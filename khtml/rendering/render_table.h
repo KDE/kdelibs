@@ -142,7 +142,7 @@ public:
                (collapseBorders() ? 0 : (paddingLeft() + paddingRight() + (numEffCols()+1) * borderHSpacing()));
      }
 
-    RenderTableCol *colElement( int col );
+    RenderTableCol *colElement( int col, bool* startEdge=0, bool* endEdge=0) const;
 
     void setNeedSectionRecalc() { needSectionRecalc = true; }
 
@@ -153,8 +153,8 @@ public:
 
     RenderTableCell* cellAbove(const RenderTableCell* cell) const;
     RenderTableCell* cellBelow(const RenderTableCell* cell) const;
-    RenderTableCell* cellLeft(const RenderTableCell* cell) const;
-    RenderTableCell* cellRight(const RenderTableCell* cell) const;
+    RenderTableCell* cellBefore(const RenderTableCell* cell) const;
+    RenderTableCell* cellAfter(const RenderTableCell* cell) const;
 
     CollapsedBorderValue* currentBorderStyle() { return m_currentBorder; }
 
@@ -368,8 +368,8 @@ public:
     int borderTop() const;
     int borderBottom() const;
 
-    CollapsedBorderValue collapsedLeftBorder() const;
-    CollapsedBorderValue collapsedRightBorder() const;
+    CollapsedBorderValue collapsedLeftBorder(bool rtl) const;
+    CollapsedBorderValue collapsedRightBorder(bool rtl) const;
     CollapsedBorderValue collapsedTopBorder() const;
     CollapsedBorderValue collapsedBottomBorder() const;
     virtual void collectBorders(QList<CollapsedBorderValue>& borderStyles);

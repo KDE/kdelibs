@@ -653,7 +653,8 @@ void RenderTable::appendColumn( int span )
     setNeedsLayoutAndMinMaxRecalc();
 }
 
-RenderTableCol *RenderTable::colElement( int col ) {
+RenderTableCol *RenderTable::colElement( int col, bool* startEdge, bool* endEdge) const
+{
     if ( !has_col_elems )
 	return 0;
     RenderObject *child = firstChild();
@@ -663,9 +664,16 @@ RenderTableCol *RenderTable::colElement( int col ) {
 	    RenderTableCol *colElem = static_cast<RenderTableCol *>(child);
 	    int span = colElem->span();
 	    if ( !colElem->firstChild() ) {
+                int startCol = cCol;
+                int endCol = cCol + span - 1;
 		cCol += span;
-		if ( cCol > col )
+		if ( cCol > col ) {
+                    if (startEdge)
+                        *startEdge = startCol == col;
+                    if (endEdge)
+                        *endEdge = endCol == col;
 		    return colElem;
+                }
 	    }
 
 	    RenderObject *next = child->firstChild();
@@ -894,7 +902,7 @@ RenderTableCell* RenderTable::cellBelow(const RenderTableCell* cell) const
     }
 }
 
-RenderTableCell* RenderTable::cellLeft(const RenderTableCell* cell) const
+RenderTableCell* RenderTable::cellBefore(const RenderTableCell* cell) const
 {
     RenderTableSection* section = cell->section();
     int effCol = colToEffCol(cell->col());
@@ -910,7 +918,7 @@ RenderTableCell* RenderTable::cellLeft(const RenderTableCell* cell) const
     return (prevCell == (RenderTableCell *)-1) ? 0 : prevCell;
 }
 
-RenderTableCell* RenderTable::cellRight(const RenderTableCell* cell) const
+RenderTableCell* RenderTable::cellAfter(const RenderTableCell* cell) const
 {
     int effCol = colToEffCol(cell->col()+cell->colSpan());
     if (effCol >= numEffCols())
@@ -2495,102 +2503,137 @@ static CollapsedBorderValue compareBorders(const CollapsedBorderValue& border1,
     return border1.precedence >= border2.precedence ? border1 : border2;
 }
 
-CollapsedBorderValue RenderTableCell::collapsedLeftBorder() const
+CollapsedBorderValue RenderTableCell::collapsedLeftBorder(bool rtl) const
 {
+    RenderTable* tableElt = table();
+    bool leftmostColumn;
+    if (!rtl)
+        leftmostColumn = col() == 0;
+    else {
+        int effCol = tableElt->colToEffCol(col() + colSpan() - 1);
+        leftmostColumn = effCol == tableElt->numEffCols() - 1;
+    }
+
     // For border left, we need to check, in order of precedence:
     // (1) Our left border.
     CollapsedBorderValue result(&style()->borderLeft(), BCELL);
 
-    // (2) The previous cell's right border.
-    RenderTableCell* prevCell = table()->cellLeft(this);
+    // (2) The right border of the cell to the left.
+    RenderTableCell* prevCell = rtl ? tableElt->cellAfter(this) : tableElt->cellBefore(this);
     if (prevCell) {
         result = compareBorders(result, CollapsedBorderValue(&prevCell->style()->borderRight(), BCELL));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
-    else if (col() == 0) {
+    else if (leftmostColumn) {
         // (3) Our row's left border.
         result = compareBorders(result, CollapsedBorderValue(&parent()->style()->borderLeft(), BROW));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
 
         // (4) Our row group's left border.
         result = compareBorders(result, CollapsedBorderValue(&section()->style()->borderLeft(), BROWGROUP));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
-    // (5) Our column's left border.
-    RenderTableCol* colElt = table()->colElement(col());
-    if (colElt) {
+    // (5) Our column and column group's left borders.
+    bool startColEdge;
+    bool endColEdge;
+    RenderTableCol* colElt = table()->colElement(col() + (rtl ? colSpan() - 1 : 0), &startColEdge, &endColEdge);
+    if (colElt && (!rtl ? startColEdge : endColEdge)) {
         result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderLeft(), BCOL));
-        if (!result.exists()) return result;
-    }
-
-    // (6) The previous column's right border.
-    if (col() > 0) {
-        colElt = table()->colElement(col()-1);
-        if (colElt) {
-            result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderRight(), BCOL));
-            if (!result.exists()) return result;
+        if (!result.exists()) 
+            return result;
+        if (colElt->parent()->isTableCol() && (!rtl ? !colElt->previousSibling() : !colElt->nextSibling())) {
+            result = compareBorders(result, CollapsedBorderValue(&colElt->parent()->style()->borderLeft(), BCOLGROUP));
+            if (!result.exists())
+                return result;
         }
     }
 
-    if (col() == 0) {
+    // (6) The previous column's right border.
+    if (!leftmostColumn) {
+        colElt = table()->colElement(col() + (rtl ? colSpan() : -1), &startColEdge, &endColEdge);
+        if (colElt && (!rtl ? endColEdge : startColEdge)) {
+            result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderRight(), BCOL));
+            if (!result.exists())
+                return result;
+        }
+    } else {
         // (7) The table's left border.
         result = compareBorders(result, CollapsedBorderValue(&table()->style()->borderLeft(), BTABLE));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     return result;
 }
 
-CollapsedBorderValue RenderTableCell::collapsedRightBorder() const
+CollapsedBorderValue RenderTableCell::collapsedRightBorder(bool rtl) const
 {
     RenderTable* tableElt = table();
-    bool inLastColumn = false;
-    int effCol = tableElt->colToEffCol(col()+colSpan()-1);
-    if (effCol == tableElt->numEffCols()-1)
-        inLastColumn = true;
+    bool rightmostColumn;
+    if (rtl)
+        rightmostColumn = col() == 0;
+    else {
+        int effCol = tableElt->colToEffCol(col() + colSpan() - 1);
+        rightmostColumn = effCol == tableElt->numEffCols() - 1;
+    }
 
     // For border right, we need to check, in order of precedence:
     // (1) Our right border.
     CollapsedBorderValue result = CollapsedBorderValue(&style()->borderRight(), BCELL);
 
-    // (2) The next cell's left border.
-    if (!inLastColumn) {
-        RenderTableCell* nextCell = tableElt->cellRight(this);
-        if (nextCell) {
+    // (2) The left border of the cell to the right.
+    if (!rightmostColumn) {
+        RenderTableCell* nextCell = rtl ? tableElt->cellBefore(this) : tableElt->cellAfter(this);
+        if (nextCell && nextCell->style()) {
             result = compareBorders(result, CollapsedBorderValue(&nextCell->style()->borderLeft(), BCELL));
-            if (!result.exists()) return result;
+            if (!result.exists())
+                return result;
         }
-    }
-    else {
+    } else {
         // (3) Our row's right border.
         result = compareBorders(result, CollapsedBorderValue(&parent()->style()->borderRight(), BROW));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
 
         // (4) Our row group's right border.
         result = compareBorders(result, CollapsedBorderValue(&section()->style()->borderRight(), BROWGROUP));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
-    // (5) Our column's right border.
-    RenderTableCol* colElt = table()->colElement(col()+colSpan()-1);
-    if (colElt) {
+    // (5) Our column and column group's right borders.
+    bool startColEdge;
+    bool endColEdge;
+    RenderTableCol* colElt = tableElt->colElement(col() + (rtl ? 0 : colSpan() - 1), &startColEdge, &endColEdge);
+    if (colElt && (!rtl ? endColEdge : startColEdge)) {
         result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderRight(), BCOL));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
+        if (colElt->parent()->isTableCol() && (!rtl ? !colElt->nextSibling() : !colElt->previousSibling())) {
+            result = compareBorders(result, CollapsedBorderValue(&colElt->parent()->style()->borderRight(), BCOLGROUP));
+            if (!result.exists())
+                return result;
+        }
     }
 
     // (6) The next column's left border.
-    if (!inLastColumn) {
-        colElt = tableElt->colElement(col()+colSpan());
-        if (colElt) {
+    if (!rightmostColumn) {
+        colElt = tableElt->colElement(col() + (rtl ? -1 : colSpan()), &startColEdge, &endColEdge);
+        if (colElt && (!rtl ? startColEdge : endColEdge)) {
             result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderLeft(), BCOL));
-            if (!result.exists()) return result;
+            if (!result.exists())
+                return result;
         }
     }
     else {
         // (7) The table's right border.
         result = compareBorders(result, CollapsedBorderValue(&tableElt->style()->borderRight(), BTABLE));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     return result;
@@ -2606,12 +2649,14 @@ CollapsedBorderValue RenderTableCell::collapsedTopBorder() const
     if (prevCell) {
         // (2) A previous cell's bottom border.
         result = compareBorders(result, CollapsedBorderValue(&prevCell->style()->borderBottom(), BCELL));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     // (3) Our row's top border.
     result = compareBorders(result, CollapsedBorderValue(&parent()->style()->borderTop(), BROW));
-    if (!result.exists()) return result;
+    if (!result.exists())
+        return result;
 
     // (4) The previous row's bottom border.
     if (prevCell) {
@@ -2623,7 +2668,8 @@ CollapsedBorderValue RenderTableCell::collapsedTopBorder() const
 
         if (prevRow) {
             result = compareBorders(result, CollapsedBorderValue(&prevRow->style()->borderBottom(), BROW));
-            if (!result.exists()) return result;
+            if (!result.exists())
+                return result;
         }
     }
 
@@ -2632,7 +2678,8 @@ CollapsedBorderValue RenderTableCell::collapsedTopBorder() const
     if (row() == 0) {
         // (5) Our row group's top border.
         result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderTop(), BROWGROUP));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
 
         // (6) Previous row group's bottom border.
         currSection = table()->sectionAbove(currSection);
@@ -2644,16 +2691,23 @@ CollapsedBorderValue RenderTableCell::collapsedTopBorder() const
     }
 
     if (!currSection) {
-        // (8) Our column's top border.
+        // (8) Our column and column group's top borders.
         RenderTableCol* colElt = table()->colElement(col());
         if (colElt) {
             result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderTop(), BCOL));
-            if (!result.exists()) return result;
+            if (!result.exists())
+                return result;
+            if (colElt->parent()->isTableCol()) {
+                result = compareBorders(result, CollapsedBorderValue(&colElt->parent()->style()->borderTop(), BCOLGROUP));
+                if (!result.exists())
+                    return result;
+            }
         }
 
         // (9) The table's top border.
         result = compareBorders(result, CollapsedBorderValue(&table()->style()->borderTop(), BTABLE));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     return result;
@@ -2669,17 +2723,20 @@ CollapsedBorderValue RenderTableCell::collapsedBottomBorder() const
     if (nextCell) {
         // (2) A following cell's top border.
         result = compareBorders(result, CollapsedBorderValue(&nextCell->style()->borderTop(), BCELL));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     // (3) Our row's bottom border. (FIXME: Deal with rowspan!)
     result = compareBorders(result, CollapsedBorderValue(&parent()->style()->borderBottom(), BROW));
-    if (!result.exists()) return result;
+    if (!result.exists())
+        return result;
 
     // (4) The next row's top border.
     if (nextCell) {
         result = compareBorders(result, CollapsedBorderValue(&nextCell->parent()->style()->borderTop(), BROW));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     // Now check row groups.
@@ -2687,7 +2744,8 @@ CollapsedBorderValue RenderTableCell::collapsedBottomBorder() const
     if (row()+rowSpan() >= static_cast<RenderTableSection*>(currSection)->numRows()) {
         // (5) Our row group's bottom border.
         result = compareBorders(result, CollapsedBorderValue(&currSection->style()->borderBottom(), BROWGROUP));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
 
         // (6) Following row group's top border.
         currSection = table()->sectionBelow(currSection);
@@ -2699,16 +2757,23 @@ CollapsedBorderValue RenderTableCell::collapsedBottomBorder() const
     }
 
     if (!currSection) {
-        // (8) Our column's bottom border.
+        // (8) Our column and column group's bottom borders.
         RenderTableCol* colElt = table()->colElement(col());
         if (colElt) {
             result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderBottom(), BCOL));
-            if (!result.exists()) return result;
+            if (!result.exists())
+                return result;
+            if (colElt->parent()->isTableCol()) {
+                result = compareBorders(result, CollapsedBorderValue(&colElt->parent()->style()->borderBottom(), BCOLGROUP));
+                if (!result.exists())
+                    return result;
+            }
         }
 
         // (9) The table's bottom border.
         result = compareBorders(result, CollapsedBorderValue(&table()->style()->borderBottom(), BTABLE));
-        if (!result.exists()) return result;
+        if (!result.exists())
+            return result;
     }
 
     return result;
@@ -2717,7 +2782,7 @@ CollapsedBorderValue RenderTableCell::collapsedBottomBorder() const
 int RenderTableCell::borderLeft() const
 {
     if (table()->collapseBorders()) {
-        CollapsedBorderValue border = collapsedLeftBorder();
+        CollapsedBorderValue border = collapsedLeftBorder(table()->style()->direction() == RTL);
         if (border.exists())
             return (border.width()+1)/2; // Give the extra pixel to top and left.
         return 0;
@@ -2728,7 +2793,7 @@ int RenderTableCell::borderLeft() const
 int RenderTableCell::borderRight() const
 {
     if (table()->collapseBorders()) {
-        CollapsedBorderValue border = collapsedRightBorder();
+        CollapsedBorderValue border = collapsedRightBorder(table()->style()->direction() == RTL);
         if (border.exists())
             return border.width()/2;
         return 0;
@@ -2884,8 +2949,9 @@ static void addBorderStyle(QList<CollapsedBorderValue>& borderStyles, CollapsedB
 
 void RenderTableCell::collectBorders(QList<CollapsedBorderValue>& borderStyles)
 {
-    addBorderStyle(borderStyles, collapsedLeftBorder());
-    addBorderStyle(borderStyles, collapsedRightBorder());
+    bool rtl = table()->style()->direction() == RTL;
+    addBorderStyle(borderStyles, collapsedLeftBorder(rtl));
+    addBorderStyle(borderStyles, collapsedRightBorder(rtl));
     addBorderStyle(borderStyles, collapsedTopBorder());
     addBorderStyle(borderStyles, collapsedBottomBorder());
 }
@@ -2895,8 +2961,9 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
     if (!table()->currentBorderStyle())
         return;
 
-    CollapsedBorderValue leftVal = collapsedLeftBorder();
-    CollapsedBorderValue rightVal = collapsedRightBorder();
+    bool rtl = table()->style()->direction() == RTL;
+    CollapsedBorderValue leftVal = collapsedLeftBorder(rtl);
+    CollapsedBorderValue rightVal = collapsedRightBorder(rtl);
     CollapsedBorderValue topVal = collapsedTopBorder();
     CollapsedBorderValue bottomVal = collapsedBottomBorder();
 
