@@ -262,8 +262,15 @@ void RenderLayer::setHasVisibleContent(bool b)
 { 
     if (m_hasVisibleContent == b && !m_visibleContentStatusDirty)
         return;
-    m_visibleContentStatusDirty = false; 
+    m_visibleContentStatusDirty = false;
     m_hasVisibleContent = b;
+    if (m_hasVisibleContent) {
+        // ### dirty painted region
+        // m_region = QRegion();
+        if (!isOverflowOnly())
+            if (RenderLayer* sc = stackingContext())
+                sc->dirtyZOrderLists();
+    }
     if (parent())
         parent()->childVisibilityChanged(m_hasVisibleContent);
 }
@@ -950,7 +957,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         p->setOpacity(renderer()->style()->opacity());
 
     // We want to paint our layer, but only if we intersect the damage rect.
-    bool shouldPaint = intersectsDamageRect(layerBounds, damageRect);
+    bool shouldPaint = intersectsDamageRect(layerBounds, damageRect) && m_hasVisibleContent;
     if (shouldPaint && !selectionOnly) {
         // Paint our background first, before painting any child layers.
         if (!damageRect.isEmpty()) {
