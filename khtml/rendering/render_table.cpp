@@ -1256,6 +1256,7 @@ void RenderTableSection::calcRowHeight()
 
 	int baseline=0;
 	int bdesc = 0;
+        grid[r].baseLine = 0;
 // 	qDebug("height of row %d is %d/%d", r, grid[r].height.value, grid[r].height.type );
 	int ch = grid[r].height.minWidth( 0 );
 	int pos = rowPos[r] + ch + (grid[r].rowRenderer ? vspacing : 0);
