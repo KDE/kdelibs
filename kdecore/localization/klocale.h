@@ -51,7 +51,14 @@ class KLocalePrivate;
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
   *
-  * Use KGlobal::locale() to get pointer to the global KLocale object
+  * Use KGlobal::locale() to get pointer to the global KLocale object,
+  * containing the applications current locale settings.
+  *
+  * For example, to format the date May 17, 1996 in the current locale, use:
+  *
+  * \code
+  *   QString date = KGlobal::locale()->formatDate(QDate(1995,5,17));
+  * \endcode
   *
   * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>,
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
