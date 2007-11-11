@@ -52,6 +52,7 @@ public:
     unsigned long length() const;
 
     DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
+    virtual void removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint);
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, bool nonCSSHint, int &ec);
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false,
                        bool nonCSSHint = false);

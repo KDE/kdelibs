@@ -1101,6 +1101,11 @@ DOM::DOMString RenderStyleDeclarationImpl::removeProperty( int, bool )
     return DOMString();
 }
 
+void RenderStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint)
+{
+     // ### emit error since we're read-only
+}
+
 bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString &, bool,
                                                bool, int &ec)
 {
