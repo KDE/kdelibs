@@ -403,7 +403,31 @@ void HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode 
     handleChildRemove( oldChild );
     HTMLElementImpl::removeChild( oldChild, exceptioncode);
 }
+ 
+static inline bool isTableCellAncestor(NodeImpl* n)
+{
+    return n->id() == ID_THEAD || n->id() == ID_TBODY ||
+           n->id() == ID_TFOOT || n->id() == ID_TR;
+}
 
+static bool setTableCellsChanged(NodeImpl* n)
+{
+    assert(n);
+    bool cellChanged = false;
+
+    if (n->id() == ID_TD || n->id() == ID_TH)
+        cellChanged = true;
+    else if (isTableCellAncestor(n)) {
+        for (NodeImpl* child = n->firstChild(); child; child = child->nextSibling())
+            cellChanged |= setTableCellsChanged(child);
+    }
+
+    if (cellChanged)
+       n->setChanged();
+
+    return cellChanged;
+}
+ 
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 {
     // ### to CSS!!
@@ -507,7 +531,10 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             rules = Cols;
         else if ( strcasecmp( attr->value(), "all" ) == 0 )
             rules = All;
-        if (attached()) updateFrame();
+
+        if (attached() && tFirstBody())
+            if (setTableCellsChanged(tFirstBody()))
+                setChanged();
         break;
    case ATTR_CELLSPACING:
         if (!attr->value().isEmpty())
