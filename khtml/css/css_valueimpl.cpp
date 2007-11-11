@@ -63,7 +63,7 @@ static int propertyID(const DOMString &s)
         unsigned short c = s[i].unicode();
         if (c == 0 || c >= 0x7F)
             return 0; // illegal character
-        buffer[i] = c;
+        buffer[i] = s[i].toLower().unicode();
     }
 
     return getPropertyID(buffer, len);
