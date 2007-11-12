@@ -582,7 +582,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     edit->button()->hide();
   }
 
-  edit->setUrl( KUrl(_value) );
+  edit->setPath( _value );
   edit->setWhatsThis(i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
@@ -679,7 +679,7 @@ void KOpenWithDialog::slotSelected( const QString& /*_name*/, const QString& _ex
 {
     kDebug(250)<<"KOpenWithDialog::slotSelected";
     KService::Ptr pService = d->curService;
-    d->edit->setUrl(KUrl(_exec)); // calls slotTextChanged :(
+    d->edit->setPath(_exec); // calls slotTextChanged :(
     d->curService = pService;
 }
 
