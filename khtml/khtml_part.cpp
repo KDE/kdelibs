@@ -3272,6 +3272,7 @@ bool KHTMLPart::findTextNext( bool reverse )
     {
       //kdDebug(6050) << "Restarting" << endl;
       initFindNode( false, options & KFindDialog::FindBackwards, false );
+      d->m_find->resetCounts();
       findTextNext( reverse );
     }
     else // really done
