@@ -567,7 +567,7 @@ private:
 
 #define KCONFIGGROUP_DECLARE_ENUM_QOBJECT(Class, Enum)                     \
 template <>                                                                \
-inline Class::Enum KConfigGroup::readEntry(const QByteArray &key, const Class::Enum& def) const\
+inline Class::Enum KConfigGroup::readEntry(const char* key, const Class::Enum& def) const\
 {                                                                          \
 const QMetaObject* M_obj = &Class::staticMetaObject;                       \
 const int M_index = M_obj->indexOfEnumerator(#Enum);                       \
@@ -577,7 +577,7 @@ const QByteArray M_data = readEntry(key, QByteArray(M_enum.valueToKey(def)));\
 return static_cast<Class::Enum>(M_enum.keyToValue(M_data.constData()));    \
 }                                                                          \
 template <>                                                                \
-inline void KConfigGroup::writeEntry(const QByteArray &key, const Class::Enum& value, WriteConfigFlags flags)\
+inline void KConfigGroup::writeEntry(const char* key, const Class::Enum& value, WriteConfigFlags flags)\
 {                                                                          \
 const QMetaObject* M_obj = &Class::staticMetaObject;                       \
 const int M_index = M_obj->indexOfEnumerator(#Enum);                       \
