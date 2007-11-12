@@ -35,11 +35,11 @@ namespace Fake
             AudioOutput(QObject *parent);
             ~AudioOutput();
 
-        public Q_SLOTS:
             // Attributes Getters:
             qreal volume() const;
             int outputDevice() const;
 
+        public Q_SLOTS:
             // Attributes Setters:
             void setVolume(qreal newVolume);
             bool setOutputDevice(int newDevice);
