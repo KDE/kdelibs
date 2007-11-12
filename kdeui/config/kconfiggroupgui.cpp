@@ -35,11 +35,11 @@
  * @returns true if something was handled (even if output was set to clear or default)
  *          or false if nothing was handled (e.g., Core type)
  */
-static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QVariant &input,
+static bool readEntryGui(const QByteArray& data, const char* key, const QVariant &input,
                          QVariant &output)
 {
     const QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
-                              .arg(key.constData())
+                              .arg(key)
                               .arg(QVariant::typeToName(input.type()))
                               .arg(data.constData());
     const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
@@ -131,7 +131,7 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
  * @returns true if something was handled (even if an empty value was written)
  *          or false if nothing was handled (e.g., Core type)
  */
-static bool writeEntryGui(KConfigGroup *cg, const QByteArray& key, const QVariant &prop,
+static bool writeEntryGui(KConfigGroup *cg, const char* key, const QVariant &prop,
                           KConfigGroup::WriteConfigFlags pFlags)
 {
     switch (prop.type()) {
@@ -139,7 +139,7 @@ static bool writeEntryGui(KConfigGroup *cg, const QByteArray& key, const QVarian
         const QColor rColor = prop.value<QColor>();
 
         if (!rColor.isValid()) {
-            cg->writeEntry(key, QByteArray("invalid"), pFlags);
+            cg->writeEntry(key, "invalid", pFlags);
             return true;
         }
 

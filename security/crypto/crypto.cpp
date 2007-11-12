@@ -848,7 +848,7 @@ void KCryptoConfig::configChanged()
 
 void KCryptoConfig::load()
 {
-  KConfigGroup cg(config, QByteArray(""));
+  KConfigGroup cg(config, "");
 #ifdef KSSL_HAVE_SSL
   otherCertDelList.clear();
   yourCertDelList.clear();
@@ -990,7 +990,7 @@ void KCryptoConfig::load()
 
 void KCryptoConfig::save()
 {
-  KConfigGroup cg(config, QByteArray(""));
+  KConfigGroup cg(config, "");
 #ifdef KSSL_HAVE_SSL
   KConfigGroup cgWarning(config, "Warnings");
   cgWarning.writeEntry("OnEnter", mWarnOnEnter->isChecked());
@@ -1129,7 +1129,7 @@ void KCryptoConfig::save()
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     KConfigGroup _cg(authcfg, KResolver::domainToAscii(x->configName()));
+     KConfigGroup _cg(authcfg, KResolver::domainToAscii(x->configName()).constData());
      _cg.writeEntry("certificate", x->getCertName());
      _cg.writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
      _cg.writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
