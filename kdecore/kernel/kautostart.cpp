@@ -137,10 +137,11 @@ void KAutostart::setCommandToCheck(const QString& exec)
     d->df->desktopGroup().writePathEntry( "TryExec", exec );
 }
 
-template <>
-KAutostart::StartPhase KConfigGroup::readEntry(const QByteArray &key, const KAutostart::StartPhase& aDefault) const
+// do not specialize the readEntry template -
+// http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=100911
+KAutostart::StartPhase readEntry(const KConfigGroup &group, const char* key, const KAutostart::StartPhase& aDefault)
 {
-    const QByteArray data = readEntry(key, QByteArray());
+    const QByteArray data = group.readEntry(key, QByteArray());
 
     if (data.isNull())
         return aDefault;
@@ -157,7 +158,7 @@ KAutostart::StartPhase KConfigGroup::readEntry(const QByteArray &key, const KAut
 
 KAutostart::StartPhase KAutostart::startPhase() const
 {
-    return d->df->desktopGroup().readEntry("X-KDE-autostart-phase", Applications);
+    return readEntry(d->df->desktopGroup(), "X-KDE-autostart-phase", Applications);
 }
 
 void KAutostart::setStartPhase(KAutostart::StartPhase phase)

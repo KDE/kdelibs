@@ -535,14 +535,14 @@ bool KConfig::forceGlobal() const
     return d->bForceGlobal;
 }
 
-KConfigGroup KConfig::groupImpl(const QByteArray &arr)
+KConfigGroup KConfig::groupImpl(const QByteArray &group)
 {
-    return KConfigGroup(this, arr);
+    return KConfigGroup(this, group.constData());
 }
 
-const KConfigGroup KConfig::groupImpl(const QByteArray &a) const
+const KConfigGroup KConfig::groupImpl(const QByteArray &group) const
 {
-    return KConfigGroup(this, a);
+    return KConfigGroup(this, group.constData());
 }
 
 KEntryMap::EntryOptions convertToOptions(KConfig::WriteConfigFlags flags)
@@ -608,7 +608,7 @@ bool KConfig::hasGroupImpl(const QByteArray& aGroup) const
     return d->entryMap.hasEntry(aGroup);
 }
 
-bool KConfigPrivate::canWriteEntry(const QByteArray& group, const QByteArray& key, bool isDefault) const
+bool KConfigPrivate::canWriteEntry(const QByteArray& group, const char* key, bool isDefault) const
 {
     if (bFileImmutable ||
         entryMap.getEntryOption(group, key, KEntryMap::SearchLocalized, KEntryMap::EntryImmutable))
@@ -616,7 +616,7 @@ bool KConfigPrivate::canWriteEntry(const QByteArray& group, const QByteArray& ke
     return true;
 }
 
-void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
+void KConfigPrivate::putData( const QByteArray& group, const char* key,
                       const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
 {
     // the KConfig object is dirty now
@@ -639,7 +639,7 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
     entryMap.setEntry(group, key, value, options);
 }
 
-QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
+QByteArray KConfigPrivate::lookupData(const QByteArray& group, const char* key,
                                       KEntryMap::SearchFlags flags) const
 {
     if (bReadDefaults)
@@ -650,7 +650,7 @@ QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray&
     return it->mValue;
 }
 
-QString KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
+QString KConfigPrivate::lookupData(const QByteArray& group, const char* key,
                                    KEntryMap::SearchFlags flags, bool *expand) const
 {
     if (bReadDefaults)

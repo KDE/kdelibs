@@ -49,12 +49,12 @@ public:
     void changeFileName(const QString& fileName, const char* resourceType);
 
     // functions for KConfigGroup
-    bool canWriteEntry(const QByteArray& group, const QByteArray& key, bool isDefault=false) const;
-    QString lookupData(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags,
+    bool canWriteEntry(const QByteArray& group, const char* key, bool isDefault=false) const;
+    QString lookupData(const QByteArray& group, const char* key, KEntryMap::SearchFlags flags,
                        bool* expand) const;
-    QByteArray lookupData(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags) const;
+    QByteArray lookupData(const QByteArray& group, const char* key, KEntryMap::SearchFlags flags) const;
 
-    void putData(const QByteArray& group, const QByteArray& key, const QByteArray& value,
+    void putData(const QByteArray& group, const char* key, const QByteArray& value,
                  KConfigBase::WriteConfigFlags flags, bool expand=false);
     QStringList groupList(const QByteArray& group) const;
 

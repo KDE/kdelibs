@@ -76,11 +76,11 @@ KSharedConfig::~KSharedConfig()
 KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName)
 {
     KSharedConfigPtr ptr(this);
-    return KConfigGroup( ptr, groupName);
+    return KConfigGroup( ptr, groupName.constData());
 }
 
 const KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName) const
 {
     const KSharedConfigPtr ptr(const_cast<KSharedConfig*>(this));
-    return KConfigGroup( ptr, groupName);
+    return KConfigGroup( ptr, groupName.constData());
 }
