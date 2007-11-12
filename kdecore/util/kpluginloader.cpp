@@ -73,6 +73,10 @@ inline QString makeLibName( const QString &libname )
 #endif
 }
 
+#ifdef Q_OS_WIN
+extern QString fixLibPrefix(const QString& libname);
+#endif
+
 inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
 {
     QString libname = makeLibName(name);
@@ -87,7 +91,9 @@ inline QString findLibraryInternal(const QString &name, const KComponentData &cD
     if (QDir::isRelativePath(libname)) {
         libfile = cData.dirs()->findResource("module", libname);
         if (libfile.isEmpty()) {
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+            libname = fixLibPrefix(libname);
+#else
             if (!hasPrefix)
                 libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
 #endif

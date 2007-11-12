@@ -113,6 +113,11 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
     t_func func = reinterpret_cast<t_func>(lib->resolveFunction( symname ));
     if ( !func )
     {
+#ifdef Q_OS_WIN
+        // a backup for cases when developer has set lib prefix for a plugin name (she should not...)
+        if (!factoryname.startsWith("lib"))
+            return kde3Factory(lib, QByteArray("lib")+symname.mid(5 /*"init_"*/));
+#endif
         kDebug(150) << "The library" << lib->fileName() << "does not offer an"
                     << symname << "function.";
         return 0;

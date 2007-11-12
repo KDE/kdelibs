@@ -59,40 +59,32 @@ KLibLoader::~KLibLoader()
 
 extern QString makeLibName( const QString &libname );
 
-extern QString findLibraryInternal(const QString &name, const KComponentData &cData);
+extern QString findLibrary(const QString &name, const KComponentData &cData);
+
+#ifdef Q_OS_WIN
+// removes "lib" prefix, if present
+QString fixLibPrefix(const QString& libname)
+{
+    int pos = libname.lastIndexOf( '/' );
+    if ( pos >= 0 )
+    {
+        QString file = libname.mid( pos + 1 );
+        QString path = libname.left( pos );
+        if( !file.startsWith( "lib" ) )
+            return libname;
+        return path + '/' + file.mid( 3 );
+    }
+    if( !libname.startsWith( "lib" ) )
+        return libname;
+    return libname.mid( 3 );
+}
+#endif
 
 //static
 QString KLibLoader::findLibrary(const QString &_name, const KComponentData &cData)
 {
-    QString libname = findLibraryInternal(QDir::fromNativeSeparators(_name), cData);
-#ifdef Q_OS_WIN
-    // we don't have 'lib' prefix on windows -> remove it and try again
-    if( libname.isEmpty() )
-    {
-      libname = _name;
-      QString file, path;
-
-      int pos = libname.lastIndexOf( '/' );
-      if ( pos >= 0 )
-      {
-        file = libname.mid( pos + 1 );
-        path = libname.left( pos );
-        libname = path + '/' + file.mid( 3 );
-      }
-      else
-      {
-        file = libname;
-        libname = file.mid( 3 );
-      }
-      if( !file.startsWith( "lib" ) )
-          return libname;
-
-      libname = findLibraryInternal(libname, cData);
-    }
-#endif
-    return libname;
+    return ::findLibrary(_name, cData);
 }
-
 
 KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 {
