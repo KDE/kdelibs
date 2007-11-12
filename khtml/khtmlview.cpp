@@ -1023,14 +1023,16 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
             pixmap.fill( QColor( qRgba( 127, 127, 127, 127 ) ) );
 
             QPainter p( &pixmap );
-            icon = KHTMLFactory::iconLoader()->loadIcon( "arrow-up", KIconLoader::Small );
-            p.drawPixmap( 16, 0, icon );
-            icon = KHTMLFactory::iconLoader()->loadIcon( "arrow-left", KIconLoader::Small );
-            p.drawPixmap( 0, 16, icon );
-            icon = KHTMLFactory::iconLoader()->loadIcon( "arrow-down", KIconLoader::Small );
-            p.drawPixmap( 16, 32,icon  );
-            icon = KHTMLFactory::iconLoader()->loadIcon( "arrow-right", KIconLoader::Small );
-            p.drawPixmap( 32, 16, icon );
+            QStyleOption option;
+
+            option.rect.setRect( 16, 0, 16, 16 );
+            QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowUp, &option, &p );
+            option.rect.setRect( 0, 16, 16, 16 );
+            QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowLeft, &option, &p );
+            option.rect.setRect( 16, 32, 16, 16 );
+            QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
+            option.rect.setRect( 32, 16, 16, 16 );
+            QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowRight, &option, &p );
             p.drawEllipse( 23, 23, 2, 2 );
 
             d->m_mouseScrollIndicator = new QWidget( this );
@@ -1323,9 +1325,9 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 	QString cursorIcon;
 	switch (linkCursor)
 	{
-          case LINK_MAILTO:     cursorIcon = "mail";       break;
-          case LINK_NEWWINDOW:  cursorIcon = "window-new"; break;
-          default:              cursorIcon = "error";      break;
+          case LINK_MAILTO:     cursorIcon = "mail-message-new"; break;
+          case LINK_NEWWINDOW:  cursorIcon = "window-new";       break;
+          default:              cursorIcon = "dialog-error";     break;
 	}
         QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
 
