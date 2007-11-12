@@ -88,10 +88,10 @@ void KFileSharePrivate::slotFileChange(const QString &file)
   }
 }
 
-template <>
-KFileShare::ShareMode KConfigGroup::readEntry(const QByteArray &key, const KFileShare::ShareMode& aDefault) const
+KFileShare::ShareMode readEntry(const KConfigGroup &cg, const char* key, 
+	const KFileShare::ShareMode& aDefault)
 {
-    const QByteArray data=readEntry(key, QByteArray());
+    const QByteArray data=cg.readEntry(key, QByteArray());
 
     if (!data.isEmpty()) {
         if (data.toLower() == "simple")
@@ -129,7 +129,7 @@ void KFileShare::readConfig() // static
             s_authorization = UserNotAllowed;
     }
 
-    s_shareMode = group.readEntry("SHARINGMODE", Simple);
+    s_shareMode = readEntry(group, "SHARINGMODE", Simple);
 
 
     s_sambaEnabled = group.readEntry("SAMBA", true);

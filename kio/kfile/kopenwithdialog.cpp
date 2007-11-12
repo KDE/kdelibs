@@ -52,12 +52,11 @@
 #include <kbuildsycocaprogressdialog.h>
 #include <kconfiggroup.h>
 
-template <> inline
-void KConfigGroup::writeEntry( const QByteArray &key,
-                              const KGlobalSettings::Completion& aValue,
-                              KConfigBase::WriteConfigFlags flags)
+inline void writeEntry( KConfigGroup& group, const char* key,
+                        const KGlobalSettings::Completion& aValue,
+                        KConfigBase::WriteConfigFlags flags = KConfigBase::Normal )
 {
-  writeEntry(key, int(aValue), flags);
+    group.writeEntry(key, int(aValue), flags);
 }
 
 namespace KDEPrivate {
@@ -568,12 +567,11 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     combo->setLineEdit(lineEdit);
     combo->setDuplicatesEnabled( false );
     KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
-    int max = cg.readEntry( QString::fromLatin1("Maximum history"), 15 );
+    int max = cg.readEntry( "Maximum history", 15 );
     combo->setMaxCount( max );
-    int mode = cg.readEntry(QString::fromLatin1("CompletionMode"),
-				int(KGlobalSettings::completionMode()));
+    int mode = cg.readEntry( "CompletionMode", int(KGlobalSettings::completionMode()));
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
-    QStringList list = cg.readEntry( QString::fromLatin1("History"), QStringList() );
+    QStringList list = cg.readEntry( "History", QStringList() );
     combo->setHistoryItems( list, true );
     edit = new KUrlRequester( combo, mainWidget );
   }
@@ -879,7 +877,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
      desktop = new KDesktopFile(newPath);
   }
   KConfigGroup cg = desktop->desktopGroup();
-  cg.writeEntry("Type", QString::fromLatin1("Application"));
+  cg.writeEntry("Type", "Application");
   cg.writeEntry("Name", initialServiceName);
   cg.writePathEntry("Exec", fullExec);
   if (terminal->isChecked())
@@ -958,8 +956,8 @@ void KOpenWithDialog::accept()
         combo->addToHistory(d->edit->url().url());
 
         KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
-        cg.writeEntry( QString::fromLatin1("History"), combo->historyItems() );
-        cg.writeEntry(QString::fromLatin1("CompletionMode"), combo->completionMode());
+        cg.writeEntry( "History", combo->historyItems() );
+        writeEntry( cg, "CompletionMode", combo->completionMode() );
         // don't store the completion-list, as it contains all of KUrlCompletion's
         // executables
         cg.sync();
