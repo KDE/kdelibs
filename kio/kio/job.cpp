@@ -341,7 +341,7 @@ bool SimpleJob::doKill()
     Q_D(SimpleJob);
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     d->m_slave = 0; // -> set to 0
-    return true;
+    return Job::doKill();
 }
 
 bool SimpleJob::doSuspend()
