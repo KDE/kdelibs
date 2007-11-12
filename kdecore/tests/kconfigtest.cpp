@@ -53,8 +53,8 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
-#define STRINGLISTEMPTYENTRY (QStringList())
-#define STRINGLISTJUSTEMPTYELEMENT (QStringList(QString()) )
+#define STRINGLISTEMPTYENTRY QStringList()
+#define STRINGLISTJUSTEMPTYELEMENT QStringList(QString())
 #define STRINGLISTEMPTYTRAINLINGELEMENT (QStringList( "Hi" ) << QString())
 #define STRINGLISTESCAPEODDENTRY (QStringList( "Hello\\\\\\" ) << "World")
 #define STRINGLISTESCAPEEVENENTRY (QStringList( "Hello\\\\\\\\" ) << "World")
@@ -127,21 +127,10 @@ void KConfigTest::initTestCase()
   cg.writePathEntry( "homepathescape", HOMEPATHESCAPE );
 
   cg = KConfigGroup(&sc, "Enum Types" );
-  cg.writeEntry( "enum-10", Tens );
-
-#ifndef Q_CC_MSVC
-  cg.writeEntry( "enum-100", Hundreds );
-#else
-  cg.writeEntry( "enum-100", Hundreds, KConfig::Normal );
-#endif
-
-  cg.writeEntry( "flags-bit0", Flags(bit0));
-
-#ifndef Q_CC_MSVC
-  cg.writeEntry( "flags-bit0-bit1", bit0|bit1);
-#else
-  cg.writeEntry( "flags-bit0-bit1", Flags(bit0|bit1), KConfig::Normal );
-#endif
+  writeEntry( cg, "enum-10", Tens );
+  writeEntry( cg, "enum-100", Hundreds );
+  writeEntry( cg, "flags-bit0", Flags(bit0));
+  writeEntry( cg, "flags-bit0-bit1", Flags(bit0|bit1) );
 
   cg = KConfigGroup(&sc, "ParentGroup" );
   KConfigGroup cg1(&cg, "SubGroup1" );
@@ -425,11 +414,11 @@ void KConfigTest::testEnums()
   KConfigGroup sc3(&sc, "Enum Types" );
 
   QCOMPARE( sc3.readEntry( "enum-10" ), QString("Tens"));
-  QVERIFY( sc3.readEntry( "enum-100", Ones) != Ones);
-  QVERIFY( sc3.readEntry( "enum-100", Ones) != Tens);
+  QVERIFY( readEntry( sc3, "enum-100", Ones) != Ones);
+  QVERIFY( readEntry( sc3, "enum-100", Ones) != Tens);
 
   QCOMPARE( sc3.readEntry( "flags-bit0" ), QString("bit0"));
-  QVERIFY( sc3.readEntry( "flags-bit0", Flags() ) == bit0 );
+  QVERIFY( readEntry( sc3, "flags-bit0", Flags() ) == bit0 );
 
   int eid = staticMetaObject.indexOfEnumerator( "Flags" );
   QVERIFY( eid != -1 );
@@ -437,7 +426,7 @@ void KConfigTest::testEnums()
   Flags bitfield = bit0|bit1;
 
   QCOMPARE( sc3.readEntry( "flags-bit0-bit1" ), QString( me.valueToKeys(bitfield) ) );
-  QVERIFY( sc3.readEntry( "flags-bit0-bit1", Flags() ) == bitfield );
+  QVERIFY( readEntry( sc3, "flags-bit0-bit1", Flags() ) == bitfield );
 }
 
 void KConfigTest::testEntryMap()
@@ -686,7 +675,7 @@ void KConfigTest::testKdeglobals()
     QVERIFY(sc.forceGlobal());
     QVERIFY(sc.name() == QLatin1String("kdeglobals"));
 
-    KConfig sc2(QString(), KConfig::IncludeGlobals);
+    KConfig sc2("", KConfig::IncludeGlobals);
     QVERIFY(sc2.forceGlobal());
     QVERIFY(sc2.name() == QLatin1String("kdeglobals"));
 
