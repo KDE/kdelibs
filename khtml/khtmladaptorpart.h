@@ -25,6 +25,25 @@
 #include <kparts/browserextension.h>
 #include <kparts/factory.h>
 
+namespace KJS
+{
+    class ExecState;
+    class JSObject;
+};
+
+class ScriptingInterface
+{
+public:
+    virtual ~ScriptingInterface() { }
+
+    virtual void initScripting(KJS::ExecState *exec) = 0;
+    virtual void stopScripting() = 0;
+
+    virtual KJS::JSObject* scriptObject() = 0;
+};
+
+Q_DECLARE_INTERFACE(ScriptingInterface, "org.kde.khtml.ScriptingInterface")
+
 class KHTMLAdaptorPartFactory : public KParts::Factory {
     Q_OBJECT
 public:
@@ -35,10 +54,16 @@ public:
                                            const QStringList &args);
 };
 
-class AdaptorView : public KParts::ReadOnlyPart {
+class AdaptorView : public KParts::ReadOnlyPart,
+                    public ScriptingInterface {
     Q_OBJECT
+    Q_INTERFACES(ScriptingInterface)
 public:
     AdaptorView(QWidget* wparent, QObject* parent, const QStringList& args);
+
+    void initScripting(KJS::ExecState *exec);
+    void stopScripting() { }
+    KJS::JSObject* scriptObject();
 
 protected:
     bool openFile();

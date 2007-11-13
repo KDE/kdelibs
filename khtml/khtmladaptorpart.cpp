@@ -19,11 +19,11 @@
  */
 
 #include "khtmladaptorpart.h"
-
+#include <kjs/object.h>
 #include <qlabel.h>
 
 AdaptorView::AdaptorView(QWidget* wparent, QObject* parent,
-                         const QStringList& args)
+                         const QStringList& /*args*/)
     : KParts::ReadOnlyPart(parent)
 {
     QLabel *placeHolder = new QLabel("Inactive", wparent);
@@ -38,6 +38,15 @@ bool AdaptorView::openFile()
     return true;
 }
 
+void AdaptorView::initScripting(KJS::ExecState * /*exec*/)
+{
+}
+
+KJS::JSObject* AdaptorView::scriptObject()
+{
+    return new KJS::JSObject();
+}
+
 K_EXPORT_COMPONENT_FACTORY (khtmladaptorpart, KHTMLAdaptorPartFactory)
 
 KHTMLAdaptorPartFactory::KHTMLAdaptorPartFactory()
@@ -46,7 +55,7 @@ KHTMLAdaptorPartFactory::KHTMLAdaptorPartFactory()
 
 KParts::Part* KHTMLAdaptorPartFactory::createPartObject(QWidget* wparent,
                                                         QObject* parent,
-                                                        const char* className,
+                                                        const char* /*className*/,
                                                         const QStringList& args)
 {
     return new AdaptorView(wparent, parent, args);
