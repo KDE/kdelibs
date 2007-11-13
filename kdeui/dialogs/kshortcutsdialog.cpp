@@ -201,7 +201,7 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
 	setContractIcon( pixmap );
 
-	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
+	connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
 
 
