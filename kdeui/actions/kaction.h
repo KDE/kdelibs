@@ -343,8 +343,9 @@ public:
      *
      * When an action, identified by main component name and text(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
-     * be saved and restored every time the action's globalShortcutAllowed flag
-     * becomes true. \e This \e includes \e calling \e setGlobalShortcut()!
+     * be saved. The shortcut will then be restored every time the action's 
+     * globalShortcutAllowed flag becomes true.
+     * \e This \e includes \e calling \e setGlobalShortcut()!
      * If you actually want to change the global shortcut you have to set
      * @p loading to NoAutoloading. The new shortcut will be saved again.
      * The only way to forget the action's global shortcut is to do
