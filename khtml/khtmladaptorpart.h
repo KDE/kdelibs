@@ -29,7 +29,7 @@ namespace KJS
 {
     class ExecState;
     class JSObject;
-};
+}
 
 class ScriptingInterface
 {
