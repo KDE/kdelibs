@@ -32,9 +32,11 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	connect(m_ui.Sound_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Popup_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Logfile_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
-	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Taskbar_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.KTTS_check,SIGNAL(toggled(bool)), this, SLOT(slotKTTSComboChanged()));
+	connect(m_ui.Execute_select,SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
+	connect(m_ui.Sound_select,SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
+	connect(m_ui.Logfile_select,SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
 	connect(m_ui.Sound_play,SIGNAL(clicked()), this, SLOT(slotPlay()));
 	connect(m_ui.KTTS_combo,SIGNAL(currentIndexChanged(int)), this, SLOT(slotKTTSComboChanged()));
 	
