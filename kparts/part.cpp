@@ -752,7 +752,10 @@ bool ReadWritePart::queryClose()
     QString docName = url().fileName();
     if (docName.isEmpty()) docName = i18n( "Untitled" );
 
-    int res = KMessageBox::warningYesNoCancel( widget(),
+    QWidget *parentWidget=widget();
+    if(!parentWidget) parentWidget=QApplication::activeWindow();
+
+    int res = KMessageBox::warningYesNoCancel( parentWidget,
                                                i18n( "The document \"%1\" has been modified.\n"
                                                      "Do you want to save your changes or discard them?" ,  docName ),
                                                i18n( "Close Document" ), KStandardGuiItem::save(), KStandardGuiItem::discard() );
@@ -767,7 +770,7 @@ bool ReadWritePart::queryClose()
         {
             if (d->m_url.isEmpty())
             {
-                KUrl url = KFileDialog::getSaveUrl(KUrl(), QString(), widget());
+                KUrl url = KFileDialog::getSaveUrl(KUrl(), QString(), parentWidget);
                 if (url.isEmpty())
                     return false;
 
