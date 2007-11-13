@@ -489,7 +489,7 @@ void Kded::update(const QString& )
 {
   if (!m_recreateBusy)
   {
-    m_pTimer->start( 2000 );
+    m_pTimer->start( 10000 );
   }
 }
 
