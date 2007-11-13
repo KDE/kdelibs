@@ -318,6 +318,7 @@
 <!ENTITY sonnet "<application>Sonnet</application>">
 <!ENTITY ksplash "<application>KSplash</application>">
 <!ENTITY kspread	"<application>KSpread</application>">
+<!ENTITY ksquares	"<application>KSquares</application>">
 <!ENTITY kstars	"<application>KStars</application>">
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
