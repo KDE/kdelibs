@@ -237,6 +237,10 @@ Q_SIGNALS:
      */
     virtual bool canChooseColumnsCheck();
 
+    /**
+     * Re-implemented for internal reasons.  API not affected.
+     */
+    virtual bool event(QEvent *event);
   private:
     class Private;
     Private* const d;

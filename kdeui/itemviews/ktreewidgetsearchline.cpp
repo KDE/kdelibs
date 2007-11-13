@@ -523,6 +523,25 @@ bool KTreeWidgetSearchLine::canChooseColumnsCheck()
   return true;
 }
 
+bool KTreeWidgetSearchLine::event(QEvent *event) {
+
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if(keyEvent->matches(QKeySequence::MoveToNextLine) || keyEvent->matches(QKeySequence::SelectNextLine) ||
+		   keyEvent->matches(QKeySequence::MoveToPreviousLine) || keyEvent->matches(QKeySequence::SelectPreviousLine) ||
+		   keyEvent->matches(QKeySequence::MoveToNextPage) ||  keyEvent->matches(QKeySequence::SelectNextPage) ||
+		   keyEvent->matches(QKeySequence::MoveToPreviousPage) ||  keyEvent->matches(QKeySequence::SelectPreviousPage))
+		{
+			QTreeWidget *first = d->treeWidgets.first();
+			if(first) {
+				QApplication::sendEvent(first, event);
+				return true;
+			}
+		}
+	}
+	return KLineEdit::event(event);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // protected slots
 ////////////////////////////////////////////////////////////////////////////////
