@@ -41,6 +41,11 @@ class KNotifyConfigElement
 		
 		void save();
 		
+		/**
+		 * return wither kttsd is installed or not.
+		 */
+		static bool have_kttsd();
+		
 	private:
 		QMap<QString,QString> m_cache;
 		KConfigGroup* m_config;

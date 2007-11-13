@@ -75,6 +75,8 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 			icon = KIcon("services");
 		else if(key == "Logfile" )
 			icon = KIcon("text-plain");
+		else if(key == "KTTS" && KNotifyConfigElement::have_kttsd())
+			icon = KIcon("speak");
 		else
 			continue;
 

@@ -43,6 +43,7 @@ class KNotifyConfigActionsWidget : public QWidget
 		void changed();
 	private Q_SLOTS:
 		void slotPlay();
+		void slotKTTSComboChanged();
 	private:
 		Ui::KNotifyConfigActionsWidgetBase m_ui;
 };

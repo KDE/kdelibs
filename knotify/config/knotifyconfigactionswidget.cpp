@@ -34,7 +34,17 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	connect(m_ui.Logfile_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Taskbar_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.KTTS_check,SIGNAL(toggled(bool)), this, SLOT(slotKTTSComboChanged()));
 	connect(m_ui.Sound_play,SIGNAL(clicked()), this, SLOT(slotPlay()));
+	connect(m_ui.KTTS_combo,SIGNAL(currentIndexChanged(int)), this, SLOT(slotKTTSComboChanged()));
+	
+	if(!KNotifyConfigElement::have_kttsd())
+	{
+		m_ui.KTTS_check->setVisible(false);
+		m_ui.KTTS_select->setVisible(false);
+		m_ui.KTTS_combo->setVisible(false);
+	}
+	
 }
 
 void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config )
@@ -48,10 +58,18 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Logfile_check->setChecked( actions.contains("Logfile") );
 	m_ui.Execute_check->setChecked( actions.contains("Execute") );
 	m_ui.Taskbar_check->setChecked( actions.contains("Taskbar") );
+	m_ui.KTTS_check->setChecked( actions.contains("KTTS") );
 
 	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "Sound" , true ) ) );
 	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "Logfile" , true ) ) );
 	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "Execute"  ) ) );
+	m_ui.KTTS_select->setText( config->readEntry( "KTTS"  )  );
+	if(m_ui.KTTS_select->text() == QLatin1String("%e"))
+		m_ui.KTTS_combo->setCurrentIndex(1);
+	else if(m_ui.KTTS_select->text() == QLatin1String("%m") || m_ui.KTTS_select->text() == QLatin1String("%s"))
+		m_ui.KTTS_combo->setCurrentIndex(0);
+	else
+		m_ui.KTTS_combo->setCurrentIndex(2);
 	blockSignals(blocked);
 }
 
@@ -68,12 +86,26 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 		actions << "Execute";
 	if(m_ui.Taskbar_check->isChecked())
 		actions << "Taskbar";
+	if(m_ui.KTTS_check->isChecked())
+		actions << "KTTS";
 
 	config->writeEntry( "Action" , actions.join("|") );
 
 	config->writeEntry( "Sound" , m_ui.Sound_select->url().url() );
 	config->writeEntry( "Logfile" , m_ui.Logfile_select->url().url() );
 	config->writeEntry( "Execute" , m_ui.Execute_select->url().url() );
+	switch(m_ui.KTTS_combo->currentIndex())
+	{
+		case 0:
+			config->writeEntry( "KTTS" , "%s" );
+			break;
+		case 1:
+			config->writeEntry( "KTTS" , "%e" );
+			break;
+		case 2:
+		default:
+			config->writeEntry( "KTTS" , m_ui.KTTS_select->text() );
+	}
 }
 
 void KNotifyConfigActionsWidget::slotPlay(  )
@@ -91,6 +123,12 @@ void KNotifyConfigActionsWidget::slotPlay(  )
 	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );
 	media->play();
 	connect(media, SIGNAL(finished()), media, SLOT(deleteLater()));
+}
+
+void KNotifyConfigActionsWidget::slotKTTSComboChanged()
+{
+	m_ui.KTTS_select->setEnabled(m_ui.KTTS_check->isChecked() &&  m_ui.KTTS_combo->currentIndex() == 2);
+	emit changed();
 }
 
 #include "knotifyconfigactionswidget.moc"

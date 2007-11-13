@@ -23,6 +23,7 @@
 #include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kstandarddirs.h>
 
 KNotifyConfigElement::KNotifyConfigElement(const QString &eventid, KConfig *config)
 	: m_config( new KConfigGroup(config , "Event/" + eventid) )
@@ -55,4 +56,11 @@ void KNotifyConfigElement::save(  )
 		m_config->writeEntry(it.key() , it.value() );
 	}
 	m_config->sync();
+}
+
+
+bool KNotifyConfigElement::have_kttsd() //[static]
+{
+	static bool val = ! KStandardDirs::findExe("kttsd").isEmpty();
+	return val;
 }
