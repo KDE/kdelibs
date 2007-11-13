@@ -530,7 +530,8 @@ bool KTreeWidgetSearchLine::event(QEvent *event) {
 		if(keyEvent->matches(QKeySequence::MoveToNextLine) || keyEvent->matches(QKeySequence::SelectNextLine) ||
 		   keyEvent->matches(QKeySequence::MoveToPreviousLine) || keyEvent->matches(QKeySequence::SelectPreviousLine) ||
 		   keyEvent->matches(QKeySequence::MoveToNextPage) ||  keyEvent->matches(QKeySequence::SelectNextPage) ||
-		   keyEvent->matches(QKeySequence::MoveToPreviousPage) ||  keyEvent->matches(QKeySequence::SelectPreviousPage))
+		   keyEvent->matches(QKeySequence::MoveToPreviousPage) ||  keyEvent->matches(QKeySequence::SelectPreviousPage) ||
+		   keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
 		{
 			QTreeWidget *first = d->treeWidgets.first();
 			if(first) {
