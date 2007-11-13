@@ -160,6 +160,13 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( !bin.isEmpty() );
     QVERIFY( bin.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
 
+#ifdef Q_OS_UNIX
+    const QString pwd = QDir::currentPath();
+    QDir::setCurrent("/bin");
+    QCOMPARE(KGlobal::dirs()->findExe("./sh"), QString::fromLatin1("/bin/sh"));
+    QDir::setCurrent(pwd);
+#endif
+
     // Check the "exe" resource too
     QCOMPARE( KGlobal::dirs()->realFilePath(bin),
               KGlobal::dirs()->locate( "exe", "lnusertemp" ) );

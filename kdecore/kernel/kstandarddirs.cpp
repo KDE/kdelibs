@@ -1087,7 +1087,8 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
     if( info.exists() && ( ignoreExecBit || info.isExecutable() )
         && ( info.isFile() || info.isSymLink() ) ) {
         //kDebug(180) << "checkExecutable(): returning " << path;
-        return path;
+        info.makeAbsolute();
+        return info.path();
     }
     //kDebug(180) << "checkExecutable(): failed, returning empty string";
     return QString();
@@ -1106,11 +1107,12 @@ QString KStandardDirs::findExe( const QString& appname,
 #endif
     QFileInfo info;
 
-    // absolute path ?
-    if (!QDir::isRelativePath(real_appname))
+    // absolute or relative path?
+    if (real_appname.contains(QDir::separator()))
     {
         //kDebug(180) << "findExe(): absolute path given";
-        return checkExecutable(real_appname, options & IgnoreExecBit);
+        QString path = checkExecutable(real_appname, options & IgnoreExecBit);
+        return path;
     }
 
     //kDebug(180) << "findExe(): relative path given";
