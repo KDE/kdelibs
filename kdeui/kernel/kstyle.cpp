@@ -2025,6 +2025,9 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         case SH_DialogButtonLayout:
             return QDialogButtonBox::KdeLayout;
 
+        case SH_ScrollBar_MiddleClickAbsolutePosition:
+            return true;
+
         default:
             break;
     };
