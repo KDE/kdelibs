@@ -228,11 +228,7 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
     DOM::CSSStyleDeclarationImpl *inlineStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->inlineDecls : m_style.inlineDecls; }
     DOM::CSSStyleDeclarationImpl *nonCSSStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->nonCSSDecls : 0; }
-
-    DOM::CSSStyleDeclarationImpl *getInlineStyleDecls() {
-        if (!m_style.inlineDecls) createInlineDecl();
-        return inlineStyleDecls();
-    }
+    DOM::CSSStyleDeclarationImpl *getInlineStyleDecls();
 
     void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);

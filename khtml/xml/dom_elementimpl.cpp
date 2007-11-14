@@ -891,6 +891,12 @@ void ElementImpl::createNonCSSDecl()
     m_hasCombinedStyle = true;
 }
 
+CSSStyleDeclarationImpl *ElementImpl::getInlineStyleDecls() 
+{
+    if (!inlineStyleDecls()) createInlineDecl();
+        return inlineStyleDecls();
+}
+
 void ElementImpl::createInlineDecl( )
 {
     assert( !m_style.inlineDecls || (m_hasCombinedStyle && !m_style.combinedDecls->inlineDecls) );
