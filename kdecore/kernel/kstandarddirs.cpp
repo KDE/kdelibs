@@ -1088,7 +1088,7 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
         && ( info.isFile() || info.isSymLink() ) ) {
         //kDebug(180) << "checkExecutable(): returning " << path;
         info.makeAbsolute();
-        return info.path();
+        return info.filePath();
     }
     //kDebug(180) << "checkExecutable(): failed, returning empty string";
     return QString();

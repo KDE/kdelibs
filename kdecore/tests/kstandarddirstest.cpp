@@ -156,9 +156,19 @@ void KStandarddirsTest::testFindExe()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    const QString bin = KGlobal::dirs()->findExe( "lnusertemp" );
-    QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
+    // findExe with a result in bin
+    const QString kded = KGlobal::dirs()->findExe( "kded4" );
+    QVERIFY( !kded.isEmpty() );
+    QVERIFY( kded.endsWith( "bin/kded4" EXT ) );
+
+    // findExe with a result in libexec
+    const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
+    QVERIFY( !lnusertemp.isEmpty() );
+    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
+
+    // Check the "exe" resource too
+    QCOMPARE( KGlobal::dirs()->realFilePath(lnusertemp),
+              KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
 
 #ifdef Q_OS_UNIX
     const QString pwd = QDir::currentPath();
@@ -166,10 +176,6 @@ void KStandarddirsTest::testFindExe()
     QCOMPARE(KGlobal::dirs()->findExe("./sh"), QString::fromLatin1("/bin/sh"));
     QDir::setCurrent(pwd);
 #endif
-
-    // Check the "exe" resource too
-    QCOMPARE( KGlobal::dirs()->realFilePath(bin),
-              KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
 }
 
 void KStandarddirsTest::testLocate()
