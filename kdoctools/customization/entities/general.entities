@@ -301,11 +301,11 @@
 <!ENTITY krfb	"<application>Desktop Sharing</application>">
 <!ENTITY krita	"<application>Krita</application>">
 <!ENTITY kruler	"<application>KDE Screen Ruler</application>">
-<!ENTITY ksame	"<application>KSame</application>">
+<!ENTITY ksame	"<application>SameGame</application>">
 <!ENTITY kscd	"<application>KsCD</application>">
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
 <!ENTITY ksgmltools	"<application>ksgmltools</application>">
-<!ENTITY kshisen	"<application>KShisen</application>">
+<!ENTITY kshisen	"<application>Shisen-Sho</application>">
 <!ENTITY ksim	"<application>KSim</application>">
 <!ENTITY ksirc	"<application>KSirc</application>">
 <!ENTITY ksirtet	"<application>KSirtet</application>">
