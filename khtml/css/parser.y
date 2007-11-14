@@ -685,7 +685,6 @@ element_name:
 specifier_list:
     specifier {
 	$$ = $1;
-	$$->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     }
     | specifier_list specifier {
 	$$ = $1;

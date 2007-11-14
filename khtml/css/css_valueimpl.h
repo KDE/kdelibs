@@ -56,15 +56,15 @@ public:
 
     virtual unsigned long length() const;
     CSSRuleImpl *parentRule() const;
-    virtual DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
-    virtual void removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint);
-    virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, bool nonCSSHint, int &ec);
-    virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
-    virtual void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
+    virtual DOM::DOMString removeProperty( int propertyID);
+    virtual void removePropertiesInSet(const int* set, unsigned length);
+    virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, int &ec);
+    virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false);
+    virtual void setProperty ( int propertyId, int value, bool important = false);
     virtual void clear();
     // this treats integers as pixels!
     // needed for conversion of html attributes
-    virtual void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);
+    virtual void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool multiLength = false);
 
     void setProperty(const DOMString &propertyName, const DOMString &value, const DOMString &priority);
     DOMString removeProperty(const DOMString &propertyName);
@@ -433,14 +433,12 @@ public:
     {
 	m_id = -1;
 	m_important = false;
-	nonCSSHint = false;
         m_value = 0;
     }
     CSSProperty(const CSSProperty& o)
     {
         m_id = o.m_id;
         m_important = o.m_important;
-        nonCSSHint = o.nonCSSHint;
         m_value = o.m_value;
         if (m_value) m_value->ref();
     }
@@ -467,7 +465,6 @@ public:
     // make sure the following fits in 4 bytes.
     signed int  m_id   : 29;
     bool m_important   : 1;
-    bool nonCSSHint    : 1;
 protected:
     CSSValueImpl *m_value;
 };

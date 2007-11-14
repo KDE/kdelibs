@@ -121,7 +121,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_LINK:
     {
         if(!m_styleSheet) {
-            m_styleSheet = new CSSStyleSheetImpl(this,DOMString(),true);
+            m_styleSheet = new CSSStyleSheetImpl(this,DOMString(),true /*implicit*/);
             m_styleSheet->ref();
         }
         QString aStr;
@@ -132,8 +132,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
 	else if ( attr->id() == ATTR_ALINK )
 	    aStr = "a:active";
 	aStr += " { color: " + attr->value().string() + "; }";
-        m_styleSheet->parseString(aStr, !getDocument()->inCompatMode());
-        m_styleSheet->setNonCSSHints();
+        m_styleSheet->parseString(aStr, false);
         if (attached())
             getDocument()->updateStyleSelector();
         break;

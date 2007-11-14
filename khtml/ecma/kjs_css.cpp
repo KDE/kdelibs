@@ -248,9 +248,9 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
       else {
         int important = propvalue.indexOf("!important", 0, Qt::CaseInsensitive);
         if (important == -1) {
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue), false /*important*/, false /*NonCSSHint*/, exception);
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue), false /*important*/, exception);
         } else
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), true /*important*/, false /*NonCSSHint*/, exception);
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), true /*important*/, exception);
       }
     }
     else

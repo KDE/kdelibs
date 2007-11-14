@@ -283,14 +283,14 @@ void HTMLElementImpl::recalcStyle( StyleChange ch )
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if (!m_hasCombinedStyle) createNonCSSDecl();
-    nonCSSStyleDecls()->setProperty(id, value, false, true);
+    nonCSSStyleDecls()->setProperty(id, value, false);
     setChanged();
 }
 
 void HTMLElementImpl::addCSSProperty(int id, int value)
 {
     if (!m_hasCombinedStyle) createNonCSSDecl();
-    nonCSSStyleDecls()->setProperty(id, value, false, true);
+    nonCSSStyleDecls()->setProperty(id, value, false);
     setChanged();
 }
 
@@ -336,12 +336,12 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
 	if (numOnly) suffix = "";
 
         QString ns = QString::number(v) + suffix;
-        nonCSSStyleDecls()->setLengthProperty( id, DOMString( ns ), false, true, multiLength );
+        nonCSSStyleDecls()->setLengthProperty( id, DOMString( ns ), false, multiLength );
         setChanged();
         return;
     }
 
-    nonCSSStyleDecls()->setLengthProperty(id, value, false, true, multiLength);
+    nonCSSStyleDecls()->setLengthProperty(id, value, false, multiLength);
     setChanged();
 }
 
@@ -372,7 +372,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 	return;
     }
 
-    if ( nonCSSStyleDecls()->setProperty(id, c, false, true) )
+    if ( nonCSSStyleDecls()->setProperty(id, c, false) )
 	return;
 
     QString color = c.string();
@@ -435,11 +435,11 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 
 	    color.sprintf("#%02x%02x%02x", colors[0], colors[1], colors[2] );
 // 	    qDebug( "trying to add fixed color string '%s'", color.toLatin1().constData() );
-	    if ( nonCSSStyleDecls()->setProperty(id, DOMString(color), false, true) )
+	    if ( nonCSSStyleDecls()->setProperty(id, DOMString(color), false) )
 		return;
 	}
     }
-    nonCSSStyleDecls()->setProperty(id, CSS_VAL_BLACK, false, true);
+    nonCSSStyleDecls()->setProperty(id, CSS_VAL_BLACK, false);
 }
 
 void HTMLElementImpl::removeCSSProperty(int id)
@@ -447,7 +447,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
     if (!m_hasCombinedStyle)
         return;
     nonCSSStyleDecls()->setParent(getDocument()->elementSheet());
-    nonCSSStyleDecls()->removeProperty(id, true /*nonCSSHint */);
+    nonCSSStyleDecls()->removeProperty(id);
     setChanged();
 }
 

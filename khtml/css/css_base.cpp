@@ -76,14 +76,14 @@ KUrl StyleBaseImpl::baseURL()
 }
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, bool nonCSSHint, QList<CSSProperty*> *propList)
+				   bool important, QList<CSSProperty*> *propList)
 {
     QMutableListIterator<CSSProperty*> propIt(*propList);
     propIt.toBack(); // just remove the top one - not sure what should happen if we have multiple instances of the property
     CSSProperty* p;
     while (propIt.hasPrevious()) {
         p = propIt.previous();
-        if (p->m_id == propId && p->nonCSSHint == nonCSSHint && p->m_important == important ) {
+        if (p->m_id == propId && p->m_important == important ) {
             delete propIt.value();
             propIt.remove();
             break;
@@ -94,14 +94,12 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
     prop->m_id = propId;
     prop->setValue((CSSValueImpl *) parsedValue);
     prop->m_important = important;
-    prop->nonCSSHint = nonCSSHint;
 
     propList->append(prop);
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
                     // non implemented yet << ", value: " << parsedValue->cssText().string()
-                    << " important: " << prop->m_important
-                    << " nonCSS: " << prop->nonCSSHint << endl;
+                    << " important: " << prop->m_important;
 #endif
 }
 
@@ -137,8 +135,6 @@ void CSSSelector::print(void)
 
 unsigned int CSSSelector::specificity() const
 {
-    if ( nonCSSHint )
-        return 0;
 
     int s = ((localNamePart(tag) == anyLocalName) ? 0 : 1);
     switch(match)
@@ -305,7 +301,6 @@ bool CSSSelector::operator == ( const CSSSelector &other ) const
         //assert(sel2->_pseudoType != PseudoNotParsed);
 	if ( sel1->tag != sel2->tag || sel1->attr != sel2->attr ||
 	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
-	     sel1->nonCSSHint != sel2->nonCSSHint ||
 	     sel1->value != sel2->value ||
              sel1->pseudoType() != sel2->pseudoType() ||
              sel1->string_arg != sel2->string_arg)

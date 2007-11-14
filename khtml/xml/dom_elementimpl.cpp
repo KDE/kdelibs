@@ -887,7 +887,7 @@ void ElementImpl::createNonCSSDecl()
     ncd->ref();
     ncd->setParent(getDocument()->elementSheet());
     ncd->setNode(this);
-    ncd->setStrictParsing( !getDocument()->inCompatMode() );
+    ncd->setStrictParsing( false );
     m_hasCombinedStyle = true;
 }
 
@@ -899,7 +899,7 @@ void ElementImpl::createInlineDecl( )
     dcl->ref();
     dcl->setParent(getDocument()->elementSheet());
     dcl->setNode(this);
-    dcl->setStrictParsing( !getDocument()->inCompatMode() );
+    dcl->setStrictParsing( false );
     if (m_hasCombinedStyle)
         m_style.combinedDecls->inlineDecls = dcl;
     else
@@ -1089,7 +1089,7 @@ void ElementImpl::setContentEditable(bool enabled) {
     }/*end if*/
     // FIXME: use addCSSProperty when I get permission to move it here
 //    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value;
-    getInlineStyleDecls()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
+    getInlineStyleDecls()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false);
     setChanged();
 
 }

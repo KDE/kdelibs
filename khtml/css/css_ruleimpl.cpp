@@ -357,13 +357,6 @@ void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
     }
 }
 
-void CSSStyleRuleImpl::setNonCSSHints()
-{
-    QListIterator<CSSSelector*> it(*m_selector);
-    while (it.hasNext())
-        it.next()->nonCSSHint = true;
-}
-
 // --------------------------------------------------------------------
 
 CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules)

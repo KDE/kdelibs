@@ -356,7 +356,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
     CSSProperty *current;
     while ( lstValuesIt.hasNext() ) {
         current = lstValuesIt.next();
-        if (current->m_id == propertyID && !current->nonCSSHint)
+        if (current->m_id == propertyID)
             return current->value();
     }
     return 0;
@@ -532,7 +532,7 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
 
 // -------------------------------------------
 
-DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHint )
+DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID)
 {
     if(!m_lstValues) return DOMString();
     DOMString value;
@@ -543,7 +543,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
 
     PropertyLonghand longhand = shorthandMap.value(propertyID);
     if (longhand.length()) {
-        removePropertiesInSet(longhand.properties(), longhand.length(), NonCSSHint);
+        removePropertiesInSet(longhand.properties(), longhand.length());
         // FIXME: Return an equivalent shorthand when possible.
         return DOMString();
     }
@@ -553,7 +553,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
     lstValuesIt.toBack();
     while ( lstValuesIt.hasPrevious() ) {
         current = lstValuesIt.previous();
-        if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
+        if (current->m_id == propertyID) {
             value = current->value()->cssText();
             delete lstValuesIt.value();
             lstValuesIt.remove();
@@ -565,7 +565,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
     return value;
 }
 
-void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint)
+void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length)
 {
     bool changed = false;
     for (unsigned i = 0; i < length; i++) {
@@ -574,7 +574,7 @@ void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned len
         lstValuesIt.toBack();
         while ( lstValuesIt.hasPrevious() ) {
             current = lstValuesIt.previous();
-            if (current->m_id == set[i] && nonCSSHint == current->nonCSSHint) {
+            if (current->m_id == set[i]) {
                 delete lstValuesIt.value();
                 lstValuesIt.remove();
                 changed = true;
@@ -627,18 +627,18 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
     return false;
 }
 
-bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint, int &ec)
+bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, int &ec)
 {
     ec = 0;
 
     // Setting the value to an empty string just removes the property in both IE and Gecko.
     // Setting it to null seems to produce less consistent results, but we treat it just the same.
     if (value.isEmpty()) {
-        removeProperty(id, nonCSSHint);
+        removeProperty(id);
         return true;
     }
 
-    bool success = setProperty(id, value, important, nonCSSHint);
+    bool success = setProperty(id, value, important);
 #if 0
     if (!success) {
         // CSS DOM requires raising SYNTAX_ERR here, but this is too dangerous for compatibility,
@@ -648,14 +648,14 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     return success;
 }
 
-bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
+bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important)
 {
     if(!m_lstValues) {
 	m_lstValues = new QList<CSSProperty*>;
     }
 
     CSSParser parser( strictParsing );
-    bool success = parser.parseValue( this, id, value, important, nonCSSHint );
+    bool success = parser.parseValue( this, id, value, important );
     if(!success)
 	kDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 			<< "] value: [" << value.string() << "]"<< endl;
@@ -664,24 +664,24 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     return success;
 }
 
-void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)
+void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important )
 {
     if(!m_lstValues) {
 	m_lstValues = new QList<CSSProperty*>;
     }
-    removeProperty(id, nonCSSHint );
+    removeProperty(id);
 
     CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
-    setParsedValue(id, cssValue, important, nonCSSHint, m_lstValues);
+    setParsedValue(id, cssValue, important, m_lstValues);
     setChanged();
 }
 
-void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint, bool _multiLength )
+void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool _multiLength )
 {
     bool parseMode = strictParsing;
     strictParsing = false;
     multiLength = _multiLength;
-    setProperty( id, value, important, nonCSSHint);
+    setProperty( id, value, important );
     strictParsing = parseMode;
     multiLength = false;
 }
@@ -693,7 +693,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     }
 
     CSSParser parser( strictParsing );
-    parser.parseDeclaration( this, propertyString, false );
+    parser.parseDeclaration( this, propertyString );
     setChanged();
 }
 
@@ -768,7 +768,7 @@ void CSSStyleDeclarationImpl::setCssText(DOM::DOMString text)
     }
 
     CSSParser parser( strictParsing );
-    parser.parseDeclaration( this, text, false );
+    parser.parseDeclaration( this, text );
     setChanged();
 }
 

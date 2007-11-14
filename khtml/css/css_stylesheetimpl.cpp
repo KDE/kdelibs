@@ -314,20 +314,6 @@ void CSSStyleSheetImpl::checkLoaded() const
     m_processed = true;
 }
 
-void CSSStyleSheetImpl::setNonCSSHints()
-{
-    StyleBaseImpl *rule;
-    QListIterator<StyleBaseImpl*> it( *m_lstChildren );
-    while ( it.hasNext() )
-    {
-        rule = it.next();
-        if(rule->isStyleRule()) {
-            static_cast<CSSStyleRuleImpl *>(rule)->setNonCSSHints();
-        }
-    }
-}
-
-
 // ---------------------------------------------------------------------------
 
 

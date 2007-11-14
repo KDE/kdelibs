@@ -222,6 +222,7 @@ namespace khtml
 	CSSStyleSelectorList *defaultPrintStyle;
 
 	CSSStyleSelectorList *authorStyle;
+	CSSStyleSelectorList *implicitStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
 

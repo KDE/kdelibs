@@ -51,14 +51,12 @@ public:
     bool getPropertyPriority( int propertyID ) const;
     unsigned long length() const;
 
-    DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
-    virtual void removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint);
-    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, bool nonCSSHint, int &ec);
-    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false,
-                       bool nonCSSHint = false);
-    void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
-    void setLengthProperty(int id, const DOM::DOMString &value, bool important,
-                           bool nonCSSHint = true, bool multiLength = false);
+    DOM::DOMString removeProperty( int propertyID );
+    virtual void removePropertiesInSet(const int* set, unsigned length);
+    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, int &ec );
+    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false );
+    void setProperty ( int propertyId, int value, bool important = false );
+    void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool multiLength = false);
 
     void setProperty ( const DOM::DOMString &propertyString);
     DOM::DOMString item ( unsigned long index ) const;

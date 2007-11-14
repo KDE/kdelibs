@@ -106,7 +106,6 @@ public:
     virtual bool parseString( const DOMString &string, bool strict = true );
 
     bool isLoading() const;
-    void setNonCSSHints();
 
     virtual void checkLoaded() const;
     bool processed() const { return m_processed; }

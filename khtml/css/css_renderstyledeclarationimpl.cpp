@@ -1095,39 +1095,36 @@ bool RenderStyleDeclarationImpl::getPropertyPriority( int ) const
     return false;
 }
 
-DOM::DOMString RenderStyleDeclarationImpl::removeProperty( int, bool )
+DOM::DOMString RenderStyleDeclarationImpl::removeProperty( int )
 {
     // ### emit error since we're read-only
     return DOMString();
 }
 
-void RenderStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length, bool nonCSSHint)
+void RenderStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length)
 {
      // ### emit error since we're read-only
 }
 
-bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString &, bool,
-                                               bool, int &ec)
+bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString &, bool, int &ec)
 {
     ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return false;
 }
 
-bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString&, bool,
-                                               bool )
+bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString&, bool )
 {
     // ### emit error since we're read-only
     return false;
 }
 
-void RenderStyleDeclarationImpl::setProperty ( int, int, bool,
-                                               bool )
+void RenderStyleDeclarationImpl::setProperty ( int, int, bool )
 {
     // ### emit error since we're read-only
 }
 
 void RenderStyleDeclarationImpl::setLengthProperty( int, const DOM::DOMString&, bool,
-                                                    bool, bool )
+                                                    bool )
 {
     // ### emit error since we're read-only
 }
@@ -1155,7 +1152,6 @@ CSSProperty RenderStyleDeclarationImpl::property( int id ) const
     CSSProperty prop;
     prop.m_id = id;
     prop.m_important = false;
-    prop.nonCSSHint = false;
 
     CSSValueImpl* v = getPropertyCSSValue( id );
     if ( !v )

@@ -240,11 +240,20 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     }
 
     // add stylesheets from document
-    authorStyle = new CSSStyleSelectorList();
+    authorStyle = 0;
+    implicitStyle = 0;
 
     foreach (StyleSheetImpl* sh, styleSheets->styleSheets) {
-        if ( sh->isCSSStyleSheet() && !sh->disabled()) {
-            authorStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
+        if ( sh->isCSSStyleSheet() ) {
+            if ( static_cast<CSSStyleSheetImpl*>(sh)->implicit() ) {
+                if (!implicitStyle) 
+                    implicitStyle = new CSSStyleSelectorList();
+                implicitStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
+            } else if ( sh->isCSSStyleSheet() && !sh->disabled()) {
+                if (!authorStyle)
+                    authorStyle = new CSSStyleSelectorList();
+                authorStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
+            }
         }
     }
 
@@ -277,8 +286,13 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     KHTMLView *view = sheet->doc()->view();
     m_medium = view ? view->mediaType() : "screen";
 
-    authorStyle = new CSSStyleSelectorList();
-    authorStyle->append( sheet, m_medium );
+    if (sheet->implicit()) {
+        implicitStyle = new CSSStyleSelectorList();
+        implicitStyle->append( sheet, m_medium );
+    } else {    
+        authorStyle = new CSSStyleSelectorList();
+        authorStyle->append( sheet, m_medium );
+    }
 }
 
 void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
@@ -302,6 +316,7 @@ CSSStyleSelector::~CSSStyleSelector()
 {
     clearLists();
     delete authorStyle;
+    delete implicitStyle;
     delete userStyle;
     delete userSheet;
     free(propsToApply);
@@ -312,7 +327,15 @@ void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
     KHTMLView *view = sheet->doc()->view();
     m_medium = view ? view->mediaType() : "screen";
-    authorStyle->append( sheet, m_medium );
+    if (sheet->implicit()) {
+        if (!implicitStyle)
+            implicitStyle = new CSSStyleSelectorList();
+        implicitStyle->append( sheet, m_medium );
+    } else {
+        if (!authorStyle)
+            authorStyle = new CSSStyleSelectorList();
+        authorStyle->append( sheet, m_medium );
+    }
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *doc)
@@ -1702,8 +1725,12 @@ void CSSStyleSelector::buildLists()
     
     if (defaultNonCSSHintsStyle)
         defaultNonCSSHintsStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
-    
-    if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
+
+    // Implicit styles are gathered from hidden, dynamically generated, implicit stylesheets.
+    // They have the same priority as presentational attributes.
+    if (implicitStyle) implicitStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
+
+    if (authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
 
     selectors_size = selectorList.count();
     selectors = new CSSSelector *[selectors_size];

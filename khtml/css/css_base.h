@@ -69,7 +69,7 @@ namespace DOM {
     public:
 	CSSSelector()
 	    : tagHistory(0), simpleSelector(0), attr(0), tag(anyQName), relation( Descendant ),
-	      match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed)
+	      match( None ), pseudoId( 0 ), _pseudoType(PseudoNotParsed)
         {}
 
 	~CSSSelector() {
@@ -176,7 +176,6 @@ namespace DOM {
 
 	Relation relation     : 3;
 	mutable Match 	 match         : 4;
-	bool	nonCSSHint : 1;
 	unsigned int pseudoId : 4;
 	mutable PseudoType _pseudoType : 6;
 
@@ -223,7 +222,7 @@ namespace DOM {
 	void setParent(StyleBaseImpl *parent) { m_parent = parent; }
 
 	static void setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, bool nonCSSHint, QList<CSSProperty*> *propList);
+				   bool important, QList<CSSProperty*> *propList);
 
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 
