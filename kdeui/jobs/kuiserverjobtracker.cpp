@@ -224,7 +224,7 @@ void KSharedUiServerProxy::slotActionPerformed(int actionId, int jobId)
                 job->suspend();
             break;
         case KJob::Killable:
-            job->kill();
+            job->kill( KJob::EmitResult ); // notify that the job has been killed
             break;
         default:
             kWarning() << "Unknown actionId (" << actionId << ") for jobId " << jobId;

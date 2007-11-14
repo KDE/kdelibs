@@ -131,7 +131,7 @@ void KAbstractWidgetJobTracker::slotStop(KJob *job)
         return;
     }
 
-    job->kill();
+    job->kill( KJob::EmitResult ); // notify that the job has been killed
 
     emit stopped(job);
 }
