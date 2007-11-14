@@ -270,6 +270,8 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
             tmp = KGlobal::locale()->formatByteSize(amount);
         }
         sizeLabel->setText(tmp);
+        if (!totalSizeKnown) // update jumping progressbar
+            progressBar->setValue(amount);
         break;
 
     case KJob::Directories:
@@ -312,6 +314,7 @@ void KWidgetJobTracker::Private::ProgressWidget::percent(unsigned long percent)
 
     title += ')';
 
+    progressBar->setMaximum(100);
     progressBar->setValue(percent);
     setWindowTitle(title);
 }
@@ -416,6 +419,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     topLayout->addLayout(progressHBox);
 
     progressBar = new QProgressBar(this);
+    progressBar->setMaximum(0); // want a jumping progress bar if percent is not emitted
     progressHBox->addWidget(progressBar);
 
     suspendedProperty = false;
