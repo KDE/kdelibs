@@ -38,12 +38,8 @@
 #include <kdialog.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-
 #include <klocale.h>
-
-#ifdef Q_WS_X11
 #include <kwindowsystem.h>
-#endif
 
 
 KWidgetJobTracker::KWidgetJobTracker(QWidget *parent)
