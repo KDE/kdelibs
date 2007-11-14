@@ -675,7 +675,12 @@ void KHTMLView::viewportToContents(int x, int y, int& cx, int& cy) const
 void KHTMLView::updateContents(int x, int y, int w, int h)
 {
     applyTransforms(x, y, w, h);
-    widget()->update(x, y, w, h);
+    if (m_kwp->isRedirected()) {
+        QPoint off = m_kwp->absolutePos();
+        KHTMLView* pview = m_part->parentPart()->view();
+        pview->updateContents(x+off.x(), y+off.y(), w, h);
+    } else
+        widget()->update(x, y, w, h);
 }
 
 void KHTMLView::updateContents( const QRect& r )
