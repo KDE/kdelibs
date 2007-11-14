@@ -1737,18 +1737,18 @@ public:
 FileCopyJob::FileCopyJob(FileCopyJobPrivate &dd)
     : Job(dd)
 {
-    Q_D(FileCopyJob);
-    if (!d->m_move)
-        JobPrivate::emitCopying( this, d->m_src, d->m_dest );
-    else
-        JobPrivate::emitMoving( this, d->m_src, d->m_dest );
-
     //kDebug(7007) << "FileCopyJob::FileCopyJob()";
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
 void FileCopyJobPrivate::slotStart()
 {
+    Q_Q(FileCopyJob);
+    if (!m_move)
+        JobPrivate::emitCopying( q, m_src, m_dest );
+    else
+        JobPrivate::emitMoving( q, m_src, m_dest );
+
    if ( m_move )
    {
       // The if() below must be the same as the one in startBestCopyMethod
