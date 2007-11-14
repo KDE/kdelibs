@@ -200,8 +200,10 @@ namespace khtml {
 
 CSSStyleSelectorList *CSSStyleSelector::s_defaultStyle;
 CSSStyleSelectorList *CSSStyleSelector::s_defaultQuirksStyle;
+CSSStyleSelectorList *CSSStyleSelector::s_defaultNonCSSHintsStyle;
 CSSStyleSelectorList *CSSStyleSelector::s_defaultPrintStyle;
 CSSStyleSheetImpl *CSSStyleSelector::s_defaultSheet;
+CSSStyleSheetImpl *CSSStyleSelector::s_defaultNonCSSHintsSheet;
 RenderStyle* CSSStyleSelector::styleNotYetAvailable;
 CSSStyleSheetImpl *CSSStyleSelector::s_quirksSheet;
 
@@ -293,6 +295,7 @@ void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
     defaultStyle = s_defaultStyle;
     defaultPrintStyle = s_defaultPrintStyle;
     defaultQuirksStyle = s_defaultQuirksStyle;
+    defaultNonCSSHintsStyle = s_defaultNonCSSHintsStyle;
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -361,7 +364,25 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	s_defaultQuirksStyle = new CSSStyleSelectorList();
 	s_defaultQuirksStyle->append( s_quirksSheet, "screen" );
     }
+    {
+	QFile f(KStandardDirs::locate( "data", "khtml/css/presentational.css" ) );
+	f.open(QIODevice::ReadOnly);
 
+	QByteArray file( f.size()+1, 0 );
+	int readbytes = f.read( file.data(), f.size() );
+	f.close();
+	if ( readbytes >= 0 )
+	    file[readbytes] = '\0';
+
+	QString style = QLatin1String( file.data() );
+	DOMString str(style);
+
+	s_defaultNonCSSHintsSheet = new DOM::CSSStyleSheetImpl(doc);
+	s_defaultNonCSSHintsSheet->parseString( str );
+
+        s_defaultNonCSSHintsStyle = new CSSStyleSelectorList();
+	s_defaultNonCSSHintsStyle->append( s_defaultNonCSSHintsSheet, "screen" );
+    }
     //kDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements";
 }
 
@@ -370,12 +391,16 @@ void CSSStyleSelector::clear()
     delete s_defaultStyle;
     delete s_defaultQuirksStyle;
     delete s_defaultPrintStyle;
+    delete s_defaultNonCSSHintsStyle;
     delete s_defaultSheet;
+    delete s_defaultNonCSSHintsSheet;
     delete styleNotYetAvailable;
     s_defaultStyle = 0;
     s_defaultQuirksStyle = 0;
     s_defaultPrintStyle = 0;
+    s_defaultNonCSSHintsStyle = 0;
     s_defaultSheet = 0;
+    s_defaultNonCSSHintsSheet = 0;
     styleNotYetAvailable = 0;
 }
 
@@ -385,6 +410,7 @@ void CSSStyleSelector::reparseConfiguration()
     s_defaultStyle = 0;
     s_defaultQuirksStyle = 0;
     s_defaultPrintStyle = 0;
+    s_defaultNonCSSHintsStyle = 0;
     s_defaultSheet = 0;
 }
 
@@ -1676,6 +1702,10 @@ void CSSStyleSelector::buildLists()
         defaultQuirksStyle->collect( &selectorList, &propertyList, Default, Default );
 
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
+    
+    if (defaultNonCSSHintsStyle)
+        defaultNonCSSHintsStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
+    
     if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
 
     selectors_size = selectorList.count();

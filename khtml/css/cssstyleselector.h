@@ -61,8 +61,8 @@ namespace khtml
      */
     enum Source {
 	Default = 0,
-	NonCSSHint = 1,
-	User = 2,
+	User = 1,
+	NonCSSHint = 2,
 	Author = 3,
 	Inline = 4,
 	AuthorImportant = 5,
@@ -209,14 +209,17 @@ namespace khtml
 				   unsigned int numProps);
 
 	static DOM::CSSStyleSheetImpl *s_defaultSheet;
+	static DOM::CSSStyleSheetImpl *s_defaultNonCSSHintsSheet;
 	static DOM::CSSStyleSheetImpl *s_quirksSheet;
 	static CSSStyleSelectorList *s_defaultStyle;
 	static CSSStyleSelectorList *s_defaultQuirksStyle;
 	static CSSStyleSelectorList *s_defaultPrintStyle;
+	static CSSStyleSelectorList *s_defaultNonCSSHintsStyle;
         static RenderStyle* styleNotYetAvailable;
 
 	CSSStyleSelectorList *defaultStyle;
 	CSSStyleSelectorList *defaultQuirksStyle;
+	CSSStyleSelectorList *defaultNonCSSHintsStyle;
 	CSSStyleSelectorList *defaultPrintStyle;
 
 	CSSStyleSelectorList *authorStyle;
