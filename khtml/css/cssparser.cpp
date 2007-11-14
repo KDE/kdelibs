@@ -1421,11 +1421,15 @@ CSSValueImpl* CSSParser::parseBackgroundColor()
     return parseColor();
 }
 
-CSSValueImpl* CSSParser::parseBackgroundImage()
+CSSValueImpl* CSSParser::parseBackgroundImage(bool& didParse)
 {
-    if (valueList->current()->id == CSS_VAL_NONE)
+    didParse = false;
+    if (valueList->current()->id == CSS_VAL_NONE) {
+        didParse = true;
         return new CSSImageValueImpl();
+    }
     if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
+        didParse = true;
         DOMString uri = khtml::parseURL(domString(valueList->current()->string));
         if (!uri.isEmpty())
             return new CSSImageValueImpl(DOMString(KUrl(styleElement->baseURL(), uri.string()).url()),
@@ -1585,11 +1589,13 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     if (currValue)
                         valueList->next();
                     break;
-                case CSS_PROP_BACKGROUND_IMAGE:
-                    currValue = parseBackgroundImage();
-                    if (currValue)
+                case CSS_PROP_BACKGROUND_IMAGE: {
+                    bool didParse=false;
+                    currValue = parseBackgroundImage(didParse);
+                    if (didParse)
                         valueList->next();
                     break;
+                }
                 case CSS_PROP__KHTML_BACKGROUND_CLIP:
                 case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
                     if (val->id == CSS_VAL_BORDER || val->id == CSS_VAL_PADDING || val->id == CSS_VAL_CONTENT) {

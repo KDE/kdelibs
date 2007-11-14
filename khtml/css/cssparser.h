@@ -122,7 +122,7 @@ namespace DOM {
 	bool parseContent( int propId, bool important );
 
         CSSValueImpl* parseBackgroundColor();
-        CSSValueImpl* parseBackgroundImage();
+        CSSValueImpl* parseBackgroundImage(bool& didParse);
         CSSValueImpl* parseBackgroundPositionXY(bool& xFound, bool& yFound);
         void parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& value2);
         CSSValueImpl* parseBackgroundSize();
