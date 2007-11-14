@@ -63,7 +63,7 @@ public Q_SLOTS:
 /**
  * @internal
  */
-class RegTestObject : public KJS::ObjectImp
+class RegTestObject : public KJS::JSObject
 {
 public:
     RegTestObject(KJS::ExecState *exec, RegressionTest *_regTest);
@@ -75,13 +75,13 @@ private:
 /**
  * @internal
  */
-class RegTestFunction : public KJS::ObjectImp
+class RegTestFunction : public KJS::JSObject
 {
 public:
     RegTestFunction(KJS::ExecState *exec, RegressionTest *_regTest, int _id, int length);
 
     bool implementsCall() const;
-    KJS::ValueImp* callAsFunction(KJS::ExecState *exec, KJS::ObjectImp* thisObj, const KJS::List &args);
+    KJS::JSValue* callAsFunction(KJS::ExecState *exec, KJS::JSObject* thisObj, const KJS::List &args);
 
     enum { Print, ReportResult, CheckOutput, Quit };
 
@@ -93,28 +93,28 @@ private:
 /**
  * @internal
  */
-class KHTMLPartObject : public KJS::ObjectImp
+class KHTMLPartObject : public KJS::JSObject
 {
 public:
     KHTMLPartObject(KJS::ExecState *exec, KHTMLPart *_part);
 
     virtual bool getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot);
 private:
-    static KJS::ValueImp *winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
-    static KJS::ValueImp *docGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
+    static KJS::JSValue *winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
+    static KJS::JSValue *docGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot&);
     KHTMLPart *m_part;
 };
 
 /**
  * @internal
  */
-class KHTMLPartFunction : public KJS::ObjectImp
+class KHTMLPartFunction : public KJS::JSObject
 {
 public:
     KHTMLPartFunction(KJS::ExecState *exec, KHTMLPart *_part, int _id, int length);
 
     bool implementsCall() const;
-    KJS::ValueImp* callAsFunction(KJS::ExecState *exec, KJS::ObjectImp* thisObj, const KJS::List &args);
+    KJS::JSValue* callAsFunction(KJS::ExecState *exec, KJS::JSObject* thisObj, const KJS::List &args);
 
     enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript, ProcessEvents };
 private:

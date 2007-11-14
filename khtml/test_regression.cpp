@@ -374,9 +374,9 @@ bool RegTestFunction::implementsCall() const
     return true;
 }
 
-ValueImp* RegTestFunction::callAsFunction(ExecState *exec, ObjectImp* /*thisObj*/, const List &args)
+JSValue* RegTestFunction::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, const List &args)
 {
-    ValueImp* result = jsUndefined();
+    JSValue* result = jsUndefined();
     if ( m_regTest->ignore_errors )
         return result;
 
@@ -450,13 +450,13 @@ KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
     putDirect("processEvents", new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ProcessEvents,0), DontEnum);
 }
 
-KJS::ValueImp *KHTMLPartObject::winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
+KJS::JSValue *KHTMLPartObject::winGetter(KJS::ExecState *, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
 {
     KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
     return KJS::Window::retrieveWindow(thisObj->m_part);
 }
 
-KJS::ValueImp *KHTMLPartObject::docGetter(KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
+KJS::JSValue *KHTMLPartObject::docGetter(KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier&, const KJS::PropertySlot& slot)
 {
     KHTMLPartObject* thisObj = static_cast<KHTMLPartObject*>(slot.slotBase());
     return getDOMNode(exec, thisObj->m_part->document().handle());
@@ -473,7 +473,7 @@ bool KHTMLPartObject::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identi
         slot.setCustom(this, winGetter);
         return true;
     }
-    return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
+    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 KHTMLPartFunction::KHTMLPartFunction(ExecState */*exec*/, KHTMLPart *_part, int _id, int length)
@@ -488,9 +488,9 @@ bool KHTMLPartFunction::implementsCall() const
     return true;
 }
 
-ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj*/, const List &args)
+JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/, const List &args)
 {
-    ValueImp* result = jsUndefined();
+    JSValue* result = jsUndefined();
 
     switch (id) {
         case OpenPage: {
@@ -1484,7 +1484,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             if (comp.value() && comp.value()->type() == ObjectType &&
                comp.value()->toObject(exec)->className() == "Array" )
             {
-                ObjectImp* argArrayObj = comp.value()->toObject(exec);
+                JSObject* argArrayObj = comp.value()->toObject(exec);
                 unsigned int length = argArrayObj->
                                       get(exec, "length")->
                                       toUInt32(exec);
@@ -1501,8 +1501,8 @@ void RegressionTest::testStaticFile(const QString & filename)
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
         QString description = "DOMTS";
         if ( comp2.complType() == Throw ) {
-            KJS::ValueImp*  val = comp2.value();
-            KJS::ObjectImp* obj = val->toObject(exec);
+            KJS::JSValue*  val = comp2.value();
+            KJS::JSObject* obj = val->toObject(exec);
             if ( obj && obj->hasProperty( exec, "jsUnitMessage" ) )
                 description = obj->get( exec, "jsUnitMessage" )->toString( exec ).qstring();
             else
@@ -1580,7 +1580,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
             QString errmsg = c.value()->toString(exec).qstring();
             if ( !expected_failure ) {
                 int line = -1;
-                ObjectImp* obj = c.value()->toObject(exec);
+                JSObject* obj = c.value()->toObject(exec);
                 if (obj)
                     line = obj->get(exec, "line")->toUInt32(exec);
                 printf( "ERROR: %s (%s) at line:%d\n",qPrintable(filename), qPrintable(errmsg), line);
@@ -1599,7 +1599,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     }
 }
 
-class GlobalImp : public ObjectImp {
+class GlobalImp : public JSObject {
 public:
   virtual UString className() const { return "global"; }
 };
@@ -1612,7 +1612,7 @@ void RegressionTest::testJSFile(const QString & filename )
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
-    ProtectedPtr<ObjectImp> global(new GlobalImp());
+    ProtectedPtr<JSObject> global(new GlobalImp());
     khtml::ChildFrame frame;
     frame.m_part = m_part;
     ScriptInterpreter interp(global,&frame);
