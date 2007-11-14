@@ -118,8 +118,8 @@ namespace KJS {
     void abort();
     void setRequestHeader(const QString& name, const QString& value, int& ec);
     void overrideMIMEType(const QString& override);
-    JSValue *getAllResponseHeaders() const;
-    JSValue *getResponseHeader(const QString& name) const;
+    JSValue *getAllResponseHeaders(int& ec) const;
+    JSValue *getResponseHeader(const QString& name, int& ec) const;
 
     void changeState(XMLHttpRequestState newState);
 

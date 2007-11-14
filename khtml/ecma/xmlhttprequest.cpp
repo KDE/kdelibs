@@ -150,7 +150,8 @@ JSValue *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
       if (!m_mimeTypeOverride.isEmpty()) {
 	  mimeType = m_mimeTypeOverride;
       } else {
-	  JSValue *header = getResponseHeader("Content-Type");
+          int dummy;
+	  JSValue *header = getResponseHeader("Content-Type", dummy);
 	  if (header->type() != UndefinedType)
 	      mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
@@ -559,8 +560,15 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   m_requestHeaders[_name] = value;
 }
 
-JSValue *XMLHttpRequest::getAllResponseHeaders() const
+JSValue *XMLHttpRequest::getAllResponseHeaders(int& ec) const
 {
+  if (m_state < XHRS_Receiving) {
+      ec = DOMException::INVALID_STATE_ERR;
+      return jsString("");
+  }
+  
+  // ### test error flag, return jsNull
+
   if (responseHeaders.isEmpty()) {
     return jsUndefined();
   }
@@ -574,8 +582,19 @@ JSValue *XMLHttpRequest::getAllResponseHeaders() const
   return jsString(responseHeaders.mid(endOfLine + 1) + '\n');
 }
 
-JSValue *XMLHttpRequest::getResponseHeader(const QString& name) const
+JSValue *XMLHttpRequest::getResponseHeader(const QString& name, int& ec) const
 {
+  if (m_state < XHRS_Receiving) {
+      ec = DOMException::INVALID_STATE_ERR;
+      return jsString("");
+  }
+
+  if (!isValidFieldName(name)) {
+    return jsString("");
+  }
+
+  // ### test error flag, return jsNull
+
   if (responseHeaders.isEmpty()) {
     return jsUndefined();
   }
@@ -771,12 +790,19 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
     request->abort();
     return jsUndefined();
   case XMLHttpRequest::GetAllResponseHeaders:
-    return request->getAllResponseHeaders();
-  case XMLHttpRequest::GetResponseHeader:
-    if (args.size() < 1)
-        return throwError(exec, SyntaxError, "Not enough arguments");
-
-    return request->getResponseHeader(args[0]->toString(exec).qstring());
+    {
+      ValueImp *ret = request->getAllResponseHeaders(ec);
+      setDOMException(exec, ec);
+      return ret;
+    }
+  case XMLHttpRequest::GetResponseHeader: 
+    {
+      if (args.size() < 1)
+          return throwError(exec, SyntaxError, "Not enough arguments");
+      ValueImp *ret = request->getResponseHeader(args[0]->toString(exec).qstring(), ec);
+      setDOMException(exec, ec);
+      return ret;
+    }
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2)
