@@ -791,7 +791,7 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
     return jsUndefined();
   case XMLHttpRequest::GetAllResponseHeaders:
     {
-      ValueImp *ret = request->getAllResponseHeaders(ec);
+      JSValue *ret = request->getAllResponseHeaders(ec);
       setDOMException(exec, ec);
       return ret;
     }
@@ -799,7 +799,7 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
     {
       if (args.size() < 1)
           return throwError(exec, SyntaxError, "Not enough arguments");
-      ValueImp *ret = request->getResponseHeader(args[0]->toString(exec).qstring(), ec);
+      JSValue *ret = request->getResponseHeader(args[0]->toString(exec).qstring(), ec);
       setDOMException(exec, ec);
       return ret;
     }
