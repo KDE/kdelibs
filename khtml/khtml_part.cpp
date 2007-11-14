@@ -2053,6 +2053,7 @@ void KHTMLPart::resetFromScript()
 void KHTMLPart::slotFinishedParsing()
 {
   d->m_doc->setParsing(false);
+  d->m_doc->dispatchWindowEvent(EventImpl::KHTML_CONTENTLOADED_EVENT, false, false);
   checkEmitLoadEvent();
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 

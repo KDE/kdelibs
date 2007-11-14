@@ -188,6 +188,8 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
         return KHTML_ECMA_DBLCLICK_EVENT;
     else if ( type == "DOMMouseScroll" )
         return KHTML_MOUSEWHEEL_EVENT;
+    else if ( type == "DOMContentLoaded" )
+        return KHTML_CONTENTLOADED_EVENT;
 
     // ignore: KHTML_CLICK_EVENT
     return UNKNOWN_EVENT;
@@ -272,6 +274,8 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "readystatechange";
     case KHTML_MOUSEWHEEL_EVENT:
         return "DOMMouseScroll"; // adopt the mozilla name for compatibility
+    case KHTML_CONTENTLOADED_EVENT:
+        return "DOMContentLoaded"; // idem
     default:
         return DOMString();
         break;
