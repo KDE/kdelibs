@@ -36,6 +36,7 @@ KDEUI_UNIT_TESTS(
   kapplication_unittest
   kcolorutilstest
   kxmlgui_unittest
+  ktimezonewidget_unittest
 )
 
 KDEUI_EXECUTABLE_TESTS(

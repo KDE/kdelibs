@@ -30,13 +30,17 @@
 
 class KTimeZoneWidget::Private
 {
-  public:
+public:
     enum Columns
     {
-      CityColumn = 0,
-      RegionColumn,
-      CommentColumn,
-      ZoneColumn
+        CityColumn = 0,
+        RegionColumn,
+        CommentColumn
+    };
+
+    enum Roles
+    {
+        ZoneRole = Qt::UserRole + 0xF3A3CB1
     };
 };
 
@@ -64,15 +68,15 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     //
     //  "Europe/London", "GB" -> "London", "Europe/GB".
     //  "UTC",           ""   -> "UTC",    "".
-    QStringList continentCity = displayName( zone ).split( "/" );
+    QStringList continentCity = displayName( zone ).split( '/' );
 
     QTreeWidgetItem *listItem = new QTreeWidgetItem( this );
     listItem->setText( Private::CityColumn, continentCity[ continentCity.count() - 1 ] );
     continentCity[ continentCity.count() - 1 ] = zone.countryCode();
 
-    listItem->setText( Private::RegionColumn, continentCity.join( "/" ) );
+    listItem->setText( Private::RegionColumn, continentCity.join( QChar('/') ) );
     listItem->setText( Private::CommentColumn, comment );
-    listItem->setText( Private::ZoneColumn, tzName ); /* store complete path in ListView */
+    listItem->setData( Private::CityColumn, Private::ZoneRole, tzName ); // store complete path in custom role
 
     // Locate the flag from /l10n/%1/flag.png.
     QString flag = KStandardDirs::locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone.countryCode().toLower() ) );
@@ -88,36 +92,45 @@ KTimeZoneWidget::~KTimeZoneWidget()
 
 QString KTimeZoneWidget::displayName( const KTimeZone &zone )
 {
-  return i18n( zone.name().toUtf8() ).replace( "_", " " );
+  return i18n( zone.name().toUtf8() ).replace( '_', ' ' );
 }
 
 QStringList KTimeZoneWidget::selection() const
 {
-  QStringList selection;
+    QStringList selection;
 
-  // Loop through all entries.
-  foreach ( QTreeWidgetItem* listItem, selectedItems() )
-    selection.append( listItem->text( Private::ZoneColumn ) );
+    // Loop through all entries.
+    foreach ( QTreeWidgetItem* listItem, selectedItems() )
+        selection.append( listItem->data( Private::CityColumn, Private::ZoneRole ).toString() );
 
-  return selection;
+    return selection;
 }
 
 void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
 {
-  bool found = false;
+    bool found = false;
 
-  // Loop through all entries.
-  foreach ( QTreeWidgetItem* listItem, findItems( zone, Qt::MatchExactly, Private::ZoneColumn ) ) {
-    listItem->setSelected( selected );
+    // The code was using findItems( zone, Qt::MatchExactly, Private::ZoneColumn )
+    // previously, but the underlying model only has 3 columns, the "hidden" column
+    // wasn't available in there.
 
-    // Ensure the selected item is visible as appropriate.
-    scrollTo( indexFromItem( listItem ) );
+    // Loop through all entries.
+    const int rowCount = model()->rowCount(QModelIndex());
+    for (int row = 0; row < rowCount; ++row) {
+        const QModelIndex index = model()->index(row, Private::CityColumn );
+        const QString tzName = index.data(Private::ZoneRole).toString();
+        if (tzName == zone) {
+            selectionModel()->select(index, selected ? QItemSelectionModel::Select : QItemSelectionModel::Deselect);
 
-    found = true;
-  }
+            // Ensure the selected item is visible as appropriate.
+            scrollTo( index );
 
-  if ( !found )
-    kDebug() << "No such zone: " << zone;
+            found = true;
+        }
+    }
+
+    if ( !found )
+        kDebug() << "No such zone: " << zone;
 }
 
 #include "ktimezonewidget.moc"
