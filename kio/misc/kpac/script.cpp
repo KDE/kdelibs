@@ -64,7 +64,7 @@ namespace
         static Address parse( const UString& ip )
             { return Address( ip.qstring(), true ); }
 
-        operator const in_addr_t() const {
+        operator in_addr_t() const {
           const sockaddr_in* sin = m_address;
           return sin->sin_addr.s_addr;
         }
@@ -167,7 +167,7 @@ namespace
         virtual Value call( ExecState* exec, Object&, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
-            try { Address::resolve( args[ 0 ].toString( exec ) ); }
+            try { ::Address::resolve( args[ 0 ].toString( exec ) ); }
             catch ( const Address::Error& ) { return Boolean( false ); }
             return Boolean( true );
         }
@@ -202,7 +202,7 @@ namespace
         virtual Value call( ExecState* exec, Object&, const List& args )
         {
             if ( args.size() != 1 ) return Undefined();
-            try { return Address::resolve( args[ 0 ].toString( exec ) ); }
+            try { return String(Address::resolve( args[ 0 ].toString( exec ))); }
             catch ( const Address::Error& ) { return Undefined(); }
         }
     };
@@ -217,7 +217,7 @@ namespace
             char hostname[ 256 ];
             gethostname( hostname, 255 );
             hostname[ 255 ] = 0;
-            try { return Address::resolve( hostname ); }
+            try { return String(Address::resolve( hostname )); }
             catch ( const Address::Error& ) { return Undefined(); }
         }
     };
