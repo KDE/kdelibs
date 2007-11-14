@@ -312,7 +312,7 @@ ElementImpl::ElementImpl(DocumentImpl *doc)
     : NodeBaseImpl(doc)
 {
     namedAttrMap = 0;
-    m_styleDecls = 0;
+    m_style.inlineDecls = 0;
     m_prefix = 0;
 }
 
@@ -323,10 +323,20 @@ ElementImpl::~ElementImpl()
         namedAttrMap->deref();
     }
 
-    if (m_styleDecls) {
-        m_styleDecls->setNode(0);
-        m_styleDecls->setParent(0);
-        m_styleDecls->deref();
+    if (m_style.inlineDecls) {
+        if (CSSStyleDeclarationImpl * ild = inlineStyleDecls()) {
+            // remove inline declarations
+            ild->setNode(0);
+            ild->setParent(0);
+            ild->deref();
+        }
+        if (CSSStyleDeclarationImpl * ncd = nonCSSStyleDecls()) {
+            // remove presentational declarations
+            ncd->setNode(0);
+            ncd->setParent(0);
+            ncd->deref();
+            delete m_style.combinedDecls;
+        }
     }
 
     if (m_prefix)
@@ -447,8 +457,17 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
 	clone->attributes()->copyAttributes(namedAttrMap);
 
     // clone individual style rules
-    if (m_styleDecls)
-        *(clone->styleRules()) = *m_styleDecls;
+    if (m_style.inlineDecls) {
+        if (m_hasCombinedStyle) {
+            if (!clone->m_hasCombinedStyle)
+                clone->createNonCSSDecl();
+            if (m_style.combinedDecls->inlineDecls)
+                *clone->m_style.combinedDecls->inlineDecls = *m_style.combinedDecls->inlineDecls;
+            *clone->m_style.combinedDecls->nonCSSDecls = *m_style.combinedDecls->nonCSSDecls;
+        } else {
+            *(clone->getInlineStyleDecls()) = *m_style.inlineDecls;
+        }
+    }
 
     if (deep)
         cloneChildNodes(clone);
@@ -857,13 +876,34 @@ void ElementImpl::scrollIntoView(bool /*alignToTop*/)
     kWarning() << "non-standard scrollIntoView() not implemented";
 }
 
-void ElementImpl::createDecl( )
+void ElementImpl::createNonCSSDecl()
 {
-    m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->ref();
-    m_styleDecls->setParent(getDocument()->elementSheet());
-    m_styleDecls->setNode(this);
-    m_styleDecls->setStrictParsing( !getDocument()->inCompatMode() );
+    assert(!m_hasCombinedStyle);
+    CSSStyleDeclarationImpl *ild = m_style.inlineDecls;
+    m_style.combinedDecls = new CombinedStyleDecl;
+    m_style.combinedDecls->inlineDecls = ild;
+    CSSStyleDeclarationImpl *ncd = new CSSStyleDeclarationImpl(0);
+    m_style.combinedDecls->nonCSSDecls = ncd;
+    ncd->ref();
+    ncd->setParent(getDocument()->elementSheet());
+    ncd->setNode(this);
+    ncd->setStrictParsing( !getDocument()->inCompatMode() );
+    m_hasCombinedStyle = true;
+}
+
+void ElementImpl::createInlineDecl( )
+{
+    assert( !m_style.inlineDecls || (m_hasCombinedStyle && !m_style.combinedDecls->inlineDecls) );
+    
+    CSSStyleDeclarationImpl *dcl = new CSSStyleDeclarationImpl(0);
+    dcl->ref();
+    dcl->setParent(getDocument()->elementSheet());
+    dcl->setNode(this);
+    dcl->setStrictParsing( !getDocument()->inCompatMode() );
+    if (m_hasCombinedStyle)
+        m_style.combinedDecls->inlineDecls = dcl;
+    else
+        m_style.inlineDecls = dcl;
 }
 
 void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl * /*value*/)
@@ -1026,7 +1066,7 @@ DOMString ElementImpl::toString() const
 bool ElementImpl::contentEditable() const {
 #if 0
     DOM::CSSPrimitiveValueImpl *val = static_cast<DOM::CSSPrimitiveValueImpl *>
-    		(const_cast<ElementImpl *>(this)->styleRules()
+    		(const_cast<ElementImpl *>(this)->getInlineStyleDecls()
 		->getPropertyCSSValue(CSS_PROP__KONQ_USER_INPUT));
 //    kDebug() << "val" << val;
     return val ? val->getIdent() == CSS_VAL_ENABLED : false;
@@ -1049,7 +1089,7 @@ void ElementImpl::setContentEditable(bool enabled) {
     }/*end if*/
     // FIXME: use addCSSProperty when I get permission to move it here
 //    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value;
-    styleRules()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
+    getInlineStyleDecls()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
     setChanged();
 
 }

@@ -205,8 +205,7 @@ namespace khtml
 
         void adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e);
 
-        unsigned int addInlineDeclarations(DOM::ElementImpl* e, DOM::CSSStyleDeclarationImpl *decl,
-				   unsigned int numProps);
+        unsigned int addInlineDeclarations(DOM::ElementImpl* e, unsigned int numProps);
 
 	static DOM::CSSStyleSheetImpl *s_defaultSheet;
 	static DOM::CSSStyleSheetImpl *s_defaultNonCSSHintsSheet;

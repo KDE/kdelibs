@@ -314,7 +314,7 @@ Element Element::form() const
 
 CSSStyleDeclaration Element::style()
 {
-    if (impl) return ((ElementImpl *)impl)->styleRules();
+    if (impl) return ((ElementImpl *)impl)->getInlineStyleDecls();
     return 0;
 }
 

@@ -190,11 +190,11 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         getDocument()->incDOMTreeVersion();
         break;
     case ATTR_STYLE:
-        if (m_styleDecls)
-	    m_styleDecls->removeCSSHints();
+        if (inlineStyleDecls())
+	    inlineStyleDecls()->clear();
 	else
-	    createDecl();
-        m_styleDecls->setProperty(attr->value());
+	    createInlineDecl();
+        inlineStyleDecls()->setProperty(attr->value());
         setChanged();
         break;
     case ATTR_TABINDEX:
@@ -282,21 +282,21 @@ void HTMLElementImpl::recalcStyle( StyleChange ch )
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
-    if(!m_styleDecls) createDecl();
-    m_styleDecls->setProperty(id, value, false, true);
+    if (!m_hasCombinedStyle) createNonCSSDecl();
+    nonCSSStyleDecls()->setProperty(id, value, false, true);
     setChanged();
 }
 
 void HTMLElementImpl::addCSSProperty(int id, int value)
 {
-    if(!m_styleDecls) createDecl();
-    m_styleDecls->setProperty(id, value, false, true);
+    if (!m_hasCombinedStyle) createNonCSSDecl();
+    nonCSSStyleDecls()->setProperty(id, value, false, true);
     setChanged();
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly, bool multiLength)
 {
-    if(!m_styleDecls) createDecl();
+    if (!m_hasCombinedStyle) createNonCSSDecl();
 
     // strip attribute garbage to avoid CSS parsing errors
     // ### create specialized hook that avoids parsing every
@@ -336,12 +336,12 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly,
 	if (numOnly) suffix = "";
 
         QString ns = QString::number(v) + suffix;
-        m_styleDecls->setLengthProperty( id, DOMString( ns ), false, true, multiLength );
+        nonCSSStyleDecls()->setLengthProperty( id, DOMString( ns ), false, true, multiLength );
         setChanged();
         return;
     }
 
-    m_styleDecls->setLengthProperty(id, value, false, true, multiLength);
+    nonCSSStyleDecls()->setLengthProperty(id, value, false, true, multiLength);
     setChanged();
 }
 
@@ -364,7 +364,7 @@ static inline int toHex( const QChar &c ) {
 /* color parsing that tries to match as close as possible IE 6. */
 void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 {
-    if(!m_styleDecls) createDecl();
+    if (!m_hasCombinedStyle) createNonCSSDecl();
 
     // this is the only case no color gets applied in IE.
     if ( !c.length() ) {
@@ -372,7 +372,7 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 	return;
     }
 
-    if ( m_styleDecls->setProperty(id, c, false, true) )
+    if ( nonCSSStyleDecls()->setProperty(id, c, false, true) )
 	return;
 
     QString color = c.string();
@@ -435,19 +435,19 @@ void HTMLElementImpl::addHTMLColor( int id, const DOMString &c )
 
 	    color.sprintf("#%02x%02x%02x", colors[0], colors[1], colors[2] );
 // 	    qDebug( "trying to add fixed color string '%s'", color.toLatin1().constData() );
-	    if ( m_styleDecls->setProperty(id, DOMString(color), false, true) )
+	    if ( nonCSSStyleDecls()->setProperty(id, DOMString(color), false, true) )
 		return;
 	}
     }
-    m_styleDecls->setProperty(id, CSS_VAL_BLACK, false, true);
+    nonCSSStyleDecls()->setProperty(id, CSS_VAL_BLACK, false, true);
 }
 
 void HTMLElementImpl::removeCSSProperty(int id)
 {
-    if(!m_styleDecls)
+    if (!m_hasCombinedStyle)
         return;
-    m_styleDecls->setParent(getDocument()->elementSheet());
-    m_styleDecls->removeProperty(id, true /*nonCSSHint */);
+    nonCSSStyleDecls()->setParent(getDocument()->elementSheet());
+    nonCSSStyleDecls()->removeProperty(id, true /*nonCSSHint */);
     setChanged();
 }
 

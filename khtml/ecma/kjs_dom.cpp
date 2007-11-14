@@ -1172,7 +1172,7 @@ JSValue* DOMElement::getValueProperty(ExecState *exec, int token) const
     case TagName:
       return jsString(element.tagName());
     case Style:
-      return getDOMCSSStyleDeclaration(exec,element.styleRules());
+      return getDOMCSSStyleDeclaration(exec,element.getInlineStyleDecls());
     default:
       kDebug(6070) << "WARNING: Unhandled token in DOMElement::getValueProperty : " << token;
       return jsUndefined();

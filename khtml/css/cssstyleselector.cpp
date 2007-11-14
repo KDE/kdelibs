@@ -562,9 +562,10 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     }
 
-    // inline style declarations, after all others. non css hints
-    // count as author rules, and come before all other style sheets, see hack in append()
-    numPropsToApply = addInlineDeclarations( e, e->m_styleDecls, numPropsToApply );
+    // Inline style declarations, after all others. 
+    // Non-css hints from presentational attributes will also be collected here 
+    // receiving the proper priority so has to cascade from before author rules (cf.CSS 2.1-6.4.4).
+    numPropsToApply = addInlineDeclarations( e, numPropsToApply );
 
 //     qDebug( "styleForElement( %s )", e->tagName().string().toLatin1().constData() );
 //     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
@@ -775,27 +776,20 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
 }
 
 unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
-                                                     DOM::CSSStyleDeclarationImpl *decl,
                                                      unsigned int numProps)
 {
-    CSSStyleDeclarationImpl* addDecls = 0;
-#ifdef APPLE_CHANGES
-    if (e->id() == ID_TD || e->id() == ID_TH)     // For now only TableCellElement implements the
-        addDecls = e->getAdditionalStyleDecls();  // virtual function for shared cell rules.
-#else
-    Q_UNUSED( e );
-#endif
-
-    if (!decl && !addDecls)
+    CSSStyleDeclarationImpl* inlineDecls = e->inlineStyleDecls();
+    CSSStyleDeclarationImpl* nonCSSDecls = e->nonCSSStyleDecls();
+    if (!inlineDecls && !nonCSSDecls)
         return numProps;
 
-    QList<CSSProperty*>* values = decl ? decl->values() : 0;
-    QList<CSSProperty*>* addValues = addDecls ? addDecls->values() : 0;
-    if (!values && !addValues)
+    QList<CSSProperty*>* values = inlineDecls ? inlineDecls->values() : 0;
+    QList<CSSProperty*>* nonCSSValues = nonCSSDecls ? nonCSSDecls->values() : 0;
+    if (!values && !nonCSSValues)
         return numProps;
 
     int firstLen = values ? values->count() : 0;
-    int secondLen = addValues ? addValues->count() : 0;
+    int secondLen = nonCSSValues ? nonCSSValues->count() : 0;
     uint totalLen = firstLen + secondLen;
 
     if ((unsigned)inlineProps.size() < totalLen)
@@ -807,17 +801,20 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
         propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
     }
 
+    bool inNonCSSDecls = false;
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
     for(int i = 0; i < (int)totalLen; i++)
     {
-        if (i == firstLen)
-            values = addValues;
+        if (i == firstLen) {
+            values = nonCSSValues;
+            inNonCSSDecls = true;
+        }
 
         CSSProperty *prop = values->at(i >= firstLen ? i - firstLen : i);
 	Source source = Inline;
 
         if( prop->m_important ) source = InlineImportant;
-	if( prop->nonCSSHint ) source = NonCSSHint;
+	if( inNonCSSDecls ) source = NonCSSHint;
 
 	bool first;
         // give special priority to font-xxx, color properties
@@ -1922,7 +1919,6 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
 	Source source = regular;
 
 	if( prop->m_important ) source = important;
-	if( prop->nonCSSHint ) source = NonCSSHint;
 
 	bool first = false;
         // give special priority to font-xxx, color properties

@@ -220,6 +220,7 @@ public:
 
     bool hasID() const      { return m_hasId; }
     bool hasClass() const   { return m_hasClass; }
+    bool hasCombinedStyle() const   { return m_hasCombinedStyle; }
     bool active() const     { return m_active; }
     bool focused() const { return m_focused; }
     bool hovered() const    { return m_hovered; }
@@ -467,7 +468,7 @@ protected:
     khtml::RenderObject *m_render;
     RegisteredListenerList m_regdListeners;
 
-    unsigned short m_tabIndex : 15;
+    unsigned short m_tabIndex : 14;
     bool m_hasTabIndex  : 1;
 
     bool m_hasId : 1;
@@ -487,6 +488,7 @@ protected:
     bool m_htmlCompat : 1; // true if element was created in HTML compat mode
     bool m_hasClassList : 1;
     bool m_hasClass : 1;   // true if element has a class property, as relevant to CSS
+    bool m_hasCombinedStyle : 1; // true if element has inline styles and presentational styles
 };
 
 // this is the full Node Implementation with parents and children.

@@ -131,6 +131,12 @@ struct AttributeImpl
     } m_data;
 };
 
+struct CombinedStyleDecl
+{
+    DOM::CSSStyleDeclarationImpl *inlineDecls;
+    DOM::CSSStyleDeclarationImpl *nonCSSDecls;
+};
+
 class ElementImpl : public NodeBaseImpl
 {
     friend class DocumentImpl;
@@ -220,10 +226,12 @@ public:
     virtual bool isFocusable() const;
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
+    DOM::CSSStyleDeclarationImpl *inlineStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->inlineDecls : m_style.inlineDecls; }
+    DOM::CSSStyleDeclarationImpl *nonCSSStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->nonCSSDecls : 0; }
 
-    DOM::CSSStyleDeclarationImpl *styleRules() {
-      if (!m_styleDecls) createDecl();
-      return m_styleDecls;
+    DOM::CSSStyleDeclarationImpl *getInlineStyleDecls() {
+        if (!m_style.inlineDecls) createInlineDecl();
+        return inlineStyleDecls();
     }
 
     void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
@@ -259,7 +267,8 @@ public:
 
 protected:
     void createAttributeMap() const;
-    void createDecl();
+    void createInlineDecl(); // for inline styles
+    void createNonCSSDecl(); // for presentational styles
     void finishCloneNode( ElementImpl *clone, bool deep );
 
 private:
@@ -271,7 +280,10 @@ private:
 protected: // member variables
     mutable NamedAttrMapImpl *namedAttrMap;
 
-    DOM::CSSStyleDeclarationImpl *m_styleDecls;
+    union {
+        DOM::CSSStyleDeclarationImpl *inlineDecls;
+        CombinedStyleDecl *combinedDecls;
+    } m_style;
     DOMStringImpl *m_prefix;
 };
 

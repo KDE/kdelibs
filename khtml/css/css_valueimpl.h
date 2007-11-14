@@ -61,6 +61,7 @@ public:
     virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, bool nonCSSHint, int &ec);
     virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
     virtual void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
+    virtual void clear();
     // this treats integers as pixels!
     // needed for conversion of html attributes
     virtual void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);

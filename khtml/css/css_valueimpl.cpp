@@ -601,17 +601,15 @@ void CSSStyleDeclarationImpl::setChanged()
         }
 }
 
-void CSSStyleDeclarationImpl::removeCSSHints()
+void CSSStyleDeclarationImpl::clear()
 {
     if (!m_lstValues)
 	return;
 
     QMutableListIterator<CSSProperty*> it(*m_lstValues);
     while (it.hasNext()) {
-        if (!it.next()->nonCSSHint) {
             delete it.value();
             it.remove();
-        }
     }
 }
 
