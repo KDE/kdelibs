@@ -41,7 +41,7 @@ class KStatusBarJobTracker::Private
 {
 public:
     Private(QWidget *parent)
-        : parent(parent) 
+        : parent(parent)
         , currentProgressWidget(0) { }
 
     ~Private() {
@@ -63,7 +63,7 @@ class KStatusBarJobTracker::Private::ProgressWidget
 public:
     ProgressWidget(KJob *job, KStatusBarJobTracker *object, QWidget *parent)
         : q(object), job(job), widget(0), progressBar(0), label(0), button(0),
-          box(0), stack(0), totalSize(0), mode(NoInformation)
+          box(0), stack(0), /*totalSize(-1),*/ mode(NoInformation)
     {
         init(job, parent);
     }
@@ -83,7 +83,7 @@ public:
     QBoxLayout *box;
     QStackedWidget *stack;
 
-    qulonglong totalSize;
+    //qlonglong totalSize;
 
     StatusBarModes mode;
 

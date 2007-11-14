@@ -545,9 +545,6 @@ void SimpleJobPrivate::slotProcessedSize( KIO::filesize_t size )
     Q_Q(SimpleJob);
     //kDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size);
     q->setProcessedAmount(KJob::Bytes, size);
-    if ( size > q->totalAmount(KJob::Bytes) ) {
-        q->setTotalAmount(KJob::Bytes, size); // safety
-    }
 }
 
 void SimpleJobPrivate::slotSpeed( unsigned long speed )
@@ -1050,9 +1047,6 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
        {
            KIO::filesize_t size = processedAmount(KJob::Bytes)+dataForSlave.size();
            setProcessedAmount(KJob::Bytes, size);
-           if ( size > totalAmount(KJob::Bytes) ) {
-               setTotalAmount(KJob::Bytes, size); // safety
-           }
        }
     }
 
@@ -1912,9 +1906,6 @@ void FileCopyJobPrivate::slotProcessedSize( KJob *, qulonglong size )
 {
     Q_Q(FileCopyJob);
     q->setProcessedAmount(KJob::Bytes, size);
-    if ( size > q->totalAmount(KJob::Bytes) ) {
-        slotTotalSize( q, size ); // safety
-    }
 }
 
 void FileCopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
@@ -1926,8 +1917,13 @@ void FileCopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
     }
 }
 
-void FileCopyJobPrivate::slotPercent( KJob*, unsigned long pct ) {
-  Q_Q(FileCopyJob); if ( pct > q->percent() ) { q->setPercent( pct ); } }
+void FileCopyJobPrivate::slotPercent( KJob*, unsigned long pct )
+{
+  Q_Q(FileCopyJob);
+  if ( pct > q->percent() ) {
+      q->setPercent( pct );
+  }
+}
 
 void FileCopyJobPrivate::startDataPump()
 {

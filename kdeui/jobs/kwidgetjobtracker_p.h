@@ -58,14 +58,15 @@ class KWidgetJobTracker::Private::ProgressWidget
 
 public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
-        : q(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
+        : QWidget(parent), q(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
           processedSize(0), processedDirs(0), processedFiles(0),
-          keepOpenChecked(false), cancelClose(0), openFile(0), openLocation(0),
+          totalSizeKnown(false), keepOpenChecked(false),
+          cancelClose(0), openFile(0), openLocation(0),
           keepOpenCheck(0), pauseButton(0), sourceEdit(0), destEdit(0),
           progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
           resumeLabel(0), progressBar(0), suspendedProperty(false)
     {
-        init(parent);
+        init();
     }
 
     ~ProgressWidget()
@@ -82,6 +83,7 @@ public:
     qulonglong processedDirs;
     qulonglong processedFiles;
 
+    bool totalSizeKnown;
     bool keepOpenChecked;
     QString caption;
 
@@ -104,7 +106,7 @@ public:
 
     bool suspendedProperty;
 
-    void init(QWidget *parent);
+    void init();
     void showTotals();
     void setDestVisible(bool visible);
     void checkDestination(const KUrl &dest);

@@ -295,20 +295,12 @@ void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
 {
     Q_D(KJob);
     // calculate percents
-    unsigned long ipercentage = d->percentage;
-
-    if (totalAmount == 0)
-    {
-        d->percentage = 100;
-    }
-    else
-    {
+    if (totalAmount) {
+        unsigned long oldPercentage = d->percentage;
         d->percentage = (unsigned long)(( (float)(processedAmount) / (float)(totalAmount) ) * 100.0);
-    }
-
-    if ( d->percentage != ipercentage || d->percentage == 100 /* for those buggy total sizes that grow */ )
-    {
-        emit percent( this, d->percentage );
+        if ( d->percentage != oldPercentage ) {
+            emit percent( this, d->percentage );
+        }
     }
 }
 

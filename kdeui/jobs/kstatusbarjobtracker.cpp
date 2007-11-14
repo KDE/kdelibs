@@ -201,9 +201,11 @@ void KStatusBarJobTracker::Private::ProgressWidget::description(const QString &t
 
 void KStatusBarJobTracker::Private::ProgressWidget::totalAmount(KJob::Unit unit, qulonglong amount)
 {
+#if 0 // currently unused
     if (unit==KJob::Bytes) {
         totalSize = amount;
     }
+#endif
 }
 
 void KStatusBarJobTracker::Private::ProgressWidget::percent(unsigned long percent)

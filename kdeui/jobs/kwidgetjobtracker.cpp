@@ -226,6 +226,7 @@ void KWidgetJobTracker::Private::ProgressWidget::totalAmount(KJob::Unit unit, qu
     switch(unit)
     {
     case KJob::Bytes:
+        totalSizeKnown = true;
         // size is measured in bytes
         if (totalSize == amount)
             return;
@@ -261,9 +262,13 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
             return;
         processedSize = amount;
 
-        tmp = i18n( "%1 of %2 complete",
-                    KGlobal::locale()->formatByteSize(amount),
-                    KGlobal::locale()->formatByteSize(totalSize));
+        if (totalSizeKnown) {
+            tmp = i18n( "%1 of %2 complete",
+                        KGlobal::locale()->formatByteSize(amount),
+                        KGlobal::locale()->formatByteSize(totalSize));
+        } else {
+            tmp = KGlobal::locale()->formatByteSize(amount);
+        }
         sizeLabel->setText(tmp);
         break;
 
@@ -294,17 +299,18 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
 
 void KWidgetJobTracker::Private::ProgressWidget::percent(unsigned long percent)
 {
-    QString title = caption+" (";
+    QString title = caption + " (";
 
-    if (totalSize)
-        title+= i18n("%1 % of %2 ", percent ,
-                     KGlobal::locale()->formatByteSize(totalSize));
-    else if(totalFiles)
-        title+= i18np("%2 % of 1 file", "%2 % of %1 files", totalFiles, percent);
-    else
-        title+= i18n("%1 %",  percent);
+    if (totalSizeKnown) {
+        title += i18n("%1 % of %2 ", percent,
+                      KGlobal::locale()->formatByteSize(totalSize));
+    } else if (totalFiles) {
+        title += i18np("%2 % of 1 file", "%2 % of %1 files", totalFiles, percent);
+    } else {
+        title += i18n("%1 %", percent);
+    }
 
-    title+=')';
+    title += ')';
 
     progressBar->setValue(percent);
     setWindowTitle(title);
@@ -315,14 +321,14 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
     if (value == 0) {
         speedLabel->setText(i18n("Stalled"));
     } else {
-        int remaining = 0;
-
-        if ((value != 0) && (totalSize != 0)) {
-            remaining = 1000*(totalSize - processedSize)/value;
+        const QString speedStr = KGlobal::locale()->formatByteSize(value);
+        if (totalSizeKnown) {
+            const int remaining = 1000*(totalSize - processedSize)/value;
+            speedLabel->setText(i18n("%1/s ( %2 remaining )", speedStr,
+                                     KGlobal::locale()->formatDuration(remaining)));
+        } else { // total size is not known (#24228)
+            speedLabel->setText(i18nc("speed in bytes per second", "%1/s", speedStr));
         }
-
-        speedLabel->setText(i18n("%1/s ( %2 remaining )", KGlobal::locale()->formatByteSize(value),
-                                    KGlobal::locale()->formatDuration(remaining)));
     }
 }
 
@@ -334,6 +340,8 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
         percent(100);
         cancelClose->setGuiItem(KStandardGuiItem::close());
         openFile->setEnabled(true);
+        if (!totalSizeKnown || totalSize < processedSize)
+            totalSize = processedSize;
         processedAmount(KJob::Bytes, totalSize);
         keepOpenCheck->setEnabled(false);
         if (!startTime.isNull()) {
@@ -372,14 +380,12 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
     QWidget::closeEvent(event);
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::init(QWidget *parent)
+void KWidgetJobTracker::Private::ProgressWidget::init()
 {
-#ifdef Q_WS_X11 //FIXME(E): Remove once all the KWindowSystem::foo calls have been ported to QWS
     // Set a useful icon for this window!
     KWindowSystem::setIcons( winId(),
-                    KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 32 ),
-                    KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
-#endif
+                             KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 32 ),
+                             KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);
     topLayout->setMargin(KDialog::marginHint());
