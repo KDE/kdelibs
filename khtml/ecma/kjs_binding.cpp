@@ -58,7 +58,7 @@ UString DOMObject::toString(ExecState *) const
 typedef QList<ScriptInterpreter*> InterpreterList;
 static InterpreterList *interpreterList;
 
-ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame )
+ScriptInterpreter::ScriptInterpreter( JSObject *global, khtml::ChildFrame* frame )
   : Interpreter( global ), m_frame( frame ),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
@@ -215,9 +215,9 @@ QString Identifier::qstring() const
   return QString((QChar*) data(), size());
 }
 
-DOM::NodeImpl* toNode(ValueImp *val)
+DOM::NodeImpl* toNode(JSValue *val)
 {
-  ObjectImp *obj = val->getObject();
+  JSObject *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMNode::info))
     return 0;
 
@@ -225,7 +225,7 @@ DOM::NodeImpl* toNode(ValueImp *val)
   return dobj->impl();
 }
 
-ValueImp* getStringOrNull(DOM::DOMString s)
+JSValue* getStringOrNull(DOM::DOMString s)
 {
   if (s.isNull())
     return jsNull();
@@ -240,7 +240,7 @@ DOM::DOMString valueToStringWithNullCheck(ExecState* exec, JSValue* val)
     return val->toString(exec).domString();
 }
 
-QVariant ValueToVariant(ExecState* exec, ValueImp *val) {
+QVariant ValueToVariant(ExecState* exec, JSValue *val) {
   QVariant res;
   switch (val->type()) {
   case BooleanType:
@@ -281,26 +281,26 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   char buffer[100]; // needs to fit 20 characters, plus an integer in ASCII, plus a null character
   snprintf(buffer, 99, "%s Exception %d", type, code);
 
-  ObjectImp *errorObject = throwError(exec, GeneralError, buffer);
+  JSObject *errorObject = throwError(exec, GeneralError, buffer);
   errorObject->put(exec, "code", jsNumber(code));
 }
 
 
-class EmbedLiveConnect : public ObjectImp
+class EmbedLiveConnect : public JSObject
 {
-  friend ValueImp* KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
+  friend JSValue* KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
   EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id);
 public:
   ~EmbedLiveConnect();
 
   virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-  virtual void put(ExecState * exec, const Identifier &prop, ValueImp *value, int=None);
+  virtual void put(ExecState * exec, const Identifier &prop, JSValue *value, int=None);
 
-  virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+  virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
   virtual bool implementsCall() const;
   virtual bool toBoolean(ExecState *) const;
-  virtual ValueImp *toPrimitive(ExecState *exec, JSType) const;
+  virtual JSValue *toPrimitive(ExecState *exec, JSType) const;
   virtual UString toString(ExecState *) const;
 
 private:
@@ -311,7 +311,7 @@ private:
   unsigned long objid;
 };
 
-ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
+JSValue *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id)
 {
   KParts::LiveConnectExtension::Type t=(KParts::LiveConnectExtension::Type)type;
   switch(t) {
@@ -372,7 +372,7 @@ bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, P
 }
 
 KDE_NO_EXPORT
-void EmbedLiveConnect::put(ExecState * exec, const Identifier &prop, ValueImp* value, int)
+void EmbedLiveConnect::put(ExecState * exec, const Identifier &prop, JSValue* value, int)
 {
   if (m_liveconnect)
     m_liveconnect->put(objid, prop.qstring(), value->toString(exec).qstring());
@@ -384,7 +384,7 @@ bool EmbedLiveConnect::implementsCall() const {
 }
 
 KDE_NO_EXPORT
-ValueImp* EmbedLiveConnect::callAsFunction(ExecState *exec, ObjectImp*, const List &args)
+JSValue* EmbedLiveConnect::callAsFunction(ExecState *exec, JSObject*, const List &args)
 {
   if (m_liveconnect) {
     QStringList qargs;
@@ -405,7 +405,7 @@ bool EmbedLiveConnect::toBoolean(ExecState *) const {
 }
 
 KDE_NO_EXPORT
-ValueImp *EmbedLiveConnect::toPrimitive(ExecState *exec, JSType) const {
+JSValue *EmbedLiveConnect::toPrimitive(ExecState *exec, JSType) const {
   return jsString(toString(exec));
 }
 

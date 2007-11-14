@@ -53,7 +53,7 @@ DOMAbstractView::~DOMAbstractView()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMAbstractView::getValueProperty(ExecState *exec, int token)
+JSValue *DOMAbstractView::getValueProperty(ExecState *exec, int token)
 {
     assert(token == Document);
     return getDOMNode(exec, impl()->document());
@@ -65,7 +65,7 @@ bool DOMAbstractView::getOwnPropertySlot(ExecState *exec, const Identifier& prop
 }
 
 
-ValueImp *DOMAbstractViewProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMAbstractViewProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMAbstractView, thisObj );
   DOM::AbstractViewImpl &abstractView = *static_cast<DOMAbstractView *>(thisObj)->impl();
@@ -81,14 +81,14 @@ ValueImp *DOMAbstractViewProtoFunc::callAsFunction(ExecState *exec, ObjectImp *t
   return jsUndefined();
 }
 
-ValueImp *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)
+JSValue *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)
 {
   return cacheDOMObject<DOM::AbstractViewImpl, DOMAbstractView>(exec, av);
 }
 
-DOM::AbstractViewImpl *KJS::toAbstractView (ValueImp *val)
+DOM::AbstractViewImpl *KJS::toAbstractView (JSValue *val)
 {
-  ObjectImp *obj = val->getObject();
+  JSObject *obj = val->getObject();
   if (!obj)
     return 0;
    

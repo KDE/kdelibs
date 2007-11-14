@@ -165,7 +165,7 @@ static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxAr
 #define KJS_CHECK_FLOAT_OR_INF_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, true)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_VAL(v) if (!valFloatOK(exec, v, false)) return;
 
-ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
     KJS_CHECK_THIS(Context2D, thisObj);
     
@@ -494,7 +494,7 @@ bool Context2D::getOwnPropertySlot(ExecState* exec, const Identifier& propertyNa
     return getStaticOwnValueSlot<Context2D>(&Context2DTable, this, propertyName, slot);
 }
 
-static ValueImp* encodeStyle(ExecState* exec, CanvasStyleBaseImpl* style)
+static JSValue* encodeStyle(ExecState* exec, CanvasStyleBaseImpl* style)
 {
     switch (style->type()) {
     case CanvasStyleBaseImpl::Color:
@@ -510,17 +510,17 @@ static ValueImp* encodeStyle(ExecState* exec, CanvasStyleBaseImpl* style)
 
 
 // ### TODO: test how non-string things are handled in other browsers.
-static CanvasStyleBaseImpl* decodeStyle(ExecState* exec, ValueImp* v)
+static CanvasStyleBaseImpl* decodeStyle(ExecState* exec, JSValue* v)
 {
-    if (v->isObject() && static_cast<ObjectImp*>(v)->inherits(&CanvasGradient::info))
+    if (v->isObject() && static_cast<JSObject*>(v)->inherits(&CanvasGradient::info))
         return static_cast<CanvasGradient*>(v)->impl();
-    else if (v->isObject() && static_cast<ObjectImp*>(v)->inherits(&CanvasPattern::info))
+    else if (v->isObject() && static_cast<JSObject*>(v)->inherits(&CanvasPattern::info))
         return static_cast<CanvasPattern*>(v)->impl();
     else
         return CanvasColorImpl::fromString(v->toString(exec).domString());
 }
 
-ValueImp* Context2D::getValueProperty(ExecState* exec, int token) const
+JSValue* Context2D::getValueProperty(ExecState* exec, int token) const
 {
     const CanvasContext2DImpl* ctx = impl();
     switch(token) {
@@ -569,12 +569,12 @@ ValueImp* Context2D::getValueProperty(ExecState* exec, int token) const
     }
 }
 
-void Context2D::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void Context2D::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
     lookupPut<Context2D,DOMObject>(exec, propertyName, value, attr, &Context2DTable, this );
 }
 
-void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
+void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/)
 {
     CanvasContext2DImpl* ctx = impl();
     switch(token) {
@@ -640,7 +640,7 @@ KJS_IMPLEMENT_PROTOTYPE("CanvasGradientProto", CanvasGradientProto, CanvasGradie
    @end
 */
 
-ValueImp *CanvasGradientFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *CanvasGradientFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
     KJS_CHECK_THIS(CanvasGradient, thisObj);
 
@@ -677,7 +677,7 @@ KJS_IMPLEMENT_PROTOTYPE("CanvasPatternProto", CanvasPatternProto, CanvasPatternF
    @end
 */
 
-ValueImp *CanvasPatternFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *CanvasPatternFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
     assert(0);
     return NULL;

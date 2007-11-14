@@ -31,11 +31,11 @@
 
 namespace KJS {
 
-  class DOMParserConstructorImp : public ObjectImp {
+  class DOMParserConstructorImp : public JSObject {
   public:
     DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp *construct(ExecState *exec, const List &args);
+    virtual JSObject *construct(ExecState *exec, const List &args);
 private:
     SharedPtr<DOM::DocumentImpl> doc;
   };

@@ -42,7 +42,7 @@
                errMsg += ClassName::info.className; \
                errMsg += " on a "; \
                errMsg += theObj->className(); \
-               KJS::ObjectImp *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+               KJS::JSObject *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
                exec->setException(err); \
                return err; \
        }
@@ -57,16 +57,14 @@ namespace khtml {
 }
 
 namespace KJS {
-  typedef JSObject ObjectImp;
-  typedef JSValue  ValueImp;
 
   /**
    * Base class for all objects in this binding. Doesn't manage exceptions any more
    */
-  class DOMObject : public ObjectImp {
+  class DOMObject : public JSObject {
   protected:
-    DOMObject() : ObjectImp() {}
-    DOMObject(ObjectImp *proto) : ObjectImp(proto) {}
+    DOMObject() : JSObject() {}
+    DOMObject(JSObject *proto) : JSObject(proto) {}
   public:
     bool shouldMark() const { return !_prop.isEmpty(); }
     virtual UString toString(ExecState *exec) const;
@@ -80,7 +78,7 @@ namespace KJS {
   class ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame );
+    ScriptInterpreter( JSObject *global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
@@ -191,7 +189,7 @@ namespace KJS {
 
   /* Helper for the below*/
   template<class JSTypeImp>
-  ValueImp *indexGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
+  JSValue *indexGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
   {
     JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
     return thisObj->indexGetter(exec, slot.index());
@@ -257,7 +255,7 @@ namespace KJS {
    * Retrieve from cache, or create, a KJS object around a DOM object
    */
   template<class DOMObj, class KJSDOMObj>
-  inline ValueImp* cacheDOMObject(ExecState *exec, DOMObj* domObj)
+  inline JSValue* cacheDOMObject(ExecState *exec, DOMObj* domObj)
   {
     DOMObject *ret;
     if (!domObj)
@@ -275,11 +273,11 @@ namespace KJS {
   /**
    * Convert an object to a Node. Returns 0 if not possible.
    */
-  DOM::NodeImpl* toNode(ValueImp*);
+  DOM::NodeImpl* toNode(JSValue*);
   /**
    *  Get a String object, or Null() if s is null
    */
-  ValueImp* getStringOrNull(DOM::DOMString s);
+  JSValue* getStringOrNull(DOM::DOMString s);
 
   /**
    * Null string if the value is null
@@ -289,7 +287,7 @@ namespace KJS {
   /**
    * Convert a KJS value into a QVariant
    */
-  QVariant ValueToVariant(ExecState* exec, ValueImp* val);
+  QVariant ValueToVariant(ExecState* exec, JSValue* val);
 
   // Convert a DOM implementation exception code into a JavaScript exception in the execution state.
   void setDOMException(ExecState *exec, int DOMExceptionCode);
@@ -310,7 +308,7 @@ namespace KJS {
     int m_code;
   };
 
-  ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
+  JSValue* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
   // convenience function
   inline JSCell* jsString(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
@@ -324,17 +322,17 @@ namespace KJS {
           ClassName(ExecState *); \
           virtual const ClassInfo* classInfo() const { return &info; } \
           static const ClassInfo info; \
-          static ObjectImp* self(ExecState *exec); \
+          static JSObject* self(ExecState *exec); \
           virtual bool implementsHasInstance() const; \
   };
 
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProto) \
     const ClassInfo Class::info = { ClassName, 0, 0, 0 }; \
     Class::Class(ExecState* exec): DOMObject(ParentProto) {\
-        ObjectImp* proto = ProtoClass::self(exec); \
+        JSObject* proto = ProtoClass::self(exec); \
         putDirect(exec->propertyNames().prototype, proto, DontDelete|ReadOnly); \
     }\
-    ObjectImp* Class::self(ExecState *exec) { \
+    JSObject* Class::self(ExecState *exec) { \
         return cacheGlobalObject<Class>(exec, "[[" ClassName ".constructor]]"); \
     } \
     bool Class::implementsHasInstance() const { \
@@ -355,10 +353,10 @@ namespace KJS {
      Class(ExecState *exec): DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {} \
      \
      virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);\
-     ValueImp* getValueProperty(ExecState *exec, int token) const; \
+     JSValue* getValueProperty(ExecState *exec, int token) const; \
      virtual const ClassInfo* classInfo() const { return &info; } \
      static const ClassInfo info; \
-     static ObjectImp* self(ExecState *exec);\
+     static JSObject* self(ExecState *exec);\
      static Identifier* s_name; \
      static Identifier* name(); \
    };
@@ -369,11 +367,11 @@ namespace KJS {
      { \
         return getStaticValueSlot<Class, DOMObject>(exec, &Class##Table, this, propertyName, slot);\
      }\
-     ValueImp* Class::getValueProperty(ExecState * /*exec*/, int token) const { \
+     JSValue* Class::getValueProperty(ExecState * /*exec*/, int token) const { \
         /* We use the token as the value to return directly*/ \
         return jsNumber((unsigned int)token); \
      }  \
-     ObjectImp* Class::self(ExecState *exec) { \
+     JSObject* Class::self(ExecState *exec) { \
         return cacheGlobalObject<Class>(exec,  *name()); \
      } \
     Identifier* Class::s_name = 0; \
@@ -385,17 +383,17 @@ namespace KJS {
 
 // cacheGlobalObject<> is not in namepsace KJS - need to use ::cacheGlobalObject<>
 #define KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ProtoCode) \
-      class ClassProto : public ObjectImp { \
-      friend ObjectImp* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
+      class ClassProto : public JSObject { \
+      friend JSObject* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
       public: \
-        static ObjectImp* self(ExecState *exec) { \
+        static JSObject* self(ExecState *exec) { \
           return ::cacheGlobalObject<ClassProto>(exec, *name()); \
         } \
         virtual const ClassInfo *classInfo() const { return &info; } \
         static const ClassInfo info; \
       protected: \
         ClassProto( ExecState *exec ) \
-          : ObjectImp( ProtoCode ) {} \
+          : JSObject( ProtoCode ) {} \
         \
         static Identifier* s_name; \
         static Identifier* name() { \

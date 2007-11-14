@@ -153,7 +153,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   m_script->setInlineCode(inlineCode);
   Window* window = Window::retrieveWindow( m_frame->m_part );
-  KJS::ValueImp *thisNode = n.isNull() ? Window::retrieve( m_frame->m_part ) : getDOMNode(m_script->globalExec(),n.handle());
+  KJS::JSValue *thisNode = n.isNull() ? Window::retrieve( m_frame->m_part ) : getDOMNode(m_script->globalExec(),n.handle());
 
   UString code( str );
 
@@ -187,14 +187,14 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 }
 
 // Implementation of the debug() function
-class TestFunctionImp : public ObjectImp {
+class TestFunctionImp : public JSObject {
 public:
-  TestFunctionImp() : ObjectImp() {}
+  TestFunctionImp() : JSObject() {}
   virtual bool implementsCall() const { return true; }
-  virtual ValueImp *call(ExecState *exec, ObjectImp *thisObj, const List &args);
+  virtual JSValue *call(ExecState *exec, JSObject *thisObj, const List &args);
 };
 
-ValueImp *TestFunctionImp::call(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue *TestFunctionImp::call(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   fprintf(stderr,"--> %s\n",args[0]->toString(exec).ascii());
   return jsUndefined();
@@ -329,7 +329,7 @@ void KJSProxyImpl::initScript()
     return;
 
   // Build the global object - which is a Window instance
-  ObjectImp *globalObject( new Window(m_frame) );
+  JSObject *globalObject( new Window(m_frame) );
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_frame);

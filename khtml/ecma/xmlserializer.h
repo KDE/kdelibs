@@ -28,11 +28,11 @@
 namespace KJS {
 
   
-  class XMLSerializerConstructorImp : public ObjectImp {
+  class XMLSerializerConstructorImp : public JSObject {
   public:
     XMLSerializerConstructorImp(ExecState *);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp *construct(ExecState *exec, const List &args);
+    virtual JSObject *construct(ExecState *exec, const List &args);
   };
 
   class XMLSerializer : public DOMObject {

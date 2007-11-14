@@ -45,7 +45,7 @@ namespace KJS {
 
     // All objects that need plugin info must inherit from PluginBase
     // Its ctor and dtor take care of the refcounting on the static lists.
-    class PluginBase : public ObjectImp {
+    class PluginBase : public JSObject {
     public:
         PluginBase(ExecState *exec, bool loadPluginInfo);
         virtual ~PluginBase();
@@ -82,14 +82,14 @@ namespace KJS {
             m_pluginsEnabled(pluginsEnabled) {}
 
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-        ValueImp *getValueProperty(ExecState *exec, int token) const;
+        JSValue *getValueProperty(ExecState *exec, int token) const;
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        static ValueImp *pluginByName( ExecState* exec, const QString& name );
+        static JSValue *pluginByName( ExecState* exec, const QString& name );
         bool pluginsEnabled() const { return m_pluginsEnabled; }
     private:
-        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         bool m_pluginsEnabled;
     };
 
@@ -102,12 +102,12 @@ namespace KJS {
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        ValueImp *getValueProperty(ExecState *exec, int token) const;
-        static ValueImp *mimeTypeByName( ExecState* exec, const QString& name );
+        JSValue *getValueProperty(ExecState *exec, int token) const;
+        static JSValue *mimeTypeByName( ExecState* exec, const QString& name );
         bool pluginsEnabled() const { return m_pluginsEnabled; }
     private:
-        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         bool m_pluginsEnabled;
     };
 
@@ -120,13 +120,13 @@ namespace KJS {
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        ValueImp *mimeByName(ExecState* exec, const QString& name ) const;
-        ValueImp *getValueProperty(ExecState *exec, int token) const;
+        JSValue *mimeByName(ExecState* exec, const QString& name ) const;
+        JSValue *getValueProperty(ExecState *exec, int token) const;
         const PluginBase::PluginInfo *pluginInfo() const { return m_info; }
     private:
         const PluginBase::PluginInfo *m_info;
-        static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-        static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+        static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     };
 
 
@@ -138,7 +138,7 @@ namespace KJS {
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
         virtual const ClassInfo* classInfo() const { return &info; }
         static const ClassInfo info;
-        ValueImp *getValueProperty(ExecState *exec, int token) const;
+        JSValue *getValueProperty(ExecState *exec, int token) const;
     private:
         const PluginBase::MimeClassInfo *m_info;
     };
@@ -174,17 +174,17 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
 KJS_IMPLEMENT_PROTOFUNC(NavigatorFunc)
 
 Navigator::Navigator(ExecState *exec, KHTMLPart *p)
-  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), m_part(p) { }
+  : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), m_part(p) { }
 
 bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Navigator::getOwnPropertySlot " << propertyName.ascii();
 #endif
-  return getStaticPropertySlot<NavigatorFunc, Navigator, ObjectImp>(exec, &NavigatorTable, this, propertyName, slot);
+  return getStaticPropertySlot<NavigatorFunc, Navigator, JSObject>(exec, &NavigatorTable, this, propertyName, slot);
 }
 
-ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
+JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KUrl url = m_part->url();
   QString userAgent = url.host();
@@ -291,7 +291,7 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
 /*******************************************************************/
 
 PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
-  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype() )
+  : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype() )
 {
     if ( loadPluginInfo && !plugins ) {
         plugins = new QList<const PluginInfo*>;
@@ -388,7 +388,7 @@ const ClassInfo Plugins::info = { "PluginArray", 0, &PluginsTable, 0 };
 */
 KJS_IMPLEMENT_PROTOFUNC(PluginsFunc)
 
-ValueImp *Plugins::getValueProperty(ExecState*, int token) const
+JSValue *Plugins::getValueProperty(ExecState*, int token) const
 {
   assert(token == Plugins_Length);
   if (pluginsEnabled())
@@ -397,12 +397,12 @@ ValueImp *Plugins::getValueProperty(ExecState*, int token) const
     return jsNumber(0);
 }
 
-ValueImp *Plugins::indexGetter(ExecState* exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
+JSValue *Plugins::indexGetter(ExecState* exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
 {
   return new Plugin(exec, plugins->at(slot.index()));
 }
 
-ValueImp *Plugins::nameGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& /*slot*/)
+JSValue *Plugins::nameGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& /*slot*/)
 {
   return pluginByName(exec, propertyName.qstring());
 }
@@ -437,7 +437,7 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
   return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
+JSValue *Plugins::pluginByName( ExecState* exec, const QString& name )
 {
   QList<const PluginInfo*>::const_iterator it, end = plugins->end();
   for (it = plugins->begin(); it != end; ++it) {
@@ -447,7 +447,7 @@ ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
   return jsUndefined();
 }
 
-ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *PluginsFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::Plugins, thisObj );
 
@@ -488,12 +488,12 @@ const ClassInfo MimeTypes::info = { "MimeTypeArray", 0, &MimeTypesTable, 0 };
 */
 KJS_IMPLEMENT_PROTOFUNC(MimeTypesFunc)
 
-ValueImp *MimeTypes::indexGetter(ExecState* exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
+JSValue *MimeTypes::indexGetter(ExecState* exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
 {
   return new MimeType(exec, mimes->at(slot.index()));
 }
 
-ValueImp *MimeTypes::nameGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& /*slot*/)
+JSValue *MimeTypes::nameGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& /*slot*/)
 {
   return mimeTypeByName(exec, propertyName.qstring());
 }
@@ -528,7 +528,7 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
   return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
+JSValue *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 {
   //kDebug(6070) << "MimeTypes[" << name << "]";
   QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
@@ -539,7 +539,7 @@ ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
   return jsUndefined();
 }
 
-ValueImp *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
+JSValue *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
 {
   assert(token == MimeTypes_Length);
   if (pluginsEnabled())
@@ -548,7 +548,7 @@ ValueImp *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
     return jsNumber(0);
 }
 
-ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *MimeTypesFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MimeTypes, thisObj );
   KJS::MimeTypes* base = static_cast<KJS::MimeTypes *>(thisObj);
@@ -589,13 +589,13 @@ const ClassInfo Plugin::info = { "Plugin", 0, &PluginTable, 0 };
 */
 KJS_IMPLEMENT_PROTOFUNC(PluginFunc)
 
-ValueImp *Plugin::indexGetter(ExecState *exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
+JSValue *Plugin::indexGetter(ExecState *exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
 {
     Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
     return new MimeType(exec, thisObj->m_info->mimes.at(slot.index()));
 }
 
-ValueImp *Plugin::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *Plugin::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   Plugin *thisObj = static_cast<Plugin *>(slot.slotBase());
   return thisObj->mimeByName(exec, propertyName.qstring());
@@ -629,7 +629,7 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   return PluginBase::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp *Plugin::mimeByName(ExecState* exec, const QString& name) const
+JSValue *Plugin::mimeByName(ExecState* exec, const QString& name) const
 {
   const QList<const MimeClassInfo*>& mimes = m_info->mimes;
   QList<const MimeClassInfo*>::const_iterator it, end = mimes.end();
@@ -640,7 +640,7 @@ ValueImp *Plugin::mimeByName(ExecState* exec, const QString& name) const
   return jsUndefined();
 }
 
-ValueImp *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
+JSValue *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
 {
   switch( token ) {
   case Plugin_Name:
@@ -657,7 +657,7 @@ ValueImp *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
   }
 }
 
-ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *PluginFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::Plugin, thisObj );
   KJS::Plugin* plugin = static_cast<KJS::Plugin *>(thisObj);
@@ -698,10 +698,10 @@ bool MimeType::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNam
 #ifdef KJS_VERBOSE
   kDebug(6070) << "MimeType::get " << propertyName.qstring();
 #endif
-  return getStaticValueSlot<MimeType, ObjectImp>(exec, &MimeTypeTable, this, propertyName, slot);
+  return getStaticValueSlot<MimeType, JSObject>(exec, &MimeTypeTable, this, propertyName, slot);
 }
 
-ValueImp *MimeType::getValueProperty(ExecState* exec, int token) const
+JSValue *MimeType::getValueProperty(ExecState* exec, int token) const
 {
   switch( token ) {
   case MimeType_Type:
@@ -719,7 +719,7 @@ ValueImp *MimeType::getValueProperty(ExecState* exec, int token) const
 }
 
 
-ValueImp *NavigatorFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &)
+JSValue *NavigatorFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &)
 {
   KJS_CHECK_THIS( KJS::Navigator, thisObj );
   Navigator *nav = static_cast<Navigator *>(thisObj);

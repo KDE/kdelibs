@@ -34,7 +34,7 @@
 namespace KJS {
 
 AudioConstructorImp::AudioConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : ObjectImp(), doc(d)
+    : JSObject(), doc(d)
 {
 }
 
@@ -43,7 +43,7 @@ bool AudioConstructorImp::implementsConstruct() const
     return true;
 }
 
-ObjectImp *AudioConstructorImp::construct(ExecState *exec, const List &list)
+JSObject *AudioConstructorImp::construct(ExecState *exec, const List &list)
 {
     QString url;
     if (list.size() > 0) {
@@ -105,7 +105,7 @@ bool Audio::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, 
     return getStaticValueSlot<Audio, DOMObject>(exec, &AudioTable, this, propertyName, slot);
 }
 
-ValueImp *Audio::getValueProperty(ExecState * /*exec*/, int token) const
+JSValue *Audio::getValueProperty(ExecState * /*exec*/, int token) const
 {
     switch (token) {
       case Onerror:
@@ -127,12 +127,12 @@ ValueImp *Audio::getValueProperty(ExecState * /*exec*/, int token) const
     return 0;
 }
 
-void Audio::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void Audio::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
     lookupPut<Audio,DOMObject>(exec, propertyName, value, attr, &AudioTable, this );
 }
 
-void Audio::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
+void Audio::putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/)
 {
     switch(token) {
       case Onerror:
@@ -206,7 +206,7 @@ void Audio::loop(int n)
 }
 
 
-ValueImp *AudioProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *AudioProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {  
     if (!thisObj->inherits(&Audio::info)) {
         return throwError(exec, TypeError);

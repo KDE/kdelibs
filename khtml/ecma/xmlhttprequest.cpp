@@ -99,7 +99,7 @@ void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KUrl& url)
 }
 
 XMLHttpRequestConstructorImp::XMLHttpRequestConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : ObjectImp(), doc(d)
+    : JSObject(), doc(d)
 {
 }
 
@@ -108,7 +108,7 @@ bool XMLHttpRequestConstructorImp::implementsConstruct() const
   return true;
 }
 
-ObjectImp *XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
+JSObject *XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
 {
   return new XMLHttpRequest(exec, doc.get());
 }
@@ -133,7 +133,7 @@ bool XMLHttpRequest::getOwnPropertySlot(ExecState *exec, const Identifier& prope
   return getStaticValueSlot<XMLHttpRequest, DOMObject>(exec, &XMLHttpRequestTable, this, propertyName, slot);
 }
 
-ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
+JSValue *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ReadyState:
@@ -150,7 +150,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
       if (!m_mimeTypeOverride.isEmpty()) {
 	  mimeType = m_mimeTypeOverride;
       } else {
-	  ValueImp *header = getResponseHeader("Content-Type");
+	  JSValue *header = getResponseHeader("Content-Type");
 	  if (header->type() != UndefinedType)
 	      mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
@@ -198,12 +198,12 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void XMLHttpRequest::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void XMLHttpRequest::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   lookupPut<XMLHttpRequest,DOMObject>(exec, propertyName, value, attr, &XMLHttpRequestTable, this );
 }
 
-void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
+void XMLHttpRequest::putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/)
 {
   switch(token) {
   case Onreadystatechange:
@@ -327,7 +327,7 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
 {
   if (m_state != newState) {
     m_state = newState;
-    ProtectedPtr<ObjectImp> ref(this);
+    ProtectedPtr<JSObject> ref(this);
 
     if (onReadyStateChangeListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
@@ -559,7 +559,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   m_requestHeaders[_name] = value;
 }
 
-ValueImp *XMLHttpRequest::getAllResponseHeaders() const
+JSValue *XMLHttpRequest::getAllResponseHeaders() const
 {
   if (responseHeaders.isEmpty()) {
     return jsUndefined();
@@ -574,7 +574,7 @@ ValueImp *XMLHttpRequest::getAllResponseHeaders() const
   return jsString(responseHeaders.mid(endOfLine + 1) + '\n');
 }
 
-ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
+JSValue *XMLHttpRequest::getResponseHeader(const QString& name) const
 {
   if (responseHeaders.isEmpty()) {
     return jsUndefined();
@@ -604,7 +604,7 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
   return jsString(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
 
-static ValueImp *httpStatus(const QString& response, bool textStatus = false)
+static JSValue *httpStatus(const QString& response, bool textStatus = false)
 {
   if (response.isEmpty()) {
     return jsUndefined();
@@ -635,12 +635,12 @@ static ValueImp *httpStatus(const QString& response, bool textStatus = false)
   return jsNumber(code);
 }
 
-ValueImp *XMLHttpRequest::getStatus() const
+JSValue *XMLHttpRequest::getStatus() const
 {
   return httpStatus(responseHeaders);
 }
 
-ValueImp *XMLHttpRequest::getStatusText() const
+JSValue *XMLHttpRequest::getStatusText() const
 {
   return httpStatus(responseHeaders, true);
 }
@@ -756,7 +756,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   }
 }
 
-ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   if (!thisObj->inherits(&XMLHttpRequest::info)) {
     return throwError(exec, TypeError);

@@ -38,7 +38,7 @@ namespace DOM {
 namespace KJS {
   ////////////////////// Conversion helpers //////////////////////
   template<typename Wrapper>
-  ValueImp* getWrapper(ExecState *exec, typename Wrapper::wrappedType* g)
+  JSValue* getWrapper(ExecState *exec, typename Wrapper::wrappedType* g)
   {
       DOMObject *ret = 0;
       if (!g)
@@ -85,9 +85,9 @@ namespace KJS {
     Context2D(ExecState* exec, DOM::CanvasContext2DImpl *ctx);
     
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
+    JSValue *getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/);
 
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

@@ -36,11 +36,11 @@ namespace Phonon {
 
 namespace KJS {
 
-  class AudioConstructorImp : public ObjectImp {
+  class AudioConstructorImp : public JSObject {
   public:
     AudioConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
     virtual bool implementsConstruct() const;
-    virtual ObjectImp* construct(ExecState *exec, const List &args);
+    virtual JSObject* construct(ExecState *exec, const List &args);
   private:
     SharedPtr<DOM::DocumentImpl> doc;
   };
@@ -56,9 +56,9 @@ namespace KJS {
     virtual ~Audio();
 
     bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
+    JSValue *getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/);
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

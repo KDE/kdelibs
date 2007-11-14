@@ -32,7 +32,7 @@ namespace KJS {
     DOMRange(ExecState *exec, DOM::RangeImpl* r);
     ~DOMRange();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -53,19 +53,19 @@ namespace KJS {
   public:
     RangeConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getDOMRange(ExecState *exec, DOM::RangeImpl* r);
-  ValueImp* getRangeConstructor(ExecState *exec);
+  JSValue* getDOMRange(ExecState *exec, DOM::RangeImpl* r);
+  JSValue* getRangeConstructor(ExecState *exec);
 
   /**
    * Convert an object to a RangeImpl. Returns 0 if not possible
    */
-  DOM::RangeImpl* toRange(ValueImp*);
+  DOM::RangeImpl* toRange(JSValue*);
 
 } // namespace
 

@@ -40,12 +40,12 @@ namespace KJS {
      * @param _html \c true if it is HTML. 
      * Never create a JSEventListener directly, use Window::getJSEventListener.
      */
-    JSEventListener(ObjectImp* _listener, ObjectImp *_compareListenerImp, ObjectImp* _win, bool _html = false);
+    JSEventListener(JSObject* _listener, JSObject *_compareListenerImp, JSObject* _win, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     // Return the KJS function object executed when this event is emitted
-    virtual ObjectImp* listenerObj() const;
+    virtual JSObject* listenerObj() const;
     // for Window::clear(). This is a bad hack though. The JSEventListener might not get deleted
     // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
     // all nodes we're listening to is quite difficult.
@@ -53,8 +53,8 @@ namespace KJS {
     bool isHTMLEventListener() const { return html; }
 
   protected:
-    mutable ProtectedPtr<ObjectImp> listener;
-    // Storing a different ObjectImp ptr is needed to support addEventListener(.. [Object] ..) calls
+    mutable ProtectedPtr<JSObject> listener;
+    // Storing a different JSObject ptr is needed to support addEventListener(.. [Object] ..) calls
     // In the real-life case (where a 'function' is passed to addEventListener) we can directly call
     // the 'listener' object and can cache the 'listener.imp()'. If the event listener should be removed
     // the implementation will call removeEventListener(.. [Function] ..), and we can lookup the event
@@ -64,17 +64,17 @@ namespace KJS {
     // the imp() ptr of the 'passedListener' function _object_, as the implementation will
     // call removeEventListener(.. [Object ..] on removal, and now we can successfully lookup
     // the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
-    mutable ObjectImp *compareListenerImp;
+    mutable JSObject *compareListenerImp;
     bool html;
-    mutable ProtectedPtr<ObjectImp> win;
+    mutable ProtectedPtr<JSObject> win;
   };
 
   class JSLazyEventListener : public JSEventListener {
   public:
-    JSLazyEventListener(const QString &_code, const QString &_name, ObjectImp* _win, DOM::NodeImpl* node);
+    JSLazyEventListener(const QString &_code, const QString &_name, JSObject* _win, DOM::NodeImpl* node);
     ~JSLazyEventListener();
     virtual void handleEvent(DOM::Event &evt);
-    ObjectImp* listenerObj() const;
+    JSObject* listenerObj() const;
   private:
     void parseCode() const;
 
@@ -91,15 +91,15 @@ namespace KJS {
   public:
     // Build a DOMEvent
     DOMEvent(ExecState *exec, DOM::EventImpl* e);
-    DOMEvent(ObjectImp *proto, DOM::EventImpl* e);
+    DOMEvent(JSObject *proto, DOM::EventImpl* e);
     ~DOMEvent();
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     virtual void put(ExecState *exec, const Identifier &propertyName,
-			ValueImp* value, int attr = None);
-    virtual ValueImp* defaultValue(ExecState *exec, KJS::JSType hint) const;
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int);
+			JSValue* value, int attr = None);
+    virtual JSValue* defaultValue(ExecState *exec, KJS::JSType hint) const;
+    void putValueProperty(ExecState *exec, int token, JSValue* value, int);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Type, Target, CurrentTarget, EventPhase, Bubbles,
@@ -111,34 +111,34 @@ namespace KJS {
     SharedPtr<DOM::EventImpl> m_impl;
   };
 
-  ValueImp* getDOMEvent(ExecState *exec, DOM::EventImpl* e);
+  JSValue* getDOMEvent(ExecState *exec, DOM::EventImpl* e);
 
   /**
    * Convert an object to an Event. Returns a null Event if not possible.
    */
-  DOM::EventImpl* toEvent(ValueImp*);
+  DOM::EventImpl* toEvent(JSValue*);
 
   // Constructor object EventException
   class EventExceptionConstructor : public DOMObject {
   public:
     EventExceptionConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getEventExceptionConstructor(ExecState *exec);
+  JSValue* getEventExceptionConstructor(ExecState *exec);
 
   class DOMUIEvent : public DOMEvent {
   public:
     // Build a DOMUIEvent
     DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue);
-    DOMUIEvent(ObjectImp *proto, DOM::UIEventImpl* ue);
+    DOMUIEvent(JSObject *proto, DOM::UIEventImpl* ue);
     ~DOMUIEvent();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -151,7 +151,7 @@ namespace KJS {
     DOMMouseEvent(ExecState *exec, DOM::MouseEventImpl* me);
     ~DOMMouseEvent();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -165,11 +165,11 @@ namespace KJS {
 
   class DOMKeyEventBase : public DOMUIEvent {
   public:
-    DOMKeyEventBase(ObjectImp* proto, DOM::KeyEventBaseImpl* ke);
+    DOMKeyEventBase(JSObject* proto, DOM::KeyEventBaseImpl* ke);
     ~DOMKeyEventBase();
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -182,7 +182,7 @@ namespace KJS {
     DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke);
     ~DOMTextEvent();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -195,7 +195,7 @@ namespace KJS {
     DOMKeyboardEvent(ExecState *exec, DOM::KeyboardEventImpl* ke);
     ~DOMKeyboardEvent();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -208,33 +208,33 @@ namespace KJS {
   public:
     KeyboardEventConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getKeyboardEventConstructor(ExecState *exec);
+  JSValue* getKeyboardEventConstructor(ExecState *exec);
 
   // Constructor object MutationEvent
   class MutationEventConstructor : public DOMObject {
   public:
     MutationEventConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getMutationEventConstructor(ExecState *exec);
+  JSValue* getMutationEventConstructor(ExecState *exec);
 
   class DOMMutationEvent : public DOMEvent {
   public:
     DOMMutationEvent(ExecState *exec, DOM::MutationEventImpl* me);
     ~DOMMutationEvent();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
+    JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

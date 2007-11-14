@@ -32,7 +32,7 @@ namespace KJS {
     DOMAbstractView(ExecState *, DOM::AbstractViewImpl* av);
     ~DOMAbstractView();
 
-    ValueImp *getValueProperty(ExecState *exec, int token);
+    JSValue *getValueProperty(ExecState *exec, int token);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     
     // no put - all read-only
@@ -44,12 +44,12 @@ namespace KJS {
     SharedPtr<DOM::AbstractViewImpl> m_impl;
   };
 
-  ValueImp* getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av);
+  JSValue* getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av);
 
   /**
    * Convert an object to an AbstractView. Returns a null Node if not possible.
    */
-  DOM::AbstractViewImpl* toAbstractView(ValueImp*);
+  DOM::AbstractViewImpl* toAbstractView(JSValue*);
 
 } // namespace
 

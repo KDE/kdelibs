@@ -36,21 +36,21 @@ namespace KJS {
   public:
     // Build a DOMNode
     DOMNode(ExecState *exec,  DOM::NodeImpl* n);
-    DOMNode(ObjectImp *proto, DOM::NodeImpl* n);
+    DOMNode(JSObject *proto, DOM::NodeImpl* n);
     ~DOMNode();
     virtual bool toBoolean(ExecState *) const;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
 
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
-    virtual ValueImp* toPrimitive(ExecState *exec, JSType preferred = UndefinedType) const;
+    virtual JSValue* toPrimitive(ExecState *exec, JSType preferred = UndefinedType) const;
     virtual UString toString(ExecState *exec) const;
-    void setListener(ExecState *exec, int eventId, ValueImp* func) const;
-    ValueImp* getListener(int eventId) const;
+    void setListener(ExecState *exec, int eventId, JSValue* func) const;
+    JSValue* getListener(int eventId) const;
     virtual void pushEventHandlerScope(ExecState *exec, ScopeChain &scope) const;
 
     enum { NodeName, NodeValue, NodeType, ParentNode, ParentElement,
@@ -82,10 +82,10 @@ namespace KJS {
     DOMNodeList(ExecState *, DOM::NodeListImpl* l);
     ~DOMNodeList();
 
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
+    JSValue* indexGetter(ExecState *exec, unsigned index);
     
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List&args);
+    virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
     virtual void getPropertyNames(ExecState* exec, PropertyNameArray& names);
 
@@ -102,21 +102,21 @@ namespace KJS {
   private:
     SharedPtr<DOM::NodeListImpl> m_impl;
 
-    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
   };
 
   class DOMDocument : public DOMNode {
   public:
     // Build a DOMDocument
     DOMDocument(ExecState *exec,  DOM::DocumentImpl* d);
-    DOMDocument(ObjectImp *proto, DOM::DocumentImpl* d);
+    DOMDocument(JSObject *proto, DOM::DocumentImpl* d);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { DocType, Implementation, DocumentElement, CharacterSet, 
@@ -139,10 +139,10 @@ namespace KJS {
   public:
     DOMAttr(ExecState *exec, DOM::AttrImpl* a) : DOMNode(exec, a) { }
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Name, Specified, ValueProperty, OwnerElement };
@@ -152,9 +152,9 @@ namespace KJS {
   public:
     // Build a DOMElement
     DOMElement(ExecState *exec, DOM::ElementImpl* e);
-    DOMElement(ObjectImp *proto, DOM::ElementImpl* e);
+    DOMElement(JSObject *proto, DOM::ElementImpl* e);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
 
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -165,11 +165,11 @@ namespace KJS {
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
   private:
-    static ValueImp *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
+    static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
   };
 
-  DOM::AttrImpl    *toAttr   (ValueImp *); // returns 0 if passed-in value is not a DOMAtt object
-  DOM::ElementImpl *toElement(ValueImp *); // returns 0 if passed-in value is not a DOMElement object
+  DOM::AttrImpl    *toAttr   (JSValue *); // returns 0 if passed-in value is not a DOMAtt object
+  DOM::ElementImpl *toElement(JSValue *); // returns 0 if passed-in value is not a DOMElement object
 
   KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
   DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
@@ -196,7 +196,7 @@ namespace KJS {
     DOMDocumentType(ExecState *exec, DOM::DocumentTypeImpl* dt);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -209,7 +209,7 @@ namespace KJS {
     ~DOMNamedNodeMap();
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
@@ -219,9 +219,9 @@ namespace KJS {
            
     DOM::NamedNodeMapImpl* impl() const { return m_impl.get(); }
 
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
+    JSValue* indexGetter(ExecState *exec, unsigned index);
   private:
-    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
+    static JSValue *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
     SharedPtr<DOM::NamedNodeMapImpl> m_impl;
   };
 
@@ -230,9 +230,9 @@ namespace KJS {
     DOMProcessingInstruction(ExecState *exec, DOM::ProcessingInstructionImpl* pi) : DOMNode(exec, pi) { }
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Target, Data, Sheet };
@@ -243,7 +243,7 @@ namespace KJS {
     DOMNotation(ExecState *exec, DOM::NotationImpl* n) : DOMNode(exec, n) { }
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -254,7 +254,7 @@ namespace KJS {
   public:
     DOMEntity(ExecState *exec, DOM::EntityImpl* e) : DOMNode(exec, e) { }
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -266,18 +266,18 @@ namespace KJS {
   public:
     DOMExceptionConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
   bool checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n);
-  ValueImp* getDOMNode(ExecState *exec, DOM::NodeImpl* n);
-  ValueImp* getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m);
-  ValueImp* getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l);
-  ValueImp* getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i);
-  ObjectImp *getDOMExceptionConstructor(ExecState *exec);
+  JSValue* getDOMNode(ExecState *exec, DOM::NodeImpl* n);
+  JSValue* getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m);
+  JSValue* getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l);
+  JSValue* getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i);
+  JSObject *getDOMExceptionConstructor(ExecState *exec);
 
   // Internal class, used for the collection return by e.g. document.forms.myinput
   // when multiple nodes have the same name.
@@ -290,9 +290,9 @@ namespace KJS {
     const QList<SharedPtr<DOM::NodeImpl> > nodes() const { return m_nodes; }
     enum { Length };
 
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
+    JSValue* indexGetter(ExecState *exec, unsigned index);
   private:
-    static ValueImp *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
+    static JSValue *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot);
     QList<SharedPtr<DOM::NodeImpl> > m_nodes;
   };
 
@@ -301,8 +301,8 @@ namespace KJS {
     // Build a DOMCharacterData
     DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    JSValue* getValueProperty(ExecState *, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::CharacterDataImpl* impl() const { return static_cast<DOM::CharacterDataImpl*>(m_impl.get()); }

@@ -103,7 +103,7 @@ DOMNode::DOMNode(ExecState *exec, DOM::NodeImpl* n)
   : DOMObject(DOMNodeProto::self(exec)), m_impl(n)
 {}
 
-DOMNode::DOMNode(ObjectImp *proto, DOM::NodeImpl* n)
+DOMNode::DOMNode(JSObject *proto, DOM::NodeImpl* n)
   : DOMObject(proto), m_impl(n)
 {}
 
@@ -234,7 +234,7 @@ static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml
   return rend;
 }
 
-ValueImp* DOMNode::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
 {
   NodeImpl& node = *impl();
   switch (token) {
@@ -401,7 +401,7 @@ ValueImp* DOMNode::getValueProperty(ExecState *exec, int token) const
 }
 
 
-void DOMNode::put(ExecState *exec, const Identifier& propertyName, ValueImp* value, int attr)
+void DOMNode::put(ExecState *exec, const Identifier& propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "DOMNode::tryPut " << propertyName.qstring();
@@ -410,7 +410,7 @@ void DOMNode::put(ExecState *exec, const Identifier& propertyName, ValueImp* val
                                         &DOMNodeTable, this );
 }
 
-void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/)
+void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /*attr*/)
 {
   DOMExceptionTranslator exception(exec);
   NodeImpl& node = *impl();
@@ -534,7 +534,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
   }
 }
 
-ValueImp* DOMNode::toPrimitive(ExecState *exec, JSType /*preferred*/) const
+JSValue* DOMNode::toPrimitive(ExecState *exec, JSType /*preferred*/) const
 {
   if (m_impl.isNull())
     return jsNull();
@@ -549,12 +549,12 @@ UString DOMNode::toString(ExecState *) const
   return "[object " + className() + "]";	//krazy:exclude=doublequote_chars DOM demands chars
 }
 
-void DOMNode::setListener(ExecState *exec, int eventId, ValueImp* func) const
+void DOMNode::setListener(ExecState *exec, int eventId, JSValue* func) const
 {
   m_impl->setHTMLEventListener(eventId,Window::retrieveActive(exec)->getJSEventListener(func,true));
 }
 
-ValueImp* DOMNode::getListener(int eventId) const
+JSValue* DOMNode::getListener(int eventId) const
 {
   DOM::EventListener *listener = m_impl->getHTMLEventListener(eventId);
   JSEventListener *jsListener = static_cast<JSEventListener*>(listener);
@@ -568,7 +568,7 @@ void DOMNode::pushEventHandlerScope(ExecState *, ScopeChain &) const
 {
 }
 
-ValueImp* DOMNodeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( DOMNode, thisObj );
   DOMExceptionTranslator exception(exec);
@@ -691,18 +691,18 @@ DOMNodeList::~DOMNodeList()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp* DOMNodeList::indexGetter(ExecState *exec, unsigned index)
+JSValue* DOMNodeList::indexGetter(ExecState *exec, unsigned index)
 {
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ValueImp *DOMNodeList::nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
+JSValue *DOMNodeList::nameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   DOMNodeList *thisObj = static_cast<DOMNodeList *>(slot.slotBase());
   return getDOMNode(exec, thisObj->getByName(name));
 }
 
-ValueImp *DOMNodeList::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue *DOMNodeList::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNodeList *thisObj = static_cast<DOMNodeList *>(slot.slotBase());
   return jsNumber(thisObj->m_impl->length());
@@ -735,7 +735,7 @@ bool DOMNodeList::getOwnPropertySlot(ExecState *exec, const Identifier& property
   //including moving nameditem down to nodelists.
 
   // Look in the prototype (for functions) before assuming it's an item's name
-  ObjectImp *proto = prototype()->getObject();
+  JSObject *proto = prototype()->getObject();
   if (proto && proto->hasProperty(exec, propertyName))
     return false;
 
@@ -764,7 +764,7 @@ void DOMNodeList::getPropertyNames(ExecState* exec, PropertyNameArray& propertyN
 }
 
 // Need to support both get and call, so that list[0] and list(0) work.
-ValueImp* DOMNodeList::callAsFunction(ExecState *exec, ObjectImp *, const List &args)
+JSValue* DOMNodeList::callAsFunction(ExecState *exec, JSObject *, const List &args)
 {
   // Do not use thisObj here. See HTMLCollection.
   UString s = args[0]->toString(exec);
@@ -778,7 +778,7 @@ ValueImp* DOMNodeList::callAsFunction(ExecState *exec, ObjectImp *, const List &
   // try lookup by name
   // ### NodeList::namedItem() would be cool to have
   // ### do we need to support the same two arg overload as in HTMLCollection?
-  ValueImp* result = get(exec, Identifier(s));
+  JSValue* result = get(exec, Identifier(s));
 
   if (result)
     return result;
@@ -786,7 +786,7 @@ ValueImp* DOMNodeList::callAsFunction(ExecState *exec, ObjectImp *, const List &
   return jsUndefined();
 }
 
-ValueImp* DOMNodeListProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMNodeListProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNodeList, thisObj );
   DOMNodeList* jsList     = static_cast<DOMNodeList *>(thisObj);
@@ -822,7 +822,7 @@ bool DOMAttr::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName
   return getStaticValueSlot<DOMAttr, DOMNode>(exec, &DOMAttrTable, this, propertyName, slot);
 }
 
-ValueImp* DOMAttr::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMAttr::getValueProperty(ExecState *exec, int token) const
 {
   AttrImpl *attr = static_cast<AttrImpl *>(impl());
   switch (token) {
@@ -838,7 +838,7 @@ ValueImp* DOMAttr::getValueProperty(ExecState *exec, int token) const
   return jsNull(); // not reached
 }
 
-void DOMAttr::put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr)
+void DOMAttr::put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring();
@@ -847,7 +847,7 @@ void DOMAttr::put(ExecState *exec, const Identifier &propertyName, ValueImp* val
                                       &DOMAttrTable, this );
 }
 
-void DOMAttr::putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/)
+void DOMAttr::putValueProperty(ExecState *exec, int token, JSValue* value, int /*attr*/)
 {
   DOMExceptionTranslator exception(exec);
   switch (token) {
@@ -859,7 +859,7 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
   }
 }
 
-AttrImpl *toAttr(ValueImp *val)
+AttrImpl *toAttr(JSValue *val)
 {
     if (!val || !val->isObject(&DOMAttr::info))
         return 0;
@@ -923,7 +923,7 @@ DOMDocument::DOMDocument(ExecState *exec, DOM::DocumentImpl* d)
   setPrototype(DOMDocumentProto::self(exec));
 }
 
-DOMDocument::DOMDocument(ObjectImp *proto, DOM::DocumentImpl* d)
+DOMDocument::DOMDocument(JSObject *proto, DOM::DocumentImpl* d)
   : DOMNode(proto, d)
 {}
 
@@ -936,7 +936,7 @@ bool DOMDocument::getOwnPropertySlot(ExecState *exec, const Identifier& property
     exec, &DOMDocumentTable, this, propertyName, slot);
 }
 
-ValueImp* DOMDocument::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMDocument::getValueProperty(ExecState *exec, int token) const
 {
   DOM::DocumentImpl& doc = *static_cast<DOM::DocumentImpl*>(m_impl.get());
 
@@ -990,7 +990,7 @@ ValueImp* DOMDocument::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-void DOMDocument::put(ExecState *exec, const Identifier& propertyName, ValueImp* value, int attr)
+void DOMDocument::put(ExecState *exec, const Identifier& propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "DOMDocument::tryPut " << propertyName.qstring();
@@ -998,7 +998,7 @@ void DOMDocument::put(ExecState *exec, const Identifier& propertyName, ValueImp*
   lookupPut<DOMDocument,DOMNode>(exec, propertyName, value, attr, &DOMDocumentTable, this );
 }
 
-void DOMDocument::putValueProperty(ExecState *exec, int token, ValueImp* value, int /*attr*/)
+void DOMDocument::putValueProperty(ExecState *exec, int token, JSValue* value, int /*attr*/)
 {
   DOM::DocumentImpl& doc = *static_cast<DOM::DocumentImpl*>(impl());
   switch (token) {
@@ -1013,7 +1013,7 @@ void DOMDocument::putValueProperty(ExecState *exec, int token, ValueImp* value, 
   }
 }
 
-ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMDocument, thisObj );
   DOMExceptionTranslator exception(exec);
@@ -1067,7 +1067,7 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
                                                          0,args[3]->toBoolean(exec), exception));
     }
     else {
-      ObjectImp *obj = args[2]->getObject();
+      JSObject *obj = args[2]->getObject();
       if (obj)
       {
         DOM::CustomNodeFilter *customFilter = new JSNodeFilter(obj);
@@ -1161,11 +1161,11 @@ DOMElement::DOMElement(ExecState *exec, DOM::ElementImpl* e)
     setPrototype(DOMElementProto::self(exec));
 }
 
-DOMElement::DOMElement(ObjectImp *proto, DOM::ElementImpl* e)
+DOMElement::DOMElement(JSObject *proto, DOM::ElementImpl* e)
   : DOMNode(proto, e)
 {}
 
-ValueImp* DOMElement::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMElement::getValueProperty(ExecState *exec, int token) const
 {
   DOM::ElementImpl& element = static_cast<DOM::ElementImpl&>(*m_impl);
   switch( token ) {
@@ -1196,8 +1196,8 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
     return true;
 
   //Check the prototype -before- the attribute thing
-  ValueImp *proto = prototype();
-  if (proto->isObject() && static_cast<ObjectImp *>(proto)->getOwnPropertySlot(exec, propertyName, slot))
+  JSValue *proto = prototype();
+  if (proto->isObject() && static_cast<JSObject *>(proto)->getOwnPropertySlot(exec, propertyName, slot))
     return true;
 
   // Give access to attributes
@@ -1210,7 +1210,7 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   return false;
 }
 
-ValueImp *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   DOMElement *thisObj = static_cast<DOMElement *>(slot.slotBase());
 
@@ -1219,7 +1219,7 @@ ValueImp *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& p
   return getStringOrNull(attr);
 }
 
-ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNode, thisObj ); // node should be enough here, given the cast
   DOMExceptionTranslator exception(exec);
@@ -1274,7 +1274,7 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
   }
 }
 
-DOM::ElementImpl *KJS::toElement(ValueImp *v)
+DOM::ElementImpl *KJS::toElement(JSValue *v)
 {
   DOM::NodeImpl* node = toNode(v);
   if (node && node->isElementNode())
@@ -1282,7 +1282,7 @@ DOM::ElementImpl *KJS::toElement(ValueImp *v)
   return 0;
 }
 
-DOM::AttrImpl *KJS::toAttr(ValueImp *v)
+DOM::AttrImpl *KJS::toAttr(JSValue *v)
 {
   DOM::NodeImpl* node = toNode(v);
   if (node && node->isAttributeNode())
@@ -1317,7 +1317,7 @@ DOMDOMImplementation::~DOMDOMImplementation()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMDOMImplementation, thisObj );
   DOM::DOMImplementationImpl& implementation = *static_cast<DOMDOMImplementation *>( thisObj )->impl();
@@ -1389,7 +1389,7 @@ bool DOMDocumentType::getOwnPropertySlot(ExecState *exec, const Identifier &prop
   return getStaticValueSlot<DOMDocumentType, DOMNode>(exec, &DOMDocumentTypeTable, this, propertyName, slot);
 }
 
-ValueImp* DOMDocumentType::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMDocumentType::getValueProperty(ExecState *exec, int token) const
 {
   DOM::DocumentTypeImpl& type = static_cast<DOM::DocumentTypeImpl&>(*m_impl);
   switch (token) {
@@ -1442,12 +1442,12 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp* DOMNamedNodeMap::indexGetter(ExecState *exec, unsigned index)
+JSValue* DOMNamedNodeMap::indexGetter(ExecState *exec, unsigned index)
 {
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ValueImp *DOMNamedNodeMap::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue *DOMNamedNodeMap::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNamedNodeMap *thisObj = static_cast<DOMNamedNodeMap *>(slot.slotBase());
   return jsNumber(thisObj->m_impl->length());
@@ -1466,7 +1466,7 @@ bool DOMNamedNodeMap::getOwnPropertySlot(ExecState *exec, const Identifier& prop
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp* DOMNamedNodeMapProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMNamedNodeMapProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNamedNodeMap, thisObj );
   DOMExceptionTranslator exception(exec);
@@ -1520,7 +1520,7 @@ bool DOMProcessingInstruction::getOwnPropertySlot(ExecState *exec, const Identif
   return getStaticValueSlot<DOMProcessingInstruction, DOMNode>(exec, &DOMProcessingInstructionTable, this, propertyName, slot);
 }
 
-ValueImp* DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) const
+JSValue* DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) const
 {
   DOM::ProcessingInstructionImpl& pi = *static_cast<DOM::ProcessingInstructionImpl*>(m_impl.get());
   switch (token) {
@@ -1536,7 +1536,7 @@ ValueImp* DOMProcessingInstruction::getValueProperty(ExecState *exec, int token)
   }
 }
 
-void DOMProcessingInstruction::put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr)
+void DOMProcessingInstruction::put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr)
 {
   DOM::ProcessingInstructionImpl& pi = *static_cast<DOM::ProcessingInstructionImpl*>(m_impl.get());
   // Not worth using the hashtable for this one ;)
@@ -1562,7 +1562,7 @@ bool DOMNotation::getOwnPropertySlot(ExecState *exec, const Identifier& property
   return getStaticValueSlot<DOMNotation, DOMNode>(exec, &DOMNotationTable, this, propertyName, slot);
 }
 
-ValueImp* DOMNotation::getValueProperty(ExecState *, int token) const
+JSValue* DOMNotation::getValueProperty(ExecState *, int token) const
 {
   DOM::NotationImpl& nota = *static_cast<DOM::NotationImpl*>(m_impl.get());
   switch (token) {
@@ -1592,7 +1592,7 @@ bool DOMEntity::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
   return getStaticValueSlot<DOMEntity, DOMNode>(exec, &DOMEntityTable, this, propertyName, slot);
 }
 
-ValueImp* DOMEntity::getValueProperty(ExecState *, int token) const
+JSValue* DOMEntity::getValueProperty(ExecState *, int token) const
 {
   DOM::EntityImpl& entity = *static_cast<DOM::EntityImpl*>(m_impl.get());
   switch (token) {
@@ -1622,7 +1622,7 @@ bool KJS::checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n)
   return true;
 }
 
-ValueImp* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
+JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
 {
   DOMObject *ret = 0;
   if (!n)
@@ -1680,17 +1680,17 @@ ValueImp* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
   return ret;
 }
 
-ValueImp* KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m)
+JSValue* KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMapImpl* m)
 {
   return cacheDOMObject<DOM::NamedNodeMapImpl, KJS::DOMNamedNodeMap>(exec, m);
 }
 
-ValueImp* KJS::getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l)
+JSValue* KJS::getDOMNodeList(ExecState *exec, DOM::NodeListImpl* l)
 {
   return cacheDOMObject<DOM::NodeListImpl, KJS::DOMNodeList>(exec, l);
 }
 
-ValueImp* KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i)
+JSValue* KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImpl* i)
 {
   return cacheDOMObject<DOM::DOMImplementationImpl, KJS::DOMDOMImplementation>(exec, i);
 }
@@ -1734,7 +1734,7 @@ bool DOMExceptionConstructor::getOwnPropertySlot(ExecState *exec, const Identifi
   return getStaticValueSlot<DOMExceptionConstructor, DOMObject>(exec, &DOMExceptionConstructorTable, this, propertyName, slot);
 }
 
-ValueImp* DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
+JSValue* DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return jsNumber((unsigned int)token);
@@ -1777,7 +1777,7 @@ ValueImp* DOMExceptionConstructor::getValueProperty(ExecState *, int token) cons
 #endif
 }
 
-ObjectImp *KJS::getDOMExceptionConstructor(ExecState *exec)
+JSObject *KJS::getDOMExceptionConstructor(ExecState *exec)
 {
   return cacheGlobalObject<DOMExceptionConstructor>(exec, "[[DOMException.constructor]]");
 }
@@ -1801,12 +1801,12 @@ DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QList<Sh
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
 }
 
-ValueImp* DOMNamedNodesCollection::indexGetter(ExecState *exec, unsigned index)
+JSValue* DOMNamedNodesCollection::indexGetter(ExecState *exec, unsigned index)
 {
   return getDOMNode(exec, m_nodes[index].get());
 }
 
-ValueImp *DOMNamedNodesCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue *DOMNamedNodesCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   DOMNamedNodesCollection *thisObj = static_cast<DOMNamedNodesCollection *>(slot.slotBase());
   return jsNumber(thisObj->m_nodes.size());
@@ -1864,7 +1864,7 @@ bool DOMCharacterData::getOwnPropertySlot(ExecState *exec, const Identifier& pro
   return getStaticValueSlot<DOMCharacterData, DOMNode>(exec, &DOMCharacterDataTable, this, propertyName, slot);
 }
 
-ValueImp* DOMCharacterData::getValueProperty(ExecState *, int token) const
+JSValue* DOMCharacterData::getValueProperty(ExecState *, int token) const
 {
   DOM::CharacterDataImpl& data = *impl();
   switch (token) {
@@ -1878,7 +1878,7 @@ ValueImp* DOMCharacterData::getValueProperty(ExecState *, int token) const
   }
 }
 
-void DOMCharacterData::put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr)
+void DOMCharacterData::put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr)
 {
   if (propertyName == "data") {
     DOMExceptionTranslator exception(exec);
@@ -1887,7 +1887,7 @@ void DOMCharacterData::put(ExecState *exec, const Identifier &propertyName, Valu
     DOMNode::put(exec, propertyName,value,attr);
 }
 
-ValueImp* DOMCharacterDataProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMCharacterDataProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMCharacterData, thisObj );
   DOM::CharacterDataImpl& data = *static_cast<DOMCharacterData *>(thisObj)->impl();
@@ -1937,7 +1937,7 @@ DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
 
 
 
-ValueImp* DOMTextProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* DOMTextProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMText, thisObj );
   DOM::TextImpl& text = *static_cast<DOMText *>(thisObj)->impl();

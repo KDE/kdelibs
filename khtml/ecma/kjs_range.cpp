@@ -79,7 +79,7 @@ bool DOMRange::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNam
   return getStaticValueSlot<DOMRange, DOMObject>(exec, &DOMRangeTable, this, propertyName, slot);
 }
 
-ValueImp *DOMRange::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMRange::getValueProperty(ExecState *exec, int token) const
 {
   DOMExceptionTranslator exception(exec);
   DOM::RangeImpl &range = *m_impl;
@@ -104,13 +104,13 @@ ValueImp *DOMRange::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMRangeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMRange, thisObj);
   DOMExceptionTranslator exception(exec);
   DOM::RangeImpl &range = *static_cast<DOMRange *>(thisObj)->impl();
   
-  ValueImp *result = jsUndefined();
+  JSValue *result = jsUndefined();
 
   switch (id) {
     case DOMRange::SetStart:
@@ -168,7 +168,7 @@ ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       range.detach(exception);
       break;
     case DOMRange::CreateContextualFragment:
-      ValueImp *value = args[0];
+      JSValue *value = args[0];
       DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
       DOM::DocumentFragment frag = range.createContextualFragment(str, exception);
       result = getDOMNode(exec, frag.handle());
@@ -178,7 +178,7 @@ ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   return result;
 }
 
-ValueImp *KJS::getDOMRange(ExecState *exec, DOM::RangeImpl* r)
+JSValue *KJS::getDOMRange(ExecState *exec, DOM::RangeImpl* r)
 {
   return cacheDOMObject<DOM::RangeImpl, KJS::DOMRange>(exec, r);
 }
@@ -205,20 +205,20 @@ bool RangeConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& pro
   return getStaticValueSlot<RangeConstructor,DOMObject>(exec, &RangeConstructorTable, this, propertyName, slot);
 }
 
-ValueImp *RangeConstructor::getValueProperty(ExecState *, int token) const
+JSValue *RangeConstructor::getValueProperty(ExecState *, int token) const
 {
   return jsNumber(token);
 }
 
-ValueImp *KJS::getRangeConstructor(ExecState *exec)
+JSValue *KJS::getRangeConstructor(ExecState *exec)
 {
   return cacheGlobalObject<RangeConstructor>(exec, "[[range.constructor]]");
 }
 
 
-DOM::RangeImpl* KJS::toRange(ValueImp *val)
+DOM::RangeImpl* KJS::toRange(JSValue *val)
 {
-  ObjectImp *obj = val->getObject();
+  JSObject *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMRange::info))
     return 0;
 

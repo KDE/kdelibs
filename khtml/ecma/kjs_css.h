@@ -39,8 +39,8 @@ namespace KJS {
     DOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* s);
     virtual ~DOMCSSStyleDeclaration();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    ValueImp *getValueProperty(ExecState *exec, int token);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
+    JSValue *getValueProperty(ExecState *exec, int token);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -50,15 +50,15 @@ namespace KJS {
            
     DOM::CSSStyleDeclarationImpl *impl() const { return m_impl.get(); }
 
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   private:
-    static ValueImp *cssPropertyGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *cssPropertyGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
 
     SharedPtr<DOM::CSSStyleDeclarationImpl> m_impl;
   };
 
   DEFINE_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor)
-  ValueImp* getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* n);
+  JSValue* getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclarationImpl* n);
 
   class DOMStyleSheet : public DOMObject {
   public:
@@ -67,8 +67,8 @@ namespace KJS {
     virtual ~DOMStyleSheet();
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    JSValue* getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -77,16 +77,16 @@ namespace KJS {
     SharedPtr<DOM::StyleSheetImpl> m_impl;
   };
 
-  ValueImp* getDOMStyleSheet(ExecState *exec, DOM::StyleSheetImpl* ss);
+  JSValue* getDOMStyleSheet(ExecState *exec, DOM::StyleSheetImpl* ss);
 
   class DOMStyleSheetList : public DOMObject {
   public:
     DOMStyleSheetList(ExecState *, DOM::StyleSheetListImpl* ssl, DOM::DocumentImpl* doc);
     virtual ~DOMStyleSheetList();
 
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List &args);
+    virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List &args);
     virtual bool implementsCall() const { return true; }
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -95,16 +95,16 @@ namespace KJS {
     
     DOM::StyleSheetListImpl* impl() const { return m_impl.get(); }
     enum { Item, Length };
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   private:
-    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
   
     SharedPtr<DOM::StyleSheetListImpl> m_impl;
     SharedPtr<DOM::DocumentImpl>       m_doc;
   };
 
   // The document is only used for get-stylesheet-by-name (make optional if necessary)
-  ValueImp* getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetListImpl* ss, DOM::DocumentImpl* doc);
+  JSValue* getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetListImpl* ss, DOM::DocumentImpl* doc);
 
   class DOMMediaList : public DOMObject {
   public:
@@ -112,26 +112,26 @@ namespace KJS {
     virtual ~DOMMediaList();
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    JSValue* getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState* ) const { return true; }
     static const ClassInfo info;
     enum { MediaText, Length,
            Item, DeleteMedium, AppendMedium };
     DOM::MediaListImpl* impl() const { return m_impl.get(); }
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   private:
     SharedPtr<DOM::MediaListImpl> m_impl;
   };
 
-  ValueImp* getDOMMediaList(ExecState *exec, DOM::MediaListImpl* ss);
+  JSValue* getDOMMediaList(ExecState *exec, DOM::MediaListImpl* ss);
 
   class DOMCSSStyleSheet : public DOMStyleSheet {
   public:
     DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheetImpl* ss);
     virtual ~DOMCSSStyleSheet();
-    ValueImp* getValueProperty(ExecState *exec, int token);
+    JSValue* getValueProperty(ExecState *exec, int token);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -145,29 +145,29 @@ namespace KJS {
   public:
     DOMCSSRuleList(ExecState *, DOM::CSSRuleListImpl* rl);
     virtual ~DOMCSSRuleList();
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Item, Length };
     DOM::CSSRuleListImpl* impl() const { return m_impl.get(); }
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   protected:
     SharedPtr<DOM::CSSRuleListImpl> m_impl;
   private:
   };
 
-  ValueImp* getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleListImpl* rl);
+  JSValue* getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleListImpl* rl);
 
   class DOMCSSRule : public DOMObject {
   public:
     DOMCSSRule(ExecState *, DOM::CSSRuleImpl* r);
     virtual ~DOMCSSRule();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp* value, int attr);
+    JSValue* getValueProperty(ExecState *exec, int token) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
+    void putValueProperty(ExecState *exec, int token, JSValue* value, int attr);
     virtual const ClassInfo* classInfo() const;
     static const ClassInfo info;
     static const ClassInfo style_info, media_info, fontface_info, page_info, import_info, charset_info;
@@ -177,34 +177,34 @@ namespace KJS {
            FontFace_Style, Page_SelectorText, Page_Style,
            Import_Href, Import_Media, Import_StyleSheet, Charset_Encoding };
     DOM::CSSRuleImpl* impl() const { return m_impl.get(); }
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   protected:
     SharedPtr<DOM::CSSRuleImpl> m_impl;
   };
 
-  ValueImp* getDOMCSSRule(ExecState *exec, DOM::CSSRuleImpl* r);
+  JSValue* getDOMCSSRule(ExecState *exec, DOM::CSSRuleImpl* r);
 
   // Constructor for CSSRule - currently only used for some global values
   class CSSRuleConstructor : public DOMObject {
   public:
     CSSRuleConstructor(ExecState *);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { UNKNOWN_RULE, STYLE_RULE, CHARSET_RULE, IMPORT_RULE, MEDIA_RULE, FONT_FACE_RULE, PAGE_RULE };
   };
 
-  ValueImp* getCSSRuleConstructor(ExecState *exec);
+  JSValue* getCSSRuleConstructor(ExecState *exec);
 
   class DOMCSSValue : public DOMObject {
   public:
     DOMCSSValue(ExecState *, DOM::CSSValueImpl* v);
     virtual ~DOMCSSValue();
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { CssText, CssValueType };
@@ -212,26 +212,26 @@ namespace KJS {
     SharedPtr<DOM::CSSValueImpl> m_impl;
   };
 
-  ValueImp* getDOMCSSValue(ExecState *exec, DOM::CSSValueImpl* v);
+  JSValue* getDOMCSSValue(ExecState *exec, DOM::CSSValueImpl* v);
 
   // Constructor for CSSValue - currently only used for some global values
   class CSSValueConstructor : public DOMObject {
   public:
     CSSValueConstructor(ExecState *exec);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { CSS_VALUE_LIST, CSS_PRIMITIVE_VALUE, CSS_CUSTOM, CSS_INHERIT };
   };
 
-  ValueImp* getCSSValueConstructor(ExecState *exec);
+  JSValue* getCSSValueConstructor(ExecState *exec);
 
   class DOMCSSPrimitiveValue : public DOMCSSValue {
   public:
     DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveValueImpl* v);
-    ValueImp *getValueProperty(ExecState *exec, int token);
+    JSValue *getValueProperty(ExecState *exec, int token);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -246,13 +246,13 @@ namespace KJS {
   public:
     CSSPrimitiveValueConstructor(ExecState *exec) : CSSValueConstructor(exec) { }
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  ValueImp* getCSSPrimitiveValueConstructor(ExecState *exec);
+  JSValue* getCSSPrimitiveValueConstructor(ExecState *exec);
 
   class DOMCSSValueList : public DOMCSSValue {
   public:
@@ -263,14 +263,14 @@ namespace KJS {
     static const ClassInfo info;
     enum { Item, Length };
     DOM::CSSValueListImpl* impl() const { return static_cast<DOM::CSSValueListImpl*>(m_impl.get()); }
-    ValueImp *indexGetter(ExecState* exec, unsigned index);
+    JSValue *indexGetter(ExecState* exec, unsigned index);
   };
 
   class DOMRGBColor : public DOMObject {
   public:
     DOMRGBColor(ExecState* exec, QRgb color);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -279,14 +279,14 @@ namespace KJS {
     QRgb m_color;
   };
 
-  ValueImp *getDOMRGBColor(ExecState *exec, unsigned color);
+  JSValue *getDOMRGBColor(ExecState *exec, unsigned color);
 
   class DOMRect : public DOMObject {
   public:
     DOMRect(ExecState *, DOM::RectImpl *r);
     ~DOMRect();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -295,14 +295,14 @@ namespace KJS {
     SharedPtr<DOM::RectImpl> m_impl;
   };
 
-  ValueImp *getDOMRect(ExecState *exec, DOM::RectImpl *r);
+  JSValue *getDOMRect(ExecState *exec, DOM::RectImpl *r);
 
   class DOMCounter : public DOMObject {
   public:
     DOMCounter(ExecState *, DOM::CounterImpl *c);
     ~DOMCounter();
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -311,7 +311,7 @@ namespace KJS {
     SharedPtr<DOM::CounterImpl> m_impl;
   };
 
-  ValueImp *getDOMCounter(ExecState *exec, DOM::CounterImpl *c);
+  JSValue *getDOMCounter(ExecState *exec, DOM::CounterImpl *c);
 } // namespace
 
 #endif

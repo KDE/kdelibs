@@ -52,11 +52,11 @@ bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifi
 #ifdef KJS_VERBOSE
   kDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii();
 #endif
-  return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,ObjectImp>
+  return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,JSObject>
             (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
 }
 
-ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
+JSValue *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) const
 {
   Q_UNUSED(exec);
   switch (token) {
@@ -66,7 +66,7 @@ ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) 
   }
 }
 
-ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::MozillaSidebarExtension, thisObj );
   MozillaSidebarExtension *mse = static_cast<MozillaSidebarExtension*>(thisObj);

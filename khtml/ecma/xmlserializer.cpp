@@ -42,7 +42,7 @@ KJS_IMPLEMENT_PROTOFUNC(XMLSerializerProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("XMLSerializer", XMLSerializerProto,XMLSerializerProtoFunc)
 
 XMLSerializerConstructorImp::XMLSerializerConstructorImp(ExecState *)
-    : ObjectImp()
+    : JSObject()
 {
 }
 
@@ -51,7 +51,7 @@ bool XMLSerializerConstructorImp::implementsConstruct() const
   return true;
 }
 
-ObjectImp *XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
+JSObject *XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
 {
   return new XMLSerializer(exec);
 }
@@ -63,7 +63,7 @@ XMLSerializer::XMLSerializer(ExecState *exec)
   setPrototype(XMLSerializerProto::self(exec));
 }
 
-ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( XMLSerializer, thisObj );
 
@@ -89,7 +89,7 @@ ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
       try {
 	  body = node->toString().string();
       } catch(DOM::DOMException& e) {
-	  ObjectImp *err = Error::create(exec, GeneralError, "Exception serializing document");
+	  JSObject *err = Error::create(exec, GeneralError, "Exception serializing document");
 	  exec->setException(err);
 	  return err;
       }

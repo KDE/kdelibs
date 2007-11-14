@@ -627,7 +627,7 @@ void KJSDebugWin::slotEval()
   // use the current context - otherwise, use the global execution state from the interpreter
   // corresponding to the currently displayed source file.
   ExecState *exec;
-  ObjectImp *thisobj;
+  JSObject *thisobj;
   if (m_execStates.isEmpty()) {
     if (m_sourceSel->currentIndex() < 0)
       return;
@@ -651,18 +651,18 @@ void KJSDebugWin::slotEval()
 
   Interpreter *interp = exec->interpreter();
 
-  ObjectImp *obj = interp->globalObject()->get(exec, "eval")->getObject();
+  JSObject *obj = interp->globalObject()->get(exec, "eval")->getObject();
   List args;
   args.append(String(code));
 
   m_evalDepth++;
-  ValueImp *retval = obj->call(exec, thisobj, args);
+  JSValue *retval = obj->call(exec, thisobj, args);
   m_evalDepth--;
   guard.stop();
 
   // Print the return value or exception message to the console
   if (exec->hadException()) {
-    ValueImp *exc = exec->exception();
+    JSValue *exc = exec->exception();
     exec->clearException();
     msg = "Exception: " + exc->toString(interp->globalExec()).qstring();
   }
@@ -818,7 +818,7 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState *exec, int sourceId)
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
+bool KJSDebugWin::exception(ExecState *exec, JSValue *value, bool inTryCatch)
 {
   assert(value);
 
@@ -838,10 +838,10 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
   // Syntax errors are a special case. For these we want to display the url & lineno,
   // which isn't included in the exception messeage. So we work it out from the values
   // passed to sourceParsed()
-  ObjectImp *valueObj = value->getObject();;
-  ObjectImp *syntaxError = exec->interpreter()->builtinSyntaxError();
+  JSObject *valueObj = value->getObject();;
+  JSObject *syntaxError = exec->interpreter()->builtinSyntaxError();
   if (valueObj && valueObj->get(exec,"constructor") == syntaxError) {
-    ValueImp *sidValue = valueObj->get(exec,"sid");
+    JSValue *sidValue = valueObj->get(exec,"sid");
     if (sidValue->type() == NumberType) { // sid is not set for Function() constructor
       int sourceId = (int)sidValue->toNumber(exec);
       assert(m_sourceFragments[sourceId]);

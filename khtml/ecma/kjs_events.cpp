@@ -40,7 +40,7 @@ using namespace DOM;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(ObjectImp *_listener, ObjectImp *_compareListenerImp, ObjectImp *_win, bool _html)
+JSEventListener::JSEventListener(JSObject *_listener, JSObject *_compareListenerImp, JSObject *_win, bool _html)
   : listener( _listener ), compareListenerImp( _compareListenerImp ), html( _html ), win( _win )
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
@@ -78,7 +78,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     args.append(getDOMEvent(exec,evt.handle()));
 
     // Set "this" to the event's current target
-    ObjectImp *thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
+    JSObject *thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
     if ( !thisObj ) {
       // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
       // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
@@ -92,7 +92,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     interpreter->setCurrentEvent( &evt );
 
     interpreter->startCPUGuard();
-    ValueImp *retval = listener->call(exec, thisObj, args);
+    JSValue *retval = listener->call(exec, thisObj, args);
     interpreter->stopCPUGuard();
 
     window->setCurrentEvent( 0 );
@@ -118,12 +118,12 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_JSEventListener";
 }
 
-ObjectImp *JSEventListener::listenerObj() const
+JSObject *JSEventListener::listenerObj() const
 {
   return listener;
 }
 
-JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, ObjectImp *_win, DOM::NodeImpl* _originalNode)
+JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, JSObject *_win, DOM::NodeImpl* _originalNode)
   : JSEventListener(0, 0, _win, true), code(_code), name(_name), parsed(false)
 {
   // We don't retain the original node, because we assume it
@@ -151,7 +151,7 @@ void JSLazyEventListener::handleEvent(DOM::Event &evt)
 }
 
 
-ObjectImp *JSLazyEventListener::listenerObj() const
+JSObject *JSLazyEventListener::listenerObj() const
 {
   parseCode();
   return listener;
@@ -170,7 +170,7 @@ void JSLazyEventListener::parseCode() const
       ExecState *exec = interpreter->globalExec();
 
       //KJS::Constructor constr(KJS::Global::current().get("Function").imp());
-      KJS::ObjectImp *constr = interpreter->builtinFunction();
+      KJS::JSObject *constr = interpreter->builtinFunction();
       KJS::List args;
 
       static KJS::UString eventString("event");
@@ -196,7 +196,7 @@ void JSLazyEventListener::parseCode() const
           // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
           ScopeChain scope = declFunc->scope();
 
-          ObjectImp *thisObj = getDOMNode(exec, originalNode)->getObject();
+          JSObject *thisObj = getDOMNode(exec, originalNode)->getObject();
 
           if (thisObj) {
             static_cast<DOMNode*>(thisObj)->pushEventHandlerScope(exec, scope);
@@ -249,7 +249,7 @@ DOMEvent::DOMEvent(ExecState *exec, DOM::EventImpl* e)
   setPrototype(DOMEventProto::self(exec));
 }
 
-DOMEvent::DOMEvent(ObjectImp *proto, DOM::EventImpl* e):
+DOMEvent::DOMEvent(JSObject *proto, DOM::EventImpl* e):
   m_impl(e) {
   setPrototype(proto);
 }
@@ -269,7 +269,7 @@ bool DOMEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNam
   return getStaticValueSlot<DOMEvent, DOMObject>(exec,&DOMEventTable,this,propertyName,slot);
 }
 
-ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMEvent::getValueProperty(ExecState *exec, int token) const
 {
   DOM::EventImpl& event = *impl();
   switch (token) {
@@ -299,7 +299,7 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::JSType hint) const
+JSValue *DOMEvent::defaultValue(ExecState *exec, KJS::JSType hint) const
 {
   if (m_impl->id() == EventImpl::ERROR_EVENT && !m_impl->message().isNull()) {
     return jsString(m_impl->message());
@@ -309,13 +309,13 @@ ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::JSType hint) const
 }
 
 void DOMEvent::put(ExecState *exec, const Identifier &propertyName,
-                      ValueImp *value, int attr)
+                      JSValue *value, int attr)
 {
   lookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
                                           &DOMEventTable, this);
 }
 
-void DOMEvent::putValueProperty(ExecState *exec, int token, ValueImp *value, int)
+void DOMEvent::putValueProperty(ExecState *exec, int token, JSValue *value, int)
 {
   switch (token) {
   case ReturnValue: // MSIE equivalent for "preventDefault" (but with a way to reset it)
@@ -331,7 +331,7 @@ void DOMEvent::putValueProperty(ExecState *exec, int token, ValueImp *value, int
   }
 }
 
-ValueImp *DOMEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMEvent, thisObj );
   DOM::EventImpl& event = *static_cast<DOMEvent *>( thisObj )->impl();
@@ -349,7 +349,7 @@ ValueImp *DOMEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   return jsUndefined();
 }
 
-ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
+JSValue *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
 {
   if (!ei)
     return jsNull();
@@ -375,9 +375,9 @@ ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
   return ret;
 }
 
-DOM::EventImpl* KJS::toEvent(ValueImp *val)
+DOM::EventImpl* KJS::toEvent(JSValue *val)
 {
-  ObjectImp *obj = val->getObject();
+  JSObject *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMEvent::info))
     return 0;
 
@@ -433,13 +433,13 @@ bool EventExceptionConstructor::getOwnPropertySlot(ExecState *exec, const Identi
   return getStaticValueSlot<EventExceptionConstructor, DOMObject>(exec,&EventExceptionConstructorTable,this,propertyName,slot);
 }
 
-ValueImp *EventExceptionConstructor::getValueProperty(ExecState *, int token) const
+JSValue *EventExceptionConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return jsNumber(token);
 }
 
-ValueImp *KJS::getEventExceptionConstructor(ExecState *exec)
+JSValue *KJS::getEventExceptionConstructor(ExecState *exec)
 {
   return cacheGlobalObject<EventExceptionConstructor>(exec, "[[eventException.constructor]]");
 }
@@ -470,7 +470,7 @@ KJS_IMPLEMENT_PROTOTYPE("DOMUIEvent",DOMUIEventProto,DOMUIEventProtoFunc)
 DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue) :
   DOMEvent(DOMUIEventProto::self(exec), ue) {}
 
-DOMUIEvent::DOMUIEvent(ObjectImp *proto, DOM::UIEventImpl* ue) :
+DOMUIEvent::DOMUIEvent(JSObject *proto, DOM::UIEventImpl* ue) :
   DOMEvent(proto, ue) {}
 
 DOMUIEvent::~DOMUIEvent()
@@ -482,7 +482,7 @@ bool DOMUIEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   return getStaticValueSlot<DOMUIEvent, DOMEvent>(exec,&DOMUIEventTable,this,propertyName,slot);
 }
 
-ValueImp *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
 {
   DOM::UIEventImpl& event = *impl();
   switch (token) {
@@ -517,7 +517,7 @@ ValueImp *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMUIEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMUIEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMUIEvent, thisObj );
   DOM::UIEventImpl& uiEvent = *static_cast<DOMUIEvent *>(thisObj)->impl();
@@ -582,7 +582,7 @@ bool DOMMouseEvent::getOwnPropertySlot(ExecState *exec, const Identifier& proper
   return getStaticValueSlot<DOMMouseEvent, DOMUIEvent>(exec,&DOMMouseEventTable,this,propertyName,slot);
 }
 
-ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 {
   DOM::MouseEventImpl& event = *impl();
   switch (token) {
@@ -661,7 +661,7 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMMouseEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMMouseEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMMouseEvent, thisObj );
   DOM::MouseEventImpl& mouseEvent = *static_cast<DOMMouseEvent *>(thisObj)->impl();
@@ -702,7 +702,7 @@ const ClassInfo DOMKeyEventBase::info = { "KeyEventBase", &DOMUIEvent::info, &DO
 @end
 */
 
-DOMKeyEventBase::DOMKeyEventBase(ObjectImp* proto, DOM::KeyEventBaseImpl* ke) :
+DOMKeyEventBase::DOMKeyEventBase(JSObject* proto, DOM::KeyEventBaseImpl* ke) :
   DOMUIEvent(proto, ke) {}
 
 DOMKeyEventBase::~DOMKeyEventBase()
@@ -716,7 +716,7 @@ bool DOMKeyEventBase::getOwnPropertySlot(ExecState *exec, const Identifier& prop
   return getStaticValueSlot<DOMKeyEventBase, DOMUIEvent>(exec,&DOMKeyEventBaseTable,this,propertyName,slot);
 }
 
-ValueImp* DOMKeyEventBase::getValueProperty(ExecState *, int token) const
+JSValue* DOMKeyEventBase::getValueProperty(ExecState *, int token) const
 {
   DOM::KeyEventBaseImpl* tevent = impl();
   switch (token) {
@@ -772,7 +772,7 @@ bool DOMTextEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propert
 }
 
 
-ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
+JSValue *DOMTextEvent::getValueProperty(ExecState *, int token) const
 {
   DOM::TextEventImpl& tevent = *impl();
   switch (token) {
@@ -784,7 +784,7 @@ ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
   }
 }
 
-ValueImp *DOMTextEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMTextEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMTextEvent, thisObj );
   DOM::TextEventImpl& keyEvent = *static_cast<DOMTextEvent *>(thisObj)->impl();
@@ -832,7 +832,7 @@ bool DOMKeyboardEvent::getOwnPropertySlot(ExecState *exec, const Identifier& pro
   return getStaticValueSlot<DOMKeyboardEvent, DOMKeyEventBase>(exec,&DOMKeyboardEventTable,this,propertyName,slot);
 }
 
-ValueImp* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
+JSValue* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
 {
   DOM::KeyboardEventImpl* tevent = impl();
   switch (token) {
@@ -846,7 +846,7 @@ ValueImp* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
   }
 }
 
-ValueImp* DOMKeyboardEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp* thisObj, const List &args)
+JSValue* DOMKeyboardEventProtoFunc::callAsFunction(ExecState *exec, JSObject* thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMKeyboardEvent, thisObj );
   DOM::KeyboardEventImpl* keyEvent = static_cast<DOMKeyboardEvent *>(thisObj)->impl();
@@ -889,13 +889,13 @@ bool KeyboardEventConstructor::getOwnPropertySlot(ExecState *exec, const Identif
   return getStaticValueSlot<KeyboardEventConstructor, DOMObject>(exec,&KeyboardEventConstructorTable,this,propertyName,slot);
 }
 
-ValueImp* KeyboardEventConstructor::getValueProperty(ExecState *, int token) const
+JSValue* KeyboardEventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return jsNumber(token);
 }
 
-ValueImp* KJS::getKeyboardEventConstructor(ExecState *exec)
+JSValue* KJS::getKeyboardEventConstructor(ExecState *exec)
 {
   return cacheGlobalObject<KeyboardEventConstructor>(exec, "[[keyboardEvent.constructor]]");
 }
@@ -920,13 +920,13 @@ bool MutationEventConstructor::getOwnPropertySlot(ExecState *exec, const Identif
   return getStaticValueSlot<MutationEventConstructor, DOMObject>(exec,&MutationEventConstructorTable,this,propertyName,slot);
 }
 
-ValueImp *MutationEventConstructor::getValueProperty(ExecState *, int token) const
+JSValue *MutationEventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
   return jsNumber(token);
 }
 
-ValueImp *KJS::getMutationEventConstructor(ExecState *exec)
+JSValue *KJS::getMutationEventConstructor(ExecState *exec)
 {
   return cacheGlobalObject<MutationEventConstructor>(exec, "[[mutationEvent.constructor]]");
 }
@@ -962,7 +962,7 @@ bool DOMMutationEvent::getOwnPropertySlot(ExecState *exec, const Identifier& pro
   return getStaticValueSlot<DOMMutationEvent, DOMEvent>(exec,&DOMMutationEventTable,this,propertyName,slot);
 }
 
-ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
 {
   DOM::MutationEventImpl& event = *impl();
   switch (token) {
@@ -984,7 +984,7 @@ ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMMutationEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *DOMMutationEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMMutationEvent, thisObj );
   DOM::MutationEventImpl& mutationEvent = *static_cast<DOMMutationEvent *>(thisObj)->impl();

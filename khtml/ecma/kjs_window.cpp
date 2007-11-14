@@ -78,13 +78,13 @@ using namespace KJS;
 
 namespace KJS {
 
-  class History : public ObjectImp {
+  class History : public JSObject {
     friend class HistoryFunc;
   public:
     History(ExecState *exec, KHTMLPart *p)
-      : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
+      : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
+    JSValue *getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
@@ -92,11 +92,11 @@ namespace KJS {
     QPointer<KHTMLPart> part;
   };
 
-  class External : public ObjectImp {
+  class External : public JSObject {
     friend class ExternalFunc;
   public:
     External(ExecState *exec, KHTMLPart *p)
-      : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
+      : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -106,20 +106,20 @@ namespace KJS {
   };
 
 
-  class FrameArray : public ObjectImp {
+  class FrameArray : public JSObject {
   public:
     FrameArray(ExecState *exec, KHTMLPart *p)
-      : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
+      : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token);
+    JSValue *getValueProperty(ExecState *exec, int token);
     virtual UString toString(ExecState *exec) const;
     enum { Length, Location };
-    ValueImp *indexGetter(ExecState *, unsigned index);
-    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+    JSValue *indexGetter(ExecState *, unsigned index);
+    virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
     virtual bool implementsCall() const { return true; }
   private:
-    static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-    static ValueImp *nameFallBackGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
+    static JSValue *nameFallBackGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
@@ -152,17 +152,17 @@ const ClassInfo Screen::info = { "Screen", 0, &ScreenTable, 0 };
 
 // We set the object prototype so that toString is implemented
 Screen::Screen(ExecState *exec)
-  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()) {}
+  : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {}
 
 bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Screen::getPropertyName " << propertyName.qstring();
 #endif
-  return getStaticValueSlot<Screen, ObjectImp>(exec, &ScreenTable, this, propertyName, slot);
+  return getStaticValueSlot<Screen, JSObject>(exec, &ScreenTable, this, propertyName, slot);
 }
 
-ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
+JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 {
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->widget();
   QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
@@ -406,7 +406,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(khtml::ChildFrame *p)
-  : ObjectImp(/*no proto*/), m_frame(p), screen(0), history(0), external(0), m_frames(0), loc(0), m_evt(0)
+  : JSObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), m_frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();
@@ -419,7 +419,7 @@ Window::~Window()
 
 Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
 {
-  ObjectImp *obj = retrieve( p )->getObject();
+  JSObject *obj = retrieve( p )->getObject();
 #ifndef NDEBUG
   // obj should never be null, except when javascript has been disabled in that part.
   KHTMLPart *part = qobject_cast<KHTMLPart*>(p);
@@ -438,7 +438,7 @@ Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
 
 Window *Window::retrieveActive(ExecState *exec)
 {
-  ValueImp *imp = exec->dynamicInterpreter()->globalObject();
+  JSValue *imp = exec->dynamicInterpreter()->globalObject();
   assert( imp );
 #ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
@@ -446,7 +446,7 @@ Window *Window::retrieveActive(ExecState *exec)
   return static_cast<KJS::Window*>(imp);
 }
 
-ValueImp *Window::retrieve(KParts::ReadOnlyPart *p)
+JSValue *Window::retrieve(KParts::ReadOnlyPart *p)
 {
   assert(p);
   KHTMLPart * part = qobject_cast<KHTMLPart*>(p);
@@ -477,7 +477,7 @@ Location *Window::location() const
   return loc;
 }
 
-ObjectImp* Window::frames( ExecState* exec ) const
+JSObject* Window::frames( ExecState* exec ) const
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (part)
@@ -489,7 +489,7 @@ ObjectImp* Window::frames( ExecState* exec ) const
 // reference our special objects during garbage collection
 void Window::mark()
 {
-  ObjectImp::mark();
+  JSObject::mark();
   if (screen && !screen->marked())
     screen->mark();
   if (history && !history->marked())
@@ -535,7 +535,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   }
 
   // Look for overrides first
-  ValueImp **val = getDirectLocation(propertyName);
+  JSValue **val = getDirectLocation(propertyName);
   if (val) {
     if (isSafeScript(exec))
       slot.setValueSlot(this, val);
@@ -653,7 +653,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   kDebug(6070) << "WARNING: Window::get property not found: " << propertyName.qstring();
 #endif
 
-  return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)
@@ -668,7 +668,7 @@ KParts::ReadOnlyPart* Window::frameByIndex(unsigned i)
   return 0;
 }
 
-ValueImp* Window::indexGetter(ExecState *exec, unsigned index)
+JSValue* Window::indexGetter(ExecState *exec, unsigned index)
 {
   KParts::ReadOnlyPart* frame = frameByIndex(index);
   if (frame)
@@ -676,7 +676,7 @@ ValueImp* Window::indexGetter(ExecState *exec, unsigned index)
   return jsUndefined(); //### ?
 }
 
-ValueImp *Window::framePartGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *Window::framePartGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   Window* thisObj = static_cast<Window*>(slot.slotBase());
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
@@ -684,7 +684,7 @@ ValueImp *Window::framePartGetter(ExecState *exec, JSObject*, const Identifier& 
   return thisObj->retrieve(rop);
 }
 
-ValueImp *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& p, const PropertySlot& slot)
+JSValue *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& p, const PropertySlot& slot)
 {
   Window* thisObj = static_cast<Window*>(slot.slotBase());
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
@@ -712,7 +712,7 @@ ValueImp *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& 
   return getDOMNode(exec, element);
 }
 
-ValueImp* Window::getValueProperty(ExecState *exec, int token) const
+JSValue* Window::getValueProperty(ExecState *exec, int token) const
 {
   KHTMLPart *part = m_frame.isNull() ? 0 : qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part) {
@@ -945,7 +945,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
     case _Navigator:
     case ClientInformation: {
       // Store the navigator in the object so we get the same one each time.
-      ValueImp *nav( new Navigator(exec, part) );
+      JSValue *nav( new Navigator(exec, part) );
       const_cast<Window *>(this)->put(exec, "navigator", nav, DontDelete|ReadOnly|Internal);
       const_cast<Window *>(this)->put(exec, "clientInformation", nav, DontDelete|ReadOnly|Internal);
       return nav;
@@ -1065,7 +1065,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
   return jsUndefined();
 }
 
-void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *value, int attr)
+void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   // we don't want any operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
@@ -1074,12 +1074,12 @@ void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *valu
   }
 
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
-  // If yes, save time and jump directly to ObjectImp.
+  // If yes, save time and jump directly to JSObject.
   if ( (attr != None && attr != DontDelete) ||
        // Same thing if we have a local override (e.g. "var location")
-       ( isSafeScript( exec ) && ObjectImp::getDirect(propertyName) ) )
+       ( isSafeScript( exec ) && JSObject::getDirect(propertyName) ) )
   {
-    ObjectImp::put( exec, propertyName, value, attr );
+    JSObject::put( exec, propertyName, value, attr );
     return;
   }
 
@@ -1222,7 +1222,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, ValueImp *valu
     return;
   if (isSafeScript(exec)) {
     //kDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring();
-    ObjectImp::put(exec, propertyName, value, attr);
+    JSObject::put(exec, propertyName, value, attr);
   }
 }
 
@@ -1336,7 +1336,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
   return false;
 }
 
-void Window::setListener(ExecState *exec, int eventId, ValueImp *func)
+void Window::setListener(ExecState *exec, int eventId, JSValue *func)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
@@ -1348,7 +1348,7 @@ void Window::setListener(ExecState *exec, int eventId, ValueImp *func)
   doc->setHTMLWindowEventListener(eventId,getJSEventListener(func,true));
 }
 
-ValueImp *Window::getListener(ExecState *exec, int eventId) const
+JSValue *Window::getListener(ExecState *exec, int eventId) const
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
@@ -1365,7 +1365,7 @@ ValueImp *Window::getListener(ExecState *exec, int eventId) const
 }
 
 
-JSEventListener *Window::getJSEventListener(ValueImp *val, bool html)
+JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
 {
   // This function is so hot that it's worth coding it directly with imps.
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
@@ -1373,7 +1373,7 @@ JSEventListener *Window::getJSEventListener(ValueImp *val, bool html)
     return 0;
 
   // It's ObjectType, so it must be valid.
-  ObjectImp *listenerObject = val->getObject();
+  JSObject *listenerObject = val->getObject();
 
   // 'listener' is not a simple ecma function. (Always use sanity checks: Better safe than sorry!)
   if (!listenerObject->implementsCall() && part && part->jScript() && part->jScript()->interpreter())
@@ -1381,8 +1381,8 @@ JSEventListener *Window::getJSEventListener(ValueImp *val, bool html)
     Interpreter *interpreter = part->jScript()->interpreter();
 
     // 'listener' probably is an EventListener object containing a 'handleEvent' function.
-    ValueImp *handleEventValue = listenerObject->get(interpreter->globalExec(), Identifier("handleEvent"));
-    ObjectImp *handleEventObject = handleEventValue->getObject();
+    JSValue *handleEventValue = listenerObject->get(interpreter->globalExec(), Identifier("handleEvent"));
+    JSObject *handleEventObject = handleEventValue->getObject();
 
     if(handleEventObject && handleEventObject->implementsCall())
     {
@@ -1537,13 +1537,13 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     emit ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
 }
 
-ValueImp *Window::openWindow(ExecState *exec, const List& args)
+JSValue *Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part)
     return jsUndefined();
   KHTMLView *widget = part->view();
-  ValueImp *v = args[0];
+  JSValue *v = args[0];
   QString str;
   if (!v->isUndefinedOrNull())
     str = v->toString(exec).qstring();
@@ -1608,7 +1608,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
   }
 }
 
-ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features)
+JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features)
 {
     KHTMLPart *p = qobject_cast<KHTMLPart *>(m_frame->m_part);
     KHTMLView *widget = p->view();
@@ -1755,7 +1755,7 @@ void Window::showSuppressedWindows()
   }
 }
 
-ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
 
@@ -1773,7 +1773,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
     return jsUndefined();
 
   KHTMLView *widget = part->view();
-  ValueImp *v = args[0];
+  JSValue *v = args[0];
   UString s;
   if (!v->isUndefinedOrNull()) {
     s = v->toString(exec);
@@ -2038,12 +2038,12 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
       return jsNumber(r);
     }
     else if (v->type() == ObjectType && v->getObject()->implementsCall()) {
-      ObjectImp *func = v->getObject();
+      JSObject *func = v->getObject();
       List funcArgs;
       ListIterator it = args.begin();
       int argno = 0;
       while (it != args.end()) {
-	ValueImp *arg = it++;
+	JSValue *arg = it++;
 	if (argno++ >= 2)
 	    funcArgs.append(arg);
       }
@@ -2093,11 +2093,11 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
 ////////////////////// ScheduledAction ////////////////////////
 
 // KDE 4: Make those parameters const ... &
-ScheduledAction::ScheduledAction(ObjectImp* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot,
+ScheduledAction::ScheduledAction(JSObject* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot,
 				  int _timerId)
 {
   //kDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this;
-  func = static_cast<ObjectImp*>(_func);
+  func = static_cast<JSObject*>(_func);
   args = _args;
   isFunction = true;
   singleShot = _singleShot;
@@ -2142,7 +2142,7 @@ bool ScheduledAction::execute(Window *window)
         KJS::Interpreter *interpreter = part->jScript()->interpreter();
         ExecState *exec = interpreter->globalExec();
         Q_ASSERT( window == interpreter->globalObject() );
-        ObjectImp *obj( window );
+        JSObject *obj( window );
         func->call(exec,obj,args); // note that call() creates its own execution state for the func call
         if (exec->hadException())
           exec->clearException();
@@ -2215,9 +2215,9 @@ int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleS
   return id;
 }
 
-int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleShot)
+int WindowQObject::installTimeout(JSValue *func, List args, int t, bool singleShot)
 {
-  ObjectImp *objFunc = func->getObject();
+  JSObject *objFunc = func->getObject();
   if (!objFunc)
     return 0;
   int id = ++lastTimerId;
@@ -2418,14 +2418,14 @@ location	FrameArray::Location	DontDelete|ReadOnly
 @end
 */
 
-ValueImp *FrameArray::getValueProperty(ExecState *exec, int token)
+JSValue *FrameArray::getValueProperty(ExecState *exec, int token)
 {
   switch (token) {
   case Length:
     return jsNumber(part->frames().count());
   case Location:
     // non-standard property, but works in NS and IE
-    if (ObjectImp *obj = Window::retrieveWindow(part))
+    if (JSObject *obj = Window::retrieveWindow(part))
       return obj->get(exec, "location");
     return jsUndefined();
   default:
@@ -2434,7 +2434,7 @@ ValueImp *FrameArray::getValueProperty(ExecState *exec, int token)
   }
 }
 
-ValueImp *FrameArray::indexGetter(ExecState *exec, unsigned index)
+JSValue *FrameArray::indexGetter(ExecState *exec, unsigned index)
 {
   KParts::ReadOnlyPart *frame = part->frames().at(index);
   if (frame)
@@ -2443,7 +2443,7 @@ ValueImp *FrameArray::indexGetter(ExecState *exec, unsigned index)
   return jsUndefined();
 }
 
-ValueImp *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
   KParts::ReadOnlyPart *frame = thisObj->part->findFrame(propertyName.qstring());
@@ -2452,7 +2452,7 @@ ValueImp *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& p
   return jsUndefined();
 }
 
-ValueImp *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
   DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(thisObj->part->document().handle());
@@ -2512,7 +2512,7 @@ bool FrameArray::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
     return true;
   }
 
-  return ObjectImp::getOwnPropertySlot(exec, propertyName, slot);
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 UString FrameArray::toString(ExecState *) const
@@ -2520,7 +2520,7 @@ UString FrameArray::toString(ExecState *) const
   return "[object FrameArray]";
 }
 
-ValueImp* FrameArray::callAsFunction(ExecState *exec, ObjectImp * /*thisObj*/, const List &args)
+JSValue* FrameArray::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
     //IE supports a subset of the get functionality as call...
     //... basically, when the return is a window, it supports that, otherwise it
@@ -2598,10 +2598,10 @@ bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, Property
     return true;
   }
 
-  return ObjectImp::getOwnPropertySlot(exec, p, slot);
+  return JSObject::getOwnPropertySlot(exec, p, slot);
 }
 
-ValueImp* Location::getValueProperty(ExecState *exec, int token) const
+JSValue* Location::getValueProperty(ExecState *exec, int token) const
 {
   KUrl url = m_frame->m_part->url();
   switch(token) {
@@ -2641,7 +2641,7 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
   return jsUndefined();
 }
 
-void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
+void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
@@ -2702,14 +2702,14 @@ void Location::put(ExecState *exec, const Identifier &p, ValueImp *v, int attr)
       break;
     }
   } else {
-    ObjectImp::put(exec, p, v, attr);
+    JSObject::put(exec, p, v, attr);
     return;
   }
 
   Window::retrieveWindow(m_frame->m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
-ValueImp *Location::toPrimitive(ExecState *exec, JSType) const
+JSValue *Location::toPrimitive(ExecState *exec, JSType) const
 {
   if (m_frame) {
     Window* window = Window::retrieveWindow( m_frame->m_part );
@@ -2737,7 +2737,7 @@ UString Location::toString(ExecState *exec) const
   return "";
 }
 
-ValueImp *LocationFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *LocationFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( Location, thisObj );
   Location *location = static_cast<Location *>(thisObj);
@@ -2782,10 +2782,10 @@ KJS_IMPLEMENT_PROTOFUNC(ExternalFunc)
 
 bool External::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& propertySlot)
 {
-  return getStaticFunctionSlot<ExternalFunc,ObjectImp>(exec, &ExternalTable, this, p, propertySlot);
+  return getStaticFunctionSlot<ExternalFunc,JSObject>(exec, &ExternalTable, this, p, propertySlot);
 }
 
-ValueImp *ExternalFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *ExternalFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( External, thisObj );
   External *external = static_cast<External *>(thisObj);
@@ -2865,10 +2865,10 @@ KJS_IMPLEMENT_PROTOFUNC(HistoryFunc)
 
 bool History::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
 {
-  return getStaticPropertySlot<HistoryFunc,History,ObjectImp>(exec, &HistoryTable, this, p, slot);
+  return getStaticPropertySlot<HistoryFunc,History,JSObject>(exec, &HistoryTable, this, p, slot);
 }
 
-ValueImp *History::getValueProperty(ExecState *, int token) const
+JSValue *History::getValueProperty(ExecState *, int token) const
 {
   // if previous or next is implemented, make sure its not a major
   // privacy leak (see i.e. http://security.greymagic.com/adv/gm005-op/)
@@ -2899,12 +2899,12 @@ ValueImp *History::getValueProperty(ExecState *, int token) const
   }
 }
 
-ValueImp *HistoryFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue *HistoryFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( History, thisObj );
   History *history = static_cast<History *>(thisObj);
 
-  ValueImp *v = args[0];
+  JSValue *v = args[0];
   double n = 0.0;
   if(v)
     n = v->toInteger(exec);

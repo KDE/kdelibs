@@ -60,7 +60,7 @@ namespace KJS {
   class JSEventListener;
   class JSLazyEventListener;
 
-  class Screen : public ObjectImp {
+  class Screen : public JSObject {
   public:
     Screen(ExecState *exec);
     enum {
@@ -68,14 +68,14 @@ namespace KJS {
       AvailWidth
     };
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
   private:
     KHTMLView *view;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  class Window : public ObjectImp {
+  class Window : public JSObject {
     friend QPointer<KHTMLPart> getInstance();
     friend class KJS::Location;
     friend class KJS::WindowFunc;
@@ -90,7 +90,7 @@ namespace KJS {
      * for the specified part p this will be returned in order to have unique
      * bindings.
      */
-    static ValueImp* retrieve(KParts::ReadOnlyPart *p);
+    static JSValue* retrieve(KParts::ReadOnlyPart *p);
     /**
      * Returns the Window object for a given part
      */
@@ -105,9 +105,9 @@ namespace KJS {
     }
 
     virtual void mark();
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
     virtual DOM::AbstractViewImpl* toAbstractView() const;
     void scheduleClose();
@@ -115,8 +115,8 @@ namespace KJS {
     void delayedGoHistory(int steps);
     void goHistory(int steps);
     void goURL(ExecState* exec, const QString& url, bool lockHistory);
-    ValueImp* openWindow(ExecState *exec, const List &args);
-    ValueImp* executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features);
+    JSValue* openWindow(ExecState *exec, const List &args);
+    JSValue* executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
@@ -125,8 +125,8 @@ namespace KJS {
       return checkIsSafeScript( activePart );
     }
     Location *location() const;
-    ObjectImp* frames( ExecState* exec ) const;
-    JSEventListener *getJSEventListener(ValueImp* val, bool html = false);
+    JSObject* frames( ExecState* exec ) const;
+    JSEventListener *getJSEventListener(JSValue* val, bool html = false);
     JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString &name, DOM::NodeImpl* node);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
@@ -176,16 +176,16 @@ namespace KJS {
     void forgetSuppressedWindows();
     void showSuppressedWindows();
 
-    ValueImp* indexGetter(ExecState *exec, unsigned index);
+    JSValue* indexGetter(ExecState *exec, unsigned index);
   protected:
     enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
 
-    ValueImp* getListener(ExecState *exec, int eventId) const;
-    void setListener(ExecState *exec, int eventId, ValueImp* func);
+    JSValue* getListener(ExecState *exec, int eventId) const;
+    void setListener(ExecState *exec, int eventId, JSValue* func);
   private:
     KParts::ReadOnlyPart* frameByIndex(unsigned index);
-    static ValueImp *framePartGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
-    static ValueImp *namedItemGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
+    static JSValue *framePartGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
+    static JSValue *namedItemGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
 
     struct DelayedAction;
     friend struct DelayedAction;
@@ -242,13 +242,13 @@ namespace KJS {
    */
   class ScheduledAction {
   public:
-    ScheduledAction(ObjectImp* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(JSObject* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId);
     ScheduledAction(QString _code, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId);
     ~ScheduledAction();
     bool execute(Window *window);
     void mark();
 
-    ObjectImp *func;
+    JSObject *func;
     List args;
     QString code;
     bool isFunction;
@@ -266,7 +266,7 @@ namespace KJS {
     WindowQObject(Window *w);
     ~WindowQObject();
     int installTimeout(const Identifier &handler, int t, bool singleShot);
-    int installTimeout(ValueImp* func, List args, int t, bool singleShot);
+    int installTimeout(JSValue* func, List args, int t, bool singleShot);
     void clearTimeout(int timerId);
     void mark();
     bool hasTimers() const;
@@ -287,14 +287,14 @@ namespace KJS {
     bool currentlyDispatching;
   };
 
-  class Location : public ObjectImp {
+  class Location : public JSObject {
   public:
     ~Location();
 
-    ValueImp* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token) const;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp* value, int attr = None);
-    virtual ValueImp* toPrimitive(ExecState *exec, JSType preferred) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
+    virtual JSValue* toPrimitive(ExecState *exec, JSType preferred) const;
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
            Assign, Replace, Reload, ToString };

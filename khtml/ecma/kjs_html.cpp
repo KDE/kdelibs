@@ -92,7 +92,7 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor, "HTMLDocument", HTMLDocumen
 */
 
 
-ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLDocument, thisObj );
 
@@ -276,7 +276,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   }
 
   // Look for overrides
-  ValueImp **val = getDirectLocation(propertyName);
+  JSValue **val = getDirectLocation(propertyName);
   if (val) {
     slot.setValueSlot(this, val);
     return true;
@@ -291,7 +291,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   return DOMDocument::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::DocumentImpl* docImpl = thisObj->impl();
@@ -318,7 +318,7 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier&
   return jsUndefined();
 }
 
-ValueImp *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier& name, const PropertySlot& slot)
+JSValue *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   KHTMLView *view      = thisObj->impl()->view();
@@ -326,21 +326,21 @@ ValueImp *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier&
   return Window::retrieve(view->part()->findFrame( name.qstring() ));
 }
 
-ValueImp *HTMLDocument::objectNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
+JSValue *HTMLDocument::objectNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::HTMLCollectionImpl objectLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_APPLETS);
   return getDOMNode(exec, objectLike.namedItem(name.domString()));
 }
 
-ValueImp *HTMLDocument::layerNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
+JSValue *HTMLDocument::layerNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   DOM::HTMLCollectionImpl layerLike(thisObj->impl(), DOM::HTMLCollectionImpl::DOC_LAYERS);
   return getDOMNode(exec, layerLike.namedItem(name.domString()));
 }
 
-ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
+JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
 {
   DOM::HTMLDocumentImpl& doc = *impl();
   KHTMLView *view = doc.view();
@@ -420,7 +420,7 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
   return 0;
 }
 
-void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "KJS::HTMLDocument::out " << propertyName.qstring();
@@ -433,7 +433,7 @@ void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, Val
   lookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
 }
 
-void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/)
+void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *value, int /*attr*/)
 {
   DOM::HTMLDocumentImpl& doc = *impl();
   DOM::DOMString val = value->toString(exec).domString();
@@ -558,7 +558,7 @@ const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTM
 const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, 0, 0 };
 const ClassInfo KJS::HTMLElement::layer_info = { "HTMLLayerElement", &KJS::HTMLElement::info, &HTMLLayerElementTable, 0 };
 
-static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id);
+static JSObject* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id);
 
 KJS::HTMLElement::HTMLElement(ExecState *exec, DOM::HTMLElementImpl* e) :
         DOMElement(prototypeForID(exec, e->id()), e) { }
@@ -1216,7 +1216,7 @@ KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HT
   return 0L;
 }
 
-ValueImp *HTMLElement::formNameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *HTMLElement::formNameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   HTMLElement *thisObj = static_cast<HTMLElement*>(slot.slotBase());
 
@@ -1224,7 +1224,7 @@ ValueImp *HTMLElement::formNameGetter(ExecState *exec, JSObject*, const Identifi
   return coll.getNamedItems(exec, propertyName);
 }
 
-//ValueImp* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
+//JSValue* KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
   DOM::HTMLElementImpl& element = *impl();
@@ -1241,7 +1241,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
         return true;
 
       KJS::HTMLCollection coll(exec, form.elements());
-      ValueImp *namedItems = coll.getNamedItems(exec, propertyName);
+      JSValue *namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems->type() != UndefinedType) {
         slot.setCustom(this, formNameGetter);
         return namedItems;
@@ -1279,7 +1279,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
     exec, &KJS::HTMLElementTable, this, propertyName, slot);
 }
 
-ValueImp* HTMLElement::indexGetter(ExecState *exec, unsigned index)
+JSValue* HTMLElement::indexGetter(ExecState *exec, unsigned index)
 {
   switch (impl()->id())
   {
@@ -1306,7 +1306,7 @@ ValueImp* HTMLElement::indexGetter(ExecState *exec, unsigned index)
       DOM::HTMLFormElementImpl& form = static_cast<DOM::HTMLFormElementImpl&>(element);
       // Check if we're retrieving an element (by index or by name)
       KJS::HTMLCollection coll(exec, form.elements());
-      ValueImp *namedItems = coll.getNamedItems(exec, propertyName);
+      JSValue *namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems->type() != UndefinedType)
         return namedItems;
     }
@@ -1583,14 +1583,14 @@ QString KJS::HTMLElement::getURLArg(unsigned id) const
   return !rel.isNull() ? impl()->getDocument()->completeURL(rel.string()) : QString();
 }
 
-DOM::HTMLElementImpl *toHTMLElement(ValueImp *val) {
+DOM::HTMLElementImpl *toHTMLElement(JSValue *val) {
   DOM::ElementImpl* e = toElement(val);
   if (e && e->isHTMLElement())
     return static_cast<HTMLElementImpl*>(e);
   return 0;
 }
 
-DOM::HTMLTableCaptionElementImpl *toHTMLTableCaptionElement(ValueImp *val)
+DOM::HTMLTableCaptionElementImpl *toHTMLTableCaptionElement(JSValue *val)
 {
     DOM::ElementImpl *e = toElement(val);
     if (e && e->id() == ID_CAPTION)
@@ -1598,7 +1598,7 @@ DOM::HTMLTableCaptionElementImpl *toHTMLTableCaptionElement(ValueImp *val)
     return 0;
 }
 
-HTMLTableSectionElementImpl *toHTMLTableSectionElement(ValueImp *val)
+HTMLTableSectionElementImpl *toHTMLTableSectionElement(JSValue *val)
 {
     DOM::ElementImpl *e = toElement(val);
     if (e && (e->id() == ID_THEAD || e->id() == ID_TBODY || e->id() == ID_TFOOT))
@@ -1606,7 +1606,7 @@ HTMLTableSectionElementImpl *toHTMLTableSectionElement(ValueImp *val)
     return 0;
 }
 
-ValueImp* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
+JSValue* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
 {
   const BoundPropInfo* prop = boundPropInfo()->value(token);
   if (!prop) return 0;
@@ -1635,9 +1635,9 @@ ValueImp* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
   return 0;
 }
 
-ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
+JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
 {
-  ValueImp* cand = handleBoundRead(exec, token);
+  JSValue* cand = handleBoundRead(exec, token);
   if (cand) return cand;
 
   DOM::HTMLElementImpl& element = *impl();
@@ -2041,7 +2041,7 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
   DOM::HTMLElementImpl& element = *impl();
 
   // The document is put on first, fall back to searching it only after the element and form.
-  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, element.getDocument())));
+  scope.push(static_cast<JSObject *>(getDOMNode(exec, element.getDocument())));
 
   // The form is next, searched before the document, but after the element itself.
   DOM::HTMLFormElementImpl* formElt;
@@ -2051,21 +2051,21 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
   // <table> or <tbody>.
   formElt = getForm(impl());
   if (formElt)
-    scope.push(static_cast<ObjectImp *>(getDOMNode(exec, formElt)));
+    scope.push(static_cast<JSObject *>(getDOMNode(exec, formElt)));
   else {
     DOM::NodeImpl* form = element.parentNode();
     while (form && form->id() != ID_FORM)
         form = form->parentNode();
 
     if (form)
-        scope.push(static_cast<ObjectImp *>(getDOMNode(exec, form)));
+        scope.push(static_cast<JSObject *>(getDOMNode(exec, form)));
   }
 
   // The element is on top, searched first.
-  scope.push(static_cast<ObjectImp *>(getDOMNode(exec, &element)));
+  scope.push(static_cast<JSObject *>(getDOMNode(exec, &element)));
 }
 
-ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( HTMLElement, thisObj );
   DOMExceptionTranslator exception(exec);
@@ -2323,7 +2323,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
   return jsUndefined();
 }
 
-void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
+void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
 #ifdef KJS_VERBOSE
   DOM::DOMString str = value->type() == NullType ? DOM::DOMString() : value->toString(exec).domString();
@@ -2343,7 +2343,7 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
       bool ok;
       /*uint u =*/ propertyName.qstring().toULong(&ok);
       if (ok) {
-        ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
+        JSObject *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
         if ( coll )
           coll->put(exec,propertyName,value);
         return;
@@ -2366,7 +2366,7 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
   const HashEntry* entry = table ? Lookup::findEntry(table, propertyName) : 0;
   if (entry) {
       if (entry->attr & Function) { // function: put as override property
-          ObjectImp::put(exec, propertyName, value, attr);
+          JSObject::put(exec, propertyName, value, attr);
           return;
       }
       else if (!(entry->attr & ReadOnly)) { // let lookupPut print the warning if read-only
@@ -2379,7 +2379,7 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
 }
 
 
-bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, ValueImp* value)
+bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, JSValue* value)
 {
   const BoundPropInfo* prop = boundPropInfo()->value(token);
   if (!prop) return false;
@@ -2412,7 +2412,7 @@ bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, ValueImp* va
 }
 
 
-void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *value, int)
+void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *value, int)
 {
   if (handleBoundWrite(exec, token, value))
     return;
@@ -2465,7 +2465,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       case SelectSelectedIndex:   { select.setSelectedIndex(value->toInteger(exec)); return; }
       case SelectValue:           { select.setValue(str.implementation()); return; }
       case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
-                                         ObjectImp *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
+                                         JSObject *coll = getSelectHTMLCollection(exec, select.options(), &select)->getObject();
                                          if ( coll )
                                            coll->put(exec,"length",value);
                                          return;
@@ -2794,7 +2794,7 @@ KJS_IMPLEMENT_PROTOTYPE("HTMLCanvasElement", HTMLCanvasElementProto, HTMLElement
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLCanvasElementPseudoCtor, "HTMLCanvasElement", HTMLCanvasElementProto)
 
 
-static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
+static JSObject* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
   switch (id) {
   case ID_HTML:
     return HTMLHtmlElementProto::self(exec);
@@ -2941,7 +2941,7 @@ const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c)
   : DOMObject(HTMLCollectionProto::self(exec)), m_impl(c), hidden(false) {}
 
-KJS::HTMLCollection::HTMLCollection(ObjectImp* proto, DOM::HTMLCollectionImpl* c)
+KJS::HTMLCollection::HTMLCollection(JSObject* proto, DOM::HTMLCollectionImpl* c)
   : DOMObject(proto), m_impl(c), hidden(false) {}
 
 KJS::HTMLCollection::~HTMLCollection()
@@ -2953,7 +2953,7 @@ bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
 }
 
-ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
+JSValue* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
 {
   return getDOMNode(exec, m_impl->item(index));
 }
@@ -2965,17 +2965,17 @@ void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& p
 
   propertyNames.add(exec->propertyNames().length);
 
-  ObjectImp::getPropertyNames(exec, propertyNames);
+  JSObject::getPropertyNames(exec, propertyNames);
 }
 
-ValueImp *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
   return jsNumber(thisObj->m_impl->length());
 }
 
 
-ValueImp *HTMLCollection::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *HTMLCollection::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
     return thisObj->getNamedItems(exec, propertyName);
@@ -2999,8 +2999,8 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
   }
 
   // Look in the prototype (for functions) before assuming it's an item's name
-  ValueImp *proto = prototype();
-  if (proto->isObject() && static_cast<ObjectImp *>(proto)->hasProperty(exec, propertyName))
+  JSValue *proto = prototype();
+  if (proto->isObject() && static_cast<JSObject *>(proto)->hasProperty(exec, propertyName))
     return false;
 
   // name or index ?
@@ -3017,7 +3017,7 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
 
 // HTMLCollections are strange objects, they support both get and call,
 // so that document.forms.item(0) and document.forms(0) both work.
-ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, const List &args)
+JSValue* KJS::HTMLCollection::callAsFunction(ExecState *exec, JSObject *, const List &args)
 {
   // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
   /*if( thisObj.imp() != this )
@@ -3062,7 +3062,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
   return jsUndefined();
 }
 
-ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
+JSValue* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii();
@@ -3096,7 +3096,7 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
   return jsUndefined();
 }
 
-ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::HTMLCollection, thisObj );
   HTMLCollectionImpl &coll = *static_cast<HTMLCollection *>(thisObj)->impl();
@@ -3140,7 +3140,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
   }
   case KJS::HTMLCollection::NamedItem:
   {
-    ValueImp *val = static_cast<HTMLCollection *>(thisObj)->getNamedItems(exec, Identifier(args[0]->toString(exec)));
+    JSValue *val = static_cast<HTMLCollection *>(thisObj)->getNamedItems(exec, Identifier(args[0]->toString(exec)));
     // Must return null when asking for a named item that isn't in the collection
     // (DOM2 testsuite, HTMLCollection12 test)
     if ( val->type() == KJS::UndefinedType )
@@ -3169,13 +3169,13 @@ KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollec
                                                 DOM::HTMLSelectElementImpl* e)
       : HTMLCollection(HTMLSelectCollectionProto::self(exec), c), element(e) { }
 
-ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue *HTMLSelectCollection::selectedIndexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return jsNumber(thisObj->element->selectedIndex());
 }
 
-ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *HTMLSelectCollection::selectedValueGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return jsString(thisObj->element->value());
@@ -3194,7 +3194,7 @@ bool KJS::HTMLSelectCollection::getOwnPropertySlot(ExecState *exec, const Identi
   return  HTMLCollection::getOwnPropertySlot(exec, p, slot);
 }
 
-void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int)
+void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int)
 {
   DOMExceptionTranslator exception(exec);
 #ifdef KJS_VERBOSE
@@ -3272,7 +3272,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
 }
 
 
-ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
+JSValue* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::HTMLSelectCollection, thisObj );
   DOM::HTMLSelectElementImpl* element = static_cast<KJS::HTMLSelectCollection *>(thisObj)->toElement();
@@ -3322,9 +3322,9 @@ ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, Ob
 ////////////////////// Option Object ////////////////////////
 
 OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
-    : ObjectImp(), doc(d)
+    : JSObject(), doc(d)
 {
-  // ## isn't there some redundancy between ObjectImp::_proto and the "prototype" property ?
+  // ## isn't there some redundancy between JSObject::_proto and the "prototype" property ?
   //put(exec,"prototype", ...,DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
@@ -3337,7 +3337,7 @@ bool OptionConstructorImp::implementsConstruct() const
   return true;
 }
 
-ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
+JSObject *OptionConstructorImp::construct(ExecState *exec, const List &args)
 {
   DOMExceptionTranslator exception(exec);
   DOM::ElementImpl* el = doc->createElement("OPTION");
@@ -3365,7 +3365,7 @@ ObjectImp *OptionConstructorImp::construct(ExecState *exec, const List &args)
 //Like in other browsers, we merely make a new HTMLImageElement
 //not in tree for this.
 ImageConstructorImp::ImageConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : ObjectImp(), doc(d)
+    : JSObject(), doc(d)
 {
 }
 
@@ -3374,18 +3374,18 @@ bool ImageConstructorImp::implementsConstruct() const
   return true;
 }
 
-ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
+JSObject *ImageConstructorImp::construct(ExecState *exec, const List &list)
 {
   bool widthSet = false, heightSet = false;
   int width = 0, height = 0;
   if (list.size() > 0) {
     widthSet = true;
-    ValueImp *w = list.at(0);
+    JSValue *w = list.at(0);
     width = w->toInt32(exec);
   }
   if (list.size() > 1) {
     heightSet = true;
-    ValueImp *h = list.at(1);
+    JSValue *h = list.at(1);
     height = h->toInt32(exec);
   }
 
@@ -3401,10 +3401,10 @@ ObjectImp *ImageConstructorImp::construct(ExecState *exec, const List &list)
 }
 
 
-ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)
+JSValue* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hide)
 {
   assert(!c || c->getType() != HTMLCollectionImpl::SELECT_OPTIONS);
-  ValueImp *coll = cacheDOMObject<DOM::HTMLCollectionImpl, KJS::HTMLCollection>(exec, c);
+  JSValue *coll = cacheDOMObject<DOM::HTMLCollectionImpl, KJS::HTMLCollection>(exec, c);
   if (hide) {
     KJS::HTMLCollection *impl = static_cast<KJS::HTMLCollection*>(coll);
     impl->hide();
@@ -3412,7 +3412,7 @@ ValueImp* getHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, bool hi
   return coll;
 }
 
-ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
+JSValue* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e)
 {
   assert(!c || c->getType() == HTMLCollectionImpl::SELECT_OPTIONS);
   DOMObject *ret;
