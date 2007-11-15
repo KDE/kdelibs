@@ -28,6 +28,7 @@
 #include "kurltogglebutton_p.h"
 
 #include <kfileitem.h>
+#include <kglobalsettings.h>
 #include <kicon.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -810,7 +811,10 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
 {
     d->m_history.prepend(HistoryElem(url));
 
-    QFontMetrics fontMetrics(font());
+    const QFont font = KGlobalSettings::generalFont();
+    setFont(font);
+
+    QFontMetrics fontMetrics(font);
     setMinimumHeight(fontMetrics.height() + 10);
 
     setLayout(d->m_layout);
