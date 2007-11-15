@@ -26,7 +26,6 @@
 #include <QtCore/QFileInfo>
 
 #include <kmimetype.h>
-#include <kstandarddirs.h>
 
 using namespace Kross;
 
