@@ -1,11 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=PSD
 Name[sr]=ПСД
 Name[te]=పిఎస్ డి
 Name[x-test]=xxPSDxx
 Type=Service
-ServiceTypes=QImageIOPlugins
+X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=psd,PSD
 X-KDE-MimeType=image/x-psd
 X-KDE-Read=true

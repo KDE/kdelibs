@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 Name=KDED Cookie Jar Module
 Name[af]=Kded Koekie Houer Module
@@ -130,7 +129,7 @@ Comment[wa]=Wårder ene trace di totes les coûkes sol sistinme
 Comment[x-test]=xxKeeps track of all cookies in the systemxx
 Comment[zh_CN]=将全部 Cookie 的记录保存在系统中
 Comment[zh_TW]=追蹤系統所有的 cookies
-ServiceTypes=KDEDModule
+X-KDE-ServiceTypes=KDEDModule
 Exec=kcookiejar4
 X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false

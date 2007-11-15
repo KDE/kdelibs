@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 MimeType=multipart/mixed;multipart/x-mixed-replace;
 Name=Embeddable Component for multipart/mixed
@@ -66,5 +65,5 @@ Name[x-test]=xxEmbeddable Component for multipart/mixedxx
 Name[zh_CN]=可嵌入的 multipart/mixed 组件
 Name[zh_HK]=multipart/mixed 的可嵌入元件
 Name[zh_TW]=multipart/mixed 的可嵌入元件
-ServiceTypes=KParts/ReadOnlyPart
+X-KDE-ServiceTypes=KParts/ReadOnlyPart
 X-KDE-Library=libkmultipart

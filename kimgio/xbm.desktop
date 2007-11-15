@@ -1,11 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=XBM
 Name[sr]=ИксБМ
 Name[te]=ఎక్స్ బిఎం
 Name[x-test]=xxXBMxx
 Type=Service
-ServiceTypes=QImageIOPlugins
+X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xbm
 X-KDE-MimeType=image/x-xbitmap
 X-KDE-Read=true

@@ -1,7 +1,6 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
-ServiceTypes=KDEDModule
+X-KDE-ServiceTypes=KDEDModule
 X-KDE-Library=kwalletd
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true

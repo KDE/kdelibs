@@ -1,11 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=XCF
 Name[sr]=ИксЦФ
 Name[te]=ఎక్స్ సిఎఫ్
 Name[x-test]=xxXCFxx
 Type=Service
-ServiceTypes=QImageIOPlugins
+X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xcf,XCF
 X-KDE-MimeType=image/x-xcf
 X-KDE-Read=true

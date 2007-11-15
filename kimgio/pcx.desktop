@@ -1,11 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=PCX
 Name[sr]=ПЦИкс
 Name[te]=పిసిఎక్స్
 Name[x-test]=xxPCXxx
 Type=Service
-ServiceTypes=QImageIOPlugins
+X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=pcx,PCX
 X-KDE-MimeType=image/x-pcx
 X-KDE-Read=true

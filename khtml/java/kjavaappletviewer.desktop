@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=Embedded Java Applet Viewer
 Name[af]=Ingelegde Java Program Bekyker
 Name[ar]=عارض بريمجات جافا المضمن
@@ -68,7 +67,7 @@ Name[zh_TW]=Embedded Java Applet 檢視器
 X-KDE-Library=kjavaappletviewer
 Icon=java
 MimeType=application/x-java-applet;application/x-java;
-ServiceTypes=KParts/ReadOnlyPart,Browser/View
+X-KDE-ServiceTypes=KParts/ReadOnlyPart,Browser/View
 Type=Service
 InitialPreference=2
 X-KDE-BrowserView-PluginsInfo=kjava/pluginsinfo

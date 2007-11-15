@@ -1,7 +1,6 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
-ServiceTypes=Sonnet/SpellClient
+X-KDE-ServiceTypes=Sonnet/SpellClient
 X-KDE-Library=kspell_hspell
 X-KDE-PluginInfo-Author=Mashrab Kuvatov
 X-KDE-PluginInfo-Email=kmashrab@uni-bremen.de

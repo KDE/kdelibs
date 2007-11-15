@@ -1,7 +1,6 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
-ServiceTypes=PhononBackend
+X-KDE-ServiceTypes=PhononBackend
 MimeType=audio/x-vorbis+ogg;audio/mpeg;audio/x-wav;video/x-ogm+ogg;
 X-KDE-Library=phonon_fake
 X-KDE-PhononBackendInfo-InterfaceVersion=1

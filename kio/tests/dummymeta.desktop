@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 Name=Dummy Meta
 Name[af]=Fop Meta
@@ -46,7 +45,7 @@ Name[x-test]=xxDummy Metaxx
 Name[zh_CN]=哑元
 Name[zh_HK]=空的資料定義
 Name[zh_TW]=空的資料定義
-ServiceTypes=KFilePlugin
+X-KDE-ServiceTypes=KFilePlugin
 X-KDE-Library=dummymeta
 MimeType=text/plain;
 PreferredItems=Author,Title,Date

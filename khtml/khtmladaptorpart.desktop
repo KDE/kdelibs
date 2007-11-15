@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=KHTML Extension Adaptor
 Name[ca]=Adaptador d'extensió KHTML
 Name[de]=Adapter für KHTML-Erweiterungen
@@ -23,6 +22,6 @@ Name[zh_CN]=KHTML 扩展适配器
 Name[zh_TW]=KHTML 延伸裝置
 X-KDE-Library=khtmladaptorpart
 MimeType=application/x-khtml-adaptor;
-ServiceTypes=KParts/ReadOnlyPart,Browser/View
+X-KDE-ServiceTypes=KParts/ReadOnlyPart,Browser/View
 Type=Service
 InitialPreference=4

@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 Comment=Embeddable HTML viewing component
 Comment[af]=Inlegbare Html aansig komponent
@@ -76,6 +75,6 @@ Name[sr]=КХТМЛ
 Name[sr@latin]=KTHML
 Name[te]=కెహెచ్ టి ఎమ్ ఎల్
 Name[x-test]=xxKHTMLxx
-ServiceTypes=KParts/ReadOnlyPart,Browser/View
+X-KDE-ServiceTypes=KParts/ReadOnlyPart,Browser/View
 X-KDE-Library=libkhtmlpart
 InitialPreference=10
