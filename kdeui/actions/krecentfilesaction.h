@@ -28,10 +28,10 @@
 #define KRECENTFILESACTION_H
 
 #include <kselectaction.h>
+#include <kurl.h>
 
 class KConfigGroup;
 class KRecentFilesActionPrivate;
-class KUrl;
 
 /**
  *  @short Recent files action
@@ -152,6 +152,11 @@ public:
    *  @param url The URL of the file
    */
   void removeUrl( const KUrl& url );
+
+  /**
+   *  Retrieve a list of all URLs in the recent files list.
+   */
+  KUrl::List urls() const;
 
 Q_SIGNALS:
   /**

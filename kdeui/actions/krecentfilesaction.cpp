@@ -37,7 +37,6 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
 
 #include "kmenu.h"
 
@@ -186,6 +185,12 @@ void KRecentFilesAction::removeUrl( const KUrl& url )
       delete removeAction(it.key());
       return;
     }
+}
+
+KUrl::List KRecentFilesAction::urls() const
+{
+  Q_D(const KRecentFilesAction);
+  return d->m_urls.values ();
 }
 
 void KRecentFilesAction::clear()
