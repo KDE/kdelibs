@@ -153,7 +153,7 @@ KNS::Entry::List Engine::download()
 
 	Engine *engine = new Engine(0);
 
-	KComponentData component = KGlobal::mainComponent();
+	KComponentData component = KGlobal::activeComponent();
 	QString name = component.componentName();
 
 	bool ret = engine->init(name + ".knsrc");
@@ -203,7 +203,7 @@ KNS::Entry *EnginePrivate::upload(const QString& file)
 
     Engine engine(0);
 
-    KComponentData component = KGlobal::mainComponent();
+    KComponentData component = KGlobal::activeComponent();
     QString name = component.componentName();
 
     bool ret = engine.init(name + ".knsrc");

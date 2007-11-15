@@ -450,8 +450,8 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     setWindowTitle(i18n("Get Hot New Stuff!"));
     titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
                                   "%1 Add On Installer",
-                                  KGlobal::mainComponent().aboutData()->programName()));
-    titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
+                                  KGlobal::activeComponent().aboutData()->programName()));
+    titleWidget->setPixmap(KGlobal::activeComponent().aboutData()->appName());
 
     connect( this, SIGNAL( closeClicked() ), SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalPayloadProgress( KUrl, int ) ), SLOT( slotPayloadProgress( KUrl, int ) ) );

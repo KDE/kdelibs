@@ -27,8 +27,10 @@
 #include "installation.h"
 #include "security.h"
 
+#include <kaboutdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kcodecs.h>
@@ -535,6 +537,8 @@ void CoreEngine::loadRegistry()
 
 	//kDebug(550) << "Loading registry in all directories named 'knewstuff2-entries.registry'.";
 
+	QString realAppName = KGlobal::activeComponent().aboutData()->appName();
+
 	// this must be same as in registerEntry()
 	QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
 	for(QStringList::Iterator it = dirs.begin(); it != dirs.end(); ++it)
@@ -548,7 +552,20 @@ void CoreEngine::loadRegistry()
 			//kDebug(550) << "  + Load from file '" + filepath + "'.";
 
 			bool ret;
+			QFileInfo info(filepath);
 			QFile f(filepath);
+
+			// first see if this file is even for this app
+			QString thisAppName = QString::fromUtf8(QByteArray::fromBase64(info.baseName().toUtf8()));
+
+			// NOTE: the ":" needs to always coincide with the separator character used in
+			// the id(Entry*) method
+			thisAppName = thisAppName.split(":")[0];
+
+			if (thisAppName != realAppName) {
+				continue;
+			}
+
 			ret = f.open(QIODevice::ReadOnly);
 			if(!ret)
 			{
@@ -951,11 +968,12 @@ bool CoreEngine::entryCached(Entry *entry)
 	for(int i = 0; i < m_entry_cache.count(); i++)
 	{
 		Entry *oldentry = m_entry_cache.at(i);
-		QString lang = id(oldentry).section(":", 0, 0);
-		QString oldname = oldentry->name().translated(lang);
-		QString name = entry->name().translated(lang);
-		//kDebug(550) << "CACHE: compare entry names " << oldname << "/" << name;
-		if(name == oldname) return true;
+		if (id(entry) == id(oldentry)) return true;
+		//QString lang = id(oldentry).section(":", 0, 0);
+		//QString oldname = oldentry->name().translated(lang);
+		//QString name = entry->name().translated(lang);
+		////kDebug(550) << "CACHE: compare entry names " << oldname << "/" << name;
+		//if(name == oldname) return true;
 	}
 
 	return false;
@@ -1220,7 +1238,7 @@ QString CoreEngine::id(Entry *e)
 	// This is the primary key of an entry:
 	// A lookup on the name, which must exist but might be translated
 	// This requires some care for comparison since translations might be added
-	return e->name().language() + ':' + e->name().representation();
+	return KGlobal::activeComponent().aboutData()->appName() + ":" + e->name().language() + ':' + e->name().representation();
 }
 
 QString CoreEngine::pid(const Provider *p)
