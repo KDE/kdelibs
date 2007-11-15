@@ -99,6 +99,7 @@ KDEUI_EXECUTABLE_TESTS(
   kdebugtest_gui
   ktitlewidgettest
   kiconeffecttest
+  kwallettest
 )
 
 if (Q_WS_X11)
