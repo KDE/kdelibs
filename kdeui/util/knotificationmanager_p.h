@@ -38,10 +38,9 @@ public:
     ~KNotificationManager();
 
     /**
-     * send the dcop call to the knotify server
-     * @return the identification number
+     * send the dbus call to the knotify server
      */
-    unsigned int notify(KNotification *n, const QPixmap& pix, const QStringList &action,
+    void notify(KNotification *n, const QPixmap& pix, const QStringList &action,
                         const KNotification::ContextList& contexts, const QString &appname);
 
     /**

@@ -98,7 +98,7 @@ void KNotificationManager::close( int id )
     }
 }
 
-unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
+void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                                            const QStringList &actions,
                                            const KNotification::ContextList & contexts,
                                            const QString &appname)

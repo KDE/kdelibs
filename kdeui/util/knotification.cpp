@@ -321,7 +321,12 @@ void KNotification::sendEvent()
 			appname = KGlobal::mainComponent().componentName();
 		}
 
-		d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
+		if(!(d->flags & Persistant))
+		{
+			QTimer::singleShot(6*1000, this, SLOT(close()));
+		}
+
+		KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
 		
 		//after a small timeout, the notification will be deleted if all presentation are finished
 		QTimer::singleShot(100, this, SLOT(deref()));
