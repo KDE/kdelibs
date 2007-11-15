@@ -236,7 +236,7 @@ else(SYS_INOTIFY_H_FOUND)
    macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
 endif(SYS_INOTIFY_H_FOUND)
 if(FAM_FOUND)
-   include_directories(${FAM_INCLUDE_DIRECTORY})
+   include_directories(${FAM_INCLUDE_DIR})
    target_link_libraries(kio ${FAM_LIBRARIES})
 endif(FAM_FOUND)
 
