@@ -34,7 +34,23 @@ class KXMLGUIFactory;
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
  *
- * Typically, you would include the KStdAction::configureToolBars()
+ * Typically you do not need to use it as KXmlGuiWindow::setupGUI
+ * takes care of it.
+ *
+ * If you use plugListAction you need to overload saveNewToolbarConfig()
+ * to plug actions again
+ *
+ * \code
+ * void MyClass::saveNewToolbarConfig()
+ * {
+ *   KXmlGuiWindow::saveNewToolbarConfig();
+ *   plugActionList( "list1", list1Actions );
+ *   plugActionList( "list2", list2Actions );
+ * }
+ * \endcode
+ *
+ * If for some reason the default behaviour does not suit you,
+ * you would include the KStandardAction::configureToolbars()
  * standard action in your application.  In your slot to this action,
  * you would have something like so:
  *
@@ -62,8 +78,8 @@ class KXMLGUIFactory;
  *
  * void MyClass::slotNewToolBarConfig() // This is called when OK, Apply or Defaults is clicked
  * {
- *    ...if you use any action list, use plugActionList on each here...
  *    createGUI();
+ *    ...if you use any action list, use plugActionList on each here...
  *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
  * \endcode
