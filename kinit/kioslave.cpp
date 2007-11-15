@@ -92,7 +92,7 @@ int main(int argc, char **argv)
             }
         }
 #else
-        fprintf(stderr, "could not open %s: %s", libpath.data(),
+        fprintf(stderr, "could not open %s: %s", qPrintable(libpath),
                 qPrintable (lib.errorString()) );
         exit(1);
 #endif
