@@ -169,7 +169,7 @@ void KPageTreeView::updateWidth()
     width = qMax( width, sizeHintForColumn( i ) );
   }
 
-  setFixedWidth( width + 20 );
+  setFixedWidth( width + 25 );
 
   expandItems();
 }
