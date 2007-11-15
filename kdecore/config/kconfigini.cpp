@@ -344,26 +344,71 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
         }
     }
 
-    KSaveFile file( filePath(), data );
-    if (!file.open())
-      return false;
+    if (createNew) {
+        KSaveFile file( filePath(), data );
+        if (!file.open()) {
+            return false;
+        }
 
-    file.setTextModeEnabled(true); // to get eol translation
-
-    if (createNew)
+        file.setTextModeEnabled(true); // to get eol translation
         file.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
-    writeEntries(locale, file, writeMap);
+        // FIXME what to do here since we can't change the file mode anymore
+//        if (!bGlobal && (fileMode == -1))
+//            fileMode = mFileMode;
 
-    if ( !file.size() && ((fileMode == -1) || (fileMode == 0600)) ) {
-        // File is empty and doesn't have special permissions: delete it.
-        file.abort();
-        // and the original file.
-        if (QFile::exists(filePath()))
-            QFile::remove(filePath());
+        if (fileMode != -1) {
+            fchmod(file.handle(), fileMode);
+        }
+
+        writeEntries(locale, file, writeMap);
+
+        if ( !file.size() && ((fileMode == -1) || (fileMode == 0600)) ) {
+            // File is empty and doesn't have special permissions: delete it.
+            file.abort();
+
+            if (fileMode != -1) {
+                // also remove the old file in case it existed. this can happen
+                // when we delete all the entries in an existing config file.
+                // if we don't do this, then deletions and revertToDefault's
+                // will mysteriously fail
+                QFile::remove(filePath());
+            }
+        } else {
+            // Normal case: Close the file
+            return file.finalize();
+        }
+    } else {
+        // Open existing file. *DON'T* create it if it suddenly does not exist!
+#ifdef Q_OS_UNIX
+        int fd = KDE_open(QFile::encodeName(filePath()), O_WRONLY | O_TRUNC);
+        if (fd < 0) {
+            return false;
+        }
+        FILE *fp = KDE_fdopen(fd, "w");
+        if (!fp) {
+            close(fd);
+            return false;
+        }
+        QFile f;
+        if (!f.open(fp, QIODevice::WriteOnly)) {
+            fclose(fp);
+            return false;
+        }
+        writeEntries(locale, f, writeMap);
+        f.close();
+        fclose(fp);
+#else
+        QFile f( filePath() );
+        // XXX This is broken - it DOES create the file if it is suddenly gone.
+        if (!f.open( QIODevice::WriteOnly | QIODevice::Truncate )) {
+            return false;
+        }
+        file.setTextModeEnabled(true);
+        writeEntries(locale, f, writeMap);
+#endif
     }
-
-    return file.finalize();
+    return true;
 }
 
 bool KConfigIniBackend::isWritable() const
