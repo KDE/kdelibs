@@ -1261,6 +1261,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
 
 KIconTheme *KIconLoader::theme() const
 {
+    d->initIconThemes();
     if (d->mpThemeRoot) return d->mpThemeRoot->theme;
     return 0L;
 }
