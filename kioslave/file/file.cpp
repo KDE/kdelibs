@@ -1321,6 +1321,7 @@ void FileProtocol::stat( const KUrl & url )
     finished();
 }
 
+#ifndef Q_OS_WIN
 void FileProtocol::listDir( const KUrl& url)
 {
     kDebug(7101) << "========= LIST " << url.url() << " =========";
@@ -1333,38 +1334,6 @@ void FileProtocol::listDir( const KUrl& url)
 	return;
     }
     QByteArray _path( QFile::encodeName(url.toLocalFile()) );
-#ifdef Q_WS_WIN
-    QDir dir( _path );
-    dir.setFilter(QDir::AllEntries);
-    dir.setSorting(QDir::Size | QDir::Reversed);
-
-    if ( !dir.exists() ) {
-        kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========";
-        error( KIO::ERR_DOES_NOT_EXIST, _path );
-        return;
-    }
-
-   	// don't knwo how to check
-   	// error( KIO::ERR_IS_FILE, url.path() );
-
-    if ( !dir.isReadable() ) {
-        kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========";
-        error( KIO::ERR_CANNOT_ENTER_DIRECTORY, _path );
-        return;
-    }
-    QFileInfoList list = dir.entryInfoList();
-    totalSize( list.size() );
-
-    UDSEntry entry;
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        entry.clear();
-        if ( createUDSEntry( fileInfo.fileName(),
-                             fileInfo.absoluteFilePath().toAscii() /* we can use the filename as relative path*/,
-                             entry, 2, true ) )
-            listEntry( entry, false);
-    }
-#else
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, _path );
@@ -1435,17 +1404,15 @@ void FileProtocol::listDir( const KUrl& url)
                              entry, 2, true ) )
           listEntry( entry, false);
     }
-#endif
 
     listEntry( entry, true ); // ready
 
     kDebug(7101) << "============= COMPLETED LIST ============";
 
-#ifndef Q_WS_WIN
     chdir(path_buffer);
-#endif
     finished();
 }
+#endif  // !Q_OS_WIN
 
 /*
 void FileProtocol::testDir( const QString& path )

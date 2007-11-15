@@ -26,62 +26,16 @@
 
 #include "file.h"
 
-#include <config.h>
-#include <config-acl.h>
-
-#include <QtCore/QBool> //for Q_OS_XXX
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
-#include <assert.h>
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <grp.h>
-#include <pwd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <time.h>
-#include <utime.h>
-#include <unistd.h>
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#include <QtCore/QByteRef>
-#include <QtCore/QDate>
-#include <QtCore/QVarLengthArray>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QRegExp>
-#include <QtCore/QFile>
-#ifdef Q_WS_WIN
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
 #include <windows.h>
-#endif
 
-#include <kdebug.h>
-#include <kurl.h>
-#include <kcomponentdata.h>
-#include <kconfig.h>
+#include <QtCore/QDir>
+#include <QtCore/QDirIterator>
+#include <QtCore/QFileInfo>
+
+#include <config.h>
+
 #include <kconfiggroup.h>
-#include <ktemporaryfile.h>
-#include <klocale.h>
-#include <limits.h>
-#include <kshell.h>
-#include <kmountpoint.h>
-#include <kstandarddirs.h>
-
-#include <kio/ioslave_defaults.h>
-#include <kde_file.h>
-#include <kglobal.h>
-#include <kmimetype.h>
+#include <kdebug.h>
 
 using namespace KIO;
 
@@ -165,6 +119,88 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     finished();
 }
 
+void FileProtocol::listDir( const KUrl& url )
+{
+    kDebug(7101) << "========= LIST " << url.url() << " =========";
+
+    if (!url.isLocalFile()) {
+        KUrl redir(url);
+        redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+        redirection(redir);
+        kDebug(7101) << "redirecting to " << redir.url();
+        finished();
+        return;
+    }
+
+    QDir dir( url.toLocalFile() );
+
+    if ( !dir.exists() ) {
+        kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========";
+        error( KIO::ERR_DOES_NOT_EXIST, url.toLocalFile() );
+        return;
+    }
+
+    if ( !dir.isReadable() ) {
+        kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========";
+        error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.toLocalFile() );
+        return;
+    }
+    QDirIterator it( dir );
+    UDSEntry entry;
+    while( it.hasNext() ) {
+        it.next();
+        QFileInfo fileInfo = it.fileInfo();
+
+        entry.insert( KIO::UDSEntry::UDS_NAME, it.fileName() );
+        if( fileInfo.isSymLink() ) {
+            entry.insert( KIO::UDSEntry::UDS_LINK_DEST, fileInfo.symLinkTarget() );
+/* TODO - or not usefull on windows?
+            if ( details > 1 ) {
+                // It is a link pointing to nowhere
+                type = S_IFMT - 1;
+                access = S_IRWXU | S_IRWXG | S_IRWXO;
+
+                entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+                entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+                entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
+                goto notype;
+
+            }
+*/
+        }
+        int type = _IFREG;
+        int access = 0;
+        if( fileInfo.isDir() )
+            type = _IFDIR;
+        else if( fileInfo.isSymLink() )
+            type = _IFLNK;
+        if( fileInfo.isReadable() )
+            access |= S_IRUSR;
+        if( fileInfo.isWritable() )
+            access |= S_IWUSR;
+        if( fileInfo.isExecutable() )
+            access |= S_IXUSR;
+
+        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+        entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+        entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
+
+        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
+        entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
+        entry.insert( KIO::UDSEntry::UDS_GROUP, fileInfo.group() );
+        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, fileInfo.lastRead().toTime_t() );
+
+        listEntry( entry, false );
+        entry.clear();
+    }
+
+    listEntry( entry, true ); // ready
+
+    kDebug(7101) << "============= COMPLETED LIST ============";
+
+    finished();
+}
+
 void FileProtocol::rename( const KUrl &src, const KUrl &dest,
                            KIO::JobFlags _flags )
 {
@@ -227,7 +263,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &dest, KIO::JobFla
     FileProtocol::copy( target, dest, 0, flags );
 }
 
-void FileProtocol::del( const KUrl& url, bool isfile)
+void FileProtocol::del( const KUrl& url, bool isfile )
 {
     QString _path( url.toLocalFile() );
     /*****

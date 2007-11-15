@@ -29,9 +29,11 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QFile>
 #ifdef Q_WS_WIN
-#include <QStringList>
-#include <QProcess>
+#include <QtCore/QDir>
+#include <QtCore/QProcess>
+#include <QtCore/QStringList>
 #include <windows.h>
+#include "kstandarddirs.h"
 #endif
 
 #ifndef Q_WS_WIN
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Usage: kioslave <slave-lib> <protocol> <klauncher-socket> <app-socket>\n\nThis program is part of KDE.\n");
         exit(1);
      }
-     QByteArray libpath = argv[1];     
+     QString libpath = QFile::decodeName(argv[1]);
 
      if (libpath.isEmpty())
      {
@@ -55,33 +57,39 @@ int main(int argc, char **argv)
         exit(1); 
      }
 
-     QLibrary lib(QFile::decodeName(libpath.data()));
+     QLibrary lib(libpath);
 #ifdef Q_WS_WIN
-     qDebug("trying to load '%s'",libpath.data());
+     qDebug("trying to load '%s'", qPrintable(libpath));
 #endif
-     if (!lib.load() || !lib.isLoaded() )
+     if ( !lib.load() || !lib.isLoaded() )
      {
 #ifdef Q_WS_WIN
-        if (!getenv("KDEDIRS")) {
-          qDebug("not able to find '%s' because KDEDIRS environment variable is not set.\n"
-                 "Set KDEDIRS to the KDE installation root dir and restart klauncher to fix this problem.",libpath.data());
-          exit(1);
-        }
-        QString pathes = getenv("KDEDIRS");
-        QStringList pathlist = pathes.split(";");
-        for (int i = 0; i < pathlist.size(); ++i) 
+        libpath = KStandardDirs::installPath("module") + QFileInfo(libpath).fileName();
+        lib.setFileName( libpath );
+        if(!lib.load() || !lib.isLoaded())
         {
-          QString slave_path = pathlist.at(i) + "/lib/kde4/" + libpath.data();
-          qDebug("trying to load '%s'",slave_path.toAscii().data());
-          lib.setFileName(slave_path);
-          if (lib.load() && lib.isLoaded() ) 
-            break;
-        }
-        if (!lib.isLoaded()) 
-        {
-          fprintf(stderr, "could not open %s: %s", libpath.data(),
-                  qPrintable (lib.errorString()) );
-          exit(1);
+            QByteArray kdedirs = qgetenv("KDEDIRS");
+            if (!kdedirs.size()) {
+              qDebug("not able to find '%s' because KDEDIRS environment variable is not set.\n"
+                     "Set KDEDIRS to the KDE installation root dir and restart klauncher to fix this problem.",
+                     qPrintable(libpath));
+              exit(1);
+            }
+            QString paths = QString::fromLocal8Bit(kdedirs);
+            QStringList pathlist = paths.split(';');
+            Q_FOREACH(QString path, pathlist) {
+              QString slave_path = path + QLatin1String("/lib/kde4/") + libpath;
+              qDebug("trying to load '%s'",slave_path.toAscii().data());
+              lib.setFileName(slave_path);
+              if (lib.load() && lib.isLoaded() )
+                break;
+            }
+            if (!lib.isLoaded())
+            {
+              fprintf(stderr, "could not open %s: %s", libpath.data(),
+                      qPrintable (lib.errorString()) );
+              exit(1);
+            }
         }
 #else
         fprintf(stderr, "could not open %s: %s", libpath.data(),

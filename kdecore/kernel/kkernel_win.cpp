@@ -27,7 +27,7 @@
 #include <kdebug.h>
 
 #include <QtCore/QDir>
-#include <QApplication>
+#include <QtCore/QString>
 
 #include <windows.h>
 #include <shellapi.h>
@@ -45,10 +45,9 @@ static class kGlobalClass {
     public: 
         kGlobalClass() {
             qInstallMsgHandler(kMessageOutput);
-            kde4prefix[0] = 0;
         }
 
-        wchar_t kde4prefix[MAX_PATH + 1];
+        QString kde4prefix;
 } myGlobals; 
 
 static HINSTANCE kdecoreDllInstance = NULL;
@@ -73,25 +72,27 @@ BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID )
 // don't have an instantiated QCoreApplication
 QString getKde4Prefix()
 {
-    if (myGlobals.kde4prefix[0] == 0) {
+    if (myGlobals.kde4prefix.isEmpty()) {
+        wchar_t kde4prefix[MAX_PATH + 1];
         //the path is C:\some\path\kde4\bin\kdecore.dll
-        GetModuleFileNameW(kdecoreDllInstance, myGlobals.kde4prefix, MAX_PATH + 1);
+        GetModuleFileNameW(kdecoreDllInstance, kde4prefix, MAX_PATH + 1);
         int bs1 = 0, bs2 = 0;
 
         //we convert \ to / and remove \bin\kdecore.dll from the string
         int pos;
-        for (pos = 0; pos < MAX_PATH + 1 && myGlobals.kde4prefix[pos] != 0; ++pos) {
-            if (myGlobals.kde4prefix[pos] == '\\') {
+        for (pos = 0; pos < MAX_PATH + 1 && kde4prefix[pos] != 0; ++pos) {
+            if (kde4prefix[pos] == '\\') {
                 bs1 = bs2;
                 bs2 = pos;
-                myGlobals.kde4prefix[pos] = '/';
+                kde4prefix[pos] = '/';
             }
         }
         Q_ASSERT(bs1);
         Q_ASSERT(pos < MAX_PATH + 1);
-        myGlobals.kde4prefix[bs1] = 0;
+        kde4prefix[bs1] = 0;
+        myGlobals.kde4prefix = QString::fromUtf16((ushort *) kde4prefix);
     }
-    return QString::fromUtf16((ushort *) myGlobals.kde4prefix);
+    return myGlobals.kde4prefix;
 }
 
 /**

@@ -30,7 +30,7 @@ QString KStandardDirs::installPath(const char *type)
 
     QString prefix = getKde4Prefix();
     QString share = prefix + QLatin1String("/share");
-    QString kde_moduledir = QLatin1String("lib/kde4");
+    QString kde_moduledir = prefix + QLatin1String("/lib/kde4");
 
     switch (type[0]) {
         case 'a':
@@ -69,7 +69,7 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("lib", type) == 0)
                 return prefix + "/lib/";
             if (strcmp("libexec", type) == 0)
-                return QString::fromLatin1(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
+                return prefix + QString::fromLatin1(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
             if (strcmp("locale", type) == 0)
                 return share + QLatin1String("/locale/");
             break;
