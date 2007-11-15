@@ -429,7 +429,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
         if (!f.open( QIODevice::WriteOnly | QIODevice::Truncate )) {
             return false;
         }
-        file.setTextModeEnabled(true);
+        f.setTextModeEnabled(true);
         writeEntries(locale, f, writeMap);
 #endif
     }
