@@ -15,7 +15,7 @@ the following:
 
 create the 'Configure MyApp' StdAction like this:
 \code
-KStdAction::preferences( this, SLOT( showConfigDialog() ), actionCollection );
+KStandardAction::preferences( this, SLOT( showConfigDialog() ), actionCollection );
 \endcode
 
 and the slot looks like this:

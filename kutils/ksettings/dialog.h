@@ -60,7 +60,7 @@ namespace KSettings
  * \endcode
  * and the action for the config dialog is connected to the show slot:
  * \code
- * KStdAction::preferences( m_cfgdlg, SLOT( show() ), actionCollection() );
+ * KStandardAction::preferences( m_cfgdlg, SLOT( show() ), actionCollection() );
  * \endcode
  *
  * If you need to be informed when the config was changed and applied in the

@@ -176,7 +176,7 @@ class KRockerGesture;
  *
  * \note if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
- * please use the methods in the KStdAction class rather than
+ * please use the methods in the KStandardAction class rather than
  * defining your own.
  *
  * \section kaction_xmlgui Usage Within the XML Framework
@@ -186,7 +186,7 @@ class KRockerGesture;
  * have to add your actions to containers manually.  The framework
  * does that for you.
  *
- * @see KStdAction
+ * @see KStandardAction
  */
 class KDEUI_EXPORT KAction : public QWidgetAction
 {

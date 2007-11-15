@@ -48,7 +48,7 @@ class KShortcutPrivate;
 * the below code binds the escape key to the close action.
 *
 * \code
-*  KAction *closeAction = KStdAction::close(this, SLOT( close() ), actionCollection());
+*  KAction *closeAction = KStandardAction::close(this, SLOT( close() ), actionCollection());
 *  KShortcut closeShortcut = closeAction->shortcut();
 *  closeShortcut.setAlternate(Qt::Key_Escape);
 *  closeAction->setShortcut(closeShortcut);

@@ -83,7 +83,7 @@ public:
 
     /**
        Easy access to the actions in the context menu
-       Currently includes KStdAction::Quit and minimizeRestore
+       Currently includes KStandardAction::Quit and minimizeRestore
     */
     KActionCollection* actionCollection();
 

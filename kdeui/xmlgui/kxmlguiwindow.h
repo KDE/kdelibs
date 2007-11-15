@@ -322,7 +322,7 @@ public Q_SLOTS:
      * This slot can be connected directly to the action to configure toolbar.
      * This is very simple to do that by adding a single line
      * \code
-     * KStdAction::configureToolbars( this, SLOT( configureToolbars() ),
+     * KStandardAction::configureToolbars( this, SLOT( configureToolbars() ),
      *                                actionCollection() );
      * \endcode
      */

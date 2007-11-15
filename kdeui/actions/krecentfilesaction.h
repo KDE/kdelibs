@@ -37,7 +37,7 @@ class KRecentFilesActionPrivate;
  *  @short Recent files action
  *
  *  This class is an action to handle a recent files submenu.
- *  The best way to create the action is to use KStdAction::openRecent.
+ *  The best way to create the action is to use KStandardAction::openRecent.
  *  Then you simply need to call loadEntries on startup, saveEntries
  *  on shutdown, addURL when your application loads/saves a file.
  *

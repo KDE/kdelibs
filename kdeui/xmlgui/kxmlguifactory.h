@@ -182,7 +182,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * This slot can be connected directly to the action to configure shortcuts. This is very simple to
    * do that by adding a single line
    * \code
-   * KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
+   * KStandardAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
    * \endcode
    *
    * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
