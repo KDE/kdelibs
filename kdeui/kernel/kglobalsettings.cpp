@@ -372,8 +372,8 @@ QFont KGlobalSettings::toolBarFont()
     _toolBarFont->setPointSize(11);
 #else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
-    _toolBarFont = new QFont("Sans Serif", 10);
-    _toolBarFont->setPointSize(10);
+    _toolBarFont = new QFont("Sans Serif", 8);
+    _toolBarFont->setPointSize(8);
 #endif
     _toolBarFont->setStyleHint(QFont::SansSerif);
 
