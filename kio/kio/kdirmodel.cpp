@@ -451,7 +451,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
         case Qt::TextAlignmentRole:
             if (index.column() == Size) {
                 // use a right alignment for L2R and R2L languages
-                return Qt::AlignRight;
+                const Qt::Alignment alignment = Qt::AlignRight | Qt::AlignVCenter;
+                return int(alignment);
             }
             break;
         case FileItemRole:
