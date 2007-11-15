@@ -133,7 +133,7 @@ void KPageListView::updateWidth()
   for ( int i = 0; i < rows; ++i )
     width = qMax( width, sizeHintForIndex( model()->index( i, 0 ) ).width() );
 
-  setFixedWidth( width + 20 );
+  setFixedWidth( width + 25 );
 }
 
 
