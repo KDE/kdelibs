@@ -28,6 +28,7 @@
 #include <QtCore/QPair>
 
 class QWidget;
+class QDBusError;
 
 /**
  * KNotification is used to notify some event to the user.
@@ -427,14 +428,15 @@ public Q_SLOTS:
 	 */
 	void sendEvent();
 	
-private Q_SLOTS:
-	void sendEventSync();
 	/**
+	 * @internal
 	 * update the texts, the icon, and the actions of one existing notification
 	 */
 	void update();
 
-	
+private Q_SLOTS:
+	void slotReceivedId(int);
+	void slotReceivedIdError(const QDBusError&);
 	
 private:
 	struct Private;

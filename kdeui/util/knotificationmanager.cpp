@@ -121,27 +121,23 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
         contextList << vl;
     }
 
-    QPointer<KNotification> _n(n);
-    QDBusReply<int> reply =
-        d->knotify->call(QDBus::BlockWithGui, "event", n->eventId(),
-                         (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname),
-                         contextList, n->text(), pixmapData, actions, qlonglong(winId));
-    if (!reply.isValid())
-    {
-        kWarning(299) << "error while contacting knotify server";
-    }
-    else if(_n)
-    {
-        d->notifications.insert(reply, n);
-        return reply;
-    }
-    return 0;
+    QList<QVariant>  args;
+    args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
+    args.append( contextList); // not the operator<< or it will concatenate the two list.
+    args << n->text() <<  pixmapData << actions << qlonglong(winId) ;
+    d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
+
 }
 
 
 void KNotificationManager::remove( int id)
 {
     d->notifications.remove(id);
+}
+
+void KNotificationManager::insert(KNotification *n, int id)
+{
+	d->notifications.insert(id, n);
 }
 
 void KNotificationManager::update(KNotification * n, int id)

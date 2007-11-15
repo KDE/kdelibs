@@ -57,6 +57,11 @@ public:
     void remove(int id);
 
     /**
+     * Insert the notification and it's id in the internal map
+     */
+    void insert(KNotification *n, int id);
+
+    /**
      * update one notification text and pixmap and actions
      */
     void update(KNotification *n, int id);

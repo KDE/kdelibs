@@ -51,6 +51,7 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QPointer>
+#include <QDBusError>
 
 struct KNotification::Private
 {
@@ -261,7 +262,7 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	notify->setPixmap(pixmap);
 	notify->setComponentData(componentData);
 
-	QTimer::singleShot(0,notify,SLOT(sendEventSync()));
+	QTimer::singleShot(0,notify,SLOT(sendEvent()));
 	
 	return notify;
 }
@@ -308,32 +309,19 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 
 void KNotification::sendEvent()
 {
-	QTimer::singleShot(0, this, SLOT(sendEventSync()));
-}
-
-void KNotification::sendEventSync()
-{
 	if(d->id<=0)
 	{
 		QString appname;
 		
 		if(d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
-                else if(d->componentData.isValid()) {
-                    appname = d->componentData.componentName();
-                } else {
-                    appname = KGlobal::mainComponent().componentName();
-                }
-	
-		QPointer<KNotification> _this(this);
-		d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
-		if(!_this) 
-		{  //since the previous function re-enter the event loop, we need the verify that we are not deleted
-			return;
+		else if(d->componentData.isValid()) {
+			appname = d->componentData.componentName();
+		} else {
+			appname = KGlobal::mainComponent().componentName();
 		}
-		if(d->id>0)
-			ref();
-//		kDebug(299) << d->id;
+
+		d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
 		
 		//after a small timeout, the notification will be deleted if all presentation are finished
 		QTimer::singleShot(100, this, SLOT(deref()));
@@ -343,6 +331,24 @@ void KNotification::sendEventSync()
 		KNotificationManager::self()->reemit(this , d->id );
 	}
 }
+
+void KNotification::slotReceivedId(int id)
+{
+	d->id=id;
+	if(d->id>0)
+	{
+		ref();
+		KNotificationManager::self()->insert(this,d->id);
+	}
+
+}
+
+void KNotification::slotReceivedIdError(const QDBusError& error)
+{
+	kWarning(299) << "Error while contacting notify deamon" << error.message();
+	
+}
+
 
 void KNotification::update()
 {
