@@ -22,6 +22,7 @@
 #include <QHash>
 #include <QWidget>
 #include <QtDBus/QtDBus>
+#include <QPointer>
 
 #include <kdebug.h>
 #include <kapplication.h>
@@ -120,15 +121,16 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
         contextList << vl;
     }
 
+    QPointer<KNotification> _n(n);
     QDBusReply<int> reply =
-        d->knotify->call("event", n->eventId(),
+        d->knotify->call(QDBus::BlockWithGui, "event", n->eventId(),
                          (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname),
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (!reply.isValid())
     {
         kWarning(299) << "error while contacting knotify server";
     }
-    else
+    else if(_n)
     {
         d->notifications.insert(reply, n);
         return reply;
@@ -151,7 +153,7 @@ void KNotificationManager::update(KNotification * n, int id)
 	QDataStream arg(&pixmapData, QIODevice::WriteOnly);
 	arg << n->pixmap();
 
-	d->knotify->call(/*QDBus::NoWaitForReply,*/"update", id, n->text(), pixmapData , n->actions() );
+	d->knotify->call(QDBus::NoBlock, "update", id, n->text(), pixmapData , n->actions() );
 }
 
 void KNotificationManager::reemit(KNotification * n, int id)
@@ -166,7 +168,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 		contextList << vl;
 	}
 
-	d->knotify->call(/*QDBus::NoWaitForReply,*/"reemit", id, contextList);
+	d->knotify->call(QDBus::NoBlock, "reemit", id, contextList);
 }
 
 

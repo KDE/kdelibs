@@ -50,6 +50,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QDateTime>
+#include <QPointer>
 
 struct KNotification::Private
 {
@@ -260,7 +261,7 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	notify->setPixmap(pixmap);
 	notify->setComponentData(componentData);
 
-	QTimer::singleShot(0,notify,SLOT(sendEvent()));
+	QTimer::singleShot(0,notify,SLOT(sendEventSync()));
 	
 	return notify;
 }
@@ -323,14 +324,13 @@ void KNotification::sendEventSync()
                 } else {
                     appname = KGlobal::mainComponent().componentName();
                 }
-
-		if(!(d->flags & Persistant))
-		{
-			QTimer::singleShot(6*1000, this, SLOT(close()));
-		}
 	
-		
+		QPointer<KNotification> _this(this);
 		d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
+		if(!_this) 
+		{  //since the previous function re-enter the event loop, we need the verify that we are not deleted
+			return;
+		}
 		if(d->id>0)
 			ref();
 //		kDebug(299) << d->id;
