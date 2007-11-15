@@ -246,23 +246,22 @@ void KConfig::sync()
             return;
         }
 
-        KEntryMap toMerge;
         if (d->wantGlobals()) {
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock(componentData())) {
                 qWarning() << "couldn't lock global file";
                 return;
             }
-            if (d->wantMerge())
-                tmp->parseConfig(utf8Locale, toMerge, ParseGlobal);
-            tmp->writeConfig(utf8Locale, d->entryMap, toMerge, WriteGlobal, d->componentData);
-            toMerge.clear();
+            // always merge "kdeglobals"
+            KConfigBackend::WriteOptions options = KConfigBackend::WriteGlobal|KConfigBackend::WriteMerge;
+            tmp->writeConfig(utf8Locale, d->entryMap, options, d->componentData);
             if (tmp->isLocked())
                 tmp->unlock();
         }
+        KConfigBackend::WriteOptions options;
         if (d->wantMerge())
-            d->mBackend->parseConfig(utf8Locale, toMerge, KConfigBackend::ParseExpansions);
-        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, toMerge, WriteOptions(), d->componentData))
+            options |= KConfigBackend::WriteMerge;
+        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, options, d->componentData))
             d->bDirty = false;
         if (d->mBackend->isLocked())
             d->mBackend->unlock();

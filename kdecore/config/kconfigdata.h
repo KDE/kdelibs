@@ -71,7 +71,7 @@ struct KEntryKey
   /** Constructor. @internal */
   KEntryKey(const QByteArray& _group = QByteArray(),
 	    const QByteArray& _key = QByteArray())
-      : mGroup(_group), mKey(_key), bLocal(false), bDefault(false)
+      : mGroup(_group), mKey(_key), bLocal(false), bDefault(false), bRaw(false)
       { ; }
   /**
    * The "group" to which this EntryKey belongs
@@ -89,6 +89,11 @@ struct KEntryKey
    * Entry indicates if this is a default value.
    */
   bool    bDefault:1;
+  /** @internal
+   * Key is a raw unprocessed key.
+   * @warning this should only be set during merging, never for normal use.
+   */
+  bool    bRaw:1;
 };
 
 /**
@@ -134,6 +139,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             EntryImmutable=4,
             EntryDeleted=8,
             EntryExpansion=16,
+            EntryRawKey=32,
             EntryDefault=(SearchDefaults<<16),
             EntryLocalized=(SearchLocalized<<16)
         };
@@ -208,6 +214,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             // set these here, since we may be changing the type of key from the one we found
             k.bLocal = (options&EntryLocalized);
             k.bDefault = (options&EntryDefault);
+            k.bRaw = (options&EntryRawKey);
 
 /*            qDebug() << "changing" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
                     << '=' << maybeNull(e.mValue)

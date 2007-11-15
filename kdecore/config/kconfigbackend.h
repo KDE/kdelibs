@@ -52,7 +52,7 @@ public:
                                              const QString& fileName = QString(),
                                              const QString& system = QString());
 
-    /** registers mappings from directory to configuration system
+    /** registers mappings from directory/file to configuration system
      * @param entryMap the KEntryMap to build the mappings from
      */
     static void registerMappings(const KEntryMap& entryMap);
@@ -71,7 +71,8 @@ public:
 
     /** options passed to writeConfig. */
     enum WriteOption {
-        WriteGlobal = 1 /// only write entries marked as "global"
+        WriteGlobal = 1, /// only write entries marked as "global"
+        WriteMerge = 2 /// merge with on disk storage
     };
     /// @typedef typedef QFlags<WriteOption> WriteOptions
     Q_DECLARE_FLAGS(WriteOptions, WriteOption)
@@ -95,13 +96,10 @@ public:
 
     /**
      * Write the @em dirty entries to permanent storage.
-     * @param entryMap the KEntryMap containing the @em dirty entries to write.
-     * @param mergeMap the KEntryMap containing the entries
+     * @param entryMap the KEntryMap containing the config object's entries.
      * @param options @see WriteOptions
      */
-    virtual bool writeConfig(const QByteArray& locale,
-                             KEntryMap& entryMap,
-                             const KEntryMap& mergeMap,
+    virtual bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
                              WriteOptions options, const KComponentData &data) = 0;
 
     /**

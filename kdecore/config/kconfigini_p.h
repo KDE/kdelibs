@@ -38,9 +38,11 @@ public:
     ParseInfo parseConfig(const QByteArray& locale,
                           KEntryMap& entryMap,
                           ParseOptions options);
-    bool writeConfig(const QByteArray& locale, 
-                     KEntryMap& entryMap,
-                     const KEntryMap& mergeMap,
+    ParseInfo parseConfig(const QByteArray& locale,
+                          KEntryMap& entryMap,
+                          ParseOptions options,
+                          bool merging);
+    bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
                      WriteOptions options, const KComponentData &data);
 
     bool isWritable() const;

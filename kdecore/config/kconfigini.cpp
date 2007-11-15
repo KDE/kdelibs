@@ -60,10 +60,16 @@ KConfigIniBackend::~KConfigIniBackend()
 {
 }
 
+KConfigBackend::ParseInfo
+        KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entryMap,
+                                       ParseOptions options)
+{
+    return parseConfig(currentLocale, entryMap, options, false);
+}
 
 KConfigBackend::ParseInfo
 KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entryMap,
-                               ParseOptions options)
+                               ParseOptions options, bool merging)
 {
     if (filePath().isEmpty() || !QFile::exists(filePath()))
         return ParseInfo();
@@ -142,6 +148,7 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 continue;
             }
             QByteArray aKey = line.left(end);
+            QByteArray rawKey;
             line = line.mid(end+1);
             if (end != 1 && aKey.length() == 0) {
                 aKey = line;
@@ -194,6 +201,7 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                     }
 
                     locale = aKey.mid(start+1,end-start-1);
+                    rawKey = aKey.left(end+1);
                 }
                 aKey = aKey.remove(start, end-start+1);
             }
@@ -202,8 +210,14 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (!locale.isEmpty()) {
                 if (locale != currentLocale) {
                     // backward compatibility. C == en_US
-                    if (locale.at(0) != 'C' || currentLocale != "en_US")
-                        goto next_line;
+                    if (locale.at(0) != 'C' || currentLocale != "en_US") {
+                        if (merging){
+                            entryOptions |= KEntryMap::EntryRawKey;
+                            aKey = rawKey; // store as unprocessed key
+                            locale = QByteArray();
+                        } else
+                            goto next_line; // skip this entry if we're not merging
+                    }
                 }
             }
 
@@ -251,12 +265,15 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
         firstEntry = false;
         // it is data for a group
 
-        file.write(stringToPrintable(key.mKey)); // Key
-
-        if (key.bLocal && locale != "C") { // locale 'C' == untranslated
-            file.putChar('[');
-            file.write(locale); // Locale tag
-            file.putChar(']');
+        if (key.bRaw) // unprocessed key with attached locale from merge
+            file.write(key.mKey);
+        else {
+            file.write(stringToPrintable(key.mKey)); // Key
+            if (key.bLocal && locale != "C") { // 'C' locale == untranslated
+                file.putChar('[');
+                file.write(locale); // locale tag
+                file.putChar(']');
+            }
         }
         if (currentEntry.bDeleted) {
             if (currentEntry.bImmutable)
@@ -291,13 +308,21 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file, cons
 }
 
 bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                                    const KEntryMap& toMerge, WriteOptions options, const KComponentData &data)
+                                    WriteOptions options, const KComponentData &data)
 {
     Q_ASSERT(!filePath().isEmpty());
 
-    KEntryMap writeMap = toMerge;
+    KEntryMap writeMap;
     bool bGlobal = options & WriteGlobal;
 
+    if (options&WriteMerge) {
+        ParseOptions opts = ParseExpansions;
+        if (bGlobal)
+            opts |= ParseGlobal;
+        ParseInfo info = parseConfig(locale, writeMap, opts, true);
+        if (info) // either there was an error or the file became immutable
+            return false;
+    }
     const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
         if (!it->bDirty) // not dirty, doesn't overwrite entry in writeMap. skips default entries, too.
