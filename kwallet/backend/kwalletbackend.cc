@@ -432,9 +432,8 @@ int Backend::open(const QByteArray& password) {
 
 	// chop off the leading blksz+4 bytes
 	QByteArray tmpenc(encrypted.data()+blksz+4, fsize);
-	tmpenc.fill( 0 );
-	encrypted = QByteArray(tmpenc.data(), tmpenc.size());
-	encrypted.fill( 0 );
+	encrypted = tmpenc;
+	tmpenc.fill(0);
 
 	// Load the data structures up
 	QDataStream eStream(encrypted);
@@ -478,6 +477,7 @@ int Backend::open(const QByteArray& password) {
 	}
 
 	_open = true;
+	encrypted.fill(0);
 	return 0;
 }
 
