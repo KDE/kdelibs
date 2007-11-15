@@ -151,6 +151,11 @@ KUrl::List::List(const KUrl &url)
     append( url );
 }
 
+KUrl::List::List(const QList<KUrl> &list)
+    : QList<KUrl>(list)
+{
+}
+
 KUrl::List::List(const QStringList &list)
 {
   for (QStringList::ConstIterator it = list.begin();

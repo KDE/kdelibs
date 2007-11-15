@@ -133,10 +133,15 @@ public:
       List(const KUrl &url);
       /**
        * Creates a list that contains the URLs from the given
-       * list.
+       * list of strings.
        * @param list the list containing the URLs as strings
        */
       List(const QStringList &list);
+      /**
+       * Creates a list that contains the URLs from the given QList<KUrl>.
+       * @param list the list containing the URLs
+       */
+      List(const QList<KUrl> &list);
       /**
        * Converts the URLs of this list to a list of strings.
        * @return the list of strings
