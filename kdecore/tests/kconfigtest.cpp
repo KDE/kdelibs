@@ -653,6 +653,50 @@ void KConfigTest::testEmptyGroup()
 #endif
 }
 
+void KConfigTest::testMerge()
+{
+    KConfig config("mergetest", KConfig::SimpleConfig);
+
+    KConfigGroup cg = config.group("some group");
+    cg.writeEntry("entry", " random entry");
+    cg.writeEntry("another entry", "blah blah blah");
+
+    { // simulate writing by another process
+        QFile file(KStandardDirs::locateLocal("config", "mergetest"));
+        file.open(QIODevice::WriteOnly|QIODevice::Text);
+        QTextStream out(&file);
+        out.setCodec("UTF-8");
+        out << "[Merged Group]" << endl
+                << "entry1=Testing" << endl
+                << "entry2=More Testing" << endl
+                << "[some group]" << endl
+                << "entry[fr]=French" << endl
+                << "entry[es]=Spanish" << endl
+                << "entry[de]=German" << endl;
+    }
+    config.sync();
+
+    {
+        QList<QByteArray> lines;
+        // this is what the file should look like
+        lines << "[Merged Group]\n"
+                << "entry1=Testing\n"
+                << "entry2=More Testing\n"
+                << "\n"
+                << "[some group]\n"
+                << "another entry=blah blah blah\n"
+                << "entry=\\srandom entry\n"
+                << "entry[de]=German\n"
+                << "entry[es]=Spanish\n"
+                << "entry[fr]=French\n";
+        QFile file(KStandardDirs::locateLocal("config", "mergetest"));
+        file.open(QIODevice::ReadOnly|QIODevice::Text);
+        foreach (const QByteArray& line, lines) {
+            QCOMPARE(line, file.readLine());
+        }
+    }
+}
+
 void KConfigTest::testSubGroup()
 {
     KConfig sc( "kconfigtest" );
