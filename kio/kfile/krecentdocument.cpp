@@ -63,11 +63,12 @@ QStringList KRecentDocument::recentDocuments()
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
        QString pathDesktop = d.absoluteFilePath( *it );
        KDesktopFile tmpDesktopFile( pathDesktop );
-       KUrl urlDesktopFile(tmpDesktopFile.readUrl());
-       if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())
+       KUrl urlDesktopFile(tmpDesktopFile.desktopGroup().readPathEntry("URL", QString()));
+       if (urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists()) {
            d.remove(pathDesktop);
-       else
+       } else {
            fullList.append( pathDesktop );
+       }
     }
 
     return fullList;
