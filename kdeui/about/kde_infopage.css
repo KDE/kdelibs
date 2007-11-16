@@ -93,8 +93,6 @@ a:hover {
   padding-bottom: 0.5ex;
   font-weight: bold;
   font-size: small;
-  margin-left: 1px;
-  margin-right: 1px;
 }
 
 #barCenter a.selected, #barCenter a.selected:hover {
