@@ -426,7 +426,8 @@ void KFontChooser::Private::fillSizeList() {
             16, 17, 18, 19,
             20, 22, 24, 26,
             28, 32, 48, 64,
-            0
+            72, 80, 96, 128,
+	     0
         };
     for(int i = 0; c[i]; ++i)
     {
