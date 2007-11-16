@@ -618,6 +618,12 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size){
 
 void KFontChooser::Private::_k_size_value_slot(int val) {
     selFont.setPointSize( val );
+    QList<QListWidgetItem*> selectedSizeList =
+        sizeListBox->findItems( QString::number(val),
+                                Qt::MatchExactly );
+    if ( !selectedSizeList.isEmpty() ) {
+        sizeListBox->setCurrentItem(selectedSizeList.first());
+    }
     emit q->fontSelected( selFont );
 }
 
