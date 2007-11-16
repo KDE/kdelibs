@@ -70,8 +70,8 @@ struct KEntryKey
 {
   /** Constructor. @internal */
   KEntryKey(const QByteArray& _group = QByteArray(),
-	    const QByteArray& _key = QByteArray())
-      : mGroup(_group), mKey(_key), bLocal(false), bDefault(false), bRaw(false)
+	    const QByteArray& _key = QByteArray(), bool isLocalized=false, bool isDefault=false)
+      : mGroup(_group), mKey(_key), bLocal(isLocalized), bDefault(isDefault), bRaw(false)
       { ; }
   /**
    * The "group" to which this EntryKey belongs
@@ -97,7 +97,8 @@ struct KEntryKey
 };
 
 /**
- * compares two KEntryKeys (needed for QMap).
+ * Compares two KEntryKeys (needed for QMap). The order is localized, localized-default,
+ * non-localized, non-localized-default
  * @internal
  */
 inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
@@ -113,7 +114,7 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
     }
 
     if (k1.bLocal != k2.bLocal)
-        return k2.bLocal;
+        return k1.bLocal;
     return (!k1.bDefault && k2.bDefault);
 }
 
@@ -148,8 +149,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         Iterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
                            SearchFlags flags = SearchFlags())
         {
-            KEntryKey theKey(group, key);
-            theKey.bDefault = (flags&SearchDefaults);
+            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
 
             // try the localized key first
             if (flags&SearchLocalized) {
@@ -167,8 +167,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         ConstIterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
                                 SearchFlags flags = SearchFlags()) const
         {
-            KEntryKey theKey(group, key);
-            theKey.bDefault = (flags&SearchDefaults);
+            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
 
             // try the localized key first
             if (flags&SearchLocalized) {
@@ -344,8 +343,8 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
 /*                qDebug() << "reverting" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
                         << '=' << entry->mValue
                         << entryDataToQString(*entry).toLatin1().constData();*/
-                const ConstIterator defaultEntry = findEntry(group, key, flags|SearchDefaults);
-                if (defaultEntry != constEnd()) {
+                const ConstIterator defaultEntry(entry+1);
+                if (defaultEntry != constEnd() && defaultEntry.key().bDefault) {
                     *entry = *defaultEntry;
                     entry->bDirty = true;
                 } else if (!entry->mValue.isNull()){
