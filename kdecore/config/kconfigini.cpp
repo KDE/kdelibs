@@ -83,6 +83,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
     if (!file.open(QIODevice::ReadOnly|QIODevice::Text))
         return ParseOpenError;
 
+    QList<QByteArray> immutableGroups;
+
     bool fileOptionImmutable = false;
     bool groupOptionImmutable = false;
     bool groupSkip = false;
@@ -128,10 +130,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (groupSkip && !bDefault)
                 continue;
 
-            KEntryMap::EntryOptions opts=0;
             if (groupOptionImmutable)
-                opts = KEntryMap::EntryImmutable;
-            entryMap.setEntry(currentGroup, 0, QByteArray(), opts);
+                immutableGroups.append(currentGroup);
         } else {
             if (groupSkip && !bDefault)
                 continue; // skip entry
@@ -231,6 +231,11 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
         }
 next_line:
         continue;
+    }
+
+    // now make sure immutable groups are marked immutable
+    foreach(const QByteArray& group, immutableGroups) {
+        entryMap.setEntry(group, QByteArray(), QByteArray(), KEntryMap::EntryImmutable);
     }
 
     return (fileOptionImmutable? ParseImmutable: ParseInfo());

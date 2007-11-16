@@ -198,7 +198,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             const ConstIterator it = findEntry(group, key, SearchFlags(options>>16));
 
             if (it != constEnd()) {
-                if (KEntryMap::value(KEntryKey(group)).bImmutable || it->bImmutable)
+                if (it->bImmutable)
                     return; // we cannot change this entry.
                 k = it.key();
                 e = *it;
@@ -209,6 +209,9 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
 
                 k = KEntryKey(group, key);
             }
+
+            if (KEntryMap::value(KEntryKey(group)).bImmutable)
+                return; // this group is immutable, so we cannot change this entry.
 
             // set these here, since we may be changing the type of key from the one we found
             k.bLocal = (options&EntryLocalized);
