@@ -215,7 +215,7 @@ QPoint KSelector::calcArrowPos( int val )
     else
     {
         p.setX( iw + (width() - 2 * iw - 1) * val  / ( maximum() - minimum() ) );
-        p.setY( height() - 5 );
+
         if ( d->arrowPE == QStyle::PE_IndicatorArrowDown ) {
             p.setY( 0 );
         } else {
