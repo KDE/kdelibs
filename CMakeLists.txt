@@ -30,14 +30,6 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
-if(WIN32)
-    set(LIB_INSTALL_DIR ${LIB_INSTALL_DIR}
-                        RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-                        LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-                        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
-endif(WIN32)
-
-
 # set some default settings
 include(KDE4Defaults)
 
