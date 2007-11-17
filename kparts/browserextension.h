@@ -280,10 +280,6 @@ private:
   * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
   * @li @p paste : Paste clipboard into view URL.
   * @li @p pasteTo(const KUrl &) : Paste clipboard into given URL.
-  * @li @p rename : Rename item in place.
-  * @li @p trash : Move selected items to trash.
-  * @li @p del : Delete selected items (couldn't call it delete!).
-  * @li @p shred : Shred selected items (secure deletion) - DEPRECATED.
   * @li @p properties : Show file/document properties.
   * @li @p editMimeType : show file/document's mimetype properties.
   * @li @p searchProvider : Lookup selected text at default search provider
