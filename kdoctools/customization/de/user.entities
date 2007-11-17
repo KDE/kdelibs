@@ -46,16 +46,3 @@
 <!ENTITY systemtray "<application>Systemabschnitt</application>">
 <!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
 
-<!-- The following entities are deprecated and will be removed at a future time, Do not use! -->
-<!ENTITY dh     "<abbrev>d.&nbsp;h.</abbrev>">
-<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
-<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
- khelpcenter -->
-<!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
- kicker -->
-<!ENTITY Strg 	"<keycap>Strg</keycap>"><!-- ctrl -->
-<!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
-<!ENTITY usw    "<abbrev>usw.</abbrev>">
-<!ENTITY ua     "<abbrev>u.&nbsp;a.</abbrev>" >
-<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch -->
-<!ENTITY zb     "<abbrev>z.&nbsp;B.</abbrev>" ><!-- eg -->
