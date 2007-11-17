@@ -29,7 +29,7 @@ const QByteArray key2("Another Key");
 const QByteArray value1("A value");
 const QByteArray value2("A different value");
 
-QTEST_KDEMAIN_CORE( KEntryMapTest );
+QTEST_KDEMAIN_CORE( KEntryMapTest )
 
 void KEntryMapTest::testKeyOrder()
 {
