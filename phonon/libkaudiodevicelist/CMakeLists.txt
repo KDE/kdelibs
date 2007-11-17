@@ -20,6 +20,7 @@ include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${KDE4_K
 set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
 	audiodeviceenumerator.cpp
+   hardwaredatabase.cpp
 	)
 IF(ALSA_FOUND)
    QT4_ADD_RESOURCES(kaudiodevicelist_LIB_SRCS resources.qrc)
@@ -35,3 +36,4 @@ install(FILES
 	audiodevice.h
 	audiodeviceenumerator.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
+install(FILES hardwaredatabase DESTINATION ${DATA_INSTALL_DIR}/libphonon)

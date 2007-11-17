@@ -1,0 +1,69 @@
+# Creative SB Audigy 2 ZS
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_4]
+name=Creative SB Audigy 2 ZS p16v
+initialPreference=0
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_3]
+name=Creative SB Audigy 2 ZS Multichannel Playback
+initialPreference=10
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_2]
+name=Creative SB Audigy 2 ZS PT Playback
+initialPreference=10
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_0]
+name=Creative SB Audigy 2 ZS Standard Playback
+initialPreference=35
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_4]
+name=Creative SB Audigy 2 ZS p16v
+initialPreference=0
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_2]
+name=Creative SB Audigy 2 ZS Multichannel Capture
+initialPreference=10
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_1]
+name=Creative SB Audigy 2 ZS Mic Capture
+initialPreference=35
+
+[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_0]
+name=Creative SB Audigy 2 ZS ADC Capture
+initialPreference=35
+
+#NVidia CK804 Analog Devices AD1981B
+[/org/freedesktop/Hal/devices/pci_10de_59_alsa_playback_2]
+name=NVidia CK804 AD1981B S/PDIF
+initialPreference=15
+
+[/org/freedesktop/Hal/devices/pci_10de_59_alsa_capture_1]
+name=NVidia CK804 AD1981B MIC ADC
+initialPreference=35
+
+[/org/freedesktop/Hal/devices/pci_10de_59_alsa_playback_0]
+name=NVidia CK804 AD1981B
+initialPreference=35
+
+[/org/freedesktop/Hal/devices/pci_10de_59_alsa_capture_0]
+name=NVidia CK804 AD1981B
+initialPreference=35
+
+#HDA Intel Analog Devices AD1986A
+[/org/freedesktop/Hal/devices/pci_8086_27d8_alsa_capture_0]
+name=Analog Devices AD1986A
+initialPreference=35
+
+[/org/freedesktop/Hal/devices/pci_8086_27d8_alsa_playback_0]
+name=Analog Devices AD1986A
+initialPreference=35
+
+#Logitech USB Headset 350
+[/org/freedesktop/Hal/devices/usb_device_46d_a02_noserial_if0_alsa_playback_0]
+name=Logitech Premium Stereo USB Headset 350
+icon=audio-headset-usb
+initialPreference=25
+
+[/org/freedesktop/Hal/devices/usb_device_46d_a02_noserial_if0_alsa_capture_0]
+name=Logitech Premium Stereo USB Headset 350
+icon=audio-headset-usb
+initialPreference=25

@@ -43,6 +43,7 @@ class AudioDevicePrivate : public QSharedData
         {
         }
 
+        void applyHardwareDatabaseOverrides();
 #ifdef HAVE_LIBASOUND2
         void deviceInfoFromPcmDevice(const QString &deviceName);
 #endif // HAVE_LIBASOUND2

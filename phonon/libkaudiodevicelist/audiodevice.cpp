@@ -21,6 +21,8 @@
 
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
+#include "hardwaredatabase_p.h"
+
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
@@ -190,7 +192,8 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("icon", d->icon);
     }
     kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
-    //Q_ASSERT(deviceGroup.readEntry("udi", d->udi) == d->udi);
+
+    d->applyHardwareDatabaseOverrides();
 }
 
 AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
@@ -207,6 +210,8 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     d->available = false;
     d->initialPreference = deviceGroup.readEntry("initialPreference", 0);
     // deviceIds stays empty because it's not available
+
+    d->applyHardwareDatabaseOverrides();
 }
 
 AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr config)
@@ -249,6 +254,8 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
         deviceGroup.writeEntry("icon", d->icon);
     }
     config->sync();
+
+    d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
 }
 
@@ -330,6 +337,8 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         deviceGroup.writeEntry("icon", d->icon);
     }
     config->sync();
+
+    d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
 }
 
@@ -397,14 +406,14 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
         snd_ctl_card_info_free(cardInfo);
 
         if (deviceNameEnc.startsWith("iec958:")) {
-            initialPreference -= 10;
+            initialPreference -= 20;
         } else if (cardName.contains("IEC958", Qt::CaseInsensitive) ||
                     cardName.contains("s/pdif", Qt::CaseInsensitive) ||
                     cardName.contains("spdif", Qt::CaseInsensitive) ||
                     probablyTheCardName.contains("IEC958", Qt::CaseInsensitive) ||
                     probablyTheCardName.contains("s/pdif", Qt::CaseInsensitive) ||
                     probablyTheCardName.contains("spdif", Qt::CaseInsensitive)) {
-            initialPreference -= 10;
+            initialPreference -= 20;
         }
         if (cardName.contains("headset", Qt::CaseInsensitive) ||
                 cardName.contains("headphone", Qt::CaseInsensitive) ||
@@ -536,6 +545,21 @@ QString AudioDevice::iconName() const
 Solid::AudioInterface::AudioDriver AudioDevice::driver() const
 {
     return d->driver;
+}
+
+void AudioDevicePrivate::applyHardwareDatabaseOverrides()
+{
+    // now let's take a look at the hardware database whether we have to override something
+    if (HardwareDatabase::contains(udi)) {
+        HardwareDatabase::Entry e = HardwareDatabase::entryFor(udi);
+        if (!e.name.isEmpty()) {
+            cardName = e.name;
+        }
+        if (!e.iconName.isEmpty()) {
+            icon = e.iconName;
+        }
+        initialPreference = e.initialPreference;
+    }
 }
 
 } // namespace Phonon
