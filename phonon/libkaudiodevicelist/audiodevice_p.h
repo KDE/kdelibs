@@ -43,6 +43,9 @@ class AudioDevicePrivate : public QSharedData
         {
         }
 
+        void changeIndex(int newIndex, KSharedConfig::Ptr config);
+        KConfigGroup configGroup(KSharedConfig::Ptr config);
+        QString uniqueIdentifierFromDevice(const Solid::Device &);
         void applyHardwareDatabaseOverrides();
 #ifdef HAVE_LIBASOUND2
         void deviceInfoFromPcmDevice(const QString &deviceName);

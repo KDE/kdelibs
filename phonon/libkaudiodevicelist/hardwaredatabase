@@ -1,69 +1,82 @@
+# Group names can be found in $KDEHOME/share/config/phonondevicesrc, you only need to remove the
+# AudioCaptureDevice_/AudioOutputDevice_/AudioIODevice_ prefix
+#
+# The four numbers in the group name are
+# vendor id:product id:subsystem vendor id:subsystem product id
+# or for USB only
+# vendor id:product id
+#
+# The last number is the ALSA device number
+#
+# Every entry may have a name, icon and initialPreference entry.
+
 # Creative SB Audigy 2 ZS
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_4]
+[pci:1102:0004:1102:2002:playback:alsa:4]
 name=Creative SB Audigy 2 ZS p16v
 initialPreference=0
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_3]
+[pci:1102:0004:1102:2002:playback:alsa:3]
 name=Creative SB Audigy 2 ZS Multichannel Playback
 initialPreference=10
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_2]
+[pci:1102:0004:1102:2002:playback:alsa:2]
 name=Creative SB Audigy 2 ZS PT Playback
 initialPreference=10
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_playback_0]
+[pci:1102:0004:1102:2002:playback:alsa:0]
 name=Creative SB Audigy 2 ZS Standard Playback
 initialPreference=35
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_4]
+[pci:1102:0004:1102:2002:capture:alsa:4]
 name=Creative SB Audigy 2 ZS p16v
 initialPreference=0
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_2]
+[pci:1102:0004:1102:2002:capture:alsa:2]
 name=Creative SB Audigy 2 ZS Multichannel Capture
 initialPreference=10
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_1]
+[pci:1102:0004:1102:2002:capture:alsa:1]
 name=Creative SB Audigy 2 ZS Mic Capture
 initialPreference=35
 
-[/org/freedesktop/Hal/devices/pci_1102_4_alsa_capture_0]
+[pci:1102:0004:1102:2002:capture:alsa:0]
 name=Creative SB Audigy 2 ZS ADC Capture
 initialPreference=35
 
 #NVidia CK804 Analog Devices AD1981B
-[/org/freedesktop/Hal/devices/pci_10de_59_alsa_playback_2]
+[pci:10de:0059:10f1:2895:playback:alsa:2]
 name=NVidia CK804 AD1981B S/PDIF
 initialPreference=15
 
-[/org/freedesktop/Hal/devices/pci_10de_59_alsa_capture_1]
+[pci:10de:0059:10f1:2895:capture:alsa:1]
 name=NVidia CK804 AD1981B MIC ADC
 initialPreference=35
 
-[/org/freedesktop/Hal/devices/pci_10de_59_alsa_playback_0]
+[pci:10de:0059:10f1:2895:playback:alsa:0]
 name=NVidia CK804 AD1981B
 initialPreference=35
 
-[/org/freedesktop/Hal/devices/pci_10de_59_alsa_capture_0]
+[pci:10de:0059:10f1:2895:capture:alsa:0]
 name=NVidia CK804 AD1981B
 initialPreference=35
 
 #HDA Intel Analog Devices AD1986A
-[/org/freedesktop/Hal/devices/pci_8086_27d8_alsa_capture_0]
+[pci:8086:27d8:144d:c024:capture:alsa:0]
 name=Analog Devices AD1986A
 initialPreference=35
 
-[/org/freedesktop/Hal/devices/pci_8086_27d8_alsa_playback_0]
+[pci:8086:27d8:144d:c024:playback:alsa:0]
 name=Analog Devices AD1986A
 initialPreference=35
 
 #Logitech USB Headset 350
-[/org/freedesktop/Hal/devices/usb_device_46d_a02_noserial_if0_alsa_playback_0]
+[usb:046d:0a02:playback:alsa:0]
 name=Logitech Premium Stereo USB Headset 350
 icon=audio-headset-usb
 initialPreference=25
 
-[/org/freedesktop/Hal/devices/usb_device_46d_a02_noserial_if0_alsa_capture_0]
+[usb:046d:0a02:capture:alsa:0]
 name=Logitech Premium Stereo USB Headset 350
 icon=audio-headset-usb
 initialPreference=25
+

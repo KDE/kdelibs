@@ -92,9 +92,27 @@ void AudioDeviceEnumeratorPrivate::findDevices()
             continue;
         }
 
-        KConfigGroup configGroup(config.data(), groupName);
+        KConfigGroup configGroup(config, groupName);
         AudioDevice dev(configGroup);
-        if (dev.isValid()) {
+        if (!dev.isValid()) { // invalid only if the storage format changed
+            // try to find the new device
+            Solid::Device device(dev.udi());
+            AudioDevice newDevice(device, config);
+            if (newDevice.isValid()) {
+                // found it, now give it the old index
+                newDevice.d->changeIndex(dev.index(), config);
+
+                if (newDevice.isCaptureDevice()) {
+                    const int i = capturedevicelist.indexOf(newDevice);
+                    capturedevicelist.replace(i, newDevice);
+                }
+                if (newDevice.isPlaybackDevice()) {
+                    const int i = playbackdevicelist.indexOf(newDevice);
+                    playbackdevicelist.replace(i, newDevice);
+                }
+            }
+            configGroup.deleteGroup(); // don't need it anymore
+        } else {
             if (dev.isCaptureDevice()) {
                 capturedevicelist << dev;
                 if (dev.isPlaybackDevice()) {

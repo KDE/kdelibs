@@ -25,6 +25,7 @@
 
 #include <solid/device.h>
 #include <solid/audiointerface.h>
+#include <solid/genericinterface.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -63,19 +64,126 @@ AudioDevice::AudioDevice()
 {
 }
 
+KConfigGroup AudioDevicePrivate::configGroup(KSharedConfig::Ptr config)
+{
+    QString groupName;
+    if (captureDevice) {
+        if (playbackDevice) {
+            groupName = QLatin1String("AudioIODevice_");
+        } else {
+            groupName = QLatin1String("AudioCaptureDevice_");
+        }
+    } else {
+        Q_ASSERT(playbackDevice);
+        groupName = QLatin1String("AudioOutputDevice_");
+    }
+    groupName += udi;
+    return KConfigGroup(config, groupName);
+}
+
+QString AudioDevicePrivate::uniqueIdentifierFromDevice(const Solid::Device &device)
+{
+    const Solid::GenericInterface *genericIface = device.as<Solid::GenericInterface>();
+    Q_ASSERT(genericIface);
+    const QString subsystem = genericIface->property(QLatin1String("info.subsystem")).toString();
+    if (subsystem == "pci") {
+        const QVariant vendor_id = genericIface->property("pci.vendor_id");
+        if (vendor_id.isValid()) {
+            const QVariant product_id = genericIface->property("pci.product_id");
+            if (product_id.isValid()) {
+                const QVariant subsys_vendor_id = genericIface->property("pci.subsys_vendor_id");
+                if (subsys_vendor_id.isValid()) {
+                    const QVariant subsys_product_id = genericIface->property("pci.subsys_product_id");
+                    if (subsys_product_id.isValid()) {
+                        return QString("pci:%1:%2:%3:%4")
+                            .arg(vendor_id.toInt(), 4, 16, QLatin1Char('0'))
+                            .arg(product_id.toInt(), 4, 16, QLatin1Char('0'))
+                            .arg(subsys_vendor_id.toInt(), 4, 16, QLatin1Char('0'))
+                            .arg(subsys_product_id.toInt(), 4, 16, QLatin1Char('0'));
+                    }
+                }
+            }
+        }
+    } else if (subsystem == "usb" || subsystem == "usb_device") {
+        const QVariant vendor_id = genericIface->property("usb.vendor_id");
+        if (vendor_id.isValid()) {
+            const QVariant product_id = genericIface->property("usb.product_id");
+            if (product_id.isValid()) {
+                return QString("usb:%1:%2")
+                    .arg(vendor_id.toInt(), 4, 16, QLatin1Char('0'))
+                    .arg(product_id.toInt(), 4, 16, QLatin1Char('0'));
+            }
+        }
+    /*} else if (subsystem == "platform") {
+    } else if (subsystem == "pnp") {
+    } else if (subsystem == "serio") {
+    } else if (subsystem == "scsi") {*/
+    }
+    return QString();
+}
+
 AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
-    kDebug(603) << audioHw->driverHandle();
-    d->udi = audioDevice.udi();
-    d->cardName = audioHw->name();
+    //kDebug(603) << audioHw->driverHandle();
+    d->udi = d->uniqueIdentifierFromDevice(audioDevice);
     d->driver = audioHw->driver();
+    const QVariant handle = audioHw->driverHandle();
+    if (d->udi.isEmpty()) {
+        Solid::Device parent = audioDevice.parent();
+        if (parent.isValid()) {
+            d->udi = d->uniqueIdentifierFromDevice(parent);
+            if (!d->udi.isEmpty()) {
+                switch (audioHw->deviceType()) {
+                case Solid::AudioInterface::AudioInput:
+                    d->udi += QLatin1String(":capture");
+                    break;
+                case Solid::AudioInterface::AudioOutput:
+                    d->udi += QLatin1String(":playback");
+                    break;
+                case 6: //Solid::AudioInterface::AudioInput | Solid::AudioInterface::AudioOutput:
+                    d->udi += QLatin1String(":both");
+                    break;
+                default:
+                    break;
+                }
+                switch (d->driver) {
+                case Solid::AudioInterface::Alsa:
+                    d->udi += QLatin1String(":alsa");
+                    if (handle.type() == QVariant::List) {
+                        const QList<QVariant> handles = handle.toList();
+                        if (handles.size() > 1 && handles.at(1).isValid()) {
+                            d->udi += QLatin1Char(':') + handles.at(1).toString();
+                        }
+                    }
+                    break;
+                case Solid::AudioInterface::OpenSoundSystem:
+                    d->udi += QLatin1String(":oss");
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        if (d->udi.isEmpty()) {
+            d->udi = audioHw->name();
+            d->udi += audioDevice.vendor();
+            d->udi += audioDevice.product();
+            if (parent.isValid()) {
+                d->udi += parent.vendor();
+                d->udi += parent.product();
+            }
+            d->udi += QString::number(audioHw->driver());
+            d->udi += QLatin1Char('_');
+            d->udi += QString::number(audioHw->deviceType());
+        }
+    }
+    d->cardName = audioHw->name();
 
     // prefer devices Solid tells us about
     d->initialPreference += 5;
 
-    const QVariant handle = audioHw->driverHandle();
     switch (d->driver) {
     case Solid::AudioInterface::UnknownAudioDriver:
         d->valid = false;
@@ -100,6 +208,10 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         QString x_phononId = QLatin1String("x-phonon:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
         QString fallbackId = QLatin1String("plughw:CARD=")   + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
         if (handles.size() > 1 && handles.at(1).isValid()) {
+            if (handles.at(1).toInt() == 0) {
+                // prefer DEV=0 devices over DEV>0
+                d->initialPreference += 1;
+            }
             x_phononId += ",DEV=" + handles.at(1).toString();
             fallbackId += ",DEV=" + handles.at(1).toString();
             if (handles.size() > 2 && handles.at(2).isValid()) {
@@ -110,66 +222,58 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         d->deviceIds << x_phononId << fallbackId;
         break;
     }
-    switch (audioHw->soundcardType()) {
-    case Solid::AudioInterface::InternalSoundcard:
-        d->icon = QLatin1String("audio-card");
-        break;
-    case Solid::AudioInterface::UsbSoundcard:
-        d->icon = QLatin1String("audio-card-usb");
-        d->initialPreference -= 10;
-        break;
-    case Solid::AudioInterface::FirewireSoundcard:
-        d->icon = QLatin1String("audio-card-firewire");
-        d->initialPreference -= 10;
-        break;
-    case Solid::AudioInterface::Headset:
-        if (d->udi.contains("usb", Qt::CaseInsensitive) ||
-                d->cardName.contains("usb", Qt::CaseInsensitive)) {
-            d->icon = QLatin1String("audio-headset-usb");
-        } else {
-            d->icon = QLatin1String("audio-headset");
+    d->icon = audioDevice.icon();
+    if (d->icon.isEmpty()) {
+        switch (audioHw->soundcardType()) {
+        case Solid::AudioInterface::InternalSoundcard:
+            d->icon = QLatin1String("audio-card");
+            break;
+        case Solid::AudioInterface::UsbSoundcard:
+            d->icon = QLatin1String("audio-card-usb");
+            d->initialPreference -= 10;
+            break;
+        case Solid::AudioInterface::FirewireSoundcard:
+            d->icon = QLatin1String("audio-card-firewire");
+            d->initialPreference -= 10;
+            break;
+        case Solid::AudioInterface::Headset:
+            if (audioDevice.udi().contains("usb", Qt::CaseInsensitive) ||
+                    d->cardName.contains("usb", Qt::CaseInsensitive)) {
+                d->icon = QLatin1String("audio-headset-usb");
+            } else {
+                d->icon = QLatin1String("audio-headset");
+            }
+            d->initialPreference -= 10;
+            break;
+        case Solid::AudioInterface::Modem:
+            d->icon = QLatin1String("modem");
+            // should a modem be a valid device so that it's shown to the user?
+            d->valid = false;
+            return;
         }
-        d->initialPreference -= 10;
-        break;
-    case Solid::AudioInterface::Modem:
-        d->icon = QLatin1String("modem");
-        // should a modem be a valid device so that it's shown to the user?
-        d->valid = false;
-        return;
     }
     d->available = true;
     d->valid = true;
 
-    QString groupName;
     Solid::AudioInterface::AudioInterfaceTypes deviceType = audioHw->deviceType();
     if (deviceType == Solid::AudioInterface::AudioInput) {
         d->captureDevice = true;
-        groupName = QLatin1String("AudioCaptureDevice_");
     } else {
         if (deviceType == Solid::AudioInterface::AudioOutput) {
             d->playbackDevice = true;
-            groupName = QLatin1String("AudioOutputDevice_");
         } else {
             Q_ASSERT(deviceType == (Solid::AudioInterface::AudioOutput | Solid::AudioInterface::AudioInput));
             d->captureDevice = true;
             d->playbackDevice = true;
-            groupName = QLatin1String("AudioIODevice_");
         }
     }
-    {
-        const QString oldGroupName = groupName + d->cardName;
-        if (config->hasGroup(oldGroupName)) {
-            config->deleteGroup(oldGroupName);
-        }
-    }
-    groupName += d->udi;
 
-    KConfigGroup deviceGroup(config, groupName);
-    if (config->hasGroup(groupName)) {
+    KConfigGroup deviceGroup = d->configGroup(config);
+    if (deviceGroup.exists()) {
         d->index = deviceGroup.readEntry("index", -1);
     }
     if (d->index == -1) {
-        KConfigGroup globalGroup(config.data(), "Globals");
+        KConfigGroup globalGroup(config, "Globals");
         int nextIndex = globalGroup.readEntry("nextIndex", 0);
         d->index = nextIndex++;
         globalGroup.writeEntry("nextIndex", nextIndex);
@@ -191,21 +295,33 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         }
         deviceGroup.writeEntry("icon", d->icon);
     }
-    kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
+    //kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
 
     d->applyHardwareDatabaseOverrides();
+}
+
+void AudioDevicePrivate::changeIndex(int newIndex, KSharedConfig::Ptr config)
+{
+    index = newIndex;
+    KConfigGroup deviceGroup = configGroup(config);
+    deviceGroup.writeEntry("index", index);
 }
 
 AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     : d(new AudioDevicePrivate)
 {
     d->index = deviceGroup.readEntry("index", d->index);
+    d->udi = deviceGroup.readEntry("udi", d->udi);
+    if (d->udi.startsWith("/org/freedesktop/Hal/devices/")) {
+        // old invalid group
+        d->valid = false;
+        return;
+    }
     d->cardName = deviceGroup.readEntry("cardName", d->cardName);
     d->icon = deviceGroup.readEntry("icon", d->icon);
     d->driver = static_cast<Solid::AudioInterface::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
     d->captureDevice = deviceGroup.readEntry("captureDevice", d->captureDevice);
     d->playbackDevice = deviceGroup.readEntry("playbackDevice", d->playbackDevice);
-    d->udi = deviceGroup.readEntry("udi", d->udi);
     d->valid = true;
     d->available = false;
     d->initialPreference = deviceGroup.readEntry("initialPreference", 0);
@@ -224,12 +340,12 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
     d->udi = alsaDeviceName;
     d->deviceInfoFromPcmDevice(alsaDeviceName);
 
-    KConfigGroup deviceGroup(config.data(), alsaDeviceName);
+    KConfigGroup deviceGroup(config, alsaDeviceName);
     if (config->hasGroup(alsaDeviceName)) {
         d->index = deviceGroup.readEntry("index", -1);
     }
     if (d->index == -1) {
-        KConfigGroup globalGroup(config.data(), "Globals");
+        KConfigGroup globalGroup(config, "Globals");
         int nextIndex = globalGroup.readEntry("nextIndex", 0);
         d->index = nextIndex++;
         globalGroup.writeEntry("nextIndex", nextIndex);
@@ -307,12 +423,12 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         }
     }
 
-    KConfigGroup deviceGroup(config.data(), alsaDeviceName);
+    KConfigGroup deviceGroup(config, alsaDeviceName);
     if (config->hasGroup(alsaDeviceName)) {
         d->index = deviceGroup.readEntry("index", -1);
     }
     if (d->index == -1) {
-        KConfigGroup globalGroup(config.data(), "Globals");
+        KConfigGroup globalGroup(config, "Globals");
         int nextIndex = globalGroup.readEntry("nextIndex", 0);
         d->index = nextIndex++;
         globalGroup.writeEntry("nextIndex", nextIndex);
@@ -345,7 +461,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
 #ifdef HAVE_LIBASOUND2
 void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 {
-    kDebug(603) << deviceName;
+    //kDebug(603) << deviceName;
     snd_pcm_info_t *pcmInfo;
     snd_pcm_info_malloc(&pcmInfo);
 
