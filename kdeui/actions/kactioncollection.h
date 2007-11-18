@@ -133,7 +133,7 @@ public:
     * \param oneAction pass an action here if you just want to save the values for one action, eg.
     *                  if you know that action is the only one which has changed.
     */
-  void writeSettings( KConfigGroup* config = 0, bool writeDefaults = false, QAction* oneAction = 0L ) const;
+  void writeSettings( KConfigGroup* config = 0, bool writeDefaults = false, QAction* oneAction = 0 ) const;
 
   /**
    * Returns the number of actions in the collection.

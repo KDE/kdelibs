@@ -148,7 +148,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * @param useTagName Specifies whether to compare the specified name with the name attribute or
    *        the tag name.
    *
-   * This method may return 0L if no container with the given name exists or is not owned by the client.
+   * This method may return 0 if no container with the given name exists or is not owned by the client.
    */
   QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName = false );
 
@@ -160,7 +160,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * NOT touched at all, meaning no containers are deleted nor any actions unplugged. That is
    * something you have to do on your own. So use this method only if you know what you are doing :-)
    *
-   * (also note that this will call KXMLGUIClient::setFactory( 0L ) for all inserted clients)
+   * (also note that this will call KXMLGUIClient::setFactory( 0 ) for all inserted clients)
    */
   void reset();
 
@@ -170,7 +170,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * specified container. The actual GUI is not touched, no containers are deleted or any actions
    * unplugged. Use this method only if you know what you are doing :-)
    *
-   * (also note that this will call KXMLGUIClient::setFactory( 0L ) for all clients of the
+   * (also note that this will call KXMLGUIClient::setFactory( 0 ) for all clients of the
    * container)
    */
   void resetContainer( const QString &containerName, bool useTagName = false );

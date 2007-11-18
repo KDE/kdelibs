@@ -136,14 +136,14 @@ public:
   void setFactory( KXMLGUIFactory *factory );
   /**
    * Retrieves a pointer to the KXMLGUIFactory this client is
-   * associated with (will return 0L if the client's GUI has not been built
+   * associated with (will return 0 if the client's GUI has not been built
    * by a KXMLGUIFactory.
    */
   KXMLGUIFactory *factory() const;
 
   /**
    * KXMLGUIClients can form a simple child/parent object tree. This
-   * method returns a pointer to the parent client or 0L if it has no
+   * method returns a pointer to the parent client or 0 if it has no
    * parent client assigned.
    */
   KXMLGUIClient *parentClient() const;
@@ -177,7 +177,7 @@ public:
   void setClientBuilder( KXMLGUIBuilder *builder );
 
   /**
-   * Retrieves the client's GUI builder or 0L if no client specific
+   * Retrieves the client's GUI builder or 0 if no client specific
    * builder has been assigned via setClientBuilder()
    */
   KXMLGUIBuilder *clientBuilder() const;
