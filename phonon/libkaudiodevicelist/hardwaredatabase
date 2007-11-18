@@ -93,3 +93,19 @@ initialPreference=35
 name=Realtek ALC861 S/PDIF
 initialPreference=15
 
+#Intel ICH 82801CA-ICH3 with AD1881A
+[pci:8086:2485:1014:051f:playback:alsa:0]
+name=Analog Devices AD1881A
+initialPreference=35
+
+[pci:8086:2485:1014:051f:capture:alsa:1]
+name=Analog Devices AD1881A (MIC ADC)
+initialPreference=35
+
+[pci:8086:2485:1014:051f:capture:alsa:0]
+name=Analog Devices AD1881A
+initialPreference=35
+
+[pci:8086:2485:1014:051f:both:oss]
+name=Analog Devices AD1881A
+initialPreference=35
