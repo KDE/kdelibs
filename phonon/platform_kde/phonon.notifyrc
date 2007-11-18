@@ -146,6 +146,7 @@ Comment[hu]=Értesítés a másodlagos eszköz aktiválásáról, ha az elsődle
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
 Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[ko]=선호하는 장치를 사용할 수 없을 때 자동으로 다음 장치로 넘어가는 알림
+Comment[lv]=Paziņojums par automātisku atkāpsistēmas izmantošanu, ja vēlamā iekārtanav pieejama
 Comment[nb]=Varsling ved automatisk overgang til reservelydenhet hvis foretrukket enhet ikke er tilgjengelig
 Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
 Comment[ne]=यदि रूचाइएको यन्त्र अनुपलब्ध छ भने स्वचालन फलब्याकमा सूचना
