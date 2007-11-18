@@ -800,7 +800,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
        return false;
     }
 
-    QDataStream stream2( reply.arguments().at(1).toByteArray() );
+    QDataStream stream2( reply.arguments().at(0).toByteArray() );
     stream2 >> authResult;
     s_seqNr = reply.arguments().at(1).toLongLong();
 
