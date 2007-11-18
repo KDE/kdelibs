@@ -814,8 +814,8 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     const QFont font = KGlobalSettings::generalFont();
     setFont(font);
 
-    QFontMetrics fontMetrics(font);
-    setMinimumHeight(fontMetrics.height() + 10);
+    const int minHeight = d->m_pathBox->sizeHint().height();
+    setMinimumHeight(minHeight);
 
     setLayout(d->m_layout);
     setMinimumWidth(100);
