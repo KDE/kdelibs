@@ -207,11 +207,7 @@ void KioslaveTest::changeProgressMode( QAbstractButton *b ) {
 
 
 void KioslaveTest::startJob() {
-#ifdef Q_WS_WIN
-  KUrl sCurrent( "file://"+QDir::currentPath() );
-#else
-  KUrl sCurrent( QDir::currentPath() );
-#endif
+  KUrl sCurrent( QUrl::fromLocalFile( QDir::currentPath() ) );
   QString sSrc( le_source->text() );
   KUrl src = KUrl( sCurrent, sSrc );
 

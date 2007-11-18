@@ -364,7 +364,7 @@ KUrl::KUrl( const QByteArray& str )
 #ifdef Q_WS_WIN
     kDebug(126) << "KUrl::KUrl " << " " << str.data();
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
-    	  setPath( QString::fromUtf8( str.mid(2) ) );
+    	  setPath( QString::fromUtf8( str.mid( 1 ) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
         setPath( QString::fromUtf8( str ) );
 #else
