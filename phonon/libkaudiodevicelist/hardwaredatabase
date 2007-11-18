@@ -80,3 +80,16 @@ name=Logitech Premium Stereo USB Headset 350
 icon=audio-headset-usb
 initialPreference=25
 
+#HDA Intel Realtek ALC861
+[pci:8086:27d8:1584:c024:capture:alsa:0]
+name=Realtek ALC861
+initialPreference=35
+
+[pci:8086:27d8:1584:c024:playback:alsa:0]
+name=Realtek ALC861
+initialPreference=35
+
+[pci:8086:27d8:1584:c024:playback:alsa:1]
+name=Realtek ALC861 S/PDIF
+initialPreference=15
+
