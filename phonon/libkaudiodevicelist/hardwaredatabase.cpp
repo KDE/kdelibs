@@ -20,9 +20,11 @@
 
 #include "hardwaredatabase_p.h"
 #include <kcomponentdata.h>
+#include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kglobal.h>
+#include <ksavefile.h>
 #include <kstandarddirs.h>
 #include <QtCore/QCache>
 #include <QtCore/QDataStream>
@@ -30,6 +32,9 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSet>
 #include <QtCore/QString>
+
+static const char CACHE_MAGIC[7] = "PHwdbC";
+static const unsigned int CACHE_VERSION = 0;
 
 namespace Phonon
 {
@@ -39,6 +44,8 @@ namespace HardwareDatabase
 struct HardwareDatabasePrivate
 {
     HardwareDatabasePrivate();
+    void createCache(const QString &dbFileName, const QString &cacheFileName);
+    bool validCacheHeader(QDataStream &cacheStream);
     void readEntry(const QString &udi);
 
     QSet<QString> knownUdis;
@@ -60,35 +67,63 @@ HardwareDatabasePrivate::HardwareDatabasePrivate()
         + QLatin1String("hardwaredatabase");
     const QFileInfo dbFileInfo(dbFileName);
     const QFileInfo cacheFileInfo(cacheFileName);
-    QFile cacheFile(cacheFileName);
+    if (!cacheFileInfo.exists() || cacheFileInfo.lastModified() < dbFileInfo.lastModified()) {
+        // update cache file
+        createCache(dbFileName, cacheFileName);
+    } else {
+        QFile cacheFile(cacheFileName);
+        cacheFile.open(QIODevice::ReadOnly);
+        QDataStream cacheStream(&cacheFile);
+        if (validCacheHeader(cacheStream)) {
+            QString udi;
+            QString name;
+            QString iconName;
+            int pref;
+            while (!cacheStream.atEnd()) {
+                cacheStream >> udi >> name >> iconName >> pref;
+                knownUdis.insert(udi);
+            }
+            cacheFile.close();
+        } else {
+            cacheFile.close();
+            createCache(dbFileName, cacheFileName);
+        }
+    }
+    fileName = cacheFileName;
+}
+
+void HardwareDatabasePrivate::createCache(const QString &dbFileName, const QString &cacheFileName)
+{
+    knownUdis.clear();
+    KSaveFile cacheFile(cacheFileName);
     QString name;
     QString iconName;
     int pref;
-    if (!cacheFileInfo.exists() || cacheFileInfo.lastModified() < dbFileInfo.lastModified()) {
-        // update cache file
-        const KConfig dbFile(dbFileName, KConfig::CascadeConfig);
-        const bool opened = cacheFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        Q_ASSERT(opened);
-        QDataStream cacheStream(&cacheFile);
-        foreach (const QString &udi, dbFile.groupList()) {
-            const KConfigGroup group = dbFile.group(udi);
-            name = group.readEntry("name", QString());
-            iconName = group.readEntry("icon", QString());
-            pref = group.readEntry("initialPreference", 0);
-            cacheStream << udi << name << iconName << pref;
-            knownUdis.insert(udi);
-        }
-    } else {
-        cacheFile.open(QIODevice::ReadOnly);
-        QDataStream cacheStream(&cacheFile);
-        QString udi;
-        while (!cacheStream.atEnd()) {
-            cacheStream >> udi >> name >> iconName >> pref;
-            knownUdis.insert(udi);
-        }
+
+    const KConfig dbFile(dbFileName, KConfig::CascadeConfig);
+    const bool opened = cacheFile.open();
+    Q_ASSERT(opened);
+    QDataStream cacheStream(&cacheFile);
+    cacheStream.writeRawData(CACHE_MAGIC, 6);
+    cacheStream << CACHE_VERSION;
+    foreach (const QString &udi, dbFile.groupList()) {
+        const KConfigGroup group = dbFile.group(udi);
+        name = group.readEntry("name", QString());
+        iconName = group.readEntry("icon", QString());
+        pref = group.readEntry("initialPreference", 0);
+        cacheStream << udi << name << iconName << pref;
+        knownUdis.insert(udi);
     }
     cacheFile.close();
-    fileName = cacheFileName;
+}
+
+bool HardwareDatabasePrivate::validCacheHeader(QDataStream &cacheStream)
+{
+    char magic[6];
+    unsigned int version;
+    const int read = cacheStream.readRawData(magic, 6);
+    cacheStream >> version;
+    return (read == 6 && 0 == strncmp(magic, CACHE_MAGIC, 6) && version == CACHE_VERSION);
 }
 
 void HardwareDatabasePrivate::readEntry(const QString &udi)
@@ -96,6 +131,10 @@ void HardwareDatabasePrivate::readEntry(const QString &udi)
     QFile cacheFile(fileName);
     cacheFile.open(QIODevice::ReadOnly);
     QDataStream cacheStream(&cacheFile);
+
+    if (!validCacheHeader(cacheStream)) {
+        return;
+    }
 
     QString readUdi;
     QString name;
