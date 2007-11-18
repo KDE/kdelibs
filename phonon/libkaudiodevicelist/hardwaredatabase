@@ -50,7 +50,7 @@ initialPreference=15
 
 [pci:10de:0059:10f1:2895:capture:alsa:1]
 name=NVidia CK804 AD1981B MIC ADC
-initialPreference=35
+initialPreference=25
 
 [pci:10de:0059:10f1:2895:playback:alsa:0]
 name=NVidia CK804 AD1981B
@@ -99,8 +99,8 @@ name=Analog Devices AD1881A
 initialPreference=35
 
 [pci:8086:2485:1014:051f:capture:alsa:1]
-name=Analog Devices AD1881A (MIC ADC)
-initialPreference=35
+name=Analog Devices AD1881A MIC ADC
+initialPreference=25
 
 [pci:8086:2485:1014:051f:capture:alsa:0]
 name=Analog Devices AD1881A
@@ -108,4 +108,33 @@ initialPreference=35
 
 [pci:8086:2485:1014:051f:both:oss]
 name=Analog Devices AD1881A
+initialPreference=35
+
+#Intel ICH6 AD1981B
+[pci:8086:266e:144d:c01a:playback:alsa:4]
+name=Analog Devices AD1981B S/PDIF
+initialPreference=15
+
+[pci:8086:266e:144d:c01a:playback:alsa:0]
+name=Analog Devices AD1981B
+initialPreference=35
+
+[pci:8086:266e:144d:c01a:capture:alsa:3]
+name=Analog Devices AD1981B ADC2
+initialPreference=25
+
+[pci:8086:266e:144d:c01a:capture:alsa:2]
+name=Analog Devices AD1981B MIC2 ADC
+initialPreference=25
+
+[pci:8086:266e:144d:c01a:capture:alsa:1]
+name=Analog Devices AD1981B MIC ADC
+initialPreference=25
+
+[pci:8086:266e:144d:c01a:capture:alsa:0]
+name=Analog Devices AD1981B
+initialPreference=35
+
+[pci:8086:266e:144d:c01a:both:oss]
+name=Analog Devices AD1981B
 initialPreference=35
