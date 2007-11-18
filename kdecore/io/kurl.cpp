@@ -313,19 +313,20 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
     int len = str.length();
+    QString pathToSet;
     kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
-    if ( str.startsWith( QLatin1String( "file:///" ) ) ) {
-      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() );
-      setPath( QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) );
-   	}
-    else if ( len > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
-      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(7).toLatin1() );
-      setPath( QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) );
-    }
+    if ( str.startsWith( QLatin1String( "file:///" ) ) )
+      pathToSet = QUrl::fromPercentEncoding( str.mid(8).toLatin1() );
+    else if ( len > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') )
+      pathToSet = QUrl::fromPercentEncoding( str.mid(7).toLatin1() );
     else if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
-      setPath(str.mid(2));
-    else if ( len >= 2 && str[0].isLetter() &&  str[1] == QLatin1Char(':') )
-        setPath( len > 2 ? str : str + QLatin1Char('/') );
+      pathToSet = str.mid(1);
+    else if ( len >= 2 && str[0].isLetter() && str[1] == QLatin1Char(':') )
+      pathToSet = str;
+    if ( !pathToSet.isEmpty() ) {
+      setScheme( "file" );
+      setPath( QDir::fromNativeSeparators( pathToSet ) );
+    }
 #else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
