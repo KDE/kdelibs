@@ -62,8 +62,8 @@ Nepomuk's core is designed to allow arbitrary types of meta data, i.e. any resou
 can be related with any other resource or value by simply naming the relation and
 providing the value.
 The power of Nepomuk, however, lies in that it provides a class for each type
-of resource. Each of these classes provide convinience methods to allow a simple
-handling of the meta data. These classes are automatcally generated from a
+of resource. Each of these classes provide convenience methods to allow a simple
+handling of the meta data. These classes are automatically generated from a
 description of types and properties, i.e. an ontology (see \ref page_ontology).
 
 Nepomuk is resource based. Thus, working with Nepomuk is always done with instances
@@ -71,8 +71,8 @@ representing a certain resource. This resource has a list of properties. Propert
 are named and have a certain type. The type can either be another resource (compare
 a file that was an attachment from an email) or a literal (this means for example a
 string, or an integer; the comment mentioned earlier would be a string literal).
-Each property can either have a cadinality of 1 (again a file can only be saved from
-one email) or greater than 1 (i.e. infinite, like one file can have arbitraty many
+Each property can either have a cardinality of 1 (again a file can only be saved from
+one email) or greater than 1 (i.e. infinite, like one file can have arbitrary many
 associated comments). See \ref hacking on how Nepomuk handles literals and cardinalities
 greater than 1.
 
@@ -119,7 +119,7 @@ In general there are two ways of using Nepomuk.
    and handle resources without knowing their type.
 
 Since all resource classes are derived from Nepomuk::Resource and only add additional methods
-both ways can be used interchangably.
+both ways can be used interchangeably.
 
 Resource objects (and thus also all objects of classes derived from Resource) with the same
 URI share their data. Thus, if one is changed the other one is, too.
@@ -220,7 +220,7 @@ f.setAnnotation( "This is just a test file that contains nothing of interest." )
 \endcode
 
 The following example is a little more complicated since it contains creating
-a new tag and thus, coming up with a unique URi for this tag (future versions
+a new tag and thus, coming up with a unique URI for this tag (future versions
 of Nepomuk should provide a way to create a unique URI automatically.)
 
 \code
@@ -242,7 +242,7 @@ while( it.hasNext() )
             << it.next().getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasName" ).toString();
 \endcode
 
-Reading the information using the convinience classes:
+Reading the information using the convenience classes:
 
 \code
 Nepomuk::File f( "/home/foo/bar.txt" );
@@ -296,14 +296,14 @@ Resource Generator
 
 The power of Nepomuk lies in the generated classes which allows the application developer to set
 and retrieve metadata according to standards without knowing any specific RDF URIs or names of properties.
-The idea is that the resoruce generator (which is installed along with the Nepomuk libraries) creates
+The idea is that the resource generator (which is installed along with the Nepomuk libraries) creates
 Resource subclasses that provide wrapper methods for Resource::getProperty and Resource::setProperty from
 ontology descriptions.
 
 
 \section rcgen_syntax Syntax
 
-The resource generator executable is called nepomuk-rcgen and has the following snytax:
+The resource generator executable is called nepomuk-rcgen and has the following syntax:
 
 \code
 nepomuk-rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
@@ -341,7 +341,7 @@ from this ontology.
 
 The simplest way to use the resource generator is through CMake. Nepomuk provides a macro to automatically
 create a list of source and header files from an ontology file and use them to create arbitrary targets
-(either link them into an installabe library or directly link them into the using application).
+(either link them into an installable library or directly link them into the using application).
 
 To use the Nepomuk cmake magic one has to include the NepomukMacros:
 
@@ -349,7 +349,7 @@ To use the Nepomuk cmake magic one has to include the NepomukMacros:
 include(NepomukMacros)
 \endcode
 
-This will provide a macro called NEPOMUK_GENERATE_FROM_ONTOLOGY with the following paramters:
+This will provide a macro called NEPOMUK_GENERATE_FROM_ONTOLOGY with the following parameters:
 
 -# The ontology file to be parsed
 -# The target directory where to put the new files
@@ -388,7 +388,7 @@ install(FILES ${TEST_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata)
 
 \section rcgen_templates Templates
 
-@warning Template usage is discuraged. Their main purpose is to support the creation of the
+@warning Template usage is discouraged. Their main purpose is to support the creation of the
 basic properties of the Resource class.
 
 An rcgen template has to provide the full skeleton for a generated class including
