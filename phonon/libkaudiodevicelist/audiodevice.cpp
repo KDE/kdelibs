@@ -371,7 +371,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
     }
     config->sync();
 
-    d->applyHardwareDatabaseOverrides();
+    //d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
 }
 
@@ -454,7 +454,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
     }
     config->sync();
 
-    d->applyHardwareDatabaseOverrides();
+    //d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
 }
 
