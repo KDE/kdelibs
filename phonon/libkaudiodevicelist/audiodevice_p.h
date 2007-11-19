@@ -35,11 +35,13 @@ class AudioDevicePrivate : public QSharedData
             : refCount(1),
             driver(Solid::AudioInterface::UnknownAudioDriver),
             index(-1),
+            deviceNumber(-1),
             initialPreference(30),
             available(false),
             valid(false),
             captureDevice(false),
-            playbackDevice(false)
+            playbackDevice(false),
+            isAdvanced(false)
         {
         }
 
@@ -55,7 +57,7 @@ class AudioDevicePrivate : public QSharedData
         QString cardName;
         QStringList deviceIds;
         QString icon;
-        QString udi;
+        QString uniqueId;
         Solid::AudioInterface::AudioDriver driver;
         struct AlsaId
         {
@@ -66,11 +68,13 @@ class AudioDevicePrivate : public QSharedData
             int subdevice;
         } alsaId;
         int index;
+        int deviceNumber;
         int initialPreference;
         bool available : 1;
         bool valid : 1;
         bool captureDevice : 1;
         bool playbackDevice : 1;
+        bool isAdvanced : 1;
 };
 } // namespace Phonon
 

@@ -163,12 +163,14 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
         nextHint.name = QString::fromUtf8(x);
         free(x);
 
-        if (nextHint.name.startsWith("front:") ||
+        if (/*nextHint.name.startsWith("front:") ||
+                nextHint.name.startsWith("rear:") ||
+                nextHint.name.startsWith("center_lfe:") ||
                 nextHint.name.startsWith("surround40:") ||
                 nextHint.name.startsWith("surround41:") ||
                 nextHint.name.startsWith("surround50:") ||
                 nextHint.name.startsWith("surround51:") ||
-                nextHint.name.startsWith("surround71:") ||
+                nextHint.name.startsWith("surround71:") ||*/
                 nextHint.name.startsWith("default:") ||
                 nextHint.name == "null"
                 ) {
@@ -264,6 +266,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 {
+    Q_UNUSED(file);
     // I was not able to reload the changed configuration yet, so disable the code
 #if 0 && defined(HAVE_LIBASOUND2)
     kDebug(603) << file;

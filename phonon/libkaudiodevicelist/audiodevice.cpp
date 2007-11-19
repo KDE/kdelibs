@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -77,7 +77,7 @@ KConfigGroup AudioDevicePrivate::configGroup(KSharedConfig::Ptr config)
         Q_ASSERT(playbackDevice);
         groupName = QLatin1String("AudioOutputDevice_");
     }
-    groupName += udi;
+    groupName += uniqueId;
     return KConfigGroup(config, groupName);
 }
 
@@ -127,56 +127,56 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
 {
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
     //kDebug(603) << audioHw->driverHandle();
-    d->udi = d->uniqueIdentifierFromDevice(audioDevice);
+    d->uniqueId = d->uniqueIdentifierFromDevice(audioDevice);
     d->driver = audioHw->driver();
     const QVariant handle = audioHw->driverHandle();
-    if (d->udi.isEmpty()) {
+    if (d->uniqueId.isEmpty()) {
         Solid::Device parent = audioDevice.parent();
         if (parent.isValid()) {
-            d->udi = d->uniqueIdentifierFromDevice(parent);
-            if (!d->udi.isEmpty()) {
+            d->uniqueId = d->uniqueIdentifierFromDevice(parent);
+            if (!d->uniqueId.isEmpty()) {
                 switch (audioHw->deviceType()) {
                 case Solid::AudioInterface::AudioInput:
-                    d->udi += QLatin1String(":capture");
+                    d->uniqueId += QLatin1String(":capture");
                     break;
                 case Solid::AudioInterface::AudioOutput:
-                    d->udi += QLatin1String(":playback");
+                    d->uniqueId += QLatin1String(":playback");
                     break;
                 case 6: //Solid::AudioInterface::AudioInput | Solid::AudioInterface::AudioOutput:
-                    d->udi += QLatin1String(":both");
+                    d->uniqueId += QLatin1String(":both");
                     break;
                 default:
                     break;
                 }
                 switch (d->driver) {
                 case Solid::AudioInterface::Alsa:
-                    d->udi += QLatin1String(":alsa");
+                    d->uniqueId += QLatin1String(":alsa");
                     if (handle.type() == QVariant::List) {
                         const QList<QVariant> handles = handle.toList();
                         if (handles.size() > 1 && handles.at(1).isValid()) {
-                            d->udi += QLatin1Char(':') + handles.at(1).toString();
+                            d->uniqueId += QLatin1Char(':') + handles.at(1).toString();
                         }
                     }
                     break;
                 case Solid::AudioInterface::OpenSoundSystem:
-                    d->udi += QLatin1String(":oss");
+                    d->uniqueId += QLatin1String(":oss");
                     break;
                 default:
                     break;
                 }
             }
         }
-        if (d->udi.isEmpty()) {
-            d->udi = audioHw->name();
-            d->udi += audioDevice.vendor();
-            d->udi += audioDevice.product();
+        if (d->uniqueId.isEmpty()) {
+            d->uniqueId = audioHw->name();
+            d->uniqueId += audioDevice.vendor();
+            d->uniqueId += audioDevice.product();
             if (parent.isValid()) {
-                d->udi += parent.vendor();
-                d->udi += parent.product();
+                d->uniqueId += parent.vendor();
+                d->uniqueId += parent.product();
             }
-            d->udi += QString::number(audioHw->driver());
-            d->udi += QLatin1Char('_');
-            d->udi += QString::number(audioHw->deviceType());
+            d->uniqueId += QString::number(audioHw->driver());
+            d->uniqueId += QLatin1Char('_');
+            d->uniqueId += QString::number(audioHw->deviceType());
         }
     }
     d->cardName = audioHw->name();
@@ -208,9 +208,12 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         QString x_phononId = QLatin1String("x-phonon:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
         QString fallbackId = QLatin1String("plughw:CARD=")   + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
         if (handles.size() > 1 && handles.at(1).isValid()) {
-            if (handles.at(1).toInt() == 0) {
+            d->deviceNumber = handles.at(1).toInt();
+            if (d->deviceNumber == 0) {
                 // prefer DEV=0 devices over DEV>0
                 d->initialPreference += 1;
+            } else {
+                d->isAdvanced = true;
             }
             x_phononId += ",DEV=" + handles.at(1).toString();
             fallbackId += ",DEV=" + handles.at(1).toString();
@@ -284,18 +287,20 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
-        deviceGroup.writeEntry("udi", d->udi);
+        deviceGroup.writeEntry("uniqueId", d->uniqueId);
         deviceGroup.writeEntry("initialPreference", d->initialPreference);
+        deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
         config->sync();
     } else {
-        if (!deviceGroup.hasKey("udi") || !deviceGroup.hasKey("initialPreference")) {
+        if (!deviceGroup.hasKey("uniqueId") || !deviceGroup.hasKey("initialPreference")) {
             deviceGroup.writeEntry("initialPreference", d->initialPreference);
-            deviceGroup.writeEntry("udi", d->udi);
+            deviceGroup.writeEntry("uniqueId", d->uniqueId);
             config->sync();
         }
         deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
     }
-    //kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
+    //kDebug(603) << deviceGroup.readEntry("uniqueId", d->uniqueId) << " == " << d->uniqueId;
 
     d->applyHardwareDatabaseOverrides();
 }
@@ -311,8 +316,8 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     : d(new AudioDevicePrivate)
 {
     d->index = deviceGroup.readEntry("index", d->index);
-    d->udi = deviceGroup.readEntry("udi", d->udi);
-    if (d->udi.startsWith("/org/freedesktop/Hal/devices/")) {
+    d->uniqueId = deviceGroup.readEntry("uniqueId", d->uniqueId);
+    if (d->uniqueId.startsWith("/org/freedesktop/Hal/devices/")) {
         // old invalid group
         d->valid = false;
         return;
@@ -325,11 +330,13 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     d->valid = true;
     d->available = false;
     d->initialPreference = deviceGroup.readEntry("initialPreference", 0);
+    d->isAdvanced = deviceGroup.readEntry("isAdvanced", false);
     // deviceIds stays empty because it's not available
 
     d->applyHardwareDatabaseOverrides();
 }
 
+#if 0
 AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
@@ -337,7 +344,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
     d->driver = Solid::AudioInterface::Alsa;
     d->deviceIds << alsaDeviceName;
     d->cardName = alsaDeviceName;
-    d->udi = alsaDeviceName;
+    d->uniqueId = alsaDeviceName;
     d->deviceInfoFromPcmDevice(alsaDeviceName);
 
     KConfigGroup deviceGroup(config, alsaDeviceName);
@@ -374,6 +381,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
     //d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
 }
+#endif
 
 AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &description, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
@@ -385,6 +393,17 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
     d->cardName = lines.first();
     if (lines.size() > 1) {
         d->cardName = i18n("%1 (%2)", d->cardName, lines[1]);
+    }
+    if (alsaDeviceName.startsWith("front:") ||
+            alsaDeviceName.startsWith("rear:") ||
+            alsaDeviceName.startsWith("center_lfe:") ||
+            alsaDeviceName.startsWith("surround40:") ||
+            alsaDeviceName.startsWith("surround41:") ||
+            alsaDeviceName.startsWith("surround50:") ||
+            alsaDeviceName.startsWith("surround51:") ||
+            alsaDeviceName.startsWith("surround71:") ||
+            alsaDeviceName.startsWith("iec958:")) {
+        d->isAdvanced = true;
     }
 
     snd_pcm_t *pcm;
@@ -440,6 +459,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
         deviceGroup.writeEntry("initialPreference", d->initialPreference);
+        deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
     } else {
         if (!deviceGroup.hasKey("initialPreference")) {
             deviceGroup.writeEntry("initialPreference", d->initialPreference);
@@ -451,6 +471,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
             deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
         }
         deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
     }
     config->sync();
 
@@ -560,7 +581,7 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 
 QString AudioDevice::udi() const
 {
-    return d->udi;
+    return d->uniqueId;
 }
 
 int AudioDevice::index() const
@@ -595,7 +616,7 @@ bool AudioDevice::ceaseToExist()
     } else {
         groupName = QLatin1String("AudioOutputDevice_");
     }
-    groupName += d->udi;
+    groupName += d->uniqueId;
     config->deleteGroup(groupName);
     config->sync();
     return true;
@@ -616,6 +637,11 @@ bool AudioDevice::isPlaybackDevice() const
     return d->playbackDevice;
 }
 
+bool AudioDevice::isAdvancedDevice() const
+{
+    return d->isAdvanced;
+}
+
 AudioDevice::AudioDevice(const AudioDevice &rhs)
     : d(rhs.d)
 {
@@ -633,7 +659,7 @@ AudioDevice &AudioDevice::operator=(const AudioDevice &rhs)
 
 bool AudioDevice::operator==(const AudioDevice &rhs) const
 {
-    return d->udi == rhs.d->udi;
+    return d->uniqueId == rhs.d->uniqueId;
     /*
     return (d->cardName == rhs.d->cardName &&
             d->icon == rhs.d->icon &&
@@ -666,8 +692,8 @@ Solid::AudioInterface::AudioDriver AudioDevice::driver() const
 void AudioDevicePrivate::applyHardwareDatabaseOverrides()
 {
     // now let's take a look at the hardware database whether we have to override something
-    if (HardwareDatabase::contains(udi)) {
-        HardwareDatabase::Entry e = HardwareDatabase::entryFor(udi);
+    if (HardwareDatabase::contains(uniqueId)) {
+        HardwareDatabase::Entry e = HardwareDatabase::entryFor(uniqueId);
         if (!e.name.isEmpty()) {
             cardName = e.name;
         }

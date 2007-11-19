@@ -36,12 +36,12 @@ createAlsaEntryFromHal()
 	fi
 	alsa_device=`getNumber "$1" "alsa\\.device"`
 	id="$id:$3:alsa:$alsa_device"
-	if echo "$found_ids"|grep -q -v "$id"; then
+	if echo -e "$found_ids"|grep -q -v "$id"; then
 		found_ids="$found_ids $id"
 		card_id=`getString "$1" "alsa\\.card_id"`
 		device_id=`getString "$1" "alsa\\.device_id"`
 		comment="$comment $card_id $device_id"
-		if echo "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
+		if echo -e "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
 			pref=$(($pref-20))
 		fi
 		all_entries="$all_entries\n# $comment\t[$id]\tname=$card_id ($device_id)\tinitialPreference=$pref\t"
@@ -70,12 +70,12 @@ createOssEntryFromHal()
 		comment="$comment $subsys_vendor"
 	fi
 	id="$id:both:oss"
-	if echo "$found_ids"|grep -q -v "$id"; then
+	if echo -e "$found_ids"|grep -q -v "$id"; then
 		found_ids="$found_ids $id"
 		card_id=`getString "$1" "oss\\.card_id"`
 		device_id=`getString "$1" "oss\\.device_id"`
 		comment="$comment $card_id $device_id"
-		if echo "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
+		if echo -e "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
 			pref=$(($pref-20))
 		fi
 		all_entries="$all_entries\n# $comment\t[$id]\tname=$card_id ($device_id)\tinitialPreference=$pref\t"
@@ -85,13 +85,13 @@ createOssEntryFromHal()
 
 echo "/proc/asound/cards:"
 cat /proc/asound/cards
-echo "\n/proc/asound/pcm:"
+echo -e "\n/proc/asound/pcm:"
 cat /proc/asound/pcm
 for card in `cat /proc/asound/cards|cut -c1-2`; do
 	num=0
 	codec="/proc/asound/card$card/codec#$num"
 	while test -e "$codec"; do
-		echo "\n$codec:"
+		echo -e "\n$codec:"
 		cat "$codec"
 		num=$(($num+1))
 		codec="/proc/asound/card$card/codec#$num"
@@ -99,7 +99,7 @@ for card in `cat /proc/asound/cards|cut -c1-2`; do
 	num=0
 	codec="/proc/asound/card$card/codec97#$num"
 	while test -d "$codec"; do
-		echo -n "\n$codec/ac97#"?-?
+		echo -e -n "\n$codec/ac97#"?-?
 		echo ":"
 		cat "$codec/ac97#"?-?
 		num=$(($num+1))
@@ -126,4 +126,4 @@ for udi in $oss; do
 	createOssEntryFromHal "$udi" "$card_udi"
 done
 echo ""
-echo "$all_entries"|sort|sed "s,\t,\n,g"
+echo -e "$all_entries"|sort|sed "s,\t,\n,g"
