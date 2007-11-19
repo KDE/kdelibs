@@ -37,12 +37,9 @@ class VolumeFaderInterface
         }
         virtual void setFadeCurve(Phonon::VolumeFaderEffect::FadeCurve) {}
         virtual void fadeTo(float, int) {}
-        virtual QVariant parameterValue(int) const { return QVariant(); }
-        virtual void setParameterValue(int, const QVariant &) {}
-
 };
 }
 
-Q_DECLARE_INTERFACE(Phonon::VolumeFaderInterface, "VolumeFaderInterface3.phonon.kde.org")
+Q_DECLARE_INTERFACE(Phonon::VolumeFaderInterface, "VolumeFaderInterface4.phonon.kde.org")
 
 #endif // PHONON_VOLUMEFADERINTERFACE_H
