@@ -1,70 +1,85 @@
 #!/bin/sh
 found_ids=""
+all_entries=""
 getId()
 {
-	printf "%4s" `lshal -l -u "$1"|grep "$2"|cut -d"(" -f2|cut -d")" -f1|cut -dx -f2`|tr ' ' '0'
+	printf "%4s" `lshal -l -u "$1"|grep "$2 ="|cut -d"(" -f2|cut -d")" -f1|cut -dx -f2`|tr ' ' '0'
+}
+getNumber()
+{
+	lshal -l -u "$1"|grep "$2 = "|cut -d"=" -f2|cut -d' ' -f2
+}
+getString()
+{
+	lshal -l -u "$1"|grep "$2 ="|cut -d"'" -f2
 }
 
 createAlsaEntryFromHal()
 {
-	vendor_id=`getId "$2" "\\.vendor_id"`
-	product_id=`getId "$2" "\\.product_id"`
-	subsystem=`lshal -l -u "$2"|grep info.subsystem|cut -d"'" -f2`
-	test -z "$subsystem" && subsystem=`lshal -l -u "$2"|grep linux.subsystem|cut -d"'" -f2`
+	subsystem=`getString "$2" "info\.subsystem"`
+	test -z "$subsystem" && subsystem=`getString "$2" "linux\.subsystem"`
+	vendor=`getString "$2" "$subsystem\\.vendor"`
+	product=`getString "$2" "$subsystem\\.product"`
+	vendor_id=`getId "$2" "$subsystem\\.vendor_id"`
+	product_id=`getId "$2" "$subsystem\\.product_id"`
 	pref=35
+	comment="$vendor $product"
 	if test "$subsystem" = "usb"; then
 		id="usb:$vendor_id:$product_id"
 		pref=$(($pref-10))
 	elif test "$subsystem" = "pci"; then
+		subsys_vendor=`getString "$2" "\\.subsys_vendor"`
 		subsys_vendor_id=`getId "$2" "\\.subsys_vendor_id"`
 		subsys_product_id=`getId "$2" "\\.subsys_product_id"`
 		id="pci:$vendor_id:$product_id:$subsys_vendor_id:$subsys_product_id"
+		comment="$comment $subsys_vendor"
 	fi
-	alsa_device=`lshal -l -u "$1"|grep "alsa\\.device = "|cut -d"=" -f2|cut -d' ' -f2`
+	alsa_device=`getNumber "$1" "alsa\\.device"`
 	id="$id:$3:alsa:$alsa_device"
 	if echo "$found_ids"|grep -q -v "$id"; then
 		found_ids="$found_ids $id"
-		echo "[$id]"
-		card_id=`lshal -l -u "$1"|grep "alsa\\.card_id = "|cut -d"'" -f2`
-		device_id=`lshal -l -u "$1"|grep "alsa\\.device_id = "|cut -d"'" -f2`
+		card_id=`getString "$1" "alsa\\.card_id"`
+		device_id=`getString "$1" "alsa\\.device_id"`
+		comment="$comment $card_id $device_id"
 		if echo "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
 			pref=$(($pref-20))
 		fi
-		echo "# name=$card_id ($device_id)"
-		echo "initialPreference=$pref"
-		echo "# icon="
-		echo ""
+		all_entries="$all_entries\n# $comment\t[$id]\tname=$card_id ($device_id)\tinitialPreference=$pref\t"
+		echo -n "."
 	fi
 }
 
 createOssEntryFromHal()
 {
-	vendor_id=`getId "$2" "\\.vendor_id"`
-	product_id=`getId "$2" "\\.product_id"`
-	subsystem=`lshal -l -u "$2"|grep info.subsystem|cut -d"'" -f2`
-	test -z "$subsystem" && subsystem=`lshal -l -u "$2"|grep linux.subsystem|cut -d"'" -f2`
-	pref=35
+	subsystem=`getString "$2" "info\.subsystem"`
+	test -z "$subsystem" && subsystem=`getString "$2" "linux\.subsystem"`
+	vendor=`getString "$2" "$subsystem\\.vendor"`
+	product=`getString "$2" "$subsystem\\.product"`
+	vendor_id=`getId "$2" "$subsystem\\.vendor_id"`
+	product_id=`getId "$2" "$subsystem\\.product_id"`
+	pref=20
+	comment="$vendor $product"
 	if test "$subsystem" = "usb"; then
 		id="usb:$vendor_id:$product_id"
 		pref=$(($pref-10))
 	elif test "$subsystem" = "pci"; then
+		subsys_vendor=`getString "$2" "\\.subsys_vendor"`
 		subsys_vendor_id=`getId "$2" "\\.subsys_vendor_id"`
 		subsys_product_id=`getId "$2" "\\.subsys_product_id"`
 		id="pci:$vendor_id:$product_id:$subsys_vendor_id:$subsys_product_id"
+		comment="$comment $subsys_vendor"
 	fi
 	id="$id:both:oss"
 	if echo "$found_ids"|grep -q -v "$id"; then
 		found_ids="$found_ids $id"
-		echo "[$id]"
-		oss_card_id=`lshal -l -u "$1"|grep "oss\\.card_id = "|cut -d"'" -f2`
-		oss_device_id=`lshal -l -u "$1"|grep "oss\\.device_id = "|cut -d"'" -f2`
-		if echo "$oss_card_id $oss_device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
+		card_id=`getString "$1" "oss\\.card_id"`
+		device_id=`getString "$1" "oss\\.device_id"`
+		comment="$comment $card_id $device_id"
+		if echo "$card_id $device_id"|grep -q -E -i "(spdif|s/pdif|iec958)"; then
 			pref=$(($pref-20))
 		fi
-		echo "# name=$oss_card_id ($oss_device_id)"
-		echo "initialPreference=$pref"
-		echo "# icon="
-		echo ""
+		all_entries="$all_entries\n# $comment\t[$id]\tname=$card_id ($device_id)\tinitialPreference=$pref\t"
+		echo -n "."
 	fi
 }
 
@@ -107,3 +122,5 @@ for udi in $oss; do
 	card_udi="${udi%_oss_pcm*}"
 	createOssEntryFromHal "$udi" "$card_udi"
 done
+echo ""
+echo "$all_entries"|sort|sed "s,\t,\n,g"
