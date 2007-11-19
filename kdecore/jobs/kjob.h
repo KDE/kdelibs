@@ -63,7 +63,7 @@ class KJobPrivate;
  * \endcode
  *
  * @note: KJob and its subclasses is meant to be used 
- * in a fire-and-forget way. Its deleting itself when
+ * in a fire-and-forget way. It's deleting itself when
  * it has finished using deleteLater() so the job
  * instance disappears after the next event loop run.
  */
