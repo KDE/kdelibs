@@ -355,16 +355,16 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     // so write it out to disk
 
     // check if file exists
-    int fileMode = -1;
+    QFile::Permissions fileMode = QFile::ReadUser | QFile::WriteUser;
     bool createNew = true;
 
-    KDE_struct_stat buf;
-    if (KDE_stat(QFile::encodeName(filePath()), &buf) == 0)
+    QFileInfo fi(filePath());
+    if (fi.exists())
     {
-        if (buf.st_uid == ::getuid() || buf.st_uid == uid_t(-2))
+        if (fi.ownerId() == ::getuid())
         {
             // Preserve file mode if file exists and is owned by user.
-            fileMode = buf.st_mode & 0777;
+            fileMode = fi.permissions();
         }
         else
         {
@@ -380,24 +380,16 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
             return false;
         }
 
+        file.setPermissions(fileMode);
+
         file.setTextModeEnabled(true); // to get eol translation
-        file.setPermissions(QFile::ReadUser|QFile::WriteUser);
-
-        // FIXME what to do here since we can't change the file mode anymore
-//        if (!bGlobal && (fileMode == -1))
-//            fileMode = mFileMode;
-
-        if (fileMode != -1) {
-            fchmod(file.handle(), fileMode);
-        }
-
         writeEntries(locale, file, writeMap);
 
-        if ( !file.size() && ((fileMode == -1) || (fileMode == 0600)) ) {
+        if (!file.size() && (fileMode == (QFile::ReadUser | QFile::WriteUser))) {
             // File is empty and doesn't have special permissions: delete it.
             file.abort();
 
-            if (fileMode != -1) {
+            if (fi.exists()) {
                 // also remove the old file in case it existed. this can happen
                 // when we delete all the entries in an existing config file.
                 // if we don't do this, then deletions and revertToDefault's
