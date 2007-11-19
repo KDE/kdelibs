@@ -60,26 +60,6 @@ initialPreference=35
 name=NVidia CK804 AD1981B
 initialPreference=35
 
-#HDA Intel Analog Devices AD1986A
-[pci:8086:27d8:144d:c024:capture:alsa:0]
-name=Analog Devices AD1986A
-initialPreference=35
-
-[pci:8086:27d8:144d:c024:playback:alsa:0]
-name=Analog Devices AD1986A
-initialPreference=35
-
-#Logitech USB Headset 350
-[usb:046d:0a02:playback:alsa:0]
-name=Logitech Premium Stereo USB Headset 350
-icon=audio-headset-usb
-initialPreference=25
-
-[usb:046d:0a02:capture:alsa:0]
-name=Logitech Premium Stereo USB Headset 350
-icon=audio-headset-usb
-initialPreference=25
-
 #HDA Intel Realtek ALC861
 [pci:8086:27d8:1584:c024:capture:alsa:0]
 name=Realtek ALC861
@@ -138,3 +118,30 @@ initialPreference=35
 [pci:8086:266e:144d:c01a:both:oss]
 name=Analog Devices AD1981B
 initialPreference=35
+
+# Intel Corporation 82801G (ICH7 Family) High Definition Audio Controller Samsung Electronics Co Ltd HDA Intel AD198x Analog
+[pci:8086:27d8:144d:c024:both:oss]
+name=Analog Devices AD1986A
+initialPreference=20
+
+[pci:8086:27d8:144d:c024:capture:alsa:0]
+name=Analog Devices AD1986A
+initialPreference=35
+
+[pci:8086:27d8:144d:c024:playback:alsa:0]
+name=Analog Devices AD1986A
+initialPreference=35
+
+# Logitech USB Audio Interface Logitech Logitech USB Headset USB Audio
+[usb:046d:0a02:both:oss]
+name=Logitech Premium Stereo USB Headset 350
+initialPreference=10
+
+[usb:046d:0a02:capture:alsa:0]
+name=Logitech Premium Stereo USB Headset 350
+initialPreference=25
+
+[usb:046d:0a02:playback:alsa:0]
+name=Logitech Premium Stereo USB Headset 350
+initialPreference=25
+
