@@ -171,7 +171,6 @@ namespace KJS {
   public:
     GlobalFuncImp(ExecState*, FunctionPrototype*, int i, int len, const Identifier&);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
-    virtual CodeType codeType() const;
     enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape,
            DecodeURI, DecodeURIComponent, EncodeURI, EncodeURIComponent
 #ifndef NDEBUG

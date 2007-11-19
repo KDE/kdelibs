@@ -50,7 +50,6 @@ namespace KJS {
     //Note: unlike body->paramName, this returns Identifier::null for parameters
     //that will never get set, due to later param having the same name
     Identifier getParameterName(int index);
-    virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
 
@@ -108,7 +107,6 @@ namespace KJS {
     JSObject *construct(ExecState *exec, const List &args);
 
     virtual Completion execute(ExecState *exec);
-    CodeType codeType() const { return FunctionCode; }
     UString toSource() const;
 
     virtual const ClassInfo *classInfo() const { return &info; }

@@ -112,7 +112,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   // enter a new execution context
   Context ctx(globalObj, exec->dynamicInterpreter(), thisObj, body.get(),
-                 codeType(), exec->context(), this, &args);
+                 FunctionCode, exec->context(), this, &args);
   ExecState newExec(exec->dynamicInterpreter(), &ctx);
   if (exec->hadException())
     newExec.setException(exec->exception());
@@ -644,11 +644,6 @@ GlobalFuncImp::GlobalFuncImp(ExecState* exec, FunctionPrototype* funcProto, int 
   , id(i)
 {
   putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
-}
-
-CodeType GlobalFuncImp::codeType() const
-{
-  return id == Eval ? EvalCode : codeType();
 }
 
 static JSValue *encode(ExecState *exec, const List &args, const char *do_not_escape)
