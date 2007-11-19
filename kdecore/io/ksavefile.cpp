@@ -76,7 +76,7 @@ KSaveFile::~KSaveFile()
     delete d;
 }
 
-bool KSaveFile::open()
+bool KSaveFile::open(OpenMode flags)
 {
     if ( d->realFileName.isNull() ) {
         d->error=QFile::OpenError;
@@ -131,7 +131,7 @@ bool KSaveFile::open()
 
     //Open oursleves with the temporary file
     QFile::setFileName(tempFile.fileName());
-    if ( !QFile::open(QIODevice::ReadWrite) ) {
+    if (!QFile::open(flags)) {
         tempFile.setAutoRemove(true);
         return false;
     }

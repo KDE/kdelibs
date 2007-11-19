@@ -151,9 +151,13 @@ public:
      * This function will open the save file by creating a temporary file to write
      * to. It will also check to ensure that there are sufficient permissions to
      * write to the target file.
+     *
+     * @param flags Sets the QIODevice::OpenMode. It should contain the write flag, otherwise you
+     * have a save file you cannot save to.
+     *
      * @return true if successful, or false if an error has occurred.
      */
-    bool open();
+    virtual bool open(OpenMode flags = QIODevice::ReadWrite);
 
     /**
      * @brief Discard changes without affecting the target file.
