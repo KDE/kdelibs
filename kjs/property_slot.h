@@ -89,6 +89,14 @@ public:
         m_data.index = index;
         m_getValue = getValue;
     }
+
+    void setCustomValue(JSObject *slotBase, void* value, GetValueFunc getValue)
+    {
+        assert(getValue);
+        m_slotBase = slotBase;
+        m_data.value = value;
+        m_getValue = getValue;
+    }
     
     void setGetterSlot(JSObject *slotBase, JSObject *getterFunc)
     {
@@ -107,6 +115,7 @@ public:
 
     const HashEntry *staticEntry() const { return m_data.staticEntry; }
     unsigned index() const { return m_data.index; }
+    void*    customValue() const { return m_data.value; }
 
     // For direct/value slots we also keep track of whether they're 
     // writeable. This is cleared when the lookup succeeds in the 
@@ -135,6 +144,7 @@ private:
         JSValue **valueSlot;
         const HashEntry *staticEntry;
         unsigned index;
+        void*    value;
     } m_data;
 
     bool m_readOnly;
