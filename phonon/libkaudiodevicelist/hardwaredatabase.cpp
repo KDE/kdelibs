@@ -27,48 +27,35 @@
 #include <ksavefile.h>
 #include <kstandarddirs.h>
 #include <QtCore/QCache>
-#include <QtCore/QList>
-#include <QtCore/QVarLengthArray>
-#include <QtCore/QVector>
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSet>
 #include <QtCore/QString>
-#include <QtCore/QTimerEvent>
 
-static const char CACHE_MAGIC[] = "PHwdbC";
-static const quint32 CACHE_VERSION = 1;
-static const quint32 HEADER_LENGTH = 14;
+static const char CACHE_MAGIC[7] = "PHwdbC";
+static const unsigned int CACHE_VERSION = 0;
 
 namespace Phonon
 {
 namespace HardwareDatabase
 {
 
-class HardwareDatabasePrivate : public QObject
+struct HardwareDatabasePrivate
 {
-    public:
-        HardwareDatabasePrivate();
-        void createCache(const QString &dbFileName, const QString &cacheFileName);
-        bool validCacheHeader(QDataStream &cacheStream);
-        Entry *readEntry(const QString &uniqueId);
+    HardwareDatabasePrivate();
+    void createCache(const QString &dbFileName, const QString &cacheFileName);
+    bool validCacheHeader(QDataStream &cacheStream);
+    void readEntry(const QString &udi);
 
-        QCache<QString, Entry> entryCache;
-
-    protected:
-        void timerEvent(QTimerEvent *);
-
-    private:
-        int m_timerId;
-        QFile *m_cacheFile;
-        QString m_fileName;
+    QSet<QString> knownUdis;
+    QCache<QString, Entry> entryCache;
+    QString fileName;
 };
 
 K_GLOBAL_STATIC(HardwareDatabasePrivate, s_globalDB)
 
 HardwareDatabasePrivate::HardwareDatabasePrivate()
-    : m_timerId(-1), m_cacheFile(0)
 {
     const QString dbFileName = KStandardDirs::locate("data", QLatin1String("libphonon/hardwaredatabase"));
     if (dbFileName.isEmpty()) {
@@ -84,171 +71,99 @@ HardwareDatabasePrivate::HardwareDatabasePrivate()
         // update cache file
         createCache(dbFileName, cacheFileName);
     } else {
-        m_cacheFile = new QFile(cacheFileName);
-        m_cacheFile->open(QIODevice::ReadOnly);
-        m_timerId = startTimer(0);
-        QDataStream cacheStream(m_cacheFile);
-        if (!validCacheHeader(cacheStream)) {
-            m_cacheFile->close();
-            delete m_cacheFile;
-            m_cacheFile = 0;
+        QFile cacheFile(cacheFileName);
+        cacheFile.open(QIODevice::ReadOnly);
+        QDataStream cacheStream(&cacheFile);
+        if (validCacheHeader(cacheStream)) {
+            QString udi;
+            QString name;
+            QString iconName;
+            int pref;
+            while (!cacheStream.atEnd()) {
+                cacheStream >> udi >> name >> iconName >> pref;
+                knownUdis.insert(udi);
+            }
+            cacheFile.close();
+        } else {
+            cacheFile.close();
             createCache(dbFileName, cacheFileName);
         }
     }
-    m_fileName = cacheFileName;
+    fileName = cacheFileName;
 }
 
 void HardwareDatabasePrivate::createCache(const QString &dbFileName, const QString &cacheFileName)
 {
+    knownUdis.clear();
     KSaveFile cacheFile(cacheFileName);
     QString name;
     QString iconName;
     int pref;
 
     const KConfig dbFile(dbFileName, KConfig::CascadeConfig);
-    const bool opened = cacheFile.open(); // QIODevice::WriteOnly
+    const bool opened = cacheFile.open();
     Q_ASSERT(opened);
     QDataStream cacheStream(&cacheFile);
     cacheStream.writeRawData(CACHE_MAGIC, 6);
-    cacheStream << CACHE_VERSION << cacheStream.version() << quint32(0) << quint32(0);
-    QStringList allIds = dbFile.groupList();
-    QHash<QString, quint32> offsets;
-    offsets.reserve(allIds.count());
-    foreach (const QString &uniqueId, allIds) {
-        offsets.insert(uniqueId, cacheFile.pos());
-        const KConfigGroup group = dbFile.group(uniqueId);
+    cacheStream << CACHE_VERSION;
+    foreach (const QString &udi, dbFile.groupList()) {
+        const KConfigGroup group = dbFile.group(udi);
         name = group.readEntry("name", QString());
         iconName = group.readEntry("icon", QString());
         pref = group.readEntry("initialPreference", 0);
-        cacheStream << uniqueId << name << iconName << pref;
+        cacheStream << udi << name << iconName << pref;
+        knownUdis.insert(udi);
     }
-    //offsets.squeeze();
-    const quint32 hashTableBuckets = offsets.capacity();
-    const quint32 hashTableOffset = cacheFile.pos();
-    QVector<QList<quint32> > bucketContents(hashTableBuckets);
-    foreach (const QString &uniqueId, allIds) {
-        const uint h = qHash(uniqueId);
-        bucketContents[h % hashTableBuckets] << h << offsets.value(uniqueId);
-    }
-    for (quint32 i = 0; i < hashTableBuckets; ++i) {
-        cacheStream << quint32(0);
-    }
-    QVarLengthArray<quint32, 4099> bucketOffsets(hashTableBuckets);
-    for (quint32 i = 0; i < hashTableBuckets; ++i) {
-        if (bucketContents[i].isEmpty()) {
-            bucketOffsets[i] = 0;
-        } else {
-            bucketOffsets[i] = cacheFile.pos();
-            cacheStream << bucketContents[i];
-        }
-    }
-    cacheFile.seek(hashTableOffset);
-    for (quint32 i = 0; i < hashTableBuckets; ++i) {
-        cacheStream << bucketOffsets[i];
-    }
-    cacheFile.seek(HEADER_LENGTH);
-    cacheStream << hashTableOffset << hashTableBuckets;
-
-
     cacheFile.close();
 }
 
 bool HardwareDatabasePrivate::validCacheHeader(QDataStream &cacheStream)
 {
     char magic[6];
-    quint32 version;
-    int datastreamVersion;
+    unsigned int version;
     const int read = cacheStream.readRawData(magic, 6);
-    cacheStream >> version >> datastreamVersion;
-    return (read == 6 && 0 == strncmp(magic, CACHE_MAGIC, 6) && version == CACHE_VERSION && datastreamVersion == cacheStream.version());
+    cacheStream >> version;
+    return (read == 6 && 0 == strncmp(magic, CACHE_MAGIC, 6) && version == CACHE_VERSION);
 }
 
-Entry *HardwareDatabasePrivate::readEntry(const QString &uniqueId)
+void HardwareDatabasePrivate::readEntry(const QString &udi)
 {
-    QDataStream cacheStream;
-    if (m_cacheFile) {
-        if (m_cacheFile->seek(HEADER_LENGTH)) {
-            cacheStream.setDevice(m_cacheFile);
-        } else {
-            delete m_cacheFile;
-            m_cacheFile = 0;
-        }
+    QFile cacheFile(fileName);
+    cacheFile.open(QIODevice::ReadOnly);
+    QDataStream cacheStream(&cacheFile);
+
+    if (!validCacheHeader(cacheStream)) {
+        return;
     }
-    if (!m_cacheFile) {
-        m_cacheFile = new QFile(m_fileName);
-        m_cacheFile->open(QIODevice::ReadOnly);
-        m_timerId = startTimer(0);
-        cacheStream.setDevice(m_cacheFile);
-        if (!validCacheHeader(cacheStream)) {
-            return 0;
-        }
-    }
-    quint32 hashTableOffset;
-    quint32 hashTableBuckets;
-    cacheStream >> hashTableOffset >> hashTableBuckets;
-    const uint h = qHash(uniqueId);
-    m_cacheFile->seek(hashTableOffset + (h % hashTableBuckets) * sizeof(quint32));
-    quint32 offset;
-    cacheStream >> offset;
-    //kDebug(603) << hashTableOffset << hashTableBuckets << uniqueId << h << offset;
-    if (0 == offset) {
-        return 0;
-    }
-    m_cacheFile->seek(offset);
-    QList<quint32> bucket;
-    cacheStream >> bucket;
 
     QString readUdi;
     QString name;
     QString iconName;
     int pref;
 
-    Q_ASSERT((bucket.size() & 1) == 0);
-    const QList<quint32>::ConstIterator end = bucket.constEnd();
-    for (QList<quint32>::ConstIterator it = bucket.constBegin();
-            it != end; ++it) {
-        if (*it == h) {
-            ++it;
-            Q_ASSERT(it != end);
-            m_cacheFile->seek(*it);
-            cacheStream >> readUdi;
-            if (readUdi == uniqueId) {
-                cacheStream >> name >> iconName >> pref;
-                Entry *e = new Entry(name, iconName, pref);
-                s_globalDB->entryCache.insert(uniqueId, e);
-                return e;
+    const QString udiStart = udi.left(udi.length() - 10); /*10 == strlen("playback_9")*/
+    while (!cacheStream.atEnd()) {
+        cacheStream >> readUdi >> name >> iconName >> pref;
+        if (readUdi.startsWith(udiStart)) {
+            s_globalDB->entryCache.insert(udi, new Entry(name, iconName, pref));
+            if (readUdi == udi) {
+                break;
             }
-        } else {
-            ++it;
         }
     }
-
-    return 0;
 }
 
-void HardwareDatabasePrivate::timerEvent(QTimerEvent *e)
+bool contains(const QString &udi)
 {
-    if (e->timerId() == m_timerId) {
-        delete m_cacheFile;
-        m_cacheFile = 0;
-        killTimer(m_timerId);
-    } else {
-        QObject::timerEvent(e);
+    return s_globalDB->knownUdis.contains(udi);
+}
+
+Entry entryFor(const QString &udi)
+{
+    if (!s_globalDB->entryCache.contains(udi)) {
+        s_globalDB->readEntry(udi);
     }
-}
-
-bool contains(const QString &uniqueId)
-{
-    return (s_globalDB->entryCache[uniqueId] || s_globalDB->readEntry(uniqueId));
-}
-
-Entry entryFor(const QString &uniqueId)
-{
-    Entry *e = s_globalDB->entryCache[uniqueId];
-    if (e) {
-        return *e;
-    }
-    e = s_globalDB->readEntry(uniqueId);
+    Entry *e = s_globalDB->entryCache[udi];
     if (e) {
         return *e;
     }
