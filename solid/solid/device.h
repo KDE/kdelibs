@@ -133,6 +133,13 @@ namespace Solid
         /**
          * Retrieves the Universal Device Identifier (UDI).
          *
+         * \warning Don't use the UDI for anything except communication with Solid. Also don't store
+         * UDIs as there's no guarantee that the UDI stays the same when the hardware setup changed.
+         * The UDI is a unique identifier that is local to the computer in question and for the
+         * current boot session. The UDIs may change after a reboot.
+         * Similar hardware in other computers may have different values; different
+         * hardware could have the same UDI.
+         *
          * @return the udi of the device
          */
         QString udi() const;
