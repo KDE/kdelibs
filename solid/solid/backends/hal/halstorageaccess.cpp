@@ -19,6 +19,7 @@
 
 #include "halstorageaccess.h"
 
+#include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
@@ -194,11 +195,14 @@ bool StorageAccess::requestPassphrase()
 
     QString appId = QCoreApplication::applicationName();
 
-    QDBusInterface soliduiserver("org.kde.kded", "/modules/soliduiserver", "org.kde.kded.SolidUiServer");
+    QDBusInterface soliduiserver("org.kde.kded", "/modules/soliduiserver", "org.kde.SolidUiServer");
     QDBusReply<void> reply = soliduiserver.call("showPassphraseDialog", udi,
                                                 returnService, m_lastReturnObject,
                                                 wId, appId);
     m_passphraseRequested = reply.isValid();
+    if (!m_passphraseRequested) {
+        qWarning() << "Failed to call the SolidUiServer, D-Bus said:" << reply.error();
+    }
     return m_passphraseRequested;
 }
 
