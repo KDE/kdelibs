@@ -133,10 +133,10 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 //X     watcher->addPath(QDir::homePath() + QLatin1String("/.asoundrc"));
 //X     watcher->addPath(QLatin1String("/etc/asound.conf"));
 //X     q.connect(watcher, SIGNAL(fileChanged(const QString &)), &q, SLOT(_k_asoundrcChanged(const QString &)));
-    KDirWatch *dirWatch = KDirWatch::self();
-    dirWatch->addFile(QDir::homePath() + QLatin1String("/.asoundrc"));
-    dirWatch->addFile(QLatin1String("/etc/asound.conf"));
-    q.connect(dirWatch, SIGNAL(dirty(const QString &)), &q, SLOT(_k_asoundrcChanged(const QString &)));
+//X     KDirWatch *dirWatch = KDirWatch::self();
+//X     dirWatch->addFile(QDir::homePath() + QLatin1String("/.asoundrc"));
+//X     dirWatch->addFile(QLatin1String("/etc/asound.conf"));
+//X     q.connect(dirWatch, SIGNAL(dirty(const QString &)), &q, SLOT(_k_asoundrcChanged(const QString &)));
 }
 
 struct DeviceHint
@@ -154,6 +154,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
     //snd_config_update();
     if (snd_device_name_hint(-1, "pcm", &hints) < 0) {
         kDebug(603) << "snd_device_name_hint failed for 'pcm'";
+        return;
     }
 
     for (void **cStrings = hints; *cStrings; ++cStrings) {
@@ -263,7 +264,8 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 {
-#ifdef HAVE_LIBASOUND2
+    // I was not able to reload the changed configuration yet, so disable the code
+#if 0 && defined(HAVE_LIBASOUND2)
     kDebug(603) << file;
     QFileInfo changedFile(file);
     QFileInfo asoundrc(QDir::homePath() + QLatin1String("/.asoundrc"));
