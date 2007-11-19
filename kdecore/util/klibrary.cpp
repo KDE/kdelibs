@@ -55,9 +55,11 @@ QString findLibrary(const QString &name, const KComponentData &cData)
         libname = file.mid( 3 );
       }
       if( !file.startsWith( "lib" ) )
-          return libname;
+          return file;
 
       libname = findLibraryInternal(libname, cData);
+      if( libname.isEmpty() )
+        libname = name;
     }
 #endif
     return libname;
