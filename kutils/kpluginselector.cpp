@@ -1549,9 +1549,15 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             configDialog = new KDialog(parent->parent);
             configDialog->setLayoutDirection(listView->layoutDirection());
             configDialog->setWindowTitle(pluginInfo.name());
-            KTabWidget *newTabWidget = new KTabWidget(configDialog);
 
-            tabWidgets.insert(index.row(), newTabWidget);
+            // The number of KCModuleProxies in use determines whether to use a tabwidget
+            KTabWidget *newTabWidget = 0;
+            // widget to use for the setting dialog's main widget,
+            // either a KTabWidget or a KCModuleProxy
+            QWidget * mainWidget = 0;
+            // widget to use as the KCModuleProxy's parent.
+            // The first proxy is owned by the dialog itself
+            QWidget * moduleProxyParentWidget = configDialog;
 
             foreach(KService::Ptr servicePtr, services)
             {
@@ -1559,10 +1565,25 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 {
                     KCModuleInfo moduleinfo(servicePtr);
                     model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
-                    KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
+                    KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, moduleProxyParentWidget);
                     if (currentModuleProxy->realModule())
                     {
-                        newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                        if ( mainWidget && !newTabWidget ) {
+                            // we already created one KCModuleProxy, so we need a tab widget.
+                            // Move the first proxy into the tab widget and ensure this and subsequent
+                            // proxies are in the tab widget
+                            newTabWidget = new KTabWidget(configDialog);
+                            moduleProxyParentWidget = newTabWidget;
+                            mainWidget->setParent( newTabWidget );
+                            newTabWidget->addTab(mainWidget, (qobject_cast<KCModuleProxy*>( mainWidget ))->moduleInfo().moduleName() );
+                            mainWidget = newTabWidget;
+                            tabWidgets.insert(index.row(), newTabWidget);
+                        }
+                        if ( newTabWidget ) {
+                            newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                        } else {
+                            mainWidget = currentModuleProxy;
+                        }
                     }
 
                     if (!modulesDialogs.contains(index.row()))
@@ -1576,7 +1597,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
 
-            configDialog->setMainWidget(newTabWidget);
+            configDialog->setMainWidget(mainWidget);
         }
         else
         {
