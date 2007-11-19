@@ -199,19 +199,19 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
 
             if (it != constEnd()) {
                 if (it->bImmutable)
-                    return; // we cannot change this entry.
+                    return; // we cannot change this entry. Inherits group immutability.
                 k = it.key();
                 e = *it;
             } else {
                 // make sure the group marker is in the map
-                if (findEntry(group) == constEnd())
+                ConstIterator it = findEntry(group);
+                if (it == constEnd())
                     insert(KEntryKey(group), KEntry());
+                else if (it->bImmutable)
+                    return; // this group is immutable, so we cannot change this entry.
 
                 k = KEntryKey(group, key);
             }
-
-            if (KEntryMap::value(KEntryKey(group)).bImmutable)
-                return; // this group is immutable, so we cannot change this entry.
 
             // set these here, since we may be changing the type of key from the one we found
             k.bLocal = (options&EntryLocalized);

@@ -131,6 +131,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 continue;
 
             if (groupOptionImmutable)
+                // Do not make the groups immutable until the entries from
+                // this file have been added.
                 immutableGroups.append(currentGroup);
         } else {
             if (groupSkip && !bDefault)
