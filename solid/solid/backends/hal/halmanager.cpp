@@ -178,8 +178,31 @@ QStringList HalManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
             qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
             return QStringList();
         }
-
-        result << reply;
+        if ( cap == QLatin1String( "video4linux" ) )
+        {
+            QStringList foundDevices ( reply );
+            QStringList filtered;
+            foreach ( QString udi, foundDevices )
+            {
+                QDBusInterface device( "org.freedesktop.Hal", udi, "org.freedesktop.Hal.Device", QDBusConnection::systemBus() );
+                QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
+                if (!reply.isValid())
+                {
+                    qWarning() << Q_FUNC_INFO << " error getting video4linux.device: " << reply.error().name() << endl;
+                    continue;
+                }
+                if ( !reply.value().contains( "video" ) )
+                {
+                    continue;
+                }
+                filtered.append( udi );
+            }
+            result += filtered;
+        }
+        else
+        {
+            result << reply;
+        }
     }
 
     return result;
