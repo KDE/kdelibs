@@ -40,34 +40,32 @@ Context::Context(JSObject* glob, Interpreter* interpreter, JSObject* thisV,
     m_codeType = type;
     m_callingContext = callingCon;
 
-    // create and initialize activation object (ECMA 10.1.6)
-    if (type == FunctionCode ) {
-        m_activation = new ActivationImp(func, *args);
-        m_variable = m_activation;
-    } else {
-        m_activation = 0;
-        m_variable = glob;
-    }
-
     // ECMA 10.2
     switch(type) {
     case EvalCode:
-        if (m_callingContext) {
-            scope = m_callingContext->scopeChain();
-            m_variable = m_callingContext->variableObject();
-            m_thisVal = m_callingContext->thisValue();
-            break;
-        } // else same as GlobalCode
+        // 10.2.2 talks about the behavior w/o a calling context here, 
+        // but this can not actually happen, as code calling .eval 
+        // must be in some context, and we never use EvalCode directly
+        assert(m_callingContext);
+        scope = m_callingContext->scopeChain();
+
+        m_variable = m_callingContext->variableObject();
+        m_thisVal  = m_callingContext->thisValue();
+        break;
     case GlobalCode:
         scope.clear();
         scope.push(glob);
-        m_thisVal = static_cast<JSObject*>(glob);
+
+        m_variable = glob;
+        // Per 10.2.1, we should use the global object here, but 
+        // Interpreter::evaluate permits it to be overriden, e.g. for LiveConnect.
+        m_thisVal = thisV;
         break;
     case FunctionCode:
         scope = func->scope();
-        scope.push(m_activation);
-        m_variable = m_activation; // TODO: DontDelete ? (ECMA 10.2.3)
-        m_thisVal = thisV;
+        m_variable = new ActivationImp(func, *args);// TODO: DontDelete ? (ECMA 10.2.3)
+        scope.push(m_variable);
+        m_thisVal  = thisV;
         break;
     }
     
@@ -85,9 +83,8 @@ Context::~Context()
     // which isn't accessible from nested scopes so we can discard the list as soon
     // as the function is done running.
     // This prevents lists of Lists from building up, waiting to be garbage collected
-    ActivationImp* activation = static_cast<ActivationImp*>(m_activation);
-    if (activation)
-        activation->releaseArguments();
+    if (m_codeType == FunctionCode)
+        activationObject()->releaseArguments();
 }
 
 void Context::mark()

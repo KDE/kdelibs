@@ -100,7 +100,11 @@ namespace KJS  {
      */
     Context* callingContext() { return m_callingContext; }
 
-    JSObject* activationObject() { return m_activation; }
+    ActivationImp* activationObject() {
+        assert(m_codeType == FunctionCode);
+        return static_cast<ActivationImp*>(m_variable);
+    }
+
     CodeType codeType() { return m_codeType; }
     FunctionBodyNode* currentBody() { return m_currentBody; }
     FunctionImp* function() const { return m_function; }
@@ -121,7 +125,6 @@ namespace KJS  {
 
     FunctionImp* m_function;
     const List* m_arguments;
-    JSObject* m_activation;
 
     ScopeChain scope;
     JSObject* m_variable;

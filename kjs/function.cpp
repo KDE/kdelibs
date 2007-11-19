@@ -918,10 +918,9 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
           return throwError(exec, SyntaxError, errMsg, errLine, sid, NULL);
 
         // enter a new execution context
-        JSObject *thisVal = static_cast<JSObject *>(exec->context()->thisValue());
         Context ctx(exec->dynamicInterpreter()->globalObject(),
                        exec->dynamicInterpreter(),
-                       thisVal,
+                       0, /* thisVal is inherited in EvalCode */
                        progNode.get(),
                        EvalCode,
                        exec->context());
