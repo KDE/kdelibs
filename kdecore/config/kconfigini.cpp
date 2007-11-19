@@ -322,7 +322,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     KEntryMap writeMap;
     bool bGlobal = options & WriteGlobal;
 
-    if (options&WriteMerge) {
+    {
         ParseOptions opts = ParseExpansions;
         if (bGlobal)
             opts |= ParseGlobal;

@@ -252,16 +252,11 @@ void KConfig::sync()
                 qWarning() << "couldn't lock global file";
                 return;
             }
-            // always merge "kdeglobals"
-            KConfigBackend::WriteOptions options = KConfigBackend::WriteGlobal|KConfigBackend::WriteMerge;
-            tmp->writeConfig(utf8Locale, d->entryMap, options, d->componentData);
+            tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData);
             if (tmp->isLocked())
                 tmp->unlock();
         }
-        KConfigBackend::WriteOptions options;
-        if (d->wantMerge())
-            options |= KConfigBackend::WriteMerge;
-        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, options, d->componentData))
+        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData))
             d->bDirty = false;
         if (d->mBackend->isLocked())
             d->mBackend->unlock();

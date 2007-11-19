@@ -44,10 +44,9 @@ public:
     enum OpenFlag {
         IncludeGlobals  = 0x01, ///< Blend kdeglobals into the config object.
         CascadeConfig   = 0x02, ///< Cascade to system-wide config files.
-        DontMergeOnSync = 0x04, ///< Overwrite concurrent changes.
 
         /// The following are convenience definitions for the basic mode.
-        /// Do @em not combine them with anything but DontMergeOnSync.
+        /// Do @em not combine them with anything.
         SimpleConfig    = 0x00, ///< Just a single config file.
         NoCascade       = IncludeGlobals, ///< Include user's globals, but omit system settings.
         NoGlobals       = CascadeConfig, ///< Cascade to system settings, but omit user's globals.

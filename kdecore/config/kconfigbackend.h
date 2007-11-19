@@ -71,8 +71,7 @@ public:
 
     /** options passed to writeConfig. */
     enum WriteOption {
-        WriteGlobal = 1, /// only write entries marked as "global"
-        WriteMerge = 2 /// merge with on disk storage
+        WriteGlobal = 1 /// only write entries marked as "global"
     };
     /// @typedef typedef QFlags<WriteOption> WriteOptions
     Q_DECLARE_FLAGS(WriteOptions, WriteOption)
