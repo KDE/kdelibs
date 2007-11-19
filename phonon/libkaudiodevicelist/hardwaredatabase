@@ -25,7 +25,7 @@ initialPreference=10
 
 [pci:1102:0004:1102:2002:playback:alsa:0]
 name=Creative SB Audigy 2 ZS Standard Playback
-initialPreference=35
+initialPreference=37
 
 [pci:1102:0004:1102:2002:capture:alsa:4]
 name=Creative SB Audigy 2 ZS p16v
@@ -41,7 +41,7 @@ initialPreference=35
 
 [pci:1102:0004:1102:2002:capture:alsa:0]
 name=Creative SB Audigy 2 ZS ADC Capture
-initialPreference=35
+initialPreference=36
 
 #NVidia CK804 Analog Devices AD1981B
 [pci:10de:0059:10f1:2895:playback:alsa:2]
@@ -54,20 +54,20 @@ initialPreference=25
 
 [pci:10de:0059:10f1:2895:playback:alsa:0]
 name=NVidia CK804 AD1981B
-initialPreference=35
+initialPreference=36
 
 [pci:10de:0059:10f1:2895:capture:alsa:0]
 name=NVidia CK804 AD1981B
-initialPreference=35
+initialPreference=36
 
 #HDA Intel Realtek ALC861
 [pci:8086:27d8:1584:c024:capture:alsa:0]
 name=Realtek ALC861
-initialPreference=35
+initialPreference=36
 
 [pci:8086:27d8:1584:c024:playback:alsa:0]
 name=Realtek ALC861
-initialPreference=35
+initialPreference=36
 
 [pci:8086:27d8:1584:c024:playback:alsa:1]
 name=Realtek ALC861 S/PDIF
@@ -76,7 +76,7 @@ initialPreference=15
 #Intel ICH 82801CA-ICH3 with AD1881A
 [pci:8086:2485:1014:051f:playback:alsa:0]
 name=Analog Devices AD1881A
-initialPreference=35
+initialPreference=36
 
 [pci:8086:2485:1014:051f:capture:alsa:1]
 name=Analog Devices AD1881A MIC ADC
@@ -84,7 +84,7 @@ initialPreference=25
 
 [pci:8086:2485:1014:051f:capture:alsa:0]
 name=Analog Devices AD1881A
-initialPreference=35
+initialPreference=36
 
 [pci:8086:2485:1014:051f:both:oss]
 name=Analog Devices AD1881A
@@ -97,7 +97,7 @@ initialPreference=15
 
 [pci:8086:266e:144d:c01a:playback:alsa:0]
 name=Analog Devices AD1981B
-initialPreference=35
+initialPreference=36
 
 [pci:8086:266e:144d:c01a:capture:alsa:3]
 name=Analog Devices AD1981B ADC2
@@ -113,7 +113,7 @@ initialPreference=25
 
 [pci:8086:266e:144d:c01a:capture:alsa:0]
 name=Analog Devices AD1981B
-initialPreference=35
+initialPreference=36
 
 [pci:8086:266e:144d:c01a:both:oss]
 name=Analog Devices AD1981B
@@ -126,11 +126,11 @@ initialPreference=20
 
 [pci:8086:27d8:144d:c024:capture:alsa:0]
 name=Analog Devices AD1986A
-initialPreference=35
+initialPreference=36
 
 [pci:8086:27d8:144d:c024:playback:alsa:0]
 name=Analog Devices AD1986A
-initialPreference=35
+initialPreference=36
 
 # Logitech USB Audio Interface Logitech Logitech USB Headset USB Audio
 [usb:046d:0a02:both:oss]
@@ -139,9 +139,21 @@ initialPreference=10
 
 [usb:046d:0a02:capture:alsa:0]
 name=Logitech Premium Stereo USB Headset 350
-initialPreference=25
+initialPreference=26
 
 [usb:046d:0a02:playback:alsa:0]
 name=Logitech Premium Stereo USB Headset 350
-initialPreference=25
+initialPreference=26
 
+# HDA NVidia Analog Devices AD1988
+[pci:10de:03f0:1043:8234:playback:alsa:1]
+name=Analog Devices AD1988 S/PDIF
+initialPreference=15
+
+[pci:10de:03f0:1043:8234:playback:alsa:0]
+name=Analog Devices AD1988
+initialPreference=36
+
+[pci:10de:03f0:1043:8234:capture:alsa:0]
+name=Analog Devices AD1988
+initialPreference=36
