@@ -71,6 +71,7 @@ Manager::Manager()
     , ChildrenInterface()
     , d( new Private() )
 {
+    setObjectName("Kross");
     d->collection = new ActionCollection("main");
 
 #ifdef KROSS_PYTHON_LIBRARY
