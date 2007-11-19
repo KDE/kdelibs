@@ -110,16 +110,19 @@ echo ""
 alsaplayback=`lshal -s|grep _alsa_playback`
 for playback_udi in $alsaplayback; do
 	card_udi="${playback_udi%_alsa_playback_*}"
+	card_udi="${card_udi%_sound_card_*}"
 	createAlsaEntryFromHal "$playback_udi" "$card_udi" "playback"
 done
 alsacapture=`lshal -s|grep _alsa_capture`
 for capture_udi in $alsacapture; do
 	card_udi="${capture_udi%_alsa_capture_*}"
+	card_udi="${card_udi%_sound_card_*}"
 	createAlsaEntryFromHal "$capture_udi" "$card_udi" "capture"
 done
 oss=`lshal -s|grep _oss_pcm`
 for udi in $oss; do
 	card_udi="${udi%_oss_pcm*}"
+	card_udi="${card_udi%_sound_card_*}"
 	createOssEntryFromHal "$udi" "$card_udi"
 done
 echo ""
