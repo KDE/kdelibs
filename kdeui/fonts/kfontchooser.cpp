@@ -290,6 +290,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->sizeOfFont = new KIntNumInput( page); // "sizeOfFont");
     d->sizeOfFont->setMinimum(4);
     d->sizeOfFont->setMaximum(128);
+    d->sizeOfFont->setSliderEnabled(false);
 
     d->sizeListBox->setEnabled( flags ^ ShowDifferences );
     d->sizeOfFont->setEnabled( flags ^ ShowDifferences );
