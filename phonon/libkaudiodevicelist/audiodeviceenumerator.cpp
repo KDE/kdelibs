@@ -165,12 +165,12 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 
         if (/*nextHint.name.startsWith("front:") ||
                 nextHint.name.startsWith("rear:") ||
-                nextHint.name.startsWith("center_lfe:") ||
+                nextHint.name.startsWith("center_lfe:") ||*/
                 nextHint.name.startsWith("surround40:") ||
                 nextHint.name.startsWith("surround41:") ||
                 nextHint.name.startsWith("surround50:") ||
                 nextHint.name.startsWith("surround51:") ||
-                nextHint.name.startsWith("surround71:") ||*/
+                nextHint.name.startsWith("surround71:") ||
                 nextHint.name.startsWith("default:") ||
                 nextHint.name == "null"
                 ) {
