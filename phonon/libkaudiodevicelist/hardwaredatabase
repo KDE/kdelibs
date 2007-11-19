@@ -157,3 +157,32 @@ initialPreference=36
 [pci:10de:03f0:1043:8234:capture:alsa:0]
 name=Analog Devices AD1988
 initialPreference=36
+
+# Intel Corporation 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) AC Fujitsu Siemens Computer GmbH I82801DBICH4 Intel 82801DB-ICH4
+[pci:8086:24c5:1734:1033:capture:alsa:3]
+name=Cirrus Logic CS4299 rev 4 ADC2
+initialPreference=35
+
+[pci:8086:24c5:1734:1033:playback:alsa:4]
+name=Cirrus Logic CS4299 rev 4 S/PDIF
+initialPreference=15
+
+[pci:8086:24c5:1734:1033:capture:alsa:2]
+name=Cirrus Logic CS4299 rev 4 MIC2 ADC
+initialPreference=35
+
+[pci:8086:24c5:1734:1033:capture:alsa:1]
+name=Cirrus Logic CS4299 rev 4 MIC ADC
+initialPreference=35
+
+[pci:8086:24c5:1734:1033:both:oss]
+name=Cirrus Logic CS4299 rev 4
+initialPreference=20
+
+[pci:8086:24c5:1734:1033:capture:alsa:0]
+name=Cirrus Logic CS4299 rev 4
+initialPreference=36
+
+[pci:8086:24c5:1734:1033:playback:alsa:0]
+name=Cirrus Logic CS4299 rev 4
+initialPreference=36
