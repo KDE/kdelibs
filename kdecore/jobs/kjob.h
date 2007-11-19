@@ -62,6 +62,10 @@ class KJobPrivate;
  *  }
  * \endcode
  *
+ * @note: KJob and its subclasses is meant to be used 
+ * in a fire-and-forget way. Its deleting itself when
+ * it has finished using deleteLater() so the job
+ * instance disappears after the next event loop run.
  */
 class KDECORE_EXPORT KJob : public QObject
 {
@@ -492,6 +496,8 @@ protected:
      * Utility function to emit the result signal, and suicide this job.
      * It first notifies the observers to hide the progress for this job using
      * the finished() signal.
+     *
+     * @note: Deletes this job using deleteLater().
      *
      * @see result()
      * @see finished()
