@@ -385,6 +385,7 @@ void DialogPrivate::createDialogFromServices()
 
 void DialogPrivate::_k_syncConfiguration()
 {
+    Q_Q(Dialog);
     const QHash<KPageWidgetItem *, KPluginInfo>::Iterator endIt = pluginForItem.end();
     QHash<KPageWidgetItem *, KPluginInfo>::Iterator it = pluginForItem.begin();
     for (; it != endIt; ++it) {
@@ -393,7 +394,10 @@ void DialogPrivate::_k_syncConfiguration()
         pinfo.setPluginEnabled(item->isChecked());
         pinfo.save();
     }
-    pluginStateDirty = 0;
+    if (pluginStateDirty > 0) {
+      emit q->pluginSelectionChanged();
+      pluginStateDirty = 0;
+    }
     Dispatcher::syncConfiguration();
 }
 
