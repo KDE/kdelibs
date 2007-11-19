@@ -157,10 +157,15 @@ namespace Phonon
              */
             bool isPlaybackDevice() const;
 
+            /**
+             * Returns whether the device is a non-standard device mostly only interesting for
+             * advanced users.
+             */
+            bool isAdvancedDevice() const;
+
         protected:
             AudioDevice(Solid::Device audioHw, KSharedConfig::Ptr config);
             AudioDevice(KConfigGroup &deviceGroup);
-            AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr config);
             AudioDevice(const QString &alsaDeviceName, const QString &description, KSharedConfig::Ptr config);
             QString udi() const;
 
