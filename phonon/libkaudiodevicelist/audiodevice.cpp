@@ -85,7 +85,9 @@ QString AudioDevicePrivate::uniqueIdentifierFromDevice(const Solid::Device &devi
 {
     const Solid::GenericInterface *genericIface = device.as<Solid::GenericInterface>();
     Q_ASSERT(genericIface);
-    const QString subsystem = genericIface->property(QLatin1String("info.subsystem")).toString();
+    const QString subsystem = genericIface->propertyExists(QLatin1String("info.subsystem")) ?
+        genericIface->property(QLatin1String("info.subsystem")).toString() :
+        genericIface->property(QLatin1String("linux.subsystem")).toString();
     if (subsystem == "pci") {
         const QVariant vendor_id = genericIface->property("pci.vendor_id");
         if (vendor_id.isValid()) {
