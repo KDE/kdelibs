@@ -169,12 +169,12 @@ void FileProtocol::listDir( const KUrl& url )
             }
 */
         }
-        int type = _IFREG;
+        int type = S_IFREG;
         int access = 0;
         if( fileInfo.isDir() )
-            type = _IFDIR;
+            type = S_IFDIR;
         else if( fileInfo.isSymLink() )
-            type = _IFLNK;
+            type = S_IFLNK;
         if( fileInfo.isReadable() )
             access |= S_IRUSR;
         if( fileInfo.isWritable() )
