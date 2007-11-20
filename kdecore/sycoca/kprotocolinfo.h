@@ -227,7 +227,7 @@ public:
   /**
    * Returns the documentation path for the specified protocol.
    *
-   * This corresponds to the "X-DocPath=" field in the protocol description file.
+   * This corresponds to the "X-DocPath=" or "X-KDE-DocPath=" field in the protocol description file.
    *
    * @param protocol the protocol to check
    * @return the docpath of the protocol, or null if unknown

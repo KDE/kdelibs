@@ -87,7 +87,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->docPath = config.readPathEntry( "X-DocPath", QString() );
   if (d->docPath.isEmpty())
-    d->docPath = config.readPathEntry( "DocPath", QString() );
+    d->docPath = config.readPathEntry( "X-KDE-DocPath", QString() );
   d->protClass = config.readEntry( "Class" ).toLower();
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));

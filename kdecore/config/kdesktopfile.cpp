@@ -346,9 +346,9 @@ QString KDesktopFile::readDocPath() const
 {
   Q_D(const KDesktopFile);
   // Both keys are KDE extensions
-  if(d->desktopGroup.hasKey( "DocPath" ))
-    return d->desktopGroup.readPathEntry( "DocPath", QString() );
-  return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
+  if(d->desktopGroup.hasKey( "X-DocPath" ))
+    return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
+  return d->desktopGroup.readPathEntry( "X-KDE-DocPath", QString() );
 }
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const

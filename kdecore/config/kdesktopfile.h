@@ -190,10 +190,8 @@ public:
   bool tryExec() const;
 
   /**
-   * Returns the value of the "X-DocPath=" Or "DocPath=" entry.
-	 * X-DocPath should be used because DocPath is deprecated and will
-	 * one day not be supported.
-   * @return The value of the "X-DocPath=" Or "DocPath=" entry.
+   * Returns the value of the "X-DocPath=" Or "X-KDE-DocPath=" entry.
+   * @return The value of the "X-DocPath=" Or "X-KDE-DocPath=" entry.
    */
   QString readDocPath() const;
 
