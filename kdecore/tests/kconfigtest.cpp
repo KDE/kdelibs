@@ -65,6 +65,9 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 #define HOMEPATH QDir::homePath()+"/foo"
 #define HOMEPATHESCAPE QDir::homePath()+"/foo/$HOME"
+#define SUBGROUPLIST (QStringList() << "SubGroup1" << "SubGroup2" << "SubGroup")
+#define PARENTGROUPKEYS (QStringList() << "parentgrpstring")
+#define SUBGROUP3KEYS (QStringList() << "sub3string")
 
 void KConfigTest::initTestCase()
 {
@@ -701,13 +704,30 @@ void KConfigTest::testSubGroup()
 {
     KConfig sc( "kconfigtest" );
     KConfigGroup cg( &sc, "ParentGroup" );
-    QVERIFY(cg.readEntry( "parentgrpstring", "") == QString("somevalue") );
+    QCOMPARE(cg.readEntry( "parentgrpstring", ""), QString("somevalue") );
     KConfigGroup subcg1( &cg, "SubGroup1");
-    QVERIFY(subcg1.readEntry( "somestring", "") == QString("somevalue") );
+    QCOMPARE(subcg1.name(), QString("SubGroup1"));
+    QCOMPARE(subcg1.readEntry( "somestring", ""), QString("somevalue") );
     KConfigGroup subcg2( &cg, "SubGroup2");
-    QVERIFY(subcg2.readEntry( "substring", "") == QString("somevalue") );
+    QCOMPARE(subcg2.name(), QString("SubGroup2"));
+    QCOMPARE(subcg2.readEntry( "substring", ""), QString("somevalue") );
     KConfigGroup subcg3( &cg, "SubGroup/3");
-    QVERIFY(subcg3.readEntry( "sub3string", "") == QString("somevalue") );
+    QCOMPARE(subcg3.readEntry( "sub3string", ""), QString("somevalue") );
+    QEXPECT_FAIL("", "To be fixed in KDE 4.1", Continue);
+    QCOMPARE(subcg3.name(), QString("SubGroup/3"));
+
+    KConfigGroup subcg( &cg, "SubGroup" );
+    KConfigGroup cg_sub3( &subcg, "3" );
+    QCOMPARE(cg_sub3.readEntry("sub3string", ""), subcg3.readEntry("sub3string", ""));
+
+    QCOMPARE(cg.groupList(), SUBGROUPLIST );
+
+    QCOMPARE(subcg3.keyList(), SUBGROUP3KEYS);
+    QCOMPARE(cg.keyList(), PARENTGROUPKEYS);
+
+    QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
+    QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
+
     KConfigGroup subcg4( &subcg3, "3");
     QVERIFY(!subcg4.exists());
 }

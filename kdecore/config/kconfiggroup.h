@@ -46,6 +46,9 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
  * empty group name.
  * A KConfigGroup can be read-only if it is constructed from a const config object
  * or from another read-only group.
+ *
+ * @note: A config group name may not contain any forward slashes
+ *
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigBase
 {
@@ -59,6 +62,11 @@ public:
 
     /**
      * Construct a config group corresponding to @p group in @p master.
+     *
+     * This allows to create subgroups, by passing an existing group as @p master.
+     *
+     * @note: Group names cannot contain forward slashes.
+     *
      * @p group is the group name encoded in UTF-8.
      */
     KConfigGroup(KConfigBase *master, const QString &group);
@@ -67,6 +75,10 @@ public:
     /**
      * Construct a read-only config group. A read-only group will silently ignore
      * any attempts to write to it.
+     *
+     * This allows to create subgroups, by passing an existing group as @p master.
+     *
+     * @note: Group names cannot contain forward slashes.
      */
     KConfigGroup(const KConfigBase *master, const QString &group);
     KConfigGroup(const KConfigBase *master, const char *group);
@@ -88,8 +100,7 @@ public:
     bool isValid() const;
 
     /**
-     * The full name of this group, including and parent groups.
-     * The hierarchy separator is the slash.
+     * The name of this group.
      * The root group is named "<default>".
      */
     QString name() const;
@@ -123,7 +134,9 @@ public:
     KDE_DEPRECATED void changeGroup( const QString &group );
     KDE_DEPRECATED void changeGroup( const char *group);
 
-    /// @reimp
+    /** 
+     * @reimp
+     */
     QStringList groupList() const;
 
     /**

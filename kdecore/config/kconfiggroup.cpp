@@ -83,11 +83,16 @@ class KConfigGroupPrivate : public QSharedData
     QByteArray fullName() const
     {
         if (!mParent) {
-            if (mName.isEmpty())
-                return "<default>";
-            return mName;
+            return name();
         }
         return mParent->fullName(mName);
+    }
+
+    QByteArray name() const
+    {
+        if (mName.isEmpty())
+            return "<default>";
+        return mName.mid(mName.lastIndexOf("/")+1);
     }
 
     QByteArray fullName(const QByteArray& aGroup) const
@@ -636,7 +641,7 @@ QString KConfigGroup::name() const
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::name", "accessing an invalid group");
 
-    return QString::fromUtf8(d->fullName());
+    return QString::fromUtf8(d->name());
 }
 
 bool KConfigGroup::exists() const
