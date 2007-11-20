@@ -215,6 +215,11 @@ QString Identifier::qstring() const
   return QString((QChar*) data(), size());
 }
 
+JSValue* valueGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
+{
+  return static_cast<JSValue*>(slot.customValue());
+}
+
 DOM::NodeImpl* toNode(JSValue *val)
 {
   JSObject *obj = val->getObject();
@@ -351,21 +356,17 @@ EmbedLiveConnect::~EmbedLiveConnect() {
   if (m_liveconnect)
     m_liveconnect->unregister(objid);
 }
-#ifdef __GNUC__
-#ifdef __GNUC__
-    #warning "LiveConnect stuff is broken"
-#endif
-#endif
+
 KDE_NO_EXPORT
-bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& /*slot*/)
+bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot)
 {
   if (m_liveconnect) {
     KParts::LiveConnectExtension::Type rettype;
     QString retval;
     unsigned long retobjid;
     if (m_liveconnect->get(objid, prop.qstring(), rettype, retobjid, retval)) {
-      getLiveConnectValue(m_liveconnect, prop.qstring(), rettype, retval, retobjid);
-      return true;
+      return getImmediateValueSlot(this,
+                  getLiveConnectValue(m_liveconnect, prop.qstring(), rettype, retval, retobjid), slot);
     }
   }
   return false;

@@ -24,6 +24,7 @@
 
 #include <khtml_export.h>
 #include <kjs/interpreter.h>
+#include <kjs/global.h>
 #include <wtf/HashMap.h>
 
 #include <dom/dom_node.h>
@@ -194,7 +195,7 @@ namespace KJS {
     JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
     return thisObj->indexGetter(exec, slot.index());
   }
-
+  
   /**
    Handler for index properties. Will call "length" method on the listObj
    to determine whether it's in range, and arrange to have indexGetter called
@@ -249,7 +250,18 @@ namespace KJS {
     }
     return false;
   }
+  
+  /* Helper for below */
+  JSValue* valueGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot);
 
+  /**
+   This sets up the slot to return a particular JSValue*; unlike 
+   setValueSlot, it does not require there to be a location to point at
+  */
+  inline bool getImmediateValueSlot(JSObject* thisObj, JSValue* value, PropertySlot& slot) {
+    slot.setCustomValue(thisObj, value, valueGetterAdapter);
+    return true;
+  }
 
   /**
    * Retrieve from cache, or create, a KJS object around a DOM object
