@@ -224,10 +224,6 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
 void KConfig::sync()
 {
     Q_D(KConfig);
-    typedef KConfigBackend::ParseOptions ParseOptions;
-    typedef KConfigBackend::WriteOptions WriteOptions;
-    static const KConfigBackend::ParseOption ParseGlobal = KConfigBackend::ParseGlobal;
-    static const KConfigBackend::WriteOption WriteGlobal = KConfigBackend::WriteGlobal;
 
     Q_ASSERT(!isImmutable() && !name().isEmpty()); // can't write to an immutable or anonymous file.
 
@@ -368,36 +364,24 @@ void KConfig::reparseConfiguration()
 
 void KConfigPrivate::parseGlobalFiles()
 {
-    typedef KConfigBackend::ParseOptions ParseOptions;
-    static const KConfigBackend::ParseOption ParseDefaults = KConfigBackend::ParseDefaults;
-    static const KConfigBackend::ParseOption ParseGlobal = KConfigBackend::ParseGlobal;
-    static const KConfigBackend::ParseInfo ParseImmutable = KConfigBackend::ParseImmutable;
-
 //    qDebug() << "parsing global files" << globalFiles;
 
     // TODO: can we cache the values in etc_kderc / other global files
     //       on a per-application basis?
     const QByteArray utf8Locale = locale.toUtf8();
     foreach(const QString& file, globalFiles) {
-        ParseOptions parseOpts = ParseGlobal;
+        KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal;
         if (file != sGlobalFileName)
-            parseOpts |= ParseDefaults;
+            parseOpts |= KConfigBackend::ParseDefaults;
 
         KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
-        if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == ParseImmutable)
+        if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == KConfigBackend::ParseImmutable)
             break;
     }
 }
 
 void KConfigPrivate::parseConfigFiles()
 {
-    typedef KConfigBackend::ParseOptions ParseOptions;
-    typedef KConfigBackend::ParseInfo ParseInfo;
-    static const KConfigBackend::ParseOption ParseExpansions = KConfigBackend::ParseExpansions;
-    static const KConfigBackend::ParseOption ParseDefaults = KConfigBackend::ParseDefaults;
-    static const KConfigBackend::ParseInfo ParseImmutable = KConfigBackend::ParseImmutable;
-    static const KConfigBackend::ParseInfo ParseOpenError = KConfigBackend::ParseOpenError;
-
     if (fileName == QLatin1String("kdeglobals") && wantGlobals())
         return; // already parsed in parseGlobalFiles()
 
@@ -424,21 +408,22 @@ void KConfigPrivate::parseConfigFiles()
 
         const QByteArray utf8Locale = locale.toUtf8();
         foreach(const QString& file, files) {
-            ParseOptions parseOpts = 0;
+            KConfigBackend::ParseOptions parseOpts;
             if (allowExecutableValues)
-                parseOpts |= ParseExpansions;
+                parseOpts |= KConfigBackend::ParseExpansions;
             if (file == mBackend->filePath()) {
-                ParseInfo info = mBackend->parseConfig(utf8Locale, entryMap, parseOpts);
-                if (info == ParseImmutable)
+                KConfigBackend::ParseInfo info = mBackend->parseConfig(utf8Locale, entryMap, parseOpts);
+                if (info == KConfigBackend::ParseImmutable)
                     bFileImmutable = true;
-                else if (info == ParseOpenError)
+                else if (info == KConfigBackend::ParseOpenError)
                     configState = KConfigBase::NoAccess;
                 else // some other error occurred
                     ; // FIXME what to do here?
             } else {
-                parseOpts |= ParseDefaults;
+                parseOpts |= KConfigBackend::ParseDefaults;
                 KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
-                bFileImmutable = backend->parseConfig(utf8Locale, entryMap, parseOpts) == ParseImmutable;
+                bFileImmutable = (backend->parseConfig(utf8Locale, entryMap, parseOpts) ==
+                                  KConfigBackend::ParseImmutable);
             }
 
             if (bFileImmutable)
