@@ -119,6 +119,13 @@ public:
     /**
      * Sets the merge stack to the list of files. The stack is last in first out with
      * the top of the stack being the most specific config file.
+     *
+     * @note: Most specific config file is relative to this list, the overall
+     * most specific file of this KConfig object is still the file it was
+     * created with, no matter which file is passed last into this function.
+     * This includes that writing always goes to the file which was used to
+     * create the KConfig object.
+     *
      * @param files A list of extra config files containing the full paths of the
      * local config files to set.
      */
