@@ -506,7 +506,9 @@ public:
 	 * @param widget the widget the notification refers to
 	 */
 	static void beep( const QString& reason = QString() , QWidget *widget=0L);
-
+	
+	//prevent warning
+	using QObject::event;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KNotification::NotificationFlags)
