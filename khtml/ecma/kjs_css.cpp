@@ -71,6 +71,9 @@ namespace KJS {
 
 static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
 {
+    // The point here is to provide compatibility with IE 
+    // syntax for accessing properties, which camel-cases them
+    // and can add prefixes to produce things like pixelFoo
     QString prop = p.qstring();
     int i = prop.length();
     while ( --i ) {
@@ -170,34 +173,6 @@ JSValue *DOMCSSStyleDeclaration::indexGetter(ExecState* , unsigned index)
   return jsString(m_impl->item(index));
 }
 
-JSValue *DOMCSSStyleDeclaration::cssPropertyGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
-{
-  DOMCSSStyleDeclaration *thisObj = static_cast<DOMCSSStyleDeclaration *>(slot.slotBase());
-
-  // Set up pixelOrPos boolean to handle the fact that
-  // pixelTop returns "CSS Top" as number value in unit pixels
-  // posTop returns "CSS top" as number value in unit pixels _if_ its a
-  // positioned element. if it is not a positioned element, return 0
-  // from MSIE documentation ### IMPLEMENT THAT (Dirk)
-  bool asNumber;
-  DOMString p   = cssPropertyName(propertyName, asNumber);
-  
-  if (asNumber) {
-    CSSValueImpl *v = thisObj->m_impl->getPropertyCSSValue(p);
-    if (v->cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
-      //### FIXME: should this not set exception when type is wrong, or convert?
-      return jsNumber(static_cast<CSSPrimitiveValueImpl*>(v)->floatValue(DOM::CSSPrimitiveValue::CSS_PX));
-  }
-
-  DOM::DOMString str = thisObj->m_impl->getPropertyValue(p);
-  if (!str.isNull())
-    return jsString(str);
-
-  //we know this css property, but nothing set, return empty then
-  return jsString("");
-}
-
-
 bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
@@ -212,8 +187,25 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
     return true;
 
   if (isCSSPropertyName(propertyName)) {
-    slot.setCustom(this, cssPropertyGetter);
-    return true;
+    // Set up pixelOrPos boolean to handle the fact that
+    // pixelTop returns "CSS Top" as number value in unit pixels
+    // posTop returns "CSS top" as number value in unit pixels _if_ its a
+    // positioned element. if it is not a positioned element, return 0
+    // from MSIE documentation ### IMPLEMENT THAT (Dirk)
+    bool asNumber;
+    DOMString p   = cssPropertyName(propertyName, asNumber);
+
+    if (asNumber) {
+      CSSValueImpl *v = m_impl->getPropertyCSSValue(p);
+      if (v && v->cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
+         //### FIXME: should this not set exception when type is wrong, or convert?
+        return getImmediateValueSlot(this, 
+                  jsNumber(static_cast<CSSPrimitiveValueImpl*>(v)->floatValue(DOM::CSSPrimitiveValue::CSS_PX)), slot);
+    }
+
+    DOM::DOMString str = m_impl->getPropertyValue(p);
+    if (!str.isNull())
+      return getImmediateValueSlot(this, jsString(str), slot);
   }
 
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);

@@ -52,8 +52,6 @@ namespace KJS {
 
     JSValue *indexGetter(ExecState* exec, unsigned index);
   private:
-    static JSValue *cssPropertyGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-
     SharedPtr<DOM::CSSStyleDeclarationImpl> m_impl;
   };
 
