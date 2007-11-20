@@ -77,7 +77,6 @@ public:
 
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
-    virtual bool eventFilter( QObject *filterTarget, QEvent *e );
 
 private Q_SLOTS:
     void restoreScrollPosition();

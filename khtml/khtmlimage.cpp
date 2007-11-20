@@ -71,10 +71,11 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     setComponentData( KHTMLImageFactory::componentData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
     KVBox *box = new KVBox( parentWidget );
+    box->setAcceptDrops( true );
 
     m_khtml = new KHTMLPart( box, this, prof );
     m_khtml->setAutoloadImages( true );
-    m_khtml->widget()->installEventFilter(this);
+
     connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );
 
     setWidget( box );
@@ -284,26 +285,6 @@ void KHTMLImage::disposeImage()
 
     m_image->deref( this );
     m_image = 0;
-}
-
-bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
-    switch (e->type()) {
-      case QEvent::DragEnter:
-      case QEvent::DragMove:
-      case QEvent::DragLeave:
-      case QEvent::Drop: {
-        // find out if this part is embedded in a frame, and send the
-	// event to its outside widget
-	KHTMLPart *p = qobject_cast<KHTMLPart*>(parent());
-	if (p)
-	    return QApplication::sendEvent(p->widget(), e);
-        // otherwise simply forward all dnd events to the part widget,
-	// konqueror will handle them properly there
-        return QApplication::sendEvent(widget(), e);
-      }
-      default: ;
-    }
-    return false;
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent )
