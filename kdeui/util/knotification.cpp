@@ -327,9 +327,6 @@ void KNotification::sendEvent()
 		}
 
 		KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
-
-		//after a small timeout, the notification will be deleted if all presentation are finished
-		QTimer::singleShot(3000, this, SLOT(deref()));
 	}
 	else
 	{
@@ -343,8 +340,12 @@ void KNotification::slotReceivedId(int id)
 	kDebug(299)  << id;
 	if(d->id>0)
 	{
-		ref();
 		KNotificationManager::self()->insert(this,d->id);
+	}
+	else
+	{
+		//if there is no presentation, delete the object
+		QTimer::singleShot(0, this, SLOT(deref()));
 	}
 
 }
@@ -352,7 +353,7 @@ void KNotification::slotReceivedId(int id)
 void KNotification::slotReceivedIdError(const QDBusError& error)
 {
 	kWarning(299) << "Error while contacting notify deamon" << error.message();
-	
+	QTimer::singleShot(0, this, SLOT(deref()));
 }
 
 
