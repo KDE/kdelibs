@@ -373,7 +373,7 @@ void KConfigPrivate::parseGlobalFiles()
     //       on a per-application basis?
     const QByteArray utf8Locale = locale.toUtf8();
     foreach(const QString& file, globalFiles) {
-        KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal;
+        KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal|KConfigBackend::ParseExpansions;
         if (file != sGlobalFileName)
             parseOpts |= KConfigBackend::ParseDefaults;
 
