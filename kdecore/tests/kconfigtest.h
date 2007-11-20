@@ -53,6 +53,7 @@ private Q_SLOTS:
     void testChangeGroup();
     void testKdeglobals();
     void testSubGroup();
+    void testAddConfigSources();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

@@ -152,6 +152,22 @@ void KConfigTest::initTestCase()
   sg0.writeEntry("WarnOutput", 0);
   sg0.writeEntry("FatalOutput", 0);
   sc1.sync();
+
+  //Setup stuff to test KConfig::addConfigSources()
+  KConfig devcfg("specificrc");
+  KConfigGroup devonlygrp(&devcfg, "Specific Only Group");
+  devonlygrp.writeEntry("ExistingEntry", "DevValue");
+  KConfigGroup devandbasegrp(&devcfg, "Shared Group");
+  devandbasegrp.writeEntry("SomeSharedEntry", "DevValue");
+  devandbasegrp.writeEntry("SomeSpecificOnlyEntry", "DevValue");
+  devcfg.sync();
+  KConfig basecfg("baserc");
+  KConfigGroup basegrp(&basecfg, "Base Only Group");
+  basegrp.writeEntry("ExistingEntry", "BaseValue");
+  KConfigGroup baseanddevgrp(&basecfg, "Shared Group");
+  baseanddevgrp.writeEntry("SomeSharedEntry", "BaseValue");
+  baseanddevgrp.writeEntry("SomeBaseOnlyEntry", "BaseValue");
+  basecfg.sync();
 }
 
 void KConfigTest::cleanupTestCase()
@@ -746,6 +762,39 @@ void KConfigTest::testKdeglobals()
     KConfig sc3("kdeglobals", KConfig::SimpleConfig);
     QVERIFY(sc3.forceGlobal());
     QVERIFY(sc3.name() == QLatin1String("kdeglobals"));
+}
+
+void KConfigTest::testAddConfigSources()
+{
+    KConfig cf("specificrc");
+
+    cf.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", "baserc"));
+    cf.reparseConfiguration();
+
+    KConfigGroup specificgrp(&cf, "Specific Only Group");
+    QCOMPARE(specificgrp.readEntry("ExistingEntry", ""), QString("DevValue"));
+
+    KConfigGroup sharedgrp(&cf, "Shared Group");
+    QCOMPARE(sharedgrp.readEntry("SomeSpecificOnlyEntry",""), QString("DevValue"));
+    QCOMPARE(sharedgrp.readEntry("SomeBaseOnlyEntry",""), QString("BaseValue"));
+    QCOMPARE(sharedgrp.readEntry("SomeSharedEntry",""), QString("DevValue"));
+
+    KConfigGroup basegrp(&cf, "Base Only Group");
+    QCOMPARE(basegrp.readEntry("ExistingEntry", ""), QString("BaseValue"));
+    basegrp.writeEntry("New Entry Base Only", "SomeValue");
+
+    KConfigGroup newgrp(&cf, "New Group");
+    newgrp.writeEntry("New Entry", "SomeValue");
+
+    cf.sync();
+
+    KConfig plaincfg("specificrc");
+
+    KConfigGroup newgrp2(&plaincfg, "New Group");
+    QCOMPARE(newgrp2.readEntry("New Entry", ""), QString("SomeValue"));
+
+    KConfigGroup basegrp2(&plaincfg, "Base Only Group");
+    QCOMPARE(basegrp2.readEntry("New Entry Base Only", ""), QString("SomeValue"));
 }
 
 void KConfigTest::testKAboutDataOrganizationDomain()
