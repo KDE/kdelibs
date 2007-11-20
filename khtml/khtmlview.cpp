@@ -435,7 +435,8 @@ static bool findImageMapRect(HTMLImageElementImpl *img, const QPoint &scrollOfs,
 
 bool KHTMLView::event( QEvent* e )
 {
-    if ( e->type() == QEvent::ToolTip) {
+    switch ( e->type() ) {
+    case QEvent::ToolTip: {
         QHelpEvent *he = static_cast<QHelpEvent*>(e);
         QPoint     p   = he->pos();
 
@@ -468,7 +469,23 @@ bool KHTMLView::event( QEvent* e )
         }
         return true;
     }
-    return QScrollArea::event(e);
+
+    case QEvent::DragEnter:
+    case QEvent::DragMove:
+    case QEvent::DragLeave:
+    case QEvent::Drop:
+      // In Qt4, one needs to both call accept() on the DND event and return
+      // true on ::event for the candidate widget for the drop to be possible. 
+      // Apps hosting us, such as konq, can do the former but not the later. 
+      // We will do the second bit, as it's a no-op unless someone else explicitly
+      // accepts the event. We need to skip the scrollarea to do that,
+      // since it will just skip the events, both killing the drop, and 
+      // not permitting us to forward it up the part hiearchy in our dragEnterEvent, 
+      // etc. handlers
+      return QWidget::event(e);
+    default:
+      return QScrollArea::event(e);
+    }
 }
 #endif
 
