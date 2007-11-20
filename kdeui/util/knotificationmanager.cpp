@@ -68,9 +68,9 @@ KNotificationManager::~KNotificationManager()
 
 void KNotificationManager::notificationActivated( int id, int action )
 {
-    kDebug(299) << id << " " << action;
     if(d->notifications.contains(id))
     {
+        kDebug(299) << id << " " << action;
         KNotification *n = d->notifications[id];
         d->notifications.remove(id);
         n->activate( action );
@@ -79,9 +79,9 @@ void KNotificationManager::notificationActivated( int id, int action )
 
 void KNotificationManager::notificationClosed( int id )
 {
-    kDebug( 299 ) << id;
     if(d->notifications.contains(id))
     {
+        kDebug( 299 ) << id;
         KNotification *n = d->notifications[id];
         d->notifications.remove(id);
         n->close();

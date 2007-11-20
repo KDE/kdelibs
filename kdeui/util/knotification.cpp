@@ -91,7 +91,7 @@ KNotification::KNotification(const QString& eventId, QWidget *parent, const Noti
 
 KNotification::~KNotification()
 {
-//	kDebug( 299 ) << d->id;
+	kDebug( 299 ) << d->id;
 	if(d ->id != 0)
 		KNotificationManager::self()->remove( d->id );
 	delete d;
@@ -327,9 +327,9 @@ void KNotification::sendEvent()
 		}
 
 		KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
-		
+
 		//after a small timeout, the notification will be deleted if all presentation are finished
-		QTimer::singleShot(100, this, SLOT(deref()));
+		QTimer::singleShot(3000, this, SLOT(deref()));
 	}
 	else
 	{
@@ -340,6 +340,7 @@ void KNotification::sendEvent()
 void KNotification::slotReceivedId(int id)
 {
 	d->id=id;
+	kDebug(299)  << id;
 	if(d->id>0)
 	{
 		ref();
