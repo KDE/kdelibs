@@ -268,8 +268,8 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
     _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", SET_DEFAULT(AlternateBackground) );
 
     // adjustment
-    _brushes.bg[0] = KColorUtils::tint(_brushes.bg[0].color(), tint.color());
-    _brushes.bg[1] = KColorUtils::tint(_brushes.bg[1].color(), tint.color());
+    _brushes.bg[0] = KColorUtils::tint(_brushes.bg[0].color(), tint.color(), 0.4);
+    _brushes.bg[1] = KColorUtils::tint(_brushes.bg[1].color(), tint.color(), 0.4);
 
     // the rest
     init(config, state, group, defaults);
