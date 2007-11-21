@@ -51,7 +51,7 @@ Action=Sound|PassivePopup|Taskbar
 
 <h3>before</h3>
 <pre>
-  KNotifyClient::event( someWidget->winId() , "kopete_incoming", i18n("you received a message from %1").arg( contactName ) );
+  KNotifyClient::event( someWidget-&gt;winId() , "kopete_incoming", i18n("you received a message from %1").arg( contactName ) );
 </pre>
 
 <h3>after</h3>
@@ -62,8 +62,8 @@ Action=Sound|PassivePopup|Taskbar
 <p>or, which is probably better API</p>
 <pre>
   KNotification *notification= new KNotification ( "kopete_incoming" , someWidget );
-  notification->setText( i18n("you received a message from %1",  contactName ) );
-  notification->sendEvent();
+  notification-&gt;setText( i18n("you received a message from %1",  contactName ) );
+  notification-&gt;sendEvent();
 </pre>
 
 </body>
