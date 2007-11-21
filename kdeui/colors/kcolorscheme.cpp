@@ -206,6 +206,7 @@ class KColorSchemePrivate : public QSharedData
 {
 public:
     explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors);
+    explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors, const QBrush&);
     ~KColorSchemePrivate() {}
 
     QBrush background(KColorScheme::BackgroundRole) const;
@@ -228,6 +229,8 @@ private:
         Hover = 0,
         Focus = 1
     };
+
+    void init(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors);
 };
 
 #define DEFAULT(c) QColor( c[0], c[1], c[2] )
@@ -243,6 +246,42 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
     KConfigGroup cfg( config, group );
     _contrast = KGlobalSettings::contrastF( config );
 
+    // loaded-from-config colors (no adjustment)
+    _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
+    _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", SET_DEFAULT(AlternateBackground) );
+
+    // the rest
+    init(config, state, group, defaults);
+}
+
+KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
+                                         QPalette::ColorGroup state,
+                                         const char *group,
+                                         SetDefaultColors defaults,
+                                         const QBrush &tint)
+{
+    KConfigGroup cfg( config, group );
+    _contrast = KGlobalSettings::contrastF( config );
+
+    // loaded-from-config colors
+    _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
+    _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", SET_DEFAULT(AlternateBackground) );
+
+    // adjustment
+    _brushes.bg[0] = KColorUtils::tint(_brushes.bg[0].color(), tint.color());
+    _brushes.bg[1] = KColorUtils::tint(_brushes.bg[1].color(), tint.color());
+
+    // the rest
+    init(config, state, group, defaults);
+}
+
+void KColorSchemePrivate::init(const KSharedConfigPtr &config,
+                               QPalette::ColorGroup state,
+                               const char *group,
+                               SetDefaultColors defaults)
+{
+    KConfigGroup cfg( config, group );
+
     // loaded-from-config colors
     _brushes.fg[0] = cfg.readEntry( "ForegroundNormal", SET_DEFAULT(NormalText) );
     _brushes.fg[1] = cfg.readEntry( "ForegroundInactive", SET_DEFAULT(InactiveText) );
@@ -252,9 +291,6 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
     _brushes.fg[5] = cfg.readEntry( "ForegroundNegative", FG_DEFAULT(Negative) );
     _brushes.fg[6] = cfg.readEntry( "ForegroundNeutral", FG_DEFAULT(Neutral) );
     _brushes.fg[7] = cfg.readEntry( "ForegroundPositive", FG_DEFAULT(Positive) );
-
-    _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
-    _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", SET_DEFAULT(AlternateBackground) );
 
     _brushes.deco[0] = cfg.readEntry( "DecorationHover", DECO_DEFAULT(Hover) );
     _brushes.deco[1] = cfg.readEntry( "DecorationFocus", DECO_DEFAULT(Focus) );
@@ -369,9 +405,13 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
             break;
         case Selection:
             // inactiver/disabled uses Window colors instead, ala gtk
+            // ...except tinted with the Selection:NormalBackground color so it looks more like selection
             if (state == QPalette::Active)
                 d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
-            else
+            else if (state == QPalette::Inactive)
+                d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors,
+                                            KColorScheme(QPalette::Active, Selection, config).background());
+            else // disabled (...and still want this branch when inactive+disabled exists)
                 d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
             break;
         case Tooltip:
