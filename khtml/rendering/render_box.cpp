@@ -252,7 +252,7 @@ InlineBox* RenderBox::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRoot
 {
     if (m_placeHolderBox)
         m_placeHolderBox->detach(renderArena(), true/*noRemove*/);
-    return (m_placeHolderBox = new (renderArena()) InlineBox(this));
+    return (m_placeHolderBox = new (renderArena()) PlaceHolderBox(this));
 }
 
 void RenderBox::deleteInlineBoxes(RenderArena* /*arena*/)

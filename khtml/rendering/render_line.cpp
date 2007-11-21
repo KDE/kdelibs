@@ -100,9 +100,10 @@ void* InlineBox::operator new(size_t sz, RenderArena* renderArena) throw()
 void InlineBox::operator delete(void* ptr, size_t sz)
 {
     assert(inInlineBoxDetach);
-
+#ifdef KHTML_USE_ARENA_ALLOCATOR
     // Stash size where detach can find it.
     *(size_t *)ptr = sz;
+#endif
 }
 
 static bool needsOutlinePhaseRepaint(RenderObject* o, RenderObject::PaintInfo& i, int tx, int ty) {

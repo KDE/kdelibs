@@ -181,7 +181,8 @@ void RenderFlow::deleteInlineBoxes(RenderArena* arena)
         InlineRunBox *curr=m_firstLineBox, *next=0;
         while (curr) {
             next = curr->nextLineBox();
-            curr->detach(arena, true /*noRemove*/);
+            if (!curr->isPlaceHolderBox())
+                curr->detach(arena, true /*noRemove*/);
             curr = next;
         }
         m_firstLineBox = 0;

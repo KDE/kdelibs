@@ -49,29 +49,6 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
     m_last = 0;
 }
 
-void RenderContainer::detach()
-{
-    // We simulate removeNode calls for all our children
-    // and set parent to 0 to avoid removeNode from being called.
-    // First call removeLayers and removeFromObjectLists since they assume
-    // a valid render-tree
-    for(RenderObject* n = m_first; n; n = n->nextSibling() ) {
-        n->removeLayers(enclosingLayer());
-        n->removeFromObjectLists();
-    }
-
-    RenderObject* next;
-    for(RenderObject* n = m_first; n; n = next ) {
-        n->setParent(0);
-        next = n->nextSibling();
-        n->detach();
-    }
-    m_first = 0;
-    m_last = 0;
-
-    RenderObject::detach();
-}
-
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
@@ -163,15 +140,28 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
+    bool inCleanup = !document()->renderer();
 
-    if ( document()->renderer() ) {
+    if ( !inCleanup ) {
         oldChild->setNeedsLayoutAndMinMaxRecalc(); // Dirty the containing block chain
         oldChild->setNeedsLayout( false ); // The child itself does not need to layout - it's going away.
 
         // Repaint, so that the area exposed when the child
         // disappears gets repainted properly.
         oldChild->repaint();
+    }
+    
+    // detach the place holder box
+    if (oldChild->isBox()) {
+        RenderBox* rb = static_cast<RenderBox*>(oldChild);
+        InlineBox* ph = rb->placeHolderBox();
+        if (ph) {
+            ph->detach(rb->renderArena(), inCleanup /*NoRemove*/);
+            rb->setPlaceHolderBox( 0 );
+        }
+    }
 
+    if ( !inCleanup ) {
         // if we remove visible child from an invisible parent, we don't know the layer visibility any more
         RenderLayer* layer = 0;
         if (m_style->visibility() != VISIBLE && oldChild->style()->visibility() == VISIBLE && !oldChild->layer()) {
@@ -187,7 +177,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         // remove the child from any special layout lists
         oldChild->removeFromObjectLists();
         
-        if (oldChild->isPositioned() && childrenInline())
+        if (oldChild->isPosWithStaticDim() && childrenInline())
             dirtyLinesFromChangedChild(oldChild);
 
         // if oldChild is the start or end of the selection, then clear
@@ -202,16 +192,6 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
         if (oldChild->isSelectionBorder())
             canvas()->clearSelection();
-    }
-
-    // remove and detach the place holder box
-    if (oldChild->isBox()) {
-        RenderBox* rb = static_cast<RenderBox*>(oldChild);
-        InlineBox* ph = rb->placeHolderBox();
-        if (ph) {
-            ph->detach(rb->renderArena());
-            rb->setPlaceHolderBox( 0 );
-        }
     }
 
     // remove the child from the render-tree

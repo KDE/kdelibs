@@ -42,10 +42,6 @@ using namespace khtml;
 
 namespace khtml {
 
-//#ifdef NDEBUG
-#define KHTML_USE_ARENA_ALLOCATOR
-//#endif
-
 typedef struct {
     RenderArena *arena;
     size_t size;
@@ -121,8 +117,8 @@ void RenderArena::free(size_t size, void* ptr)
     // Use standard free so that memory debugging tools work.
     assert(this);
     RenderArenaDebugHeader *header = (RenderArenaDebugHeader *)ptr - 1;
-    assert(header->size == size);
-    assert(header->arena == this);
+    //assert(header->size == size);
+    //assert(header->arena == this);
     ::free(header);
 #else
 

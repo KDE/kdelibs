@@ -91,8 +91,10 @@ void RenderObject::operator delete(void* ptr, size_t sz)
 {
     assert(baseOfRenderObjectBeingDeleted == ptr);
 
+#ifdef KHTML_USE_ARENA_ALLOCATOR
     // Stash size where detach can find it.
     *(size_t *)ptr = sz;
+#endif
 }
 
 RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* style)
@@ -1672,8 +1674,6 @@ RenderArena* RenderObject::renderArena() const
 void RenderObject::detach()
 {
     detachCounters();
-
-    deleteInlineBoxes();
     remove();
 
     // make sure our DOM-node don't think we exist

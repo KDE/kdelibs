@@ -65,7 +65,7 @@ private:
     void* operator new(size_t sz) throw();
 
 public:
-    virtual bool isInlineBox() const { return false; }
+    virtual bool isPlaceHolderBox() const { return false; }
     virtual bool isInlineFlowBox() const { return false; }
     virtual bool isContainer() const { return false; }
     virtual bool isInlineTextBox() const { return false; }
@@ -151,6 +151,13 @@ public: // FIXME: Would like to make this protected, but methods are accessing t
     InlineBox* m_prev; // The previous element on the same line as us.
 
     InlineFlowBox* m_parent; // The box that contains us.
+};
+
+class PlaceHolderBox: public InlineBox
+{
+public:
+    PlaceHolderBox(RenderObject* obj): InlineBox(obj) {}
+    virtual bool isPlaceHolderBox() const { return true; }
 };
 
 class InlineRunBox : public InlineBox
