@@ -320,6 +320,7 @@ CSSStyleRuleImpl::~CSSStyleRuleImpl()
 	m_style->setParent( 0 );
 	m_style->deref();
     }
+    qDeleteAll(*m_selector);
     delete m_selector;
 }
 
