@@ -77,6 +77,7 @@ public:
 
     virtual void determineParseMode( const QString &str );
     virtual void close();
+    virtual void contentLoaded();
 
     void setAutoFill() { m_doAutoFill = true; }
 

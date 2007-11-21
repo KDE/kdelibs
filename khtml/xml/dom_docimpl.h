@@ -311,6 +311,7 @@ public:
 
     void open ( bool clearEventListeners = true );
     virtual void close (  );
+    virtual void contentLoaded() {}
     void write ( const DOMString &text );
     void write ( const QString &text );
     void writeln ( const DOMString &text );

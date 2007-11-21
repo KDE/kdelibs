@@ -228,6 +228,17 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
         return 0;
 }
 
+void HTMLDocumentImpl::contentLoaded()
+{
+    // auto fill: walk the tree and try to fill in login credentials
+    if (view() && m_doAutoFill) {
+        for (NodeImpl* n = this; n; n = n->traverseNextNode())
+            if (n->id() == ID_FORM)
+                static_cast<HTMLFormElementImpl*>(n)->doAutoFill();
+        m_doAutoFill = false;
+    }
+}
+
 void HTMLDocumentImpl::close()
 {
     bool doload = !parsing() && m_tokenizer;
@@ -238,14 +249,6 @@ void HTMLDocumentImpl::close()
 
         if (title().isEmpty()) // ensure setTitle is called at least once
             setTitle( DOMString() );
-
-        // auto fill: walk the tree and try to fill in login credentials
-        if (view() && m_doAutoFill) {
-            for (NodeImpl* n = this; n; n = n->traverseNextNode())
-                if (n->id() == ID_FORM)
-                    static_cast<HTMLFormElementImpl*>(n)->doAutoFill();
-            m_doAutoFill = false;
-        }
 
         // According to dom the load event must not bubble
         // but other browsers execute in a frameset document

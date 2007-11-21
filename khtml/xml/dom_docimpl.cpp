@@ -2542,27 +2542,29 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    if (!m_windowEventListeners.listeners || evt->propagationStopped())
-        return;
+    if (m_windowEventListeners.listeners && !evt->propagationStopped()) {
 
-    QList<RegisteredEventListener>::iterator it;
+        QList<RegisteredEventListener>::iterator it;
 
-    //Grab a copy in case of clear
-    QList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
-    Event ev(evt);
-    for (it = listeners.begin(); it != listeners.end(); ++it) {
-        //Check to make sure it didn't get removed. KDE4: use Java-style iterators
-        if (!m_windowEventListeners.stillContainsListener(*it))
-            continue;
+        //Grab a copy in case of clear
+        QList<RegisteredEventListener> listeners = *m_windowEventListeners.listeners;
+        Event ev(evt);
+        for (it = listeners.begin(); it != listeners.end(); ++it) {
+            //Check to make sure it didn't get removed. KDE4: use Java-style iterators
+            if (!m_windowEventListeners.stillContainsListener(*it))
+                continue;
 
-        if ((*it).id == evt->id()) {
-            // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
-            // (this is how we identify events dispatched to the window, like window.onmousedown)
-            // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
-            evt->setCurrentTarget(0);
-            (*it).listener->handleEvent(ev);
-	}
+            if ((*it).id == evt->id()) {
+                // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
+                // (this is how we identify events dispatched to the window, like window.onmousedown)
+                // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
+                evt->setCurrentTarget(0);
+                (*it).listener->handleEvent(ev);
+	    }
+        }
     }
+    if ( evt->id() == EventImpl::KHTML_CONTENTLOADED_EVENT && !evt->propagationStopped() && !evt->defaultPrevented() )
+        contentLoaded();
 }
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
