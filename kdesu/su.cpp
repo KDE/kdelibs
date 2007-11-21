@@ -182,6 +182,7 @@ int SuProcess::exec(const char *password, int check)
  	        kDebug() << "kill < 0";
  		//FIXME SIGKILL doesn't work for sudo,
  		//why is this different from su?
+ 		//A: because sudo runs as root. Perhaps we could write a Ctrl+C to its stdin, instead?
  		ret=error;
  	    }
             else
@@ -197,7 +198,7 @@ int SuProcess::exec(const char *password, int check)
     if (m_bErase && password)
         memset(const_cast<char *>(password), 0, qstrlen(password));
 
-    if (ret == notauthorized)
+    if (ret != ok)
     {
         kill(m_Pid, SIGKILL);
         if (d->m_superUserCommand != "sudo") {
@@ -335,10 +336,10 @@ int SuProcess::ConverseSU(const char *password)
                 {
                     unreadLine(line);
                     return ok;
- 	        } else if (d->m_superUserCommand == "sudo") {
- 	            // sudo gives a "sorry" line so reaches here
- 	            // with the wrong password
- 	            return notauthorized;
+                } else if (!line.isEmpty ()) {
+                    // if we read anything else, it's probably a
+                    // sorry, wrong password.
+                    return notauthorized;
                 }
                 break;
             //////////////////////////////////////////////////////////////////////////

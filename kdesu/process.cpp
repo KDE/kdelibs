@@ -428,15 +428,21 @@ void PtyProcess::setErase(bool erase)
 
 int PtyProcess::waitForChild()
 {
-    int retval = 1;
-
     fd_set fds;
     FD_ZERO(&fds);
 
     while (1)
     {
         FD_SET(fd(), &fds);
-        int ret = select(fd()+1, &fds, 0L, 0L, 0L);
+
+        // specify timeout to make sure select() does not block, even if the
+        // process is dead / non-responsive. It does not matter if we abort too
+        // early. In that case 0 is returned, and we'll try again in the next
+        // iteration.
+        timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 1000;
+        int ret = select(fd()+1, &fds, 0L, 0L, &timeout);
         if (ret == -1)
         {
             if (errno != EINTR)
@@ -466,14 +472,12 @@ int PtyProcess::waitForChild()
         ret = checkPidExited(m_Pid);
         if (ret == Error)
         {
-            if (errno == ECHILD) retval = 0;
-            else retval = 1;
-            break;
+            if (errno == ECHILD) return 0;
+            else return 1;
         }
         else if (ret == Killed)
         {
-            retval = 0;
-            break;
+            return 0;
         }
         else if (ret == NotExited)
         {
@@ -481,11 +485,9 @@ int PtyProcess::waitForChild()
         }
         else
         {
-            retval = ret;
-            break;
+            return ret;
         }
     }
-    return retval;
 }
 
 /*
