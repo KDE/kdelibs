@@ -61,6 +61,7 @@ namespace khtml {
     class RenderPartObject;
     class RenderWidget;
     class RenderLayer;
+    class RenderBox;
     class CSSStyleSelector;
     class LineEditWidget;
     class CaretBox;
@@ -106,6 +107,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
     friend class khtml::RenderLayer;
+    friend class khtml::RenderBox;
     friend class khtml::CSSStyleSelector;
     friend class khtml::LineEditWidget;
     friend class KJS::WindowFunc;

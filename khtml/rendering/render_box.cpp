@@ -2329,6 +2329,14 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
 
         QWheelEvent we(p, -me.detail()*40, buttons, state, orient);
         KHTMLAssert(layer());
+        KHTMLView* v = element()->getDocument()->view();
+        if ( ((orient == Qt::Vertical && (v->contentsHeight() > v->visibleHeight()))  ||
+              (orient == Qt::Horizontal && (v->contentsWidth() > v->visibleWidth()))) &&
+               v->isScrollingFromMouseWheel() ) {
+            // don't propagate wheel events to overflows if heuristics say the view is being scrolled by mouse wheel
+            accepted = false;
+            break;
+        }
         if (orient == Qt::Vertical) {
             if (QWidget* w = layer()->verticalScrollbar())
                 QApplication::sendEvent( w, &we);
