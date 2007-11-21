@@ -76,19 +76,6 @@ set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSIO
 install(TARGETS ${KJSEMBEDLIBNAME} DESTINATION ${LIB_INSTALL_DIR})
 
 
-########### install files ###############
-
-install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
-               object_binding.h builtins.h fileio.h jseventmapper.h
-               eventproxy.h slotproxy.h jseventutils.h qobject_binding.h
-               kjsembed.h value_binding.h iosupport.h qwidget_binding.h
-							 qaction_binding.h qlayout_binding.h
-               qpainter_binding.h
-               settings.h svg_binding.h filedialog_binding.h
-               brush.h color.h dom.h font.h image.h pen.h
-               pixmap.h point.h rect.h size.h url.h pointer.h
-               bind_qlcdnumber.h bind_qtimer.h quiloader_binding.h
-         DESTINATION  ${INCLUDE_INSTALL_DIR}/kjsembed )
 
 
 
