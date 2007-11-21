@@ -127,6 +127,13 @@ static RenderObject* getParentOfFirstLineBox(RenderBlock* curr, RenderObject* ma
     return 0;
 }
 
+static RenderObject* firstNonMarkerChild(RenderObject* parent)
+{
+    RenderObject* result = parent->firstChild();
+    while (result && result->isListMarker())
+        result = result->nextSibling();
+    return result;
+}
 
 void RenderListItem::updateMarkerLocation()
 {
@@ -150,7 +157,7 @@ void RenderListItem::updateMarkerLocation()
                 markerPar->removeChild(m_marker);
             if (!lineBoxParent)
                 lineBoxParent = this;
-            lineBoxParent->addChild(m_marker, lineBoxParent->firstChild());
+            lineBoxParent->addChild(m_marker, firstNonMarkerChild(lineBoxParent));
             m_deleteMarker = false;
             if (!m_marker->minMaxKnown())
                 m_marker->calcMinMaxWidth();
