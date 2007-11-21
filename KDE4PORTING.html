@@ -76,6 +76,7 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 <li><a href="#kdnssd">Changes in kdnssd</a></li>
 <li><a href="#khtmlpart">API-cleanup in KHTML</a></li>
 <li><a href="#kfile">Changes in kfile</a></li>
+<li><a href="#kdesu">Changes in kdesu</a></li>
 <li><a href="#kcontrol">KDE Control Center</a></li>
 <li><a href="#kicker">Panel Applets and Extensions</a></li>
 <li><a href="#kscreensaver">KScreensaver</a></li>
@@ -602,7 +603,7 @@ Q3DragObject until being fully ported.</p>
 </ul>
 
 <h4>KNotifyClient</h4>
-<p>Replaced by KNotification. The API is quite similar, but the config file need to be updated. See KNotification documentation</p>
+<p>Replaced by KNotification. The API is quite similar, but the config file need to be updated. See KNotification documentation, and the file kdelibs/knotify/PORTING.html</p>
 
 <h4>KProcess</h4>
 <p>Deprecated and renamed to K3Process, header is k3process.h. Use QProcess instead.</p>
@@ -799,7 +800,7 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 <li>libkwalletclient (which used to provide the KWallet class) has been merged with kdeui</li>
 <li>system color scheme accessors in kglobalsettings.h are deprecated, use kcolorscheme.h</li>
 <li>KPalette was renamed to KColorCollection</li>
-<li>KPaletteTable was renamed to KColorTable</li>
+<li>KPaletteTable was renamed to KColorTable and moved to private API</li>
 </ul>
 
 <h4>KAboutContainer</h4>
@@ -2372,6 +2373,13 @@ bool ask = true, bool showProgress = true)
 <ul>
 <li>void setPreviewWidget(const KPreviewWidgetBase *w) -&gt; void setPreviewWidget(KPreviewWidgetBase *w)</li>
 </ul>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+<h3><a name="kdesu">Changes in kdesu</a></h3>
+
+All classes of kdesu are now in the <tt>KDESu</tt> namespace
+
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
