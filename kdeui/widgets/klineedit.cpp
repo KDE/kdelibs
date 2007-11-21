@@ -27,6 +27,7 @@
 
 #include "klineedit.h"
 #include "klineedit_p.h"
+#include "kdeuiwidgetsproxystyle_p.h"
 
 #include <kconfig.h>
 #include <QtGui/QToolTip>
@@ -122,6 +123,32 @@ public:
     QMap<KGlobalSettings::Completion, bool> disableCompletionMap;
 };
 
+// FIXME: Go back to using StyleSheets instead of a proxy style
+// once Qt has been fixed not to mess with widget font when
+// using StyleSheets
+class KLineEditStyle : public KdeUiProxyStyle
+{
+public:
+  KLineEditStyle(KLineEdit *parent) : KdeUiProxyStyle(parent), overlap(0) {}
+ 
+  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
+  
+  int overlap;
+};
+
+QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+{
+  if (element == SE_LineEditContents)
+  {
+    QRect rect = style()->subElementRect(SE_LineEditContents, option, widget);
+
+    if (option->direction == Qt::LeftToRight) return rect.adjusted(0, 0, -overlap, 0);
+    else return rect.adjusted(overlap, 0, 0, 0);
+  }
+
+  return KdeUiProxyStyle::subElementRect(element, option, widget);
+}
+
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
 bool KLineEdit::KLineEditPrivate::initialized = false;
 
@@ -164,6 +191,8 @@ void KLineEdit::init()
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
+    
+    setStyle(new KLineEditStyle(this));
 }
 
 QString KLineEdit::clickMessage() const
@@ -190,7 +219,8 @@ void KLineEdit::setClearButtonShown(bool show)
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
-        setStyleSheet(QString());
+        KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
+        if (lestyle) lestyle->overlap = 0;
     }
 }
 
@@ -242,11 +272,9 @@ void KLineEdit::updateClearButton()
 
     if (newButtonSize != d->clearButton->size()) {
         d->clearButton->resize(newButtonSize);
-
-        // we don't need to check for RTL here as Qt does that for us
-        // when it comes to style sheets
-        //kDebug() << "setting padding right to" << buttonWidth;
-        setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth + frameWidth));
+        
+        KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
+        if (lestyle) lestyle->overlap = buttonWidth + frameWidth;
     }
 
     if (qApp->isLeftToRight()) {
@@ -397,7 +425,8 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton) {
             d->clearButton->animateVisible(false);
-            setStyleSheet(QString());
+            KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
+            if (lestyle) lestyle->overlap = 0;
         }
     }
     else
@@ -411,8 +440,9 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton && !text().isEmpty()) {
             int buttonWidth = d->clearButton->sizeHint().width();
-            setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth));
             d->clearButton->animateVisible(true);
+            KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
+            if (lestyle) lestyle->overlap = buttonWidth;
         }
     }
 }

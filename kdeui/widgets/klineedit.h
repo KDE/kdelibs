@@ -149,6 +149,7 @@ class KUrl;
 class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
 {
     friend class KComboBox;
+    friend class KLineEditStyle;
 
     Q_OBJECT
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
