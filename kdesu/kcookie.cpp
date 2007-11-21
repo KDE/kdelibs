@@ -84,6 +84,7 @@ void KCookie::getXCookie()
 	kError(900) << k_lineinfo << "Could not run xauth.\n";
 	return;
     }
+    proc.waitForReadyRead(100);
     QByteArray output = proc.readLine().simplified();
     if (output.isEmpty())
     {
@@ -97,6 +98,7 @@ void KCookie::getXCookie()
 	return;
     }
     d->m_DisplayAuth = (lst[1] + ' ' + lst[2]);
+    proc.waitForFinished(100); // give QProcess a chance to clean up gracefully
 #endif
 }
 
