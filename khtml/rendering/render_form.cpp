@@ -1426,8 +1426,7 @@ void RenderSelect::updateSelection()
     }
     else {
         bool found = false;
-        int firstOption = listItems.size();
-        i = listItems.size();
+        int firstOption = i = listItems.size();
         while (i--)
             if (listItems[i]->id() == ID_OPTION) {
                 if (found)
@@ -1439,7 +1438,11 @@ void RenderSelect::updateSelection()
                 firstOption = i;
             }
 
-        Q_ASSERT(firstOption == listItems.size() || found);
+        if (!found && firstOption != listItems.size()) {
+            // select first option (IE7/Gecko behaviour)
+            static_cast<HTMLOptionElementImpl*>(listItems[firstOption])->m_selected = true;
+            static_cast<KComboBox*>( m_widget )->setCurrentIndex(firstOption);
+        }
     }
 
     m_selectionChanged = false;
