@@ -97,9 +97,6 @@ void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& 
         ui.keepCheckBox->hide();
     }
 
-    // Configure necessary key-bindings and connect necessary slots and signals
-    QObject::connect( ui.passEdit, SIGNAL(returnPressed()), q, SLOT(accept()) );
-
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
     q->setFixedWidth(qMin(1000, qMax(400, desktop.width() / 4)));
     //q->setMinimumHeight( q->minimumSizeHint().height() );
