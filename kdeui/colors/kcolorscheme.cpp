@@ -261,7 +261,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
     // apply state adjustments
     if (state != QPalette::Active) {
         StateEffects effects(state, config);
-        for (int i=0; i<7; i++) {
+        for (int i=0; i<8; i++) {
             _brushes.fg[i] = effects.brush(_brushes.fg[i], _brushes.bg[0]);
         }
         _brushes.deco[0] = effects.brush(_brushes.deco[0], _brushes.bg[0]);
