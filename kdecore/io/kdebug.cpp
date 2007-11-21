@@ -98,7 +98,7 @@ class KNoDebugStream: public QIODevice
     // Q_OBJECT
 public:
     KNoDebugStream() { open(WriteOnly); }
-    bool isSequential() { return true; }
+    bool isSequential() const { return true; }
     qint64 readData(char *, qint64) { return 0; /* eof */ }
     qint64 readLineData(char *, qint64) { return 0; /* eof */ }
     qint64 writeData(const char *, qint64 len) { return len; }
