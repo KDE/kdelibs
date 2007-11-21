@@ -58,6 +58,11 @@ if (WIN32)
       util/kmacroexpander_win.cpp
       util/kuser_win.cpp
    )
+   if(NOT MSVC)
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      network/netsupp.cpp
+   )
+   endif(NOT MSVC)
 endif (WIN32)
 
 
@@ -69,6 +74,7 @@ if (UNIX)
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
+      network/netsupp.cpp
       io/klockfile_unix.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
@@ -184,7 +190,6 @@ set(kdecore_LIB_SRCS
    network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
-   network/netsupp.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
    localization/kencodingdetector.cpp

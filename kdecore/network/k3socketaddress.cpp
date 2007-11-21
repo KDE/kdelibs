@@ -41,7 +41,9 @@
 
 #include "klocale.h"
 
+#ifndef Q_CC_MSVC
 #include "netsupp.h"
+#endif
 
 using namespace KNetwork;
 
