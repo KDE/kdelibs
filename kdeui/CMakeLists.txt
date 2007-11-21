@@ -204,6 +204,7 @@ set(kdeui_LIB_SRCS
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
+ widgets/kdeuiwidgetsproxystyle.cpp
  xmlgui/kxmlguibuilder.cpp
  xmlgui/kxmlguiwindow.cpp
  xmlgui/kmainwindowiface.cpp
