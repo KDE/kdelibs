@@ -6,13 +6,13 @@
 """
 
 import unittest
+import TestObject1
+from TestObject2 import *
 
 class TestKross(unittest.TestCase):
 	""" Testcases to test the Kross python functionality for regressions. """
 
 	def setUp(self):
-		import TestObject1
-		from TestObject2 import *
 		self.object1 = TestObject1
 		self.object2 = TestObject2
 
@@ -168,6 +168,8 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.name() == "TestObject1" and self.object2.name() == "TestObject2" )
 		self.assert_( self.object1.objectName == "TestObject1" and self.object2.objectName == "TestObject2" )
 		self.assert_( self.object1.className() == "TestObject" and self.object2.className() == "TestObject" )
+		self.assert_( self.object1.__toPointer__() )
+		self.assert_( self.object1 * 2 == self.object1.__toPointer__() * 2 )
 
 	def testPropertyMembers(self):
 		self.object1.boolProperty = True
