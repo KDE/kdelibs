@@ -1252,22 +1252,19 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
       if (getIndexSlot(this, propertyName, slot))
         return true;
       break;
-#ifdef __GNUC__
-#warning "FIXME: LiveConnect!"
-#endif
-#if 0
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      KParts::LiveConnectExtension *lc = getLiveConnectExtension(impl());
+      KParts::LiveConnectExtension *lc = getLiveConnectExtension(*impl());
       QString rvalue;
       KParts::LiveConnectExtension::Type rtype;
       unsigned long robjid;
       if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
-        return getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid);
-    }
+        return getImmediateValueSlot(this, 
+                  getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid), slot);
+
       break;
-#endif
+    }
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
@@ -1989,12 +1986,8 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (impl()->id() == ID_A)
     return UString(getURLArg(ATTR_HREF));
-#ifdef __GNUC__
-#warning "LiveConnect stuff stubbed out!"
-#endif
-#if 0
-  else if (node.elementId() == ID_APPLET) {
-    KParts::LiveConnectExtension *lc = getLiveConnectExtension(node);
+  else if (impl()->id() == ID_APPLET) {
+    KParts::LiveConnectExtension *lc = getLiveConnectExtension(*impl());
     QStringList qargs;
     QString retvalue;
     KParts::LiveConnectExtension::Type rettype;
@@ -2004,7 +1997,6 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
       return UString(str + retvalue + QString("]"));
     }
   }
-#endif
   else if (impl()->id() == ID_IMG) {
     DOMString alt = impl()->getAttribute(ATTR_ALT);
     if (!alt.isEmpty())

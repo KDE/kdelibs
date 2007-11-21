@@ -515,6 +515,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
 #endif
+  
   // we want only limited operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
     const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
@@ -589,11 +590,6 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
       break;
     }
   } else if (!part) {
-
-#ifdef __GNUC__
-#warning "FIXME:Liveconnect stuff!"
-#endif
-#if 0
     // not a  KHTMLPart
     QString rvalue;
     KParts::LiveConnectExtension::Type rtype;
@@ -601,9 +597,9 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     if (m_frame->m_liveconnect &&
         isSafeScript(exec) &&
         m_frame->m_liveconnect->get(0, propertyName.qstring(), rtype, robjid, rvalue))
-      return getLiveConnectValue(m_frame->m_liveconnect, propertyName.qstring(), rtype, rvalue, robjid);
-    return jsUndefined();
-#endif
+      return getImmediateValueSlot(this,
+                       getLiveConnectValue(m_frame->m_liveconnect, propertyName.qstring(), rtype, rvalue, robjid), slot);
+
     slot.setUndefined(this);
     return true;
   }
