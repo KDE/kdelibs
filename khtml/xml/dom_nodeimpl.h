@@ -468,8 +468,7 @@ protected:
     khtml::RenderObject *m_render;
     RegisteredListenerList m_regdListeners;
 
-    unsigned short m_tabIndex : 14;
-    bool m_hasTabIndex  : 1;
+    unsigned short m_tabIndex : 15;
 
     bool m_hasId : 1;
     bool m_attached : 1;
