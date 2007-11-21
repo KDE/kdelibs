@@ -33,6 +33,7 @@
 #include <QtGui/QImage>
 
 #include "imageloader.h"
+#include "imagemanager.h"
 
 extern "C" {
 #define XMD_H
@@ -314,6 +315,21 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
     {
         if(jpeg_read_header(&cinfo, true) != JPEG_SUSPENDED) {
             state = startDecompress;
+            
+            // libJPEG can scale down 2x, 4x, and 8x, 
+            // so do this for oversize images.
+            int scaleDown = 1;
+            while (scaleDown <= 8 && !ImageManager::isAcceptableSize(
+                    cinfo.image_width / scaleDown, cinfo.image_height / scaleDown)) {
+                scaleDown *= 2;
+            }
+            
+            cinfo.scale_denom = scaleDown;
+            
+            if (scaleDown > 8) {
+                // Still didn't fit... Abort.
+                return ImageLoader::Error;
+            }
         }
     }
     

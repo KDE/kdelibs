@@ -24,6 +24,7 @@
 
 #include "image.h"
 #include "imageloader.h"
+#include "imagemanager.h"
 #include "imageowner.h"
 #include "pixmapplane.h"
 #include "rawimageplane.h"
@@ -31,6 +32,8 @@
 
 #include <QtGui/QPainter>
 #include <limits.h>
+
+#include <kdebug.h>
 
 namespace khtmlImLoad {
 
@@ -87,6 +90,8 @@ void Image::loadError()
 {
     inError = true;
     owner->imageError(this);
+    delete loader;
+    loader = 0;
 }
 
 bool Image::processData(uchar* data, int length)
@@ -216,6 +221,11 @@ void Image::processEOF()
 
 void Image::notifyImageInfo(int _width, int _height)
 {
+    if (!ImageManager::isAcceptableSize(_width, _height)) {
+        kWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
+        loadError();
+        return;
+    }
     width  = _width;
     height = _height;
     
@@ -224,17 +234,22 @@ void Image::notifyImageInfo(int _width, int _height)
 
 void Image::notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format)
 {
+    if (!ImageManager::isAcceptableSize(fwidth, fheight)) {
+        kWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
+        loadError();
+        return;
+    }
+
     //Create the new frame.
     QImage image = format.makeImage (fwidth, fheight);
     //IMPORTANT: we use image.width(), etc., below for security/paranoia
     //reasons -- so we e.g. end up with a size 0 image if QImage overflow
-    //checks kick in, etc.
-    //### probably notifyError in that case?
+    //checks kick in, etc. This is on top of the policy enforcement 
+    //enough, in case someone breaks it or such
     RawImagePlane* iplane = new RawImagePlane(image.width(), image.height());
     iplane->image         = image;
     iplane->format        = format;
     PixmapPlane*   plane  = new PixmapPlane  (image.width(), image.height(), iplane);
-
 
     if (loaderPlane) //Had a previous plane
     {

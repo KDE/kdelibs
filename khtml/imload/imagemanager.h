@@ -49,6 +49,16 @@ private:
     
     static void initLoaders();
 public:
+    // IMPORTANT: Don't even think about changing these to signed; it's security-critical
+    // This method determines whether we'll ever accept an image so large
+    static bool isAcceptableSize(unsigned width, unsigned height);
+    
+    // IMPORTANT: Don't even think about changing these to signed; it's security-critical
+    // Says whether the target size is OK to scale an image too. This is much 
+    // bigger than the above, as we store the actual data in the tile cache, so 
+    // we just need some control information, which is much smaller
+    static bool isAcceptableScaleSize(unsigned width, unsigned height);
+
     static AnimTimer* animTimer()
     {
         if (!anmTimer)

@@ -25,6 +25,7 @@
 #include "imagepainter.h"
 #include "image.h"
 #include "pixmapplane.h"
+#include "imagemanager.h"
 
 namespace khtmlImLoad {
 
@@ -35,6 +36,8 @@ ImagePainter::ImagePainter(Image* _image):image(_image), sizeRefd(false)
 
 ImagePainter::ImagePainter(Image* _image, QSize _size):image(_image), size(_size), sizeRefd(false)
 {
+    if (!ImageManager::isAcceptableScaleSize(_size.width(), _size.height()))
+        setDefaultSize();
 }
 
 ImagePainter::~ImagePainter()
@@ -62,6 +65,11 @@ ImagePainter& ImagePainter::operator=(const ImagePainter& src)
 
 void ImagePainter::setSize(QSize _size)
 {
+    if (!ImageManager::isAcceptableScaleSize(_size.width(), _size.height())) {
+        setDefaultSize();
+        return;
+    }
+    
     // Don't do anything if size didn't change, 
     // to avoid dropping the image..
     if (size == _size)

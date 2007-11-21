@@ -24,6 +24,7 @@
 
 #include "pngloader.h"
 #include "imageloader.h"
+#include "imagemanager.h"
 
 #include <config.h> //For endian
 #include <png.h>
@@ -84,6 +85,11 @@ private:
     
         png_get_IHDR(pngReadStruct, pngInfoStruct, &width, &height, &bitDepth,
                      &colorType, &interlaceType, 0, 0);
+                     
+        if (!ImageManager::isAcceptableSize(width, height)) {
+            libPngError = true;
+            return;
+        }
         
         //Ask libPNG to change bit depths we don't support
         if (bitDepth < 8)

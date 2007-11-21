@@ -336,10 +336,28 @@ public:
             DGifCloseFile(file);
             return Error;
         }
+        
 
         //We use canvas size only for animations
-        if (file->ImageCount > 1)
+        if (file->ImageCount > 1) {
+            // Verify it..
+            if (!ImageManager::isAcceptableSize(file->SWidth, file->SHeight)) {
+                DGifCloseFile(file);
+                return Error;
+            }
             notifyImageInfo(file->SWidth, file->SHeight);
+        }
+        
+        // Check each frame to be within the size limit policy
+        for (int frame = 0; frame < file->ImageCount; ++frame)
+        {
+            //Extract colormap, geometry, so that we can create the frame
+            SavedImage* curFrame = &file->SavedImages[frame];
+            if (!ImageManager::isAcceptableSize(curFrame->ImageDesc.Width, curFrame->ImageDesc.Height)) {
+                DGifCloseFile(file);
+                return Error;
+            }
+        }
         
         QVector<GIFFrameInfo> frameProps;
         
@@ -519,6 +537,8 @@ public:
             PixmapPlane* frame0  = requestFrame0();
             frame0->animProvider = new GIFAnimProvider(frame0, image, frameProps, bgColor);
         }
+        
+        DGifCloseFile(file);
 
         return Done;
     }
