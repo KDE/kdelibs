@@ -523,6 +523,8 @@ KHTMLView::~KHTMLView()
 
 void KHTMLView::init()
 {
+    // Do not access the part here. It might not be fully constructed.
+
     setFrameStyle(QFrame::NoFrame);
     setFocusPolicy(Qt::StrongFocus);
     viewport()->setFocusProxy(this);
@@ -538,15 +540,19 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
-
-    bool redirect = m_part->parentPart();
-    m_kwp->setIsRedirected( redirect );
 }
 
 void KHTMLView::delayedInit()
 {
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
+
+    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() && 
+                    m_kwp->renderWidget()->element()->id() != ID_FRAME; 
+
+    m_kwp->setIsRedirected( redirect );
+    if (redirect)
+        setHasStaticBackground();
 }
 
 void KHTMLView::clear()
@@ -572,11 +578,7 @@ void KHTMLView::clear()
     verticalScrollBar()->setEnabled( false );
     horizontalScrollBar()->setEnabled( false );
 
-    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() && 
-                    m_kwp->renderWidget()->element()->id() != ID_FRAME; 
-
-    m_kwp->setIsRedirected( redirect );
-    if (redirect)
+    if (m_kwp->isRedirected())
         setHasStaticBackground();
 }
 
