@@ -174,10 +174,13 @@ namespace DOM {
         DOM::NodeImpl::Id attr;
         DOM::NodeImpl::Id tag;
 
-	Relation relation     : 3;
-	mutable Match 	 match         : 4;
+	// note: some compilers convert enums stored in bitfields as signed, 
+	// so they need to have an extra bit of slack space beyond their
+	// largest value to be safe.
+	Relation relation     : 4;
+	mutable Match 	 match         : 5;
 	unsigned int pseudoId : 4;
-	mutable PseudoType _pseudoType : 6;
+	mutable PseudoType _pseudoType : 7;
 
     private:
 	void extractPseudoType() const;
