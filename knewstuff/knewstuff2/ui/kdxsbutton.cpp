@@ -66,15 +66,13 @@ KDXSButton::KDXSButton(QWidget *parent)
 	m_p = new KMenu(this);
 	action_install = m_p->addAction(SmallIcon("get-hot-new-stuff"),
 		i18n("Install"));
-	action_uninstall = m_p->addAction(SmallIcon("get-hot-new-stuff"),
-		i18n("Uninstall"));
-	action_comments = m_p->addAction(SmallIcon("leftjust"),
+	action_uninstall = m_p->addAction(i18n("Uninstall"));
+	action_comments = m_p->addAction(SmallIcon("document-properties"),
 		i18n("Comments"));
-	action_changes = m_p->addAction(SmallIcon("leftjust"),
+	action_changes = m_p->addAction(SmallIcon("document-properties"),
 		i18n("Changelog"));
 
 	m_history = new KMenu(this);
-	m_history->setIcon(SmallIcon("news"));
 	m_history->setTitle(i18n("Switch version"));
 
 	// FIXME KDE4PORT
@@ -84,27 +82,20 @@ KDXSButton::KDXSButton(QWidget *parent)
 	action_historysub = m_p->addMenu(m_history);
 
 	m_p->addSeparator();
-	action_info = m_p->addAction(SmallIcon("info"),
-		i18n("Provider information"));
+	action_info = m_p->addAction(i18n("Provider information"));
 
 	m_contact = new KMenu(this);
-	m_contact->setIcon(SmallIcon("users"));
+	m_contact->setIcon(SmallIcon("mail-message-new"));
 	m_contact->setTitle(i18n("Contact author"));
 
 	KMenu *pcollab = new KMenu(this);
-	pcollab->setIcon(SmallIcon("gear"));
 	pcollab->setTitle(i18n("Collaboration"));
 
-	action_collabrating = pcollab->addAction(SmallIcon("plus"),
-		i18n("Add Rating"));
-	action_collabcomment = pcollab->addAction(SmallIcon("kontact-notes"),
-		i18n("Add Comment"));
-	action_collabtranslation = pcollab->addAction(SmallIcon("character-set"),
-		i18n("Translate"));
-	action_collabsubscribe = pcollab->addAction(SmallIcon("news-subscribe"),
-		i18n("Subscribe"));
-	action_collabremoval = pcollab->addAction(SmallIcon("user-trash"),
-		i18n("Report bad entry"));
+	action_collabrating = pcollab->addAction(i18n("Add Rating"));
+	action_collabcomment = pcollab->addAction(i18n("Add Comment"));
+	action_collabtranslation = pcollab->addAction(i18n("Translate"));
+	action_collabsubscribe = pcollab->addAction(i18n("Subscribe"));
+	action_collabremoval = pcollab->addAction(i18n("Report bad entry"));
 	pcollab->addMenu(m_contact);
 
 	m_p->addSeparator();
@@ -159,13 +150,12 @@ void KDXSButton::setEntry(Entry *e)
 	Author author = e->author();
 	if(!author.email().isEmpty())
 	{
-		action_contactbymail = m_contact->addAction(SmallIcon("message"),
+		action_contactbymail = m_contact->addAction(SmallIcon("mail-message-new"),
 			i18n("Send Mail"));
 	}
 	if(!author.jabber().isEmpty())
 	{
-		action_contactbyjabber = m_contact->addAction(SmallIcon("idea"),
-			i18n("Contact on Jabber"));
+		action_contactbyjabber = m_contact->addAction(i18n("Contact on Jabber"));
 	}
 }
 
@@ -320,7 +310,7 @@ void KDXSButton::slotHistory(QStringList entries)
 		//kDebug() << (*it);
 
 		// FIXME KDE4PORT
-		//m_history->insertItem(SmallIcon("history"),
+		//m_history->insertItem(SmallIcon("view-history"),
 		//	i18n((*it)), historyslots + i);
 		i++;
 	}

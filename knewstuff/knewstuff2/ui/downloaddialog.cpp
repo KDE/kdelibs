@@ -229,10 +229,10 @@ void EntryView::buildContents()
             //statusIcon = "<img src='" + loader->iconPath("network-server", -KIconLoader::SizeSmall) + "' />";
             break;
         case Entry::Installed:
-            statusIcon = "<img src='" + loader->iconPath("ok", -KIconLoader::SizeSmall) + "' />";
+            statusIcon = "<img src='" + loader->iconPath("dialog-ok", -KIconLoader::SizeSmall) + "' />";
             break;
         case Entry::Updateable:
-            statusIcon = "<img src='" + loader->iconPath("xclock", -KIconLoader::SizeSmall) + "' />";
+            statusIcon = "<img src='" + loader->iconPath("software-update-available", -KIconLoader::SizeSmall) + "' />";
             break;
         case Entry::Deleted:
             statusIcon = "<img src='" + loader->iconPath("user-trash", -KIconLoader::SizeSmall) + "' />";
@@ -416,10 +416,10 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
     sortCombo->setMinimumWidth( 100 );
     sortCombo->setEnabled( false );
-    sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
-    sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
-    sortCombo->addItem( SmallIcon( "go-jump-today" ), i18n("Most recent") );
-    sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
+    sortCombo->addItem( i18n("Name") );
+    sortCombo->addItem( i18n("Rating") );
+    sortCombo->addItem( i18n("Most recent") );
+    sortCombo->addItem( i18n("Most downloads") );
     connect( sortCombo, SIGNAL( activated(int) ), SLOT( slotSortingSelected(int) ) );
 
     QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );

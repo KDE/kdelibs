@@ -35,7 +35,7 @@ QProgressIndicator::QProgressIndicator(QWidget *parent)
 
 	m_pbdetails = new QPushButton();
 	m_pbdetails->setFixedWidth(32); // FIXME: I want a squared button
-	m_pbdetails->setIcon(SmallIcon("arrow-up"));
+	m_pbdetails->setIcon(SmallIcon("go-up"));
 	m_pbdetails->setEnabled(false);
 
 	QHBoxLayout *hbox = new QHBoxLayout(this);
