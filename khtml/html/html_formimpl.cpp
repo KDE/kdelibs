@@ -345,13 +345,10 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                     ++it;
 
                     // append body
-                    const unsigned int old_size = form_data.size();
-		    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
-                    memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
-		    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
-                    form_data[form_data.size()-2] = '\r';
-                    form_data[form_data.size()-1] = '\n';
-
+                    form_data.append(hstr);
+                    form_data.append(*it);
+                    form_data.append("\r\n");
+                    
 		    // reset unsubmittedFormChange flag
                     if (current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT)
