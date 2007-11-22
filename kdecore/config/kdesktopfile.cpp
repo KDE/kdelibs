@@ -345,6 +345,9 @@ KDesktopFile::sortOrder() const
 QString KDesktopFile::readDocPath() const
 {
   Q_D(const KDesktopFile);
+  //legacy entry in kde3 apps
+  if(d->desktopGroup.hasKey( "DocPath" ))
+    return d->desktopGroup.readPathEntry( "DocPath", QString() );
   // Both keys are KDE extensions
   if(d->desktopGroup.hasKey( "X-DocPath" ))
     return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
