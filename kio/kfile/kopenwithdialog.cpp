@@ -562,7 +562,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   {
     // init the history combo and insert it into the URL-Requester
     KHistoryComboBox *combo = new KHistoryComboBox();
-    KLineEdit *lineEdit = new KLineEdit();
+    KLineEdit *lineEdit = new KLineEdit(q);
     lineEdit->setClearButtonShown(true);
     combo->setLineEdit(lineEdit);
     combo->setDuplicatesEnabled( false );
