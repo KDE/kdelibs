@@ -51,11 +51,21 @@ public:
 
     /**
      * Reads a line from the program's standard out. Depending on the @em block
-     * parameter, this call blocks until a single, full line is read.
+     * parameter, this call blocks until something was read.
+     * Note that in some situations this function will return less than a full
+     * line of output, but never more. Newline characters are stripped.
      * @param block Block until a full line is read?
      * @return The output string.
      */
     QByteArray readLine(bool block=true);
+
+    /**
+     * Read all available output from the program's standard out.
+     * @param block If no output is in the buffer, should the function block
+     * (else it will return an empty QByteArray)?
+     * @return The output.
+     */
+    QByteArray readAll(bool block=true);
 
     /**
      * Writes a line of text to the program's standard in.

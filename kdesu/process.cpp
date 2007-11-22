@@ -188,30 +188,17 @@ QList<QByteArray> PtyProcess::environment() const
     return d->env;
 }
 
-/*
- * Read one line of input. The terminal is in canonical mode, so you always
- * read a line at at time, but it's possible to receive multiple lines in
- * one time.
- */
 
-QByteArray PtyProcess::readLine(bool block)
+QByteArray PtyProcess::readAll(bool block)
 {
-    int pos;
     QByteArray ret;
-
     if (!d->m_Inbuf.isEmpty())
     {
-        pos = d->m_Inbuf.indexOf('\n');
-        if (pos == -1)
-        {
-            ret = d->m_Inbuf;
-            d->m_Inbuf.resize(0);
-        } else
-        {
-            ret = d->m_Inbuf.left(pos);
-            d->m_Inbuf = d->m_Inbuf.mid(pos+1);
-        }
-        return ret;
+        // if there is still something in the buffer, we need not block.
+        // we should still try to read any further output, from the fd, though.
+        block = false;
+        ret = d->m_Inbuf;
+        d->m_Inbuf.resize(0);
     }
 
     int flags = fcntl(fd(), F_GETFL);
@@ -245,14 +232,29 @@ QByteArray PtyProcess::readLine(bool block)
             else break;
         }
         if (nbytes == 0)
-            break;        // eof
+            break;        // nothing available / eof
 
         buf[nbytes] = '\000';
-        d->m_Inbuf += buf;
+        ret += buf;
+        break;
+    }
 
+    return ret;
+}
+
+
+QByteArray PtyProcess::readLine(bool block)
+{
+    d->m_Inbuf = readAll(block);
+
+    int pos;
+    QByteArray ret;
+    if (!d->m_Inbuf.isEmpty())
+    {
         pos = d->m_Inbuf.indexOf('\n');
         if (pos == -1)
         {
+            // NOTE: this means we return something even if there in no full line!
             ret = d->m_Inbuf;
             d->m_Inbuf.resize(0);
         } else
@@ -260,7 +262,6 @@ QByteArray PtyProcess::readLine(bool block)
             ret = d->m_Inbuf.left(pos);
             d->m_Inbuf = d->m_Inbuf.mid(pos+1);
         }
-        break;
     }
 
     return ret;
@@ -438,10 +439,10 @@ int PtyProcess::waitForChild()
         // specify timeout to make sure select() does not block, even if the
         // process is dead / non-responsive. It does not matter if we abort too
         // early. In that case 0 is returned, and we'll try again in the next
-        // iteration.
+        // iteration. (As long as we don't consitently time out in each iteration)
         timeval timeout;
         timeout.tv_sec = 0;
-        timeout.tv_usec = 1000;
+        timeout.tv_usec = 100000;
         int ret = select(fd()+1, &fds, 0L, 0L, &timeout);
         if (ret == -1)
         {
@@ -455,17 +456,24 @@ int PtyProcess::waitForChild()
 
         if (ret)
         {
-            QByteArray line = readLine(false);
-            while (!line.isNull())
+            QByteArray output = readAll(false);
+            while (!output.isNull())
             {
-                if (!m_Exit.isEmpty() && !qstrnicmp(line.constData(), m_Exit, m_Exit.length()))
-                    kill(m_Pid, SIGTERM);
+                if (!m_Exit.isEmpty())
+                {
+                    // match exit string only at line starts
+                    int pos = output.indexOf(m_Exit);
+                    if ((pos >= 0) && ((pos == 0) || (output.at (pos - 1) == '\n')))
+                    {
+                        kill(m_Pid, SIGTERM);
+                    }
+                }
                 if (m_bTerminal)
                 {
-                    fputs(line, stdout);
-                    fputc('\n', stdout);
+                    fputs(output, stdout);
+                    fflush(stdout);
                 }
-                line = readLine(false);
+                output = readAll(false);
             }
         }
 
