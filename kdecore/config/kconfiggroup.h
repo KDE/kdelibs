@@ -176,12 +176,6 @@ public:
     template <typename T>
         inline T readEntry(const char *key, const T& aDefault) const
             { return qvariant_cast<T>(readEntry(key, qVariantFromValue(aDefault))); }
-    template<typename T>
-        inline QList<T> readEntry(const QString& key, const QList<T> &aDefault) const
-            { return readListCheck(key.toUtf8().constData(), aDefault); }
-    template<typename T>
-        inline QList<T> readEntry(const char* key, const QList<T> &aDefault) const
-            { return readListCheck(key, aDefault); }
 
     /**
      * Reads the value of an entry specified by @p key in the current group.
@@ -235,6 +229,19 @@ public:
      */
     QStringList readEntry(const QString &key, const QStringList& aDefault) const;
     QStringList readEntry(const char* key, const QStringList& aDefault) const;
+
+    /**
+     * Reads a list of values from the config object.
+     * @param key The key to search for.
+     * @param aDefault The default value to use if the key does not exist.
+     * @return The list. Contains @p aDefault if @p key does not exist.
+     */
+    template<typename T>
+        inline QList<T> readEntry(const QString& key, const QList<T> &aDefault) const
+            { return readListCheck(key.toUtf8().constData(), aDefault); }
+    template<typename T>
+        inline QList<T> readEntry(const char* key, const QList<T> &aDefault) const
+            { return readListCheck(key, aDefault); }
 
     /**
      * Reads a list of strings from the config object, following XDG
@@ -342,9 +349,7 @@ public:
      */
     template <typename T>
         inline void writeEntry( const char *key, const T& value, WriteConfigFlags pFlags = Normal )
-            {
-                writeListCheck( key, value, pFlags );
-            }
+            { writeListCheck( key, value, pFlags ); }
 
     template <typename T>
         inline void writeEntry( const QString& key, const T& value, WriteConfigFlags pFlags = Normal )
@@ -391,15 +396,11 @@ public:
      */
     template <typename T>
         inline void writeEntry(const QString& key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
-            {
-                writeListCheck( key.toUtf8().constData(), value, pFlags );
-            }
+            { writeListCheck( key.toUtf8().constData(), value, pFlags ); }
 
     template <typename T>
         inline void writeEntry(const char* key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
-            {
-                writeListCheck( key, value, pFlags );
-            }
+            { writeListCheck( key, value, pFlags ); }
 
     /**
      * Writes a list of strings to the config object, following XDG
@@ -646,6 +647,14 @@ QList<T> KConfigGroup::readListCheck(const char* key, const QList<T> &defaultVal
 }
 
 template <typename T>
+void KConfigGroup::writeListCheck( const char* key, const T& value,
+                               WriteConfigFlags pFlags )
+{
+    ConversionCheck::to_QVariant<T>();
+    writeEntry( key, qVariantFromValue(value), pFlags );
+}
+
+template <typename T>
 void KConfigGroup::writeListCheck( const char* key, const QList<T>& list,
                                    WriteConfigFlags pFlags )
 {
@@ -656,14 +665,6 @@ void KConfigGroup::writeListCheck( const char* key, const QList<T>& list,
     data.append(qVariantFromValue(value));
 
   writeEntry( key, data, pFlags );
-}
-
-template <typename T>
-void KConfigGroup::writeListCheck( const char* key, const T& value,
-                              WriteConfigFlags pFlags )
-{
-  ConversionCheck::to_QVariant<T>();
-  writeEntry( key, qVariantFromValue(value), pFlags );
 }
 
 #endif // KCONFIGGROUP_H
