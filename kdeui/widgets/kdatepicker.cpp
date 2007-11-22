@@ -636,7 +636,10 @@ void KDatePicker::setFontSize( int s )
         font.setPointSize( s );
         buttons[count]->setFont( font );
     }
+    d->table->setFontSize( s );
+
     QFontMetrics metrics( d->selectMonth->fontMetrics() );
+    QString longestMonth;
 
     for ( int i = 1; ; ++i ) {
         QString str = calendar()->monthName( i, calendar()->year( date() ), KCalendarSystem::LongName );
@@ -644,26 +647,32 @@ void KDatePicker::setFontSize( int s )
             break;
         }
         r = metrics.boundingRect( str );
-        d->maxMonthRect.setWidth( qMax( r.width(), d->maxMonthRect.width() ) );
-        d->maxMonthRect.setHeight( qMax( r.height(),  d->maxMonthRect.height() ) );
+
+        if ( r.width() > d->maxMonthRect.width() ) {
+            d->maxMonthRect.setWidth( r.width() );
+            longestMonth = str;
+        }
+        if ( r.height() > d->maxMonthRect.height() ) {
+            d->maxMonthRect.setHeight( r.height() );
+        }
     }
 
     QStyleOptionToolButton opt;
+    opt.initFrom( d->selectMonth );
+    opt.text      = longestMonth;
 
-    // stolen from KToolBarButton
-    opt.init( this );
-    opt.font      = d->selectMonth->font();
-    opt.icon      = d->selectMonth->icon();
-    opt.text      = d->selectMonth->text();
-    opt.features  = d->selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
-    opt.subControls       = QStyle::SC_All;
-    opt.activeSubControls = 0; //### FIXME: !!
+    // stolen from QToolButton
+    QSize textSize = metrics.size( Qt::TextShowMnemonic, longestMonth );
+    textSize.setWidth( textSize.width() + metrics.width( QLatin1Char(' ') ) * 2 );
+    int w = textSize.width();
+    int h = textSize.height();
+    opt.rect.setHeight( h ); // PM_MenuButtonIndicator depends on the height
 
-    QSize metricBound = style()->sizeFromContents( QStyle::CT_ToolButton, &opt,
-                                                   d->maxMonthRect, d->selectMonth );
+    QSize metricBound = style()->sizeFromContents(
+        QStyle::CT_ToolButton, &opt, QSize( w, h ), d->selectMonth
+    ).expandedTo( QApplication::globalStrut() );
+
     d->selectMonth->setMinimumSize( metricBound );
-
-    d->table->setFontSize( s );
 }
 
 int KDatePicker::fontSize() const
