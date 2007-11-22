@@ -146,7 +146,7 @@ public:
    * @param group the new action group
    */
   KConfigGroup actionGroup(const QString &group);
-  
+
   const KConfigGroup actionGroup(const QString &group) const;
 
   /**
@@ -190,8 +190,8 @@ public:
   bool tryExec() const;
 
   /**
-   * Returns the value of the "X-DocPath=" Or "X-KDE-DocPath=" entry.
-   * @return The value of the "X-DocPath=" Or "X-KDE-DocPath=" entry.
+   * Returns the value of the "X-DocPath=" Or "DocPath=" entry.
+   * @return The value of the "X-DocPath=" Or "DocPath=" entry.
    */
   QString readDocPath() const;
 
