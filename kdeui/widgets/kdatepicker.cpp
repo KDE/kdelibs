@@ -84,7 +84,7 @@ void KDatePickerPrivateYearSelector::yearEnteredSlot()
     }
 
     // check if new year will lead to a valid date
-    if ( calendar->setYMD( newDate, newYear, calendar->month( oldDate ), calendar->day( oldDate ) ) ) {
+    if ( calendar->setDate( newDate, newYear, calendar->month( oldDate ), calendar->day( oldDate ) ) ) {
         result = newYear;
         emit( closeMe( 1 ) );
     } else {
@@ -177,8 +177,8 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
 
     QDate lastDayOfYear;
     if ( ! q->calendar()->isValid( dayInLastMonthOfYear ) ||
-         ! q->calendar()->setYMD( lastDayOfYear, thisYear, lastMonthThisYear,
-                                  q->calendar()->daysInMonth( dayInLastMonthOfYear ) ) ) {
+         ! q->calendar()->setDate( lastDayOfYear, thisYear, lastMonthThisYear,
+                                   q->calendar()->daysInMonth( dayInLastMonthOfYear ) ) ) {
         lastDayOfYear = q->calendar()->latestValidDate();
     }
 
@@ -191,7 +191,7 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
     // In particular covers the case of Gregorian where 1/1/-4713 is not a valid QDate
 
     QDate day;
-    if ( ! q->calendar()->setYMD( day, thisYear, 1, 1 ) ) {
+    if ( ! q->calendar()->setDate( day, thisYear, 1, 1 ) ) {
         day = q->calendar()->earliestValidDate();
     }
 
@@ -238,9 +238,9 @@ QDate KDatePicker::KDatePickerPrivate::validDateInYearMonth( int year, int month
     // Try to create a valid date in this year and month
     // First try the first of the month, then try last of month
     if ( q->calendar()->isValid( year, month, 1 ) ) {
-        q->calendar()->setYMD( newDate, year, month, 1 );
+        q->calendar()->setDate( newDate, year, month, 1 );
     } else if ( q->calendar()->isValid( year, month + 1, 1 ) ) {
-        q->calendar()->setYMD( newDate, year, month, 1 );
+        q->calendar()->setDate( newDate, year, month, 1 );
         q->calendar()->addDays( newDate, -1 );
     } else {
         newDate = QDate::fromJulianDay( 0 );
@@ -405,7 +405,7 @@ void KDatePicker::dateChangedSlot( const QDate &date_ )
     // the earliestValidDate as the first day.
     // In particular covers the case of Gregorian where 1/1/-4713 is not a valid QDate
     QDate day;
-    if ( ! calendar()->setYMD( firstDay, calendar()->year( date_ ), 1, 1 ) ) {
+    if ( ! calendar()->setDate( firstDay, calendar()->year( date_ ), 1, 1 ) ) {
         firstDay = calendar()->earliestValidDate();
     }
     d->selectWeek->setCurrentIndex( ( calendar()->dayOfYear( date_ ) + calendar()->dayOfWeek( firstDay ) - 2 ) /
@@ -513,10 +513,10 @@ void KDatePicker::selectMonthClicked()
     // If we have succeeded in creating a date in the new month, then try to create the new date,
     // checking we don't set a day after the last day of the month
     if ( calendar()->isValid( newDate ) ) {
-        calendar()->setYMD( newDate,
-                            calendar()->year( date() ),
-                            item->data().toInt(),
-                            qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) ) );
+        calendar()->setDate( newDate,
+            calendar()->year( date() ), item->data().toInt(),
+            qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) )
+        );
     }
 
     // Set the date, if it's invalid in any way then alert user and don't update
@@ -550,10 +550,10 @@ void KDatePicker::selectYearClicked()
         // If we have succeeded in creating a date in the new month, then try to create the new
         // date, checking we don't set a day after the last day of the month
         if ( calendar()->isValid( newDate ) ) {
-            calendar()->setYMD( newDate,
-                                picker->year(),
-                                calendar()->month( date() ),
-                                qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) ) );
+            calendar()->setDate( newDate,
+                picker->year(), calendar()->month( date() ),
+                qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) )
+            );
         }
     }
 
