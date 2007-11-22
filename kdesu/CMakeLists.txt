@@ -3,7 +3,6 @@ project(kdesu)
 
 include_directories( ${KDE4_KPTY_INCLUDES} )
 
-
 ########### next target ###############
 
 set(kdesu_LIB_SRCS
@@ -19,6 +18,11 @@ set(kdesu_LIB_SRCS
 kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
 
 target_link_libraries(kdesu ${KDE4_KPTY_LIBS} )
+
+if(KDESU_USE_SUDO_DEFAULT)
+   set_source_files_properties(su.cpp
+      PROPERTIES COMPILE_FLAGS -DKDESU_USE_SUDO_DEFAULT)
+endif(KDESU_USE_SUDO_DEFAULT)
 
 set_target_properties(kdesu PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 install(TARGETS kdesu  DESTINATION ${LIB_INSTALL_DIR} )

@@ -49,9 +49,11 @@
 #define __PATH_SUDO "false"
 #endif
 
-//change to sudo or su according to your preferences
-#define DEFAULT_SUPER_USER_COMMAND "sudo"
-
+#ifdef KDESU_USE_SUDO_DEFAULT
+#  define DEFAULT_SUPER_USER_COMMAND "sudo"
+#else
+#  define DEFAULT_SUPER_USER_COMMAND "su"
+#endif
 
 namespace KDESu {
 using namespace KDESuPrivate;
@@ -74,7 +76,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
 
     if ( d->m_superUserCommand != "sudo" && d->m_superUserCommand != "su" ) {
       kWarning() << "unknown super user command";
-      d->m_superUserCommand = "su";
+      d->m_superUserCommand = DEFAULT_SUPER_USER_COMMAND;
     }
 }
 
