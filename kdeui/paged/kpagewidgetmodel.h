@@ -102,6 +102,12 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
 
     /**
      * Sets the header of the page widget item.
+     *
+     * If setHeader(QString()) is used, what is the default if the header
+     * does not got set explicit, then the defined name() will also be used
+     * for the header. If setHeader("") is used, the header will be hidden
+     * even if the @a KPageView::FaceType is something else then Tabbed.
+     *
      * @param header Header of the page widget item.
      */
     void setHeader( const QString &header );

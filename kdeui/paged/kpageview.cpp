@@ -226,7 +226,7 @@ void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
 {
     Q_Q(KPageView);
     QString header = model->data( index, KPageModel::HeaderRole ).toString();
-    if ( header.isEmpty() ) {
+    if ( header.isNull() ) { //TODO KDE5 remove that ugly logic, see also doxy-comments in KPageWidgetItem::setHeader()
         header = model->data( index, Qt::DisplayRole ).toString();
     }
 
