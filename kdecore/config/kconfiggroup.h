@@ -172,10 +172,10 @@ public:
      */
     template <typename T>
         inline T readEntry(const QString& key, const T& aDefault) const
-            { return readEntry(key.toUtf8().constData(), aDefault); }
+            { return readCheck(key.toUtf8().constData(), aDefault); }
     template <typename T>
         inline T readEntry(const char *key, const T& aDefault) const
-            { return qvariant_cast<T>(readEntry(key, qVariantFromValue(aDefault))); }
+            { return readCheck(key, aDefault); }
 
     /**
      * Reads the value of an entry specified by @p key in the current group.
@@ -349,11 +349,11 @@ public:
      */
     template <typename T>
         inline void writeEntry( const char *key, const T& value, WriteConfigFlags pFlags = Normal )
-            { writeListCheck( key, value, pFlags ); }
+            { writeCheck( key, value, pFlags ); }
 
     template <typename T>
         inline void writeEntry( const QString& key, const T& value, WriteConfigFlags pFlags = Normal )
-            { writeListCheck( key.toUtf8().constData(), value, pFlags ); }
+            { writeCheck( key.toUtf8().constData(), value, pFlags ); }
 
     /**
      * writeEntry() overridden to accept a list of strings.
@@ -549,13 +549,13 @@ private:
     QExplicitlySharedDataPointer<KConfigGroupPrivate> d;
 
     template<typename T>
-    inline T readListCheck(const char* key, const T &defaultValue) const;
+    inline T readCheck(const char* key, const T &defaultValue) const;
 
     template<typename T>
     inline QList<T> readListCheck(const char* key, const QList<T> &defaultValue) const;
 
     template<typename T>
-    inline void writeListCheck(const char* key, const T &value, WriteConfigFlags pFlags);
+    inline void writeCheck(const char* key, const T &value, WriteConfigFlags pFlags);
 
     template<typename T>
     inline void writeListCheck(const char* key, const QList<T> &value, WriteConfigFlags pFlags);
@@ -620,7 +620,7 @@ group.writeEntry(key, QByteArray(M_enum.valueToKeys(value)), flags);            
 #include "conversion_check.h"
 
 template <typename T>
-T KConfigGroup::readListCheck(const char* key, const T &defaultValue) const
+T KConfigGroup::readCheck(const char* key, const T &defaultValue) const
 {
   ConversionCheck::to_QVariant<T>();
   return qvariant_cast<T>(readEntry(key, qVariantFromValue(defaultValue)));
@@ -647,7 +647,7 @@ QList<T> KConfigGroup::readListCheck(const char* key, const QList<T> &defaultVal
 }
 
 template <typename T>
-void KConfigGroup::writeListCheck( const char* key, const T& value,
+void KConfigGroup::writeCheck( const char* key, const T& value,
                                WriteConfigFlags pFlags )
 {
     ConversionCheck::to_QVariant<T>();
