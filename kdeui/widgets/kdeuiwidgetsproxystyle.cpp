@@ -19,6 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
 #include "kdeuiwidgetsproxystyle_p.h"
@@ -30,7 +31,12 @@ KdeUiProxyStyle::KdeUiProxyStyle(QWidget *parent)
 
 QStyle *KdeUiProxyStyle::style() const
 {
-    return parent->parentWidget()->style();
+    if (parent && parent->parentWidget()) {
+        return parent->parentWidget()->style();
+    }
+    else {
+        return QApplication::style();
+    }
 }
 
 void KdeUiProxyStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
