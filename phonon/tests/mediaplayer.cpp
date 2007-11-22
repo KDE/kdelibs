@@ -210,7 +210,9 @@ bool MediaPlayer::setNextSource()
     cdButton->setCheckable(true);
     cdButton->setChecked(false);
     layout->addWidget(cdButton);
-    KFileDialog dlg(KUrl(), QString(), 0, extraWidget);
+    const QString dummyString;
+    const KUrl dummyUrl;
+    KFileDialog dlg(dummyUrl, dummyString, 0, extraWidget);
     connect(dvdButton, SIGNAL(toggled(bool)), &dlg, SLOT(accept()));
     connect(cdButton, SIGNAL(toggled(bool)), &dlg, SLOT(accept()));
     dlg.setOperationMode(KFileDialog::Opening);
