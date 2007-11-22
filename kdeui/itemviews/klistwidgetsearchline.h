@@ -105,6 +105,10 @@ protected:
      */
     virtual bool itemMatches( const QListWidgetItem *item,
                               const QString &s ) const;
+    /**
+     * Re-implemented for internal reasons.  API not affected.
+     */
+    virtual bool event(QEvent *event);
 
 private:
     class KListWidgetSearchLinePrivate;

@@ -20,6 +20,10 @@
 #include "klistwidgetsearchline.h"
 
 #include <QtGui/QListWidget>
+#include <QtGui/QApplication>
+#include <QtGui/QKeyEvent>
+#include <QtCore/QEvent>
+
 #include <klocale.h>
 #include <QtCore/QTimer>
 #include <kdebug.h>
@@ -232,6 +236,24 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::showItem( QListWidgetI
     hiddenItems.removeAll( item );
 }
 
+bool KListWidgetSearchLine::event(QEvent *event) {
+
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if(keyEvent->matches(QKeySequence::MoveToNextLine) || keyEvent->matches(QKeySequence::SelectNextLine) ||
+		   keyEvent->matches(QKeySequence::MoveToPreviousLine) || keyEvent->matches(QKeySequence::SelectPreviousLine) ||
+		   keyEvent->matches(QKeySequence::MoveToNextPage) ||  keyEvent->matches(QKeySequence::SelectNextPage) ||
+		   keyEvent->matches(QKeySequence::MoveToPreviousPage) ||  keyEvent->matches(QKeySequence::SelectPreviousPage) ||
+		   keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
+		{
+			if(d->listWidget) {
+				QApplication::sendEvent(d->listWidget, event);
+				return true;
+			}
+		}
+	}
+	return KLineEdit::event(event);
+}
 /******************************************************************************
  * Protected Slots                                                            *
  *****************************************************************************/
