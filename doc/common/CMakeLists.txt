@@ -17,4 +17,5 @@ install(FILES
     top-kde.jpg  top-left.jpg  top-right.jpg  top.jpg
     bottom-left.png bottom-right.png bottom-middle.png kde-default.css kde_logo_bg.png
     top-middle.png top-right-konqueror.png top-left.png
+    1.png 2.png 3.png 4.png 5.png 6.png 7.png 8.png 9.png 10.png
     DESTINATION ${HTML_INSTALL_DIR}/en/common)
