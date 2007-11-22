@@ -214,7 +214,12 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
             weekString += '*';
         }
 
-        selectWeek->addItem( weekString );
+        // when the week is selected, go to the same weekday as the one
+        // that is currently selected in the date table
+        QDate targetDate = q->calendar()->addDays( day,
+            q->calendar()->dayOfWeek( q->date() ) - q->calendar()->dayOfWeek( day )
+        );
+        selectWeek->addItem( weekString, targetDate );
 
         // make sure that the week of the lastDayOfYear is always inserted: in Chinese calendar
         // system, this is not always the case
@@ -471,24 +476,11 @@ void KDatePicker::yearBackwardClicked()
     }
 }
 
-void KDatePicker::weekSelected( int week )
+void KDatePicker::weekSelected( int index )
 {
-    QDate newDate;
+    QDate targetDay = d->selectWeek->itemData( index ).toDateTime().date();
 
-    // First obtain a date that has weekday number of 1, either in this week or next week, whichevers valid
-    newDate = calendar()->addDays( date(), 1 - calendar()->dayOfWeek( date() ) );
-    if ( ! calendar()->isValid( newDate ) ) {
-        newDate = calendar()->addDays( date(),
-                  1 - calendar()->dayOfWeek( date() ) + calendar()->daysInWeek( date() ) );
-    }
-
-    // If we have a valid date, then add/subtract the number of days difference between the week numbers
-    if ( calendar()->isValid( newDate ) ) {
-        newDate = calendar()->addDays( newDate,
-                 ( week - calendar()->weekNumber( newDate ) ) * calendar()->daysInWeek( date() ) );
-    }
-
-    if ( ! setDate( newDate ) ) {
+    if ( ! setDate( targetDay ) ) {
         KNotification::beep();
     }
 }
