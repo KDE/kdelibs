@@ -125,7 +125,7 @@ protected:
     khtml::Length* m_coords;
     int m_coordsLen;
     int lastw, lasth;
-    Shape shape  : 3;
+    KDE_BF_ENUM(Shape) shape  : 3;
     bool nohref  : 1;
 };
 

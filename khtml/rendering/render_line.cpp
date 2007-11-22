@@ -1087,9 +1087,9 @@ bool RootInlineBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx,
 BidiStatus RootInlineBox::lineBreakBidiStatus() const
 {
     BidiStatus st;
-    st.eor = m_lineBreakBidiStatusEor;
-    st.last = m_lineBreakBidiStatusLast;
-    st.lastStrong = m_lineBreakBidiStatusLastStrong;
+    st.eor = KDE_CAST_BF_ENUM(QChar::Direction, m_lineBreakBidiStatusEor);
+    st.last = KDE_CAST_BF_ENUM(QChar::Direction, m_lineBreakBidiStatusLast);
+    st.lastStrong = KDE_CAST_BF_ENUM(QChar::Direction, m_lineBreakBidiStatusLastStrong);
     return st;
 }
 

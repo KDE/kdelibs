@@ -401,6 +401,36 @@
 #endif
 
 /**
+ * @def KDE_BF_ENUM
+ * @ingroup KDEMacros
+ *
+ * The KDE_BF_ENUM is used when storing an enum
+ * in a bitfield, to ensure correct conversion
+ * by all compilers.
+ *
+ * @sa KDE_CAST_BF_ENUM
+ */
+ 
+/**
+ * @def KDE_CAST_BF_ENUM
+ * @ingroup KDEMacros
+ *
+ * The KDE_CAST_BF_ENUM is used when retrieving an 
+ * enumfrom  a bitfield, to ensure correct conversion
+ * by all compilers.
+ *
+ * @sa KDE_BF_ENUM
+ */
+ 
+#ifdef Q_CC_MSVC
+# define KDE_BF_ENUM(a) unsigned int
+# define KDE_CAST_BF_ENUM(a,b) static_cast<a>(b)
+#else
+# define KDE_BF_ENUM(a) a
+# define KDE_CAST_BF_ENUM(a,b) b
+#endif
+
+/**
  * @def KDE_WEAK_SYMBOL
  * @ingroup KDEMacros
  *

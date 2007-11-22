@@ -360,9 +360,9 @@ protected:
     // The height of the block at the end of this line.  This is where the next line starts.
     int m_blockHeight;
 
-    QChar::Direction m_lineBreakBidiStatusEor : 5;
-    QChar::Direction m_lineBreakBidiStatusLastStrong : 5;
-    QChar::Direction m_lineBreakBidiStatusLast : 5;
+    KDE_BF_ENUM(QChar::Direction) m_lineBreakBidiStatusEor : 5;
+    KDE_BF_ENUM(QChar::Direction) m_lineBreakBidiStatusLastStrong : 5;
+    KDE_BF_ENUM(QChar::Direction) m_lineBreakBidiStatusLast : 5;
     
     // An inline text box that represents our text truncation string.
     EllipsisBox* m_ellipsisBox;

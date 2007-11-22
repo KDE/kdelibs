@@ -59,18 +59,6 @@
 #endif
 #endif
 
-#ifdef Q_CC_MSVC
-# define SIGNED_BF_ENUMS
-#endif
-
-#ifdef SIGNED_BF_ENUMS
-# define BF_ENUM(a) unsigned int
-# define CAST_BF_ENUM(a,b) static_cast<a>(b)
-#else
-# define BF_ENUM(a) a
-# define CAST_BF_ENUM(a,b) b
-#endif
-
 namespace DOM {
     class DOMStringImpl;
     class QuotesValueImpl;
@@ -870,24 +858,24 @@ protected:
 
         union {
             struct {
-                BF_ENUM(EEmptyCell) _empty_cells : 1 ;
-                BF_ENUM(ECaptionSide) _caption_side : 2;
-                BF_ENUM(EListStyleType) _list_style_type : 6;
-                BF_ENUM(EListStylePosition) _list_style_position : 1;
+                KDE_BF_ENUM(EEmptyCell) _empty_cells : 1 ;
+                KDE_BF_ENUM(ECaptionSide) _caption_side : 2;
+                KDE_BF_ENUM(EListStyleType) _list_style_type : 6;
+                KDE_BF_ENUM(EListStylePosition) _list_style_position : 1;
 
-                BF_ENUM(EVisibility) _visibility : 2;
-                BF_ENUM(ETextAlign) _text_align : 4;
-                BF_ENUM(ETextTransform) _text_transform : 2;
+                KDE_BF_ENUM(EVisibility) _visibility : 2;
+                KDE_BF_ENUM(ETextAlign) _text_align : 4;
+                KDE_BF_ENUM(ETextTransform) _text_transform : 2;
                 unsigned _text_decorations : 4;
-                BF_ENUM(ECursor) _cursor_style : 5;
+                KDE_BF_ENUM(ECursor) _cursor_style : 5;
 
-                BF_ENUM(EDirection) _direction : 1;
+                KDE_BF_ENUM(EDirection) _direction : 1;
                 unsigned _border_collapse : 1 ;
-                BF_ENUM(EWhiteSpace) _white_space : 3;
+                KDE_BF_ENUM(EWhiteSpace) _white_space : 3;
                 // non CSS2 inherited
                 unsigned _visuallyOrdered : 1;
                 unsigned _htmlHacks : 1;
-                BF_ENUM(EUserInput) _user_input : 2;
+                KDE_BF_ENUM(EUserInput) _user_input : 2;
 
                 unsigned _page_break_inside : 1; // AUTO/AVOID
 
@@ -907,24 +895,24 @@ protected:
 
         union {
             struct {
-                BF_ENUM(EDisplay) _display : 5;
-                BF_ENUM(EDisplay) _originalDisplay : 5;
-                BF_ENUM(EOverflow) _overflowX : 4 ;
-                BF_ENUM(EOverflow) _overflowY : 4 ;
-                BF_ENUM(EVerticalAlign) _vertical_align : 4;
-                BF_ENUM(EClear) _clear : 2;
-                BF_ENUM(EPosition) _position : 2;
-                BF_ENUM(EFloat) _floating : 3;
-                BF_ENUM(ETableLayout) _table_layout : 1;
+                KDE_BF_ENUM(EDisplay) _display : 5;
+                KDE_BF_ENUM(EDisplay) _originalDisplay : 5;
+                KDE_BF_ENUM(EOverflow) _overflowX : 4 ;
+                KDE_BF_ENUM(EOverflow) _overflowY : 4 ;
+                KDE_BF_ENUM(EVerticalAlign) _vertical_align : 4;
+                KDE_BF_ENUM(EClear) _clear : 2;
+                KDE_BF_ENUM(EPosition) _position : 2;
+                KDE_BF_ENUM(EFloat) _floating : 3;
+                KDE_BF_ENUM(ETableLayout) _table_layout : 1;
                 unsigned _flowAroundFloats : 1;
 
-                BF_ENUM(EPageBreak) _page_break_before : 3;
-                BF_ENUM(EPageBreak) _page_break_after : 3;
+                KDE_BF_ENUM(EPageBreak) _page_break_before : 3;
+                KDE_BF_ENUM(EPageBreak) _page_break_after : 3;
 
-                BF_ENUM(PseudoId) _styleType : 4;
+                KDE_BF_ENUM(PseudoId) _styleType : 4;
                 unsigned _hasClip : 1;
                 unsigned _pseudoBits : 8;
-                BF_ENUM(EUnicodeBidi) _unicodeBidi : 2;
+                KDE_BF_ENUM(EUnicodeBidi) _unicodeBidi : 2;
 
                 // non CSS2 non-inherited
                 unsigned _textOverflow : 1; // Whether or not lines that spill out should be truncated with "..."
@@ -1015,7 +1003,7 @@ public:
 
     void inheritFrom(const RenderStyle* inheritParent);
 
-    PseudoId styleType() const { return  CAST_BF_ENUM(PseudoId, noninherited_flags.f._styleType); }
+    PseudoId styleType() const { return KDE_CAST_BF_ENUM(PseudoId, noninherited_flags.f._styleType); }
     void setStyleType(PseudoId pi) { noninherited_flags.f._styleType = pi; }
     bool isGenerated() const {
         if (styleType() == AFTER || styleType() == BEFORE || styleType() == MARKER || styleType() == REPLACED)
@@ -1050,16 +1038,16 @@ public:
 
 // attribute getter methods
 
-    EDisplay 	display() const { return CAST_BF_ENUM(EDisplay, noninherited_flags.f._display); }
-    EDisplay    originalDisplay() const { return CAST_BF_ENUM(EDisplay, noninherited_flags.f._originalDisplay); }
+    EDisplay 	display() const { return KDE_CAST_BF_ENUM(EDisplay, noninherited_flags.f._display); }
+    EDisplay    originalDisplay() const { return KDE_CAST_BF_ENUM(EDisplay, noninherited_flags.f._originalDisplay); }
 
     Length  	left() const {  return surround->offset.left; }
     Length  	right() const {  return surround->offset.right; }
     Length  	top() const {  return surround->offset.top; }
     Length  	bottom() const {  return surround->offset.bottom; }
 
-    EPosition 	position() const { return CAST_BF_ENUM(EPosition, noninherited_flags.f._position); }
-    EFloat  	floating() const { return CAST_BF_ENUM(EFloat, noninherited_flags.f._floating); }
+    EPosition 	position() const { return KDE_CAST_BF_ENUM(EPosition, noninherited_flags.f._position); }
+    EFloat  	floating() const { return KDE_CAST_BF_ENUM(EFloat, noninherited_flags.f._floating); }
 
     Length  	width() const { return box->width; }
     Length  	height() const { return box->height; }
@@ -1099,15 +1087,15 @@ public:
     bool outlineStyleIsAuto() const { return background->m_outline._auto; }
     const QColor &  outlineColor() const { return background->m_outline.color; }
 
-    EOverflow overflowX() const { return CAST_BF_ENUM(EOverflow, noninherited_flags.f._overflowX); }
-    EOverflow overflowY() const { return CAST_BF_ENUM(EOverflow, noninherited_flags.f._overflowY); }
+    EOverflow overflowX() const { return KDE_CAST_BF_ENUM(EOverflow, noninherited_flags.f._overflowX); }
+    EOverflow overflowY() const { return KDE_CAST_BF_ENUM(EOverflow, noninherited_flags.f._overflowY); }
     bool hidesOverflow() const {
         // either both overflow are visible or none are
         return overflowX() != OVISIBLE;
     }
 
-    EVisibility visibility() const { return CAST_BF_ENUM(EVisibility, inherited_flags.f._visibility); }
-    EVerticalAlign verticalAlign() const { return  CAST_BF_ENUM(EVerticalAlign, noninherited_flags.f._vertical_align); }
+    EVisibility visibility() const { return KDE_CAST_BF_ENUM(EVisibility, inherited_flags.f._visibility); }
+    EVerticalAlign verticalAlign() const { return  KDE_CAST_BF_ENUM(EVerticalAlign, noninherited_flags.f._vertical_align); }
     Length verticalAlignLength() const { return box->vertical_align; }
 
     Length clipLeft() const { return visual->clip.left; }
@@ -1117,10 +1105,10 @@ public:
     LengthBox clip() const { return visual->clip; }
     bool hasClip() const { return noninherited_flags.f._hasClip; }
 
-    EUnicodeBidi unicodeBidi() const { return CAST_BF_ENUM(EUnicodeBidi, noninherited_flags.f._unicodeBidi); }
+    EUnicodeBidi unicodeBidi() const { return KDE_CAST_BF_ENUM(EUnicodeBidi, noninherited_flags.f._unicodeBidi); }
 
-    EClear clear() const { return CAST_BF_ENUM(EClear, noninherited_flags.f._clear); }
-    ETableLayout tableLayout() const { return CAST_BF_ENUM(ETableLayout, noninherited_flags.f._table_layout); }
+    EClear clear() const { return KDE_CAST_BF_ENUM(EClear, noninherited_flags.f._clear); }
+    ETableLayout tableLayout() const { return KDE_CAST_BF_ENUM(ETableLayout, noninherited_flags.f._table_layout); }
 
     const QFont & font() const { return inherited->font.f; }
     // use with care. call font->update() after modifications
@@ -1129,17 +1117,17 @@ public:
 
     const QColor & color() const { return inherited->color; }
     Length textIndent() const { return inherited->indent; }
-    ETextAlign textAlign() const { return CAST_BF_ENUM(ETextAlign, inherited_flags.f._text_align); }
-    ETextTransform textTransform() const { return CAST_BF_ENUM(ETextTransform, inherited_flags.f._text_transform); }
+    ETextAlign textAlign() const { return KDE_CAST_BF_ENUM(ETextAlign, inherited_flags.f._text_align); }
+    ETextTransform textTransform() const { return KDE_CAST_BF_ENUM(ETextTransform, inherited_flags.f._text_transform); }
     int textDecorationsInEffect() const { return inherited_flags.f._text_decorations; }
     int textDecoration() const { return visual->textDecoration; }
     int wordSpacing() const { return inherited->font.wordSpacing; }
     int letterSpacing() const { return inherited->font.letterSpacing; }
 
-    EDirection direction() const { return CAST_BF_ENUM(EDirection, inherited_flags.f._direction); }
+    EDirection direction() const { return KDE_CAST_BF_ENUM(EDirection, inherited_flags.f._direction); }
     Length lineHeight() const { return inherited->line_height; }
 
-    EWhiteSpace whiteSpace() const { return CAST_BF_ENUM(EWhiteSpace, inherited_flags.f._white_space); }
+    EWhiteSpace whiteSpace() const { return KDE_CAST_BF_ENUM(EWhiteSpace, inherited_flags.f._white_space); }
     bool autoWrap() const {
         if (whiteSpace() == NORMAL || whiteSpace() == PRE_WRAP || whiteSpace() == PRE_LINE)
             return true;
@@ -1172,12 +1160,12 @@ public:
     bool borderCollapse() const { return inherited_flags.f._border_collapse; }
     short borderHorizontalSpacing() const { return inherited->border_hspacing; }
     short borderVerticalSpacing() const { return inherited->border_vspacing; }
-    EEmptyCell emptyCells() const { return CAST_BF_ENUM(EEmptyCell, inherited_flags.f._empty_cells); }
-    ECaptionSide captionSide() const { return CAST_BF_ENUM(ECaptionSide, inherited_flags.f._caption_side); }
+    EEmptyCell emptyCells() const { return KDE_CAST_BF_ENUM(EEmptyCell, inherited_flags.f._empty_cells); }
+    ECaptionSide captionSide() const { return KDE_CAST_BF_ENUM(ECaptionSide, inherited_flags.f._caption_side); }
 
-    EListStyleType listStyleType() const { return CAST_BF_ENUM(EListStyleType, inherited_flags.f._list_style_type); }
+    EListStyleType listStyleType() const { return KDE_CAST_BF_ENUM(EListStyleType, inherited_flags.f._list_style_type); }
     CachedImage *listStyleImage() const { return inherited->style_image; }
-    EListStylePosition listStylePosition() const { return CAST_BF_ENUM(EListStylePosition, inherited_flags.f._list_style_position); }
+    EListStylePosition listStylePosition() const { return KDE_CAST_BF_ENUM(EListStylePosition, inherited_flags.f._list_style_position); }
 
     Length marginTop() const { return surround->margin.top; }
     Length marginBottom() const {  return surround->margin.bottom; }
@@ -1189,13 +1177,13 @@ public:
     Length paddingLeft() const { return surround->padding.left; }
     Length paddingRight() const {  return surround->padding.right; }
 
-    ECursor cursor() const { return CAST_BF_ENUM(ECursor, inherited_flags.f._cursor_style); }
+    ECursor cursor() const { return KDE_CAST_BF_ENUM(ECursor, inherited_flags.f._cursor_style); }
 
     short widows() const { return inherited->widows; }
     short orphans() const { return inherited->orphans; }
     bool pageBreakInside() const { return inherited_flags.f._page_break_inside; }
-    EPageBreak pageBreakBefore() const { return CAST_BF_ENUM(EPageBreak, noninherited_flags.f._page_break_before); }
-    EPageBreak pageBreakAfter() const { return CAST_BF_ENUM(EPageBreak, noninherited_flags.f._page_break_after); }
+    EPageBreak pageBreakBefore() const { return KDE_CAST_BF_ENUM(EPageBreak, noninherited_flags.f._page_break_before); }
+    EPageBreak pageBreakAfter() const { return KDE_CAST_BF_ENUM(EPageBreak, noninherited_flags.f._page_break_after); }
 
     DOM::QuotesValueImpl* quotes() const { return inherited->quotes; }
     QString openQuote(int level) const;
@@ -1209,7 +1197,7 @@ public:
     }
     ShadowData* textShadow() const { return css3InheritedData->textShadow; }
     float opacity() { return css3NonInheritedData->opacity; }
-    EUserInput userInput() const { return CAST_BF_ENUM(EUserInput, inherited_flags.f._user_input); }
+    EUserInput userInput() const { return KDE_CAST_BF_ENUM(EUserInput, inherited_flags.f._user_input); }
 
     Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
     int marqueeSpeed() { return css3NonInheritedData->marquee->speed; }

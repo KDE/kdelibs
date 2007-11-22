@@ -89,7 +89,7 @@ public:
     bool isUnfurlMarquee() const;
     int unfurlPos() const { return m_unfurlPos; }
 
-    EWhiteSpace whiteSpace() { return m_whiteSpace; }
+    EWhiteSpace whiteSpace() { return KDE_CAST_BF_ENUM(EWhiteSpace, m_whiteSpace); }
 
     int computePosition(EMarqueeDirection dir, bool stopAtClientEdge);
 
@@ -114,8 +114,8 @@ private:
     bool m_reset:1;
     bool m_suspended:1;
     bool m_stopped:1;
-    EWhiteSpace m_whiteSpace : 3;
-    EMarqueeDirection m_direction : 4;
+    KDE_BF_ENUM(EWhiteSpace) m_whiteSpace : 3;
+    KDE_BF_ENUM(EMarqueeDirection) m_direction : 4;
 };
 
 class RenderLayer

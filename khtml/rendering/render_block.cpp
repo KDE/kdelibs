@@ -2445,7 +2445,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
                 }
             }
             if ( !already ) {
-                FloatingObject *floatingObj = new FloatingObject(r->type);
+                FloatingObject *floatingObj = new FloatingObject(KDE_CAST_BF_ENUM(FloatingObject::Type, r->type));
                 floatingObj->startY = r->startY - offset;
                 floatingObj->endY = r->endY - offset;
                 floatingObj->left = r->left - xoff;

@@ -96,7 +96,7 @@ public:
     EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg);
     virtual ~EventImpl();
 
-    EventId id() const { return m_id; }
+    EventId id() const { return KDE_CAST_BF_ENUM(EventId, m_id); }
 
     DOMString type() const { return m_type; }
     NodeImpl *target() const { return m_target; }
@@ -140,7 +140,7 @@ protected:
     bool m_propagationStopped;
     bool m_defaultPrevented;
     bool m_defaultHandled;
-    EventId m_id : 6;
+    KDE_BF_ENUM(EventId) m_id : 6;
     unsigned short m_eventPhase : 2;
     NodeImpl *m_currentTarget; // ref > 0 maintained externally
     NodeImpl *m_target;
@@ -225,7 +225,7 @@ public:
     long pageY() const { return m_pageY; } // non-DOM extension
     virtual int which() const { return button() + 1; } // non-DOM extension
     bool isDoubleClick() const { return m_isDoubleClick; } // non-DOM extension
-    Orientation orientation() const { return m_orientation; } // non-DOM extension
+    Orientation orientation() const { return KDE_CAST_BF_ENUM(Orientation, m_orientation); } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
     bool altKey() const { return m_altKey; }
@@ -268,7 +268,7 @@ protected:
     bool m_shiftKey : 1;
     bool m_metaKey : 1;
     bool m_isDoubleClick : 1;
-    Orientation m_orientation : 2;
+    KDE_BF_ENUM(Orientation) m_orientation : 2;
     unsigned short m_button;
     NodeImpl *m_relatedTarget;
     QMouseEvent *m_qevent;
@@ -483,7 +483,7 @@ public:
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
 
 
-    EventImpl::EventId id : 6;
+    KDE_BF_ENUM(EventImpl::EventId) id : 6;
     bool useCapture;
     EventListener *listener;
 

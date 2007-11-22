@@ -164,7 +164,7 @@ namespace DOM {
 	PseudoType pseudoType() const {
             if (_pseudoType == PseudoNotParsed)
                 extractPseudoType();
-            return _pseudoType;
+            return KDE_CAST_BF_ENUM(PseudoType, _pseudoType);
         }
 
         mutable DOM::DOMString value;
@@ -174,13 +174,10 @@ namespace DOM {
         DOM::NodeImpl::Id attr;
         DOM::NodeImpl::Id tag;
 
-	// note: some compilers convert enums stored in bitfields as signed, 
-	// so they need to have an extra bit of slack space beyond their
-	// largest value to be safe.
-	Relation relation     : 4;
-	mutable Match 	 match         : 5;
+	KDE_BF_ENUM(Relation) relation     : 3;
+	mutable KDE_BF_ENUM(Match) 	 match         : 4;
 	unsigned int pseudoId : 4;
-	mutable PseudoType _pseudoType : 7;
+	mutable KDE_BF_ENUM(PseudoType) _pseudoType : 6;
 
     private:
 	void extractPseudoType() const;

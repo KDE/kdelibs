@@ -1016,7 +1016,7 @@ static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSS
                 break;
         }
     }
-    CSSSelector::Relation relation = sel->relation;
+    CSSSelector::Relation relation = KDE_CAST_BF_ENUM(CSSSelector::Relation, sel->relation);
     sel = sel->tagHistory;
     if (!sel) return;
 
@@ -1052,7 +1052,7 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
     if(!checkSimpleSelector(sel, e, isAncestor, isSubSelector)) return SelectorFailsLocal;
 
     // The rest of the selectors has to match
-    CSSSelector::Relation relation = sel->relation;
+    CSSSelector::Relation relation = KDE_CAST_BF_ENUM(CSSSelector::Relation, sel->relation);
 
     // Prepare next sel
     sel = sel->tagHistory;
