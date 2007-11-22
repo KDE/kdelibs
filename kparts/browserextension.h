@@ -340,7 +340,7 @@ public:
       NoDeletion=0x0040, /**< deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
        *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP) */
       IsLink=0x0080, /**< show "Bookmark This Link" and other link-related actions (linkactions merging group) */
-      ShowUrlOperations=0x0100, /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
+      ShowUrlOperations=0x0100, /**< show copy, paste, as well as cut if NoDeletion is not set. */
       ShowProperties=0x200     /**< show "Properties" action (usually done by directory views) */
   };
 
