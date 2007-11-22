@@ -817,28 +817,29 @@ void KPopupFrame::resizeEvent( QResizeEvent *e )
 void KPopupFrame::popup( const QPoint &pos )
 {
     // Make sure the whole popup is visible.
-    QRect d = KGlobalSettings::desktopGeometry( pos );
+    QRect desktopGeometry = KGlobalSettings::desktopGeometry( pos );
 
     int x = pos.x();
     int y = pos.y();
     int w = width();
     int h = height();
-    if ( x + w > d.x() + d.width() ) {
-        x = d.width() - w;
+    if ( x + w > desktopGeometry.x() + desktopGeometry.width() ) {
+        x = desktopGeometry.width() - w;
     }
-    if ( y + h > d.y() + d.height() ) {
-        y = d.height() - h;
+    if ( y + h > desktopGeometry.y() + desktopGeometry.height() ) {
+        y = desktopGeometry.height() - h;
     }
-    if ( x < d.x() ) {
+    if ( x < desktopGeometry.x() ) {
         x = 0;
     }
-    if ( y < d.y() ) {
+    if ( y < desktopGeometry.y() ) {
         y = 0;
     }
 
     // Pop the thingy up.
     move( x, y );
     show();
+    d->main->setFocus();
 }
 
 int KPopupFrame::exec( const QPoint &pos )

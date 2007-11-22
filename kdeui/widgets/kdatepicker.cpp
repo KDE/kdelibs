@@ -300,6 +300,8 @@ void KDatePicker::init( const QDate &date_ )
     d->line = new KLineEdit( this );
     d->val = new KDateValidator( this );
     d->table = new KDateTable( this );
+    setFocusProxy( d->table );
+
     d->fontsize = KGlobalSettings::generalFont().pointSize();
     if ( d->fontsize == -1 ) {
         d->fontsize = QFontInfo( KGlobalSettings::generalFont() ).pointSize();
@@ -308,6 +310,7 @@ void KDatePicker::init( const QDate &date_ )
     d->fontsize++; // Make a little bigger
 
     d->selectWeek = new KComboBox( this );  // read only week selection
+    d->selectWeek->setFocusPolicy( Qt::NoFocus );
     d->todayButton = new QToolButton( this );
     d->todayButton->setIcon( KIcon( "go-jump-today" ) );
 
@@ -347,7 +350,6 @@ void KDatePicker::init( const QDate &date_ )
     connect( d->selectMonth, SIGNAL( clicked() ), SLOT( selectMonthClicked() ) );
     connect( d->selectYear, SIGNAL( toggled( bool ) ), SLOT( selectYearClicked() ) );
     connect( d->line, SIGNAL( returnPressed() ), SLOT( lineEnterPressed() ) );
-    d->table->setFocus();
 
 
     topLayout->addWidget( d->table );
@@ -453,6 +455,7 @@ void KDatePicker::monthForwardClicked()
     if ( ! setDate( calendar()->addMonths( date(), 1 ) ) ) {
         KNotification::beep();
     }
+    d->table->setFocus();
 }
 
 void KDatePicker::monthBackwardClicked()
@@ -460,6 +463,7 @@ void KDatePicker::monthBackwardClicked()
     if ( ! setDate( calendar()->addMonths( date(), -1 ) ) ) {
         KNotification::beep();
     }
+    d->table->setFocus();
 }
 
 void KDatePicker::yearForwardClicked()
@@ -467,6 +471,7 @@ void KDatePicker::yearForwardClicked()
     if ( ! setDate( calendar()->addYears( d->table->date(), 1 ) ) ) {
         KNotification::beep();
     }
+    d->table->setFocus();
 }
 
 void KDatePicker::yearBackwardClicked()
@@ -474,6 +479,7 @@ void KDatePicker::yearBackwardClicked()
     if ( ! setDate( calendar()->addYears( d->table->date(), -1 ) ) ) {
         KNotification::beep();
     }
+    d->table->setFocus();
 }
 
 void KDatePicker::weekSelected( int index )
@@ -483,10 +489,13 @@ void KDatePicker::weekSelected( int index )
     if ( ! setDate( targetDay ) ) {
         KNotification::beep();
     }
+    d->table->setFocus();
 }
 
 void KDatePicker::selectMonthClicked()
 {
+    d->table->setFocus();
+
     QMenu popup( d->selectMonth );
 
     // Populate the pick list with all the month names, this may change by year
@@ -582,6 +591,7 @@ void KDatePicker::setEnabled( bool enable )
     for( count = 0; count < Size; ++count ) {
         widgets[count]->setEnabled( enable );
     }
+    d->table->setFocus();
 }
 
 KDateTable *KDatePicker::dateTable() const
@@ -596,6 +606,7 @@ void KDatePicker::lineEnterPressed()
     if ( calendar()->isValid( newDate ) ) {
         emit( dateEntered( newDate ) );
         setDate( newDate );
+        d->table->setFocus();
     } else {
         KNotification::beep();
     }
@@ -604,6 +615,7 @@ void KDatePicker::lineEnterPressed()
 void KDatePicker::todayButtonClicked()
 {
     setDate( QDate::currentDate() );
+    d->table->setFocus();
 }
 
 QSize KDatePicker::sizeHint() const
