@@ -231,6 +231,10 @@ void KConfigTest::testSimple()
   KConfig sc2( "kconfigtest" );
   QCOMPARE(sc2.name(), QString("kconfigtest"));
 
+  // make sure groupList() isn't returning something it shouldn't
+  foreach(const QString& group, sc2.groupList())
+      QVERIFY(!group.isEmpty() && group != "<default>");
+
   KConfigGroup sc3( &sc2, "AAA");
 
   QVERIFY( sc3.hasKey( "stringEntry1" ) );
