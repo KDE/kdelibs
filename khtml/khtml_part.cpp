@@ -1361,7 +1361,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
   else if ( !d->m_paLoadImages ) {
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
     actionCollection()->addAction( "loadImages", d->m_paLoadImages );
-    d->m_paLoadImages->setIcon( KIcon( "images-display" ) );
+    d->m_paLoadImages->setIcon( KIcon( "image-loading" ) );
     connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
   }
 
