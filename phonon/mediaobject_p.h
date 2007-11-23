@@ -53,6 +53,7 @@ class MediaObjectPrivate : public MediaNodePrivate, private MediaNodeDestruction
         void _k_resumePause();
         void _k_metaDataChanged(const QMultiMap<QString, QString> &);
         void _k_aboutToFinish();
+        void _k_currentSourceChanged(const MediaSource &);
         PHONON_EXPORT void _k_stateChanged(Phonon::State, Phonon::State);
 
         MediaObjectPrivate()

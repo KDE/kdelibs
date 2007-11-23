@@ -444,9 +444,20 @@ void MediaObjectPrivate::_k_aboutToFinish()
             return;
         }
     }
-    mediaSource = sourceQueue.dequeue();
+
+    mediaSource = sourceQueue.head();
     pINTERFACE_CALL(setNextSource(mediaSource));
-    emit q->currentSourceChanged(mediaSource);
+}
+
+void MediaObjectPrivate::_k_currentSourceChanged(const MediaSource &source)
+{
+    Q_Q(MediaObject);
+    pDebug() << Q_FUNC_INFO;
+
+    if (sourceQueue.head() == source)
+        sourceQueue.dequeue();
+
+    emit q->currentSourceChanged(source);
 }
 
 void MediaObjectPrivate::setupBackendObject()
@@ -470,6 +481,8 @@ void MediaObjectPrivate::setupBackendObject()
     QObject::connect(m_backendObject, SIGNAL(totalTimeChanged(qint64)), q, SIGNAL(totalTimeChanged(qint64)));
     QObject::connect(m_backendObject, SIGNAL(metaDataChanged(const QMultiMap<QString, QString> &)),
             q, SLOT(_k_metaDataChanged(const QMultiMap<QString, QString> &)));
+    QObject::connect(m_backendObject, SIGNAL(currentSourceChanged(const MediaSource&)), 
+        q, SLOT(_k_currentSourceChanged(const MediaSource&)));
 
     // set up attributes
     pINTERFACE_CALL(setTickInterval(tickInterval));
