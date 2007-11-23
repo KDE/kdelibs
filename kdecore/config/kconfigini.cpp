@@ -274,11 +274,11 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
                 file.putChar('[');
                 end = currentGroup.indexOf('\x1d', start);
                 if (end < 0) {
-                    file.write(stringToPrintable(currentGroup.mid(start)));
+                    file.write(stringToPrintable(currentGroup.mid(start), GroupString));
                     file.write("]\n", 2);
                     break;
                 } else {
-                    file.write(stringToPrintable(currentGroup.mid(start, end - start)));
+                    file.write(stringToPrintable(currentGroup.mid(start, end - start), GroupString));
                     file.putChar(']');
                 }
             }
@@ -290,7 +290,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
         if (key.bRaw) // unprocessed key with attached locale from merge
             file.write(key.mKey);
         else {
-            file.write(stringToPrintable(key.mKey)); // Key
+            file.write(stringToPrintable(key.mKey, KeyString)); // Key
             if (key.bLocal && locale != "C") { // 'C' locale == untranslated
                 file.putChar('[');
                 file.write(locale); // locale tag
@@ -540,7 +540,7 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
     int i = 0;
 
     // Protect leading space
-    if (s[0] == ' ') {
+    if (s[0] == ' ' && type != GroupString) {
         result.append("\\s");
         i++;
     }
@@ -565,9 +565,14 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
             case '\\':
                 result.append("\\\\");
                 break;
+            case '=':
+                if (type != KeyString) {
+                    result.append(s[i]);
+                    break;
+                }
+                goto doEscape;
             case '[':
             case ']':
-            case '=':
             // Above chars are OK to put in *value* strings as plaintext
                 if (type == ValueString) {
                     result.append(s[i]);
@@ -582,8 +587,8 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
     }
 
     // Protect trailing space
-    if (result.endsWith(' ')) {
-        result.replace(result.lastIndexOf(' '), 1, "\\s");
+    if (result.endsWith(' ') && type != GroupString) {
+        result.replace(result.length() - 1, 1, "\\s");
     }
     result.squeeze();
 

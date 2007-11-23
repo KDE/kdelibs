@@ -56,11 +56,12 @@ public:
 protected:
 
     enum StringType {
-        OtherString = 0,
-        ValueString = 1
+        GroupString = 0,
+        KeyString = 1,
+        ValueString = 2
     };
     static QByteArray printableToString(const QByteArray& aString, const QFile& file, int line);
-    static QByteArray stringToPrintable(const QByteArray& aString, StringType type=OtherString);
+    static QByteArray stringToPrintable(const QByteArray& aString, StringType type);
     static char charFromHex(const char *str, const QFile& file, int line);
     static QString warningProlog(const QFile& file, int line);
 
