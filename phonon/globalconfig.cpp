@@ -49,6 +49,11 @@ class QSettingsGroup
             return m_s->value(m_group + key, def);
         }
 
+        bool hasKey(const QString &key) const
+        {
+            return m_s->contains(m_group + key);
+        }
+
     private:
         const QSettings *const m_s;
         QString m_group;
@@ -64,47 +69,59 @@ GlobalConfig::~GlobalConfig()
 {
 }
 
+static void filterAdvanced(BackendInterface *backendIface, QList<int> *list)
+{
+    QMutableListIterator<int> it(*list);
+    while (it.hasNext()) {
+        const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(Phonon::AudioOutputDeviceType, it.next());
+        QVariant var = properties.value("isAdvanced");
+        if (var.isValid() && var.toBool()) {
+            it.remove();
+        }
+    }
+}
+
 QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) const
 {
     //The devices need to be stored independently for every backend
-    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice_") + Factory::identifier());
+    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice")); // + Factory::identifier());
+    const QSettingsGroup generalGroup(&m_config, QLatin1String("General"));
+    const bool hideAdvancedDevices = generalGroup.value(QLatin1String("HideAdvancedDevices"), true);
 
     //First we lookup the available devices directly from the backend
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
     if (!backendIface) {
         return QList<int>();
     }
+
+    // this list already is in default order (as defined by the backend)
     QList<int> defaultList = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
+    if (hideAdvancedDevices) {
+        filterAdvanced(backendIface, &defaultList);
+    }
+
+    QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
+    if (!backendConfig.hasKey(categoryKey)) {
+        // no list in config for the given category
+        QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(Phonon::NoCategory));
+        if (!backendConfig.hasKey(categoryKey)) {
+            // no list in config for NoCategory
+            return defaultList;
+        }
+    }
 
     //Now the list from m_config
-    const QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
     QList<int> deviceList = backendConfig.value(categoryKey, QList<int>());
-    if (deviceList.isEmpty()) {
-        //try to read from global group for defaults
-        const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioOutputDevice"));
-        deviceList = globalConfig.value(categoryKey, QList<int>());
+
+    //if there are devices in m_config that the backend doesn't report, remove them from the list
+    QMutableListIterator<int> i(deviceList);
+    while (i.hasNext()) {
+        if (0 == defaultList.removeAll(i.next())) {
+            i.remove();
+        }
     }
 
-    QMutableListIterator<int> i(deviceList);
-    while (i.hasNext())
-        if (0 == defaultList.removeAll(i.next()))
-            //if there are devices in m_config that the backend doesn't report, remove them from the list
-            i.remove();
     //if the backend reports more devices that are not in m_config append them to the list
-    if (defaultList.size() > 1) {
-        // initial order is important
-        QMap<int, int> orderedList;
-        QList<int> noPrefList; //list with no preference
-        foreach (int index, defaultList) {
-            const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(Phonon::AudioOutputDeviceType, index);
-            QVariant var = properties.value("initialPreference");
-            if (var.isValid())
-                orderedList.insertMulti(-var.toInt(), index);
-            else
-                noPrefList += index;
-        }
-        defaultList = orderedList.values() + noPrefList;
-    }
     deviceList += defaultList;
 
     return deviceList;
