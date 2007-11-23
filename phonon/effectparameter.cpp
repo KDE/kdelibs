@@ -23,7 +23,7 @@
 namespace Phonon
 {
 
-uint qHash (const EffectParameter &param)
+uint qHash(const Phonon::EffectParameter &param)
 {
     return param.id();
 }
@@ -95,7 +95,10 @@ bool EffectParameter::isLogarithmicControl() const
 
 QVariant::Type EffectParameter::type() const
 {
-    return d->defaultValue.type();
+    if (d->possibleValues.isEmpty()) {
+        return d->defaultValue.type();
+    }
+    return QVariant::String;
 }
 
 QVariantList EffectParameter::possibleValues() const

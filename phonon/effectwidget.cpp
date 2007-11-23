@@ -85,7 +85,7 @@ void EffectWidgetPrivate::autogenerateUi()
         label->setToolTip(para.description());
 
         QWidget *control;
-        if (para.type() == QVariant::List) {
+        if (para.type() == QVariant::String) {
             QComboBox *cb = new QComboBox(q);
             control = cb;
             if (value.type() == QVariant::Int) {

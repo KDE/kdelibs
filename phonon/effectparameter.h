@@ -22,9 +22,8 @@
 
 #include "phonon_export.h"
 
-
+#include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QVariant>
-#include <QtCore/QSharedData>
 
 namespace Phonon
 {
@@ -71,17 +70,17 @@ class PHONON_EXPORT EffectParameter
         /**
          * Returns the parameter type.
          *
-         * usually it will be QVariant::Int or QVariant::Double or QVariant::Bool
+         * Common types are QVariant::Int, QVariant::Double, QVariant::Bool and QVariant::String. When
+         * QVariant::String is returned you get the possible values from possibleValues.
          */
         QVariant::Type type() const;
 
         /**
          * Returns whether the parameter should be
-         * displayed in a logarithmic scale. This is particularly useful for
+         * displayed using a logarithmic scale. This is particularly useful for
          * frequencies and gains.
          */
         bool isLogarithmicControl() const;
-
 
         /**
          * The minimum value to be used for the control to edit the parameter.
@@ -210,9 +209,12 @@ class PHONON_EXPORT EffectParameter
         QExplicitlySharedDataPointer<EffectParameterPrivate> d;
 };
 
-uint PHONON_EXPORT qHash (const EffectParameter &param);
+uint PHONON_EXPORT qHash(const Phonon::EffectParameter &param);
 
 } // namespace Phonon
+
+// will code outside of the Phonon namespace be able to make use of the above qHash function?
+//inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::EffectParameter::Hints)
 
