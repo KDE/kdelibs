@@ -212,6 +212,14 @@ bool Nepomuk::ResourceData::store()
                 statements.append( Statement( m_uri, QUrl(Resource::identifierUri()), LiteralValue(m_kickoffIdentifier) ) );
             }
 
+            // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
+            // Dolphin and co.
+            if ( QFile::exists( m_uri.toLocalFile())) {
+                statements.append( Statement( m_uri,
+                                              QUrl("http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileUrl"),
+                                              LiteralValue( m_uri.toLocalFile() ) ) );
+            }
+
             return ResourceManager::instance()->mainModel()->addStatements( statements ) == Soprano::Error::ErrorNone;
         }
         else {
@@ -378,7 +386,7 @@ bool Nepomuk::ResourceData::determineUri()
                         StatementIterator resourceSl = model->listStatements( Statement( it.current().subject(),
                                                                                          QUrl( typePredicate() ),
                                                                                          Node() ) );
-                        if ( resourceSl.next() ) {
+                        if ( resourceSl.next() && resourceSl.current().object().isResource() ) {
                             const Nepomuk::Class* storedType = Nepomuk::Class::load( resourceSl.current().object().uri() );
                             if ( storedType ) {
                                 if ( storedType == wantedType ) {
@@ -461,7 +469,7 @@ void Nepomuk::ResourceData::updateType()
     StatementIterator typeStatements = model->listStatements( Statement( m_uri,
                                                                          QUrl( typePredicate() ),
                                                                          Node() ) );
-    if ( typeStatements.next() ) {
+    if ( typeStatements.next() && typeStatements.current().object().isResource() ) {
         // FIXME: handle multple types, maybe select the one type that fits best
         QUrl storedType = typeStatements.current().object().uri();
         if ( m_type == Soprano::Vocabulary::RDFS::Resource() ) {
