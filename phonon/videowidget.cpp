@@ -53,7 +53,6 @@ void VideoWidgetPrivate::init()
 {
     Q_Q(VideoWidget);
     QObject::connect(&cursorTimer, SIGNAL(timeout()), q, SLOT(_k_cursorTimeout()));
-    cursorTimer.start();
 }
 
 void VideoWidget::mouseMoveEvent(QMouseEvent *)
