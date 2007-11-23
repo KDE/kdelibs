@@ -92,12 +92,12 @@ class KConfigGroupPrivate : public QSharedData
     {
         if (mName.isEmpty())
             return "<default>";
-        return mName.mid(mName.lastIndexOf("/")+1);
+        return mName;
     }
 
     QByteArray fullName(const QByteArray& aGroup) const
     {
-        return fullName() + '/' + aGroup;
+        return fullName() + '\x1d' + aGroup;
     }
 
     static QString expandString(const QString& value);

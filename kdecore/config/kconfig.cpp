@@ -173,7 +173,7 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
         if (key.mKey.isNull() && key.mGroup.startsWith(group) && key.mGroup != group)
         {
             QString groupname = QString::fromUtf8(key.mGroup.mid(group.length()+1));
-            groups << groupname.left(groupname.indexOf("/"));
+            groups << groupname.left(groupname.indexOf('\x1d'));
         }
 
     return groups.toList();

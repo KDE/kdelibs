@@ -65,7 +65,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 #define HOMEPATH QDir::homePath()+"/foo"
 #define HOMEPATHESCAPE QDir::homePath()+"/foo/$HOME"
-#define SUBGROUPLIST (QStringList() << "SubGroup1" << "SubGroup2" << "SubGroup")
+#define SUBGROUPLIST (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2")
 #define PARENTGROUPKEYS (QStringList() << "parentgrpstring")
 #define SUBGROUP3KEYS (QStringList() << "sub3string")
 
@@ -728,13 +728,19 @@ void KConfigTest::testImmutable()
         QTextStream out(&file);
         out.setCodec("UTF-8");
         out << "[$i]" << endl
-                << "entry1=Testing" << endl;
+                << "entry1=Testing" << endl
+            << "[group][$i]" << endl
+            << "[group][subgroup][$i]" << endl;
     }
 
     KConfig config("immutabletest", KConfig::SimpleConfig);
     QVERIFY(config.isGroupImmutable(QByteArray()));
     KConfigGroup cg = config.group(QByteArray());
     QVERIFY(cg.isEntryImmutable("entry1"));
+    KConfigGroup cg1 = config.group("group");
+    QVERIFY(cg1.isImmutable());
+    KConfigGroup cg2 = cg1.group("subgroup");
+    QVERIFY(cg2.isImmutable());
 }
 
 void KConfigTest::testSubGroup()
@@ -750,12 +756,7 @@ void KConfigTest::testSubGroup()
     QCOMPARE(subcg2.readEntry( "substring", ""), QString("somevalue") );
     KConfigGroup subcg3( &cg, "SubGroup/3");
     QCOMPARE(subcg3.readEntry( "sub3string", ""), QString("somevalue") );
-    QEXPECT_FAIL("", "To be fixed in KDE 4.1", Continue);
     QCOMPARE(subcg3.name(), QString("SubGroup/3"));
-
-    KConfigGroup subcg( &cg, "SubGroup" );
-    KConfigGroup cg_sub3( &subcg, "3" );
-    QCOMPARE(cg_sub3.readEntry("sub3string", ""), subcg3.readEntry("sub3string", ""));
 
     QCOMPARE(cg.groupList(), SUBGROUPLIST );
 
@@ -764,9 +765,6 @@ void KConfigTest::testSubGroup()
 
     QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
     QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
-
-    KConfigGroup subcg4( &subcg3, "3");
-    QVERIFY(!subcg4.exists());
 }
 
 void KConfigTest::testKdeglobals()

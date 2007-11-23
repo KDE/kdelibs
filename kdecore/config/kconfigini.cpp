@@ -99,28 +99,37 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             continue;
 
         if (line.at(0) == '[') { // found a group
-            int end = 0;
-            do {
-                end++;
-                if (end == line.length()) {
-                    kWarning() << warningProlog(file, lineNo) << "Invalid group header.";
-                    // XXX maybe reset the current group here?
-                    goto next_line;
-                }
-            } while (line.at(end) != ']');
-
-            if (end == 3 && line.at(1) == '$' && line.at(2) == 'i') {
-                fileOptionImmutable = !kde_kiosk_exception;
-                continue;
-            }
-            currentGroup = printableToString(line.mid(1,end-1), file, lineNo);
-            line = line.remove(0, end+1);
-
             groupOptionImmutable = fileOptionImmutable;
-            if (!line.isEmpty() && line.at(0) == '[' && line.at(1) == '$') { // group option follows
-                if (line.at(2) == 'i')
-                    groupOptionImmutable = !kde_kiosk_exception;
-            }
+
+            QByteArray newGroup;
+            int start = 1, end;
+            do {
+                end = start;
+                for (;;) {
+                    if (end == line.length()) {
+                        kWarning() << warningProlog(file, lineNo) << "Invalid group header.";
+                        // XXX maybe reset the current group here?
+                        goto next_line;
+                    }
+                    if (line.at(end) == ']')
+                        break;
+                    end++;
+                }
+                if (end + 1 == line.length() && start + 2 == end &&
+                    line.at(start) == '$' && line.at(start + 1) == 'i')
+                {
+                    if (newGroup.isEmpty())
+                        fileOptionImmutable = !kde_kiosk_exception;
+                    else
+                        groupOptionImmutable = !kde_kiosk_exception;
+                }
+                else {
+                    if (!newGroup.isEmpty())
+                        newGroup += '\x1d';
+                    newGroup += printableToString(line.mid(start, end - start), file, lineNo);
+                }
+            } while ((start = end + 2) <= line.length() && line.at(end + 1) == '[');
+            currentGroup = newGroup;
 
             groupSkip = entryMap.getEntryOption(currentGroup, 0, 0, KEntryMap::EntryImmutable);
 
@@ -261,9 +270,18 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
             if (!firstEntry)
                 file.putChar('\n');
             currentGroup = key.mGroup;
-            file.putChar('[');
-            file.write(stringToPrintable(currentGroup));
-            file.write("]\n", 2);
+            for (int start = 0, end;; start = end + 1) {
+                file.putChar('[');
+                end = currentGroup.indexOf('\x1d', start);
+                if (end < 0) {
+                    file.write(stringToPrintable(currentGroup.mid(start)));
+                    file.write("]\n", 2);
+                    break;
+                } else {
+                    file.write(stringToPrintable(currentGroup.mid(start, end - start)));
+                    file.putChar(']');
+                }
+            }
         }
 
         firstEntry = false;

@@ -87,9 +87,6 @@ public:
     /**
      * Returns an object for the named subgroup.
      *
-     * @note: Don't pass group names that contain forward slashes, this is 
-     * not supported.
-     *
      * @param group the group to open. Pass a null string on to the KConfig
      *   object to obtain a handle on the root group.
      * @return The list of groups.

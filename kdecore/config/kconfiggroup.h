@@ -47,8 +47,6 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
  * A KConfigGroup can be read-only if it is constructed from a const config object
  * or from another read-only group.
  *
- * @note: A config group name may not contain any forward slashes
- *
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigBase
 {
@@ -65,8 +63,6 @@ public:
      *
      * This allows to create subgroups, by passing an existing group as @p master.
      *
-     * @note: Group names cannot contain forward slashes.
-     *
      * @p group is the group name encoded in UTF-8.
      */
     KConfigGroup(KConfigBase *master, const QString &group);
@@ -77,8 +73,6 @@ public:
      * any attempts to write to it.
      *
      * This allows to create subgroups, by passing an existing group as @p master.
-     *
-     * @note: Group names cannot contain forward slashes.
      */
     KConfigGroup(const KConfigBase *master, const QString &group);
     KConfigGroup(const KConfigBase *master, const char *group);
