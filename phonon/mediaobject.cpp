@@ -457,7 +457,7 @@ void MediaObjectPrivate::_k_currentSourceChanged(const MediaSource &source)
     Q_Q(MediaObject);
     pDebug() << Q_FUNC_INFO;
 
-    if (sourceQueue.head() == source)
+    if (!sourceQueue.isEmpty() && sourceQueue.head() == source)
         sourceQueue.dequeue();
 
     emit q->currentSourceChanged(source);
