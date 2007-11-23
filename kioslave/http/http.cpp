@@ -1553,8 +1553,11 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       }
 
       //kError = ERR_SLAVE_DEFINED;
-      errorString = i18nc( "%1: request type, %2: url", "An error occurred while attempting to %1, %2. A "
-                         "summary of the reasons is below.<ul>",  action ,  url );
+      errorString = i18nc( "%1: request type, %2: url",
+                           "An error occurred while attempting to %1, %2. A "
+                           "summary of the reasons is below.", action, url );
+
+      errorString += "<ul>";
 
       for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
         errorString += "<li>" + *it + "</li>";

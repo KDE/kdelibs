@@ -449,30 +449,34 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
                                                 KLocale::LongDate );
 
   ret << errorName;
-  ret << QLatin1String( "<qt><p><b>" ) + errorName +
-         QLatin1String( "</b></p><p>" ) + description +
-         QLatin1String( "</p>" );
-  ret2 = QLatin1String( "<qt><p>" );
+  ret << i18nc( "@info %1 error name, %2 description",
+                "<qt><p><b>%1</b></p><p>%2</p></qt>", errorName, description);
+
+  ret2 = QLatin1String( "<qt>" );
   if ( !techName.isEmpty() )
-    ret2 += i18n( "<b>Technical reason</b>: " ) + techName + QLatin1String( "</p>" );
-  ret2 += i18n( "</p><p><b>Details of the request</b>:" );
-  ret2 += i18n( "</p><ul><li>URL: %1</li>" ,  url );
+    ret2 += QLatin1String( "<p>" ) + i18n( "<b>Technical reason</b>: " ) +
+            techName + QLatin1String( "</p>" );
+  ret2 += QLatin1String( "<p>" ) + i18n( "<b>Details of the request</b>:" ) +
+          QLatin1String( "</p><ul>" ) + i18n( "<li>URL: %1</li>", url );
   if ( !protocol.isEmpty() ) {
-    ret2 += i18n( "<li>Protocol: %1</li>" ,  protocol );
+    ret2 += i18n( "<li>Protocol: %1</li>" , protocol );
   }
-  ret2 += i18n( "<li>Date and time: %1</li>" ,  datetime );
-  ret2 += i18n( "<li>Additional information: %1</li></ul>" ,  errorText() );
+  ret2 += i18n( "<li>Date and time: %1</li>", datetime ) +
+          i18n( "<li>Additional information: %1</li>" ,  errorText() ) +
+          QLatin1String( "</ul>" );
   if ( !causes.isEmpty() ) {
-    ret2 += i18n( "<p><b>Possible causes</b>:</p><ul><li>" );
-    ret2 += causes.join( "</li><li>" );
-    ret2 += QLatin1String( "</li></ul>" );
+    ret2 += QLatin1String( "<p>" ) + i18n( "<b>Possible causes</b>:" ) +
+            QLatin1String( "</p><ul><li>" ) + causes.join( "</li><li>" ) +
+            QLatin1String( "</li></ul>" );
   }
   if ( !solutions.isEmpty() ) {
-    ret2 += i18n( "<p><b>Possible solutions</b>:</p><ul><li>" );
-    ret2 += solutions.join( "</li><li>" );
-    ret2 += QLatin1String( "</li></ul>" );
+    ret2 += QLatin1String( "<p>" ) + i18n( "<b>Possible solutions</b>:" ) +
+            QLatin1String( "</p><ul><li>" ) + solutions.join( "</li><li>" ) +
+            QLatin1String( "</li></ul>" );
   }
+  ret2 += QLatin1String( "</qt>" );
   ret << ret2;
+
   return ret;
 }
 
