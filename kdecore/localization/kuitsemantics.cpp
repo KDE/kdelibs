@@ -815,19 +815,34 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     #undef I18N_NOOP2
     #define I18N_NOOP2(ctxt, msg) msg
 
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Ctrl"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Alt"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Meta"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Shift"));
-
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Space"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "AltGr"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Backspace"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Insert"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "CapsLock"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Control"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Ctrl"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Delete"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Home"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "End"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PageUp"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Enter"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Home"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Hyper"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Insert"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Menu"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Meta"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "NumLock"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PageDown"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PageUp"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PauseBreak"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PrintScreen"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PrtScr"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Return"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "ScrollLock"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Shift"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Space"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Super"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "SysReq"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Tab"));
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Win"));
     // TODO: Add rest of the key names?
 }
 
