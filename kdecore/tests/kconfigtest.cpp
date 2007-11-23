@@ -68,6 +68,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define SUBGROUPLIST (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2")
 #define PARENTGROUPKEYS (QStringList() << "parentgrpstring")
 #define SUBGROUP3KEYS (QStringList() << "sub3string")
+#define DOLLARGROUP "$i"
 
 void KConfigTest::initTestCase()
 {
@@ -168,6 +169,11 @@ void KConfigTest::initTestCase()
   baseanddevgrp.writeEntry("SomeSharedEntry", "BaseValue");
   baseanddevgrp.writeEntry("SomeBaseOnlyEntry", "BaseValue");
   basecfg.sync();
+
+  KConfig gecfg("groupescapetest", KConfig::SimpleConfig);
+  cg = KConfigGroup(&gecfg, DOLLARGROUP);
+  cg.writeEntry( "entry", "doesntmatter" );
+
 }
 
 void KConfigTest::cleanupTestCase()
@@ -741,6 +747,12 @@ void KConfigTest::testImmutable()
     QVERIFY(cg1.isImmutable());
     KConfigGroup cg2 = cg1.group("subgroup");
     QVERIFY(cg2.isImmutable());
+}
+
+void KConfigTest::testGroupEscape()
+{
+    KConfig config("groupescapetest", KConfig::SimpleConfig);
+    QVERIFY( config.group(DOLLARGROUP).exists() );
 }
 
 void KConfigTest::testSubGroup()

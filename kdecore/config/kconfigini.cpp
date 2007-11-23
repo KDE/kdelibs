@@ -274,6 +274,17 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
                 file.putChar('[');
                 end = currentGroup.indexOf('\x1d', start);
                 if (end < 0) {
+                    int cgl = currentGroup.length();
+                    if (currentGroup.at(start) == '$' && cgl - start <= 10) {
+                        for (int i = start + 1; i < cgl; i++) {
+                            char c = currentGroup.at(i);
+                            if (c < 'a' || c > 'z')
+                                goto nope;
+                        }
+                        file.write("\\x24");
+                        start++;
+                    }
+                  nope:
                     file.write(stringToPrintable(currentGroup.mid(start), GroupString));
                     file.write("]\n", 2);
                     break;
