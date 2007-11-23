@@ -100,19 +100,16 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
 
         if (line.at(0) == '[') { // found a group
             int end = 0;
-            int opens=1;
-            do { // match brackets
+            do {
                 end++;
-                if (line.at(end) == '[')
-                    opens++;
-                else if (line.at(end) == ']')
-                    opens--;
-            } while (end < line.length() && opens > 0);
+                if (end == line.length()) {
+                    kWarning() << warningProlog(file, lineNo) << "Invalid group header.";
+                    // XXX maybe reset the current group here?
+                    goto next_line;
+                }
+            } while (line.at(end) != ']');
 
-            if (end == line.length() && opens > 0) {
-                kWarning() << warningProlog(file, lineNo) << "Invalid group header.";
-                continue;
-            } else if (end == 3 && line.at(1) == '$' && line.at(2) == 'i') {
+            if (end == 3 && line.at(1) == '$' && line.at(2) == 'i') {
                 fileOptionImmutable = !kde_kiosk_exception;
                 continue;
             }
