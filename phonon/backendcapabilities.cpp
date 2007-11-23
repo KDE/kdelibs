@@ -23,6 +23,7 @@
 #include "phonondefs_p.h"
 #include "backendinterface.h"
 #include "factory.h"
+#include "globalconfig.h"
 #include "globalstatic_p.h"
 #include "objectdescription.h"
 
@@ -118,7 +119,20 @@ QList<T ## Description> BackendCapabilities::available ## T ## s() \
     qSort(ret.begin(), ret.end(), sortByInitialPreference<T ## Description>); \
     return ret; \
 }
-availableDevicesImpl(AudioOutputDevice)
+
+QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
+{
+    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
+    QList<AudioOutputDevice> ret;
+    if (backendIface) {
+        QList<int> deviceIndexes = GlobalConfig().audioOutputDeviceListFor(Phonon::NoCategory);
+        foreach (int i, deviceIndexes) {
+            ret.append(AudioOutputDevice::fromIndex(i));
+        }
+    }
+    return ret;
+}
+
 /*availableDevicesImpl(AudioCaptureDevice)
 availableDevicesImpl(VideoOutputDevice)
 availableDevicesImpl(VideoCaptureDevice)
