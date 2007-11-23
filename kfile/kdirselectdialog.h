@@ -77,6 +77,11 @@ public:
      * @param caption the caption to use for the dialog, or QString() for the default caption
      * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
+     *
+     * NOTE: if you use this method and nothing else from libkfile,
+     * then you can use KFileDialog::getExistingDirectory (if localOnly was true)
+     * or KFileDialog::getExistingDirectoryUrl (if localOnly was false),
+     * and then you can link to libkio only instead of libkfile.
      */
     static KUrl selectDirectory( const KUrl& startDir = KUrl(),
                                  bool localOnly = false, QWidget *parent = 0L,
