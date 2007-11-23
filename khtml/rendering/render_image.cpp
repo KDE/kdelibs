@@ -61,7 +61,8 @@ using namespace khtmlImLoad;
 RenderImage::RenderImage(NodeImpl *_element)
     : RenderReplaced(_element)
 {
-    m_oldImage = m_cachedImage = 0;
+    m_cachedImage  = 0;
+    m_imagePainter = 0;
 
     m_selectionState = SelectionNone;
     berrorPic = false;
@@ -75,8 +76,8 @@ RenderImage::RenderImage(NodeImpl *_element)
 
 RenderImage::~RenderImage()
 {
+    delete m_imagePainter;
     if(m_cachedImage) m_cachedImage->deref( this );
-    if(m_oldImage) m_oldImage->deref( this );
 }
 
 // QPixmap RenderImage::pixmap() const
@@ -100,9 +101,6 @@ void RenderImage::setContentObject(CachedObject* co )
 
 void RenderImage::updatePixmap( const QRect& r, CachedImage *o)
 {
-    if ( o == m_oldImage )
-        return;
-
     if(o != m_cachedImage) {
         RenderReplaced::updatePixmap(r, o);
         return;
@@ -229,16 +227,6 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (!canvas()->printImages())
         return;
 
-#ifdef __GNUC__
-#warning "FIXME: when isComplete added, use this"
-#endif
-    CachedImage* i = m_cachedImage;
-
-/*    CachedImage* i = m_oldImage && m_oldImage->valid_rect().size() == m_oldImage->pixmap_size() &&
-                     m_oldImage->pixmap_size().width()  == intrinsicWidth() &&
-                     m_oldImage->pixmap_size().height() == intrinsicHeight()
-                     ? m_oldImage : m_cachedImage;*/
-
     // paint frame around image as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
         static QPixmap *loadingIcon;
@@ -257,6 +245,8 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         }
 
     }
+
+    CachedImage* i = m_cachedImage;
 
     //kDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft();
     if ( !i || berrorPic)
@@ -303,11 +293,9 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     {
         paintInfo.p->setPen( Qt::black ); // used for bitmaps
         //const QPixmap& pix = i->pixmap();
-        //### FIXME!!!  FIXME!!! Ultra-slow -- need to store the painter
-#ifdef __GNUC__
-        #warning "FIXME: bad performance when scaling"
-#endif
-        ImagePainter ip(i->image(), QSize(contentWidth(), contentHeight()));
+        if (!m_imagePainter)
+            m_imagePainter = new ImagePainter(i->image());
+        m_imagePainter->setSize(QSize(contentWidth(), contentHeight()));
 
         //Intersect with the painting clip rectangle.
         int x = _tx + leftBorder + leftPad;
@@ -317,7 +305,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         QRect clipPortion = paintInfo.r.translated(-x, -y);
         imageGeom &= clipPortion;
 
-        ip.paint(x + imageGeom.x(), y + imageGeom.y(), paintInfo.p,
+        m_imagePainter->paint(x + imageGeom.x(), y + imageGeom.y(), paintInfo.p,
                                     imageGeom.x(),     imageGeom.y(),
                                     imageGeom.width(), imageGeom.height());
 
@@ -361,33 +349,7 @@ void RenderImage::layout()
     calcWidth();
     calcHeight();
 
-    // if they are variable width and we calculate a huge height or width, we assume they
-    // actually wanted the intrinsic width.
-    if ( m_width > 4096 && !style()->width().isFixed() )
-	m_width = intrinsicWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
-    if ( m_height > 2048 && !style()->height().isFixed() )
-	m_height = intrinsicHeight() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
-
-    // limit total size to not run out of memory when doing the xform call.
-    if ( ( m_width * m_height > 4096*2048 ) &&
-         ( contentWidth() > intrinsicWidth() || contentHeight() > intrinsicHeight() ) ) {
-	float scale = sqrt( m_width*m_height / ( 4096.*2048. ) );
-	m_width = (int) (m_width/scale);
-	m_height = (int) (m_height/scale);
-    }
-
     setNeedsLayout(false);
-}
-
-void RenderImage::notifyFinished(CachedObject *finishedObj)
-{
-    if ( ( m_cachedImage == finishedObj || m_oldImage == finishedObj ) && m_oldImage ) {
-        m_oldImage->deref( this );
-        m_oldImage = 0;
-        repaint();
-    }
-
-    RenderReplaced::notifyFinished(finishedObj);
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
@@ -413,18 +375,21 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
     return inside;
 }
 
-void RenderImage::updateImage(CachedImage* new_image)
+void RenderImage::updateImage(CachedImage* newImage)
 {
-    CachedImage* tempimage = m_oldImage;
-    m_oldImage = m_cachedImage;
-    m_cachedImage = new_image;
-    assert( m_cachedImage != m_oldImage );
+    if (newImage == m_cachedImage)
+        return;
+
+    delete m_imagePainter; m_imagePainter = 0;
 
     if ( m_cachedImage )
-        m_cachedImage->ref(this);
+        m_cachedImage->deref(this);
 
-    if ( tempimage )
-        tempimage->deref(this);
+    // Note: this must be up-to-date before we ref, since
+    // ref can cause us to be notified of it being loaded
+    m_cachedImage  = newImage;
+    if ( m_cachedImage )
+        m_cachedImage->ref(this);
 
     // if the loading finishes we might get an error and then the image is deleted
     if ( m_cachedImage )

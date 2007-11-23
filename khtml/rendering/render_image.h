@@ -31,6 +31,10 @@
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
 
+namespace khtmlImLoad {
+    class ImagePainter;
+}
+
 namespace khtml {
 
 class CachedObject;
@@ -62,7 +66,6 @@ public:
     virtual void setStyle(RenderStyle *style);
     virtual void updateFromElement();
 
-    virtual void notifyFinished(CachedObject *finishedObj);
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inside);
 
     bool isWidthSpecified() const;
@@ -91,7 +94,7 @@ private:
     DOM::DOMString alt;
 
     CachedImage *m_cachedImage;
-    CachedImage *m_oldImage;
+    khtmlImLoad::ImagePainter *m_imagePainter;
 
     bool berrorPic : 1;
     bool bUnfinishedImageFrame :1;
