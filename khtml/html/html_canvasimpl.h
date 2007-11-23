@@ -141,7 +141,7 @@ private:
 class CanvasGradientImpl : public CanvasStyleBaseImpl
 {
 public:
-    CanvasGradientImpl(QGradient* newGradient);
+    CanvasGradientImpl(QGradient* newGradient, float innerRadius = 0.0, bool inverse = false);
     ~CanvasGradientImpl();
 
     // Our internal interface..
@@ -152,6 +152,8 @@ public:
     void addColorStop(float offset, const DOM::DOMString& color, int& exceptionCode);
 private:
     QGradient* gradient;
+    float innerRadius; // In a radial gradient
+    bool inverse; // For radial gradients only
 };
 
 class CanvasContext2DImpl : public khtml::Shared<CanvasContext2DImpl>

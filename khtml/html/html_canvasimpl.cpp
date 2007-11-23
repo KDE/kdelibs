@@ -568,7 +568,8 @@ CanvasColorImpl* CanvasColorImpl::fromString(const DOM::DOMString& str)
 
 //-------
 
-CanvasGradientImpl::CanvasGradientImpl(QGradient* newGradient): gradient(newGradient)
+CanvasGradientImpl::CanvasGradientImpl(QGradient* newGradient, float innerRadius, bool inverse)
+    : gradient(newGradient), innerRadius(innerRadius), inverse(inverse)
 {}
 
 
@@ -582,7 +583,7 @@ static qreal adjustPosition( qreal pos, const QGradientStops &stops )
         bool atEnd = ( itr != stops.constEnd() );
         if ( qFuzzyCompare( pos, stop.first ) ) {
             if ( atEnd || !qFuzzyCompare( pos + smallDiff, ( *itr ).first ) ) {
-                return pos + smallDiff;
+                return qMin(pos + smallDiff, 1.0);
             }
         }
     }
@@ -604,6 +605,15 @@ void CanvasGradientImpl::addColorStop(float offset, const DOM::DOMString& color,
     if (!qcolor.isValid()) {
         exceptionCode = DOMException::SYNTAX_ERR;
         return;
+    }
+
+    // Adjust the position of the stop to emulate an inner radius.
+    // If the inner radius is larger than the outer, we'll reverse
+    // the position of the stop.
+    if (gradient->type() == QGradient::RadialGradient) {
+        offset = innerRadius + offset * (1.0 - innerRadius);
+        if (inverse)
+            offset = 1.0 - offset;
     }
 
     //<canvas> says that gradient can have two stops at the same position
@@ -682,8 +692,30 @@ CanvasGradientImpl* CanvasContext2DImpl::createRadialGradient(float x0, float y0
         return 0;
     }
 
-    // ### What the heck? Ask FredrikH. For now copy the 1-radius code from old
-    return new CanvasGradientImpl(new QRadialGradient(x0, y0, r0, x1, y1));
+    QPointF center, focalPoint;
+    float radius, innerRadius;
+    bool inverse;
+
+    // Use the larger of the two radii as the radius in the QGradient.
+    // r0 is supposed to be the inner radius, but if r0 is larger than r1,
+    // we'll use r0 as the radius and invert the positions of the color stops.
+    // innerRadius is a percentage of the outer radius.
+    if (r1 > r0) {
+        center      = QPointF(x1, y1);
+        focalPoint  = QPointF(x0, y0);
+        radius      = r1;
+        innerRadius = (r1 > 0.0f ? r0 / r1 : 0.0f);
+        inverse     = false;
+    } else {
+        center      = QPointF(x0, y0);
+        focalPoint  = QPointF(x1, y1);
+        radius      = r0;
+        innerRadius = (r0 > 0.0f ? r1 / r0 : 0.0f);
+        inverse     = true;
+    }
+
+    QGradient *gradient = new QRadialGradient(center, radius, focalPoint);
+    return new CanvasGradientImpl(gradient, innerRadius, inverse);
 }
 
 CanvasPatternImpl* CanvasContext2DImpl::createPattern(ElementImpl* pat, const DOMString& rpt,
