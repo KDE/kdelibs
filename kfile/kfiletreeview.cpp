@@ -69,7 +69,8 @@ void KFileTreeView::Private::_k_currentChanged(const QModelIndex &currentIndex, 
 
 void KFileTreeView::Private::_k_expanded(const QModelIndex &index)
 {
-    mParent->selectionModel()->select(index, QItemSelectionModel::Clear | QItemSelectionModel::SelectCurrent);
+    mParent->selectionModel()->clearSelection();
+    mParent->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
     mParent->scrollTo(index);
 }
 
@@ -153,8 +154,8 @@ void KFileTreeView::setCurrentUrl(const KUrl &url)
         d->mModel->expandToUrl(url);
         return;
     }
-
-    selectionModel()->select(index, QItemSelectionModel::Clear | QItemSelectionModel::SelectCurrent);
+    selectionModel()->clearSelection();
+    selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
     scrollTo(index);
 }
 
