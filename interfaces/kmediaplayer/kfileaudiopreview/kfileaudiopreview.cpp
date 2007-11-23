@@ -23,7 +23,6 @@
 #include <QtGui/QLayout>
 #include <QtGui/QGroupBox>
 
-#include <khbox.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -77,16 +76,12 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->addWidget( box );
 
-    (void) new QWidget( box ); // spacer
 
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
     d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
 
-    KHBox *frame = new KHBox( box );
-    frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-    frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-    d->videoWidget = new VideoWidget( frame );
+    d->videoWidget = new VideoWidget( box );
 
     d->controls = new MediaControls( box );
     d->controls->setEnabled( false );
@@ -96,6 +91,11 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     KConfigGroup config( KGlobal::config(), ConfigGroup );
     m_autoPlay->setChecked( config.readEntry( "Autoplay sounds", true ) );
     connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
+
+    layout = new QVBoxLayout(box);
+    layout->addWidget(d->videoWidget);
+    layout->addWidget(d->controls);
+    layout->addWidget(m_autoPlay);
 }
 
 KFileAudioPreview::~KFileAudioPreview()
