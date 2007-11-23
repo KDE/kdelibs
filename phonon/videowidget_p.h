@@ -42,8 +42,6 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
         virtual void createBackendObject();
         void setupBackendObject();
 
-        void _k_cursorTimeout();
-
         VideoWidgetPrivate(VideoWidget *parent)
             : layout(parent),
               aspectRatio(VideoWidget::AspectRatioAuto),
@@ -54,14 +52,11 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
               saturation(0)
         {
             layout.setMargin(0);
-            cursorTimer.setInterval(1000); // 1s timeout until the cursor disappears
-            cursorTimer.setSingleShot(true);
         }
 
         QHBoxLayout layout;
         VideoWidget::AspectRatio aspectRatio;
         VideoWidget::ScaleMode scaleMode;
-        QTimer cursorTimer;
         bool changeFlags;
 
         qreal brightness;

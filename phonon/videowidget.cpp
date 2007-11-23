@@ -52,24 +52,11 @@ VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
 void VideoWidgetPrivate::init()
 {
     Q_Q(VideoWidget);
-    QObject::connect(&cursorTimer, SIGNAL(timeout()), q, SLOT(_k_cursorTimeout()));
 }
 
-void VideoWidget::mouseMoveEvent(QMouseEvent *)
+void VideoWidget::mouseMoveEvent(QMouseEvent *e)
 {
-    K_D(VideoWidget);
-    if (Qt::BlankCursor == cursor().shape()) {
-        unsetCursor();
-        d->cursorTimer.start();
-    }
-}
-
-void VideoWidgetPrivate::_k_cursorTimeout()
-{
-    Q_Q(VideoWidget);
-    if (Qt::ArrowCursor == q->cursor().shape()) {
-        q->setCursor(Qt::BlankCursor);
-    }
+    QWidget::mouseMoveEvent(e);
 }
 
 void VideoWidgetPrivate::createBackendObject()

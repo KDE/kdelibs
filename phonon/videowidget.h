@@ -197,9 +197,6 @@ class AbstractVideoOutput;
             VideoWidget(VideoWidgetPrivate &d, QWidget *parent);
 
             void mouseMoveEvent(QMouseEvent *);
-
-        private:
-            Q_PRIVATE_SLOT(k_func(), void _k_cursorTimeout())
     };
 
 } //namespace Phonon
