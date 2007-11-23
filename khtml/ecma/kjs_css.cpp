@@ -204,8 +204,9 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
     }
 
     DOM::DOMString str = m_impl->getPropertyValue(p);
-    if (!str.isNull())
-      return getImmediateValueSlot(this, jsString(str), slot);
+    
+    // We want to return at least an empty string here --- see #152791
+    return getImmediateValueSlot(this, jsString(str), slot);
   }
 
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
