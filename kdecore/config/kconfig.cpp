@@ -167,12 +167,13 @@ QStringList KConfig::groupList() const
 
 QStringList KConfigPrivate::groupList(const QByteArray& group) const
 {
+    QByteArray theGroup = group + '\x1d';
     QSet<QString> groups;
 
     foreach (const KEntryKey& key, entryMap.keys())
-        if (key.mKey.isNull() && key.mGroup.startsWith(group) && key.mGroup != group)
+        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup))
         {
-            QString groupname = QString::fromUtf8(key.mGroup.mid(group.length()+1));
+            QString groupname = QString::fromUtf8(key.mGroup.mid(theGroup.length()));
             groups << groupname.left(groupname.indexOf('\x1d'));
         }
 
