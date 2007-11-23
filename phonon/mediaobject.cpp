@@ -369,7 +369,10 @@ void MediaObjectPrivate::streamError(Phonon::ErrorType type, const QString &text
 void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State oldstate)
 {
     Q_Q(MediaObject);
-    Q_ASSERT(mediaSource.type() == MediaSource::Url);
+    if (mediaSource.type() != MediaSource::Url) {
+        // special handling only necessary for URLs because of the fallback
+        emit q->stateChanged(newstate, oldstate);
+    }
     if (errorOverride) {
         errorOverride = false;
         if (newstate == ErrorState) {
