@@ -692,7 +692,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
     SET_PATTERN(Tag::Placeholder, Att::None, Fmt::Plain,
                 I18N_NOOP2("@placeholder/plain",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "<%1>"));
+                           "&lt;%1&gt;"));
     SET_PATTERN(Tag::Placeholder, Att::None, Fmt::Rich,
                 I18N_NOOP2("@placeholder/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
@@ -702,7 +702,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
     SET_PATTERN(Tag::Email, Att::None, Fmt::Plain,
                 I18N_NOOP2("@email/plain",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "<%1>"));
+                           "&lt;%1&gt;"));
     SET_PATTERN(Tag::Email, Att::None, Fmt::Rich,
                 I18N_NOOP2("@email/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
@@ -711,7 +711,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
                 I18N_NOOP2("@email-with-name/plain\n"
                            "%1 is name, %2 is address",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "%1 <%2>"));
+                           "%1 &lt;%2&gt;"));
     SET_PATTERN(Tag::Email, Att::Address, Fmt::Rich,
                 I18N_NOOP2("@email-with-name/rich\n"
                            "%1 is name, %2 is address",
