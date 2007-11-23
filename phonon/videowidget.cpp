@@ -38,6 +38,7 @@ VideoWidget::VideoWidget(QWidget *parent)
     K_D(VideoWidget);
     d->init();
     d->createBackendObject();
+    setMouseTracking(true);
 }
 
 VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
@@ -53,7 +54,6 @@ void VideoWidgetPrivate::init()
     Q_Q(VideoWidget);
     QObject::connect(&cursorTimer, SIGNAL(timeout()), q, SLOT(_k_cursorTimeout()));
     cursorTimer.start();
-    q->setMouseTracking(true);
 }
 
 void VideoWidget::mouseMoveEvent(QMouseEvent *)
@@ -62,7 +62,7 @@ void VideoWidget::mouseMoveEvent(QMouseEvent *)
     if (k_ptr->backendObject()) {
         QWidget *w = INTERFACE_CALL(widget());
         if (w && Qt::BlankCursor == w->cursor().shape()) {
-            w->unsetCursor();
+            unsetCursor();
             d->cursorTimer.start();
         }
     }
@@ -73,7 +73,7 @@ void VideoWidgetPrivate::_k_cursorTimeout()
     if (m_backendObject) {
         QWidget *w = pINTERFACE_CALL(widget());
         if (w && Qt::ArrowCursor == w->cursor().shape()) {
-            w->setCursor(Qt::BlankCursor);
+            q_func()->setCursor(Qt::BlankCursor);
         }
     }
 }
@@ -163,6 +163,7 @@ void VideoWidgetPrivate::setupBackendObject()
     if (w) {
         layout.addWidget(w);
         q->setSizePolicy(w->sizePolicy());
+        w->setMouseTracking(true);
     }
 }
 
