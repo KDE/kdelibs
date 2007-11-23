@@ -59,24 +59,20 @@ void VideoWidgetPrivate::init()
 void VideoWidget::mouseMoveEvent(QMouseEvent *)
 {
     K_D(VideoWidget);
-    if (k_ptr->backendObject()) {
-        QWidget *w = INTERFACE_CALL(widget());
-        if (w && Qt::BlankCursor == w->cursor().shape()) {
-            unsetCursor();
-            d->cursorTimer.start();
-        }
+    if (Qt::BlankCursor == cursor().shape()) {
+        unsetCursor();
+        d->cursorTimer.start();
     }
 }
 
 void VideoWidgetPrivate::_k_cursorTimeout()
 {
-    if (m_backendObject) {
-        QWidget *w = pINTERFACE_CALL(widget());
-        if (w && Qt::ArrowCursor == w->cursor().shape()) {
-            q_func()->setCursor(Qt::BlankCursor);
-        }
+    Q_Q(VideoWidget);
+    if (Qt::ArrowCursor == q->cursor().shape()) {
+        q->setCursor(Qt::BlankCursor);
     }
 }
+
 void VideoWidgetPrivate::createBackendObject()
 {
     if (m_backendObject)
