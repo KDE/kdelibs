@@ -51,7 +51,6 @@ VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
 
 void VideoWidgetPrivate::init()
 {
-    Q_Q(VideoWidget);
 }
 
 void VideoWidget::mouseMoveEvent(QMouseEvent *e)
