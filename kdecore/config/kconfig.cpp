@@ -141,7 +141,7 @@ KConfig::KConfig(KConfigPrivate &d)
 KConfig::~KConfig()
 {
     Q_D(KConfig);
-    if (d->mBackend.isUnique())
+    if (d->bDirty && d->mBackend.isUnique())
         sync();
     delete d;
 }
