@@ -204,17 +204,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     QStringList dirs = cfg.readPathEntry("Directories", QStringList());
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
-        //First find the right config group, as config groups in ini backend use / as separator
-        //we need to split up the path and create a new group for each part of it
-	//This might be possible to simplify once nested group implementation has
-	//been revisited for KDE 4.1
-        QStringList pathentries = it->split("/");
-        
-        KConfigGroup cg(d->sharedConfig, pathentries.takeFirst());
-        Q_FOREACH(QString pathentry, pathentries)
-        {
-            cg = KConfigGroup(&cg, pathentry);
-        }
+        KConfigGroup cg(d->sharedConfig, *it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
 	{
 	    if (KStandardDirs::exists(*itDir + *it + '/'))
