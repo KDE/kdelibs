@@ -380,6 +380,7 @@
 <!ENTITY PalmPilot	"<productname><trademark>PalmPilot</trademark></productname>">
 <!ENTITY parley	"<application>Parley</application>">
 <!ENTITY phonon "<application>Phonon</application>">
+<!ENTITY plasma "<application>Plasma</application>">
 <!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
