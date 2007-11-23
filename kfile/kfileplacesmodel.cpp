@@ -82,7 +82,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
         KFilePlacesItem::createBookmark(d->bookmarkManager,
-                                        i18n("Home"), KUrl(KUser().homeDir()), "user-home");
+                                        i18nc("Home Directory", "Home"), KUrl(KUser().homeDir()), "user-home");
         KFilePlacesItem::createBookmark(d->bookmarkManager,
                                         i18n("Network"), KUrl("remote:/"), "network-local");
 #ifdef Q_OS_WIN
