@@ -28,14 +28,7 @@
 QStringList KSSLCertificateHome::getCertificateList()
 {
     KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
-    QStringList list = cfg.groupList();
-    QString defaultstr("<default>");
-    QString blankstr("");
-
-    list.removeAll(defaultstr);
-    list.removeAll(blankstr);
-
-    return list;
+    return cfg.groupList();
 }
 
 

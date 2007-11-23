@@ -120,8 +120,6 @@ static void initStatic()
     const QStringList tmpList = profilerc.groupList();
     for (QStringList::const_iterator aIt = tmpList.begin();
          aIt != tmpList.end(); ++aIt) {
-        if ( *aIt == "<default>" )
-            continue;
 
         KConfigGroup config(&profilerc, *aIt );
 

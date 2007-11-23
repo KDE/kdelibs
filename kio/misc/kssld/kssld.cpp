@@ -707,8 +707,6 @@ QFile out(path);
 	for (QStringList::const_iterator i = x.begin();
 				   i != x.end();
 				   ++i) {
-		if ((*i).isEmpty() || *i == "<default>") continue;
-
                 KConfigGroup cg(&cfg, *i);
 
 		if (!cg.readEntry("site", false)) continue;
@@ -825,13 +823,8 @@ bool KSSLD::caRemoveFromFile(QString filename) {
 
 
 QStringList KSSLD::caList() {
-QStringList x;
-KConfig cfg("ksslcalist", KConfig::NoGlobals);
-
-	x = cfg.groupList();
-	x.removeAll("<default>");
-
-return x;
+    KConfig cfg("ksslcalist", KConfig::NoGlobals);
+    return cfg.groupList();
 }
 
 

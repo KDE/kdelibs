@@ -897,7 +897,7 @@ void KCryptoConfig::load()
 
   otherSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
-    if ((*i).isEmpty() || *i == "<default>" || *i == "General") continue;
+    if (*i == "General") continue;
     KConfigGroup _cg(policies, *i);
     KSSLCertificate *cert = KSSLCertificate::fromString(_cg.readEntry("Certificate", QString()).toLocal8Bit());
     if (cert) {
@@ -913,7 +913,6 @@ void KCryptoConfig::load()
 
   yourSSLBox->clear();
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
-    if ((*i).isEmpty() || *i == "<default>") continue;
     KConfigGroup _cg(pcerts, *i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
                      _cg.readEntry("PKCS12Base64"),
@@ -946,7 +945,6 @@ void KCryptoConfig::load()
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
-    if ((*i).isEmpty() || *i == "<default>") continue;
     KConfigGroup _cg(authcfg, *i);
     KSSLCertificateHome::KSSLAuthAction aa = KSSLCertificateHome::AuthDont;
     if (_cg.readEntry("send", false) == true)
@@ -967,7 +965,6 @@ void KCryptoConfig::load()
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
-    if ((*i).isEmpty() || *i == "<default>") continue;
     if (!sigcfg.hasGroup(*i)) continue;
     KConfigGroup _cg(&sigcfg, *i);
     if (!_cg.hasKey("x509")) continue;
@@ -1981,7 +1978,6 @@ void KCryptoConfig::slotCARestore() {
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
-    if ((*i).isEmpty() || *i == "<default>") continue;
     if (!sigcfg.hasGroup(*i)) continue;
     KConfigGroup _cg(&sigcfg, *i);
     if (!_cg.hasKey("x509")) continue;
