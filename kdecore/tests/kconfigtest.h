@@ -49,6 +49,7 @@ private Q_SLOTS:
     void testDefaultGroup();
     void testEmptyGroup();
     void testMerge();
+    void testImmutable();
     void testRevertAllEntries();
     void testChangeGroup();
     void testKdeglobals();

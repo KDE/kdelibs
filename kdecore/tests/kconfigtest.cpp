@@ -720,6 +720,23 @@ void KConfigTest::testMerge()
     }
 }
 
+void KConfigTest::testImmutable()
+{
+    {
+        QFile file(KStandardDirs::locateLocal("config", "immutabletest"));
+        file.open(QIODevice::WriteOnly|QIODevice::Text);
+        QTextStream out(&file);
+        out.setCodec("UTF-8");
+        out << "[$i]" << endl
+                << "entry1=Testing" << endl;
+    }
+
+    KConfig config("immutabletest", KConfig::SimpleConfig);
+    QVERIFY(config.isGroupImmutable(QByteArray()));
+    KConfigGroup cg = config.group(QByteArray());
+    QVERIFY(cg.isEntryImmutable("entry1"));
+}
+
 void KConfigTest::testSubGroup()
 {
     KConfig sc( "kconfigtest" );
