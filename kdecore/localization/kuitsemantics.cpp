@@ -1379,7 +1379,10 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
 
     QString text = final;
 
-    // Wrap with <qt> tag if rich text.
+    // Wrap with <html> tag if rich text.
+    // *Do not* go with <qt> instead: if the message is later concatenated
+    // to more rich text, <qt> would introduce line break, whereas a
+    // non-top <html> will be just ignored by Qt rich text engine.
     if (fmt == Kuit::Fmt::Rich) {
         QString rich = "<html>" + text + "</html>";
         return rich;
