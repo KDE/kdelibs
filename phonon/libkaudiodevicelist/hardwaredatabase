@@ -268,5 +268,5 @@ initialPreference=36
 
 [pci:8086:266e:1014:0567:playback:alsa:4]
 name=Intel ICH6 with AD1981B S/PDIF
-initialPreference=35
+initialPreference=15
 
