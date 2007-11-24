@@ -33,17 +33,17 @@ class KLineEdit;
 class KConfigGroup;
 
 /**
- * This Widget extends the functionality of QListView to honor the system
+ * This Widget extends the functionality of Q3ListView to honor the system
  * wide settings for Single Click/Double Click mode, AutoSelection and
  * ChangeCursorOverLink (TM).
  *
  * There is a new signal executed(). It gets connected to either
- * QListView::clicked() or QListView::doubleClicked() depending on the KDE
+ * Q3ListView::clicked() or Q3ListView::doubleClicked() depending on the KDE
  * wide Single Click/Double Click settings. It is strongly recommended that
  * you use this signal instead of the above mentioned. This way you don't
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
- * QListView::selectionChanged() signal.
+ * Q3ListView::selectionChanged() signal.
  *
  * Drag-and-Drop is supported with the signal dropped(), just setAcceptDrops(true)
  * and connect it to a suitable slot.
@@ -77,7 +77,7 @@ public:
   /**
    * Possible selection modes.
    *
-   * The first four correspond directly to QListView::SelectionMode, while
+   * The first four correspond directly to Q3ListView::SelectionMode, while
    * the FileManager selection mode is defined as follows:
    *   @li home: move to the first
    *   @li end: move to the last
@@ -116,10 +116,9 @@ public:
   /**
    * Constructor.
    *
-   * The parameters @p parent and @p name are handled by
-   * QListView, as usual.
+   * The parameter @p parent is handled by Q3ListView, as usual.
    */
-  K3ListView ( QWidget *parent = 0 );
+  explicit K3ListView ( QWidget *parent = 0 );
 
   /**
    * Destructor.
@@ -137,9 +136,9 @@ public:
 
   /**
    * This function determines whether the given coordinates are within the
-   * execute area. The execute area is the part of a QListViewItem where mouse
+   * execute area. The execute area is the part of a Q3ListViewItem where mouse
    * clicks or double clicks respectively generate a executed() signal.
-   * Depending on QListView::allColumnsShowFocus() this is either the
+   * Depending on Q3ListView::allColumnsShowFocus() this is either the
    * whole item or only the first column.
    * @return true if point is inside execute area of an item, false in all
    * other cases including the case that it is over the viewport.
@@ -395,7 +394,7 @@ Q_SIGNALS:
    * setting the user clicked or double clicked on that item.
    * @param item is the pointer to the executed listview item.
    *
-   * Note that you may not delete any QListViewItem objects in slots
+   * Note that you may not delete any Q3ListViewItem objects in slots
    * connected to this signal.
    */
   void executed( Q3ListViewItem *item );
@@ -408,7 +407,7 @@ Q_SIGNALS:
    * @param pos is the position where the user has clicked
    * @param c is the column into which the user clicked.
    *
-   * Note that you may not delete any QListViewItem objects in slots
+   * Note that you may not delete any Q3ListViewItem objects in slots
    * connected to this signal.
    */
   void executed( Q3ListViewItem *item, const QPoint &pos, int c );
@@ -523,7 +522,7 @@ Q_SIGNALS:
    * This signal is emitted when the shortcut key for popup-menus is pressed.
    *
    * Normally you should not use this, just connect a slot to signal
-   * contextMenu (K3ListView*, QListViewItem*, const QPoint&) to correctly
+   * contextMenu (K3ListView*, Q3ListViewItem*, const QPoint&) to correctly
    * handle showing context menus regardless of settings.
    *
    * @param list is this listview.
@@ -621,7 +620,7 @@ public Q_SLOTS:
   /**
    * Set the selection mode.
    *
-   * A different name was chosen to avoid API-clashes with QListView::setSelectionMode().
+   * A different name was chosen to avoid API-clashes with Q3ListView::setSelectionMode().
    */
   void setSelectionModeExt (SelectionModeExt mode);
 
@@ -873,7 +872,7 @@ protected:
 
   /**
    * @deprecated This is just here for binary compatibility.  Use the signal
-   * in QListView instead.
+   * in Q3ListView instead.
    */
   // KDE 4: remove
   void doubleClicked( Q3ListViewItem *item, const QPoint &pos, int c );
@@ -941,7 +940,7 @@ protected:
   virtual void movableDropEvent (Q3ListViewItem* parent, Q3ListViewItem* afterme);
 
   /**
-   * Where is the nearest QListViewItem that I'm going to drop?
+   * Where is the nearest Q3ListViewItem that I'm going to drop?
    *
    * FIXME KDE 4.0: Make this method const so it can be called from an
    * acceptDrag method without ugly casts
@@ -971,7 +970,7 @@ private:
 
 /**
  * A listview item with support for alternate background colors. It is
- * a drop-in replacement for QListViewItem
+ * a drop-in replacement for Q3ListViewItem
  *
  * @short listview item with alternate background color support
  */
@@ -980,9 +979,9 @@ class KDE3SUPPORT_EXPORT K3ListViewItem : public Q3ListViewItem
   friend class K3ListView;
 public:
   /**
-   * constructors. The semantics remain as in QListViewItem.
-   * Although they accept a QListViewItem as parent, please
-   * don't mix K3ListViewItem (or subclasses) with QListViewItem
+   * constructors. The semantics remain as in Q3ListViewItem.
+   * Although they accept a Q3ListViewItem as parent, please
+   * don't mix K3ListViewItem (or subclasses) with Q3ListViewItem
    * (or subclasses).
    */
   K3ListViewItem(Q3ListView *parent);
