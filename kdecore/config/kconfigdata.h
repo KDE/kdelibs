@@ -231,7 +231,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 e.bDeleted = e.bDeleted || (options&EntryDeleted);
             else
                 e.bDeleted = false; // setting a value to a previously deleted entry
-            e.bExpand = e.bExpand || (options&EntryExpansion);
+            e.bExpand = (options&EntryExpansion);
 
             insert(k, e);
 //             qDebug() << "to" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
