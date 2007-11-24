@@ -186,3 +186,87 @@ initialPreference=36
 [pci:8086:24c5:1734:1033:playback:alsa:0]
 name=Cirrus Logic CS4299 rev 4
 initialPreference=36
+
+# Creative Labs SB Live! EMU10k1 Creative Labs SBLive! Platinum [CT4760P] (rev.8, serial:0x80401102)
+[pci:1102:0002:1102:8040:both:oss]
+name=SBLive! Platinum (rev.8) ADC Capture/Standard PCM Playback
+initialPreference=20
+
+[pci:1102:0002:1102:8040:capture:alsa:0]
+name=SBLive! Platinum (rev.8) ADC Capture
+initialPreference=36
+
+[pci:1102:0002:1102:8040:playback:alsa:0]
+name=SBLive! Platinum (rev.8) Standard PCM Playback
+initialPreference=36
+
+[pci:1102:0002:1102:8040:capture:alsa:1]
+name=SBLive! Platinum (rev.8) Mic Capture
+initialPreference=35
+
+[pci:1102:0002:1102:8040:capture:alsa:2]
+name=SBLive! Platinum (rev.8) Multichannel Capture
+initialPreference=10
+
+[pci:1102:0002:1102:8040:playback:alsa:2]
+name=SBLive! Platinum (rev.8) PT Playback
+initialPreference=10
+
+[pci:1102:0002:1102:8040:playback:alsa:3]
+name=SBLive! Platinum (rev.8) Multichannel Playback
+initialPreference=10
+
+# Intel Corporation 82801EB/ER (ICH5/ICH5R) AC ASRock Incorporation Intel ICH5 with ALC850 Intel ICH5
+[pci:8086:24d5:1849:0850:both:oss]
+name=Realtek ALC850
+initialPreference=20
+
+[pci:8086:24d5:1849:0850:capture:alsa:0]
+name=Realtek ALC850
+initialPreference=36
+
+[pci:8086:24d5:1849:0850:playback:alsa:0]
+name=Realtek ALC850
+initialPreference=36
+
+[pci:8086:24d5:1849:0850:capture:alsa:3]
+name=Realtek ALC850 ADC2
+initialPreference=35
+
+[pci:8086:24d5:1849:0850:playback:alsa:4]
+name=Realtek ALC850 S/PDIF
+initialPreference=15
+
+[pci:8086:24d5:1849:0850:capture:alsa:1]
+name=Realtek ALC850 MIC ADC
+initialPreference=35
+
+[pci:8086:24d5:1849:0850:capture:alsa:2]
+name=Realtek ALC850 MIC2 ADC
+initialPreference=35
+
+# Intel Corporation 82801FB/FBM/FR/FW/FRW (ICH6 Family) AC IBM Intel ICH6 with AD1981B
+[pci:8086:266e:1014:0567:capture:alsa:0]
+name=Intel ICH6 with AD1981B
+initialPreference=36
+
+[pci:8086:266e:1014:0567:capture:alsa:1]
+name=Intel ICH6 with AD1981B MIC ADC
+initialPreference=35
+
+[pci:8086:266e:1014:0567:capture:alsa:2]
+name=Intel ICH6 with AD1981B MIC2 ADC
+initialPreference=35
+
+[pci:8086:266e:1014:0567:capture:alsa:3]
+name=Intel ICH6 with AD1981B ADC2
+initialPreference=35
+
+[pci:8086:266e:1014:0567:playback:alsa:0]
+name=Intel ICH6 with AD1981B
+initialPreference=36
+
+[pci:8086:266e:1014:0567:playback:alsa:4]
+name=Intel ICH6 with AD1981B S/PDIF
+initialPreference=35
+
