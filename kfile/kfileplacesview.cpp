@@ -453,6 +453,12 @@ void KFilePlacesView::hideEvent(QHideEvent *event)
     d->smoothItemResizing = false;
 }
 
+void KFilePlacesView::setModel(QAbstractItemModel *model)
+{
+    QListView::setModel(model);
+    d->updateHiddenRows();
+}
+
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
 {
     QListView::rowsInserted(parent, start, end);
