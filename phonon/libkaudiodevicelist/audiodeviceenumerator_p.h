@@ -40,6 +40,7 @@ class AudioDeviceEnumeratorPrivate
         QList<AudioDevice> playbackdevicelist;
         QList<AudioDevice> capturedevicelist;
         void findDevices();
+        void renameDevices(QList<AudioDevice> *devicelist);
 
         KSharedConfig::Ptr config;
 

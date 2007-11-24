@@ -129,6 +129,9 @@ void AudioDeviceEnumeratorPrivate::findDevices()
     // ~/.asoundrc and /etc/asound.conf
     findVirtualDevices();
 
+    renameDevices(&playbackdevicelist);
+    renameDevices(&capturedevicelist);
+
 //X     QFileSystemWatcher *watcher = new QFileSystemWatcher(QCoreApplication::instance());
 //X     watcher->addPath(QDir::homePath() + QLatin1String("/.asoundrc"));
 //X     watcher->addPath(QLatin1String("/etc/asound.conf"));
@@ -262,6 +265,24 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 #endif
     }
 #endif //HAS_LIBASOUND_DEVICE_NAME_HINT / HAVE_LIBASOUND2
+}
+
+void AudioDeviceEnumeratorPrivate::renameDevices(QList<AudioDevice> *devicelist)
+{
+    // This looks horrible but allows us to quickly find out which
+    // AudioDevices have duplicate names with the scope of an AudioDriver
+    QHash<Solid::AudioInterface::AudioDriver, QHash<QString, int> > cardNames;
+    foreach (AudioDevice dev, *devicelist) {
+        cardNames[dev.d->driver][dev.d->cardName]++;
+    }
+
+    // We then go through and rename devices by appending the device number as appropriate
+    QList<AudioDevice>::Iterator device;
+    for (device = devicelist->begin(); device != devicelist->end(); ++device) {
+        if (device->d->deviceNumber > 0 && cardNames[device->d->driver][device->d->cardName] > 1) {
+            device->d->cardName += QLatin1String(" #") + QString::number(device->d->deviceNumber);
+        }
+    }
 }
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
