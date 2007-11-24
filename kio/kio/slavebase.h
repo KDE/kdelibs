@@ -24,6 +24,7 @@
 #include <kio/udsentry.h>
 #include <kio/authinfo.h>
 #include <kio/jobclasses.h> // for KIO::JobFlags
+#include <klocale.h>
 
 #include <QtCore/QByteArray>
 
@@ -165,7 +166,7 @@ public:
      */
     bool canResume( KIO::filesize_t offset );
 
-    /*
+    /**
      * Call this at the beginning of get(), if the "resume" metadata was set
      * and resuming is implemented by this protocol.
      */
@@ -259,8 +260,8 @@ public:
      */
     int messageBox( MessageBoxType type, const QString &text,
                     const QString &caption = QString(),
-                    const QString &buttonYes = QString(),
-                    const QString &buttonNo = QString() );
+                    const QString &buttonYes = i18n("&Yes"),
+                    const QString &buttonNo = i18n("&No"));
 
     /**
      * Call this to show a message box from the slave
@@ -279,8 +280,8 @@ public:
      */
     int messageBox( const QString &text, MessageBoxType type,
                     const QString &caption = QString(),
-                    const QString &buttonYes = QString(),
-                    const QString &buttonNo = QString(),
+                    const QString &buttonYes = i18n("&Yes"),
+                    const QString &buttonNo = i18n("&No"),
                     const QString &dontAskAgainName = QString() );
 
     /**
