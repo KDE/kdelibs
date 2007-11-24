@@ -407,6 +407,9 @@ KFontChooser::KFontChooser( QWidget *parent,
 
     KConfigGroup cg(KGlobal::config(), QLatin1String("General"));
     d->_k_showXLFDArea(cg.readEntry(QLatin1String("fontSelectorShowXLFD"), false));
+
+    // Set focus to the size list as this is the most commonly changed property
+    d->sizeListBox->setFocus();
 }
 
 KFontChooser::~KFontChooser()
