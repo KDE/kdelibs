@@ -41,13 +41,14 @@ namespace HardwareDatabase
             const QString name;
             const QString iconName;
             const int initialPreference;
+            const int isAdvanced;
 
         private:
             friend struct HardwareDatabasePrivate;
             friend Entry entryFor(const QString &);
-            inline Entry(const QString &_name, const QString &_iconName, int _initialPreference)
-                : name(_name), iconName(_iconName), initialPreference(_initialPreference) {}
-            inline Entry() : initialPreference(0) {}
+            inline Entry(const QString &_name, const QString &_iconName, int _initialPreference, int _isAdvanced)
+                : name(_name), iconName(_iconName), initialPreference(_initialPreference), isAdvanced(_isAdvanced) {}
+            inline Entry() : initialPreference(0), isAdvanced(0) {}
     };
 } // namespace HardwareDatabase
 

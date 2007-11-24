@@ -38,7 +38,7 @@
 #include <QtCore/QTimerEvent>
 
 static const char CACHE_MAGIC[] = "PHwdbC";
-static const quint32 CACHE_VERSION = 1;
+static const quint32 CACHE_VERSION = 2;
 static const quint32 HEADER_LENGTH = 14;
 
 namespace Phonon
@@ -98,12 +98,31 @@ HardwareDatabasePrivate::HardwareDatabasePrivate()
     m_fileName = cacheFileName;
 }
 
+struct BucketEntry
+{
+    BucketEntry() {}
+    BucketEntry(const uint &a, const quint32 &b) : hash(a), offset(b) {}
+    uint hash;
+    quint32 offset;
+};
+
+QDataStream &operator<<(QDataStream &s, const BucketEntry &e)
+{
+    return s << e.hash << e.offset;
+}
+
+QDataStream &operator>>(QDataStream &s, BucketEntry &e)
+{
+    return s >> e.hash >> e.offset;
+}
+
 void HardwareDatabasePrivate::createCache(const QString &dbFileName, const QString &cacheFileName)
 {
     KSaveFile cacheFile(cacheFileName);
     QString name;
     QString iconName;
     int pref;
+    quint8 isAdvanced;
 
     const KConfig dbFile(dbFileName, KConfig::CascadeConfig);
     const bool opened = cacheFile.open(); // QIODevice::WriteOnly
@@ -112,23 +131,33 @@ void HardwareDatabasePrivate::createCache(const QString &dbFileName, const QStri
     cacheStream.writeRawData(CACHE_MAGIC, 6);
     cacheStream << CACHE_VERSION << cacheStream.version() << quint32(0) << quint32(0);
     QStringList allIds = dbFile.groupList();
-    QHash<QString, quint32> offsets;
+    QHash<uint, quint32> offsets;
     offsets.reserve(allIds.count());
     foreach (const QString &uniqueId, allIds) {
-        offsets.insert(uniqueId, cacheFile.pos());
+        offsets.insertMulti(qHash(uniqueId), cacheFile.pos());
         const KConfigGroup group = dbFile.group(uniqueId);
         name = group.readEntry("name", QString());
         iconName = group.readEntry("icon", QString());
         pref = group.readEntry("initialPreference", 0);
-        cacheStream << uniqueId << name << iconName << pref;
+        if (group.hasKey("isAdvancedDevice")) {
+            isAdvanced = group.readEntry("isAdvancedDevice", false) ? 1 : 0;
+        } else {
+            isAdvanced = 2;
+        }
+        cacheStream << uniqueId << name << iconName << pref << isAdvanced;
     }
     //offsets.squeeze();
     const quint32 hashTableBuckets = offsets.capacity();
     const quint32 hashTableOffset = cacheFile.pos();
-    QVector<QList<quint32> > bucketContents(hashTableBuckets);
-    foreach (const QString &uniqueId, allIds) {
-        const uint h = qHash(uniqueId);
-        bucketContents[h % hashTableBuckets] << h << offsets.value(uniqueId);
+    QVector<QList<BucketEntry> > bucketContents(hashTableBuckets);
+    {
+        QHashIterator<uint, quint32> it(offsets);
+        while (it.hasNext()) {
+            it.next();
+            const uint &h = it.key();
+            bucketContents[h % hashTableBuckets] << BucketEntry(h, it.value());
+        }
+        offsets.clear();
     }
     for (quint32 i = 0; i < hashTableBuckets; ++i) {
         cacheStream << quint32(0);
@@ -142,14 +171,13 @@ void HardwareDatabasePrivate::createCache(const QString &dbFileName, const QStri
             cacheStream << bucketContents[i];
         }
     }
+    bucketContents.clear();
     cacheFile.seek(hashTableOffset);
     for (quint32 i = 0; i < hashTableBuckets; ++i) {
         cacheStream << bucketOffsets[i];
     }
     cacheFile.seek(HEADER_LENGTH);
     cacheStream << hashTableOffset << hashTableBuckets;
-
-
     cacheFile.close();
 }
 
@@ -195,31 +223,25 @@ Entry *HardwareDatabasePrivate::readEntry(const QString &uniqueId)
         return 0;
     }
     m_cacheFile->seek(offset);
-    QList<quint32> bucket;
+    QList<BucketEntry> bucket;
     cacheStream >> bucket;
 
     QString readUdi;
     QString name;
     QString iconName;
     int pref;
+    quint8 isAdvanced;
 
-    Q_ASSERT((bucket.size() & 1) == 0);
-    const QList<quint32>::ConstIterator end = bucket.constEnd();
-    for (QList<quint32>::ConstIterator it = bucket.constBegin();
-            it != end; ++it) {
-        if (*it == h) {
-            ++it;
-            Q_ASSERT(it != end);
-            m_cacheFile->seek(*it);
+    foreach (const BucketEntry &entry, bucket) {
+        if (entry.hash == h) {
+            m_cacheFile->seek(entry.offset);
             cacheStream >> readUdi;
             if (readUdi == uniqueId) {
-                cacheStream >> name >> iconName >> pref;
-                Entry *e = new Entry(name, iconName, pref);
+                cacheStream >> name >> iconName >> pref >> isAdvanced;
+                Entry *e = new Entry(name, iconName, pref, isAdvanced);
                 s_globalDB->entryCache.insert(uniqueId, e);
                 return e;
             }
-        } else {
-            ++it;
         }
     }
 
