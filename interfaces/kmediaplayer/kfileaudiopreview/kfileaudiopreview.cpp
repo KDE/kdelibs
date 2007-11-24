@@ -76,12 +76,12 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->addWidget( box );
 
-
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
-    d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
+    d->audioOutput = new AudioOutput(Phonon::NoCategory, this);
 
     d->videoWidget = new VideoWidget( box );
+    d->videoWidget->hide();
 
     d->controls = new MediaControls( box );
     d->controls->setEnabled( false );
@@ -96,6 +96,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     layout->addWidget(d->videoWidget);
     layout->addWidget(d->controls);
     layout->addWidget(m_autoPlay);
+    layout->addStretch();
 }
 
 KFileAudioPreview::~KFileAudioPreview()
@@ -110,30 +111,22 @@ void KFileAudioPreview::stateChanged( Phonon::State newstate, Phonon::State olds
 {
     if( oldstate == Phonon::LoadingState && newstate != Phonon::ErrorState )
         d->controls->setEnabled( true );
-    disconnect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-            this, SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
 }
 
 void KFileAudioPreview::showPreview( const KUrl &url )
 {
-    delete d->player;
-    d->player = new MediaObject( this );
-    d->player->setCurrentSource(url);
-    if( d->player->state() == Phonon::ErrorState )
-    {
-        delete d->player;
-        d->player = 0;
-        return;
+    d->controls->setEnabled(false);
+    if (!d->player) {
+        d->player = new MediaObject(this);
+        Phonon::createPath(d->player, d->videoWidget);
+        Phonon::createPath(d->player, d->audioOutput);
+        connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+                SLOT(stateChanged(Phonon::State, Phonon::State)));
+        d->videoWidget->setVisible(d->player->hasVideo());
+        connect(d->player, SIGNAL(hasVideoChanged(bool)), d->videoWidget, SLOT(setVisible(bool)));
+        d->controls->setMediaObject(d->player);
     }
-    Phonon::createPath(d->player, d->audioOutput);
-    Phonon::createPath(d->player, d->videoWidget);
-
-    d->controls->setMediaObject(d->player);
-    if( d->player->state() == Phonon::StoppedState )
-        d->controls->setEnabled( true );
-    else
-        connect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-                SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
+    d->player->setCurrentSource(url);
 
     if( m_autoPlay->isChecked() )
         d->player->play();
@@ -143,7 +136,6 @@ void KFileAudioPreview::clearPreview()
 {
     if( d->player )
     {
-        d->player->stop();
         delete d->player;
         d->player = 0;
         d->controls->setEnabled( false );
