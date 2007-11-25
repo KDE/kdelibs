@@ -611,9 +611,10 @@ void CanvasGradientImpl::addColorStop(float offset, const DOM::DOMString& color,
     // If the inner radius is larger than the outer, we'll reverse
     // the position of the stop.
     if (gradient->type() == QGradient::RadialGradient) {
-        offset = innerRadius + offset * (1.0 - innerRadius);
         if (inverse)
             offset = 1.0 - offset;
+
+        offset = innerRadius + offset * (1.0 - innerRadius);
     }
 
     //<canvas> says that gradient can have two stops at the same position
