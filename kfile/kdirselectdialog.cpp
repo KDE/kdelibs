@@ -303,6 +303,8 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
              SLOT( _k_slotUrlActivated( const QString& )));
 
     connect(this, SIGNAL(user1Clicked()), this, SLOT(_k_slotUser1()));
+
+    setCurrentUrl(d->m_startURL);
 }
 
 

@@ -8,10 +8,17 @@
 int main( int argc, char **argv )
 {
     KCmdLineArgs::init(argc, argv, "kdirselectdialogtest", 0, ki18n("kdirselectdialogtest"), "0", ki18n("test app"));
+
+    KCmdLineOptions opt;
+    opt.add("+[startDir]", ki18n("Directory to start in"), QByteArray());
+
+    KCmdLineArgs::addCmdLineOptions(opt);
+
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
 
-    KUrl u = KDirSelectDialog::selectDirectory( (argc >= 1) ? argv[1] : QString());
+    KUrl u = KDirSelectDialog::selectDirectory( KCmdLineArgs::parsedArgs()->count() >= 1 ? 
+        KCmdLineArgs::parsedArgs()->arg(0) : QString() );
     if ( u.isValid() )
         KMessageBox::information( 0L,
                                 QString("You selected the url: %1")

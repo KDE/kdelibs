@@ -150,6 +150,7 @@ void KFileTreeView::setShowHiddenFiles(bool enabled)
 void KFileTreeView::setCurrentUrl(const KUrl &url)
 {
     QModelIndex index = d->mModel->indexForUrl(url);
+
     if (!index.isValid()) {
         d->mModel->expandToUrl(url);
         return;
