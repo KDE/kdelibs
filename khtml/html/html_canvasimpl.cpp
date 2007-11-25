@@ -698,8 +698,9 @@ CanvasGradientImpl* CanvasContext2DImpl::createRadialGradient(float x0, float y0
     bool inverse;
 
     // Use the larger of the two radii as the radius in the QGradient.
-    // r0 is supposed to be the inner radius, but if r0 is larger than r1,
-    // we'll use r0 as the radius and invert the positions of the color stops.
+    // The gradient is always supposed to move from r0 to r1, so if r0 is
+    // larger than r1, we'll use r0 as the radius and reverse the direction
+    // of the gradient by inverting the positions of the color stops.
     // innerRadius is a percentage of the outer radius.
     if (r1 > r0) {
         center      = QPointF(x1, y1);
