@@ -376,7 +376,7 @@
 <!ENTITY Guenter.Schwann '<personname><firstname>Günter</firstname><surname>Schwann</surname></personname>'>
 <!ENTITY Guenter.Schwann.mail '<email>vogel@sbox.tugraz.at</email>'>
 <!ENTITY Aaron.J.Seigo '<personname><firstname>Aaron</firstname><othername>J.</othername><surname>Seigo</surname></personname>'>
-<!ENTITY Aaron.J.Seigo.mail '<email>aseigo@olympusproject.org</email>'>
+<!ENTITY Aaron.J.Seigo.mail '<email>aseigo@kde.org</email>'>
 <!ENTITY Jonathan.Singer '<personname><firstname>Jonathan</firstname><surname>Singer</surname></personname>'>
 <!ENTITY Jonathan.Singer.mail '<email>jsinger@leeta.net</email>'>
 <!ENTITY Martin.Sommer '<personname><firstname>Martin</firstname><surname>Sommer</surname></personname>'>
