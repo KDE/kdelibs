@@ -147,7 +147,7 @@ QStringList Loader::languageNames() const
         variantName,         // dictionary variant name e.g. w_accents
         localizedLang,       // localized language
         localizedCountry;    // localized country
-    const char*  variantEnglish = 0; // dictionary variant in English
+    QByteArray variantEnglish; // dictionary variant in English
 
     int underscorePos,     // position of "_" char
         minusPos,          // position of "-" char
