@@ -20,12 +20,12 @@
 
 #include "main.h"
 #include <kgenericfactory.h>
+#include <ktabwidget.h>
 #include <kaboutdata.h>
 #include <kdeversion.h>
 #include <QtGui/QBoxLayout>
 #include <kdialog.h>
 #include "outputdevicechoice.h"
-#include <QtGui/QTabWidget>
 #include "backendselection.h"
 
 K_PLUGIN_FACTORY(PhononKcmFactory, registerPlugin<PhononKcm>();)
@@ -45,7 +45,7 @@ PhononKcm::PhononKcm(QWidget *parent, const QVariantList &args)
     layout()->setMargin(0);
     layout()->setSpacing(0);
 
-    QTabWidget *tabs = new QTabWidget(this);
+    KTabWidget *tabs = new KTabWidget(this);
     layout()->addWidget(tabs);
 
     m_outputDeviceWidget = new OutputDeviceChoice;
