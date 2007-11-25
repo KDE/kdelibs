@@ -38,6 +38,13 @@ QTEST_KDEMAIN_CORE( KUrlTest )
 #include <stdio.h>
 #include <stdlib.h>
 
+// needed to build a valid path on windows
+#ifdef Q_OS_WIN
+#define LOCAL_FILE_PREFIX "C:"
+#else
+#define LOCAL_FILE_PREFIX
+#endif
+
 void KUrlTest::testEmptyURL()
 {
   KUrl emptyURL;
@@ -1446,8 +1453,8 @@ void KUrlTest::testOtherEncodings()
 void KUrlTest::testPathOrURL()
 {
   // passing path or url to the constructor: both work
-  KUrl uloc( "/home/dfaure/konqtests/Mat%C3%A9riel" );
-  QCOMPARE( uloc.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  KUrl uloc( LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel" );
+  QCOMPARE( uloc.path(), QString(LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = KUrl( "http://www.kde.org" );
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   uloc = KUrl( QString("www.kde.org" ) );
@@ -1471,7 +1478,7 @@ void KUrlTest::testPathOrURL()
 #endif
 
   // pathOrUrl tests
-  uloc = KUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
+  uloc = KUrl( LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.pathOrUrl(), uloc.path() );
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.url(), QString("http://www.kde.org") );
@@ -1479,19 +1486,19 @@ void KUrlTest::testPathOrURL()
   QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8("file:///home/dfaure/konq tests/Matériel#ref" ) );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query";
   QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8("file:///home/dfaure/konq tests/Matériel?query" ) );
-  uloc = KUrl( "/home/dfaure/file#with#hash" );
-  QCOMPARE( uloc.pathOrUrl(), QString("/home/dfaure/file#with#hash" ) );
+  uloc = KUrl( LOCAL_FILE_PREFIX"/home/dfaure/file#with#hash" );
+  QCOMPARE( uloc.pathOrUrl(), QString(LOCAL_FILE_PREFIX"/home/dfaure/file#with#hash" ) );
 }
 
 void KUrlTest::testAssignment()
 {
   // passing path or url to the constructor: both work
   KUrl uloc;
-  uloc = "/home/dfaure/konqtests/Mat%C3%A9riel";
-  QCOMPARE( uloc.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  uloc = LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel";
+  QCOMPARE( uloc.path(), QString(LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel") );
   KUrl u2;
   u2 = uloc;
-  QCOMPARE( u2.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE( u2.path(), QString(LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   uloc = QString("www.kde.org" );
