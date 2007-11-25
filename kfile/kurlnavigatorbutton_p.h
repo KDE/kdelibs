@@ -59,6 +59,14 @@ public:
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 
+    /**
+     * Updates the minimum width of the button and should be invoked
+     * when the text of the button is changed by QAbstractButton::setText().
+     * TODO: this method would not be necessary if QAbstractButton::setText()
+     * would be virtual.
+     */
+    void updateMinimumWidth();
+
 Q_SIGNALS:
     /**
      * Is emitted if the URLs \a urls have been dropped

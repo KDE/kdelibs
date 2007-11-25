@@ -642,6 +642,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
 
             if (isFirstButton) {
                 button->setText(text);
+                button->updateMinimumWidth();
             }
 
             if (createButton) {

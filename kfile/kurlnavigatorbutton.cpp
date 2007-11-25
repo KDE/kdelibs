@@ -82,18 +82,7 @@ void KUrlNavigatorButton::setIndex(int index)
     }
 
     setFont(adjustedFont);
-
-    QFontMetrics fontMetrics(adjustedFont);
-    int minWidth = fontMetrics.width(buttonText) + arrowWidth() + 2 * BorderWidth;
-    if (minWidth < 50) {
-        minWidth = 50;
-    }
-    else if (minWidth > 150) {
-        // don't let an overlong path name waste all the URL navigator space
-        minWidth = 150;
-    }
-    setMinimumWidth(minWidth);
-
+    updateMinimumWidth();
     update();
 }
 
@@ -106,6 +95,20 @@ QSize KUrlNavigatorButton::sizeHint() const
         width = minimumWidth();
     }
     return QSize(width, KUrlButton::sizeHint().height());
+}
+
+void KUrlNavigatorButton::updateMinimumWidth()
+{
+    QFontMetrics fontMetrics(font());
+    int minWidth = fontMetrics.width(text()) + arrowWidth() + 2 * BorderWidth;
+    if (minWidth < 50) {
+        minWidth = 50;
+    }
+    else if (minWidth > 150) {
+        // don't let an overlong path name waste all the URL navigator space
+        minWidth = 150;
+    }
+    setMinimumWidth(minWidth);
 }
 
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
