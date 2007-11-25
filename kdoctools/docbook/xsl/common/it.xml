@@ -170,10 +170,10 @@
    <l:gentext key="index symbols" text="Simboli"/>
    <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyz"/>
    <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
-   <l:dingbat key="startquote" text="&#8220;"/>
-   <l:dingbat key="endquote" text="&#8221;"/>
-   <l:dingbat key="nestedstartquote" text="&#8216;"/>
-   <l:dingbat key="nestedendquote" text="&#8217;"/>
+   <l:dingbat key="startquote" text="&#171;"/>
+   <l:dingbat key="endquote" text="&#187;"/>
+   <l:dingbat key="nestedstartquote" text="&#8220;"/>
+   <l:dingbat key="nestedendquote" text="&#8221;"/>
    <l:dingbat key="singlestartquote" text="&#8216;" lang="en"/>
    <l:dingbat key="singleendquote" text="&#8217;" lang="en"/>
    <l:dingbat key="bullet" text="&#8226;"/>
