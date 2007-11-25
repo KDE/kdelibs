@@ -1447,7 +1447,7 @@ void KUrlTest::testPathOrURL()
 {
   // passing path or url to the constructor: both work
   KUrl uloc( "/home/dfaure/konqtests/Mat%C3%A9riel" );
-  QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE( uloc.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = KUrl( "http://www.kde.org" );
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   uloc = KUrl( QString("www.kde.org" ) );
@@ -1488,10 +1488,10 @@ void KUrlTest::testAssignment()
   // passing path or url to the constructor: both work
   KUrl uloc;
   uloc = "/home/dfaure/konqtests/Mat%C3%A9riel";
-  QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE( uloc.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
   KUrl u2;
   u2 = uloc;
-  QCOMPARE( u2.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE( u2.toEncoded(), QByteArray("/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   uloc = QString("www.kde.org" );
