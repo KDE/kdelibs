@@ -59,6 +59,7 @@ void ConfigWidget::init(KConfig *config)
 {
     d->loader = Loader::openLoader();
     d->loader->settings()->restore(config);
+    d->config = config;
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
