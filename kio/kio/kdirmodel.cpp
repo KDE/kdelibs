@@ -417,7 +417,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
         case Qt::DisplayRole:
             switch (index.column()) {
             case Name:
-                return item.name();
+                return item.text();
             case Size:
                 //
                 //return KIO::convertSize(item->size());

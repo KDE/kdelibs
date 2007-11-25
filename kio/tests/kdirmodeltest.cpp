@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2006 David Faure <faure@kde.org>
+   Copyright 2006 - 2007 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,15 +45,20 @@ void KDirModelTest::initTestCase()
      * PATH/toplevelfile_1
      * PATH/toplevelfile_2
      * PATH/toplevelfile_3
+     * PATH/file%2fslash
      * PATH/subdir
      * PATH/subdir/testfile
      * PATH/subdir/subsubdir
      * PATH/subdir/subsubdir/testfile
      */
     const QString path = m_tempDir.name();
-    createTestFile(path+"toplevelfile_1");
-    createTestFile(path+"toplevelfile_2");
-    createTestFile(path+"toplevelfile_3");
+    m_topLevelFileNames << "toplevelfile_1"
+                        << "toplevelfile_2"
+                        << "toplevelfile_3"
+                        << "file%2fslash";
+    foreach(QString f, m_topLevelFileNames) {
+        createTestFile(path+f);
+    }
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir", NoSymlink);
 
@@ -73,7 +78,7 @@ void KDirModelTest::fillModel( bool reload )
     m_secondFileIndex = QModelIndex();
     // Create the indexes once and for all
     // The trouble is that the order of listing is undefined, one can get 1/2/3/subdir or subdir/3/2/1 for instance.
-    for (int row = 0; row < 4; ++row) {
+    for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
         KFileItem item = m_dirModel.itemForIndex(idx);
         if (item.isDir())
@@ -82,10 +87,13 @@ void KDirModelTest::fillModel( bool reload )
             m_fileIndex = idx;
         else if (item.url().fileName() == "toplevelfile_2")
             m_secondFileIndex = idx;
+        else if (item.url().fileName().endsWith("slash"))
+            m_slashFileIndex = idx;
     }
     QVERIFY(m_dirIndex.isValid());
     QVERIFY(m_fileIndex.isValid());
     QVERIFY(m_secondFileIndex.isValid());
+    QVERIFY(m_slashFileIndex.isValid());
 
     // Now list subdir/
     QVERIFY(m_dirModel.canFetchMore(m_dirIndex));
@@ -125,7 +133,7 @@ void KDirModelTest::slotListingCompleted()
 void KDirModelTest::testRowCount()
 {
     const int topLevelRowCount = m_dirModel.rowCount();
-    QCOMPARE(topLevelRowCount, 4);
+    QCOMPARE(topLevelRowCount, m_topLevelFileNames.count() + 1 /*subdir*/);
     QCOMPARE(m_dirModel.rowCount(m_dirIndex), 3);
 }
 
@@ -170,6 +178,9 @@ void KDirModelTest::testNames()
 {
     QString fileName = m_dirModel.data(m_fileIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileName, QString("toplevelfile_1"));
+
+    QString slashFileName = m_dirModel.data(m_slashFileIndex, Qt::DisplayRole).toString();
+    QCOMPARE(slashFileName, QString("file/slash"));
 
     QString dirName = m_dirModel.data(m_dirIndex, Qt::DisplayRole).toString();
     QCOMPARE(dirName, QString("subdir"));
@@ -383,6 +394,7 @@ void KDirModelTest::testExpandToUrl()
 // Must be done last because it changes the other indexes
 void KDirModelTest::testDeleteFile()
 {
+    const int oldTopLevelRowCount = m_dirModel.rowCount();
     const QString file = m_tempDir.name() + "toplevelfile_1";
     const KUrl url(file);
 
@@ -399,7 +411,7 @@ void KDirModelTest::testDeleteFile()
 
     // If we come here, then rowsRemoved() was emitted - all good.
     const int topLevelRowCount = m_dirModel.rowCount();
-    QCOMPARE(topLevelRowCount, 3); // one less than before
+    QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 }

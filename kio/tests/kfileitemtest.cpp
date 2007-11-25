@@ -209,6 +209,7 @@ void KFileItemTest::testDecodeFileName_data()
     QTest::newRow("no %") << "filename" << "filename";
     QTest::newRow("%2f at end") << "foo%2f" << "foo/";
     QTest::newRow("%2f at begin") << "%2f" << "/";
+    QTest::newRow("%2F") << "foo%2Fbar" << "foo/bar";
     QTest::newRow("%%") << "%%" << "%";
     QTest::newRow("%%%%") << "%%%%" << "%%";
     QTest::newRow("%x") << "%x" << "%x";
