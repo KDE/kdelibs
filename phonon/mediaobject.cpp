@@ -404,7 +404,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             break;
         default:
             pError() << "backend MediaObject reached ErrorState after " << oldstate
-                << ". It seems a KioMediaStream won't help here, trying anyway.";
+                << ". It seems a KioMediaStream will not help here, trying anyway.";
             emit q->stateChanged(Phonon::LoadingState, oldstate);
             break;
         }
