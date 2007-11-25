@@ -1043,16 +1043,16 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
 
   K3DockWidget *tmpTarget = 0;
   switch (dockPos) {
-	case Qt::DockLeft:
+	case K3DockWidget::DockLeft:
 		tmpTarget=dockManager()->d->leftContainer;
 		break;
-	case Qt::DockRight:
+	case K3DockWidget::DockRight:
 		tmpTarget=dockManager()->d->rightContainer;
 		break;
-	case Qt::DockBottom:
+	case K3DockWidget::DockBottom:
 		tmpTarget=dockManager()->d->bottomContainer;
 		break;
-	case Qt::DockTop:
+	case K3DockWidget::DockTop:
 		tmpTarget=dockManager()->d->topContainer;
 		break;
 	default:
