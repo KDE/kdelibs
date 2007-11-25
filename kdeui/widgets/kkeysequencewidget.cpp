@@ -352,7 +352,7 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 	}
 
 	if (s.isEmpty())
-		s = i18nc("Shortcut is not user defined", "None");
+		s = i18n("None");
 
 	s.prepend(' ');
 	s.append(' ');
