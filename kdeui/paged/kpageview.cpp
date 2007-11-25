@@ -345,7 +345,7 @@ void KPageView::setCurrentPage( const QModelIndex &index )
   if ( !d->view || !d->view->selectionModel() )
     return;
 
-  d->view->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Select );
+  d->view->selectionModel()->setCurrentIndex( index, QItemSelectionModel::SelectCurrent );
 }
 
 QModelIndex KPageView::currentPage() const
