@@ -409,7 +409,7 @@ void SimpleJobPrivate::start(Slave *slave)
                 SLOT( slotWarning( const QString & ) ) );
 
     q->connect( slave, SIGNAL( infoMessage( const QString & ) ),
-                SLOT( slotInfoMessage( const QString & ) ) );
+                SLOT( _k_slotSlaveInfoMessage( const QString & ) ) );
 
     q->connect( slave, SIGNAL( connected() ),
                 SLOT( slotConnected() ) );
@@ -521,9 +521,9 @@ void SimpleJob::slotWarning( const QString & errorText )
     emit warning( this, errorText );
 }
 
-void SimpleJob::slotInfoMessage( const QString & msg )
+void SimpleJobPrivate::_k_slotSlaveInfoMessage( const QString & msg )
 {
-    emit infoMessage( this, msg );
+    emit q_func()->infoMessage( q_func(), msg );
 }
 
 void SimpleJobPrivate::slotConnected()

@@ -37,7 +37,7 @@ namespace KIO {
 
     /**
      * Flags for the job properties.
-     * Not all flags are supported in all cases. Please see documentation of 
+     * Not all flags are supported in all cases. Please see documentation of
      * the calling function!
      */
     enum JobFlag {
@@ -386,13 +386,6 @@ namespace KIO {
         virtual void slotWarning( const QString & );
 
         /**
-         * Called on a slave's info message.
-	 * @param s the info message
-	 * @see infoMessage()
-         */
-        virtual void slotInfoMessage( const QString &s );
-
-        /**
          * MetaData from the slave is received.
 	 * @param _metaData the meta data
 	 * @see metaData()
@@ -419,6 +412,7 @@ namespace KIO {
         Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KIO::filesize_t data_size ))
         Q_PRIVATE_SLOT(d_func(), void slotSpeed( unsigned long speed ))
         Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KIO::filesize_t data_size ))
+        Q_PRIVATE_SLOT(d_func(), void _k_slotSlaveInfoMessage(const QString&))
 
         Q_DECLARE_PRIVATE(SimpleJob)
     };

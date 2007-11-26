@@ -126,6 +126,13 @@ namespace KIO {
         void slotTotalSize( KIO::filesize_t data_size );
 
         /**
+         * Called on a slave's info message.
+         * @param s the info message
+         * @see infoMessage()
+         */
+        void _k_slotSlaveInfoMessage( const QString &s );
+
+        /**
          * @internal
          * Called by the scheduler when a slave gets to
          * work on this job.
