@@ -1,26 +1,21 @@
 project(kfile)
-add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+add_definitions(-DQT3_SUPPORT_WARNINGS)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/solid
   ${CMAKE_BINARY_DIR}/solid
-  ${CMAKE_SOURCE_DIR}/kde3support
-  ${CMAKE_SOURCE_DIR}/kde3support/kdeui #for k3iconview, k3listview
 )
 
 add_subdirectory(tests)
 
 set(kfile_LIB_SRCS
-  k3filetreeview.cpp
-  k3filetreeviewitem.cpp
   kdiroperator.cpp
   kdiroperatordetailview.cpp
   kdirselectdialog.cpp
   kdirsortfilterproxymodel.cpp #used in combination with kio/kio/kdirmodel.cpp
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
-  kfiletreebranch.cpp
   kfiletreeview.cpp
   kfileview.cpp
   kfilewidget.cpp
@@ -43,22 +38,18 @@ target_link_libraries(kfile
    ${ZLIB_LIBRARY}
    ${STRIGI_LIBRARIES}
    ${KDE4_SOLID_LIBS}
-   ${KDE4_KDE3SUPPORT_LIBS}
 )
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kfile  DESTINATION ${LIB_INSTALL_DIR})
 
 install( FILES
-  k3filetreeview.h
-  k3filetreeviewitem.h
   kdiroperator.h
   kdirselectdialog.h
   kdirsortfilterproxymodel.h
   kfilefiltercombo.h
   kfileplacesmodel.h
   kfileplacesview.h
-  kfiletreebranch.h
   kfiletreeview.h
   kfileview.h
   kfilewidget.h

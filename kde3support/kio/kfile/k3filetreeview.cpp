@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
-#include <kfileview.h>
+#include <kfile/kfileview.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <stdlib.h>

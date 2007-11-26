@@ -46,7 +46,7 @@ class K3FileTreeView;
  *
  */
 
-class KFILE_EXPORT KFileTreeBranch : public KDirLister
+class KDE3SUPPORT_EXPORT KFileTreeBranch : public KDirLister
 {
    Q_OBJECT
 public:

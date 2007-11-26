@@ -3,7 +3,9 @@ project(kde3support)
 KDE4_NO_ENABLE_FINAL(kde3support)
 
 # inter-subdir dependencies
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui
+${CMAKE_CURRENT_SOURCE_DIR}/kio/kfile
+${CMAKE_SOURCE_DIR}/solid )
 #${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
 
 # all dependent libs
@@ -51,6 +53,9 @@ set(kde3support_LIB_SRCS
   kdeui/k3panelapplet.cpp
   kdeui/k3panelmenu.cpp
   kio/k3bookmarkdrag.cpp
+  kio/kfile/k3filetreeview.cpp
+  kio/kfile/k3filetreeviewitem.cpp
+  kio/kfile/kfiletreebranch.cpp
   kparts/dockmainwindow3.cpp
 )
 
@@ -72,7 +77,7 @@ remove_definitions(-DQT3_SUPPORT_WARNINGS -DKDE_DEPRECATED_WARNINGS)
 
 kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 
-target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY})
+target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${KDE4_KFILE_LIBS})
 
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR})
@@ -119,6 +124,9 @@ install( FILES
   kio/kfile/kurlrequesterdlg.h
   kio/kfile/kfilesharedlg.h
   kio/kfile/kpropsdlg.h
+  kio/kfile/k3filetreeview.h
+  kio/kfile/k3filetreeviewitem.h
+  kio/kfile/kfiletreebranch.h
   kparts/dockmainwindow3.h
   kdeui/kactivelabel.h
   kdeui/kstdaccel.h

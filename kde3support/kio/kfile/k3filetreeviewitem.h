@@ -20,7 +20,7 @@
 #ifndef kfile_tree_view_item_h
 #define kfile_tree_view_item_h
 
-#include "kfile_export.h"
+#include "kde3support_export.h"
 
 #include <Qt3Support/Q3PtrList>
 #include <k3listview.h>
@@ -38,7 +38,7 @@ class KFileTreeBranch;
 /**
  * An item for a K3FileTreeView that knows about its own KFileItem.
  */
-class KFILE_EXPORT K3FileTreeViewItem : public K3ListViewItem
+class KDE3SUPPORT_EXPORT K3FileTreeViewItem : public K3ListViewItem
 {
 public:
    K3FileTreeViewItem( K3FileTreeViewItem*, const KFileItem&, KFileTreeBranch * );
