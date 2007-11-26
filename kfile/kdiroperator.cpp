@@ -1329,6 +1329,9 @@ void KDirOperator::setView(QAbstractItemView *view)
         QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
     }
     connect(d->itemView->selectionModel(),
+            SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
+            this, SLOT(_k_triggerPreview(const QModelIndex&)));
+    connect(d->itemView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
 
