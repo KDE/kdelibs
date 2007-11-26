@@ -60,7 +60,7 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 	m_nbNewMessage++;
 	if(!m_readNotif)
 	{
-		KNotification *n=new KNotification( "message", this, KNotification::Persistant );
+		KNotification *n=new KNotification( "message", this, KNotification::Persistent );
 		n->setText(i18n( "new message : %1" ,  view.c_text->toPlainText() ));
 		n->setActions( QStringList( i18n("Read") ) );
 		connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
