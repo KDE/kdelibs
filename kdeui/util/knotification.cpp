@@ -321,7 +321,7 @@ void KNotification::sendEvent()
 			appname = KGlobal::mainComponent().componentName();
 		}
 
-		if(!(d->flags & Persistant))
+		if(!(d->flags & Persistent))
 		{
 			QTimer::singleShot(6*1000, this, SLOT(close()));
 		}

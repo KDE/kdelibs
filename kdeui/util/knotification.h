@@ -50,7 +50,7 @@ class QDBusError;
  * Example of a persistent notification in an instant messaging application:
  * The application emits the notification when the message is actually received, and closes it only
  * when the user has read the message (when the message window has received the focus) using the close() slot
- * Persistent notifications must have the Persistant flag.
+ * Persistent notifications must have the Persistent flag.
  *
  * In order to perform a notification, you need to create a description file, which contains
  * default parameters of the notification, and use KNotification::event at the place in the
@@ -207,7 +207,7 @@ public:
 		 * You will have to track the notification, and close it with the 
 		 * close function manually when the event is done, otherwise there will be a memory leak
 		 */
-		Persistant=0x02,
+		Persistent=0x02,
 
 		/**
 		 * The notification will be automatically closed if the widget() becomes
