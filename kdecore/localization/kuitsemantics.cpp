@@ -840,7 +840,6 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PageUp"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PgDown"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PgUp"));
-    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Pause"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PauseBreak"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PrintScreen"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "PrtScr"));
