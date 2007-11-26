@@ -360,6 +360,7 @@
 9039        kdevelop (qmake builder)
 9040        kdevelop (cpp parser)
 9041        kdevelop (cpp duchain)
+9042        kdevelop (cmake support debug)
 
 #kdevplatform
 9500        kdevplatform
