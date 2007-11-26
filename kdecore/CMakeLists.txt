@@ -116,6 +116,7 @@ set(kdecore_LIB_SRCS
    config/kconfigini.cpp
    config/kdesktopfile.cpp
    config/ksharedconfig.cpp
+   config/kcoreconfigskeleton.cpp
    date/kcalendarsystem.cpp
    date/kcalendarsystemgregorian.cpp
    date/kcalendarsystemhijri.cpp
@@ -300,6 +301,7 @@ install( FILES
    config/kconfiggroup.h
    config/kdesktopfile.h
    config/ksharedconfig.h
+   config/kcoreconfigskeleton.h
    date/kcalendarsystem.h
    date/kdatetime.h
    date/ksystemtimezone.h
