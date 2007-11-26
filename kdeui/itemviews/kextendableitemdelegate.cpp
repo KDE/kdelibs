@@ -134,7 +134,8 @@ QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, cons
 	else
 		ret = QItemDelegate::sizeHint(option, index);
 
-	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
+	bool showExtensionIndicator = index.model() ? 
+		index.model()->data(index, ShowExtensionIndicatorRole).toBool() : false;
 	if (showExtensionIndicator)
 		ret.rwidth() += d->extendIcon.width();
 
