@@ -447,6 +447,7 @@ public:
 
     /**
      * Deletes the entry specified by @p pKey in the current group.
+     * This also hides system wide defaults.
      *
      * @param pKey The key to delete.
      * @param pFlags       The flags to use when deleting this entry.
@@ -457,8 +458,7 @@ public:
     /**
      * Checks whether the key has an entry in the currently active group.
      * Use this to determine whether a key is not specified for the current
-     * group (hasKey() returns false). Keys with null data are considered
-     * nonexistent.
+     * group (hasKey() returns false).
      *
      * @param key The key to search for.
      * @return If true, the key is available.

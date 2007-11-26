@@ -112,6 +112,9 @@ public:
 
     /**
      * Syncs the configuration object that this group belongs to.
+     * Unrelated concurrent changes to the same file are merged and thus
+     * not overwritten. Note however, that this object is @em not automatically
+     * updated with those changes.
      */
     virtual void sync() = 0;
 
