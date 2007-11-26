@@ -358,6 +358,8 @@
 9037        kdevelop (make builder)
 9038        kdevelop (qtdesigner)
 9039        kdevelop (qmake builder)
+9040        kdevelop (cpp parser)
+9041        kdevelop (cpp duchain)
 
 #kdevplatform
 9500        kdevplatform
