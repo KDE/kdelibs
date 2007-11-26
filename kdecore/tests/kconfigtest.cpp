@@ -378,7 +378,7 @@ void KConfigTest::testPath()
   QString p = sc3.readPathEntry("homepath", QString());
   QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
   QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
-  
+
   {
       QFile file(KStandardDirs::locateLocal("config", "pathtest"));
       file.open(QIODevice::WriteOnly|QIODevice::Text);
@@ -568,6 +568,8 @@ void KConfigTest::testDelete()
   QCOMPARE( sc3.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
 
   sc.deleteGroup("Complex Types");
+  QCOMPARE(sc.group("Complex Types").keyList().count(), 0);
+  QVERIFY(sc.group("Complex Types").exists()); // yep, we deleted it, but it still "exists"...
 
   KConfigGroup cg(&sc , "AAA" );
   cg.deleteGroup();
@@ -575,14 +577,14 @@ void KConfigTest::testDelete()
   QVERIFY( sc.entryMap("AAA").isEmpty() );
   QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
-  
+
   // test for entries that are marked as deleted when there is no default
   KConfig cf("kconfigtest", KConfig::SimpleConfig); // make sure there are no defaults
   cg = cf.group("Portable Devices");
   cg.writeEntry("devices|manual|(null)", "whatever");
   cg.writeEntry("devices|manual|/mnt/ipod", "/mnt/ipod");
   cf.sync();
-  
+
   int count=0;
   foreach(const QByteArray& item, readLines())
       if (item.startsWith("devices|"))
