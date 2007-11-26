@@ -4,6 +4,7 @@ X-KDE-ServiceType=DBUS/Text-to-Speech
 Comment=Text-to-Speech Service with a D-Bus interface
 Comment[ar]=خدمة تحويل النص مع واجهة D-Bus
 Comment[be]=Сервіс агалошвання тэксту з інтэрфейсам D-Bus
+Comment[bg]=Синтез на глас с интерфейс DCOP
 Comment[ca]=Servei de síntesi de veu amb una interfície D-Bus
 Comment[cs]=Služba text-na-řeč s DBUS rozhraním
 Comment[csb]=Ùsłëżnota czëtaniô tekstu z interfejsã DCOP

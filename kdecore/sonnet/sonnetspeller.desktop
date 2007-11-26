@@ -4,6 +4,7 @@ X-KDE-ServiceType=Sonnet/SpellClient
 X-KDE-Derived=KPluginInfo
 Comment=Sonnet Spell Client
 Comment[ar]=عميل التهجئة Sonnet
+Comment[bg]=Клиент на KSpell
 Comment[ca]=Client de l'Spell pel Sonnet
 Comment[cs]=Sonnet klient
 Comment[csb]=Klient Sonnet Spell

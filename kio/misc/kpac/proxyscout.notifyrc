@@ -2,6 +2,7 @@
 IconName=proxy
 Comment=Automatic Proxy Configuration
 Comment[be]=Аўтаматычнае настаўленне проксі
+Comment[bg]=Автоматично настройване на прокси сървъра
 Comment[br]=Kefluniadur emgefreekh ar proksi
 Comment[ca]=Configuració automàtica de l'intermediari
 Comment[cs]=Automatické nastavení proxy
@@ -41,6 +42,7 @@ Comment[zh_TW]=自動代理組態
 [Event/script-error]
 Name=Invalid Proxy Script
 Name[be]=Няправільны сцэнар проксі
+Name[bg]=Невалиден скрипт на прокси
 Name[ca]=Script de l'intermediari no vàlid
 Name[cs]=Neplatný proxy skript
 Name[de]=Ungültiges Proxy-Skript

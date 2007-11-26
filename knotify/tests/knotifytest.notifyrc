@@ -1,6 +1,7 @@
 [Global]
 IconName=knotifytest
 Comment=Test for Knotify
+Comment[bg]=Тест за Knotify
 Comment[ca]=Prova pel Knotify
 Comment[cs]=Test pro KNotify
 Comment[de]=Test für KNotify
@@ -136,6 +137,7 @@ Name[x-test]=xxOnlinexx
 Name[zh_CN]=在线
 Name[zh_TW]=上線
 Comment=The contact is now connected
+Comment[bg]=Контактът е свързан
 Comment[ca]=El contacte ara està connectat
 Comment[cs]=Kontakt je nyní připojen
 Comment[de]=Der Kontakt ist jetzt verbunden
@@ -173,6 +175,7 @@ Action=Popup
 
 [Event/message]
 Name=Message Received
+Name[bg]=Съобшението е получено
 Name[ca]=Missatge rebut
 Name[cs]=Obdržena zpráva
 Name[de]=Nachricht empfangen
@@ -207,6 +210,7 @@ Name[zh_CN]=收到了消息
 Name[zh_TW]=接到訊息
 Comment=A Message has been received
 Comment[be]=Была атрымана паведамленне
+Comment[bg]=Получено е съобщение
 Comment[ca]=S'ha rebut un missatge
 Comment[cs]=Byla obdržena zpráva
 Comment[de]=Eine Nachricht wurde empfangen

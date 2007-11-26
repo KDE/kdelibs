@@ -12,6 +12,7 @@ X-KDE-System-Settings-Parent-Category=computer-administration
 
 Name=Sound
 Name[be]=Гук
+Name[bg]=Звук
 Name[br]=Son
 Name[ca]=So
 Name[cs]=Zvuk
@@ -52,6 +53,7 @@ Name[zh_TW]=音效
 Comment=Sound System Configuration
 Comment[ar]=ضبط نظام الصوت
 Comment[be]=Настаўленні гукавай сістэмы
+Comment[bg]=Системни съобщения
 Comment[br]=Kefluniadur ar reizhiad son
 Comment[ca]=Configuració del sistema de so
 Comment[cs]=Nastavení zvukového systému
