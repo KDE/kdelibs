@@ -289,6 +289,7 @@ void KMimeTypeTest::testFindByNameAndContent()
     QByteArray mswordData = "\320\317\021\340\241\261\032\341";
     mime = KMimeType::findByNameAndContent("mswordfile.doc", mswordData);
     QVERIFY( mime );
+    // If you get powerpoint instead, then you're hit by https://bugs.freedesktop.org/show_bug.cgi?id=435
     QCOMPARE( mime->name(), QString::fromLatin1("application/msword") );
 
     // excelfile.xls -> application/vnd.ms-excel. Found by extension.
@@ -335,8 +336,10 @@ void KMimeTypeTest::testFindByContent_data()
     QTest::newRow("pdf") << QByteArray("%PDF-") << "application/pdf";
 
     QByteArray mswordData = "\320\317\021\340\241\261\032\341";
+    // same as \xD0\xCF\x11\xE0 \xA1\xB1\x1A\xE1
     QVERIFY(KMimeType::isBufferBinaryData(mswordData));
     // We have no magic specific to msword data, so finding x-ole-storage is correct.
+    // If you get powerpoint instead, then you're hit by https://bugs.freedesktop.org/show_bug.cgi?id=435
     QTest::newRow("msword") << mswordData << "application/x-ole-storage";
 }
 
