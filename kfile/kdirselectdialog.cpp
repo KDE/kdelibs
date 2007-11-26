@@ -255,8 +255,6 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_urlCombo->setCompletionObject( comp, true );
     d->m_urlCombo->setAutoDeleteCompletionObject( true );
     d->m_urlCombo->setDuplicatesEnabled( false );
-    connect( d->m_urlCombo, SIGNAL( textChanged( const QString& ) ),
-             SLOT( _k_slotComboTextChanged( const QString& ) ));
 
     d->m_contextMenu = new QMenu( this );
     KAction* newFolder = new KAction( i18n("New Folder..."), this);
@@ -297,6 +295,8 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     connect( d->m_treeView, SIGNAL( customContextMenuRequested( const QPoint & )),
              SLOT( _k_slotContextMenu( const QPoint & )));
 
+    connect( d->m_urlCombo, SIGNAL( textChanged( const QString& ) ),
+             SLOT( _k_slotComboTextChanged( const QString& ) ));
     connect( d->m_urlCombo, SIGNAL( activated( const QString& )),
              SLOT( _k_slotUrlActivated( const QString& )));
     connect( d->m_urlCombo, SIGNAL( returnPressed( const QString& )),
