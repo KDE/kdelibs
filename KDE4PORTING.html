@@ -606,10 +606,16 @@ Q3DragObject until being fully ported.</p>
 <p>Replaced by KNotification. The API is quite similar, but the config file need to be updated. See KNotification documentation, and the file kdelibs/knotify/PORTING.html</p>
 
 <h4>KProcess</h4>
-<p>Deprecated and renamed to K3Process, header is k3process.h. Use QProcess instead.</p>
+<p>The kde3 version was deprecated and renamed to K3Process, header is k3process.h. 
+Its usage is discouraged as it will create problems when being used together with
+the new KProcess or QProcess in the same application, this is more of a problem in
+applications that use KParts or plugins and can't control what those plugins do.</p>
 <ul>
-<li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
-<li>getPid() was removed for just pid()</li>
+<li>start() lost all arguments, the setup of communication and program/arguments
+has to be done before starting the process</li>
+<li>suspend() and resume() where removed for now</li>
+<li>quoting support moved to KShell namespace</li>
+<li>getPid() was renamed to just pid()</li>
 </ul>
 
 <h4>KProcCtrl</h4>
