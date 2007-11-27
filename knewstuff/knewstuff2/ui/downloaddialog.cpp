@@ -69,6 +69,28 @@
 
 using namespace KNS;
 
+bool NameSorter(const Entry* e1, const Entry* e2)
+{
+    return e1->name().representation() < e2->name().representation();
+}
+
+bool RatingSorter(const Entry* e1, const Entry* e2)
+{
+    return e1->rating() < e2->rating();
+}
+
+bool RecentSorter(const Entry* e1, const Entry* e2)
+{
+    // return > instead of < to sort in reverse order
+    return e1->releaseDate() > e2->releaseDate();
+}
+
+bool DownloadsSorter(const Entry* e1, const Entry* e2)
+{
+    // return > instead of < to sort most downloads at the top
+    return e1->downloads() > e2->downloads();
+}
+
 ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
     : QScrollArea( _parent ),
     m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
@@ -132,7 +154,23 @@ void ItemsView::buildContents()
     QGridLayout* _layout = new QGridLayout(m_root);
     _layout->setVerticalSpacing (10);
 
+    // FIXME: this is only showing entries from the first feed
     Entry::List entries = m_entries[m_entries.keys().first()];
+    switch (m_sorting)
+    {
+        case 0:
+            qSort(entries.begin(), entries.end(), NameSorter);
+            break;
+        case 1:
+            qSort(entries.begin(), entries.end(), RatingSorter);
+            break;
+        case 2:
+            qSort(entries.begin(), entries.end(), RecentSorter);
+            break;
+        case 3:
+            qSort(entries.begin(), entries.end(), DownloadsSorter);
+            break;
+    }
     Entry::List::iterator it = entries.begin(), iEnd = entries.end();
     for ( unsigned row = 0; it != iEnd; ++it, ++row )
     {
@@ -208,12 +246,12 @@ void EntryView::updateEntry( Entry *entry )
 
 void EntryView::buildContents()
 {
-    setTheAaronnesqueStyle();
     // write the html header and contents manipulation scripts
     QString t;
 
-    t += "<qt>";
+    t += "<html><body>";
 
+    //t += setTheAaronnesqueStyle();
     // precalc the status icon
     Entry::Status status = m_entry->status();
     QString statusIcon;
@@ -239,20 +277,18 @@ void EntryView::buildContents()
             break;
     }
 
-    // precalc the image string
-    QString imageString = m_entry->preview().representation();
-    if ( !imageString.isEmpty() )
-        imageString = "<img class='leftImage' src='" + Qt::escape(imageString) + "' border='0' />";
-
     // precalc the title string
     QString titleString = m_entry->name().representation();
     if ( !m_entry->version().isEmpty() ) titleString += " v." + Qt::escape(m_entry->version());
 
     // precalc the string for displaying stars (normal+grayed)
+    QString starIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star.png" );
+    QString starBgIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star_gray.png" );
+
     int starPixels = 11 + 11 * (m_entry->rating() / 10);
-    QString starsString = "<div class='star' style='width: " + QString::number( starPixels ) + "px;'></div>";
+    QString starsString = "<div style='width: " + QString::number( starPixels ) + "px; background-image: url(" + starIconPath + "); background-repeat: repeat-x;'>&nbsp;</div>";
     int grayPixels = 22 + 22 * (m_entry->rating() / 20);
-    starsString = "<div class='starbg' style='width: " + QString::number( grayPixels ) + "px;'>" + starsString + "</div>";
+    starsString = "<div style='width: " + QString::number( grayPixels ) + "px;background-image: url(" + starBgIconPath + "); background-repeat: repeat-x;'>" + starsString + "&nbsp;</div>";
 
     // precalc the string for displaying author (parsing email)
     KNS::Author author = m_entry->author();
@@ -266,25 +302,16 @@ void EntryView::buildContents()
     }
 
     // write the HTML code for the current item
-    t += QLatin1String("<table class='contentsHeader' cellspacing='2' cellpadding='0'>")
-         + "<tr>"
-         +   "<td>" + statusIcon + Qt::escape(titleString) + "</td>"
-         +   "<td align='right'>" + starsString +  "</td>"
-         + "</tr>"
-         + "<tr>"
-         +   "<td colspan='2' class='contentsBody'>"
+    t += //QLatin1String("<table class='contentsHeader' cellspacing='2' cellpadding='0'>")
+         statusIcon + Qt::escape(titleString) + "<br />"
+         //+   "<span align='right'>" + starsString +  "</span><br />"
          +      Qt::escape(m_entry->summary().representation())
-         +   "</td>"
-         + "</tr>"
-         + "<tr>"
-         +   "<td colspan='2' class='contentsFooter'>"
+         +   "<br />"
          +     "<em>" + authorString + "</em>, "
          +       KGlobal::locale()->formatDate( m_entry->releaseDate(), KLocale::ShortDate )
-         +   "</td>"
-         + "</tr>"
-         + "</table>";
+         + "<br />";
 
-    t += "</qt>";
+    t += "</body></html>";
     setText(t);
 }
 
@@ -292,8 +319,8 @@ void EntryView::setTheAaronnesqueStyle()
 {
     QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
     QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
-    QString starIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star.png" );
-    QString starBgIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star_gray.png" );
+    QString starIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star.png" );
+    QString starBgIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star_gray.png" );
 
     // default elements style
     QString s;
