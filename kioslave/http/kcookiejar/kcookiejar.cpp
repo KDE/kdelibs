@@ -815,9 +815,12 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
                 // Workaround for servers that send the expiration date in
                 // 'Wed Sep 12 07:00:00 2007 GMT' format. See BR# 145244.
-                if (lastCookie->mExpireDate == 0)
+                if (lastCookie->mExpireDate == -1)
                   lastCookie->mExpireDate = KDateTime::fromString(fixupDateTime(Value), KDateTime::RFCDate).toTime_t();
-
+                  
+                // We encode parse error/invalid as 0, but KDateTime likes -1, so convert
+                if (lastCookie->mExpireDate == -1)
+                  lastCookie->mExpireDate = 0;
             }
             else if (cName == "path")
             {
