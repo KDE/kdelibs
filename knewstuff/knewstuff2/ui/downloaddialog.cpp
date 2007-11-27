@@ -69,23 +69,23 @@
 
 using namespace KNS;
 
-bool NameSorter(const Entry* e1, const Entry* e2)
+static bool NameSorter(const Entry* e1, const Entry* e2)
 {
     return e1->name().representation() < e2->name().representation();
 }
 
-bool RatingSorter(const Entry* e1, const Entry* e2)
+static bool RatingSorter(const Entry* e1, const Entry* e2)
 {
     return e1->rating() < e2->rating();
 }
 
-bool RecentSorter(const Entry* e1, const Entry* e2)
+static bool RecentSorter(const Entry* e1, const Entry* e2)
 {
     // return > instead of < to sort in reverse order
     return e1->releaseDate() > e2->releaseDate();
 }
 
-bool DownloadsSorter(const Entry* e1, const Entry* e2)
+static bool DownloadsSorter(const Entry* e1, const Entry* e2)
 {
     // return > instead of < to sort most downloads at the top
     return e1->downloads() > e2->downloads();
