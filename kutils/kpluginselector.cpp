@@ -1638,13 +1638,13 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             if (!pluginInfo.comment().isEmpty())
             {
-                // FIXME: cleanup the following i18n strings after string freeze (remove \t%1...)
-                text += "<tr><td>" + i18n("Description:\t%1", QString()) + "</td><td>" + pluginInfo.comment() + "<br /></td></tr>";
+                // FIXME: cleanup the following i18n strings after string freeze (remove \n\t%1...)
+                text += "<tr><td>" + i18n("Description:\n\t%1", QString()) + "</td><td>" + pluginInfo.comment() + "<br /></td></tr>";
             }
 
             if (!pluginInfo.author().isEmpty())
             {
-                text += "<tr><td>" + i18n("Author:\t%1", QString()) + "</td><td>" + pluginInfo.author() + "</td><br /></tr>";
+                text += "<tr><td>" + i18n("Author:\n\t%1", QString()) + "</td><td>" + pluginInfo.author() + "</td><br /></tr>";
             }
 
             if (!pluginInfo.email().isEmpty())
@@ -1661,12 +1661,12 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             if (!pluginInfo.version().isEmpty())
             {
-                text += "<tr><td>" + i18n("Version:\t%1", QString()) + "</td><td>" + pluginInfo.version() + "<br /></td></tr>";
+                text += "<tr><td>" + i18n("Version:\n\t%1", QString()) + "</td><td>" + pluginInfo.version() + "<br /></td></tr>";
             }
 
             if (!pluginInfo.license().isEmpty())
             {
-                text += "<tr><td>" + i18n("License:\t%1", QString()) + "</td><td>" + pluginInfo.license() + "<br /></td></tr>";
+                text += "<tr><td>" + i18n("License:\n\t%1", QString()) + "</td><td>" + pluginInfo.license() + "<br /></td></tr>";
             }
             text += "</table>";
 
