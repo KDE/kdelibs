@@ -1656,17 +1656,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             // can't submit file in www-url-form encoded
             QWidget* const toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
             if (multipart) {
-                QByteArray filearray( "" );
+                QByteArray filearray;
                 if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
                     const KFileItem fileitem(filestat, fileurl, true, false);
                     if ( fileitem.isFile() &&
                          KIO::NetAccess::download(fileurl, local, toplevel) ) {
                         QFile file(local);
-                        filearray.resize(file.size()+1);
                         if ( file.open( QIODevice::ReadOnly ) ) {
-                            const int readbytes = file.read( filearray.data(), file.size());
-                            if ( readbytes >= 0 )
-                                filearray[readbytes] = '\0';
+                            filearray = file.read( file.size() );
                             file.close();
                         }
                         KIO::NetAccess::removeTempFile( local );
