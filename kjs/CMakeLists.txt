@@ -165,34 +165,34 @@ target_link_libraries(kjs_bin ${KJSLIBNAME})
 install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 
 ########### install files ###############
-install( FILES
-    ExecState.h
-    JSImmediate.h
-    JSLock.h
-    JSType.h
-    PropertyNameArray.h
-    collector.h
-    completion.h
-    function.h
-    identifier.h
-    interpreter.h
-    list.h
-    lookup.h
-    object.h
-    operations.h
-    package.h
-    property_map.h
-    property_slot.h
-    protect.h
-    scope_chain.h
-    types.h
-    ustring.h
-    value.h
-    CommonIdentifiers.h
-
-    ${CMAKE_CURRENT_BINARY_DIR}/global.h
-
-    DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
+# install( FILES
+#     ExecState.h
+#     JSImmediate.h
+#     JSLock.h
+#     JSType.h
+#     PropertyNameArray.h
+#     collector.h
+#     completion.h
+#     function.h
+#     identifier.h
+#     interpreter.h
+#     list.h
+#     lookup.h
+#     object.h
+#     operations.h
+#     package.h
+#     property_map.h
+#     property_slot.h
+#     protect.h
+#     scope_chain.h
+#     types.h
+#     ustring.h
+#     value.h
+#     CommonIdentifiers.h
+# 
+#     ${CMAKE_CURRENT_BINARY_DIR}/global.h
+# 
+#     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
 
 
 
