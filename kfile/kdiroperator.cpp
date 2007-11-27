@@ -185,6 +185,7 @@ public:
     void _k_slotProperties();
     void _k_slotPressed(const QModelIndex&);
     void _k_slotClicked(const QModelIndex&);
+    void _k_slotActivated(const QModelIndex&);
     void _k_slotDoubleClicked(const QModelIndex&);
     void _k_slotSelectionChanged();
     void _k_openContextMenu(const QPoint&);
@@ -1292,6 +1293,8 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->itemView->setMouseTracking(true);
     //d->itemView->setDropOptions(d->dropOptions);
 
+    connect(d->itemView, SIGNAL(activated(const QModelIndex&)),
+            this, SLOT(_k_slotActivated(const QModelIndex&)));
     connect(d->itemView, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(_k_slotPressed(const QModelIndex&)));
     connect(d->itemView, SIGNAL(clicked(const QModelIndex&)),
@@ -1915,6 +1918,11 @@ void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
         return;
     }
 
+    _k_slotActivated(index);
+}
+
+void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
+{
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
     bool selectDir = false;

@@ -773,6 +773,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotProperties() )
     Q_PRIVATE_SLOT( d, void _k_slotPressed(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotClicked(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_slotActivated(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotDoubleClicked(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
     Q_PRIVATE_SLOT( d, void _k_openContextMenu(const QPoint&) )
