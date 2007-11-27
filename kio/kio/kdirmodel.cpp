@@ -646,25 +646,33 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
 
     // Allow dropping onto this item?
     if (d->m_dropsAllowed != NoDrops) {
-        KFileItem item = itemForIndex(index);
-        if (item.isDir()) {
+        if(!index.isValid()) {
             if (d->m_dropsAllowed & DropOnDirectory) {
                 f |= Qt::ItemIsDropEnabled;
             }
-        } else { // regular file item
-            if (d->m_dropsAllowed & DropOnAnyFile)
-                f |= Qt::ItemIsDropEnabled;
-            else if (d->m_dropsAllowed & DropOnLocalExecutable) {
-                if (item.isLocalFile()) {
-                    // Desktop file?
-                    if (item.mimeTypePtr()->is("application/x-desktop"))
-                        f |= Qt::ItemIsDropEnabled;
-                    // Executable, shell script ... ?
-                    else if ( QFileInfo( item.localPath() ).isExecutable() )
-                        f |= Qt::ItemIsDropEnabled;
+        } else {
+            KFileItem item = itemForIndex(index);
+            if (item.isNull()) {
+                kWarning(7007) << "Invalid item returned for index";
+            } else if (item.isDir()) {
+                if (d->m_dropsAllowed & DropOnDirectory) {
+                    f |= Qt::ItemIsDropEnabled;
+                }
+            } else { // regular file item
+                if (d->m_dropsAllowed & DropOnAnyFile)
+                    f |= Qt::ItemIsDropEnabled;
+                else if (d->m_dropsAllowed & DropOnLocalExecutable) {
+                    if (item.isLocalFile()) {
+                        // Desktop file?
+                        if (item.mimeTypePtr()->is("application/x-desktop"))
+                            f |= Qt::ItemIsDropEnabled;
+                        // Executable, shell script ... ?
+                        else if ( QFileInfo( item.localPath() ).isExecutable() )
+                            f |= Qt::ItemIsDropEnabled;
+                    }
                 }
             }
-        }
+	}
     }
 
     return f;
