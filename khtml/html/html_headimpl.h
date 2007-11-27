@@ -92,7 +92,7 @@ public:
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset);
     virtual void error(int err, const QString &text);
     bool isLoading() const;
-    void sheetLoaded();
+    bool sheetLoaded();
 
     bool isAlternate() const { return m_alternate; }
     bool isCSSStyleSheet() const { return m_isCSSSheet; }
@@ -198,7 +198,7 @@ public:
     virtual void childrenChanged();
 
     bool isLoading() const;
-    void sheetLoaded();
+    bool sheetLoaded();
 
 protected:
     CSSStyleSheetImpl *m_sheet;

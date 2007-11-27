@@ -216,7 +216,7 @@ public:
     };
 
     // for LINK and STYLE
-    virtual void sheetLoaded() {}
+    virtual bool sheetLoaded() { return true; }
 
     bool hasID() const      { return m_hasId; }
     bool hasClass() const   { return m_hasClass; }

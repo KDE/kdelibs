@@ -277,10 +277,13 @@ bool HTMLLinkElementImpl::isLoading() const
     return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
 }
 
-void HTMLLinkElementImpl::sheetLoaded()
+bool HTMLLinkElementImpl::sheetLoaded()
 {
-    if (!isLoading() && !isDisabled() && !isAlternate())
+    if (!isLoading() && !isDisabled() && !isAlternate()) {
         getDocument()->styleSheetLoaded();
+	return true;
+    }
+    return false;
 }
 
 // -------------------------------------------------------------------------
@@ -594,10 +597,13 @@ bool HTMLStyleElementImpl::isLoading() const
     return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
 }
 
-void HTMLStyleElementImpl::sheetLoaded()
+bool HTMLStyleElementImpl::sheetLoaded()
 {
-    if (!isLoading())
+    if (!isLoading()) {
         getDocument()->styleSheetLoaded();
+        return true;
+    }
+    return false;
 }
 
 // -------------------------------------------------------------------------

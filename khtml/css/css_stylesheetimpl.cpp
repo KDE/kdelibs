@@ -310,8 +310,7 @@ void CSSStyleSheetImpl::checkLoaded() const
 {
     if(isLoading()) return;
     if(m_parent) m_parent->checkLoaded();
-    if(m_parentNode) m_parentNode->sheetLoaded();
-    m_processed = true;
+    m_processed = m_parentNode ? m_parentNode->sheetLoaded() : true;
 }
 
 // ---------------------------------------------------------------------------
