@@ -1153,9 +1153,9 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
     QString dir = url.url(KUrl::AddTrailingSlash);
     // is trigged in ctor before completion object is set
-    KUrlCompletion * compl = dynamic_cast<KUrlCompletion*>( locationEdit->completionObject() );
-    if( compl )
-        compl->setDir( dir );
+    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>( locationEdit->completionObject() );
+    if( completion )
+        completion->setDir( dir );
 
     if ( placesView )
         placesView->setUrl( url );
