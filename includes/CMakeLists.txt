@@ -398,6 +398,7 @@ install( FILES
   KUser
   KUserGroup
   KVBox
+  KWindowInfo
   KWindowSystem
   KWordMacroExpander
   KWordWrap
