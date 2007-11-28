@@ -66,7 +66,7 @@ class KWidgetJobTracker::Private::ProgressWidget
 
 public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
-        : QWidget(parent), q(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
+        : QWidget(parent), tracker(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
           processedSize(0), processedDirs(0), processedFiles(0),
           totalSizeKnown(false), keepOpenChecked(false),
           cancelClose(0), openFile(0), openLocation(0),
@@ -79,10 +79,10 @@ public:
 
     ~ProgressWidget()
     {
-        q->d->progressWidget.remove(job);
+        tracker->d->progressWidget.remove(job);
     }
 
-    KWidgetJobTracker *const q;
+    KWidgetJobTracker *const tracker;
     KJob *const job;
 
     qulonglong totalSize;

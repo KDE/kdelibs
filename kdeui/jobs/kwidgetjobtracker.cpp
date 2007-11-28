@@ -367,7 +367,7 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
             speedLabel->setText(i18n("%1/s (done)",
                                         KGlobal::locale()->formatByteSize(1000 * totalSize / s)));
         }
-        q->setAutoDelete(job, true);
+        tracker->setAutoDelete(job, true);
     }
 }
 
@@ -385,12 +385,12 @@ void KWidgetJobTracker::Private::ProgressWidget::resumed()
 
 void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 {
-    if (q->stopOnClose(job)) {
-        q->slotStop(job);
-    } else if (q->autoDelete(job)) {
+    if (tracker->stopOnClose(job)) {
+        tracker->slotStop(job);
+    } else if (tracker->autoDelete(job)) {
         deleteLater();
     } else {
-        q->slotClean(job);
+        tracker->slotClean(job);
     }
 
     QWidget::closeEvent(event);
@@ -577,16 +577,16 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 {
     if ( !suspendedProperty ) {
-        q->slotSuspend(job);
+        tracker->slotSuspend(job);
     } else {
-        q->slotResume(job);
+        tracker->slotResume(job);
     }
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
-    q->slotStop(job);
-    q->widget(job)->deleteLater();
+    tracker->slotStop(job);
+    tracker->widget(job)->deleteLater();
 }
 
 #include "kwidgetjobtracker.moc"
