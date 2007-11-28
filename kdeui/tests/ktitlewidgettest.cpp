@@ -40,6 +40,12 @@ public:
 
         mainLayout->addWidget(titleWidget);
 
+        KTitleWidget *errorTitle = new KTitleWidget(this);
+        errorTitle->setText("Title");
+        errorTitle->setComment("Error Comment", KTitleWidget::ErrorMessage);
+
+        mainLayout->addWidget(errorTitle);
+
         KTitleWidget *checkboxTitleWidget = new KTitleWidget(this);
 
         QWidget *checkBoxTitleMainWidget = new QWidget(this);

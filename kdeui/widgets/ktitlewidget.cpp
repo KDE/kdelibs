@@ -158,6 +158,15 @@ void KTitleWidget::setBuddy(QWidget *buddy)
     d->textLabel->setBuddy(buddy);
 }
 
+void KTitleWidget::changeEvent(QEvent *e)
+{
+    QWidget::changeEvent(e);
+    if (e->type() == QEvent::PaletteChange) {
+        d->textLabel->setStyleSheet(d->textLabel->styleSheet());
+        d->commentLabel->setStyleSheet(d->commentLabel->styleSheet());
+    }
+}
+
 void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
 {
     d->textLabel->setVisible(!text.isNull());
@@ -190,11 +199,7 @@ void KTitleWidget::setComment(const QString &comment, MessageType type)
         case InfoMessage:
         case WarningMessage:
         case ErrorMessage:
-            styleSheet = QString("QLabel { font-color: %1; background: %2 }")
-                                .arg(palette().color(QPalette::Active,
-                                                     QPalette::HighlightedText).name(),
-                                     palette().color(QPalette::Active,
-                                                     QPalette::Highlight).name());
+            styleSheet = QString("QLabel { color: palette(highlighted-text); background: palette(highlight); }");
             break;
         case PlainMessage:
         default:

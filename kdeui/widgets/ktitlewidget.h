@@ -193,6 +193,7 @@ public Q_SLOTS:
     void setAutoHideTimeout(int msecs);
 
 protected:
+    void changeEvent(QEvent *e);
     void showEvent(QShowEvent *event);
     bool eventFilter(QObject *object, QEvent *event);
 
