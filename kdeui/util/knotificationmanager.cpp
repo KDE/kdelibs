@@ -50,13 +50,15 @@ KNotificationManager::KNotificationManager()
 {
     d->knotify =
         new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"), QDBusConnection::sessionBus(), this);
-    if (d->knotify->isValid())
-    {
-        QObject::connect(d->knotify, SIGNAL(notificationClosed(int)),
-                         this, SLOT(notificationClosed(int)));
-        QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),
-                         this, SLOT(notificationActivated(int,int)));
-    }
+    d->knotify->connection().connect(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
+                           QLatin1String("org.kde.KNotify"), 
+                           QLatin1String("notificationClosed"),
+                           this, SLOT(notificationClosed(int)));
+    d->knotify->connection().connect(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
+                           QLatin1String("org.kde.KNotify"),
+                           QLatin1String("notificationActivated"),
+                           this, SLOT(notificationActivated(int,int)));
+
 }
 
 
@@ -137,7 +139,7 @@ void KNotificationManager::remove( int id)
 
 void KNotificationManager::insert(KNotification *n, int id)
 {
-	d->notifications.insert(id, n);
+    d->notifications.insert(id, n);
 }
 
 void KNotificationManager::update(KNotification * n, int id)
