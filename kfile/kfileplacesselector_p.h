@@ -82,6 +82,10 @@ protected:
      */
     virtual void paintEvent(QPaintEvent* event);
 
+    virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dragLeaveEvent(QDragLeaveEvent* event);
+    virtual void dropEvent(QDropEvent* event);
+
 private Q_SLOTS:
     /**
      * Updates the selected index and the icon to the bookmark

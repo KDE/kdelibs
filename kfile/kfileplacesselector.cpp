@@ -26,8 +26,12 @@
 #include <kglobalsettings.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
+#include <kmimetype.h>
 #include <kdebug.h>
 
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDragLeaveEvent>
+#include <QtGui/QDropEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 #include <kicon.h>
@@ -51,6 +55,8 @@ KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel
             this, SLOT(activatePlace(QAction*)));
 
     setMenu(m_placesMenu);
+
+    setAcceptDrops(true);
 }
 
 KFilePlacesSelector::~KFilePlacesSelector()
@@ -158,6 +164,41 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     const int x = (buttonWidth -  pixmap.width()) / 2;
     const int y = (buttonHeight - pixmap.height()) / 2;
     painter.drawPixmap(x, y, pixmap);
+}
+
+void KFilePlacesSelector::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasUrls()) {
+        setDisplayHintEnabled(DraggedHint, true);
+        event->acceptProposedAction();
+
+        update();
+    }
+}
+
+void KFilePlacesSelector::dragLeaveEvent(QDragLeaveEvent* event)
+{
+    KUrlButton::dragLeaveEvent(event);
+
+    setDisplayHintEnabled(DraggedHint, false);
+    update();
+}
+
+void KFilePlacesSelector::dropEvent(QDropEvent* event)
+{
+    setDisplayHintEnabled(DraggedHint, false);
+    update();
+
+    const KUrl::List urlList = KUrl::List::fromMimeData(event->mimeData());
+    if (urlList.isEmpty()) {
+        return;
+    }
+    foreach(KUrl url, urlList) {
+        KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
+        if (mimetype->is("inode/directory")) {
+            m_placesModel->addPlace(url.fileName(), url);
+        }
+    }
 }
 
 void KFilePlacesSelector::activatePlace(QAction* action)
