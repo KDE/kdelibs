@@ -1280,8 +1280,14 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
     // parenthesis construct should be removed. Provide these filtering i18n
     // messages so that translators can use Transcript for custom removal.
     if ( event->type() == QEvent::Show || event->type() == QEvent::Paint || event->type() == QEvent::EnabledChange ) {
-      tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", act->text()));
-      tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", act->toolTip()));
+      if (!tb->defaultAction()) {
+        if (!act->iconText().isEmpty()) {
+          tb->setText(act->iconText());
+        } else {
+          tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", act->text()));
+        }
+        tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", act->toolTip()));
+      }
     }
   }
 
