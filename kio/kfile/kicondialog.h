@@ -11,8 +11,8 @@
  * exact licensing terms.
  */
 
-#ifndef __KIconDialog_h__
-#define __KIconDialog_h__
+#ifndef KICONDIALOG_H
+#define KICONDIALOG_H
 
 #include <kio/kio_export.h>
 
@@ -202,7 +202,6 @@ public:
      * @param parent The parent widget of the dialog.
      * @param caption The caption to use for the dialog.
      * @return The name of the icon, suitable for loading with KIconLoader.
-     * @version New in 3.0
      */
     static QString getIcon(KIconLoader::Group group=KIconLoader::Desktop,
                            KIconLoader::Context context=KIconLoader::Application,
@@ -332,4 +331,4 @@ private:
 };
 
 
-#endif // __KIconDialog_h__
+#endif // KICONDIALOG_H

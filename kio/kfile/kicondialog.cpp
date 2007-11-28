@@ -17,29 +17,22 @@
 
 #include <kbuttongroup.h>
 #include <klistwidgetsearchline.h>
-#include <assert.h>
-
 #include <kapplication.h>
 #include <klocale.h>
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
+#include <ksvgrenderer.h>
 
 #include <QtGui/QLayout>
-#include <QtGui/QImage>
-#include <QtGui/QPixmap>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
 #include <QtCore/QTimer>
 #include <QtGui/QRadioButton>
 #include <QtCore/QFileInfo>
 #include <QtGui/QProgressBar>
-#include <ksvgrenderer.h>
-
-#include <QImage>
-#include <QPainter>
+#include <QtGui/QPainter>
 
 class KIconCanvas::KIconCanvasPrivate
 {
@@ -113,7 +106,7 @@ void KIconCanvas::loadFiles(const QStringList& files)
     d->mFiles = files;
     emit startLoading(d->mFiles.count());
     d->mpTimer->setSingleShot(true);
-    d->mpTimer->start(10); // #86680
+    d->mpTimer->start(10);
     d->m_bLoading = false;
 }
 
@@ -132,18 +125,13 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     QStringList::ConstIterator end(mFiles.end());
     for (it=mFiles.begin(), i=0; it!=end; ++it, i++)
     {
-	// Calling kapp->processEvents() makes the iconview flicker like hell
-	// (it's being repainted once for every new item), so we don't do this.
-	// Instead, we directly repaint the progress bar without going through
-	// the event-loop. We do that just once for every 10th item so that
-	// the progress bar doesn't flicker in turn. (pfeiffer)
 	if ( emitProgress >= 10 ) {
             emit q->progress(i);
             emitProgress = 0;
         }
 
         emitProgress++;
-//	kapp->processEvents();
+
         if (!m_bLoading) { // user clicked on a button that will load another set of icons
             break;
         }
@@ -270,7 +258,6 @@ class KIconDialog::KIconDialogPrivate
 KIconDialog::KIconDialog(QWidget *parent)
     : KDialog(parent), d(new KIconDialogPrivate(this))
 {
-    setObjectName( "icondialog" );
     setModal( true );
     setCaption( i18n("Select Icon") );
     setButtons( Ok | Cancel );
@@ -283,7 +270,6 @@ KIconDialog::KIconDialog(QWidget *parent)
 KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
     : KDialog(parent), d(new KIconDialogPrivate(this))
 {
-    setObjectName( "icondialog" );
     setModal( true );
     setCaption( i18n("Select Icon") );
     setButtons( Ok | Cancel );
@@ -393,7 +379,7 @@ void KIconDialog::KIconDialogPrivate::init()
     mNumContext = 0;
     int cnt = sizeof( context_text ) / sizeof( context_text[ 0 ] );
     // check all 3 arrays have same sizes
-    assert( cnt == sizeof( context_id ) / sizeof( context_id[ 0 ] )
+    Q_ASSERT( cnt == sizeof( context_id ) / sizeof( context_id[ 0 ] )
             && cnt == sizeof( mContextMap ) / sizeof( mContextMap[ 0 ] ));
     for( int i = 0;
          i < cnt;
@@ -569,7 +555,6 @@ QString KIconDialog::getIcon(KIconLoader::Group group, KIconLoader::Context cont
                              QWidget *parent, const QString &caption)
 {
     KIconDialog dlg(parent);
-    dlg.setObjectName(QLatin1String("icon dialog"));
     dlg.setup( group, context, strictIconSize, iconSize, user );
     if (!caption.isNull())
         dlg.setCaption(caption);
@@ -638,9 +623,6 @@ void KIconDialog::KIconDialogPrivate::_k_slotStartLoading(int steps)
 void KIconDialog::KIconDialogPrivate::_k_slotProgress(int p)
 {
     mpProgress->setValue(static_cast<int>(100.0 * (double)p / (double)mNumOfSteps));
-    // commented out the following since setProgress already paints ther
-    // progress bar. ->repaint() only makes it flicker
-    //mpProgress->repaint();
 }
 
 void KIconDialog::KIconDialogPrivate::_k_slotFinished()
@@ -681,11 +663,13 @@ class KIconButton::KIconButtonPrivate
 KIconButton::KIconButton(QWidget *parent)
     : QPushButton(parent), d(new KIconButtonPrivate(this, KIconLoader::global()))
 {
+    QPushButton::setIconSize(QSize(48, 48));
 }
 
 KIconButton::KIconButton(KIconLoader *loader, QWidget *parent)
     : QPushButton(parent), d(new KIconButtonPrivate(this, loader))
 {
+    QPushButton::setIconSize(QSize(48, 48));
 }
 
 KIconButton::KIconButtonPrivate::KIconButtonPrivate(KIconButton *qq, KIconLoader *loader)
@@ -744,7 +728,7 @@ void KIconButton::setIconType(KIconLoader::Group group, KIconLoader::Context con
 void KIconButton::setIcon(const QString& icon)
 {
     d->mIcon = icon;
-    setIcon(d->mpLoader->loadIconSet(d->mIcon, d->mGroup, d->iconSize));
+    setIcon(KIcon(d->mIcon));
 
     if (!d->mpDialog) {
         d->mpDialog = new KIconDialog(d->mpLoader, this);
@@ -789,8 +773,7 @@ void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
     if (name.isEmpty())
         return;
 
-    QIcon iconset = mpLoader->loadIconSet(name, mGroup, iconSize);
-    q->setIcon(iconset);
+    q->setIcon(KIcon(name));
     mIcon = name;
 
     if (mbUser) {
