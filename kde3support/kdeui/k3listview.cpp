@@ -1282,6 +1282,18 @@ void K3ListView::contentsDragEnterEvent(QDragEnterEvent *event)
     event->accept();
 }
 
+void K3ListView::contentsContextMenuEvent( QContextMenuEvent *event )
+{
+    Q3ListView::contentsContextMenuEvent(event);
+
+    // if KGlobalSettings::contextMenuKey() == Qt::Key_Menu it will never reach
+    // keyPressEvent() as it's handled by QKeyMapper::sendKeyEvent()
+    if (event->reason() == QContextMenuEvent::Keyboard
+        && d->contextMenuKey == Qt::Key_Menu) {
+        emit menuShortCutPressed (this, currentItem());
+    }
+}
+
 void K3ListView::setDropVisualizerWidth (int w)
 {
   d->mDropVisualizerWidth = w > 0 ? w : 1;

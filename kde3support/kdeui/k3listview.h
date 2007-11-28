@@ -778,6 +778,15 @@ protected:
   virtual void contentsDragEnterEvent (QDragEnterEvent *);
 
   /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
+  virtual void contentsContextMenuEvent ( QContextMenuEvent * );
+
+  /**
    * @return a dragobject encoding the current selection.
    *
    * @see setDragEnabled()
