@@ -1,0 +1,86 @@
+bugs
+====
+
+- call reparseConfiguration() in addConfigSources()
+- make expandString stuff consistent
+- KConfigGroup::revertToDefault
+  - does not match apidoc re. reverting to kdeglobals
+  - should use entryMap.revertEntry()
+  - map has no bRevert flag that could be set along with bDirty, so it
+    is impossible to get rid of a once set key
+- KConfigGroup::deleteGroup
+  - is non-recursive
+  - the group still exists() afterwards
+- immutable groups with no entries are not written out and thus lose
+  their immutability.
+- "C" & "en_US" should be detected early and converted to a null string
+  (but also save the original string, so locale() semantics don't change
+  at that point).
+
+wishes
+======
+
+- add kconfiggroup::parentGroup()
+- use lazy loading
+- add $\\VAR and $\\(cmd) escapes to list-quote expanded string
+- possibly:
+  - preserve unchanged parts of the config literally. problem: comments
+    might become stale.
+  - api to actively add comments to files, groups and keys
+  - guaranteeing that write order of new keys is preserved
+
+internals
+=========
+
+- the handling of opening kdeglobals explicitly seems weird, at least.
+  couldn't it simply mask out IncludeGlobals and thus handle it as any
+  other config without globals instead of spreading kdeglobals special
+  cases all over the place?
+- clear up bDeleted vs. isNull in entrymap
+- make entrymap truly hierarchical
+
+
+overwriting semantics
+=====================
+
+generally:
+- localized entries cannot exist without an unlocalized "primary" entry,
+  so writing a localized key when no corresponding unlocalized key
+  exists should print a warning and copy the value to the unlocalized
+  key.
+- a primary entry in the user config overshadows not only the immediate
+  default, but also any localizations of the default. applies also to a
+  [$d] marker, obviously.
+  a localized entry in the user config overshadows only that
+  localization from the default.
+
+write ops:
+> > - writing an entry with the localization flag changes really only that
+> >   key.
+> >   trying to change the globality of the key prints a warning and does
+> >   nothing.
+- key exists in local config => overwritten
+- key does not exist => created
+yes, that's the trivial case.
+
+> > - writing an entry without the localization flag deletes all
+> >   localizations.
+> >   in this case, changing the globality of the key poses no problem.
+- the key itself is handled trivially
+- if localizations exist in the local config, they are actively purged
+- localizations in the default config don't matter, as they will be
+  overshadowed by the unlocalized key in the local config
+
+> > - deleting an entry also deletes all localizations.
+- if default exists, write [$d] entry
+- if no default exists, delete entry
+- if localizations exist in the local config, they are actively purged
+- localizations in the default config don't matter, as they will be
+  overshadowed by the unlocalized key in the local config (as
+  localizations cannot exist without a primary key, a deletion marker
+  key will be present).
+
+> > - reverting a key to default also restores all localizations.
+- any local entries are actively purged
+
+
