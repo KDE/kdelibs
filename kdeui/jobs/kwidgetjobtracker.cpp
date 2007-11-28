@@ -23,7 +23,7 @@
 #include "kwidgetjobtracker_p.h"
 
 #include <QProcess>
-#include <QTime>
+#include <QTimer>
 #include <QLabel>
 #include <QCheckBox>
 #include <QProgressBar>
@@ -41,9 +41,25 @@
 #include <klocale.h>
 #include <kwindowsystem.h>
 
+void KWidgetJobTracker::Private::_k_slotShowProgressWidget()
+{
+    if (progressWidgetsToBeShown.isEmpty()) {
+        return;
+    }
+
+    KJob *job = progressWidgetsToBeShown.dequeue();
+
+    // If the job has been unregistered before reaching this point, widget will
+    // return 0.
+    QWidget *widget = q->widget(job);
+
+    if (widget) {
+        widget->show();
+    }
+}
 
 KWidgetJobTracker::KWidgetJobTracker(QWidget *parent)
-    : KAbstractWidgetJobTracker(parent), d(new Private(parent))
+    : KAbstractWidgetJobTracker(parent), d(new Private(parent, this))
 {
 }
 
@@ -70,9 +86,10 @@ void KWidgetJobTracker::registerJob(KJob *job)
     }
 
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
-    vi->show();
-
     d->progressWidget.insert(job, vi);
+    d->progressWidgetsToBeShown.enqueue(job);
+
+    QTimer::singleShot(500, this, SLOT(_k_slotShowProgressWidget()));
 }
 
 void KWidgetJobTracker::unregisterJob(KJob *job)

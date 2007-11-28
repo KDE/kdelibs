@@ -24,6 +24,7 @@
 #include <QWidget>
 #include <QMap>
 #include <QTime>
+#include <QQueue>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -38,16 +39,23 @@ class QProgressBar;
 class KWidgetJobTracker::Private
 {
 public:
-    Private(QWidget *parent)
-        : parent(parent) { }
+    Private(QWidget *parent, KWidgetJobTracker *tracker)
+        : parent(parent)
+        , q(tracker)
+    {
+    }
 
     ~Private() {
     }
 
+    void _k_slotShowProgressWidget();
+
     class ProgressWidget;
 
     QWidget *parent;
+    KWidgetJobTracker *q;
     QMap<KJob*, ProgressWidget*> progressWidget;
+    QQueue<KJob*> progressWidgetsToBeShown;
 };
 
 
@@ -71,6 +79,7 @@ public:
 
     ~ProgressWidget()
     {
+        q->d->progressWidget.remove(job);
     }
 
     KWidgetJobTracker *const q;
