@@ -1226,7 +1226,10 @@ bool TCPSlaveBase::waitForResponse( int t )
 #ifdef USE_SOCKETFACTORY
   return d->socket->waitForReadyRead(t * 1000);
 #else
-  return d->socket->waitForMore(t * 1000) > 0;
+  // We want to return true if we saw EOF as well, as it is after all 
+  // activity (and that's how KDE3 behaved)
+  bool timeout = false;
+  return d->socket->waitForMore(t * 1000, &timeout) >= 0 && !timeout;
 #endif
 }
 
