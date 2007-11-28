@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,18 +19,11 @@
 
 #include "ksettingswidgetadaptor.h"
 #include <QtCore/QString>
-#include <kapplication.h>
-#include <kdebug.h>
+#include <kglobal.h>
 
 KSettingsWidgetAdaptor::KSettingsWidgetAdaptor(QObject *parent)
-    : QDBusAbstractAdaptor(parent)
+    : QObject(parent)
 {
-	kDebug() ;
-	setAutoRelaySignals(true);
-}
-KSettingsWidgetAdaptor::~KSettingsWidgetAdaptor()
-{
-	kDebug() ;
 }
 
 QString KSettingsWidgetAdaptor::applicationName()
@@ -39,4 +32,3 @@ QString KSettingsWidgetAdaptor::applicationName()
 }
 
 #include "ksettingswidgetadaptor.moc"
-// vim: sw=4 ts=4 tw=80

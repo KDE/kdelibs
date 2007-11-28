@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,31 +21,20 @@
 #define KSETTINGSWIDGETADAPTOR_H
 
 #include <QtCore/QObject>
-#include <QtDBus/QtDBus>
 class QString;
 
 /*
- * Adaptor class for interface org.kde.internal.KSettingsWidget
+ * Simple D-Bus object to return the KGlobal::caption()
  */
-class KSettingsWidgetAdaptor: public QDBusAbstractAdaptor
+class KSettingsWidgetAdaptor: public QObject
 {
 	Q_OBJECT
 	Q_CLASSINFO("D-Bus Interface", "org.kde.internal.KSettingsWidget")
-	/*
-	Q_CLASSINFO("D-Bus Introspection", ""
-			"  <interface name=\"org.kde.internal.KSettingsWidget\" >\n"
-			"    <method name=\"applicationName\" >\n"
-			"      <arg direction=\"out\" type=\"s\" />\n"
-			"    </method>\n"
-			"  </interface>\n"
-			"")*/
 	public:
 		KSettingsWidgetAdaptor(QObject *parent);
-		~KSettingsWidgetAdaptor();
 
 	public Q_SLOTS:
 		QString applicationName();
 };
 
-// vim: sw=4 ts=4 tw=80
 #endif // KSETTINGSWIDGETADAPTOR_H
