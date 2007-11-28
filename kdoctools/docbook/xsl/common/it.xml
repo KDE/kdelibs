@@ -402,18 +402,18 @@
       <l:template name="docnamelong" text=" in the document titled %o" lang="en"/>
       <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
       <l:template name="Page" text="Page %p" lang="en"/>
-      <l:template name="bridgehead" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsection" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsect1" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsect2" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsect3" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect1" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect2" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect3" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect4" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect5" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="section" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="la sezione chiamata &#8220;%t&#8221;"/>
+      <l:template name="bridgehead" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsection" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsect1" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsect2" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsect3" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect1" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect2" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect3" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect4" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect5" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="section" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="simplesect" text="la sezione chiamata &#171;%t&#187;"/>
    </l:context>
 
    <l:context name="xref-number">
@@ -441,27 +441,27 @@
 
    <l:context name="xref-number-and-title">
       <l:template name="appendix" text="Appendice&#160;%n, %t"/>
-      <l:template name="bridgehead" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="bridgehead" text="Sezione&#160;%n, &#171;%t&#187;"/>
       <l:template name="chapter" text="Capitolo&#160;%n, %t"/>
-      <l:template name="equation" text="Equazione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="example" text="Esempio&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="figure" text="Figura&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="part" text="Parte&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="procedure" text="Procedura&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="productionset" text="Produzione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="refsect1" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsect2" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsect3" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="refsection" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="sect1" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect2" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect3" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect4" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect5" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="section" text="Sezione&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="la sezione chiamata &#8220;%t&#8221;"/>
-      <l:template name="table" text="Tabella&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="equation" text="Equazione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="example" text="Esempio&#160;%n, &#171;%t&#187;"/>
+      <l:template name="figure" text="Figura&#160;%n, &#171;%t&#187;"/>
+      <l:template name="part" text="Parte&#160;%n, &#171;%t&#187;"/>
+      <l:template name="procedure" text="Procedura&#160;%n, &#171;%t&#187;"/>
+      <l:template name="productionset" text="Produzione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="qandadiv" text="Q &amp; A&#160;%n, &#171;%t&#187;"/>
+      <l:template name="refsect1" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsect2" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsect3" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="refsection" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="sect1" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="sect2" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="sect3" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="sect4" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="sect5" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="section" text="Sezione&#160;%n, &#171;%t&#187;"/>
+      <l:template name="simplesect" text="la sezione chiamata &#171;%t&#187;"/>
+      <l:template name="table" text="Tabella&#160;%n, &#171;%t&#187;"/>
    </l:context>
 
    <l:context name="authorgroup">
