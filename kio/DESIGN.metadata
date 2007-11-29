@@ -35,6 +35,8 @@ window-id       number          winId() of the window the request is associated 
 
 resume          number          Try to get the file starting at the given offset (set by TransferJob)
 
+resume_until    number          Try to get the file until at the given offset (not set in kdelibs; handled by kio_http).
+
 charset         string          Charset of the current content as returned by a HTTP Header Response.
 
 Charsets        string          Charset(s) send in the "Accept-Charset:" HTTP Request Header.
