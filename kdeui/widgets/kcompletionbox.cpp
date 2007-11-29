@@ -349,6 +349,9 @@ void KCompletionBox::setVisible( bool visible )
 
 QRect KCompletionBox::calculateGeometry() const
 {
+    if (count() == 0)
+        return QRect();
+
     int x = 0, y = 0;
 
     Q_ASSERT( visualItemRect(item(0)).isValid() );
