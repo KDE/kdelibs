@@ -68,7 +68,7 @@ namespace KStandardShortcut
     BackwardWord, ForwardWord,
     // View parameters
     AddBookmark, ZoomIn, ZoomOut, FullScreen,
-    PopupMenuContext, ShowMenubar,
+    ShowMenubar,
     // Tabular navigation
     TabNext, TabPrev,
     // Help menu
@@ -393,12 +393,6 @@ namespace KStandardShortcut
    * @return the shortcut of the standard accelerator
    */
   KDEUI_EXPORT const KShortcut &rotateDown();
-
-  /**
-   * popup a context menu. Default: Menu
-   * @return the shortcut of the standard accelerator
-   */
-  KDEUI_EXPORT const KShortcut &popupMenuContext();
 
   /**
    * What's This button. Default: Shift+F1

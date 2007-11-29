@@ -108,7 +108,6 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
 	{ ZoomOut,             "ZoomOut", I18N_NOOP2("@action","Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
 	{ FullScreen,          "FullScreen", I18N_NOOP2("@action","Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
 
-	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP2("@action","Popup Menu Context"), Qt::Key_Menu, 0, KShortcut(), false },
 	{ ShowMenubar,         "ShowMenubar", I18N_NOOP2("@action","Show Menu Bar"),CTRL(M), 0, KShortcut(), false },
 	{ TabNext,             I18N_NOOP2("@action","Activate Next Tab"), 0, CTRL(Period), CTRL(BracketRight), KShortcut(), false },
 	{ TabPrev,             I18N_NOOP2("@action","Activate Previous Tab"), 0, CTRL(Comma), CTRL(BracketLeft), KShortcut(), false },
@@ -299,7 +298,6 @@ const KShortcut& nextCompletion()        { return shortcut( NextCompletion ); }
 const KShortcut& rotateUp()              { return shortcut( RotateUp ); }
 const KShortcut& rotateDown()            { return shortcut( RotateDown ); }
 const KShortcut& substringCompletion()   { return shortcut( SubstringCompletion ); }
-const KShortcut& popupMenuContext()      { return shortcut( PopupMenuContext ); }
 const KShortcut& whatsThis()             { return shortcut( WhatsThis ); }
 const KShortcut& reload()                { return shortcut( Reload ); }
 const KShortcut& selectAll()             { return shortcut( SelectAll ); }

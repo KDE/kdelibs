@@ -162,9 +162,6 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 		case KStandardShortcut::Reload:
 			markup += "Reload";
 			break;
-		case KStandardShortcut::PopupMenuContext:
-			markup += "PopupMenuContext";
-			break;
 		case KStandardShortcut::ShowMenubar:
 			markup += "ShowMenubar";
 			break;
