@@ -3,6 +3,8 @@
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2007      Daniel Nicoletti <mirttex@users.sourceforge.net>
+
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -104,6 +106,7 @@ public:
       port = 0;
       method = KIO::HTTP_UNKNOWN;
       offset = 0;
+      endoffset = 0;
       doProxy = false;
       allowCompressedPage = false;
       disablePassDlg = false;
@@ -131,6 +134,7 @@ public:
     KIO::HTTP_METHOD method;
     KIO::CacheControl cache;
     KIO::filesize_t offset;
+    KIO::filesize_t endoffset;
     KUrl url;
     QString window;                 // Window Id this request is related to.
     QString referrer;

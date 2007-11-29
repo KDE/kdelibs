@@ -4,6 +4,8 @@
    Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2007      Nick Shaforostoff <shafff@ukr.net>
+   Copyright (C) 2007      Daniel Nicoletti <mirttex@users.sourceforge.net>
+
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -336,9 +338,16 @@ void HTTPProtocol::resetSessionSettings()
   // Adjust the offset value based on the "resume" meta-data.
   QString resumeOffset = metaData("resume");
   if ( !resumeOffset.isEmpty() )
-     m_request.offset = resumeOffset.toInt(); // TODO: Convert to 64 bit
+     m_request.offset = resumeOffset.toULongLong();
   else
      m_request.offset = 0;
+
+  // Adjust the endoffset value based on the "resume_until" meta-data.
+  QString resumeEndOffset = metaData("resume_until");
+  if ( !resumeEndOffset.isEmpty() )
+     m_request.endoffset = resumeEndOffset.toULongLong();
+  else
+     m_request.endoffset = 0;
 
   m_request.disablePassDlg = config()->readEntry("DisablePassDlg", false);
   m_request.allowCompressedPage = config()->readEntry("AllowCompressedPage", true);
@@ -2334,10 +2343,15 @@ bool HTTPProtocol::httpOpen()
         header += "\r\n";
     }
 
-    if ( m_request.offset > 0 )
+    if ( m_request.offset >= 0 && m_request.endoffset > m_request.offset )
     {
-      header += QString("Range: bytes=%1-\r\n").arg(KIO::number(m_request.offset));
-      kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset);
+        header += QString("Range: bytes=%1-%2\r\n").arg(KIO::number(m_request.offset)).arg(KIO::number(m_request.endoffset));
+        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) << " - "  << KIO::number(m_request.endoffset);
+    }
+    else if ( m_request.offset > 0 && m_request.endoffset == 0 )
+    {
+        header += QString("Range: bytes=%1-\r\n").arg(KIO::number(m_request.offset));
+        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset);
     }
 
     if ( m_request.cache == CC_Reload )
