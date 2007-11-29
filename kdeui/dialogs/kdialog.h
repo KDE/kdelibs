@@ -144,6 +144,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       Close   = 0x00000040, ///< Show Close-button. (this button closes the dialog)
       No      = 0x00000080, ///< Show No button. (this button closes the dialog and sets the result to KDialog::No)
       Yes     = 0x00000100, ///< Show Yes button. (this button closes the fialog and sets the result to KDialog::Yes)
+      Reset   = 0x00000200, ///< Show Reset button
       Details = 0x00000400, ///< Show Details button. (this button will show the detail widget set with setDetailsWidget)
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
@@ -654,6 +655,12 @@ class KDEUI_EXPORT KDialog : public QDialog
      * slotButtonClicked() is not replaced
      */
     void defaultClicked();
+
+    /**
+     * The Reset button was pressed. This signal is only emitted if
+     * slotButtonClicked() is not replaced
+     */
+    void resetClicked();
 
     /**
      * The User3 button was pressed. This signal is only emitted if

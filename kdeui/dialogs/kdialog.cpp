@@ -107,6 +107,7 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
       role = QDialogButtonBox::HelpRole;
       break;
     case KDialog::Default:
+    case KDialog::Reset:
       role = QDialogButtonBox::ResetRole;
       break;
     case KDialog::Ok:
@@ -210,6 +211,8 @@ void KDialog::setButtons( ButtonCodes buttonMask )
     d->appendButton( Help, KStandardGuiItem::help() );
   if ( buttonMask & Default )
     d->appendButton( Default, KStandardGuiItem::defaults() );
+  if ( buttonMask & Reset )
+    d->appendButton( Reset, KStandardGuiItem::reset() );
   if ( buttonMask & User3 )
     d->appendButton( User3, KGuiItem() );
   if ( buttonMask & User2 )
@@ -918,6 +921,9 @@ void KDialog::slotButtonClicked( int button )
       break;
     case Default:
       emit defaultClicked();
+      break;
+    case Reset:
+      emit resetClicked();
       break;
     case Details:
       setDetailsWidgetVisible( !d->mDetailsVisible );
