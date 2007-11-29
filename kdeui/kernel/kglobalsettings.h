@@ -144,8 +144,9 @@ public:
      * context menus.
      *
      * @return the key that pops up context menus.
+     * @deprecated Simply reimplement QWidget::contextMenuEvent() instead.
      */
-    static int contextMenuKey ();
+    static KDE_DEPRECATED int contextMenuKey ();
 
     /**
      * Returns the KDE setting for context menus.
