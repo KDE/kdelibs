@@ -100,7 +100,6 @@ public:
       selectionDirection(0),
       tooltipColumn (0),
       selectionMode (Single),
-      contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
       mDropVisualizerWidth (4),
       paintAbove (0),
@@ -159,7 +158,6 @@ public:
   int tooltipColumn;
 
   SelectionModeExt selectionMode;
-  int contextMenuKey;
   bool showContextMenusOnPress;
 
   QRect mOldDropVisualizer;
@@ -552,7 +550,6 @@ void K3ListView::slotSettingsChanged(int category)
     break;
 
   case KGlobalSettings::SETTINGS_POPUPMENU:
-    d->contextMenuKey = KGlobalSettings::contextMenuKey ();
     d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 
     if (d->showContextMenusOnPress)
@@ -1286,10 +1283,7 @@ void K3ListView::contentsContextMenuEvent( QContextMenuEvent *event )
 {
     Q3ListView::contentsContextMenuEvent(event);
 
-    // if KGlobalSettings::contextMenuKey() == Qt::Key_Menu it will never reach
-    // keyPressEvent() as it's handled by QKeyMapper::sendKeyEvent()
-    if (event->reason() == QContextMenuEvent::Keyboard
-        && d->contextMenuKey == Qt::Key_Menu) {
+    if (event->reason() == QContextMenuEvent::Keyboard) {
         emit menuShortCutPressed (this, currentItem());
     }
 }
@@ -1464,13 +1458,6 @@ bool K3ListView::below (Q3ListViewItem* i, const QPoint& p)
 
 void K3ListView::keyPressEvent (QKeyEvent* e)
 {
-  //don't we need a contextMenuModifier too ? (aleXXX)
-  if (e->key() == d->contextMenuKey)
-        {
-          emit menuShortCutPressed (this, currentItem());
-          return;
-        }
-
   if (d->selectionMode != FileManager)
         Q3ListView::keyPressEvent (e);
   else
