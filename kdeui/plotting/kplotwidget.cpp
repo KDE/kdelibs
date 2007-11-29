@@ -548,7 +548,7 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
     p.begin( this );
     p.setRenderHint( QPainter::Antialiasing, d->useAntialias );
     p.fillRect( rect(), backgroundColor() );
-    p.translate( leftPadding(), topPadding() );
+    p.translate( leftPadding() + 0.5, topPadding() + 0.5 );
 
     setPixRect();
     p.setClipRect( d->pixRect );
