@@ -350,7 +350,6 @@ void KDirModelPrivate::_k_slotDeleteItem(const KFileItem& item)
     const QPair<int, KDirModelNode*> result = nodeForUrl(item.url()); // O(n*m)
     const int rowNumber = result.first;
     KDirModelNode* node = result.second;
-    Q_ASSERT(node);
     if (!node)
         return;
 
