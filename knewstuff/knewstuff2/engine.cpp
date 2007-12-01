@@ -67,11 +67,13 @@ public:
     KNS::Provider::List m_providers;
     bool m_modal;
     QWidget * m_parent;
+    QList<KNS::Entry*> m_changedEntries;
 
   private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
     void slotProvidersFailed();
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntryChanged(KNS::Entry *entry);
     void slotEntriesFailed();
     void slotEntryUploaded();
     void slotEntryFailed();
@@ -129,6 +131,9 @@ void EnginePrivate::workflow()
         connect(this,
                 SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
                 SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
+        connect(this,
+                SIGNAL(signalEntryChanged(KNS::Entry *)),
+                SLOT(slotEntryChanged(KNS::Entry *)));
 
         m_downloaddialog = new DownloadDialog(this,m_parent);
         m_downloaddialog->show();
@@ -179,7 +184,7 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
 	d->workflow();
 
-	return KNS::Entry::List();
+	return d->m_changedEntries;
 }
 
 void Engine::downloadDialog()
@@ -391,6 +396,12 @@ void EnginePrivate::slotEntriesFeedFinished(const KNS::Feed *feed)
 
     Q_UNUSED(feed);
     //m_downloaddialog->refresh();
+}
+
+void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
+{
+    //kDebug() << "adding entries to list of changed entries";
+    m_changedEntries << entry;
 }
 
 void EnginePrivate::slotEntriesFinished()
