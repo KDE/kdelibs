@@ -83,6 +83,8 @@
 1001        kparts (mainwindow)
 1002        kparts (factory)
 
+1100        kdeedu
+
 # kdebase
 1201        konqtree
 1202        konqueror
