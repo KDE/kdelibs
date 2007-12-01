@@ -25,10 +25,11 @@
 
 #include "knewstuff2/core/entryhandler.h" // tmp
 
-#include <kapplication.h> // kapp-ptr
+#include <kcomponentdata.h>
 #include <kglobal.h>
-
 #include <kdebug.h>
+
+#include <qeventloop.h>
 
 using namespace KNS;
 
@@ -47,6 +48,7 @@ public:
         m_entry = NULL;
         m_modal = false;
         m_parent = parent;
+        m_loop = 0;
     }
 
     enum Command
@@ -58,6 +60,7 @@ public:
 
     void workflow();
     KNS::Entry* upload(const QString& file);
+    void stopLoop();
 
     Command m_command;
     UploadDialog *m_uploaddialog;
@@ -68,6 +71,7 @@ public:
     bool m_modal;
     QWidget * m_parent;
     QList<KNS::Entry*> m_changedEntries;
+    QEventLoop* m_loop;
 
   private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
@@ -145,10 +149,17 @@ void EnginePrivate::workflow()
 
     if(m_modal)
     {
-        while((m_command == command_upload) || (m_command == command_download))
-        {
-            kapp->processEvents();
-        }
+        QEventLoop loop;
+        m_loop = &loop;
+        loop.exec();
+    }
+}
+
+void EnginePrivate::stopLoop()
+{
+    if (m_loop) {
+        m_loop->exit();
+        m_loop = 0;
     }
 }
 
@@ -297,6 +308,7 @@ void EnginePrivate::slotProvidersFailed()
     //kDebug(550) << "Engine: slotProvidersFailed";
 
     m_command = command_none;
+    stopLoop();
 }
 
 void EnginePrivate::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
@@ -320,6 +332,8 @@ void EnginePrivate::slotEntryUploaded()
     //m_entry = ...; // FIXME: where do we get it from now?
     // FIXME: we cannot assign it earlier, probably need m_delayedentry
     // FIXME: if not modal, this must be a signal to the outside (is already the case?)
+
+    stopLoop();
 }
 
 void EnginePrivate::slotEntryFailed()
@@ -327,6 +341,8 @@ void EnginePrivate::slotEntryFailed()
     //kDebug(550) << "Engine: slotEntryFailed";
 
     m_command = command_none;
+
+    stopLoop();
 }
 
 void EnginePrivate::slotProvidersFinished()
@@ -351,6 +367,7 @@ void EnginePrivate::slotProvidersFinished()
 	if(ret == QDialog::Rejected)
 	{
 		m_command = EnginePrivate::command_none;
+		stopLoop();
 		return;
 	}
 
@@ -362,6 +379,7 @@ void EnginePrivate::slotProvidersFinished()
 	if(ret == QDialog::Rejected)
 	{
 		m_command = EnginePrivate::command_none;
+		stopLoop();
 		return;
 	}
 
@@ -370,6 +388,7 @@ void EnginePrivate::slotProvidersFinished()
 	if(!entry)
 	{
 		m_command = EnginePrivate::command_none;
+		stopLoop();
 		return;
 	}
 
@@ -417,6 +436,8 @@ void EnginePrivate::slotDownloadDialogClosed()
     m_downloaddialog = NULL;
 
     m_command = command_none;
+
+    stopLoop();
 }
 
 #include "engine.moc"
