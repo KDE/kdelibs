@@ -134,6 +134,16 @@ class KLocalizedStringPrivate;
  * it may happen that you add context or plural to previously basic message,
  * but forget to change the name of the call.
  *
+ * All message strings are expected to pass for well-formed XML, whether or
+ * not the output device supports some form of markup.
+ * Thus, predefined XML entities are always available: &amp;lt;, &amp;gt;,
+ * &amp;amp;, &amp;apos;, and &amp;quot;. E.g. if you need a non-tag
+ * less-than sign, use &amp;lt; entity instead.
+ * The exception to the well-formed XML requirement is the ampersand (&amp;),
+ * which is used a lot for marking accelerators, so you should not write it
+ * as &amp;amp; (except in the very unlikely case when the construct with
+ * the naked ampersand can be interpreted as an entity in itself).
+ *
  * \section spec_usage Specialized Usage
  *
  * There are some situations where i18n* calls are not sufficient or
@@ -197,6 +207,14 @@ class KLocalizedStringPrivate;
  *
  * \li If none of the arguments supplied to a plural call is integer-valued,
  *     you will get an error mark in message at runtime (in debug mode).
+ *
+ * \li Plain number arguments will be normally formatted as if they denote
+ *     amounts, according to language rules (thousands separation, etc.)
+ *     But sometimes a number is a numerical identifier (e.g. port number),
+ *     and to be treated as such, wrap the placeholder with the numid tag:
+ *     \code
+ *       QString msg = i18n("Using port <numid>%1</numid>", port);
+ *     \endcode
  *
  * \section other_ref Further References
  *
