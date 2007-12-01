@@ -783,7 +783,22 @@ class KDEUI_EXPORT KDialog : public QDialog
   protected Q_SLOTS:
     /**
      * Activated when the button @p button is clicked
-     * @param button is the type ButtonCode
+     *
+     * Sample that shows how to catch and handle button clicks within
+     * an own dialog;
+     * @code
+     * class MyDialog : public KDialog {
+     *     protected Q_SLOTS:
+     *         virtual void slotButtonClicked(int button) {
+     *             if (button == KDialog::Ok)
+     *                 accept();
+     *             else
+     *                 KDialog::slotButtonClicked(button);
+     *         }
+     * }
+     * @endcode
+     *
+     * @param button is the type @a KDialog::ButtonCode
      */
     virtual void slotButtonClicked(int button);
 
