@@ -904,7 +904,9 @@ bool KEncodingDetector::analyze(const char *data, int len)
             //enc = d->m_codec->name();
             delete d->m_decoder;
             d->m_decoder = d->m_codec->makeDecoder();
+#ifdef DECODE_DEBUG
             kWarning() << "Detection by BOM";
+#endif
             if (is16Bit(d->m_codec) && c2==0x00)
             {
                 // utf16LE, we need to put the decoder in LE mode
