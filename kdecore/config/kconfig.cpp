@@ -546,16 +546,30 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
     Q_D(KConfig);
     KEntryMap::EntryOptions options = convertToOptions(flags)|KEntryMap::EntryDeleted;
 
-    const QStringList keys = keyList(aGroup);
-    bool dirty = false;
-    foreach (const QString& key, keys) {
-        if (d->canWriteEntry(aGroup, key.toUtf8().constData())) {
-           d->entryMap.setEntry(aGroup, key.toUtf8(), QByteArray(), options);
-           dirty = true;
+    QByteArray theGroup = aGroup + '\x1d';
+    QSet<QByteArray> groups;
+    groups << aGroup;
+
+    foreach (const KEntryKey& key, d->entryMap.keys()) {
+        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
+            groups << key.mGroup;
         }
     }
-    if (dirty)
+
+    bool dirty = false;
+    foreach (const QByteArray& group, groups) {
+        const QStringList keys = keyList(group);
+        foreach (const QString& key, keys) {
+            if (d->canWriteEntry(group, key.toUtf8().constData())) {
+                d->entryMap.setEntry(group, key.toUtf8(), QByteArray(), options);
+                dirty = true;
+            }
+        }
+    }
+
+    if (dirty) {
         d->setDirty(true);
+    }
 }
 
 bool KConfig::isConfigWritable(bool warnUser)

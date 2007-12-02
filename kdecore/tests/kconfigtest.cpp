@@ -114,6 +114,16 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "dateTimeEntry", DATETIMEENTRY );
   cg.writeEntry( "dateEntry", DATETIMEENTRY.date() );
 
+  KConfigGroup ct = cg;
+  cg = KConfigGroup(&ct, "Nested Group 1");
+  cg.writeEntry("stringentry1", STRINGENTRY1);
+
+  cg = KConfigGroup(&ct, "Nested Group 2");
+  cg.writeEntry( "stringEntry2", STRINGENTRY2 );
+
+  cg = KConfigGroup(&cg, "Nested Group 2.1");
+  cg.writeEntry( "stringEntry3", STRINGENTRY3 );
+
   cg = KConfigGroup(&sc, "List Types" );
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
@@ -567,9 +577,14 @@ void KConfigTest::testDelete()
   sc3.deleteEntry("Test");
   QCOMPARE( sc3.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
 
+  KConfigGroup ct(&sc, "Complex Types");
+  KConfigGroup ng(&ct, "Nested Group 2");
   sc.deleteGroup("Complex Types");
   QCOMPARE(sc.group("Complex Types").keyList().count(), 0);
   QVERIFY(sc.group("Complex Types").exists()); // yep, we deleted it, but it still "exists"...
+  QCOMPARE(ct.group("Nested Group 1").keyList().count(), 0);
+  QCOMPARE(ct.group("Nested Group 2").keyList().count(), 0);
+  QCOMPARE(ng.group("Nested Group 2.1").keyList().count(), 0);
 
   KConfigGroup cg(&sc , "AAA" );
   cg.deleteGroup();

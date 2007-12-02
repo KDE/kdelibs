@@ -9,7 +9,6 @@ bugs
   - map has no bRevert flag that could be set along with bDirty, so it
     is impossible to get rid of a once set key
 - KConfigGroup::deleteGroup
-  - is non-recursive
   - the group still exists() afterwards
 - immutable groups with no entries are not written out and thus lose
   their immutability.
