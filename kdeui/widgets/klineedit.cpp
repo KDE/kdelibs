@@ -192,7 +192,9 @@ void KLineEdit::init()
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
     
-    setStyle(new KLineEditStyle(this));
+    QStyle *lineEditStyle = new KLineEditStyle(this);
+    lineEditStyle->setParent(this);
+    setStyle(lineEditStyle);
 }
 
 QString KLineEdit::clickMessage() const
