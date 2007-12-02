@@ -1055,12 +1055,18 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             return;
         }
 
-        case CE_ToolBoxTab:
+        case CE_ToolBoxTabShape:
         {
             drawKStylePrimitive(WT_ToolBoxTab, ToolBoxTab::Panel, option, r, pal, flags, p, widget);
             return;
         }
-
+/*
+        case CE_ToolBoxTabLabel:
+        {
+            drawKStylePrimitive(WT_ToolBoxTab, Generic::Text, option, r, pal, flags, p, widget);
+            return;
+        }
+*/
         case CE_CheckBox:
         {
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
