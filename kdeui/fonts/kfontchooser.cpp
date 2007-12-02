@@ -90,6 +90,7 @@ public:
     // inserted into the fontdialog font-family combo-box
 //    QStringList  fontList;
 
+    void setFamilyBoxItems(const QStringList &fonts);
     void fillFamilyListBox(bool onlyFixedFonts = false);
     void fillSizeList();
     void setupDisplay();
@@ -129,7 +130,10 @@ public:
 
     QString      selectedStyle;
     int          selectedSize;
-    QMap<QString, QString> currentStyles;
+
+    // Mappings of translated to original family and style strings.
+    QHash<QString, QString> families;
+    QHash<QString, QString> currentStyles;
 
 };
 
@@ -252,7 +256,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     connect(d->familyListBox, SIGNAL(currentTextChanged(const QString &)),
             this, SLOT(_k_family_chosen_slot(const QString &)));
     if ( !fontList.isEmpty() ) {
-        d->familyListBox->addItems(fontList);
+        d->setFamilyBoxItems(fontList);
     }
     else
     {
@@ -574,7 +578,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
 {
     QFontDatabase dbase;
     signalsAllowed = false;
-    QStringList styles = QStringList(dbase.styles(family));
+    QStringList styles = QStringList(dbase.styles(families[family]));
     styleListBox->clear();
     currentStyles.clear();
     for ( QStringList::Iterator it = styles.begin(); it != styles.end(); ++it ) {
@@ -588,13 +592,23 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
 
         QList<QListWidgetItem*> styleList = styleListBox->findItems(style,Qt::MatchContains);
         if ( styleList.isEmpty() ) {
-            styleListBox->addItem(i18n(style.toUtf8()));
-            currentStyles.insert(i18n(style.toUtf8()), *it);
+            QString trstyle = i18n(style.toUtf8());
+            // i18n: Filtering message, so that translators can script the
+            // style string according to the font family name (e.g. may need
+            // noun-adjective congruence wrt. gender of the family name).
+            // The message provides the dynamic context 'family', which is
+            // the family name to which the style string corresponds.
+            trstyle = ki18nc("@item Font style", "%1").subs(trstyle).inContext("family", family).toString();
+            styleListBox->addItem(trstyle);
+            currentStyles.insert(trstyle, *it);
         }
     }
     if ( styleListBox->count() == 0 ) {
-        styleListBox->addItem(i18nc("@item font","Regular"));
-        currentStyles.insert(i18nc("@item font","Regular"), "Normal");
+        QString trstyle = i18nc("@item font","Regular");
+        // See the comment above.
+        trstyle = ki18nc("@item Font style", "%1").subs(trstyle).inContext("family", family).toString();
+        styleListBox->addItem(trstyle);
+        currentStyles.insert(trstyle, "Normal");
     }
 
     QList<QListWidgetItem*> selectedStyleList = styleListBox->findItems(selectedStyle,Qt::MatchContains);
@@ -604,7 +618,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
         styleListBox->setCurrentRow(0);
     }
     signalsAllowed = true;
-    selFont.setFamily( family );
+    selFont.setFamily( families[family] );
     emit q->fontSelected( selFont );
 }
 
@@ -649,14 +663,14 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
 
     sizeListBox->clear();
     QFontDatabase dbase;
-    if( dbase.isSmoothlyScalable( familyListBox->currentItem()->text(),
+    if( dbase.isSmoothlyScalable( families[familyListBox->currentItem()->text()],
                                   currentStyles[currentStyle])) {
         // is vector font
         //>sampleEdit->setPaletteBackgroundPixmap( VectorPixmap ); // TODO
         fillSizeList();
     } else {                                // is bitmap font.
         //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
-        QList<int> sizes = dbase.smoothSizes( familyListBox->currentItem()->text(),
+        QList<int> sizes = dbase.smoothSizes( families[familyListBox->currentItem()->text()],
                                               currentStyles[currentStyle] );
         if(sizes.count() > 0) {
             QList<int>::const_iterator it;
@@ -682,7 +696,7 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
     //TODO - KDE4 : sizeListBox->scrollTo(sizeListBox->currentItem());
 
     //kDebug() << "Showing: " << d->familyListBox->currentText() << ", " << d->currentStyles[currentStyle] << ", " << selectedSize-diff;
-    selFont = dbase.font(familyListBox->currentItem()->text(),
+    selFont = dbase.font(families[familyListBox->currentItem()->text()],
                          currentStyles[currentStyle],
                          selectedSize-diff);
     emit q->fontSelected(selFont);
@@ -719,7 +733,7 @@ void KFontChooser::Private::setupDisplay()
 
     numEntries = familyListBox->count();
     for (i = 0; i < numEntries; i++) {
-        if (family == familyListBox->item(i)->text().toLower()) {
+        if (family == families[familyListBox->item(i)->text()].toLower()) {
             familyListBox->setCurrentRow(i);
             break;
         }
@@ -732,7 +746,7 @@ void KFontChooser::Private::setupDisplay()
         {
             family = family.left(family.indexOf('[')).trimmed();
             for (i = 0; i < numEntries; i++) {
-                if (family == familyListBox->item(i)->text().toLower()) {
+                if (family == families[familyListBox->item(i)->text()].toLower()) {
                     familyListBox->setCurrentRow(i);
                     break;
                 }
@@ -745,7 +759,7 @@ void KFontChooser::Private::setupDisplay()
     {
         QString fallback = family+" [";
         for (i = 0; i < numEntries; i++) {
-            if (familyListBox->item(i)->text().toLower().startsWith(fallback)) {
+            if (families[familyListBox->item(i)->text()].toLower().startsWith(fallback)) {
                 familyListBox->setCurrentRow(i);
                 break;
             }
@@ -756,7 +770,7 @@ void KFontChooser::Private::setupDisplay()
     if ( (i == numEntries) )
     {
         for (i = 0; i < numEntries; i++) {
-            if (familyListBox->item(i)->text().toLower().startsWith(family)) {
+            if (families[familyListBox->item(i)->text()].toLower().startsWith(family)) {
                 familyListBox->setCurrentRow(i);
                 break;
             }
@@ -815,12 +829,33 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     list = lstSys;
 }
 
+static bool localeLessThan(const QString &a, const QString &b)
+{
+    return QString::localeAwareCompare(a, b) < 0;
+}
+
+void KFontChooser::Private::setFamilyBoxItems(const QStringList &fonts)
+{
+    QStringList trfonts;
+    families.clear();
+    foreach (const QString &font, fonts) {
+        // i18n: Filtering message, so that translators can translate the font
+        // names on their own should they want. May be replaced in the future
+        // with conventional messages in a PO file for font names.
+        QString trfont = i18nc("@item Font name", "%1", font);
+        trfonts.append(trfont);
+        families.insert(trfont, font);
+    }
+    qSort(trfonts.begin(), trfonts.end(), localeLessThan);
+    familyListBox->clear();
+    familyListBox->addItems(trfonts);
+}
+
 void KFontChooser::Private::fillFamilyListBox(bool onlyFixedFonts)
 {
     QStringList fontList;
     getFontList(fontList, onlyFixedFonts?FixedWidthFonts:0);
-    familyListBox->clear();
-    familyListBox->addItems(fontList);
+    setFamilyBoxItems(fontList);
 }
 
 void KFontChooser::Private::_k_showXLFDArea(bool show)

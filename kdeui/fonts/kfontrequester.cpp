@@ -148,11 +148,14 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
   if(size == -1)
     size = m_selFont.pixelSize();
 
-  if ( m_sampleText.isEmpty() )
-    m_sampleLabel->setText( QString( "%1 %2" ).arg( m_selFont.family() )
-      .arg( size ) );
-  else
+  if ( m_sampleText.isEmpty() ) {
+    // See the comment to the same message in kfontchooser.cpp.
+    QString family = i18nc("@item Font name", "%1", m_selFont.family());
+    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( size ) );
+  }
+  else {
     m_sampleLabel->setText( m_sampleText );
+  }
 }
 
 void KFontRequester::KFontRequesterPrivate::setToolTip()
