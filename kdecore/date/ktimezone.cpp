@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -678,7 +678,7 @@ const KTimeZoneData *KTimeZone::data(bool create) const
 {
     if (!isValid())
         return 0;
-    if (create && !d->d->data)
+    if (create && !d->d->data && d->d->source->useZoneParse())
         d->d->data = d->d->source->parse(*this);
     return d->d->data;
 }
@@ -709,8 +709,11 @@ bool KTimeZone::parse() const
 {
     if (!isValid())
         return false;
-    delete d->d->data;
-    d->d->data = d->d->source->parse(*this);
+    if (d->d->source->useZoneParse())
+    {
+        delete d->d->data;
+        d->d->data = d->d->source->parse(*this);
+    }
     return d->d->data;
 }
 
@@ -868,16 +871,39 @@ time_t KTimeZone::toTime_t(const QDateTime &utcDateTime)
 
 /******************************************************************************/
 
-KTimeZoneSource::KTimeZoneSource()
-  : d(0)
+class KTimeZoneSourcePrivate
 {
+public:
+    bool mUseZoneParse;
+};
+
+
+KTimeZoneSource::KTimeZoneSource()
+  : d(new KTimeZoneSourcePrivate)
+{
+    d->mUseZoneParse = true;
 }
 
-KTimeZoneSource::~KTimeZoneSource() {}
+KTimeZoneSource::KTimeZoneSource(bool useZoneParse)
+  : d(new KTimeZoneSourcePrivate)
+{
+    d->mUseZoneParse = useZoneParse;
+}
+
+KTimeZoneSource::~KTimeZoneSource()
+{
+    delete d;
+}
 
 KTimeZoneData *KTimeZoneSource::parse(const KTimeZone &) const
 {
+    Q_ASSERT(d->mUseZoneParse);  // method should never be called if it isn't usable
     return new KTimeZoneData;
+}
+
+bool KTimeZoneSource::useZoneParse() const
+{
+    return d->mUseZoneParse;
 }
 
 

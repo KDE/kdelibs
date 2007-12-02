@@ -1228,9 +1228,13 @@ public:
 
     /**
      * Extracts detail information for one time zone from the source database.
+     *
      * In this base class, the method always succeeds and returns an empty data
      * instance. Derived classes should reimplement this method to return an
-     * appropriate data class derived from KTimeZoneData.
+     * appropriate data class derived from KTimeZoneData. Some source databases
+     * may not be compatible with this method of parsing. In these cases, they
+     * should use the constructor KTimeZoneSource(false) and calling this method
+     * will produce a fatal error.
      *
      * @param zone the time zone for which data is to be extracted.
      * @return an instance of a class derived from KTimeZoneData containing
@@ -1239,6 +1243,35 @@ public:
      *         Null is returned on error.
      */
     virtual KTimeZoneData *parse(const KTimeZone &zone) const;
+
+    /**
+     * Return whether the source database supports the ad hoc extraction of data for
+     * individual time zones using parse(const KTimeZone&).
+     *
+     * @return true if parse(const KTimeZone&) works, false if parsing must be
+     *         performed by other methods
+     */
+    bool useZoneParse() const;
+
+protected:
+    /**
+     * Constructor for use by derived classes, which specifies whether the
+     * source database supports the ad hoc extraction of data for individual
+     * time zones using parse(const KTimeZone&).
+     *
+     * If parse(const KTimeZone&) cannot be used, KTimeZone derived classes
+     * which use this KTimeZoneSource derived class must create a
+     * KTimeZoneData object at construction time so that KTimeZone::data()
+     * will always return a data object.
+     *
+     * Note the default constructor is equivalent to KTimeZoneSource(true), i.e.
+     * it is only necessary to use this constructor if parse(const KTimeZone&)
+     * does not work.
+     *
+     * @param useZoneParse true if parse(const KTimeZone&) works, false if
+     *                     parsing must be performed by other methods
+     */
+    explicit KTimeZoneSource(bool useZoneParse);
 
 private:
     KTimeZoneSourcePrivate * const d;
