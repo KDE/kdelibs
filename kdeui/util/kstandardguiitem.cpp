@@ -118,7 +118,7 @@ KGuiItem yes()
 
 KGuiItem no()
 {
-  return KGuiItem( i18n( "&No" ), "", i18n( "No" ) );
+  return KGuiItem( i18n( "&No" ), "process-stop", i18n( "No" ) );
 }
 
 KGuiItem discard()
@@ -164,7 +164,7 @@ KGuiItem adminMode()
 
 KGuiItem clear()
 {
-  return KGuiItem( i18n( "C&lear" ), "edit-clear-locationbar",
+  return KGuiItem( i18n( "C&lear" ), "edit-clear",
                    i18n( "Clear input" ),
                    i18n( "Clear the input in the edit field" ) );
 }
