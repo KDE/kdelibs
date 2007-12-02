@@ -179,10 +179,14 @@ KNS::Entry::List Engine::download()
 		return entries;
 	}
 
-	entries = engine->downloadDialogModal(0);
+	KNS::Entry::List tempList = engine->downloadDialogModal(0);
+
+	// copy the list since the entries will be deleted when we delete the engine
+	foreach (Entry * entry, tempList) {
+		entries << new Entry(*entry);
+	}
 	delete engine;
 
-	// FIXME: refcounting?
 	return entries;
 }
 
