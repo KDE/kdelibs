@@ -27,10 +27,20 @@
 KUrlDropDownButton::KUrlDropDownButton(KUrlNavigator* parent) :
     KUrlButton(parent)
 {
+    setText("...");
 }
 
 KUrlDropDownButton::~KUrlDropDownButton()
 {
+}
+
+QSize KUrlDropDownButton::sizeHint() const
+{
+    int width = fontMetrics().width(text()) + 4 * BorderWidth;
+    if (width < minimumWidth()) {
+        width = minimumWidth();
+    }
+    return QSize(width, KUrlButton::sizeHint().height());
 }
 
 void KUrlDropDownButton::paintEvent(QPaintEvent* event)
@@ -45,7 +55,7 @@ void KUrlDropDownButton::paintEvent(QPaintEvent* event)
 
     // draw '...'
     painter.setPen(foregroundColor());
-    painter.drawText(rect(), Qt::AlignCenter, "...");
+    painter.drawText(rect(), Qt::AlignCenter, text());
 }
 
 #include "kurldropdownbutton_p.moc"
