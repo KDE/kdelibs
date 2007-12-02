@@ -26,6 +26,7 @@
 #include <kfileitem.h>
 #include <kdatetime.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 // TODO KDE 4.1: bring Nepomuk stuff from Dolphin to kdelibs/nepomuk
 // in the form of a separate subclass
@@ -180,8 +181,8 @@ int KDirSortFilterProxyModel::pointsForPermissions(const QFileInfo &info)
     return points;
 }
 
-bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
-                                        const QModelIndex& right) const
+bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
+                                               const QModelIndex& right) const
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
 
@@ -314,17 +315,11 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
 
     // We have set a SortRole and trust the ProxyModel to do
     // the right thing for now.
-    return KCategorizedSortFilterProxyModel::lessThan(left, right);
+    return KCategorizedSortFilterProxyModel::subsortLessThan(left, right);
 }
 
-bool KDirSortFilterProxyModel::lessThanCategoryPurpose(const QModelIndex &left,
-                                                       const QModelIndex &right) const
-{
-    return lessThan(left, right);
-}
-
-bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
-                                                      const QModelIndex &right) const
+int KDirSortFilterProxyModel::compareCategories(const QModelIndex &left,
+                                                const QModelIndex &right) const
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
 
@@ -358,33 +353,34 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
         }
 
         if (!rightFileNameStartsByLetter)
-            return true;
+            return -1;
 
         if (!leftFileNameStartsByLetter && rightFileNameStartsByLetter)
-            return false;
+            return 1;
 
-        return naturalCompare(*currA, *currB) < 0;
+        return naturalCompare(*currA, *currB);
     }
 
     case KDirModel::Size: {
         // If we are sorting by size, show folders first. We will sort them
         // correctly later.
         if (leftFileItem.isDir() && !rightFileItem.isDir()) {
-            return true;
+            return -1;
         }
 
         if (!leftFileItem.isDir() && !rightFileItem.isDir()) {
-            return leftFileItem.size() < rightFileItem.size();
+            return rightFileItem.size() - leftFileItem.size();
         }
 
-        return false;
+        return 1;
     }
 
     case KDirModel::ModifiedTime: {
         KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
         KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
-
-        return leftTime >= rightTime;
+	if(leftTime == rightTime) return 0;
+	if(leftTime > rightTime) return 1;
+	return -1;
     }
 
     case KDirModel::Permissions: {
@@ -394,36 +390,36 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
         int leftPermissionsPoints = pointsForPermissions(leftFileInfo);
         int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
 
-        return leftPermissionsPoints > rightPermissionsPoints;
+        return leftPermissionsPoints - rightPermissionsPoints;
     }
 
     case KDirModel::Owner: {
         return naturalCompare(leftFileItem.user().toLower(),
-                              rightFileItem.user().toLower()) < 0;
+                              rightFileItem.user().toLower());
     }
 
     case KDirModel::Group: {
         return naturalCompare(leftFileItem.group().toLower(),
-                              rightFileItem.group().toLower()) < 0;
+                              rightFileItem.group().toLower());
     }
 
     case KDirModel::Type: {
         // If we are sorting by size, show folders first. We will sort them
         // correctly later.
         if (leftFileItem.isDir() && !rightFileItem.isDir()) {
-            return true;
+            return -1;
         } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
-            return false;
+            return 1;
         }
 
         return naturalCompare(leftFileItem.mimeComment().toLower(),
-                              rightFileItem.mimeComment().toLower()) < 0;
+                              rightFileItem.mimeComment().toLower());
     }
 
     default:
         break;
     }
-    return false;
+    return 0;
 }
 
 #include "kdirsortfilterproxymodel.moc"

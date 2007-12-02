@@ -83,14 +83,10 @@ protected:
     /**
      * Reimplemented from QAbstractItemModel to use naturalCompare.
      */
-    virtual bool lessThan(const QModelIndex& left,
-                          const QModelIndex& right) const;
+    virtual bool subsortLessThan(const QModelIndex& left,
+                                 const QModelIndex& right) const;
 
-    virtual bool lessThanCategoryPurpose(const QModelIndex &left,
-                                         const QModelIndex &right) const;
-
-    virtual bool lessThanGeneralPurpose(const QModelIndex &left,
-                                        const QModelIndex &right) const;
+    virtual int compareCategories(const QModelIndex &left, const QModelIndex &right) const;
 private:
     class KDirSortFilterProxyModelPrivate;
     KDirSortFilterProxyModelPrivate* const d;
