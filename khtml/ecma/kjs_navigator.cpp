@@ -166,6 +166,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
   product	Navigator::Product	DontDelete|ReadOnly
   vendor	Navigator::Vendor	DontDelete|ReadOnly
+  vendorSub	Navigator::VendorSub	DontDelete|ReadOnly
   productSub    Navigator::ProductSub   DontDelete|ReadOnly
   cookieEnabled	Navigator::CookieEnabled DontDelete|ReadOnly
   javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
@@ -187,10 +188,17 @@ bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KUrl url = m_part->url();
-  QString userAgent = url.host();
-  if (userAgent.isEmpty())
-     userAgent = "localhost";
-  userAgent = KProtocolManager::userAgentForHost(userAgent);
+  QString host = url.host();
+  if (host.isEmpty())
+     host = "localhost";
+  QString userAgent  = KProtocolManager::userAgentForHost(host);
+// ### get the following from the spoofing UA files as well.
+  QString appName = "Netscape";
+  QString product = "Gecko";
+  QString productSub = "20030107";
+  QString vendor = "KDE";
+  QString vendorSub = "";
+
   switch (token) {
   case AppCodeName:
     return jsString("Mozilla");
@@ -208,8 +216,8 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
       //kDebug() << "appName -> IE";
       return jsString("Microsoft Internet Explorer");
     }
-    //kDebug() << "appName -> Konqueror";
-    return jsString("Konqueror");
+    //kDebug() << "appName -> Default";
+    return jsString(appName);
   case AppVersion:
     // We assume the string is something like Mozilla/version (properties)
     return jsString(userAgent.mid(userAgent.indexOf('/') + 1));
@@ -226,8 +234,7 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
     {
         return jsUndefined();
     }
-    // We are acting straight
-    return jsString("Konqueror/khtml");
+    return jsString(product);
   case ProductSub:
     {
       int ix = userAgent.indexOf("Gecko");
@@ -237,14 +244,16 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
           // We have Gecko/<productSub> in the UA string
           return jsString(userAgent.mid(ix+6, 8));
       }
-      else if (ix >= 0)
-      {
-          return jsString("20040107");
-      }
     }
-    return jsUndefined();
+    return jsString(productSub);
   case Vendor:
-    return jsString("KDE");
+    if (userAgent.indexOf(QLatin1String("Safari")) >= 0)
+    {
+        return jsString("Apple Computer, Inc.");
+    }
+    return jsString(vendor);
+  case VendorSub:
+    return jsString(vendorSub);
   case BrowserLanguage:
   case Language:
   case UserLanguage:
