@@ -4802,9 +4802,15 @@ void HTTPProtocol::closeCacheEntry()
    m_request.fcache = 0;
    if (result == 0)
    {
+#ifdef Q_OS_WIN
+      if ( MoveFileExW( (LPCWSTR)filename.utf16(),
+                        (LPCWSTR)m_request.cef.utf16(),
+                        MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 )
+        return;
+#else
       if (::rename( QFile::encodeName(filename), QFile::encodeName(m_request.cef)) == 0)
          return; // Success
-
+#endif
       kWarning(7113) << "closeCacheEntry: error renaming "
                       << "cache entry. (" << filename << " -> " << m_request.cef
                       << ")";
