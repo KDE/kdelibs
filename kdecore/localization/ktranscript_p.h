@@ -23,6 +23,7 @@
 
 #include <QList>
 #include <QStringList>
+#include <QHash>
 
 /**
   * @internal
@@ -45,6 +46,7 @@ class KTranscript
      * @param lang language of the translation
      * @param lscr script of the translation
      * @param msgctxt message context
+     * @param dynctxt dynamic context
      * @param msgid original message
      * @param subs substitutions for message placeholders
      * @param final finalized ordinary translation
@@ -60,6 +62,7 @@ class KTranscript
                           const QString &lang,
                           const QString &lscr,
                           const QString &msgctxt,
+                          const QHash<QString, QString> &dynctxt,
                           const QString &msgid,
                           const QStringList &subs,
                           const QString &final,

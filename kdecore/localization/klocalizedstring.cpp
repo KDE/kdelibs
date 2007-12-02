@@ -64,6 +64,7 @@ class KLocalizedStringPrivate
     pluraln number;
     int numberOrd;
     QByteArray ctxt;
+    QHash<QString, QString> dynctxt;
     QByteArray msg;
     QByteArray plural;
 
@@ -649,8 +650,8 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallbackLocal;
-    result = s->ktrs->eval(iargs, lang, lscr, msgctxt, msgid, args,
-                           final, s->scriptModulesToLoad,
+    result = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
+                           args, final, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
     // s->scriptModulesToLoad will be cleared during the call.
 
@@ -687,8 +688,8 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallback;
-    QString dummy = s->ktrs->eval(iargs, lang, lscr, msgctxt, msgid, args,
-                                  final, s->scriptModulesToLoad,
+    QString dummy = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
+                                  args, final, s->scriptModulesToLoad,
                                   scriptError, fallback);
     // s->scriptModulesToLoad will be cleared during the call.
 
@@ -819,6 +820,14 @@ KLocalizedString KLocalizedString::subs (const QString &a, int fieldWidth,
 {
     KLocalizedString kls(*this);
     kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
+    return kls;
+}
+
+KLocalizedString KLocalizedString::inContext (const QString &key,
+                                              const QString &text) const
+{
+    KLocalizedString kls(*this);
+    kls.d->dynctxt[key] = text;
     return kls;
 }
 

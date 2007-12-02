@@ -59,6 +59,7 @@ class KTranscriptImp : public KTranscript
                   const QString &lang,
                   const QString &lscr,
                   const QString &msgctxt,
+                  const QHash<QString, QString> &dynctxt,
                   const QString &msgid,
                   const QStringList &subs,
                   const QString &final,
@@ -97,6 +98,7 @@ class Scriptface : public JSObject
     JSValue *nsubsf (ExecState *exec);
     JSValue *subsf (ExecState *exec, JSValue *index);
     JSValue *msgctxtf (ExecState *exec);
+    JSValue *dynctxtf (ExecState *exec, JSValue *key);
     JSValue *msgidf (ExecState *exec);
     JSValue *msgkeyf (ExecState *exec);
     JSValue *msgstrff (ExecState *exec);
@@ -115,6 +117,7 @@ class Scriptface : public JSObject
         Nsubs,
         Subs,
         Msgctxt,
+        Dynctxt,
         Msgid,
         Msgkey,
         Msgstrf,
@@ -137,6 +140,7 @@ class Scriptface : public JSObject
 
     // Current message data.
     const QString *msgctxt;
+    const QHash<QString, QString> *dynctxt;
     const QString *msgid;
     const QStringList *subs;
     const QString *final;
@@ -328,6 +332,7 @@ QString KTranscriptImp::eval (const QStringList &argv,
                               const QString &lang,
                               const QString &lscr,
                               const QString &msgctxt,
+                              const QHash<QString, QString> &dynctxt,
                               const QString &msgid,
                               const QStringList &subs,
                               const QString &final,
@@ -379,6 +384,7 @@ QString KTranscriptImp::eval (const QStringList &argv,
 
     // Link current message data for script-side interface.
     sface->msgctxt = &msgctxt;
+    sface->dynctxt = &dynctxt;
     sface->msgid = &msgid;
     sface->subs = &subs;
     sface->final = &final;
@@ -548,6 +554,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     nsubs           Scriptface::Nsubs           DontDelete|ReadOnly|Function 0
     subs            Scriptface::Subs            DontDelete|ReadOnly|Function 1
     msgctxt         Scriptface::Msgctxt         DontDelete|ReadOnly|Function 0
+    dynctxt         Scriptface::Dynctxt         DontDelete|ReadOnly|Function 1
     msgid           Scriptface::Msgid           DontDelete|ReadOnly|Function 0
     msgkey          Scriptface::Msgkey          DontDelete|ReadOnly|Function 0
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
@@ -626,6 +633,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->subsf(exec, CALLARG(0));
         case Scriptface::Msgctxt:
             return obj->msgctxtf(exec);
+        case Scriptface::Dynctxt:
+            return obj->dynctxtf(exec, CALLARG(0));
         case Scriptface::Msgid:
             return obj->msgidf(exec);
         case Scriptface::Msgkey:
@@ -802,6 +811,19 @@ JSValue *Scriptface::msgctxtf (ExecState *exec)
 {
     Q_UNUSED(exec);
     return jsString(*msgctxt);
+}
+
+JSValue *Scriptface::dynctxtf (ExecState *exec, JSValue *key)
+{
+    if (!key->isString())
+        return throwError(exec, TypeError,
+                          SPREF"dynctxt: expected string as first argument");
+
+    QString qkey = key->getString().qstring();
+    if (dynctxt->contains(qkey)) {
+        return jsString(dynctxt->value(qkey));
+    }
+    return jsUndefined();
 }
 
 JSValue *Scriptface::msgidf (ExecState *exec)

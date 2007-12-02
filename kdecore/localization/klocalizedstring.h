@@ -188,6 +188,23 @@ class KLocalizedStringPrivate;
  *   ki18n("Welcome").toString(myLocale);
  * \endcode
  *
+ * Translators have a capability to script translations at runtime, which is
+ * for the most part transparent to the programmer. However, sometimes the
+ * programmer may help by providing some @e dynamic context to the message,
+ * using the inContext method of KLocalizedString.  Unlike the ordinary
+ * context, this one changes at runtime; translators have the means to fetch
+ * it and use it to script the translation properly. An example:
+ * \code
+ *   KLocalizedString ks = ki18nc("%1 is user name; may have "
+ *                                "dynamic context gender=[male,female]",
+ *                                "%1 went offline");
+ *   if (knownUsers.contains(user) && !knownUsers[user].gender.isEmpty()) {
+ *     ks = ks.inContext("gender", knownUsers[user].gender);
+ *   }
+ *   QString msg = ks.subs(user).toString();
+ * \endcode
+ *  Several dynamic contexts, with different keys, can be added like this.
+ *
  * \section subs_notes Placeholder Substitution
  *
  * Hopefully, for the most part placeholders are being substituted the way
@@ -436,6 +453,16 @@ public:
      */
     KLocalizedString subs (const QString &a, int fieldWidth = 0,
                            const QChar &fillChar = QLatin1Char(' ')) const;
+
+    /**
+     * Adds dynamic context to the message.
+     *
+     * @param key context key
+     * @param text context value
+     * @return resultant KLocalizedString
+     */
+    KLocalizedString inContext (const QString &key,
+                                const QString &text) const;
 
     /**
      * @internal Called from KLocale on addition or removal of catalogs.
