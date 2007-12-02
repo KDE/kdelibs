@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 
 /** @file
  * Date/times with associated time zone
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 
 #ifndef _KDATETIME_H_
@@ -155,7 +155,7 @@ class KDateTimeSpecPrivate;
  *
  * @see KTimeZone, KSystemTimeZones, QDateTime, QDate, QTime
  * @see <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
- * @author David Jarvie \<software@astrojar.org.uk\>.
+ * @author David Jarvie \<djarvie@kde.org\>.
  */
 class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
 {

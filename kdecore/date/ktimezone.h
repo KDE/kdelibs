@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 
 /** @file
  * Time zone functions
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 
@@ -302,7 +302,7 @@ class KTimeZoneLeapSecondsPrivate;
  *
  * @short Represents a time zone database or collection
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KTimeZones
@@ -409,7 +409,7 @@ private:
  * @short Base class representing a time zone
  * @see KTimeZoneBackend, KTimeZoneSource, KTimeZoneData
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KTimeZone  //krazy:exclude=dpointer (has non-const d-pointer to Backend class)
@@ -423,7 +423,7 @@ public:
      * UTC offset and time zone abbreviation (e.g. EST, GMT).
      *
      * @short Time zone phase
-     * @author David Jarvie <software@astrojar.org.uk>.
+     * @author David Jarvie <djarvie@kde.org>.
      */
     class KDECORE_EXPORT Phase
     {
@@ -503,7 +503,7 @@ public:
      * standard time, including the UTC time of the change.
      *
      * @short Time zone transition
-     * @author David Jarvie <software@astrojar.org.uk>.
+     * @author David Jarvie <djarvie@kde.org>.
      */
     class KDECORE_EXPORT Transition
     {
@@ -550,7 +550,7 @@ public:
      * @short Leap seconds adjustment for a time zone
      * @see KTimeZone, KTimeZoneData
      * @ingroup timezones
-     * @author David Jarvie <software@astrojar.org.uk>.
+     * @author David Jarvie <djarvie@kde.org>.
      */
     class KDECORE_EXPORT LeapSeconds
     {
@@ -1110,7 +1110,7 @@ private:
  * @short Base backend class for KTimeZone classes
  * @see KTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
 {
@@ -1217,7 +1217,7 @@ private:
  * @short Base class representing a source of time zone information
  * @see KTimeZone, KTimeZoneData
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KTimeZoneSource
@@ -1257,7 +1257,7 @@ private:
  * @short Base class for parsed time zone data
  * @see KTimeZone, KTimeZoneSource
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KTimeZoneData
 {

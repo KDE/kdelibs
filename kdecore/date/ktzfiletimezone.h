@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 
 /** @file
  * TZFILE time zone functions
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 
 #ifndef _KTZFILETIMEZONE_H
@@ -45,7 +45,7 @@ class KTzfileTimeZoneSourcePrivate;
  * @short Represents a time zone defined in tzfile(5) format
  * @see KTzfileTimeZoneBackend, KTzfileTimeZoneSource, KTzfileTimeZoneData
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
@@ -83,7 +83,7 @@ private:
  * @short Backend class for KTzfileTimeZone class
  * @see KTimeZoneBackend, KTzfileTimeZone, KTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KTzfileTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
 {
@@ -132,7 +132,7 @@ private:
  * @short Reads and parses tzfile(5) time zone definition files
  * @see KTzfileTimeZone, KTzfileTimeZoneData
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KTzfileTimeZoneSource : public KTimeZoneSource
 {
@@ -173,7 +173,7 @@ private:
  * @short Parsed data from tzfile(5) time zone definition files
  * @see KTzfileTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KTzfileTimeZoneData : public KTimeZoneData
 {

@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 
 /** @file
  * System time zone functions
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 
@@ -76,7 +76,7 @@ class KSystemTimeZoneDataPrivate;
  * @short System time zone access
  * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KSystemTimeZones : public QObject
@@ -189,7 +189,7 @@ private:
  * @short System time zone
  * @see KSystemTimeZones, KSystemTimeZoneSource, KSystemTimeZoneData, KTzfileTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KSystemTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
@@ -228,7 +228,7 @@ private:
  * @short Backend class for KSystemTimeZone class
  * @see KTimeZoneBackend, KSystemTimeZone, KTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KSystemTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
 {
@@ -348,7 +348,7 @@ private:
  * @short Reads and parses system time zone data
  * @see KSystemTimeZones, KSystemTimeZone, KSystemTimeZoneData
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KDECORE_EXPORT KSystemTimeZoneSource : public KTimeZoneSource
 {
@@ -398,7 +398,7 @@ private:
  * @short Parsed system time zone data
  * @see KSystemTimeZoneSource, KSystemTimeZone
  * @ingroup timezones
- * @author David Jarvie <software@astrojar.org.uk>.
+ * @author David Jarvie <djarvie@kde.org>.
  */
 class KSystemTimeZoneData : public KTimeZoneData
 {
