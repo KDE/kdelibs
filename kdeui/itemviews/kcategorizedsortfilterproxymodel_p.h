@@ -17,9 +17,6 @@
   * along with this library; see the file COPYING.LIB.  If not, write to
   * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   * Boston, MA 02110-1301, USA.
-  *
-  * ATTENTION: This code is based on the class QSortFilterProxyModel created
-  *            by Trolltech ASA.
   */
 
 #ifndef KCATEGORIZEDSORTFILTERPROXYMODEL_P_H
