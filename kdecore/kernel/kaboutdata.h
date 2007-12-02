@@ -208,7 +208,7 @@ class KDECORE_EXPORT KAboutData
      *        you use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like this:
-     *        ki18n("(c) 1999-2000, Name"). The string specified here is not
+     *        ki18n("(c) 1999-2000, Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      *
      * @param text Some free form text, that can contain any kind of
