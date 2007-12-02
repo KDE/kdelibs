@@ -1171,8 +1171,12 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
     if(sel->attr)
     {
-        bool nsAware = (namespacePart(sel->attr) != anyNamespace);
-        DOMStringImpl* value = e->getAttributeImpl(sel->attr, nsAware);
+        quint16 selLocalName = localNamePart(sel->attr);
+        quint16 selNS = namespacePart(sel->attr);
+        bool nsAware = (selNS != anyNamespace);
+        if (selNS == emptyNamespace)
+            selNS = defaultNamespace;
+        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), nsAware);
         if(!value) return false; // attribute is not set
 
         // attributes are always case-sensitive in XHTML

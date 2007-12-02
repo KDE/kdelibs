@@ -1881,7 +1881,11 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     bool cs = true; // case sensitive
     if (_type != NodeImpl::NamespaceId) {
         if (_nsURI)
-            nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
+            nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 );
+
+        // for attributes empty and default namespaces are the same
+        if (_type == NodeImpl::AttributeId && nsid == emptyNamespace)
+            nsid = defaultNamespace;
 
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
@@ -1891,12 +1895,12 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         // xhtml is lower case - case sensitive, easy to implement
         if ( cs && (id = lookup(n.toAscii().constData(), _name->l)) ) {
             map->addAlias(_prefix, _name, cs, id);
-            return nsid + id;
+            return makeId(nsid, id);
         }
         // compatibility: upper case - case insensitive
         if ( !cs && (id = lookup(n.toLower().toAscii().constData(), _name->l )) ) {
             map->addAlias(_prefix, _name, cs, id);
-            return nsid + id;
+            return makeId(nsid, id);
         }
     }
 
@@ -1921,7 +1925,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         }
     }
 
-    if (id) return nsid + id;
+    if (id) return makeId(nsid, id);
 
     // unknown
     if (readonly) return 0;
@@ -1941,7 +1945,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     // and register an alias if needed for DOM1 methods compatibility
     map->addAlias(_prefix, _name, cs, cid);
 
-    return nsid + cid;
+    return makeId(nsid, cid);
  }
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML, int *pExceptioncode)
