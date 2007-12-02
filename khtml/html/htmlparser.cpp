@@ -313,12 +313,12 @@ static bool isTableRelatedTag(int id)
 bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 {
     int id = n->id();
-    
+
     // <table> is never allowed inside stray table content.  Always pop out of the stray table content
     // and close up the first table, and then start the second table as a sibling.
     if (inStrayTableContent && id == ID_TABLE)
         popBlock(ID_TABLE);
-    
+
     // let's be stupid and just try to insert it.
     // this should work if the document is wellformed
 #ifdef PARSER_DEBUG
@@ -1075,7 +1075,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLTableColElementImpl(document, t->tid);
         break;
     case ID_TR:
-        popBlock(ID_TR);
+        popOptionalBlock(ID_TR);
         n = new HTMLTableRowElementImpl(document);
         break;
     case ID_TD:
