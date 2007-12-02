@@ -475,12 +475,12 @@ bool KHTMLView::event( QEvent* e )
     case QEvent::DragLeave:
     case QEvent::Drop:
       // In Qt4, one needs to both call accept() on the DND event and return
-      // true on ::event for the candidate widget for the drop to be possible. 
-      // Apps hosting us, such as konq, can do the former but not the later. 
+      // true on ::event for the candidate widget for the drop to be possible.
+      // Apps hosting us, such as konq, can do the former but not the later.
       // We will do the second bit, as it's a no-op unless someone else explicitly
       // accepts the event. We need to skip the scrollarea to do that,
-      // since it will just skip the events, both killing the drop, and 
-      // not permitting us to forward it up the part hiearchy in our dragEnterEvent, 
+      // since it will just skip the events, both killing the drop, and
+      // not permitting us to forward it up the part hiearchy in our dragEnterEvent,
       // etc. handlers
       return QWidget::event(e);
     default:
@@ -547,8 +547,8 @@ void KHTMLView::delayedInit()
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
 
-    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() && 
-                    m_kwp->renderWidget()->element()->id() != ID_FRAME; 
+    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() &&
+                    m_kwp->renderWidget()->element()->id() != ID_FRAME;
 
     m_kwp->setIsRedirected( redirect );
     if (redirect)
@@ -770,6 +770,8 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
         showCaret();
     }/*end if*/
 #endif
+    if (d->staticWidget && widget()->pos() != QPoint(0,0))
+        widget()->move(0,0);
 
     QApplication::sendPostedEvents(viewport(), QEvent::Paint);
 
@@ -1326,7 +1328,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     case CURSOR_DEFAULT:
         break;
     }
-    
+
     if (!setCursor && style && style->cursor() != CURSOR_AUTO)
         setCursor = true;
 
@@ -1930,19 +1932,19 @@ void KHTMLView::doAutoScroll()
     }
 }
 
-// KHTML defines its own stacking order for any object and thus takes 
+// KHTML defines its own stacking order for any object and thus takes
 // control of widget painting whenever it can. This is called "redirection".
 //
 // Redirected widgets are placed off screen. When they are declared as a child of our view (ChildPolished event),
 // an event filter is installed, so as to catch any paint event and translate them as update() of the view's main widget.
 //
 // Painting also happens spontaneously within widgets. In this case, the widget would update() parts of itself.
-// While this ordinarily results in a paintEvent being schedduled, it is not the case with off screen widgets. 
+// While this ordinarily results in a paintEvent being schedduled, it is not the case with off screen widgets.
 // Thus update() is monitored by using the mechanism that deffers any update call happening during a paint event,
 // transforming it into a posted UpdateLater event. Hence the need to set Qt::WA_WState_InPaintEvent on redirected widgets.
 //
 // Once the UpdateLater event has been received, Qt::WA_WState_InPaintEvent is removed and the process continues
-// with the update of the corresponding rect on the view. That in turn will make our painting subsystem render() 
+// with the update of the corresponding rect on the view. That in turn will make our painting subsystem render()
 // the widget at the correct stacking position.
 //
 // For non-redirected (e.g. external) widgets, z-order is honoured through masking. cf.RenderLayer::updateWidgetMasks
@@ -1958,14 +1960,14 @@ static void handleWidget(QWidget* w, KHTMLView* view, bool recurse=true)
     w->setAttribute(Qt::WA_WState_InPaintEvent);
     w->setAttribute(Qt::WA_OpaquePaintEvent);
     w->installEventFilter(view);
-    
+
     if (!recurse)
         return;
     if (qobject_cast<KHTMLView*>(w)) {
         handleWidget(static_cast<KHTMLView*>(w)->widget(), view, false);
         handleWidget(static_cast<KHTMLView*>(w)->horizontalScrollBar(), view, false);
         handleWidget(static_cast<KHTMLView*>(w)->verticalScrollBar(), view, false);
-        return;        
+        return;
     }
 
     QObjectList children = w->children();
@@ -2031,7 +2033,7 @@ static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
       }
 
       foreach(QObject* cw, w->children()) {
-          if (cw->isWidgetType() && ! static_cast<QWidget*>(cw)->isWindow() 
+          if (cw->isWidgetType() && ! static_cast<QWidget*>(cw)->isWindow()
                                  && !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
               setInPaintEventFlag(static_cast<QWidget*>(cw), b);
           }
@@ -2320,7 +2322,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     // See whether we're in the middle of a detach, or hiding of the
     // widget. In this case, we will just clear focus, the document code
-    // will be careful to not emit events in that case... Doing this 
+    // will be careful to not emit events in that case... Doing this
     // also prevents the code below from going bonkers with oldFocusNode
     // not actually being focusable, etc.
     if (oldFocusNode) {
@@ -3526,7 +3528,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::wheelEvent(QWheelEvent* e)
 {
-    // check if we should reset the state of the indicator describing if 
+    // check if we should reset the state of the indicator describing if
     // we are currently scrolling the view as a result of wheel events
     if (d->scrollingFromWheel != QPoint(-1,-1) && d->scrollingFromWheel != QCursor::pos())
         d->scrollingFromWheel = d->scrollingFromWheelTimerId ? QCursor::pos() : QPoint(-1,-1);
@@ -3542,7 +3544,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     {
         e->accept();
     }
-    else if( !m_kwp->isRedirected() && 
+    else if( !m_kwp->isRedirected() &&
              (   (e->orientation() == Qt::Vertical &&
                    ((d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
                      || e->delta() > 0 && contentsY() <= 0
@@ -3570,7 +3572,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
         MouseEventImpl::Orientation o = MouseEventImpl::OVertical;
         if (e->orientation() == Qt::Horizontal)
             o = MouseEventImpl::OHorizontal;
-       
+
         QMouseEvent _mouse(QEvent::MouseMove, QPoint(xm,ym), Qt::NoButton, e->buttons(), e->modifiers());
         bool swallow = dispatchMouseEvent(EventImpl::KHTML_MOUSEWHEEL_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),
                                                true,-e->delta()/40,&_mouse,true,DOM::NodeImpl::MouseWheel,o);
@@ -3717,6 +3719,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     d->contentsY = verticalScrollBar()->value();
 
     if ( d->staticWidget ) {
+        if (widget()->pos() != QPoint(0,0))
+            widget()->move(0,0);
         widget()->update();
         return;
     }
