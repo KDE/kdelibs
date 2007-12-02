@@ -168,18 +168,18 @@ void TestKHTML::setupActions()
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *kprint = new KAction(KIcon("print"), "Print", this );
+    KAction *kprint = new KAction(KIcon("document-print"), "Print", this );
     m_part->actionCollection()->addAction( "print", kprint );
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
 
-    KToggleAction *ta = new KToggleAction( KIcon("edit-clear"), "Navigable", this );
+    KToggleAction *ta = new KToggleAction( KIcon("edit-rename"), "Navigable", this );
     actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT( toggleNavigable(bool) ));
 
-    ta = new KToggleAction( KIcon("edit"), "Editable", this );
+    ta = new KToggleAction( KIcon("object-edit"), "Editable", this );
     actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isEditable());

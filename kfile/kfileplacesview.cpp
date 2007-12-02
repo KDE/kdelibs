@@ -362,7 +362,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *hide = 0;
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
-            edit = menu.addAction(KIcon("edit"), i18n("&Edit '%1'...", label));
+            edit = menu.addAction(KIcon("object-edit"), i18n("&Edit '%1'...", label));
         }
 
         hide = menu.addAction(i18n("&Hide '%1'", label));
