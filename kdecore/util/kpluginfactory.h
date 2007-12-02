@@ -108,7 +108,7 @@ KComponentData name::componentData() \
  *     KAboutData aboutData("myplugin", "myplugin", ki18n("MyPlugin"), "0.1",
  *             ki18n("a description of the plugin"), KAboutData::License_LGPL,
  *             ki18n("Copyright (C) 2007 Your Name"));
- *     aboutData->addAuthor(ki18n("Your Name"), ...);
+ *     aboutData.addAuthor(ki18n("Your Name"), ...);
  *     return aboutData;
  * }
  * K_EXPORT_PLUGIN(MyPluginFactory(createAboutData()))
