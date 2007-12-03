@@ -112,7 +112,7 @@ bool Image::processData(uchar* data, int length)
             //need to to do auto detection... so append all the data into a buffer
             int oldSize = bufferPreDetect.size();
             bufferPreDetect.resize(oldSize + length);
-            memcpy(bufferPreDetect.data(), data, length);
+            memcpy(bufferPreDetect.data() + oldSize, data, length);
             
             //Attempt to create a loader
             loader = ImageManager::loaderDatabase()->loaderFor(bufferPreDetect);
