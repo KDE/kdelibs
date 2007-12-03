@@ -86,25 +86,24 @@ public:
 protected:
     /**
       * Overridden from QSortFilterProxyModel. If you are subclassing
-      * KCategorizedSortFilterProxyModel, you won't need to reimplement this
-      * method. If you reimplement it because of special needs, make sure to
-      * return with:
+      * KCategorizedSortFilterProxyModel, you will probably not need to reimplement this
+      * method. 
       *
-      * \code
-      *     return KCategorizedSortFilterProxyModel::lessThan(left, right);
-      * \endcode
+      * It calls compareCategories() to sort by category.  If the both items are in the
+      * same category (i.e. compareCategories returns 0), then subSortLessThan is called.
       *
-      * @return whether @p left should be placed before than @p right when sorting.
+      * @return Returns true if the item @p left is less than the item @p right when sorting.
       *
-      * @warning you usually won't need to reimplement this method when subclassing
+      * @warning You usually won't need to reimplement this method when subclassing
       *          from KCategorizedSortFilterProxyModel.
       */
     virtual bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
     /**
-      * This method has the same purpose as lessThan() has on QSortFilterProxyModel.
+      * This method has a similar purpose as lessThan() has on QSortFilterProxyModel.
+      * It is used for sorting items that in the same category.
       *
-      * @return whether @p left should be placed before than @p right when sorting.
+      * @return Returns true if the item @p left is less than the item @p right when sorting.
       */
     virtual bool subSortLessThan(const QModelIndex &left, const QModelIndex &right) const;
 
