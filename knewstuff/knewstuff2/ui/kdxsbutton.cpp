@@ -67,9 +67,9 @@ KDXSButton::KDXSButton(QWidget *parent)
 	action_install = m_p->addAction(SmallIcon("get-hot-new-stuff"),
 		i18n("Install"));
 	action_uninstall = m_p->addAction(i18n("Uninstall"));
-	action_comments = m_p->addAction(SmallIcon("document-properties"),
+	action_comments = m_p->addAction(SmallIcon("help-about"),
 		i18n("Comments"));
-	action_changes = m_p->addAction(SmallIcon("document-properties"),
+	action_changes = m_p->addAction(SmallIcon("help-about"),
 		i18n("Changelog"));
 
 	m_history = new KMenu(this);

@@ -66,17 +66,17 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 	{
 		QIcon icon;
 		if(key == "Sound" )
-			icon = KIcon("speaker");
+			icon = KIcon("media-playback-start");
 		else if(key == "Popup" )
-			icon = KIcon("document-properties");
+			icon = KIcon("dialog-information");
 		else if(key == "Execute" )
 			icon = KIcon("system-run");
 		else if(key == "Taskbar" )
 			icon = KIcon("services");
 		else if(key == "Logfile" )
-			icon = KIcon("text-plain");
+			icon = KIcon("text-x-generic");
 		else if(key == "KTTS" && KNotifyConfigElement::have_kttsd())
-			icon = KIcon("speak");
+			icon = KIcon("text-speak");
 		else
 			continue;
 
@@ -203,11 +203,11 @@ void KNotifyEventListItem::update()
 	QStringList actions=prstring.split ("|");
 
 	QPixmap pexec = SmallIcon("system-run");
-	QPixmap pstderr = SmallIcon("terminal");
-	QPixmap pmessage = SmallIcon("document-properties");
-	QPixmap plogfile = SmallIcon("log");
-	QPixmap psound = SmallIcon("sound");
-	QPixmap ptaskbar = SmallIcon("kicker");
+	QPixmap pstderr = SmallIcon("utilities-terminal");
+	QPixmap pmessage = SmallIcon("dialog-information");
+	QPixmap plogfile = SmallIcon("utilities-log-viewer");
+	QPixmap psound = SmallIcon("media-playback-start");
+	QPixmap ptaskbar = SmallIcon("services");
 
 	setIcon(2 , actions.contains("Sound") ? QIcon(psound) : QIcon() );
 	setIcon(3 , actions.contains("Popup") ? QIcon(pmessage) : QIcon() );
