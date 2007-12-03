@@ -181,7 +181,7 @@ int KDirSortFilterProxyModel::pointsForPermissions(const QFileInfo &info)
     return points;
 }
 
-bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
+bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
                                                const QModelIndex& right) const
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
@@ -314,7 +314,7 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
 
     // We have set a SortRole and trust the ProxyModel to do
     // the right thing for now.
-    return KCategorizedSortFilterProxyModel::subsortLessThan(left, right);
+    return KCategorizedSortFilterProxyModel::subSortLessThan(left, right);
 }
 
 int KDirSortFilterProxyModel::compareCategories(const QModelIndex &left,
@@ -453,5 +453,3 @@ int KDirSortFilterProxyModel::compareCategories(const QModelIndex &left,
     }
     return 0;
 }
-
-#include "kdirsortfilterproxymodel.moc"

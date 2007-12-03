@@ -27,21 +27,20 @@ class KCategorizedSortFilterProxyModel;
 class KCategorizedSortFilterProxyModel::Private
 {
 public:
-    int sortColumn;
-    Qt::SortOrder sortOrder;
-
-    bool categorizedModel:1;
-
-    Private(KCategorizedSortFilterProxyModel *parent)
+    Private()
+        : sortColumn(0)
+        , sortOrder(Qt::AscendingOrder)
+        , categorizedModel(false)
     {
-        sortColumn = 0;
-        sortOrder =  Qt::AscendingOrder;
-        categorizedModel = false;
     }
 
     ~Private()
     {
     }
+
+    int sortColumn;
+    Qt::SortOrder sortOrder;
+    bool categorizedModel;
 };
 
 #endif

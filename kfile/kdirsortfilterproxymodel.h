@@ -51,8 +51,6 @@
 class KFILE_EXPORT KDirSortFilterProxyModel
     : public KCategorizedSortFilterProxyModel
 {
-    Q_OBJECT
-
 public:
     KDirSortFilterProxyModel(QObject* parent = 0);
     virtual ~KDirSortFilterProxyModel();
@@ -83,7 +81,7 @@ protected:
     /**
      * Reimplemented from QAbstractItemModel to use naturalCompare.
      */
-    virtual bool subsortLessThan(const QModelIndex& left,
+    virtual bool subSortLessThan(const QModelIndex& left,
                                  const QModelIndex& right) const;
 
     virtual int compareCategories(const QModelIndex &left, const QModelIndex &right) const;

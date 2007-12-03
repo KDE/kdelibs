@@ -30,7 +30,7 @@
 
 KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
-    , d(new Private(this))
+    , d(new Private())
 
 {
 }
@@ -48,7 +48,7 @@ void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
     QSortFilterProxyModel::sort(column, order);
 }
 
-bool KCategorizedSortFilterProxyModel::lessThan (const QModelIndex & left, const QModelIndex & right) const
+bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex & left, const QModelIndex & right) const
 {
     if (d->categorizedModel)
     {
@@ -64,17 +64,12 @@ bool KCategorizedSortFilterProxyModel::lessThan (const QModelIndex & left, const
         }
     }
 
-    return subsortLessThan(left, right);
+    return subSortLessThan(left, right);
 }
 
-bool KCategorizedSortFilterProxyModel::subsortLessThan (const QModelIndex & left, const QModelIndex & right) const
+bool KCategorizedSortFilterProxyModel::subSortLessThan(const QModelIndex & left, const QModelIndex & right) const
 {
     return QSortFilterProxyModel::lessThan(left, right);
-}
-
-int KCategorizedSortFilterProxyModel::compareCategories(const QModelIndex &left, const QModelIndex &right) const
-{
-    return 0;
 }
 
 bool KCategorizedSortFilterProxyModel::isCategorizedModel() const
@@ -102,6 +97,3 @@ Qt::SortOrder KCategorizedSortFilterProxyModel::sortOrder() const
 {
     return d->sortOrder;
 }
-
-
-#include "kcategorizedsortfilterproxymodel.moc"
