@@ -213,7 +213,7 @@ int SuProcess::exec(const char *password, int check)
     if (iret < 0)
     {
         if (!check)
-            kError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+            kError(900) << k_lineinfo << "Conversation with kdesu_stub failed\n";
         return iret;
     }
     else if (iret == 1)
