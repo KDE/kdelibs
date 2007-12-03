@@ -279,10 +279,13 @@ public class KJASProtocolHandler
             String appletID  = getArg( command );
             int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
+            int arg_count  = Integer.parseInt( getArg( command ) );
             java.util.List args = new java.util.Vector();
             try { // fix getArg
                 String param = getArg(command);
-                while (param != null) {
+                while (arg_count-- > 0) {
+                    if (param == null)
+                        param = new String();
                     args.add(param);
                     param = getArg(command);
                 }

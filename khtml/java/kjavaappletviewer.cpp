@@ -570,6 +570,7 @@ bool KJavaAppletViewerLiveConnectExtension::call( const unsigned long objid, con
     args.append (QString::number (applet->appletId ()));
     args.append (QString::number ((int) objid));
     args.append (func);
+    args.append (QString::number ((int) fargs.size ()));
     {
         QStringList::const_iterator it = fargs.begin();
         const QStringList::const_iterator itEnd = fargs.end();
