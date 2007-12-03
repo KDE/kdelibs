@@ -66,6 +66,7 @@
 #include <misc/htmltags.h>
 #include <misc/htmlattrs.h>
 #include <misc/translator.h>
+#include <misc/imagefilter.h>
 #include <imload/canvasimage.h>
 #include <kjs/global.h>
 #include <kjs/operations.h> //uglyyy: needs for inf/NaN tests
@@ -207,23 +208,23 @@ void CanvasContext2DImpl::resetContext(int width, int height)
     defaultState.infinityTransform = false;
     defaultState.clipPath.addRect(0, 0, width, height);
     defaultState.clipPath.setFillRule(Qt::WindingFill);
-    
+
     defaultState.globalAlpha = 1.0f;
     defaultState.globalCompositeOperation = QPainter::CompositionMode_SourceOver;
 
     defaultState.strokeStyle = new CanvasColorImpl(QColor(Qt::black));
     defaultState.fillStyle   = new CanvasColorImpl(QColor(Qt::black));
-    
+
     defaultState.lineWidth  = 1.0f;
     defaultState.lineCap    = Qt::FlatCap;
     defaultState.lineJoin   = Qt::MiterJoin;
     defaultState.miterLimit = 10.0f;
-    
+
     defaultState.shadowOffsetX = 0.0f;
     defaultState.shadowOffsetY = 0.0f;
     defaultState.shadowBlur    = 0.0f;
     defaultState.shadowColor   = QColor(0, 0, 0, 0); // Transparent black
-    
+
     stateStack.push(defaultState);
 
     dirty = DrtAll;
@@ -249,6 +250,7 @@ QPainter* CanvasContext2DImpl::acquirePainter()
     if (!workPainter.isActive()) {
         workPainter.begin(canvasImage->qimage());
         workPainter.setRenderHint(QPainter::Antialiasing);
+        workPainter.setRenderHint(QPainter::SmoothPixmapTransform);
         dirty = DrtAll;
     }
 
@@ -263,7 +265,7 @@ QPainter* CanvasContext2DImpl::acquirePainter()
         // Restore the transform..
         dirty |= DrtTransform;
     }
-    
+
     if (dirty & DrtTransform) {
         if (state.infinityTransform) {
             // Make stuff disappear. Cliprect should avoid this ever showing..
@@ -900,9 +902,15 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
         exceptionCode = DOMException::INDEX_SIZE_ERR;
         return;
     }
-    
+
     QPainter* p = acquirePainter();
-    p->fillRect(QRectF(x, y, w, h), p->brush());
+    QPainterPath path;
+    path.addRect(x, y, w, h);
+
+    if (needsShadow())
+        drawPathWithShadow(p, path, FillPath);
+    else
+        p->fillPath(path, p->brush());
 }
 
 void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& exceptionCode)
@@ -917,7 +925,11 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
 
     QPainterPath path;
     path.addRect(x, y, w, h);
-    p->strokePath(path, p->pen());
+
+    if (needsShadow())
+        drawPathWithShadow(p, path, StrokePath);
+    else
+        p->strokePath(path, p->pen());
 }
 
 // Path ops
@@ -974,16 +986,124 @@ void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptio
     path.addRect(x, y, w, h);
 }
 
+inline QRect CanvasContext2DImpl::coverage(const QRectF &rect) const
+{
+    int x1 = std::floor(rect.x());
+    int y1 = std::floor(rect.y());
+    int x2 = std::ceil(rect.right());
+    int y2 = std::ceil(rect.bottom());
+
+    return QRect(x1, y1, (x2 - x1), (y2 - y1));
+}
+
+inline bool CanvasContext2DImpl::needsShadow() const
+{
+    return activeState().shadowColor.alpha() > 0;
+}
+
+void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &path, PathPaintOp op) const
+{
+    QPainterPathStroker stroker;
+    QPainterPath fillPath;
+    QBrush brush;
+
+    const PaintState &state = activeState();
+
+    switch (op)
+    {
+    case FillPath:
+        fillPath = path;
+        brush = p->brush();
+        break;
+
+    case StrokePath:
+        stroker.setCapStyle(state.lineCap);
+        stroker.setJoinStyle(state.lineJoin);
+        stroker.setMiterLimit(state.miterLimit);
+        stroker.setWidth(state.lineWidth);
+        fillPath = stroker.createStroke(path);
+        brush = p->pen().brush();
+        break;
+    }
+
+    float radius = shadowBlur();
+
+    // This seems to produce a shadow that's a fairly close approximation
+    // to the shadows rendered by CoreGraphics.
+    if (radius > 7)
+        radius = qMin(7 + std::pow(float(radius - 7.0), float(.7)), float(127.0));
+
+    qreal xoffset = radius * 2;
+    qreal yoffset = radius * 2;
+
+    QRect shapeBounds = coverage(p->worldTransform().map(fillPath).controlPointRect());
+
+    QRect clipRect = coverage(state.clipPath.controlPointRect());
+    clipRect &= QRect(QPoint(), canvasImage->size());
+
+    // We need the clip rect to be large enough so that items that are partially or
+    // completely outside the canvas will still cast shadows into it when they should.
+    clipRect.adjust(qMin(-shadowOffsetX(), float(0)), qMin(-shadowOffsetY(), float(0)),
+                    qMax(-shadowOffsetX(), float(0)), qMax(-shadowOffsetY(), float(0)));
+    clipRect.adjust(-xoffset, -yoffset, xoffset, yoffset);
+
+    QRect shapeRect  = shapeBounds & clipRect;
+    QRect shadowRect = shapeRect.translated(shadowOffsetX(), shadowOffsetY());
+    shadowRect.adjust(-xoffset, -yoffset, xoffset, yoffset);
+
+    QPainter painter;
+
+    // Create the image for the original shape
+    QImage shape(shapeRect.size(), QImage::Format_ARGB32_Premultiplied);
+    shape.fill(0);
+
+    // Draw the shape
+    painter.begin(&shape);
+    painter.setRenderHints(p->renderHints());
+    painter.setBrushOrigin(p->brushOrigin());
+    painter.translate(-shapeRect.x(), -shapeRect.y());
+    painter.setWorldTransform(p->worldTransform(), true);
+    painter.fillPath(fillPath, brush);
+    painter.end();
+
+    // Create the shadow image and draw the original image on it
+    QImage shadow(shadowRect.size(), QImage::Format_ARGB32_Premultiplied);
+    shadow.fill(0);
+
+    painter.begin(&shadow);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.drawImage(xoffset, yoffset, shape);
+    painter.end();
+
+    // Blur the alpha channel
+    ImageFilter::shadowBlur(shadow, radius, state.shadowColor);
+
+    // Draw the shadow on the canvas first, then composite the original image over it.
+    QTransform save = p->worldTransform();
+    p->setWorldTransform(QTransform());
+    p->drawImage(shadowRect.topLeft(), shadow);
+    p->drawImage(shapeRect.topLeft(), shape);
+    p->setWorldTransform(save);
+}
+
 void CanvasContext2DImpl::fill()
 {
     QPainter* p = acquirePainter();
-    p->fillPath(path, p->brush());
+
+    if (needsShadow())
+        drawPathWithShadow(p, path, FillPath);
+    else
+        p->fillPath(path, p->brush());
 }
 
 void CanvasContext2DImpl::stroke()
 {
     QPainter* p = acquirePainter();
-    p->strokePath(path, p->pen());
+
+    if (needsShadow())
+        drawPathWithShadow(p, path, StrokePath);
+    else
+        p->strokePath(path, p->pen());
 }
 
 void CanvasContext2DImpl::clip()
@@ -996,7 +1116,7 @@ void CanvasContext2DImpl::clip()
 /*    QTransform t;
     t.translate(-0.0001*cnt, cnt*0.0001);
     pathCopy = t.map(pathCopy);*/
-    
+
     state.clipPath = state.clipPath.intersected(state.transform.map(pathCopy));
     state.clipPath.setFillRule(Qt::WindingFill);
     dirty |= DrtClip;
@@ -1159,6 +1279,30 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
     }
 }
 
+void CanvasContext2DImpl::drawImageWithShadow(QPainter *p, const QRectF &dstRect, const QImage &image,
+                                              const QRectF &srcRect) const
+{
+    QPainterPath path;
+    path.addRect(dstRect);
+
+    QTransform transform;
+    transform.translate(dstRect.x(), dstRect.y());
+    if (dstRect.size() != srcRect.size())
+    {
+        float xscale = dstRect.width()  / srcRect.width();
+        float yscale = dstRect.height() / srcRect.height();
+        transform.scale(xscale, yscale);
+    }
+
+    QBrush brush(srcRect == image.rect() ? image : image.copy(srcRect.toRect()));
+    brush.setTransform(transform);
+
+    p->save();
+    p->setBrush(brush);
+    drawPathWithShadow(p, path, FillPath);
+    p->restore();
+}
+
 // Image stuff
 void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, int& exceptionCode)
 {
@@ -1168,7 +1312,11 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, int&
         return;
 
     QPainter* p = acquirePainter();
-    p->drawImage(QPointF(dx, dy), img);
+
+    if (needsShadow())
+        drawImageWithShadow(p, QRectF(dx, dy, img.width(), img.height()), img, img.rect());
+    else
+        p->drawImage(QPointF(dx, dy), img);
 }
 
 void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, float dw, float dh,
@@ -1181,7 +1329,11 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, floa
         return;
 
     QPainter* p = acquirePainter();
-    p->drawImage(QRectF(dx, dy, dw, dh), img);
+
+    if (needsShadow())
+        drawImageWithShadow(p, QRectF(dx, dy, dw, dh), img, img.rect());
+    else
+        p->drawImage(QRectF(dx, dy, dw, dh), img);
 }
 
 void CanvasContext2DImpl::drawImage(ElementImpl* image,
@@ -1196,7 +1348,11 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
         return;
 
     QPainter* p = acquirePainter();
-    p->drawImage(QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
+
+    if (needsShadow())
+        drawImageWithShadow(p, QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
+    else
+        p->drawImage(QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
