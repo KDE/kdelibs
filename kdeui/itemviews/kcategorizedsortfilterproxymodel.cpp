@@ -58,7 +58,7 @@ bool KCategorizedSortFilterProxyModel::lessThan (const QModelIndex & left, const
         {
             return false;
         }
-        else if (compare < 0) //left is less than right
+        else if (compare < 0) // left is less than right
         {
             return true;
         }
@@ -105,4 +105,3 @@ Qt::SortOrder KCategorizedSortFilterProxyModel::sortOrder() const
 
 
 #include "kcategorizedsortfilterproxymodel.moc"
-#include "kcategorizedsortfilterproxymodel_p.moc"

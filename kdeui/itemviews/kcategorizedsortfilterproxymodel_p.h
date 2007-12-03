@@ -22,19 +22,10 @@
 #ifndef KCATEGORIZEDSORTFILTERPROXYMODEL_P_H
 #define KCATEGORIZEDSORTFILTERPROXYMODEL_P_H
 
-#include <QVector>
-#include <QPair>
-#include <QStringList>
-#include <QModelIndexList>
-#include <QHash>
-
-#include <kglobal.h>
+class KCategorizedSortFilterProxyModel;
 
 class KCategorizedSortFilterProxyModel::Private
-    : public QObject
 {
-    Q_OBJECT
-
 public:
     int sortColumn;
     Qt::SortOrder sortOrder;
