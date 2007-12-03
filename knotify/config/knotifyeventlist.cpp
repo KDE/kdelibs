@@ -59,27 +59,25 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QRect rect=option.rect;
 
+	QStringList optionsList = prstring.split ("|");
+	QList<KIcon> iconList;
+	if(optionsList.contains("Sound"))
+		iconList << KIcon("speaker");
+	if(optionsList.contains("Popup"))
+		iconList << KIcon("document-properties");
+	if(optionsList.contains("Logfile"))
+		iconList << KIcon("text-plain");
+	if(optionsList.contains("Taskbar"))
+		iconList << KIcon("services");
+	if(optionsList.contains("Execute"))
+		iconList << KIcon("system-run");
+	if(optionsList.contains("KTTS") && KNotifyConfigElement::have_kttsd())
+		iconList << KIcon("speak");
 
 	int mc_x=0;
 	QSize iconsSize = option.decorationSize;
-	foreach(QString key , prstring.split ("|"))
+	foreach(KIcon icon, iconList)
 	{
-		QIcon icon;
-		if(key == "Sound" )
-			icon = KIcon("media-playback-start");
-		else if(key == "Popup" )
-			icon = KIcon("dialog-information");
-		else if(key == "Execute" )
-			icon = KIcon("system-run");
-		else if(key == "Taskbar" )
-			icon = KIcon("services");
-		else if(key == "Logfile" )
-			icon = KIcon("text-x-generic");
-		else if(key == "KTTS" && KNotifyConfigElement::have_kttsd())
-			icon = KIcon("text-speak");
-		else
-			continue;
-
 		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconsSize.height()) / 2, iconsSize.width(), iconsSize.height());
 		mc_x += iconsSize.width() + 4;
 	}

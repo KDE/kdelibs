@@ -28,6 +28,14 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 {
 	m_ui.setupUi(this);
 	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
+
+	m_ui.Sound_check->setIcon(KIcon("speaker"));
+	m_ui.Popup_check->setIcon(KIcon("document-properties"));
+	m_ui.Logfile_check->setIcon(KIcon("text-plain"));
+	m_ui.Execute_check->setIcon(KIcon("system-run"));
+	m_ui.Taskbar_check->setIcon(KIcon("services"));
+	m_ui.KTTS_check->setIcon(KIcon("speak"));
+
 	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Sound_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Popup_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
