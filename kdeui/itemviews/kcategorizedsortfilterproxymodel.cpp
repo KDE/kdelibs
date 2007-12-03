@@ -85,7 +85,8 @@ void KCategorizedSortFilterProxyModel::setCategorizedModel(bool categorizedModel
     }
 
     d->categorizedModel = categorizedModel;
-    sort(d->sortColumn, d->sortOrder); // items need to be sorted again
+
+    invalidate();
 }
 
 int KCategorizedSortFilterProxyModel::sortColumn() const
