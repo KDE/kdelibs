@@ -745,6 +745,21 @@ void KUrlTest::testAdjustPath()
     KUrl u5 = u4;
     u5.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE( u5.url(), u4.url() );
+
+    {
+    KUrl remote("remote:/");
+    QCOMPARE( remote.url(KUrl::RemoveTrailingSlash ), QString("remote:/") );
+    remote.adjustPath( KUrl::RemoveTrailingSlash );
+    QCOMPARE( remote.url(), QString("remote:/") );
+    remote.adjustPath( KUrl::RemoveTrailingSlash );
+    QCOMPARE( remote.url(), QString("remote:/") );
+    }
+
+    {
+    KUrl remote2("remote://");
+    QCOMPARE( remote2.url(), QString("remote:") );
+    QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") );
+    }
 }
 
 void KUrlTest::testIPV6()
