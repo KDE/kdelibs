@@ -206,15 +206,9 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
 
     switch (left.column()) {
     case KDirModel::Name: {
-        // So we are in the same priority, what counts now is their names.
-        const QVariant leftData  = dirModel->data(left, KDirModel::Name);
-        const QVariant rightData = dirModel->data(right, KDirModel::Name);
-        const QString leftValueString(leftData.toString());
-        const QString rightValueString(rightData.toString());
-
         return sortCaseSensitivity() ?
-               (naturalCompare(leftValueString, rightValueString) < 0) :
-               (naturalCompare(leftValueString.toLower(), rightValueString.toLower()) < 0);
+               (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+               (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
     }
 
     case KDirModel::Size: {
@@ -222,10 +216,10 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
         // items that contains each other
         if (leftFileItem.isDir() && rightFileItem.isDir()) {
             QVariant leftValue = dirModel->data(left, KDirModel::ChildCountRole);
-            int leftCount = leftValue.type() == QVariant::Int ? leftValue.toInt() : KDirModel::ChildCountUnknown;
+            int leftCount = leftValue.toInt();
 
             QVariant rightValue = dirModel->data(right, KDirModel::ChildCountRole);
-            int rightCount = rightValue.type() == QVariant::Int ? rightValue.toInt() : KDirModel::ChildCountUnknown;
+            int rightCount = rightValue.toInt();
 
             // In the case they two have the same child items, we sort them by
             // their names. So we have always everything ordered. We also check
@@ -252,16 +246,9 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::ModifiedTime: {
-        KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
-        KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
-
-        if (leftTime == rightTime) {
-            return sortCaseSensitivity() ?
-                   (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
-                   (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
-        }
-
-        return leftTime > rightTime;
+        return sortCaseSensitivity() ?
+                (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
     }
 
     case KDirModel::Permissions: {
@@ -369,18 +356,26 @@ int KDirSortFilterProxyModel::compareCategories(const QModelIndex &left,
         }
 
         if (!leftFileItem.isDir() && !rightFileItem.isDir()) {
-            return rightFileItem.size() - leftFileItem.size();
+            return leftFileItem.size() - rightFileItem.size();
         }
 
-        return 1;
+        return 0;
     }
 
     case KDirModel::ModifiedTime: {
         KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
         KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
-	if(leftTime == rightTime) return 0;
-	if(leftTime > rightTime) return 1;
-	return -1;
+
+        if ((leftTime.date().year() == rightTime.date().year()) &&
+            (leftTime.date().month() == rightTime.date().month())) {
+            return 0;
+        }
+
+        if (leftTime > rightTime) {
+            return 1;
+        }
+
+        return -1;
     }
 
     case KDirModel::Permissions: {

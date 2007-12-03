@@ -42,7 +42,6 @@ KCategorizedSortFilterProxyModel::~KCategorizedSortFilterProxyModel()
 
 void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
 {
-    if(!sourceModel()) return;
     d->sortColumn = column;
     d->sortOrder = order;
 
@@ -51,15 +50,15 @@ void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
 
 bool KCategorizedSortFilterProxyModel::lessThan (const QModelIndex & left, const QModelIndex & right) const
 {
-    if(d->categorizedModel)
+    if (d->categorizedModel)
     {
         int compare = compareCategories(left, right);
 
-        if(compare > 0) // left is greater than right
+        if (compare > 0) // left is greater than right
         {
             return false;
         }
-        else if(compare < 0) //left is less than right
+        else if (compare < 0) //left is less than right
         {
             return true;
         }
