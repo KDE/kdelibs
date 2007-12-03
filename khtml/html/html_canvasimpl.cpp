@@ -1153,8 +1153,8 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
     }
 
-    float angle1 = M_PI_2 - std::atan2(line1.dx(), line1.dy());
-    float angle2 = M_PI_2 - std::atan2(line2.dx(), line2.dy());
+    float angle1 = std::atan2(line1.dy(), line1.dx());
+    float angle2 = std::atan2(line2.dy(), line2.dx());
 
     // The angle between by line1 and line2
     float span = angle2 - angle1;
@@ -1219,8 +1219,8 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     QLineF toT2(centerPoint, t2);
 
     // The start and end angles of the arc
-    float startAngle = M_PI_2 - std::atan2(toT1.dx(), toT1.dy());
-    float endAngle   = M_PI_2 - std::atan2(toT2.dx(), toT2.dy());
+    float startAngle = std::atan2(toT1.dy(), toT1.dx());
+    float endAngle   = std::atan2(toT2.dy(), toT2.dx());
     bool counterClockWise = span > 0;
 
     int dummy; // Exception code from arc()
