@@ -81,16 +81,30 @@ public:
   void clear();
 
   /**
-   * Associate all actions in this collection to the given \a widget, and set all
-   * shortcutContexts to Qt::WidgetShortcut.  This has the effect of making the actions
-   * only trigger when:
-   * 1) the widget (or its children, it Qt 4.4 and above) has focus
-   * 2) the shortcut is pressed.
+   * Associate all actions in this collection to the given \a widget, including any actions
+   * added after this association is made.
    *
-   * This is important particularly when actions only apply to a specific widget, and
-   * when the application is a kpart and needs to respect other parts' shortcuts.
+   * This does not change the action's shortcut context, so if you need to have the actions only
+   * trigger when the widget has focus, you'll need to set the shortcut context on each action
+   * to Qt::WidgetShortcut (or better still, Qt::WidgetWithChildrenShortcut with Qt 4.4+)
    */
-  void associateWidget(QWidget* widget) const;
+  void addAssociatedWidget(QWidget* widget);
+
+  /**
+   * Remove an association between all actions in this collection and the given \a widget, i.e.
+   * remove those actions from the widget, and stop associating newly added actions as well.
+   */
+  void removeAssociatedWidget(QWidget* widget);
+
+  /**
+   * Return a list of all associated widgets.
+   */
+  QList<QWidget*> associatedWidgets() const;
+
+  /**
+   * Clear all associated widgets and remove the actions from those widgets.
+   */
+  void clearAssociatedWidgets();
 
   /**
    * Returns the KConfig group with which settings will be loaded and saved.
@@ -301,6 +315,7 @@ public:
 
 private:
   Q_PRIVATE_SLOT(d, void _k_actionDestroyed(QObject *))
+  Q_PRIVATE_SLOT(d, void _k_associatedWidgetDestroyed(QObject*))
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 

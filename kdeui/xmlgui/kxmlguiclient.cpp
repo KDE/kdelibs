@@ -687,28 +687,22 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 
 }
 
-void KXMLGUIClient::beginXMLPlug( QWidget* /*w*/ )
+void KXMLGUIClient::beginXMLPlug( QWidget* w )
 {
-  /* FIXME KAction Port
-  actionCollection()->beginXMLPlug( w );
+  actionCollection()->addAssociatedWidget( w );
   foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->beginXMLPlug( w );*/
+    client->beginXMLPlug( w );
 }
 
 void KXMLGUIClient::endXMLPlug()
 {
-  /* FIXME KAction Port
-  actionCollection()->endXMLPlug();
-  foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->endXMLPlug();*/
 }
 
-void KXMLGUIClient::prepareXMLUnplug( QWidget * )
+void KXMLGUIClient::prepareXMLUnplug( QWidget * w )
 {
-  /* FIXME KAction Port
-  actionCollection()->prepareXMLUnplug();
+  actionCollection()->removeAssociatedWidget( w );
   foreach (KXMLGUIClient* client, d->m_children)
-    client->actionCollection()->prepareXMLUnplug();*/
+    client->prepareXMLUnplug( w );
 }
 
 void KXMLGUIClient::virtual_hook( int, void* )

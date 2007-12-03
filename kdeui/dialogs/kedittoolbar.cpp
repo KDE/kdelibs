@@ -45,6 +45,7 @@
 #include <kpushbutton.h>
 #include <kprocess.h>
 #include <ktoolbar.h>
+#include <kdeversion.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -726,7 +727,13 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
   m_widget->adjustSize();
   m_widget->setMinimumSize( m_widget->sizeHint() );
 
-  m_widget->actionCollection()->associateWidget( m_widget );
+  m_widget->actionCollection()->addAssociatedWidget( m_widget );
+  foreach (QAction* action, m_widget->actionCollection()->actions())
+#if QT_VERSION < KDE_MAKE_VERSION(4,4,0)
+    action->setShortcutContext(Qt::WidgetShortcut); // remove after Qt4.4 becomes mandatory
+#else
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#endif
 }
 
 bool KEditToolBarWidget::save()

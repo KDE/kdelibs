@@ -45,7 +45,6 @@
 #include <stdio.h>
 #include <kcomponentdata.h>
 #include <kconfiggroup.h>
-#include <kdeversion.h>
 
 class KActionCollectionPrivate
 {
@@ -64,7 +63,7 @@ public:
 
   static QList<KActionCollection*> s_allCollections;
 
-  void _k_widgetDestroyed(QObject *obj);
+  void _k_associatedWidgetDestroyed(QObject *obj);
   void _k_actionDestroyed(QObject *obj);
 
   KComponentData m_componentData;
@@ -81,6 +80,8 @@ public:
   bool connectHighlighted : 1;
 
   KActionCollection *q;
+
+  QList<QWidget*> associatedWidgets;
 };
 
 QList<KActionCollection*> KActionCollectionPrivate::s_allCollections;
@@ -239,6 +240,9 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     d->actionByName.insert(index_name, action);
     d->nameByAction.insert(action, index_name);
 
+    foreach (QWidget* widget, d->associatedWidgets)
+      widget->addAction(action);
+
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
 
     if (d->connectHighlighted)
@@ -264,6 +268,9 @@ QAction* KActionCollection::takeAction(QAction *action)
   const QString name = *it;
   d->nameByAction.erase(it);
   d->actionByName.remove(name);
+
+  foreach (QWidget* widget, d->associatedWidgets)
+    widget->removeAction(action);
 
   disconnect(action, SIGNAL(destroyed(QObject*)), this, SLOT(_k_actionDestroyed(QObject*)));
 
@@ -296,19 +303,6 @@ KAction *KActionCollection::addAction(const QString &name, const QObject *receiv
   if (receiver && member)
     connect(a, SIGNAL(triggered()), receiver, member);
   return addAction(name, a);
-}
-
-void KActionCollection::associateWidget(QWidget* widget) const
-{
-  foreach (QAction* action, actions()) {
-#if QT_VERSION < KDE_MAKE_VERSION(4,4,0)
-    action->setShortcutContext(Qt::WidgetShortcut); // remove after Qt4.4 becomes mandatory
-#else
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-#endif
-    if (!widget->actions().contains(action))
-      widget->addAction(action);
-  }
 }
 
 QString KActionCollection::configGroup( ) const
@@ -510,6 +504,44 @@ void KActionCollection::connectNotify ( const char * signal )
 const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
     return KActionCollectionPrivate::s_allCollections;
+}
+
+void KActionCollection::addAssociatedWidget(QWidget * widget)
+{
+  if (!d->associatedWidgets.contains(widget)) {
+    widget->addActions(actions());
+
+    d->associatedWidgets.append(widget);
+    connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_associatedWidgetDestroyed(QObject*)));
+  }
+}
+
+void KActionCollection::removeAssociatedWidget(QWidget * widget)
+{
+  foreach (QAction* action, actions())
+    widget->removeAction(action);
+
+  d->associatedWidgets.removeAll(widget);
+  disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_associatedWidgetDestroyed(QObject*)));
+}
+
+QList< QWidget * > KActionCollection::associatedWidgets() const
+{
+  return d->associatedWidgets;
+}
+
+void KActionCollection::clearAssociatedWidgets()
+{
+  foreach (QWidget* widget, d->associatedWidgets)
+    foreach (QAction* action, actions())
+      widget->removeAction(action);
+
+  d->associatedWidgets.clear();
+}
+
+void KActionCollectionPrivate::_k_associatedWidgetDestroyed(QObject *obj)
+{
+  associatedWidgets.removeAll(static_cast<QWidget*>(obj));
 }
 
 /* vim: et sw=2 ts=2

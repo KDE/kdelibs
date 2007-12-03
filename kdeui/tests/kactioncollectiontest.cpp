@@ -65,7 +65,7 @@ void tst_KActionCollection::deleted()
     QWidget* myAssociatedWidget = new QWidget(myWidget); // child widget
     action = new KAction( /*i18n()*/ "Foo", myWidget); // child action
     collection->addAction("foo", action);
-    collection->associateWidget(myAssociatedWidget);
+    collection->addAssociatedWidget(myAssociatedWidget);
     QVERIFY(myAssociatedWidget->actions().contains(action));
     delete myAssociatedWidget; // would be done by the line below, but let's make sure it happens first
     delete myWidget;

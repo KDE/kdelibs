@@ -74,6 +74,7 @@
 #include <ktoggleaction.h>
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
+#include <kdeversion.h>
 
 
 template class QHash<QString, KFileItem>;
@@ -1576,7 +1577,9 @@ void KDirOperator::setupActions()
     // an interface to add a custom action collection.
 
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 4, 0))
-    d->actionCollection->associateWidget(topLevelWidget());
+    d->actionCollection->addAssociatedWidget(topLevelWidget());
+    foreach (QAction* action, d->actionCollection->actions())
+      action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #endif
 }
 
