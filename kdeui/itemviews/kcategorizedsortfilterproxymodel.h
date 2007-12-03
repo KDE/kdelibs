@@ -109,11 +109,6 @@ protected:
     virtual bool subSortLessThan(const QModelIndex &left, const QModelIndex &right) const;
 
     /**
-      * For two indexes, return -1 if @p left comes in a category before @p right,
-      * 0 if they are in the same category, and 1 if left comes in a category after right
-      * You need to reimplement this method. This method will sort items so they are
-      * correctly grouped by categories.
-      *
       * @return A negative value if the category of @p left should be placed before the
       *         category of @p right. 0 if @p left and @p right are on the same category, and
       *         a positive value if the category of @p left should be placed after the
