@@ -1291,10 +1291,12 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             if (!e->firstChild())
                 return true;
             else {
-                // check for empty text nodes
                 NodeImpl *t = e->firstChild();
 
-                while (t && t->isTextNode() && static_cast<TextImpl*>(t)->length() == 0) t = t->nextSibling();
+                // check for empty text nodes and comments
+                while (t && (t->nodeType() == Node::COMMENT_NODE ||
+                       (t->isTextNode() && static_cast<TextImpl*>(t)->length() == 0)))
+                    t = t->nextSibling();
 
                 if (t == 0)
                     return true;
