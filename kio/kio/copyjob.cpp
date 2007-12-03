@@ -1109,7 +1109,11 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
 
     //kDebug(7007) << files.count() << " files remaining";
 
-    q->removeSubjob( job, true ); // merge metadata
+    // Merge metadata from subjob
+    KIO::Job* kiojob = dynamic_cast<KIO::Job*>(job);
+    Q_ASSERT(kiojob);
+    m_incomingMetaData += kiojob->metaData();
+    q->removeSubjob( job );
     assert( !q->hasSubjobs() ); // We should have only one job at a time ...
     copyNextFile();
 }
@@ -1577,7 +1581,11 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     Q_Q(CopyJob);
     int err = job->error();
     const QString errText = job->errorText();
-    q->removeSubjob( job, true ); // merge metadata
+    // Merge metadata from subjob
+    KIO::Job* kiojob = dynamic_cast<KIO::Job*>(job);
+    Q_ASSERT(kiojob);
+    m_incomingMetaData += kiojob->metaData();
+    q->removeSubjob( job );
     assert ( !q->hasSubjobs() );
     // Determine dest again
     KUrl dest = m_dest;

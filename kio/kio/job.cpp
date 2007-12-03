@@ -101,42 +101,29 @@ JobUiDelegate *Job::ui() const
     return static_cast<JobUiDelegate*>( uiDelegate() );
 }
 
-void Job::addSubjob(Job *job, bool inheritMetaData)
+bool Job::addSubjob(KJob *jobBase)
 {
-    Q_D(Job);
-    //kDebug(7007) << "addSubjob(" << job << ") this = " << this;
+    //kDebug(7007) << "addSubjob(" << jobBase << ") this=" << this;
 
-    KCompositeJob::addSubjob( job );
+    bool ok = KCompositeJob::addSubjob( jobBase );
+    KIO::Job *job = dynamic_cast<KIO::Job*>( jobBase );
+    if (ok && job) {
+        // Forward information from that subjob.
+        connect( job, SIGNAL(speed( KJob*, unsigned long )),
+                 SLOT(slotSpeed(KJob*, unsigned long)) );
 
-    // Forward information from that subjob.
-    connect( job, SIGNAL(speed( KJob*, unsigned long )),
-             SLOT(slotSpeed(KJob*, unsigned long)) );
-
-    if (inheritMetaData)
-        job->mergeMetaData(d->m_outgoingMetaData);
-
-    if (ui() && job->ui()) {
-        job->ui()->setWindow( ui()->window() );
-        job->ui()->updateUserTimestamp( ui()->userTimestamp() );
+        if (ui() && job->ui()) {
+            job->ui()->setWindow( ui()->window() );
+            job->ui()->updateUserTimestamp( ui()->userTimestamp() );
+        }
     }
+    return ok;
 }
 
-bool Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
+bool Job::removeSubjob( KJob *jobBase )
 {
-    Q_D(Job);
-    KIO::Job *job = dynamic_cast<KIO::Job*>( jobBase );
-
-    if ( job == 0 )
-    {
-        return false;
-    }
-
-    //kDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs().count();
-    // Merge metadata from subjob
-    if ( mergeMetaData )
-        d->m_incomingMetaData += job->metaData();
-
-    return KCompositeJob::removeSubjob( job );
+    //kDebug(7007) << "removeSubjob(" << jobBase << ") this=" << this << "subjobs=" << subjobs().count();
+    return KCompositeJob::removeSubjob( jobBase );
 }
 
 void JobPrivate::emitMoving(KIO::Job * job, const KUrl &src, const KUrl &dest)

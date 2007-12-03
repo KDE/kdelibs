@@ -287,10 +287,8 @@ namespace KIO {
          * the finish signal is emitted by the slave.
          *
 	 * @param job the subjob to add
-         * @param inheritMetaData if true, the subjob will
-         * inherit the meta data from this job.
          */
-        virtual void addSubjob( Job *job, bool inheritMetaData=true );
+        virtual bool addSubjob( KJob *job );
 
         /**
          * Mark a sub job as being done.
@@ -298,10 +296,8 @@ namespace KIO {
          * KDE4 change: this doesn't terminate the parent job anymore, call emitResult to do that.
 	 *
 	 * @param job the subjob to remove
-         * @param mergeMetaData if set, the metadata received by the subjob is
-         *                      merged into this job.
          */
-        bool removeSubjob( KJob *job, bool mergeMetaData = false );
+        virtual bool removeSubjob( KJob *job );
 
     private:
         /**
