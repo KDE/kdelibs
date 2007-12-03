@@ -174,12 +174,11 @@ void KPageViewPrivate::_k_modelChanged()
   /**
    * If the face type is Auto, we rebuild the GUI whenever the layout
    * of the model changes.
-   *
-   * We have to decouple the method call here, since the view which
-   * called use is deleted.
    */
     if (faceType == KPageView::Auto) {
-        QTimer::singleShot(0, q, SLOT(_k_rebuildGui()));
+        _k_rebuildGui();
+        // If you discover some crashes use the line below instead...
+        //QTimer::singleShot(0, q, SLOT(_k_rebuildGui()));
     }
 
   /**
