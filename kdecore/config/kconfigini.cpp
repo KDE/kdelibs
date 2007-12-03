@@ -33,7 +33,6 @@
 #include <ksavefile.h>
 #include <kde_file.h>
 #include "kstandarddirs.h"
-#include <kdebug.h>
 
 #include <qdatetime.h>
 #include <qdir.h>
@@ -107,7 +106,7 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 end = start;
                 for (;;) {
                     if (end == line.length()) {
-                        kWarning() << warningProlog(file, lineNo) << "Invalid group header.";
+                        qWarning() << warningProlog(file, lineNo) << "Invalid group header.";
                         // XXX maybe reset the current group here?
                         goto next_line;
                     }
@@ -148,11 +147,11 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
 
             if (end == -1 && !line.contains("[$d]")) {
                 // no equals sign
-                kWarning() << warningProlog(file, lineNo) << "Invalid entry (missing '=')" << endl;
+                qWarning() << warningProlog(file, lineNo) << "Invalid entry (missing '=')";
                 continue;
             } else if (end == 1) {
                 // empty key
-                kWarning() << warningProlog(file, lineNo) << "Invalid entry (empty key)" << endl;
+                qWarning() << warningProlog(file, lineNo) << "Invalid entry (empty key)";
                 continue;
             }
             QByteArray aKey = line.left(end);
@@ -172,12 +171,12 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 int start = aKey.indexOf('[');
                 end = aKey.indexOf(']', start);
                 if (start != -1 && end == -1) {
-                    kWarning() << warningProlog(file, lineNo)
-                            << "Invalid entry (missing ']')" << endl;
+                    qWarning() << warningProlog(file, lineNo)
+                            << "Invalid entry (missing ']')";
                     continue;
                 } else if (end < start) {
-                    kWarning() << warningProlog(file, lineNo)
-                            << "Invalid entry (unmatched ']')" << endl;
+                    qWarning() << warningProlog(file, lineNo)
+                            << "Invalid entry (unmatched ']')";
                     continue;
                 }else if (aKey.at(start+1) == '$') { // found option(s)
                     int i = start+2;
@@ -203,8 +202,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                     }
                 } else { // found a locale
                     if (!locale.isNull()) {
-                        kWarning() << warningProlog(file, lineNo)
-                                << "Invalid entry (second locale!?)" << endl;
+                        qWarning() << warningProlog(file, lineNo)
+                                << "Invalid entry (second locale!?)";
                         continue;
                     }
 
@@ -622,8 +621,8 @@ char KConfigIniBackend::charFromHex(const char *str, const QFile& file, int line
         } else {
             QByteArray e(str, 2);
             e.prepend("\\x");
-            kWarning() << warningProlog(file, line) << "Invalid hex character " << c
-                    << " in \\x<nn>-type escape sequence \"" << e.constData() << "\"." << endl;
+            qWarning() << warningProlog(file, line) << "Invalid hex character " << c
+                    << " in \\x<nn>-type escape sequence \"" << e.constData() << "\".";
             return 'x';
         }
     }
@@ -690,8 +689,8 @@ QByteArray KConfigIniBackend::printableToString(const QByteArray& aString, const
                     break;
                 default:
                     *r = '\\';
-                    kWarning() << warningProlog(file, line)
-                            << QString("Invalid escape sequence \"\\%1\".").arg(str[i]) << endl;
+                    qWarning() << warningProlog(file, line)
+                            << QString("Invalid escape sequence \"\\%1\".").arg(str[i]);
             }
         }
     }
