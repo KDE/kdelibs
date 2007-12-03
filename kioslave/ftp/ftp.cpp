@@ -2327,7 +2327,13 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   {
     if(iRes == statusSuccess)
     { // rename ".part" on success
+#ifdef Q_OS_WIN
+        if ( MoveFileExA( sPart.data(),
+                          sDest.data(),
+                          MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) == 0 )
+#else
       if ( ::rename( sPart.data(), sDest.data() ) )
+#endif
       {
         kDebug(7102) << "copy: cannot rename " << sPart << " to " << sDest;
         iError = ERR_CANNOT_RENAME_PARTIAL;

@@ -759,7 +759,13 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
         if( (_flags & KIO::Overwrite) && S_ISLNK( buff_orig.st_mode ) )
           remove( _dest_orig.data() );
 
+#ifdef Q_OS_WIN
+        if ( MoveFileExA( _dest.data(),
+                          _dest_orig.data(),
+                          MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) == 0 )
+#else
         if ( ::rename( _dest.data(), _dest_orig.data() ) )
+#endif
         {
             kWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig;
             error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
