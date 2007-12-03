@@ -150,8 +150,6 @@ public:
      */
     KCompletion();
 
-    // FIXME: copy constructor, assignment operator...
-
     /**
      * Destructor, nothing special here, either.
      */
@@ -552,6 +550,7 @@ private:
     void        doBeep( BeepMode ) const;
 
 private:
+    Q_DISABLE_COPY( KCompletion )
     KCompletionPrivate* const d;
 };
 
@@ -580,11 +579,31 @@ class KCompletionMatchesPrivate;
 class KDEUI_EXPORT KCompletionMatches : public KCompletionMatchesList
 {
 public:
+    /**
+     * Default constructor.
+     * @param sort if false, the matches won't be sorted before the conversion,
+     *             use only if you're sure the sorting is not needed
+     */
     KCompletionMatches( bool sort );
+
+    /**
+     * copy constructor.
+     */
+    KCompletionMatches( const KCompletionMatches& );
+
+    /**
+     * assignment operator.
+     */
+    KCompletionMatches &operator=( const KCompletionMatches& );
+
     /**
      * @internal
      */
     KCompletionMatches( const KCompletionMatchesWrapper& matches );
+
+    /**
+     * default destructor.
+     */
     ~KCompletionMatches();
     /**
      * Removes duplicate matches. Needed only when you merged several matches
@@ -604,6 +623,7 @@ public:
      * @return true if the matches won't be sorted
      */
     bool sorting() const;
+
 private:
     KCompletionMatchesPrivate * const d;
 };
@@ -938,6 +958,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
+    Q_DISABLE_COPY( KCompletionBase )
     KCompletionBasePrivate * const d;
 };
 

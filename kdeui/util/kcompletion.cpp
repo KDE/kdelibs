@@ -830,6 +830,22 @@ public:
     bool sorting;
 };
 
+KCompletionMatches::KCompletionMatches( const KCompletionMatches &o )
+ : d( new KCompletionMatchesPrivate( o.d->sorting ) )
+{
+    *this = KCompletionMatches::operator=( o );
+}
+
+KCompletionMatches &KCompletionMatches::operator=( const KCompletionMatches &o )
+{
+    if( *this == o )
+        return *this;
+    KCompletionMatchesList::operator=( o );
+    d->sorting = o.d->sorting;
+
+    return *this;
+}
+
 KCompletionMatches::KCompletionMatches( bool sort_P )
     : d( new KCompletionMatchesPrivate( sort_P ) )
 {
