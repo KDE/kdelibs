@@ -87,7 +87,7 @@ protected:
     /**
       * Overridden from QSortFilterProxyModel. If you are subclassing
       * KCategorizedSortFilterProxyModel, you will probably not need to reimplement this
-      * method. 
+      * method.
       *
       * It calls compareCategories() to sort by category.  If the both items are in the
       * same category (i.e. compareCategories returns 0), then subSortLessThan is called.
@@ -101,7 +101,7 @@ protected:
 
     /**
       * This method has a similar purpose as lessThan() has on QSortFilterProxyModel.
-      * It is used for sorting items that in the same category.
+      * It is used for sorting items that are in the same category.
       *
       * @return Returns true if the item @p left is less than the item @p right when sorting.
       */
