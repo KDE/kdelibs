@@ -31,6 +31,7 @@ public:
         : sortColumn(0)
         , sortOrder(Qt::AscendingOrder)
         , categorizedModel(false)
+        , sortCategoriesByNaturalComparison(true)
     {
     }
 
@@ -41,6 +42,7 @@ public:
     int sortColumn;
     Qt::SortOrder sortOrder;
     bool categorizedModel;
+    bool sortCategoriesByNaturalComparison;
 };
 
 #endif

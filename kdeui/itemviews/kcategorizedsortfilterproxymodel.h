@@ -49,7 +49,14 @@ public:
     enum AdditionalRoles {
         // Note: use printf "0x%08X\n" $(($RANDOM*$RANDOM))
         // to define additional roles.
-        CategoryRole = 0x17CE990A ///< This role is used for asking the category to a given index
+        CategoryDisplayRole = 0x17CE990A,  ///< This role is used for asking the category to a given index
+
+        CategorySortRole    = 0x27857E60   ///< This role is used for sorting categories. You can return a
+                                           ///< string or a long long value. Strings will be sorted alphabetically
+                                           ///< while long long will be sorted by their value. Please note that this
+                                           ///< value won't be shown on the view, is only for sorting purposes. What will
+                                           ///< be shown as "Category" on the view will be asked with the role
+                                           ///< CategoryDisplayRole.
     };
 
     KCategorizedSortFilterProxyModel(QObject *parent = 0);
@@ -62,7 +69,7 @@ public:
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
     /**
-      * @return whether the model is categorized or not.
+      * @return whether the model is categorized or not. Disabled by default.
       */
     bool isCategorizedModel() const;
 
@@ -82,6 +89,26 @@ public:
       * @return the sort order being used for sorting.
       */
     Qt::SortOrder sortOrder() const;
+
+    /**
+      * Set if the sorting using CategorySortRole will use a natural comparison
+      * in the case that strings were returned.
+      *
+      * @param sortCategoriesByNaturalComparison whether to sort using a natural comparison or not.
+      */
+    void setSortCategoriesByNaturalComparison(bool sortCategoriesByNaturalComparison);
+
+    /**
+      * @return whether it is being used a natural comparison for sorting. Enabled by default.
+      */
+    bool sortCategoriesByNaturalComparison() const;
+
+    /**
+      * Does a natural comparing of the strings. -1 is returned if \a a
+      * is smaller than \a b. +1 is returned if \a a is greater than \a b. 0
+      * is returned if both values are equal.
+      */
+    static int naturalCompare(const QString &a, const QString &b);
 
 protected:
     /**
@@ -113,7 +140,7 @@ protected:
       *         a positive value if the category of @p left should be placed after the
       *         category of @p right.
       */
-    virtual int compareCategories(const QModelIndex &left, const QModelIndex &right) const = 0;
+    virtual int compareCategories(const QModelIndex &left, const QModelIndex &right) const;
 
 private:
     class Private;

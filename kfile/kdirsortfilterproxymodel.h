@@ -65,13 +65,6 @@ public:
     virtual bool canFetchMore(const QModelIndex& parent) const;
 
     /**
-     * Does a natural comparing of the strings. -1 is returned if \a a
-     * is smaller than \a b. +1 is returned if \a a is greater than \a b. 0
-     * is returned if both values are equal.
-     */
-    static int naturalCompare(const QString& a, const QString& b);
-
-    /**
      * Returns the permissions in "points". This is useful for sorting by
      * permissions.
      */
@@ -79,12 +72,11 @@ public:
 
 protected:
     /**
-     * Reimplemented from QAbstractItemModel to use naturalCompare.
+     * Reimplemented from KCategorizedSortFilterProxyModel.
      */
     virtual bool subSortLessThan(const QModelIndex& left,
                                  const QModelIndex& right) const;
 
-    virtual int compareCategories(const QModelIndex &left, const QModelIndex &right) const;
 private:
     class KDirSortFilterProxyModelPrivate;
     KDirSortFilterProxyModelPrivate* const d;
