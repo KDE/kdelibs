@@ -251,7 +251,7 @@ set(khtml_LIB_SRCS
    khtmlview.cpp
    khtml_part.cpp
    khtml_run.cpp
-   khtml_factory.cpp
+   khtml_global.cpp
    khtml_settings.cc
    khtml_events.cpp
    khtml_ext.cpp
@@ -330,7 +330,7 @@ install(TARGETS khtml DESTINATION ${LIB_INSTALL_DIR})
 
 ########### khtmlpart ###############
 
-set(khtmlpart_PART_SRCS khtml_factory_init.cpp )
+set(khtmlpart_PART_SRCS khtml_factory.cpp )
 
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})

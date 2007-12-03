@@ -39,7 +39,7 @@
 #include "xml/xml_tokenizer.h"
 #include "xml/dom2_eventsimpl.h"
 
-#include "khtml_factory.h"
+#include <khtml_global.h>
 #include "rendering/render_object.h"
 #include "dom/dom_exception.h"
 
@@ -80,12 +80,12 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
     m_doAutoFill = false;
 
 /* dynamic history stuff to be fixed later (pfeiffer)
-    connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
+    connect( KHTMLGlobal::vLinks(), SIGNAL( removed( const QString& )),
              SLOT( slotHistoryChanged() ));
 */
-    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& ) ),
+    connect( KHTMLGlobal::vLinks(), SIGNAL( inserted( const QString& ) ),
              SLOT( slotHistoryChanged() ));
-    connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
+    connect( KHTMLGlobal::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
 }
 

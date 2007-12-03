@@ -36,7 +36,7 @@
 #  endif
 #endif
 
-#include <khtml_factory.h>
+#include <khtml_global.h>
 #include <khtml_settings.h>
 
 #include <kdebug.h>
@@ -302,9 +302,9 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAdd ) const
 {
     int w = 0;
-    
+
    // #### Qt 4 has a major speed regression : QFontMetrics::width() is around 15 times slower than Qt 3's.
-   // This is a great speed bottleneck as we are now spending up to 70% of the layout time in that method 
+   // This is a great speed bottleneck as we are now spending up to 70% of the layout time in that method
    // (compared to around 5% before).
    // It as been reported to TT and acknowledged as issue N138867, but whether they intend to give it some
    // care in the near future is unclear :-/
@@ -374,7 +374,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 }
 
 /** Querying QFontDB whether something is scalable is expensive, so we cache. */
-struct ScalKey 
+struct ScalKey
 {
     QString family;
     int     weight;
@@ -404,7 +404,7 @@ uint qHash (const ScalKey& key) {
 
 static QCache<ScalKey, ScalInfo>* scalCache;
 
-bool Font::isFontScalable(QFontDatabase& db, const QFont& font) 
+bool Font::isFontScalable(QFontDatabase& db, const QFont& font)
 {
     if (!scalCache)
         scalCache = new QCache<ScalKey, ScalInfo>(64);
@@ -430,7 +430,7 @@ bool Font::isFontScalable(QFontDatabase& db, const QFont& font)
 
 void Font::update(int logicalDpiY) const
 {
-    f.setFamily( fontDef.family.isEmpty() ? KHTMLFactory::defaultHTMLSettings()->stdFontName() : fontDef.family );
+    f.setFamily( fontDef.family.isEmpty() ? KHTMLGlobal::defaultHTMLSettings()->stdFontName() : fontDef.family );
     f.setItalic( fontDef.italic );
     f.setWeight( fontDef.weight );
 

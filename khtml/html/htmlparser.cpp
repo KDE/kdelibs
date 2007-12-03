@@ -50,7 +50,7 @@
 #include <html/htmltokenizer.h>
 #include <khtmlview.h>
 #include <khtml_part.h>
-#include <khtml_factory.h>
+#include <khtml_global.h>
 #include <css/cssproperties.h>
 #include <css/cssvalues.h>
 #include <css/csshelper.h>
@@ -892,11 +892,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_INPUT:
         if ( t->attrs &&
-             KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() &&
-             KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() &&
+             KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled() &&
+             KHTMLGlobal::defaultHTMLSettings()->isHideAdsEnabled() &&
              !strcasecmp( t->attrs->getValue( ATTR_TYPE ), "image" ) )
         {
-            if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered( doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() ) ))
+            if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() ) ))
                 return 0;
         }
         n = new HTMLInputElementImpl(document, form);
@@ -1020,11 +1020,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // images
     case ID_IMG:
         if (t->attrs&&
-            KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
-            KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled())
+            KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()&&
+            KHTMLGlobal::defaultHTMLSettings()->isHideAdsEnabled())
         {
             QString url = doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() );
-            if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url))
+            if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered(url))
                 return 0;
         }
         n = new HTMLImageElementImpl(document, form);

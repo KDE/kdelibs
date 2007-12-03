@@ -36,7 +36,7 @@
 #include "xml/dom_restyler.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
-#include "khtml_factory.h"
+#include "khtml_global.h"
 #include "khtmlpart_p.h"
 using namespace khtml;
 using namespace DOM;
@@ -246,7 +246,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     foreach (StyleSheetImpl* sh, styleSheets->styleSheets) {
         if ( sh->isCSSStyleSheet() ) {
             if ( static_cast<CSSStyleSheetImpl*>(sh)->implicit() ) {
-                if (!implicitStyle) 
+                if (!implicitStyle)
                     implicitStyle = new CSSStyleSelectorList();
                 implicitStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
             } else if ( sh->isCSSStyleSheet() && !sh->disabled()) {
@@ -289,7 +289,7 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     if (sheet->implicit()) {
         implicitStyle = new CSSStyleSelectorList();
         implicitStyle->append( sheet, m_medium );
-    } else {    
+    } else {
         authorStyle = new CSSStyleSelectorList();
         authorStyle->append( sheet, m_medium );
     }
@@ -585,8 +585,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     }
 
-    // Inline style declarations, after all others. 
-    // Non-css hints from presentational attributes will also be collected here 
+    // Inline style declarations, after all others.
+    // Non-css hints from presentational attributes will also be collected here
     // receiving the proper priority so has to cascade from before author rules (cf.CSS 2.1-6.4.4).
     numPropsToApply = addInlineDeclarations( e, numPropsToApply );
 
@@ -929,9 +929,9 @@ static PseudoState checkPseudoState( const CSSStyleSelector::Encodedurl& encoded
         cleanpath( u );
     }
     //completeURL( attr.string() );
-    bool contains = KHTMLFactory::vLinks()->contains( u );
+    bool contains = KHTMLGlobal::vLinks()->contains( u );
     if ( !contains && u.count('/')==2 )
-      contains = KHTMLFactory::vLinks()->contains( u+'/' );
+      contains = KHTMLGlobal::vLinks()->contains( u+'/' );
     return contains ? PseudoVisited : PseudoLink;
 }
 
@@ -1726,7 +1726,7 @@ void CSSStyleSelector::buildLists()
         defaultQuirksStyle->collect( &selectorList, &propertyList, Default, Default );
 
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
-    
+
     if (defaultNonCSSHintsStyle)
         defaultNonCSSHintsStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
 

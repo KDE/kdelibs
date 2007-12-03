@@ -59,6 +59,7 @@ struct KPerDomainSettings {
 #endif
 };
 
+QString *KHTMLSettings::avFamilies = 0;
 typedef QMap<QString,KPerDomainSettings> PolicyMap;
 
 class KHTMLSettingsPrivate
@@ -316,7 +317,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
   KConfigGroup cgFilter( config, "Filter Settings" );
-  
+
   if (reset || cgFilter.exists() )
   {
       d->m_adFilterEnabled = cgFilter.readEntry("Enabled", false);

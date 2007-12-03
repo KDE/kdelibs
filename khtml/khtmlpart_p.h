@@ -42,7 +42,7 @@
 
 #include "html/html_formimpl.h"
 #include "khtml_run.h"
-#include "khtml_factory.h"
+#include "khtml_global.h"
 #include "khtml_events.h"
 #include "khtml_ext.h"
 #include "khtml_settings.h"
@@ -151,7 +151,7 @@ public:
     m_bLoadEventEmitted = true;
     m_cachePolicy = KIO::CC_Verify;
     m_manager = 0L;
-    m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
+    m_settings = new KHTMLSettings(*KHTMLGlobal::defaultHTMLSettings());
     m_bClearing = false;
     m_bCleared = false;
     m_zoomFactor = 100;

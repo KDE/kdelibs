@@ -247,10 +247,9 @@ public:
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
 
-        // We ref/deref to ensure defaultHTMLSettings is available
-        KHTMLFactory::ref();
-        accessKeysEnabled = KHTMLFactory::defaultHTMLSettings()->accessKeysEnabled();
-        KHTMLFactory::deref();
+        // defaultHTMLSettings is available since a KHTMLPart has been created first
+        // and has ref()'ed the factory for us.
+        accessKeysEnabled = KHTMLGlobal::defaultHTMLSettings()->accessKeysEnabled();
 
         emitCompletedAfterRepaint = CSNone;
         m_mouseEventsTarget = 0;
@@ -555,6 +554,7 @@ void KHTMLView::delayedInit()
         setHasStaticBackground();
 }
 
+// called by KHTMLPart::clear()
 void KHTMLView::clear()
 {
 #ifndef KHTML_NO_CARET
@@ -1355,7 +1355,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
           case LINK_NEWWINDOW:  cursorIcon = "window-new";       break;
           default:              cursorIcon = "dialog-error";     break;
 	}
-        QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
+        QPixmap icon_pixmap = KHTMLGlobal::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
 
 #if 0
 	if (d->cursor_icon_widget)

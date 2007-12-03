@@ -217,7 +217,7 @@ public:
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
-#include "khtml_factory.h"
+#include "khtml_global.h"
 #include <kio/job.h>
 #include <kmainwindow.h>
 #include <kconfig.h>
@@ -750,7 +750,7 @@ int main(int argc, char *argv[])
     kClearDebugConfig();
 
     // create widgets
-    KHTMLFactory *fac = new KHTMLFactory();
+    KHTMLGlobal *fac = new KHTMLGlobal();
     KMainWindow *toplevel = new KMainWindow();
     KHTMLPart *part = new KHTMLPart( toplevel, 0, KHTMLPart::BrowserViewGUI );
 

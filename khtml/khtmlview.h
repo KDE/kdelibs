@@ -168,7 +168,7 @@ public:
      * Prints the HTML document.
      * @param quick if true, fully automated printing, without print dialog
      */
-    void print( bool quick = false ); 
+    void print( bool quick = false );
 
     /**
      * Display all accesskeys in small tooltips
@@ -206,7 +206,7 @@ public:
      * Returns the height of the viewport
      */
     int visibleHeight() const;
-    
+
     /**
      *  Place the contents area point x/y
      *  at the top left of the viewport
@@ -231,7 +231,7 @@ public:
      * Returns a point translated to contents area coordinates
      * @param x x coordinate of viewport point to translate
      * @param y y coordinate of viewport point to translate
-     * @param cx resulting x coordinate 
+     * @param cx resulting x coordinate
      * @param cy resulting y coordinate
      *
      */
@@ -241,7 +241,7 @@ public:
      * Returns a point translated to viewport coordinates
      * @param x x coordinate of contents area point to translate
      * @param y y coordinate of contents area point to translate
-     * @param cx resulting x coordinate 
+     * @param cx resulting x coordinate
      * @param cy resulting y coordinate
      *
      */
@@ -253,14 +253,14 @@ public:
      * @param y y offset
      */
     void scrollBy(int x, int y);
-    
+
     /**
      * Requests an update of the content area
      * @param r the content area rectangle to update
      */
     void updateContents( const QRect& r );
     void updateContents(int x, int y, int w, int h);
-    
+
     void addChild(QWidget *child, int dx, int dy);
 
     /**
@@ -269,13 +269,13 @@ public:
      */
     void repaintContents( const QRect& r );
     void repaintContents(int x, int y, int w, int h);
-    
+
     /**
      * Apply a zoom level to the content area
      * @param percent a zoom level expressed as a percentage
      */
     void setZoomLevel( int percent );
-    
+
     /**
      * Retrieve the current zoom level
      *
@@ -369,7 +369,7 @@ private:
 
     void setMouseEventsTarget( QWidget* w );
     QWidget* mouseEventsTarget() const;
-    
+
     QStack<QRegion>* clipHolder() const;
     void setClipHolder( QStack<QRegion>* ch );
 

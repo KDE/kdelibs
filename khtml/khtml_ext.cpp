@@ -59,7 +59,7 @@
 #include <kdesktopfile.h>
 #include <kinputdialog.h>
 #include <ktemporaryfile.h>
-#include "khtml_factory.h"
+#include "khtml_global.h"
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
@@ -611,7 +611,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             action->setSeparator(true);
             menu->addAction(action);
 
-            if ( KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() ) {
+            if ( KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled() ) {
                 if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame ) {
                     action = new KAction( i18n( "Block IFrame..." ), this );
                     d->m_actionCollection->addAction( "blockiframe", action );
@@ -671,7 +671,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         connect( action, SIGNAL(triggered(bool)), this, SLOT( slotViewImage() ) );
         partActions.append(action);
 
-        if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()) {
+        if (KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()) {
             action = new KAction( i18n( "Block Image..." ), this );
             d->m_actionCollection->addAction( "blockimage", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockImage() ) );
@@ -750,7 +750,7 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 void KHTMLPopupGUIClient::slotBlockHost()
 {
     QString name=d->m_imageURL.protocol()+"://"+d->m_imageURL.host()+"/*";
-    KHTMLFactory::defaultHTMLSettings()->addAdFilter( name );
+    KHTMLGlobal::defaultHTMLSettings()->addAdFilter( name );
     d->m_khtml->reparseConfiguration();
 }
 
@@ -763,7 +763,7 @@ void KHTMLPopupGUIClient::slotBlockImage()
                                          d->m_imageURL.url(),
                                          &ok);
     if ( ok ) {
-        KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
+        KHTMLGlobal::defaultHTMLSettings()->addAdFilter( url );
         d->m_khtml->reparseConfiguration();
     }
 }
@@ -776,7 +776,7 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
                                                d->m_khtml->url().url(),
                                                &ok );
     if ( ok ) {
-        KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
+        KHTMLGlobal::defaultHTMLSettings()->addAdFilter( url );
         d->m_khtml->reparseConfiguration();
     }
 }

@@ -322,7 +322,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_view = v;
     m_renderArena.reset();
 
-    KHTMLFactory::ref();
+    KHTMLGlobal::registerDocumentImpl(this);
 
     if ( v ) {
         m_docLoader = new DocLoader(v->part(), this );
@@ -390,10 +390,10 @@ void DocumentImpl::removedLastRef()
     if (m_selfOnlyRefCount) {
         /* In this case, the only references to us are from children,
            so we have a cycle. We'll try to break it by disconnecting the
-           children from us; this sucks/is wrong, but it's pretty much 
-           the best we can do without tracing. 
+           children from us; this sucks/is wrong, but it's pretty much
+           the best we can do without tracing.
 
-           Of course, if dumping the children causes the refcount from them to 
+           Of course, if dumping the children causes the refcount from them to
            drop to 0 we can get killed right here, so better hold
            a temporary reference, too
         */
@@ -402,10 +402,10 @@ void DocumentImpl::removedLastRef()
         // we must make sure not to be retaining any of our children through
         // these extra pointers or we will create a reference cycle
         if (m_doctype) {
-            m_doctype->deref(); 
+            m_doctype->deref();
             m_doctype = 0;
         }
-        
+
         if (m_cssTarget) {
             m_cssTarget->deref();
             m_cssTarget = 0;
@@ -420,12 +420,12 @@ void DocumentImpl::removedLastRef()
             m_hoverNode->deref();
             m_hoverNode = 0;
         }
-        
+
         if (m_activeNode) {
             m_activeNode->deref();
             m_activeNode = 0;
         }
-        
+
         if (m_documentElement) {
             m_documentElement->deref();
             m_documentElement = 0;
@@ -484,7 +484,7 @@ DocumentImpl::~DocumentImpl()
 
     m_renderArena.reset();
 
-    KHTMLFactory::deref();
+    KHTMLGlobal::deregisterDocumentImpl(this);
 }
 
 
@@ -643,7 +643,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	result = createDocumentFragment();
     else
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	
+
     //### FIXME: This should handle Attributes, and a few other things
 
     if(deep && result)
@@ -2241,9 +2241,9 @@ void DocumentImpl::rebuildStyleSelector()
     m_styleSelectorDirty = false;
 }
 
-void DocumentImpl::setBaseURL(const KUrl& _baseURL) 
-{ 
-    m_baseURL = _baseURL; 
+void DocumentImpl::setBaseURL(const KUrl& _baseURL)
+{
+    m_baseURL = _baseURL;
     if (m_elemSheet)
         m_elemSheet->setHref( baseURL().url() );
 }
@@ -2268,13 +2268,13 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
     // don't process focus changes while detaching
     if( !m_render ) return;
-    
+
     // We do want to blur if a widget is being detached,
-    // but we don't want to emit events since that 
+    // but we don't want to emit events since that
     // triggers updateLayout() and may recurse detach()
     bool widgetDetach = m_focusNode && m_focusNode != this &&
               m_focusNode->renderer() && !m_focusNode->renderer()->parent();
-      
+
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->getDocument() != this))
         return;
@@ -2289,7 +2289,7 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 oldFocusNode->setActive(false);
 
             oldFocusNode->setFocus(false);
-            
+
             if (!widgetDetach) {
                 oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
                 oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
@@ -2376,7 +2376,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     KUrl newURL(completeURL(url));
     newURL.setRef(QString());
 
-    if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered( newURL.url() ))
+    if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( newURL.url() ))
         return false;
 
     // Prohibit non-file URLs if we are asked to.

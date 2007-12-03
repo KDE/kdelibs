@@ -57,6 +57,7 @@ using namespace DOM;
 
 #include "khtmlview.h"
 #include <kparts/partmanager.h>
+#include <kparts/factory.h>
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_window.h"
 #include "khtml_settings.h"
@@ -209,10 +210,10 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, QObject *parent, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
     d = 0;
-    KHTMLFactory::registerPart( this );
-    setComponentData(  KHTMLFactory::componentData(), prof == BrowserViewGUI && !parentPart() );
+    KHTMLGlobal::registerPart( this );
+    setComponentData(  KHTMLGlobal::componentData(), prof == BrowserViewGUI && !parentPart() );
     // TODO KDE4 - don't load plugins yet
-    //setComponentData( KHTMLFactory::componentData(), false );
+    //setComponentData( KHTMLGlobal::componentData(), false );
     init( new KHTMLView( this, parentWidget ), prof );
 }
 
@@ -220,10 +221,10 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
     d = 0;
-    KHTMLFactory::registerPart( this );
-    setComponentData(  KHTMLFactory::componentData(), prof == BrowserViewGUI && !parentPart() );
+    KHTMLGlobal::registerPart( this );
+    setComponentData(  KHTMLGlobal::componentData(), prof == BrowserViewGUI && !parentPart() );
     // TODO KDE4 - don't load plugins yet
-    //setComponentData( KHTMLFactory::componentData(), false );
+    //setComponentData( KHTMLGlobal::componentData(), false );
     assert( view );
     init( view, prof );
 }
@@ -467,7 +468,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
-  //kDebug(6050) << "KHTMLPart::~KHTMLPart " << this;
+  kDebug(6050) << this;
   KConfigGroup config( KGlobal::config(), "HTML Settings" );
   config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 
@@ -515,7 +516,7 @@ KHTMLPart::~KHTMLPart()
   if (!parentPart()) // only delete d->m_frame if the top khtml_part closes
       delete d->m_frame;
   delete d; d = 0;
-  KHTMLFactory::deregisterPart( this );
+  KHTMLGlobal::deregisterPart( this );
 }
 
 bool KHTMLPart::restoreURL( const KUrl &url )
@@ -539,10 +540,10 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   d->m_workingURL = url;
 
   // set the java(script) flags according to the current host.
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
-  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
+  d->m_bJScriptEnabled = KHTMLGlobal::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  setDebugScript( KHTMLGlobal::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
+  d->m_bJavaEnabled = KHTMLGlobal::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_bPluginsEnabled = KHTMLGlobal::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
   setUrl(url);
 
@@ -602,7 +603,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
     if (userAgent != KProtocolManager::userAgentForHost(QString())) {
       if (!d->m_statusBarUALabel) {
         d->m_statusBarUALabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-        d->m_statusBarUALabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(KIconLoader::Small));
+        d->m_statusBarUALabel->setFixedHeight(KHTMLGlobal::iconLoader()->currentSize(KIconLoader::Small));
         d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
@@ -752,10 +753,10 @@ bool KHTMLPart::openUrl( const KUrl &url )
     d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString();
 
   // set the javascript flags according to the current url
-  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
-  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
-  d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
+  d->m_bJScriptEnabled = KHTMLGlobal::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  setDebugScript( KHTMLGlobal::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
+  d->m_bJavaEnabled = KHTMLGlobal::defaultHTMLSettings()->isJavaEnabled(url.host());
+  d->m_bPluginsEnabled = KHTMLGlobal::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
 
   connect( d->m_job, SIGNAL( speed( KJob*, unsigned long ) ),
@@ -1863,10 +1864,10 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 
   if(url.isValid()) {
       QString urlString = url.url();
-      KHTMLFactory::vLinks()->insert( urlString );
+      KHTMLGlobal::vLinks()->insert( urlString );
       QString urlString2 = url.prettyUrl();
       if ( urlString != urlString2 ) {
-          KHTMLFactory::vLinks()->insert( urlString2 );
+          KHTMLGlobal::vLinks()->insert( urlString2 );
       }
   }
 
@@ -1907,14 +1908,14 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   if (!d->m_doc->attached())
     d->m_doc->attach( );
   d->m_doc->setBaseURL( KUrl() );
-  d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
+  d->m_doc->docLoader()->setShowAnimations( KHTMLGlobal::defaultHTMLSettings()->showAnimations() );
   emit docCreated();
 
   d->m_paUseStylesheet->setItems(QStringList());
   d->m_paUseStylesheet->setEnabled( false );
 
-  setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
-  QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
+  setAutoloadImages( KHTMLGlobal::defaultHTMLSettings()->autoLoadImages() );
+  QString userStyleSheet = KHTMLGlobal::defaultHTMLSettings()->userStyleSheet();
   if ( !userStyleSheet.isEmpty() )
     setUserStyleSheet( KUrl( userStyleSheet ) );
 
@@ -4568,7 +4569,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
   {
     KService::Ptr service = (*it);
 
-    KPluginLoader loader( *service, KHTMLFactory::componentData() );
+    KPluginLoader loader( *service, KHTMLGlobal::componentData() );
     KPluginFactory* const factory = loader.factory();
     if ( factory ) {
       KParts::ReadOnlyPart *res = 0L;
@@ -5803,7 +5804,7 @@ void KHTMLPart::slotLoadImages()
 
 void KHTMLPart::reparseConfiguration()
 {
-  KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
+  KHTMLSettings *settings = KHTMLGlobal::defaultHTMLSettings();
   settings->init();
 
   setAutoloadImages( settings->autoLoadImages() );
@@ -5819,14 +5820,14 @@ void KHTMLPart::reparseConfiguration()
   d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
 
   delete d->m_settings;
-  d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
+  d->m_settings = new KHTMLSettings(*KHTMLGlobal::defaultHTMLSettings());
 
   QApplication::setOverrideCursor( Qt::WaitCursor );
   khtml::CSSStyleSelector::reparseConfiguration();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
 
-  if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
+  if (KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled())
      runAdFilter();
 }
 
@@ -6649,13 +6650,13 @@ void KHTMLPart::runAdFilter()
         if ( obj->type() == khtml::CachedObject::Image ) {
             khtml::CachedImage *image = static_cast<khtml::CachedImage *>(obj);
             bool wasBlocked = image->m_wasBlocked;
-            image->m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( image->url().string() ) );
+            image->m_wasBlocked = KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( image->url().string() ) );
             if ( image->m_wasBlocked != wasBlocked )
                 image->do_notify(QRect(QPoint(0,0), image->pixmap_size()));
         }
     }
 
-    if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
+    if ( KHTMLGlobal::defaultHTMLSettings()->isHideAdsEnabled() ) {
         for ( NodeImpl *nextNode, *node = d->m_doc; node; node = nextNode ) {
 
             // We might be deleting 'node' shortly.
@@ -6665,7 +6666,7 @@ void KHTMLPart::runAdFilter()
                  node->id() == ID_IFRAME ||
                  (node->id() == ID_INPUT && static_cast<HTMLInputElementImpl *>(node)->inputType() == HTMLInputElementImpl::IMAGE ))
             {
-                if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
+                if ( KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
                 {
                     // We found an IMG, IFRAME or INPUT (of type IMAGE) matching a filter.
                     node->ref();
@@ -7113,7 +7114,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
 
   if (!d->m_statusBarWalletLabel) {
     d->m_statusBarWalletLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarWalletLabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(KIconLoader::Small));
+    d->m_statusBarWalletLabel->setFixedHeight(KHTMLGlobal::iconLoader()->currentSize(KIconLoader::Small));
     d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
@@ -7248,7 +7249,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
     if ( enable && !d->m_statusBarPopupLabel ) {
         d->m_statusBarPopupLabel = new KUrlLabel( d->m_statusBarExtension->statusBar() );
-        d->m_statusBarPopupLabel->setFixedHeight( KHTMLFactory::iconLoader()->currentSize( KIconLoader::Small) );
+        d->m_statusBarPopupLabel->setFixedHeight( KHTMLGlobal::iconLoader()->currentSize( KIconLoader::Small) );
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );

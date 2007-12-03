@@ -222,7 +222,7 @@ public:
     bool jsPopupBlockerPassivePopup() const;
 
 private:
-    friend class KHTMLFactory;
+    friend class KHTMLGlobal;
     QString lookupFont(int i) const;
 
     KHTMLSettingsPrivate* const d;

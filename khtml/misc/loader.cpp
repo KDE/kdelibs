@@ -69,8 +69,9 @@
 #include <kiconloader.h>
 #include <scheduler.h>
 #include <kdebug.h>
-#include "khtml_factory.h"
-#include "khtml_part.h"
+
+#include <khtml_global.h>
+#include <khtml_part.h>
 
 #ifdef IMAGE_TITLES
 #include <qfile.h>
@@ -406,7 +407,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     setAccept( acceptHeader );
     m_showAnimations = dl->showAnimations();
 
-    if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( url.string() ) ) {
+    if ( KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( url.string() ) ) {
         m_wasBlocked = true;
         CachedObject::finish();
     }
@@ -517,7 +518,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT-1) / xHeight + 1) * xHeight;
     }
-    
+
     if ( w != xWidth  || h != xHeight )
     {
         // kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h;
@@ -529,7 +530,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
             else
                 bg->fill( Qt::transparent );
         }
-        
+
         QPainter p(bg);
         p.drawTiledPixmap(0, 0, w, h, *src);
         p.end();
@@ -540,7 +541,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
         // we were asked for the entire pixmap. Cache it.
         // ### goes against imload stuff, but it's far too expensive
         //     to recreate the full pixmap each time it's requested as
-        //     we don't know what portion of it will be used eventually 
+        //     we don't know what portion of it will be used eventually
         //     (by e.g. paintBackgroundExtended). It could be a few pixels of
         //     a huge image. See #140248/#1 for an obvious example.
         //     Imload probably needs to handle all painting in paintBackgroundExtended.
@@ -569,8 +570,8 @@ QPixmap* CachedImage::scaled_pixmap( int xWidth, int xHeight )
         delete scaled;
     }
 
-    //### this is quite awful performance-wise. It should avoid 
-    // alpha if not needed, and go to pixmap, etc. 
+    //### this is quite awful performance-wise. It should avoid
+    // alpha if not needed, and go to pixmap, etc.
     QImage im(xWidth, xHeight, QImage::Format_ARGB32_Premultiplied);
 
     QPainter paint(&im);
@@ -597,7 +598,7 @@ QPixmap CachedImage::pixmap( ) const
 
     if (i->hasAlpha()) {
         QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
-        
+
         QPainter paint(&im);
         paint.setCompositionMode(QPainter::CompositionMode_Source);
         ImagePainter pi(i);
@@ -1118,8 +1119,8 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
     DOCLOADER_SECCHECK(true);
-    if ( ! KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(fullURL.host()) ||
-           KHTMLFactory::defaultHTMLSettings()->isAdFiltered(fullURL.url()))
+    if ( ! KHTMLGlobal::defaultHTMLSettings()->isJavaScriptEnabled(fullURL.host()) ||
+           KHTMLGlobal::defaultHTMLSettings()->isAdFiltered(fullURL.url()))
 	return 0L;
 
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
@@ -1443,7 +1444,7 @@ void Cache::init()
         nullPixmap = new QPixmap;
 
     if ( !brokenPixmap )
-        brokenPixmap = new QPixmap(KHTMLFactory::iconLoader()->loadIcon("image-missing", KIconLoader::Desktop, 16, KIconLoader::DisabledState));
+        brokenPixmap = new QPixmap(KHTMLGlobal::iconLoader()->loadIcon("image-missing", KIconLoader::Desktop, 16, KIconLoader::DisabledState));
 
     if ( !blockedPixmap ) {
         blockedPixmap = new QPixmap();
