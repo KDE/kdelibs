@@ -216,10 +216,10 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
         // items that contains each other
         if (leftFileItem.isDir() && rightFileItem.isDir()) {
             QVariant leftValue = dirModel->data(left, KDirModel::ChildCountRole);
-            int leftCount = leftValue.toInt();
+            int leftCount = (leftValue.type() == QVariant::Int) ? leftValue.toInt() : KDirModel::ChildCountUnknown;
 
             QVariant rightValue = dirModel->data(right, KDirModel::ChildCountRole);
-            int rightCount = rightValue.toInt();
+            int rightCount = (rightValue.type() == QVariant::Int) ? leftValue.toInt() : KDirModel::ChildCountUnknown;
 
             // In the case they two have the same child items, we sort them by
             // their names. So we have always everything ordered. We also check
@@ -227,6 +227,18 @@ bool KDirSortFilterProxyModel::subsortLessThan(const QModelIndex& left,
             if (leftCount == rightCount) {
                 return sortCaseSensitivity() ? (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
                         (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
+            }
+
+            // If one of them has unknown child items, place them on the end. If we
+            // were comparing two unknown childed items, the previous comparation
+            // sorted them by naturalCompare between them. This case is when we
+            // have an unknown childed item, and another known.
+            if (leftCount == KDirModel::ChildCountUnknown) {
+                return false;
+            }
+
+            if (rightCount == KDirModel::ChildCountUnknown) {
+                return true;
             }
 
             // If they had different number of items, we sort them depending
@@ -355,11 +367,36 @@ int KDirSortFilterProxyModel::compareCategories(const QModelIndex &left,
             return -1;
         }
 
-        if (!leftFileItem.isDir() && !rightFileItem.isDir()) {
-            return leftFileItem.size() - rightFileItem.size();
+        if (!leftFileItem.isDir() && rightFileItem.isDir()) {
+            return 1;
         }
 
-        return 0;
+        if (leftFileItem.isDir() && rightFileItem.isDir()) {
+            return 0;
+        }
+
+        const int leftFileSize = !leftFileItem.isNull() ? leftFileItem.size() : -1;
+        const int rightFileSize = !rightFileItem.isNull() ? rightFileItem.size() : -1;
+        int leftGroup;
+        int rightGroup;
+
+        if (leftFileSize < 5242880) {
+            leftGroup = 0;
+        } else if (leftFileSize < 10485760) {
+            leftGroup = 1;
+        } else {
+            leftGroup = 2;
+        }
+
+        if (rightFileSize < 5242880) {
+            rightGroup = 0;
+        } else if (rightFileSize < 10485760) {
+            rightGroup = 1;
+        } else {
+            rightGroup = 2;
+        }
+
+        return leftGroup - rightGroup;
     }
 
     case KDirModel::ModifiedTime: {
