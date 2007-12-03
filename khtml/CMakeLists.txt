@@ -64,6 +64,7 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/arena.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/stringit.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/paintbuffer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/imagefilter.cpp
 )
 
 # khtml/html/Makefile.am: khtmlhtml
