@@ -22,6 +22,7 @@ kconfigbase.cpp		Waldo Bastian <bastian@kde.org>
 kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
 kdebug.cpp		Stephan Kulow <coolo@kde.org>
+kdatetime.cpp		David Jarvie <djarvie@kde.org>
 kdesktopfile.cpp
 kglobal.cpp		Stephan Kulow <coolo@kde.org>
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
@@ -58,6 +59,9 @@ ksycoca.cpp		Waldo Bastian <bastian@kde.org>
 ksycocadict.cpp		Waldo Bastian <bastian@kde.org>
 ksycocafactory.cpp	Waldo Bastian <bastian@kde.org>
 ktemporaryfile.cpp	Jaison Lee <lee.jaison@gmail.com>
+ktimezone.cpp
+ksystemtimezone.cpp
+ktzfiletimezone.cpp	David Jarvie <djarvie@kde.org>
 kuniqueapplication.cpp	Waldo Bastian <bastian@kde.org>
 kurl.cpp		Waldo Bastian <bastian@kde.org>
 kurldrag.cpp		David Faure <faure@kde.org>
