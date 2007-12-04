@@ -8,7 +8,7 @@ class KComboBox;
 class QToolButton;
 class QLineEdit;
 class KUrl;
-class KHTMLFactory;
+class KHTMLGlobal;
 class QLabel;
 class QMovie;
 
@@ -56,7 +56,7 @@ private:
     QMovie *m_movie;
 
 #ifndef __KDE_HAVE_GCC_VISIBILITY
-    KHTMLFactory *m_factory;
+    KHTMLGlobal *m_factory;
 #endif
 
 };

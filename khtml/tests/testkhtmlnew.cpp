@@ -46,14 +46,14 @@
 #undef protected
 
 #define protected public
-#include "khtml_factory.h"
+#include "khtml_global.h"
 #undef protected
 
 TestKHTML::TestKHTML()
     : KXmlGuiWindow()
 {
 #ifndef __KDE_HAVE_GCC_VISIBILITY
-    m_factory = new KHTMLFactory(true);
+    m_factory = new KHTMLGlobal();
 #endif
 
     m_movie = new QMovie(":/pics/progress.gif");
@@ -118,7 +118,7 @@ void TestKHTML::finishedLoading()
 TestKHTML::~TestKHTML()
 {
 #ifndef __KDE_HAVE_GCC_VISIBILITY
-    m_factory->deref();
+    delete m_factory;
 #endif
 }
 
