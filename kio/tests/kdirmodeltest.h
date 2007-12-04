@@ -40,11 +40,13 @@ private Q_SLOTS:
     void testCreateFile();
     void testModifyFile();
     void testRenameFile();
+    void testExpandToUrl_data();
     void testExpandToUrl();
     void testDeleteFile();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();
+    void slotExpand(const QModelIndex& index);
 
 private:
     void enterLoop();
@@ -61,6 +63,9 @@ private:
     QModelIndex m_fileInDirIndex;
     QModelIndex m_fileInSubdirIndex;
     QStringList m_topLevelFileNames; // files only
+
+    // for slotExpand
+    QString m_nextExpectedExpandPath;
 };
 
 

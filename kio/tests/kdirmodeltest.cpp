@@ -360,34 +360,44 @@ void KDirModelTest::testRenameFile()
                 &m_eventLoop, SLOT(quit()) );
 }
 
-struct ExpandToUrlTest {
-    ExpandToUrlTest(const QString& p, int er) : path(p), expectedResult(er) {}
-    QString path;
-    int expectedResult;
-};
+void KDirModelTest::testExpandToUrl_data()
+{
+    QTest::addColumn<QString>("expandToPath");
+    QTest::addColumn<QStringList>("expectedExpandSignals");
+
+    const QString path = m_tempDir.name();
+    QTest::newRow("the root, nothing to do")
+        << path << QStringList();
+    QTest::newRow("already known child, nothing to do")
+        << path+"subdir" << QStringList();
+    const QString subsubdir = path+"subdir/subsubdir";
+    QStringList sigs; sigs << subsubdir;
+    QTest::newRow("must list subdir and then expand is emitted")
+        << subsubdir << sigs;
+    QTest::newRow("must list subdir, emit expand for subsubdir, and then list subsubdir")
+        << subsubdir + "/testfile" << sigs;
+    // TODO: we need an async test too (to emit expand twice)
+}
 
 void KDirModelTest::testExpandToUrl()
 {
     const QString path = m_tempDir.name();
-    QList<ExpandToUrlTest> tests;
-    tests << ExpandToUrlTest(path, 0); // the root, nothing to do
-    tests << ExpandToUrlTest(path+"subdir", 0); // already known child, nothing to do
-    tests << ExpandToUrlTest(path+"subdir/subsubdir", 1); // must list and then expand is emitted
-    tests << ExpandToUrlTest(path+"subdir/subsubdir/testfile", 1); // must list two levels and then expand is emitted
+    QFETCH(QString, expandToPath);
+    QFETCH(QStringList, expectedExpandSignals);
 
-    for (int i=0; i < tests.count(); ++i ) {
-        KDirModel dirModelForExpand;
-        KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-        dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // it gets them from the cache, so this is sync
-        QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
-        KUrl url(tests[i].path);
-        dirModelForExpand.expandToUrl(url);
-        if (tests[i].expectedResult == 0) {
-            QCOMPARE(spyExpand.count(), 0);
-        } else {
-            enterLoop();
-            QCOMPARE(spyExpand.count(), 1);
-        }
+    KDirModel dirModelForExpand;
+    KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
+    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // it gets them from the cache, so this is sync
+    connect(&dirModelForExpand, SIGNAL(expand(QModelIndex)),
+            this, SLOT(slotExpand(QModelIndex)));
+    m_nextExpectedExpandPath = expectedExpandSignals.isEmpty() ? QString() : expectedExpandSignals.first();
+    QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
+    dirModelForExpand.expandToUrl(KUrl(expandToPath));
+    if (expectedExpandSignals.isEmpty()) {
+        QCOMPARE(spyExpand.count(), 0);
+    } else {
+        enterLoop();
+        QCOMPARE(spyExpand.count(), 1);
     }
 }
 
@@ -414,4 +424,12 @@ void KDirModelTest::testDeleteFile()
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
+}
+
+void KDirModelTest::slotExpand(const QModelIndex& index)
+{
+    QVERIFY(index.isValid());
+    KFileItem item = m_dirModel.itemForIndex(index);
+    QVERIFY(!item.isNull());
+    QCOMPARE(m_nextExpectedExpandPath, item.url().path());
 }
