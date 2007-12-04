@@ -286,6 +286,7 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     QDir dir( path );
     if ( !dir.exists() )
         return false;
+    dir.setFilter(dir.filter() | QDir::Hidden);
     QStringList files = dir.entryList();
     for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
     {
