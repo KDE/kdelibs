@@ -36,7 +36,6 @@
 #include <kdiroperator.h>
 #include <kdirselectdialog.h>
 #include <kfilefiltercombo.h>
-#include <kfileview.h>
 #include <kimagefilepreview.h>
 #include <kmenu.h>
 #include <kmimetype.h>

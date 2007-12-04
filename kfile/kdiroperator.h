@@ -27,15 +27,16 @@
 #include <ktoggleaction.h>
 #include <kcompletion.h>
 #include <kdirlister.h>
-#include <kfileview.h>
 #include <kfileitem.h>
 #include <kfile.h>
+#include <kfile_export.h>
 
 class QAbstractItemView;
 class QModelIndex;
 class QProgressBar;
 
 class KAction;
+class KActionCollection;
 class KActionMenu;
 class KDirLister;
 class KPreviewWidgetBase;
@@ -208,13 +209,16 @@ public:
     void setCurrentItem(const QString& filename);
 
     /**
-     * Sets a new KFileView to be used for showing and browsing files.
+     * Clears the current selection and attempts to set @p item
+     * as the the current item.
+     */
+    void setCurrentItem(const KFileItem& item);
+
+    /**
+     * Sets a new view to be used for showing and browsing files.
      * Note: this will read the current url() to fill the view.
      *
-     * @see KFileView
-     * @see KFileIconView
-     * @see KFileDetailView
-     * @see KCombiView
+     * @see KFileTreeView
      * @see view
      */
     virtual void setView(QAbstractItemView *view);
@@ -369,8 +373,7 @@ public:
 
     /**
      * Sets the config object and the to be used group in KDirOperator. This
-     * will be used to store the view's configuration via
-     * KFileView::writeConfig() (and for KFileView::readConfig()).
+     * will be used to store the view's configuration.
      * If you don't set this, the views cannot save and restore their
      * configuration.
      *
@@ -502,7 +505,7 @@ public:
 
     /**
      * Sets the options for dropping files.
-     * @see KFileView::DropOptions
+     * CURRENTLY NOT IMPLEMENTED
      */
     virtual void setDropOptions(int options);
 
@@ -523,7 +526,7 @@ protected:
      * but you can also call it directly. Reimplement this if you depend on self defined fileviews.
      * @param parent   is the QWidget to be set as parent
      * @param viewKind is the predefined view to be set, note: this can be several ones OR:ed together
-     * @returns the created KFileView
+     * @returns the created view
      * @see KFile::FileView
      * @see setView
      */

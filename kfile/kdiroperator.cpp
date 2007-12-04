@@ -22,7 +22,6 @@
 #include "kdirmodel.h"
 #include "kdiroperatordetailview_p.h"
 #include "kdirsortfilterproxymodel.h"
-#include "kfileview.h"
 #include "kfileitem.h"
 #include "kfilemetapreview.h"
 #include "kpreviewwidgetbase.h"
@@ -1402,13 +1401,17 @@ void KDirOperator::highlightFile(const KFileItem &item)
 
 void KDirOperator::setCurrentItem(const QString& filename)
 {
-    if (d->itemView == 0) {
-        return;
-    }
-
     KFileItem item;
     if ( !filename.isNull() ) {
         item = d->dirLister->findByName(filename);
+    }
+    setCurrentItem(item);
+}
+
+void KDirOperator::setCurrentItem(const KFileItem& item)
+{
+    if (d->itemView == 0) {
+        return;
     }
 
     QItemSelectionModel *selModel = d->itemView->selectionModel();
