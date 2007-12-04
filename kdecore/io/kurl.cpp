@@ -762,7 +762,7 @@ QString KUrl::path( AdjustPathOption trailing ) const
   // throw away the first '/' when it's a local file
   return trailingSlash( trailing, isLocalFile() ? QUrl::toLocalFile() : QUrl::path() );
 #else
-  return trailingSlash( trailing, path() );
+  return trailingSlash( trailing, QUrl::path() );
 #endif
 }
 
