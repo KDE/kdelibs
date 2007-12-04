@@ -831,7 +831,8 @@ public:
 };
 
 KCompletionMatches::KCompletionMatches( const KCompletionMatches &o )
- : d( new KCompletionMatchesPrivate( o.d->sorting ) )
+ : KSortableList<QString, int>(),
+   d( new KCompletionMatchesPrivate( o.d->sorting ) )
 {
     *this = KCompletionMatches::operator=( o );
 }

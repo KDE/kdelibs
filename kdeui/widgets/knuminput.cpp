@@ -297,9 +297,9 @@ public:
     QSize        m_sizeSpin;
     
     KIntNumInputPrivate( KIntNumInput *q, int r )
-	: q(q),
+        : q(q),
           referencePoint( r ),
-	  blockRelative( 0 ) {}
+          blockRelative( 0 ) {}
 };
 
 
@@ -339,12 +339,12 @@ void KIntNumInput::init(int val, int _base)
 #ifdef __GNUC__
 #warning KDE4 we NEED to fix the validation of values here
 #endif
-//	if (_base != 10)
+//        if (_base != 10)
 //        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
 
     connect(d->m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
     connect(this, SIGNAL(valueChanged(int)),
-	    SLOT(slotEmitRelativeValueChanged(int)));
+            SLOT(slotEmitRelativeValueChanged(int)));
 
     setFocusProxy(d->m_spin);
     layout(true);
@@ -405,8 +405,6 @@ void KIntNumInput::setSliderEnabled(bool slider)
 
 void KIntNumInput::setRange(int lower, int upper, int step)
 {
-    K_USING_KNUMINPUT_P(priv);
-
     upper = qMax(upper, lower);
     lower = qMin(upper, lower);
     d->m_spin->setMinimum(lower);
@@ -430,7 +428,6 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 
 void KIntNumInput::setMinimum(int min)
 {
-    K_USING_KNUMINPUT_P(priv);
     setRange(min, d->m_spin->maximum(), d->m_spin->singleStep());
 }
 
@@ -441,7 +438,6 @@ int KIntNumInput::minimum() const
 
 void KIntNumInput::setMaximum(int max)
 {
-    K_USING_KNUMINPUT_P(priv);
     setRange(d->m_spin->minimum(), max, d->m_spin->singleStep());
 }
 
@@ -607,9 +603,9 @@ void KIntNumInput::setLabel(const QString & label, Qt::Alignment a)
 class KDoubleNumInput::KDoubleNumInputPrivate {
 public:
     KDoubleNumInputPrivate( double r )
-	: spin( 0 ),
-	  referencePoint( r ),
-	  blockRelative ( 0 ) {}
+        : spin( 0 ),
+          referencePoint( r ),
+          blockRelative ( 0 ) {}
     QDoubleSpinBox * spin;
     double referencePoint;
     short blockRelative;
@@ -626,7 +622,7 @@ KDoubleNumInput::KDoubleNumInput(QWidget *parent)
 }
 
 KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
-				 double step, int precision)
+                                 double step, int precision)
     : KNumInput(parent)
     , d( new KDoubleNumInputPrivate( value ) )
 {
@@ -634,8 +630,8 @@ KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidg
 }
 
 KDoubleNumInput::KDoubleNumInput(KNumInput *below,
-				 double lower, double upper, double value, QWidget *parent,
-				 double step, int precision)
+                                 double lower, double upper, double value, QWidget *parent,
+                                 double step, int precision)
     : KNumInput(parent,below)
     , d( new KDoubleNumInputPrivate( value ) )
 {
@@ -654,7 +650,7 @@ QString KDoubleNumInput::specialValueText() const
 
 
 void KDoubleNumInput::init(double value, double lower, double upper,
-			   double step, int precision )
+                           double step, int precision )
 {
     d->spin = new QDoubleSpinBox(this);
     d->spin->setRange(lower, upper);
@@ -665,9 +661,9 @@ void KDoubleNumInput::init(double value, double lower, double upper,
     d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);
     connect( d->spin, SIGNAL(valueChanged(double)),
-	     this, SIGNAL(valueChanged(double)) );
+             this, SIGNAL(valueChanged(double)) );
     connect( this, SIGNAL(valueChanged(double)),
-	     this, SLOT(slotEmitRelativeValueChanged(double)) );
+             this, SLOT(slotEmitRelativeValueChanged(double)) );
 
     updateLegacyMembers();
 
@@ -737,7 +733,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
         h += 4 + priv->m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
-	h = qMax(h, priv->m_sizeLabel.height() + 2);
+        h = qMax(h, priv->m_sizeLabel.height() + 2);
 
     w = priv->m_slider ? priv->m_slider->sizeHint().width() + 8 : 0;
     w += priv->m_colw1 + priv->m_colw2;
@@ -821,26 +817,26 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
                                                            bool slider)
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     if( priv->m_slider ) {
-	// don't update the slider to avoid an endless recursion
-	QDoubleSpinBox * spin = d->spin;
-	disconnect(spin, SIGNAL(valueChanged(int)),
-		priv->m_slider, SLOT(setValue(int)) );
+        // don't update the slider to avoid an endless recursion
+        QDoubleSpinBox * spin = d->spin;
+        disconnect(spin, SIGNAL(valueChanged(int)),
+                priv->m_slider, SLOT(setValue(int)) );
     }
     d->spin->setRange( lower, upper);
     d->spin->setSingleStep(step);
 
     if(slider) {
-	// upcast to base type to get the minimum/maximum in int form:
-	QDoubleSpinBox * spin = d->spin;
+        // upcast to base type to get the minimum/maximum in int form:
+        QDoubleSpinBox * spin = d->spin;
         int slmax = spin->maximum();
-	int slmin = spin->minimum();
+        int slmin = spin->minimum();
         int slvalue = spin->value();
-	int slstep = spin->singleStep();
+        int slstep = spin->singleStep();
         if (priv->m_slider) {
             priv->m_slider->setRange(slmin, slmax);
-	    priv->m_slider->setSingleStep(slstep);
+            priv->m_slider->setSingleStep(slstep);
             priv->m_slider->setValue(slvalue);
         } else {
             priv->m_slider = new QSlider(Qt::Horizontal, this);
@@ -849,14 +845,14 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
             priv->m_slider->setPageStep(slstep);
             priv->m_slider->setValue(slvalue);
             priv->m_slider->setTickPosition(QSlider::TicksBelow);
-	    // feedback line: when one moves, the other moves, too:
+            // feedback line: when one moves, the other moves, too:
             connect(priv->m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );
         }
-	connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)) );
-	// calculate ( slmax - slmin ) / 10 without overflowing ints:
-	int major = calcDiffByTen( slmax, slmin );
-	if ( !major ) major = slstep; // ### needed?
+        connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)) );
+        // calculate ( slmax - slmin ) / 10 without overflowing ints:
+        int major = calcDiffByTen( slmax, slmin );
+        if ( !major ) major = slstep; // ### needed?
         priv->m_slider->setTickInterval(major);
     } else {
         delete priv->m_slider;
