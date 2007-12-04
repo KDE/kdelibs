@@ -155,13 +155,8 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::ModifiedTime: {
-        KDateTime leftModifiedTime;
-        leftModifiedTime.setTime_t(leftFileItem.time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
-        leftModifiedTime = leftModifiedTime.toLocalZone();
-
-        KDateTime rightModifiedTime;
-        rightModifiedTime.setTime_t(rightFileItem.time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
-        rightModifiedTime = rightModifiedTime.toLocalZone();
+        KDateTime leftModifiedTime = leftFileItem.time(KFileItem::ModificationTime).toLocalZone();
+        KDateTime rightModifiedTime = rightFileItem.time(KFileItem::ModificationTime).toLocalZone();
 
         if (leftModifiedTime == rightModifiedTime) {
             return sortCaseSensitivity() ?
@@ -173,6 +168,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::Permissions: {
+        // ### You can't use QFileInfo on urls!! Use the KFileItem instead.
         QFileInfo leftFileInfo(leftFileItem.url().pathOrUrl());
         QFileInfo rightFileInfo(rightFileItem.url().pathOrUrl());
 
