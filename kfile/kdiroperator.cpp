@@ -1932,6 +1932,10 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
     bool selectDir = false;
+
+    if (item.isNull())
+        return;
+
     if (item.isDir()) {
         const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
         selectDir = KGlobalSettings::singleClick() &&
@@ -1954,6 +1958,10 @@ void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
 
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
+
+    if (item.isNull())
+        return;
+
     if (item.isDir()) {
         parent->selectDir(item);
     } else {
@@ -1985,6 +1993,10 @@ void KDirOperator::Private::_k_openContextMenu(const QPoint& pos)
     const QModelIndex proxyIndex = itemView->indexAt(pos);
     const QModelIndex dirIndex = proxyModel->mapToSource(proxyIndex);
     KFileItem item = dirModel->itemForIndex(dirIndex);
+
+    if (item.isNull())
+        return;
+
     parent->activatedMenu(item, QCursor::pos());
 }
 
@@ -1993,6 +2005,10 @@ void KDirOperator::Private::_k_triggerPreview(const QModelIndex& index)
     if ((preview != 0) && index.isValid() && (index.column() == KDirModel::Name)) {
         const QModelIndex dirIndex = proxyModel->mapToSource(index);
         const KFileItem item = dirModel->itemForIndex(dirIndex);
+
+        if (item.isNull())
+            return;
+
         if (!item.isDir()) {
             previewUrl = item.url();
             previewTimer->start(300);
