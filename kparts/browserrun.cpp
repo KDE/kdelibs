@@ -96,10 +96,10 @@ void BrowserRun::init()
 
     if ( isLocalFile() )  {
       struct stat buff;
-      if ( stat( QFile::encodeName(KRun::url().path()), &buff ) == -1 )
+      if ( stat( QFile::encodeName(KRun::url().toLocalFile()), &buff ) == -1 )
       {
-        kDebug(1000) << "BrowserRun::init:" << KRun::url() << "doesn't exist.";
-        redirectToError( KIO::ERR_DOES_NOT_EXIST, KRun::url().path() );
+        kDebug(1000) << "BrowserRun::init:" << KRun::url().toLocalFile() << "doesn't exist.";
+        redirectToError( KIO::ERR_DOES_NOT_EXIST, KRun::url().toLocalFile() );
         return;
       }
       setMode( buff.st_mode ); // while we're at it, save it for KRun::init() to use it
