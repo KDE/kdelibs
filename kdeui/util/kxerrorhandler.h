@@ -100,6 +100,7 @@ class KDEUI_EXPORT KXErrorHandler
         static KXErrorHandler** handlers;
         static int pos;
         static int size;
+        Q_DISABLE_COPY( KXErrorHandler )
         KXErrorHandlerPrivate * const d;
     };
 

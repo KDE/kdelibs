@@ -109,6 +109,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
+    Q_DISABLE_COPY( KFilterBase )
     class Private;
     Private * const d;
 };

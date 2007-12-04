@@ -135,6 +135,7 @@ public:
                                   const QString &t );
 
 private:
+    Q_DISABLE_COPY( KWordWrap )
     KWordWrap( const QRect & r );
     class KWordWrapPrivate* const d;
 };

@@ -636,6 +636,7 @@ protected:
     const KLocale *locale() const;
 
 private:
+    Q_DISABLE_COPY( KCalendarSystem )
     KCalendarSystemPrivate * const d;
 };
 

@@ -140,6 +140,7 @@ class KDE_EXPORT Backend {
 		static QString openRCToString(int rc);
 
 	private:
+		Q_DISABLE_COPY( Backend )
 		class BackendPrivate;
 		BackendPrivate *const d;
 		QString _name;
