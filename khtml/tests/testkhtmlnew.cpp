@@ -39,15 +39,7 @@
 #include "rendering/render_style.h"
 
 #include "khtml_part.h"
-
-// to be able to delete a static protected member pointer in kbrowser...
-// just for memory debugging
-#define protected public
-#undef protected
-
-#define protected public
 #include "khtml_global.h"
-#undef protected
 
 TestKHTML::TestKHTML()
     : KXmlGuiWindow()
