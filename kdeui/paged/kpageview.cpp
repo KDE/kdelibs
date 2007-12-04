@@ -169,8 +169,6 @@ void KPageViewPrivate::_k_modelChanged()
   if ( !model )
     return;
 
-    Q_Q(KPageView);
-
   /**
    * If the face type is Auto, we rebuild the GUI whenever the layout
    * of the model changes.
