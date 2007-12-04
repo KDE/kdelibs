@@ -506,6 +506,14 @@ const QList< KActionCollection * >& KActionCollection::allCollections( )
     return KActionCollectionPrivate::s_allCollections;
 }
 
+void KActionCollection::associateWidget(QWidget* widget) const
+{
+    foreach (QAction* action, actions()) {
+        if (!widget->actions().contains(action))
+            widget->addAction(action);
+    }
+}
+
 void KActionCollection::addAssociatedWidget(QWidget * widget)
 {
   if (!d->associatedWidgets.contains(widget)) {
