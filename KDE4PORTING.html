@@ -1828,7 +1828,7 @@ in the drop/paste side.</li>
   <li> no more name and modal parameters in the constructors</li>
 </ul>
 
-<h4>KFileDialog, KFileView, KDirOperator</h4>
+<h4>KFileDialog, KDirOperator</h4>
 <ul>
   <li> instead of KConfig* + QString group everywhere KConfigGroup is used now </li>
 </ul>
@@ -2373,6 +2373,12 @@ with parent parameter instead.</li>
 <li>KIO::CopyJob* trash(const KFileItemList&amp; items, QWidget *parent,
 bool ask = true, bool showProgress = true) -&gt; KIO::CopyJob* trash(const QList&lt;KFileItem&gt;&amp; items, QWidget *parent,
 bool ask = true, bool showProgress = true)
+</ul>
+
+<h4>KFileView</h4>
+<ul>
+  <li>KFileView doesn't exist anymore, see the new itemview based KDirOperator.</li>
+  <li>For ease of porting, kde3support provides K3FileView, but don't expect it to still be useable in a KDirOperator.</li>
 </ul>
 
 <h4>KFileWidget</h4>

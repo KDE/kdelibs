@@ -53,6 +53,7 @@ set(kde3support_LIB_SRCS
   kdeui/k3panelapplet.cpp
   kdeui/k3panelmenu.cpp
   kio/k3bookmarkdrag.cpp
+  kio/kfile/k3fileview.cpp
   kio/kfile/k3filetreeview.cpp
   kio/kfile/k3filetreeviewitem.cpp
   kio/kfile/kfiletreebranch.cpp
@@ -124,6 +125,7 @@ install( FILES
   kio/kfile/kurlrequesterdlg.h
   kio/kfile/kfilesharedlg.h
   kio/kfile/kpropsdlg.h
+  kio/kfile/k3fileview.h
   kio/kfile/k3filetreeview.h
   kio/kfile/k3filetreeviewitem.h
   kio/kfile/kfiletreebranch.h

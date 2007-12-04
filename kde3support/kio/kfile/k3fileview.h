@@ -27,7 +27,7 @@ class QWidget;
 class QDropEvent;
 class KActionCollection;
 
-#include "kfile_export.h"
+#include "kde3support_export.h"
 #include "kfileitem.h"
 #include "kfile.h"
 
@@ -35,7 +35,7 @@ class KActionCollection;
  * internal class to make easier to use signals possible
  * @internal
  **/
-class KFILE_EXPORT KFileViewSignaler : public QObject
+class KDE3SUPPORT_EXPORT K3FileViewSignaler : public QObject
 {
     Q_OBJECT
 
@@ -86,18 +86,18 @@ Q_SIGNALS:
   * @short A base class for views of the KDE file selector
   * @author Stephan Kulow <coolo@kde.org>
   **/
-class KFILE_EXPORT KFileView {
+class KDE3SUPPORT_EXPORT K3FileView {
 
 public:
     /**
      * Creates a new file view.
      */
-    KFileView();
+    K3FileView();
 
     /**
      * Destroys the file view.
      */
-    virtual ~KFileView();
+    virtual ~K3FileView();
 
     /**
      * Inserts a list of items.
@@ -153,7 +153,7 @@ public:
 
     /**
      * Removes an item from the list; has to be implemented by the view.
-     * Call KFileView::removeItem( item ) after removing it.
+     * Call K3FileView::removeItem( item ) after removing it.
      */
     virtual void removeItem(const KFileItem &item);
 
@@ -233,14 +233,14 @@ public:
      */
     void setViewName( const QString& name );
 
-    virtual void setParentView(KFileView *parent);
+    virtual void setParentView(K3FileView *parent);
 
     /**
      * The derived view must implement this function to add
      * the file in the widget.
      *
      * Make sure to call this implementation, i.e.
-     * KFileView::insertItem( i );
+     * K3FileView::insertItem( i );
      *
      */
     virtual void insertItem( const KFileItem &i);
@@ -334,7 +334,7 @@ public:
      */
     virtual KActionCollection * actionCollection() const;
 
-    KFileViewSignaler * signaler() const;
+    K3FileViewSignaler * signaler() const;
 
     virtual void readConfig( KConfigGroup *);
     virtual void writeConfig( KConfigGroup *);
@@ -394,11 +394,11 @@ protected:
      * @internal
      * class to distribute the signals
      **/
-    KFileViewSignaler *sig;
+    K3FileViewSignaler *sig;
 
 private:
-    class KFileViewPrivate;
-    KFileViewPrivate* const d;
+    class K3FileViewPrivate;
+    K3FileViewPrivate* const d;
 };
 
 #endif // KFILEINFOLISTWIDGET_H

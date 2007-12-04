@@ -169,8 +169,6 @@ install( FILES
   KFileTreeView
   K3FileTreeView
   K3FileTreeViewItem
-  KFileView
-  KFileViewSignaler
   KFilterBase
   KFilterDev
   KFind

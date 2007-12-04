@@ -23,10 +23,11 @@
 #include <Qt3Support/Q3Header>
 #include <QtGui/QKeyEvent>
 #include <QtCore/QTimer>
+#include <QtCore/QDir>
+#include <QtGui/QApplication>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
-#include <kfile/kfileview.h>
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <stdlib.h>
@@ -118,7 +119,7 @@ void K3FileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
    if( item )
    {
       m_dropItem = item;
-      m_autoOpenTimer->start( KFileView::autoOpenDelay() );
+      m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
    }
    else
    {
@@ -148,9 +149,9 @@ void K3FileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
    {
       setSelected( item, true );
       if( item != m_dropItem ) {
-	 m_autoOpenTimer->stop();
-	 m_dropItem = item;
-	 m_autoOpenTimer->start( KFileView::autoOpenDelay() );
+         m_autoOpenTimer->stop();
+         m_dropItem = item;
+         m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
       }
    }
    else
