@@ -155,9 +155,21 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::ModifiedTime: {
-        return sortCaseSensitivity() ?
-                (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
-                (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
+        KDateTime leftModifiedTime;
+        leftModifiedTime.setTime_t(leftFileItem.time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
+        leftModifiedTime = leftModifiedTime.toLocalZone();
+
+        KDateTime rightModifiedTime;
+        rightModifiedTime.setTime_t(rightFileItem.time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
+        rightModifiedTime = rightModifiedTime.toLocalZone();
+
+        if (leftModifiedTime == rightModifiedTime) {
+            return sortCaseSensitivity() ?
+                    (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                    (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
+        }
+
+        return leftModifiedTime > rightModifiedTime; // newer items go first
     }
 
     case KDirModel::Permissions: {
