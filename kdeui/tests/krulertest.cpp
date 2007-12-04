@@ -141,7 +141,8 @@ KRulerTest::KRulerTest()
   lineEdit->setFixedSize(140, 80);
   lineEdit->move(330,4+160);
   beginMark = new KIntNumInput(0, lineEdit);
-  beginMark->setRange(-1000, 1000, 1, false);
+  beginMark->setRange(-1000, 1000);
+  beginMark->setSliderEnabled(false);
   beginMark->move(5, 15);
   beginMark->setFixedSize(beginMark->sizeHint());
   connect(beginMark, SIGNAL(valueChanged(int)), 
@@ -149,7 +150,8 @@ KRulerTest::KRulerTest()
   connect(beginMark, SIGNAL(valueChanged(int)), 
 	  vruler, SLOT(slotNewOffset(int)) );
   endMark = new KIntNumInput(0, lineEdit);
-  endMark->setRange(-1000, 1000, 1, false);
+  endMark->setRange(-1000, 1000);
+  endMark->setSliderEnabled(false);
   endMark->move(5, 35);
   endMark->setFixedSize(endMark->sizeHint());
   connect(endMark, SIGNAL(valueChanged(int)), 
@@ -157,7 +159,8 @@ KRulerTest::KRulerTest()
   connect(endMark, SIGNAL(valueChanged(int)), 
 	  vruler, SLOT(slotEndOffset(int)) );
   lengthInput = new KIntNumInput(0, lineEdit);
-  lengthInput->setRange(-1000, 1000, 1, false);
+  lengthInput->setRange(-1000, 1000);
+  lengthInput->setSliderEnabled(false);
   lengthInput->move(5, 55);
   lengthInput->setFixedSize(lengthInput->sizeHint());
   connect(lengthInput, SIGNAL(valueChanged(int)), 
