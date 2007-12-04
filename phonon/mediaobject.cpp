@@ -302,35 +302,37 @@ void MediaObject::setQueue(const QList<MediaSource> &sources)
 {
     K_D(MediaObject);
     d->sourceQueue.clear();
-    d->sourceQueue << sources;
+    enqueue(sources);
 }
 
 void MediaObject::setQueue(const QList<QUrl> &urls)
 {
     K_D(MediaObject);
     d->sourceQueue.clear();
-    foreach (const QUrl &url, urls) {
-        d->sourceQueue << url;
-    }
+    enqueue(urls);
 }
 
 void MediaObject::enqueue(const MediaSource &source)
 {
     K_D(MediaObject);
-    d->sourceQueue << source;
+    if (d->mediaSource.type() == MediaSource::Invalid) {
+        setCurrentSource(source);
+    } else {
+        d->sourceQueue << source;
+    }
 }
 
 void MediaObject::enqueue(const QList<MediaSource> &sources)
 {
-    K_D(MediaObject);
-    d->sourceQueue << sources;
+    foreach (const MediaSource &m, sources) {
+        enqueue(m);
+    }
 }
 
 void MediaObject::enqueue(const QList<QUrl> &urls)
 {
-    K_D(MediaObject);
     foreach (const QUrl &url, urls) {
-        d->sourceQueue << url;
+        enqueue(url);
     }
 }
 
