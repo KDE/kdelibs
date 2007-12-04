@@ -372,9 +372,11 @@ void KDirModelTest::testExpandToUrl_data()
         << path+"subdir" << QStringList();
     const QString subsubdir = path+"subdir/subsubdir";
     QStringList sigs; sigs << subsubdir;
-    QTest::newRow("must list subdir and then expand is emitted")
+    // must list subdir and then expand is emitted
+    QTest::newRow("subdir/subsubdir")
         << subsubdir << sigs;
-    QTest::newRow("must list subdir, emit expand for subsubdir, and then list subsubdir")
+    // must list subdir, emit expand for subsubdir, and then list subsubdir
+    QTest::newRow("subdir/subsubdir/testfile")
         << subsubdir + "/testfile" << sigs;
     // TODO: we need an async test too (to emit expand twice)
 }
@@ -390,6 +392,9 @@ void KDirModelTest::testExpandToUrl()
     dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // it gets them from the cache, so this is sync
     connect(&dirModelForExpand, SIGNAL(expand(QModelIndex)),
             this, SLOT(slotExpand(QModelIndex)));
+    connect(&dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(slotRowsInserted(QModelIndex,int,int)));
+    m_rowsInsertedEmitted = false;
     m_nextExpectedExpandPath = expectedExpandSignals.isEmpty() ? QString() : expectedExpandSignals.first();
     QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
     dirModelForExpand.expandToUrl(KUrl(expandToPath));
@@ -398,6 +403,7 @@ void KDirModelTest::testExpandToUrl()
     } else {
         enterLoop();
         QCOMPARE(spyExpand.count(), 1);
+        QVERIFY(m_rowsInsertedEmitted);
     }
 }
 
@@ -432,4 +438,11 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     KFileItem item = m_dirModel.itemForIndex(index);
     QVERIFY(!item.isNull());
     QCOMPARE(m_nextExpectedExpandPath, item.url().path());
+    // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
+    QVERIFY(m_rowsInsertedEmitted);
+}
+
+void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
+{
+    m_rowsInsertedEmitted = true;
 }

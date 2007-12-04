@@ -47,6 +47,7 @@ private Q_SLOTS:
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();
     void slotExpand(const QModelIndex& index);
+    void slotRowsInserted(const QModelIndex& index, int, int);
 
 private:
     void enterLoop();
@@ -66,6 +67,7 @@ private:
 
     // for slotExpand
     QString m_nextExpectedExpandPath;
+    bool m_rowsInsertedEmitted;
 };
 
 
