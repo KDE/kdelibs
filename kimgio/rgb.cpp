@@ -286,7 +286,7 @@ QVector<const RLEData*> RLEMap::vector()
 {
     QVector<const RLEData*> v(size());
     for (Iterator it = begin(); it != end(); ++it)
-        v.insert(it.value(), &it.key());
+        v.replace(it.value(), &it.key());
 
     return v;
 }
