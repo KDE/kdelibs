@@ -159,7 +159,7 @@ SetDefaultColors defaultViewColors = {
 };
 
 SetDefaultColors defaultWindowColors = {
-    { 241, 241, 241 },
+    { 227, 227, 227 },
     { 227, 227, 227 },
     {   0,   0,   0 },
     { 152, 152, 152 }
