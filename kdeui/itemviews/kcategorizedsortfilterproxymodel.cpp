@@ -195,7 +195,7 @@ int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a,
     return currA->isNull() ? -1 : + 1;
 }
 
-bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex & left, const QModelIndex & right) const
+bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     if (d->categorizedModel)
     {
@@ -214,7 +214,7 @@ bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex & left, const 
     return subSortLessThan(left, right);
 }
 
-bool KCategorizedSortFilterProxyModel::subSortLessThan(const QModelIndex & left, const QModelIndex & right) const
+bool KCategorizedSortFilterProxyModel::subSortLessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     return QSortFilterProxyModel::lessThan(left, right);
 }
