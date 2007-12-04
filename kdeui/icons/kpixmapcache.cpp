@@ -1295,13 +1295,6 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         return;
     }
 
-#ifdef Q_WS_WIN
-    // QT for windows doesn't tolerate the insertion of null pixmaps
-    if (pix.isNull()) {
-        return;
-    }
-#endif
-
     //kDebug(264) << "key:" << key << ", size:" << pix.width() << "x" << pix.height();
     // Insert to QPixmapCache as well
     if (d->mUseQPixmapCache) {
