@@ -4530,7 +4530,7 @@ gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
 
    m_request.cef = CEF;
 
-   const char *mode = (readWrite ? "r+" : "r");
+   const char *mode = (readWrite ? "r+b" : "rb");
 
    gzFile fs = gzopen( QFile::encodeName(CEF), mode); // Open for reading and writing
    if (!fs)
@@ -4722,7 +4722,7 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
 //   kDebug( 7103 ) <<  "creating new cache entry: " << filename;
 
-   m_request.fcache = gzopen( QFile::encodeName(filename), "w");
+   m_request.fcache = gzopen( QFile::encodeName(filename), "wb");
    if (!m_request.fcache)
    {
       kWarning(7113) << "opening" << filename << "failed.";
