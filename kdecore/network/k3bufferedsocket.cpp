@@ -123,11 +123,9 @@ qint64 KBufferedSocket::readData(char *data, qint64 maxlen, KSocketAddress* from
   if (d->input)
     {
       if (d->input->isEmpty())
-	{
-	  setError(WouldBlock);
-	  emit gotError(WouldBlock);
-	  return -1;
-	}
+      {
+        return 0;
+      }
       resetError();
       return d->input->consumeBuffer(data, maxlen);
     }
@@ -141,11 +139,9 @@ qint64 KBufferedSocket::peekData(char *data, qint64 maxlen, KSocketAddress* from
   if (d->input)
     {
       if (d->input->isEmpty())
-	{
-	  setError(WouldBlock);
-	  emit gotError(WouldBlock);
-	  return -1;
-	}
+      {
+        return 0;
+      }
       resetError();
       return d->input->consumeBuffer(data, maxlen, false);
     }
