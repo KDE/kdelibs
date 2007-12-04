@@ -225,7 +225,7 @@ class KCleanUpGlobalStatic
 
 /**
  * @overload
- * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed 
+ * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed
  * to the object's constructor
  *
  * @param TYPE The type of the global static object. Do not add a *.
@@ -247,7 +247,7 @@ class KCleanUpGlobalStatic
  *
  * void doSomething()
  * {
- *     //  The first time you acess globalA a new instance of A will be created automatically.
+ *     //  The first time you access globalA a new instance of A will be created automatically.
  *     A *a = globalA;
  *     ...
  * }
