@@ -758,19 +758,22 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 
 QString KUrl::path( AdjustPathOption trailing ) const
 {
-  return trailingSlash( trailing, QUrl::path() );
+#ifdef Q_OS_WIN
+  // throw away the first '/' when it's a local file
+  return trailingSlash( trailing, isLocalFile() ? QUrl::toLocalFile() : QUrl::path() );
+#else
+  return trailingSlash( trailing, path() );
+#endif
 }
 
 QString KUrl::toLocalFile( AdjustPathOption trailing ) const
 {
-  if ( trailing == KUrl::LeaveTrailingSlash )
-    return QUrl::toLocalFile();
   return trailingSlash( trailing, QUrl::toLocalFile() );
 }
 
 bool KUrl::isLocalFile() const
 {
-  if ( ( scheme() != "file" ) || hasSubUrl() )
+  if ( ( scheme() != QLatin1String("file") ) || hasSubUrl() )
      return false;
 
   if (host().isEmpty() || (host() == QLatin1String("localhost")))
@@ -784,7 +787,7 @@ bool KUrl::isLocalFile() const
   for(char *p = hostname; *p; p++)
      *p = tolower(*p);
 
-  return (host() == hostname);
+  return (host() == QString::fromLatin1( hostname ));
 }
 
 void KUrl::setFileEncoding(const QString &encoding)
