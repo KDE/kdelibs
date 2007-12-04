@@ -25,6 +25,7 @@
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <kdirsortfilterproxymodel.h>
 #include <kfileitemdelegate.h>
 #include <kurl.h>
 
@@ -32,63 +33,69 @@ class KFileTreeView::Private
 {
     public:
         Private(KFileTreeView *parent)
-            : mParent(parent)
+            : q(parent)
         {
         }
 
-        KUrl urlForIndex(const QModelIndex &index) const;
+        KUrl urlForProxyIndex(const QModelIndex &index) const;
 
         void _k_activated(const QModelIndex&);
         void _k_currentChanged(const QModelIndex&, const QModelIndex&);
         void _k_expanded(const QModelIndex&);
 
-        KFileTreeView *mParent;
-        KDirModel *mModel;
+        KFileTreeView *q;
+        KDirModel *mSourceModel;
+        KDirSortFilterProxyModel *mProxyModel;
 };
 
-KUrl KFileTreeView::Private::urlForIndex(const QModelIndex &index) const
+KUrl KFileTreeView::Private::urlForProxyIndex(const QModelIndex &index) const
 {
-    const KFileItem item = mModel->itemForIndex(index);
+    const KFileItem item = mSourceModel->itemForIndex(mProxyModel->mapToSource(index));
 
     return !item.isNull() ? item.url() : KUrl();
 }
 
 void KFileTreeView::Private::_k_activated(const QModelIndex &index)
 {
-    const KUrl url = urlForIndex(index);
+    const KUrl url = urlForProxyIndex(index);
     if (url.isValid())
-        emit mParent->activated(url);
+        emit q->activated(url);
 }
 
 void KFileTreeView::Private::_k_currentChanged(const QModelIndex &currentIndex, const QModelIndex&)
 {
-    const KUrl url = urlForIndex(currentIndex);
+    const KUrl url = urlForProxyIndex(currentIndex);
     if (url.isValid())
-        emit mParent->currentChanged(url);
+        emit q->currentChanged(url);
 }
 
-void KFileTreeView::Private::_k_expanded(const QModelIndex &index)
+void KFileTreeView::Private::_k_expanded(const QModelIndex &baseIndex)
 {
-    mParent->selectionModel()->clearSelection();
-    mParent->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
-    mParent->scrollTo(index);
+    QModelIndex index = mProxyModel->mapFromSource(baseIndex);
+
+    q->selectionModel()->clearSelection();
+    q->selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
+    q->scrollTo(index);
 }
 
 KFileTreeView::KFileTreeView(QWidget *parent)
     : QTreeView(parent), d(new Private(this))
 {
-    d->mModel = new KDirModel(this);
+    d->mSourceModel = new KDirModel(this);
+    d->mProxyModel = new KDirSortFilterProxyModel(this);
+    d->mProxyModel->setSourceModel(d->mSourceModel);
 
-    setModel(d->mModel);
+    setModel(d->mProxyModel);
     setItemDelegate(new KFileItemDelegate(this));
 
-    d->mModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), KDirLister::Keep);
+    d->mSourceModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), KDirLister::Keep);
 
     connect(this, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_activated(const QModelIndex&)));
     connect(selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
             this, SLOT(_k_currentChanged(const QModelIndex&, const QModelIndex&)));
-    connect(d->mModel, SIGNAL(expand(const QModelIndex&)),
+
+    connect(d->mSourceModel, SIGNAL(expand(const QModelIndex&)),
             this, SLOT(_k_expanded(const QModelIndex&)));
 }
 
@@ -99,7 +106,7 @@ KFileTreeView::~KFileTreeView()
 
 KUrl KFileTreeView::currentUrl() const
 {
-    return d->urlForIndex(currentIndex());
+    return d->urlForProxyIndex(currentIndex());
 }
 
 KUrl KFileTreeView::selectedUrl() const
@@ -110,7 +117,7 @@ KUrl KFileTreeView::selectedUrl() const
     const QItemSelection selection = selectionModel()->selection();
     const QModelIndex firstIndex = selection.indexes().first();
 
-    return d->urlForIndex(firstIndex);
+    return d->urlForProxyIndex(firstIndex);
 }
 
 KUrl::List KFileTreeView::selectedUrls() const
@@ -122,7 +129,7 @@ KUrl::List KFileTreeView::selectedUrls() const
 
     const QModelIndexList indexes = selectionModel()->selection().indexes();
     foreach (const QModelIndex index, indexes) {
-        const KUrl url = d->urlForIndex(index);
+        const KUrl url = d->urlForProxyIndex(index);
         if (url.isValid())
             urls.append(url);
     }
@@ -132,37 +139,39 @@ KUrl::List KFileTreeView::selectedUrls() const
 
 KUrl KFileTreeView::rootUrl() const
 {
-    return d->mModel->dirLister()->url();
+    return d->mSourceModel->dirLister()->url();
 }
 
 void KFileTreeView::setDirOnlyMode(bool enabled)
 {
-    d->mModel->dirLister()->setDirOnlyMode(enabled);
-    d->mModel->dirLister()->openUrl(d->mModel->dirLister()->url());
+    d->mSourceModel->dirLister()->setDirOnlyMode(enabled);
+    d->mSourceModel->dirLister()->openUrl(d->mSourceModel->dirLister()->url());
 }
 
 void KFileTreeView::setShowHiddenFiles(bool enabled)
 {
-    d->mModel->dirLister()->setShowingDotFiles(enabled);
-    d->mModel->dirLister()->openUrl(d->mModel->dirLister()->url());
+    d->mSourceModel->dirLister()->setShowingDotFiles(enabled);
+    d->mSourceModel->dirLister()->openUrl(d->mSourceModel->dirLister()->url());
 }
 
 void KFileTreeView::setCurrentUrl(const KUrl &url)
 {
-    QModelIndex index = d->mModel->indexForUrl(url);
+    QModelIndex baseIndex = d->mSourceModel->indexForUrl(url);
 
-    if (!index.isValid()) {
-        d->mModel->expandToUrl(url);
+    if (!baseIndex.isValid()) {
+        d->mSourceModel->expandToUrl(url);
         return;
     }
+
+    QModelIndex proxyIndex = d->mProxyModel->mapFromSource(baseIndex);
     selectionModel()->clearSelection();
-    selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
-    scrollTo(index);
+    selectionModel()->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
+    scrollTo(proxyIndex);
 }
 
 void KFileTreeView::setRootUrl(const KUrl &url)
 {
-    d->mModel->dirLister()->openUrl(url);
+    d->mSourceModel->dirLister()->openUrl(url);
 }
 
 #include "kfiletreeview.moc"
