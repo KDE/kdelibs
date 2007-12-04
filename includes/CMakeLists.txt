@@ -418,13 +418,11 @@ install( FILES
   NETWinInfo
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
-  Pointer
   PtyProcess
   SshProcess
   StubProcess
   SuProcess
   ThumbCreator
-  Value
   kdbgstream
   kndbgstream
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
