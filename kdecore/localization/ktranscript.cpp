@@ -935,7 +935,7 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
         QFile file(qfpath);
         if (!file.open(QIODevice::ReadOnly)) {
             return throwError(exec, GeneralError,
-                              QString(SPREF"loadProps: cannot read file '%1'")\
+                              QString(SPREF"loadProps: cannot read file '%1'")
                                      .arg(qfpath));
         }
 
@@ -967,23 +967,32 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
                         QString(SPREF"loadProps: unexpected end "
                                 "of file in %1").arg(qfpath));
                 }
-                // Separator characters for this entry.
-                key_sep = s[i];
-                prop_sep = s[i + 1];
-                if (key_sep.isLetter() || prop_sep.isLetter()) {
-                    return throwError(exec, SyntaxError,
-                        QString(SPREF"loadProps: separator characters must "
-                                "not be letters at %1:%2")
-                               .arg(qfpath).arg(countLines(s, i)));
+                if (s[i] != '#') {
+                    // Separator characters for this entry.
+                    key_sep = s[i];
+                    prop_sep = s[i + 1];
+                    if (key_sep.isLetter() || prop_sep.isLetter()) {
+                        return throwError(exec, SyntaxError,
+                            QString(SPREF"loadProps: separator characters "
+                                    "must not be letters at %1:%2")
+                                   .arg(qfpath).arg(countLines(s, i)));
+                    }
+
+                    // Reset all data for current entry.
+                    ekeys.clear();
+                    props.clear();
+                    pkey.clear();
+
+                    i += 2;
+                    state = s_nextKey;
                 }
-
-                // Reset all data for current entry.
-                ekeys.clear();
-                props.clear();
-                pkey.clear();
-
-                i += 2;
-                state = s_nextKey;
+                else {
+                    // This is a comment, skip to EOL, don't change state.
+                    while (s[i] != '\n') {
+                        ++i;
+                        if (i >= slen) goto END_PROP_PARSE;
+                    }
+                }
             }
             else if (state == s_nextKey) {
                 int ip = i;
