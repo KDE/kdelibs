@@ -400,6 +400,10 @@ void SGIImage::writeHeader()
 	m_stream << m_pixmin << m_pixmax;
 	m_stream << quint32(0);
 
+    for (int i = 0; i < 80; i++)
+        m_imagename[i] = '\0';
+    m_stream.writeRawData(m_imagename, 80);
+
 	m_stream << m_colormap;
 	for (int i = 0; i < 404; i++)
 		m_stream << quint8(0);
