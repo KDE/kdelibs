@@ -29,18 +29,18 @@
 
 
 SGIImage::SGIImage(QIODevice *io) :
-	m_starttab(0),
-	m_lengthtab(0)
+    _starttab(0),
+    _lengthtab(0)
 {
-	m_dev = io;
-	m_stream.setDevice(m_dev);
+    _dev = io;
+    _stream.setDevice(_dev);
 }
 
 
 SGIImage::~SGIImage()
 {
-	delete[] m_starttab;
-	delete[] m_lengthtab;
+    delete[] _starttab;
+    delete[] _lengthtab;
 }
 
 
@@ -49,100 +49,100 @@ SGIImage::~SGIImage()
 
 bool SGIImage::getRow(uchar *dest)
 {
-	int n, i;
-	if (!m_rle) {
-		for (i = 0; i < m_xsize; i++) {
-			if (m_pos >= m_data.end())
-				return false;
-			dest[i] = uchar(*m_pos);
-			m_pos += m_bpc;
-		}
-		return true;
-	}
+    int n, i;
+    if (!_rle) {
+        for (i = 0; i < _xsize; i++) {
+            if (_pos >= _data.end())
+                return false;
+            dest[i] = uchar(*_pos);
+            _pos += _bpc;
+        }
+        return true;
+    }
 
-	for (i = 0; i < m_xsize;) {
-		if (m_bpc == 2)
-			m_pos++;
-		n = *m_pos & 0x7f;
-		if (!n)
-			break;
+    for (i = 0; i < _xsize;) {
+        if (_bpc == 2)
+            _pos++;
+        n = *_pos & 0x7f;
+        if (!n)
+            break;
 
-		if (*m_pos++ & 0x80) {
-			for (; i < m_xsize && n--; i++) {
-				*dest++ = *m_pos;
-				m_pos += m_bpc;
-			}
-		} else {
-			for (; i < m_xsize && n--; i++)
-				*dest++ = *m_pos;
+        if (*_pos++ & 0x80) {
+            for (; i < _xsize && n--; i++) {
+                *dest++ = *_pos;
+                _pos += _bpc;
+            }
+        } else {
+            for (; i < _xsize && n--; i++)
+                *dest++ = *_pos;
 
-			m_pos += m_bpc;
-		}
-	}
-	return i == m_xsize;
+            _pos += _bpc;
+        }
+    }
+    return i == _xsize;
 }
 
 
 bool SGIImage::readData(QImage& img)
 {
-	QRgb *c;
-	quint32 *start = m_starttab;
-	QByteArray lguard(m_xsize, 0);
-	uchar *line = (uchar *)lguard.data();
-	unsigned x, y;
+    QRgb *c;
+    quint32 *start = _starttab;
+    QByteArray lguard(_xsize, 0);
+    uchar *line = (uchar *)lguard.data();
+    unsigned x, y;
 
-	if (!m_rle)
-		m_pos = m_data.begin();
+    if (!_rle)
+        _pos = _data.begin();
 
-	for (y = 0; y < m_ysize; y++) {
-		if (m_rle)
-			m_pos = m_data.begin() + *start++;
-		if (!getRow(line))
-			return false;
-		c = (QRgb *)img.scanLine(m_ysize - y - 1);
-		for (x = 0; x < m_xsize; x++, c++)
-			*c = qRgb(line[x], line[x], line[x]);
-	}
+    for (y = 0; y < _ysize; y++) {
+        if (_rle)
+            _pos = _data.begin() + *start++;
+        if (!getRow(line))
+            return false;
+        c = (QRgb *)img.scanLine(_ysize - y - 1);
+        for (x = 0; x < _xsize; x++, c++)
+            *c = qRgb(line[x], line[x], line[x]);
+    }
 
-	if (m_zsize == 1)
-		return true;
+    if (_zsize == 1)
+        return true;
 
-	if (m_zsize != 2) {
-		for (y = 0; y < m_ysize; y++) {
-			if (m_rle)
-				m_pos = m_data.begin() + *start++;
-			if (!getRow(line))
-				return false;
-			c = (QRgb *)img.scanLine(m_ysize - y - 1);
-			for (x = 0; x < m_xsize; x++, c++)
-				*c = qRgb(qRed(*c), line[x], line[x]);
-		}
+    if (_zsize != 2) {
+        for (y = 0; y < _ysize; y++) {
+            if (_rle)
+                _pos = _data.begin() + *start++;
+            if (!getRow(line))
+                return false;
+            c = (QRgb *)img.scanLine(_ysize - y - 1);
+            for (x = 0; x < _xsize; x++, c++)
+                *c = qRgb(qRed(*c), line[x], line[x]);
+        }
 
-		for (y = 0; y < m_ysize; y++) {
-			if (m_rle)
-				m_pos = m_data.begin() + *start++;
-			if (!getRow(line))
-				return false;
-			c = (QRgb *)img.scanLine(m_ysize - y - 1);
-			for (x = 0; x < m_xsize; x++, c++)
-				*c = qRgb(qRed(*c), qGreen(*c), line[x]);
-		}
+        for (y = 0; y < _ysize; y++) {
+            if (_rle)
+                _pos = _data.begin() + *start++;
+            if (!getRow(line))
+                return false;
+            c = (QRgb *)img.scanLine(_ysize - y - 1);
+            for (x = 0; x < _xsize; x++, c++)
+                *c = qRgb(qRed(*c), qGreen(*c), line[x]);
+        }
 
-		if (m_zsize == 3)
-			return true;
-	}
+        if (_zsize == 3)
+            return true;
+    }
 
-	for (y = 0; y < m_ysize; y++) {
-		if (m_rle)
-			m_pos = m_data.begin() + *start++;
-		if (!getRow(line))
-			return false;
-		c = (QRgb *)img.scanLine(m_ysize - y - 1);
-		for (x = 0; x < m_xsize; x++, c++)
-			*c = qRgba(qRed(*c), qGreen(*c), qBlue(*c), line[x]);
-	}
+    for (y = 0; y < _ysize; y++) {
+        if (_rle)
+            _pos = _data.begin() + *start++;
+        if (!getRow(line))
+            return false;
+        c = (QRgb *)img.scanLine(_ysize - y - 1);
+        for (x = 0; x < _xsize; x++, c++)
+            *c = qRgba(qRed(*c), qGreen(*c), qBlue(*c), line[x]);
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -155,86 +155,86 @@ bool SGIImage::readImage(QImage& img)
     kDebug(399) << "reading rgb ";
 
     // magic
-    m_stream >> u16;
+    _stream >> u16;
     if (u16 != 0x01da)
         return false;
 
     // verbatim/rle
-    m_stream >> m_rle;
-    kDebug(399) << (m_rle ? "RLE" : "verbatim");
-    if (m_rle > 1)
+    _stream >> _rle;
+    kDebug(399) << (_rle ? "RLE" : "verbatim");
+    if (_rle > 1)
         return false;
 
     // bytes per channel
-    m_stream >> m_bpc;
-    kDebug(399) << "bytes per channel: " << int(m_bpc);
-    if (m_bpc == 1)
+    _stream >> _bpc;
+    kDebug(399) << "bytes per channel: " << int(_bpc);
+    if (_bpc == 1)
         ;
-    else if (m_bpc == 2)
+    else if (_bpc == 2)
         kDebug(399) << "dropping least significant byte";
     else
         return false;
 
     // number of dimensions
-    m_stream >> m_dim;
-    kDebug(399) << "dimensions: " << m_dim;
-    if (m_dim < 1 || m_dim > 3)
+    _stream >> _dim;
+    kDebug(399) << "dimensions: " << _dim;
+    if (_dim < 1 || _dim > 3)
         return false;
 
-    m_stream >> m_xsize >> m_ysize >> m_zsize >> m_pixmin >> m_pixmax >> u32;
-    kDebug(399) << "x: " << m_xsize;
-    kDebug(399) << "y: " << m_ysize;
-    kDebug(399) << "z: " << m_zsize;
+    _stream >> _xsize >> _ysize >> _zsize >> _pixmin >> _pixmax >> u32;
+    kDebug(399) << "x: " << _xsize;
+    kDebug(399) << "y: " << _ysize;
+    kDebug(399) << "z: " << _zsize;
 
     // name
-    m_stream.readRawData(m_imagename, 80);
-    m_imagename[79] = '\0';
+    _stream.readRawData(_imagename, 80);
+    _imagename[79] = '\0';
 
-    m_stream >> m_colormap;
-    kDebug(399) << "colormap: " << m_colormap;
-    if (m_colormap != NORMAL)
-        return false;		// only NORMAL supported
+    _stream >> _colormap;
+    kDebug(399) << "colormap: " << _colormap;
+    if (_colormap != NORMAL)
+        return false;        // only NORMAL supported
 
     for (int i = 0; i < 404; i++)
-        m_stream >> u8;
+        _stream >> u8;
 
-    if (m_dim == 1) {
+    if (_dim == 1) {
         kDebug(399) << "1-dimensional images aren't supported yet";
         return false;
     }
 
-    if( m_stream.atEnd())
+    if( _stream.atEnd())
         return false;
 
-    m_numrows = m_ysize * m_zsize;
+    _numrows = _ysize * _zsize;
 
-    img = QImage( m_xsize, m_ysize, QImage::Format_RGB32 );
+    img = QImage( _xsize, _ysize, QImage::Format_RGB32 );
 
-    if (m_zsize == 2 || m_zsize == 4)
+    if (_zsize == 2 || _zsize == 4)
         img = img.convertToFormat(QImage::Format_ARGB32);
-    else if (m_zsize > 4)
-        kDebug(399) << "using first 4 of " << m_zsize << " channels";
+    else if (_zsize > 4)
+        kDebug(399) << "using first 4 of " << _zsize << " channels";
 
-    if (m_rle) {
+    if (_rle) {
         uint l;
-        m_starttab = new quint32[m_numrows];
-        for (l = 0; !m_stream.atEnd() && l < m_numrows; l++) {
-            m_stream >> m_starttab[l];
-            m_starttab[l] -= 512 + m_numrows * 2 * sizeof(quint32);
+        _starttab = new quint32[_numrows];
+        for (l = 0; !_stream.atEnd() && l < _numrows; l++) {
+            _stream >> _starttab[l];
+            _starttab[l] -= 512 + _numrows * 2 * sizeof(quint32);
         }
 
-        m_lengthtab = new quint32[m_numrows];
-        for (l = 0; l < m_numrows; l++)
-            m_stream >> m_lengthtab[l];
+        _lengthtab = new quint32[_numrows];
+        for (l = 0; l < _numrows; l++)
+            _stream >> _lengthtab[l];
     }
 
-    m_data = m_dev->readAll();
+    _data = _dev->readAll();
 
     // sanity check
-    if (m_rle)
-        for (uint o = 0; o < m_numrows; o++)
+    if (_rle)
+        for (uint o = 0; o < _numrows; o++)
             // don't change to greater-or-equal!
-            if (m_starttab[o] + m_lengthtab[o] > (uint)m_data.size()) {
+            if (_starttab[o] + _lengthtab[o] > (uint)_data.size()) {
                 kDebug(399) << "image corrupt (sanity check failed)";
                 return false;
             }
@@ -250,35 +250,36 @@ bool SGIImage::readImage(QImage& img)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 void RLEData::write(QDataStream& s)
 {
-	for (int i = 0; i < size(); i++)
-		s << at(i);
+    for (int i = 0; i < size(); i++)
+        s << at(i);
 }
 
 
 bool RLEData::operator<(const RLEData& b) const
 {
-	uchar ac, bc;
-	for (int i = 0; i < qMin(size(), b.size()); i++) {
-		ac = at(i);
-		bc = b[i];
-		if (ac != bc)
-			return ac < bc;
-	}
-	return size() < b.size();
+    uchar ac, bc;
+    for (int i = 0; i < qMin(size(), b.size()); i++) {
+        ac = at(i);
+        bc = b[i];
+        if (ac != bc)
+            return ac < bc;
+    }
+    return size() < b.size();
 }
 
 
 uint RLEMap::insert(const uchar *d, uint l)
 {
-	RLEData data = RLEData(d, l, m_offset);
-	Iterator it = find(data);
-	if (it != end())
-		return it.value();
+    RLEData data = RLEData(d, l, _offset);
+    Iterator it = find(data);
+    if (it != end())
+        return it.value();
 
-	m_offset += l;
-	return QMap<RLEData, uint>::insert(data, m_counter++).value();
+    _offset += l;
+    return QMap<RLEData, uint>::insert(data, _counter++).value();
 }
 
 
@@ -294,276 +295,273 @@ QVector<const RLEData*> RLEMap::vector()
 
 uchar SGIImage::intensity(uchar c)
 {
-	if (c < m_pixmin)
-		m_pixmin = c;
-	if (c > m_pixmax)
-		m_pixmax = c;
-	return c;
+    if (c < _pixmin)
+        _pixmin = c;
+    if (c > _pixmax)
+        _pixmax = c;
+    return c;
 }
 
 
 uint SGIImage::compact(uchar *d, uchar *s)
 {
-	uchar *dest = d, *src = s, patt, *t, *end = s + m_xsize;
-	int i, n;
-	while (src < end) {
-		for (n = 0, t = src; t + 2 < end && !(*t == t[1] && *t == t[2]); t++)
-			n++;
+    uchar *dest = d, *src = s, patt, *t, *end = s + _xsize;
+    int i, n;
+    while (src < end) {
+        for (n = 0, t = src; t + 2 < end && !(*t == t[1] && *t == t[2]); t++)
+            n++;
 
-		while (n) {
-			i = n > 126 ? 126 : n;
-			n -= i;
-			*dest++ = 0x80 | i;
-			while (i--)
-				*dest++ = *src++;
-		}
+        while (n) {
+            i = n > 126 ? 126 : n;
+            n -= i;
+            *dest++ = 0x80 | i;
+            while (i--)
+                *dest++ = *src++;
+        }
 
-		if (src == end)
-			break;
+        if (src == end)
+            break;
 
-		patt = *src++;
-		for (n = 1; src < end && *src == patt; src++)
-			n++;
+        patt = *src++;
+        for (n = 1; src < end && *src == patt; src++)
+            n++;
 
-		while (n) {
-			i = n > 126 ? 126 : n;
-			n -= i;
-			*dest++ = i;
-			*dest++ = patt;
-		}
-	}
-	*dest++ = 0;
-	return dest - d;
+        while (n) {
+            i = n > 126 ? 126 : n;
+            n -= i;
+            *dest++ = i;
+            *dest++ = patt;
+        }
+    }
+    *dest++ = 0;
+    return dest - d;
 }
 
 
 bool SGIImage::scanData(const QImage& img)
 {
-	quint32 *start = m_starttab;
-	QByteArray lineguard(m_xsize * 2, 0);
-	QByteArray bufguard(m_xsize, 0);
-	uchar *line = (uchar *)lineguard.data();
-	uchar *buf = (uchar *)bufguard.data();
-	const QRgb *c;
-	unsigned x, y;
-	uint len;
+    quint32 *start = _starttab;
+    QByteArray lineguard(_xsize * 2, 0);
+    QByteArray bufguard(_xsize, 0);
+    uchar *line = (uchar *)lineguard.data();
+    uchar *buf = (uchar *)bufguard.data();
+    const QRgb *c;
+    unsigned x, y;
+    uint len;
 
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			buf[x] = intensity(qRed(*c++));
-		len = compact(line, buf);
-		*start++ = m_rlemap.insert(line, len);
-	}
+    for (y = 0; y < _ysize; y++) {
+        c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+        for (x = 0; x < _xsize; x++)
+            buf[x] = intensity(qRed(*c++));
+        len = compact(line, buf);
+        *start++ = _rlemap.insert(line, len);
+    }
 
-	if (m_zsize == 1)
-		return true;
+    if (_zsize == 1)
+        return true;
 
-	if (m_zsize != 2) {
-		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-			for (x = 0; x < m_xsize; x++)
-				buf[x] = intensity(qGreen(*c++));
-			len = compact(line, buf);
-			*start++ = m_rlemap.insert(line, len);
-		}
+    if (_zsize != 2) {
+        for (y = 0; y < _ysize; y++) {
+            c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+            for (x = 0; x < _xsize; x++)
+                buf[x] = intensity(qGreen(*c++));
+            len = compact(line, buf);
+            *start++ = _rlemap.insert(line, len);
+        }
 
-		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-			for (x = 0; x < m_xsize; x++)
-				buf[x] = intensity(qBlue(*c++));
-			len = compact(line, buf);
-			*start++ = m_rlemap.insert(line, len);
-		}
+        for (y = 0; y < _ysize; y++) {
+            c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+            for (x = 0; x < _xsize; x++)
+                buf[x] = intensity(qBlue(*c++));
+            len = compact(line, buf);
+            *start++ = _rlemap.insert(line, len);
+        }
 
-		if (m_zsize == 3)
-			return true;
-	}
+        if (_zsize == 3)
+            return true;
+    }
 
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			buf[x] = intensity(qAlpha(*c++));
-		len = compact(line, buf);
-		*start++ = m_rlemap.insert(line, len);
-	}
+    for (y = 0; y < _ysize; y++) {
+        c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+        for (x = 0; x < _xsize; x++)
+            buf[x] = intensity(qAlpha(*c++));
+        len = compact(line, buf);
+        *start++ = _rlemap.insert(line, len);
+    }
 
-	return true;
+    return true;
 }
 
 
 void SGIImage::writeHeader()
 {
-	m_stream << quint16(0x01da);
-	m_stream << m_rle << m_bpc << m_dim;
-	m_stream << m_xsize << m_ysize << m_zsize;
-	m_stream << m_pixmin << m_pixmax;
-	m_stream << quint32(0);
+    _stream << quint16(0x01da);
+    _stream << _rle << _bpc << _dim;
+    _stream << _xsize << _ysize << _zsize;
+    _stream << _pixmin << _pixmax;
+    _stream << quint32(0);
 
     for (int i = 0; i < 80; i++)
-        m_imagename[i] = '\0';
-    m_stream.writeRawData(m_imagename, 80);
+        _imagename[i] = '\0';
+    _stream.writeRawData(_imagename, 80);
 
-	m_stream << m_colormap;
-	for (int i = 0; i < 404; i++)
-		m_stream << quint8(0);
+    _stream << _colormap;
+    for (int i = 0; i < 404; i++)
+        _stream << quint8(0);
 }
 
 
 void SGIImage::writeRle()
 {
-	m_rle = 1;
-	kDebug(399) << "writing RLE data";
-	writeHeader();
-	uint i;
+    _rle = 1;
+    kDebug(399) << "writing RLE data";
+    writeHeader();
+    uint i;
 
-	// write start table
-	for (i = 0; i < m_numrows; i++)
-		m_stream << quint32(m_rlevector[m_starttab[i]]->offset());
+    // write start table
+    for (i = 0; i < _numrows; i++)
+        _stream << quint32(_rlevector[_starttab[i]]->offset());
 
-	// write length table
-	for (i = 0; i < m_numrows; i++)
-		m_stream << quint32(m_rlevector[m_starttab[i]]->size());
+    // write length table
+    for (i = 0; i < _numrows; i++)
+        _stream << quint32(_rlevector[_starttab[i]]->size());
 
-	// write data
-	for (i = 0; (int)i < m_rlevector.size(); i++)
-		const_cast<RLEData*>(m_rlevector[i])->write(m_stream);
+    // write data
+    for (i = 0; (int)i < _rlevector.size(); i++)
+        const_cast<RLEData*>(_rlevector[i])->write(_stream);
 }
 
 
 void SGIImage::writeVerbatim(const QImage& img)
 {
-	m_rle = 0;
-	kDebug(399) << "writing verbatim data";
-	writeHeader();
+    _rle = 0;
+    kDebug(399) << "writing verbatim data";
+    writeHeader();
 
-	const QRgb *c;
-	unsigned x, y;
+    const QRgb *c;
+    unsigned x, y;
 
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << quint8(qRed(*c++));
-	}
+    for (y = 0; y < _ysize; y++) {
+        c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+        for (x = 0; x < _xsize; x++)
+            _stream << quint8(qRed(*c++));
+    }
 
-	if (m_zsize == 1)
-		return;
+    if (_zsize == 1)
+        return;
 
-	if (m_zsize != 2) {
-		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-			for (x = 0; x < m_xsize; x++)
-				m_stream << quint8(qGreen(*c++));
-		}
+    if (_zsize != 2) {
+        for (y = 0; y < _ysize; y++) {
+            c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+            for (x = 0; x < _xsize; x++)
+                _stream << quint8(qGreen(*c++));
+        }
 
-		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-			for (x = 0; x < m_xsize; x++)
-				m_stream << quint8(qBlue(*c++));
-		}
+        for (y = 0; y < _ysize; y++) {
+            c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+            for (x = 0; x < _xsize; x++)
+                _stream << quint8(qBlue(*c++));
+        }
 
-		if (m_zsize == 3)
-			return;
-	}
+        if (_zsize == 3)
+            return;
+    }
 
-	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
-		for (x = 0; x < m_xsize; x++)
-			m_stream << quint8(qAlpha(*c++));
-	}
+    for (y = 0; y < _ysize; y++) {
+        c = reinterpret_cast<const QRgb *>(img.scanLine(_ysize - y - 1));
+        for (x = 0; x < _xsize; x++)
+            _stream << quint8(qAlpha(*c++));
+    }
 }
 
 
 bool SGIImage::writeImage(const QImage& image)
 {
-	kDebug(399) << "writing ";
-        QImage img = image;
-	if (img.allGray())
-		m_dim = 2, m_zsize = 1;
-	else
-		m_dim = 3, m_zsize = 3;
+    kDebug(399) << "writing "; // TODO add filename
+    QImage img = image;
+    if (img.allGray())
+        _dim = 2, _zsize = 1;
+    else
+        _dim = 3, _zsize = 3;
 
-	if (img.format() == QImage::Format_ARGB32)
-		m_dim = 3, m_zsize++;
+    if (img.format() == QImage::Format_ARGB32)
+        _dim = 3, _zsize++;
 
-	img = img.convertToFormat(QImage::Format_RGB32);
-	if (img.isNull()) {
-		kDebug(399) << "can't convert image to depth 32";
-		return false;
-	}
+    img = img.convertToFormat(QImage::Format_RGB32);
+    if (img.isNull()) {
+        kDebug(399) << "can't convert image to depth 32";
+        return false;
+    }
 
-	m_bpc = 1;
-	m_xsize = img.width();
-	m_ysize = img.height();
-	m_pixmin = ~0u;
-	m_pixmax = 0;
-	m_colormap = NORMAL;
+    _bpc = 1;
+    _xsize = img.width();
+    _ysize = img.height();
+    _pixmin = ~0u;
+    _pixmax = 0;
+    _colormap = NORMAL;
+    _numrows = _ysize * _zsize;
+    _starttab = new quint32[_numrows];
+    _rlemap.setBaseOffset(512 + _numrows * 2 * sizeof(quint32));
 
-	m_numrows = m_ysize * m_zsize;
+    if (!scanData(img)) {
+        kDebug(399) << "this can't happen";
+        return false;
+    }
 
-	m_starttab = new quint32[m_numrows];
-	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(quint32));
+    _rlevector = _rlemap.vector();
 
-	if (!scanData(img)) {
-		kDebug(399) << "this can't happen";
-		return false;
-	}
+    long verbatim_size = _numrows * _xsize;
+    long rle_size = _numrows * 2 * sizeof(quint32);
+    for (int i = 0; i < _rlevector.size(); i++)
+        rle_size += _rlevector[i]->size();
 
-	m_rlevector = m_rlemap.vector();
+    kDebug(399) << "minimum intensity: " << _pixmin;
+    kDebug(399) << "maximum intensity: " << _pixmax;
+    kDebug(399) << "saved scanlines: " << _numrows - _rlemap.size();
+    kDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes";
+    kDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%';
 
-	long verbatim_size = m_numrows * m_xsize;
-	long rle_size = m_numrows * 2 * sizeof(quint32);
-	for (int i = 0; i < m_rlevector.size(); i++)
-		rle_size += m_rlevector[i]->size();
-
-	kDebug(399) << "minimum intensity: " << m_pixmin;
-	kDebug(399) << "maximum intensity: " << m_pixmax;
-	kDebug(399) << "saved scanlines: " << m_numrows - m_rlemap.size();
-	kDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes";
-	kDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%';
-
-	if (verbatim_size <= rle_size)
-		writeVerbatim(img);
-	else
-		writeRle();
-	return true;
+    if (verbatim_size <= rle_size)
+        writeVerbatim(img);
+    else
+        writeRle();
+    return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 RGBHandler::RGBHandler()
 {
 }
 
+
 bool RGBHandler::canRead() const
 {
     return canRead(device());
 }
 
+
 bool RGBHandler::read(QImage *outImage)
 {
     SGIImage sgi(device());
-
-    if (!sgi.readImage(*outImage)) {
-        return false;
-    }
-
-    return true;
+    return sgi.readImage(*outImage);
 }
+
 
 bool RGBHandler::write(const QImage &image)
 {
     SGIImage sgi(device());
-
-    if (!sgi.writeImage(image))
-        return false;
-
-    return true;
+    return sgi.writeImage(image);
 }
+
 
 QByteArray RGBHandler::name() const
 {
     return "rgb";
 }
+
 
 bool RGBHandler::canRead(QIODevice *device)
 {
@@ -579,6 +577,7 @@ bool RGBHandler::canRead(QIODevice *device)
     if (device->isSequential()) {
         while (readBytes > 0)
             device->ungetChar(head[readBytes-- - 1]);
+
     } else {
         device->seek(oldPos);
     }
@@ -590,6 +589,9 @@ bool RGBHandler::canRead(QIODevice *device)
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+
+
 class RGBPlugin : public QImageIOPlugin
 {
 public:
@@ -598,18 +600,19 @@ public:
     QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
 };
 
+
 QStringList RGBPlugin::keys() const
 {
-    return QStringList() << "rgb"<<"RGB"<<"rgba"<<"RGBA"
-                         <<"bw"<<"BW"<<"sgi"<<"SGI";
+    return QStringList() << "rgb" << "RGB" << "rgba" << "RGBA" << "bw" << "BW" << "sgi" << "SGI";
 }
+
 
 QImageIOPlugin::Capabilities RGBPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "rgb" || format == "rgb" || format == "RGB" ||
-        format ==  "rgba" || format == "RGBA" || format ==  "bw" ||
-        format == "BW" || format == "sgi" || format == "SGI")
-        return Capabilities(CanRead | CanWrite);
+    if (format == "rgb" || format == "RGB" || format ==  "rgba" || format == "RGBA"
+            || format ==  "bw" || format == "BW" || format == "sgi" || format == "SGI")
+        return Capabilities(CanRead|CanWrite);
+
     if (!format.isEmpty())
         return 0;
     if (!device->isOpen())
@@ -623,6 +626,7 @@ QImageIOPlugin::Capabilities RGBPlugin::capabilities(QIODevice *device, const QB
     return cap;
 }
 
+
 QImageIOHandler *RGBPlugin::create(QIODevice *device, const QByteArray &format) const
 {
     QImageIOHandler *handler = new RGBHandler;
@@ -631,5 +635,7 @@ QImageIOHandler *RGBPlugin::create(QIODevice *device, const QByteArray &format) 
     return handler;
 }
 
+
 Q_EXPORT_STATIC_PLUGIN(RGBPlugin)
 Q_EXPORT_PLUGIN2(rgb, RGBPlugin)
+
