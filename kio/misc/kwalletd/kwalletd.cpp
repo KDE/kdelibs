@@ -47,6 +47,7 @@
 #include <QtCore/QDir>
 #include <QtGui/QTextDocument> // Qt::escape
 #include <QtCore/QRegExp>
+#include <QtCore/QTimer>
 
 #include <assert.h>
 

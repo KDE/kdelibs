@@ -26,13 +26,13 @@
 #include <QtCore/QHash>
 #include <QtCore/QCache>
 #include <QtCore/QSet>
+#include <QtCore/QTimer>
 #include <QtGui/QWidget>
 
 #include <kurl.h>
 #include <kio/global.h>
 #include <kdirwatch.h>
 
-class QTimer;
 class KDirLister;
 namespace KIO { class Job; class ListJob; }
 class OrgKdeKDirNotifyInterface;
