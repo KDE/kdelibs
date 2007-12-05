@@ -263,6 +263,8 @@ protected:
 
 private Q_SLOTS:
     void slotDefaultClicked();
+    void invokeMailer(const QString &url) const;
+    void invokeBrowser(const QString &url) const;
 
 private:
     enum EventReceived

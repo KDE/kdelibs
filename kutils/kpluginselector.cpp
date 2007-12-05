@@ -55,6 +55,7 @@
 #include <kurllabel.h>
 #include <klineedit.h>
 #include <kurl.h>
+#include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kglobalsettings.h>
 #include <kdebug.h>
@@ -1462,6 +1463,17 @@ void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
     }
 }
 
+
+void KPluginSelector::Private::PluginDelegate::invokeMailer(const QString &url) const
+{
+    KToolInvocation::invokeMailer(url);
+}
+
+void KPluginSelector::Private::PluginDelegate::invokeBrowser(const QString &url) const
+{
+    KToolInvocation::invokeBrowser(url);
+}
+
 QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
     QSize canvasSize = sizeHint(option, index);
@@ -1634,47 +1646,86 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             aboutDialog->setWindowTitle(i18n("About %1 plugin", pluginInfo.name()));
             aboutDialog->setButtons(KDialog::Close);
 
-            QString text = "<br /><table>";
+            QWidget *aboutWidget = new QWidget(aboutDialog);
+            QVBoxLayout *layout = new QVBoxLayout;
+            layout->setSpacing(0);
+            aboutWidget->setLayout(layout);
 
             if (!pluginInfo.comment().isEmpty())
             {
-                // FIXME: cleanup the following i18n strings after string freeze (remove \n\t%1...)
-                text += "<tr><td>" + i18n("Description:\n\t%1", QString()) + "</td><td>" + pluginInfo.comment() + "<br /></td></tr>";
+                QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo.comment()), aboutWidget);
+                layout->addWidget(description);
+                layout->addSpacing(20);
             }
 
             if (!pluginInfo.author().isEmpty())
             {
-                text += "<tr><td>" + i18n("Author:\n\t%1", QString()) + "</td><td>" + pluginInfo.author() + "</td><br /></tr>";
+                QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo.author()), aboutWidget);
+                layout->addWidget(author);
+                layout->addSpacing(20);
             }
 
             if (!pluginInfo.email().isEmpty())
             {
-                text += "<tr><td>" + i18n("E-Mail:") + "</td><td><a href=\"mailto:" + pluginInfo.email() + "\">"
-                                                                                    + pluginInfo.email() + "</a><br /></td></tr>";
+                QLabel *authorEmail = new QLabel(i18n("E-Mail:"), aboutWidget);
+                KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), '\t' + pluginInfo.email());
+
+                sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                sendEmail->setGlowEnabled(false);
+                sendEmail->setUnderline(false);
+                sendEmail->setFloatEnabled(true);
+                sendEmail->setUseCursor(true);
+                sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
+                sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
+
+                QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeMailer(QString)));
+
+                layout->addWidget(authorEmail);
+                layout->addWidget(sendEmail);
+                layout->addSpacing(20);
             }
 
             if (!pluginInfo.website().isEmpty())
             {
-                text += "<tr><td>" + i18n("Website:") + "</td><td><a href=\"" + pluginInfo.website() + "\">"
-                                                                              + pluginInfo.website() + "</a><br /></td></tr>";
+                QLabel *website = new QLabel(i18n("Website:"), aboutWidget);
+                KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), '\t' + pluginInfo.website());
+
+                visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                visitWebsite->setGlowEnabled(false);
+                visitWebsite->setUnderline(false);
+                visitWebsite->setFloatEnabled(true);
+                visitWebsite->setUseCursor(true);
+                visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
+                visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
+
+                QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeBrowser(QString)));
+
+                layout->addWidget(website);
+                layout->addWidget(visitWebsite);
+                layout->addSpacing(20);
             }
 
             if (!pluginInfo.version().isEmpty())
             {
-                text += "<tr><td>" + i18n("Version:\n\t%1", QString()) + "</td><td>" + pluginInfo.version() + "<br /></td></tr>";
+                QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo.version()), aboutWidget);
+
+                layout->addWidget(version);
+                layout->addSpacing(20);
             }
 
             if (!pluginInfo.license().isEmpty())
             {
-                text += "<tr><td>" + i18n("License:\n\t%1", QString()) + "</td><td>" + pluginInfo.license() + "<br /></td></tr>";
+                QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo.license()), aboutWidget);
+
+                layout->addWidget(license);
+                layout->addSpacing(20);
             }
-            text += "</table>";
 
-            QLabel *aboutLabel = new QLabel(aboutDialog);
-            aboutLabel->setText(text);
-            aboutLabel->setOpenExternalLinks(true);
+            layout->insertStretch(-1);
 
-            aboutDialog->setMainWidget(aboutLabel);
+            aboutDialog->setMainWidget(aboutWidget);
 
             aboutDialogs.insert(index.row(), aboutDialog);
         }
