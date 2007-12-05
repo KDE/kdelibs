@@ -90,7 +90,7 @@ KUrlLabel::KUrlLabel( const QString& url, const QString& text, QWidget* parent )
     d( new Private( url, this ) )
 {
   setFont( font() );
-  setCursor( QCursor( Qt::OpenHandCursor ) );
+  setCursor( QCursor( Qt::PointingHandCursor ) );
   d->setLinkColor( d->linkColor );
 }
 
@@ -99,7 +99,7 @@ KUrlLabel::KUrlLabel( QWidget* parent )
     d( new Private( QString(), this ) )
 {
   setFont( font() );
-  setCursor( QCursor( Qt::OpenHandCursor ) );
+  setCursor( QCursor( Qt::PointingHandCursor ) );
   d->setLinkColor( d->linkColor );
 }
 
