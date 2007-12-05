@@ -10,7 +10,7 @@
 DockTest::DockTest( QWidget* parent )
   : K3DockArea( parent )
 {
-  m_blueDock = createDockWidget( "Blue Widget", SmallIcon("mail") );
+  m_blueDock = createDockWidget( "Blue Widget", SmallIcon("internet-mail") );
   //m_blueDock->setDetachable( false );
   m_blueDock->setEnableDocking( K3DockWidget::DockFullSite );
   K3DockWidgetHeader *header = new K3DockWidgetHeader( m_blueDock, "Blue Header" );
@@ -27,7 +27,7 @@ DockTest::DockTest( QWidget* parent )
 
   setMainDockWidget( m_blueDock );
 
-  m_redDock = createDockWidget( "Red Widget", SmallIcon("news") );
+  m_redDock = createDockWidget( "Red Widget", SmallIcon("akregator") );
   m_redDock->setEnableDocking( K3DockWidget::DockFullSite );
   //m_redDock->setDetachable( false );
   header = new K3DockWidgetHeader( m_redDock, "Red kHeader" );
@@ -42,7 +42,7 @@ DockTest::DockTest( QWidget* parent )
   m_redDock->setWidget( l );
   m_redDock->manualDock( m_blueDock, K3DockWidget::DockLeft, 3000 );
 
-  m_yellowDock = createDockWidget( "Yellow Widget", SmallIcon("web") );
+  m_yellowDock = createDockWidget( "Yellow Widget", SmallIcon("internet-web-browser") );
   m_yellowDock->setEnableDocking( K3DockWidget::DockFullSite );
   //m_yellowDock->setDetachable( false );
 //  header = new K3DockWidgetHeader( m_yellowDock, "Yellow Header" );
