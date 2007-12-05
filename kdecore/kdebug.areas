@@ -516,6 +516,7 @@
 30007        koffice (lib koproperty)
 30008        koffice (lib pigment)
 30009        koffice (lib resources)
+30010        koffice (lib kopageapp)
 30500        koffice (filter manager)
 30501        csvfilter
 30502        asciifilter
@@ -550,7 +551,9 @@
 32010        kword/kross (scripting)
 32500        kotext
 33001        kpresenter
-34000        kpresenter
+33002        kpresenter (page transitions)
+33003        kpresenter (shape animations)
+#34000        kpresenter
 34001        klyx
 35000        klyx
 35001        kchart
