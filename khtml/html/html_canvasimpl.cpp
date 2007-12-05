@@ -986,16 +986,6 @@ void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptio
     path.addRect(x, y, w, h);
 }
 
-inline QRect CanvasContext2DImpl::coverage(const QRectF &rect) const
-{
-    int x1 = std::floor(rect.x());
-    int y1 = std::floor(rect.y());
-    int x2 = std::ceil(rect.right());
-    int y2 = std::ceil(rect.bottom());
-
-    return QRect(x1, y1, (x2 - x1), (y2 - y1));
-}
-
 inline bool CanvasContext2DImpl::needsShadow() const
 {
     return activeState().shadowColor.alpha() > 0;
@@ -1036,9 +1026,9 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     qreal xoffset = radius * 2;
     qreal yoffset = radius * 2;
 
-    QRect shapeBounds = coverage(p->worldTransform().map(fillPath).controlPointRect());
+    QRect shapeBounds = p->worldTransform().map(fillPath).controlPointRect().toAlignedRect();
 
-    QRect clipRect = coverage(state.clipPath.controlPointRect());
+    QRect clipRect = state.clipPath.controlPointRect().toAlignedRect();
     clipRect &= QRect(QPoint(), canvasImage->size());
 
     // We need the clip rect to be large enough so that items that are partially or

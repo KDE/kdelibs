@@ -253,9 +253,6 @@ private:
     // initialize canvas for new size
     void resetContext(int width, int height);
 
-    // Returns the smallest QRect that can contain all the pixels inside rect
-    QRect coverage(const QRectF &rect) const;
-
     bool needsShadow() const;
 
     // Draws a shadowed path using the painter.
