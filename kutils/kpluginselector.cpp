@@ -60,8 +60,8 @@
 #include <kglobalsettings.h>
 #include <kdebug.h>
 
-static QString details = I18N_NOOP("Settings");
-static QString about = I18N_NOOP("About");
+static const char * details = I18N_NOOP("Settings");
+static const char * about = I18N_NOOP("About");
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
@@ -842,7 +842,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
                 opt.icon = iconLoader->loadIcon("configure", KIconLoader::Small);
                 opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
             }
-            opt.text = details;
+            opt.text = i18n(details);
             opt.fontMetrics = option.fontMetrics;
             opt.direction = option.direction;
             opt.rect = option.rect;
@@ -878,7 +878,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
             opt.icon = iconLoader->loadIcon("dialog-information", KIconLoader::Small);
             opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
         }
-        opt.text = about;
+        opt.text = i18n(about);
         opt.fontMetrics = option.fontMetrics;
         opt.direction = option.direction;
         opt.rect = option.rect;
