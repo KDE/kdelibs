@@ -51,6 +51,7 @@ static QString shortenMessage (const QString &str)
 
 typedef qulonglong pluraln;
 typedef qlonglong intn;
+typedef qulonglong uintn;
 typedef double realn;
 
 class KLocalizedStringPrivateStatics;
@@ -60,6 +61,7 @@ class KLocalizedStringPrivate
     friend class KLocalizedString;
 
     QStringList args;
+    QList<QVariant> vals;
     bool numberSet;
     pluraln number;
     int numberOrd;
@@ -88,6 +90,7 @@ class KLocalizedStringPrivate
                               const QString &final,
                               QString &result,
                               bool &fallback) const;
+    QVariant segmentToValue (const QString &arg) const;
     QString postTranscript (const QString &pcall,
                             const QString &lang,
                             const QString &lscr,
@@ -106,6 +109,7 @@ class KLocalizedStringPrivateStatics
     const QString startInterp;
     const QString endInterp;
     const QChar scriptPlchar;
+    const QChar scriptVachar;
 
     const QString scriptDir;
     QHash<QString, QStringList> scriptModules;
@@ -123,6 +127,7 @@ class KLocalizedStringPrivateStatics
         startInterp("$["),
         endInterp("]"),
         scriptPlchar('%'),
+        scriptVachar('^'),
 
         scriptDir("LC_SCRIPTS"),
         scriptModules(),
@@ -528,7 +533,8 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
     return fallback ? QString() : sfinal;
 }
 
-int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int pos,
+int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
+                                                   int pos,
                                                    const QString &lang,
                                                    const QString &lscr,
                                                    const QString &final,
@@ -547,7 +553,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
     fallback = false;
 
     // Split interpolation into arguments.
-    QStringList iargs;
+    QList<QVariant> iargs;
     int slen = strans.length();
     int islen = s->startInterp.length();
     int ielen = s->endInterp.length();
@@ -571,8 +577,11 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
         // and sub-interpolations.
         // Free and quoted segments may contain placeholders, substitute them;
         // recurse into sub-interpolations.
+        // Free segments may be value references, parse and record for
+        // consideration at the end.
         // Mind backslash escapes throughout.
-        QString arg;
+        QStringList segs;
+        QVariant vref;
         while (   !strans[tpos].isSpace()
                && strans.mid(tpos, ielen) != s->endInterp)
         {
@@ -592,8 +601,8 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
                     return -1;
                 }
 
-                // Append to argument, resolving placeholders.
-                arg.append(substituteSimple(seg, s->scriptPlchar, true));
+                // Append to list of segments, resolving placeholders.
+                segs.append(substituteSimple(seg, s->scriptPlchar, true));
 
                 ++tpos; // skip closing quote
             }
@@ -609,7 +618,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
                 if (fallbackLocal) { // sub-interpolation requested fallback
                     fallback = true;
                 }
-                arg.append(resultLocal);
+                segs.append(resultLocal);
             }
             else { // free segment
                 QString seg;
@@ -630,13 +639,30 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
                     return -1;
                 }
 
-                // Append to argument, resolving placeholders.
-                arg.append(substituteSimple(seg, s->scriptPlchar, true));
+                // The free segment may look like a value reference;
+                // in that case, record which value it would reference,
+                // and add verbatim to the segment list.
+                // Otherwise, do a normal substitution on the segment.
+                vref = segmentToValue(seg);
+                if (vref.isValid()) {
+                    segs.append(seg);
+                }
+                else {
+                    segs.append(substituteSimple(seg, s->scriptPlchar, true));
+                }
             }
         }
 
-        // Append to rest of the arguments.
-        iargs.append(arg);
+        // Append this argument to rest of the arguments.
+        // If the there was a single text segment and it was a proper value
+        // reference, add it instead of the joined segments.
+        // Otherwise, add the joined segments.
+        if (segs.size() == 1 && vref.isValid()) {
+            iargs.append(vref);
+        }
+        else {
+            iargs.append(segs.join(""));
+        }
     }
     tpos += ielen; // skip to first character after closing sequence
 
@@ -651,7 +677,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
     QString scriptError;
     bool fallbackLocal;
     result = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
-                           args, final, s->scriptModulesToLoad,
+                           args, vals, final, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
     // s->scriptModulesToLoad will be cleared during the call.
 
@@ -669,6 +695,36 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
     return tpos;
 }
 
+QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    // Return invalid variant if segment is either not a proper
+    // value reference, or the reference is out of bounds.
+
+    // Value reference must start with a special character.
+    if (seg.left(1) != s->scriptVachar) {
+        return QVariant();
+    }
+
+    // Reference number must start with 1-9.
+    // (If numstr is empty, toInt() will return 0.)
+    QString numstr = seg.mid(1);
+    if (numstr.left(1).toInt() < 1) {
+        return QVariant();
+    }
+
+    // Number must be valid and in bounds.
+    bool ok;
+    int index = numstr.toInt(&ok) - 1;
+    if (!ok || index >= vals.size()) {
+        return QVariant();
+    }
+
+    // Passed all hoops.
+    return vals.at(index);
+}
+
 QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &lang,
                                                  const QString &lscr,
@@ -682,14 +738,14 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
         return QString();
 
     // Resolve the post call.
-    QStringList iargs;
+    QList<QVariant> iargs;
     iargs.append(pcall);
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallback;
     QString dummy = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
-                                  args, final, s->scriptModulesToLoad,
+                                  args, vals, final, s->scriptModulesToLoad,
                                   scriptError, fallback);
     // s->scriptModulesToLoad will be cleared during the call.
 
@@ -725,6 +781,7 @@ KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
 
@@ -739,6 +796,7 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
 
@@ -753,6 +811,7 @@ KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
 
@@ -767,6 +826,7 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
 
@@ -781,6 +841,7 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<intn>(a));
     return kls;
 }
 
@@ -795,6 +856,7 @@ KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
     }
     KLocalizedString kls(*this);
     kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
+    kls.d->vals.append(static_cast<uintn>(a));
     return kls;
 }
 
@@ -804,6 +866,7 @@ KLocalizedString KLocalizedString::subs (double a, int fieldWidth,
 {
     KLocalizedString kls(*this);
     kls.d->args.append(wrapReal(QString("%1").arg(a, fieldWidth, format, precision, fillChar)));
+    kls.d->vals.append(static_cast<realn>(a));
     return kls;
 }
 
@@ -812,6 +875,7 @@ KLocalizedString KLocalizedString::subs (QChar a, int fieldWidth,
 {
     KLocalizedString kls(*this);
     kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
+    kls.d->vals.append(QString(a));
     return kls;
 }
 
@@ -820,6 +884,7 @@ KLocalizedString KLocalizedString::subs (const QString &a, int fieldWidth,
 {
     KLocalizedString kls(*this);
     kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
+    kls.d->vals.append(a);
     return kls;
 }
 

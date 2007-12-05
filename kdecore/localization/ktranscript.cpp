@@ -33,7 +33,7 @@
 #include <kjs/string_object.h>
 #include <kjs/error_object.h>
 
-
+#include <QVariant>
 #include <QStringList>
 #include <QList>
 #include <QHash>
@@ -55,13 +55,14 @@ class KTranscriptImp : public KTranscript
     KTranscriptImp ();
     ~KTranscriptImp ();
 
-    QString eval (const QStringList &argv,
+    QString eval (const QList<QVariant> &argv,
                   const QString &lang,
                   const QString &lscr,
                   const QString &msgctxt,
                   const QHash<QString, QString> &dynctxt,
                   const QString &msgid,
                   const QStringList &subs,
+                  const QList<QVariant> &vals,
                   const QString &final,
                   QList<QStringList> &mods,
                   QString &error,
@@ -97,6 +98,7 @@ class Scriptface : public JSObject
     JSValue *fallbackf (ExecState *exec);
     JSValue *nsubsf (ExecState *exec);
     JSValue *subsf (ExecState *exec, JSValue *index);
+    JSValue *valsf (ExecState *exec, JSValue *index);
     JSValue *msgctxtf (ExecState *exec);
     JSValue *dynctxtf (ExecState *exec, JSValue *key);
     JSValue *msgidf (ExecState *exec);
@@ -116,6 +118,7 @@ class Scriptface : public JSObject
         Fallback,
         Nsubs,
         Subs,
+        Vals,
         Msgctxt,
         Dynctxt,
         Msgid,
@@ -143,6 +146,7 @@ class Scriptface : public JSObject
     const QHash<QString, QString> *dynctxt;
     const QString *msgid;
     const QStringList *subs;
+    const QList<QVariant> *vals;
     const QString *final;
     const QString *lscr;
 
@@ -304,6 +308,21 @@ QString trimSmart (const QString &raw)
 }
 
 // ----------------------------------------------------------------------
+// Produce a JavaScript object out of Qt variant.
+JSValue *variantToJsValue (const QVariant &val)
+{
+    QVariant::Type vtype = val.type();
+    if (vtype == QVariant::String)
+        return jsString(val.toString());
+    else if (   vtype == QVariant::Double \
+             || vtype == QVariant::Int || vtype == QVariant::UInt \
+             || vtype == QVariant::LongLong || vtype == QVariant::ULongLong)
+        return jsNumber(val.toDouble());
+    else
+        return jsUndefined();
+}
+
+// ----------------------------------------------------------------------
 // Dynamic loading.
 K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
@@ -328,13 +347,14 @@ KTranscriptImp::~KTranscriptImp ()
     //    jsi->deref();
 }
 
-QString KTranscriptImp::eval (const QStringList &argv,
+QString KTranscriptImp::eval (const QList<QVariant> &argv,
                               const QString &lang,
                               const QString &lscr,
                               const QString &msgctxt,
                               const QHash<QString, QString> &dynctxt,
                               const QString &msgid,
                               const QStringList &subs,
+                              const QList<QVariant> &vals,
                               const QString &final,
                               QList<QStringList> &mods,
                               QString &error,
@@ -387,6 +407,7 @@ QString KTranscriptImp::eval (const QStringList &argv,
     sface->dynctxt = &dynctxt;
     sface->msgid = &msgid;
     sface->subs = &subs;
+    sface->vals = &vals;
     sface->final = &final;
     sface->fallback = &fallback;
     sface->lscr = &lscr;
@@ -400,22 +421,23 @@ QString KTranscriptImp::eval (const QStringList &argv,
         // at a given point (e.g. for Ts.setForall() to start having effect).
         return QString();
     }
-    if (!sface->funcs.contains(argv[0]))
+    QString funcName = argv[0].toString();
+    if (!sface->funcs.contains(funcName))
     {
-        error = QString("Unregistered call to '%1'.").arg(argv[0]);
+        error = QString("Unregistered call to '%1'.").arg(funcName);
         return QString();
     }
-    JSObject *func = sface->funcs[argv[0]];
-    JSValue *fval = sface->fvals[argv[0]];
+    JSObject *func = sface->funcs[funcName];
+    JSValue *fval = sface->fvals[funcName];
 
     // Recover module path from the time of definition of this call,
     // for possible load calls.
-    currentModulePath = sface->fpaths[argv[0]];
+    currentModulePath = sface->fpaths[funcName];
 
     // Execute function.
     List arglist;
     for (int i = 1; i < argc; ++i)
-        arglist.append(jsString(argv[i]));
+        arglist.append(variantToJsValue(argv[i]));
     JSValue *val;
     if (fval->isObject())
         val = func->callAsFunction(exec, fval->getObject(), arglist);
@@ -553,6 +575,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     fallback        Scriptface::Fallback        DontDelete|ReadOnly|Function 0
     nsubs           Scriptface::Nsubs           DontDelete|ReadOnly|Function 0
     subs            Scriptface::Subs            DontDelete|ReadOnly|Function 1
+    vals            Scriptface::Vals            DontDelete|ReadOnly|Function 1
     msgctxt         Scriptface::Msgctxt         DontDelete|ReadOnly|Function 0
     dynctxt         Scriptface::Dynctxt         DontDelete|ReadOnly|Function 1
     msgid           Scriptface::Msgid           DontDelete|ReadOnly|Function 0
@@ -631,6 +654,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->nsubsf(exec);
         case Scriptface::Subs:
             return obj->subsf(exec, CALLARG(0));
+        case Scriptface::Vals:
+            return obj->valsf(exec, CALLARG(0));
         case Scriptface::Msgctxt:
             return obj->msgctxtf(exec);
         case Scriptface::Dynctxt:
@@ -805,6 +830,20 @@ JSValue *Scriptface::subsf (ExecState *exec, JSValue *index)
                           SPREF"subs: index out of range");
 
     return jsString(subs->at(i));
+}
+
+JSValue *Scriptface::valsf (ExecState *exec, JSValue *index)
+{
+    if (!index->isNumber())
+        return throwError(exec, TypeError,
+                          SPREF"vals: expected number as first argument");
+
+    int i = qRound(index->getNumber());
+    if (i < 0 || i >= vals->size())
+        return throwError(exec, RangeError,
+                          SPREF"vals: index out of range");
+
+    return variantToJsValue(vals->at(i));
 }
 
 JSValue *Scriptface::msgctxtf (ExecState *exec)

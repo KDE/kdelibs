@@ -20,7 +20,7 @@
 #ifndef KTRANSCRIPT_P_H
 #define KTRANSCRIPT_P_H
 
-
+#include <QVariant>
 #include <QList>
 #include <QStringList>
 #include <QHash>
@@ -49,6 +49,7 @@ class KTranscript
      * @param dynctxt dynamic context
      * @param msgid original message
      * @param subs substitutions for message placeholders
+     * @param vals values that were formatted to substitutions
      * @param final finalized ordinary translation
      * @param mods scripting modules to load; the list is cleared after loading
      * @param error set to the message detailing the problem, if the script
@@ -58,13 +59,14 @@ class KTranscript
      * @return resolved interpolation if evaluation succeeded,
      *         empty string otherwise
      */
-    virtual QString eval (const QStringList &argv,
+    virtual QString eval (const QList<QVariant> &argv,
                           const QString &lang,
                           const QString &lscr,
                           const QString &msgctxt,
                           const QHash<QString, QString> &dynctxt,
                           const QString &msgid,
                           const QStringList &subs,
+                          const QList<QVariant> &vals,
                           const QString &final,
                           QList<QStringList> &mods,
                           QString &error,
