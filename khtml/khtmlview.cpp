@@ -759,7 +759,7 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
     revertTransforms(x, y, dummy, dummy);
 }
 
-void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
+void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     if (d->layoutSchedulingEnabled)
         layout();
@@ -770,6 +770,9 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
         showCaret();
     }/*end if*/
 #endif
+
+    QScrollArea::resizeEvent( e );
+
     if (d->staticWidget && widget()->pos() != QPoint(0,0))
         widget()->move(0,0);
 
