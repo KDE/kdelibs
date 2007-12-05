@@ -68,7 +68,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 
     ui.setupUi( q->mainWidget() );
 
-    ui.labelIcon->setPixmap( KIcon("password").pixmap(96, 96) );
+    ui.labelIcon->setPixmap( KIcon("dialog-password").pixmap(96, 96) );
     ui.labelMatch->setHidden(true);
 
     const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
