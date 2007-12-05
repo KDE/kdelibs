@@ -295,6 +295,11 @@ void KDialog::setMainWidget( QWidget *widget )
 {
     Q_D(KDialog);
   d->mMainWidget = widget;
+  QLayout* layout = d->mMainWidget->layout();
+  if (layout) {
+    // Avoid double-margin problem
+    layout->setMargin(0);
+  }
   d->setupLayout();
 }
 
