@@ -274,7 +274,7 @@ void Image::notifyScanline(uchar version, uchar* data)
         return;
 
     //Load the data in..
-    if (plane->format.type != ImageFormat::Image_RGBA_32)
+    if (plane->format.type != ImageFormat::Image_ARGB_32)
     {
         //Can just copy
         std::memcpy(plane->image.scanLine(loaderScanline), data,

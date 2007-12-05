@@ -423,7 +423,7 @@ public:
             // If we have transparency, we need to go an RGBA mode.
             ImageFormat format;
             if (trans != -1)
-                format.type = ImageFormat::Image_RGBA_32;
+                format.type = ImageFormat::Image_ARGB_32; // Premultiply always OK, since we only have 0/1 alpha
             else
                 format.type = ImageFormat::Image_Palette_8;
 

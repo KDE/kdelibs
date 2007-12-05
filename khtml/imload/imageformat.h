@@ -35,11 +35,12 @@ struct ImageFormat
 {
     enum Type
     {
-        Image_RGB_32,     //32-bit RGB + padding
-        Image_RGBA_32,    //32-bit RGB + alpha
-                          //note that this is interpreted as normal by
-                          //the loader interface, as premultiplied
-                          //by the drawing code
+        Image_RGB_32,     // 32-bit RGB
+        Image_ARGB_32,    // 32-bit ARGB; this will be premultiplied upon reception
+                          // so should not be used in combination with requestScanline
+        Image_ARGB_32_DontPremult,  // 32-bit ARGB that will be kept as-is
+                                         // should only be used for interlaced images
+                                         // as it is slower
         Image_Palette_8   //8-bit paletted image
     } type;
     
@@ -48,7 +49,8 @@ struct ImageFormat
         switch (type)
         {
         case Image_RGB_32:
-        case Image_RGBA_32:
+        case Image_ARGB_32:
+        case Image_ARGB_32_DontPremult:
             return 4;
         default:
             return 1;
@@ -63,8 +65,11 @@ struct ImageFormat
         case Image_RGB_32:
             toRet = QImage(width, height, QImage::Format_RGB32);
             break;
-        case Image_RGBA_32:
+        case Image_ARGB_32:
             toRet = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+            break;
+        case Image_ARGB_32_DontPremult:
+            toRet = QImage(width, height, QImage::Format_ARGB32);
             break;
         case Image_Palette_8:
             toRet = QImage(width, height, QImage::Format_Indexed8);
@@ -76,7 +81,7 @@ struct ImageFormat
 
     bool hasAlpha() const
     {
-        return  (type == Image_RGBA_32);
+        return  (type == Image_ARGB_32 || type == Image_ARGB_32_DontPremult);
     }
 
     QVector<QRgb> palette;

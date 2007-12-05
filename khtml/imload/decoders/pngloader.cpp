@@ -122,20 +122,20 @@ private:
             case PNG_COLOR_TYPE_GRAY_ALPHA:
                 //We don't natively support 8-bit plus alpha, so ask libPNG to expand it out to RGB
                 png_set_gray_to_rgb(pngReadStruct);
-                imFrm.type = ImageFormat::Image_RGBA_32;
+                imFrm.type = ImageFormat::Image_ARGB_32;
                 break;
             case PNG_COLOR_TYPE_PALETTE:                
-                //For now, we handle paletted images as RGB or RGBA. 
+                //For now, we handle paletted images as RGB or ARGB
                 //### TODO: handle non-alpha paletted images with a sufficiently small palette as 
                 //paletted
-                imFrm.type = haveTRNS ? ImageFormat::Image_RGBA_32 : ImageFormat::Image_RGB_32;
+                imFrm.type = haveTRNS ? ImageFormat::Image_ARGB_32 : ImageFormat::Image_RGB_32;
                 png_set_palette_to_rgb(pngReadStruct);
                 break;
             case PNG_COLOR_TYPE_RGB:
                 imFrm.type = ImageFormat::Image_RGB_32;
                 break;
             case PNG_COLOR_TYPE_RGB_ALPHA:
-                imFrm.type = ImageFormat::Image_RGBA_32;
+                imFrm.type = ImageFormat::Image_ARGB_32;
                 break;
             default:
                 //Huh?
@@ -157,7 +157,7 @@ private:
             png_set_bgr   (pngReadStruct);
 #endif                
         }
-        else if (imFrm.type == ImageFormat::Image_RGBA_32)
+        else if (imFrm.type == ImageFormat::Image_ARGB_32)
         {
 #if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
             png_set_swap_alpha(pngReadStruct); //ARGB, not RGBA
@@ -174,7 +174,11 @@ private:
         {
             interlaced  = true;
             scanlineBuf = new unsigned char[depth * width];
-            png_set_interlace_handling(pngReadStruct);            
+            png_set_interlace_handling(pngReadStruct);
+            
+            // Give up on premultiply in this case..
+            if (imFrm.type == ImageFormat::Image_ARGB_32)
+                imFrm.type = ImageFormat::Image_ARGB_32_DontPremult;
         }
         
         notifySingleFrameImage(width, height, imFrm);
