@@ -527,7 +527,7 @@ Notes:
     <comment>KSeg document</comment>
     <glob pattern="*.seg"/>
   </mime-type>
-  <mime-type type="application/x-kvoctrain">
+  <mime-type type="application/x-kvtml">
     <sub-class-of type="application/xml"/>
     <comment>vocabulary trainer document</comment>
     <glob pattern="*.kvtml"/>
