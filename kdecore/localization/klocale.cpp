@@ -265,10 +265,10 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
 
     // catalogs from which each application can draw translations
     numberOfSysCatalogs = 4;
-    catalogNames.append(KCatalogName("kdeqt"));
-    catalogNames.append(KCatalogName("kdelibs4"));
-    catalogNames.append(KCatalogName("kio4"));
     catalogNames.append(KCatalogName("libphonon"));
+    catalogNames.append(KCatalogName("kio4"));
+    catalogNames.append(KCatalogName("kdelibs4"));
+    catalogNames.append(KCatalogName("kdeqt"));
 
     updateCatalogs(); // evaluate this for all languages
   }
