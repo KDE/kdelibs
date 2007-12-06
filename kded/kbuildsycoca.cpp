@@ -764,13 +764,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KGlobal::locale();
    KGlobal::dirs()->addResourceType("app-reg", 0, "share/application-registry" );
 
-    if (!QDBusConnection::sessionBus().isConnected())
-    {
-        kError() << "kbuildsycoca4: Cannot find the D-Bus session server" << endl;
-        return 255;
-    }
-
-   while(true)
+   while(QDBusConnection::sessionBus().isConnected())
    {
      // kapp registered already, but with the PID in the name.
      // We need to re-register without it, to detect already-running kbuildsycoca instances.
@@ -914,7 +908,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      // Notify ALL applications that have a ksycoca object, using a signal
      QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.KSycoca", "notifyDatabaseChanged" );
      signal << *g_changeList;
-     QDBusConnection::sessionBus().send(signal);
+
+     if (QDBusConnection::sessionBus().isConnected())
+       QDBusConnection::sessionBus().send(signal);
    }
 
 #ifdef KBUILDSYCOCA_GUI
