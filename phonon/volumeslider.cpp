@@ -38,6 +38,8 @@ VolumeSlider::VolumeSlider(QWidget *parent)
 
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
     connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
+
+    setFocusProxy(&d->slider);
 }
 
 VolumeSlider::VolumeSlider(AudioOutput *output, QWidget *parent)
@@ -59,6 +61,8 @@ VolumeSlider::VolumeSlider(AudioOutput *output, QWidget *parent)
         connect(output, SIGNAL(volumeChanged(qreal)), SLOT(_k_volumeChanged(qreal)));
         connect(output, SIGNAL(mutedChanged(bool)), SLOT(_k_mutedChanged(bool)));
     }
+
+    setFocusProxy(&d->slider);
 }
 
 VolumeSlider::~VolumeSlider()
