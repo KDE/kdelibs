@@ -60,8 +60,8 @@
 #include <kglobalsettings.h>
 #include <kdebug.h>
 
-static const char * details = I18N_NOOP("Settings");
-static const char * about = I18N_NOOP("About");
+static const char *details = I18N_NOOP("Settings");
+static const char *about = I18N_NOOP("About");
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
@@ -885,7 +885,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         opt.rect = aboutButtonRect(opt);
 
         QStyleOptionButton opt2(opt);
-        opt2.text = details;
+        opt2.text = i18n(details);
         opt2.rect = option.rect;
         opt2.rect = settingsButtonRect(opt2);
 
@@ -1097,7 +1097,7 @@ QRect KPluginSelector::Private::PluginDelegate::settingsButtonRect(const QStyleO
     const QFontMetrics &fontMetrics = option.fontMetrics;
 
     QStyleOptionButton aboutOption(option);
-    aboutOption.text = about;
+    aboutOption.text = i18n(about);
 
     retRect.setHeight(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).height());
     retRect.setWidth(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).width());
@@ -1332,7 +1332,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             }
 
             QStyleOptionButton opt;
-            opt.text = about;
+            opt.text = i18n(about);
             opt.fontMetrics = listView->viewOptions().fontMetrics;
             opt.direction = listView->layoutDirection();
             if (KGlobalSettings::showIconsOnPushButtons())
@@ -1343,7 +1343,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             opt.rect = aboutButtonRect(opt);
 
             QStyleOptionButton opt2(opt);
-            opt2.text = details;
+            opt2.text = i18n(details);
             opt2.rect = listView->visualRect(currentIndex);
             opt2.rect = settingsButtonRect(opt2);
 
@@ -1393,7 +1393,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             }
 
             QStyleOptionButton opt;
-            opt.text = about;
+            opt.text = i18n(about);
             opt.fontMetrics = listView->viewOptions().fontMetrics;
             opt.direction = listView->layoutDirection();
             if (KGlobalSettings::showIconsOnPushButtons())
@@ -1404,7 +1404,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             opt.rect = aboutButtonRect(opt);
 
             QStyleOptionButton opt2(opt);
-            opt2.text = details;
+            opt2.text = i18n(details);
             opt2.rect = listView->visualRect(currentIndex);
             opt2.rect = settingsButtonRect(opt2);
 
@@ -1520,7 +1520,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
     // Option button for the about button
     QStyleOptionButton opt;
-    opt.text = about;
+    opt.text = i18n(about);
     if (KGlobalSettings::showIconsOnPushButtons())
     {
         opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
@@ -1532,7 +1532,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
     // Option button for the settings button
     QStyleOptionButton opt2(opt);
-    opt2.text = details;
+    opt2.text = i18n(details);
     opt2.rect = option.rect;
     opt2.rect = settingsButtonRect(opt2);
 
@@ -1648,30 +1648,37 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             QWidget *aboutWidget = new QWidget(aboutDialog);
             QVBoxLayout *layout = new QVBoxLayout;
-            layout->setSpacing(0);
             aboutWidget->setLayout(layout);
+            layout->insertStretch(-1);
+
+            QGridLayout *gridLayout = new QGridLayout;
+            gridLayout->setSpacing(20);
+            gridLayout->setColumnStretch(1, 1);
+            layout->addLayout(gridLayout);
 
             if (!pluginInfo.comment().isEmpty())
             {
-                QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo.comment()), aboutWidget);
-                layout->addWidget(description);
-                layout->addSpacing(20);
+                QLabel *description = new QLabel(i18n("Description:"), aboutWidget);
+                QLabel *description2 = new QLabel(pluginInfo.comment(), aboutWidget);
+                description2->setWordWrap(true);
+                description2->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding, QSizePolicy::Label));
+                gridLayout->addWidget(description, 0, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(description2, 0, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             if (!pluginInfo.author().isEmpty())
             {
-                QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo.author()), aboutWidget);
-                layout->addWidget(author);
-                layout->addSpacing(20);
+                QLabel *author = new QLabel(i18n("Author:"), aboutWidget);
+                QLabel *author2 = new QLabel(pluginInfo.author(), aboutWidget);
+                gridLayout->addWidget(author, 1, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(author2, 1, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             if (!pluginInfo.email().isEmpty())
             {
                 QLabel *authorEmail = new QLabel(i18n("E-Mail:"), aboutWidget);
-                KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), '\t' + pluginInfo.email());
+                KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), pluginInfo.email());
 
-                sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-                sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
                 sendEmail->setGlowEnabled(false);
                 sendEmail->setUnderline(false);
                 sendEmail->setFloatEnabled(true);
@@ -1681,18 +1688,15 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                 QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeMailer(QString)));
 
-                layout->addWidget(authorEmail);
-                layout->addWidget(sendEmail);
-                layout->addSpacing(20);
+                gridLayout->addWidget(authorEmail, 2, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(sendEmail, 2, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             if (!pluginInfo.website().isEmpty())
             {
                 QLabel *website = new QLabel(i18n("Website:"), aboutWidget);
-                KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), '\t' + pluginInfo.website());
+                KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), pluginInfo.website());
 
-                visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-                visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
                 visitWebsite->setGlowEnabled(false);
                 visitWebsite->setUnderline(false);
                 visitWebsite->setFloatEnabled(true);
@@ -1702,30 +1706,32 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                 QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeBrowser(QString)));
 
-                layout->addWidget(website);
-                layout->addWidget(visitWebsite);
-                layout->addSpacing(20);
+                gridLayout->addWidget(website, 3, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(visitWebsite, 3, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             if (!pluginInfo.version().isEmpty())
             {
-                QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo.version()), aboutWidget);
+                QLabel *version = new QLabel(i18n("Version:"), aboutWidget);
+                QLabel *version2 = new QLabel(pluginInfo.version(), aboutWidget);
 
-                layout->addWidget(version);
-                layout->addSpacing(20);
+                gridLayout->addWidget(version, 4, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(version2, 4, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             if (!pluginInfo.license().isEmpty())
             {
-                QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo.license()), aboutWidget);
+                QLabel *license = new QLabel(i18n("License:"), aboutWidget);
+                QLabel *license2 = new QLabel(pluginInfo.license(), aboutWidget);
 
-                layout->addWidget(license);
-                layout->addSpacing(20);
+                gridLayout->addWidget(license, 5, 0, Qt::AlignLeft | Qt::AlignTop);
+                gridLayout->addWidget(license2, 5, 1, Qt::AlignLeft | Qt::AlignTop);
             }
 
             layout->insertStretch(-1);
 
             aboutDialog->setMainWidget(aboutWidget);
+            aboutDialog->setMinimumSize(400, 250);
 
             aboutDialogs.insert(index.row(), aboutDialog);
         }
