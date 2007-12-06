@@ -237,36 +237,39 @@ void KBookmarkManager::parse() const
     d->m_doc = QDomDocument("xbel");
     d->m_doc.setContent( &file );
 
-    QDomElement docElem = d->m_doc.documentElement();
-    if ( docElem.isNull() )
-        kWarning() << "KBookmarkManager::parse : can't parse " << d->m_bookmarksFile;
-    else
+    if ( d->m_doc.documentElement().isNull() )
     {
-        QString mainTag = docElem.tagName();
-        if ( mainTag != "xbel" )
-            kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag;
-
-        if(d->m_dbusObjectName.isNull())
-        {
-            d->m_dbusObjectName = docElem.attribute("dbusName");
-        }
-        else if(docElem.attribute("dbusName") != d->m_dbusObjectName)
-        {
-            docElem.setAttribute("dbusName", d->m_dbusObjectName);
-            save();
-        }
-
-        QDomNode n = d->m_doc.documentElement().previousSibling();
-        if ( n.isProcessingInstruction() )
-        {
-            QDomProcessingInstruction pi = n.toProcessingInstruction();
-            pi.parentNode().removeChild(pi);
-        }
-
-        QDomProcessingInstruction pi;
-        pi = d->m_doc.createProcessingInstruction( "xml", PI_DATA );
-        d->m_doc.insertBefore( pi, docElem );
+        kWarning() << "KBookmarkManager::parse : main tag is missing, creating default " << d->m_bookmarksFile;
+        QDomElement element = d->m_doc.createElement("xbel");
+        d->m_doc.appendChild(element);
     }
+
+    QDomElement docElem = d->m_doc.documentElement();
+
+    QString mainTag = docElem.tagName();
+    if ( mainTag != "xbel" )
+        kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag;
+
+    if(d->m_dbusObjectName.isNull())
+    {
+        d->m_dbusObjectName = docElem.attribute("dbusName");
+    }
+    else if(docElem.attribute("dbusName") != d->m_dbusObjectName)
+    {
+        docElem.setAttribute("dbusName", d->m_dbusObjectName);
+        save();
+    }
+
+    QDomNode n = d->m_doc.documentElement().previousSibling();
+    if ( n.isProcessingInstruction() )
+    {
+        QDomProcessingInstruction pi = n.toProcessingInstruction();
+        pi.parentNode().removeChild(pi);
+    }
+
+    QDomProcessingInstruction pi;
+    pi = d->m_doc.createProcessingInstruction( "xml", PI_DATA );
+    d->m_doc.insertBefore( pi, docElem );
 
     file.close();
     if ( !s_bk->map )
