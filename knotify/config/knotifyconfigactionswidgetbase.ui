@@ -200,6 +200,9 @@
         <property name="text" >
          <string>Speak custom text</string>
         </property>
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
        </item>
       </widget>
      </item>

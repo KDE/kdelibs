@@ -47,7 +47,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	connect(m_ui.Logfile_select,SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
 	connect(m_ui.Sound_play,SIGNAL(clicked()), this, SLOT(slotPlay()));
 	connect(m_ui.KTTS_combo,SIGNAL(currentIndexChanged(int)), this, SLOT(slotKTTSComboChanged()));
-	
+	m_ui.KTTS_combo->setEnabled(false);
 	if(!KNotifyConfigElement::have_kttsd())
 	{
 		m_ui.KTTS_check->setVisible(false);
