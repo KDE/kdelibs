@@ -3169,13 +3169,13 @@ void NETWinInfo::setWindowType(WindowType type) {
 
     case DropdownMenu:
 	data[0] = net_wm_window_type_dropdown_menu;
-	data[1] = None;
+	data[1] = net_wm_window_type_menu; // fallback (tearoff seems to be the best)
 	len = 1;
 	break;
 
     case PopupMenu:
 	data[0] = net_wm_window_type_popup_menu;
-	data[1] = None;
+	data[1] = net_wm_window_type_menu; // fallback (tearoff seems to be the best)
 	len = 1;
 	break;
 
@@ -3187,7 +3187,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 
     case Notification:
 	data[0] = net_wm_window_type_notification;
-	data[1] = None;
+	data[1] = net_wm_window_type_utility; // fallback (utility seems to be the best)
 	len = 1;
 	break;
 
