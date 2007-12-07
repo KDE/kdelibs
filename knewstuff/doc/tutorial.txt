@@ -100,7 +100,7 @@ certain aspects of its usage of KNewStuff2.
 
 # install(FILES app.knsrc DESTINATION ${CONFIG_INSTALL_DIR})
 
-The *.knsrc files describe where application is downloaded to, if/how it is uncompressed,
+The *.knsrc files describe where application data is downloaded to, if/how it is uncompressed,
 and further details such as data security policies.
 
 # # Minimum contents
@@ -135,6 +135,11 @@ configuration of the desktop wallpaper, for instance.
 The download dialog can be opened in modal or non-modal mode. Example:
 
 # KNS::Entry::List entries = KNS::Engine::download()
+
+Please note that entry pointers in the returned list are allocated, and you should delete them
+with something like: 
+
+# qDeleteAll(entries);
 
 Or, in detail:
 

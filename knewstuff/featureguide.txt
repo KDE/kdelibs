@@ -62,8 +62,8 @@ Still security and privilege handling does play an important role.
   of files or a whole directory, and invoking a post-installation
   handler to notify the application or run an external script.
 
-* Deinstallation
-  Installed items can be deinstalled at any time. For this reason,
+* Uninstallation
+  Installed items can be uninstalled at any time. For this reason,
   the metadata is kept for each installed entry in an entry registry.
 
 * Translation
@@ -77,7 +77,7 @@ Still security and privilege handling does play an important role.
   be queried as a virtual feed.
 
 * Versioning
-  Subscription and (de)installation automatically lead to a simple
+  Subscription and (un)installation automatically lead to a simple
   versioning schema. This option is not shown by default unless a
   particular application wants to make use of it.
 
