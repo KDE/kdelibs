@@ -73,8 +73,8 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginDelegate = new PluginDelegate(this);
 
     pluginDelegate->setMinimumItemWidth(200);
-    pluginDelegate->setLeftMargin(20);
-    pluginDelegate->setRightMargin(20);
+    pluginDelegate->setLeftMargin(KDialog::marginHint());
+    pluginDelegate->setRightMargin(KDialog::marginHint());
     pluginDelegate->setSeparatorPixels(8);
 
     QFont title(parent->font());
@@ -1597,7 +1597,12 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
 
-            configDialog->setMainWidget(mainWidget);
+            QWidget *showWidget = new QWidget(configDialog);
+            QVBoxLayout *layout = new QVBoxLayout;
+            showWidget->setLayout(layout);
+            layout->addWidget(mainWidget);
+            layout->insertSpacing(-1, KDialog::marginHint());
+            configDialog->setMainWidget(showWidget);
         }
         else
         {
@@ -1652,7 +1657,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             layout->insertStretch(-1);
 
             QGridLayout *gridLayout = new QGridLayout;
-            gridLayout->setSpacing(20);
+            gridLayout->setSpacing(KDialog::spacingHint());
             gridLayout->setColumnStretch(1, 1);
             layout->addLayout(gridLayout);
 
