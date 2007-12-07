@@ -115,6 +115,22 @@ int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a,
     const QChar* begSeqB = currB;
 
     while (!currA->isNull() && !currB->isNull()) {
+        if (currA->unicode() == QChar::ObjectReplacementCharacter) {
+            return 1;
+        }
+
+        if (currB->unicode() == QChar::ObjectReplacementCharacter) {
+            return -1;
+        }
+
+        if (currA->unicode() == QChar::ReplacementCharacter) {
+            return 1;
+        }
+
+        if (currB->unicode() == QChar::ReplacementCharacter) {
+            return -1;
+        }
+
         // find sequence of characters ending at the first non-character
         while (!currA->isNull() && !currA->isDigit()) {
             ++currA;
