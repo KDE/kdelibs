@@ -382,6 +382,8 @@ KPageWidgetItem* KPageWidgetModel::addPage( QWidget *widget, const QString &name
 
 void KPageWidgetModel::addPage( KPageWidgetItem *item )
 {
+  emit layoutAboutToBeChanged();
+
     Q_D(KPageWidgetModel);
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -408,6 +410,8 @@ void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *ite
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
+
+  emit layoutAboutToBeChanged();
 
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -436,6 +440,8 @@ void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *ite
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
+
+  emit layoutAboutToBeChanged();
 
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -475,8 +481,6 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   delete pageItem;
 
   endRemoveRows();
-
-  emit layoutChanged();
 }
 
 KPageWidgetItem *KPageWidgetModel::item(const QModelIndex &index) const
