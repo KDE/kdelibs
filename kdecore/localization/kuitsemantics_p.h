@@ -55,7 +55,7 @@ class KuitSemantics
      * @param ctxt context of the text
      *
      * @see More information on semantic markup in UI messages in the
-     * <a href="http://techbase.kde.org/Development/Tutorials/Localization/???">article on Techbase</a>.
+     * <a href="http://techbase.kde.org/Development/Tutorials/Localization/i18n_Semantics">article on Techbase</a>.
      */
     QString format (const QString &text, const QString &ctxt) const;
 

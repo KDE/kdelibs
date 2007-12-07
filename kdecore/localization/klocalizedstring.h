@@ -236,7 +236,7 @@ class KLocalizedStringPrivate;
  * \section other_ref Further References
  *
  * <a href="http://techbase.kde.org/">KDE Techbase</a> contains a
- * <a href="http://techbase.kde.org/Development/Tutorials/Localization/i18n">
+ * <a href="http://techbase.kde.org/Development/Tutorials/Localization">
  * series of tutorials</a> on preparing the code for localization (and on
  * internationalization process in general), where the intended patterns of
  * usage of i18n API are covered in great detail.
