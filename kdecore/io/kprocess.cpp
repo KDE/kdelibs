@@ -213,6 +213,7 @@ void KProcess::setProgram(const QStringList &argv)
 {
     Q_D(KProcess);
 
+    Q_ASSERT( !argv.isEmpty() );
     d->args = argv;
     d->prog = d->args.takeFirst();
 }

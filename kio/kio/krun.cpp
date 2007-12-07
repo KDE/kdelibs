@@ -634,6 +634,10 @@ static bool runTempService( const KService& _service, const KUrl::List& _urls, Q
   {
       args = KRun::processDesktopExec(_service, _urls, tempFiles, suggestedFileName );
   }
+  if (args.isEmpty()) {
+      KMessageBox::sorry(window, i18n("Error processing Exec field in %1", _service.entryPath()) );
+      return false;
+  }
   kDebug(7010) << "runTempService: KProcess args=" << args;
 
   KProcess * proc = new KProcess;
