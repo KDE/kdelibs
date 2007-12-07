@@ -1,6 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 2007 Laurent Montel (montel@kde.org)
+    Copyright (C) 2007 Christian Ehrlicher (ch.ehrlicher@gmx.de)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,15 +21,17 @@
 
 #include "kwindowsystem.h"
 
-#include <kiconloader.h>
-#include <klocale.h>
-#include <kuniqueapplication.h>
-#include <kxerrorhandler.h>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QIcon>
 #include <QtGui/QBitmap>
-#include <QDesktopWidget>
-#include <QtGui/QDialog>
-#include <QtDBus/QtDBus>
-#include <kdebug.h>
+#include <QtGui/QPixmap>
+
+#include "kdebug.h"
+#include "klocalizedstring.h"
+
+#include <windows.h>
+
+static QDesktopWidget s_deskWidget;
 
 int KWindowSystem::currentDesktop()
 {
@@ -66,46 +69,102 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
 
 WId KWindowSystem::activeWindow()
 {
-    //return something
-    kDebug() << "WId KWindowSystem::activeWindow()   isn't yet implemented!";
-    return 0;
+    return GetActiveWindow();
 }
 
-void KWindowSystem::activateWindow( WId win, long time )
+void KWindowSystem::activateWindow( WId win, long )
 {
-    //TODO
-    kDebug() << "KWindowSystem::activateWindow( WId win, long time )isn't yet implemented!";
+    SetActiveWindow( win );
 }
 
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
-    //TODO
-    kDebug() << "KWindowSystem::forceActiveWindow( WId win, long time ) isn't yet implemented!";
+    SetActiveWindow( win );
+    SetForegroundWindow( win );
 }
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-     //TODO
-     kDebug() << "KWindowSystem::demandAttention( WId win, bool set ) isn't yet implemented!";
+    FLASHWINFO fi;
+    fi.cbSize = sizeof( FLASHWINFO );
+    fi.hwnd = win;
+    fi.dwFlags = set ? FLASHW_ALL : FLASHW_STOP;
+    fi.uCount = 5;
+    fi.dwTimeout = 0;
+
+    FlashWindowEx( &fi );
+}
+
+static HBITMAP QPixmapMask2HBitmap(const QPixmap &pix)
+{
+    QBitmap bm = pix.mask();
+    if( bm.isNull() ) {
+        bm = QBitmap( pix.size() );
+        bm.fill( Qt::color1 );
+    }
+    QImage im = bm.toImage().convertToFormat( QImage::Format_Mono );
+    im.invertPixels();                  // funny blank'n'white games on windows
+    int w = im.width();
+    int h = im.height();
+    int bpl = (( w + 15 ) / 16 ) * 2;   // bpl, 16 bit alignment
+    QByteArray bits( bpl * h, '\0' );
+    for (int y=0; y < h; y++)
+        memcpy( bits.data() + y * bpl, im.scanLine( y ), bpl );
+    return CreateBitmap( w, h, 1, 1, bits );
+}
+
+static HICON QPixmap2HIcon(const QPixmap &pix)
+{
+    if ( pix.isNull() )
+        return 0;
+
+    ICONINFO ii;
+    ii.fIcon    = true;
+    ii.hbmMask  = QPixmapMask2HBitmap( pix );
+    ii.hbmColor = pix.toWinHBITMAP( QPixmap::PremultipliedAlpha );
+    ii.xHotspot = 0;
+    ii.yHotspot = 0;
+    HICON result = CreateIconIndirect( &ii );
+
+    DeleteObject( ii.hbmMask );
+    DeleteObject( ii.hbmColor );
+
+    return result;
+}
+
+static QPixmap HIcon2QPixmap( HICON hIcon )
+{
+    ICONINFO ii;
+    if( GetIconInfo( hIcon, &ii ) == NULL )
+        return QPixmap();
+
+    QPixmap pix  = QPixmap::fromWinHBITMAP( ii.hbmColor );
+    pix.setMask( QPixmap::fromWinHBITMAP( ii.hbmMask ) );
+
+    return pix;
 }
 
 QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
 {
-    kDebug() << "QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale ) isn't yet implemented!";
-    return QPixmap();
+    UINT size = ICON_BIG;
+    if( width < 24 || height < 24 )
+        size = ICON_SMALL;
+    HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
+    QPixmap pm = HIcon2QPixmap( hIcon );
+    if( scale )
+        pm = pm.scaled( width, height );
+    return pm;
 }
 
-
-QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int flags )
+QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int )
 {
-    kDebug() << "QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int flags ) isn't yet implemented!";
-    return QPixmap();
+    return icon( win, width, height, scale );
 }
 
 void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 {
-    //TODO
-    kDebug() << "KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon ) isn't yet implemented!";
+    SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)QPixmap2HIcon(icon) );
+    SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)QPixmap2HIcon(miniIcon) );
 }
 
 
@@ -123,26 +182,22 @@ void KWindowSystem::clearState( WId win, unsigned long state )
 
 void KWindowSystem::minimizeWindow( WId win, bool animation)
 {
-     //TODO
-     kDebug() << "KWindowSystem::minimizeWindow( WId win, bool animation) isn't yet implemented!";
+    ShowWindow( win, SW_MINIMIZE );
 }
 
 void KWindowSystem::unminimizeWindow( WId win, bool animation )
 {
-     //TODO
-     kDebug() << "KWindowSystem::unminimizeWindow( WId win, bool animation ) isn't yet implemented!";
+    ShowWindow( win, SW_RESTORE );
 }
 
 void KWindowSystem::raiseWindow( WId win )
 {
-     //TODO
-     kDebug() << "KWindowSystem::raiseWindow( WId win ) isn't yet implemented!";
+    SetWindowPos( win, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
 }
 
 void KWindowSystem::lowerWindow( WId win )
 {
-     //TODO
-     kDebug() << "KWindowSystem::lowerWindow( WId win ) isn't yet implemented!";
+    SetWindowPos( win, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
 }
 
 bool KWindowSystem::compositingActive()
@@ -152,9 +207,7 @@ bool KWindowSystem::compositingActive()
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    //TODO 
-    kDebug() << "QRect KWindowSystem::workArea( int desktop ) isn't yet implemented!";
-    return QRect();
+    return s_deskWidget.availableGeometry( desktop );
 }
 
 QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
