@@ -6953,9 +6953,9 @@ KEncodingDetector *KHTMLPart::createDecoder()
             d->m_haveEncoding ? KEncodingDetector::UserChosenEncoding : KEncodingDetector::EncodingFromHTTPHeader);
     else {
         // Inherit the default encoding from the parent frame if there is one.
-        const char *defaultEncoding = (parentPart() && parentPart()->d->m_decoder)
-            ? parentPart()->d->m_decoder->encoding() : settings()->encoding().toLatin1().constData();
-        dec->setEncoding(defaultEncoding, KEncodingDetector::DefaultEncoding);
+        QByteArray defaultEncoding = (parentPart() && parentPart()->d->m_decoder)
+            ? QByteArray( parentPart()->d->m_decoder->encoding() ) : settings()->encoding().toLatin1();
+        dec->setEncoding(defaultEncoding.constData(), KEncodingDetector::DefaultEncoding);
     }
 #ifdef APPLE_CHANGES
     if (d->m_doc)
