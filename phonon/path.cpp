@@ -125,7 +125,7 @@ bool Path::insertEffect(Effect *newEffect, Effect *insertBefore)
         << QObjectPair(newEffectBackend, rightNode);
 
     if (d->executeTransaction(disconnections, connections)) {
-        newEffect->k_ptr->addDestructionHandler(d);
+        newEffect->k_ptr->addDestructionHandler(d.data());
         d->effects.insert(insertIndex, newEffect);
         return true;
     } else {
@@ -181,19 +181,19 @@ bool Path::reconnect(MediaNode *source, MediaNode *sink)
         sink->k_ptr->addInputPath(*this);
         if (d->sinkNode) {
             d->sinkNode->k_ptr->removeInputPath(*this);
-            d->sinkNode->k_ptr->removeDestructionHandler(d);
+            d->sinkNode->k_ptr->removeDestructionHandler(d.data());
         }
         d->sinkNode = sink;
-        d->sinkNode->k_ptr->addDestructionHandler(d);
+        d->sinkNode->k_ptr->addDestructionHandler(d.data());
 
         //everything went well: let's update the path and the sink node
         source->k_ptr->addOutputPath(*this);
         if (d->sourceNode) {
             d->sourceNode->k_ptr->removeOutputPath(*this);
-            d->sourceNode->k_ptr->removeDestructionHandler(d);
+            d->sourceNode->k_ptr->removeDestructionHandler(d.data());
         }
         d->sourceNode = source;
-        d->sourceNode->k_ptr->addDestructionHandler(d);
+        d->sourceNode->k_ptr->addDestructionHandler(d.data());
         return true;
     } else {
         return false;
@@ -225,22 +225,22 @@ bool Path::disconnect()
     }
 
     if (d->executeTransaction(disco, QList<QObjectPair>())) {
-        //everything went well, let's remove the reference 
+        //everything went well, let's remove the reference
         //to the paths from the source and sink
         if (d->sourceNode) {
             d->sourceNode->k_ptr->removeOutputPath(*this);
-            d->sourceNode->k_ptr->removeDestructionHandler(d);
+            d->sourceNode->k_ptr->removeDestructionHandler(d.data());
         }
         d->sourceNode = 0;
 
         foreach(Effect *e, d->effects) {
-            e->k_ptr->removeDestructionHandler(d);
+            e->k_ptr->removeDestructionHandler(d.data());
         }
         d->effects.clear();
 
         if (d->sinkNode) {
             d->sinkNode->k_ptr->removeInputPath(*this);
-            d->sinkNode->k_ptr->removeDestructionHandler(d);
+            d->sinkNode->k_ptr->removeDestructionHandler(d.data());
         }
         d->sinkNode = 0;
         return true;
@@ -265,21 +265,21 @@ bool PathPrivate::executeTransaction( const QList<QObjectPair> &disconnections, 
         return false;
 
     ConnectionTransaction transaction(backend, nodesForTransaction);
-    if (!transaction) 
+    if (!transaction)
         return false;
 
     QList<QObjectPair>::const_iterator it = disconnections.begin();
     for(;it != disconnections.end();++it) {
         const QObjectPair &pair = *it;
         if (!backend->disconnectNodes(pair.first, pair.second)) {
-            
+
             //Error: a disconnection failed
             QList<QObjectPair>::const_iterator it2 = disconnections.begin();
             for(; it2 != it; ++it2) {
                 const QObjectPair &pair = *it2;
                 bool success = backend->connectNodes(pair.first, pair.second);
                 Q_ASSERT(success); //a failure here means it is impossible to reestablish the connection
-                Q_UNUSED(success);                 
+                Q_UNUSED(success);
             }
             return false;
         }
@@ -294,14 +294,14 @@ bool PathPrivate::executeTransaction( const QList<QObjectPair> &disconnections, 
                 const QObjectPair &pair = *it2;
                 bool success = backend->disconnectNodes(pair.first, pair.second);
                 Q_ASSERT(success); //a failure here means it is impossible to reestablish the connection
-                Q_UNUSED(success);                 
+                Q_UNUSED(success);
             }
 
             //and now let's reconnect the nodes that were disconnected: rollback
             foreach(const QObjectPair &pair, disconnections) {
                 bool success = backend->connectNodes(pair.first, pair.second);
                 Q_ASSERT(success); //a failure here means it is impossible to reestablish the connection
-                Q_UNUSED(success);                 
+                Q_UNUSED(success);
             }
 
             return false;
