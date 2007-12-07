@@ -7253,14 +7253,14 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
-        d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed") );
+        d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window-suppressed") );
 
 		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 
         connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedUrl()), SLOT(suppressedPopupMenu()));
         if (d->m_settings->jsPopupBlockerPassivePopup()) {
             QPixmap px;
-            px = MainBarIcon( "window_suppressed" );
+            px = MainBarIcon( "window-suppressed" );
             KPassivePopup::message(i18n("Popup Window Blocked"),i18n("This page has attempted to open a popup window but was blocked.\nYou can click on this icon in the status bar to control this behavior\nor to open the popup."),px,d->m_statusBarPopupLabel);
         }
     } else if ( !enable && d->m_statusBarPopupLabel ) {
