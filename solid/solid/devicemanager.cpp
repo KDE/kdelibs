@@ -197,7 +197,7 @@ void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
 Solid::DevicePrivate *Solid::DeviceManagerPrivate::findRegisteredDevice(const QString &udi)
 {
     if (udi.isEmpty()) {
-        return m_nullDevice;
+        return m_nullDevice.data();
     } else if (m_devicesMap.contains(udi)) {
         return m_devicesMap[udi];
     } else {

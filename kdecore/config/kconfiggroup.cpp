@@ -626,7 +626,7 @@ void KConfigGroup::changeGroup( const char *group )
 
     // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
     // ### temporary solution until QExplicitlySharedDataPointer has detach()
-    d = new KConfigGroupPrivate(d, config()->isGroupImmutable(group), group);
+    d = new KConfigGroupPrivate(d.data(), config()->isGroupImmutable(group), group);
 }
 
 QString KConfigGroup::name() const
