@@ -169,6 +169,7 @@ void KDXSButton::setProvider(const KNS::Provider *provider)
 	// FIXME: handle switch-version and collab menus as well
 	if(provider->webService().isValid())
 	{
+		// the web service url is valid, so enable all the actions
 		action_collabrating->setEnabled(true);
 		action_collabcomment->setEnabled(true);
 		action_collabtranslation->setEnabled(true);
@@ -477,14 +478,14 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_install)
 	{
-		m_engine->downloadPayload(m_entry);
-
 		connect(m_engine,
 			SIGNAL(signalPayloadLoaded(KUrl)),
 			SLOT(slotPayloadLoaded(KUrl)));
 		connect(m_engine,
 			SIGNAL(signalPayloadFailed()),
 			SLOT(slotPayloadFailed()));
+
+		m_engine->downloadPayload(m_entry);
 	}
 	if(action == action_collabcomment)
 	{
