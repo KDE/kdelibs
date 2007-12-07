@@ -19,7 +19,6 @@ class QStringList;
 class QVariant;
 #ifndef QT_NO_DBUS
 #include <QtDBus/QtDBus>
-#endif
 
 /*
  * Adaptor class for interface org.kde.Phonon.AudioOutput
@@ -57,5 +56,6 @@ public Q_SLOTS: // METHODS
     QString name();
 Q_SIGNALS: // SIGNALS
 };
+#endif
 
 #endif
