@@ -92,9 +92,6 @@ protected:
     virtual QStyleOptionViewItem viewOptions() const;
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void mousePressEvent(QMouseEvent *event);
-
-private:
-    QStyleOptionViewItem m_viewOptions;
 };
 
 KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
@@ -109,13 +106,7 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setHorizontalScrollMode(QListView::ScrollPerPixel);
 
-    m_viewOptions = QListView::viewOptions();
-    m_viewOptions.showDecorationSelected = true;
-    m_viewOptions.decorationPosition = QStyleOptionViewItem::Left;
-    m_viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
-    m_viewOptions.decorationSize = QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
-
-    QFontMetrics metrics(m_viewOptions.font);
+    QFontMetrics metrics(viewOptions().font);
     const int fontHeight = metrics.height();
     setGridSize(QSize(fontHeight * 10, fontHeight + 4));
 }
@@ -126,7 +117,13 @@ KDirOperatorIconView::~KDirOperatorIconView()
 
 QStyleOptionViewItem KDirOperatorIconView::viewOptions() const
 {
-    return m_viewOptions;
+    QStyleOptionViewItem viewOptions = QListView::viewOptions();
+    viewOptions.showDecorationSelected = true;
+    viewOptions.decorationPosition = QStyleOptionViewItem::Left;
+    viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
+    viewOptions.decorationSize = QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
+
+    return viewOptions;
 }
 
 void KDirOperatorIconView::dragEnterEvent(QDragEnterEvent* event)
