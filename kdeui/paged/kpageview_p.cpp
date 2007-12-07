@@ -384,12 +384,20 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
   int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
   int wt = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).width() + 10;
   int wp = pixmap.width() + 10;
+  int hp = pixmap.height();
+
+  if ( hp == 0 ) {
+    /**
+     * No pixmap loaded yet, we'll use the default icon size in this case.
+     */
+    hp = dim;
+  }
 
   int width, height;
   if ( text.isEmpty() )
-    height = pixmap.height();
+    height = hp;
   else
-    height = pixmap.height() + ht + 10;
+    height = hp + ht + 10;
 
   width = qMax( wt, wp );
 
