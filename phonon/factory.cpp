@@ -34,8 +34,10 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QList>
 #include <QtCore/QPluginLoader>
-#include <QtDBus/QtDBus>
 #include <QtGui/QIcon>
+#ifndef QT_NO_DBUS
+#include <QtDBus/QtDBus>
+#endif
 
 namespace Phonon
 {
