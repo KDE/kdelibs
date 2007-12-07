@@ -213,8 +213,9 @@ uint PHONON_EXPORT qHash(const Phonon::EffectParameter &param);
 
 } // namespace Phonon
 
-// will code outside of the Phonon namespace be able to make use of the above qHash function?
-//inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); }
+//this ensures that code outside Phonon can use the hash function
+//it also a workaround for some compilers
+inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::EffectParameter::Hints)
 
