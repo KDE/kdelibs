@@ -54,6 +54,7 @@ public:
     void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList );
     void setProviders( QMap<Entry*, const Provider*> providers );
     void setSorting( int sortType );
+    void setFeed( const Feed* );
     void updateItem( Entry *entry );
 
 private:
@@ -63,6 +64,7 @@ private:
 
     DownloadDialog * m_newStuffDialog;
     QMap<const Feed*, Entry::List> m_entries;
+    const Feed* m_currentFeed;
     QMap<Entry*, const Provider*> m_providers;
     QWidget *m_root;
     int m_sorting;
@@ -140,7 +142,7 @@ private Q_SLOTS:
     void slotSortingSelected( int sortType );
     // DXS
     void slotLoadProvidersListDXS();
-    void slotLoadProviderDXS(int index);
+    void slotLoadProviderDXS();
     void slotCategories(QList<Category*> categories);
     void slotEntries(QList<Entry*> entries);
     void slotFault();

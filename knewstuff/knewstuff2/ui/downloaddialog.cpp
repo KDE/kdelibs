@@ -93,7 +93,7 @@ static bool DownloadsSorter(const Entry* e1, const Entry* e2)
 
 ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
     : QScrollArea( _parent ),
-    m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
+    m_newStuffDialog( newStuffDialog ), m_currentFeed(0), m_root( 0 ), m_sorting( 0 )
 {
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
     setWidgetResizable(true);
@@ -127,6 +127,12 @@ void ItemsView::setSorting( int sortType )
     buildContents();
 }
 
+void ItemsView::setFeed( const Feed * feed)
+{
+    m_currentFeed = feed;
+    buildContents();
+}
+
 void ItemsView::updateItem( Entry *entry )
 {
     // FIXME: change this to call updateEntry once it is complete
@@ -154,8 +160,13 @@ void ItemsView::buildContents()
     QGridLayout* _layout = new QGridLayout(m_root);
     _layout->setVerticalSpacing (10);
 
-    // FIXME: this is only showing entries from the first feed
-    Entry::List entries = m_entries[m_entries.keys().first()];
+    // use the first feed if none has been set
+    if (m_currentFeed == NULL)
+    {
+        m_currentFeed = m_entries.keys()[0];
+    }
+    
+    Entry::List entries = m_entries[m_currentFeed];
     switch (m_sorting)
     {
         case 0:
@@ -434,7 +445,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
     typeCombo->setMinimumWidth( 150 );
     typeCombo->setEnabled( false );
-    connect( typeCombo, SIGNAL( activated(int) ), SLOT( slotLoadProviderDXS(int) ) );
+    connect( typeCombo, SIGNAL( activated(int) ), SLOT( slotLoadProviderDXS() ) );
 
     QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
     panelLayout->addWidget( label2, 0, 2 );
@@ -541,13 +552,23 @@ void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 
 ///////////////// DXS ////////////////////
 
-void DownloadDialog::slotLoadProviderDXS(int index)
+void DownloadDialog::slotLoadProviderDXS()
 {
     Q_UNUSED(index);
 
     QString category = typeCombo->currentText();
     QString categoryname = categorymap[category];
 
+    QList<const Feed*> feeds = entries.keys();
+
+    for (int i = 0; i < feeds.size(); ++i)
+    {
+        if (feeds[i]->name().representation() == category)
+        {
+            itemsView->setFeed(feeds[i]);
+            break;
+        }
+    }
     //m_dxs->call_entries(categoryname, QString());
     // FIXME: use d->engine
 }
@@ -574,7 +595,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 
     typeCombo->setEnabled(true);
 
-    slotLoadProviderDXS(0);
+    slotLoadProviderDXS();
 }
 
 void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
