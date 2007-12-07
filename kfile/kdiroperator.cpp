@@ -277,8 +277,9 @@ KDirOperator::Private::~Private()
     delete preview;
     preview = 0;
 
-    delete dirLister;
-    dirLister = 0;
+    delete dirModel;
+    dirModel = 0;
+    dirLister = 0; // deleted by KDirModel
     delete configGroup;
     configGroup = 0;
 
@@ -1349,7 +1350,7 @@ void KDirOperator::setDirLister(KDirLister *lister)
     delete d->proxyModel;
     d->proxyModel = 0;
 
-    delete d->dirLister;
+    //delete d->dirLister; // deleted by KDirModel already, which took ownership
     d->dirLister = lister;
 
     d->dirModel = new KDirModel();

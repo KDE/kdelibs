@@ -534,6 +534,7 @@ protected:
 
     /**
      * Sets a custom KDirLister to list directories.
+     * The KDirOperator takes ownership of the given KDirLister.
      */
     virtual void setDirLister(KDirLister *lister);
 
