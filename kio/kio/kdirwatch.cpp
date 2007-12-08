@@ -617,14 +617,13 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir)
-      qWarning("KDirWatch: %s is a directory. Use addDir!", qPrintable(path));
+      qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
     else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
     if (!e->isDir && ( watchModes != KDirWatch::WatchDirOnly)) {
-      QString msg ("KDirWatch: %s is a file. You can't use recursive or "
-                   "watchFiles options");
-      qWarning(msg.toAscii(), qPrintable(path));
+      qWarning() << "KDirWatch:" << path << "is a file. You can't use recursive or "
+                    "watchFiles options";
       watchModes = KDirWatch::WatchDirOnly;
     }
 
