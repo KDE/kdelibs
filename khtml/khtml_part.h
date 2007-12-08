@@ -1345,6 +1345,11 @@ private Q_SLOTS:
   void slotDecZoom();
   void slotIncZoomFast();
   void slotDecZoomFast();
+  
+  void slotIncFontSize();
+  void slotDecFontSize();
+  void slotIncFontSizeFast();
+  void slotDecFontSizeFast();
 
   void slotLoadImages();
   void slotWalletClosed();
@@ -1638,6 +1643,10 @@ private:
    * generic zoom out
    */
   void zoomOut(const int stepping[], int count);
+
+  void incFontSize(const int stepping[], int count);
+
+  void decFontSize(const int stepping[], int count);
 
   void emitCaretPositionChanged(const DOM::Node &node, long offset);
 

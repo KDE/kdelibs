@@ -340,7 +340,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "zoom-in", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
-      connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncZoomFast() ));
+      connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncFontSizeFast() ));
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<br /><br />"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
@@ -348,7 +348,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "zoom-out", i18n( "Shrink Font" ), this );
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
-      connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecZoomFast() ));
+      connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecFontSizeFast() ));
       d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<br /><br />"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
@@ -5642,7 +5642,11 @@ void KHTMLPart::zoomOut(const int stepping[], int count)
 
 void KHTMLPart::setZoomFactor (int percent)
 {
-  if (percent < minZoom) percent = minZoom;
+  // ### zooming under 100% is majorly botched, 
+  //     so disable that for now.
+  if (percent < 100) percent = 100;
+  // ### if (percent < minZoom) percent = minZoom;
+
   if (percent > maxZoom) percent = maxZoom;
   if (d->m_zoomFactor == percent) return;
   d->m_zoomFactor = percent;
@@ -5665,6 +5669,54 @@ void KHTMLPart::setZoomFactor (int percent)
       d->m_paDecZoomFactor->setEnabled( d->m_zoomFactor > minZoom );
       d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
   }
+}
+void KHTMLPart::slotIncFontSize()
+{
+  incFontSize(zoomSizes, zoomSizeCount);
+}
+
+void KHTMLPart::slotDecFontSize()
+{
+  decFontSize(zoomSizes, zoomSizeCount);
+}
+
+void KHTMLPart::slotIncFontSizeFast()
+{
+  incFontSize(fastZoomSizes, fastZoomSizeCount);
+}
+
+void KHTMLPart::slotDecFontSizeFast()
+{
+  decFontSize(fastZoomSizes, fastZoomSizeCount);
+}
+
+void KHTMLPart::incFontSize(const int stepping[], int count)
+{
+  int zoomFactor = d->m_fontScaleFactor;
+
+  if (zoomFactor < maxZoom) {
+    // find the entry nearest to the given zoomsizes
+    for (int i = 0; i < count; ++i)
+      if (stepping[i] > zoomFactor) {
+        zoomFactor = stepping[i];
+        break;
+      }
+    setFontScaleFactor(zoomFactor);
+  }
+}
+
+void KHTMLPart::decFontSize(const int stepping[], int count)
+{
+    int zoomFactor = d->m_fontScaleFactor;
+    if (zoomFactor > minZoom) {
+      // find the entry nearest to the given zoomsizes
+      for (int i = count-1; i >= 0; --i)
+        if (stepping[i] < zoomFactor) {
+          zoomFactor = stepping[i];
+          break;
+        }
+      setFontScaleFactor(zoomFactor);
+    }
 }
 
 void KHTMLPart::setFontScaleFactor(int percent)
@@ -5695,7 +5747,6 @@ int KHTMLPart::fontScaleFactor() const
 {
   return d->m_fontScaleFactor;
 }
-
 
 void KHTMLPart::slotZoomView( int delta )
 {

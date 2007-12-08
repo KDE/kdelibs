@@ -1083,9 +1083,9 @@ void KHTMLZoomFactorAction::slotTriggered(QAction* action)
     int idx = selectableActionGroup()->actions().indexOf(action);
 
     if (idx == 0)
-        m_part->setZoomFactor(100);
+        m_part->setFontScaleFactor(100);
     else
-        m_part->setZoomFactor(fastZoomSizes[fastZoomSizeCount/2 + (m_direction ? 1 : -1)*idx]);
+        m_part->setFontScaleFactor(fastZoomSizes[fastZoomSizeCount/2 + (m_direction ? 1 : -1)*idx]);
 }
 
 #include "khtml_ext.moc"
