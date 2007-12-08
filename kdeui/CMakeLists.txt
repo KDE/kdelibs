@@ -243,6 +243,9 @@ if (Q_WS_QWS)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
 endif (Q_WS_QWS)
 
+if(MINGW)
+add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
+endif(MINGW)
 
 set( kdeui_UI
    dialogs/kpassworddialog.ui
@@ -270,6 +273,10 @@ qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiS
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} )
+
+if(MINGW)
+   target_link_libraries(kdeui gdi32)
+endif(MINGW)
 
 if(X11_XTest_FOUND)
    target_link_libraries(kdeui ${X11_XTest_LIB})
