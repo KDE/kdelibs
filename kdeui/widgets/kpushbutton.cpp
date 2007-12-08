@@ -150,8 +150,6 @@ void KPushButton::init( const KGuiItem &item )
 
     setIcon( d->item.icon() );
 
-    setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
-
     setToolTip( item.toolTip() );
 
     setWhatsThis(item.whatsThis());
