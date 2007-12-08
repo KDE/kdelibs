@@ -55,6 +55,7 @@ public:
     void setProviders( QMap<Entry*, const Provider*> providers );
     void setSorting( int sortType );
     void setFeed( const Feed* );
+    void setSearchText( const QString & text );
     void updateItem( Entry *entry );
 
 private:
@@ -71,6 +72,7 @@ private:
     QMap<QPixmap*, QWidget*> m_pixmaps;
     DxsEngine *m_engine;
     QMap<Entry*, EntryView*> m_views;
+    QString m_searchText;
 };
 
 
@@ -140,6 +142,8 @@ private Q_SLOTS:
     void slotResetMessage();
     void slotNetworkTimeout();
     void slotSortingSelected( int sortType );
+    void slotSearchTextChanged();
+    void slotUpdateSearch();
     // DXS
     void slotLoadProvidersListDXS();
     void slotLoadProviderDXS();
@@ -165,6 +169,7 @@ private:
     QProgressIndicator * m_progress;
 
     // other classes
+    QTimer * searchTimer;
     QTimer * messageTimer;
     QTimer * networkTimer;
     KTitleWidget* titleWidget;

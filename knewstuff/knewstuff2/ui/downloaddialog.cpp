@@ -133,6 +133,12 @@ void ItemsView::setFeed( const Feed * feed)
     buildContents();
 }
 
+void ItemsView::setSearchText( const QString & text )
+{
+    m_searchText = text;
+    buildContents();
+}
+
 void ItemsView::updateItem( Entry *entry )
 {
     // FIXME: change this to call updateEntry once it is complete
@@ -182,37 +188,42 @@ void ItemsView::buildContents()
             qSort(entries.begin(), entries.end(), DownloadsSorter);
             break;
     }
+
     Entry::List::iterator it = entries.begin(), iEnd = entries.end();
-    for ( unsigned row = 0; it != iEnd; ++it, ++row )
+    for ( unsigned row = 0; it != iEnd; ++it)
     {
         Entry* entry = (*it);
 
-        EntryView *part = new EntryView(m_root);
-        part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
-        _layout->addWidget(part, row*2, 1, 2, 1);
-
-        KDXSButton *dxsbutton = new KDXSButton(m_root);
-        dxsbutton->setEntry(entry);
-        if(m_providers.contains(entry))
-            dxsbutton->setProvider(m_providers[entry]);
-        dxsbutton->setEngine(m_engine);
-
-        QString imageurl = entry->preview().representation();
-        if(!imageurl.isEmpty())
+        if (entry->name().representation().toLower().contains(m_searchText.toLower()))
         {
-            QLabel *f = new QLabel(this);
-            f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-            QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
-            f->setFixedSize(64, 64);
-            connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
-                    f, SLOT(setPixmap(const QPixmap&)));
-            _layout->addWidget(f, row*2, 0);
-        }
-        _layout->setRowStretch(row*2, 1);
-        _layout->addWidget(dxsbutton, row*2+1, 0);
+            EntryView *part = new EntryView(m_root);
+            part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
+            _layout->addWidget(part, row*2, 1, 2, 1);
 
-        part->setEntry(entry);
-        m_views.insert(entry, part);
+            KDXSButton *dxsbutton = new KDXSButton(m_root);
+            dxsbutton->setEntry(entry);
+            if(m_providers.contains(entry))
+                dxsbutton->setProvider(m_providers[entry]);
+            dxsbutton->setEngine(m_engine);
+
+            QString imageurl = entry->preview().representation();
+            if(!imageurl.isEmpty())
+            {
+                QLabel *f = new QLabel(this);
+                f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+                QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
+                f->setFixedSize(64, 64);
+                connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
+                        f, SLOT(setPixmap(const QPixmap&)));
+                _layout->addWidget(f, row*2, 0);
+            }
+            _layout->setRowStretch(row*2, 1);
+            _layout->addWidget(dxsbutton, row*2+1, 0);
+
+            part->setEntry(entry);
+            m_views.insert(entry, part);
+            ++row;
+        }
     }
 
     setWidget(m_root);
@@ -293,8 +304,8 @@ void EntryView::buildContents()
     if ( !m_entry->version().isEmpty() ) titleString += " v." + Qt::escape(m_entry->version());
 
     // precalc the string for displaying stars (normal+grayed)
-    QString starIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star.png" );
-    QString starBgIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star_gray.png" );
+    QString starIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star.png" );
+    QString starBgIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star_gray.png" );
 
     int starPixels = 11 + 11 * (m_entry->rating() / 10);
     QString starsString = "<div style='width: " + QString::number( starPixels ) + "px; background-image: url(" + starIconPath + "); background-repeat: repeat-x;'>&nbsp;</div>";
@@ -330,8 +341,8 @@ void EntryView::setTheAaronnesqueStyle()
 {
     QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
     QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
-    QString starIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star.png" );
-    QString starBgIconPath = KStandardDirs::locate( "data", "okular/pics/ghns_star_gray.png" );
+    QString starIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star.png" );
+    QString starBgIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star_gray.png" );
 
     // default elements style
     QString s;
@@ -416,6 +427,11 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     networkTimer = new QTimer( this );
     connect( networkTimer, SIGNAL( timeout() ), SLOT( slotNetworkTimeout() ) );
 
+    searchTimer = new QTimer( this );
+    //searchTimer->setSingleShot( true );
+    searchTimer->setInterval( 1000 ); // timeout after 30 seconds
+    connect( searchTimer, SIGNAL( timeout() ), SLOT( slotUpdateSearch() ) );
+
     // popuplate dialog with stuff
     QWidget* _mainWidget = new QWidget(this);
     setMainWidget(_mainWidget);
@@ -466,6 +482,8 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     panelLayout->addWidget( searchLine, 1, 1, 1, 3 );
     searchLine->setEnabled( false );
     searchLine->setClearButtonShown(true);
+    connect( searchLine, SIGNAL( textChanged( const QString &) ), SLOT( slotSearchTextChanged() ));
+    connect( searchLine, SIGNAL( editingFinished() ), SLOT( slotUpdateSearch() ));
 
     m_progress = new QProgressIndicator( this );
     panelLayout->addWidget( m_progress, 2, 0, 2, 4 );
@@ -571,8 +589,22 @@ void DownloadDialog::slotLoadProviderDXS()
     // FIXME: use d->engine
 }
 
+void DownloadDialog::slotUpdateSearch()
+{
+    if (searchTimer->isActive())
+    {
+        searchTimer->stop();
+        itemsView->setSearchText(searchLine->text());
+    }
+}
+
 void DownloadDialog::slotLoadProvidersListDXS()
 {
+}
+
+void DownloadDialog::slotSearchTextChanged()
+{
+    searchTimer->start();
 }
 
 void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
@@ -622,26 +654,27 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 
 void DownloadDialog::refresh()
 {
-	itemsView->setProviders(providers);
-	itemsView->setItems(entries);
-	// FIXME: this method has side effects (rebuilding HTML!!!)
+    itemsView->setProviders(providers);
+    itemsView->setItems(entries);
+    // FIXME: this method has side effects (rebuilding HTML!!!)
 
-	for(int i = 0; i < entries.keys().count(); i++)
-	{
-		const Feed *feed = entries.keys().at(i);
-		if(!feed)
-		{
-			//kDebug() << "INVALID FEED?!";
-			continue;
-		}
-		//QPixmap icon = DesktopIcon(QString(), 16);
-		//d->typeCombo->addItem(icon, feed->name().representation());
-		typeCombo->addItem(feed->name().representation());
-		// FIXME: see DXS categories
-	}
-	typeCombo->setEnabled(true);
-	sortCombo->setEnabled(true);
-	// FIXME: sort combo must be filled with feeds instead of being prefilled
+    for(int i = 0; i < entries.keys().count(); i++)
+    {
+        const Feed *feed = entries.keys().at(i);
+        if(!feed)
+        {
+            //kDebug() << "INVALID FEED?!";
+            continue;
+        }
+        //QPixmap icon = DesktopIcon(QString(), 16);
+        //d->typeCombo->addItem(icon, feed->name().representation());
+        typeCombo->addItem(feed->name().representation());
+        // FIXME: see DXS categories
+    }
+    typeCombo->setEnabled(true);
+    sortCombo->setEnabled(true);
+    searchLine->setEnabled(true);
+    // FIXME: sort combo must be filled with feeds instead of being prefilled
 }
 
 ///////////////// DXS ////////////////////
