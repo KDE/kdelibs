@@ -554,8 +554,6 @@ void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 
 void DownloadDialog::slotLoadProviderDXS()
 {
-    Q_UNUSED(index);
-
     QString category = typeCombo->currentText();
     QString categoryname = categorymap[category];
 
