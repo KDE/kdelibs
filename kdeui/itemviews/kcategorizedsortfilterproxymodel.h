@@ -92,7 +92,8 @@ public:
 
     /**
       * Set if the sorting using CategorySortRole will use a natural comparison
-      * in the case that strings were returned.
+      * in the case that strings were returned. If enabled, QString::localeAwareCompare
+      * will be used for sorting.
       *
       * @param sortCategoriesByNaturalComparison whether to sort using a natural comparison or not.
       */
@@ -135,6 +136,35 @@ protected:
     virtual bool subSortLessThan(const QModelIndex &left, const QModelIndex &right) const;
 
     /**
+      * This method compares the category of the @p left index with the category
+      * of the @p right index.
+      *
+      * Internally and if not reimplemented, this method will ask for @p left and
+      * @p right models for role CategorySortRole. In order to correctly sort
+      * categories, the data() metod of the model should return a qlonglong (or numeric) value, or
+      * a QString object. QString objects will be sorted with QString::localeAwareCompare if
+      * sortCategoriesByNaturalComparison() is true.
+      *
+      * @note Please have present that:
+      *       QString(QChar(QChar::ObjectReplacementCharacter)) >
+      *       QString(QChar(QChar::ReplacementCharacter)) >
+      *       [ all possible strings ] >
+      *       QString();
+      *
+      *       This means that QString() will be sorted the first one, while
+      *       QString(QChar(QChar::ObjectReplacementCharacter)) and
+      *       QString(QChar(QChar::ReplacementCharacter)) will be sorted in last
+      *       position.
+      *
+      * @warning Please note that data() method of the model should return always
+      *          information of the same type. If you return a QString for an index,
+      *          you should return always QStrings for all indexes for role CategorySortRole
+      *          in order to correctly sort categories. You can't mix by returning
+      *          a QString for one index, and a qlonglong for other.
+      *
+      * @note If you need a more complex layout, you will have to reimplement this
+      *       method.
+      *
       * @return A negative value if the category of @p left should be placed before the
       *         category of @p right. 0 if @p left and @p right are on the same category, and
       *         a positive value if the category of @p left should be placed after the
