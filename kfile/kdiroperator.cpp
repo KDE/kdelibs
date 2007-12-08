@@ -277,6 +277,8 @@ KDirOperator::Private::~Private()
     delete preview;
     preview = 0;
 
+    delete proxyModel;
+    proxyModel = 0;
     delete dirModel;
     dirModel = 0;
     dirLister = 0; // deleted by KDirModel
