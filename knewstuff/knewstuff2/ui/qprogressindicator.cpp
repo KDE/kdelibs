@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2007 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,6 +23,7 @@
 
 #include <QtGui/QProgressBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
 #include <kiconloader.h>
@@ -73,18 +75,25 @@ void QProgressIndicator::addProgress(KUrl url, int percentage)
 	{
 		QWidget *pbcontainer = new QWidget();
 
+		// make a label to show the url
+		QLabel * urlLabel = new QLabel(pbcontainer);
+		urlLabel->setText(url.fileName());
+
+		// make a progress bar
 		pb = new QProgressBar(pbcontainer);
 		pb->setMinimum(0);
 		pb->setMaximum(100);
 		m_progresswidgets.insert(url, pb);
 
+		// make a cancel button
 		QPushButton *pbcancel = new QPushButton();
 		pbcancel->setFixedWidth(32); // FIXME: I want a squared button
 		pbcancel->setIcon(SmallIcon("dialog-cancel"));
 
-		QHBoxLayout *hbox = new QHBoxLayout(pbcontainer);
-		hbox->addWidget(pbcancel);
-		hbox->addWidget(pb);
+		QGridLayout *layout = new QGridLayout(pbcontainer);
+		layout->addWidget(urlLabel, 0, 0, 1, 2);
+		layout->addWidget(pbcancel, 1, 0);
+		layout->addWidget(pb, 1, 1);
 
 		pbcontainer->show();
 
@@ -111,7 +120,10 @@ void QProgressIndicator::removeProgress(KUrl url)
 	m_progress.remove(url);
 
 	if (m_progresswidgets[url])
+	{
 		delete m_progresswidgets[url]->parentWidget();
+		m_progresswidgets.remove(url);
+	}
 
 	if(m_progress.count() == 0)
 	{
