@@ -545,13 +545,6 @@ void KHTMLView::delayedInit()
 {
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
-
-    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() &&
-                    m_kwp->renderWidget()->element()->id() != ID_FRAME;
-
-    m_kwp->setIsRedirected( redirect );
-    if (redirect)
-        setHasStaticBackground();
 }
 
 // called by KHTMLPart::clear()

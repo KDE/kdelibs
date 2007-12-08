@@ -51,6 +51,7 @@
 #include "misc/helper.h"
 #include "misc/paintbuffer.h"
 #include "css/cssvalues.h"
+#include "misc/htmltags.h"
 #include <kdebug.h>
 
 bool khtml::allowWidgetPaintEvents = false;
@@ -266,10 +267,19 @@ void RenderWidget::setQWidget(QWidget *widget)
         }
         m_widget = widget;
         if (m_widget) {
-            m_widget->setParent(m_view->widget());
             KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_widget);
-            if (k)
+            bool isRedirectedSubFrame = false;
+            if (k) {
                 k->m_kwp->setRenderWidget(this);
+                // enable redirection of every sub-frame that is not a FRAME
+                if (qobject_cast<KHTMLView*>(m_widget) && element() && element()->id() != ID_FRAME) {
+                    k->m_kwp->setIsRedirected( true );
+                    isRedirectedSubFrame = true;
+                }
+            }   
+            m_widget->setParent(m_view->widget());
+            if (isRedirectedSubFrame)
+                static_cast<KHTMLView*>(m_widget)->setHasStaticBackground();
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
             if (isRedirectedWidget()) {
