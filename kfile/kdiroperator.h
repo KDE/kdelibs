@@ -585,6 +585,8 @@ protected:
      */
     virtual void activatedMenu(const KFileItem &item, const QPoint &pos);
 
+    virtual void changeEvent(QEvent *event);
+
 public Q_SLOTS:
     /**
      * Goes one step back in the history and opens that url.

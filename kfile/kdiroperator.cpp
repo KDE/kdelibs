@@ -1118,6 +1118,24 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
     d->actionMenu->menu()->exec(pos);
 }
 
+void KDirOperator::changeEvent(QEvent *event)
+{
+    QWidget::changeEvent(event);
+
+    if (event->type() == QEvent::FontChange) {
+        // Only cast when necessary, speeding up things
+        KDirOperatorIconView *iconView = dynamic_cast<KDirOperatorIconView*>(d->itemView);
+
+        if (!iconView) {
+            return;
+        }
+
+        QFontMetrics metrics(font());
+        const int fontHeight = metrics.height();
+        iconView->setGridSize(QSize(fontHeight * 10, fontHeight + 4));
+    }
+}
+
 bool KDirOperator::Private::checkPreviewInternal() const
 {
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
