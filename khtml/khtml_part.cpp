@@ -607,7 +607,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
         d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
-        d->m_statusBarUALabel->setPixmap(SmallIcon("agent"));
+        d->m_statusBarUALabel->setPixmap(SmallIcon("preferences-web-browser-identification"));
       }
       d->m_statusBarUALabel->setToolTip(i18n("The fake user-agent '%1' is in use.", userAgent));
     } else if (d->m_statusBarUALabel) {
