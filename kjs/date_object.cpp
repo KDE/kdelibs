@@ -1018,6 +1018,8 @@ static double parseDate(const UString &date)
 
     CString dateCString = date.UTF8String();
     const char *dateString = dateCString.c_str();
+    if(!dateString)
+      return NaN;
 
     // Skip leading space
     dateString = skipSpacesAndComments(dateString);

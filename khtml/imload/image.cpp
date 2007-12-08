@@ -89,9 +89,11 @@ void Image::notifyPerformUpdate()
 void Image::loadError()
 {
     inError = true;
-    owner->imageError(this);
     delete loader;
     loader = 0;
+
+    //Make sure to call this last, since we may get deleted here.
+    owner->imageError(this);
 }
 
 bool Image::processData(uchar* data, int length)
