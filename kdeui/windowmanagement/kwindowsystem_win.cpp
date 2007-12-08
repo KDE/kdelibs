@@ -26,12 +26,13 @@
 #include <QtGui/QBitmap>
 #include <QtGui/QPixmap>
 
+#include "kglobal.h"
 #include "kdebug.h"
 #include "klocalizedstring.h"
 
 #include <windows.h>
 
-static QDesktopWidget s_deskWidget;
+K_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
 
 int KWindowSystem::currentDesktop()
 {
@@ -156,6 +157,18 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
     return pm;
 }
 
+class hIconCache
+{
+public:
+    ~hIconCache()
+    {
+        Q_FOREACH(HICON hIcon, m_iconList)
+            DestroyIcon(hIcon);
+    }
+    QList<HICON> m_iconList;
+};
+K_GLOBAL_STATIC(hIconCache, s_iconCache)
+
 QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int )
 {
     return icon( win, width, height, scale );
@@ -163,8 +176,18 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int )
 
 void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
 {
-    SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)QPixmap2HIcon(icon) );
-    SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)QPixmap2HIcon(miniIcon) );
+    HICON hIconBig = QPixmap2HIcon(icon);
+    HICON hIconSmall = QPixmap2HIcon(miniIcon);
+    if(hIconBig)
+        s_iconCache->m_iconList.append(hIconBig);
+    if(hIconSmall)
+        s_iconCache->m_iconList.append(hIconSmall);
+
+    hIconBig = (HICON)SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
+    hIconSmall = (HICON)SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
+    
+    s_iconCache->m_iconList.removeAll(hIconBig);
+    s_iconCache->m_iconList.removeAll(hIconSmall);
 }
 
 
@@ -207,7 +230,7 @@ bool KWindowSystem::compositingActive()
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    return s_deskWidget.availableGeometry( desktop );
+    return s_deskWidget->availableGeometry( desktop );
 }
 
 QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
