@@ -147,7 +147,7 @@ KGuiItem saveAs()
 
 KGuiItem apply()
 {
-  return KGuiItem( i18n( "&Apply" ), "dialog-apply", i18n( "Apply changes" ),
+  return KGuiItem( i18n( "&Apply" ), "dialog-ok-apply", i18n( "Apply changes" ),
                    i18n( "When clicking <b>Apply</b>, the settings will be "
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
@@ -183,7 +183,7 @@ KGuiItem close()
 
 KGuiItem defaults()
 {
-  return KGuiItem( i18n( "&Defaults" ), "",
+  return KGuiItem( i18n( "&Defaults" ), "document-revert",
                    i18n( "Reset all items to their default values" ) );
 }
 
@@ -282,7 +282,7 @@ KGuiItem test()
 
 KGuiItem properties()
 {
-  return KGuiItem(i18n("Properties"));
+  return KGuiItem(i18n("Properties"), "document-properties");
 }
 
 KGuiItem overwrite()

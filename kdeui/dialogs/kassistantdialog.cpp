@@ -94,7 +94,7 @@ void KAssistantDialog::Private::init()
     q->setButtonText( KDialog::User2, i18nc("Opposite to Back", "Next") );
     q->setButtonText(KDialog::User1, i18n("Finish"));
     q->setButtonIcon( KDialog::User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
-    q->setButtonIcon( KDialog::User1, KIcon("dialog-apply") );
+    q->setButtonIcon( KDialog::User1, KIcon("dialog-ok-apply") );
     q->setDefaultButton(KDialog::User2);
     q->showButtonSeparator(true);
     q->setFaceType(KPageDialog::Plain);

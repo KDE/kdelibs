@@ -41,7 +41,7 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
     backButton()->setIcon( back.icon() );
     nextButton()->setIcon( forward.icon() );
 
-    finishButton()->setIcon( KIcon( "dialog-apply" ) );
+    finishButton()->setIcon( KIcon( "dialog-ok-apply" ) );
     cancelButton()->setIcon( KIcon( "dialog-cancel" ) );
     helpButton()->setIcon( KIcon( "help-contents" ) );
 
