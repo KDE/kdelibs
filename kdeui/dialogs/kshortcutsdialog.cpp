@@ -628,7 +628,9 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
         bool conflict = false;
 		KShortcutsEditorItem *otherItem = 0;
 		for (QTreeWidgetItemIterator it(ui.list); (*it) && !conflict; ++it) {
-			if ((*it)->childCount())
+			//when moving around a shortcut in the same action item the intent is clear
+			//and we don't need to ask about conflicts
+			if ((*it)->childCount() || (*it == item))
 				continue;
 
 			otherItem = static_cast<KShortcutsEditorItem *>(*it);
@@ -672,7 +674,7 @@ void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, con
 
 		//search for conflicts
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
-			if (!(*it)->parent())
+			if (!(*it)->parent() || (*it == item))
 				continue;
 
 			otherItem = static_cast<KShortcutsEditorItem *>(*it);
@@ -705,7 +707,7 @@ void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, co
 		KShortcutsEditorItem *otherItem;
 
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
-			if (!(*it)->parent())
+			if (!(*it)->parent() || (*it == item))
 				continue;
 
 			otherItem = static_cast<KShortcutsEditorItem *>(*it);
@@ -1059,7 +1061,8 @@ void KShortcutsEditorItem::undoChanges()
 		m_action->setShortcut(*m_oldLocalShortcut);
 
 	if (m_oldGlobalShortcut)
-		m_action->setGlobalShortcut(*m_oldGlobalShortcut);
+		m_action->setGlobalShortcut(*m_oldGlobalShortcut, KAction::ActiveShortcut,
+		                            KAction::NoAutoloading);
 
 	if (m_oldShapeGesture)
 		m_action->setShapeGesture(*m_oldShapeGesture);
