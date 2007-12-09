@@ -604,11 +604,11 @@ void CSSStyleDeclarationImpl::setChanged()
 void CSSStyleDeclarationImpl::clear()
 {
     if (!m_lstValues)
-	return;
+        return;
 
     QMutableListIterator<CSSProperty*> it(*m_lstValues);
     while (it.hasNext()) {
-            delete it.value();
+            delete it.next();
             it.remove();
     }
 }
