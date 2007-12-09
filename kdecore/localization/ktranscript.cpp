@@ -41,6 +41,7 @@
 #include <QIODevice>
 #include <QTextStream>
 #include <QRegExp>
+#include <qendian.h>
 
 using namespace KJS;
 
@@ -132,6 +133,10 @@ class Scriptface : public JSObject
         toUpperFirst
     };
 
+    // Helper methods to interface functions.
+    QString loadProps_bin (const QString &fpath);
+    QString loadProps_text (const QString &fpath);
+
     // Virtual implementations.
     bool getOwnPropertySlot (ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue *getValueProperty (ExecState *exec, int token) const;
@@ -162,7 +167,9 @@ class Scriptface : public JSObject
     QList<QString> nameForalls;
 
     // Property values per phrase (used by *Prop interface calls).
-    QHash<QString, QHash<QString, QString> > phraseProps;
+    // Not QStrings, in order to avoid conversion from UTF-8 when
+    // loading compiled maps (less latency on startup).
+    QHash<QByteArray, QHash<QByteArray, QByteArray> > phraseProps;
 };
 
 // ----------------------------------------------------------------------
@@ -250,7 +257,7 @@ int countLines (const QString &s, int p)
 
 // ----------------------------------------------------------------------
 // Normalize string key for hash lookups,
-QString normKeystr (const QString &raw)
+QByteArray normKeystr (const QString &raw)
 {
     // NOTE: Regexes should not be used here for performance reasons.
     // This function may potentially be called thousands of times
@@ -272,7 +279,7 @@ QString normKeystr (const QString &raw)
     // Convert to lower case.
     key = key.toLower();
 
-    return key;
+    return key.toUtf8();
 }
 
 // ----------------------------------------------------------------------
@@ -909,8 +916,8 @@ JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
                           SPREF"normKey: expected string as argument");
     }
 
-    QString nqphrase = normKeystr(phrase->toString(exec).qstring());
-    return jsString(nqphrase);
+    QByteArray nqphrase = normKeystr(phrase->toString(exec).qstring());
+    return jsString(QString::fromUtf8(nqphrase));
 }
 
 JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
@@ -930,158 +937,36 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
     for (int i = 0; i < fnames.size(); ++i)
     {
         QString qfname = fnames[i]->getString().qstring();
-        QString qfpath = globalKTI->currentModulePath + '/' + qfname + ".pmap";
+        QString qfpath_base = globalKTI->currentModulePath + '/' + qfname;
 
-        QFile file(qfpath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            return throwError(exec, GeneralError,
-                              QString(SPREF"loadProps: cannot read file '%1'")
-                                     .arg(qfpath));
-        }
-
-        QTextStream stream(&file);
-        stream.setCodec("UTF-8");
-        QString s = stream.readAll();
-        file.close();
-
-        // Parse the map.
-        // Should care about performance: possibly executed on each KDE
-        // app startup and reading houndreds of thousands of characters.
-        enum {s_nextEntry, s_nextKey, s_nextValue};
-        QStringList ekeys; // holds keys for current entry
-        QHash<QString, QString> props; // holds properties for current entry
-        int slen = s.length();
-        int state = s_nextEntry;
-        QString pkey;
-        QChar prop_sep, key_sep;
-        while (1) {
-            int i_checkpoint = i;
-
-            if (state == s_nextEntry) {
-                while (s[i].isSpace()) {
-                    ++i;
-                    if (i >= slen) goto END_PROP_PARSE;
-                }
-                if (i + 1 >= slen) {
-                    return throwError(exec, SyntaxError,
-                        QString(SPREF"loadProps: unexpected end "
-                                "of file in %1").arg(qfpath));
-                }
-                if (s[i] != '#') {
-                    // Separator characters for this entry.
-                    key_sep = s[i];
-                    prop_sep = s[i + 1];
-                    if (key_sep.isLetter() || prop_sep.isLetter()) {
-                        return throwError(exec, SyntaxError,
-                            QString(SPREF"loadProps: separator characters "
-                                    "must not be letters at %1:%2")
-                                   .arg(qfpath).arg(countLines(s, i)));
-                    }
-
-                    // Reset all data for current entry.
-                    ekeys.clear();
-                    props.clear();
-                    pkey.clear();
-
-                    i += 2;
-                    state = s_nextKey;
-                }
-                else {
-                    // This is a comment, skip to EOL, don't change state.
-                    while (s[i] != '\n') {
-                        ++i;
-                        if (i >= slen) goto END_PROP_PARSE;
-                    }
-                }
-            }
-            else if (state == s_nextKey) {
-                int ip = i;
-                // Proceed up to next key or property separator.
-                while (s[i] != key_sep && s[i] != prop_sep) {
-                    ++i;
-                    if (i >= slen) goto END_PROP_PARSE;
-                }
-                if (s[i] == key_sep) {
-                    // This is a property key,
-                    // record for when the value gets parsed.
-                    pkey = normKeystr(s.mid(ip, i - ip));
-
-                    i += 1;
-                    state = s_nextValue;
-                }
-                else { // if (s[i] == prop_sep) {
-                    // This is an entry key, or end of entry.
-                    QString ekey = normKeystr(s.mid(ip, i - ip));
-                    if (!ekey.isEmpty()) {
-                        // An entry key.
-                        ekeys.append(ekey);
-
-                        i += 1;
-                        state = s_nextKey;
-                    }
-                    else {
-                        // End of entry.
-                        if (ekeys.size() < 1) {
-                            return throwError(exec, SyntaxError,
-                                QString(SPREF"loadProps: no entry key "
-                                        "for entry ending at %1:%2")
-                                       .arg(qfpath).arg(countLines(s, i)));
-                        }
-
-                        // Put collected properties into global store,
-                        // filed once under each entry key.
-                        // TODO: Wastes memory, perhaps it would be better
-                        // to store pointers to single property hash.
-                        foreach (const QString &ekey, ekeys) {
-                            phraseProps[ekey] = props;
-                        }
-
-                        i += 1;
-                        state = s_nextEntry;
-                    }
-                }
-            }
-            else if (state == s_nextValue) {
-                int ip = i;
-                // Proceed up to next property separator.
-                while (s[i] != prop_sep) {
-                    ++i;
-                    if (i >= slen) goto END_PROP_PARSE;
-                    if (s[i] == key_sep) {
-                        return throwError(exec, SyntaxError,
-                            QString(SPREF"loadProps: property separator "
-                                    "inside property value at %1:%2")
-                                   .arg(qfpath).arg(countLines(s, i)));
-                    }
-                }
-                // Extract the property value and store the property.
-                QString pval = trimSmart(s.mid(ip, i - ip));
-                props[pkey] = pval;
-
-                i += 1;
-                state = s_nextKey;
-            }
-            else {
+        // Determine which kind of map is available.
+        // Give preference to compiled map.
+        QString qfpath = qfpath_base + ".pmapc";
+        bool haveCompiled = true;
+        QFile file_check(qfpath);
+        if (!file_check.open(QIODevice::ReadOnly)) {
+            haveCompiled = false;
+            qfpath = qfpath_base + ".pmap";
+            QFile file_check(qfpath);
+            if (!file_check.open(QIODevice::ReadOnly)) {
                 return throwError(exec, GeneralError,
-                    QString(SPREF"loadProps: internal error 10 at %1:%2")
-                           .arg(qfpath).arg(countLines(s, i)));
-            }
-
-            // To avoid infinite looping and stepping out.
-            if (i == i_checkpoint || i >= slen) {
-                return throwError(exec, GeneralError,
-                    QString(SPREF"loadProps: internal error 20 at %1:%2")
-                           .arg(qfpath).arg(countLines(s, i)));
+                              QString(SPREF"loadProps: cannot read map '%1'")
+                                     .arg(qfpath_base));
             }
         }
+        file_check.close();
 
-        END_PROP_PARSE:
-        if (state != s_nextEntry) {
-            return throwError(exec, SyntaxError,
-                              QString(SPREF"loadProps: unexpected end of "
-                                      "file in %1").arg(qfpath));
+        // Load from appropriate type of map.
+        QString errorString;
+        if (haveCompiled) {
+            errorString = loadProps_bin(qfpath);
         }
-
+        else {
+            errorString = loadProps_text(qfpath);
+        }
+        if (!errorString.isEmpty()) {
+            return throwError(exec, SyntaxError, errorString);
+        }
         dbgout("Loaded property map: %1", qfpath);
     }
 
@@ -1099,12 +984,13 @@ JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
                           SPREF"getProp: expected string as second argument");
     }
 
-    QString qphrase = normKeystr(phrase->toString(exec).qstring());
-    QString qprop = prop->toString(exec).qstring();
-
-    if (phraseProps.contains(qphrase)) {
-        if (phraseProps[qphrase].contains(qprop)) {
-            return jsString(phraseProps[qphrase][qprop]);
+    QByteArray qphrase = normKeystr(phrase->toString(exec).qstring());
+    QHash<QByteArray, QByteArray> props = phraseProps.value(qphrase);
+    if (!props.isEmpty()) {
+        QByteArray qprop = normKeystr(prop->toString(exec).qstring());
+        QByteArray qval = props.value(qprop);
+        if (!qval.isEmpty()) {
+            return jsString(QString::fromUtf8(qval));
         }
     }
     return jsUndefined();
@@ -1178,3 +1064,249 @@ JSValue *Scriptface::toUpperFirstf (ExecState *exec,
     return jsString(qstruc);
 }
 
+// ----------------------------------------------------------------------
+// Scriptface helpers to interface functions.
+
+QString Scriptface::loadProps_text (const QString &fpath)
+{
+    QFile file(fpath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QString(SPREF"loadProps_text: cannot read file '%1'")
+                      .arg(fpath);
+    }
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    QString s = stream.readAll();
+    file.close();
+
+    // Parse the map.
+    // Should care about performance: possibly executed on each KDE
+    // app startup and reading houndreds of thousands of characters.
+    enum {s_nextEntry, s_nextKey, s_nextValue};
+    QList<QByteArray> ekeys; // holds keys for current entry
+    QHash<QByteArray, QByteArray> props; // holds properties for current entry
+    int slen = s.length();
+    int state = s_nextEntry;
+    QByteArray pkey;
+    QChar prop_sep, key_sep;
+    int i = 0;
+    while (1) {
+        int i_checkpoint = i;
+
+        if (state == s_nextEntry) {
+            while (s[i].isSpace()) {
+                ++i;
+                if (i >= slen) goto END_PROP_PARSE;
+            }
+            if (i + 1 >= slen) {
+                return QString(SPREF"loadProps_text: unexpected end "
+                               "of file in %1").arg(fpath);
+            }
+            if (s[i] != '#') {
+                // Separator characters for this entry.
+                key_sep = s[i];
+                prop_sep = s[i + 1];
+                if (key_sep.isLetter() || prop_sep.isLetter()) {
+                    return  QString(SPREF"loadProps_text: separator "
+                                    "characters must not be letters at %1:%2")
+                                   .arg(fpath).arg(countLines(s, i));
+                }
+
+                // Reset all data for current entry.
+                ekeys.clear();
+                props.clear();
+                pkey.clear();
+
+                i += 2;
+                state = s_nextKey;
+            }
+            else {
+                // This is a comment, skip to EOL, don't change state.
+                while (s[i] != '\n') {
+                    ++i;
+                    if (i >= slen) goto END_PROP_PARSE;
+                }
+            }
+        }
+        else if (state == s_nextKey) {
+            int ip = i;
+            // Proceed up to next key or property separator.
+            while (s[i] != key_sep && s[i] != prop_sep) {
+                ++i;
+                if (i >= slen) goto END_PROP_PARSE;
+            }
+            if (s[i] == key_sep) {
+                // This is a property key,
+                // record for when the value gets parsed.
+                pkey = normKeystr(s.mid(ip, i - ip));
+
+                i += 1;
+                state = s_nextValue;
+            }
+            else { // if (s[i] == prop_sep) {
+                // This is an entry key, or end of entry.
+                QByteArray ekey = normKeystr(s.mid(ip, i - ip));
+                if (!ekey.isEmpty()) {
+                    // An entry key.
+                    ekeys.append(ekey);
+
+                    i += 1;
+                    state = s_nextKey;
+                }
+                else {
+                    // End of entry.
+                    if (ekeys.size() < 1) {
+                        return QString(SPREF"loadProps_text: no entry key "
+                                       "for entry ending at %1:%2")
+                                       .arg(fpath).arg(countLines(s, i));
+                    }
+
+                    // Add collected entry into global store,
+                    // once for each entry key (QHash implicitly shared).
+                    foreach (const QByteArray &ekey, ekeys) {
+                        phraseProps[ekey] = props;
+                    }
+
+                    i += 1;
+                    state = s_nextEntry;
+                }
+            }
+        }
+        else if (state == s_nextValue) {
+            int ip = i;
+            // Proceed up to next property separator.
+            while (s[i] != prop_sep) {
+                ++i;
+                if (i >= slen) goto END_PROP_PARSE;
+                if (s[i] == key_sep) {
+                    return QString(SPREF"loadProps_text: property separator "
+                                   "inside property value at %1:%2")
+                                  .arg(fpath).arg(countLines(s, i));
+                }
+            }
+            // Extract the property value and store the property.
+            QByteArray pval = trimSmart(s.mid(ip, i - ip)).toUtf8();
+            props[pkey] = pval;
+
+            i += 1;
+            state = s_nextKey;
+        }
+        else {
+            return QString(SPREF"loadProps: internal error 10 at %1:%2")
+                          .arg(fpath).arg(countLines(s, i));
+        }
+
+        // To avoid infinite looping and stepping out.
+        if (i == i_checkpoint || i >= slen) {
+            return QString(SPREF"loadProps: internal error 20 at %1:%2")
+                          .arg(fpath).arg(countLines(s, i));
+        }
+    }
+
+    END_PROP_PARSE:
+
+    if (state != s_nextEntry) {
+        return QString(SPREF"loadProps: unexpected end of file in %1")
+                      .arg(fpath);
+    }
+
+    return QString();
+}
+
+static int bin_read_int (const char *fc, qlonglong len, qlonglong &pos)
+{
+    // Binary format is big-endian, 32-bit integer.
+    static const int nbytes = 4;
+    if (pos + nbytes > len) {
+        pos = -1;
+        return 0;
+    }
+    int num = qFromBigEndian<quint32>((uchar*) fc + pos);
+    pos += nbytes;
+    return num;
+}
+
+static QByteArray bin_read_string (const char *fc, qlonglong len, qlonglong &pos)
+{
+    // Binary format stores strings as length followed by byte sequence.
+    // No null-termination.
+    int nbytes = bin_read_int(fc, len, pos);
+    if (pos < 0) {
+        return QByteArray();
+    }
+    if (nbytes < 0 || pos + nbytes > len) {
+        pos = -1;
+        return QByteArray();
+    }
+    QByteArray s(fc + pos, nbytes);
+    pos += nbytes;
+    return s;
+}
+
+QString Scriptface::loadProps_bin (const QString &fpath)
+{
+    QFile file(fpath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QString(SPREF"loadProps_bin: cannot read file '%1'")
+                      .arg(fpath);
+    }
+    QByteArray fctmp = file.readAll();
+    file.close();
+    const char *fc = fctmp.data();
+    const int fclen = fctmp.size();
+
+    // Indicates stream state.
+    qlonglong pos = 0;
+
+    // Match header.
+    QByteArray head(fc, 8);
+    pos += 8;
+    if (head != "TSPMAP00") goto END_PROP_PARSE;
+
+    // Read total number of entries.
+    int nentries;
+    nentries = bin_read_int(fc, fclen, pos);
+    if (pos < 0) goto END_PROP_PARSE;
+
+    // Read all entries.
+    for (int i = 0; i < nentries; ++i) {
+
+        // Read number of entry keys and all entry keys.
+        QList<QByteArray> ekeys;
+        int nekeys = bin_read_int(fc, fclen, pos);
+        if (pos < 0) goto END_PROP_PARSE;
+        for (int j = 0; j < nekeys; ++j) {
+            QByteArray ekey = bin_read_string(fc, fclen, pos);
+            if (pos < 0) goto END_PROP_PARSE;
+            ekeys.append(ekey);
+        }
+        //dbgout("--------> ekey[0]={%1}", QString::fromUtf8(ekeys[0]));
+
+        // Read number of properties and all properties.
+        QHash<QByteArray, QByteArray> props;
+        int nprops = bin_read_int(fc, fclen, pos);
+        if (pos < 0) goto END_PROP_PARSE;
+        for (int j = 0; j < nprops; ++j) {
+            QByteArray pkey = bin_read_string(fc, fclen, pos);
+            if (pos < 0) goto END_PROP_PARSE;
+            QByteArray pval = bin_read_string(fc, fclen, pos);
+            if (pos < 0) goto END_PROP_PARSE;
+            props[pkey] = pval;
+        }
+
+        // Add collected entry into global store,
+        // once for each entry key (QHash implicitly shared).
+        foreach (const QByteArray &ekey, ekeys) {
+            phraseProps[ekey] = props;
+        }
+    }
+
+    END_PROP_PARSE:
+
+    if (pos < 0) {
+        return QString(SPREF"loadProps_bin: corrupt compiled map %1")
+                      .arg(fpath);
+    }
+
+    return QString();
+}
