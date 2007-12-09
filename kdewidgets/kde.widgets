@@ -94,6 +94,12 @@ ToolTip=QListWidget Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
 
+[KShortcutsEditor]
+ToolTip=Shortcuts editor widget. (KDE)
+WhatsThis=A widget to edit a list of shortcuts.
+IncludeFile=kshortcutseditor.h
+Group=Input (KDE)
+
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
