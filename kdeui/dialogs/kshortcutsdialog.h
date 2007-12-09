@@ -68,7 +68,6 @@ public:
 	/**
 	 * Add all actions of the collection to the ones displayed and configured
 	 * by the dialog.
-	 * Call insert with each of your to-be-configured collections in turn.
 	 *
 	 * @param title the title associated with the collection (if null, the
 	 * KAboutData::progName() of the collection's componentData is used)
@@ -76,8 +75,8 @@ public:
 	void addCollection(KActionCollection *, const QString &title = QString());
 
 	/**
-	 * Run the dialog and call commitChanges() if @p bSaveSettings
-	 * is true.
+	 * Run the dialog and call writeSettings() on the action collections
+	 * that were added if @p bSaveSettings is true.
 	 */
 	bool configure(bool saveSettings = true);
 
@@ -85,25 +84,15 @@ public:
 	virtual QSize sizeHint() const;
 
 	/**
-	 * Commit key setting changes so that changed settings actually become active.
-	 * This method is implicitly called from configure(bool) if
-	 * @p bSaveSettings is true.
-	 */
-	//TODO: it's (okay, almost) unused! maybe add undoChanges, though...
-	//void commitChanges();
-
-	/**
 	 * Pops up a modal dialog for configuring key settings. The new
-	 * shortcut settings will be active if the user presses OK.  If
-	 * @p bSaveSettings if true, the settings will also be saved back to
-	 * the *uirc file which they were intially read from.
+	 * shortcut settings will become active if the user presses OK.
 	 *
 	 * @param collection the KActionCollection to configure
 	 * @param allowLetterShortcuts set to KShortcutsEditor::LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 * @param parent the parent widget to attach to
-	 * @param bSaveSettings if true, the settings will also be saved back to
-	 * the *uirc file which they were intially read from.
+	 * @param bSaveSettings if true, the settings will also be saved back
+	 * by calling writeSettings() on the action collections that were added.
 	 *
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
