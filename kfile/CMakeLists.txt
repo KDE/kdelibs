@@ -1,5 +1,4 @@
 project(kfile)
-add_definitions(-DQT3_SUPPORT_WARNINGS)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}

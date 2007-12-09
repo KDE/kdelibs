@@ -1,23 +1,16 @@
 
-add_definitions (-DQT3_SUPPORT)
+add_definitions (-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
-########### next target ###############
 include_directories( ${OPENSSL_INCLUDE_DIR} )
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl )
 
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 
-
 kde4_add_plugin(kcm_crypto ${kcm_crypto_PART_SRCS})
-
 
 target_link_libraries(kcm_crypto  ${KDE4_KDE3SUPPORT_LIBS} ${OPENSSL_LIBRARIES})
 
 install(TARGETS kcm_crypto  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
 install( FILES crypto.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )

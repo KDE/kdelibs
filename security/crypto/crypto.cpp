@@ -387,8 +387,7 @@ QString whatstr;
   egrid->addWidget(mUseEGD);
   egrid->addWidget(mUseEFile);
   QFrame *egdframe = new QFrame(tabOSSL);
-  QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
-                                                       KDialog::spacingHint());
+  QGridLayout *grid2 = new QGridLayout(egdframe);
   mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
   grid2->addWidget(mEGDLabel, 0, 0);
   mEGDPath = new KUrlRequester(egdframe);
@@ -1391,7 +1390,7 @@ QString iss = QString();
          QPalette cspl;
          iss = cert->getIssuer();
          cspl = validFrom->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
+         if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
             cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
             cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1399,7 +1398,7 @@ QString iss = QString();
          validFrom->setPalette(cspl);
 
          cspl = validUntil->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
+         if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
             cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
             cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1409,7 +1408,7 @@ QString iss = QString();
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
          untilDate->setText(x ? KGlobal::locale()->formatDateTime(x->getExpires())
-                              : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime(Qt::UTC)));
+                              : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime()));
          untilDate->setEnabled(x && !x->isPermanent());
          pHash->setText(cert->getMD5DigestText());
          delete cert;
@@ -1644,7 +1643,7 @@ QString iss;
    QPalette cspl;
    KSSLCertificate *cert = pkcs->getCertificate();
    cspl = yValidFrom->palette();
-   if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
+   if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
 	   cspl.setColor(QPalette::Foreground, QColor(196,33,21));
    } else {
 	   cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1652,7 +1651,7 @@ QString iss;
    yValidFrom->setPalette(cspl);
 
    cspl = yValidUntil->palette();
-   if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
+   if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
 	   cspl.setColor(QPalette::Foreground, QColor(196,33,21));
    } else {
 	   cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1684,7 +1683,7 @@ QString iss;
          KSSLCertificate *cert = pkcs->getCertificate();
          iss = cert->getIssuer();
          cspl = yValidFrom->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
+         if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
             cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
             cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1692,7 +1691,7 @@ QString iss;
          yValidFrom->setPalette(cspl);
 
          cspl = yValidUntil->palette();
-         if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
+         if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
             cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
             cspl.setColor(QPalette::Foreground, QColor(42,153,59));
@@ -1869,8 +1868,7 @@ void KCryptoConfig::slotCAImport() {
 			char *cr;
 			cr = new char[qf.size()+1];
 			qf.read(cr, qf.size());
-			QByteArray qba;
-			qba.duplicate(cr, qf.size());
+			QByteArray qba(cr, qf.size());
 			certtext = KCodecs::base64Encode(qba);
 			delete [] cr;
 		}

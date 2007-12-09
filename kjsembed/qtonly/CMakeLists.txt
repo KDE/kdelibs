@@ -91,7 +91,6 @@ macro_optional_find_package(Libintl)
 
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 link_directories(${QJS_LIB_DIR})
 
