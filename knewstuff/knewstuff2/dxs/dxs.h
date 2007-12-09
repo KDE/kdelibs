@@ -54,15 +54,57 @@ public:
 	~Dxs();
 	void setEndpoint(KUrl endpoint);
 
+	/**
+	 * 
+	 */
 	void call_info();
+	/**
+	 * 
+	 */
 	void call_categories();
+	/**
+	 * 
+	 * @param category 
+	 * @param feed 
+	 */
 	void call_entries(QString category, QString feed);
+	/**
+	 * 
+	 * @param id 
+	 */
 	void call_comments(int id);
+	/**
+	 * 
+	 * @param id 
+	 */
 	void call_changes(int id);
+	/**
+	 * 
+	 * @param id 
+	 */
 	void call_history(int id);
+	/**
+	 * 
+	 * @param id 
+	 */
 	void call_removal(int id);
+	/**
+	 * 
+	 * @param id 
+	 * @param subscribe 
+	 */
 	void call_subscription(int id, bool subscribe);
+	/**
+	 * 
+	 * @param id 
+	 * @param comment 
+	 */
 	void call_comment(int id, QString comment);
+	/**
+	 *        Change the rating
+	 * @param id 
+	 * @param rating 
+	 */
 	void call_rating(int id, int rating);
 
 signals:
@@ -80,7 +122,14 @@ signals:
 	void signalError();
 
 private slots:
+	/**
+	 * Valid response from server - parsed here to emit the corresponding signal
+	 * @param node 
+	 */
 	void slotResult(QDomNode node);
+	/**
+	 *        Communication error
+	 */
 	void slotError();
 
 private:

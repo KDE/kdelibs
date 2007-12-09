@@ -62,11 +62,39 @@ public:
 		canonicaltree
 	};
 
+	/**
+	 * Set the model to be either soap or canonicaltree
+	 * @param m 
+	 */
 	void setModel(Model m);
 
+	/**
+	 * Send to the server - uses either soap or tree
+	 * @param element 
+	 * @param endpoint 
+	 */
 	void call(const QDomElement& element, const QString &endpoint);
+
+	/**
+	 * Name of the QDomElement for node without the namespace
+	 * @param node 
+	 * @return localname
+	 */
 	QString localname(const QDomNode& node);
+
+	/**
+	 * Find the text element to a xpath like expression
+	 * @param node xml (<test>my_text</test>)
+	 * @param expr /test
+	 * @return my_text
+	 */
 	QString xpath(const QDomNode& node, const QString &expr);
+	/**
+	 * 
+	 * @param node 
+	 * @param name 
+	 * @return 
+	 */
 	QList<QDomNode> directChildNodes(const QDomNode& node, const QString &name);
 
 signals:
@@ -80,8 +108,25 @@ private slots:
 	void slotSocketError(QAbstractSocket::SocketError error);
 
 private:
+	/**
+	 * Create the SOAP xml and send it to the server
+	 * @param element the message
+	 * @param endpoint server URL
+	 */
 	void call_soap(QDomElement element, const QString& endpoint);
+	/**
+	 * Same as call_soap but with canonicaltree as model
+	 * @param element 
+	 * @param endpoint 
+	 */
 	void call_tree(const QDomElement& element, const QString& endpoint);
+	/**
+	 * 
+	 * @param doc 
+	 * @param cur 
+	 * @param data 
+	 * @return 
+	 */
 	QDomDocument buildtree(QDomDocument doc, QDomElement cur, const QString& data);
 
 	QString m_data;
