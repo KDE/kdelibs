@@ -560,7 +560,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
     // frameset? -> add "Reload Frame" etc.
     if (!hasSelection) {
         if ( khtml->parentPart() ) {
-            KActionMenu* menu = new KActionMenu(this);
+            KActionMenu* menu = new KActionMenu( i18nc("@title:menu HTML frame/iframe", "Frame"), this);
             KAction *action = new KAction( i18n( "Open in New &Window" ), this );
             d->m_actionCollection->addAction( "frameinwindow", action );
             action->setIcon( KIcon( "window-new" ) );
