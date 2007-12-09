@@ -81,6 +81,7 @@ Entry *EntryHandler::entryptr()
   entry->setPreview(mEntry.preview());
   entry->setRating(mEntry.rating());
   entry->setDownloads(mEntry.downloads());
+  entry->setInstalledFiles(mEntry.installedFiles());
   return entry;
 }
 
@@ -116,6 +117,10 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
   if(!entry.checksum().isEmpty())
   {
     (void)addElement(doc, el, "checksum", entry.checksum());
+  }
+  foreach(QString file, entry.installedFiles())
+  {
+    (void)addElement(doc, el, "installedfile", file);
   }
 
   (void)addElement(doc, el, "releasedate",
@@ -165,6 +170,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 {
   Entry entry;
   KTranslatable name, summary, preview, payload;
+  QStringList installedFiles;
 
   if(entryxml.tagName() != "stuff") return entry;
 
@@ -253,12 +259,17 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     {
       entry.setChecksum(e.text());
     }
+    else if(e.tagName() == "installedfile")
+    {
+      installedFiles << e.text();
+    }
   }
 
   entry.setName(name);
   entry.setSummary(summary);
   entry.setPreview(preview);
   entry.setPayload(payload);
+  entry.setInstalledFiles(installedFiles);
 
   // Validation
 

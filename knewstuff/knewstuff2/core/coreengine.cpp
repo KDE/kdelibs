@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright 2007 Frederik Gladhorn <frederik.gladhorn@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1000,6 +1001,8 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 		{
 			// see if the one online is newer (higher version, release, or release date)
 			Entry *oldentry = m_entry_index[id(e)];
+                        e->setInstalledFiles(oldentry->installedFiles());
+
 			if (entryChanged(oldentry, e))
 			{
 				e->setStatus(Entry::Updateable);
@@ -1233,6 +1236,19 @@ void CoreEngine::registerEntry(Entry *entry)
 	f.close();
 }
 
+void KNS::CoreEngine::unregisterEntry(Entry * entry)
+{
+    KStandardDirs d;
+
+    // NOTE: this directory must match loadRegistry
+    QString registrydir = d.saveLocation("data", "knewstuff2-entries.registry");
+
+    // FIXME: see cacheEntry() for naming-related discussion
+    QString registryfile = QString(id(entry).toUtf8().toBase64()) + ".meta";
+
+    QFile::remove(registrydir + registryfile);
+}
+
 QString CoreEngine::id(Entry *e)
 {
 	// This is the primary key of an entry:
@@ -1385,6 +1401,8 @@ bool CoreEngine::install(const QString &payloadfile)
 		return false;
 	}
 
+	QStringList installedFiles;
+
 	if(!m_installation->uncompression().isEmpty())
 	{
 		//kDebug(550) << "Postinstallation: uncompress the file";
@@ -1392,41 +1410,42 @@ bool CoreEngine::install(const QString &payloadfile)
 		// FIXME: check for overwriting, malicious archive entries (../foo) etc.
 		// FIXME: KArchive should provide "safe mode" for this!
 		// FIXME: value for uncompression was application/x-gzip etc. - and now?
+		KArchive *archive = 0;
 
 		if(ext == "zip")
 		{
-			KZip zip(installpath);
-			bool success = zip.open(QIODevice::ReadOnly);
-			if(!success)
-			{
-				kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
-				return false;
-			}
-			const KArchiveDirectory *dir = zip.directory();
-			dir->copyTo(installdir);
-			zip.close();
-			QFile::remove(installpath);
+			archive = new KZip(installpath);
 		}
-		else if((ext == "tar") || (ext == "gz") || (ext == "bz2"))
+		else if((ext == "tar") || (ext == "gz") || (ext == "tgz") || (ext == "bz2") || (ext == "tb2"))
 		{
-			KTar tar(installpath);
-			bool success = tar.open(QIODevice::ReadOnly);
-			if(!success)
-			{
-				kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
-				return false;
-			}
-			const KArchiveDirectory *dir = tar.directory();
-			dir->copyTo(installdir);
-			tar.close();
-			QFile::remove(installpath);
+			archive = new KTar(installpath);
 		}
 		else
 		{
+			delete archive;
 			kError(550) << "Unknown uncompression method " << ext << endl;
 			return false;
 		}
+
+		bool success = archive->open(QIODevice::ReadOnly);
+		if(!success)
+		{
+			kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
+			return false;
+		}
+		const KArchiveDirectory *dir = archive->directory();
+		dir->copyTo(installdir);
+
+		installedFiles << archiveEntries(installdir, dir);
+
+		archive->close();
+		QFile::remove(installpath);
+		delete archive;
+
+	} else {
+		installedFiles << installpath;
 	}
+        entry->setInstalledFiles(installedFiles);
 
 	if(!m_installation->command().isEmpty())
 	{
@@ -1475,10 +1494,18 @@ bool CoreEngine::install(const QString &payloadfile)
 
 bool CoreEngine::uninstall(KNS::Entry *entry)
 {
-	entry->setStatus(Entry::Deleted);
-	// FIXME: remove payload file, and maybe unpacked files
-	// FIXME: also remove registry for this file?
-	return true;
+    entry->setStatus(Entry::Deleted);
+
+    foreach(QString file, entry->installedFiles()) {
+            QFile::remove(file);
+    }
+    entry->setInstalledFiles(QStringList());
+
+    unregisterEntry(entry);
+
+    emit signalEntryChanged(entry);
+
+    return true;
 }
 
 void CoreEngine::slotInstallationVerification(int result)
@@ -1500,5 +1527,23 @@ void CoreEngine::setCachePolicy(CachePolicy policy)
 {
 	m_cachepolicy = policy;
 }
+
+QStringList KNS::CoreEngine::archiveEntries(const QString& path, const KArchiveDirectory * dir)
+{
+	QStringList files;
+	foreach(QString entry, dir->entries()) {
+		QString childPath = path + '/' + entry;
+		if(dir->entry(entry)->isFile()) {
+			files << childPath;
+		}
+
+		if(dir->entry(entry)->isDirectory()) {
+			const KArchiveDirectory* childDir = static_cast<const KArchiveDirectory*>(dir->entry(entry));
+			files << archiveEntries(childPath, childDir);
+		}
+	}
+	return files;
+}
+
 
 #include "coreengine.moc"

@@ -185,6 +185,18 @@ class KNEWSTUFF_EXPORT Entry
     KTranslatable preview() const;
 
     /**
+     * Set the files that have been installed by the install command.
+     * @param files local file names
+     */
+    void setInstalledFiles(const QStringList& files);
+
+    /**
+     * Retrieve the locally installed files.
+     * @return file names
+     */
+    QStringList installedFiles() const;
+
+    /**
      * Sets the rating between 0 (worst) and 100 (best).
      *
      * @internal

@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright 2007 Frederik Gladhorn <frederik.gladhorn@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 #include <QtCore/QMap>
 
 class KJob;
+class KArchiveDirectory;
 
 namespace KNS {
 
@@ -287,6 +289,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     void cacheEntry(Entry *entry);
     void cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries);
     void registerEntry(Entry *entry);
+    void unregisterEntry(Entry *entry);
     void mergeProviders(Provider::List providers);
     void mergeEntries(Entry::List entries, const Feed *feed, const Provider *provider);
     void shutdown();
@@ -295,6 +298,8 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     bool entryChanged(Entry *oldentry, Entry *entry);
     bool providerCached(Provider *provider);
     bool providerChanged(Provider *oldprovider, Provider *provider);
+
+    static QStringList archiveEntries(const QString& path, const KArchiveDirectory * dir);
 
     QString id(Entry *e);
     QString pid(const Provider *p);

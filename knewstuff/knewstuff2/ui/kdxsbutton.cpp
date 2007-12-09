@@ -131,20 +131,26 @@ void KDXSButton::setEntry(Entry *e)
 	if(m_engine) setEnabled(true);
 
 	Entry::Status status = e->status();
-	if(status == Entry::Installed)
-	{
+	switch (status) {
+        case Entry::Installed:
 		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
-	}
-	else if (status == Entry::Updateable)
-	{
+		action_uninstall->setVisible(true);
+	   break;
+	case Entry::Updateable:
 		setText(i18n("Update"));
 		action_uninstall->setVisible(false);
-	}
-	else
-	{
+		action_install->setVisible(true);
+	   break;
+	case Entry::Deleted:
+                /// @todo Set different button text when string freeze is over? "Install again"
 		setText(i18n("Install"));
 		action_uninstall->setVisible(false);
+		action_install->setVisible(true);
+	default:
+		setText(i18n("Install"));
+		action_uninstall->setVisible(false);
+		action_install->setVisible(true);
 	}
 
 	Author author = e->author();
@@ -475,6 +481,9 @@ void KDXSButton::slotTriggered(QAction *action)
 	if(action == action_uninstall)
 	{
 		m_engine->uninstall(m_entry);
+		setText(i18n("Install"));
+		action_uninstall->setVisible(false);
+		action_install->setVisible(true);
 	}
 	if(action == action_install)
 	{
@@ -571,11 +580,13 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 	{
 		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
+		action_uninstall->setVisible(true);
 	}
 	else
 	{
 		setText(i18n("Install"));
 		action_uninstall->setVisible(false);
+		action_install->setVisible(true);
 	}
 
 	m_engine->install(url.path());

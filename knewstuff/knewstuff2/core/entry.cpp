@@ -43,6 +43,7 @@ struct KNS::EntryPrivate
     KTranslatable mSummary;
     KTranslatable mPayload;
     KTranslatable mPreview;
+    QStringList mInstalledFiles;
 
     QString mChecksum;
     QString mSignature;
@@ -218,5 +219,15 @@ Entry::Status Entry::status()
 void Entry::setStatus(Status status)
 {
     d->mStatus = status;
+}
+
+void KNS::Entry::setInstalledFiles(const QStringList & files)
+{
+    d->mInstalledFiles = files;
+}
+
+QStringList KNS::Entry::installedFiles() const
+{
+    return d->mInstalledFiles;
 }
 
