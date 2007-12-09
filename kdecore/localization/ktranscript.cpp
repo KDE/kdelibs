@@ -79,7 +79,6 @@ class KTranscriptImp : public KTranscript
     void loadModules (const QList<QStringList> &mods, QString &error);
     void setupInterpreter (const QString &lang);
 
-    QHash<QString, Interpreter*> m_jsi;
     QHash<QString, Scriptface*> m_sface;
 };
 
@@ -94,8 +93,10 @@ class Scriptface : public JSObject
     JSValue *loadf (ExecState *exec, const List &fnames);
     JSValue *setcallf (ExecState *exec, JSValue *name,
                        JSValue *func, JSValue *fval);
-    JSValue *callForallf (ExecState *exec, JSValue *name,
-                          JSValue *func, JSValue *fval);
+    JSValue *hascallf (ExecState *exec, JSValue *name);
+    JSValue *acallf (ExecState *exec, const List &argv);
+    JSValue *setcallForallf (ExecState *exec, JSValue *name,
+                             JSValue *func, JSValue *fval);
     JSValue *fallbackf (ExecState *exec);
     JSValue *nsubsf (ExecState *exec);
     JSValue *subsf (ExecState *exec, JSValue *index);
@@ -110,12 +111,15 @@ class Scriptface : public JSObject
     JSValue *normKeyf (ExecState *exec, JSValue *phrase);
     JSValue *loadPropsf (ExecState *exec, const List &fnames);
     JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
+    JSValue *setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, JSValue *value);
     JSValue *toUpperFirstf (ExecState *exec, JSValue *str, JSValue *nalt);
 
     enum {
         Load,
         Setcall,
-        CallForall,
+        Hascall,
+        Acall,
+        SetcallForall,
         Fallback,
         Nsubs,
         Subs,
@@ -127,10 +131,11 @@ class Scriptface : public JSObject
         Msgstrf,
         Dbgputs,
         Lscr,
-        normKey,
-        loadProps,
-        getProp,
-        toUpperFirst
+        NormKey,
+        LoadProps,
+        GetProp,
+        SetProp,
+        ToUpperFirst
     };
 
     // Helper methods to interface functions.
@@ -145,6 +150,10 @@ class Scriptface : public JSObject
     const ClassInfo* classInfo() const { return &info; }
 
     static const ClassInfo info;
+
+    // Link to its interpreter.
+    // FIXME: Probably accessible without the explicit link.
+    Interpreter *jsi;
 
     // Current message data.
     const QString *msgctxt;
@@ -350,8 +359,8 @@ KTranscriptImp::~KTranscriptImp ()
 {
     // FIXME: vallgrind shows an afwul lot of "invalid read" in WTF:: stuff
     // when deref is called... Are we leaking somewhere?
-    //foreach (Interpreter *jsi, m_jsi.values())
-    //    jsi->deref();
+    //foreach (Scriptface *sface, m_sface.values())
+    //    sface->jsi->deref();
 }
 
 QString KTranscriptImp::eval (const QList<QVariant> &argv,
@@ -400,14 +409,13 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
     // (though it should never happen here, but earlier when loading modules;
     // this also means there are no calls set, so the unregistered call error
     // below will be reported).
-    if (!m_jsi.contains(lang))
+    if (!m_sface.contains(lang))
         setupInterpreter(lang);
 
     // Shortcuts.
-    Interpreter *jsi = m_jsi[lang];
     Scriptface *sface = m_sface[lang];
-    ExecState *exec = jsi->globalExec();
-    JSObject *gobj = jsi->globalObject();
+    ExecState *exec = sface->jsi->globalExec();
+    JSObject *gobj = sface->jsi->globalObject();
 
     // Link current message data for script-side interface.
     sface->msgctxt = &msgctxt;
@@ -511,7 +519,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
         QString mlang = mod[1];
 
         // Add interpreters for new languages.
-        if (!m_jsi.contains(mlang))
+        if (!m_sface.contains(mlang))
             setupInterpreter(mlang);
 
         // Setup current module path for loading submodules.
@@ -529,7 +537,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
         fname = fname.left(fname.lastIndexOf('.'));
 
         // Load the module.
-        ExecState *exec = m_jsi[mlang]->globalExec();
+        ExecState *exec = m_sface[mlang]->jsi->globalExec();
         List alist;
         alist.append(jsString(fname));
 
@@ -563,8 +571,8 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     jsi->globalObject()->put(jsi->globalExec(), SFNAME, sface,
                              DontDelete|ReadOnly);
 
-    // Store interpreter and scriptface.
-    m_jsi[lang] = jsi;
+    // Store scriptface and link to its interpreter.
+    sface->jsi = jsi;
     m_sface[lang] = sface;
 
     //dbgout("=====> Created interpreter for '%1'", lang);
@@ -578,7 +586,9 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
 @begin ScriptfaceProtoTable 2
     load            Scriptface::Load            DontDelete|ReadOnly|Function 0
     setcall         Scriptface::Setcall         DontDelete|ReadOnly|Function 3
-    callForall      Scriptface::CallForall      DontDelete|ReadOnly|Function 3
+    hascall         Scriptface::Hascall         DontDelete|ReadOnly|Function 1
+    acall           Scriptface::Acall           DontDelete|ReadOnly|Function 0
+    setcallForall   Scriptface::SetcallForall   DontDelete|ReadOnly|Function 3
     fallback        Scriptface::Fallback        DontDelete|ReadOnly|Function 0
     nsubs           Scriptface::Nsubs           DontDelete|ReadOnly|Function 0
     subs            Scriptface::Subs            DontDelete|ReadOnly|Function 1
@@ -590,10 +600,11 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
     dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
     lscr            Scriptface::Lscr            DontDelete|ReadOnly|Function 0
-    normKey         Scriptface::normKey         DontDelete|ReadOnly|Function 1
-    loadProps       Scriptface::loadProps       DontDelete|ReadOnly|Function 0
-    getProp         Scriptface::getProp         DontDelete|ReadOnly|Function 2
-    toUpperFirst    Scriptface::toUpperFirst    DontDelete|ReadOnly|Function 2
+    normKey         Scriptface::NormKey         DontDelete|ReadOnly|Function 1
+    loadProps       Scriptface::LoadProps       DontDelete|ReadOnly|Function 0
+    getProp         Scriptface::GetProp         DontDelete|ReadOnly|Function 2
+    setProp         Scriptface::SetProp         DontDelete|ReadOnly|Function 3
+    toUpperFirst    Scriptface::ToUpperFirst    DontDelete|ReadOnly|Function 2
 @end
 */
 /* Source for ScriptfaceTable.
@@ -653,8 +664,12 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->loadf(exec, args);
         case Scriptface::Setcall:
             return obj->setcallf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
-        case Scriptface::CallForall:
-            return obj->callForallf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
+        case Scriptface::Hascall:
+            return obj->hascallf(exec, CALLARG(0));
+        case Scriptface::Acall:
+            return obj->acallf(exec, args);
+        case Scriptface::SetcallForall:
+            return obj->setcallForallf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
         case Scriptface::Fallback:
             return obj->fallbackf(exec);
         case Scriptface::Nsubs:
@@ -677,13 +692,15 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->dbgputsf(exec, CALLARG(0));
         case Scriptface::Lscr:
             return obj->lscrf(exec);
-        case Scriptface::normKey:
+        case Scriptface::NormKey:
             return obj->normKeyf(exec, CALLARG(0));
-        case Scriptface::loadProps:
+        case Scriptface::LoadProps:
             return obj->loadPropsf(exec, args);
-        case Scriptface::getProp:
+        case Scriptface::GetProp:
             return obj->getPropf(exec, CALLARG(0), CALLARG(1));
-        case Scriptface::toUpperFirst:
+        case Scriptface::SetProp:
+            return obj->setPropf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
+        case Scriptface::ToUpperFirst:
             return obj->toUpperFirstf(exec, CALLARG(0), CALLARG(1));
         default:
             return jsUndefined();
@@ -720,9 +737,6 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
         stream.setCodec("UTF-8");
         QString source = stream.readAll();
         file.close();
-
-        Interpreter *jsi = exec->lexicalInterpreter(); // shortcut
-        // FIXME: Hmm... use dynamic or lexical interpreter?
 
         Completion comp = jsi->evaluate(qfpath, 0, source);
 
@@ -779,19 +793,69 @@ JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
     return jsUndefined();
 }
 
-JSValue *Scriptface::callForallf (ExecState *exec, JSValue *name,
-                                  JSValue *func, JSValue *fval)
+JSValue *Scriptface::hascallf (ExecState *exec, JSValue *name)
 {
     if (!name->isString())
         return throwError(exec, TypeError,
-                          SPREF"callForall: expected string as first argument");
+                          SPREF"hascall: expected string as first argument");
+
+    QString qname = name->toString(exec).qstring();
+    return jsBoolean(funcs.contains(qname));
+}
+
+JSValue *Scriptface::acallf (ExecState *exec, const List &argv)
+{
+    if (argv.size() < 1) {
+        return throwError(exec, SyntaxError,
+                          SPREF"acall: expected at least one argument (call name)");
+    }
+    if (!argv[0]->isString()) {
+        return throwError(exec, SyntaxError,
+                          SPREF"acall: expected string as first argument (call name)");
+    }
+
+    // Get the function and its context object.
+    QString callname = argv[0]->getString().qstring();
+    if (!funcs.contains(callname)) {
+        return throwError(exec, EvalError,
+                          QString(SPREF"acall: unregistered call to '%1'").arg(callname));
+    }
+    JSObject *func = funcs[callname];
+    JSValue *fval = fvals[callname];
+
+    // Recover module path from the time of definition of this call,
+    // for possible load calls.
+    globalKTI->currentModulePath = fpaths[callname];
+
+    // Execute function.
+    List arglist;
+    for (int i = 1; i < argv.size(); ++i)
+        arglist.append(argv[i]);
+    JSValue *val;
+    if (fval->isObject()) {
+        // Call function with the context object.
+        val = func->callAsFunction(exec, fval->getObject(), arglist);
+    }
+    else {
+        // No context object associated to this function, use global.
+        val = func->callAsFunction(exec, jsi->globalObject(), arglist);
+    }
+    return val;
+}
+
+JSValue *Scriptface::setcallForallf (ExecState *exec, JSValue *name,
+                                     JSValue *func, JSValue *fval)
+{
+    if (!name->isString())
+        return throwError(exec, TypeError,
+                          SPREF"setcallForall: expected string as first argument");
     if (   !func->isObject()
         || !func->getObject()->implementsCall())
         return throwError(exec, TypeError,
-                          SPREF"callForall: expected function as second argument");
+                          SPREF"setcallForall: expected function as second argument");
     if (!(fval->isObject() || fval->isNull()))
         return throwError(exec, TypeError,
-                          SPREF"callForall: expected object or null as third argument");
+                          SPREF"setcallForall: expected object or null as third argument");
 
     QString qname = name->toString(exec).qstring();
     funcs[qname] = func->getObject();
@@ -993,6 +1057,29 @@ JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
             return jsString(QString::fromUtf8(qval));
         }
     }
+    return jsUndefined();
+}
+
+JSValue *Scriptface::setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, JSValue *value)
+{
+    if (!phrase->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"setProp: expected string as first argument");
+    }
+    if (!prop->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"setProp: expected string as second argument");
+    }
+    if (!value->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"setProp: expected string as third argument");
+    }
+
+    QByteArray qphrase = normKeystr(phrase->toString(exec).qstring());
+    QByteArray qprop = normKeystr(prop->toString(exec).qstring());
+    QByteArray qvalue = normKeystr(value->toString(exec).qstring());
+    // Any non-existant key in first or second-level hash will be created.
+    phraseProps[qphrase][qprop] = qvalue;
     return jsUndefined();
 }
 

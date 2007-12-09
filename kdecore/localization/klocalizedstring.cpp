@@ -961,8 +961,13 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
 
     // Find script modules for all included language/catalogs that have them,
     // and remember their paths.
+    // A more specific module may reference the calls from a less specific,
+    // and the catalog list is ordered from more to less specific. Therefore,
+    // work on reversed list of catalogs.
     foreach (const QString &lang, languages) {
-        foreach (const KCatalogName &cat, catalogs) {
+        for (int i = catalogs.size() - 1; i >= 0; --i) {
+            const KCatalogName &cat(catalogs[i]);
+
             // Assemble module's relative path.
             QString modrpath =   lang + '/' + s->scriptDir + '/'
                             + cat.name + '/' + cat.name + ".js";
