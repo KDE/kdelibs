@@ -29,6 +29,14 @@
 #include <config-kdirwatch.h>
 #include "kdirwatch.h"
 
+#include <QtCore/QList>
+#include <QtCore/QMap>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QTimer>
+class QFileSystemWatcher;
+class QSocketNotifier;
+
 #ifdef HAVE_FAM
 #include <limits.h>
 #include <fam.h>
@@ -63,11 +71,11 @@ class KDirWatchPrivate : public QObject
 public:
 
   enum entryStatus { Normal = 0, NonExistent };
-  enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, INotifyMode, FAMMode };
+  enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, INotifyMode, FAMMode, QFSWatchMode };
   enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
 
 
-  enum WatchMethod { Stat, Fam, INotify };
+  enum WatchMethod { Stat, Fam, INotify, QFSWatch };
 
   struct Client {
     KDirWatch* instance;
@@ -134,7 +142,7 @@ public:
 
   Entry* entry(const QString&);
   int scanEntry(Entry* e);
-  void emitEvent(Entry* e, int event, const QString &fileName = QString());
+  void emitEvent(const Entry* e, int event, const QString &fileName = QString());
 
   // Memory management - delete when last KDirWatch gets deleted
   void ref() { m_ref++; }
@@ -147,6 +155,7 @@ public Q_SLOTS:
   void famEventReceived(); // for FAM
   void inotifyEventReceived(); // for inotify
   void slotRemoveDelayed();
+  void fswEventReceived(const QString &path);  // for QFileSystemWatcher
 
 public:
   QTimer timer;
@@ -180,6 +189,10 @@ public:
   int m_inotify_fd;
 
   bool useINotify(Entry*);
+#endif
+#ifdef HAVE_QFILESYSTEMWATCHER
+  QFileSystemWatcher *fsWatcher;
+  bool useQFSWatch(Entry* e);
 #endif
 
   bool _isStopped;

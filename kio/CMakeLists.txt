@@ -31,6 +31,11 @@ macro_bool_to_01(FAM_FOUND HAVE_FAM)
 
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
+if(WIN32)
+ # currently for win32 only --> enable it for all in 4.1?
+ OPTION(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
+ macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
+endif(WIN32)
 
 configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kdirwatch.h )
 

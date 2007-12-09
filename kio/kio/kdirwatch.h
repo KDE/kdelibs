@@ -18,10 +18,9 @@
 #ifndef _KDIRWATCH_H
 #define _KDIRWATCH_H
 
-#include <QtCore/QTimer>
-#include <QtCore/QDate>
-#include <QtCore/QMap>
-#include <QtCore/QSocketNotifier>
+#include <QtCore/QDateTime>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include <kio/kio_export.h>
 
@@ -75,7 +74,7 @@ class KIO_EXPORT KDirWatch : public QObject
       WatchSubDirs = 0x02 ///< Watch also all the subdirs contained by the directory
     };
     Q_DECLARE_FLAGS(WatchModes, WatchMode)
-   
+
    /**
     * Constructor.
     *

@@ -50,8 +50,10 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
-#include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTimer>
+#ifdef HAVE_QFILESYSTEMWATCHER
+#include <QtCore/QFileSystemWatcher>
+#endif
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -122,16 +124,22 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
 
-  QString method = config.readEntry("PreferredMethod", "Fam"); 
+  QString method = config.readEntry("PreferredMethod", "Fam");
   if (method == "Fam")
   {
     m_preferredMethod = Fam;
   }else if (method == "Stat")
   {
     m_preferredMethod = Stat;
+  }else if (method == "QFSWatch") {
+    m_preferredMethod = QFSWatch;
   }else
   {
+#ifdef Q_OS_WIN
+    m_preferredMethod = QFSWatch;
+#else
     m_preferredMethod = INotify;
+#endif
   }
 
 
@@ -192,7 +200,12 @@ KDirWatchPrivate::KDirWatchPrivate()
              this, SLOT( inotifyEventReceived() ) );
   }
 #endif
-
+#ifdef HAVE_QFILESYSTEMWATCHER
+  availableMethods << "QFileSystemWatcher";
+  fsWatcher = new QFileSystemWatcher();
+  connect(fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fswEventReceived(QString)));
+  connect(fsWatcher, SIGNAL(fileChanged(QString)),      this, SLOT(fswEventReceived(QString)));
+#endif
   kDebug(7001) << "Available methods: " << availableMethods;
 }
 
@@ -212,6 +225,9 @@ KDirWatchPrivate::~KDirWatchPrivate()
 #ifdef HAVE_SYS_INOTIFY_H
   if ( supports_inotify )
     ::close( m_inotify_fd );
+#endif
+#ifdef HAVE_QFILESYSTEMWATCHER
+  delete fsWatcher;
 #endif
 }
 
@@ -353,7 +369,7 @@ void KDirWatchPrivate::Entry::addClient(KDirWatch* instance,
 {
   if (instance == 0)
     return;
-  
+
   foreach(Client* client, m_clients) {
     if (client->instance == instance) {
       client->count++;
@@ -529,6 +545,21 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   return false;
 }
 #endif
+#ifdef HAVE_QFILESYSTEMWATCHER
+bool KDirWatchPrivate::useQFSWatch(Entry* e)
+{
+  e->m_mode = QFSWatchMode;
+  e->dirty = false;
+
+  if ( e->m_status == NonExistent ) {
+    addEntry( 0, QDir::cleanPath( e->path + "/.." ), e, true );
+    return true;
+  }
+
+  fsWatcher->addPath( e->path );
+  return true;
+}
+#endif
 
 bool KDirWatchPrivate::useStat(Entry* e)
 {
@@ -667,7 +698,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     } else if (watchModes & KDirWatch::WatchFiles) {
       filters |= QDir::Files;
     }
- 
+
     QDir basedir (e->path);
     QFileInfoList contents = basedir.entryInfoList(filters);
     for (QFileInfoList::iterator iter = contents.begin();
@@ -679,11 +710,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
                 isDir ? watchModes : KDirWatch::WatchDirOnly);
     }
   }
-  
+
   // Now I've put inotify check before famd one, otherwise famd will be used
   // also when inotify is available. Since inotify works
   // better than famd, it is preferred to the last one
- 
+
   //First try to use the preferred method, if that fails use the usual order:
   //inotify,fam,stat
   bool entryAdded = false;
@@ -697,6 +728,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #if defined(HAVE_SYS_INOTIFY_H)
     entryAdded = useINotify(e);
 #endif
+  }else if (m_preferredMethod == QFSWatch)
+  {
+#ifdef HAVE_QFILESYSTEMWATCHER
+    entryAdded = useQFSWatch(e);
+#endif
   }else if (m_preferredMethod == Stat)
   {
     entryAdded = useStat(e);
@@ -707,18 +743,22 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #if defined(HAVE_SYS_INOTIFY_H)
     if (useINotify(e)) return;
 #endif
-  
+
 #if defined(HAVE_FAM)
     if (useFAM(e)) return;
 #endif
-  
+
+#if defined(HAVE_QFILESYSTEMWATCHER)
+    if (useQFSWatch(e)) return;
+#endif
+
     useStat(e);
   }
 }
 
 
 void KDirWatchPrivate::removeEntry( KDirWatch* instance,
-				    const QString& _path, Entry* sub_entry )
+                                    const QString& _path, Entry* sub_entry )
 {
   kDebug(7001)  << "KDirWatchPrivate::removeEntry for" << _path
                 << "sub_entry:" << sub_entry;
@@ -777,6 +817,11 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   }
 #endif
 
+#ifdef HAVE_QFILESYSTEMWATCHER
+  if (e->m_mode == QFSWatchMode) {
+    fsWatcher->removePath(e->path);
+  }
+#endif
   if (e->m_mode == StatMode) {
     statEntries--;
     if ( statEntries == 0 ) {
@@ -960,6 +1005,14 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   }
 #endif
 
+#if defined( USE_QFILSYSTEMWATCHER )
+  if (e->m_mode == QFSWatchMode ) {
+    // we know nothing has changed, no need to stat
+    if(!e->dirty) return NoChange;
+    e->dirty = false;
+  }
+#endif
+
   if (e->m_mode == StatMode) {
     // only scan if timeout on entry timer happens;
     // e.g. when using 500msec global timer, a entry
@@ -1011,7 +1064,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
  * and stored pending events. When watching is stopped, the event is
  * added to the pending events.
  */
-void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
+void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileName)
 {
   QString path (e->path);
   if (!fileName.isEmpty()) {
@@ -1346,6 +1399,7 @@ void KDirWatchPrivate::statistics()
                     << ((e->m_mode == FAMMode) ? "FAM" :
                         (e->m_mode == INotifyMode) ? "INotify" :
                         (e->m_mode == DNotifyMode) ? "DNotify" :
+                        (e->m_mode == QFSWatchMode) ? "QFSWatch" :
                         (e->m_mode == StatMode) ? "Stat" : "Unknown Method")
                     << ")";
 
@@ -1371,6 +1425,57 @@ void KDirWatchPrivate::statistics()
   }
 }
 
+#ifdef HAVE_QFILESYSTEMWATCHER
+// Slot for QFileSystemWatcher
+void KDirWatchPrivate::fswEventReceived(const QString &path)
+{
+  EntryMap::Iterator it;
+  it = m_mapEntries.find(path);
+  if(it != m_mapEntries.end()) {
+    Entry* e = &(*it);
+    e->dirty = true;
+    int ev = scanEntry(e);
+    if (ev != NoChange)
+      emitEvent(e, ev);
+    if(ev == Deleted) {
+      if (e->isDir)
+        addEntry(0, QDir::cleanPath(e->path + "/.."), e, true);
+      else
+        addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
+    } else
+    if (ev == Changed && e->isDir && e->m_entries.count()) {
+      Entry* sub_entry = 0;
+      Q_FOREACH(sub_entry, e->m_entries) {
+        if(e->isDir) {
+          if (QFileInfo(sub_entry->path).isDir())
+            break;
+        } else {
+          if (QFileInfo(sub_entry->path).isFile())
+            break;
+        }
+      }
+      if (sub_entry) {
+        removeEntry(0, e->path, sub_entry);
+        KDE_struct_stat stat_buf;
+        QByteArray tpath = QFile::encodeName(path);
+        KDE_stat(tpath, &stat_buf);
+
+        if(!useQFSWatch(sub_entry))
+#ifdef HAVE_SYS_INOTIFY_H
+          if(!useINotify(sub_entry))
+#endif
+            useStat(sub_entry);
+        fswEventReceived(sub_entry->path);
+      }
+    }
+  }
+}
+#else
+void KDirWatchPrivate::fswEventReceived(const QString &path)
+{
+    kWarning (7001) << "QFileSystemWatcher event received but QFileSystemWatcher isn't supported";
+}
+#endif    // HAVE_QFILESYSTEMWATCHER
 
 //
 // Class KDirWatch
