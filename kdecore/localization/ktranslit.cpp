@@ -113,9 +113,12 @@ QString KTranslit::transliterate (const QString &str,
     return str;
 }
 
+// Head of alternative inserts directives.
+#define ALTINS_HEAD "~@"
+
 QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
 {
-    static QString head("~@");
+    static QString head(ALTINS_HEAD);
     static int hlen = head.length();
 
     QString str = str_;
@@ -166,6 +169,30 @@ QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
     rstr.append(str);
 
     return rstr;
+}
+
+// If the insert is just starting at position i, return the position of the
+// first character after the insert (or string length if none).
+// If the insert is not starting, return i itself.
+static int skipInsert (const QString &str, int i, int ninserts)
+{
+    static QString head(ALTINS_HEAD);
+    static int hlen = head.length();
+
+    if (str.mid(i, hlen) == head) {
+        int slen = str.length();
+        int ia = i + hlen;
+        if (ia >= slen) return slen;
+        QChar sep = str[ia];
+        for (int k = 0; k < ninserts; ++k) {
+            ia = str.indexOf(sep, ia + 1);
+            if (ia < 0) return slen;
+        }
+        return ia + 1;
+    }
+    else {
+        return i;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -254,16 +281,29 @@ KTranslitSerbian::~KTranslitSerbian ()
     delete d;
 }
 
-QString KTranslitSerbian::transliterate (const QString &str_,
+QString KTranslitSerbian::transliterate (const QString &str,
                                          const QString &script) const
 {
+    static QString insHead(ALTINS_HEAD);
+
     if (d->latinNames.contains(script)) {
-        QString str = resolveInserts(str_, 2, 1);
         // NOTE: This loop has been somewhat optimized for speed.
         int slen = str.length();
+        bool anyInserts = str.indexOf(insHead) >= 0;
         QString nstr;
         nstr.reserve(slen + 5);
         for (int i = 0; i < slen; ++i) {
+            // Skip alternative inserts altogether, so that they can be used
+            // as a mean to exclude from transliteration.
+            if (anyInserts) {
+                int to = skipInsert(str, i, 2);
+                if (to > i) {
+                    nstr.append(str.mid(i, to - i));
+                    if (to >= slen) break;
+                    i = to;
+                }
+            }
+            // Transliterate current character.
             QChar c = str[i];
             QString r = d->dictC2L[c];
             if (!r.isEmpty()) {
@@ -280,10 +320,11 @@ QString KTranslitSerbian::transliterate (const QString &str_,
                 nstr.append(c);
             }
         }
+        nstr = resolveInserts(nstr, 2, 1);
         return nstr;
     }
     else {
-        QString str = resolveInserts(str_, 2, 0);
-        return str;
+        QString nstr = resolveInserts(str, 2, 0);
+        return nstr;
     }
 }
