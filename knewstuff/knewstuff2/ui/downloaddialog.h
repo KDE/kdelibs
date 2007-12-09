@@ -25,6 +25,7 @@
 #include <kdialog.h>
 #include <ktitlewidget.h>
 
+#include <QtCore/QSet>
 #include <QtGui/QScrollArea>
 #include <QtGui/QLabel>
 
@@ -184,6 +185,7 @@ private:
 
     //QList<Entry*> m_entries;
     QMap<const Feed*, Entry::List> entries;
+	QSet<QString> m_payloads;
 	QMap<const Provider*, Entry::List> m_entriesByProvider;
     QMap<Entry*, const Provider*> providers;
 };

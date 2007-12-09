@@ -649,9 +649,10 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 	e.append(entry);
 	entries[feed] = e;
 
-	if (!m_entriesByProvider[provider].contains(entry))
+	if (!m_payloads.contains(entry->payload().representation()))
 	{
 		m_entriesByProvider[provider].append(entry);
+		m_payloads.insert(entry->payload().representation());
 	}
 
 	// FIXME: what if entry belongs to more than one provider at once?
