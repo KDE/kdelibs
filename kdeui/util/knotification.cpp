@@ -50,7 +50,6 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QDateTime>
-#include <QPointer>
 #include <QDBusError>
 
 struct KNotification::Private
@@ -352,7 +351,7 @@ void KNotification::slotReceivedId(int id)
 
 void KNotification::slotReceivedIdError(const QDBusError& error)
 {
-	kWarning(299) << "Error while contacting notify deamon" << error.message();
+	kWarning(299) << "Error while contacting notify daemon" << error.message();
 	QTimer::singleShot(0, this, SLOT(deref()));
 }
 
