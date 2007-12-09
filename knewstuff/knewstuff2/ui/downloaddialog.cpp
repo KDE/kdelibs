@@ -93,7 +93,7 @@ static bool DownloadsSorter(const Entry* e1, const Entry* e2)
 
 ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
     : QScrollArea( _parent ),
-    m_newStuffDialog( newStuffDialog ), m_currentFeed(0), m_root( 0 ), m_sorting( 0 )
+    m_newStuffDialog( newStuffDialog ), m_currentProvider(0), m_root( 0 ), m_sorting( 0 )
 {
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
     setWidgetResizable(true);
@@ -109,7 +109,7 @@ void ItemsView::setEngine(DxsEngine *engine)
     m_engine = engine;
 }
 
-void ItemsView::setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList )
+void ItemsView::setItems(QMap<const Provider*, KNS::Entry::List> itemList )
 {
     clear();
     m_entries = itemList;
@@ -121,6 +121,12 @@ void ItemsView::setProviders( QMap<Entry*, const Provider*> providers )
     m_providers = providers;
 }
 
+void ItemsView::setProvider( const Provider * provider)
+{
+	m_currentProvider = provider;
+	buildContents();
+}
+
 void ItemsView::setSorting( int sortType )
 {
     m_sorting = sortType;
@@ -129,8 +135,8 @@ void ItemsView::setSorting( int sortType )
 
 void ItemsView::setFeed( const Feed * feed)
 {
-    m_currentFeed = feed;
-    buildContents();
+    //m_currentFeed = feed;
+    //buildContents();
 }
 
 void ItemsView::setSearchText( const QString & text )
@@ -167,12 +173,12 @@ void ItemsView::buildContents()
     _layout->setVerticalSpacing (10);
 
     // use the first feed if none has been set
-    if (m_currentFeed == NULL)
+    if (m_currentProvider == NULL)
     {
-        m_currentFeed = m_entries.keys()[0];
+        m_currentProvider = m_entries.keys()[0];
     }
     
-    Entry::List entries = m_entries[m_currentFeed];
+    Entry::List entries = m_entries[m_currentProvider];
     switch (m_sorting)
     {
         case 0:
@@ -439,7 +445,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     mainLayout->setMargin(0);
 
     // create left picture widget (if picture found)
-    //QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
+    //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
     //if ( !p.isNull() )
     //   horLay->addWidget( new ExtendImageWidget( p, this ) );
     // FIXME KDE4PORT: if we use a left bar image, find a better way
@@ -456,12 +462,12 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     // add widgets to the control panel
     QLabel * label1 = new QLabel( i18n("Show:")/*, panelFrame*/ );
     panelLayout->addWidget( label1, 0, 0 );
-    typeCombo = new QComboBox( false/*, panelFrame*/ );
-    panelLayout->addWidget( typeCombo, 0, 1 );
-    typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
-    typeCombo->setMinimumWidth( 150 );
-    typeCombo->setEnabled( false );
-    connect( typeCombo, SIGNAL( activated(int) ), SLOT( slotLoadProviderDXS() ) );
+    m_typeCombo = new QComboBox( false/*, panelFrame*/ );
+    panelLayout->addWidget( m_typeCombo, 0, 1 );
+    m_typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
+    m_typeCombo->setMinimumWidth( 150 );
+    m_typeCombo->setEnabled( false );
+    connect( m_typeCombo, SIGNAL( activated(int) ), SLOT( slotLoadProviderDXS() ) );
 
     QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
     panelLayout->addWidget( label2, 0, 2 );
@@ -572,21 +578,20 @@ void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 
 void DownloadDialog::slotLoadProviderDXS()
 {
-    QString category = typeCombo->currentText();
-    QString categoryname = categorymap[category];
+    //QString category = m_typeCombo->currentText();
+    //QString categoryname = categorymap[category];
+	QString providerName = m_typeCombo->currentText();
 
-    QList<const Feed*> feeds = entries.keys();
+    QList<const Provider*> providers = m_entriesByProvider.keys();
 
-    for (int i = 0; i < feeds.size(); ++i)
+    for (int i = 0; i < providers.size(); ++i)
     {
-        if (feeds[i]->name().representation() == category)
+        if (providers[i]->name().representation() == providerName)
         {
-            itemsView->setFeed(feeds[i]);
+            itemsView->setProvider(providers[i]);
             break;
         }
     }
-    //m_dxs->call_entries(categoryname, QString());
-    // FIXME: use d->engine
 }
 
 void DownloadDialog::slotUpdateSearch()
@@ -617,13 +622,13 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
         //kDebug() << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
-        typeCombo->addItem(icon, category->name().representation());
+        m_typeCombo->addItem(icon, category->name().representation());
         categorymap[category->name().representation()] = category->id();
         // FIXME: better use global id, since names are not guaranteed
         //        to be unique
     }
 
-    typeCombo->setEnabled(true);
+    m_typeCombo->setEnabled(true);
 
     slotLoadProviderDXS();
 }
@@ -640,11 +645,14 @@ void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
 
 void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *provider)
 {
-	Q_UNUSED(provider);
-
-        Entry::List e = entries[feed];
-        e.append(entry);
+	Entry::List e = entries[feed];
+	e.append(entry);
 	entries[feed] = e;
+
+	if (!m_entriesByProvider[provider].contains(entry))
+	{
+		m_entriesByProvider[provider].append(entry);
+	}
 
 	// FIXME: what if entry belongs to more than one provider at once?
 	providers[entry] = provider;
@@ -655,23 +663,23 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 void DownloadDialog::refresh()
 {
     itemsView->setProviders(providers);
-    itemsView->setItems(entries);
+    itemsView->setItems(m_entriesByProvider);
     // FIXME: this method has side effects (rebuilding HTML!!!)
 
-    for(int i = 0; i < entries.keys().count(); i++)
+    for(int i = 0; i < m_entriesByProvider.keys().count(); i++)
     {
-        const Feed *feed = entries.keys().at(i);
-        if(!feed)
+        const Provider *provider = m_entriesByProvider.keys().at(i);
+        if(!provider)
         {
             //kDebug() << "INVALID FEED?!";
             continue;
         }
         //QPixmap icon = DesktopIcon(QString(), 16);
-        //d->typeCombo->addItem(icon, feed->name().representation());
-        typeCombo->addItem(feed->name().representation());
+        //d->m_typeCombo->addItem(icon, feed->name().representation());
+        m_typeCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
     }
-    typeCombo->setEnabled(true);
+    m_typeCombo->setEnabled(true);
     sortCombo->setEnabled(true);
     searchLine->setEnabled(true);
     // FIXME: sort combo must be filled with feeds instead of being prefilled

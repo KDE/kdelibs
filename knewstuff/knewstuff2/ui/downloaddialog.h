@@ -2,6 +2,7 @@
  *   Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>                  *
  *   Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>           *
  *   Copyright (C) 2007 Dirk Mueller <mueller@kde.org>                     *
+ *   Copyright (C) 2007 Jeremy Whiting <jeremy@scitools.com>               *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -51,12 +52,15 @@ public:
 
     void setEngine(DxsEngine *engine);
 
-    void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList );
-    void setProviders( QMap<Entry*, const Provider*> providers );
+    void setItems( QMap<const Provider*, KNS::Entry::List> itemList );
+	void setProvider( const Provider * );
     void setSorting( int sortType );
-    void setFeed( const Feed* );
     void setSearchText( const QString & text );
     void updateItem( Entry *entry );
+
+	// deprecate these
+	void setProviders( QMap<Entry*, const Provider*> providers );
+    void setFeed( const Feed* );
 
 private:
     void buildContents();
@@ -64,9 +68,10 @@ private:
     void clear();
 
     DownloadDialog * m_newStuffDialog;
-    QMap<const Feed*, Entry::List> m_entries;
-    const Feed* m_currentFeed;
-    QMap<Entry*, const Provider*> m_providers;
+    QMap<const Provider*, Entry::List> m_entries;
+    const Provider* m_currentProvider;
+
+	QMap<Entry*, const Provider*> m_providers;
     QWidget *m_root;
     int m_sorting;
     QMap<QPixmap*, QWidget*> m_pixmaps;
@@ -162,7 +167,7 @@ private:
     // Contents
     // gui related vars
     KLineEdit * searchLine;
-    QComboBox * typeCombo;
+    QComboBox * m_typeCombo;
     QComboBox * sortCombo;
     QLabel    * statusLabel;
     ItemsView * itemsView;
@@ -179,6 +184,7 @@ private:
 
     //QList<Entry*> m_entries;
     QMap<const Feed*, Entry::List> entries;
+	QMap<const Provider*, Entry::List> m_entriesByProvider;
     QMap<Entry*, const Provider*> providers;
 };
 
