@@ -22,6 +22,7 @@
 #include "kdeprintdialog.h"
 
 #include <klocale.h>
+#include <kdeversion.h>
 
 #include <QLayout>
 #include <fixx11h.h> // for enable-final
@@ -34,6 +35,9 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                                                QWidget *parent)
 {
     QPrintDialog *dialog = createPrintDialog(printer, parent);
+#if QT_VERSION >= KDE_MAKE_VERSION(4,4,0)
+    dialog->setOptionTabs(customTabs);
+#else
     if (! customTabs.isEmpty()) {
         QWidget *generalWidget = dialog->findChild<QWidget*>("generalWidget");
         QWidget *buttons = dialog->findChild<QWidget*>("buttonBox");
@@ -52,6 +56,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                 tabs->addTab(tab, tab->windowTitle());
         }
     }
+#endif
 
     return dialog;
 }
