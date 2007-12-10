@@ -306,8 +306,6 @@ private:
   * and having parameters.
   *
   * [configuration slot]
-  * @li @p setSaveViewPropertiesLocally( bool ): If @p true, view properties are saved into .directory
-  *                                       otherwise, they are saved globally.
   * @li @p disableScrolling: no scrollbars
   */
 class KPARTS_EXPORT BrowserExtension : public QObject

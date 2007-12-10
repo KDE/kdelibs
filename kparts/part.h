@@ -799,10 +799,10 @@ Q_SIGNALS:
 public Q_SLOTS:
     /**
      * Call setModified() whenever the contents get modified.
-     * This is a slot for convenience, so that you can connect it
-     * to a signal, like textChanged().
+     * This is a slot for convenience, since it simply calls setModified(true),
+     * so that you can connect it to a signal, like textChanged().
      */
-    virtual void setModified();
+    void setModified();
 
     /**
      * Save the file in the location from which it was opened.

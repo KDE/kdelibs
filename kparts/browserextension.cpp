@@ -493,7 +493,6 @@ void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
     // can have or not. No need to return them here.
     //s_actionSlotMap->insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
     //s_actionSlotMap->insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
-    // nothing for setSaveViewPropertiesLocally either
 
     // Create the action-number map
     ActionSlotMap::ConstIterator it = s_actionSlotMap->constBegin();
