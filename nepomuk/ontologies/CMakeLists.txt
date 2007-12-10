@@ -6,11 +6,13 @@ configure_file(rdfs.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/rdfs.desktop)
 configure_file(dcq.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcq.desktop)
 configure_file(dctype.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/dctype.desktop)
 configure_file(dces.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/dces.desktop)
+configure_file(xesam.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/xesam.desktop)
+configure_file(xss.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/xss.desktop)
 
 install(FILES
-  nrl.rdfs
+  nrl.trig
   ${CMAKE_CURRENT_BINARY_DIR}/nrl.desktop
-  nao.nrl
+  nao.trig
   ${CMAKE_CURRENT_BINARY_DIR}/nao.desktop
   nfo.rdfs
   ${CMAKE_CURRENT_BINARY_DIR}/nfo.desktop
@@ -24,6 +26,10 @@ install(FILES
   dcq.rdf
   ${CMAKE_CURRENT_BINARY_DIR}/dctype.desktop
   dctype.rdf
+  ${CMAKE_CURRENT_BINARY_DIR}/xesam.desktop
+  xesam.rdfs
+  ${CMAKE_CURRENT_BINARY_DIR}/xss.desktop
+  xss.rdfs
   DESTINATION
   ${DATA_INSTALL_DIR}/nepomuk/ontologies
 )
