@@ -26,6 +26,9 @@
 #include "../property.h"
 
 #include <Soprano/Statement>
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/NRL>
 
 #include <QtTest/QTest>
 #include <QtCore/QCoreApplication>
@@ -49,52 +52,52 @@ public:
 
         // one dummy class
         sl.append( Statement( Node( QUrl( ns + "DummyClass" ) ),
-                              Node( QUrl( RDF::type() ) ),
-                              Node( QUrl( RDF::NS() + "Class" ) ) ) );
+                              Node( Soprano::Vocabulary::RDF::type() ),
+                              Node( Soprano::Vocabulary::RDFS::Class() ) ) );
         sl.append( Statement( Node( QUrl( ns + "DummyClass" ) ),
-                              Node( QUrl( RDFS::label() ) ),
+                              Node( Soprano::Vocabulary::RDFS::label() ),
                               Node( LiteralValue( "A dummy class" ) ) ) );
 
         sl.append( Statement( Node( QUrl( ns + "DummySubClass" ) ),
-                              Node( QUrl( RDF::type() ) ),
-                              Node( QUrl( RDFS::NS() + "Class" ) ) ) );
+                              Node( Soprano::Vocabulary::RDF::type() ),
+                              Node( Soprano::Vocabulary::RDFS::Class() ) ) );
         sl.append( Statement( Node( QUrl( ns + "DummySubClass" ) ),
-                              Node( QUrl( RDFS::NS() + "subClassOf" ) ),
+                              Node( Soprano::Vocabulary::RDFS::subClassOf() ),
                               Node( QUrl( ns + "DummyClass" ) ) ) );
 
         sl.append( Statement( Node( QUrl( ns + "DummySubSubClass" ) ),
-                              Node( QUrl( RDF::type() ) ),
-                              Node( QUrl( RDFS::NS() + "Class" ) ) ) );
+                              Node( Soprano::Vocabulary::RDF::type() ),
+                              Node( Soprano::Vocabulary::RDFS::Class() ) ) );
         sl.append( Statement( Node( QUrl( ns + "DummySubSubClass" ) ),
-                              Node( QUrl( RDFS::NS() + "subClassOf" ) ),
+                              Node( Soprano::Vocabulary::RDFS::subClassOf() ),
                               Node( QUrl( ns + "DummySubClass" ) ) ) );
 
         // one dummy property
         sl.append( Statement( Node( QUrl( ns + "hasBrother" ) ),
-                              Node( QUrl( RDF::type() ) ),
-                              Node( QUrl( RDFS::NS() + "Property" ) ) ) );
+                              Node( Soprano::Vocabulary::RDF::type() ),
+                              Node( Soprano::Vocabulary::RDF::Property() ) ) );
         sl.append( Statement( Node( QUrl( ns + "hasBrother" ) ),
-                              Node( QUrl( RDFS::NS() + "domain" ) ),
+                              Node( Soprano::Vocabulary::RDFS::domain() ),
                               Node( QUrl( ns + "DummyClass" ) ) ) );
         sl.append( Statement( Node( QUrl( ns + "hasBrother" ) ),
-                              Node( QUrl( RDFS::NS() + "range" ) ),
+                              Node( Soprano::Vocabulary::RDFS::range() ),
                               Node( QUrl( ns + "DummyClass" ) ) ) );
         sl.append( Statement( Node( QUrl( ns + "hasBrother" ) ),
-                              Node( QUrl( NRL::NS() + "inverseProperty" ) ),
+                              Node( Soprano::Vocabulary::NRL::inverseProperty() ),
                               Node( QUrl( ns + "isBrotherOf" ) ) ) );
 
         // and its reverse property
         sl.append( Statement( Node( QUrl( ns + "isBrotherOf" ) ),
-                              Node( QUrl( RDF::type() ) ),
-                              Node( QUrl( RDFS::NS() + "Property" ) ) ) );
+                              Node( Soprano::Vocabulary::RDF::type() ),
+                              Node( Soprano::Vocabulary::RDF::Property() ) ));
         sl.append( Statement( Node( QUrl( ns + "isBrotherOf" ) ),
-                              Node( QUrl( RDFS::NS() + "domain" ) ),
+                              Node( Soprano::Vocabulary::RDFS::domain() ),
                               Node( QUrl( ns + "DummyClass" ) ) ) );
         sl.append( Statement( Node( QUrl( ns + "isBrotherOf" ) ),
-                              Node( QUrl( RDFS::NS() + "range" ) ),
+                              Node( Soprano::Vocabulary::RDFS::range() ),
                               Node( QUrl( ns + "DummyClass" ) ) ) );
         sl.append( Statement( Node( QUrl( ns + "isBrotherOf" ) ),
-                              Node( QUrl( NRL::NS() + "inverseProperty" ) ),
+                              Node( Soprano::Vocabulary::NRL::inverseProperty() ),
                               Node( QUrl( ns + "hasBrother" ) ) ) );
 
         return sl;
