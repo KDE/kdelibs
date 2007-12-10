@@ -403,17 +403,20 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
         case Button:
             d = new KColorSchemePrivate(config, state, "Colors:Button", defaultButtonColors);
             break;
-        case Selection:
-            // inactiver/disabled uses Window colors instead, ala gtk
+        case Selection: {
+            KConfigGroup group(config, "ColorEffects:Inactive");
+            // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
+            bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", false);
+            // if enabled, inactiver/disabled uses Window colors instead, ala gtk
             // ...except tinted with the Selection:NormalBackground color so it looks more like selection
-            if (state == QPalette::Active)
+            if (state == QPalette::Active || (state == QPalette::Inactive && !inactiveSelectionEffect))
                 d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
             else if (state == QPalette::Inactive)
                 d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors,
                                             KColorScheme(QPalette::Active, Selection, config).background());
             else // disabled (...and still want this branch when inactive+disabled exists)
                 d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
-            break;
+            } break;
         case Tooltip:
             d = new KColorSchemePrivate(config, state, "Colors:Tooltip", defaultTooltipColors);
             break;
