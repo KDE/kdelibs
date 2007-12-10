@@ -18,8 +18,6 @@
 
 #include "ktoolbarhandler.h"
 
-#include <assert.h>
-
 #include <QtXml/QDomDocument>
 
 #include <kaction.h>
@@ -46,8 +44,6 @@ namespace
     "    </Menu>"
     "</MenuBar>"
     "</kpartgui>";
-
-  const char *resourceFileName = "barhandler.rc";
 
   class BarActionBuilder
   {
@@ -226,7 +222,7 @@ ToolBarHandler::~ToolBarHandler()
 
 QAction *ToolBarHandler::toolBarMenuAction()
 {
-  assert( d->actions.count() == 1 );
+  Q_ASSERT( d->actions.count() == 1 );
   return d->actions.first();
 }
 

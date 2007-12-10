@@ -1473,6 +1473,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
 #else
 void KDirWatchPrivate::fswEventReceived(const QString &path)
 {
+    Q_UNUSED(path);
     kWarning (7001) << "QFileSystemWatcher event received but QFileSystemWatcher isn't supported";
 }
 #endif    // HAVE_QFILESYSTEMWATCHER

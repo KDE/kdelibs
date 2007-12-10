@@ -2380,7 +2380,7 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
 
     //See if we're asked for the very last item, and check whether it's an <option>
     //to fastpath clear
-    if ((unsigned)optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
+    if (optionIndex == (m_length - 1) && items[itemsSize - 1]->id() == ID_OPTION)
         return itemsSize - 1;
 
     int listIndex = 0;

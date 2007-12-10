@@ -41,7 +41,8 @@ TopLevel::TopLevel(QWidget *parent)
 
     i1 = new KIntNumInput(42,b1,10 /*"perc_no_slider"*/);
     i1->setLabel("percent of usage (no slider)");
-    i1->setRange(0, 100, 5, false);
+    i1->setRange(0, 100, 5);
+    i1->setSliderEnabled(false);
     conn(i1,int);
     b1->layout()->addWidget(i1);
 
@@ -54,7 +55,8 @@ TopLevel::TopLevel(QWidget *parent)
 
     i3 = new KIntNumInput(i2, 0xAF, b1,16);
     i3->setLabel("Hex byte (no slider)");
-    i3->setRange(0, 255, 1, false);
+    i3->setRange(0, 255, 1);
+    i3->setSliderEnabled(false);
     i3->setSuffix(" (hex)");
     conn(i3,int);
     b1->layout()->addWidget(i3);

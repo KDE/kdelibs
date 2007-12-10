@@ -74,6 +74,7 @@ int KJSObjectModel::rowCount(const QModelIndex &parent ) const
 
 int KJSObjectModel::columnCount(const QModelIndex &parent ) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
