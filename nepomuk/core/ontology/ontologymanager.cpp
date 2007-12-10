@@ -28,7 +28,9 @@
 #include "qurlhash.h"
 #include "global.h"
 
-#include <soprano/statement.h>
+#include <Soprano/Statement>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/XMLSchema>
 
 #include <QtCore/QDebug>
 
@@ -279,7 +281,7 @@ Nepomuk::Ontology* Nepomuk::OntologyManager::constructOntology( const QUrl& onto
         }
 
         else if( s.predicate().toString().endsWith( "#range" ) ) {
-            if ( s.object().toString().startsWith( XMLSchema::NS() ) ) {
+            if ( s.object().toString().startsWith( Soprano::Vocabulary::XMLSchema::xsdNamespace().toString() ) ) {
                 currentProperty->d->literalRange = Literal( s.object().literal().toString() );
             }
             else {
@@ -318,7 +320,7 @@ Nepomuk::Ontology* Nepomuk::OntologyManager::constructOntology( const QUrl& onto
         }
 
         // load l10n'ed comments
-        else if( s.predicate().toString() == RDFS::comment() ) {
+        else if( s.predicate() == Soprano::Vocabulary::RDFS::comment() ) {
             if ( s.object().language().isEmpty() ) {
                 currentEntity->d->comment = s.object().toString();
             }
@@ -328,7 +330,7 @@ Nepomuk::Ontology* Nepomuk::OntologyManager::constructOntology( const QUrl& onto
         }
 
         // load l10n'ed labels
-        else if( s.predicate().toString() == RDFS::label() ) {
+        else if( s.predicate() == Soprano::Vocabulary::RDFS::label() ) {
             if ( s.object().language().isEmpty() ) {
                 currentEntity->d->label = s.object().toString();
             }

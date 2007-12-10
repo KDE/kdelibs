@@ -26,42 +26,6 @@
 #include <QtCore/QUrl>
 
 namespace Nepomuk {
-    namespace RDF {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString type();
-    }
-
-    namespace RDFS {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString label();
-        NEPOMUK_EXPORT QString comment();
-    }
-
-    namespace XMLSchema {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString xmlInt();
-        NEPOMUK_EXPORT QString xmlLong();
-        NEPOMUK_EXPORT QString xmlString();
-        NEPOMUK_EXPORT QString xmlDouble();
-        NEPOMUK_EXPORT QString xmlBoolean();
-    }
-
-    namespace NRL {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString Ontology();
-    }
-
-    namespace NAO {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString hasIdentifier();
-    }
-
-    namespace NFO {
-        NEPOMUK_EXPORT QString NS();
-        NEPOMUK_EXPORT QString File();
-        NEPOMUK_EXPORT QString fileUrl();
-    }
-
     NEPOMUK_EXPORT QUrl extractNamespace( const QUrl& url );
 }
 
