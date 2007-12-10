@@ -72,8 +72,7 @@ public:
 OntologyParser::OntologyParser()
 {
     d = new Private;
-    d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( Soprano::SerializationRdfXml );
-    Q_ASSERT( d->rdfParser );
+    d->rdfParser = 0;
 }
 
 
@@ -108,6 +107,18 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
 
 bool OntologyParser::parse( const QString& filename )
 {
+    Soprano::RdfSerialization serialization;
+    if ( filename.endsWith( "trig" ) ) {
+        serialization = Soprano::SerializationTrig;
+    }
+    else {
+        serialization = Soprano::SerializationRdfXml;
+    }
+
+    if ( !( d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( serialization ) ) ) {
+        return false;
+    }
+
     qDebug() << "(OntologyParser) Parsing " << filename << endl;
 
     // get the namespaces the hacky way
@@ -125,7 +136,7 @@ bool OntologyParser::parse( const QString& filename )
     // FIXME: the serialization should be somehow specified
     Soprano::StatementIterator it = d->rdfParser->parseFile( filename,
                                                              QUrl("http://org.kde.nepomuk/dummybaseuri"),
-                                                             Soprano::SerializationRdfXml );
+                                                             serialization );
     bool success = true;
 
     while( it.next() ) {
