@@ -514,7 +514,10 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         else
             mode = QIcon::Disabled;
 
-        QPixmap icon = iconOpts->icon.pixmap(pixelMetric(PM_SmallIconSize), mode);
+        QSize size = iconOpts->size;
+        if(!size.isValid())
+            size = QSize(pixelMetric(PM_SmallIconSize), pixelMetric(PM_SmallIconSize));
+        QPixmap icon = iconOpts->icon.pixmap(size, mode);
         p->drawPixmap(centerRect(r, icon.size()), icon);
     }
     else if (primitive == Generic::FocusIndicator)
@@ -988,11 +991,11 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             // Draw the icon if there is one
             if (!bOpt->icon.isNull())
             {
-                int iconSize = pixelMetric(PM_SmallIconSize);
+                QSize iconSize(pixelMetric(PM_SmallIconSize),pixelMetric(PM_SmallIconSize));
                 IconOption icoOpt;
                 icoOpt.icon   = bOpt->icon;
+                icoOpt.size   = bOpt->iconSize;
                 icoOpt.active = flags & State_HasFocus;
-
 
                 if (!bOpt->text.isEmpty())
                 {
@@ -1000,21 +1003,21 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     //Center text + icon w/margin in between..
 
                     //Calculate length of both.
-                    int length = iconSize + margin
+                    int length = iconSize.width() + margin
                                   + p->fontMetrics().size(Qt::TextShowMnemonic, bOpt->text).width();
 
                     //Calculate offset.
                     int offset = (w - length)/2;
 
                     //draw icon
-                    QRect rect = QRect(x + offset, y + h/2 - iconSize/2, iconSize, iconSize);
+                    QRect rect = QRect(QPoint(x + offset, y + h/2 - iconSize.height()/2), iconSize);
                     drawKStylePrimitive(WT_PushButton, Generic::Icon, option,
                                         handleRTL(bOpt, rect),
                                         pal, flags, p, widget, &icoOpt);
 
                     //new bounding rect for the text
-                    x += offset + iconSize + margin;
-                    w =  length - iconSize - margin;
+                    x += offset + iconSize.width() + margin;
+                    w =  length - iconSize.width() - margin;
                 }
                 else
                 {

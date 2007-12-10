@@ -235,6 +235,7 @@ protected:
     {
         bool  active; ///< Is the icon active?
         QIcon icon;   ///< Icon drawn by this option
+        QSize size;
 
         IconOption(): active(false)
         {}
