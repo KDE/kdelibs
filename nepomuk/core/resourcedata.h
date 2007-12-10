@@ -34,8 +34,10 @@
 
 
 namespace Nepomuk {
-    class ResourceData
+    class ResourceData : public QObject
     {
+        Q_OBJECT
+
     public:
         explicit ResourceData( const QString& kickoffId_ = QString(), const QUrl& type_ = QString() );
         explicit ResourceData( const QUrl& uri, const QUrl& type_ = QString() );
@@ -82,6 +84,8 @@ namespace Nepomuk {
 
         bool hasProperty( const QString& uri );
 
+        bool hasType( const QUrl& uri );
+
         Variant property( const QString& uri );
 
         /**
@@ -101,6 +105,8 @@ namespace Nepomuk {
          * \sa exists, setProperty
          */
         bool store();
+
+        bool load();
 
         /**
          * Remove this resource data from the store completely.
@@ -132,13 +138,15 @@ namespace Nepomuk {
          */
         void updateType();
 
+        void invalidateCache() { m_cacheDirty = true; }
+
         /**
          * Compares the properties of two ResourceData objects taking into account the Deleted flag
          */
         bool operator==( const ResourceData& other ) const;
 
         /**
-         * The KMetaData lib is based on the fact that for each uri only one ResourceData object is
+         * The Nepomuk lib is based on the fact that for each uri only one ResourceData object is
          * created at all times. This method searches for an existing data object to reuse or creates
          * a new one if none exists.
          *
@@ -150,7 +158,7 @@ namespace Nepomuk {
         static ResourceData* data( const QString& uriOrId, const QUrl& type );
 
         /**
-         * The KMetaData lib is based on the fact that for each uri only one ResourceData object is
+         * The Nepomuk lib is based on the fact that for each uri only one ResourceData object is
          * created at all times. This method searches for an existing data object to reuse or creates
          * a new one if none exists.
          *
@@ -193,6 +201,9 @@ namespace Nepomuk {
          * this scenario.
          */
         ResourceData* m_proxyData;
+
+        QHash<QUrl, Variant> m_cache;
+        bool m_cacheDirty;
 
         friend class ResourceManager;
     };

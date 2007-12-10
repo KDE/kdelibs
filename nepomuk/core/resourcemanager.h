@@ -154,6 +154,10 @@ namespace Nepomuk {
 
         // FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
 
+    private Q_SLOTS:
+        // FIXME: use the new Soprano::Model signals once they are implemented
+        void slotStoreChanged();
+
     private:
         friend class Nepomuk::ResourceManagerHelper;
         ResourceManager();

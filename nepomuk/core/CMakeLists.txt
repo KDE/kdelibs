@@ -7,10 +7,12 @@ include_directories(
   ${nepomukcore_SOURCE_DIR}/generated
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
+  ${KDE4_INCLUDES}
+  ${KDE4_KDECORE_INCLUDES}
+  ${KDE4_KDEUI_INCLUDES}
+  ${QT_INCLUDES}
+  ${SOPRANO_INCLUDE_DIR}
 )
-
-include_directories( ${KDE4_KDEUI_INCLUDES} )
-include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 set(nepomuk_LIB_SRCS
   variant.cpp

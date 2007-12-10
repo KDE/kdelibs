@@ -28,6 +28,12 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+#include <Soprano/Vocabulary/NAO>
+#include <Soprano/Vocabulary/Xesam>
+#include <Soprano/Vocabulary/RDFS>
+
+#include <kmimetype.h>
+
 // FIXME: let the code generator do this
 #include "tag.h"
 
@@ -104,6 +110,12 @@ QString Nepomuk::Resource::type() const
 }
 
 
+bool Nepomuk::Resource::hasType( const QUrl& typeUri ) const
+{
+    return m_data->hasType( typeUri );
+}
+
+
 QString Nepomuk::Resource::className() const
 {
     return type().section( QRegExp( "[#:]" ), -1 );
@@ -155,6 +167,80 @@ bool Nepomuk::Resource::exists() const
 bool Nepomuk::Resource::isValid() const
 {
     return m_data->isValid();
+}
+
+
+QString Nepomuk::Resource::genericLabel() const
+{
+    QString label = property( Soprano::Vocabulary::NAO::prefLabel().toString() ).toString();
+    if ( label.isEmpty() ) {
+        label = property( Soprano::Vocabulary::RDFS::label().toString() ).toString();
+
+        if ( label.isEmpty() ) {
+            label = property( Soprano::Vocabulary::NAO::identifier().toString() ).toString();
+
+            if ( label.isEmpty() ) {
+                label = property( Soprano::Vocabulary::Xesam::name().toString() ).toString();
+
+                if ( label.isEmpty() ) {
+                    label = property( Soprano::Vocabulary::Xesam::url().toString() ).toString().section( '/', -1 );
+
+                    if ( label.isEmpty() ) {
+                        // ugly fallback
+                        label = uri();
+                    }
+                }
+            }
+        }
+    }
+
+    return label;
+}
+
+
+QString Nepomuk::Resource::genericDescription() const
+{
+    QString s = property( Soprano::Vocabulary::NAO::description().toString() ).toString();
+    if ( !s.isEmpty() ) {
+        return s;
+    }
+
+    s = property( Soprano::Vocabulary::Xesam::summary().toString() ).toString();
+    if ( !s.isEmpty() ) {
+        return s;
+    }
+
+    s = property( Soprano::Vocabulary::Xesam::description().toString() ).toString();
+    if ( !s.isEmpty() ) {
+        return s;
+    }
+
+    s = property( Soprano::Vocabulary::RDFS::comment().toString() ).toString();
+
+    return s;
+}
+
+
+QString Nepomuk::Resource::genericIcon() const
+{
+    Variant symbol = property( Soprano::Vocabulary::NAO::hasSymbol().toString() );
+    if ( symbol.isString() ) {
+        return symbol.toString();
+    }
+
+    QString mimeType = property( Soprano::Vocabulary::Xesam::mimeType().toString() ).toString();
+    if ( !mimeType.isEmpty() ) {
+        if ( KMimeType::Ptr m = KMimeType::mimeType( mimeType ) ) {
+            return m->iconName();
+        }
+    }
+
+    if ( hasType( Soprano::Vocabulary::Xesam::File() ) ||
+         uri().startsWith( "file://" ) ) {
+        return KMimeType::iconNameForUrl( uri() );
+    }
+
+    return QString();
 }
 
 

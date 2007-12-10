@@ -29,6 +29,7 @@
 #include <Soprano/StatementIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/RDF>
 
 #include "ontology/class.h"
 
@@ -64,8 +65,10 @@ Nepomuk::ResourceData::ResourceData( const QString& uriOrId, const QUrl& type )
     : m_kickoffUriOrId( uriOrId ),
       m_type( type ),
       m_ref(0),
-      m_proxyData(0)
+      m_proxyData(0),
+      m_cacheDirty(true)
 {
+    kDebug() << "Creating new ResourceData from uriOrId" << uriOrId;
     if( m_type.isEmpty() && !uriOrId.isEmpty() )
         m_type = Soprano::Vocabulary::RDFS::Resource();
 }
@@ -75,8 +78,10 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& type )
     : m_uri( uri ),
       m_type( type ),
       m_ref(0),
-      m_proxyData(0)
+      m_proxyData(0),
+      m_cacheDirty(true)
 {
+    kDebug() << "Creating new ResourceData from uri" << uri;
     if( m_type.isEmpty() && !uri.isEmpty() )
         m_type = Soprano::Vocabulary::RDFS::Resource();
 }
@@ -115,6 +120,7 @@ QUrl Nepomuk::ResourceData::type() const
 
 void Nepomuk::ResourceData::deleteData()
 {
+    kDebug() << m_uri;
     if( m_proxyData )
         if( m_proxyData->deref() )
             m_proxyData->deleteData();
@@ -126,8 +132,7 @@ void Nepomuk::ResourceData::deleteData()
     if( !m_kickoffUriOrId.isEmpty() )
         kickoffData()->remove( m_kickoffUriOrId );
 
-    // FIXME: crashes
-    // delete this;
+    deleteLater();
 }
 
 
@@ -171,29 +176,56 @@ bool Nepomuk::ResourceData::hasProperty( const QString& uri )
 }
 
 
+bool Nepomuk::ResourceData::hasType( const QUrl& uri )
+{
+    if( m_proxyData )
+        return m_proxyData->hasType( uri );
+
+    if ( determineUri() ) {
+        return ResourceManager::instance()->mainModel()->containsAnyStatement( Soprano::Statement( m_uri, Soprano::Vocabulary::RDF::type(), QUrl( uri ) ) );
+    }
+    else {
+        return false;
+    }
+}
+
+
 Nepomuk::Variant Nepomuk::ResourceData::property( const QString& uri )
 {
     if( m_proxyData )
         return m_proxyData->property( uri );
 
-    Variant v;
-
-    if ( determineUri() ) {
-        Soprano::Model* model = ResourceManager::instance()->mainModel();
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( m_uri, QUrl(uri), Soprano::Node() ) );
-
-        while ( it.next() ) {
-            Statement statement = *it;
-            if ( !v.isValid() ) {
-                v = nodeToVariant( statement.object() );
-            }
-            else {
-                v.append( nodeToVariant( statement.object() ) );
-            }
+    if ( load() ) {
+        QHash<QUrl, Variant>::iterator it = m_cache.find( uri );
+        if ( it == m_cache.end() ) {
+            return Variant();
         }
-        it.close();
+        else {
+            return *it;
+        }
     }
-    return v;
+    else {
+        return Variant();
+    }
+
+//     Variant v;
+
+//     if ( determineUri() ) {
+//         Soprano::Model* model = ResourceManager::instance()->mainModel();
+//         Soprano::StatementIterator it = model->listStatements( Soprano::Statement( m_uri, QUrl(uri), Soprano::Node() ) );
+
+//         while ( it.next() ) {
+//             Statement statement = *it;
+//             if ( !v.isValid() ) {
+//                 v = nodeToVariant( statement.object() );
+//             }
+//             else {
+//                 v.append( nodeToVariant( statement.object() ) );
+//             }
+//         }
+//         it.close();
+//     }
+//     return v;
 }
 
 
@@ -205,7 +237,7 @@ bool Nepomuk::ResourceData::store()
 
             // save type
             // FIXME: handle multiple types
-            statements.append( Statement( m_uri, QUrl(Nepomuk::typePredicate()), m_type ) );
+            statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_type ) );
 
             // save the kickoff identifier (other identifiers are stored via setProperty)
             if ( !m_kickoffIdentifier.isEmpty() ) {
@@ -216,7 +248,7 @@ bool Nepomuk::ResourceData::store()
             // Dolphin and co.
             if ( QFile::exists( m_uri.toLocalFile())) {
                 statements.append( Statement( m_uri,
-                                              QUrl("http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileUrl"),
+                                              QUrl("http://freedesktop.org/standards/xesam/1.0/core#url"),
                                               LiteralValue( m_uri.toLocalFile() ) ) );
             }
 
@@ -228,6 +260,36 @@ bool Nepomuk::ResourceData::store()
     }
     else {
         return false;
+    }
+}
+
+
+bool Nepomuk::ResourceData::load()
+{
+    if ( m_cacheDirty ) {
+        m_cache.clear();
+
+        if ( determineUri() ) {
+            kDebug();
+            Soprano::Model* model = ResourceManager::instance()->mainModel();
+            Soprano::StatementIterator it = model->listStatements( Soprano::Statement( m_uri, Soprano::Node(), Soprano::Node() ) );
+
+            while ( it.next() ) {
+                Statement statement = *it;
+                if ( statement.predicate().uri() != Soprano::Vocabulary::RDF::type() ) {
+                    m_cache.insert( statement.predicate().uri(), nodeToVariant( statement.object() ) );
+                }
+            }
+
+            m_cacheDirty = false;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return true;
     }
 }
 
@@ -280,6 +342,8 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
             model->addStatement( Statement( m_uri, QUrl(uri),
                                             Nepomuk::valueToRDFNode( value ) ) );
         }
+
+        m_cacheDirty = true;
     }
 }
 
@@ -384,7 +448,7 @@ bool Nepomuk::ResourceData::determineUri()
                     do {
                         // get the type of the stored resource
                         StatementIterator resourceSl = model->listStatements( Statement( it.current().subject(),
-                                                                                         QUrl( typePredicate() ),
+                                                                                         Soprano::Vocabulary::RDF::type(),
                                                                                          Node() ) );
                         if ( resourceSl.next() && resourceSl.current().object().isResource() ) {
                             const Nepomuk::Class* storedType = Nepomuk::Class::load( resourceSl.current().object().uri() );
@@ -418,8 +482,6 @@ bool Nepomuk::ResourceData::determineUri()
             it.close();
 
             if ( m_uri.isEmpty() ) {
-                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << uri();
-
                 //
                 // The resource does not exist, create a new one:
                 // If the kickoffUriOrId is a valid URI we use it as such, otherwise we create a new URI
@@ -437,6 +499,8 @@ bool Nepomuk::ResourceData::determineUri()
                     m_kickoffIdentifier = kickoffUriOrId();
                     m_uri = ResourceManager::instance()->generateUniqueUri();
                 }
+
+                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
             }
         }
 
@@ -467,7 +531,7 @@ void Nepomuk::ResourceData::updateType()
 
     // get the type of the stored resource
     StatementIterator typeStatements = model->listStatements( Statement( m_uri,
-                                                                         QUrl( typePredicate() ),
+                                                                         Soprano::Vocabulary::RDF::type(),
                                                                          Node() ) );
     if ( typeStatements.next() && typeStatements.current().object().isResource() ) {
         // FIXME: handle multple types, maybe select the one type that fits best
@@ -654,6 +718,12 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceData()
          rdIt != kickoffData()->end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
+    for( ResourceDataHash::iterator rdIt = initializedData()->begin();
+         rdIt != initializedData()->end(); ++rdIt ) {
+        l.append( rdIt.value() );
+    }
 
     return l;
 }
+
+#include "resourcedata.moc"

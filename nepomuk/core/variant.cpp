@@ -762,7 +762,7 @@ double Nepomuk::Variant::toDouble() const
 
 QString Nepomuk::Variant::toString() const
 {
-    kDebug(300004) << "(Variant::toString() converting... " << QMetaType::typeName(type());
+//    kDebug(300004) << "(Variant::toString() converting... " << QMetaType::typeName(type());
     if( isList() )
         return toStringList().join( "," );
 

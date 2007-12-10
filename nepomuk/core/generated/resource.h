@@ -159,10 +159,16 @@ namespace Nepomuk {
         QString uri() const;
 
         /**
-         * The type URI.
-         * \sa name()
+         * The main type of the resource.
+         *
+         * \sa name(), hasType()
          */
         QString type() const;
+
+        /**
+         * Check if the resource is of a certain type.
+         */
+        bool hasType( const QUrl& typeUri ) const;
 
         /**
          * The name of the class this Resource represents an object of.
@@ -232,6 +238,32 @@ namespace Nepomuk {
         bool isValid() const;
 
         /**
+         * Tries very hard to find a suitable human-readable label for this resource.
+         * It looks for properties such as nao:prefLabel, rdfs:label, or nao:identifier,
+         * or even the fileName of File resources.
+         *
+         * \return A human readable label or if all fails the URI of the resource.
+         */
+        QString genericLabel() const;
+
+        /**
+         * Tries very hard to find a suitable human-readable description of the resource.
+         * This description is supposed to be longer than text() and includes such properties
+         * as nao:description, xesam:comment, rdfs:comment
+         *
+         * \return A human readable description of the resource or an empty string if none
+         * could be found.
+         */
+        QString genericDescription() const;
+
+        /**
+         * Tries very hard to find an icon suitable for this resource.
+         *
+         * \return An icon name to be used with KIcon or an empty string if none was found.
+         */
+        QString genericIcon() const;
+
+        /**
          * Operator to compare two Resource objects. Normally one does not need this. It is
          * mainly intended for testing and debugging purposes.
          */
@@ -256,22 +288,22 @@ namespace Nepomuk {
             static QString descriptionUri();
 
             /**
-             * Get property 'Identifier'. 
+             * Get property 'identifier'. 
              */
             QStringList identifiers() const;
 
             /**
-             * Set property 'Identifier'. 
+             * Set property 'identifier'. 
              */
             void setIdentifiers( const QStringList& value );
 
             /**
-             * Add a value to property 'Identifier'. 
+             * Add a value to property 'identifier'. 
              */
             void addIdentifier( const QString& value );
 
             /**
-             * \return The URI of the property 'Identifier'. 
+             * \return The URI of the property 'identifier'. 
              */
             static QString identifierUri();
 

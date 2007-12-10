@@ -44,7 +44,7 @@ Nepomuk::Tag::Tag( const Nepomuk::Resource& res )
 
 
 Nepomuk::Tag::Tag( const QString& uri )
-  : Resource( uri, "http://semanticdesktop.org/ontologies/2007/03/31/nao#Tag" )
+  : Resource( uri, "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag" )
 {
 }
 
@@ -67,17 +67,17 @@ Nepomuk::Tag& Nepomuk::Tag::operator=( const Tag& res )
 
 QString Nepomuk::Tag::resourceTypeUri()
 {
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#Tag";
+    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag";
 }
 
 QList<Nepomuk::Resource> Nepomuk::Tag::tagOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag", *this ) );
+    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag", *this ) );
 }
 
 QList<Nepomuk::Tag> Nepomuk::Tag::allTags()
 {
-    return Nepomuk::convertResourceList<Tag>( ResourceManager::instance()->allResourcesOfType( "http://semanticdesktop.org/ontologies/2007/03/31/nao#Tag" ) );
+    return Nepomuk::convertResourceList<Tag>( ResourceManager::instance()->allResourcesOfType( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag" ) );
 }
 
 

@@ -68,6 +68,10 @@ Nepomuk::ResourceManager::ResourceManager()
     : QObject(),
       d( new Private( this ) )
 {
+    connect( mainModel(), SIGNAL(statementsAdded()),
+             this, SLOT(slotStoreChanged()) );
+    connect( mainModel(), SIGNAL(statementsRemoved()),
+             this, SLOT(slotStoreChanged()) );
 }
 
 
@@ -224,6 +228,15 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
     }
 
     return d->mainModel;
+}
+
+
+void Nepomuk::ResourceManager::slotStoreChanged()
+{
+    kDebug();
+    Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
+        data->invalidateCache();
+    }
 }
 
 #include "resourcemanager.moc"
