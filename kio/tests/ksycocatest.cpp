@@ -32,20 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void debug(QString txt)
-{
- fprintf(stderr, "%s\n", txt.toAscii().constData());
-}
-
-void debug(const char *txt)
-{
- fprintf(stderr, "%s\n", txt);
-}
-void debug(const char *format, const char *txt)
-{
- fprintf(stderr, format, txt);
- fprintf(stderr, "\n");
-}
 
 // ############
 // Some of the tests here (those that don't depend on other modules being installed)
@@ -76,55 +62,55 @@ int main(int argc, char *argv[])
    else
        qDebug( "not found" );
 
-   debug("Trying to look for Desktop Pager");
+   qDebug("Trying to look for Desktop Pager");
    KService::Ptr se = KService::serviceByName("Desktop Pager");
    if ( se )
    {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(se->comment()));
+     qDebug("Found it !");
+     qDebug("Comment is %s", qPrintable(se->comment()));
    }
    else
    {
-     debug("Not found !");
+     qDebug("Not found !");
    }
 
-   debug("Trying to look for kpager");
+   qDebug("Trying to look for kpager");
    se = KService::serviceByDesktopName("kpager");
    if ( se )
    {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(se->comment()));
+     qDebug("Found it !");
+     qDebug("Comment is %s", qPrintable(se->comment()));
      QVariant qv = se->property("X-DocPath");
-     debug(QString("Property type is %1").arg(qv.typeName()));
-     debug(QString("Property value is %1").arg(qv.toString()));
+     qDebug("Property type is %s", qv.typeName());
+     qDebug("Property value is %s", qPrintable(qv.toString()));
    }
    else
    {
-     debug("Not found !");
+     qDebug("Not found !");
    }
 
-   debug("Trying to look for System/kpager.desktop");
+   qDebug("Trying to look for System/kpager.desktop");
    se = KService::serviceByDesktopPath("System/kpager.desktop");
    if ( se )
    {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(se->comment()));
+     qDebug("Found it !");
+     qDebug("Comment is %s", qPrintable(se->comment()));
    }
    else
    {
-     debug("Not found !");
+     qDebug("Not found !");
    }
 
-   debug("Trying to look for System/fake-entry.desktop");
+   qDebug("Trying to look for System/fake-entry.desktop");
    se = KService::serviceByDesktopPath("System/fake-entry.desktop");
    if ( se )
    {
-     debug("Found it !");
-     debug(QString("Comment is %1").arg(se->comment()));
+     qDebug("Found it !");
+     qDebug("Comment is %s", qPrintable(se->comment()));
    }
    else
    {
-     debug("Not found !");
+     qDebug("Not found !");
    }
 
 #if 1
@@ -136,7 +122,7 @@ int main(int argc, char *argv[])
 
    KServiceGroup::Ptr first;
 
-   debug(QString("Found %1 entries").arg(list.count()));
+   qDebug("Found %d entries", list.count());
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); ++it)
    {
@@ -144,25 +130,25 @@ int main(int argc, char *argv[])
       if (p->isType(KST_KService))
       {
           KService::Ptr service = KService::Ptr::staticCast( p );
-         debug(service->name());
-         debug(service->entryPath());
+         qDebug("%s", qPrintable(service->name()));
+         qDebug("%s", qPrintable(service->entryPath()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
          KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
-         debug(QString("             %1 -->").arg(serviceGroup->caption()));
+         qDebug("             %s -->", qPrintable(serviceGroup->caption()));
          if (!first) first = serviceGroup;
       }
       else
       {
-         debug("KServiceGroup: Unexpected object in list!");
+         qDebug("KServiceGroup: Unexpected object in list!");
       }
    }
 
    if (first)
    {
    list = first->entries();
-   debug(QString("Found %1 entries").arg(list.count()));
+   qDebug("Found %d entries",list.count());
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); ++it)
    {
@@ -170,28 +156,28 @@ int main(int argc, char *argv[])
       if (p->isType(KST_KService))
       {
          KService::Ptr service = KService::Ptr::staticCast( p );
-         debug(QString("             %1").arg(service->name()));
+         qDebug("             %s", qPrintable(service->name()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
          KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
-         debug(QString("             %1 -->").arg(serviceGroup->caption()));
+         qDebug("             %s -->", qPrintable(serviceGroup->caption()));
       }
       else
       {
-         debug("KServiceGroup: Unexpected object in list!");
+         qDebug("KServiceGroup: Unexpected object in list!");
       }
    }
    }
 
-   debug("--protocols--");
+   qDebug("--protocols--");
    QStringList stringL = KProtocolInfo::protocols();
    for( QStringList::ConstIterator it = stringL.begin();
        it != stringL.end(); ++it)
    {
-      debug((*it).toAscii().constData());
+      qDebug("%s", qPrintable(*it));
    }
-   debug("--End of list--");
+   qDebug("--End of list--");
 #endif
    return 0;
 }
