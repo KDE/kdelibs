@@ -356,31 +356,17 @@ class CompletionWidget: public KCompletionBox
 {
 public:
     CompletionWidget( QWidget *parent = 0 ) : KCompletionBox( parent ) {}
-    virtual void popup() {
+    virtual QPoint globalPositionHint() const
+    {
         QWidget* pw = parentWidget();
         KHTMLWidget* kwp = dynamic_cast<KHTMLWidget*>(pw);
         if (!kwp) {
             qDebug() << "CompletionWidget has no KHTMLWidget parent" << endl;
-            KCompletionBox::popup();
-            return;
+            return KCompletionBox::globalPositionHint();
         }
-        QPoint p = pw->pos();
         QPoint dest;
-        QWidget* parent = pw->parentWidget();
         KHTMLView* v = kwp->m_kwp->rootViewPos(dest);
-        bool blocked = pw->blockSignals(true);
-        if (v != parent)
-            pw->setParent(v);
-        pw->move( dest );
-        pw->blockSignals(blocked);
-
-        KCompletionBox::popup();
-
-        blocked = pw->blockSignals(true);
-        if (v != parent)
-            pw->setParent(parent);
-        pw->move( p );
-        pw->blockSignals(blocked);
+        return v ? v->mapToGlobal( dest + QPoint(0, pw->height()) ) : QPoint();
     }
 };
 

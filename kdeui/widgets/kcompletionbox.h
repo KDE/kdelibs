@@ -213,6 +213,12 @@ protected:
      */
     virtual bool eventFilter( QObject *, QEvent * );
 
+    /**
+     * The preferred global coordinate at which the completion box's top left corner
+     * should be positioned.
+     */
+    virtual QPoint globalPositionHint() const;
+
 protected Q_SLOTS:
     /**
      * Called when an item was activated. Emits

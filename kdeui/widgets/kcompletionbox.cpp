@@ -296,7 +296,7 @@ void KCompletionBox::sizeAndPosition()
       if ( !isVisible() ) {
         QRect screenSize = KGlobalSettings::desktopGeometry(d->m_parent);
 
-        QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
+        QPoint orig = globalPositionHint();
         x = orig.x() + geom.x();
         y = orig.y() + geom.y();
 
@@ -314,6 +314,13 @@ void KCompletionBox::sizeAndPosition()
       }
       move( x, y);
     }
+}
+
+QPoint KCompletionBox::globalPositionHint() const
+{
+    if (!d->m_parent)
+        return QPoint();
+    return d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
 }
 
 void KCompletionBox::setVisible( bool visible )
