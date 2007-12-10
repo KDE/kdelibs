@@ -529,9 +529,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 
 	ui.setupUi(q);
 	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
-	ui.list->header()->setStretchLastSection(false);
 	ui.list->header()->setResizeMode(QHeaderView::ResizeToContents);
-	ui.list->header()->setResizeMode(0, QHeaderView::Stretch);
 	ui.list->header()->hideSection(GlobalAlternate);  //not expected to be very useful
 	ui.list->header()->hideSection(ShapeGesture);  //mouse gestures didn't make it in time...
 	ui.list->header()->hideSection(RockerGesture);
