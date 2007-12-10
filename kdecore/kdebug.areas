@@ -178,6 +178,22 @@
 # kdepim
 5150        kdepimlibs (libkleo)
 5200        kitchensync
+5250        libakonadi
+5251        akonadiresource (ical)
+5252        akonadiresource (knut)
+5253        akonadiresource (localbookmarks)
+5254        akonadiresource (maildir)
+5255        akonadiresource (nntp)
+5256        akonadiresource (openchange)
+5257        akonadiresource (vcard)
+5258        akonadiagent (mailthreader)
+5259        akonadiagent (nepomukfeeder)
+5260        akonadiagent (strigifeeder)
+5261        akonadiserializer (addressee)
+5262        akonadiserializer (bookmark)
+5263        akonadiserializer (calendar)
+5264        akonadiserializer (mail)
+5265        akonadiconsole
 5300        libkdepim
 5310        kprefs
 5320        kdepimlibs (kmime)
@@ -304,6 +320,7 @@
 7126        kio_devices
 7127        kio_fish
 7128        kio_svn
+7129        kio_akonadi
 
 # kdesdk
 8100        kompare
@@ -571,7 +588,7 @@
 39001        kformula
 40000        kformula
 41000        krita (tiles)
-41001        krita (core) 
+41001        krita (core)
 41002        krita (registry)
 41003        krita (tools)
 41004        krita (color management system)
