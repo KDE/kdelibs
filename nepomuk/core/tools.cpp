@@ -29,10 +29,10 @@
 
 #include <QtCore/QLocale>
 
-static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
-static const char* NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
-static const char* NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/NAO>
 
 static QString s_customRep;
 
@@ -64,8 +64,7 @@ QString Nepomuk::defaultGraph()
 
 QString Nepomuk::typePredicate()
 {
-    static QString s = RDF_NAMESPACE + QString( "type" );
-    return s;
+    return Soprano::Vocabulary::RDF::type().toString();
 }
 
 
@@ -101,23 +100,23 @@ Nepomuk::Variant Nepomuk::RDFLiteralToValue( const Soprano::Node& node )
 
 QString Nepomuk::rdfNamepace()
 {
-    return QString( RDF_NAMESPACE );
+    return Soprano::Vocabulary::RDF::rdfNamespace().toString();
 }
 
 
 QString Nepomuk::rdfsNamespace()
 {
-    return QString( RDFS_NAMESPACE );
+    return Soprano::Vocabulary::RDFS::rdfsNamespace().toString();
 }
 
 
 QString Nepomuk::nrlNamespace()
 {
-    return QString( NRL_NAMESPACE );
+    return Soprano::Vocabulary::NRL::nrlNamespace().toString();
 }
 
 
 QString Nepomuk::naoNamespace()
 {
-    return QString( NAO_NAMESPACE );
+    return Soprano::Vocabulary::NAO::naoNamespace().toString();
 }
