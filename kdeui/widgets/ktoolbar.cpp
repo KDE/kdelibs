@@ -199,8 +199,6 @@ void KToolBar::Private::init( bool readConfig, bool _honorStyle )
            parent, SLOT( slotMovableChanged( bool ) ) );
 
   parent->setAcceptDrops( true );
-
-  parent->setFont( KGlobalSettings::toolBarFont() );
 }
 
 void KToolBar::Private::getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index ) const

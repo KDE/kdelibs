@@ -966,6 +966,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
         QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
         QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
         QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
+        QApplication::setFont(KGlobalSettings::toolBarFont(), "QToolBar");
 
 #if 0
         // "patch" standard QStyleSheet to follow our fonts
