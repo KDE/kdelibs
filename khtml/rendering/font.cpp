@@ -182,7 +182,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	// For each letter in the text box, save the width of the character.
 	// When word-wise, only the first letter contains the width, but of the
 	// whole word.
-        short* const widthList = (short *)alloca(to*sizeof(short));
+	short* const widthList = (short *)alloca((to+1)*sizeof(short));
 
 	// First pass: gather widths
 	int preSegmentWidth = 0;
