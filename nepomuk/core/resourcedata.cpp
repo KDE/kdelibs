@@ -81,7 +81,6 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
              rdIt != initializedData()->end(); ++rdIt ) {
             ResourceData* data = rdIt.value();
             if ( !data->cnt() ) {
-                kDebug() << "Cleaning cache:" << data->uri();
                 data->deleteData();
                 break;
             }
@@ -126,7 +125,6 @@ QUrl Nepomuk::ResourceData::type() const
 
 void Nepomuk::ResourceData::deleteData()
 {
-    kDebug() << m_uri;
     if( m_proxyData )
         if( m_proxyData->deref() )
             m_proxyData->deleteData();
@@ -271,7 +269,6 @@ bool Nepomuk::ResourceData::load()
         m_cache.clear();
 
         if ( determineUri() ) {
-            kDebug();
             Soprano::Model* model = ResourceManager::instance()->mainModel();
             Soprano::StatementIterator it = model->listStatements( Soprano::Statement( m_uri, Soprano::Node(), Soprano::Node() ) );
 
