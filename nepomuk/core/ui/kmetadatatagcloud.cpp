@@ -20,16 +20,23 @@
  */
 
 #include "kmetadatatagcloud.h"
+#include "resourcemanager.h"
 
 #include "../generated/tag.h"
 
 #include <QtCore/QTimer>
 
+#include <Soprano/Model>
+
 
 class Nepomuk::TagCloud::Private
 {
 public:
+    Private()
+        : autoUpdate(false) {
+    }
     QTimer* updateTimer;
+    bool autoUpdate;
 };
 
 
@@ -37,8 +44,6 @@ Nepomuk::TagCloud::TagCloud( QWidget* parent )
     : KTagCloudWidget( parent ),
       d( new Private() )
 {
-    d->updateTimer = new QTimer( this );
-    connect( d->updateTimer, SIGNAL(timeout()), this, SLOT(updateTags()) );
     updateTags();
     setAutoUpdate( true );
 }
@@ -52,7 +57,7 @@ Nepomuk::TagCloud::~TagCloud()
 
 bool Nepomuk::TagCloud::autoUpdate() const
 {
-    return d->updateTimer->isActive();
+    return d->autoUpdate;
 }
 
 
@@ -78,10 +83,22 @@ void Nepomuk::TagCloud::updateTags()
 
 void Nepomuk::TagCloud::setAutoUpdate( bool enable )
 {
-    if( !enable )
-        d->updateTimer->stop();
-    else if( !autoUpdate() )
-        d->updateTimer->start( 10*1000 ); // update every 10 seconds
+    if ( enable != d->autoUpdate ) {
+        if( !enable ) {
+            disconnect( ResourceManager::instance()->mainModel(), SIGNAL(statementsAdded()),
+                        this, SLOT(updateTags()) );
+            disconnect( ResourceManager::instance()->mainModel(), SIGNAL(statementsRemoved()),
+                        this, SLOT(updateTags()) );
+        }
+        else {
+            connect( ResourceManager::instance()->mainModel(), SIGNAL(statementsAdded()),
+                     this, SLOT(updateTags()) );
+            connect( ResourceManager::instance()->mainModel(), SIGNAL(statementsRemoved()),
+                     this, SLOT(updateTags()) );
+        }
+
+        d->autoUpdate = enable;
+    }
 }
 
 
