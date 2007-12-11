@@ -19,11 +19,8 @@
 #ifndef __kbzip2filter__h
 #define __kbzip2filter__h
 
-#include <config.h>
-
-#if defined( HAVE_BZIP2_SUPPORT )
-
 #include "kfilterbase.h"
+#define NEED_BZ2_PREFIX
 
 /**
  * Internal class used by KFilterDev
@@ -51,7 +48,5 @@ private:
     class Private;
     Private* const d;
 };
-
-#endif
 
 #endif
