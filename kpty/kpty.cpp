@@ -89,7 +89,9 @@ extern "C" {
 #endif
 
 #ifdef HAVE_UTEMPTER
+extern "C" {
 # include <utempter.h>
+}
 #endif
 
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
