@@ -88,6 +88,10 @@ extern "C" {
 # include <utmp.h>
 #endif
 
+#ifdef HAVE_UTEMPTER
+# include <utempter.h>
+#endif
+
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
 # define _tcgetattr(fd, ttmode) ioctl(fd, TIOCGETA, (char *)ttmode)
 #else
@@ -132,21 +136,6 @@ extern "C" {
 ///////////////////////
 // private functions //
 ///////////////////////
-
-#ifdef HAVE_UTEMPTER
-class KProcess_Utmp : public QProcess
-{
-public:
-   virtual void setupChildProcess()
-   {
-     dup2(cmdFd, 0);
-     dup2(cmdFd, 1);
-     dup2(cmdFd, 3);
-   }
-   int cmdFd;
-};
-#endif
-
 
 //////////////////
 // private data //
@@ -397,13 +386,8 @@ void KPty::login(const char *user, const char *remotehost)
 #ifdef HAVE_UTEMPTER
     Q_D(KPty);
 
-    KProcess_Utmp utmp;
-    utmp.cmdFd = d->masterFd;
-    utmp.setProcessChannelMode(QProcess::ForwardedChannels);
-    utmp.start("/usr/sbin/utempter", QStringList() << "-a" << d->ttyName << "");
-    utmp.waitForFinished();
+    addToUtmp(d->ttyName, remotehost, d->masterFd);
     Q_UNUSED(user);
-    Q_UNUSED(remotehost);
 #elif defined(USE_LOGIN)
     Q_D(KPty);
 
@@ -445,11 +429,7 @@ void KPty::logout()
 #ifdef HAVE_UTEMPTER
     Q_D(KPty);
 
-    KProcess_Utmp utmp;
-    utmp.cmdFd = d->masterFd;
-    utmp.setProcessChannelMode(QProcess::ForwardedChannels);
-    utmp.start("/usr/sbin/utempter", QStringList() << "-d" << d->ttyName);
-    utmp.waitForFinished();
+    removeLineFromUtmp(d->ttyName, d->masterFd);
 #elif defined(USE_LOGIN)
     Q_D(KPty);
 
