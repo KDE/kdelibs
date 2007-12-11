@@ -228,7 +228,11 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 
 
 	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, but only in such case.
-	if( m_owner->isHandled(keyQt) && !QWidget::keyboardGrabber() && !QApplication::activePopupWidget()) {
+	//
+	// The || keyQt == 184549378 part is there to not grab the keyboard forever in the
+	// case of Alt+Shift+Tab not creating that key sequence, due to X11 not creating a Tab
+	// keysym for the Alt+Shift+Tab sequence. See Bugreport #153211
+	if( m_owner->isHandled(keyQt) && !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() || keyQt == 184549378 ) {
 		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
 		XFlush( QX11Info::display()); // avoid X(?) bug
 	}
