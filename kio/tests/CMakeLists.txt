@@ -42,7 +42,6 @@ KIO_EXECUTABLE_TESTS(
   speed
   kiopassdlgtest
   kscantest
-  safesitetest
   kdirlistertest_gui
   previewtest
   kionetrctest

@@ -107,7 +107,6 @@ set(kiocore_STAT_SRCS
   kio/previewjob.cpp
   kio/renamedialog.cpp
   kio/renamedialogplugin.cpp
-  kio/safesite.cpp
   kio/scheduler.cpp
   kio/sessiondata.cpp
   kio/skipdialog.cpp
@@ -309,7 +308,6 @@ install(  FILES
   kio/renamedialog.h
   kio/renamedialogplugin.h
   kio/skipdialog.h
-  kio/safesite.h
   kio/udsentry.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
