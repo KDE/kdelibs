@@ -406,7 +406,7 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
         case Selection: {
             KConfigGroup group(config, "ColorEffects:Inactive");
             // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
-            bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", false);
+            bool inactiveSelectionEffect = group.readEntry("ChangeSelectionColor", group.readEntry("Enable", false));
             // if enabled, inactiver/disabled uses Window colors instead, ala gtk
             // ...except tinted with the Selection:NormalBackground color so it looks more like selection
             if (state == QPalette::Active || (state == QPalette::Inactive && !inactiveSelectionEffect))
