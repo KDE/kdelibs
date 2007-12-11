@@ -152,22 +152,19 @@ if (UNIX)
   check_library_exists(util  openpty "" HAVE_OPENPTY)
   if (HAVE_OPENPTY)
     set(UTIL_LIBRARY util)
+  else (HAVE_OPENPTY)
+    EXECUTE_PROCESS(
+      COMMAND sh -c "
+        for ptm in ptc ptmx ptm ptym/clone; do
+          if test -c /dev/$ptm; then
+            echo /dev/$ptm
+            break
+          fi
+        done"
+      OUTPUT_VARIABLE PTM_DEVICE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
   endif (HAVE_OPENPTY)
-
-  EXECUTE_PROCESS(
-    COMMAND sh -c "
-      for ptm in ptc ptmx ptm ptym/clone; do
-        if test -c /dev/$ptm; then
-          echo /dev/$ptm
-          break
-        fi
-      done"
-    OUTPUT_VARIABLE PTM_DEVICE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if (HAVE_OPENPTY)
-    message(STATUS "PTY uses openpty(3)")
-  endif (HAVE_OPENPTY)
-  message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
 
 endif (UNIX)
 
