@@ -39,8 +39,7 @@ namespace Nepomuk {
         Q_OBJECT
 
     public:
-        explicit ResourceData( const QString& kickoffId_ = QString(), const QUrl& type_ = QString() );
-        explicit ResourceData( const QUrl& uri, const QUrl& type_ = QString() );
+        explicit ResourceData( const QUrl& uri = QUrl(), const QString& kickoffId_ = QString(), const QUrl& type_ = QString() );
         ~ResourceData();
 
         /**

@@ -77,7 +77,7 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 Nepomuk::Resource::~Resource()
 {
     if( m_data->deref() == 0 ) {
-        m_data->deleteData();
+//        m_data->deleteData();
     }
 }
 
@@ -86,7 +86,7 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
         if ( m_data->deref() == 0 ) {
-            m_data->deleteData();
+//            m_data->deleteData();
         }
         m_data = res.m_data;
         m_data->ref();

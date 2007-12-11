@@ -538,44 +538,49 @@ void Nepomuk::Variant::append( const Resource& r )
 
 void Nepomuk::Variant::append( const Variant& v )
 {
-    if( v.simpleType() == QVariant::Int ) {
-        operator=( toIntList() += v.toIntList() );
+    if ( !isValid() ) {
+        operator=( v );
     }
-    else if( v.simpleType() == QVariant::UInt ) {
-        operator=( toUnsignedIntList() += v.toUnsignedIntList() );
+    else {
+        if( v.simpleType() == QVariant::Int ) {
+            operator=( toIntList() += v.toIntList() );
+        }
+        else if( v.simpleType() == QVariant::UInt ) {
+            operator=( toUnsignedIntList() += v.toUnsignedIntList() );
+        }
+        else if( v.simpleType() == QVariant::LongLong ) {
+            operator=( toInt64List() += v.toInt64List() );
+        }
+        else if( v.simpleType() == QVariant::ULongLong ) {
+            operator=( toUnsignedInt64List() += v.toUnsignedInt64List() );
+        }
+        else if( v.simpleType() == QVariant::Bool ) {
+            operator=( toBoolList() += v.toBoolList() );
+        }
+        else if( v.simpleType() == QVariant::Double ) {
+            operator=( toDoubleList() += v.toDoubleList() );
+        }
+        else if( v.simpleType() == QVariant::String ) {
+            operator=( toStringList() += v.toStringList() );
+        }
+        else if( v.simpleType() == QVariant::Date ) {
+            operator=( toDateList() += v.toDateList() );
+        }
+        else if( v.simpleType() == QVariant::Time ) {
+            operator=( toTimeList() += v.toTimeList() );
+        }
+        else if( v.simpleType() == QVariant::DateTime ) {
+            operator=( toDateTimeList() += v.toDateTimeList() );
+        }
+        else if( v.simpleType() == QVariant::Url ) {
+            operator=( toUrlList() += v.toUrlList() );
+        }
+        else if( v.simpleType() == qMetaTypeId<Resource>() ) {
+            operator=( toResourceList() += v.toResourceList() );
+        }
+        else
+            kDebug(300004) << "(Variant::append) unknown type: " << v.simpleType();
     }
-    else if( v.simpleType() == QVariant::LongLong ) {
-        operator=( toInt64List() += v.toInt64List() );
-    }
-    else if( v.simpleType() == QVariant::ULongLong ) {
-        operator=( toUnsignedInt64List() += v.toUnsignedInt64List() );
-    }
-    else if( v.simpleType() == QVariant::Bool ) {
-        operator=( toBoolList() += v.toBoolList() );
-    }
-    else if( v.simpleType() == QVariant::Double ) {
-        operator=( toDoubleList() += v.toDoubleList() );
-    }
-    else if( v.simpleType() == QVariant::String ) {
-        operator=( toStringList() += v.toStringList() );
-    }
-    else if( v.simpleType() == QVariant::Date ) {
-        operator=( toDateList() += v.toDateList() );
-    }
-    else if( v.simpleType() == QVariant::Time ) {
-        operator=( toTimeList() += v.toTimeList() );
-    }
-    else if( v.simpleType() == QVariant::DateTime ) {
-        operator=( toDateTimeList() += v.toDateTimeList() );
-    }
-    else if( v.simpleType() == QVariant::Url ) {
-        operator=( toUrlList() += v.toUrlList() );
-    }
-    else if( v.simpleType() == qMetaTypeId<Resource>() ) {
-        operator=( toResourceList() += v.toResourceList() );
-    }
-    else
-        kDebug(300004) << "(Variant::append) unknown type: " << v.simpleType();
 }
 
 

@@ -22,8 +22,8 @@
 
 #include "resourcedata.h"
 #include "resourcemanager.h"
-#include "tools.h"
 #include "generated/resource.h"
+#include "tools.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -41,10 +41,13 @@
 using namespace Soprano;
 
 
-typedef QMap<QString, Nepomuk::ResourceData*> ResourceDataHash;
+typedef QHash<QString, Nepomuk::ResourceData*> ResourceDataHash;
 
 Q_GLOBAL_STATIC( ResourceDataHash, initializedData )
 Q_GLOBAL_STATIC( ResourceDataHash, kickoffData )
+
+
+static int s_dataCnt = 0;
 
 
 static Nepomuk::Variant nodeToVariant( const Soprano::Node& node )
@@ -61,34 +64,37 @@ static Nepomuk::Variant nodeToVariant( const Soprano::Node& node )
 }
 
 
-Nepomuk::ResourceData::ResourceData( const QString& uriOrId, const QUrl& type )
+Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, const QUrl& type )
     : m_kickoffUriOrId( uriOrId ),
+      m_uri( uri ),
       m_type( type ),
       m_ref(0),
       m_proxyData(0),
       m_cacheDirty(true)
 {
-    kDebug() << "Creating new ResourceData from uriOrId" << uriOrId;
-    if( m_type.isEmpty() && !uriOrId.isEmpty() )
+    if( m_type.isEmpty() && !( uriOrId.isEmpty() && uri.isEmpty() ) )
         m_type = Soprano::Vocabulary::RDFS::Resource();
-}
 
+    // TODO: handle the caching in a decent Cache class and not this ugly.
+    if ( s_dataCnt >= 1000 ) {
+        for( ResourceDataHash::iterator rdIt = initializedData()->begin();
+             rdIt != initializedData()->end(); ++rdIt ) {
+            ResourceData* data = rdIt.value();
+            if ( !data->cnt() ) {
+                kDebug() << "Cleaning cache:" << data->uri();
+                data->deleteData();
+                break;
+            }
+        }
+    }
 
-Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& type )
-    : m_uri( uri ),
-      m_type( type ),
-      m_ref(0),
-      m_proxyData(0),
-      m_cacheDirty(true)
-{
-    kDebug() << "Creating new ResourceData from uri" << uri;
-    if( m_type.isEmpty() && !uri.isEmpty() )
-        m_type = Soprano::Vocabulary::RDFS::Resource();
+    ++s_dataCnt;
 }
 
 
 Nepomuk::ResourceData::~ResourceData()
 {
+    --s_dataCnt;
     if( m_proxyData )
         m_proxyData->deref();
 }
@@ -216,12 +222,7 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QString& uri )
 
 //         while ( it.next() ) {
 //             Statement statement = *it;
-//             if ( !v.isValid() ) {
-//                 v = nodeToVariant( statement.object() );
-//             }
-//             else {
-//                 v.append( nodeToVariant( statement.object() ) );
-//             }
+//             v.append( nodeToVariant( statement.object() ) );
 //         }
 //         it.close();
 //     }
@@ -277,7 +278,7 @@ bool Nepomuk::ResourceData::load()
             while ( it.next() ) {
                 Statement statement = *it;
                 if ( statement.predicate().uri() != Soprano::Vocabulary::RDF::type() ) {
-                    m_cache.insert( statement.predicate().uri(), nodeToVariant( statement.object() ) );
+                    m_cache[statement.predicate().uri()].append( nodeToVariant( statement.object() ) );
                 }
             }
 
@@ -343,7 +344,8 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
                                             Nepomuk::valueToRDFNode( value ) ) );
         }
 
-        m_cacheDirty = true;
+        // update the cache for now
+        m_cache[uri] = value;
     }
 }
 
@@ -594,7 +596,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
         //
         // The actual URI is already known here
         //
-        ResourceData* d = new ResourceData( uri, type );
+        ResourceData* d = new ResourceData( uri, QString(), type );
         initializedData()->insert( uri.toString(), d );
 
         return d;
@@ -662,7 +664,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
         //
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //
-        ResourceData* d = new ResourceData( uriOrId, type );
+        ResourceData* d = new ResourceData( QUrl(), uriOrId, type );
         kickoffData()->insert( uriOrId, d );
 
         return d;

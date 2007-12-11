@@ -79,7 +79,7 @@ namespace Nepomuk {
         Q_FOREACH( T r, l )
 /*       for( QList<T>::const_iterator it = l.constBegin(); */
 /* 	   it != l.constEnd(); ++it ) */
-            rl.append( Resource( r/**it*/ ) );
+            rl.append( Resource( r/*it*/ ) );
         return rl;
     }
 

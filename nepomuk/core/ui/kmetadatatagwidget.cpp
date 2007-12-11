@@ -30,6 +30,7 @@
 #include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include <QtGui/QPushButton>
 #include <QtGui/QBoxLayout>
@@ -68,20 +69,20 @@ public:
         // convert the tag list to keywords
         for( QList<Tag>::iterator it = tags.begin();
              it != tags.end(); ++it ) {
-            Tag& tag = *it;
-            if ( tag.label().isEmpty() ) {
-                tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
-            }
-            tagStrings += ( *it ).label();
+            tagStrings += ( *it ).genericLabel();
         }
         return tagStrings;
     }
 
     QList<Tag> intersectTags() {
-        if ( !res.isEmpty() ) {
+        if ( res.count() == 1 ) {
+            return res.first().tags();
+        }
+        else if ( !res.isEmpty() ) {
             // determine the tags used for all resources
             QSet<Tag> tags = QSet<Tag>::fromList( res.first().tags() );
-            for ( QList<Resource>::const_iterator it = res.begin(); it != res.end(); ++it ) {
+            QList<Resource>::const_iterator it = res.begin();
+            for ( ++it; it != res.end(); ++it ) {
                 tags.intersect( QSet<Tag>::fromList( (*it).tags() ) );
             }
             return tags.values();
