@@ -379,9 +379,11 @@ QString Addressee::fullEmail( const QString &email ) const
     text = e;
   else {
     QRegExp needQuotes( "[^ 0-9A-Za-z\\x0080-\\xFFFF]" );
-    if ( realName().find( needQuotes ) != -1 )
-      text = "\"" + realName() + "\" <" + e + ">";
-    else
+    if ( realName().find( needQuotes ) != -1 ) {
+      QString name = realName();
+      name.replace( "\"", "\\\"" );
+      text = "\"" + name + "\" <" + e + ">";
+    } else
       text = realName() + " <" + e + ">";
   }
 
