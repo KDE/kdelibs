@@ -1,6 +1,7 @@
 project(dnssd)
 macro_optional_find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
+macro_log_feature(AVAHI_FOUND "Avahi" "For Linux and BSDs: a system which facilitates service discovery on a local network, based on the Zeroconf standard" "http://avahi.org" FALSE "" "Enables KDE applications access to multicast DNS/DNS-SD service discovery.")
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 set(kdnssd_LIB_SRCS    servicebase.cpp )
@@ -25,7 +26,8 @@ else (HAVE_AVAHI)
 
 macro_optional_find_package(DNSSD)
 macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
-    
+macro_log_feature(DNSSD_FOUND "DNSSD" "For MacOS and platforms without Avahi: A system which facilitates service discovery on a local network, based on the Zeroconf standard" "http://www.zeroconf.org"  FALSE "" "Enables KDE applications access to multicast DNS/DNS-SD service discovery.")
+
 if (HAVE_DNSSD)
   include_directories( ${DNSSD_INCLUDE_DIR} )
   set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
