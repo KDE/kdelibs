@@ -50,6 +50,10 @@
 #include <cstring>
 #include <time.h>
 
+#if PLATFORM(SOLARIS_OS)
+#include <strings.h>
+#endif
+
 #include "error_object.h"
 #include "operations.h"
 
