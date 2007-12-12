@@ -23,8 +23,6 @@ endif (KHTML_BUILD_TESTREGRESSION)
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Strigi REQUIRED)
-# Soprano can be found in kdesupport and is used for Konto and KNepomuk
-find_package(Soprano)
 
 if (APPLE)
    find_package(Carbon REQUIRED)
@@ -39,9 +37,16 @@ include (MacroLibrary)
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(BZip2)
+macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
+
 macro_optional_find_package(OpenSSL)
+macro_log_feature(OPENSSL_FOUND "OpenSSL" "A toolkit implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS.")
+
 macro_optional_find_package(Libintl)
+macro_log_feature(LIBINTL_FOUND "Libintl" "Library for message translation" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages.")
+
 macro_optional_find_package(OpenGL)
+macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
 #########################################################################
 # Disallow in-source build
@@ -194,6 +199,7 @@ add_subdirectory( kross )
 add_subdirectory( security )
 add_subdirectory( includes )
 
+macro_optional_find_package(Soprano)
 macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic desktop).")
 if(Soprano_FOUND)
   macro_optional_add_subdirectory(nepomuk)
