@@ -1,4 +1,4 @@
-FIND_PACKAGE(Alsa REQUIRED)
+FIND_PACKAGE(Alsa)
 ALSA_CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/config-alsa.h)
 
 # Those apply to all subdirs
