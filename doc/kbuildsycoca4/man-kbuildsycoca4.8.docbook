@@ -55,7 +55,7 @@
 <title>Description</title>
 
 <para>
-<command>kbuildsyscoca4</command>, as part of the &kde; command line
+<command>kbuildsycoca4</command>, as part of the &kde; command line
 tools ensures the proper operation of &kde; by reading in all the
 <literal role="extension">.desktop</literal>, <literal
 role="extension">.directory</literal>, <literal
@@ -168,7 +168,7 @@ Show license information
 <para>
 A standard way to run this program is by simply specifying the following
 command at the prompt
-<userinput><command>kbuildsyscoca4</command></userinput>
+<userinput><command>kbuildsycoca4</command></userinput>
 </para>
 
 </refsect1>
@@ -178,7 +178,7 @@ command at the prompt
 
 <variablelist>
 <varlistentry>
-<term><filename>/tmp/kde-$USER/ksyscoca</filename></term>
+<term><filename>/tmp/kde-$USER/ksycoca</filename></term>
 <listitem>
 <para>...</para>
 </listitem>
