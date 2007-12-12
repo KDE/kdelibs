@@ -141,7 +141,7 @@ set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml
                         ${KDE4_KDE3SUPPORT_INCLUDES})
 
 # ACL stuff (used in kio/ and kioslaves/)
-macro_optional_find_package(ACL)
+find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
