@@ -19,23 +19,18 @@ if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
 
-
 find_package(KDE4Internal REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(Strigi REQUIRED)
-
+include(KDE4Defaults)
+include (MacroLibrary)
 if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
-# set some default settings
-include(KDE4Defaults)
+#required features
+find_package(ZLIB REQUIRED)
+find_package(Strigi REQUIRED)
 
-# make some more macros available
-include (MacroLibrary)
-
-# macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
-# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
+#optional features
 macro_optional_find_package(BZip2)
 macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
 
@@ -47,6 +42,9 @@ macro_log_feature(LIBINTL_FOUND "Libintl" "Library for message translation" "htt
 
 macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
+
+macro_optional_find_package(Soprano)
+macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic desktop).")
 
 #########################################################################
 # Disallow in-source build
@@ -199,8 +197,6 @@ add_subdirectory( kross )
 add_subdirectory( security )
 add_subdirectory( includes )
 
-macro_optional_find_package(Soprano)
-macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic desktop).")
 if(Soprano_FOUND)
   macro_optional_add_subdirectory(nepomuk)
 endif(Soprano_FOUND)
