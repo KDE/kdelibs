@@ -127,7 +127,7 @@ namespace KJS {
     bool get(size_t n) const { return !!(bits[n >> 5] & (1 << (n & 0x1F))); } 
     void set(size_t n) { bits[n >> 5] |= (1 << (n & 0x1F)); } 
     void clear(size_t n) { bits[n >> 5] &= ~(1 << (n & 0x1F)); } 
-    void clearAll() { memset(bits, 0, sizeof(bits)); }
+    void clearAll() { std::memset(bits, 0, sizeof(bits)); }
   };
 
   struct CollectorCell {
