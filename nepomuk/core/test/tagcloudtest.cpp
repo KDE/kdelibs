@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kmetadata/kmetadata.h>
-#include <kmetadatatagcloud.h>
+#include <nepomuk/resourcemanager.h>
+#include "../ui/kmetadatatagcloud.h"
 
 #include <krandom.h>
 #include <kapplication.h>
@@ -30,8 +30,8 @@ int main( int argc, char** argv )
     KAboutData about("tagcloudtest", 0, ki18n("tagcloudtest"), "1.0");
     KCmdLineArgs::init( argc, argv, &about );
     KApplication app;
-    Nepomuk::KMetaData::ResourceManager::instance()->init();
-    Nepomuk::KMetaData::TagCloud tcw;
+    Nepomuk::ResourceManager::instance()->init();
+    Nepomuk::TagCloud tcw;
     //  KTagCloudWidget tcw;
 //   for( int i = 1; i <= 12; ++i )
 //     tcw.addTag( QLocale::system().monthName(i), (int)(20.0*(double)KRandom::random()/(double)RAND_MAX) + 1 );

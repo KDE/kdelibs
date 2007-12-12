@@ -1,23 +1,21 @@
 /*
- *
- * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
- *
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Library General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #include "resourcedata.h"
@@ -574,7 +572,9 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
 
 Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl& type )
 {
-    Q_ASSERT( !uri.isEmpty() );
+    if ( uri.isEmpty() ) {
+        return 0;
+    }
 
     // default to "file" scheme, i.e. we do not allow an empty scheme
     if ( uri.scheme().isEmpty() ) {
@@ -609,7 +609,9 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
 
 Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, const QUrl& type )
 {
-    Q_ASSERT( !uriOrId.isEmpty() );
+    if ( uriOrId.isEmpty() ) {
+        return 0;
+    }
 
     // special case: files (only absolute paths for now)
     if ( uriOrId[0] == '/' ) {

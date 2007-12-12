@@ -5,7 +5,7 @@ include (MacroLibrary)
 include(NepomukMacros)
 
 NEPOMUK_GENERATE_FROM_ONTOLOGY(
-   ${CMAKE_SOURCE_DIR}/../../ontologies/nao.nrl
+   ${CMAKE_SOURCE_DIR}/../../ontologies/nao.rdfs
    ${CMAKE_SOURCE_DIR}
    DUMMY1
    DUMMY2

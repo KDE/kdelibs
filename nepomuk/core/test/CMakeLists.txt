@@ -55,5 +55,5 @@ target_link_libraries(speedtest
 #  ${KDE4_KDECORE_LIBRARY})
 
 # Not a real test, just a simple app for testing a widget manually
-#kde4_add_executable(tagcloudtest TEST tagcloudtest.cpp)
-#target_link_libraries(tagcloudtest kmetadata)
+kde4_add_executable(tagcloudtest TEST tagcloudtest.cpp)
+target_link_libraries(tagcloudtest nepomuk)

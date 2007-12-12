@@ -1,23 +1,21 @@
 /*
- *
- * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
- *
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Library General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #include "resource.h"
@@ -39,44 +37,46 @@
 
 
 Nepomuk::Resource::Resource()
+    : m_data( 0 )
 {
-    // invalid data
-    m_data = new ResourceData();
-    m_data->ref();
 }
 
 
 Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 {
     m_data = res.m_data;
-    m_data->ref();
+    if ( m_data )
+        m_data->ref();
 }
 
 
 Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceData::data( uri, type );
-    m_data->ref();
+    if ( m_data )
+        m_data->ref();
 }
 
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 {
     m_data = ResourceData::data( uri, type );
-    m_data->ref();
+    if ( m_data )
+        m_data->ref();
 }
 
 
 Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
     m_data = data;
-    data->ref();
+    if ( m_data )
+        data->ref();
 }
 
 
 Nepomuk::Resource::~Resource()
 {
-    if( m_data->deref() == 0 ) {
+    if( m_data && m_data->deref() == 0 ) {
 //        m_data->deleteData();
     }
 }
@@ -85,11 +85,12 @@ Nepomuk::Resource::~Resource()
 Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        if ( m_data->deref() == 0 ) {
+        if ( m_data && m_data->deref() == 0 ) {
 //            m_data->deleteData();
         }
         m_data = res.m_data;
-        m_data->ref();
+        if ( m_data )
+            m_data->ref();
     }
 
     return *this;
@@ -98,21 +99,31 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 
 QString Nepomuk::Resource::uri() const
 {
-    m_data->determineUri();
-    return m_data->uri();
+    if ( m_data ) {
+        m_data->determineUri();
+        return m_data->uri();
+    }
+    else {
+        return QString();
+    }
 }
 
 
 QString Nepomuk::Resource::type() const
 {
-    m_data->determineUri();
-    return m_data->type().toString();
+    if ( m_data ) {
+        m_data->determineUri();
+        return m_data->type().toString();
+    }
+    else {
+        return QString();
+    }
 }
 
 
 bool Nepomuk::Resource::hasType( const QUrl& typeUri ) const
 {
-    return m_data->hasType( typeUri );
+    return m_data ? m_data->hasType( typeUri ) : false;
 }
 
 
@@ -124,49 +135,65 @@ QString Nepomuk::Resource::className() const
 
 QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 {
-    return m_data->allProperties();
+    if ( m_data ) {
+        return m_data->allProperties();
+    }
+    else {
+        return QHash<QString, Nepomuk::Variant>();
+    }
 }
 
 
 bool Nepomuk::Resource::hasProperty( const QString& uri ) const
 {
-    return m_data->hasProperty( uri );
+    return m_data ? m_data->hasProperty( uri ) : false;
 }
 
 
 Nepomuk::Variant Nepomuk::Resource::property( const QString& uri ) const
 {
-    return m_data->property( uri );
+    if ( m_data ) {
+        return m_data->property( uri );
+    }
+    else {
+        return Variant();
+    }
 }
 
 
 void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant& value )
 {
-    m_data->setProperty( uri, value );
+    if ( m_data ) {
+        m_data->setProperty( uri, value );
+    }
 }
 
 
 void Nepomuk::Resource::removeProperty( const QString& uri )
 {
-    m_data->removeProperty( uri );
+    if ( m_data ) {
+        m_data->removeProperty( uri );
+    }
 }
 
 
 void Nepomuk::Resource::remove()
 {
-    m_data->remove();
+    if ( m_data ) {
+        m_data->remove();
+    }
 }
 
 
 bool Nepomuk::Resource::exists() const
 {
-    return m_data->exists();
+    return m_data ? m_data->exists() : false;
 }
 
 
 bool Nepomuk::Resource::isValid() const
 {
-    return m_data->isValid();
+    return m_data ? m_data->isValid() : false;
 }
 
 
@@ -251,6 +278,11 @@ bool Nepomuk::Resource::operator==( const Resource& other ) const
 
     if( this->m_data == other.m_data )
         return true;
+
+    if ( !m_data || !other.m_data ) {
+        return false;
+    }
+
 
     m_data->determineUri();
     other.m_data->determineUri();

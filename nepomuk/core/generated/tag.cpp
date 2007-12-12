@@ -18,9 +18,9 @@
  * ANY CHANGES WILL BE LOST.
  */
 
-#include "tools.h"
-#include "variant.h"
-#include "resourcemanager.h"
+#include <nepomuk/tools.h>
+#include <nepomuk/variant.h>
+#include <nepomuk/resourcemanager.h>
 #include "tag.h"
 
 #include "resource.h"
