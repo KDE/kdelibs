@@ -1013,6 +1013,44 @@ void QXEmbed::embed(WId w)
     }
 }
 
+// When a window is reparented into QXEmbed (or created inside of it), this function
+// sets up the actual embedding.
+void QXEmbed::handleEmbed()
+{
+    // only XEMBED apps can survive crash,
+    // see http://lists.kde.org/?l=kfm-devel&m=106752026501968&w=2
+    if( !d->xplain )
+        XAddToSaveSet( qt_xdisplay(), window );
+    XResizeWindow(qt_xdisplay(), window, width(), height());
+    XMapRaised(qt_xdisplay(), window);
+    // L2024: see L2900.
+    sendSyntheticConfigureNotifyEvent();
+    // L2025: ??? [any idea about drag&drop?] 
+    extraData()->xDndProxy = window;
+    if ( parent() ) {
+        // L2030: embedded window might have new size requirements.
+        //        see L2500, L2520, L2550.
+        QEvent * layoutHint = new QEvent( QEvent::LayoutHint );
+        QApplication::postEvent( parent(), layoutHint );
+    }
+    windowChanged( window );
+    if (d->xplain) {
+        // L2040: Activation has changed. Grab state might change. See L2800.
+        checkGrab();
+        if ( hasFocus() )
+            // L2041: Send fake focus message to inform the client. See L1521.
+            sendFocusMessage(window, XFocusIn, NotifyNormal, NotifyPointer );
+    } else {
+        // L2050: Send XEMBED messages (see L0670, L1312, L1322, L1530)
+        sendXEmbedMessage( window, XEMBED_EMBEDDED_NOTIFY, 0, (long) winId() );
+        if (isActiveWindow())
+            sendXEmbedMessage( window, XEMBED_WINDOW_ACTIVATE);
+        else
+            sendXEmbedMessage( window, XEMBED_WINDOW_DEACTIVATE);
+        if ( hasFocus() )
+            sendXEmbedMessage( window, XEMBED_FOCUS_IN, XEMBED_FOCUS_CURRENT );
+    }
+}
 
 // L1800: Returns the window identifier of the embedded window
 WId QXEmbed::embeddedWinId() const
@@ -1051,6 +1089,13 @@ bool QXEmbed::x11Event( XEvent* e)
             emit embeddedWindowDestroyed();
         }
         break;
+    case CreateNotify:
+        // A window was created inside of QXEmbed, handle it as embedded
+        if( window == 0 ) { // only one window
+            window = e->xcreatewindow.window;
+            handleEmbed();
+        }
+        break;
     case ReparentNotify:
         if ( e->xreparent.window == d->focusProxy->winId() )
             break; // ignore proxy
@@ -1067,40 +1112,8 @@ bool QXEmbed::x11Event( XEvent* e)
                 XRemoveFromSaveSet( qt_xdisplay(), window );
         } else if ( e->xreparent.parent == winId()){
             // L2020: We got a window. Complete the embedding process.
-            window = e->xreparent.window;
-            // only XEMBED apps can survive crash,
-            // see http://lists.kde.org/?l=kfm-devel&m=106752026501968&w=2
-            if( !d->xplain )
-                XAddToSaveSet( qt_xdisplay(), window );
-            XResizeWindow(qt_xdisplay(), window, width(), height());
-            XMapRaised(qt_xdisplay(), window);
-            // L2024: see L2900.
-            sendSyntheticConfigureNotifyEvent();
-            // L2025: ??? [any idea about drag&drop?] 
-            extraData()->xDndProxy = window;
-            if ( parent() ) {
-                // L2030: embedded window might have new size requirements.
-                //        see L2500, L2520, L2550.
-                QEvent * layoutHint = new QEvent( QEvent::LayoutHint );
-                QApplication::postEvent( parent(), layoutHint );
-            }
-            windowChanged( window );
-            if (d->xplain) {
-                // L2040: Activation has changed. Grab state might change. See L2800.
-                checkGrab();
-                if ( hasFocus() )
-                    // L2041: Send fake focus message to inform the client. See L1521.
-                    sendFocusMessage(window, XFocusIn, NotifyNormal, NotifyPointer );
-            } else {
-                // L2050: Send XEMBED messages (see L0670, L1312, L1322, L1530)
-                sendXEmbedMessage( window, XEMBED_EMBEDDED_NOTIFY, 0, (long) winId() );
-                if (isActiveWindow())
-                    sendXEmbedMessage( window, XEMBED_WINDOW_ACTIVATE);
-                else
-                    sendXEmbedMessage( window, XEMBED_WINDOW_DEACTIVATE);
-                if ( hasFocus() )
-                    sendXEmbedMessage( window, XEMBED_FOCUS_IN, XEMBED_FOCUS_CURRENT );
-            }
+            if( e->xreparent.window == window )
+                handleEmbed();
         }
         break;
     case ButtonPress:

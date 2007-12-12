@@ -226,6 +226,7 @@ private:
     QXEmbedData* d;
     void checkGrab();
     void sendSyntheticConfigureNotifyEvent();
+    void handleEmbed();
 };
 
 
