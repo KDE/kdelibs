@@ -1,5 +1,4 @@
 find_package(KDE4 REQUIRED)
-find_package(Nepomuk)
 include (KDE4Defaults)
 include (MacroLibrary)
 
