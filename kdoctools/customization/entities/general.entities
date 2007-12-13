@@ -213,6 +213,7 @@
 <!ENTITY kfloppy	"<application>Kfloppy</application>">
 <!ENTITY kformula	"<application>KFormula</application>">
 <!ENTITY kfouleggs	"<application>KFoulEggs</application>">
+<!ENTITY kfourinline	"<application>KFourInLine</application>">
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY khangman	"<application>KHangMan</application>">
 <!ENTITY kgeo	"<application>KGeo</application>">
@@ -346,7 +347,6 @@
 <!ENTITY kworldclock	"<application>KWorldClock</application>">
 <!ENTITY kword	"<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
-<!ENTITY k4wins	"<application>KWin4</application>">
 <!ENTITY kwordquiz "<application>KWordQuiz</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
