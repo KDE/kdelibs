@@ -134,7 +134,8 @@ public:
                       const char *msgid_plural = 0,
                       unsigned long n = 0,
                       QString *language = 0,
-                      QString *translation = 0) const;
+                      QString *translation = 0,
+                      bool onlyQt = false) const;
 
   /**
    * @internal function used to determine if we are using the en_US translation
@@ -661,7 +662,8 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
                                     const char *msgid_plural,
                                     unsigned long n,
                                     QString *language,
-                                    QString *translation) const
+                                    QString *translation,
+                                    bool onlyQt) const
 {
   if ( !msgid || !msgid[0] ) {
     kWarning() << "KLocale: trying to look up \"\" in catalog. "
@@ -702,6 +704,17 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
         it != catalogs.end();
         ++it )
   {
+    // Skip non-qt catalogs if requested.
+    // It is necessary to skip non-Qt catalogs when looking for Qt messages,
+    // because KDE messages may contain stuff that Qt does not handle
+    // (e.g. semantic markup, scripted parts...)
+    // TODO: Better let PO files state if they contain fully-featured
+    // KDE messages (in a header field), and add a method to KCatalog
+    // which reports that.
+    if (onlyQt && (*it).name() != "kdeqt") {
+        continue;
+    }
+
     // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
     // the catalog as it will not have an assiciated mo-file. For this default language we can
     // immediately pick the fallback string.
@@ -797,18 +810,18 @@ QString KLocale::translateQt(const char *context, const char *sourceText,
 
   if (comment && comment[0]) {
     // Comment given, go for context call.
-    d->translate_priv(comment, sourceText, 0, 0, &language, &translation);
+    d->translate_priv(comment, sourceText, 0, 0, &language, &translation, true);
     if (language != defaultLanguage())
       return translation;
   }
   else {
     // Comment not given, go for try-fallback with context.
     if (context && context[0]) {
-      d->translate_priv(context, sourceText, 0, 0, &language, &translation);
+      d->translate_priv(context, sourceText, 0, 0, &language, &translation, true);
       if (language != defaultLanguage())
         return translation;
     }
-    d->translate_priv(0, sourceText, 0, 0, &language, &translation);
+    d->translate_priv(0, sourceText, 0, 0, &language, &translation, true);
     if (language != defaultLanguage())
       return translation;
   }
