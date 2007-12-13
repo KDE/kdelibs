@@ -96,6 +96,7 @@ QVConversions(int, supported, supported);
 QVConversions(unsigned int, supported, supported);
 QVConversions(long long, supported, supported);
 QVConversions(unsigned long long, supported, supported);
+QVConversions(float, supported, supported);
 QVConversions(double, supported, supported);
 QVConversions(QString, supported, supported);
 QVConversions(QColor, unsupported, supported);
