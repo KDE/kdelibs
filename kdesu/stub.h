@@ -23,7 +23,7 @@ namespace KDESu {
 namespace KDESuPrivate { class KCookie; }
 
 
-/**
+/** \class StubProcess stub.h kdesu/stub.h
  * Chat with kdesu_stub.
  *
  * StubProcess extends PtyProcess with functionality to chat with kdesu_stub.
