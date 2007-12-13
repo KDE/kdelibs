@@ -67,18 +67,8 @@ bool FactoryPrivate::createBackend()
         m_backendObject = f->createBackend();
     }
     if (!m_backendObject) {
-        // could not load a backend through the platform plugin. Falling back to the default.
-#if defined(Q_WS_MAC)
-        const QLatin1String pluginName("mac_qt7");
-#elif defined(Q_WS_WIN)
-#if defined(QT_NO_DEBUG)
-        const QLatin1String pluginName("phonon_ds9");
-#else
-        const QLatin1String pluginName("phonon_ds9d");
-#endif
-#else
-        const QLatin1String pluginName("xine");
-#endif
+        // could not load a backend through the platform plugin. Falling back to the default
+        // (finding the first loadable backend).
         const QLatin1String suffix("/phonon_backend/");
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;
@@ -87,10 +77,8 @@ bool FactoryPrivate::createBackend()
                 pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
                 continue;
             }
-            QLibrary pluginLib(libPath + pluginName);
-            if (pluginLib.load()) {
-                pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
-                QPluginLoader pluginLoader(pluginLib.fileName());
+            foreach (QString pluginName, dir.entryList(QDir::Files)) {
+                QPluginLoader pluginLoader(libPath + pluginName);
                 if (!pluginLoader.load()) {
                     pDebug() << Q_FUNC_INFO << "  load failed:"
                              << pluginLoader.errorString();
@@ -101,10 +89,17 @@ bool FactoryPrivate::createBackend()
                 if (m_backendObject) {
                     break;
                 }
+
+                // no backend found, don't leave an unused plugin in memory
+                pluginLoader.unload();
+            }
+
+            if (m_backendObject) {
+                break;
             }
         }
         if (!m_backendObject) {
-            pDebug() << Q_FUNC_INFO << "phonon plugin could not be loaded:" << pluginName;
+            pDebug() << Q_FUNC_INFO << "phonon backend plugin could not be loaded";
             return false;
         }
     }
@@ -277,20 +272,17 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
                 pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
                 continue;
             }
-            QLibrary pluginLib(libPath + QLatin1String("/kde"));
-            if (pluginLib.load()) {
-                pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
-                QPluginLoader pluginLoader(pluginLib.fileName());
-                Q_ASSERT_X(pluginLoader.load(), Q_FUNC_INFO,
-                           qPrintable(pluginLoader.errorString()));
-                pDebug() << pluginLoader.instance();
-                m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
-                pDebug() << m_platformPlugin;
-                if (m_platformPlugin) {
-                    return m_platformPlugin;
-                }
+            QPluginLoader pluginLoader(libPath + QLatin1String("/kde"));
+            Q_ASSERT_X(pluginLoader.load(), Q_FUNC_INFO,
+                       qPrintable(pluginLoader.errorString()));
+            pDebug() << pluginLoader.instance();
+            m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
+            pDebug() << m_platformPlugin;
+            if (m_platformPlugin) {
+                return m_platformPlugin;
             } else {
-                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the KDE platform plugin was not loadable:" << pluginLib.errorString();
+                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the KDE platform plugin was not loadable:" << pluginLoader.errorString();
+                pluginLoader.unload();
             }
         }
         if (!m_platformPlugin) {
