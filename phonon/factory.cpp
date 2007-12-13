@@ -263,7 +263,7 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
             pWarning() << "Phonon needs QCoreApplication::applicationName to be set to export audio output names through the DBUS interface";
         }
 #endif
-        const QString suffix(QLatin1String("/phonon_platform"));
+        const QString suffix(QLatin1String("/phonon_platform/"));
         Q_ASSERT(QCoreApplication::instance());
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;
