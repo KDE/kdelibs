@@ -81,12 +81,12 @@ bool AnimationState::update()
 
     if (direction == QTimeLine::Forward)
     {
-        progress = qMin(1.0, progress + delta);
+        progress = qMin(qreal(1.0), progress + delta);
         animating = (progress < 1.0);
     }
     else
     {
-        progress = qMax(0.0, progress - delta);
+        progress = qMax(qreal(0.0), progress - delta);
         animating = (progress > 0.0);
     }
 

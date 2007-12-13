@@ -585,7 +585,7 @@ static qreal adjustPosition( qreal pos, const QGradientStops &stops )
         bool atEnd = ( itr != stops.constEnd() );
         if ( qFuzzyCompare( pos, stop.first ) ) {
             if ( atEnd || !qFuzzyCompare( pos + smallDiff, ( *itr ).first ) ) {
-                return qMin(pos + smallDiff, 1.0);
+                return qMin(pos + smallDiff, qreal(1.0));
             }
         }
     }
