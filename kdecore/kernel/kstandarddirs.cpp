@@ -408,10 +408,10 @@ bool KStandardDirs::addResourceDir( const char *type,
 }
 
 QString KStandardDirs::findResource( const char *type,
-                                     const QString& filename ) const
+                                     const QString& _filename ) const
 {
-    if (!QDir::isRelativePath(filename))
-        return filename; // absolute dirs are absolute dirs, right? :-/
+    if (!QDir::isRelativePath(_filename))
+        return _filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
     kDebug(180) << "Find resource: " << type;
@@ -423,6 +423,13 @@ QString KStandardDirs::findResource( const char *type,
     }
 #endif
 
+    QString filename(_filename);
+#ifdef Q_OS_WIN
+    if(strcmp(type, "exe") == 0) {
+      if(!filename.endsWith(QLatin1String(".exe")))
+        filename += QLatin1String(".exe");
+    }
+#endif
     const QString dir = findResourceDir(type, filename);
     if (dir.isEmpty())
         return dir;
@@ -499,15 +506,22 @@ QStringList KStandardDirs::findDirs( const char *type,
 }
 
 QString KStandardDirs::findResourceDir( const char *type,
-                                        const QString& filename) const
+                                        const QString& _filename) const
 {
 #ifndef NDEBUG
-    if (filename.isEmpty()) {
+    if (_filename.isEmpty()) {
         kWarning() << "filename for type " << type << " in KStandardDirs::findResourceDir is not supposed to be empty!!";
         return QString();
     }
 #endif
 
+    QString filename(_filename);
+#ifdef Q_OS_WIN
+    if(strcmp(type, "exe") == 0) {
+      if(!filename.endsWith(QLatin1String(".exe")))
+        filename += QLatin1String(".exe");
+    }
+#endif
     if (d->restrictionsActive && (strcmp(type, "data")==0))
         applyDataRestrictions(filename);
     QStringList candidates = resourceDirs(type);
