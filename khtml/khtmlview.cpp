@@ -797,7 +797,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
         r.setY(r.y()*100/d->zoomLevel);
         r.setWidth(r.width()*100/d->zoomLevel);
         r.setHeight(r.height()*100/d->zoomLevel);
-        r.adjust(-.999,-.999,.999,.999);
+        r.adjust(-1,-1,1,1);
     }
     p.setClipRect(r);
 
