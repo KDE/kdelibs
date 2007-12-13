@@ -366,7 +366,16 @@ public:
         }
         QPoint dest;
         KHTMLView* v = kwp->m_kwp->rootViewPos(dest);
-        return v ? v->mapToGlobal( dest + QPoint(0, pw->height()) ) : QPoint();
+        QPoint ret;
+        if (v) {
+            ret = v->mapToGlobal( dest + QPoint(0, pw->height()) );
+            int zoomLevel = v->zoomLevel();
+            if (zoomLevel != 100) {
+                ret.setX( ret.x()*zoomLevel/100 );
+                ret.setY( ret.y()*zoomLevel/100 );
+            }
+        }
+        return ret;
     }
 };
 
@@ -1009,6 +1018,11 @@ void ComboBoxWidget::showPopup()
     QPoint dest;
     QWidget* parent = parentWidget();
     KHTMLView* v = m_kwp->rootViewPos(dest);
+    int zoomLevel = v ? v->zoomLevel() : 100;
+    if (zoomLevel != 100) {
+        dest.setX( dest.x()*zoomLevel/100 );
+        dest.setY( dest.y()*zoomLevel/100 );
+    }
     bool blocked = blockSignals(true);
     if (v != parent)
         setParent(v);

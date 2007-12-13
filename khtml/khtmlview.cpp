@@ -797,6 +797,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
         r.setY(r.y()*100/d->zoomLevel);
         r.setWidth(r.width()*100/d->zoomLevel);
         r.setHeight(r.height()*100/d->zoomLevel);
+        r.adjust(-.999,-.999,.999,.999);
     }
     p.setClipRect(r);
 
@@ -3204,12 +3205,20 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
+    QPaintDevice* opd = m_part->xmlDocImpl()->paintDevice();
     m_part->xmlDocImpl()->setPaintDevice(p->device());
     root->setPagedMode(true);
     root->setStaticMode(true);
     root->setWidth(rc.width());
 
-    p->save();
+    // save()
+    QRegion creg = p->clipRegion();
+    QTransform t = p->worldTransform();
+    QRect w = p->window();
+    QRect v = p->viewport();
+    bool vte = p->viewTransformEnabled();
+    bool wme = p->worldMatrixEnabled();
+
     p->setClipRect(rc);
     p->translate(rc.left(), rc.top());
     double scale = ((double) rc.width()/(double) root->docWidth());
@@ -3223,11 +3232,21 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     root->layer()->paint(p, QRect(0, yOff, root->docWidth(), height));
     if (more)
         *more = yOff + height < root->docHeight();
-    p->restore();
+
+    // restore()
+    p->setWorldTransform(t);
+    p->setWindow(w);
+    p->setViewport(v);
+    p->setViewTransformEnabled( vte );
+    p->setWorldMatrixEnabled( wme );
+    if (!creg.isEmpty())
+        p->setClipRegion( creg );
+    else
+        p->setClipRegion(QRegion(), Qt::NoClip);
 
     root->setPagedMode(false);
     root->setStaticMode(false);
-    m_part->xmlDocImpl()->setPaintDevice( this );
+    m_part->xmlDocImpl()->setPaintDevice( opd );
 }
 
 void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
@@ -3238,8 +3257,10 @@ void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
         p->fillRect(clip, palette().brush(QPalette::Active, QPalette::Base));
         return;
     }
+    QPaintDevice* opd = m_part->xmlDocImpl()->paintDevice();
     m_part->xmlDocImpl()->setPaintDevice(p->device());
 
+    // save()
     QRegion creg = p->clipRegion();
     QTransform t = p->worldTransform();
     QRect w = p->window();
@@ -3253,6 +3274,7 @@ void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
 
     m_part->xmlDocImpl()->renderer()->layer()->paint(p, rect);
 
+    // restore()
     p->setWorldTransform(t);
     p->setWindow(w);
     p->setViewport(v);
@@ -3262,7 +3284,8 @@ void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
         p->setClipRegion( creg );
     else
         p->setClipRegion(QRegion(), Qt::NoClip);
-    m_part->xmlDocImpl()->setPaintDevice( this );
+
+    m_part->xmlDocImpl()->setPaintDevice( opd );
 }
 
 void KHTMLView::setHasStaticBackground()

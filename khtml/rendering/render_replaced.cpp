@@ -575,7 +575,10 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     bool wme = p->worldMatrixEnabled();
     QRect w = p->window();
     QRect v = p->viewport();
-    thePoint = thePoint * t;
+    if (!buffered && t.isTranslating()) {
+        thePoint.setX( thePoint.x()+t.dx() );
+        thePoint.setY( thePoint.y()+t.dy() );
+    }
     QRegion rg = p->clipRegion();
     QPaintDevice *d = p->device();
     QPaintDevice *x = d;
@@ -611,7 +614,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setOpacity(op);
     } else {
         // transfer results
-        p->drawPixmap(thePoint, static_cast<QPixmap&>(*d), r);
+        QPoint off(r.x(), r.y());
+        p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
         PaintBuffer::release();
     }
 }
@@ -621,15 +625,13 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool buffered = p->combinedMatrix().m22() != 1.0 && !qobject_cast<KHTMLView*>(widget);
+    bool buffered = p->combinedMatrix().m22() != 1.0;
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
     if ( KHTMLView* v = qobject_cast<KHTMLView*>( widget ) ) {
         QPoint thePoint(tx, ty);
-        QTransform t  = p->worldTransform();
-        thePoint = thePoint * t;
         if (v->verticalScrollBar()->isVisible()) {
             QRect vbr = v->verticalScrollBar()->rect();
             QPoint of = v->verticalScrollBar()->mapTo(v, QPoint(vbr.x(), vbr.y()));

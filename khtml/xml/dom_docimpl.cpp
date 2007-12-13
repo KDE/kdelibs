@@ -1268,7 +1268,7 @@ void DocumentImpl::attach()
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
                                             !inCompatMode() );
     m_render = new (m_renderArena.get()) RenderCanvas(this, m_view);
-    m_styleSelector->computeFontSizes(m_paintDevice->logicalDpiY(), m_view ? m_view->part()->zoomFactor() : 100);
+    m_styleSelector->computeFontSizes(m_paintDevice->logicalDpiY(), m_view ? m_view->part()->fontScaleFactor() : 100);
     recalcStyle( Force );
 
     RenderObject* render = m_render;
