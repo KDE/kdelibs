@@ -99,7 +99,7 @@ bool FactoryPrivate::createBackend()
             }
         }
         if (!m_backendObject) {
-            pDebug() << Q_FUNC_INFO << "phonon backend plugin could not be loaded";
+            pWarning() << Q_FUNC_INFO << "phonon backend plugin could not be loaded";
             return false;
         }
     }
@@ -272,17 +272,22 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
                 pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
                 continue;
             }
-            QPluginLoader pluginLoader(libPath + QLatin1String("/kde"));
-            Q_ASSERT_X(pluginLoader.load(), Q_FUNC_INFO,
-                       qPrintable(pluginLoader.errorString()));
-            pDebug() << pluginLoader.instance();
-            m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
-            pDebug() << m_platformPlugin;
-            if (m_platformPlugin) {
-                return m_platformPlugin;
-            } else {
-                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the KDE platform plugin was not loadable:" << pluginLoader.errorString();
-                pluginLoader.unload();
+            foreach (const QString &pluginName, dir.entryList(QDir::Files)) {
+                QPluginLoader pluginLoader(libPath + pluginName);
+                if (!pluginLoader.load()) {
+                    pDebug() << Q_FUNC_INFO << "  platform plugin load failed:"
+                        << pluginLoader.errorString();
+                    continue;
+                }
+                pDebug() << pluginLoader.instance();
+                m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
+                pDebug() << m_platformPlugin;
+                if (m_platformPlugin) {
+                    return m_platformPlugin;
+                } else {
+                    pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the KDE platform plugin was not loadable:" << pluginLoader.errorString();
+                    pluginLoader.unload();
+                }
             }
         }
         if (!m_platformPlugin) {
