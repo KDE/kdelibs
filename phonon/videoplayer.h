@@ -20,10 +20,13 @@
 #ifndef Phonon_VIDEOPLAYER_H
 #define Phonon_VIDEOPLAYER_H
 
-#include "phonon_export.h"
-#include "phononnamespace.h"
-#include "mediasource.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phononnamespace.h"
+#include "phonon/mediasource.h"
 #include <QtGui/QWidget>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -184,6 +187,9 @@ class PHONON_EXPORT VideoPlayer : public QWidget
 };
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // Phonon_VIDEOPLAYER_H
 // vim: sw=4 ts=4 tw=80

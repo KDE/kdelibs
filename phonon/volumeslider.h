@@ -20,9 +20,12 @@
 #ifndef PHONON_UI_VOLUMESLIDER_H
 #define PHONON_UI_VOLUMESLIDER_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
 #include <QtGui/QWidget>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -137,6 +140,9 @@ class PHONON_EXPORT VolumeSlider : public QWidget
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 et
 #endif // PHONON_UI_VOLUMESLIDER_H

@@ -23,6 +23,9 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 /** \class AddonInterface addoninterface.h Phonon/AddonInterface
@@ -73,5 +76,8 @@ class AddonInterface
 } // namespace Phonon
 
 Q_DECLARE_INTERFACE(Phonon::AddonInterface, "AddonInterface0.2.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_ADDONINTERFACE_H

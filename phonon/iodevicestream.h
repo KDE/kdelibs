@@ -20,7 +20,10 @@
 #ifndef PHONON_IODEVICESTREAM_H
 #define PHONON_IODEVICESTREAM_H
 
-#include "abstractmediastream.h"
+#include "phonon/abstractmediastream.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QIODevice;
 
@@ -41,4 +44,8 @@ class IODeviceStream : public AbstractMediaStream
         void seekStream(qint64);
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
+
 #endif // PHONON_IODEVICESTREAM_H

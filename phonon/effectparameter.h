@@ -20,10 +20,13 @@
 #ifndef PHONON_EFFECTPARAMETER_H
 #define PHONON_EFFECTPARAMETER_H
 
-#include "phonon_export.h"
+#include "phonon/phonon_export.h"
 
 #include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QVariant>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -218,8 +221,10 @@ uint PHONON_EXPORT qHash(const Phonon::EffectParameter &param);
 //it also a workaround for some compilers
 inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); }
 #endif
-
 Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::EffectParameter::Hints)
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_EFFECTPARAMETER_H
 // vim: sw=4 ts=4 tw=80

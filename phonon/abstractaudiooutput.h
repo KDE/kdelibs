@@ -19,10 +19,13 @@ Boston, MA 02110-1301, USA.
 #ifndef Phonon_ABSTRACTAUDIOOUTPUTBASE_H
 #define Phonon_ABSTRACTAUDIOOUTPUTBASE_H
 
-#include "phonondefs.h"
-#include "phonon_export.h"
-#include "medianode.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phonon_export.h"
+#include "phonon/medianode.h"
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -43,6 +46,9 @@ namespace Phonon
         ~AbstractAudioOutput();
     };
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // Phonon_ABSTRACTAUDIOOUTPUTBASE_H

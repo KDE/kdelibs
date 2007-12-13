@@ -20,10 +20,13 @@
 #ifndef Phonon_BACKENDCAPABILITIES_H
 #define Phonon_BACKENDCAPABILITIES_H
 
-#include "phonon_export.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/objectdescription.h"
 
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 template<class T> class QList;
 class QStringList;
@@ -89,14 +92,14 @@ namespace BackendCapabilities
 //X      * do anything.
 //X      */
 //X     PHONON_EXPORT bool supportsVideo();
-//X 
+//X
 //X     /**
 //X      * Tells whether the backend implements the OSD interfaces.
 //X      *
 //X      * \todo there's no interfaces for it at this point
 //X      */
 //X     PHONON_EXPORT bool supportsOSD();
-//X 
+//X
 //X     /**
 //X      * Tells whether the backend supports subtitle rendering on the
 //X      * video output.
@@ -130,7 +133,7 @@ namespace BackendCapabilities
      *
      * \return A list of AudioOutputDevice objects that give a name and
      * description for every supported audio output device.
-     * 
+     *
      * \see knownAudioOutputDevices
      */
     PHONON_EXPORT QList<AudioOutputDevice> usableAudioOutputDevices();
@@ -227,6 +230,9 @@ namespace BackendCapabilities
 //    PHONON_EXPORT QList<ContainerFormatDescription> availableContainerFormats();
 } // namespace BackendCapabilities
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // Phonon_BACKENDCAPABILITIES_H
 // vim: sw=4 ts=4 tw=80

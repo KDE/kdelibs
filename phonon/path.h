@@ -20,10 +20,13 @@
 #ifndef PHONON_PATH_H
 #define PHONON_PATH_H
 
-#include "phonon_export.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/objectdescription.h"
 
 #include <QtCore/QExplicitlySharedDataPointer>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 template<class T> class QList;
 
@@ -216,5 +219,8 @@ class PHONON_EXPORT Path
 PHONON_EXPORT Path createPath(MediaNode *source, MediaNode *sink);
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_PATH_H

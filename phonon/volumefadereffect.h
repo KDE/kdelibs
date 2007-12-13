@@ -20,8 +20,11 @@
 #ifndef PHONON_VOLUMEFADEREFFECT_H
 #define PHONON_VOLUMEFADEREFFECT_H
 
-#include "phonon_export.h"
-#include "effect.h"
+#include "phonon/phonon_export.h"
+#include "phonon/effect.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -160,6 +163,9 @@ namespace Phonon
             void fadeTo(float volume, int fadeTime);
     };
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_VOLUMEFADEREFFECT_H

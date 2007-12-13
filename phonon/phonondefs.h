@@ -20,6 +20,12 @@
 #ifndef PHONONDEFS_H
 #define PHONONDEFS_H
 
+#include <QtCore/qglobal.h>
+#include "phonon/phonon_export.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 #define K_DECLARE_PRIVATE(Class) \
     inline Class##Private* k_func() { return reinterpret_cast<Class##Private *>(k_ptr); } \
     inline const Class##Private* k_func() const { return reinterpret_cast<const Class##Private *>(k_ptr); } \
@@ -119,5 +125,8 @@ public: \
      * Constructs an object with the given \p parent.
      */ \
     classname(QObject *parent = 0); \
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONONDEFS_H

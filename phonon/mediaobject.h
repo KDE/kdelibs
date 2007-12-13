@@ -19,11 +19,14 @@
 #ifndef Phonon_MEDIAOBJECT_H
 #define Phonon_MEDIAOBJECT_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
-#include "phononnamespace.h"
-#include "mediasource.h"
-#include "medianode.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phononnamespace.h"
+#include "phonon/mediasource.h"
+#include "phonon/medianode.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -443,7 +446,7 @@ namespace Phonon
              * Selects a video stream from the media.
              *
              * Some media formats allow multiple video streams to be stored in
-             * the same file. Normally only one should be played back. 
+             * the same file. Normally only one should be played back.
              * The latter allows to play, two or more
              * different video streams simultaneously.
              *
@@ -682,6 +685,9 @@ namespace Phonon
      */
     PHONON_EXPORT MediaObject *createPlayer(Phonon::Category category, const MediaSource &source = MediaSource());
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // Phonon_MEDIAOBJECT_H

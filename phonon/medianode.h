@@ -21,9 +21,12 @@
 #ifndef PHONON_MEDIANODE_H
 #define PHONON_MEDIANODE_H
 
-#include "phonondefs.h"
-#include "phonon_export.h"
-#include "path.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phonon_export.h"
+#include "phonon/path.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -56,5 +59,8 @@ namespace Phonon
     };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_MEDIANODE_H

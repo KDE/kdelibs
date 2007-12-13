@@ -20,12 +20,15 @@
 #ifndef PHONON_OBJECTDESCRIPTIONMODEL_H
 #define PHONON_OBJECTDESCRIPTIONMODEL_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
+#include "phonon/objectdescription.h"
 #include <QtCore/QList>
 #include <QtCore/QModelIndex>
 #include <QtCore/QStringList>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -341,7 +344,7 @@ namespace Phonon
 
     typedef ObjectDescriptionModel<AudioOutputDeviceType> AudioOutputDeviceModel;
     typedef ObjectDescriptionModel<EffectType> EffectDescriptionModel;
-/*    
+/*
     typedef ObjectDescriptionModel<AudioCaptureDeviceType> AudioCaptureDeviceModel;
     typedef ObjectDescriptionModel<VideoOutputDeviceType> VideoOutputDeviceModel;
     typedef ObjectDescriptionModel<VideoCaptureDeviceType> VideoCaptureDeviceModel;
@@ -351,6 +354,9 @@ namespace Phonon
     typedef ObjectDescriptionModel<VisualizationType> VisualizationDescriptionModel;*/
 
 }
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_OBJECTDESCRIPTIONMODEL_H
 // vim: sw=4 ts=4 tw=80

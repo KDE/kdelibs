@@ -20,9 +20,12 @@
 #ifndef PHONON_UI_EFFECTWIDGET_H
 #define PHONON_UI_EFFECTWIDGET_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
 #include <QtGui/QWidget>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -56,6 +59,10 @@ class Effect;
             Q_PRIVATE_SLOT(k_func(), void _k_setStringParameter(const QString &))
     };
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
+
 #endif // PHONON_UI_EFFECTWIDGET_H
 
 // vim: sw=4 ts=4 tw=100

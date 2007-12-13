@@ -20,11 +20,14 @@
 #ifndef PHONON_BACKENDINTERFACE_H
 #define PHONON_BACKENDINTERFACE_H
 
-#include "phonon_export.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/objectdescription.h"
 
 #include <QtCore/QtGlobal>
 #include <QtCore/QSet>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QVariant;
 
@@ -275,5 +278,8 @@ class BackendInterface
 } // namespace Phonon
 
 Q_DECLARE_INTERFACE(Phonon::BackendInterface, "BackendInterface3.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_BACKENDINTERFACE_H

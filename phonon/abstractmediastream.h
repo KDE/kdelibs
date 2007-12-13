@@ -20,9 +20,13 @@
 #ifndef PHONON_ABSTRACTMEDIASTREAM_H
 #define PHONON_ABSTRACTMEDIASTREAM_H
 
-#include "phonon_export.h"
-#include "phononnamespace.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phononnamespace.h"
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 class QByteArray;
 
 namespace Phonon
@@ -209,4 +213,8 @@ class PHONON_EXPORT AbstractMediaStream : public QObject
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
+
 #endif // PHONON_ABSTRACTMEDIASTREAM_H

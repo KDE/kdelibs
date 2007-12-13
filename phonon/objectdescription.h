@@ -20,7 +20,7 @@
 #ifndef PHONON_OBJECTDESCRIPTION_H
 #define PHONON_OBJECTDESCRIPTION_H
 
-#include "phonon_export.h"
+#include "phonon/phonon_export.h"
 
 #include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QtDebug>
@@ -28,6 +28,9 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -316,5 +319,8 @@ typedef ObjectDescription<VideoStreamType> VideoStreamDescription;
 typedef ObjectDescription<SubtitleStreamType> SubtitleStreamDescription;
 */
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_OBJECTDESCRIPTION_H

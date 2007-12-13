@@ -20,10 +20,13 @@
 #ifndef PHONON_UI_SEEKSLIDER_H
 #define PHONON_UI_SEEKSLIDER_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
-#include "phononnamespace.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phononnamespace.h"
 #include <QtGui/QWidget>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -138,6 +141,9 @@ class PHONON_EXPORT SeekSlider : public QWidget
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_UI_SEEKSLIDER_H

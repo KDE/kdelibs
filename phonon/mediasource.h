@@ -20,10 +20,13 @@
 #ifndef PHONON_MEDIASOURCE_H
 #define PHONON_MEDIASOURCE_H
 
-#include "phonon_export.h"
-#include "phononnamespace.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phononnamespace.h"
+#include "phonon/objectdescription.h"
 #include <QtCore/QSharedData>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 class QUrl;
@@ -57,7 +60,7 @@ class PHONON_EXPORT MediaSource
     public:
         /**
          * Identifies the type of media described by the MediaSource object.
-         * 
+         *
          * \see MediaSource::type()
          */
         enum Type {
@@ -248,4 +251,8 @@ class PHONON_EXPORT MediaSource
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
+
 #endif // PHONON_MEDIASOURCE_H

@@ -20,10 +20,13 @@
 #ifndef PHONON_FACTORY_H
 #define PHONON_FACTORY_H
 
-#include "phonon_export.h"
+#include "phonon/phonon_export.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QUrl;
 class QIcon;
@@ -189,6 +192,9 @@ namespace Factory
 //X    void freeSoundcardDevices();
 } // namespace Factory
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_FACTORY_H
 // vim: sw=4 ts=4

@@ -20,7 +20,10 @@
 #ifndef PHONON_VIDEOWIDGETINTERFACE_H
 #define PHONON_VIDEOWIDGETINTERFACE_H
 
-#include "videowidget.h"
+#include "phonon/videowidget.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -48,5 +51,8 @@ class VideoWidgetInterface
 }
 
 Q_DECLARE_INTERFACE(Phonon::VideoWidgetInterface, "VideoWidgetInterface3.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_VIDEOWIDGETINTERFACE_H

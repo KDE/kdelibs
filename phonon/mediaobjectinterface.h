@@ -20,8 +20,11 @@
 #ifndef PHONON_MEDIAOBJECTINTERFACE_H
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
-#include "mediaobject.h"
+#include "phonon/mediaobject.h"
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -306,6 +309,9 @@ class MediaObjectInterface
 }
 
 Q_DECLARE_INTERFACE(Phonon::MediaObjectInterface, "MediaObjectInterface3.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_MEDIAOBJECTINTERFACE_H
 // vim: sw=4 ts=4 tw=80

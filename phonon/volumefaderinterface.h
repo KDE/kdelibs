@@ -20,8 +20,11 @@
 #ifndef PHONON_VOLUMEFADERINTERFACE_H
 #define PHONON_VOLUMEFADERINTERFACE_H
 
-#include "volumefadereffect.h"
+#include "phonon/volumefadereffect.h"
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -41,5 +44,8 @@ class VolumeFaderInterface
 }
 
 Q_DECLARE_INTERFACE(Phonon::VolumeFaderInterface, "VolumeFaderInterface4.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_VOLUMEFADERINTERFACE_H

@@ -20,6 +20,11 @@
 #ifndef MEDIANODEDESTRUCTIONHANDLER_H
 #define MEDIANODEDESTRUCTIONHANDLER_H
 
+#include <QtCore/qglobal.h>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 /**
@@ -47,5 +52,8 @@ protected:
     virtual void phononObjectDestroyed(MediaNodePrivate *) = 0;
 };
 }
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // MEDIANODEDESTRUCTIONHANDLER_H

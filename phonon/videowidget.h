@@ -19,10 +19,13 @@
 #ifndef Phonon_VIDEOWIDGET_H
 #define Phonon_VIDEOWIDGET_H
 
-#include "phonon_export.h"
-#include "phonondefs.h"
-#include "abstractvideooutput.h"
+#include "phonon/phonon_export.h"
+#include "phonon/phonondefs.h"
+#include "phonon/abstractvideooutput.h"
 #include <QtGui/QWidget>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 
@@ -200,6 +203,9 @@ class AbstractVideoOutput;
     };
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // Phonon_VIDEOWIDGET_H

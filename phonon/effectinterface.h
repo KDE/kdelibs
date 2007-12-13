@@ -22,6 +22,9 @@
 
 #include <QtCore/QVariant>
 
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
     class EffectParameter;
@@ -39,5 +42,8 @@ namespace Phonon
 } //namespace Phonon::Fake
 
 Q_DECLARE_INTERFACE(Phonon::EffectInterface, "EffectInterface0.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_EFFECTINTERFACE_H

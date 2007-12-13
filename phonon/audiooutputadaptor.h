@@ -4,21 +4,27 @@
  *
  * dbusidl2cpp is Copyright (C) 2006 Trolltech AS. All rights reserved.
  *
- * This is an auto-generated file.
+ * This is an auto-generated file. This file has been hand-edited.
  */
 
 #ifndef AUDIOOUTPUTADAPTOR_H_56661149284959
 #define AUDIOOUTPUTADAPTOR_H_56661149284959
 
 #include <QtCore/QObject>
+#include "phonon/phonon_export.h"
+
+#ifndef QT_NO_DBUS
+#include <QtDBus/QtDBus>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
+
 class QByteArray;
 template<class T> class QList;
 template<class Key, class Value> class QMap;
 class QString;
 class QStringList;
 class QVariant;
-#ifndef QT_NO_DBUS
-#include <QtDBus/QtDBus>
 
 /*
  * Adaptor class for interface org.kde.Phonon.AudioOutput
@@ -56,6 +62,10 @@ public Q_SLOTS: // METHODS
     QString name();
 Q_SIGNALS: // SIGNALS
 };
-#endif
 
-#endif
+QT_END_NAMESPACE
+QT_END_HEADER
+
+#endif // QT_NO_DBUS
+
+#endif // AUDIOOUTPUTADAPTOR_H_56661149284959

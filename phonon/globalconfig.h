@@ -23,7 +23,10 @@ Boston, MA 02110-1301, USA.
 #include <QtCore/QObject>
 #include <QtCore/QSettings>
 
-#include "phononnamespace.h"
+#include "phonon/phononnamespace.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -47,4 +50,8 @@ Q_SIGNALS:
         QSettings m_config;
     };
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
+
 #endif // PHONON_GLOBALCONFIG_H

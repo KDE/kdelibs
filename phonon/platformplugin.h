@@ -22,6 +22,10 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include "phonon/phonon_export.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QUrl;
 class QObject;
@@ -91,5 +95,8 @@ class PlatformPlugin
 } // namespace Phonon
 
 Q_DECLARE_INTERFACE(Phonon::PlatformPlugin, "PlatformPlugin1.phonon.kde.org")
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_PLATFORMPLUGIN_H

@@ -19,10 +19,13 @@
 #ifndef PHONON_EFFECT_H
 #define PHONON_EFFECT_H
 
-#include "phonondefs.h"
+#include "phonon/phonondefs.h"
 #include <QtCore/QObject>
-#include "objectdescription.h"
-#include "medianode.h"
+#include "phonon/objectdescription.h"
+#include "phonon/medianode.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 template<class T> class QList;
@@ -99,6 +102,9 @@ namespace Phonon
             Effect(EffectPrivate &dd, QObject *parent);
     };
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_EFFECT_H

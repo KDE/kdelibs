@@ -19,11 +19,14 @@
 #ifndef Phonon_AUDIOOUTPUT_H
 #define Phonon_AUDIOOUTPUT_H
 
-#include "phonon_export.h"
-#include "abstractaudiooutput.h"
-#include "phonondefs.h"
-#include "phononnamespace.h"
-#include "objectdescription.h"
+#include "phonon/phonon_export.h"
+#include "phonon/abstractaudiooutput.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phononnamespace.h"
+#include "phonon/objectdescription.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 
@@ -165,6 +168,9 @@ namespace Phonon
             Q_PRIVATE_SLOT(k_func(), void _k_deviceListChanged())
     };
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // Phonon_AUDIOOUTPUT_H

@@ -20,7 +20,10 @@
 #ifndef PHONONNAMESPACE_H
 #define PHONONNAMESPACE_H
 
-#include "phonon_export.h"
+#include "phonon/phonon_export.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 
@@ -245,6 +248,9 @@ namespace Phonon
 Q_DECLARE_METATYPE(Phonon::State)
 Q_DECLARE_METATYPE(Phonon::ErrorType)
 Q_DECLARE_METATYPE(Phonon::Category)
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONONNAMESPACE_H

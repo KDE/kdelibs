@@ -19,10 +19,13 @@
 #ifndef Phonon_ABSTRACTVIDEOOUTPUTBASE_H
 #define Phonon_ABSTRACTVIDEOOUTPUTBASE_H
 
-#include "phonondefs.h"
-#include "phonon_export.h"
-#include "medianode.h"
+#include "phonon/phonondefs.h"
+#include "phonon/phonon_export.h"
+#include "phonon/medianode.h"
 #include <QtCore/QObject>
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 class QString;
 
@@ -56,5 +59,8 @@ namespace Experimental
             AbstractVideoOutput(AbstractVideoOutputPrivate &d);
     };
 } //namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // Phonon_ABSTRACTVIDEOOUTPUTBASE_H
