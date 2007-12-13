@@ -48,7 +48,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
+#ifdef HAVE_PTY_H
+#  include <pty.h>
+#endif
 
 #include <sys/param.h>
 #if defined(__FreeBSD__)
@@ -68,6 +72,10 @@ int main (int argc, char *argv[])
   mode_t        mod;
   char*         tty;
   int           fd;
+#if !defined(HAVE_PTSNAME) && defined(TIOCGPTN)
+  int           ptyno;
+  char          ttyb[32];
+#endif
 
   /* check preconditions **************************************************/
   if (argc != 3 || (strcmp(argv[1],"--grant") && strcmp(argv[1],"--revoke")))
@@ -92,6 +100,11 @@ int main (int argc, char *argv[])
 #ifdef HAVE_PTSNAME
   tty = ptsname(fd);
   if (!tty)
+#elif defined(TIOCGPTN)
+  if (!ioctl(fd, TIOCGPTN, &ptyno)) {
+    sprintf(ttyb, "/dev/pts/%d", ptyno);
+    tty = ttyb;
+  } else
 #endif
   {
     /* Check that fd is a valid master pseudo terminal.  */
@@ -142,7 +155,7 @@ int main (int argc, char *argv[])
     /* matches /dev/pty?? */
     if (memcmp(pty,"/dev/pty",8))
     {
-      fprintf(stderr,"%s: determined a strange pty name `%s'.\n",argv[0],pty);
+      fprintf(stderr,"%s: determined a strange pty name '%s'.\n",argv[0],pty);
       return 1; /* FAIL */
     }
 
@@ -154,7 +167,7 @@ int main (int argc, char *argv[])
   /* Check that the returned slave pseudo terminal is a character device.  */
   if (stat(tty, &st) < 0 || !S_ISCHR(st.st_mode))
   {
-    fprintf(stderr,"%s: found `%s' not to be a character device.\n",argv[0],tty);
+    fprintf(stderr,"%s: found '%s' not to be a character device.\n",argv[0],tty);
     return 1; /* FAIL */
   }
 

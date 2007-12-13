@@ -141,6 +141,7 @@ if (UNIX)
   check_function_exists(getpt      HAVE_GETPT)
   check_function_exists(grantpt    HAVE_GRANTPT)
   check_function_exists(unlockpt   HAVE_UNLOCKPT)
+  check_function_exists(posix_openpt HAVE_POSIX_OPENPT)
 
   check_library_exists(utempter addToUtmp "" HAVE_ADDTOUTEMP)
   check_include_files(utempter.h HAVE_UTEMPTER_H)

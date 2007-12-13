@@ -204,26 +204,50 @@ bool KPty::open()
 
 #else
 
-#if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) && defined(PTM_DEVICE)
-  d->masterFd = ::open(PTM_DEVICE, O_RDWR);
+#ifdef HAVE__GETPTY // irix
+
+  char *ptsn = _getpty(&d->masterFd, O_RDWR|O_NOCTTY, S_IRUSR|S_IWUSR, 0);
+  if (ptsn) {
+    d->ttyName = ptsn;
+    goto grantedpt;
+  }
+
+#elif defined(HAVE_PTSNAME) || defined(TIOCGPTN)
+
+#ifdef HAVE_POSIX_OPENPT
+  d->masterFd = ::posix_openpt(O_RDWR|O_NOCTTY);
+#elif defined(HAVE_GETPT)
+  d->masterFd = ::getpt();
+#else
+  d->masterFd = ::open(PTM_DEVICE, O_RDWR|O_NOCTTY);
+#endif
   if (d->masterFd >= 0)
   {
+#ifdef HAVE_PTSNAME
     char *ptsn = ptsname(d->masterFd);
     if (ptsn) {
-        grantpt(d->masterFd);
         d->ttyName = ptsn;
-        goto gotpty;
-    } else {
-       ::close(d->masterFd);
-       d->masterFd = -1;
-    }
-  }
+#else
+    int ptyno;
+    if (!ioctl(d->masterFd, TIOCGPTN, &ptyno)) {
+        d->ttyName.sprintf("/dev/pts/%d", ptyno);
 #endif
+#ifdef HAVE_GRANTPT
+        if (!grantpt(d->masterFd))
+           goto grantedpt;
+#else
+        goto gotpty;
+#endif
+    }
+    ::close(d->masterFd);
+    d->masterFd = -1;
+  }
+#endif // HAVE_PTSNAME || TIOCGPTN
 
   // Linux device names, FIXME: Trouble on other systems?
-  for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3; s3++)
+  for (const char* s3 = "pqrstuvwxyzabcde"; *s3; s3++)
   {
-    for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4; s4++)
+    for (const char* s4 = "0123456789abcdef"; *s4; s4++)
     {
       ptyName = QString().sprintf("/dev/pty%c%c", *s3, *s4).toAscii();
       d->ttyName = QString().sprintf("/dev/tty%c%c", *s3, *s4).toAscii();
@@ -281,12 +305,17 @@ bool KPty::open()
       << "\nThis means the communication can be eavesdropped." << endl;
   }
 
+ grantedpt:
+
 #ifdef HAVE_REVOKE
   revoke(d->ttyName.data());
 #endif
 
 #ifdef HAVE_UNLOCKPT
   unlockpt(d->masterFd);
+#elif defined(TIOCSPTLCK)
+  int flag = 0;
+  ioctl(d->masterFd, TIOCSPTLCK, &flag);
 #endif
 
   d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
