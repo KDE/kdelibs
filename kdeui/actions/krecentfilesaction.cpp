@@ -29,7 +29,9 @@
 #include "krecentfilesaction_p.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QPointer>
+#ifdef Q_OS_WIN
+#include <QtCore/QDir>
+#endif
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -118,10 +120,14 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
      */
     const KUrl url( _url );
 
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith('/'))
+    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation("tmp", url.path()) != url.path() )
        return;
     const QString tmpName = name.isEmpty() ?  url.fileName() : name;
+#ifdef Q_OS_WIN
+    const QString file = url.isLocalFile() ? QDir::toNativeSeparators( url.pathOrUrl() ) : url.pathOrUrl();
+#else
     const QString file = url.pathOrUrl();
+#endif
 
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
@@ -228,7 +234,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     {
         key = QString( "File%1" ).arg( i );
         value = cg.readPathEntry( key, QString() );
-	if (value.isEmpty()) continue;
+        if (value.isEmpty()) continue;
         url = KUrl( value );
 
         // Don't restore if file doesn't exist anymore
@@ -239,18 +245,24 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
         if (d->m_urls.values().contains(url))
           continue;
 
+#ifdef Q_OS_WIN
+        // convert to backslashes
+        if ( url.isLocalFile() )
+            value = QDir::toNativeSeparators( value );
+#endif
+
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = cg.readPathEntry( nameKey, url.fileName() );
         title = nameValue + " [" + value + ']';
         if (!value.isNull())
         {
-	  thereAreEntries=true;
+          thereAreEntries=true;
           addAction(new QAction(title, selectableActionGroup()), url, nameValue);
         }
     }
     if (thereAreEntries)
     {
-	if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
+        if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
     }
 }
 
