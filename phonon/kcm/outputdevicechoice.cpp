@@ -21,7 +21,6 @@
 #include "outputdevicechoice.h"
 
 #include <QtCore/QList>
-#include <QtCore/QSettings>
 #include <QtGui/QHeaderView>
 #include <QtGui/QPalette>
 
@@ -30,6 +29,7 @@
 #include <phonon/phononnamespace.h>
 #include "../libkaudiodevicelist/audiodeviceenumerator.h"
 #include "../libkaudiodevicelist/audiodevice.h"
+#include "../qsettingsgroup_p.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -41,36 +41,7 @@
 Q_DECLARE_METATYPE(QList<int>)
 #endif
 
-class QSettingsGroup
-{
-    public:
-        QSettingsGroup(QSettings *settings, const QString &name)
-            : m_s(settings),
-            m_group(name + QLatin1Char('/'))
-        {
-        }
-
-        template<typename T>
-        inline T value(const QString &key, const T &def) const
-        {
-            return qvariant_cast<T>(value(key, QVariant::fromValue(def)));
-        }
-
-        QVariant value(const QString &key, const QVariant &def) const
-        {
-            return m_s->value(m_group + key, def);
-        }
-
-        template<typename T>
-        inline void setValue(const QString &key, const T &value)
-        {
-            m_s->setValue(m_group + key, QVariant::fromValue(value));
-        }
-
-    private:
-        QSettings *const m_s;
-        QString m_group;
-};
+using Phonon::QSettingsGroup;
 
 class CategoryItem : public QStandardItem {
     public:
@@ -87,33 +58,34 @@ class CategoryItem : public QStandardItem {
         Phonon::Category m_cat;
 };
 
+/**
+ * Need this to change the colors of the ListView if the Palette changed. With CSS set this won't
+ * change automatically
+ */
+void OutputDeviceChoice::changeEvent(QEvent *e)
+{
+    QWidget::changeEvent(e);
+    if (e->type() == QEvent::PaletteChange) {
+        deviceList->setStyleSheet(deviceList->styleSheet());
+    }
+}
+
 OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     : QWidget(parent)
 {
     setupUi(this);
     removeButton->setIcon(KIcon("list-remove"));
-    deferButton->setIcon(KIcon("arrow-down"));
-    preferButton->setIcon(KIcon("arrow-up"));
-    //categoryTree->setDragEnabled(true);
-    //categoryTree->setAcceptDrops(true);
-    //categoryTree->setDropIndicatorShown(true);
-    //categoryTree->setDragDropMode(QAbstractItemView::InternalMove);
-//X     deviceList->setDragEnabled(true);
-//X     deviceList->setAcceptDrops(true);
-//X     deviceList->setDropIndicatorShown(true);
+    deferButton->setIcon(KIcon("go-down"));
+    preferButton->setIcon(KIcon("go-up"));
     deviceList->setDragDropMode(QAbstractItemView::InternalMove);
-    const QColor bgColor = deviceList->viewport()->palette().color(deviceList->viewport()->backgroundRole());
-    const QString stylesheet = QString("QListView {"
-            "background-color: %1;"
-            "background-image: url(%2);"
-            "background-position: bottom left;"
-            "background-attachment: fixed;"
-            "background-repeat: no-repeat;"
-            "}")
-        .arg(bgColor.name())
-        .arg(KStandardDirs::locate("data", "kcm_phonon/listview-background.png"));
-    kDebug() << stylesheet;
-    deviceList->setStyleSheet(stylesheet);
+    deviceList->setStyleSheet(QString("QListView {"
+                "background-color: palette(base);"
+                "background-image: url(%1);"
+                "background-position: bottom left;"
+                "background-attachment: fixed;"
+                "background-repeat: no-repeat;"
+                "}")
+            .arg(KStandardDirs::locate("data", "kcm_phonon/listview-background.png")));
     deviceList->setAlternatingRowColors(false);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
@@ -161,7 +133,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     connect(Phonon::BackendCapabilities::notifier(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(updateAudioOutputDevices()));
 
     if (!categoryTree->currentIndex().isValid()) {
-        categoryTree->setCurrentIndex(m_categoryModel.index(0, 0).child(0, 0));
+        categoryTree->setCurrentIndex(m_categoryModel.index(0, 0).child(1, 0));
     }
 }
 
@@ -234,14 +206,21 @@ void OutputDeviceChoice::load()
     QSettingsGroup outputDeviceGroup(&phononConfig, QLatin1String("AudioOutputDevice"));
     QSettingsGroup captureDeviceGroup(&phononConfig, QLatin1String("AudioCaptureDevice"));
 
+    // the following call returns ordered according to NoCategory
     QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
     QHash<int, Phonon::AudioOutputDevice> hash;
     foreach (Phonon::AudioOutputDevice dev, list) {
         hash.insert(dev.index(), dev);
     }
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        const QString configKey(QLatin1String("Category") + QString::number(i));
+        if (!outputDeviceGroup.hasKey(configKey)) {
+            m_outputModel[i]->setModelData(list); // use the NoCategory order
+            m_outputModel[i]->setProperty("dirty", false);
+            continue;
+        }
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
-        QList<int> order = outputDeviceGroup.value(QLatin1String("Category") + QString::number(i), QList<int>());
+        QList<int> order = outputDeviceGroup.value(configKey, QList<int>());
         QList<Phonon::AudioOutputDevice> orderedList;
         foreach (int idx, order) {
             if (hashCopy.contains(idx)) {

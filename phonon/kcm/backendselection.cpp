@@ -36,8 +36,8 @@ BackendSelection::BackendSelection(QWidget *parent)
     : QWidget(parent)
 {
     setupUi(this);
-    m_down->setIcon(KIcon("arrow-down"));
-    m_up->setIcon(KIcon("arrow-up"));
+    m_down->setIcon(KIcon("go-down"));
+    m_up->setIcon(KIcon("go-up"));
     m_comment->setWordWrap(true);
 
     m_emptyPage = stackedWidget->addWidget(new QWidget());

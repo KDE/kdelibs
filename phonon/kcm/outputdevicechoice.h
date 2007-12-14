@@ -40,6 +40,9 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
     Q_SIGNALS:
         void changed();
 
+    protected:
+        void changeEvent(QEvent *);
+
     private Q_SLOTS:
         void on_preferButton_clicked();
         void on_deferButton_clicked();
