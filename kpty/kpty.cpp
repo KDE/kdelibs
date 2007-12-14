@@ -218,8 +218,10 @@ bool KPty::open()
   d->masterFd = ::posix_openpt(O_RDWR|O_NOCTTY);
 #elif defined(HAVE_GETPT)
   d->masterFd = ::getpt();
-#else
+#elif defined(PTM_DEVICE)
   d->masterFd = ::open(PTM_DEVICE, O_RDWR|O_NOCTTY);
+#else
+# error No method to open a PTY master detected.
 #endif
   if (d->masterFd >= 0)
   {
