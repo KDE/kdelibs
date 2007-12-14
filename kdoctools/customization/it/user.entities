@@ -5,7 +5,6 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-<!-- Entit&agrave; inglesi tradotte -->
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
@@ -13,17 +12,13 @@
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	"<acronym>dpi</acronym>">
 <!ENTITY eg	"<abbrev>ad es.</abbrev>">
-<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY Enter	"<keycap>Invio</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc	"<abbrev>ecc.</abbrev>">
 <!ENTITY FAQ	"<acronym>FAQ</acronym>">
 <!ENTITY ie	"cio&egrave;">
-<!ENTITY Tab	"<keycap>Tab</keycap>">
-<!-- remove one of these two -->
-<!ENTITY kcontrol       "<application>Centro di controllo di &kde;</application>">
+<!ENTITY infocenter	"<application>Centro d'informazione</application>">
 <!ENTITY kcontrolcenter	"<application>Centro di controllo di &kde;</application>">
-<!ENTITY khelpcenter    "<application>Centro di informazioni di &kde;</application>">
-
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>icona K di &kde;</title></objectinfo>
@@ -33,12 +28,13 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
 <!ENTITY kmenu  "menu <guimenu>K</guimenu>">
-
 <!ENTITY LMB    "tasto <mousebutton>sinistro</mousebutton> del mouse">
 <!ENTITY MMB    "tasto <mousebutton>centrale</mousebutton> del mouse">
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemtray "<application>vassoio di sistema</application>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 <!--                                                     -->
 <!-- Note (EB): you can translate the entity names as well:
      &cioe;
@@ -49,4 +45,4 @@
 
 <!-- Entit&agrave; aggiunte dai traduttori -->
 
-<!ENTITY teamit "il Team di traduzione in italiano di &kde;">
+<!ENTITY teamit "la squadra di traduzione in italiano di &kde;">

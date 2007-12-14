@@ -8,19 +8,19 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LISTA DEI LORO TITOLI"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "le sezioni invarianti &FDLISTitles;">
+<!ENTITY FDLInvariantSections "con le sezioni non modificabili &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "nessuna sezione invariante">
+<!ENTITY FDLInvariantSections "senza sezioni non modificabili">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTA"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "i testi di copertina anteriore &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "con i testi di copertina &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "nessun testo di copertina anteriore">
+<!ENTITY FDLFrontCoverText "senza testi di copertina">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTA DEI LORO TITOLI"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "i testi di copertina posteriore &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "con i testi di quarta di copertina &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "nessun testo di copertina posteriore">
+<!ENTITY FDLBackCoverText "senza testo di quarta di copertina">
 
 <!-- modespec entity: must be adapted in accordance with the normal usage
      for documents in a language; the most likely candidates are the value

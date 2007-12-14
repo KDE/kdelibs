@@ -1,13 +1,7 @@
-<para>Per compilare e installare &kappname; sul tuo sistema, immetti i
-seguenti comandi nella directory di base della distribuzione di &kappname;:</para>
+<para>Per avere informazioni dettagliate su come compilare e installare le
+applicazioni di &kde;, vedi <ulink url="http://techbase.kde.org/Getting_Started_(it)">
+Generare KDE4 dal codice sorgente</ulink></para>
 
-<screen><prompt>%</prompt> <userinput><command>./configure</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command> install</userinput>
-</screen>
-
-<para>Dato che &kappname; usa <command>autoconf</command> e
-<command>automake</command>, non dovresti incontrare dei problemi per
-compilarlo. Se si verificasse qualche problema,
-per piacere segnalalo alle mailing list di &kde;.</para>
-
+<para>Siccome &kde; usa <command>cmake</command> non dovresti avere problemi a
+compilarlo. Se invece dovessi incontrarne, per piacere, segnalali alle liste di
+distribuzione di &kde;.</para>

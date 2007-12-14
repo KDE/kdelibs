@@ -23,11 +23,13 @@
 
     Include a copy of the licence in the documentation distribution.
  -->
+<!-- Nota di traduzione: le preposizioni "con" e "senza" sono passate nel
+file ../strings.entities in modo da poter essere usate correttamente. -->
 <para>&Egrave; concesso il permesso di copiare, distribuire ovvero modificare questo
 documento sotto i termini della GNU Free Documentation License,
 versione 1.1 o qualsiasi versione successiva pubblicata dalla Free Software
-Foundation; con &FDLInvariantSections;, con &FDLFrontCoverText; e
-con &FDLBackCoverText;. Una copia di questa licenza &egrave; inclusa nel<xref linkend="gnu-fdl"/>.</para>
+Foundation; &FDLInvariantSections;, &FDLFrontCoverText; e
+&FDLBackCoverText;. Una copia di questa licenza &egrave; inclusa nel<xref linkend="gnu-fdl"/>.</para>
 
 <!-- If you have no Invariant Sections, don't add any FDLIS entities.
      If you have no Front-Cover Texts, don't add any FDLFCT; likewise
