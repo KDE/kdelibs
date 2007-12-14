@@ -18,7 +18,6 @@
 #include "kcookie.h"
 
 #include <config.h>
-#include <config-pty.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,12 +33,6 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <sys/ioctl.h>
-
-#if defined(__SVR4) && defined(sun)
-#include <stropts.h>
-#include <sys/stream.h>
-#endif
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>                // Needed on some systems.
