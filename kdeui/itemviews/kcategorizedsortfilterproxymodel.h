@@ -2,6 +2,8 @@
   * This file is part of the KDE project
   * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
   * Copyright (C) 2007 John Tapsell <tapsell@kde.org>
+  * Copyright (C) 2006 by Dominic Battre <dominic@battre.de>
+  * Copyright (C) 2006 by Martin Pool <mbp@canonical.com>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
