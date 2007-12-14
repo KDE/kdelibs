@@ -111,9 +111,6 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
     void resizeEvent( QResizeEvent* e );
 
  private:
-    void drawRatingPixmaps( QPainter* p, int pix, int hoverPix, int grayPix, bool half );
-    unsigned int posToRating( int pos ) const;
-
     class Private;
     Private* const d;
 };
