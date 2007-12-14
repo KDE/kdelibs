@@ -63,6 +63,8 @@ AudioDeviceEnumerator *AudioDeviceEnumerator::self()
 
 void AudioDeviceEnumeratorPrivate::findDevices()
 {
+    KConfigGroup globalConfigGroup(config, "Globals");
+    const int cacheVersion = globalConfigGroup.readEntry("CacheVersion", 0);
     QSet<QString> alreadyFoundCards;
 
     // ask Solid for the available audio hardware
@@ -74,13 +76,13 @@ void AudioDeviceEnumeratorPrivate::findDevices()
                 capturedevicelist << dev;
                 if (dev.isPlaybackDevice()) {
                     playbackdevicelist << dev;
-                    alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.udi();
+                    alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.d->uniqueId;
                 } else {
-                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.udi();
+                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.d->uniqueId;
                 }
             } else {
                 playbackdevicelist << dev;
-                alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.udi();
+                alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.d->uniqueId;
             }
         }
     }
@@ -96,7 +98,7 @@ void AudioDeviceEnumeratorPrivate::findDevices()
         AudioDevice dev(configGroup);
         if (!dev.isValid()) { // invalid only if the storage format changed
             // try to find the new device
-            Solid::Device device(dev.udi());
+            Solid::Device device(dev.d->udi);
             AudioDevice newDevice(device, config);
             if (newDevice.isValid()) {
                 // found it, now give it the old index
@@ -140,6 +142,9 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 //X     dirWatch->addFile(QDir::homePath() + QLatin1String("/.asoundrc"));
 //X     dirWatch->addFile(QLatin1String("/etc/asound.conf"));
 //X     q.connect(dirWatch, SIGNAL(dirty(const QString &)), &q, SLOT(_k_asoundrcChanged(const QString &)));
+
+    globalConfigGroup.writeEntry("CacheVersion", 1);
+    config->sync();
 }
 
 struct DeviceHint
@@ -392,7 +397,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
     kDebug(603) << udi;
     AudioDevice dev;
     foreach (const AudioDevice &listedDev, capturedevicelist) {
-        if (listedDev.udi() == udi && listedDev.isAvailable()) {
+        if (listedDev.d->udi == udi && listedDev.isAvailable()) {
             // listedDev is the same devices as was removed
             kDebug(603) << "removing from capturedevicelist: " << listedDev.cardName();
             dev = listedDev;
@@ -401,7 +406,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
         }
     }
     foreach (const AudioDevice &listedDev, playbackdevicelist) {
-        if (listedDev.udi() == udi && listedDev.isAvailable()) {
+        if (listedDev.d->udi == udi && listedDev.isAvailable()) {
             // listedDev is the same devices as was removed
             kDebug(603) << "removing from playbackdevicelist: " << listedDev.cardName();
             dev = listedDev;
@@ -437,7 +442,7 @@ QDebug operator<<(QDebug &s, const Solid::AudioInterface::AudioDriver &driver)
 }
 QDebug operator<<(QDebug &s, const AudioDevice &dev)
 {
-    s.space() << "\n-" << dev.cardName() << dev.driver() << dev.deviceIds() << "index:" << dev.index() << "preference:" << dev.initialPreference() << "avail:" << dev.isAvailable();
+    s.space() << "\n-" << dev.cardName() << dev.driver() << dev.deviceIds() << "index:" << dev.index() << "preference:" << dev.initialPreference() << "avail:" << dev.isAvailable() << "advanced:" << dev.isAdvancedDevice();
     return s.space();
 }
 

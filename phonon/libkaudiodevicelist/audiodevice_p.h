@@ -55,6 +55,7 @@ class AudioDevicePrivate : public QSharedData
         QStringList deviceIds;
         QString icon;
         QString uniqueId;
+        QString udi;
         Solid::AudioInterface::AudioDriver driver;
         struct AlsaId
         {

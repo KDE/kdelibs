@@ -130,6 +130,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
     //kDebug(603) << audioHw->driverHandle();
     d->uniqueId = d->uniqueIdentifierFromDevice(audioDevice);
+    d->udi = audioDevice.udi();
     d->driver = audioHw->driver();
     const QVariant handle = audioHw->driverHandle();
     if (d->uniqueId.isEmpty()) {
@@ -289,16 +290,12 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
-        deviceGroup.writeEntry("uniqueId", d->uniqueId);
+        deviceGroup.writeEntry("udi", d->udi);
         deviceGroup.writeEntry("initialPreference", d->initialPreference);
         deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
-        config->sync();
     } else {
-        if (!deviceGroup.hasKey("uniqueId") || !deviceGroup.hasKey("initialPreference")) {
-            deviceGroup.writeEntry("initialPreference", d->initialPreference);
-            deviceGroup.writeEntry("uniqueId", d->uniqueId);
-            config->sync();
-        }
+        deviceGroup.writeEntry("udi", d->udi);
+        deviceGroup.writeEntry("initialPreference", d->initialPreference);
         deviceGroup.writeEntry("icon", d->icon);
         deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
     }
@@ -318,12 +315,15 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     : d(new AudioDevicePrivate)
 {
     d->index = deviceGroup.readEntry("index", d->index);
-    d->uniqueId = deviceGroup.readEntry("uniqueId", d->uniqueId);
+    const QString groupName = deviceGroup.name();
+    d->uniqueId = groupName.mid(groupName.indexOf(QLatin1Char('_')));
+    kDebug(603) << groupName << d->uniqueId;
     if (d->uniqueId.startsWith("/org/freedesktop/Hal/devices/")) {
         // old invalid group
         d->valid = false;
         return;
     }
+    d->udi = deviceGroup.readEntry("udi", d->udi);
     d->cardName = deviceGroup.readEntry("cardName", d->cardName);
     d->icon = deviceGroup.readEntry("icon", d->icon);
     d->driver = static_cast<Solid::AudioInterface::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
@@ -342,6 +342,8 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
     : d(new AudioDevicePrivate)
 {
 #ifdef HAVE_LIBASOUND2
+    d->uniqueId = alsaDeviceName;
+    d->udi = alsaDeviceName;
     d->driver = Solid::AudioInterface::Alsa;
     d->deviceIds << alsaDeviceName;
     QStringList lines = description.split("\n");
@@ -428,15 +430,9 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         deviceGroup.writeEntry("icon", d->icon);
         deviceGroup.writeEntry("isAdvanced", d->isAdvanced);
     }
-    config->sync();
 
     //d->applyHardwareDatabaseOverrides();
 #endif // HAVE_LIBASOUND2
-}
-
-QString AudioDevice::udi() const
-{
-    return d->uniqueId;
 }
 
 int AudioDevice::index() const
@@ -547,6 +543,9 @@ void AudioDevicePrivate::applyHardwareDatabaseOverrides()
         }
         if (!e.iconName.isEmpty()) {
             icon = e.iconName;
+        }
+        if (e.isAdvanced != 2) {
+            isAdvanced = e.isAdvanced;
         }
         initialPreference = e.initialPreference;
     }

@@ -163,13 +163,11 @@ namespace Phonon
              */
             bool isAdvancedDevice() const;
 
-        protected:
+        private:
             AudioDevice(Solid::Device audioHw, KSharedConfig::Ptr config);
             AudioDevice(KConfigGroup &deviceGroup);
             AudioDevice(const QString &alsaDeviceName, const QString &description, KSharedConfig::Ptr config);
-            QString udi() const;
 
-        private:
             QExplicitlySharedDataPointer<AudioDevicePrivate> d;
     };
 } // namespace Phonon
