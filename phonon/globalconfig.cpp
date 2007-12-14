@@ -23,41 +23,13 @@
 #include "objectdescription.h"
 #include "phonondefs_p.h"
 #include "backendinterface.h"
+#include "qsettingsgroup_p.h"
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 
 namespace Phonon
 {
-class QSettingsGroup
-{
-    public:
-        QSettingsGroup(const QSettings *settings, const QString &name)
-            : m_s(settings),
-            m_group(name + QLatin1Char('/'))
-        {
-        }
-
-        template<typename T>
-        inline T value(const QString &key, const T &def) const
-        {
-            return qvariant_cast<T>(value(key, QVariant::fromValue(def)));
-        }
-
-        QVariant value(const QString &key, const QVariant &def) const
-        {
-            return m_s->value(m_group + key, def);
-        }
-
-        bool hasKey(const QString &key) const
-        {
-            return m_s->contains(m_group + key);
-        }
-
-    private:
-        const QSettings *const m_s;
-        QString m_group;
-};
 
 GlobalConfig::GlobalConfig(QObject *parent)
     : QObject(parent)
