@@ -4302,6 +4302,9 @@ NET::WindowType NETWinInfo::windowType( unsigned long supported_types ) const {
     return Unknown;
 }
 
+bool NETWinInfo::hasWindowType() const {
+    return p->types.size() > 0;
+}
 
 const char *NETWinInfo::name() const {
     return p->name;

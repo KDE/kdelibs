@@ -914,6 +914,13 @@ public:
     WindowType windowType( unsigned long supported_types ) const;
 
     /**
+      This function returns false if the window has not window type
+      specified at all. Used by KWindowInfo::windowType() to return either
+      NET::Normal or NET::Dialog as appropriate as a fallback.
+    **/
+    bool hasWindowType() const;
+
+    /**
        Returns the name of the window in UTF-8 format.
 
        @return the name of the window

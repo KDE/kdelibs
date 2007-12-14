@@ -65,6 +65,8 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
 	properties |= NET::WMName; // force, in case it will be used as a fallback
     if( properties2 & NET::WM2ExtendedStrut )
         properties |= NET::WMStrut; // will be used as fallback
+    if( properties & NET::WMWindowType )
+        properties2 |= NET::WM2TransientFor; // will be used when type is not set
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
     d->info = new NETWinInfo( QX11Info::display(), _win, QX11Info::appRootWindow(), props, 2 );
@@ -195,6 +197,15 @@ NET::WindowType KWindowInfo::windowType( int supported_types ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
         << "Pass NET::WMWindowType to KWindowInfo" << endl;
+    if( !d->info->hasWindowType()) { // fallback, per spec recommendation
+        if( transientFor() != None ) { // dialog
+            if( supported_types & NET::DialogMask )
+                return NET::Dialog;
+        } else {
+            if( supported_types & NET::NormalMask )
+                return NET::Normal;
+        }
+    }
     return d->info->windowType( supported_types );
 }
 
