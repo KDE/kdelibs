@@ -39,6 +39,7 @@
 #include <kshell.h>
 
 #include <kio/job.h>
+#include <kmimetype.h>
 #include <krandom.h>
 #include <ktar.h>
 #include <kzip.h>
@@ -390,7 +391,6 @@ void CoreEngine::slotPayloadResult(KJob *job)
 	else
 	{
 		KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-
 		if(m_entry_jobs.contains(job))
 		{
 			// FIXME: this is only so exposing the KUrl suffices for downloaded entries
@@ -1341,22 +1341,10 @@ bool CoreEngine::install(const QString &payloadfile)
 	//kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression();
 	//kDebug(550) << "INSTALL + command " << m_installation->command();
 
-	// FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-	KUrl source = KUrl(entry->payload().representation());
-	QString installfile;
-	QString ext = source.fileName().section('.', -1);
-	if(m_installation->customName())
-	{
-		installfile = entry->name().representation();
-		installfile += '-' + entry->version();
-		if(!ext.isEmpty()) installfile += '.' + ext;
-	}
-	else
-	{
-		installfile = source.fileName();
-	}
-
-	QString installpath, installdir;
+        // installdir is the target directory
+	QString installdir;
+        // installpath also contains the file name if it's a single file, otherwise equal to installdir
+        QString installpath;
 	int pathcounter = 0;
 	if(!m_installation->standardResourceDir().isEmpty())
 	{
@@ -1379,7 +1367,6 @@ bool CoreEngine::install(const QString &payloadfile)
 		installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
 		pathcounter++;
 	}
-	installpath = installdir + '/' + installfile;
 
 	if(pathcounter != 1)
 	{
@@ -1387,63 +1374,88 @@ bool CoreEngine::install(const QString &payloadfile)
 		return false;
 	}
 
-	//kDebug(550) << "Install to file " << installpath;
-	// FIXME: copy goes here (including overwrite checking)
-	// FIXME: what must be done now is to update the cache *again*
-	//        in order to set the new payload filename (on root tag only)
-	//        - this might or might not need to take uncompression into account
-	// FIXME: for updates, we might need to force an overwrite (that is, deleting before)
-	QFile file(payloadfile);
-	bool success = file.rename(installpath);
-	if(!success)
-	{
-		kError(550) << "Cannot move file to destination" << endl;
-		return false;
-	}
+        // Collect all files that were installed
+        QStringList installedFiles;
 
-	QStringList installedFiles;
-
+        // respect the uncompress flag in the knsrc
 	if(!m_installation->uncompression().isEmpty())
 	{
+                // this is weird but a decompression is not a single name, so take the path instead
+                installpath = installdir;
+                KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
 		//kDebug(550) << "Postinstallation: uncompress the file";
 
 		// FIXME: check for overwriting, malicious archive entries (../foo) etc.
 		// FIXME: KArchive should provide "safe mode" for this!
-		// FIXME: value for uncompression was application/x-gzip etc. - and now?
 		KArchive *archive = 0;
 
-		if(ext == "zip")
+		if(mimeType->name() == "application/zip")
 		{
-			archive = new KZip(installpath);
+			archive = new KZip(payloadfile);
 		}
-		else if((ext == "tar") || (ext == "gz") || (ext == "tgz") || (ext == "bz2") || (ext == "tb2"))
+		else if(mimeType->name() == "application/tar" 
+                       || mimeType->name() == "application/x-gzip"
+                       || mimeType->name() == "application/x-bzip")
 		{
-			archive = new KTar(installpath);
+			archive = new KTar(payloadfile);
 		}
 		else
 		{
 			delete archive;
-			kError(550) << "Unknown uncompression method " << ext << endl;
+			kError(550) << "Could not determine type of archive file '" << payloadfile << "'";
 			return false;
 		}
 
 		bool success = archive->open(QIODevice::ReadOnly);
 		if(!success)
 		{
-			kError(550) << "Cannot open archive file '" << installpath << "'" << endl;
+			kError(550) << "Cannot open archive file '" << payloadfile << "'";
 			return false;
 		}
 		const KArchiveDirectory *dir = archive->directory();
 		dir->copyTo(installdir);
 
-		installedFiles << archiveEntries(installdir, dir);
+		installedFiles << archiveEntries(payloadfile, dir);
 
 		archive->close();
-		QFile::remove(installpath);
+		QFile::remove(payloadfile);
 		delete archive;
 
 	} else {
-		installedFiles << installpath;
+            // no decompress but move to target
+
+            /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
+            // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
+            KUrl source = KUrl(entry->payload().representation());
+            QString installfile;
+            QString ext = source.fileName().section('.', -1);
+            if(m_installation->customName())
+            {
+                    installfile = entry->name().representation();
+                    installfile += '-' + entry->version();
+                    if(!ext.isEmpty()) installfile += '.' + ext;
+            }
+            else
+            {
+                    installfile = source.fileName();
+            }
+            installpath = installdir + '/' + installfile;
+
+            //kDebug(550) << "Install to file " << installpath;
+            // FIXME: copy goes here (including overwrite checking)
+            // FIXME: what must be done now is to update the cache *again*
+            //        in order to set the new payload filename (on root tag only)
+            //        - this might or might not need to take uncompression into account
+            // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
+            QFile file(payloadfile);
+
+            bool success = file.rename("/home/frederik/kns-testfile");//installpath);
+            if(!success)
+            {
+                    kError(550) << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
+                    return false;
+            }
+            installedFiles << installpath;
 	}
         entry->setInstalledFiles(installedFiles);
 
@@ -1485,7 +1497,7 @@ bool CoreEngine::install(const QString &payloadfile)
 	m_payloadfiles[entry] = installpath;
 	registerEntry(entry);
 	// FIXME: hm, do we need to update the cache really?
-	// only registration is probably be needed here
+	// only registration is probably needed here
 
 	emit signalEntryChanged(entry);
 
