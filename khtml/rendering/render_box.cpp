@@ -2337,15 +2337,18 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
             accepted = false;
             break;
         }
+
+        bool d = (we.delta() < 0);
         if (orient == Qt::Vertical) {
-            if (QWidget* w = layer()->verticalScrollbar())
-                QApplication::sendEvent( w, &we);
+            if (QScrollBar* vsb = layer()->verticalScrollbar())
+                if (d && vsb->value() != vsb->maximum() || !d && vsb->value() != vsb->minimum())
+                    QApplication::sendEvent( vsb, &we);
         } else {
-            if (QWidget* w = layer()->horizontalScrollbar())
-                QApplication::sendEvent( w, &we);
+            if (QScrollBar* hsb = layer()->horizontalScrollbar())
+                if (d && hsb->value() != hsb->maximum() || !d && hsb->value() != hsb->minimum())
+                    QApplication::sendEvent( hsb, &we);
         }
-        if (we.isAccepted())
-            accepted = true;
+        accepted = true;
         break;
       }
       case EventImpl::KEYDOWN_EVENT:

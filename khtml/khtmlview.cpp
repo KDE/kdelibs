@@ -3603,7 +3603,20 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
         d->scrollingFromWheel = QCursor::pos();
         if (d->scrollingFromWheelTimerId)
             killTimer(d->scrollingFromWheelTimerId);
-        d->scrollingFromWheelTimerId = startTimer(200);
+        d->scrollingFromWheelTimerId = startTimer(400);
+        
+        if (m_part->parentPart()) {
+            // don't propagate if we are a sub-frame and our scrollbars are already at end of range
+            bool h = (static_cast<QWheelEvent*>(e)->orientation() == Qt::Horizontal);
+            bool d = (static_cast<QWheelEvent*>(e)->delta() < 0);
+            QScrollBar* hsb = horizontalScrollBar();
+            QScrollBar* vsb = verticalScrollBar();
+            if ( h && (d && hsb->value() == hsb->maximum() || !d && hsb->value() == hsb->minimum()) ||
+                !h && (d && vsb->value() == vsb->maximum() || !d && vsb->value() == vsb->minimum()) ) {
+                e->accept();
+                return;
+            }
+        }            
         QScrollArea::wheelEvent( e );
     }
 
