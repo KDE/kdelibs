@@ -89,6 +89,10 @@ public:
 
     void setNextSourceInfo(QString url, int baseLine);
 
+    // Returns if we blocked execution; KHTML will attempt to use it 
+    // to prevent some kinds of accidental recursion. Should go 
+    // if proper modal dialog manager shows up
+    bool inSession() const { return m_inSession; }
 public:
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                       const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
@@ -161,6 +165,7 @@ private:
     QString m_nextUrl;
 
     Mode m_mode;
+    bool m_inSession;
 
     QList<KTextEditor::Document*>  m_documentList;
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents

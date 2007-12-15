@@ -32,6 +32,7 @@
 #include <rendering/render_canvas.h>
 #include <khtml_part.h>
 #include <kjs/scriptfunction.h> // private API
+#include "debugger/debugwindow.h"
 
 #include <kdebug.h>
 
@@ -60,7 +61,9 @@ JSEventListener::~JSEventListener()
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow() && KJSDebugWin::debugWindow()->inSession())
+  //### This is the wrong place to do this --- we need 
+  // a more global/general stategy to prevent unwanted event loop recursion issues.
+  if (DebugWindow::window() && DebugWindow::window()->inSession())
     return;
 #endif
   KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.get())->part());

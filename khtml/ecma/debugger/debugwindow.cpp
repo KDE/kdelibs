@@ -162,6 +162,8 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     connect(m_scripts, SIGNAL(displayScript(KJS::DebugDocument*)),
             this, SLOT(displayScript(KJS::DebugDocument*)));
+
+    m_inSession = false;
 }
 
 void DebugWindow::createActions()
@@ -265,6 +267,7 @@ void DebugWindow::continueExecution()
 
     exitLoop();
     m_mode = Continue;
+    m_inSession = false;
 }
 
 void DebugWindow::stepInto()
@@ -646,6 +649,7 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     m_callStack->displayStack(document);
     m_localVariables->display(exec);
 
+    m_inSession = true;
     enterLoop();
 }
 
@@ -711,3 +715,5 @@ void DebugWindow::leaveModality()
     foreach (QWidget *widget, widgets)
         widget->removeEventFilter(this);
 }
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
