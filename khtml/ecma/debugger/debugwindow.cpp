@@ -529,6 +529,8 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         // ### KDE4.1: fix this hack used to avoid new string
         markInterface->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive, 
                                           m_breakpoints->windowTitle());
+        markInterface->setMarkPixmap(KTextEditor::MarkInterface::BreakpointActive, 
+                                     SmallIcon("flag-red"));
     }
 
     doc->setReadWrite(false);
