@@ -68,10 +68,10 @@ class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponen
 public:
     enum Mode
     {
-        Disabled = 0, // No break on any statements
-        Next     = 1, // Will break on next statement in current context
-        Step     = 2, // Will break on next statement in current or deeper context
-        Continue = 3, // Will continue until next breakpoint
+        Normal   = 0, // Only stop at breakpoints
+        StepOver = 1, // Will break on next statement in current context
+        StepOut  = 2, // Will break one or more contexts above.
+        Step     = 3, // Will break on next statement in current or deeper context
         Abort    = 4  // The script will stop execution completely,
                       // as soon as possible
     };
@@ -106,7 +106,7 @@ public:
     bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
 
 public Q_SLOTS:
-    void stopExecution();
+    void stopAtNext();
     void continueExecution();
     void stepInto();
     void stepOut();
@@ -134,7 +134,8 @@ private:
     void createStatusBar();
     void createTabWidget();
 
-    void enterDebugSession(KJS::ExecState *exec, DebugDocument *document);
+    void enterDebugSession(KJS::ExecState *exec, DebugDocument *document, int line);
+    void leaveDebugSession();
     void enableKateHighlighting(KTextEditor::Document *document);
 
     void enterModality();
@@ -144,6 +145,10 @@ private:
     void exitLoop();
 
 private:
+    // Checks to see whether we should stop at the given location, based on the current 
+    // mode and breakpoints. Returns false if we should abort
+    bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
+
     // Standard actions
     KAction *m_exitAct;
 

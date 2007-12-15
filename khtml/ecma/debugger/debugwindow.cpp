@@ -164,6 +164,7 @@ DebugWindow::DebugWindow(QWidget *parent)
             this, SLOT(displayScript(KJS::DebugDocument*)));
 
     m_inSession = false;
+    m_mode      = Normal;
 }
 
 void DebugWindow::createActions()
@@ -181,9 +182,8 @@ void DebugWindow::createActions()
     m_stopAct->setStatusTip(i18n("Stop script execution"));
     m_stopAct->setToolTip(i18n("Stop script execution"));
     m_stopAct->setEnabled(true);
-    // ### Actually we use this for stop-at-next; which is identical to 
-    // stepInto, just we enable/disable this differently.
-    connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
+    // ### Actually we use this for stop-at-next
+    connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopAtNext()));
 
     m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), this );
     actionCollection()->addAction( "stepInto", m_stepIntoAct );
@@ -254,37 +254,49 @@ void DebugWindow::createStatusBar()
     statusBar()->showMessage(i18n("Ready"));
 }
 
-void DebugWindow::stopExecution()
+void DebugWindow::stopAtNext()
 {
-    m_mode = Abort;
+    m_mode = Step;
+}
+
+void DebugWindow::leaveDebugSession() {
+    // Trigger buttons unless it's expected to be 
+    // short-running
+    if (m_mode != Step) 
+    {
+        m_continueAct->setEnabled(false);
+        m_stopAct->setEnabled(true);
+        m_stepIntoAct->setEnabled(false);
+        m_stepOutAct->setEnabled(false);
+        m_stepOverAct->setEnabled(false);
+    }
+    m_inSession = false;
+
+    exitLoop();
 }
 
 void DebugWindow::continueExecution()
 {
-    m_continueAct->setEnabled(false);
-    m_stopAct->setEnabled(false);
-    m_stepIntoAct->setEnabled(false);
-    m_stepOutAct->setEnabled(false);
-    m_stepOverAct->setEnabled(false);
-
-    exitLoop();
-    m_mode = Continue;
-    m_inSession = false;
+    m_mode = Normal;
+    leaveDebugSession();
 }
 
 void DebugWindow::stepInto()
 {
-    KMessageBox::information(this, "Step Into!");
+    m_mode = Step;
+    leaveDebugSession();
 }
 
 void DebugWindow::stepOut()
 {
-    KMessageBox::information(this, "Step Out Of!");
+    m_mode = StepOut;
+    leaveDebugSession();
 }
 
 void DebugWindow::stepOver()
 {
-    KMessageBox::information(this, "Step Over!");
+    m_mode = StepOver;
+    leaveDebugSession();
 }
 
 DebugWindow::~DebugWindow()
@@ -366,57 +378,47 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *
 }
 
 
-// This is where we are going to check for a breakpoint. First check for breakpoint
-// then if one is found, stop execution and display local variables in the localVariables
-// dock.
-
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
-    Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
-    Q_UNUSED(firstLine);
-    Q_UNUSED(lastLine);
+    return checkSourceLocation(exec, sourceId, firstLine, lastLine);
+}
 
-//     kDebug() << "***************************** atStatement ***************************************************" << endl
-//              << "      sourceId: " << sourceId << endl
-//              << "     firstLine: " << firstLine << endl
-//              << "      lastLine: " << lastLine << endl;
+bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
+{
+    if (m_mode == Abort)
+        return false;
+
+    bool enterDebugMode = false;
+    if (m_mode == Step)
+        enterDebugMode = true;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    if (document)
-    {
-//         kDebug() << "found document for sourceId";
-//         QVector<int> bpoints = document->breakpoints();
-//         foreach (int bpoint, bpoints)
-//         {
-//             kDebug() << " > " << bpoint;
-//         }
+    kDebug() << sourceId << document;
+    assert(document);
 
-/*
-        int numLines = lastLine - firstLine;
-        for (int i = 0; i < numLines; i++)
-        {
-            int lineNumber = firstLine + i;
-            kDebug() << "breakpoint at line " << lineNumber << "?";
-            if (document->hasBreakpoint(lineNumber))
-            {
-                kDebug() << "Hey! we actually found a breakpoint!";
-                // Lets try a dump of the scope chain now..
-                m_localVariables->display(exec->dynamicInterpreter());
-            }
-      }
-*/
-        if (document->hasBreakpoint(firstLine))
-        {
-//             kDebug() << "Hey! we actually found a breakpoint!";
-            // Lets try a dump of the scope chain now..
-            // m_localVariables->display(exec);
-            enterDebugSession(exec, document);
-        }
-    }
+    // Adjust line by fragment base.
+    SourceFragment fragment = document->fragment(sourceId);
 
-//     kDebug() << "*********************************************************************************************";
+    // interpret unset location as beginning of the fragment.
+    // this, again, is due to the lazy listeners
+    if (firstLine == -1)
+        firstLine = 0;
 
+    firstLine += fragment.baseLine;
+    
+    kDebug() << firstLine;
+
+    // ### next!
+    // Now check for breakpoints if needed
+    if (document->hasBreakpoint(firstLine))
+        enterDebugMode = true;
+    
+    // Block the UI, and enable all the debugging buttons, etc.
+    if (enterDebugMode)
+        enterDebugSession(exec, document, firstLine);
+        //### focus the line!
+    
+    // re-checking the abort mode here, in case it got change when recursing
     return (m_mode != Abort);
 }
 
@@ -426,6 +428,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     kDebug() << "  sourceId: " << sourceId << endl
              << "lineNumber: " << lineno << endl;
 
+    // First update call stack.
     DebugDocument *document = m_sourceIdLookup[sourceId];
     if (document)
     {
@@ -450,11 +453,13 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
             kDebug() << "arg: " << value->toString(exec).qstring();
         }
     }
+    
+    //### update depth here, for next/stepOver
 
 
     kDebug() << "****************************************************************************************";
 
-    return (m_mode != Abort);
+    return checkSourceLocation(exec, sourceId, lineno, lineno);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
@@ -463,7 +468,6 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     kDebug() << "  sourceId: " << sourceId << endl
              << "lineNumber: " << lineno << endl;
 
-    Q_UNUSED( exec );
     DebugDocument *document = m_sourceIdLookup[sourceId];
     if (document)
     {
@@ -482,8 +486,10 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     }
 
     kDebug() << "****************************************************************************************";
+    
+    //### update depth here -- and be careful with the placement of the check
 
-    return (m_mode != Abort);
+    return checkSourceLocation(exec, sourceId, lineno, lineno);
 }
 
 // End KJS::Debugger overloads
@@ -629,6 +635,7 @@ void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mar
     switch(action)
     {
         case KTextEditor::MarkInterface::MarkAdded:
+            kDebug() << lineNumber;
             debugDocument->setBreakpoint(lineNumber);
             break;
         case KTextEditor::MarkInterface::MarkRemoved:
@@ -656,7 +663,7 @@ void DebugWindow::closeTab()
 }
 
 
-void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *document)
+void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *document, int line)
 {
     // This "enters" a new debugging session, i.e. enables usage of the debugging window
     // It re-enters the qt event loop here, allowing execution of other parts of the
@@ -670,7 +677,7 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
 //    if (m_execStates.isEmpty())
     {
         m_continueAct->setEnabled(true);
-        m_stopAct->setEnabled(true);
+        m_stopAct->setEnabled(false);
         m_stepIntoAct->setEnabled(true);
         m_stepOutAct->setEnabled(true);
         m_stepOverAct->setEnabled(true);
