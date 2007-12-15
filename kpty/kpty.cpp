@@ -413,9 +413,6 @@ void KPty::login(const char *user, const char *remotehost)
     addToUtmp(d->ttyName, remotehost, d->masterFd);
     Q_UNUSED(user);
 #elif defined(HAVE_LOGIN)
-    Q_D(KPty);
-
-    const char *str_ptr;
     struct utmp l_struct;
     memset(&l_struct, 0, sizeof(struct utmp));
     // note: strncpy without terminators _is_ correct here. man 4 utmp
@@ -427,7 +424,8 @@ void KPty::login(const char *user, const char *remotehost)
       strncpy(l_struct.ut_host, remotehost, UT_HOSTSIZE);
 
 # ifndef __GLIBC__
-    str_ptr = d->ttyName.data();
+    Q_D(KPty);
+    const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))
         str_ptr += 5;
     strncpy(l_struct.ut_line, str_ptr, UT_LINESIZE);
