@@ -26,10 +26,8 @@
 class QTreeWidget;
 class QTreeWidgetItem;
 
-namespace KJS
-{
+namespace KJSDebugger {
 class DebugDocument;
-}
 
 class ScriptsDock : public QDockWidget
 {
@@ -38,13 +36,13 @@ public:
     ScriptsDock(QWidget *parent = 0);
     ~ScriptsDock();
 
-    void addDocument(KJS::DebugDocument *document);
+    void addDocument(DebugDocument *document);
 
 public Q_SLOTS:
-    void documentDestroyed(KJS::DebugDocument *document);
+    void documentDestroyed(DebugDocument *document);
 
 Q_SIGNALS:
-     void displayScript(KJS::DebugDocument *document);
+     void displayScript(DebugDocument *document);
 
 private Q_SLOTS:
     void scriptSelected(QTreeWidgetItem *item, int column);
@@ -52,8 +50,10 @@ private Q_SLOTS:
 private:
     void updateModel();
     QTreeWidget *m_widget;
-    QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
+    QHash<DebugDocument*, QTreeWidgetItem*> m_documents;
     QHash<QString, QTreeWidgetItem*> m_headers;
 };
+
+}
 
 #endif

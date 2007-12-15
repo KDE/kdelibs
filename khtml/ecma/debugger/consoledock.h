@@ -26,6 +26,8 @@ class QTextEdit;
 class QLineEdit;
 class QPushButton;
 
+namespace KJSDebugger {
+
 class ConsoleDock : public QDockWidget
 {
     Q_OBJECT
@@ -38,5 +40,7 @@ private:
     QLineEdit *consoleInput;
     QPushButton *consoleInputButton;
 };
+
+}
 
 #endif

@@ -4,24 +4,26 @@
 #include <QSharedDataPointer>
 #include <QMetaType>
 
-namespace KJS
-{
+namespace KJS {
+    class Interpreter;
+}
+
+namespace KJSDebugger {
 
 struct CallStackEntry;
 struct BreakPoint;
 struct SourceFragment;
-class Interpreter;
 
 class DebugDocument
 {
 public:
-    DebugDocument(const QString &url, Interpreter *interpreter);
+    DebugDocument(const QString &url, KJS::Interpreter *interpreter);
     DebugDocument(const DebugDocument &other);
     ~DebugDocument();
 
     QString name() const;
     QString url() const;
-    Interpreter *interpreter() const;
+    KJS::Interpreter *interpreter() const;
 
     QList<SourceFragment> fragments();
     SourceFragment fragment(int sourceId);
@@ -41,7 +43,6 @@ private:
 
 };
 
-
 struct BreakPoint
 {
     int lineNumber;
@@ -57,6 +58,6 @@ struct SourceFragment
 };
 
 }
-Q_DECLARE_METATYPE(KJS::DebugDocument*)
+Q_DECLARE_METATYPE(KJSDebugger::DebugDocument*)
 
 #endif

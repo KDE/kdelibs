@@ -23,11 +23,13 @@
 #include <QDockWidget>
 
 class QTreeView;
-class ExecStateModel;
-namespace KJS
-{
+
+namespace KJS {
     class ExecState;
 }
+
+namespace KJSDebugger {
+class ExecStateModel;
 
 class LocalVariablesDock : public QDockWidget
 {
@@ -44,5 +46,7 @@ private:
     ExecStateModel  *m_execModel;
 
 };
+
+}
 
 #endif

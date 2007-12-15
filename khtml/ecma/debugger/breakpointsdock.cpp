@@ -24,6 +24,8 @@
 #include <QListWidget>
 #include <klocale.h>
 
+namespace KJSDebugger {
+
 BreakpointsDock::BreakpointsDock(QWidget *parent)
     : QDockWidget(i18n("Breakpoints"), parent)
 {
@@ -34,4 +36,6 @@ BreakpointsDock::BreakpointsDock(QWidget *parent)
 
 BreakpointsDock::~BreakpointsDock()
 {
+}
+
 }

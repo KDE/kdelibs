@@ -24,10 +24,11 @@
 #include <QModelIndex>
 #include <QVariant>
 
-namespace KJS
-{
-   class JSObject;
+namespace KJS {
+    class JSObject;
 }
+
+namespace KJSDebugger {
 
 class ObjectNode
 {
@@ -78,6 +79,6 @@ private:
 };
 
 
-
+}
 
 #endif

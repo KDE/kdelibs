@@ -23,6 +23,8 @@
 #include <QVBoxLayout>
 #include <QListWidget>
 
+namespace KJSDebugger {
+
 WatchesDock::WatchesDock(QWidget *parent)
     : QDockWidget("Watches", parent)
 {
@@ -34,3 +36,4 @@ WatchesDock::~WatchesDock()
 {
 }
 
+}

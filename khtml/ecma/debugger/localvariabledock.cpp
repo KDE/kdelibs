@@ -37,6 +37,8 @@
 #include "objectmodel.h"
 #include "execstatemodel.h"
 
+namespace KJSDebugger {
+
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
     : QDockWidget(i18n("Local Variables"), parent), m_execModel(0)
 {
@@ -67,3 +69,4 @@ void LocalVariablesDock::display(KJS::ExecState *exec)
     m_view->setModel(m_execModel);
 }
 
+}

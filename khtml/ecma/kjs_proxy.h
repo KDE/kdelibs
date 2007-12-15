@@ -39,7 +39,6 @@ namespace KJS {
   class List;
   class Interpreter;
   class Completion;
-  class DebugWindow;
 }
 
 namespace khtml {

@@ -8,6 +8,8 @@
 #include "khtml_part.h"
 
 using namespace KJS;
+using namespace KJSDebugger;
+
 class DebugDocument::Private : public QSharedData
 {
 public:

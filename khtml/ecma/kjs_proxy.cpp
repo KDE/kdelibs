@@ -40,6 +40,7 @@
 #include <kjs/JSLock.h>
 
 using namespace KJS;
+using namespace KJSDebugger;
 
 extern "C" {
   KJSProxy *kjs_html_init(khtml::ChildFrame *childframe);

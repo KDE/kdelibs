@@ -29,6 +29,8 @@
 #include <kjs/ExecState.h>
 #include <kjs/PropertyNameArray.h>
 
+namespace KJSDebugger {
+
 // NODE
 Node::Node(const QString &name, KJS::JSValue *value, KJS::ExecState *exec, int row, Node *parent)
 {
@@ -298,3 +300,5 @@ int ExecStateModel::rowCount(const QModelIndex &parent) const
     return props.size();
 }
 
+
+}

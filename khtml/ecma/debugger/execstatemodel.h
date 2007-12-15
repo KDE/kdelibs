@@ -24,11 +24,12 @@
 #include <QHash>
 #include <kjs/JSType.h>
 
-namespace KJS
-{
+namespace KJS {
     class JSValue;
     class ExecState;
 }
+
+namespace KJSDebugger {
 
 class Node
 {
@@ -74,6 +75,8 @@ private:
     KJS::ExecState *m_exec;
     Node *m_rootNode;
 };
+
+}
 
 #endif
 

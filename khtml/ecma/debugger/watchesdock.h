@@ -22,6 +22,8 @@
 
 #include <QDockWidget>
 
+namespace KJSDebugger {
+
 class WatchesDock : public QDockWidget
 {
     Q_OBJECT
@@ -33,5 +35,6 @@ private:
 
 };
 
+}
 
 #endif

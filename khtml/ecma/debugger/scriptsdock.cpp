@@ -32,6 +32,7 @@
 #include "debugdocument.h"
 
 using namespace KJS;
+using namespace KJSDebugger;
 
 ScriptsDock::ScriptsDock(QWidget *parent)
     : QDockWidget(i18n("Loaded Scripts"), parent)
@@ -49,7 +50,7 @@ ScriptsDock::~ScriptsDock()
 {
 }
 
-void ScriptsDock::documentDestroyed(KJS::DebugDocument *document)
+void ScriptsDock::documentDestroyed(DebugDocument *document)
 {
     if (!m_documents.contains(document))
         return;
@@ -71,7 +72,7 @@ void ScriptsDock::documentDestroyed(KJS::DebugDocument *document)
 
 }
 
-void ScriptsDock::addDocument(KJS::DebugDocument *document)
+void ScriptsDock::addDocument(DebugDocument *document)
 {
     if (m_documents.contains(document))
         return;
@@ -97,7 +98,7 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
 
 void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int /*column*/)
 {
-    KJS::DebugDocument *doc = m_documents.key(item);
+    DebugDocument *doc = m_documents.key(item);
     if (doc)
         emit displayScript(doc);
 }

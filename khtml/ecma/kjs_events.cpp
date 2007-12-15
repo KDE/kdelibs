@@ -38,6 +38,7 @@
 #include <kdebug.h>
 
 using namespace KJS;
+using namespace KJSDebugger;
 using namespace DOM;
 
 // -------------------------------------------------------------------------

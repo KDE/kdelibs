@@ -24,7 +24,7 @@
 
 class QTableWidget;
 
-namespace KJS {
+namespace KJSDebugger {
 class DebugDocument;
 
 struct CallStackEntry

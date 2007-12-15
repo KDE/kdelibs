@@ -21,6 +21,8 @@
 
 #include <QDockWidget>
 
+namespace KJSDebugger {
+
 class BreakpointsDock : public QDockWidget
 {
     Q_OBJECT
@@ -31,6 +33,8 @@ public:
 private:
 
 };
+
+}
 
 #endif
 

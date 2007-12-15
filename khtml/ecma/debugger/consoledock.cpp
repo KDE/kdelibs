@@ -27,6 +27,8 @@
 
 #include <klocale.h>
 
+namespace KJSDebugger {
+
 ConsoleDock::ConsoleDock(QWidget *parent)
     : QDockWidget(i18n("Console"), parent)
 {
@@ -55,4 +57,6 @@ ConsoleDock::ConsoleDock(QWidget *parent)
 
 ConsoleDock::~ConsoleDock()
 {
+}
+
 }

@@ -29,7 +29,7 @@
 
 #include "debugdocument.h"
 
-namespace KJS {
+namespace KJSDebugger {
 
 CallStackDock::CallStackDock(QWidget *parent)
     : QDockWidget(i18n("Call Stack"), parent)
@@ -74,7 +74,7 @@ void CallStackDock::displayStack()
     m_view->setRowCount(m_callStack.count());
 
     int row = 0;
-    foreach (KJS::CallStackEntry entry, m_callStack)
+    foreach (CallStackEntry entry, m_callStack)
     {
         int displayRow = m_callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);

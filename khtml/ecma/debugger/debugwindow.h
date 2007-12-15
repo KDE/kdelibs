@@ -41,18 +41,21 @@
 #include "dom/dom_misc.h"
 
 class KAction;
+class QTabWidget;
+class QFrame;
+
+using namespace KJS;
+
+namespace KJSDebugger {
+
+class CallStackDock;
 class WatchesDock;
 class LocalVariablesDock;
 class ScriptsDock;
 class BreakpointsDock;
 class ConsoleDock;
-class QTabWidget;
-class QFrame;
+class DebugDocument;
 
-namespace KJS
-{
-
-class CallStackDock;
 
 /**
 * DebuggerWindow
@@ -114,7 +117,7 @@ protected:
     void enableOtherWindows();
 
 private Q_SLOTS:
-    void displayScript(KJS::DebugDocument *document);
+    void displayScript(DebugDocument *document);
     void closeTab();
     void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
                  KTextEditor::MarkInterface::MarkChangeAction action);
@@ -122,7 +125,7 @@ private Q_SLOTS:
 private:
     // Constructs or updates the peer KTextEditor::Document to display
     // this DebugDocument
-    KTextEditor::Document* buildViewerDocument(KJS::DebugDocument *document);
+    KTextEditor::Document* buildViewerDocument(DebugDocument *document);
 
     void createActions();
     void createMenus();

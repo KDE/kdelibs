@@ -27,6 +27,8 @@
 
 #include <kdebug.h>
 
+namespace KJSDebugger {
+
 //////////// Item
 ObjectNode::ObjectNode(ObjectNode *parent)
 {
@@ -294,3 +296,4 @@ void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, Obj
     }
 }
 
+}

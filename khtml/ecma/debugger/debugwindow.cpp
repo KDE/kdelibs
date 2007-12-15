@@ -79,6 +79,7 @@
 #include "debugdocument.h"
 
 using namespace KJS;
+using namespace KJSDebugger;
 
 DebugWindow* DebugWindow::m_debugger = 0;
 DebugWindow *DebugWindow::createInstance()
@@ -152,8 +153,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     createTabWidget();
     m_tabWidget->hide();
 
-    connect(m_scripts, SIGNAL(displayScript(KJS::DebugDocument*)),
-            this, SLOT(displayScript(KJS::DebugDocument*)));
+    connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
+            this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
 
     m_inSession = false;
     m_mode      = Normal;
@@ -460,7 +461,7 @@ void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 }
 
 
-void DebugWindow::displayScript(KJS::DebugDocument *document)
+void DebugWindow::displayScript(DebugDocument *document)
 {
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
@@ -513,7 +514,7 @@ KTextEditor::View* DebugWindow::viewForDocument(DebugDocument* document)
     return qobject_cast<KTextEditor::View*>(m_tabWidget->widget(idx));
 }
 
-KTextEditor::Document* DebugWindow::buildViewerDocument(KJS::DebugDocument *document)
+KTextEditor::Document* DebugWindow::buildViewerDocument(DebugDocument *document)
 {
     KTextEditor::Document *doc = 0;
     doc = m_debugLut[document];     // Check to see if we've already worked on this document
