@@ -190,8 +190,8 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
   // notify debugger that source has been parsed
   Debugger *dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
-    // send empty sourceURL to indicate constructed code
-    bool cont = dbg->sourceParsed(exec, sid, UString(), body, lineNumber, errLine, errMsg);
+    // make sure to pass in sourceURL, since it's useful for lazy event listeners, and empty for actual function ctor
+    bool cont = dbg->sourceParsed(exec, sid, sourceURL, body, lineNumber, errLine, errMsg);
     if (!cont) {
       dbg->imp()->abort();
       return new JSObject();
