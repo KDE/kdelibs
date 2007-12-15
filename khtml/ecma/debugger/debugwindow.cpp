@@ -320,8 +320,9 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     {
         document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
         m_documents[key] = document;
-        m_sourceIdLookup[sourceId] = document;
     }
+
+    m_sourceIdLookup[sourceId] = document;
 
     document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
     m_scripts->addDocument(document);
