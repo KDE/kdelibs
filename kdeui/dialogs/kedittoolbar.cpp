@@ -1143,7 +1143,7 @@ void KEditToolBarWidgetPrivate::slotInactiveSelectionChanged()
   {
     m_insertAction->setEnabled(true);
     QString statusText = static_cast<ToolBarItem*>(m_inactiveList->selectedItems().first())->statusText();
-    m_helpArea->setText( statusText );
+    m_helpArea->setText( i18nc("@label Action tooltip in toolbar editor, below the action list", "%1", statusText) );
   }
   else
   {
@@ -1170,7 +1170,7 @@ void KEditToolBarWidgetPrivate::slotActiveSelectionChanged()
     m_downAction->setEnabled(toolitem->index() != toolitem->listWidget()->count() - 1);
 
     QString statusText = toolitem->statusText();
-    m_helpArea->setText( statusText );
+    m_helpArea->setText( i18nc("@label Action tooltip in toolbar editor, below the action list", "%1", statusText) );
   }
   else
   {
