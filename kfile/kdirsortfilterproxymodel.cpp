@@ -116,7 +116,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
             int leftCount = (leftValue.type() == QVariant::Int) ? leftValue.toInt() : KDirModel::ChildCountUnknown;
 
             QVariant rightValue = dirModel->data(right, KDirModel::ChildCountRole);
-            int rightCount = (rightValue.type() == QVariant::Int) ? leftValue.toInt() : KDirModel::ChildCountUnknown;
+            int rightCount = (rightValue.type() == QVariant::Int) ? rightValue.toInt() : KDirModel::ChildCountUnknown;
 
             // In the case they two have the same child items, we sort them by
             // their names. So we have always everything ordered. We also check
