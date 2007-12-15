@@ -25,7 +25,7 @@ public:
 
     QList<SourceFragment> fragments();
     SourceFragment fragment(int sourceId);
-    void addCodeFragment(int sourceId, int baseLine, const QString &source);
+    void addCodeFragment(int sourceId, int baseLine, const QString &source, bool relativeLineNumbers);
     bool deleteFragment(int sourceId);
 
     QString source() const;
@@ -69,6 +69,11 @@ struct SourceFragment
     int sourceId;
     int baseLine;
     QString source;
+    // We have to distinguish how we'll see lines 
+    // for a fragment --- for normal code, KJS will report real
+    // numbers, for inline fragments, it will report -1,
+    // so we'll have to adjust by the base line.
+    bool relativeLineNumbers;
 };
 
 }

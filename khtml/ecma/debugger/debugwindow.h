@@ -149,6 +149,8 @@ private:
     // mode and breakpoints. Returns false if we should abort
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
 
+    KTextEditor::View* viewForDocument(DebugDocument* debugDoc);
+
     // Standard actions
     KAction *m_exitAct;
 
@@ -178,6 +180,11 @@ private:
 
     Mode m_mode;
     bool m_inSession;
+    
+    // Used to keep track of line highlighting in enterDebugSession,
+    // so leaveDebugSession can clear it;
+    KTextEditor::MarkInterface* m_execLineMarkIFace;
+    int                         m_execLine;
 
     QList<KTextEditor::Document*>  m_documentList;
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents

@@ -91,12 +91,14 @@ QString DebugDocument::source() const
     return d->source;
 }
 
-void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &source)
+void DebugDocument::addCodeFragment(int sourceId, int baseLine, 
+                                   const QString &source, bool relativeLineNumbers)
 {
     SourceFragment code;
     code.sourceId = sourceId;
     code.baseLine = baseLine;
     code.source = source;
+    code.relativeLineNumbers = relativeLineNumbers;
 
     d->codeFragments[sourceId] = code;
 }

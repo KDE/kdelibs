@@ -165,6 +165,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     m_inSession = false;
     m_mode      = Normal;
+    m_execLineMarkIFace = 0;
 }
 
 void DebugWindow::createActions()
@@ -271,6 +272,10 @@ void DebugWindow::leaveDebugSession() {
         m_stepOverAct->setEnabled(false);
     }
     m_inSession = false;
+    
+    if (m_execLineMarkIFace)
+        m_execLineMarkIFace->removeMark(m_execLine - 1, KTextEditor::MarkInterface::Execution);
+
 
     exitLoop();
 }
@@ -318,10 +323,11 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
              << "     sourceURL: " << sourceURL.qstring() << endl
              << "     m_nextUrl: " << m_nextUrl << endl
              << "m_nextBaseLine: " << m_nextBaseLine << endl
+             << "startingLineNumber: " << startingLineNumber << endl
              << "        source: " << source.qstring() << endl
              << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
-
+             
     // Determine key
     QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(m_nextUrl);
     
@@ -336,7 +342,8 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
     m_sourceIdLookup[sourceId] = document;
 
-    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
+    bool relativeLineNumbers = (sourceURL != m_nextUrl || startingLineNumber != m_nextBaseLine);
+    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring(), relativeLineNumbers);
     m_scripts->addDocument(document);
     buildViewerDocument(document);
 
@@ -380,6 +387,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *
 
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
+    kDebug() << "atStatement" << firstLine;
     return checkSourceLocation(exec, sourceId, firstLine, lastLine);
 }
 
@@ -396,7 +404,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
     kDebug() << sourceId << document;
     assert(document);
 
-    // Adjust line by fragment base.
+    // Adjust line by fragment base, if needed
     SourceFragment fragment = document->fragment(sourceId);
 
     // interpret unset location as beginning of the fragment.
@@ -404,7 +412,8 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
     if (firstLine == -1)
         firstLine = 0;
 
-    firstLine += fragment.baseLine;
+    if (fragment.relativeLineNumbers)
+        firstLine += fragment.baseLine;
     
     kDebug() << firstLine;
 
@@ -549,6 +558,14 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     m_tabWidget->setCurrentIndex(idx);
 }
 
+KTextEditor::View* DebugWindow::viewForDocument(DebugDocument* document)
+{
+    assert (m_openDocuments.contains(document));
+
+    int idx = m_openDocuments.indexOf(document);
+    return qobject_cast<KTextEditor::View*>(m_tabWidget->widget(idx));
+}
+
 KTextEditor::Document* DebugWindow::buildViewerDocument(KJS::DebugDocument *document)
 {
     KTextEditor::Document *doc = 0;
@@ -625,6 +642,9 @@ KTextEditor::Document* DebugWindow::buildViewerDocument(KJS::DebugDocument *docu
 void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
                           KTextEditor::MarkInterface::MarkChangeAction action)
 {
+    if (mark.type != KTextEditor::MarkInterface::BreakpointActive)
+        return;
+
     DebugDocument *debugDocument = m_documentLut[document];
     if (!debugDocument)
         return;
@@ -674,17 +694,29 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     if (!isVisible())
         show();
 
-//    if (m_execStates.isEmpty())
-    {
-        m_continueAct->setEnabled(true);
-        m_stopAct->setEnabled(false);
-        m_stepIntoAct->setEnabled(true);
-        m_stepOutAct->setEnabled(true);
-        m_stepOverAct->setEnabled(true);
-    }
+    m_continueAct->setEnabled(true);
+    m_stopAct->setEnabled(false);
+    m_stepIntoAct->setEnabled(true);
+    m_stepOutAct->setEnabled(true);
+    m_stepOverAct->setEnabled(true);
 
     m_callStack->displayStack(document);
     m_localVariables->display(exec);
+    
+    // Display the source file, and visualize the position
+    displayScript(document);
+    kDebug() << line;
+    KTextEditor::Document* ddoc = m_debugLut[document];
+    KTextEditor::View*     view = viewForDocument(document);
+    view->setCursorPosition(KTextEditor::Cursor(line - 1, 0)); // Note: KTextEditor lines 0-based
+    
+    
+    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(ddoc);
+    if (markInterface)
+        markInterface->addMark(line - 1, KTextEditor::MarkInterface::Execution);
+
+    m_execLineMarkIFace = markInterface;
+    m_execLine          = line;
 
     m_inSession = true;
     enterLoop();
