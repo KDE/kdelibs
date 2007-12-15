@@ -18,65 +18,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-// TODO: http://mail.kde.org/pipermail/kde-buildsystem/2006-July/003147.html
-
-#if 1
-
-#define THREADGUARD
 #include "ktoolinvocation.h"
 #include <config.h>
-#include "kcmdlineargs.h"
-#include "kconfig.h"
-#include "kcodecs.h"
-#include "kglobal.h"
-#include "kshell.h"
-#include "kmacroexpander.h"
+
+#include "kmessage.h"
 #include "klocale.h"
-#include <qhash.h>
 #include <QProcess>
-
-#include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#include <sys/wait.h>
-
-#ifndef Q_WS_WIN
-#include "kwin.h"
-#endif
-
-#include <fcntl.h>
-#include <stdlib.h> // getenv(), srand(), rand()
-#include <signal.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <errno.h>
-#include <string.h>
-#include <netdb.h>
-
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-#include <QThread>
-#include <QMutex>
-#include <QMutexLocker>
-#include <qglobal.h>
-#ifdef __GNUC__
-#warning used non public api for now
-#warning Implement the commented methods!
-#endif
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
-
-#if 1  // TODO: merge with relating parts from x11
-
-#include <kstandarddirs.h>
-#include <klocale.h>
-#include <kurl.h>
-
-#include <qassistantclient.h>
-#include <qdir.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QHash>
+#include <QtDBus/QtDBus>
 
 #include "windows.h"
 #include "shellapi.h"
@@ -86,23 +36,49 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                const QString& _appname,
                                const QByteArray& startup_id )
 {
-/*
-   QString url;
-   QString appname;
+    if (!isMainThreadActive())
+        return;
 
-   if (_appname.isEmpty()) {
-     appname = qApp->applicationName();
-   } else
-     appname = _appname;
+    QString url;
+    QString appname;
+    if (_appname.isEmpty()) {
+        appname = QCoreApplication::instance()->applicationName();
+    } else
+        appname = _appname;
 
-   if (!anchor.isEmpty())
-     url = QString("help:/%1?anchor=%2").arg(appname).arg(anchor);
-   else
-     url = QString("help:/%1/index.html").arg(appname);
+    if (!anchor.isEmpty())
+        url = QString("help:/%1?anchor=%2").arg(appname).arg(anchor);
+    else
+        url = QString("help:/%1/index.html").arg(appname);
 
-   QString error;
-   startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false);
-*/
+    QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
+                                               QLatin1String("/KHelpCenter"),
+                                               QLatin1String("org.kde.khelpcenter.khelpcenter"),
+                                               QDBusConnection::sessionBus());
+    if ( !iface->isValid() )
+    {
+        QString error;
+#if 1
+		if (kdeinitExec( "khelpcenter", QStringList() << url, &error, 0, startup_id ))
+#else
+		// does not work yet KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
+        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
+#endif
+        {
+            KMessage::message(KMessage::Error,
+                              i18n("Could not launch the KDE Help Center:\n\n%1", error),
+                              i18n("Could not Launch Help Center"));
+            return;
+        }
+        delete iface;
+        iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
+                                   QLatin1String("/KHelpCenter"),
+                                   QLatin1String("org.kde.khelpcenter.khelpcenter"),
+                                   QDBusConnection::sessionBus());
+    }
+
+    iface->call("openUrl", url, startup_id );
+    delete iface;
 }
 
 
@@ -182,8 +158,3 @@ void KToolInvocation::startKdeinit()
    kdeinit.start("kdeinit4");
    kdeinit.waitForFinished();
 }
-
-#endif
-
-
-#endif //#if 0
