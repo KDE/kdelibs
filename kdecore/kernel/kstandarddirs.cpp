@@ -1206,6 +1206,19 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     return list.count();
 }
 
+static inline QString equalizePath(QString &str)
+{
+#ifdef Q_WS_WIN
+	// filter pathes through QFileInfo to have always 
+	// the same case for drive letters
+	QFileInfo f(str);
+	if (f.isAbsolute())
+		return f.absoluteFilePath();
+	else 
+#endif
+		return str;
+}
+
 static int tokenize( QStringList& tokens, const QString& str,
                      const QString& delim )
 {
@@ -1216,8 +1229,8 @@ static int tokenize( QStringList& tokens, const QString& str,
     {
         if ( delim.contains( str[ index ] ) )
         {
-            tokens.append( token );
-            token = "";
+			tokens.append( equalizePath(token) );
+			token = "";
         }
         else
         {
@@ -1226,9 +1239,9 @@ static int tokenize( QStringList& tokens, const QString& str,
     }
     if ( token.length() > 0 )
     {
-        tokens.append( token );
+        tokens.append( equalizePath(token) );
     }
-
+	
     return tokens.count();
 }
 
@@ -1371,7 +1384,7 @@ static QString readEnvPath(const char *env)
     QByteArray c_path = getenv(env);
     if (c_path.isEmpty())
         return QString();
-    return QFile::decodeName(c_path);
+	return QDir::fromNativeSeparators(QFile::decodeName(c_path));
 }
 
 #ifdef __linux__
