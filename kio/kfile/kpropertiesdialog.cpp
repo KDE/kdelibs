@@ -867,7 +867,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       if ( (*kit).mode() != mode )
         mode = (mode_t)0;
       if ( KMimeType::iconNameForUrl(url, mode) != iconStr )
-        iconStr = "kmultiple";
+        iconStr = "document-multiple";
       if ( url.directory() != directory )
         directory.clear();
       if ( url.protocol() != protocol )
