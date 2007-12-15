@@ -412,31 +412,70 @@ void KPty::login(const char *user, const char *remotehost)
 
     addToUtmp(d->ttyName, remotehost, d->masterFd);
     Q_UNUSED(user);
-#elif defined(HAVE_LOGIN)
+#else
+# ifdef HAVE_UTMPX
+    struct utmpx l_struct;
+# else
     struct utmp l_struct;
-    memset(&l_struct, 0, sizeof(struct utmp));
+# endif
+    memset(&l_struct, 0, sizeof(l_struct));
     // note: strncpy without terminators _is_ correct here. man 4 utmp
 
     if (user)
-      strncpy(l_struct.ut_name, user, UT_NAMESIZE);
+      strncpy(l_struct.ut_name, user, sizeof(l_struct.ut_name));
 
-    if (remotehost)
-      strncpy(l_struct.ut_host, remotehost, UT_HOSTSIZE);
+    if (remotehost) {
+      strncpy(l_struct.ut_host, remotehost, sizeof(l_struct.ut_host));
+# ifdef HAVE_STRUCT_UTMP_UT_SYSLEN
+      l_struct.ut_syslen = qMin(strlen(remotehost), sizeof(l_struct.ut_host));
+# endif
+    }
 
 # ifndef __GLIBC__
     Q_D(KPty);
     const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))
         str_ptr += 5;
-    strncpy(l_struct.ut_line, str_ptr, UT_LINESIZE);
+    strncpy(l_struct.ut_line, str_ptr, sizeof(l_struct.ut_line));
+#  ifdef HAVE_STRUCT_UTMP_UT_ID
+    strncpy(l_struct.ut_id,
+            str_ptr + strlen(str_ptr) - sizeof(l_struct.ut_id),
+            sizeof(l_struct.ut_id));
+#  endif
 # endif
 
+# ifdef HAVE_UTMPX
+    gettimeofday(&l_struct.ut_tv, 0);
+# else
     l_struct.ut_time = time(0);
+# endif
 
+# ifdef HAVE_LOGIN
     ::login(&l_struct);
-#else
-    Q_UNUSED(user);
-    Q_UNUSED(remotehost);
+# else
+#  ifdef HAVE_STRUCT_UTMP_UT_TYPE
+    l_struct.ut_type = USER_PROCESS;
+#  endif
+#  ifdef HAVE_STRUCT_UTMP_UT_PID
+    l_struct.ut_pid = getpid();
+#   ifdef HAVE_STRUCT_UTMP_UT_SESSION
+    l_struct.ut_session = getsid(0);
+#   endif
+#  endif
+#  ifdef HAVE_UTMPX
+    utmpxname(_PATH_UTMPX);
+    setutxent();
+    pututxline(&l_struct);
+    endutxent();
+    updwtmpx(_PATH_WTMPX, &l_struct);
+#  else
+    utmpname(_PATH_UTMP);
+    setutent();
+    pututline(&l_struct);
+    endutent();
+    updwtmp(_PATH_WTMP, &l_struct);
+#  endif
+# endif
 #endif
 }
 
@@ -446,7 +485,7 @@ void KPty::logout()
     Q_D(KPty);
 
     removeLineFromUtmp(d->ttyName, d->masterFd);
-#elif defined(HAVE_LOGIN)
+#else
     Q_D(KPty);
 
     const char *str_ptr = d->ttyName.data();
@@ -459,7 +498,47 @@ void KPty::logout()
             str_ptr = sl_ptr + 1;
     }
 # endif
+# ifdef HAVE_LOGIN
     ::logout(str_ptr);
+# else
+#  ifdef HAVE_UTMPX
+    struct utmpx l_struct, *ut;
+#  else
+    struct utmp l_struct, *ut;
+#  endif
+    memset(&l_struct, 0, sizeof(l_struct));
+
+    strncpy(l_struct.ut_line, str_ptr, sizeof(l_struct.ut_line));
+
+#  ifdef HAVE_UTMPX
+    utmpxname(_PATH_UTMPX);
+    setutxent();
+    if ((ut = getutxline(&l_struct))) {
+#  else
+    utmpname(_PATH_UTMP);
+    setutent();
+    if ((ut = getutline(&l_struct))) {
+#  endif
+        memset(ut->ut_name, 0, sizeof(*ut->ut_name));
+        memset(ut->ut_host, 0, sizeof(*ut->ut_host));
+#  ifdef HAVE_STRUCT_UTMP_UT_SYSLEN
+        ut->ut_syslen = 0;
+#  endif
+#  ifdef HAVE_STRUCT_UTMP_UT_TYPE
+        ut->ut_type = DEAD_PROCESS;
+#  endif
+#  ifdef HAVE_UTMPX
+        gettimeofday(ut->ut_tv, 0);
+        pututxline(ut);
+    }
+    endutxent();
+#  else
+        ut->ut_time = time(0);
+        pututline(ut);
+    }
+    endutent();
+#  endif
+# endif
 #endif
 }
 

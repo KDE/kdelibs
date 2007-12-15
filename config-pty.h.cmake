@@ -21,6 +21,11 @@
 #cmakedefine HAVE_UTEMPTER 1
 #cmakedefine HAVE_LOGIN 1
 #cmakedefine HAVE_UTMPX 1
+#cmakedefine HAVE_STRUCT_UTMP_UT_TYPE 1
+#cmakedefine HAVE_STRUCT_UTMP_UT_PID 1
+#cmakedefine HAVE_STRUCT_UTMP_UT_SESSION 1
+#cmakedefine HAVE_STRUCT_UTMP_UT_SYSLEN 1
+#cmakedefine HAVE_STRUCT_UTMP_UT_ID 1
 
 /*
  * Steven Schultz <sms at to.gd-es.com> tells us :
