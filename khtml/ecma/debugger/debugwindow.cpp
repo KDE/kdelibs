@@ -180,8 +180,10 @@ void DebugWindow::createActions()
     actionCollection()->addAction( "stop", m_stopAct );
     m_stopAct->setStatusTip(i18n("Stop script execution"));
     m_stopAct->setToolTip(i18n("Stop script execution"));
-    m_stopAct->setEnabled(false);
-    connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopExecution()));
+    m_stopAct->setEnabled(true);
+    // ### Actually we use this for stop-at-next; which is identical to 
+    // stepInto, just we enable/disable this differently.
+    connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
 
     m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), this );
     actionCollection()->addAction( "stepInto", m_stepIntoAct );
@@ -254,7 +256,7 @@ void DebugWindow::createStatusBar()
 
 void DebugWindow::stopExecution()
 {
-    m_mode = Stop;
+    m_mode = Abort;
 }
 
 void DebugWindow::continueExecution()
@@ -328,7 +330,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     m_nextBaseLine = 0;
     m_nextUrl = "";
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
 bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
@@ -346,11 +348,12 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
         m_sourceIdLookup.remove(sourceId);
     }
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
-bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj)
+bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj)
 {
+    //### FIXME: use error dialog
     Q_UNUSED(exec);
     Q_UNUSED(sourceId);
     Q_UNUSED(lineno);
@@ -358,7 +361,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject 
 
     kDebug() << "exception";
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
 
@@ -413,7 +416,7 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
 //     kDebug() << "*********************************************************************************************";
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
@@ -450,7 +453,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
     kDebug() << "****************************************************************************************";
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
@@ -479,7 +482,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
     kDebug() << "****************************************************************************************";
 
-    return (m_mode != Stop);
+    return (m_mode != Abort);
 }
 
 // End KJS::Debugger overloads
@@ -663,7 +666,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     if (!isVisible())
         show();
 
-    m_mode = Stop;
 //    if (m_execStates.isEmpty())
     {
         m_continueAct->setEnabled(true);

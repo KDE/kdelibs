@@ -72,7 +72,7 @@ public:
         Next     = 1, // Will break on next statement in current context
         Step     = 2, // Will break on next statement in current or deeper context
         Continue = 3, // Will continue until next breakpoint
-        Stop     = 4  // The script will stop execution completely,
+        Abort    = 4  // The script will stop execution completely,
                       // as soon as possible
     };
 
@@ -100,7 +100,7 @@ public:
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                       const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
     bool sourceUnused(ExecState *exec, int sourceId);
-    bool exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj);
+    bool exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj);
     bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
     bool callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
     bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
