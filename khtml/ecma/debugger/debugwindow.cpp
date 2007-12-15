@@ -315,7 +315,6 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
              << "      sourceId: " << sourceId << endl
              << "     sourceURL: " << sourceURL.qstring() << endl
              << "startingLineNumber: " << startingLineNumber << endl
-             << "        source: " << source.qstring() << endl
              << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
              
@@ -325,6 +324,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     DebugDocument *document = 0;
     if (!sourceURL.isEmpty())
         document = m_documents[key];
+    else
+        key = key + "|" + sourceId; // Give separate entries for EvalCode 
+                                    // and function-ctor created things;
+                                    // this is quite suboptimal, unfortunately
     if (!document)
     {
         document = new DebugDocument(sourceURL.qstring(), exec->dynamicInterpreter());
@@ -655,7 +658,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     
     // Display the source file, and visualize the position
     displayScript(document);
-    kDebug() << line;
     KTextEditor::Document* ddoc = m_debugLut[document];
     KTextEditor::View*     view = viewForDocument(document);
     view->setCursorPosition(KTextEditor::Cursor(line - 1, 0)); // Note: KTextEditor lines 0-based
