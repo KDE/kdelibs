@@ -53,20 +53,6 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 
-/* for HP-UX (some versions) the extern C is needed, and for other
-   platforms it doesn't hurt */
-extern "C" {
-#include <termios.h>
-#if defined(HAVE_TERMIO_H)
-# include <termio.h> // struct winsize on some systems
-#endif
-}
-
-#ifdef HAVE_SYS_STROPTS_H
-# include <sys/stropts.h>	// Defines I_PUSH
-# define _NEW_TTY_CTRL
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
@@ -76,22 +62,44 @@ extern "C" {
 #include <unistd.h>
 #include <grp.h>
 
-#ifdef HAVE_LIBUTIL_H
-# include <libutil.h>
-# define USE_LOGIN
-#elif defined(HAVE_UTIL_H)
-# include <util.h>
-# define USE_LOGIN
+#if defined(HAVE_PTY_H)
+# include <pty.h>
 #endif
 
-#ifdef USE_LOGIN
-# include <utmp.h>
+#ifdef HAVE_LIBUTIL_H
+# include <libutil.h>
+#elif defined(HAVE_UTIL_H)
+# include <util.h>
 #endif
 
 #ifdef HAVE_UTEMPTER
 extern "C" {
 # include <utempter.h>
 }
+#else
+# include <utmp.h>
+# ifdef HAVE_UTMPX
+#  include <utmpx.h>
+# endif
+#endif
+
+/* for HP-UX (some versions) the extern C is needed, and for other
+   platforms it doesn't hurt */
+extern "C" {
+#include <termios.h>
+#if defined(HAVE_TERMIO_H)
+# include <termio.h> // struct winsize on some systems
+#endif
+}
+
+#if defined (_HPUX_SOURCE)
+# define _TERMIOS_INCLUDED
+# include <bsdtty.h>
+#endif
+
+#ifdef HAVE_SYS_STROPTS_H
+# include <sys/stropts.h>	// Defines I_PUSH
+# define _NEW_TTY_CTRL
 #endif
 
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
@@ -112,15 +120,6 @@ extern "C" {
 # else
 #  define _tcsetattr(fd, ttmode) ioctl(fd, TCSETS, (char *)ttmode)
 # endif
-#endif
-
-#if defined (_HPUX_SOURCE)
-# define _TERMIOS_INCLUDED
-# include <bsdtty.h>
-#endif
-
-#if defined(HAVE_PTY_H)
-# include <pty.h>
 #endif
 
 #include <kdebug.h>
@@ -411,7 +410,7 @@ void KPty::login(const char *user, const char *remotehost)
 
     addToUtmp(d->ttyName, remotehost, d->masterFd);
     Q_UNUSED(user);
-#elif defined(USE_LOGIN)
+#elif defined(HAVE_LOGIN)
     Q_D(KPty);
 
     const char *str_ptr;
@@ -453,7 +452,7 @@ void KPty::logout()
     Q_D(KPty);
 
     removeLineFromUtmp(d->ttyName, d->masterFd);
-#elif defined(USE_LOGIN)
+#elif defined(HAVE_LOGIN)
     Q_D(KPty);
 
     const char *str_ptr = d->ttyName.data();
