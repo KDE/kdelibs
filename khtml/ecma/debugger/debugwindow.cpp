@@ -321,15 +321,12 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
         m_sourceIdLookup[sourceId] = document;
     }
 
+    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
+    m_scripts->addDocument(document);
+    buildViewerDocument(document);
 
-    if (document)
-    {
-        document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
-        m_scripts->addDocument(document);
-
-        m_nextBaseLine = 0;
-        m_nextUrl = "";
-    }
+    m_nextBaseLine = 0;
+    m_nextUrl = "";
 
     return (m_mode != Stop);
 }
@@ -496,6 +493,7 @@ void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
     document->setMode("JavaScript");
 }
 
+
 void DebugWindow::displayScript(KJS::DebugDocument *document)
 {
     if (m_tabWidget->isHidden())
@@ -507,7 +505,40 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         m_tabWidget->setCurrentIndex(idx);
         return;
     }
+    
+    KTextEditor::Document *doc = buildViewerDocument(document);
+    
+    KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
+    KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
+    if (configInterface)
+    {
+        if (configInterface->configKeys().contains("line-numbers"))
+            configInterface->setConfigValue("line-numbers", true);
+        if (configInterface->configKeys().contains("icon-bar"))
+            configInterface->setConfigValue("icon-bar", true);
+        if (configInterface->configKeys().contains("dynamic-word-wrap"))
+            configInterface->setConfigValue("dynamic-word-wrap", true);
+    }
 
+    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
+    if (markInterface)
+    {
+        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
+        connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
+                this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
+        // ### KDE4.1: fix this hack used to avoid new string
+        markInterface->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive, 
+                                          m_breakpoints->windowTitle());
+    }
+
+    doc->setReadWrite(false);
+    m_openDocuments.append(document);
+    int idx = m_tabWidget->addTab(view, document->name());
+    m_tabWidget->setCurrentIndex(idx);
+}
+
+KTextEditor::Document* DebugWindow::buildViewerDocument(KJS::DebugDocument *document)
+{
     KTextEditor::Document *doc = 0;
     doc = m_debugLut[document];     // Check to see if we've already worked on this document
     if (!doc)
@@ -576,30 +607,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         doc->insertLines(line, sourceLines);
     }
     
-    KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
-    KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
-    if (configInterface)
-    {
-        if (configInterface->configKeys().contains("line-numbers"))
-            configInterface->setConfigValue("line-numbers", true);
-        if (configInterface->configKeys().contains("icon-bar"))
-            configInterface->setConfigValue("icon-bar", true);
-        if (configInterface->configKeys().contains("dynamic-word-wrap"))
-            configInterface->setConfigValue("dynamic-word-wrap", true);
-    }
-
-    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
-    if (markInterface)
-    {
-        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
-        connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
-                this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
-    }
-
-    doc->setReadWrite(false);
-    m_openDocuments.append(document);
-    int idx = m_tabWidget->addTab(view, document->name());
-    m_tabWidget->setCurrentIndex(idx);
+    return doc;
 }
 
 void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mark,

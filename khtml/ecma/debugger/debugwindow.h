@@ -124,6 +124,10 @@ private Q_SLOTS:
                  KTextEditor::MarkInterface::MarkChangeAction action);
 
 private:
+    // Constructs or updates the peer KTextEditor::Document to display
+    // this DebugDocument
+    KTextEditor::Document* buildViewerDocument(KJS::DebugDocument *document);
+
     void createActions();
     void createMenus();
     void createToolBars();
