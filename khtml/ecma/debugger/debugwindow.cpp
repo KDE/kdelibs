@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *            (C) 2007 Maks Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -63,6 +64,7 @@
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
 #include <kjs/value.h>
+#include <kjs/context.h>
 
 #include <QVBoxLayout>
 #include <QSplitter>
@@ -651,6 +653,10 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     m_stepOutAct->setEnabled(true);
     m_stepOverAct->setEnabled(true);
 
+    // In global code, we may have to swizzle the lowest 
+    // frame as appropriate
+    if (exec->context()->codeType() == GlobalCode)
+        m_callStack->setGlobalFrame(document->url());
     m_callStack->updateCall(line);
     m_callStack->displayStack();
 

@@ -26,6 +26,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kurl.h>
 
 #include "debugdocument.h"
 
@@ -66,6 +67,12 @@ void CallStackDock::updateCall(int line)
 {
     m_callStack.last().lineNumber = line;
     // Expects displayStack to be called to redraw.
+}
+
+void CallStackDock::setGlobalFrame(const QString& url)
+{
+    m_callStack.clear();
+    addCall(KUrl(url).fileName(), 0);
 }
 
 void CallStackDock::displayStack()

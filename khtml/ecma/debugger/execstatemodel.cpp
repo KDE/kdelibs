@@ -255,10 +255,17 @@ QModelIndex ExecStateModel::index(int row, int column, const QModelIndex &parent
 {
     Node *parentNode;
 
-    if (!parent.isValid())
+    if (!parent.isValid()) 
+    {
         parentNode = m_rootNode;
+        if (!m_rootNode)
+            return QModelIndex();
+    }
     else
+    {
         parentNode = static_cast<Node*>(parent.internalPointer());
+    }
+
 
     Node *childNode = parentNode->child(row);
     if (childNode)
