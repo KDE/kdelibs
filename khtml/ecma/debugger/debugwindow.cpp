@@ -522,13 +522,13 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     enableKateHighlighting(doc);
     QList<SourceFragment> fragments = document->fragments();
 
-    // Below makes the assumption that we parse top->bottom....
-    // ...which is wrong w/lazily parsed event handles. urgh.
-    // So the list should actually be sorted, w/some sort of left-to
-    // right ordering, too.
     doc->setReadWrite(true);
     doc->clear();
     
+    // Note: in case there are fragments on the same line, and some 
+    // are inline code, the order will not match the document.
+    // This needs column information to work right; with corresponding 
+    // adjustments for breakpoints
     foreach (SourceFragment fragment, fragments)
     {
         // Note: the KTextEditor interface counts the lines/columns from 0,
@@ -541,13 +541,29 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         // We have to be a bit careful here, since
         // in an ultra-stupid HTML documents, there may be more than
         // one script tag on a line. So we try to append things. 
-        QString source = fragment.source + "  ";
+        QString source = fragment.source;
 
-        if (line == doc->lines() - 1) {
-            // We want to append to the end, so join up with the line, 
-            // remove it, and then re-append the whole chunk
-            source = doc->line(line) + source;
-            doc->removeLine(line);
+        // ### can we guarantee this as a separator? probably not
+        QStringList sourceLines = source.split("\n");
+
+        if (line <= doc->lines() - 1) {
+            // There is actually something there, so we want to combine,
+            // taking care that there may be fragments already there are beginning and end.
+            sourceLines[0] = doc->line(line) + "  " + sourceLines[0];
+
+            int lastLine = line + sourceLines.size() - 1;
+            if (lastLine < doc->lines())
+                sourceLines[sourceLines.size() - 1] += "  " + doc->line(lastLine);
+
+            // Now get rid of all the lines in this range..
+            int linesToRemove = sourceLines.size();
+            if (lastLine >= doc->lines())
+                linesToRemove = doc->lines() - line;
+
+            while (linesToRemove > 0) {
+                doc->removeLine(line);
+                --linesToRemove;
+            }
         }
         
         // Insert enough blank lines to get us to the end. Kind of sucks.
@@ -555,10 +571,11 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
             doc->insertLine(doc->lines(), "");
         }
         
-        // ### can we guarantee this as a separator? probably not
-        doc->insertLines(line, source.split("\n"));
-    }
 
+        // Now put in our code
+        doc->insertLines(line, sourceLines);
+    }
+    
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
     if (configInterface)
