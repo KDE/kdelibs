@@ -193,13 +193,15 @@ bool KPty::open()
 
 #ifdef HAVE_OPENPTY
 
-  if (::openpty( &d->masterFd, &d->slaveFd, 0, 0, 0))
+  char ptsn[PATH_MAX];
+  if (::openpty( &d->masterFd, &d->slaveFd, ptsn, 0, 0))
   {
     d->masterFd = -1;
     d->slaveFd = -1;
     kWarning(175) << "Can't open a pseudo teletype";
     return false;
   }
+  d->ttyName = ptsn;
 
 #else
 
