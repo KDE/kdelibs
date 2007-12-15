@@ -102,14 +102,6 @@ DebugWindow * DebugWindow::window()
 
 // ----------------------------------------------
 
-void DebugWindow::setNextSourceInfo(QString url, int baseLine)
-{
-    m_nextUrl = url;
-    m_nextBaseLine = baseLine;
-}
-
-// ----------------------------------------------
-
 DebugWindow::DebugWindow(QWidget *parent)
   : KXmlGuiWindow(parent, Qt::Window),
     KComponentData("kjs_debugger")
@@ -321,34 +313,28 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     kDebug() << "***************************** sourceParsed **************************************************" << endl
              << "      sourceId: " << sourceId << endl
              << "     sourceURL: " << sourceURL.qstring() << endl
-             << "     m_nextUrl: " << m_nextUrl << endl
-             << "m_nextBaseLine: " << m_nextBaseLine << endl
              << "startingLineNumber: " << startingLineNumber << endl
              << "        source: " << source.qstring() << endl
              << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
              
     // Determine key
-    QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(m_nextUrl);
+    QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(sourceURL.qstring());
     
     DebugDocument *document = 0;
-    if (!m_nextUrl.isEmpty())
+    if (!sourceURL.isEmpty())
         document = m_documents[key];
     if (!document)
     {
-        document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
+        document = new DebugDocument(sourceURL.qstring(), exec->dynamicInterpreter());
         m_documents[key] = document;
     }
 
     m_sourceIdLookup[sourceId] = document;
 
-    bool relativeLineNumbers = (sourceURL != m_nextUrl || startingLineNumber != m_nextBaseLine);
-    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring(), relativeLineNumbers);
+    document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
     m_scripts->addDocument(document);
     buildViewerDocument(document);
-
-    m_nextBaseLine = 0;
-    m_nextUrl = "";
 
     return (m_mode != Abort);
 }
@@ -387,12 +373,15 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *
 
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
+    // ### line number seems to be off-by-one here
     kDebug() << "atStatement" << firstLine;
-    return checkSourceLocation(exec, sourceId, firstLine, lastLine);
+    return checkSourceLocation(exec, sourceId, firstLine - 1, lastLine);
 }
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
+    kDebug() << "sourceId:" << sourceId << "line:" << firstLine;
+
     if (m_mode == Abort)
         return false;
 
@@ -401,21 +390,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
         enterDebugMode = true;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    kDebug() << sourceId << document;
     assert(document);
-
-    // Adjust line by fragment base, if needed
-    SourceFragment fragment = document->fragment(sourceId);
-
-    // interpret unset location as beginning of the fragment.
-    // this, again, is due to the lazy listeners
-    if (firstLine == -1)
-        firstLine = 0;
-
-    if (fragment.relativeLineNumbers)
-        firstLine += fragment.baseLine;
-    
-    kDebug() << firstLine;
 
     // ### next!
     // Now check for breakpoints if needed
@@ -468,7 +443,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
     kDebug() << "****************************************************************************************";
 
-    return checkSourceLocation(exec, sourceId, lineno, lineno);
+    return (m_mode != Abort);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
@@ -498,7 +473,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     
     //### update depth here -- and be careful with the placement of the check
 
-    return checkSourceLocation(exec, sourceId, lineno, lineno);
+    return (m_mode != Abort);
 }
 
 // End KJS::Debugger overloads

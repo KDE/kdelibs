@@ -141,12 +141,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     if (inlineCode)
         filename = "(unknown file)";
     if (DebugWindow::window())
-    {
         DebugWindow::window()->attach(m_script);
-        // M.O: seems to be not needed anymore?
-        DebugWindow::window()->setNextSourceInfo(filename, baseLine);
-        // KJSDebugWin::debugWindow()->setMode(KJSDebugWin::Step);
-    }
 #else
     Q_UNUSED(baseLine);
 #endif

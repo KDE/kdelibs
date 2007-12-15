@@ -87,11 +87,6 @@ public:
     static void destroyInstance();
     static DebugWindow *window();
 
-    // KHTML calls this to provide information, 
-    // as lazy event listeners are parsed incrementally via the
-    // function constructor, not letting KJS know their source
-    void setNextSourceInfo(QString url, int baseLine);
-
     // Returns if we blocked execution; KHTML will attempt to use it 
     // to prevent some kinds of accidental recursion. Should go 
     // if proper modal dialog manager shows up
@@ -173,10 +168,6 @@ private:
 
     QTabWidget *m_tabWidget;
     QFrame *m_docFrame;
-
-    // Used to keep track of information provided by setNextSourceInfo
-    int m_nextBaseLine;
-    QString m_nextUrl;
 
     Mode m_mode;
     bool m_inSession;

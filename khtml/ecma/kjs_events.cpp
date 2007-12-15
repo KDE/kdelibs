@@ -32,6 +32,7 @@
 #include <rendering/render_canvas.h>
 #include <khtml_part.h>
 #include <kjs/scriptfunction.h> // private API
+#include <kjs/function_object.h> // even more private API. or not. I dunno.
 #include "debugger/debugwindow.h"
 
 #include <kdebug.h>
@@ -175,21 +176,15 @@ void JSLazyEventListener::parseCode() const
       ExecState *exec = interpreter->globalExec();
 
       //KJS::Constructor constr(KJS::Global::current().get("Function").imp());
-      KJS::JSObject *constr = interpreter->builtinFunction();
+      KJS::FunctionObjectImp *constr = static_cast<KJS::FunctionObjectImp*>(interpreter->builtinFunction());
       KJS::List args;
 
       static KJS::UString eventString("event");
       
-#ifdef KJS_DEBUGGER
-      if (DebugWindow::window()) {
-        DebugWindow::window()->setNextSourceInfo(url, lineNum);
-        url.clear();
-      }
-#endif
-
       args.append(jsString(eventString));
       args.append(jsString(code));
-      listener = constr->construct(exec, args); // ### is globalExec ok ?
+      listener = constr->construct(exec, args, 
+            Identifier(UString(name)), url, lineNum); // ### is globalExec ok ?
 
       if (exec->hadException()) {
         exec->clearException();
@@ -200,7 +195,6 @@ void JSLazyEventListener::parseCode() const
         listener = 0;// Error creating function
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.get());
-        declFunc->setFunctionName(Identifier(UString(name)));
 
         if (originalNode)
         {
