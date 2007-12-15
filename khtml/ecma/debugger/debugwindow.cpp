@@ -478,7 +478,7 @@ void DebugWindow::displayScript(DebugDocument *document)
         return;
     }
     
-    KTextEditor::Document *doc = buildViewerDocument(document);
+    KTextEditor::Document *doc = m_debugLut[document];
     
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);

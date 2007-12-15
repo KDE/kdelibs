@@ -297,6 +297,9 @@ int ExecStateModel::rowCount(const QModelIndex &parent) const
     else
         parentNode = static_cast<Node*>(parent.internalPointer());
 
+    if (!parentNode)
+        return 0;
+
     KJS::JSValue *value = parentNode->value();
     if (!value->isObject())
         return 0;
