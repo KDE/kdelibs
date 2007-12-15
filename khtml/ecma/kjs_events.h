@@ -71,7 +71,8 @@ namespace KJS {
 
   class JSLazyEventListener : public JSEventListener {
   public:
-    JSLazyEventListener(const QString &_code, const QString &_name, JSObject* _win, DOM::NodeImpl* node);
+    JSLazyEventListener(const QString &_code, const QString &_url, int _lineNum,
+                        const QString &_name, JSObject* _win, DOM::NodeImpl* node);
     ~JSLazyEventListener();
     virtual void handleEvent(DOM::Event &evt);
     JSObject* listenerObj() const;
@@ -79,6 +80,9 @@ namespace KJS {
     void parseCode() const;
 
     mutable QString code;
+    mutable QString url;
+    int     lineNum;
+
     mutable QString name;
     mutable bool parsed;
     DOM::NodeImpl *originalNode;

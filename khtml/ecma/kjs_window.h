@@ -127,7 +127,8 @@ namespace KJS {
     Location *location() const;
     JSObject* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(JSValue* val, bool html = false);
-    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString &name, DOM::NodeImpl* node);
+    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo, 
+                                                const QString &name, DOM::NodeImpl* node);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
 

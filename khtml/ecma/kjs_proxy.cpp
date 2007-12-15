@@ -246,15 +246,13 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 
 #ifdef KJS_DEBUGGER
     if (DebugWindow::window())
-    {
         DebugWindow::window()->attach(m_script);
-        DebugWindow::window()->setNextSourceInfo(sourceUrl, m_handlerLineno);
-    }
 #else
     Q_UNUSED(sourceUrl);
 #endif
 
-  return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(code,name,node);
+  return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(
+        code, sourceUrl, m_handlerLineno, name, node);
 }
 
 void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)

@@ -1398,9 +1398,10 @@ JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
   return new JSEventListener(listenerObject, listenerObject, this, html);
 }
 
-JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& name, DOM::NodeImpl *node)
+JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& srcUrl, int line,
+                                                    const QString& name, DOM::NodeImpl *node)
 {
-  return new JSLazyEventListener(code, name, this, node);
+  return new JSLazyEventListener(code, srcUrl, line, name, this, node);
 }
 
 void Window::clear( ExecState *exec )

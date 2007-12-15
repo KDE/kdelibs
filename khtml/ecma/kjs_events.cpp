@@ -126,8 +126,10 @@ JSObject *JSEventListener::listenerObj() const
   return listener;
 }
 
-JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_name, JSObject *_win, DOM::NodeImpl* _originalNode)
-  : JSEventListener(0, 0, _win, true), code(_code), name(_name), parsed(false)
+JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_url, int _lineNum,
+                               const QString &_name, JSObject *_win, DOM::NodeImpl* _originalNode)
+  : JSEventListener(0, 0, _win, true), code(_code), url(_url), lineNum(_lineNum), 
+    name(_name), parsed(false)
 {
   // We don't retain the original node, because we assume it
   // will stay alive as long as this handler object is around
@@ -177,6 +179,13 @@ void JSLazyEventListener::parseCode() const
       KJS::List args;
 
       static KJS::UString eventString("event");
+      
+#ifdef KJS_DEBUGGER
+      if (DebugWindow::window()) {
+        DebugWindow::window()->setNextSourceInfo(url, lineNum);
+        url.clear();
+      }
+#endif
 
       args.append(jsString(eventString));
       args.append(jsString(code));
