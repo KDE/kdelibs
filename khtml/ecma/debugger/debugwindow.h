@@ -44,7 +44,6 @@ class KAction;
 class WatchesDock;
 class LocalVariablesDock;
 class ScriptsDock;
-class CallStackDock;
 class BreakpointsDock;
 class ConsoleDock;
 class QTabWidget;
@@ -52,6 +51,8 @@ class QFrame;
 
 namespace KJS
 {
+
+class CallStackDock;
 
 /**
 * DebuggerWindow

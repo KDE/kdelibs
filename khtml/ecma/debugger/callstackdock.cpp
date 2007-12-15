@@ -29,6 +29,8 @@
 
 #include "debugdocument.h"
 
+namespace KJS {
+
 CallStackDock::CallStackDock(QWidget *parent)
     : QDockWidget(i18n("Call Stack"), parent)
 {
@@ -46,21 +48,39 @@ CallStackDock::~CallStackDock()
 {
 }
 
-void CallStackDock::displayStack(KJS::DebugDocument *document)
+void CallStackDock::addCall(const QString &function, int lineNumber)
 {
-    QVector<KJS::CallStackEntry> entries = document->callStack();
+    CallStackEntry entry;
+    entry.name = function;
+    entry.lineNumber = lineNumber;
 
+    m_callStack.append(entry);
+}
+
+void CallStackDock::removeCall()
+{
+    m_callStack.pop_back();
+}
+
+void CallStackDock::updateCall(int line)
+{
+    m_callStack.last().lineNumber = line;
+    // Expects displayStack to be called to redraw.
+}
+
+void CallStackDock::displayStack()
+{
     m_view->clearContents();
-    m_view->setRowCount(entries.count());
-    m_current = document;
+    m_view->setRowCount(m_callStack.count());
 
     int row = 0;
-    foreach (KJS::CallStackEntry entry, entries)
+    foreach (KJS::CallStackEntry entry, m_callStack)
     {
+        int displayRow = m_callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);
-        m_view->setItem(row, 0, function);
+        m_view->setItem(displayRow, 0, function);
         QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber));
-        m_view->setItem(row, 1, lineNumber);
+        m_view->setItem(displayRow, 1, lineNumber);
         row++;
     }
     m_view->resizeColumnsToContents();
@@ -68,3 +88,4 @@ void CallStackDock::displayStack(KJS::DebugDocument *document)
 //    m_view->setColumnWidth(1, 20);
 }
 
+}

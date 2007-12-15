@@ -22,12 +22,22 @@
 
 #include <QDockWidget>
 
-namespace KJS
-{
-    class DebugDocument;
-}
-
 class QTableWidget;
+
+namespace KJS {
+class DebugDocument;
+
+struct CallStackEntry
+{
+    QString name;
+    int lineNumber;
+
+    bool operator==(const CallStackEntry& other) const        // you're being lazy..
+    {
+        return ((other.name == name) && (other.lineNumber == lineNumber));
+    }
+};
+
 class CallStackDock : public QDockWidget
 {
     Q_OBJECT
@@ -35,11 +45,17 @@ public:
     CallStackDock(QWidget *parent = 0);
     ~CallStackDock();
 
-    void displayStack(KJS::DebugDocument *document);
+    void displayStack();
 
+    QVector<CallStackEntry> callStack();
+    void addCall(const QString&, int line);
+    void updateCall(int line);
+    void removeCall();
 private:
     QTableWidget *m_view;
-    KJS::DebugDocument *m_current;
+    QVector<CallStackEntry> m_callStack;
 };
+
+}
 
 #endif

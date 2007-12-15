@@ -35,27 +35,12 @@ public:
     void removeBreakpoint(int lineNumber);
     bool hasBreakpoint(int lineNumber);
 
-    QVector<CallStackEntry> callStack();
-    void addCall(const QString&, int);
-    void removeCall(const QString&, int);
-
 private:
     class Private;
     QSharedDataPointer<Private> d;
 
 };
 
-
-struct CallStackEntry
-{
-    QString name;
-    int lineNumber;
-
-    bool operator==(const CallStackEntry& other) const        // you're being lazy..
-    {
-        return ((other.name == name) && (other.lineNumber == lineNumber));
-    }
-};
 
 struct BreakPoint
 {

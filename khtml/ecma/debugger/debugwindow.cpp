@@ -414,29 +414,14 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
     // First update call stack.
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    if (document)
+    QString functionName = "?????";
+    if (function->inherits(&InternalFunctionImp::info))
     {
-        if (function->inherits(&InternalFunctionImp::info))
-        {
-            KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
-            if (func)
-            {
-                QString functionName = func->functionName().qstring();
-                kDebug() << "  function: " << functionName;
-                func = 0;
-
-                document->addCall(functionName, lineno);
-            }
-        }
-
-        for( KJS::ListIterator item = args.begin();
-            item != args.end();
-            ++item)
-        {
-            KJS::JSValue *value = (*item);
-            kDebug() << "arg: " << value->toString(exec).qstring();
-        }
+        KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
+        functionName = func->functionName().qstring();
     }
+
+    m_callStack->addCall(functionName, lineno);
     
     //### update depth here, for next/stepOver
 
@@ -453,21 +438,8 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
              << "lineNumber: " << lineno << endl;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    if (document)
-    {
-        if (function->inherits(&InternalFunctionImp::info))
-        {
-            KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
-            if (func)
-            {
-                QString functionName = func->functionName().qstring();
-                kDebug() << "  function: " << functionName;
-                func = 0;
-
-                document->removeCall(functionName, lineno);
-            }
-        }
-    }
+    m_callStack->removeCall();
+    m_callStack->displayStack(); //### FIXME: don't want to do this all the time
 
     kDebug() << "****************************************************************************************";
     
@@ -675,7 +647,9 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     m_stepOutAct->setEnabled(true);
     m_stepOverAct->setEnabled(true);
 
-    m_callStack->displayStack(document);
+    m_callStack->updateCall(line);
+    m_callStack->displayStack();
+
     m_localVariables->display(exec);
     
     // Display the source file, and visualize the position

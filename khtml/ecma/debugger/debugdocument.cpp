@@ -17,7 +17,6 @@ public:
     Interpreter *interpreter;
     QHash<int, SourceFragment> codeFragments;
     QVector<int> breakpoints;
-    QVector<CallStackEntry> callStack;
 };
 
 DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
@@ -121,30 +120,3 @@ QVector<int> DebugDocument::breakpoints()
 {
     return d->breakpoints;
 }
-
-QVector<CallStackEntry> DebugDocument::callStack()
-{
-    return d->callStack;
-}
-
-void DebugDocument::addCall(const QString &function, int lineNumber)
-{
-    CallStackEntry entry;
-    entry.name = function;
-    entry.lineNumber = lineNumber;
-
-    d->callStack.append(entry);
-}
-
-void DebugDocument::removeCall(const QString &function, int lineNumber)
-{
-    CallStackEntry entry;
-    entry.name = function;
-    entry.lineNumber = lineNumber;
-
-    int idx = d->callStack.indexOf(entry);
-    kDebug() << "DebugDocument::removeCall(..) idx = " << idx;
-    if (idx != -1)
-        d->callStack.remove(idx);
-}
-
