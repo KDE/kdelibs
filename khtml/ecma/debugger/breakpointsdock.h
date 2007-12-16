@@ -29,7 +29,6 @@ class BreakpointsDock : public QDockWidget
 public:
     BreakpointsDock(QWidget *parent = 0);
     ~BreakpointsDock();
-
 private:
 
 };

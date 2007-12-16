@@ -125,14 +125,14 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_localVariables = new LocalVariablesDock;
     m_scripts = new ScriptsDock;
     m_callStack = new CallStackDock;
-    m_breakpoints = new BreakpointsDock;
+    //m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
     m_docFrame = new QFrame;
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
     addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
     addDockWidget(Qt::LeftDockWidgetArea, m_callStack);
-    addDockWidget(Qt::LeftDockWidgetArea, m_breakpoints);
+    //addDockWidget(Qt::LeftDockWidgetArea, m_breakpoints);
 //     addDockWidget(Qt::LeftDockWidgetArea, m_watches);
 
     QFrame *mainFrame = new QFrame;
@@ -500,7 +500,7 @@ void DebugWindow::displayScript(DebugDocument *document)
                 this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
         // ### KDE4.1: fix this hack used to avoid new string
         markInterface->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive, 
-                                          m_breakpoints->windowTitle());
+                                          i18n("Breakpoints"));
         markInterface->setMarkPixmap(KTextEditor::MarkInterface::BreakpointActive, 
                                      SmallIcon("flag-red"));
     }
