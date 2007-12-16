@@ -238,7 +238,7 @@ Q_SIGNALS:
    */
   void actionTriggered(QAction* action);
 
-protected:
+protected Q_SLOTS:
   /// Overridden to perform connections when someone wants to know whether an action was highlighted or triggered
   virtual void connectNotify ( const char * signal );
 
