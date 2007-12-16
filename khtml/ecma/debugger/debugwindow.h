@@ -175,6 +175,9 @@ private:
 
     Mode m_mode;
     bool m_inSession;
+    int  m_callDepth;   // How many calls we're in.
+    int  m_depthAtSkip; // How far we were in on stepOut
+                        // our stepOver.
     
     // Used to keep track of line highlighting in enterDebugSession,
     // so leaveDebugSession can clear it;

@@ -160,6 +160,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     m_inSession = false;
     m_mode      = Normal;
+    m_callDepth = 0;
     m_execLineMarkIFace = 0;
 }
 
@@ -290,12 +291,14 @@ void DebugWindow::stepInto()
 void DebugWindow::stepOut()
 {
     m_mode = StepOut;
+    m_depthAtSkip = m_callDepth;
     leaveDebugSession();
 }
 
 void DebugWindow::stepOver()
 {
     m_mode = StepOver;
+    m_depthAtSkip = m_callDepth;
     leaveDebugSession();
 }
 
@@ -380,44 +383,38 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
     // ### line number seems to be off-by-one here
-    kDebug() << "atStatement" << firstLine;
     return checkSourceLocation(exec, sourceId, firstLine - 1, lastLine);
 }
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
-    kDebug() << "sourceId:" << sourceId << "line:" << firstLine;
-
     if (m_mode == Abort)
         return false;
 
     bool enterDebugMode = false;
     if (m_mode == Step)
         enterDebugMode = true;
+    if (m_mode == StepOver && m_callDepth <= m_depthAtSkip)
+        enterDebugMode = true;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
     assert(document);
 
-    // ### next!
     // Now check for breakpoints if needed
     if (document->hasBreakpoint(firstLine))
         enterDebugMode = true;
-    
+
     // Block the UI, and enable all the debugging buttons, etc.
     if (enterDebugMode)
         enterDebugSession(exec, document, firstLine);
-        //### focus the line!
-    
+
+
     // re-checking the abort mode here, in case it got change when recursing
     return (m_mode != Abort);
 }
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
-    kDebug() << "***************************** callEvent **************************************************";
-    kDebug() << "  sourceId: " << sourceId << endl
-             << "lineNumber: " << lineno << endl;
-
     // First update call stack.
     DebugDocument *document = m_sourceIdLookup[sourceId];
     QString functionName = "?????";
@@ -428,28 +425,31 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     }
 
     m_callStack->addCall(functionName, lineno);
-    
-    //### update depth here, for next/stepOver
 
-
-    kDebug() << "****************************************************************************************";
+    ++m_callDepth;
 
     return (m_mode != Abort);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
-    kDebug() << "***************************** returnEvent **************************************************";
-    kDebug() << "  sourceId: " << sourceId << endl
-             << "lineNumber: " << lineno << endl;
-
     DebugDocument *document = m_sourceIdLookup[sourceId];
     m_callStack->removeCall();
     m_callStack->displayStack(); //### FIXME: don't want to do this all the time
 
-    kDebug() << "****************************************************************************************";
-    
-    //### update depth here -- and be careful with the placement of the check
+    --m_callDepth;
+
+    // See if we should stop on the next instruction
+    if (m_mode == StepOut)
+    {
+        if (m_callDepth < m_depthAtSkip)
+            m_mode = Step;
+    }
+    else if (m_mode == StepOver)
+    {
+        if (m_callDepth <= m_depthAtSkip)
+            m_mode = Step;
+    }
 
     return (m_mode != Abort);
 }
@@ -660,7 +660,7 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     m_callStack->updateCall(line);
     m_callStack->displayStack();
 
-    m_localVariables->display(exec);
+    m_localVariables->updateDisplay(exec);
     
     // Display the source file, and visualize the position
     displayScript(document);

@@ -22,14 +22,15 @@
 
 #include <QDockWidget>
 
-class QTreeView;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 namespace KJS {
     class ExecState;
+    class JSValue;
 }
 
 namespace KJSDebugger {
-class ExecStateModel;
 
 class LocalVariablesDock : public QDockWidget
 {
@@ -38,12 +39,20 @@ public:
     LocalVariablesDock(QWidget *parent = 0);
     ~LocalVariablesDock();
 
-    void display(KJS::ExecState *exec);
-    void clear();
+    void updateDisplay(KJS::ExecState *exec);
+    
+private Q_SLOTS:
+    void slotItemExpanded(QTreeWidgetItem* item);
 
 private:
-    QTreeView       *m_view;
-    ExecStateModel  *m_execModel;
+    QString valueToDisplay(KJS::JSValue* val);
+    void updateObjectProperties(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item, 
+                                bool globalObject = false);
+    void updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item);
+
+
+    QTreeWidget*     m_view;
+    KJS::ExecState*  m_execState;
 
 };
 
