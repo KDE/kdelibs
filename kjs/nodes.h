@@ -1120,6 +1120,7 @@ namespace KJS {
     void setBuiltSymbolList()       { m_builtSymbolList = true; }
     int  numLocals()          const { return m_symbolList.size(); }
     int  getLocalAttr(int id) const { return m_symbolList[id-1].attr; }
+    Identifier getLocalName(int id) const { return m_symbolList[id-1].name; }
     FuncDeclNode* getLocalFuncDecl(int id) const { return m_symbolList[id-1].funcDecl; }
     
     //Returns -1 if not found..

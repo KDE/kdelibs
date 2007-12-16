@@ -35,6 +35,7 @@
 #include "operations.h"
 #include "debugger.h"
 #include "context.h"
+#include "PropertyNameArray.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -552,6 +553,16 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
 {
   return ActivationImp::argumentsGetter;
+}
+
+void ActivationImp::getPropertyNames(ExecState* exec, PropertyNameArray& props)
+{
+    // This is used for debugging only -- no way to access from script code.
+    int numLocals = _function->body->numLocals();
+    for (int l = 1; l < numLocals + 1; ++l)
+        props.add(_function->body->getLocalName(l));
+
+    JSObject::getPropertyNames(exec, props);
 }
 
 bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
