@@ -52,6 +52,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
+    m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     m_lineEdit = new KLineEdit(value, frame);
@@ -95,6 +96,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
+    m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     m_textEdit = new KTextEdit(frame);
@@ -127,6 +129,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
+    m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     m_intSpinBox = new KIntSpinBox(minValue, maxValue, step, value, frame, base);
@@ -157,6 +160,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
+    m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     m_doubleSpinBox = new QDoubleSpinBox(frame);
@@ -192,6 +196,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
+    m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     if (editable) {
@@ -240,7 +245,8 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
-    layout->addWidget(m_label);
+    m_label->setWordWrap(true); 
+   layout->addWidget(m_label);
 
     m_listBox = new KListWidget(frame);
     m_listBox->addItems(list);
