@@ -285,6 +285,9 @@ QByteArray normKeystr (const QString &raw)
     }
     key = nkey;
 
+    // Strip accelerator.
+    key.remove('&');
+
     // Convert to lower case.
     key = key.toLower();
 
