@@ -40,6 +40,8 @@
 #include "khtml_part.h"
 #include "dom/dom_misc.h"
 
+#include <QStack>
+
 class KAction;
 class QTabWidget;
 class QFrame;
@@ -117,7 +119,7 @@ protected:
     void enableOtherWindows();
 
 private Q_SLOTS:
-    void displayScript(DebugDocument *document);
+    void displayScript(KJSDebugger::DebugDocument *document);
     void closeTab();
     void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
                  KTextEditor::MarkInterface::MarkChangeAction action);
@@ -175,7 +177,7 @@ private:
 
     Mode m_mode;
     bool m_inSession;
-    int  m_callDepth;   // How many calls we're in.
+    QStack<KJS::ExecState*> m_execContexts;
     int  m_depthAtSkip; // How far we were in on stepOut
                         // our stepOver.
     

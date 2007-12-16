@@ -27,17 +27,19 @@ DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
     d->url = url;
     d->interpreter = interpreter;
 
-    QStringList splitUrl = url.split('/');
-    if (!splitUrl.isEmpty())
-    {
-        while (d->name.isEmpty() && !splitUrl.isEmpty())
-            d->name = splitUrl.takeLast();
+    KUrl kurl(url);
+    d->name = kurl.fileName();
+    
+    // Might have to fall back in case of query-like things;
+    // ad scripts tend to do that
+    while (d->name.contains("=") || d->name.contains("&"))
+        d->name = kurl.upUrl().fileName();
 
-        if (d->name.isEmpty())
-            d->name = "undefined";
-    }
-    else
-        d->name = "undefined";
+    if (d->name.isEmpty())
+        d->name = kurl.host();
+
+    if (d->name.isEmpty())
+        d->name = "????"; //Probably better than un-i18n'd 'undefined'...
 }
 
 DebugDocument::DebugDocument(const DebugDocument &other)

@@ -42,7 +42,7 @@ public Q_SLOTS:
     void documentDestroyed(DebugDocument *document);
 
 Q_SIGNALS:
-     void displayScript(DebugDocument *document);
+    void displayScript(KJSDebugger::DebugDocument *document);
 
 private Q_SLOTS:
     void scriptSelected(QTreeWidgetItem *item, int column);

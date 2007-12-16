@@ -160,7 +160,6 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     m_inSession = false;
     m_mode      = Normal;
-    m_callDepth = 0;
     m_execLineMarkIFace = 0;
 }
 
@@ -238,7 +237,7 @@ void DebugWindow::createTabWidget()
     m_tabWidget->setCornerWidget(closeTabButton, Qt::TopRightCorner);
     closeTabButton->setCursor(Qt::ArrowCursor);
     closeTabButton->setAutoRaise(true);
-    closeTabButton->setIcon(QIcon(":/images/removetab.png"));
+    closeTabButton->setIcon(KIcon("tab-close"));
     connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
     closeTabButton->setToolTip(i18n("Close source"));
     closeTabButton->setEnabled(true);
@@ -291,14 +290,14 @@ void DebugWindow::stepInto()
 void DebugWindow::stepOut()
 {
     m_mode = StepOut;
-    m_depthAtSkip = m_callDepth;
+    m_depthAtSkip = m_execContexts.size();
     leaveDebugSession();
 }
 
 void DebugWindow::stepOver()
 {
     m_mode = StepOver;
-    m_depthAtSkip = m_callDepth;
+    m_depthAtSkip = m_execContexts.size();
     leaveDebugSession();
 }
 
@@ -394,7 +393,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
     bool enterDebugMode = false;
     if (m_mode == Step)
         enterDebugMode = true;
-    if (m_mode == StepOver && m_callDepth <= m_depthAtSkip)
+    if (m_mode == StepOver && m_execContexts.size() <= m_depthAtSkip)
         enterDebugMode = true;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
@@ -426,7 +425,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
     m_callStack->addCall(functionName, lineno);
 
-    ++m_callDepth;
+    m_execContexts.push(exec);
 
     return (m_mode != Abort);
 }
@@ -437,19 +436,36 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     m_callStack->removeCall();
     m_callStack->displayStack(); //### FIXME: don't want to do this all the time
 
-    --m_callDepth;
+    assert(m_execContexts.top() == exec);
+    m_execContexts.pop();
 
     // See if we should stop on the next instruction
     if (m_mode == StepOut)
     {
-        if (m_callDepth < m_depthAtSkip)
+        if (m_execContexts.size() < m_depthAtSkip)
             m_mode = Step;
     }
     else if (m_mode == StepOver)
     {
-        if (m_callDepth <= m_depthAtSkip)
+        if (m_execContexts.size() <= m_depthAtSkip)
             m_mode = Step;
     }
+
+    // If there is nothing more to run, we have to go back to 
+    // "continue" mode, and flush all UI, etc.
+    if (m_mode != Normal && m_execContexts.isEmpty())
+    {
+        m_localVariables->updateDisplay(0);
+        m_continueAct->setEnabled(false);
+        m_stopAct->setEnabled(true);
+        m_stepIntoAct->setEnabled(false);
+        m_stepOutAct->setEnabled(false);
+        m_stepOverAct->setEnabled(false);
+
+        if (m_mode != Abort)
+            m_mode = Normal;
+    }
+
 
     return (m_mode != Abort);
 }
@@ -654,9 +670,12 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     m_stepOverAct->setEnabled(true);
 
     // In global code, we may have to swizzle the lowest 
-    // frame as appropriate
-    if (exec->context()->codeType() == GlobalCode)
+    // frame as appropriate; also will have to fix up 
+    // the context stack. ### fix up KJS::Debugger instead
+    if (exec->context()->codeType() == GlobalCode) {
         m_callStack->setGlobalFrame(document->url());
+        m_execContexts.push(exec);
+    }
     m_callStack->updateCall(line);
     m_callStack->displayStack();
 

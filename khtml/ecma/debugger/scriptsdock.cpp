@@ -39,6 +39,7 @@ ScriptsDock::ScriptsDock(QWidget *parent)
 {
     setFeatures(DockWidgetMovable | DockWidgetFloatable);
     m_widget = new QTreeWidget;
+    m_widget->header()->hide();
 
     connect(m_widget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
             this, SLOT(scriptSelected(QTreeWidgetItem *, int)));
