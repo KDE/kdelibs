@@ -67,7 +67,7 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
         } else if ( !xmlStrcmp( cur->name, (const xmlChar *) "entry") )
             parseEntry( list, cur, base );
 
-    	cur = cur->next;
+        cur = cur->next;
     }
 
 }
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
     options.add("+xml", ki18n("The file to transform"));
 
     KAboutData aboutData( "meinproc4", "kio_help4", ki18n("XML-Translator" ),
-	"$Revision$",
-	ki18n("KDE Translator for XML"));
+    "$Revision$",
+    ki18n("KDE Translator for XML"));
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
@@ -183,22 +183,22 @@ int main(int argc, char **argv) {
 
     QVector<const char *> params;
     if (args->isSet( "output" ) ) {
-		params.append( qstrdup( "outputFile" ) );
+        params.append( qstrdup( "outputFile" ) );
 #ifdef Q_WS_WIN 
-		// recent external used win32 libxslt version (1.1.22) do not allow pathes in the outputFile parameter. Until this problem is fixed
-		// a workaround is used: change into the output directory and provide libxslt with the raw filename
-		// This workaround works also with other xslt versions 
-		QFileInfo fi( args->getOption( "output" ).toLocal8Bit() );
-		QDir a;
-		if (!a.cd( fi.absolutePath()) ) {
-			kWarning() << "could not change into" << fi.absolutePath();
-			return 1;
-		}
+        // recent external used win32 libxslt version (1.1.22) do not allow pathes in the outputFile parameter. Until this problem is fixed
+        // a workaround is used: change into the output directory and provide libxslt with the raw filename
+        // This workaround works also with other xslt versions 
+        QFileInfo fi( args->getOption( "output" ).toLocal8Bit() );
+        QDir a;
+        if (!a.cd( fi.absolutePath()) ) {
+            kWarning() << "could not change into" << fi.absolutePath();
+            return 1;
+        }
         params.append( qstrdup( fi.fileName().toLocal8Bit() ) );
 #else
         params.append( qstrdup( args->getOption( "output" ).toLocal8Bit() ) );
 #endif
-	}
+    }
     {
         const QStringList paramList = args->getOptionList( "param" );
         QStringList::ConstIterator it = paramList.begin();
