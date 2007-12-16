@@ -22,8 +22,7 @@
 
 using namespace KNS;
 
-struct KNS::CategoryPrivate
-{
+struct KNS::CategoryPrivate {
     KTranslatable mName;
     KTranslatable mDescription;
     KUrl mIcon;
@@ -31,13 +30,13 @@ struct KNS::CategoryPrivate
 };
 
 Category::Category()
-    : d(new CategoryPrivate)
+        : d(new CategoryPrivate)
 {
 }
 
 Category::~Category()
 {
-  delete d;
+    delete d;
 }
 
 void Category::setId(const QString& id)

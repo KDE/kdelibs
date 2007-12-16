@@ -24,9 +24,10 @@
 
 #include <kurl.h>
 
-namespace KNS {
+namespace KNS
+{
 
-    struct CategoryPrivate;
+struct CategoryPrivate;
 
 /**
  * @short KNewStuff category.
@@ -35,7 +36,7 @@ namespace KNS {
  */
 class KNEWSTUFF_EXPORT Category
 {
-  public:
+public:
     /**
      * Constructor.
      */
@@ -94,8 +95,8 @@ class KNEWSTUFF_EXPORT Category
      */
     KUrl icon() const;
 
-  private:
-    Q_DISABLE_COPY (Category)
+private:
+    Q_DISABLE_COPY(Category)
 
     struct CategoryPrivate * const d;
 };

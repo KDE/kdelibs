@@ -20,10 +20,8 @@
 
 #include "installation.h"
 
-struct KNS::InstallationPrivate
-{
-    InstallationPrivate()
-    {
+struct KNS::InstallationPrivate {
+    InstallationPrivate() {
         m_checksumpolicy = Installation::CheckIfPossible;
         m_signaturepolicy = Installation::CheckIfPossible;
         m_scope = Installation::ScopeUser;
@@ -44,7 +42,7 @@ struct KNS::InstallationPrivate
 using namespace KNS;
 
 Installation::Installation()
-    : d(new InstallationPrivate)
+        : d(new InstallationPrivate)
 {
 }
 
@@ -125,9 +123,9 @@ QString Installation::installPath() const
 
 bool Installation::isRemote() const
 {
-    if(!installPath().isEmpty()) return false;
-    if(!targetDir().isEmpty()) return false;
-    if(!standardResourceDir().isEmpty()) return false;
+    if (!installPath().isEmpty()) return false;
+    if (!targetDir().isEmpty()) return false;
+    if (!standardResourceDir().isEmpty()) return false;
     return true;
 }
 

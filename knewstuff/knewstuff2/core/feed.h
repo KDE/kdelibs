@@ -25,7 +25,8 @@
 
 #include <kurl.h>
 
-namespace KNS {
+namespace KNS
+{
 
 struct FeedPrivate;
 
@@ -45,7 +46,7 @@ struct FeedPrivate;
  */
 class KNEWSTUFF_EXPORT Feed
 {
-  public:
+public:
     /**
      * Constructor.
      */
@@ -111,7 +112,7 @@ class KNEWSTUFF_EXPORT Feed
      */
     Entry::List entries() const;
 
-  private:
+private:
     FeedPrivate * const d;
 };
 

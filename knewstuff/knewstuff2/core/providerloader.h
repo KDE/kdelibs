@@ -31,9 +31,13 @@
 
 class KJob;
 
-namespace KIO { class Job; }
+namespace KIO
+{
+class Job;
+}
 
-namespace KNS {
+namespace KNS
+{
 
 /**
  * KNewStuff provider loader.
@@ -46,7 +50,7 @@ namespace KNS {
 class KNEWSTUFF_EXPORT ProviderLoader : public QObject
 {
     Q_OBJECT
-  public:
+public:
     /**
      * Constructor.
      */
@@ -60,18 +64,18 @@ class KNEWSTUFF_EXPORT ProviderLoader : public QObject
      */
     void load(const QString &providersurl);
 
-  Q_SIGNALS:
+Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
     void signalProvidersLoaded(KNS::Provider::List);
     void signalProvidersFailed();
 
-  protected Q_SLOTS:
+protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
     void slotJobResult(KJob *);
 
-  private:
+private:
     QByteArray m_jobdata;
 
     Provider::List m_providers;

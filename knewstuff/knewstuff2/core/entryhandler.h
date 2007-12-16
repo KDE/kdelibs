@@ -60,7 +60,7 @@ private:
     QDomElement serializeElement(const Entry& entry);
     Entry deserializeElement(const QDomElement& entryxml);
     QDomElement addElement(QDomDocument& doc, QDomElement& parent,
-      const QString& tag, const QString& value);
+                           const QString& tag, const QString& value);
 
     Entry mEntry;
     QDomElement mEntryXML;

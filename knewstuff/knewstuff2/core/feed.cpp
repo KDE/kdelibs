@@ -22,8 +22,7 @@
 
 using namespace KNS;
 
-struct KNS::FeedPrivate
-{
+struct KNS::FeedPrivate {
     KTranslatable mName;
     KTranslatable mDescription;
     KUrl mFeed;
@@ -31,13 +30,13 @@ struct KNS::FeedPrivate
 };
 
 Feed::Feed()
-    : d(new FeedPrivate)
+        : d(new FeedPrivate)
 {
 }
 
 Feed::~Feed()
 {
-   delete d;
+    delete d;
 }
 
 void Feed::setName(const KTranslatable& name)

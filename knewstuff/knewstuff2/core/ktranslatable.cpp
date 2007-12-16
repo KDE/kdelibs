@@ -27,17 +27,17 @@
 using namespace KNS;
 
 KTranslatable::KTranslatable()
-    : d(0)
+        : d(0)
 {
 }
 
 KTranslatable::KTranslatable(const KTranslatable& other)
-    : d(0)
+        : d(0)
 {
     *this = other;
 }
 
-KTranslatable& KTranslatable::operator=(const KTranslatable& other)
+KTranslatable& KTranslatable::operator=(const KTranslatable & other)
 {
     m_strings = other.m_strings;
     return *this;
@@ -49,89 +49,87 @@ KTranslatable::~KTranslatable()
 }
 
 KTranslatable::KTranslatable(const QString& string)
-    : d(0)
+        : d(0)
 {
-	m_strings[QString()] = string;
+    m_strings[QString()] = string;
 }
 
 void KTranslatable::addString(const QString& lang, const QString& string)
 {
-	m_strings[lang] = string;
+    m_strings[lang] = string;
 }
 
 QString KTranslatable::representation() const
 {
-	if(m_strings.isEmpty()) return QString();
+    if (m_strings.isEmpty()) return QString();
 
-	QStringList langs = KGlobal::locale()->languageList();
-	for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
-		if(m_strings.contains(*it)) return m_strings[*it];
+    QStringList langs = KGlobal::locale()->languageList();
+    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+        if (m_strings.contains(*it)) return m_strings[*it];
 
-	if(m_strings.contains(QString())) return m_strings[QString()];
-	else return *(m_strings.begin());
+    if (m_strings.contains(QString())) return m_strings[QString()];
+    else return *(m_strings.begin());
 }
 
 QString KTranslatable::language() const
 {
-	if(m_strings.isEmpty()) return QString();
+    if (m_strings.isEmpty()) return QString();
 
-	QStringList langs = KGlobal::locale()->languageList();
-	for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
-		if(m_strings.contains(*it)) return (*it);
+    QStringList langs = KGlobal::locale()->languageList();
+    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+        if (m_strings.contains(*it)) return (*it);
 
-	if(m_strings.contains(QString())) return QString();
-	else return m_strings.begin().key();
+    if (m_strings.contains(QString())) return QString();
+    else return m_strings.begin().key();
 }
 
 QString KTranslatable::translated(const QString& lang) const
 {
-	if(m_strings.contains(lang))
-		return m_strings[lang];
-	return QString();
+    if (m_strings.contains(lang))
+        return m_strings[lang];
+    return QString();
 }
 
 QStringList KTranslatable::languages() const
 {
-	QStringList strlist;
+    QStringList strlist;
 
-	QMapIterator<QString, QString> it(m_strings);
-	while(it.hasNext())
-	{
-		it.next();
-		strlist << it.key();
-	}
+    QMapIterator<QString, QString> it(m_strings);
+    while (it.hasNext()) {
+        it.next();
+        strlist << it.key();
+    }
 
-	return strlist;
+    return strlist;
 }
 
 QStringList KTranslatable::strings() const
 {
-	QStringList strlist;
+    QStringList strlist;
 
-	QMapIterator<QString, QString> it(m_strings);
-	while(it.hasNext())
-	{
-		it.next();
-		strlist << it.value();
-	}
+    QMapIterator<QString, QString> it(m_strings);
+    while (it.hasNext()) {
+        it.next();
+        strlist << it.value();
+    }
 
-	return strlist;
+    return strlist;
 }
 
 QMap<QString, QString> KTranslatable::stringmap() const
 {
-	return m_strings;
+    return m_strings;
 }
 
 bool KTranslatable::isTranslated() const
 {
-	if(m_strings.count() > 1) return true;
-	return false;
+    if (m_strings.count() > 1) return true;
+    return false;
 }
 
 bool KTranslatable::isEmpty() const
 {
-	if(m_strings.count() > 0) return false;
-	return true;
+    if (m_strings.count() > 0) return false;
+    return true;
 }
 

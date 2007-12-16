@@ -34,212 +34,195 @@ using namespace KNS;
 
 ProviderHandler::ProviderHandler(const Provider& provider)
 {
-  mValid = false;
-  mProvider = provider;
-  mProviderXML = serializeElement(provider);
+    mValid = false;
+    mProvider = provider;
+    mProviderXML = serializeElement(provider);
 }
 
 ProviderHandler::ProviderHandler(const QDomElement& providerxml)
 {
-  mValid = false;
-  mProviderXML = providerxml;
-  mProvider = deserializeElement(providerxml);
+    mValid = false;
+    mProviderXML = providerxml;
+    mProvider = deserializeElement(providerxml);
 }
 
 bool ProviderHandler::isValid()
 {
-  return mValid;
+    return mValid;
 }
 
 QDomElement ProviderHandler::providerXML()
 {
-  return mProviderXML;
+    return mProviderXML;
 }
 
 Provider *ProviderHandler::providerptr()
 {
-  Provider *provider = new Provider();
-  provider->setName(mProvider.name());
-  //provider->setDownloadUrl(mProvider.downloadUrl());
-  provider->setUploadUrl(mProvider.uploadUrl());
-  provider->setNoUploadUrl(mProvider.noUploadUrl());
-  provider->setWebAccess(mProvider.webAccess());
-  provider->setWebService(mProvider.webService());
-  provider->setIcon(mProvider.icon());
+    Provider *provider = new Provider();
+    provider->setName(mProvider.name());
+    //provider->setDownloadUrl(mProvider.downloadUrl());
+    provider->setUploadUrl(mProvider.uploadUrl());
+    provider->setNoUploadUrl(mProvider.noUploadUrl());
+    provider->setWebAccess(mProvider.webAccess());
+    provider->setWebService(mProvider.webService());
+    provider->setIcon(mProvider.icon());
 
-  QStringList feeds = mProvider.feeds();
-  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it)
-  {
-    Feed *feed = mProvider.downloadUrlFeed((*it));
-    provider->addDownloadUrlFeed((*it), feed);
-  }
-  return provider;
+    QStringList feeds = mProvider.feeds();
+    for (QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
+        Feed *feed = mProvider.downloadUrlFeed((*it));
+        provider->addDownloadUrlFeed((*it), feed);
+    }
+    return provider;
 }
 
 Provider ProviderHandler::provider()
 {
-  return mProvider;
+    return mProvider;
 }
 
 QDomElement ProviderHandler::serializeElement(const Provider& provider)
 {
-  QDomDocument doc;
+    QDomDocument doc;
 
-  QDomElement el = doc.createElement("provider");
+    QDomElement el = doc.createElement("provider");
 
-  KTranslatable name = provider.name();
+    KTranslatable name = provider.name();
 
-  QStringList::ConstIterator it;
-  QDomElement e;
-  QStringList langs;
+    QStringList::ConstIterator it;
+    QDomElement e;
+    QStringList langs;
 
-  langs = name.languages();
-  for(it = langs.begin(); it != langs.end(); ++it)
-  {
-    e = addElement(doc, el, "title", name.translated(*it));
-    e.setAttribute("lang", *it);
-  }
+    langs = name.languages();
+    for (it = langs.begin(); it != langs.end(); ++it) {
+        e = addElement(doc, el, "title", name.translated(*it));
+        e.setAttribute("lang", *it);
+    }
 
-  /*if(provider.downloadUrl().isValid())
-  {
-    el.setAttribute("downloadurl", provider.downloadUrl().url());
-  }*/
-  if(provider.uploadUrl().isValid())
-  {
-    el.setAttribute("uploadurl", provider.uploadUrl().url());
-  }
-  if(provider.noUploadUrl().isValid())
-  {
-    el.setAttribute("nouploadurl", provider.noUploadUrl().url());
-  }
-  if(provider.webAccess().isValid())
-  {
-    el.setAttribute("webaccess", provider.webAccess().url());
-  }
-  if(provider.webService().isValid())
-  {
-    el.setAttribute("webservice", provider.webService().url());
-  }
-  if(provider.icon().isValid())
-  {
-    el.setAttribute("icon", provider.icon().url());
-  }
+    /*if(provider.downloadUrl().isValid())
+    {
+      el.setAttribute("downloadurl", provider.downloadUrl().url());
+    }*/
+    if (provider.uploadUrl().isValid()) {
+        el.setAttribute("uploadurl", provider.uploadUrl().url());
+    }
+    if (provider.noUploadUrl().isValid()) {
+        el.setAttribute("nouploadurl", provider.noUploadUrl().url());
+    }
+    if (provider.webAccess().isValid()) {
+        el.setAttribute("webaccess", provider.webAccess().url());
+    }
+    if (provider.webService().isValid()) {
+        el.setAttribute("webservice", provider.webService().url());
+    }
+    if (provider.icon().isValid()) {
+        el.setAttribute("icon", provider.icon().url());
+    }
 
-  QStringList feeds = provider.feeds();
-  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it)
-  {
-    Feed *feed = provider.downloadUrlFeed((*it));
-    if((*it).isEmpty())
-      el.setAttribute("downloadurl", feed->feedUrl().url());
-    else
-      el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
-  }
+    QStringList feeds = provider.feeds();
+    for (QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
+        Feed *feed = provider.downloadUrlFeed((*it));
+        if ((*it).isEmpty())
+            el.setAttribute("downloadurl", feed->feedUrl().url());
+        else
+            el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
+    }
 
-  mValid = true;
-  return el;
+    mValid = true;
+    return el;
 }
 
 Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
 {
-  Provider provider;
-  KTranslatable name;
+    Provider provider;
+    KTranslatable name;
 
-  if(providerxml.tagName() != "provider") return provider;
+    if (providerxml.tagName() != "provider") return provider;
 
-  QString uploadurl = providerxml.attribute("uploadurl");
-  QString nouploadurl = providerxml.attribute("nouploadurl");
-  QString webservice = providerxml.attribute("webservice");
-  QString webaccess = providerxml.attribute("webaccess");
-  //provider.setDownloadUrl(KUrl(downloadurl));
-  provider.setUploadUrl(KUrl(uploadurl));
-  provider.setNoUploadUrl(KUrl(nouploadurl));
-  provider.setWebService(KUrl(webservice));
-  provider.setWebAccess(KUrl(webaccess));
+    QString uploadurl = providerxml.attribute("uploadurl");
+    QString nouploadurl = providerxml.attribute("nouploadurl");
+    QString webservice = providerxml.attribute("webservice");
+    QString webaccess = providerxml.attribute("webaccess");
+    //provider.setDownloadUrl(KUrl(downloadurl));
+    provider.setUploadUrl(KUrl(uploadurl));
+    provider.setNoUploadUrl(KUrl(nouploadurl));
+    provider.setWebService(KUrl(webservice));
+    provider.setWebAccess(KUrl(webaccess));
 
-  QString downloadurl = providerxml.attribute("downloadurl");
-  QString downloadlatest = providerxml.attribute("downloadurl-latest");
-  QString downloadscore = providerxml.attribute("downloadurl-score");
-  QString downloaddownloads = providerxml.attribute("downloadurl-downloads");
+    QString downloadurl = providerxml.attribute("downloadurl");
+    QString downloadlatest = providerxml.attribute("downloadurl-latest");
+    QString downloadscore = providerxml.attribute("downloadurl-score");
+    QString downloaddownloads = providerxml.attribute("downloadurl-downloads");
 
-  if(!downloadlatest.isEmpty())
-  {
-    Feed *feedlatest = new Feed();
-    feedlatest->setName(i18n("Latest"));
-    feedlatest->setFeedUrl(downloadlatest);
-    provider.addDownloadUrlFeed("latest", feedlatest);
-  }
-  if(!downloadscore.isEmpty())
-  {
-    Feed *feedscore = new Feed();
-    feedscore->setName(i18n("Highest Rated"));
-    feedscore->setFeedUrl(downloadscore);
-    provider.addDownloadUrlFeed("score", feedscore);
-  }
-  if(!downloaddownloads.isEmpty())
-  {
-    Feed *feeddownloads = new Feed();
-    feeddownloads->setName(i18n("Most Downloads"));
-    feeddownloads->setFeedUrl(downloaddownloads);
-    provider.addDownloadUrlFeed("downloads", feeddownloads);
-  }
-  if(!downloadurl.isEmpty())
-  {
-    Feed *feedgeneric = new Feed();
-    feedgeneric->setName(i18n("Unsorted"));
-    feedgeneric->setFeedUrl(downloadurl);
-    provider.addDownloadUrlFeed(QString(), feedgeneric);
-  }
- 
-  // FIXME: what exactly is the following condition supposed to do?
-  // FIXME: make sure new KUrl in KDE 4 handles this right
-  // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
-  KUrl iconurl(providerxml.attribute("icon"));
-  if(!iconurl.isValid()) iconurl.setPath(providerxml.attribute("icon"));
-  provider.setIcon(iconurl);
-
-  QDomNode n;
-  for(n = providerxml.firstChild(); !n.isNull(); n = n.nextSibling())
-  {
-    QDomElement e = n.toElement();
-    if(e.tagName() == "title")
-    {
-      QString lang = e.attribute("lang");
-      name.addString(lang, e.text().trimmed());
+    if (!downloadlatest.isEmpty()) {
+        Feed *feedlatest = new Feed();
+        feedlatest->setName(i18n("Latest"));
+        feedlatest->setFeedUrl(downloadlatest);
+        provider.addDownloadUrlFeed("latest", feedlatest);
     }
-  }
+    if (!downloadscore.isEmpty()) {
+        Feed *feedscore = new Feed();
+        feedscore->setName(i18n("Highest Rated"));
+        feedscore->setFeedUrl(downloadscore);
+        provider.addDownloadUrlFeed("score", feedscore);
+    }
+    if (!downloaddownloads.isEmpty()) {
+        Feed *feeddownloads = new Feed();
+        feeddownloads->setName(i18n("Most Downloads"));
+        feeddownloads->setFeedUrl(downloaddownloads);
+        provider.addDownloadUrlFeed("downloads", feeddownloads);
+    }
+    if (!downloadurl.isEmpty()) {
+        Feed *feedgeneric = new Feed();
+        feedgeneric->setName(i18n("Unsorted"));
+        feedgeneric->setFeedUrl(downloadurl);
+        provider.addDownloadUrlFeed(QString(), feedgeneric);
+    }
 
-  provider.setName(name);
+    // FIXME: what exactly is the following condition supposed to do?
+    // FIXME: make sure new KUrl in KDE 4 handles this right
+    // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
+    KUrl iconurl(providerxml.attribute("icon"));
+    if (!iconurl.isValid()) iconurl.setPath(providerxml.attribute("icon"));
+    provider.setIcon(iconurl);
 
-  // Validation
+    QDomNode n;
+    for (n = providerxml.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        QDomElement e = n.toElement();
+        if (e.tagName() == "title") {
+            QString lang = e.attribute("lang");
+            name.addString(lang, e.text().trimmed());
+        }
+    }
 
-  if((provider.noUploadUrl().isValid()) && (provider.uploadUrl().isValid()))
-  {
-  	//kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
-  	return provider;
-  }
+    provider.setName(name);
 
-  if((!provider.noUploadUrl().isValid()) && (!provider.uploadUrl().isValid()))
-  {
-  	if(!provider.webService().isValid())
-	{
-  		//kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl nor DXS given";
-  		return provider;
-	}
-  }
+    // Validation
 
-  // Provider is valid
+    if ((provider.noUploadUrl().isValid()) && (provider.uploadUrl().isValid())) {
+        //kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
+        return provider;
+    }
 
-  mValid = true;
-  return provider;
+    if ((!provider.noUploadUrl().isValid()) && (!provider.uploadUrl().isValid())) {
+        if (!provider.webService().isValid()) {
+            //kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl nor DXS given";
+            return provider;
+        }
+    }
+
+    // Provider is valid
+
+    mValid = true;
+    return provider;
 }
 
 // FIXME: also used in EntryHandler - make common method?
 QDomElement ProviderHandler::addElement(QDomDocument& doc, QDomElement& parent,
-  const QString& tag, const QString& value)
+                                        const QString& tag, const QString& value)
 {
-  QDomElement n = doc.createElement(tag);
-  n.appendChild(doc.createTextNode(value));
-  parent.appendChild(n);
+    QDomElement n = doc.createElement(tag);
+    n.appendChild(doc.createTextNode(value));
+    parent.appendChild(n);
 
-  return n;
+    return n;
 }

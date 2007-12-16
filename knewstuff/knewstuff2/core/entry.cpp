@@ -23,13 +23,12 @@
 
 using namespace KNS;
 
-struct KNS::EntryPrivate
-{
+struct KNS::EntryPrivate {
     EntryPrivate() : mReleaseDate(QDate::currentDate())
-       , mRelease(0)
-       , mRating(0)
-       , mDownloads(0)
-       , mStatus(Entry::Invalid) {}
+            , mRelease(0)
+            , mRating(0)
+            , mDownloads(0)
+            , mStatus(Entry::Invalid) {}
 
     QString mCategory;
     QString mLicense;
@@ -50,17 +49,17 @@ struct KNS::EntryPrivate
     Entry::Status mStatus;
 };
 
-Entry::Entry() 
-    : d(new EntryPrivate)
+Entry::Entry()
+        : d(new EntryPrivate)
 {
 }
 
 Entry::Entry(const Entry& other)
-    : d(new EntryPrivate(*other.d))
+        : d(new EntryPrivate(*other.d))
 {
 }
 
-Entry& Entry::operator=(const Entry& other)
+Entry& Entry::operator=(const Entry & other)
 {
     *d = *other.d;
     return *this;
@@ -68,7 +67,7 @@ Entry& Entry::operator=(const Entry& other)
 
 Entry::~Entry()
 {
-     delete d;
+    delete d;
 }
 
 void Entry::setName(const KTranslatable& name)

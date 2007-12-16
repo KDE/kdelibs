@@ -51,7 +51,7 @@
 using namespace KNS;
 
 CoreEngine::CoreEngine(QObject* parent)
-    : QObject(parent)
+        : QObject(parent)
 {
     m_initialized = false;
     m_cachepolicy = CacheNever;
@@ -169,9 +169,9 @@ void CoreEngine::start()
 
     if (m_cachepolicy != CacheNever) {
         loadProvidersCache();
-    #if 0
+#if 0
         loadEntriesCache();
-    #endif
+#endif
     }
 
     loadRegistry();
@@ -186,11 +186,11 @@ void CoreEngine::start()
     provider_loader->load(m_providersurl);
 
     connect(provider_loader,
-        SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
-        SLOT(slotProvidersLoaded(KNS::Provider::List)));
+            SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
+            SLOT(slotProvidersLoaded(KNS::Provider::List)));
     connect(provider_loader,
-        SIGNAL(signalProvidersFailed()),
-        SLOT(slotProvidersFailed()));
+            SIGNAL(signalProvidersFailed()),
+            SLOT(slotProvidersFailed()));
 }
 
 void CoreEngine::loadEntries(Provider *provider)
@@ -207,11 +207,11 @@ void CoreEngine::loadEntries(Provider *provider)
             entry_loader->load(provider, feed);
 
             connect(entry_loader,
-                SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
-                SLOT(slotEntriesLoaded(KNS::Entry::List)));
+                    SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
+                    SLOT(slotEntriesLoaded(KNS::Entry::List)));
             connect(entry_loader,
-                SIGNAL(signalEntriesFailed()),
-                SLOT(slotEntriesFailed()));
+                    SIGNAL(signalEntriesFailed()),
+                    SLOT(slotEntriesFailed()));
 
             m_activefeeds++;
         }
@@ -240,8 +240,8 @@ void CoreEngine::downloadPreview(Entry *entry)
     // FIXME: check for validity
     KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(job,
-        SIGNAL(result(KJob*)),
-        SLOT(slotPreviewResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotPreviewResult(KJob*)));
 
     m_entry_jobs[job] = entry;
 }
@@ -270,11 +270,11 @@ void CoreEngine::downloadPayload(Entry *entry)
     // FIXME: check for validity
     KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(job,
-        SIGNAL(result(KJob*)),
-        SLOT(slotPayloadResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotPayloadResult(KJob*)));
     connect(job,
-        SIGNAL(percent(KJob*, unsigned long)),
-        SLOT(slotPayloadProgress(KJob*, unsigned long)));
+            SIGNAL(percent(KJob*, unsigned long)),
+            SLOT(slotPayloadProgress(KJob*, unsigned long)));
 
     m_entry_jobs[job] = entry;
 }
@@ -306,8 +306,8 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 
     KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(fcjob,
-        SIGNAL(result(KJob*)),
-        SLOT(slotUploadPayloadResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotUploadPayloadResult(KJob*)));
 
     return true;
 }
@@ -365,8 +365,7 @@ void CoreEngine::slotPayloadResult(KJob *job)
 
         m_entry_jobs.remove(job);
         emit signalPayloadFailed();
-    }
-    else {
+    } else {
         KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
         if (m_entry_jobs.contains(job)) {
             // FIXME: this is only so exposing the KUrl suffices for downloaded entries
@@ -390,8 +389,7 @@ void CoreEngine::slotPreviewResult(KJob *job)
 
         m_entry_jobs.remove(job);
         emit signalPreviewFailed();
-    }
-    else {
+    } else {
         KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
 
         if (m_entry_jobs.contains(job)) {
@@ -431,8 +429,8 @@ void CoreEngine::slotUploadPayloadResult(KJob *job)
 
     KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(fcjob,
-        SIGNAL(result(KJob*)),
-        SLOT(slotUploadPreviewResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotUploadPreviewResult(KJob*)));
 }
 
 void CoreEngine::slotUploadPreviewResult(KJob *job)
@@ -474,8 +472,8 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
 
     KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
     connect(fcjob,
-        SIGNAL(result(KJob*)),
-        SLOT(slotUploadMetaResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotUploadMetaResult(KJob*)));
 }
 
 void CoreEngine::slotUploadMetaResult(KJob *job)
@@ -489,8 +487,7 @@ void CoreEngine::slotUploadMetaResult(KJob *job)
 
         emit signalEntryFailed();
         return;
-    }
-    else {
+    } else {
         m_uploadedentry = NULL;
         m_uploadprovider = NULL;
 
@@ -860,8 +857,7 @@ void CoreEngine::mergeProviders(Provider::List providers)
                 emit signalProviderChanged(p);
                 // FIXME: oldprovider can now be deleted, see entry hit case
             }
-        }
-        else {
+        } else {
             if (m_cachepolicy != CacheNever) {
                 //kDebug(550) << "CACHE: miss provider " << p->name().representation();
                 cacheProvider(p);
@@ -909,8 +905,8 @@ bool CoreEngine::entryCached(Entry *entry)
 bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 {
     if ((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
-     || (entry->version() > oldentry->version())
-     || (entry->release() > oldentry->release()))
+            || (entry->version() > oldentry->version())
+            || (entry->release() > oldentry->release()))
         return true;
     return false;
 }
@@ -925,17 +921,15 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
         if (m_entry_index.contains(id(e))) {
             // see if the one online is newer (higher version, release, or release date)
             Entry *oldentry = m_entry_index[id(e)];
-                        e->setInstalledFiles(oldentry->installedFiles());
+            e->setInstalledFiles(oldentry->installedFiles());
 
             if (entryChanged(oldentry, e)) {
                 e->setStatus(Entry::Updateable);
-            }
-            else {
+            } else {
                 e->setStatus(Entry::Installed);
             }
             emit signalEntryLoaded(e, feed, provider);
-        }
-        else {
+        } else {
             e->setStatus(Entry::Downloadable);
 
             if (entryCached(e)) {
@@ -953,8 +947,7 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
                     // FIXME: oldentry can now be deleted, but it's still in the list!
                     // FIXME: better: assigne all values to 'e', keeps refs intact
                 }
-            }
-            else {
+            } else {
                 if (m_cachepolicy != CacheNever) {
                     //kDebug(550) << "CACHE: miss entry " << e->name().representation();
                     cacheEntry(e);
@@ -1200,13 +1193,11 @@ bool CoreEngine::install(const QString &payloadfile)
         if (entry->checksum().isEmpty()) {
             if (m_installation->checksumPolicy() == Installation::CheckIfPossible) {
                 //kDebug(550) << "Skip checksum verification";
-            }
-            else {
+            } else {
                 kError(550) << "Checksum verification not possible" << endl;
                 return false;
             }
-        }
-        else {
+        } else {
             //kDebug(550) << "Verify checksum...";
         }
     }
@@ -1215,13 +1206,11 @@ bool CoreEngine::install(const QString &payloadfile)
         if (entry->signature().isEmpty()) {
             if (m_installation->signaturePolicy() == Installation::CheckIfPossible) {
                 //kDebug(550) << "Skip signature verification";
-            }
-            else {
+            } else {
                 kError(550) << "Signature verification not possible" << endl;
                 return false;
             }
-        }
-        else {
+        } else {
             //kDebug(550) << "Verify signature...";
         }
     }
@@ -1234,10 +1223,10 @@ bool CoreEngine::install(const QString &payloadfile)
     //kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression();
     //kDebug(550) << "INSTALL + command " << m_installation->command();
 
-        // installdir is the target directory
+    // installdir is the target directory
     QString installdir;
-        // installpath also contains the file name if it's a single file, otherwise equal to installdir
-        QString installpath;
+    // installpath also contains the file name if it's a single file, otherwise equal to installdir
+    QString installpath;
     int pathcounter = 0;
     if (!m_installation->standardResourceDir().isEmpty()) {
         if (m_installation->scope() == Installation::ScopeUser)
@@ -1263,14 +1252,14 @@ bool CoreEngine::install(const QString &payloadfile)
         return false;
     }
 
-        // Collect all files that were installed
-        QStringList installedFiles;
+    // Collect all files that were installed
+    QStringList installedFiles;
 
-        // respect the uncompress flag in the knsrc
+    // respect the uncompress flag in the knsrc
     if (!m_installation->uncompression().isEmpty()) {
-                // this is weird but a decompression is not a single name, so take the path instead
-                installpath = installdir;
-                KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
+        // this is weird but a decompression is not a single name, so take the path instead
+        installpath = installdir;
+        KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
         //kDebug(550) << "Postinstallation: uncompress the file";
 
         // FIXME: check for overwriting, malicious archive entries (../foo) etc.
@@ -1279,13 +1268,11 @@ bool CoreEngine::install(const QString &payloadfile)
 
         if (mimeType->name() == "application/zip") {
             archive = new KZip(payloadfile);
-        }
-        else if (mimeType->name() == "application/tar" 
-                       || mimeType->name() == "application/x-gzip"
-                       || mimeType->name() == "application/x-bzip") {
+        } else if (mimeType->name() == "application/tar"
+                   || mimeType->name() == "application/x-gzip"
+                   || mimeType->name() == "application/x-bzip") {
             archive = new KTar(payloadfile);
-        }
-        else {
+        } else {
             delete archive;
             kError(550) << "Could not determine type of archive file '" << payloadfile << "'";
             return false;
@@ -1306,39 +1293,38 @@ bool CoreEngine::install(const QString &payloadfile)
         delete archive;
 
     } else {
-            // no decompress but move to target
+        // no decompress but move to target
 
-            /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
-            // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-            KUrl source = KUrl(entry->payload().representation());
-            QString installfile;
-            QString ext = source.fileName().section('.', -1);
-            if (m_installation->customName()) {
-                    installfile = entry->name().representation();
-                    installfile += '-' + entry->version();
-                    if (!ext.isEmpty()) installfile += '.' + ext;
-            }
-            else {
-                    installfile = source.fileName();
-            }
-            installpath = installdir + '/' + installfile;
+        /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
+        // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
+        KUrl source = KUrl(entry->payload().representation());
+        QString installfile;
+        QString ext = source.fileName().section('.', -1);
+        if (m_installation->customName()) {
+            installfile = entry->name().representation();
+            installfile += '-' + entry->version();
+            if (!ext.isEmpty()) installfile += '.' + ext;
+        } else {
+            installfile = source.fileName();
+        }
+        installpath = installdir + '/' + installfile;
 
-            //kDebug(550) << "Install to file " << installpath;
-            // FIXME: copy goes here (including overwrite checking)
-            // FIXME: what must be done now is to update the cache *again*
-            //        in order to set the new payload filename (on root tag only)
-            //        - this might or might not need to take uncompression into account
-            // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
-            QFile file(payloadfile);
+        //kDebug(550) << "Install to file " << installpath;
+        // FIXME: copy goes here (including overwrite checking)
+        // FIXME: what must be done now is to update the cache *again*
+        //        in order to set the new payload filename (on root tag only)
+        //        - this might or might not need to take uncompression into account
+        // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
+        QFile file(payloadfile);
 
-            bool success = file.rename("/home/frederik/kns-testfile");//installpath);
-            if (!success) {
-                    kError(550) << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
-                    return false;
-            }
-            installedFiles << installpath;
+        bool success = file.rename("/home/frederik/kns-testfile");//installpath);
+        if (!success) {
+            kError(550) << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
+            return false;
+        }
+        installedFiles << installpath;
     }
-        entry->setInstalledFiles(installedFiles);
+    entry->setInstalledFiles(installedFiles);
 
     if (!m_installation->command().isEmpty()) {
         KProcess process;
@@ -1354,8 +1340,7 @@ bool CoreEngine::install(const QString &payloadfile)
 
         if (exitcode) {
             kError(550) << "Command failed" << endl;
-        }
-        else {
+        } else {
             //kDebug(550) << "Command executed successfully";
         }
     }
@@ -1366,8 +1351,8 @@ bool CoreEngine::install(const QString &payloadfile)
     Security *sec = Security::ref();
 
     connect(sec,
-        SIGNAL(validityResult(int)),
-        SLOT(slotInstallationVerification(int)));
+            SIGNAL(validityResult(int)),
+            SLOT(slotInstallationVerification(int)));
 
     // FIXME: change to accept filename + signature
     sec->checkValidity(QString());
@@ -1387,7 +1372,7 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
     entry->setStatus(Entry::Deleted);
 
     foreach(QString file, entry->installedFiles()) {
-            QFile::remove(file);
+        QFile::remove(file);
     }
     entry->setInstalledFiles(QStringList());
 

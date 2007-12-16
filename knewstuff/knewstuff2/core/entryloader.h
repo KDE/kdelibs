@@ -28,9 +28,13 @@
 
 class KJob;
 
-namespace KIO { class Job; }
+namespace KIO
+{
+class Job;
+}
 
-namespace KNS {
+namespace KNS
+{
 
 class Feed;
 class Provider;
@@ -39,13 +43,13 @@ class Provider;
  * KNewStuff entry loader.
  * Loads any entries from a given file and notifies about when the
  * loading has completed.
- * 
+ *
  * @internal
  */
 class KNEWSTUFF_EXPORT EntryLoader : public QObject
 {
     Q_OBJECT
-  public:
+public:
     /**
      * Constructor.
      */
@@ -74,7 +78,7 @@ class KNEWSTUFF_EXPORT EntryLoader : public QObject
      */
     const Feed *feed() const;
 
-  Q_SIGNALS:
+Q_SIGNALS:
     /**
      * Indicates that the list of entries has been successfully loaded.
      */
@@ -85,11 +89,11 @@ class KNEWSTUFF_EXPORT EntryLoader : public QObject
      */
     void signalEntriesFailed();
 
-  protected Q_SLOTS:
+protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
     void slotJobResult(KJob *);
 
-  private:
+private:
     QByteArray m_jobdata;
 
     Entry::List m_entries;

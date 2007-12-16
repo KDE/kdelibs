@@ -33,69 +33,69 @@
 using namespace KNS;
 
 ProviderLoader::ProviderLoader(QObject* parent)
-    : QObject(parent)
+        : QObject(parent)
 {
 }
 
 void ProviderLoader::load(const QString &providersurl)
 {
-  //kDebug(550) << "ProviderLoader::load()";
+    //kDebug(550) << "ProviderLoader::load()";
 
-  m_providers.clear();
-  m_jobdata.clear();
+    m_providers.clear();
+    m_jobdata.clear();
 
-  //kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl;
-  
-  KIO::TransferJob *job = KIO::get( KUrl( providersurl ), KIO::NoReload, KIO::HideProgressInfo );
-  connect( job, SIGNAL( result( KJob * ) ),
-           SLOT( slotJobResult( KJob * ) ) );
-  connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-           SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
+    //kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl;
+
+    KIO::TransferJob *job = KIO::get(KUrl(providersurl), KIO::NoReload, KIO::HideProgressInfo);
+    connect(job, SIGNAL(result(KJob *)),
+            SLOT(slotJobResult(KJob *)));
+    connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
+            SLOT(slotJobData(KIO::Job *, const QByteArray &)));
 }
 
-void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
+void ProviderLoader::slotJobData(KIO::Job *, const QByteArray &data)
 {
-  //kDebug(550) << "ProviderLoader::slotJobData()";
+    //kDebug(550) << "ProviderLoader::slotJobData()";
 
-  m_jobdata.append(data);
+    m_jobdata.append(data);
 }
 
-void ProviderLoader::slotJobResult( KJob *job )
+void ProviderLoader::slotJobResult(KJob *job)
 {
-  if ( job->error() ) {
-    emit signalProvidersFailed();
-    return;
-  }
-
-  //kDebug(550) << "--PROVIDERS-START--";
-  //kDebug(550) << QString::fromUtf8(m_jobdata);
-  //kDebug(550) << "--PROVIDERS-END--";
-
-  QDomDocument doc;
-  if ( !doc.setContent( m_jobdata ) ) {
-    emit signalProvidersFailed();
-    return;
-  }
-
-  QDomElement providers = doc.documentElement();
-
-  if ( providers.tagName() != "ghnsproviders" && 
-       providers.tagName() != "knewstuffproviders"  ) {
-    kWarning(550) << "No document in providers.xml.";
-    return;
-  }
-
-  QDomNode n;
-  for ( n = providers.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-    QDomElement p = n.toElement();
- 
-    if ( p.tagName() == "provider" ) {
-      ProviderHandler handler(p);
-      m_providers.append(handler.providerptr());
+    if (job->error()) {
+        emit signalProvidersFailed();
+        return;
     }
-  }
- 
-  emit signalProvidersLoaded( m_providers );
+
+    //kDebug(550) << "--PROVIDERS-START--";
+    //kDebug(550) << QString::fromUtf8(m_jobdata);
+    //kDebug(550) << "--PROVIDERS-END--";
+
+    QDomDocument doc;
+    if (!doc.setContent(m_jobdata)) {
+        emit signalProvidersFailed();
+        return;
+    }
+
+    QDomElement providers = doc.documentElement();
+
+    if (providers.tagName() != "ghnsproviders" &&
+            providers.tagName() != "knewstuffproviders") {
+        kWarning(550) << "No document in providers.xml.";
+        return;
+    }
+
+    QDomNode n;
+    for (n = providers.firstChild(); !n.isNull(); n = n.nextSibling()) {
+        QDomElement p = n.toElement();
+
+        if (p.tagName() == "provider") {
+            ProviderHandler handler(p);
+            m_providers.append(handler.providerptr());
+        }
+    }
+
+    emit signalProvidersLoaded(m_providers);
 }
 
 #include "providerloader.moc"

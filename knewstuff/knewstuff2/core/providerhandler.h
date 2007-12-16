@@ -27,9 +27,13 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-namespace KIO { class Job; }
+namespace KIO
+{
+class Job;
+}
 
-namespace KNS {
+namespace KNS
+{
 
 /**
  * @short Parser and dumper for KNewStuff providers.
@@ -44,7 +48,7 @@ namespace KNS {
  */
 class KNEWSTUFF_EXPORT ProviderHandler
 {
-  public:
+public:
     ProviderHandler(const QDomElement &providerxml);
     ProviderHandler(const Provider& provider);
 
@@ -53,11 +57,11 @@ class KNEWSTUFF_EXPORT ProviderHandler
     Provider *providerptr();
     QDomElement providerXML();
 
-  private:
+private:
     QDomElement serializeElement(const Provider& entry);
     Provider deserializeElement(const QDomElement& providerxml);
     QDomElement addElement(QDomDocument& doc, QDomElement& parent,
-      const QString& tag, const QString& value);
+                           const QString& tag, const QString& value);
 
     Provider mProvider;
     QDomElement mProviderXML;

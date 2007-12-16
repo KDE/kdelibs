@@ -29,7 +29,8 @@
 #include <QtCore/QDate>
 #include <QtCore/QString>
 
-namespace KNS {
+namespace KNS
+{
 
 struct EntryPrivate;
 
@@ -46,7 +47,7 @@ struct EntryPrivate;
  */
 class KNEWSTUFF_EXPORT Entry
 {
-  public:
+public:
     typedef QList<Entry*> List;
 
     /**
@@ -213,7 +214,7 @@ class KNEWSTUFF_EXPORT Entry
 
     /**
      * Sets the number of downloads.
-     * 
+     *
      * @internal
      */
     void setDownloads(int downloads);
@@ -271,8 +272,7 @@ class KNEWSTUFF_EXPORT Entry
      * Entries not taking part in this cycle, for example those in upload,
      * have an invalid status.
      */
-    enum Status
-    {
+    enum Status {
         Invalid,
         Downloadable,
         Installed,

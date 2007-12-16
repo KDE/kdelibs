@@ -25,9 +25,10 @@
 
 #include <QtCore/QString>
 
-namespace KNS {
+namespace KNS
+{
 
-    struct AuthorPrivate;
+struct AuthorPrivate;
 
 /**
  * @short KNewStuff author information.
@@ -40,7 +41,7 @@ namespace KNS {
  */
 class KNEWSTUFF_EXPORT Author
 {
-  public:
+public:
     /**
      * Constructor.
      */
@@ -102,7 +103,7 @@ class KNEWSTUFF_EXPORT Author
      */
     QString homepage() const;
 
-  private:
+private:
     struct AuthorPrivate * const d;
 };
 

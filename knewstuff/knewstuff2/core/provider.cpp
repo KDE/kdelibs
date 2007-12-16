@@ -28,101 +28,98 @@ using namespace KNS;
 
 class ProviderPrivate
 {
-  public:
-  ProviderPrivate(){}
+public:
+    ProviderPrivate() {}
 };
 
 Provider::Provider()
-  :d(0)
+        : d(0)
 {
 }
 
 Provider::~Provider()
 {
-  //qDeleteAll(mFeeds);
-  //delete d;
+    //qDeleteAll(mFeeds);
+    //delete d;
 }
 
-void Provider::addDownloadUrlFeed( const QString& feedtype, Feed *feed )
+void Provider::addDownloadUrlFeed(const QString& feedtype, Feed *feed)
 {
-  mFeeds[feedtype] = feed;
-  // FIXME: check for "blessed" feed types?
+    mFeeds[feedtype] = feed;
+    // FIXME: check for "blessed" feed types?
 }
 
-Feed *Provider::downloadUrlFeed( const QString& feedtype ) const
+Feed *Provider::downloadUrlFeed(const QString& feedtype) const
 {
-  if(mFeeds.contains(feedtype))
-  {
-    return mFeeds[feedtype];
-  }
-  else
-  {
-    return NULL;
-  }
+    if (mFeeds.contains(feedtype)) {
+        return mFeeds[feedtype];
+    } else {
+        return NULL;
+    }
 }
 
-void Provider::setName( const KTranslatable &name )
+void Provider::setName(const KTranslatable &name)
 {
-  mName = name;
+    mName = name;
 }
 
 KTranslatable Provider::name() const
 {
-  return mName;
+    return mName;
 }
 
-void Provider::setIcon( const KUrl &url )
+void Provider::setIcon(const KUrl &url)
 {
-  mIcon = url;
+    mIcon = url;
 }
 
 KUrl Provider::icon() const
 {
-  return mIcon;
+    return mIcon;
 }
 
-void Provider::setUploadUrl( const KUrl &url )
+void Provider::setUploadUrl(const KUrl &url)
 {
-  mUploadUrl = url;
+    mUploadUrl = url;
 }
 
 KUrl Provider::uploadUrl() const
 {
-  return mUploadUrl;
+    return mUploadUrl;
 }
 
-void Provider::setNoUploadUrl( const KUrl &url )
+void Provider::setNoUploadUrl(const KUrl &url)
 {
-  mNoUploadUrl = url;
+    mNoUploadUrl = url;
 }
 
 KUrl Provider::noUploadUrl() const
 {
-  return mNoUploadUrl;
+    return mNoUploadUrl;
 }
 
-void Provider::setWebAccess( const KUrl &url )
+void Provider::setWebAccess(const KUrl &url)
 {
-  mWebAccess = url;
+    mWebAccess = url;
 }
 
 KUrl Provider::webAccess() const
 {
-  return mWebAccess;
+    return mWebAccess;
 }
 
-void Provider::setWebService( const KUrl &url )
+void Provider::setWebService(const KUrl &url)
 {
-  mWebService = url;
+    mWebService = url;
 }
 
 KUrl Provider::webService() const
 {
-  return mWebService;
+    return mWebService;
 }
 
 QStringList Provider::feeds() const
 {
-  return mFeeds.keys();
+    return mFeeds.keys();
 }
 

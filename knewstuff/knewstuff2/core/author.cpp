@@ -23,8 +23,7 @@
 
 using namespace KNS;
 
-struct KNS::AuthorPrivate
-{
+struct KNS::AuthorPrivate {
     QString mName;
     QString mEmail;
     QString mJabber;
@@ -32,17 +31,17 @@ struct KNS::AuthorPrivate
 };
 
 Author::Author()
-    : d(new AuthorPrivate)
+        : d(new AuthorPrivate)
 {
 }
 
 Author::Author(const Author& other)
-    : d(new AuthorPrivate(*other.d))
+        : d(new AuthorPrivate(*other.d))
 
 {
 }
 
-Author& Author::operator=(const Author& other)
+Author& Author::operator=(const Author & other)
 {
     *this->d = *other.d;
     return *this;

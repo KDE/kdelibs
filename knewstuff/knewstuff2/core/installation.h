@@ -24,7 +24,8 @@
 
 #include <QtCore/QString>
 
-namespace KNS {
+namespace KNS
+{
 
 struct InstallationPrivate;
 
@@ -44,7 +45,7 @@ struct InstallationPrivate;
  */
 class KNEWSTUFF_EXPORT Installation
 {
-  public:
+public:
     /**
      * Constructor.
      */
@@ -55,17 +56,15 @@ class KNEWSTUFF_EXPORT Installation
      */
     ~Installation();
 
-    enum Policy
-    {
-      CheckNever,
-      CheckIfPossible,
-      CheckAlways
+    enum Policy {
+        CheckNever,
+        CheckIfPossible,
+        CheckAlways
     };
 
-    enum Scope
-    {
-      ScopeUser,
-      ScopeSystem
+    enum Scope {
+        ScopeUser,
+        ScopeSystem
     };
 
     void setUncompression(const QString& uncompression);
@@ -95,8 +94,8 @@ class KNEWSTUFF_EXPORT Installation
 
     bool customName() const;
 
-  private:
-    Q_DISABLE_COPY (Installation)
+private:
+    Q_DISABLE_COPY(Installation)
     InstallationPrivate * const d;
 };
 

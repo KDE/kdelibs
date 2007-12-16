@@ -30,9 +30,13 @@
 #include <QtCore/QList>
 #include <QtCore/QString>
 
-namespace KIO { class Job; }
+namespace KIO
+{
+class Job;
+}
 
-namespace KNS {
+namespace KNS
+{
 
 /**
  * @short KNewStuff provider container.
@@ -48,7 +52,7 @@ namespace KNS {
  */
 class KNEWSTUFF_EXPORT Provider
 {
-  public:
+public:
     typedef QList<Provider*> List;
 
     /**
@@ -64,7 +68,7 @@ class KNEWSTUFF_EXPORT Provider
     /**
      * Sets the common name of the provider.
      */
-    void setName( const KTranslatable& name );
+    void setName(const KTranslatable& name);
 
     /**
      * Retrieves the common name of the provider.
@@ -82,7 +86,7 @@ class KNEWSTUFF_EXPORT Provider
      * @param feedtype String representing the feed type
      * @param feed Feed to add to this provider
      */
-    void addDownloadUrlFeed( const QString& feedtype, Feed *feed );
+    void addDownloadUrlFeed(const QString& feedtype, Feed *feed);
 
     /**
      * Feed to retrieve for the given feed type.
@@ -93,7 +97,7 @@ class KNEWSTUFF_EXPORT Provider
      *
      * @return download feed of a certain feed type
      */
-    Feed *downloadUrlFeed( const QString& feedtype ) const;
+    Feed *downloadUrlFeed(const QString& feedtype) const;
 
     /**
      * Returns a list of all feeds.
@@ -105,7 +109,7 @@ class KNEWSTUFF_EXPORT Provider
     /**
      * Sets the upload URL.
      */
-    void setUploadUrl( const KUrl & );
+    void setUploadUrl(const KUrl &);
 
     /**
      * Retrieves the upload URL.
@@ -118,7 +122,7 @@ class KNEWSTUFF_EXPORT Provider
      * Sets the URL where a user is led if the provider does not support
      * uploads.
      */
-    void setNoUploadUrl( const KUrl & );
+    void setNoUploadUrl(const KUrl &);
 
     /**
      * Retrieves the URL where a user is led if the provider does not
@@ -131,7 +135,7 @@ class KNEWSTUFF_EXPORT Provider
     /**
      * Sets the URL of a web frontend for the provider.
      */
-    void setWebAccess( const KUrl & );
+    void setWebAccess(const KUrl &);
 
     /**
      * Retrieves the web frontend URL.
@@ -143,7 +147,7 @@ class KNEWSTUFF_EXPORT Provider
     /**
      * Sets the URL of the DXS, if offered by the provider.
      */
-    void setWebService( const KUrl & );
+    void setWebService(const KUrl &);
 
     /**
      * Retrieves the URL to the DXS Web Service.
@@ -157,7 +161,7 @@ class KNEWSTUFF_EXPORT Provider
      * The icon should be in 32x32 format. If not set, the default icon
      * of KDialogBase is used.
      */
-    void setIcon( const KUrl & );
+    void setIcon(const KUrl &);
 
     /**
      * Retrieves the icon URL for this provider.
@@ -166,7 +170,7 @@ class KNEWSTUFF_EXPORT Provider
      */
     KUrl icon() const;
 
-  private:
+private:
     KTranslatable mName;
     KUrl mUploadUrl;
     KUrl mNoUploadUrl;

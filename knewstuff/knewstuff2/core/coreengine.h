@@ -33,7 +33,8 @@
 class KJob;
 class KArchiveDirectory;
 
-namespace KNS {
+namespace KNS
+{
 
 class Installation;
 
@@ -48,7 +49,7 @@ class Installation;
 class KNEWSTUFF_EXPORT CoreEngine : public QObject
 {
     Q_OBJECT
-  public:
+public:
     /**
      * Constructor.
      */
@@ -73,8 +74,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      *
      * The default cache policy is CacheNever.
      */
-    enum CachePolicy
-    {
+    enum CachePolicy {
         /**< Do not use any cache. (default) */
         CacheNever,
         /**< Use the cache first, but then update from the network. */
@@ -97,8 +97,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      *
      * The default automation policy is AutomationOff.
      */
-    enum AutomationPolicy
-    {
+    enum AutomationPolicy {
         /**< Turn on automation, and take care of method calls. */
         AutomationOn,
         /**< Turn off automation, and let the application call the methods. (default) */
@@ -235,7 +234,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      */
     bool uninstall(KNS::Entry *entry);
 
-  Q_SIGNALS:
+Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      * This signal might occur twice, for the local cache and for updated provider
@@ -263,7 +262,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
 
     void signalPayloadProgress(KUrl payload, int percentage);
 
-  private Q_SLOTS:
+private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
     void slotProvidersFailed();
     void slotEntriesLoaded(KNS::Entry::List list);
@@ -277,7 +276,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
 
     void slotInstallationVerification(int result);
 
-  private:
+private:
     void loadRegistry();
     void loadProvidersCache();
     KNS::Entry *loadEntryCache(const QString& filepath);
