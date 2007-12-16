@@ -77,12 +77,12 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     {
         /**< Do not use any cache. (default) */
         CacheNever,
-	/**< Use the cache first, but then update from the network. */
-	CacheReplaceable,
-	/**< Like CacheReplaceable, but only update if necessary. */
-	CacheResident,
-	/**< Operate on cache files but never update them. */
-	CacheOnly
+        /**< Use the cache first, but then update from the network. */
+        CacheReplaceable,
+        /**< Like CacheReplaceable, but only update if necessary. */
+        CacheResident,
+        /**< Operate on cache files but never update them. */
+        CacheOnly
     };
 
     /**
@@ -102,7 +102,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
         /**< Turn on automation, and take care of method calls. */
         AutomationOn,
         /**< Turn off automation, and let the application call the methods. (default) */
-	AutomationOff
+        AutomationOff
     };
 
     void setAutomationPolicy(AutomationPolicy policy);
