@@ -513,7 +513,11 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
                                   "%1 Add On Installer",
                                   KGlobal::activeComponent().aboutData()->programName()));
-    titleWidget->setPixmap(KGlobal::activeComponent().aboutData()->appName());
+    if (qApp && !qApp->windowIcon().isNull()) {
+        titleWidget->setPixmap(qApp->windowIcon());
+    } else {
+        titleWidget->setPixmap(KGlobal::activeComponent().aboutData()->appName());
+    }
 
     connect( this, SIGNAL( closeClicked() ), SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalPayloadProgress( KUrl, int ) ), SLOT( slotPayloadProgress( KUrl, int ) ) );
