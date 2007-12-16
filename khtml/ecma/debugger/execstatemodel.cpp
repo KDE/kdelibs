@@ -64,6 +64,14 @@ Node *Node::parent()
     return m_parent;
 }
 
+static bool shouldShowProperty(KJS::JSObject* object, const KJS::Identifier& ident)
+{
+    if (object->isActivation())
+        return true;
+
+    return object->getDirect(ident);
+}
+
 Node *Node::child(int i)
 {
     if (m_children.contains(i))
@@ -79,15 +87,24 @@ Node *Node::child(int i)
     KJS::PropertyNameArray props;
     object->getPropertyNames(m_exec, props);
 
-    if (i >= 0 && i < props.size())
+    int showPos = 0;
+    for (int pos = 0; pos < props.size(); ++pos)
     {
-        KJS::Identifier id = props[i];
-        QString name = id.qstring();
-        KJS::JSValue *childValue = object->get(m_exec, id);
+        KJS::Identifier id = props[pos];
 
-        Node *childItem = new Node(name, childValue, m_exec, i, this);
-        m_children[i] = childItem;
-        return childItem;
+        if (!shouldShowProperty(object, id))
+            continue;
+
+        if (showPos == i)
+        {
+            QString name = id.qstring();
+            KJS::JSValue *childValue = object->get(m_exec, id);
+
+            Node *childItem = new Node(name, childValue, m_exec, i, this);
+            m_children[i] = childItem;
+            return childItem;
+        }
+        ++showPos;
     }
 
     return 0;
@@ -118,7 +135,9 @@ ExecStateModel::ExecStateModel(KJS::ExecState *exec, QObject *parent)
         return;
     }
 
-    KJS::JSObject *activationObject = 0;
+    // Find the nearest local scope, or 
+    // failing that the topmost scope
+    KJS::JSObject *scopeObject = 0;
     KJS::ScopeChain chain = context->scopeChain();
     for( KJS::ScopeChainIterator obj = chain.begin();
          obj != chain.end();
@@ -128,17 +147,15 @@ ExecStateModel::ExecStateModel(KJS::ExecState *exec, QObject *parent)
         if (!object)
             break;
 
-        if (object->isActivation())         // hack check to see if we're in local scope
-        {
-            activationObject = object;
+        scopeObject = object;
+        if (object->isActivation())
             break;
-        }
     }
 
-    if (activationObject)
+    if (scopeObject)
     {
 //        QString name = activationObject->toString(m_exec).qstring();
-        m_rootNode = new Node("Activation", activationObject, m_exec, 0);
+        m_rootNode = new Node("Activation", scopeObject, m_exec, 0);
     }
 }
 
@@ -149,32 +166,7 @@ ExecStateModel::~ExecStateModel()
 
 int ExecStateModel::columnCount(const QModelIndex &/*parent*/) const
 {
-    return 3;
-}
-
-QString ExecStateModel::typeToString(KJS::JSType type) const
-{
-    switch(type)
-    {
-        case 0:
-            return "UnspecifiedType";
-        case 1:
-            return "NumberType";
-        case 2:
-            return "BooleanType";
-        case 3:
-            return "UndefinedType";
-        case 4:
-            return "NullType";
-        case 5:
-            return "StringType";
-        case 6:
-            return "ObjectType";
-        case 7:
-            return "GetterSetterType";
-        default:
-            return QString();
-    }
+    return 2;
 }
 
 QVariant ExecStateModel::valueToVariant(KJS::JSValue *value) const
@@ -187,11 +179,14 @@ QVariant ExecStateModel::valueToVariant(KJS::JSValue *value) const
             return value->toBoolean(m_exec);
         case KJS::StringType:
             return value->toString(m_exec).qstring();
-        case KJS::UnspecifiedType:
         case KJS::UndefinedType:
+            return "undefined";
         case KJS::NullType:
+            return "null";
         case KJS::ObjectType:
+            return "[object " + static_cast<KJS::JSObject*>(value)->className().qstring() +"]";
         case KJS::GetterSetterType:
+        case KJS::UnspecifiedType:
         default:
             return QVariant();
     }
@@ -213,8 +208,6 @@ QVariant ExecStateModel::data(const QModelIndex &index, int role) const
         case 0:
             return item->name();
         case 1:
-            return typeToString(value->type());
-        case 2:
             return valueToVariant(value);
         default:
             return QVariant();
@@ -239,8 +232,6 @@ QVariant ExecStateModel::headerData(int section, Qt::Orientation orientation,
             case 0:
                 return i18n("Reference");
             case 1:
-                return i18n("Type");
-            case 2:
                 return i18n("Value");
             default:
                 return QVariant();
@@ -307,7 +298,18 @@ int ExecStateModel::rowCount(const QModelIndex &parent) const
     KJS::JSObject *object = value->toObject(m_exec);
     KJS::PropertyNameArray props;
     object->getPropertyNames(m_exec, props);
-    return props.size();
+    
+    int items = 0;
+    for (int pos = 0; pos < props.size(); ++pos)
+    {
+        KJS::Identifier id = props[pos];
+        kDebug() << "Checking prop:" << id.ustring().qstring();
+
+        if (shouldShowProperty(object, id))
+            ++items;
+    }
+    
+    return items;
 }
 
 

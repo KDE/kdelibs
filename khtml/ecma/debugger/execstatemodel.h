@@ -69,7 +69,6 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
-    QString typeToString(KJS::JSType) const;
     QVariant valueToVariant(KJS::JSValue*) const;
 
     KJS::ExecState *m_exec;
