@@ -854,6 +854,9 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Up"));
     SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "Win"));
     // TODO: Add rest of the key names?
+
+    // i18n: Pattern for the function keys.
+    SET_KEYNAME(I18N_NOOP2("keyboard-key-name", "F%1"));
 }
 
 QString KuitSemanticsPrivate::format (const QString &text,

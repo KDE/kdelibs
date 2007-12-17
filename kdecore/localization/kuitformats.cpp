@@ -116,7 +116,13 @@ QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
     for (int i = 0; i < keys.size(); ++i) {
         // Normalize key, trim and all lower-case.
         QString nkey = keys[i].trimmed().toLower();
-        keys[i] = keydict.contains(nkey) ? keydict[nkey] : nkey;
+        bool isFunctionKey = nkey.length() > 1 && nkey[1].isDigit();
+        if (not isFunctionKey) {
+            keys[i] = keydict.contains(nkey) ? keydict[nkey] : keys[i].trimmed();
+        }
+        else {
+            keys[i] = keydict["f%1"].arg(nkey.mid(1));
+        }
     }
     return keys.join(delim);
 }
