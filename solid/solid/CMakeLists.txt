@@ -21,6 +21,7 @@ configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-proce
 
 ########### next target ###############
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
 set(solid_LIB_SRCS 
    solidnamespace.cpp 
    managerbase.cpp 
