@@ -453,6 +453,13 @@ KShortcutsEditor::~KShortcutsEditor()
 	delete d;
 }
 
+void KShortcutsEditor::clearCollections()
+{
+	d->ui.list->clear();
+	d->actionCollections.clear();
+	QTimer::singleShot(0, this, SLOT(resizeColumns()));
+}
+
 void KShortcutsEditor::addCollection(KActionCollection *collection, const QString &title)
 {
 	d->actionCollections.append(collection);

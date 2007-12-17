@@ -108,6 +108,11 @@ public:
 	virtual ~KShortcutsEditor();
 
 	/**
+	 * Removes all action collections from the editor
+	 */
+	void clearCollections();
+
+	/**
 	 * Insert an action collection, i.e. add all its actions to the ones
 	 * already associated with the KShortcutsEditor object.
 	 * @param title subtree title of this collection of shortcut.
