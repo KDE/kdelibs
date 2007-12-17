@@ -58,6 +58,14 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
+/* Substitute the variable and function names.  */
+#define yyparse Solidparse
+#define yylex   Solidlex
+#define yyerror Soliderror
+#define yylval  Solidlval
+#define yychar  Solidchar
+#define yydebug Soliddebug
+#define yynerrs Solidnerrs
 
 
 /* Tokens.  */
@@ -100,8 +108,8 @@
 #include <stdio.h>
 #include "predicateparse.h"
 
-void yyerror(const char *s);
-int yylex();
+void Soliderror(const char *s);
+int Solidlex();
 void PredicateParse_initLexer( const char *s );
 void PredicateParse_mainParse( const char *_code );
 
@@ -136,7 +144,7 @@ typedef union YYSTYPE
      void *ptr;
 }
 /* Line 187 of yacc.c.  */
-#line 140 "predicate_parser.tab.c"
+#line 148 "predicate_parser.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -149,7 +157,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 153 "predicate_parser.tab.c"
+#line 161 "predicate_parser.tab.c"
 
 #ifdef short
 # undef short
@@ -1440,7 +1448,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1444 "predicate_parser.tab.c"
+#line 1452 "predicate_parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1657,7 +1665,7 @@ yyreturn:
 #line 69 "predicate_parser.y"
 
 
-void yyerror ( const char *s )  /* Called by yyparse on error */
+void Soliderror ( const char *s )  /* Called by Solidparse on error */
 {
     printf ("ERROR: %s\n", s);
     PredicateParse_errorDetected();
@@ -1666,7 +1674,7 @@ void yyerror ( const char *s )  /* Called by yyparse on error */
 void PredicateParse_mainParse( const char *_code )
 {
     PredicateParse_initLexer( _code );
-    yyparse();
+    Solidparse();
 }
 
 

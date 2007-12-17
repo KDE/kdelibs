@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #define YY_NO_UNPUT
 
-int yywrap();
+int Solidwrap();
 void PredicateParse_initLexer( const char *_code );
 char *PredicateParse_putSymbol( char *_name );
 char *PredicateParse_putString( char *_str );
@@ -22,23 +22,23 @@ DIGIT [0-9]
 [oO][rR] { return OR; }
 [iI][sS] { return IS; }
 
-[tT][rR][uU][eE] { yylval.valb = 1; return VAL_BOOL; }
-[fF][aA][lL][sS][eE] { yylval.valb = 0; return VAL_BOOL; }
+[tT][rR][uU][eE] { Solidlval.valb = 1; return VAL_BOOL; }
+[fF][aA][lL][sS][eE] { Solidlval.valb = 0; return VAL_BOOL; }
 
-"'"[^']*"'" { yylval.name = PredicateParse_putString( yytext ); return VAL_STRING; }
+"'"[^']*"'" { Solidlval.name = PredicateParse_putString( Solidtext ); return VAL_STRING; }
 
-"-"{DIGIT}+ { yylval.vali = atoi( yytext ); return VAL_NUM; }
-{DIGIT}+ { yylval.vali = atoi( yytext ); return VAL_NUM; }
+"-"{DIGIT}+ { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
+{DIGIT}+ { Solidlval.vali = atoi( Solidtext ); return VAL_NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return VAL_FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { Solidlval.vald = atof( Solidtext ); return VAL_FLOAT; }
 
-[a-zA-Z][a-zA-Z0-9\-]* { yylval.name = PredicateParse_putSymbol( yytext ); return VAL_ID; }
+[a-zA-Z][a-zA-Z0-9\-]* { Solidlval.name = PredicateParse_putSymbol( Solidtext ); return VAL_ID; }
 
-"{"|"}"|"["|"]"|","|"\." { yylval.name = 0; return (int)(*yytext); }
+"{"|"}"|"["|"]"|","|"\." { Solidlval.name = 0; return (int)(*Solidtext); }
 
 [ \t\n]+ /* eat up whitespace */
 
-. { printf( "Unrecognized character: %s\n", yytext ); }
+. { printf( "Unrecognized character: %s\n", Solidtext ); }
 
 %%
 
@@ -89,12 +89,12 @@ char *PredicateParse_putString( char *_str )
 
 void PredicateParse_initLexer( const char *_code )
 {
-    yy_switch_to_buffer( yy_scan_string( _code ) );
+    Solid_switch_to_buffer( Solid_scan_string( _code ) );
 }
 
-int yywrap()
+int Solidwrap()
 {
-    yy_delete_buffer( YY_CURRENT_BUFFER );
+    Solid_delete_buffer( YY_CURRENT_BUFFER );
     return 1;
 }
 

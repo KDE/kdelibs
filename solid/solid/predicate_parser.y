@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include "predicateparse.h"
 
-void yyerror(const char *s);
-int yylex();
+void Soliderror(const char *s);
+int Solidlex();
 void PredicateParse_initLexer( const char *s );
 void PredicateParse_mainParse( const char *_code );
 
@@ -68,7 +68,7 @@ string_list_rec: /* empty */ { $$ = PredicateParse_newEmptyStringListValue(); }
 
 %%
 
-void yyerror ( const char *s )  /* Called by yyparse on error */
+void Soliderror ( const char *s )  /* Called by Solidparse on error */
 {
     printf ("ERROR: %s\n", s);
     PredicateParse_errorDetected();
@@ -77,6 +77,6 @@ void yyerror ( const char *s )  /* Called by yyparse on error */
 void PredicateParse_mainParse( const char *_code )
 {
     PredicateParse_initLexer( _code );
-    yyparse();
+    Solidparse();
 }
 

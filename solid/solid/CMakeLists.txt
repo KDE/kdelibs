@@ -163,12 +163,12 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 add_custom_command(OUTPUT ${lexer_FILE}.c
-                   COMMAND flex ARGS -o${lexer_FILE}.c ${lexer_FILE}.l
+                   COMMAND flex ARGS -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
                    DEPENDS ${lexer_FILE}.l
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
-                   COMMAND bison ARGS -d -b ${parser_FILE} ${parser_FILE}.y
+                   COMMAND bison ARGS -p Solid -d -b ${parser_FILE} ${parser_FILE}.y
                    COMMAND mv ARGS ${parser_FILE}.tab.c ${parser_FILE}.c
                    COMMAND mv ARGS ${parser_FILE}.tab.h ${parser_FILE}.h
                    DEPENDS ${lexer_FILE}.c
