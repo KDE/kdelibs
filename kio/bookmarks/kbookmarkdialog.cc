@@ -11,6 +11,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kinputdialog.h>
+#include <kstandardguiitem.h>
 
 
 KBookmark KBookmarkDialog::editBookmark(const KBookmark & bm)
@@ -98,7 +99,7 @@ KBookmarkGroup KBookmarkDialog::selectFolder(KBookmark parent)
     if(parent.isNull())
         parent = m_mgr->root();
     setButtons( User1 | Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok, KGuiItem(i18n( "Ok" )) );
+    setButtonGuiItem( KDialog::Ok, KStandardGuiItem::ok() );
     setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder-new") );
     setCaption( i18n("Select Folder"));
     m_url->setVisible(false);
@@ -124,7 +125,7 @@ KBookmarkGroup KBookmarkDialog::createNewFolder(const QString & name, KBookmark 
     if(parent.isNull())
         parent = m_mgr->root();
     setButtons( Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok, KGuiItem(i18n( "Ok" )) );
+    setButtonGuiItem( KDialog::Ok, KStandardGuiItem::ok() );
     setCaption( i18n("New Folder"));
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
