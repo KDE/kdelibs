@@ -36,26 +36,26 @@
 			</Not>
 		</Include>
 	</Menu>
-       <Menu>
-                <Name>Development</Name>
-                <Directory>kde-development.directory</Directory>
-                <Menu>
-                        <Name>X-KDE-KDevelopIDE</Name>
-                        <Directory>kde-development-kdevelop.directory</Directory>
-                        <Include>
-                                <And>
-                                <Category>Development</Category>
-                                <Category>X-KDE-KDevelopIDE</Category>
-                                </And>
-                        </Include>
-                </Menu>
+	<Menu>
+		<Name>Development</Name>
+		<Directory>kde-development.directory</Directory>
+		<Menu>
+			<Name>X-KDE-KDevelopIDE</Name>
+			<Directory>kde-development-kdevelop.directory</Directory>
+			<Include>
+				<And>
+					<Category>Development</Category>
+					<Category>X-KDE-KDevelopIDE</Category>
+				</And>
+			</Include>
+		</Menu>
 		<Menu>
 			<Name>Translation</Name>
 			<Directory>kde-development-translation.directory</Directory>
 			<Include>
 				<And>
-				<Category>Development</Category>
-				<Category>Translation</Category>
+					<Category>Development</Category>
+					<Category>Translation</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -64,18 +64,18 @@
 			<Directory>kde-development-webdevelopment.directory</Directory>
 			<Include>
 				<And>
-				<Category>Development</Category>
-				<Category>WebDevelopment</Category>
+					<Category>Development</Category>
+					<Category>WebDevelopment</Category>
 				</And>
 			</Include>
 		</Menu>
                 <Include>
-                        <And>
+					<And>
                         <Category>Development</Category>
                         <Not><Category>X-KDE-KDevelopIDE</Category></Not>
                         <Not><Category>Translation</Category></Not>
                         <Not><Category>WebDevelopment</Category></Not>
-                        </And>
+					</And>
                 </Include>
         </Menu>
 	<Menu>
@@ -105,11 +105,11 @@
 			<Directory>kde-edu-languages.directory</Directory>
 			<Include>
 				<And>
-				<Category>Education</Category>
-				<Or>
-				<Category>Languages</Category>
-				<Category>X-KDE-Edu-Language</Category>
-				</Or>
+					<Category>Education</Category>
+					<Or>
+						<Category>Languages</Category>
+						<Category>X-KDE-Edu-Language</Category>
+					</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -118,8 +118,8 @@
 			<Directory>kde-edu-mathematics.directory</Directory>
 			<Include>
 				<And>
-				<Category>Education</Category>
-				<Category>Math</Category>
+					<Category>Education</Category>
+					<Category>Math</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -128,15 +128,15 @@
 			<Directory>kde-edu-miscellaneous.directory</Directory>
 			<Include>
 				<And>
-				<Category>Education</Category>
-				<Not>
-				<Category>Languages</Category>
-				<Category>X-KDE-Edu-Language</Category>
-				<Category>Math</Category>
-				<Category>Science</Category>
-				<Category>Teaching</Category>
-				<Category>X-KDE-Edu-Teaching</Category>
-				</Not>
+					<Category>Education</Category>
+					<Not>
+						<Category>Languages</Category>
+						<Category>X-KDE-Edu-Language</Category>
+						<Category>Math</Category>
+						<Category>Science</Category>
+						<Category>Teaching</Category>
+						<Category>X-KDE-Edu-Teaching</Category>
+					</Not>
 				</And>
 			</Include>
 		</Menu>
@@ -145,8 +145,8 @@
 			<Directory>kde-edu-science.directory</Directory>
 			<Include>
 				<And>
-				<Category>Education</Category>
-				<Category>Science</Category>
+					<Category>Education</Category>
+					<Category>Science</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -155,11 +155,11 @@
 			<Directory>kde-edu-tools.directory</Directory>
 			<Include>
 				<And>
-				<Category>Education</Category>
-				<Or>
-				<Category>Teaching</Category>
-				<Category>X-KDE-Edu-Teaching</Category>
-				</Or>
+					<Category>Education</Category>
+					<Or>
+						<Category>Teaching</Category>
+						<Category>X-KDE-Edu-Teaching</Category>
+					</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -172,8 +172,8 @@
 			<Directory>kde-games-arcade.directory</Directory>
 			<Include>
 				<And>
-				<Category>Game</Category>
-				<Category>ArcadeGame</Category>
+					<Category>Game</Category>
+					<Category>ArcadeGame</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -182,8 +182,8 @@
 			<Directory>kde-games-board.directory</Directory>
 			<Include>
 				<And>
-				<Category>Game</Category>
-				<Category>BoardGame</Category>
+					<Category>Game</Category>
+					<Category>BoardGame</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -192,8 +192,8 @@
 			<Directory>kde-games-card.directory</Directory>
 			<Include>
 				<And>
-				<Category>Game</Category>
-				<Category>CardGame</Category>
+					<Category>Game</Category>
+					<Category>CardGame</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -202,11 +202,11 @@
 			<Directory>kde-games-kids.directory</Directory>
 			<Include>
 				<And>
-				<Category>Game</Category>
-				<Or>
-				<Category>X-KDE-KidsGame</Category>
-				<Category>KidsGame</Category>
-				</Or>
+					<Category>Game</Category>
+					<Or>
+						<Category>X-KDE-KidsGame</Category>
+						<Category>KidsGame</Category>
+					</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -215,39 +215,39 @@
 			<Directory>kde-games-strategy.directory</Directory>
 			<Include>
 				<And>
-				<Category>Game</Category>
-				<Category>StrategyGame</Category>
+					<Category>Game</Category>
+					<Category>StrategyGame</Category>
 				</And>
 			</Include>
 		</Menu>
 		<Include>
 			<And>
-			<Category>Game</Category>
-			<Not>
-			<Category>ArcadeGame</Category>
-			<Category>BoardGame</Category>
-			<Category>CardGame</Category>
-			<Category>X-KDE-KidsGame</Category>
-			<Category>KidsGame</Category>
-			<Category>StrategyGame</Category>
-			</Not>
+				<Category>Game</Category>
+				<Not>
+					<Category>ArcadeGame</Category>
+					<Category>BoardGame</Category>
+					<Category>CardGame</Category>
+					<Category>X-KDE-KidsGame</Category>
+					<Category>KidsGame</Category>
+					<Category>StrategyGame</Category>
+				</Not>
 			</And>
 		</Include>
-               <Menu>
-                        <Name>Toys</Name>
-                        <Directory>kde-toys.directory</Directory>
-                        <Include>
-                                 <Category>Amusement</Category>
-                        </Include>
-               </Menu>
+		<Menu>
+			<Name>Toys</Name>
+			<Directory>kde-toys.directory</Directory>
+			<Include>
+				<Category>Amusement</Category>
+			</Include>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Graphics</Name>
 		<Directory>kde-graphics.directory</Directory>
 		<Include>
 			<And>
-			<Category>Graphics</Category>
-			<Not><Category>X-KDE-More</Category></Not>
+				<Category>Graphics</Category>
+				<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
 		<Menu>
@@ -255,8 +255,8 @@
 			<Directory>kde-more.directory</Directory>
 			<Include>
 				<And>
-				<Category>Graphics</Category>
-				<Category>X-KDE-More</Category>
+					<Category>Graphics</Category>
+					<Category>X-KDE-More</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -266,21 +266,21 @@
 		<Directory>kde-internet.directory</Directory>
 		<Include>
 			<And>
-			<Category>Network</Category>
-			<Not><Category>X-KDE-More</Category></Not>
+				<Category>Network</Category>
+				<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
 		<Menu>
-		  <Name>Terminal</Name>
-		  <Directory>kde-internet-terminal.directory</Directory>
+			<Name>Terminal</Name>
+			<Directory>kde-internet-terminal.directory</Directory>
 		</Menu>
 		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
 			<Include>
 				<And>
-				<Category>Network</Category>
-				<Category>X-KDE-More</Category>
+					<Category>Network</Category>
+					<Category>X-KDE-More</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -290,8 +290,8 @@
 		<Directory>kde-multimedia.directory</Directory>
 		<Include>
 			<And>
-			<Category>AudioVideo</Category>
-			<Not><Category>X-KDE-More</Category></Not>
+				<Category>AudioVideo</Category>
+				<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
 		<Menu>
@@ -299,8 +299,8 @@
 			<Directory>kde-more.directory</Directory>
 			<Include>
 				<And>
-				<Category>AudioVideo</Category>
-				<Category>X-KDE-More</Category>
+					<Category>AudioVideo</Category>
+					<Category>X-KDE-More</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -321,21 +321,21 @@
 			<Menuname>More</Menuname>
 		</Layout>
 		<Include>
-                        <And>
-			<Category>Office</Category>
-                        <Not><Category>X-KDE-More</Category></Not>
-                        </And>
-                </Include>
-                <Menu>
-                        <Name>More</Name>
-                        <Directory>kde-more.directory</Directory>
-                        <Include>
-                                <And>
-                                <Category>Office</Category>
-                                <Category>X-KDE-More</Category>
-                                </And>
-                        </Include>
-                </Menu>
+			<And>
+				<Category>Office</Category>
+				<Not><Category>X-KDE-More</Category></Not>
+			</And>
+		</Include>
+		<Menu>
+			<Name>More</Name>
+			<Directory>kde-more.directory</Directory>
+			<Include>
+				<And>
+					<Category>Office</Category>
+					<Category>X-KDE-More</Category>
+				</And>
+			</Include>
+		</Menu>
 	</Menu>
 	<Menu>
 		<Name>Settingsmenu</Name>
@@ -349,8 +349,8 @@
 		<Directory>kde-system.directory</Directory>
 		<Include>
 			<And>
-			<Category>System</Category>
-			<Not><Category>X-KDE-More</Category></Not>
+				<Category>System</Category>
+				<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
 		<Menu>
@@ -358,8 +358,8 @@
 			<Directory>kde-more.directory</Directory>
 			<Include>
 				<And>
-				<Category>System</Category>
-				<Category>X-KDE-More</Category>
+					<Category>System</Category>
+					<Category>X-KDE-More</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -377,13 +377,13 @@
 		<Directory>kde-utilities.directory</Directory>
 		<Include>
 			<And>
-			<Category>Utility</Category>
-			<Not><Category>Accessibility</Category></Not>
-			<Not><Category>X-KDE-Utilities-Desktop</Category></Not>
-			<Not><Category>X-KDE-Utilities-File</Category></Not>
-			<Not><Category>X-KDE-Utilities-Peripherals</Category></Not>
-			<Not><Category>X-KDE-Utilities-PIM</Category></Not>
-			<Not><Category>X-KDE-More</Category></Not>
+				<Category>Utility</Category>
+				<Not><Category>Accessibility</Category></Not>
+				<Not><Category>X-KDE-Utilities-Desktop</Category></Not>
+				<Not><Category>X-KDE-Utilities-File</Category></Not>
+				<Not><Category>X-KDE-Utilities-Peripherals</Category></Not>
+				<Not><Category>X-KDE-Utilities-PIM</Category></Not>
+				<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
 		<Menu>
@@ -391,8 +391,8 @@
 			<Directory>kde-utilities-accessibility.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>Accessibility</Category>
+					<Category>Utility</Category>
+					<Category>Accessibility</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -401,25 +401,25 @@
 			<Directory>kde-utilities-desktop.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>X-KDE-Utilities-Desktop</Category>
+					<Category>Utility</Category>
+					<Category>X-KDE-Utilities-Desktop</Category>
 				</And>
 			</Include>
 		</Menu>
-                <Menu>
-                        <Name>Editors</Name>
-                        <Directory>kde-editors.directory</Directory>
-                        <Include>
-                                <Category>TextEditor</Category>
-                        </Include>
-                </Menu>
+		<Menu>
+			<Name>Editors</Name>
+			<Directory>kde-editors.directory</Directory>
+			<Include>
+					<Category>TextEditor</Category>
+			</Include>
+		</Menu>
 		<Menu>
 			<Name>File</Name>
 			<Directory>kde-utilities-file.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>X-KDE-Utilities-File</Category>
+					<Category>Utility</Category>
+					<Category>X-KDE-Utilities-File</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -428,8 +428,8 @@
 			<Directory>kde-utilities-peripherals.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>X-KDE-Utilities-Peripherals</Category>
+					<Category>Utility</Category>
+					<Category>X-KDE-Utilities-Peripherals</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -438,8 +438,8 @@
 			<Directory>kde-utilities-pim.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>X-KDE-Utilities-PIM</Category>
+					<Category>Utility</Category>
+					<Category>X-KDE-Utilities-PIM</Category>
 				</And>
 			</Include>
 		</Menu>
@@ -452,16 +452,16 @@
 			<Directory>kde-more.directory</Directory>
 			<Include>
 				<And>
-				<Category>Utility</Category>
-				<Category>X-KDE-More</Category>
+					<Category>Utility</Category>
+					<Category>X-KDE-More</Category>
 				</And>
 			</Include>
 		</Menu>
 	</Menu>
 	<Include>
 		<And>
-		<Category>KDE</Category>
-		<Category>Core</Category>
+			<Category>KDE</Category>
+			<Category>Core</Category>
 		</And>
 	</Include>
 	<DefaultMergeDirs/>
