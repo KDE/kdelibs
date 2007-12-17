@@ -2,7 +2,6 @@
 #ifndef notepad_h
 #define notepad_h
 
-#include <kparts/genericfactory.h>
 #include <kparts/part.h>
 
 class KAboutData;

@@ -3,8 +3,8 @@
 #include "plugin_spellcheck.h"
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kgenericfactory.h>
 #include <kmessagebox.h>
+#include <kpluginfactory.h>
 #include <klocale.h>
 #include <kdebug.h>
 

@@ -16,6 +16,7 @@
 #include <klocale.h>
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
+#include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(NotepadFactory, registerPlugin<NotepadPart>();)
 K_EXPORT_PLUGIN(NotepadFactory("notepadpart"))
