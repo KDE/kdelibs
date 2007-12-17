@@ -45,6 +45,7 @@
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
 
+#include <kdebug.h>
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
@@ -315,6 +316,11 @@ KDirSelectDialog::~KDirSelectDialog()
 
 KUrl KDirSelectDialog::url() const
 {
+    KUrl comboUrl(d->m_urlCombo->currentText());
+    if (comboUrl.isValid()) {
+        return comboUrl;
+    }
+    kDebug() << comboUrl.path() << " is not valid";
     return d->m_treeView->currentUrl();
 }
 
