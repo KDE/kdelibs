@@ -198,14 +198,16 @@ void CoreEngine::start()
     }
 
     ProviderLoader *provider_loader = new ProviderLoader(this);
-    provider_loader->load(m_providersurl);
 
+    // make connections before loading, just in case the iojob is very fast
     connect(provider_loader,
             SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
             SLOT(slotProvidersLoaded(KNS::Provider::List)));
     connect(provider_loader,
             SIGNAL(signalProvidersFailed()),
             SLOT(slotProvidersFailed()));
+
+    provider_loader->load(m_providersurl);
 }
 
 void CoreEngine::loadEntries(Provider *provider)
@@ -1332,7 +1334,7 @@ bool CoreEngine::install(const QString &payloadfile)
         // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
         QFile file(payloadfile);
 
-        bool success = file.rename("/home/frederik/kns-testfile");//installpath);
+        bool success = file.rename(installpath);
         if (!success) {
             kError(550) << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
             return false;
