@@ -163,8 +163,6 @@ void KEditListBox::init( bool checkAtEntering, Buttons buttons,
     grid->setSpacing( KDialog::spacingHint() );
     grid->setRowStretch( 6, 1 );
 
-    grid->setMargin(15);
-
     if ( representationWidget )
         representationWidget->setParent(this);
     else
