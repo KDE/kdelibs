@@ -91,9 +91,9 @@ static bool DownloadsSorter(const Entry* e1, const Entry* e2)
     return e1->downloads() > e2->downloads();
 }
 
-ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
+ItemsView::ItemsView(QWidget* _parent )
     : QScrollArea( _parent ),
-    m_newStuffDialog( newStuffDialog ), m_currentProvider(0), m_root( 0 ), m_sorting( 0 )
+    m_currentProvider(0), m_currentFeed(0), m_root(0), m_sorting(0), m_engine(0)
 {
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
     setWidgetResizable(true);
@@ -101,7 +101,6 @@ ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
 
 ItemsView::~ItemsView()
 {
-    clear();
 }
 
 void ItemsView::setEngine(DxsEngine *engine)
@@ -109,22 +108,11 @@ void ItemsView::setEngine(DxsEngine *engine)
     m_engine = engine;
 }
 
-void ItemsView::setItems(QMap<const Provider*, KNS::Entry::List> itemList )
+void ItemsView::setProvider(const Provider * provider, const Feed * feed)
 {
-    clear();
-    m_entries = itemList;
+    m_currentProvider = provider;
+    m_currentFeed = feed;
     buildContents();
-}
-
-void ItemsView::setProviders( QMap<Entry*, const Provider*> providers )
-{
-    m_providers = providers;
-}
-
-void ItemsView::setProvider( const Provider * provider)
-{
-	m_currentProvider = provider;
-	buildContents();
 }
 
 void ItemsView::setSorting( int sortType )
@@ -135,8 +123,8 @@ void ItemsView::setSorting( int sortType )
 
 void ItemsView::setFeed( const Feed * feed)
 {
-    //m_currentFeed = feed;
-    //buildContents();
+    m_currentFeed = feed;
+    buildContents();
 }
 
 void ItemsView::setSearchText( const QString & text )
@@ -153,16 +141,9 @@ void ItemsView::updateItem( Entry *entry )
 
 void ItemsView::buildContents()
 {
-    if(m_root)
-    {
+    if(m_root) {
         m_root = takeWidget();
         delete m_root;
-    }
-
-    if(m_entries.keys().count() == 0)
-    {
-        // FIXME: warning?
-        return;
     }
 
     m_views.clear();
@@ -172,74 +153,59 @@ void ItemsView::buildContents()
     QGridLayout* _layout = new QGridLayout(m_root);
     _layout->setVerticalSpacing (10);
 
-    // use the first feed if none has been set
-    if (m_currentProvider == NULL)
-    {
-        m_currentProvider = m_entries.keys()[0];
-    }
-    
-    Entry::List entries = m_entries[m_currentProvider];
-    switch (m_sorting)
-    {
-        case 0:
-            qSort(entries.begin(), entries.end(), NameSorter);
-            break;
-        case 1:
-            qSort(entries.begin(), entries.end(), RatingSorter);
-            break;
-        case 2:
-            qSort(entries.begin(), entries.end(), RecentSorter);
-            break;
-        case 3:
-            qSort(entries.begin(), entries.end(), DownloadsSorter);
-            break;
-    }
+    if (m_currentFeed != NULL) {
+        Entry::List entries = m_currentFeed->entries();
+        //switch (m_sorting)
+        //{
+        //    case 0:
+        //        qSort(entries.begin(), entries.end(), NameSorter);
+        //        break;
+        //    case 1:
+        //        qSort(entries.begin(), entries.end(), RatingSorter);
+        //        break;
+        //    case 2:
+        //        qSort(entries.begin(), entries.end(), RecentSorter);
+        //        break;
+        //    case 3:
+        //        qSort(entries.begin(), entries.end(), DownloadsSorter);
+        //        break;
+        //}
 
-    Entry::List::iterator it = entries.begin(), iEnd = entries.end();
-    for ( unsigned row = 0; it != iEnd; ++it)
-    {
-        Entry* entry = (*it);
+        Entry::List::iterator it = entries.begin(), iEnd = entries.end();
+        for ( unsigned row = 0; it != iEnd; ++it) {
+            Entry* entry = (*it);
 
-        if (entry->name().representation().toLower().contains(m_searchText.toLower()))
-        {
-            EntryView *part = new EntryView(m_root);
-            part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
-            _layout->addWidget(part, row*2, 1, 2, 1);
+            if (entry->name().representation().toLower().contains(m_searchText.toLower())) {
+                EntryView *part = new EntryView(m_root);
+                part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
+                _layout->addWidget(part, row*2, 1, 2, 1);
 
-            KDXSButton *dxsbutton = new KDXSButton(m_root);
-            dxsbutton->setEntry(entry);
-            if(m_providers.contains(entry))
-                dxsbutton->setProvider(m_providers[entry]);
-            dxsbutton->setEngine(m_engine);
+                KDXSButton *dxsbutton = new KDXSButton(m_root);
+                dxsbutton->setEntry(entry);
+                dxsbutton->setProvider(m_currentProvider);
+                dxsbutton->setEngine(m_engine);
 
-            QString imageurl = entry->preview().representation();
-            if(!imageurl.isEmpty())
-            {
-                QLabel *f = new QLabel(this);
-                f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
-                f->setFixedSize(64, 64);
-                connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
-                        f, SLOT(setPixmap(const QPixmap&)));
-                _layout->addWidget(f, row*2, 0);
+                QString imageurl = entry->preview().representation();
+                if (!imageurl.isEmpty()) {
+                    QLabel *f = new QLabel(this);
+                    f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
+                    f->setFixedSize(64, 64);
+                    connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
+                            f, SLOT(setPixmap(const QPixmap&)));
+                    _layout->addWidget(f, row*2, 0);
+                }
+                _layout->setRowStretch(row*2, 1);
+                _layout->addWidget(dxsbutton, row*2+1, 0);
+
+                part->setEntry(entry);
+                m_views.insert(entry, part);
+                ++row;
             }
-            _layout->setRowStretch(row*2, 1);
-            _layout->addWidget(dxsbutton, row*2+1, 0);
-
-            part->setEntry(entry);
-            m_views.insert(entry, part);
-            ++row;
         }
     }
 
     setWidget(m_root);
-}
-
-void ItemsView::clear()
-{
-    m_entries.clear();
-    //m_providers.clear();
-    m_pixmaps.clear();
 }
 
 EntryView::EntryView( QWidget * _parent )
@@ -323,8 +289,7 @@ void EntryView::buildContents()
     QString authorString = author.name();
 
     QString emailString = author.email();
-    if (!emailString.isEmpty())
-    {
+    if (!emailString.isEmpty()) {
         authorString = "<a href='mailto:" + Qt::escape( emailString) + "'>"
             + Qt::escape(authorString) + "</a>";
     }
@@ -383,28 +348,24 @@ void EntryView::urlSelected( const QString &link)
     QString urlProtocol = url.protocol();
     QString urlPath = url.path();
 
-    if ( urlProtocol == "mailto" )
-    {
+    if (urlProtocol == "mailto") {
         // clicked over a mail address
         // FIXME: if clicked with MRB, show context menu with IM etc.
         // FIXME: but RMB never reaches this method?!
         KToolInvocation::invokeMailer( url );
     }
-    else if ( urlProtocol == "item" )
-    {
+    else if (urlProtocol == "item") {
         // clicked over an item
         bool ok;
         unsigned long itemPointer = urlPath.toULong( &ok );
-        if ( !ok )
-        {
+        if ( !ok ) {
             kWarning() << "ItemsView: error converting item pointer.";
             return;
         }
 
         // I love to cast pointers
         Entry *entry = (Entry*)itemPointer;
-        if ( entry != m_entry )
-        {
+        if ( entry != m_entry ) {
             kWarning() << "ItemsView: error retrieving item pointer.";
             return;
         }
@@ -476,10 +437,10 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
     sortCombo->setMinimumWidth( 100 );
     sortCombo->setEnabled( false );
-    sortCombo->addItem( i18n("Name") );
-    sortCombo->addItem( i18n("Rating") );
-    sortCombo->addItem( i18n("Most recent") );
-    sortCombo->addItem( i18n("Most downloads") );
+    //sortCombo->addItem( i18n("Name") );
+    //sortCombo->addItem( i18n("Rating") );
+    //sortCombo->addItem( i18n("Most recent") );
+    //sortCombo->addItem( i18n("Most downloads") );
     connect( sortCombo, SIGNAL( activated(int) ), SLOT( slotSortingSelected(int) ) );
 
     QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );
@@ -495,7 +456,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     panelLayout->addWidget( m_progress, 2, 0, 2, 4 );
 
     // create the ItemsView used to display available items
-    itemsView = new ItemsView( this, _mainWidget );
+    itemsView = new ItemsView(_mainWidget);
     itemsView->setEngine(m_engine);
 
     mainLayout->addWidget(titleWidget);
@@ -574,7 +535,11 @@ void DownloadDialog::slotNetworkTimeout() // SLOT
 
 void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 {
-    itemsView->setSorting( sortType );
+    QString feedName = sortCombo->currentText();
+    QString feedType = sortCombo->itemData(sortType).toString();
+
+    const Provider * currentProvider = m_entriesByProvider.keys()[m_typeCombo->currentIndex()];
+    itemsView->setFeed(currentProvider->downloadUrlFeed(feedType));
 }
 
 
@@ -584,15 +549,17 @@ void DownloadDialog::slotLoadProviderDXS()
 {
     //QString category = m_typeCombo->currentText();
     //QString categoryname = categorymap[category];
-	QString providerName = m_typeCombo->currentText();
+    QString providerName = m_typeCombo->currentText();
 
     QList<const Provider*> providers = m_entriesByProvider.keys();
 
-    for (int i = 0; i < providers.size(); ++i)
-    {
-        if (providers[i]->name().representation() == providerName)
-        {
-            itemsView->setProvider(providers[i]);
+    for (int i = 0; i < providers.size(); ++i) {
+        if (providers[i]->name().representation() == providerName) {
+            // update the sortCombo with this provider's feeds
+            populateSortCombo(providers[i]);
+
+            itemsView->setProvider(providers[i], 
+                providers[i]->downloadUrlFeed(sortCombo->itemData(sortCombo->currentIndex()).toString()));
             break;
         }
     }
@@ -600,8 +567,7 @@ void DownloadDialog::slotLoadProviderDXS()
 
 void DownloadDialog::slotUpdateSearch()
 {
-    if (searchTimer->isActive())
-    {
+    if (searchTimer->isActive()) {
         searchTimer->stop();
         itemsView->setSearchText(searchLine->text());
     }
@@ -620,8 +586,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
     categorymap.clear();
 
-    for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
-    {
+    for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
         KNS::Category *category = (*it);
         //kDebug() << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
@@ -639,43 +604,34 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 
 void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
 {
-	Q_UNUSED(_entries);
+    Q_UNUSED(_entries);
 
-	//d->itemsView->setItems( entries );
-	// FIXME: old API here
+    //d->itemsView->setItems( entries );
+    // FIXME: old API here
 }
 
 // FIXME: below here, those are for traditional GHNS
 
 void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *provider)
 {
-	Entry::List e = entries[feed];
-	e.append(entry);
-	entries[feed] = e;
+    Entry::List e = entries[feed];
+    e.append(entry);
+    entries[feed] = e;
 
-	if (!m_payloads.contains(entry->payload().representation()))
-	{
-		m_entriesByProvider[provider].append(entry);
-		m_payloads.insert(entry->payload().representation());
-	}
+    m_entriesByProvider[provider].append(entry);
 
-	// FIXME: what if entry belongs to more than one provider at once?
-	providers[entry] = provider;
+    // FIXME: what if entry belongs to more than one provider at once?
+    providers[entry] = provider;
 
-	//kDebug() << "downloaddialog: addEntry to list of size " << entries.size();
+    //kDebug() << "downloaddialog: addEntry to list of size " << entries.size();
 }
 
 void DownloadDialog::refresh()
 {
-    itemsView->setProviders(providers);
-    itemsView->setItems(m_entriesByProvider);
-    // FIXME: this method has side effects (rebuilding HTML!!!)
-
-    for(int i = 0; i < m_entriesByProvider.keys().count(); i++)
-    {
+    Q_ASSERT(m_entriesByProvider.keys().size() > 0);
+    for (int i = 0; i < m_entriesByProvider.keys().count(); i++) {
         const Provider *provider = m_entriesByProvider.keys().at(i);
-        if(!provider)
-        {
+        if(!provider) {
             //kDebug() << "INVALID FEED?!";
             continue;
         }
@@ -684,10 +640,27 @@ void DownloadDialog::refresh()
         m_typeCombo->addItem(provider->name().representation());
         // FIXME: see DXS categories
     }
+
+    slotLoadProviderDXS();
+    
+    //// get the current provider
+    //const Provider * selectedProvider = m_entriesByProvider.keys()[0];
+
+    //populateSortCombo(selectedProvider);
+    
     m_typeCombo->setEnabled(true);
     sortCombo->setEnabled(true);
     searchLine->setEnabled(true);
-    // FIXME: sort combo must be filled with feeds instead of being prefilled
+}
+
+void DownloadDialog::populateSortCombo(const Provider * provider)
+{
+    QStringList feeds = provider->feeds();
+    sortCombo->clear();
+    for (int i = 0; i < feeds.size(); ++i) {
+        QString feedName = provider->downloadUrlFeed(feeds[i])->name().representation();
+        sortCombo->addItem(feedName, feeds[i]); // put in the name for the text, and feeds[i] for the userData
+    }
 }
 
 ///////////////// DXS ////////////////////

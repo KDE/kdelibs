@@ -47,35 +47,45 @@ namespace KNS
 /** GUI/CORE: HTML Widget to operate on AvailableItem::List */
 class ItemsView : public QScrollArea
 {
+    Q_OBJECT
 public:
-    ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget );
+    ItemsView(QWidget * parentWidget);
     ~ItemsView();
 
     void setEngine(DxsEngine *engine);
 
-    void setItems( QMap<const Provider*, KNS::Entry::List> itemList );
-	void setProvider( const Provider * );
-    void setSorting( int sortType );
-    void setSearchText( const QString & text );
-    void updateItem( Entry *entry );
+    /** set the provider to show entries from with the feed also
+     * @param provider the provider to show
+     */
+    void setProvider(const Provider * provider, const Feed * feed);
 
-	// deprecate these
-	void setProviders( QMap<Entry*, const Provider*> providers );
+    /** set which feed from the current provider to show
+     * @param feed the feed to use
+     */
     void setFeed( const Feed* );
 
+public slots:
+    /** set the search text to filter the shown entries by
+     * @param text filter text
+     */
+    void setSearchText( const QString & text );
+    /** update the given item because it has changed
+     * @param entry the entry to update
+     */
+    void updateItem( Entry *entry );
+
+    // not used because the ui doesn't support it yet
+    void setSorting( int sortType );
+
 private:
+
     void buildContents();
 
-    void clear();
-
-    DownloadDialog * m_newStuffDialog;
-    QMap<const Provider*, Entry::List> m_entries;
     const Provider* m_currentProvider;
+    const Feed* m_currentFeed;
 
-	QMap<Entry*, const Provider*> m_providers;
     QWidget *m_root;
     int m_sorting;
-    QMap<QPixmap*, QWidget*> m_pixmaps;
     DxsEngine *m_engine;
     QMap<Entry*, EntryView*> m_views;
     QString m_searchText;
@@ -165,6 +175,8 @@ private Q_SLOTS:
     void slotPayloadProgress(KUrl payload, int percentage);
 
 private:
+    void populateSortCombo(const Provider * provider);
+
     // Contents
     // gui related vars
     KLineEdit * searchLine;
@@ -185,8 +197,7 @@ private:
 
     //QList<Entry*> m_entries;
     QMap<const Feed*, Entry::List> entries;
-	QSet<QString> m_payloads;
-	QMap<const Provider*, Entry::List> m_entriesByProvider;
+    QMap<const Provider*, Entry::List> m_entriesByProvider;
     QMap<Entry*, const Provider*> providers;
 };
 
