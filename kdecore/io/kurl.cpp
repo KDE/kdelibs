@@ -194,10 +194,10 @@ void KUrl::List::populateMimeData( QMimeData* mimeData,
     }
 
     QByteArray uriListData;
-    for ( QList<QByteArray>::const_iterator it = urlStringList.begin(), end = urlStringList.end()
-                                                 ; it != end ; ++it ) {
-        uriListData += (*it);
-        uriListData += "\r\n";
+    for (int i = 0, n = urlStringList.count(); i < n; ++i) {
+      uriListData += urlStringList.at(i);
+        if (i < n-1)
+          uriListData += "\r\n";
     }
     mimeData->setData( "text/uri-list", uriListData );
 

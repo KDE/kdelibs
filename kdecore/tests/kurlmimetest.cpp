@@ -16,6 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kurlmimetest.h"
 #include <qtest_kde.h>
 #include <QtCore/QMimeData>
 #include <kurl.h>
@@ -27,9 +28,9 @@ QTEST_KDEMAIN_CORE( KUrlMimeTest )
 
 void KUrlMimeTest::testURLList()
 {
-    kDebug() ;
     QMimeData* mimeData = new QMimeData;
     QVERIFY( !KUrl::List::canDecode( mimeData ) );
+    QVERIFY(!mimeData->hasUrls());
 
     KUrl::List urls;
     urls.append( KUrl( "http://www.kde.org" ) );
@@ -40,12 +41,19 @@ void KUrlMimeTest::testURLList()
 
     urls.populateMimeData( mimeData, metaData );
 
-    QVERIFY( KUrl::List::canDecode( mimeData ) );
+    QVERIFY(KUrl::List::canDecode( mimeData ));
+    QVERIFY(mimeData->hasUrls());
 
     QMap<QString, QString> decodedMetaData;
     KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
     QCOMPARE( urls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
+
+    QList<QUrl> qurls = mimeData->urls();
+    QCOMPARE(qurls.count(), urls.count());
+    for (int i = 0; i < qurls.count(); ++i )
+        QCOMPARE(qurls[i], static_cast<QUrl>(decodedURLs[i]));
+
     QVERIFY( !decodedMetaData.isEmpty() );
     QCOMPARE( decodedMetaData["key"], QString( "value" ) );
     QCOMPARE( decodedMetaData["key2"], QString( "value2" ) );
@@ -66,6 +74,25 @@ void KUrlMimeTest::testOneURL()
     QVERIFY( !decodedURLs.isEmpty() );
     QCOMPARE( decodedURLs.count(), 1 );
     QCOMPARE( decodedURLs[0].url(), oneURL.url() );
+    QVERIFY( decodedMetaData.isEmpty() );
+    delete mimeData;
+}
+
+void KUrlMimeTest::testFromQUrl()
+{
+    QList<QUrl> qurls;
+    qurls.append( QUrl( "http://www.kde.org" ) );
+    qurls.append( QUrl( "file:///home/dfaure/konqtests/Mat%C3%A9riel" ) );
+    QMimeData* mimeData = new QMimeData;
+    mimeData->setUrls(qurls);
+
+    QVERIFY(KUrl::List::canDecode(mimeData));
+    QMap<QString, QString> decodedMetaData;
+    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
+    QVERIFY( !decodedURLs.isEmpty() );
+    QCOMPARE( decodedURLs.count(), 2 );
+    QCOMPARE( static_cast<QUrl>(decodedURLs[0]), qurls[0] );
+    QCOMPARE( static_cast<QUrl>(decodedURLs[1]), qurls[1] );
     QVERIFY( decodedMetaData.isEmpty() );
     delete mimeData;
 }

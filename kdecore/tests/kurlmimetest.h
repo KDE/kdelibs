@@ -27,6 +27,7 @@ class KUrlMimeTest : public QObject
 private Q_SLOTS:
     void testURLList();
     void testOneURL();
+    void testFromQUrl();
 };
 
 
