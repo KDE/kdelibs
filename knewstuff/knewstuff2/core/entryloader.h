@@ -62,7 +62,7 @@ public:
      * @param provider Provider to load the entries from
      * @param feed Feed to download
      */
-    void load(const Provider *provider, const Feed *feed);
+    void load(const Provider *provider, Feed *feed);
 
     /**
      * Returns the provider which was used for download.
@@ -97,7 +97,7 @@ private:
     QByteArray m_jobdata;
 
     Entry::List m_entries;
-    const Feed *m_feed;
+    Feed *m_feed;
     const Provider *m_provider;
 };
 

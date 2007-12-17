@@ -39,7 +39,7 @@ EntryLoader::EntryLoader(QObject* parent)
     m_provider = 0;
 }
 
-void EntryLoader::load(const Provider *provider, const Feed *feed)
+void EntryLoader::load(const Provider *provider, Feed *feed)
 {
     //kDebug(550) << "EntryLoader::load()";
 
@@ -107,7 +107,9 @@ void EntryLoader::slotJobResult(KJob *job)
 
         if (e.tagName() == "stuff") {
             EntryHandler handler(e);
-            m_entries.append(handler.entryptr());
+            Entry * entry = handler.entryptr();
+            m_entries.append(entry);
+            m_feed->addEntry(entry);
         }
     }
 
