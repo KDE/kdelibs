@@ -109,8 +109,6 @@ bool CoreEngine::init(const QString &configfile)
     m_installation->setCustomName(group.readEntry("CustomName", false));
 
     QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
-    QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
-    QString scope = group.readEntry("Scope", QString());
     if (!checksumpolicy.isEmpty()) {
         if (checksumpolicy == "never")
             m_installation->setChecksumPolicy(Installation::CheckNever);
@@ -124,6 +122,7 @@ bool CoreEngine::init(const QString &configfile)
         }
     }
 
+    QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
     if (!signaturepolicy.isEmpty()) {
         if (signaturepolicy == "never")
             m_installation->setSignaturePolicy(Installation::CheckNever);
@@ -137,6 +136,7 @@ bool CoreEngine::init(const QString &configfile)
         }
     }
 
+    QString scope = group.readEntry("Scope", QString());
     if (!scope.isEmpty()) {
         if (scope == "user")
             m_installation->setScope(Installation::ScopeUser);
@@ -152,6 +152,21 @@ bool CoreEngine::init(const QString &configfile)
                 kError(550) << "System installation cannot be mixed with InstallPath." << endl;
                 return false;
             }
+        }
+    }
+
+    QString cachePolicy = group.readEntry("CachePolicy", QString());
+    if (!cachePolicy.isEmpty()) {
+        if (cachePolicy == "never") {
+            m_cachepolicy = CacheNever;
+        } else if (cachePolicy == "replaceable") {
+            m_cachepolicy = CacheReplaceable;
+        } else if (cachePolicy == "resident") {
+            m_cachepolicy = CacheResident;
+        } else if (cachePolicy == "only") {
+            m_cachepolicy = CacheOnly;
+        } else {
+            kError(550) << "Cache policy '" + cachePolicy + "' is unknown." << endl;
         }
     }
 
