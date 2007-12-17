@@ -52,7 +52,7 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "faketextpart");
         group.writeEntry("ServiceTypes", "KParts/ReadOnlyPart");
-        group.writeEntry("MimeType", "text/plain");
+        group.writeEntry("MimeType", "text/plain;");
         group.writeEntry("InitialPreference",100);
     }
 
@@ -67,7 +67,7 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "faketextplugin");
         group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
-        group.writeEntry("MimeType", "text/plain");
+        group.writeEntry("MimeType", "text/plain;");
     }
 
     if ( mustUpdateKSycoca ) {

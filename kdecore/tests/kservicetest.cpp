@@ -18,11 +18,15 @@
 
 #include "kservicetest.h"
 #include "kservicetest.moc"
+#include <qtest_kde.h>
+
+#include <kconfig.h>
+#include <kconfiggroup.h>
+#include <kdesktopfile.h>
 #include <ksycoca.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include <qtest_kde.h>
 #include <kprotocolinfo.h>
 #include <kdebug.h>
 #include <kservicetypetrader.h>
@@ -42,6 +46,29 @@ void KServiceTest::initTestCase()
         QFile::remove( profilerc );
 
     m_hasKde4Konsole = false;
+
+
+    // Create fake service for some tests below.
+    bool mustUpdateKSycoca = false;
+    const QString fakeService = KStandardDirs::locateLocal("services", "fakeservice.desktop");
+    const bool mustCreateFakeService = !QFile::exists(fakeService);
+    if (mustCreateFakeService) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(fakeService);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePlugin");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "faketextplugin");
+        group.writeEntry("X-KDE-Protocols", "http,ftp");
+        group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("MimeType", "text/plain;");
+    }
+
+    if ( mustUpdateKSycoca ) {
+        // Update ksycoca in ~/.kde-unit-test after creating the above
+        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
+    }
+
 }
 
 QTEST_KDEMAIN_CORE( KServiceTest )
@@ -75,14 +102,12 @@ void KServiceTest::testProperty()
     QVERIFY(kjavaappletviewer);
     QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
 
-    // Test property("MimeTypes"), which triggers the KServiceReadProperty code.
-    // Didn't find any desktop file in kdelibs that had a stringlist property, so this one needs kdebase/workspace installed.
-    KService::Ptr fontthumbnail = KService::serviceByDesktopPath("fontthumbnail.desktop");
-    if (fontthumbnail) {
-        QVERIFY(fontthumbnail->property("MimeTypes").toStringList().contains("application/x-font-ttf"));
-    } else {
-        qDebug("Skipping property(\"MimeTypes\") test, fontthumbnail.desktop not found (kdebase/workspace not installed)");
-    }
+    // Test property("X-KDE-Protocols"), which triggers the KServiceReadProperty code.
+    KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
+    QVERIFY(fakeService); // see initTestCase; it should be found.
+    QVERIFY(fakeService->propertyNames().contains("X-KDE-Protocols"));
+    const QStringList protocols = fakeService->property("X-KDE-Protocols").toStringList();
+    QCOMPARE(protocols, QStringList() << "http" << "ftp");
 }
 
 void KServiceTest::testAllServiceTypes()
