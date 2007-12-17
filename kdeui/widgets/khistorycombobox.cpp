@@ -416,9 +416,13 @@ void KHistoryComboBox::slotSimulateActivated( const QString& text )
 {
     /* With the insertion policy NoInsert, which we use by default,
        Qt doesn't emit activated on typed text if the item is not already there,
-       which is perhaps reasonable. Generate the signal ourselves if that's the case
+       which is perhaps reasonable. Generate the signal ourselves if that's the case.
+
+       Qt also doesn't emit it if the box is full, and policy is not 
+       InsertAtCurrent
     */
-    if (insertPolicy() == NoInsert && findText(text) == -1)
+    if ((insertPolicy() == NoInsert && findText(text) == -1) ||
+        (insertPolicy() != InsertAtCurrent && count() >= maxCount()))
         emit activated(text);
 }
 
