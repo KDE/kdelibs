@@ -1176,7 +1176,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
       KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
