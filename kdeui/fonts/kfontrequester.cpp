@@ -22,9 +22,56 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 #include <QtGui/QLayout>
+#include <QtGui/QFontDatabase>
 
 #include <kfontdialog.h>
 #include <klocale.h>
+
+// Determine if the font with given properties is available on the system,
+// otherwise find and return the best fitting combination.
+static QFont nearestExistingFont (const QFont &font)
+{
+    QFontDatabase dbase;
+
+    // Initialize font data accoring to given font object.
+    QString family = font.family();
+    QString style = dbase.styleString(font);
+    int size = font.pointSize();
+
+    // Check if the family exists.
+    QStringList families = dbase.families();
+    if (!families.contains(family)) {
+        // Chose another family.
+        family = families.count() ? families[0] : "fixed";
+        // TODO: Try to find nearest match?
+    }
+
+    // Check if the family has the requested style.
+    // Easiest by piping it through font selection in the database.
+    QString retStyle = dbase.styleString(dbase.font(family, style, 10));
+    style = retStyle;
+
+    // Check if the family has the requested size.
+    // Only for bitmap fonts.
+    if (!dbase.isSmoothlyScalable(family, style)) {
+        QList<int> sizes = dbase.smoothSizes(family, style);
+        if (!sizes.contains(size)) {
+            // Find nearest available size.
+            int mindiff = 1000;
+            int refsize = size;
+            foreach (int lsize, sizes) {
+                int diff = qAbs(refsize - lsize);
+                if (mindiff > diff) {
+                    mindiff = diff;
+                    size = lsize;
+                }
+            }
+        }
+    }
+
+    // Select the font with confirmed properties.
+    return dbase.font(family, style, size);
+}
 
 class KFontRequester::KFontRequesterPrivate
 {
@@ -105,7 +152,7 @@ QPushButton *KFontRequester::button() const
 
 void KFontRequester::setFont( const QFont &font, bool onlyFixed )
 {
-  d->m_selFont = font;
+  d->m_selFont = nearestExistingFont(font);
   d->m_onlyFixed = onlyFixed;
 
   d->displaySampleText();
