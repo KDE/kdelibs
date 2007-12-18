@@ -116,6 +116,8 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
 )
 
 qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )

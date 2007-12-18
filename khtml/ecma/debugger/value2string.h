@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *            (C) 2007 Maks Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,44 +18,21 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef LOCALVARIABLEDOCK_H
-#define LOCALVARIABLEDOCK_H
+#ifndef VALUE2STRING_H
+#define VALUE2STRING_H
 
-#include <QDockWidget>
-
-class QTreeWidget;
-class QTreeWidgetItem;
+#include <QString>
 
 namespace KJS {
-    class ExecState;
     class JSValue;
 }
 
 namespace KJSDebugger {
 
-class LocalVariablesDock : public QDockWidget
-{
-    Q_OBJECT
-public:
-    LocalVariablesDock(QWidget *parent = 0);
-    ~LocalVariablesDock();
-
-    void updateDisplay(KJS::ExecState *exec);
-    
-private Q_SLOTS:
-    void slotItemExpanded(QTreeWidgetItem* item);
-
-private:
-    void updateObjectProperties(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item, 
-                                bool globalObject = false);
-    void updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item);
-
-
-    QTreeWidget*     m_view;
-    KJS::ExecState*  m_execState;
-
-};
-
+// We provide our own conversion rather than the 
+// use the native one, since using the toString
+// method on object can invoke code
+QString valueToString(KJS::JSValue* value);
 }
 
 #endif

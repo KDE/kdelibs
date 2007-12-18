@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *  Copyright (C) 2000-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,44 +18,34 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef LOCALVARIABLEDOCK_H
-#define LOCALVARIABLEDOCK_H
 
-#include <QDockWidget>
+#ifndef ERROR_DLG_H
+#define ERROR_DLG_H
 
-class QTreeWidget;
-class QTreeWidgetItem;
-
-namespace KJS {
-    class ExecState;
-    class JSValue;
-}
+#include <QString>
+#include <QCheckBox>
+#include <QWidget>
+#include <kdialog.h>
 
 namespace KJSDebugger {
-
-class LocalVariablesDock : public QDockWidget
-{
+  class KJSErrorDialog : public KDialog {
     Q_OBJECT
-public:
-    LocalVariablesDock(QWidget *parent = 0);
-    ~LocalVariablesDock();
+  public:
+    KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug);
+    virtual ~KJSErrorDialog();
 
-    void updateDisplay(KJS::ExecState *exec);
-    
-private Q_SLOTS:
-    void slotItemExpanded(QTreeWidgetItem* item);
+    bool debugSelected() const { return m_debugSelected; }
+    bool dontShowAgain() const { return m_dontShowAgainCb->isChecked(); }
 
-private:
-    void updateObjectProperties(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item, 
-                                bool globalObject = false);
-    void updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item);
+  protected Q_SLOTS:
+    virtual void slotUser1();
 
-
-    QTreeWidget*     m_view;
-    KJS::ExecState*  m_execState;
-
-};
-
+  private:
+    QCheckBox *m_dontShowAgainCb;
+    bool m_debugSelected;
+  };
 }
 
 #endif
+
+// kate: indent-width 2; replace-tabs on; tab-width 2; space-indent on;

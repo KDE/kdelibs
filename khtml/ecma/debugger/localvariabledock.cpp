@@ -35,6 +35,7 @@
 #include <klocale.h>
 
 #include "objectmodel.h"
+#include "value2string.h"
 
 namespace KJSDebugger {
 
@@ -61,41 +62,10 @@ LocalVariablesDock::~LocalVariablesDock()
 {
 }
 
-QString LocalVariablesDock::valueToDisplay(KJS::JSValue* value)
-{
-    switch(value->type())
-    {
-        case KJS::NumberType:
-        {
-            double v = 0.0;
-            value->getNumber(v);
-            return QString::number(v);
-        }
-        case KJS::BooleanType:
-            return value->getBoolean() ? "true" : "false";
-        case KJS::StringType:
-        {
-            KJS::UString s;
-            value->getString(s);
-            return '"' + s.qstring() + '"';
-        }
-        case KJS::UndefinedType:
-            return "undefined";
-        case KJS::NullType:
-            return "null";
-        case KJS::ObjectType:
-            return "[object " + static_cast<KJS::JSObject*>(value)->className().qstring() +"]";
-        case KJS::GetterSetterType:
-        case KJS::UnspecifiedType:
-        default:
-            return QString();
-    }
-}
-
 void LocalVariablesDock::updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item)
 {
     // Note: parent is responsible for setting our name..
-    item->setText(1, valueToDisplay(val));
+    item->setText(1, valueToString(val));
     if (val->isObject())
         updateObjectProperties(exec, val, item);
 }

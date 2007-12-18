@@ -1,7 +1,9 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
- *            (C) 2007 Maks Orlovich <maksim@kde.org>
+ *  Copyright (C) 2007 Maks Orlovich <maksim@kde.org>
+ *  Copyright (C) 2000-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -79,6 +81,8 @@
 #include "scriptsdock.h"
 
 #include "debugdocument.h"
+#include "value2string.h"
+#include "errordlg.h"
 
 using namespace KJS;
 using namespace KJSDebugger;
@@ -350,7 +354,6 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
 {
     Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
 
     // Remove the debug document associated with this sourceId
     DebugDocument *document = m_sourceIdLookup[sourceId];
@@ -365,15 +368,78 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
     return (m_mode != Abort);
 }
 
-bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj)
+bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
 {
-    //### FIXME: use error dialog
-    Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
-    Q_UNUSED(lineno);
-    Q_UNUSED(exceptionObj);
+    // Fixup the line..
+    lineNo = lineNo - 1;
 
-    kDebug() << "exception";
+    // Don't report it if error reporting is not on
+    KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
+    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
+    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
+        return (m_mode != Abort);
+
+    // ### adjust to have m_evalDepth, for console, like in KDE3 version
+    QString exceptionMsg = valueToString(exceptionObj);
+
+    // Since we purposefully bypass toString, we need to figure out
+    // string serialization ourselves.
+    //### might be easier to export class info for ErrorInstance --- 
+
+    JSObject* valueObj = exceptionObj->getObject();
+    JSValue*  protoObj = valueObj ? valueObj->prototype() : 0;
+
+    bool exception   = false;
+    bool syntaxError = false;
+    if (protoObj == exec->lexicalInterpreter()->builtinSyntaxErrorPrototype())
+    {
+        exception   = true;
+        syntaxError = true;
+    }
+    
+    if (protoObj == exec->lexicalInterpreter()->builtinErrorPrototype()          ||
+        protoObj == exec->lexicalInterpreter()->builtinEvalErrorPrototype()      ||
+        protoObj == exec->lexicalInterpreter()->builtinReferenceErrorPrototype() ||
+        protoObj == exec->lexicalInterpreter()->builtinRangeErrorPrototype()     ||
+        protoObj == exec->lexicalInterpreter()->builtinTypeErrorPrototype()      ||
+        protoObj == exec->lexicalInterpreter()->builtinURIErrorPrototype())
+    {
+        exception = true;
+    }
+
+    // Extract messages for exceptions --- add syntax error properly
+    if (exception)
+    {
+        // ### it's still not 100% safe to call toString here, 
+        // since someone might have changed the toString property of the 
+        // exception prototype, but I'll punt on this case for now.
+        // We also need to clear exception temporarily so that JSObject::toString
+        // does not do a "oy, and exception" routine for us
+        exec->clearException();
+        exceptionMsg = exceptionObj->toString(exec).qstring();
+        exec->setException(exceptionObj);
+    }
+    
+    // Look up fragment info from sourceId
+    DebugDocument* doc = m_sourceIdLookup[sourceId];
+    
+    // Figure out filename.
+    QString url = "????";
+    if (exec->context()->codeType() == EvalCode)
+        url = "eval";
+    if (!doc->url().isEmpty())
+        url = doc->url();
+
+    QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3",
+                KStringHandler::rsqueeze(url, 80), lineNo, exceptionMsg);
+
+    KJSErrorDialog dlg(this /*dlgParent*/, msg, true);
+    dlg.exec();
+    if (dlg.debugSelected())
+    {
+        // We want to stop at the current line, to see what's going on.
+        enterDebugSession(exec, doc, lineNo);
+    }
 
     return (m_mode != Abort);
 }
