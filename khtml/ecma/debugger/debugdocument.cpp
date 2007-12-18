@@ -32,8 +32,10 @@ DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
     
     // Might have to fall back in case of query-like things;
     // ad scripts tend to do that
-    while (d->name.contains("=") || d->name.contains("&"))
-        d->name = kurl.upUrl().fileName();
+    while (d->name.contains("=") || d->name.contains("&")) {
+        kurl = kurl.upUrl();
+        d->name = kurl.fileName();
+    }
 
     if (d->name.isEmpty())
         d->name = kurl.host();
