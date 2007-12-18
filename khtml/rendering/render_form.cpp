@@ -611,11 +611,12 @@ void RenderLineEdit::calcMinMaxWidth()
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
 
-    QStyleOption opt;
-    opt.init(widget());
+    QStyleOptionFrame opt;
+    opt.initFrom(widget());
+    if (static_cast<LineEditWidget*>(widget())->hasFrame())
+        opt.lineWidth = widget()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, widget());
 
-    int margin = static_cast<LineEditWidget*>(widget())->hasFrame() ? 4 : 0;
-    s = QSize(w + margin, qMax(h, 14) + margin);
+    s = QSize(w, qMax(h, 14));
     s = widget()->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s, widget());
     s = s.expandedTo(QApplication::globalStrut());
 
