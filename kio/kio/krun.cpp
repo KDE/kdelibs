@@ -775,7 +775,8 @@ bool KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, 
 
 bool KRun::runCommand( const QString &cmd, QWidget* window )
 {
-  return KRun::runCommand( cmd, QString(), QString(), window, "" );
+  QString bin = binaryName( cmd, true );
+  return KRun::runCommand( cmd, bin, bin, window, "" );
 }
 
 bool KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
