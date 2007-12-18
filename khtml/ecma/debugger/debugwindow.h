@@ -128,6 +128,9 @@ private:
     // Constructs or updates the peer KTextEditor::Document to display
     // this DebugDocument
     KTextEditor::Document* buildViewerDocument(DebugDocument *document);
+    
+    void pauseTimeoutChecks();
+    void resumeTimeoutChecks();
 
     void createActions();
     void createMenus();

@@ -271,12 +271,34 @@ void DebugWindow::leaveDebugSession() {
         m_stepOverAct->setEnabled(false);
     }
     m_inSession = false;
-    
+
     if (m_execLineMarkIFace)
         m_execLineMarkIFace->removeMark(m_execLine - 1, KTextEditor::MarkInterface::Execution);
 
-
+    resumeTimeoutChecks();
     exitLoop();
+}
+
+void DebugWindow::pauseTimeoutChecks()
+{
+    KJS::Interpreter* intp = KJS::Interpreter::firstInterpreter();
+    do
+    {
+        intp->pauseTimeoutCheck();
+        intp = intp->nextInterpreter();
+    }
+    while (intp != KJS::Interpreter::firstInterpreter());
+}
+
+void DebugWindow::resumeTimeoutChecks()
+{
+    KJS::Interpreter* intp = KJS::Interpreter::firstInterpreter();
+    do
+    {
+        intp->resumeTimeoutCheck();
+        intp = intp->nextInterpreter();
+    }
+    while (intp != KJS::Interpreter::firstInterpreter());
 }
 
 void DebugWindow::continueExecution()
@@ -730,6 +752,8 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
 
     if (!isVisible())
         show();
+
+    pauseTimeoutChecks();
 
     m_continueAct->setEnabled(true);
     m_stopAct->setEnabled(false);
