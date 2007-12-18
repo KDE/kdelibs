@@ -585,6 +585,8 @@ void DebugWindow::displayScript(DebugDocument *document)
                                           i18n("Breakpoints"));
         markInterface->setMarkPixmap(KTextEditor::MarkInterface::BreakpointActive, 
                                      SmallIcon("flag-red"));
+        markInterface->setMarkPixmap(KTextEditor::MarkInterface::Execution, 
+                                     SmallIcon("arrow-right"));
     }
 
     doc->setReadWrite(false);
