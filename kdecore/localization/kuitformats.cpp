@@ -117,7 +117,7 @@ QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
         // Normalize key, trim and all lower-case.
         QString nkey = keys[i].trimmed().toLower();
         bool isFunctionKey = nkey.length() > 1 && nkey[1].isDigit();
-        if (not isFunctionKey) {
+        if (!isFunctionKey) {
             keys[i] = keydict.contains(nkey) ? keydict[nkey] : keys[i].trimmed();
         }
         else {
