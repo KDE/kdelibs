@@ -832,7 +832,7 @@ void KFontChooser::Private::_k_displaySample( const QFont& font )
 int KFontChooser::Private::nearestSizeRow (int val, bool customize)
 {
     int diff = 1000;
-    int row;
+    int row = 0;
     for (int r = 0; r < sizeListBox->count(); ++r) {
         int cval = sizeListBox->item(r)->text().toInt();
         if (qAbs(cval - val) < diff) {
@@ -855,6 +855,7 @@ int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
     }
 
     QList<int> sizes = sizes_;
+    bool canCustomize = false;
     if (sizes.count() == 0) {
         static const int c[] = {
             4,  5,  6,  7,
@@ -869,6 +870,9 @@ int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
         for (int i = 0; c[i]; ++i) {
             sizes.append(c[i]);
         }
+        // Since sizes were not supplied, this is a vector font,
+        // and size slot customization is allowed.
+        canCustomize = true;
     }
 
     // Insert sizes into the listbox.
@@ -879,13 +883,13 @@ int KFontChooser::Private::fillSizeList (const QList<int> &sizes_)
     }
 
     // Return the nearest to selected size.
-    // In case default sizes were filled in (count == 0), the font is
-    // vector and the nearest size is always the selected one, thus slot
-    // customization is allowed if the selected size is not a standard one.
-    // If the sizes were not the default (count != 0), the font is bitmap,
-    // the nearest size need not be same as selected size,
-    // thus slot customization is not allowed.
-    return nearestSizeRow(selectedSize, sizes.count() == 0);
+    // If the font is vector, the nearest size is always same as selected,
+    // thus size slot customization is allowed.
+    // If the font is bitmap, the nearest size need not be same as selected,
+    // thus size slot customization is not allowed.
+    customSizeRow = -1;
+    int row = nearestSizeRow(selectedSize, canCustomize);
+    return sizeListBox->item(row)->text().toInt();
 }
 
 int KFontChooser::Private::setupSizeListBox (const QString& family, const QString& style)
