@@ -24,6 +24,7 @@
 
 #include "kcursor.h"
 #include "kcursor_p.h"
+#include <kdebug.h>
 
 #include <QBitmap>
 #include <QCursor>
@@ -227,7 +228,7 @@ KCursorPrivateAutoHideEventFilter::KCursorPrivateAutoHideEventFilter( QWidget* w
     , m_isCursorHidden( false )
     , m_isOwnCursor( false )
 {
-    m_widget->setMouseTracking( true );
+    mouseWidget()->setMouseTracking( true );
     connect( &m_autoHideTimer, SIGNAL( timeout() ),
              this, SLOT( hideCursor() ) );
 }
@@ -235,7 +236,7 @@ KCursorPrivateAutoHideEventFilter::KCursorPrivateAutoHideEventFilter( QWidget* w
 KCursorPrivateAutoHideEventFilter::~KCursorPrivateAutoHideEventFilter()
 {
     if( m_widget != NULL )
-        m_widget->setMouseTracking( m_wasMouseTracking );
+        mouseWidget()->setMouseTracking( m_wasMouseTracking );
 }
 
 void KCursorPrivateAutoHideEventFilter::resetWidget()
@@ -252,7 +253,7 @@ void KCursorPrivateAutoHideEventFilter::hideCursor()
 
     m_isCursorHidden = true;
 
-    QWidget* w = actualWidget();
+    QWidget* w = mouseWidget();
 
     m_isOwnCursor = w->testAttribute(Qt::WA_SetCursor);
     if ( m_isOwnCursor )
@@ -270,7 +271,7 @@ void KCursorPrivateAutoHideEventFilter::unhideCursor()
 
     m_isCursorHidden = false;
 
-    QWidget* w = actualWidget();
+    QWidget* w = mouseWidget();
 
     if ( w->cursor().shape() != Qt::BlankCursor ) // someone messed with the cursor already
 	return;
@@ -281,7 +282,9 @@ void KCursorPrivateAutoHideEventFilter::unhideCursor()
         w->unsetCursor();
 }
 
-QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
+// The widget which gets mouse events, and that shows the cursor
+// (that is the viewport, for a QAbstractScrollArea)
+QWidget* KCursorPrivateAutoHideEventFilter::mouseWidget() const
 {
     QWidget* w = m_widget;
 
@@ -295,14 +298,12 @@ QWidget* KCursorPrivateAutoHideEventFilter::actualWidget() const
 
 bool KCursorPrivateAutoHideEventFilter::eventFilter( QObject *o, QEvent *e )
 {
-    Q_ASSERT( o == m_widget );
+    Q_UNUSED(o);
+    // o is m_widget or its viewport
+    //Q_ASSERT( o == m_widget );
 
     switch ( e->type() )
     {
-    case QEvent::Create:
-        // Qt steals mouseTracking on create()
-        m_widget->setMouseTracking( true );
-        break;
     case QEvent::Leave:
     case QEvent::FocusOut:
     case QEvent::WindowDeactivate:
@@ -366,14 +367,24 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
     if ( !w || !enabled )
         return;
 
+    QWidget* viewport = 0;
+    QAbstractScrollArea * sv = qobject_cast<QAbstractScrollArea *>( w );
+    if ( sv )
+        viewport = sv->viewport();
+
     if ( enable )
     {
         if ( m_eventFilters.contains( w ) )
             return;
         KCursorPrivateAutoHideEventFilter* filter = new KCursorPrivateAutoHideEventFilter( w );
         m_eventFilters.insert( w, filter );
-        if ( !customEventFilter )
-            w->installEventFilter( filter );
+        if (viewport)
+            m_eventFilters.insert( viewport, filter );
+        if ( !customEventFilter ) {
+            w->installEventFilter( filter ); // for key events
+            if (viewport)
+                viewport->installEventFilter( filter ); // for mouse events
+        }
         connect( w, SIGNAL( destroyed(QObject*) ),
                  this, SLOT( slotWidgetDestroyed(QObject*) ) );
     }
@@ -383,6 +394,10 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
         if ( filter == 0 )
             return;
         w->removeEventFilter( filter );
+        if (viewport) {
+            m_eventFilters.remove( viewport );
+            viewport->removeEventFilter( filter );
+        }
         delete filter;
         disconnect( w, SIGNAL( destroyed(QObject*) ),
                     this, SLOT( slotWidgetDestroyed(QObject*) ) );

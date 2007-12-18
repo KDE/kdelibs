@@ -52,7 +52,7 @@ private Q_SLOTS:
     void unhideCursor();
 
 private:
-    QWidget* actualWidget() const;
+    QWidget* mouseWidget() const;
 
     QTimer m_autoHideTimer;
     QWidget* m_widget;
