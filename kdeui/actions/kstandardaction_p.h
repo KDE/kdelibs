@@ -59,7 +59,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { Paste,         KStandardShortcut::Paste, "edit_paste", I18N_NOOP("&Paste"), 0, "edit-paste" },
   { PasteText,     KStandardShortcut::Paste, "edit_paste", I18N_NOOP("&Paste"), 0, "edit-paste" },
   { Clear,         KStandardShortcut::AccelNone, "edit_clear", I18N_NOOP("C&lear"), 0, "edit-clear" },
-  { SelectAll,     KStandardShortcut::SelectAll, "edit_select_all", I18N_NOOP("Select &All"), 0, 0 },
+  { SelectAll,     KStandardShortcut::SelectAll, "edit_select_all", I18N_NOOP("Select &All"), 0, "edit-select-all" },
   { Deselect,      KStandardShortcut::Deselect, "edit_deselect", I18N_NOOP("Dese&lect"), 0, 0 },
   { Find,          KStandardShortcut::Find, "edit_find", I18N_NOOP("&Find..."), 0, "edit-find" },
   { FindNext,      KStandardShortcut::FindNext, "edit_find_next", I18N_NOOP("Find &Next"), 0, "edit-find-next" },
