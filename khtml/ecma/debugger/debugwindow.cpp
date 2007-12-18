@@ -489,7 +489,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
         functionName = func->functionName().qstring();
     }
 
-    m_callStack->addCall(functionName, lineno);
+    m_callStack->addCall(functionName.isEmpty() ? document->name() : functionName, lineno);
 
     m_execContexts.push(exec);
 
