@@ -71,11 +71,11 @@ void KPageViewPrivate::_k_rebuildGui()
   if ( alignment & Qt::AlignTop )
     layout->addWidget( view, 0, 1 );
   else if ( alignment & Qt::AlignRight )
-    layout->addWidget( view, 1, 2, 3, 1 );
+    layout->addWidget( view, 1, 2, 2, 1 );
   else if ( alignment & Qt::AlignBottom )
     layout->addWidget( view, 4, 1 );
   else if ( alignment & Qt::AlignLeft )
-    layout->addWidget( view, 1, 0, 3, 1 );
+    layout->addWidget( view, 1, 0, 2, 1 );
 }
 
 void KPageViewPrivate::updateSelection()
