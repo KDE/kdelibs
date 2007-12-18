@@ -163,7 +163,7 @@ void KBuildServiceFactory::populateServiceTypes()
 #endif
 
             if (!serviceType) {
-                kWarning(7021) << "'"<< service->entryPath() << "' specifies undefined mimetype/servicetype '"<< str << "'";
+                kWarning(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << str;
                 continue;
             }
 
