@@ -39,6 +39,8 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
     // sort by the user visible string for now
     setSortCaseSensitivity(Qt::CaseInsensitive);
     sort(KDirModel::Name, Qt::AscendingOrder);
+
+    setSupportedDragActions(Qt::CopyAction | Qt::MoveAction | Qt::IgnoreAction);
 }
 
 KDirSortFilterProxyModel::~KDirSortFilterProxyModel()
