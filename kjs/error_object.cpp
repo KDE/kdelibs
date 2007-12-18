@@ -49,7 +49,8 @@ ErrorPrototype::ErrorPrototype(ExecState* exec,
                                      FunctionPrototype* funcProto)
   : JSObject(objectProto)
 {
-  // The constructor will be added later in ErrorObjectImp's constructor
+  // Interpreter::initGlobalObject sets the constructor property
+  // on the prototypes for this and the native error types
 
   put(exec, exec->propertyNames().name,     jsString("Error"), DontEnum);
   put(exec, exec->propertyNames().message,  jsString("Unknown error"), DontEnum);
