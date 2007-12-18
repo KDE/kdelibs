@@ -45,6 +45,8 @@ namespace DOM
  */
 class KHTML_EXPORT KHTMLGlobal
 {
+    friend class KHTMLViewPrivate;
+
 public:
     KHTMLGlobal();
     ~KHTMLGlobal();

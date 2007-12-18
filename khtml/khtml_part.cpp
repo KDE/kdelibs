@@ -226,6 +226,8 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
     // TODO KDE4 - don't load plugins yet
     //setComponentData( KHTMLGlobal::componentData(), false );
     assert( view );
+    if (!view->part())
+        view->setPart( this );
     init( view, prof );
 }
 
@@ -5726,7 +5728,7 @@ void KHTMLPart::setFontScaleFactor(int percent)
   if (d->m_fontScaleFactor == percent) return;
   d->m_fontScaleFactor = percent;
 
-  if(d->m_view) {
+  if (d->m_view && d->m_doc) {
     QApplication::setOverrideCursor( Qt::WaitCursor );
     if (d->m_doc->styleSelector())
       d->m_doc->styleSelector()->computeFontSizes(d->m_doc->logicalDpiY(), d->m_fontScaleFactor);

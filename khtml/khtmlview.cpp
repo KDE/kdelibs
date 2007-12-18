@@ -247,9 +247,12 @@ public:
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
 
-        // defaultHTMLSettings is available since a KHTMLPart has been created first
-        // and has ref()'ed the factory for us.
+        // the view might have been built before the part it will be assigned to,
+        // so exceptionally, we need to directly ref/deref KHTMLGlobal to 
+        // account for this transitory case.
+        KHTMLGlobal::ref();
         accessKeysEnabled = KHTMLGlobal::defaultHTMLSettings()->accessKeysEnabled();
+        KHTMLGlobal::deref();
 
         emitCompletedAfterRepaint = CSNone;
         m_mouseEventsTarget = 0;
@@ -518,6 +521,12 @@ KHTMLView::~KHTMLView()
             doc->detach();
     }
     delete d;
+}
+
+void KHTMLView::setPart(KHTMLPart *part)
+{
+    assert(part && !m_part);
+    m_part = part;
 }
 
 void KHTMLView::init()

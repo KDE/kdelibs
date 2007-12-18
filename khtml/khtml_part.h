@@ -245,14 +245,31 @@ public:
    * holding the document data (DOM document), and the KHTMLView,
    * derived from QScrollView, in which the document content is
    * rendered in. You can specify two different parent objects for a
-   * KHTMLPart, one parent for the KHTMLPart document and on parent
+   * KHTMLPart, one parent for the KHTMLPart document and one parent
    * for the KHTMLView. If the second @p parent argument is 0L, then
    * @p parentWidget is used as parent for both objects, the part and
    * the view.
    */
   KHTMLPart( QWidget *parentWidget = 0,
              QObject *parent = 0, GUIProfile prof = DefaultGUI );
-
+  /**
+   * Constructs a new KHTMLPart.
+   *
+   * This constructor is useful if you wish to subclass KHTMLView.
+   * If the @p view passed  as first argument to the constructor was built with a
+   * null KHTMLPart pointer, then the newly created KHTMLPart will be assigned as the view's part.
+   *
+   * Therefore, you might either initialize the view as part of the initialization list of
+   * your derived KHTMLPart class constructor:
+   * \code
+   *   MyKHTMLPart() : KHTMLPart( new MyKHTMLView( this ), ...
+   * \endcode
+   * Or separately build the KHTMLView beforehand:
+   * \code
+   *   KHTMLView * v = KHTMLView( 0L, parentWidget());
+   *   KHTMLPart * p = KHTMLPart( v ); // p will be assigned to v, so that v->part() == p
+   * \endcode
+   */
   KHTMLPart( KHTMLView *view, QObject *parent = 0, GUIProfile prof = DefaultGUI );
 
   /**

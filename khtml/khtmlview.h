@@ -372,6 +372,8 @@ private:
 
     QStack<QRegion>* clipHolder() const;
     void setClipHolder( QStack<QRegion>* ch );
+    
+    void setPart(KHTMLPart *part);
 
     /**
      * Paints the HTML document to a QPainter.

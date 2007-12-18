@@ -123,7 +123,6 @@ int main(int argc, char *argv[])
 
 
     int ret = a.exec();
-    delete fac;
     return ret;
 }
 
