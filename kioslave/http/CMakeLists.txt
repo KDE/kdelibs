@@ -3,6 +3,7 @@ project(kioslave-http)
 
 
 macro_optional_find_package(GSSAPI)
+macro_log_feature(GSSAPI_FOUND "GSSAPI" "Generic Security Services API" "http://web.mit.edu/kerberos/www" FALSE "" "A MIT or HEIMDAL flavor of GSSAPI to provide HTTP authentication services.")
 
 if(GSSAPI_FOUND)
     set(HAVE_LIBGSSAPI 1)
