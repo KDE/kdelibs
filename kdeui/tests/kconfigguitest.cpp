@@ -78,6 +78,7 @@ void KConfigTest::testComplex()
   QCOMPARE( sc3.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
   QCOMPARE( sc3.readEntry( "colorEntry3", QColor() ), COLORENTRY3 );
   QCOMPARE( sc3.readEntry( "colorEntry4", QColor() ), COLORENTRY2 );
+  QCOMPARE( sc3.readEntry( "defaultColorTest", QColor("black") ), QColor("black") );
   QCOMPARE( sc3.readEntry( "fontEntry", QFont() ), FONTENTRY );
 }
 
