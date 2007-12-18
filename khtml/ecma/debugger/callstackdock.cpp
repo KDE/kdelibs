@@ -85,8 +85,10 @@ void CallStackDock::displayStack()
     {
         int displayRow = m_callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);
+        function->setFlags(Qt::ItemIsEnabled);
         m_view->setItem(displayRow, 0, function);
         QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber));
+        lineNumber->setFlags(Qt::ItemIsEnabled);
         m_view->setItem(displayRow, 1, lineNumber);
         row++;
     }
