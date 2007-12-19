@@ -271,7 +271,7 @@ KFontChooser::KFontChooser( QWidget *parent,
         d->sizeLabel = 0;
     } else {
         d->sizeCheckbox = 0;
-        d->sizeLabel = new QLabel(i18n("Size:"), page );
+        d->sizeLabel = new QLabel(i18nc("@label:listbox Font size", "Size:"), page );
         d->sizeLabel->setObjectName( "sizeLabel" );
         sizeLayout->addWidget(d->sizeLabel, 1, Qt::AlignLeft);
     }
