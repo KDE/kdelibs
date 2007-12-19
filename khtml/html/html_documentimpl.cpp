@@ -276,7 +276,7 @@ const int PARSEMODE_HAVE_INTERNAL	=	(1<<3);
 
 static int parseDocTypePart(const QString& buffer, int index)
 {
-    while (true) {
+    while (index < buffer.size()) {
         QChar ch = buffer[index];
         if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
             ++index;
@@ -291,6 +291,7 @@ static int parseDocTypePart(const QString& buffer, int index)
         else
             return index;
     }
+    return -1;
 }
 
 static bool containsString(const char* str, const QString& buffer, int offset)
@@ -317,7 +318,8 @@ static bool parseDocTypeDeclaration(const QString& buffer,
     int index = 0;
     do {
         index = buffer.indexOf('<', index);
-        if (index == -1) break;
+        if (index == -1 ||
+            index+1 >= buffer.length() ) break;
         QChar nextChar = buffer[index+1];
         if (nextChar == '!') {
             if (containsString("doctype", buffer, index+2)) {
@@ -326,6 +328,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
                 break;
             }
             index = parseDocTypePart(buffer,index);
+            if (index == -1) break;
             index = buffer.indexOf('>', index);
         }
         else if (nextChar == '?')
@@ -339,13 +342,19 @@ static bool parseDocTypeDeclaration(const QString& buffer,
     *resultFlags |= PARSEMODE_HAVE_DOCTYPE;
 
     index = parseDocTypePart(buffer, index);
+    if (index == -1)
+        return false;
     if (!containsString("html", buffer, index))
         return false;
 
     index = parseDocTypePart(buffer, index+4);
+    if (index == -1)
+        return false;
     bool hasPublic = containsString("public", buffer, index);
     if (hasPublic) {
         index = parseDocTypePart(buffer, index+6);
+        if (index == -1)
+            return false;
 
         // We've read <!DOCTYPE HTML PUBLIC (not case sensitive).
         // Now we find the beginning and end of the public identifers
@@ -361,6 +370,8 @@ static bool parseDocTypeDeclaration(const QString& buffer,
         if (publicIDEnd == -1)
             return false;
         index = parseDocTypePart(buffer, publicIDEnd+1);
+        if (index == -1)
+            return false;
         QChar next = buffer[index];
         if (next == '>') {
             // Public identifier present, but no system identifier.
@@ -392,6 +403,8 @@ static bool parseDocTypeDeclaration(const QString& buffer,
             // Doctype has a system ID but no public ID
             *resultFlags |= PARSEMODE_HAVE_SYSTEM_ID;
             index = parseDocTypePart(buffer, index+6);
+	    if (index == -1)
+		return false;
             QChar next = buffer[index];
             if (next != '\"' && next != '\'')
                 return false;
@@ -401,6 +414,8 @@ static bool parseDocTypeDeclaration(const QString& buffer,
                 return false;
             systemID = buffer.mid(systemIDStart, systemIDEnd - systemIDStart);
             index = parseDocTypePart(buffer, systemIDEnd+1);
+            if (index == -1) 
+                return false;
         }
 
         QChar nextChar = buffer[index];
