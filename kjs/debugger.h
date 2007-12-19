@@ -81,7 +81,7 @@ namespace KJS {
      *
      * @see detach()
      */
-    void attach(Interpreter *interp);
+    virtual void attach(Interpreter *interp);
 
     /**
      * Detach the debugger from an interpreter
@@ -91,7 +91,7 @@ namespace KJS {
      *
      * @see attach()
      */
-    void detach(Interpreter *interp);
+    virtual void detach(Interpreter *interp);
 
     /**
      * Called to notify the debugger that some javascript source code has
