@@ -132,7 +132,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_callStack = new CallStackDock;
     //m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
-    m_docFrame = new QFrame;
+
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
     addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
@@ -140,24 +140,20 @@ DebugWindow::DebugWindow(QWidget *parent)
     //addDockWidget(Qt::LeftDockWidgetArea, m_breakpoints);
 //     addDockWidget(Qt::LeftDockWidgetArea, m_watches);
 
-    QFrame *mainFrame = new QFrame;
-    QVBoxLayout *layout = new QVBoxLayout(mainFrame);
-    layout->setSpacing(0);
     QSplitter *splitter = new QSplitter(Qt::Vertical);
-    splitter->addWidget(m_docFrame);
+    createTabWidget();
+    splitter->addWidget(m_tabWidget);
     splitter->addWidget(m_console);
     splitter->setStretchFactor(0, 10);
     splitter->setStretchFactor(1, 1);
-    layout->addWidget(splitter);
 
-    setCentralWidget(mainFrame);
+    setCentralWidget(splitter);
     resize(800, 500);
 
     createActions();
     createMenus();
     createToolBars();
     createStatusBar();
-    createTabWidget();
     m_tabWidget->hide();
 
     connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
@@ -233,7 +229,6 @@ void DebugWindow::createToolBars()
 
 void DebugWindow::createTabWidget()
 {
-    QVBoxLayout *layout = new QVBoxLayout(m_docFrame);
     m_tabWidget = new QTabWidget;
 
     QToolButton *closeTabButton = new QToolButton(m_tabWidget);
@@ -244,7 +239,6 @@ void DebugWindow::createTabWidget()
     connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
     closeTabButton->setToolTip(i18n("Close source"));
     closeTabButton->setEnabled(true);
-    layout->addWidget(m_tabWidget);
 }
 
 void DebugWindow::createStatusBar()

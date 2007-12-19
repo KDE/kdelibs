@@ -174,7 +174,6 @@ private:
     ConsoleDock *m_console;
 
     QTabWidget *m_tabWidget;
-    QFrame *m_docFrame;
 
     bool shouldContinue(InterpreterContext* ic);
 
