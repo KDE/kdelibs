@@ -113,6 +113,7 @@ DebugWindow::DebugWindow(QWidget *parent)
   : KXmlGuiWindow(parent, Qt::Window),
     KComponentData("kjs_debugger")
 {
+    setAttribute(Qt::WA_DeleteOnClose, false);
     setObjectName(QLatin1String("DebugWindow"));
     setCaption(i18n("JavaScript Debugger"));
     kDebug() << "creating DebugWindow";
