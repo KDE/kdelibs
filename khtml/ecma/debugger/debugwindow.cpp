@@ -565,7 +565,9 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
                 KStringHandler::rsqueeze(url, 80), lineNo, exceptionMsg);
 
     KJSErrorDialog dlg(this /*dlgParent*/, msg, true);
+    pauseTimeoutChecks(); //Don't let KJS freak out due to dialog hanging aroudn for a while.
     dlg.exec();
+    resumeTimeoutChecks();
     if (dlg.debugSelected())
     {
         // We want to stop at the current line, to see what's going on.
