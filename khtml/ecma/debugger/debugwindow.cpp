@@ -409,6 +409,7 @@ DebugWindow::~DebugWindow()
 void DebugWindow::attach(Interpreter *interp)
 {
     m_contexts[interp] = new InterpreterContext;
+    KJS::Debugger::attach(interp);
 }
 
 void DebugWindow::detach(Interpreter *interp)
@@ -422,6 +423,7 @@ void DebugWindow::detach(Interpreter *interp)
         qDeleteAll(m_contexts);
         m_contexts.clear();
     }
+    KJS::Debugger::detach(interp);
 }
 
 
@@ -564,8 +566,6 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
-    kDebug() << firstLine << m_breakAtNext;
-
     InterpreterContext* candidateCtx = m_contexts[exec->dynamicInterpreter()];
 
     if (!shouldContinue(candidateCtx))
