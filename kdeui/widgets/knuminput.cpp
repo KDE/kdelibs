@@ -842,7 +842,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
             priv->m_slider = new QSlider(Qt::Horizontal, this);
             priv->m_slider->setMinimum(slmin);
             priv->m_slider->setMaximum(slmax);
-            priv->m_slider->setPageStep(slstep);
+            priv->m_slider->setSingleStep(slstep);
             priv->m_slider->setValue(slvalue);
             priv->m_slider->setTickPosition(QSlider::TicksBelow);
             // feedback line: when one moves, the other moves, too:
