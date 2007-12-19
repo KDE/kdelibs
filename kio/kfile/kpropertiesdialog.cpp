@@ -602,23 +602,23 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
 void KPropertiesDialog::rename( const QString& _name )
 {
     Q_ASSERT(d->m_items.count() == 1);
-  kDebug(250) << "KPropertiesDialog::rename " << _name;
-  KUrl newUrl;
-  // if we're creating from a template : use currentdir
+    kDebug(250) << "KPropertiesDialog::rename " << _name;
+    KUrl newUrl;
+    // if we're creating from a template : use currentdir
     if (!d->m_currentDir.isEmpty()) {
         newUrl = d->m_currentDir;
-    newUrl.addPath( _name );
-  }
-  else
-  {
+        newUrl.addPath(_name);
+    } else {
         QString tmpurl = d->m_singleUrl.url();
-    if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/')
-      // It's a directory, so strip the trailing slash first
-      tmpurl.truncate( tmpurl.length() - 1);
-    newUrl = tmpurl;
-    newUrl.setFileName( _name );
-  }
-  updateUrl( newUrl );
+        if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/') {
+            // It's a directory, so strip the trailing slash first
+            tmpurl.truncate(tmpurl.length() - 1);
+        }
+
+        newUrl = tmpurl;
+        newUrl.setFileName(_name);
+    }
+    updateUrl(newUrl);
 }
 
 void KPropertiesDialog::abortApplying()
