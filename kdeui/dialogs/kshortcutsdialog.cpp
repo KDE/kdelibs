@@ -497,6 +497,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 			delete hier[l];
 	}
 
+	d->ui.list->sortItems(0, Qt::AscendingOrder);
 	QTimer::singleShot(0, this, SLOT(resizeColumns()));
 }
 
