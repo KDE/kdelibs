@@ -51,7 +51,7 @@ static int s_dataCnt = 0;
 static Nepomuk::Variant nodeToVariant( const Soprano::Node& node )
 {
     if ( node.isResource() ) {
-        return Nepomuk::Variant( Nepomuk::Resource( node.toString() ) );
+        return Nepomuk::Variant( Nepomuk::Resource( node.uri() ) );
     }
     else if ( node.isLiteral() ) {
         return Nepomuk::Variant( node.literal().variant() );
@@ -299,10 +299,9 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
     if ( store() ) {
         Soprano::Model* model = ResourceManager::instance()->mainModel();
 
-        // step 1: remove all the existing stuff
-        model->removeAllStatements( Statement( m_uri, QUrl(uri), Node() ) );
+        QList<Statement> resourceStatements;
 
-        // step 2: make sure resource values are in the store
+        // make sure resource values are in the store
         if ( value.simpleType() == qMetaTypeId<Resource>() ) {
             QList<Resource> l = value.toResourceList();
             for( QList<Resource>::iterator resIt = l.begin(); resIt != l.end(); ++resIt ) {
@@ -310,18 +309,18 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
             }
         }
 
-        // step 3: add the actual property statements
+        // add the actual property statements
 
         // one-to-one Resource
         if( value.isResource() ) {
-            model->addStatement( Statement( m_uri, QUrl(uri), QUrl( value.toResource().uri() ) ) );
+            resourceStatements.append( Statement( m_uri, QUrl(uri), QUrl( value.toResource().uri() ) ) );
         }
 
         // one-to-many Resource
         else if( value.isResourceList() ) {
             const QList<Resource>& l = value.toResourceList();
             for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-                model->addStatement( Statement( m_uri, QUrl(uri), QUrl( (*resIt).uri() ) ) );
+                resourceStatements.append( Statement( m_uri, QUrl(uri), QUrl( (*resIt).uri() ) ) );
             }
         }
 
@@ -329,18 +328,33 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
         else if( value.isList() ) {
             QList<Node> nl = Nepomuk::valuesToRDFNodes( value );
             for( QList<Node>::const_iterator nIt = nl.constBegin(); nIt != nl.constEnd(); ++nIt ) {
-                model->addStatement( Statement( m_uri, QUrl(uri), *nIt ) );
+                resourceStatements.append( Statement( m_uri, QUrl(uri), *nIt ) );
             }
         }
 
         // one-to-one literal
         else {
-            model->addStatement( Statement( m_uri, QUrl(uri),
-                                            Nepomuk::valueToRDFNode( value ) ) );
+            resourceStatements.append( Statement( m_uri, QUrl(uri),
+                                                  Nepomuk::valueToRDFNode( value ) ) );
         }
 
         // update the cache for now
         m_cache[uri] = value;
+
+        // update the store
+        QList<Statement> existingStatements = model->listStatements( m_uri, QUrl(uri), Node() ).allStatements();
+        for ( QList<Statement>::const_iterator it = existingStatements.constBegin();
+              it != existingStatements.constEnd(); ++it ) {
+            if ( !resourceStatements.contains( *it ) ) {
+                model->removeStatement( *it );
+            }
+        }
+        for ( QList<Statement>::const_iterator it = resourceStatements.constBegin();
+              it != resourceStatements.constEnd(); ++it ) {
+            if ( !existingStatements.contains( *it ) ) {
+                model->addStatement( *it );
+            }
+        }
     }
 }
 
