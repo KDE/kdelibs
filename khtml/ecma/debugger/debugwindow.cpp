@@ -403,7 +403,9 @@ DebugWindow::~DebugWindow()
 
 void DebugWindow::attach(Interpreter *interp)
 {
-    m_contexts[interp] = new InterpreterContext;
+    // ::attach can be called many times, so handle that
+    if (!m_contexts[interp])
+        m_contexts[interp] = new InterpreterContext;
     KJS::Debugger::attach(interp);
 }
 
