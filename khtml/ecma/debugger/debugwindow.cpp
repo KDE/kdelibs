@@ -260,6 +260,8 @@ void DebugWindow::updateStoppedMark(RunMode mode)
 
     if (ctx() && ctx()->activeDocument)
     {
+        if (mode == Stopped)
+            displayScript(ctx()->activeDocument); // Create view, we will need it
         DebugDocument* document = ctx()->activeDocument;
         KTextEditor::Document* ddoc = m_debugLut[document];
         view  = viewForDocument(document);
@@ -275,8 +277,6 @@ void DebugWindow::updateStoppedMark(RunMode mode)
     }
     else
     {
-        // Display the source file, and visualize the position
-        displayScript(ctx()->activeDocument);
         view->setCursorPosition(KTextEditor::Cursor(line, 0));
         if (imark)
             imark->addMark(line, KTextEditor::MarkInterface::Execution);
