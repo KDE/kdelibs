@@ -612,7 +612,7 @@ void KPropertiesDialog::rename( const QString& _name )
   else
   {
         QString tmpurl = d->m_singleUrl.url();
-    if ( tmpurl.at(tmpurl.length() - 1) == '/')
+    if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/')
       // It's a directory, so strip the trailing slash first
       tmpurl.truncate( tmpurl.length() - 1);
     newUrl = tmpurl;
