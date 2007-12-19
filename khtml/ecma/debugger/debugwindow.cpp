@@ -914,14 +914,19 @@ bool DebugWindow::eventFilter(QObject *object, QEvent *event)
         case QEvent::Destroy:
         case QEvent::Close:
         case QEvent::Quit:
-        case QEvent::HideToParent:
+        case QEvent::Shortcut:
+        case QEvent::ShortcutOverride:
             {
                 while (object->parent())
                     object = object->parent();
                 if (object == this)
                     return QWidget::eventFilter(object, event);
                 else
+                {
+                    if (event->type() == QEvent::Close)
+                        event->setAccepted(false);
                     return true;
+                }
             }
             break;
         default:
