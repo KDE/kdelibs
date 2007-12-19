@@ -416,10 +416,33 @@ void DebugWindow::detach(Interpreter *interp)
 {
     if (interp)
     {
+        // See if we're the active session...
+        InterpreterContext* ctx = m_contexts[interp];
+        if (m_activeSessionCtxs.contains(ctx))
+        {
+            kDebug() << "### detach while session active!";
+            // Hopefully, we're the last one. In this case,
+            // we merely behave as if someone clicked continue,
+            // and leave the session.
+            if (m_activeSessionCtxs.top() == ctx)
+            {
+                leaveDebugSession();
+            }
+            else
+            {
+                // Here, we want to remove the old context, drop out
+                // one event loop level, but not actually
+                // leave the session, since it's unrelated.
+                m_activeSessionCtxs.remove(m_activeSessionCtxs.indexOf(ctx));
+                exitLoop();
+            }
+        }
+
         delete m_contexts.take(interp);
     }
     else //All
     {
+        assert(m_activeSessionCtxs.isEmpty());
         qDeleteAll(m_contexts);
         m_contexts.clear();
     }
