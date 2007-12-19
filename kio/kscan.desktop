@@ -2,8 +2,10 @@
 Type=ServiceType
 X-KDE-ServiceType=KScan/KScanDialog
 Name=KScan
+Name[bn]=কে-স্ক্যান
 Name[cy]=KSgan
 Name[eo]=Bildciferecigo
+Name[hi]=के-स्कैन
 Name[is]=KScan myndlesari
 Name[kn]=ಕೆಸ್ಕ್ಯಾನ್
 Name[ne]=केडीई स्क्यान
