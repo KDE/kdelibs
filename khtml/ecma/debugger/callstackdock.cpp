@@ -29,6 +29,7 @@
 #include <kurl.h>
 
 #include "debugdocument.h"
+#include "interpreter_ctx.h"
 
 namespace KJSDebugger {
 
@@ -49,41 +50,21 @@ CallStackDock::~CallStackDock()
 {
 }
 
-void CallStackDock::addCall(const QString &function, int lineNumber)
-{
-    CallStackEntry entry;
-    entry.name = function;
-    entry.lineNumber = lineNumber;
-
-    m_callStack.append(entry);
-}
-
-void CallStackDock::removeCall()
-{
-    m_callStack.pop_back();
-}
-
-void CallStackDock::updateCall(int line)
-{
-    m_callStack.last().lineNumber = line;
-    // Expects displayStack to be called to redraw.
-}
-
-void CallStackDock::setGlobalFrame(const QString& url)
-{
-    m_callStack.clear();
-    addCall(KUrl(url).fileName(), 0);
-}
-
-void CallStackDock::displayStack()
+void CallStackDock::clearDisplay()
 {
     m_view->clearContents();
-    m_view->setRowCount(m_callStack.count());
+    m_view->setRowCount(0);
+}
+
+void CallStackDock::displayStack(InterpreterContext* ic)
+{
+    m_view->clearContents();
+    m_view->setRowCount(ic->callStack.count());
 
     int row = 0;
-    foreach (CallStackEntry entry, m_callStack)
+    foreach (CallStackEntry entry, ic->callStack)
     {
-        int displayRow = m_callStack.count() - row - 1; //Want newest entry on top
+        int displayRow = ic->callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);
         function->setFlags(Qt::ItemIsEnabled);
         m_view->setItem(displayRow, 0, function);

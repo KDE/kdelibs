@@ -1,0 +1,89 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+#ifndef KJSDBG_ICTX_H
+#define KJSDBG_ICTX_H
+
+#include <QStack>
+#include <QString>
+
+namespace KJS {
+    class ExecState;
+}
+
+namespace KTextEditor {
+    class MarkInterface;
+}
+
+namespace KJSDebugger {
+
+class DebugDocument;
+
+enum Mode
+{
+    Normal   = 0, // Only stop at breakpoints
+    StepOver = 1, // Will break on next statement in current context
+    StepOut  = 2, // Will break one or more contexts above.
+    Step     = 3, // Will break on next statement in current or deeper context
+    Abort    = 4  // The script will stop execution completely,
+                    // as soon as possible
+};
+
+struct CallStackEntry
+{
+    QString name;
+    int lineNumber;
+
+    bool operator==(const CallStackEntry& other) const        // you're being lazy..
+    {
+        return ((other.name == name) && (other.lineNumber == lineNumber));
+    }
+};
+
+// This contains information we have to keep track of per-interpreter,
+// such as the stack information. 
+struct InterpreterContext
+{
+    Mode mode;
+    QStack<KJS::ExecState*> execContexts;
+    int  depthAtSkip; // How far we were in on stepOut
+                      // our stepOver.
+    QStack<CallStackEntry> callStack;
+
+    // Denotes the document we're stopped in (the line can be found 
+    // from the call stack);
+    DebugDocument* activeDocument;
+    int            activeLine();
+
+    InterpreterContext() : mode(Normal), depthAtSkip(0), activeDocument(0)
+    {}
+
+    void addCall(const QString&, int line);
+    void setGlobalFrame(const QString& url);
+    void updateCall(int line);
+    void removeCall();
+
+};
+
+}
+
+#endif
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+

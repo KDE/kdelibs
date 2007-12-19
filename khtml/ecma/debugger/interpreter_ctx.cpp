@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,31 +18,42 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef CALLSTACKDOCK_H
-#define CALLSTACKDOCK_H
-
-#include <QDockWidget>
-
-
-class QTableWidget;
+#include "interpreter_ctx.h"
+#include <kurl.h>
 
 namespace KJSDebugger {
-class DebugDocument;
-class InterpreterContext;
 
-class CallStackDock : public QDockWidget
+void InterpreterContext::addCall(const QString &function, int lineNumber)
 {
-    Q_OBJECT
-public:
-    CallStackDock(QWidget *parent = 0);
-    ~CallStackDock();
+    CallStackEntry entry;
+    entry.name = function;
+    entry.lineNumber = lineNumber;
 
-    void displayStack(InterpreterContext* ctx);
-    void clearDisplay();
-private:
-    QTableWidget *m_view;
-};
+    callStack.append(entry);
+}
+
+void InterpreterContext::removeCall()
+{
+    callStack.pop_back();
+}
+
+void InterpreterContext::updateCall(int line)
+{
+    callStack.last().lineNumber = line;
+    // Expects displayStack to be called to redraw.
+}
+
+void InterpreterContext::setGlobalFrame(const QString& url)
+{
+    callStack.clear();
+    addCall(KUrl(url).fileName(), 0);
+}
+
+int InterpreterContext::activeLine()
+{
+    return callStack.top().lineNumber;
+}
 
 }
 
-#endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

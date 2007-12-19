@@ -162,9 +162,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
             this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
 
-    m_inSession = false;
-    m_mode      = Normal;
-    m_execLineMarkIFace = 0;
+    m_breakAtNext  = false;
 }
 
 void DebugWindow::createActions()
@@ -248,34 +246,106 @@ void DebugWindow::createTabWidget()
     layout->addWidget(m_tabWidget);
 }
 
-// -------------------------------------------------------------
 void DebugWindow::createStatusBar()
 {
     statusBar()->showMessage(i18n("Ready"));
 }
 
-void DebugWindow::stopAtNext()
+void DebugWindow::updateStoppedMark(RunMode mode)
 {
-    m_mode = Step;
+    // Figure out where we're stopped or stoping.
+    KTextEditor::MarkInterface* imark = 0;
+    KTextEditor::View*          view  = 0;
+    int                         line  = 0;
+
+    if (ctx() && ctx()->activeDocument)
+    {
+        DebugDocument* document = ctx()->activeDocument;
+        KTextEditor::Document* ddoc = m_debugLut[document];
+        view  = viewForDocument(document);
+        imark = qobject_cast<KTextEditor::MarkInterface*>(ddoc);
+        line  = ctx()->activeLine() - 1; // -1 since KTextEditor 0-based, other 1-based
+    }
+
+    if (mode == Running)
+    {
+        // No longer stopped there.
+        if (imark)
+            imark->removeMark(line, KTextEditor::MarkInterface::Execution);
+    }
+    else
+    {
+        // Display the source file, and visualize the position
+        displayScript(ctx()->activeDocument);
+        view->setCursorPosition(KTextEditor::Cursor(line, 0));
+        if (imark)
+            imark->addMark(line, KTextEditor::MarkInterface::Execution);
+    }
 }
 
-void DebugWindow::leaveDebugSession() {
-    // Trigger buttons unless it's expected to be 
-    // short-running
-    if (m_mode != Step) 
+void DebugWindow::setUIMode(RunMode mode)
+{
+    if (mode == Running)
     {
+        // Clear local variable and stack display..
+        m_localVariables->updateDisplay(0);
+        m_callStack->clearDisplay();
+
+        // Toggle buttons..
         m_continueAct->setEnabled(false);
         m_stopAct->setEnabled(true);
         m_stepIntoAct->setEnabled(false);
         m_stepOutAct->setEnabled(false);
         m_stepOverAct->setEnabled(false);
     }
-    m_inSession = false;
+    else
+    {
+        // Show local variables and the bt
+        m_localVariables->updateDisplay(ctx()->execContexts.top());
+        m_callStack->displayStack(ctx());
 
-    if (m_execLineMarkIFace)
-        m_execLineMarkIFace->removeMark(m_execLine - 1, KTextEditor::MarkInterface::Execution);
+        // Toggle buttons..
+        m_continueAct->setEnabled(true);
+        m_stopAct->setEnabled(false);
+        m_stepIntoAct->setEnabled(true);
+        m_stepOutAct->setEnabled(true);
+        m_stepOverAct->setEnabled(true);
+    }
+
+    updateStoppedMark(mode);
+}
+
+
+// -------------------------------------------------------------
+
+void DebugWindow::stopAtNext()
+{
+    m_breakAtNext = true;
+}
+
+bool DebugWindow::shouldContinue(InterpreterContext* ic)
+{
+    return !ic || ic->mode != Abort;
+}
+
+void DebugWindow::leaveDebugSession()
+{
+    // Update UI for running mode, unless we expect things to
+    // be quick; in which case we'll only update if we have to, due to
+    // finishing running
+    if (ctx()->mode != Step)
+        setUIMode(Running);
+    else  // In the other case, we still want to remove the old running marker, however
+        updateStoppedMark(Running);
+    m_activeSessionCtxs.pop();
 
     resumeTimeoutChecks();
+
+    // There may be a previous session in progress --- in
+    // that case we need to update the UI to reflect that.
+    if (!m_activeSessionCtxs.isEmpty())
+        setUIMode(Running);
+
     exitLoop();
 }
 
@@ -303,39 +373,58 @@ void DebugWindow::resumeTimeoutChecks()
 
 void DebugWindow::continueExecution()
 {
-    m_mode = Normal;
+    ctx()->mode   = Normal;
+    m_breakAtNext = false;
     leaveDebugSession();
 }
 
 void DebugWindow::stepInto()
 {
-    m_mode = Step;
+    ctx()->mode = Step;
     leaveDebugSession();
 }
 
 void DebugWindow::stepOut()
 {
-    m_mode = StepOut;
-    m_depthAtSkip = m_execContexts.size();
+    ctx()->mode        = StepOut;
+    ctx()->depthAtSkip = ctx()->execContexts.size();
     leaveDebugSession();
 }
 
 void DebugWindow::stepOver()
 {
-    m_mode = StepOver;
-    m_depthAtSkip = m_execContexts.size();
+    ctx()->mode        = StepOver;
+    ctx()->depthAtSkip = ctx()->execContexts.size();
     leaveDebugSession();
 }
 
 DebugWindow::~DebugWindow()
 {
-    while (!m_documentList.isEmpty())
-        delete m_documentList.takeFirst();
-
+    qDeleteAll(m_documentList);
     m_documentList.clear();
 }
 
 // -------------------------------------------------------------
+
+void DebugWindow::attach(Interpreter *interp)
+{
+    m_contexts[interp] = new InterpreterContext;
+}
+
+void DebugWindow::detach(Interpreter *interp)
+{
+    if (interp)
+    {
+        delete m_contexts.take(interp);
+    }
+    else //All
+    {
+        qDeleteAll(m_contexts);
+        m_contexts.clear();
+    }
+}
+
+
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                                const UString &source, int startingLineNumber , int errorLine, const UString &/* errorMsg */)
 {
@@ -347,10 +436,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
              << "startingLineNumber: " << startingLineNumber << endl
              << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
-             
+
     // Determine key
     QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(sourceURL.qstring());
-    
+
     DebugDocument *document = 0;
     if (!sourceURL.isEmpty())
         document = m_documents[key];
@@ -370,7 +459,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     m_scripts->addDocument(document);
     buildViewerDocument(document);
 
-    return (m_mode != Abort);
+    return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
 
 bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
@@ -387,7 +476,7 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
         m_sourceIdLookup.remove(sourceId);
     }
 
-    return (m_mode != Abort);
+    return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
 
 bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
@@ -399,7 +488,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
     if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
-        return (m_mode != Abort);
+        return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 
     // ### adjust to have m_evalDepth, for console, like in KDE3 version
     QString exceptionMsg = valueToString(exceptionObj);
@@ -418,7 +507,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
         exception   = true;
         syntaxError = true;
     }
-    
+
     if (protoObj == exec->lexicalInterpreter()->builtinErrorPrototype()          ||
         protoObj == exec->lexicalInterpreter()->builtinEvalErrorPrototype()      ||
         protoObj == exec->lexicalInterpreter()->builtinReferenceErrorPrototype() ||
@@ -441,10 +530,10 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
         exceptionMsg = exceptionObj->toString(exec).qstring();
         exec->setException(exceptionObj);
     }
-    
+
     // Look up fragment info from sourceId
     DebugDocument* doc = m_sourceIdLookup[sourceId];
-    
+
     // Figure out filename.
     QString url = "????";
     if (exec->context()->codeType() == EvalCode)
@@ -463,7 +552,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
         enterDebugSession(exec, doc, lineNo);
     }
 
-    return (m_mode != Abort);
+    return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
 
 
@@ -475,14 +564,26 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
-    if (m_mode == Abort)
+    kDebug() << firstLine << m_breakAtNext;
+
+    InterpreterContext* candidateCtx = m_contexts[exec->dynamicInterpreter()];
+
+    if (!shouldContinue(candidateCtx))
         return false;
 
     bool enterDebugMode = false;
-    if (m_mode == Step)
+
+    // We stop when breakAtNext is set regardless of the context.
+    if (m_breakAtNext)
+    {
         enterDebugMode = true;
-    if (m_mode == StepOver && m_execContexts.size() <= m_depthAtSkip)
+        m_breakAtNext  = false;
+    }
+
+    if (candidateCtx->mode == Step)
         enterDebugMode = true;
+
+    //### test StepOver on top level, etc.
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
     assert(document);
@@ -495,13 +596,14 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
     if (enterDebugMode)
         enterDebugSession(exec, document, firstLine);
 
-
     // re-checking the abort mode here, in case it got change when recursing
-    return (m_mode != Abort);
+    return shouldContinue(candidateCtx);
 }
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
+    InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
+
     // First update call stack.
     DebugDocument *document = m_sourceIdLookup[sourceId];
     QString functionName = "?????";
@@ -511,51 +613,48 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
         functionName = func->functionName().qstring();
     }
 
-    m_callStack->addCall(functionName.isEmpty() ? document->name() : functionName, lineno);
+    ctx->addCall(functionName.isEmpty() ? document->name() : functionName, lineno);
+    ctx->execContexts.push(exec);
 
-    m_execContexts.push(exec);
-
-    return (m_mode != Abort);
+    return shouldContinue(ctx);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
+    InterpreterContext* ic  = m_contexts[exec->dynamicInterpreter()];
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    m_callStack->removeCall();
-    m_callStack->displayStack(); //### FIXME: don't want to do this all the time
+    ic->removeCall();
 
-    assert(m_execContexts.top() == exec);
-    m_execContexts.pop();
+    assert(ic->execContexts.top() == exec);
+    ic->execContexts.pop();
 
     // See if we should stop on the next instruction
-    if (m_mode == StepOut)
+    if (ic->mode == StepOut)
     {
-        if (m_execContexts.size() < m_depthAtSkip)
-            m_mode = Step;
+        if (ic->execContexts.size() < ic->depthAtSkip)
+            ic->mode = Step;
     }
-    else if (m_mode == StepOver)
+    else if (ic->mode == StepOver)
     {
-        if (m_execContexts.size() <= m_depthAtSkip)
-            m_mode = Step;
-    }
-
-    // If there is nothing more to run, we have to go back to 
-    // "continue" mode, and flush all UI, etc.
-    if (m_mode != Normal && m_execContexts.isEmpty())
-    {
-        m_localVariables->updateDisplay(0);
-        m_continueAct->setEnabled(false);
-        m_stopAct->setEnabled(true);
-        m_stepIntoAct->setEnabled(false);
-        m_stepOutAct->setEnabled(false);
-        m_stepOverAct->setEnabled(false);
-
-        if (m_mode != Abort)
-            m_mode = Normal;
+        if (ic->execContexts.size() <= ic->depthAtSkip)
+            ic->mode = Step;
     }
 
+    // There is a special case here: we may have clicked step, and
+    // ran out of code, and now UI is in stopped mode (since we avoid
+    // switching Stopped->Running->Stopped on plain single-step)
+    // This happens when:
+    // 1) No session is active
+    // 2) The context steck for this session is empty
+    // 3) This session is thought to be waiting for a step.
+    if (m_activeSessionCtxs.isEmpty() &&
+        ic->execContexts.isEmpty() && ic->mode == Step)
+    {
+        setUIMode(Running);
+        ic->mode = Normal;
+    }
 
-    return (m_mode != Abort);
+    return shouldContinue(ic);
 }
 
 // End KJS::Debugger overloads
@@ -574,16 +673,16 @@ void DebugWindow::displayScript(DebugDocument *document)
 {
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
-        
+
     if (m_openDocuments.contains(document))
     {
         int idx = m_openDocuments.indexOf(document);
         m_tabWidget->setCurrentIndex(idx);
         return;
     }
-    
+
     KTextEditor::Document *doc = m_debugLut[document];
-    
+
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
     if (configInterface)
@@ -754,45 +853,22 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
         show();
 
     pauseTimeoutChecks();
+    m_activeSessionCtxs.push(m_contexts[exec->dynamicInterpreter()]);
 
-    m_continueAct->setEnabled(true);
-    m_stopAct->setEnabled(false);
-    m_stepIntoAct->setEnabled(true);
-    m_stepOutAct->setEnabled(true);
-    m_stepOverAct->setEnabled(true);
-
-    // In global code, we may have to swizzle the lowest 
-    // frame as appropriate; also will have to fix up 
+    // In global code, we may have to swizzle the lowest
+    // frame as appropriate; also will have to fix up
     // the context stack. ### fix up KJS::Debugger instead
-    if (exec->context()->codeType() == GlobalCode) {
-        m_callStack->setGlobalFrame(document->url());
-        m_execContexts.push(exec);
+    if (exec->context()->codeType() == GlobalCode) 
+    {
+        ctx()->setGlobalFrame(document->url());
+        ctx()->execContexts.push(exec);
     }
-    m_callStack->updateCall(line);
-    m_callStack->displayStack();
+    ctx()->updateCall(line);
+    ctx()->activeDocument = document;
 
-    m_localVariables->updateDisplay(exec);
-    
-    // Display the source file, and visualize the position
-    displayScript(document);
-    KTextEditor::Document* ddoc = m_debugLut[document];
-    KTextEditor::View*     view = viewForDocument(document);
-    view->setCursorPosition(KTextEditor::Cursor(line - 1, 0)); // Note: KTextEditor lines 0-based
-    
-    
-    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(ddoc);
-    if (markInterface)
-        markInterface->addMark(line - 1, KTextEditor::MarkInterface::Execution);
-
-    m_execLineMarkIFace = markInterface;
-    m_execLine          = line;
-
-    m_inSession = true;
+    setUIMode(Stopped);
     enterLoop();
 }
-
-
-
 
 //// Event handling - ripped from old kjsdebugger
 
@@ -809,6 +885,7 @@ bool DebugWindow::eventFilter(QObject *object, QEvent *event)
         case QEvent::Destroy:
         case QEvent::Close:
         case QEvent::Quit:
+        case QEvent::HideToParent:
             {
                 while (object->parent())
                     object = object->parent();

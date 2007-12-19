@@ -42,6 +42,8 @@
 
 #include <QStack>
 
+#include "interpreter_ctx.h"
+
 class KAction;
 class QTabWidget;
 class QFrame;
@@ -71,16 +73,6 @@ class DebugDocument;
 class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponentData
 {
     Q_OBJECT
-public:
-    enum Mode
-    {
-        Normal   = 0, // Only stop at breakpoints
-        StepOver = 1, // Will break on next statement in current context
-        StepOut  = 2, // Will break one or more contexts above.
-        Step     = 3, // Will break on next statement in current or deeper context
-        Abort    = 4  // The script will stop execution completely,
-                      // as soon as possible
-    };
 
 Q_SIGNALS:
     void quitLoop();
@@ -96,7 +88,7 @@ public:
     // Returns if we blocked execution; KHTML will attempt to use it 
     // to prevent some kinds of accidental recursion. Should go 
     // if proper modal dialog manager shows up
-    bool inSession() const { return m_inSession; }
+    bool inSession() const { return !m_activeSessionCtxs.isEmpty(); }
 public:
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                       const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
@@ -105,6 +97,8 @@ public:
     bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
     bool callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
     bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
+    void attach(Interpreter *interp);
+    void detach(Interpreter *interp);
 
 public Q_SLOTS:
     void stopAtNext();
@@ -148,6 +142,10 @@ private:
     void enterLoop();
     void exitLoop();
 
+    enum RunMode { Running, Stopped };
+
+    void setUIMode        (RunMode mode);
+    void updateStoppedMark(RunMode mode);
 private:
     // Checks to see whether we should stop at the given location, based on the current 
     // mode and breakpoints. Returns false if we should abort
@@ -178,16 +176,23 @@ private:
     QTabWidget *m_tabWidget;
     QFrame *m_docFrame;
 
-    Mode m_mode;
-    bool m_inSession;
-    QStack<KJS::ExecState*> m_execContexts;
-    int  m_depthAtSkip; // How far we were in on stepOut
-                        // our stepOver.
-    
-    // Used to keep track of line highlighting in enterDebugSession,
-    // so leaveDebugSession can clear it;
-    KTextEditor::MarkInterface* m_execLineMarkIFace;
-    int                         m_execLine;
+    bool shouldContinue(InterpreterContext* ic);
+
+    // The handling of debugger modes is a bit funny.
+    // essentially, we want normal step/stepOver/stepOut
+    // to work per (dynamic) interpreter, but "break at next" 
+    // should work globally. 
+    bool m_breakAtNext;
+
+    // This keeps track of the contexts for the various debuggers
+    // we may be in session for. It's needed because the same window is
+    // used for all, so we may occassionally be a few levels of recursion in,
+    // so we need to know exactly how to unwind, etc.
+    QStack<InterpreterContext*> m_activeSessionCtxs;
+
+    InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }
+
+    QHash<Interpreter*, InterpreterContext*> m_contexts;
 
     QList<KTextEditor::Document*>  m_documentList;
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
@@ -203,8 +208,6 @@ private:
 
 
 } // namespace
-
-
 
 
 #endif // DEBUGWINDOW_H

@@ -118,6 +118,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/interpreter_ctx.cpp
 )
 
 qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
