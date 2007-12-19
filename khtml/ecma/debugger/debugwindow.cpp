@@ -582,6 +582,11 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
 
     if (candidateCtx->mode == Step)
         enterDebugMode = true;
+    else if (candidateCtx->mode == StepOver)
+    {
+        if (candidateCtx->execContexts.size() <= candidateCtx->depthAtSkip)
+            enterDebugMode = true;
+    }
 
     //### test StepOver on top level, etc.
 
@@ -628,15 +633,15 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     assert(ic->execContexts.top() == exec);
     ic->execContexts.pop();
 
-    // See if we should stop on the next instruction
+    // See if we should stop on the next instruction.
+    // Note that we should not test StepOver here, as
+    // we may have a return event at same level
+    // in case of a f(g(), h()) type setup
+    // Note that in the above case a StepOut from
+    // g() would step into h() from below, which is reasonable
     if (ic->mode == StepOut)
     {
         if (ic->execContexts.size() < ic->depthAtSkip)
-            ic->mode = Step;
-    }
-    else if (ic->mode == StepOver)
-    {
-        if (ic->execContexts.size() <= ic->depthAtSkip)
             ic->mode = Step;
     }
 
