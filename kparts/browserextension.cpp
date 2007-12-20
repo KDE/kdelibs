@@ -510,7 +510,6 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 : QObject( parent ), d( new BrowserExtensionPrivate(parent) )
 {
   //kDebug() << "BrowserExtension::BrowserExtension() " << this;
-  d->m_urlDropHandlingEnabled = false;
 
   if (s_actionSlotMap->isEmpty())
       // Create the action-slot map
