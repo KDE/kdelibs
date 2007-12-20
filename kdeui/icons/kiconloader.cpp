@@ -857,7 +857,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
        name = KStandardDirs::locateLocal("cache", name+".png");
     }
 
-    if (name.isEmpty()
+    if (!name.isEmpty()
 #ifdef Q_WS_WIN
         && !QDir::isRelativePath(name))
 #else
