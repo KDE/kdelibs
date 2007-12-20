@@ -186,7 +186,7 @@ public:
    * by calling setDefaultToolBar( const QString& ) on the dialog.
    *   @param  toolbarName  the name of the tool bar
    */
-  static void setGlobalDefaultToolBar(const char *toolBarName);
+  static void setGlobalDefaultToolBar(const char *toolBarName); // TODO should be const QString&
 
 Q_SIGNALS:
   /**

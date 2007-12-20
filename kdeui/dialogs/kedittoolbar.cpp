@@ -444,11 +444,9 @@ public:
     QString m_defaultToolBar;
     KXMLGUIFactory* m_factory;
     KEditToolBarWidget *m_widget;
-
-    static const char *s_defaultToolBar;
 };
 
-const char *KEditToolBarPrivate::s_defaultToolBar = 0L;
+K_GLOBAL_STATIC(QString, s_defaultToolBarName)
 
 KEditToolBar::KEditToolBar( KActionCollection *collection,
                             QWidget* parent )
@@ -494,7 +492,7 @@ void KEditToolBarPrivate::init()
     q->connect(q, SIGNAL(defaultClicked()), SLOT(_k_slotDefault()));
 
     q->setMinimumSize(q->sizeHint());
-    KEditToolBarPrivate::s_defaultToolBar = 0;
+    s_defaultToolBarName->clear();
 }
 
 void KEditToolBar::setResourceFile( const QString& file, bool global )
@@ -512,7 +510,7 @@ KEditToolBar::~KEditToolBar()
 void KEditToolBar::setDefaultToolBar( const QString& toolBarName )
 {
     if ( toolBarName.isEmpty() ) {
-        d->m_defaultToolBar = QLatin1String(KEditToolBarPrivate::s_defaultToolBar);
+        d->m_defaultToolBar = *s_defaultToolBarName;
     } else {
         d->m_defaultToolBar = toolBarName;
     }
@@ -618,7 +616,7 @@ void KEditToolBarPrivate::_k_slotApply()
 
 void KEditToolBar::setGlobalDefaultToolBar(const char *toolbarName)
 {
-    KEditToolBarPrivate::s_defaultToolBar = toolbarName;
+    *s_defaultToolBarName = QString::fromLatin1(toolbarName);
 }
 
 KEditToolBarWidget::KEditToolBarWidget( KActionCollection *collection,
