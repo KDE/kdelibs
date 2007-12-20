@@ -96,6 +96,8 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QList<CSSP
 
 CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDeclarationImpl& o)
 {
+    if (this == &o) return *this;
+
     // don't attach it to the same node, just leave the current m_node value
     if (m_lstValues)
         qDeleteAll(*m_lstValues);

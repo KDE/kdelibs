@@ -576,8 +576,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QRect w = p->window();
     QRect v = p->viewport();
     if (!buffered && t.isTranslating()) {
-        thePoint.setX( thePoint.x()+t.dx() );
-        thePoint.setY( thePoint.y()+t.dy() );
+        thePoint.setX( thePoint.x()+ static_cast<int>(t.dx()) );
+        thePoint.setY( thePoint.y()+ static_cast<int>(t.dy()) );
     }
     QRegion rg = p->clipRegion();
     QPaintDevice *d = p->device();
