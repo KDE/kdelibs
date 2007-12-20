@@ -347,6 +347,9 @@ namespace KJS {
     void startTimeoutCheck();
     void stopTimeoutCheck();
 
+    // Resets the timer to full time if it's running
+    void restartTimeoutCheck();
+
     void pauseTimeoutCheck();
     void resumeTimeoutCheck();
     

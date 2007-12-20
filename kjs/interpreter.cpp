@@ -814,6 +814,16 @@ void Interpreter::stopTimeoutCheck()
     m_timeoutChecker->stopTimeoutCheck(this);
 }
 
+void Interpreter::restartTimeoutCheck()
+{
+    if (!m_timeoutChecker || !m_startTimeoutCheckCount)
+        return;
+
+    m_timedOut = false;
+    m_timeoutChecker->stopTimeoutCheck(this);
+    m_timeoutChecker->startTimeoutCheck(this);
+}
+
 void Interpreter::pauseTimeoutCheck()
 {
     ASSERT(m_timeoutChecker);
