@@ -43,10 +43,14 @@
 #include <kparts/browserextension.h>
 #include <kmessagebox.h>
 
+#include "debugger/debugwindow.h"
+
 #include <QtCore/QList>
 
 #include <assert.h>
 #include <stdlib.h>
+
+using namespace KJSDebugger;
 
 namespace KJS {
 
@@ -167,6 +171,11 @@ void ScriptInterpreter::stopCPUGuard()
 
 bool ScriptInterpreter::shouldInterruptScript() const
 {
+#ifdef KJS_DEBUGGER
+  if (DebugWindow::isBlocked())
+    return false;
+#endif
+
     kDebug(6070) << "alarmhandler";
   return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), KGuiItem(i18n("&Abort")), KStandardGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
 }

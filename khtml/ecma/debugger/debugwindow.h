@@ -85,6 +85,11 @@ public:
     static void destroyInstance();
     static DebugWindow *window();
 
+    // Returns true if the debugger is active, and has blocked the execution
+    // for some reason.
+    // ### seems like some of what we (mis-)use inSession() for should use this
+    static bool isBlocked();
+
     // Returns if we blocked execution; KHTML will attempt to use it 
     // to prevent some kinds of accidental recursion. Should go 
     // if proper modal dialog manager shows up
@@ -123,9 +128,6 @@ private:
     // this DebugDocument
     KTextEditor::Document* buildViewerDocument(DebugDocument *document);
     
-    void pauseTimeoutChecks();
-    void resumeTimeoutChecks();
-
     void createActions();
     void createMenus();
     void createToolBars();
@@ -175,7 +177,14 @@ private:
 
     QTabWidget *m_tabWidget;
 
+    // e.g. not aborted
     bool shouldContinue(InterpreterContext* ic);
+
+    // This keeps track of modal dialogs we've put up
+    // that may disable the CPU guard.
+    int m_modalLevel;
+
+    void resetTimeoutsIfNeeded();
 
     // The handling of debugger modes is a bit funny.
     // essentially, we want normal step/stepOver/stepOut
@@ -200,7 +209,7 @@ private:
     QHash<DebugDocument*, KTextEditor::Document*> m_debugLut; // map DebugDocument's to KTextEditor::Document's
     QList<DebugDocument*> m_openDocuments;
 
-    static DebugWindow *m_debugger;
+    static DebugWindow *s_debugger;
 };
 
 

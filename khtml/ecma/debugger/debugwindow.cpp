@@ -87,24 +87,24 @@
 using namespace KJS;
 using namespace KJSDebugger;
 
-DebugWindow* DebugWindow::m_debugger = 0;
+DebugWindow* DebugWindow::s_debugger = 0;
 DebugWindow *DebugWindow::createInstance()
 {
-    Q_ASSERT(!m_debugger);
-    m_debugger = new DebugWindow();
-    return m_debugger;
+    Q_ASSERT(!s_debugger);
+    s_debugger = new DebugWindow();
+    return s_debugger;
 }
 
 void DebugWindow::destroyInstance()
 {
-    Q_ASSERT(m_debugger);
-    m_debugger->hide();
-    delete m_debugger;
+    Q_ASSERT(s_debugger);
+    s_debugger->hide();
+    delete s_debugger;
 }
 
 DebugWindow * DebugWindow::window()
 {
-    return m_debugger;
+    return s_debugger;
 }
 
 // ----------------------------------------------
@@ -159,7 +159,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
             this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
 
-    m_breakAtNext  = false;
+    m_breakAtNext = false;
+    m_modalLevel  = 0;
 }
 
 void DebugWindow::createActions()
@@ -313,6 +314,28 @@ void DebugWindow::setUIMode(RunMode mode)
 
 // -------------------------------------------------------------
 
+bool DebugWindow::isBlocked()
+{
+    DebugWindow* self = window();
+    if (!self)
+        return false;
+    return self->inSession() || self->m_modalLevel;
+}
+
+void DebugWindow::resetTimeoutsIfNeeded()
+{
+    if (!isBlocked())
+    {
+        KJS::Interpreter* intp = KJS::Interpreter::firstInterpreter();
+        do
+        {
+            intp->restartTimeoutCheck();
+            intp = intp->nextInterpreter();
+        }
+        while (intp != KJS::Interpreter::firstInterpreter());
+    }
+}
+
 void DebugWindow::stopAtNext()
 {
     m_breakAtNext = true;
@@ -333,8 +356,7 @@ void DebugWindow::leaveDebugSession()
     else  // In the other case, we still want to remove the old running marker, however
         updateStoppedMark(Running);
     m_activeSessionCtxs.pop();
-
-    resumeTimeoutChecks();
+    resetTimeoutsIfNeeded();
 
     // There may be a previous session in progress --- in
     // that case we need to update the UI to reflect that.
@@ -342,28 +364,6 @@ void DebugWindow::leaveDebugSession()
         setUIMode(Running);
 
     exitLoop();
-}
-
-void DebugWindow::pauseTimeoutChecks()
-{
-    KJS::Interpreter* intp = KJS::Interpreter::firstInterpreter();
-    do
-    {
-        intp->pauseTimeoutCheck();
-        intp = intp->nextInterpreter();
-    }
-    while (intp != KJS::Interpreter::firstInterpreter());
-}
-
-void DebugWindow::resumeTimeoutChecks()
-{
-    KJS::Interpreter* intp = KJS::Interpreter::firstInterpreter();
-    do
-    {
-        intp->resumeTimeoutCheck();
-        intp = intp->nextInterpreter();
-    }
-    while (intp != KJS::Interpreter::firstInterpreter());
 }
 
 void DebugWindow::continueExecution()
@@ -443,6 +443,9 @@ void DebugWindow::detach(Interpreter *interp)
         qDeleteAll(m_contexts);
         m_contexts.clear();
     }
+
+    resetTimeoutsIfNeeded();
+
     KJS::Debugger::detach(interp);
 }
 
@@ -570,14 +573,13 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
                 KStringHandler::rsqueeze(url, 80), lineNo, exceptionMsg);
 
     KJSErrorDialog dlg(this /*dlgParent*/, msg, true);
-    pauseTimeoutChecks(); //Don't let KJS freak out due to dialog hanging aroudn for a while.
+    ++m_modalLevel;
     dlg.exec();
-    resumeTimeoutChecks();
+    --m_modalLevel;
+    resetTimeoutsIfNeeded();
     if (dlg.debugSelected())
-    {
         // We want to stop at the current line, to see what's going on.
         enterDebugSession(exec, doc, lineNo);
-    }
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -886,7 +888,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
     if (!isVisible())
         show();
 
-    pauseTimeoutChecks();
     m_activeSessionCtxs.push(m_contexts[exec->dynamicInterpreter()]);
 
     // In global code, we may have to swizzle the lowest
