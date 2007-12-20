@@ -492,7 +492,6 @@ void KEditToolBarPrivate::init()
     q->connect(q, SIGNAL(defaultClicked()), SLOT(_k_slotDefault()));
 
     q->setMinimumSize(q->sizeHint());
-    s_defaultToolBarName->clear();
 }
 
 void KEditToolBar::setResourceFile( const QString& file, bool global )
@@ -505,6 +504,7 @@ void KEditToolBar::setResourceFile( const QString& file, bool global )
 KEditToolBar::~KEditToolBar()
 {
     delete d;
+    s_defaultToolBarName->clear();
 }
 
 void KEditToolBar::setDefaultToolBar( const QString& toolBarName )
