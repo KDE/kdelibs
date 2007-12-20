@@ -479,7 +479,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
     document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
     m_scripts->addDocument(document);
-    buildViewerDocument(document);
+
+    // Rebuild document if it was built before
+    if (m_debugLut[document])
+        buildViewerDocument(document);
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -708,6 +711,11 @@ void DebugWindow::displayScript(DebugDocument *document)
         return;
     }
 
+    // Here, we are responsible for initial creation of the document.
+    // updates will be handled in sourceParsed
+    if (!m_debugLut[document])
+        buildViewerDocument(document);
+
     KTextEditor::Document *doc = m_debugLut[document];
 
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
@@ -737,7 +745,6 @@ void DebugWindow::displayScript(DebugDocument *document)
                                      SmallIcon("arrow-right"));
     }
 
-    doc->setReadWrite(false);
     m_openDocuments.append(document);
     int idx = m_tabWidget->addTab(view, document->name());
     m_tabWidget->setCurrentIndex(idx);
@@ -769,7 +776,7 @@ KTextEditor::Document* DebugWindow::buildViewerDocument(DebugDocument *document)
 
     doc->setReadWrite(true);
     doc->clear();
-    
+
     // Note: in case there are fragments on the same line, and some 
     // are inline code, the order will not match the document.
     // This needs column information to work right; with corresponding 
@@ -810,17 +817,17 @@ KTextEditor::Document* DebugWindow::buildViewerDocument(DebugDocument *document)
                 --linesToRemove;
             }
         }
-        
+
         // Insert enough blank lines to get us to the end. Kind of sucks.
         while (doc->lines() - 1 < line) {
             doc->insertLine(doc->lines(), "");
         }
-        
 
         // Now put in our code
         doc->insertLines(line, sourceLines);
     }
-    
+
+    doc->setReadWrite(false);
     return doc;
 }
 
