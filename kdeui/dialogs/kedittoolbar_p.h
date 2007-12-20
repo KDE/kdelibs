@@ -191,7 +191,7 @@ Q_SIGNALS:
     void enableOk(bool);
 
 private:
-    Q_PRIVATE_SLOT(d, void slotToolBarSelected(const QString& text))
+    Q_PRIVATE_SLOT(d, void slotToolBarSelected(int index))
 
     Q_PRIVATE_SLOT(d, void slotInactiveSelectionChanged())
     Q_PRIVATE_SLOT(d, void slotActiveSelectionChanged())

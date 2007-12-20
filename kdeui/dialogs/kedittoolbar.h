@@ -123,10 +123,6 @@ public:
    * The other two parameters are optional.
    *
    * @param collection The collection of actions to work on.
-   * @param defaultToolBar The toolbar with this name will appear for editing.
-   *                       Pass in QString() for the default behaviour,
-   *                       generallyd desired for apps that do not use
-   *                       components.
    * @param parent The parent of the dialog.
    */
   explicit KEditToolBar(KActionCollection *collection,
@@ -148,8 +144,6 @@ public:
    * \endcode
    *
    * @param factory Your application's factory object
-   * @param defaultToolBar The toolbar with this name will appear for editing.
-   *                       Pass in QString() for default behavior.
    * @param parent The usual parent for the dialog.
    */
   explicit KEditToolBar( KXMLGUIFactory* factory,
