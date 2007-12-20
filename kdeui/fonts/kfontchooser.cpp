@@ -765,16 +765,20 @@ void KFontChooser::Private::_k_size_value_slot(int val)
     QFontDatabase dbase;
     QString family = qtFamilies[familyListBox->currentItem()->text()];
     QString style = qtStyles[styleListBox->currentItem()->text()];
-    if (dbase.isSmoothlyScalable(family, style)) {
-        // Vector font, reset current size slot in list if it was customized.
-        if (sizeListBox->currentRow() == customSizeRow) {
-            sizeListBox->item(customSizeRow)->setText(standardSizeAtCustom);
-            customSizeRow = -1;
-        }
+
+    // Reset current size slot in list if it was customized.
+    if (sizeListBox->currentRow() == customSizeRow) {
+        sizeListBox->item(customSizeRow)->setText(standardSizeAtCustom);
+        customSizeRow = -1;
     }
-    else {
+
+    bool canCustomize = true;
+
+    // For Qt-bad-sizes workaround: skip this block unconditionally
+    if (!dbase.isSmoothlyScalable(family, style)) {
         // Bitmap font, allow only discrete sizes.
         // Determine the nearest in the direction of change.
+        canCustomize = false;
         int nrows = sizeListBox->count();
         int row = sizeListBox->currentRow();
         int nrow;
@@ -795,19 +799,9 @@ void KFontChooser::Private::_k_size_value_slot(int val)
         sizeOfFont->setValue(val);
     }
 
-    // Set the current size in the size listbox if available,
-    // otherwise customize one size slot and set it as current.
-    QList<QListWidgetItem*> selectedSizeList =
-        sizeListBox->findItems( QString::number(val),
-                                Qt::MatchExactly );
-    if ( !selectedSizeList.isEmpty() ) {
-        sizeListBox->setCurrentItem(selectedSizeList.first());
-    }
-    else {
-        // Find nearest standard size slot and customize it.
-        int row = nearestSizeRow(val, true);
-        sizeListBox->setCurrentRow(row);
-    }
+    // Set the current size in the size listbox.
+    int row = nearestSizeRow(val, canCustomize);
+    sizeListBox->setCurrentRow(row);
 
     selectedSize = val;
     selFont.setPointSize(val);
@@ -840,7 +834,8 @@ int KFontChooser::Private::nearestSizeRow (int val, bool customize)
             row = r;
         }
     }
-    if (customize) {
+    // For Qt-bad-sizes workaround: ignore value of customize, use true
+    if (customize && diff > 0) {
         customSizeRow = row;
         standardSizeAtCustom = sizeListBox->item(row)->text();
         sizeListBox->item(row)->setText(QString::number(val));
