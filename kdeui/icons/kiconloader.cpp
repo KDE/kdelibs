@@ -197,10 +197,12 @@ public:
     int lastIconType; // see KIconLoader::type
     int lastIconThreshold; // see KIconLoader::threshold
     QList<KIconThemeNode *> links;
-    bool extraDesktopIconsLoaded :1;
     QHash<QString, KSvgRenderer*> svgRenderers;
     KIconCache* mIconCache;
-    bool mIconThemeInited;
+    bool extraDesktopIconsLoaded :1;
+    // lazy loading: initIconThemes() is only needed when the "links" list is needed
+    // mIconThemeInited is used inside initIconThemes() to init only once
+    bool mIconThemeInited :1;
     QString appname;
 
     KIconLoader *q;
@@ -409,7 +411,7 @@ bool KIconLoaderPrivate::initIconThemes()
         // If mpThemeRoot isn't 0 then initing has succeeded
         return (mpThemeRoot != 0);
     }
-    kDebug(264) ;
+    kDebug(264);
     mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree
@@ -485,7 +487,7 @@ KIconLoader::~KIconLoader()
 
 void KIconLoader::addAppDir(const QString& appname)
 {
-    const_cast<KIconLoader*>(this)->d->initIconThemes();
+    d->initIconThemes();
 
     d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
@@ -541,7 +543,7 @@ void KIconLoader::addExtraDesktopThemes()
 {
     if ( d->extraDesktopIconsLoaded ) return;
 
-    const_cast<KIconLoader*>(this)->d->initIconThemes();
+    d->initIconThemes();
 
     QStringList list;
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
@@ -757,7 +759,7 @@ inline QString KIconLoaderPrivate::unknownIconPath( int size ) const
 QString KIconLoader::iconPath(const QString& _name, int group_or_size,
                               bool canReturnNull) const
 {
-    if (!const_cast<KIconLoader*>(this)->d->initIconThemes()) {
+    if (!d->initIconThemes()) {
         return QString();
     }
 
@@ -881,7 +883,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         if (d->mIconCache->find(key, pix, path_store)) {
             //kDebug(264) << "KIL: " << "found the icon from KIC";
             return pix;
-        } else if (!const_cast<KIconLoader*>(this)->d->initIconThemes()) {
+        } else if (!d->initIconThemes()) {
             return pix;  // null pixmap
         }
 
@@ -973,7 +975,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (d->mIconCache->find(key, pix, path_store)) {
         //kDebug() << "KIL: " << "found icon from KIC";
         return pix;
-    } else if (!const_cast<KIconLoader*>(this)->d->initIconThemes()) {
+    } else if (!d->initIconThemes()) {
         return pix; // null pixmap
     }
 
@@ -1158,7 +1160,7 @@ QString KIconLoader::moviePath(const QString& name, KIconLoader::Group group, in
 {
     if (!d->mpGroups) return QString();
 
-    const_cast<KIconLoader*>(this)->d->initIconThemes();
+    d->initIconThemes();
 
     if ( (group < -1 || group >= KIconLoader::LastGroup) && group != KIconLoader::User )
     {
@@ -1212,7 +1214,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
 
     if (!d->mpGroups) return lst;
 
-    const_cast<KIconLoader*>(this)->d->initIconThemes();
+    d->initIconThemes();
 
     if ((group < -1) || (group >= KIconLoader::LastGroup))
     {
@@ -1282,8 +1284,8 @@ QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 {
     QDir dir(iconsDir);
     QStringList formats;
-    formats << "*.png" << "*.xpm";
-    QStringList lst = dir.entryList(formats, QDir::Files);
+    formats << "*.png" << "*.xpm" << "*.svg" << "*.svgz";
+    const QStringList lst = dir.entryList(formats, QDir::Files);
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); ++it)
@@ -1294,6 +1296,8 @@ QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 QStringList KIconLoader::queryIconsByContext(int group_or_size,
                                              KIconLoader::Context context) const
 {
+    d->initIconThemes();
+
     QStringList result;
     if (group_or_size >= KIconLoader::LastGroup)
     {
@@ -1333,6 +1337,8 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
 
 QStringList KIconLoader::queryIcons(int group_or_size, KIconLoader::Context context) const
 {
+    d->initIconThemes();
+
     QStringList result;
     if (group_or_size >= KIconLoader::LastGroup)
     {

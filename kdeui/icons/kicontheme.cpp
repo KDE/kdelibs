@@ -201,7 +201,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->example = cfg.readPathEntry("Example", QString());
     d->screenshot = cfg.readPathEntry("ScreenShot", QString());
 
-    QStringList dirs = cfg.readPathEntry("Directories", QStringList());
+    const QStringList dirs = cfg.readPathEntry("Directories", QStringList());
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
         KConfigGroup cg(d->sharedConfig, *it);
@@ -210,9 +210,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	    if (KStandardDirs::exists(*itDir + *it + '/'))
 	    {
 	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, cg);
-	        if (!dir->isValid())
-	        {
-	            kDebug(264) << "Icon directory " << *itDir << " group " << *it << " not valid.";
+	        if (!dir->isValid()) {
 	            delete dir;
 	        }
 	        else
@@ -647,7 +645,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigGroup &config)
     else if (tmp == "Status")
         mContext = KIconLoader::StatusIcon;
     else {
-        kDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
+        kDebug(264) << "Invalid Context=" << tmp << "line for icon theme: " << mDir << "\n";
         return;
     }
     tmp = config.readEntry("Type");
@@ -658,7 +656,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigGroup &config)
     else if (tmp == "Threshold")
         mType = KIconLoader::Threshold;
     else {
-        kDebug(264) << "Invalid Type= line for icon theme: " << mDir << "\n";
+        kDebug(264) << "Invalid Type=" << tmp << "line for icon theme: " << mDir << "\n";
         return;
     }
     if (mType == KIconLoader::Scalable)
