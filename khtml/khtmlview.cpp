@@ -647,11 +647,39 @@ int KHTMLView::contentsY() const
 
 int KHTMLView::visibleWidth() const
 {
+    if (m_kwp->isRedirected()) {
+        // our RenderWidget knows better
+        if (RenderWidget* rw = m_kwp->renderWidget()) {
+            int ret = rw->width()-rw->paddingLeft()-rw->paddingRight()-rw->borderLeft()-rw->borderRight();
+            if (verticalScrollBar()->isVisible()) {
+                ret -= style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+                int lhs = style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
+                if (lhs > 0)
+                    ret -= lhs;
+                ret = qMax(0, ret);
+            }
+            return ret;
+        }
+    }
     return viewport()->width();
 }
 
 int KHTMLView::visibleHeight() const
 {
+    if (m_kwp->isRedirected()) {
+        // our RenderWidget knows better
+        if (RenderWidget* rw = m_kwp->renderWidget()) {
+            int ret = rw->height()-rw->paddingBottom()-rw->paddingTop()-rw->borderTop()-rw->borderBottom();
+            if (horizontalScrollBar()->isVisible()) {
+                ret -= style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+                int lvs = style()->pixelMetric(QStyle::PM_LayoutVerticalSpacing);
+                if (lvs > 0)
+                    ret -= lvs;
+                ret = qMax(0, ret);
+            }
+            return ret;
+        }
+    }
     return viewport()->height();
 }
 
@@ -763,6 +791,9 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
+
+    QScrollArea::resizeEvent( e );
+
     if (d->layoutSchedulingEnabled)
         layout();
 #ifndef KHTML_NO_CARET
@@ -772,8 +803,6 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
         showCaret();
     }/*end if*/
 #endif
-
-    QScrollArea::resizeEvent( e );
 
     if (d->staticWidget && widget()->pos() != QPoint(0,0))
         widget()->move(0,0);

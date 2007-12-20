@@ -923,15 +923,35 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
         return jsUndefined();
       }
     case InnerHeight:
+    {
       if (!part->view())
         return jsUndefined();
       khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
-      return jsNumber(part->view()->visibleHeight());
+      int ret = part->view()->visibleHeight();
+      // match Gecko which does not subtract the scrollbars
+      if (part->view()->horizontalScrollBar()->isVisible()) {
+          ret += part->view()->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+          int lvs = part->view()->style()->pixelMetric(QStyle::PM_LayoutVerticalSpacing);
+          if (lvs > 0)
+              ret += lvs;
+      }
+      return jsNumber(ret);
+    }
     case InnerWidth:
+    {
       if (!part->view())
         return jsUndefined();
       khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
-      return jsNumber(part->view()->visibleWidth());
+      int ret = part->view()->visibleWidth();
+      // match Gecko which does not subtract the scrollbars
+      if (part->view()->verticalScrollBar()->isVisible()) {
+          ret += part->view()->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+          int lhs = part->view()->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
+          if (lhs > 0)
+              ret += lhs;
+      }
+      return jsNumber(ret);
+    }
     case Length:
       return jsNumber(part->frames().count());
     case Name:
