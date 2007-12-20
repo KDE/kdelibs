@@ -54,5 +54,5 @@ KIO_EXECUTABLE_TESTS(
   kdirmodeltest_gui
   kmimetypechoosertest_gui
   ksslkeygentest
+  kdbusservicestartertest
 )
-
