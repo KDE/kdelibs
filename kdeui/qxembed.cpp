@@ -1091,7 +1091,8 @@ bool QXEmbed::x11Event( XEvent* e)
         break;
     case CreateNotify:
         // A window was created inside of QXEmbed, handle it as embedded
-        if( window == 0 ) { // only one window
+        if( true || // flashplayer v9,0,115,0 bug
+            window == 0 ) { // only one window
             window = e->xcreatewindow.window;
             handleEmbed();
         }
