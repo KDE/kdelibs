@@ -23,7 +23,8 @@
 #include <QDockWidget>
 #include <QString>
 
-class QTextEdit;
+class QListWidget;
+class QListWidgetItem;
 class KHistoryComboBox;
 class QPushButton;
 
@@ -43,13 +44,12 @@ signals: // Bah. This isn't a public header.
 
 private slots:
     void slotUserRequestedEval();
+    void slotPasteItem(QListWidgetItem* item);
 
 private:
-    QTextEdit *consoleView;
+    QListWidget *consoleView;
     KHistoryComboBox *consoleInput;
     QPushButton *consoleInputButton;
-    bool    oddLine;
-    QString src; //The source currently being eval'd.
 };
 
 }
