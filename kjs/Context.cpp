@@ -43,15 +43,20 @@ Context::Context(JSObject* glob, Interpreter* interpreter, JSObject* thisV,
     // ECMA 10.2
     switch(type) {
     case EvalCode:
-        // 10.2.2 talks about the behavior w/o a calling context here, 
-        // but this can not actually happen, as code calling .eval 
-        // must be in some context, and we never use EvalCode directly
-        assert(m_callingContext);
-        scope = m_callingContext->scopeChain();
+        // 10.2.2 talks about the behavior w/o a calling context here,
+        // saying it should be like global code. This can not happen
+        // in actual JS code, but it may be synthesized by e.g.
+        // the JS debugger calling 'eval' itself, from globalExec
+        if (m_callingContext)
+        {
+            scope = m_callingContext->scopeChain();
 
-        m_variable = m_callingContext->variableObject();
-        m_thisVal  = m_callingContext->thisValue();
-        break;
+            m_variable = m_callingContext->variableObject();
+            m_thisVal  = m_callingContext->thisValue();
+            break;
+        }
+        thisV = glob;
+        // Fallthrough intentional.
     case GlobalCode:
         scope.clear();
         scope.push(glob);
