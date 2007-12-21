@@ -36,7 +36,7 @@ public:
     ConsoleDock(QWidget *parent = 0);
     ~ConsoleDock();
 
-    void reportResult(const QString& msg);
+    void reportResult(const QString& src, const QString& msg);
 
 signals: // Bah. This isn't a public header.
     void requestEval(const QString& code);

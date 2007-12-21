@@ -29,7 +29,7 @@ DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
 
     KUrl kurl(url);
     d->name = kurl.fileName();
-    
+
     // Might have to fall back in case of query-like things;
     // ad scripts tend to do that
     while (d->name.contains("=") || d->name.contains("&")) {

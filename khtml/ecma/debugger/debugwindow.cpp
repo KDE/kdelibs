@@ -132,6 +132,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_callStack = new CallStackDock;
     //m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
+    connect(m_console, SIGNAL(requestEval(const QString&)),
+            this,      SLOT  (doEval(const QString&)));
 
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
@@ -507,19 +509,9 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
 
-bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
+QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 {
-    // Fixup the line..
-    lineNo = lineNo - 1;
-
-    // Don't report it if error reporting is not on
-    KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
-    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
-    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
-        return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
-
-    // ### adjust to have m_evalDepth, for console, like in KDE3 version
-    QString exceptionMsg = valueToString(exceptionObj);
+   QString exceptionMsg = valueToString(exceptionObj);
 
     // Since we purposefully bypass toString, we need to figure out
     // string serialization ourselves.
@@ -558,6 +550,22 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
         exceptionMsg = exceptionObj->toString(exec).qstring();
         exec->setException(exceptionObj);
     }
+
+    return exceptionMsg;
+}
+
+bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
+{
+    // Fixup the line..
+    lineNo = lineNo - 1;
+
+    // Don't report it if error reporting is not on
+    KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
+    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
+    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
+        return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
+
+    QString exceptionMsg = exceptionToString(exec, exceptionObj);
 
     // Look up fragment info from sourceId
     DebugDocument* doc = m_sourceIdLookup[sourceId];
@@ -691,6 +699,72 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 
 // End KJS::Debugger overloads
 
+void DebugWindow::doEval(const QString& qcode)
+{
+    // Work out which execution state to use. If we're currently in a debugging session,
+    // use the current context - otherwise, use the global execution state from the interpreter
+    // corresponding to the currently displayed source file.
+    ExecState* exec;
+    JSObject*  thisObj;
+    JSValue*   oldException = 0;
+    if (inSession())
+    {
+        InterpreterContext* ctx = m_activeSessionCtxs.top();
+        exec    = ctx->execContexts.top();
+        thisObj = exec->context()->thisValue();
+    }
+    else
+    {
+        int idx = m_tabWidget->currentIndex();
+        if (idx < 0)
+        {
+            m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+            return;
+        }
+        DebugDocument* document = m_openDocuments[idx];
+        exec    = document->interpreter()->globalExec();
+        thisObj = document->interpreter()->globalObject();
+    }
+
+    UString code(qcode);
+
+    Interpreter *interp = exec->dynamicInterpreter();
+
+    // If there was a previous exception, clear it for now and save it.
+    if (exec->hadException())
+    {
+        oldException = exec->exception();
+        exec->clearException();
+    }
+
+    JSObject *obj = interp->globalObject()->get(exec, "eval")->getObject();
+    List args;
+    args.append(jsString(code));
+
+    // ### we want the CPU guard here.. But only for this stuff,
+    // not others things. oooh boy. punt for now
+
+    JSValue *retVal = obj->call(exec, thisObj, args);
+
+    // Print the return value or exception message to the console
+    QString msg;
+    if (exec->hadException())
+    {
+        JSValue *exc = exec->exception();
+        exec->clearException();
+        msg = "Exception: " + exceptionToString(exec, exc);
+    }
+    else
+    {
+        msg = valueToString(retVal);
+    }
+
+    // Restore old exception if need be
+    if (oldException)
+        exec->setException(oldException);
+
+    m_console->reportResult(qcode, msg);
+}
 
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {

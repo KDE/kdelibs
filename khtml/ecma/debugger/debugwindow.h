@@ -123,6 +123,7 @@ private Q_SLOTS:
     void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
                  KTextEditor::MarkInterface::MarkChangeAction action);
 
+    void doEval(const QString& code);
 private:
     // Constructs or updates the peer KTextEditor::Document to display
     // this DebugDocument
@@ -152,6 +153,9 @@ private:
     // Checks to see whether we should stop at the given location, based on the current 
     // mode and breakpoints. Returns false if we should abort
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
+
+    // Serializes an exception for human consumption.
+    QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
 
     KTextEditor::View* viewForDocument(DebugDocument* debugDoc);
 

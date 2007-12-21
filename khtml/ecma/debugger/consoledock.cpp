@@ -77,7 +77,7 @@ ConsoleDock::~ConsoleDock()
 {
 }
 
-void ConsoleDock::reportResult(const QString& msg)
+void ConsoleDock::reportResult(const QString& src, const QString& msg)
 {
     QTextCursor cursor(consoleView->document());
     cursor.movePosition(QTextCursor::End);
@@ -117,12 +117,11 @@ void ConsoleDock::reportResult(const QString& msg)
 
 void ConsoleDock::slotUserRequestedEval()
 {
-    src = consoleInput->lineEdit()->text();
+    QString src = consoleInput->lineEdit()->text();
     consoleInput->addToHistory(src);
     consoleInput->lineEdit()->clear();
 
     emit requestEval(src);
-    reportResult("42");
 }
 
 }
