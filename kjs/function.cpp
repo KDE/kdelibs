@@ -135,7 +135,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // Here, we actually fill stuff in, going by increasing priorities: 
   // first, initialize flags and set to undefined...
   activation->setupLocals();
-  
+
   // Next, assign user supplied arguments to parameters
   passInParameters(&newExec, args);
 
@@ -151,7 +151,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
       lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
     }
 
-    bool cont = dbg->callEvent(&newExec,sid,lineno,this,args);
+    bool cont = dbg->enterContext(&newExec,sid,lineno,this,args);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -185,7 +185,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     if (comp.complType() == Throw)
         newExec.setException(comp.value());
 
-    int cont = dbg->returnEvent(&newExec,sid,lineno,this);
+    int cont = dbg->exitContext(&newExec,sid,lineno,this);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -940,9 +940,26 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         if (exec->hadException())
             newExec.setException(exec->exception());
 
+        if (dbg) {
+            bool cont = dbg->enterContext(&newExec, sid, 0, 0, List::empty());
+            if (!cont) {
+                dbg->imp()->abort();
+                return jsUndefined();
+            }
+        }
+
         // execute the code
         progNode->processDecls(&newExec);
         Completion c = progNode->execute(&newExec);
+
+        dbg = exec->dynamicInterpreter()->debugger();
+        if (dbg) {
+            bool cont = dbg->exitContext(&newExec, sid, 0, 0);
+            if (!cont) {
+                dbg->imp()->abort();
+                return jsUndefined();
+            }
+        }
 
         // if an exception occurred, propogate it back to the previous execution object
         if (newExec.hadException())

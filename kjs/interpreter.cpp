@@ -490,8 +490,21 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         // execute the code
         Context ctx(globalObj, this, thisObj, progNode.get());
         ExecState newExec(this, &ctx);
+
+        if (m_debugger && !m_debugger->enterContext(&newExec, sid, startingLineNumber, 0, List::empty())) {
+            // debugger requested we stop execution.
+            m_debugger->imp()->abort();
+            return Completion(Break);
+        }
+
         progNode->processDecls(&newExec);
         res = progNode->execute(&newExec);
+
+        if (m_debugger && !m_debugger->exitContext(&newExec, sid, startingLineNumber, 0)) {
+            // debugger requested we stop execution.
+            m_debugger->imp()->abort();
+            return Completion(Break);
+        }
     }
     
     m_recursion--;

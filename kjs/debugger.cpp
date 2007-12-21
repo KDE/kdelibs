@@ -118,13 +118,13 @@ bool Debugger::atStatement(ExecState * /*exec*/, int /*sourceId*/, int /*firstLi
   return true;
 }
 
-bool Debugger::callEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
-                         JSObject * /*function*/, const List &/*args*/)
+bool Debugger::enterContext(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                            JSObject * /*function*/, const List & /*args*/)
 {
   return true;
 }
 
-bool Debugger::returnEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+bool Debugger::exitContext(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
                            JSObject * /*function*/)
 {
   return true;

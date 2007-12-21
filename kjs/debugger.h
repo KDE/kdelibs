@@ -171,35 +171,43 @@ namespace KJS {
     virtual bool atStatement(ExecState *exec, int sourceId, int firstLine,
                              int lastLine);
     /**
-     * Called on each function call. Use together with @ref #returnEvent
-     * if you want to keep track of the call stack.
+     * Called when the interpreter enters a new execution context (stack
+     * frame). This can happen in three situations:
+     * 
+     * <ul>
+     *   <li>A call to Interpreter::evaluate(). This has a codeType of
+     *   GlobalCode </li>
+     *   <li>A call to the builtin eval() function. The sourceId corresponds to
+     *   the code passed in to eval. This has a codeType of EvalCode. The
+     *   lineno here is always 0 since execution starts at the beginning of
+     *   the script.</li>
+     *   <li>A function call. This only occurs for functions defined in
+     *   ECMAScript code, whether via the normal function() { ... } syntax or
+     *   a call to the built-in Function() constructor (anonymous functions).
+     *   In the former case, the sourceId and lineno indicate the location at
+     *   which the function was defined. For anonymous functions, the sourceId
+     *   corresponds to the code passed into the Function() constructor.</li>
+     * </ul>
      *
-     * Note: This only gets called for functions that are declared in ECMAScript
-     * source code or passed to eval(), not for internal KJS or
-     * application-supplied functions.
-     *
-     * The default implementation does nothing. Override this method if
-     * you want to process this event.
-     *
-     * @param exec The current execution state
+     * enterContext() is not called for functions implemented in the native
+     * code, since these do not use an execution context.
+     * 
+     * @param exec The current execution state (corresponding to the new stack
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
-     * @param function The function being called
+     * @param function The function being called. 0 in non-function context.
      * @param args The arguments that were passed to the function
-     * line is being executed
+     * line is being executed. Empty in non-function contexts.
+     *
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool callEvent(ExecState *exec, int sourceId, int lineno,
+    virtual bool enterContext(ExecState *exec, int sourceId, int lineno,
                            JSObject *function, const List &args);
 
     /**
-     * Called on each function exit. The function being returned from is that
-     * which was supplied in the last callEvent().
-     *
-     * Note: This only gets called for functions that are declared in ECMAScript
-     * source code or passed to eval(), not for internal KJS or
-     * application-supplied functions.
+     * Called when the inteprreter exits an execution context. This always
+     * corresponds to a previous call to enterContext()
      *
      * The default implementation does nothing. Override this method if
      * you want to process this event.
@@ -207,11 +215,11 @@ namespace KJS {
      * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
-     * @param function The function being called
+     * @param function The function being returned from, if there is one
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool returnEvent(ExecState *exec, int sourceId, int lineno,
+    virtual bool exitContext(ExecState *exec, int sourceId, int lineno,
                              JSObject *function);
 
   private:
