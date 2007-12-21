@@ -897,6 +897,17 @@ Name[zh_HK]=孟加拉語
 Name[zh_TW]=孟加拉語
 [bn_IN]
 Name=Bengali (India)
+Name[ca]=Bengalí (India)
+Name[eo]=Bengala (Hindio)
+Name[ga]=Beangáilis (An India)
+Name[is]=Bengalst (Indland)
+Name[ja]=ベンガル語 (インド)
+Name[km]=​បេន្កាលី (ឥណ្ឌា)
+Name[lv]=Bengāļu (Indijas)
+Name[nds]=Bengaalsch (Indien)
+Name[pt]=Bengali (Índia)
+Name[pt_BR]=Bengali (Índia)
+Name[sv]=Bengali (Indien)
 [bo]
 Name=Tibetan
 Name[ar]=تبتية
@@ -1438,6 +1449,17 @@ Name[zh_HK]=捷克語
 Name[zh_TW]=捷克語
 [cs]
 Name=Kashubian
+Name[ca]=Caixubi
+Name[el]=Kασουβιανά
+Name[eo]=Kaŝuba
+Name[ga]=Caisiúibis
+Name[hu]=Kasub
+Name[ja]=カシューブ語
+Name[km]=កាស៊ូបៀន
+Name[lv]=Kašubāņu
+Name[nds]=Kaschuubsch
+Name[sv]=Kasjubiska
+Name[zh_CN]=卡舒比语
 [cu]
 Name=Church Slavic
 Name[ar]=سلافية الكنيسة
@@ -3440,7 +3462,7 @@ Name[ar]=صوربية مرتفعة
 Name[be]=Верхнялужыцкая
 Name[bg]=Горносорбийски
 Name[bn]=উচ্চ সার্বীয়
-Name[bn_IN]=উচ্চ সার্বীয়
+Name[bn_IN]=আপার সোর্বিয়ান
 Name[br]=Sorab uhel
 Name[ca]=Alt sòrab
 Name[cs]=Hornolužicko srbský

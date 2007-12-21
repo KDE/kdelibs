@@ -1,6 +1,7 @@
 [Global]
 IconName=phonon
 Comment=Phonon: KDE's Multimedia Library
+Comment[bn_IN]=Phonon: KDE-র মাল্টিমিডিয়া লাইব্রেরি
 Comment[ca]=Phonon: biblioteca multimèdia del KDE
 Comment[cs]=Phonon: multimediální knihovna KDE
 Comment[csb]=Phonon: Mùltimedialnô biblioteka KDE
@@ -48,7 +49,7 @@ Name[ar]=تطبيق
 Name[be]=Праграма
 Name[bg]=Програма
 Name[bn]=অ্যাপলিকেশন
-Name[bn_IN]=অ্যাপলিকেশন
+Name[bn_IN]=অ্যাপ্লিকেশন
 Name[br]=Arload
 Name[ca]=Aplicació
 Name[cs]=Aplikace
@@ -119,6 +120,7 @@ Name[zh_TW]=應用程式
 
 [Event/AudioDeviceFallback]
 Name=Audio Device Fallback
+Name[bn_IN]=অডিও ডিভাইস সংক্রান্ত বিকল্প ব্যবস্থা
 Name[ca]=Dispositiu d'àudio de reserva
 Name[cs]=Záložní zvukové zařízení
 Name[de]=Ausweichgerät für Audio
@@ -156,6 +158,7 @@ Name[x-test]=xxAudio Device Fallbackxx
 Name[zh_CN]=默认音频设备
 Name[zh_TW]=預設音效裝置
 Comment=Notification on automatic fallback if the preferred device is unavailable
+Comment[bn_IN]=নির্বাচিত ডিভাইস উপলব্ধ না থাকলে স্বয়ংক্রিয়রূপে বিকল্প ব্যবস্থায় প্রয়োগের সূচনাবার্তা
 Comment[ca]=Notificació del funcionament automàtic del de reserva si el dispositiu preferit no és disponible
 Comment[de]=Benachrichtigung bei automatischem Ausweichen, wenn das bevorzugte Gerätnicht verfügbar ist.
 Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
