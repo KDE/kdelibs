@@ -75,7 +75,6 @@ struct InterpreterContext
     {}
 
     void addCall(const QString&, int line);
-    void setGlobalFrame(const QString& url);
     void updateCall(int line);
     void removeCall();
 

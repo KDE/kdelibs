@@ -100,8 +100,8 @@ public:
     bool sourceUnused(ExecState *exec, int sourceId);
     bool exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj);
     bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
-    bool callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
-    bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
+    bool enterContext(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
+    bool exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function);
     void attach(Interpreter *interp);
     void detach(Interpreter *interp);
 

@@ -632,14 +632,14 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
     return shouldContinue(candidateCtx);
 }
 
-bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
+bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
     InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
 
     // First update call stack.
     DebugDocument *document = m_sourceIdLookup[sourceId];
-    QString functionName = "?????";
-    if (function->inherits(&InternalFunctionImp::info))
+    QString functionName;
+    if (function && function->inherits(&InternalFunctionImp::info))
     {
         KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
         functionName = func->functionName().qstring();
@@ -651,7 +651,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     return shouldContinue(ctx);
 }
 
-bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
+bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
     InterpreterContext* ic  = m_contexts[exec->dynamicInterpreter()];
     DebugDocument *document = m_sourceIdLookup[sourceId];
@@ -890,14 +890,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
 
     m_activeSessionCtxs.push(m_contexts[exec->dynamicInterpreter()]);
 
-    // In global code, we may have to swizzle the lowest
-    // frame as appropriate; also will have to fix up
-    // the context stack. ### fix up KJS::Debugger instead
-    if (exec->context()->codeType() == GlobalCode) 
-    {
-        ctx()->setGlobalFrame(document->url());
-        ctx()->execContexts.push(exec);
-    }
     ctx()->updateCall(line);
     ctx()->activeDocument = document;
 

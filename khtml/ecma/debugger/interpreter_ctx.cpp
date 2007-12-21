@@ -43,12 +43,6 @@ void InterpreterContext::updateCall(int line)
     // Expects displayStack to be called to redraw.
 }
 
-void InterpreterContext::setGlobalFrame(const QString& url)
-{
-    callStack.clear();
-    addCall(KUrl(url).fileName(), 0);
-}
-
 int InterpreterContext::activeLine()
 {
     return callStack.top().lineNumber;
