@@ -49,10 +49,13 @@ struct CallStackEntry
 {
     QString name;
     int lineNumber;
+    DebugDocument* doc;
 
-    bool operator==(const CallStackEntry& other) const        // you're being lazy..
+    bool operator==(const CallStackEntry& other) const
     {
-        return ((other.name == name) && (other.lineNumber == lineNumber));
+        return ((other.name == name) &&
+                (other.lineNumber == lineNumber) &&
+                (other.doc        == doc));
     }
 };
 
@@ -74,7 +77,7 @@ struct InterpreterContext
     InterpreterContext() : mode(Normal), depthAtSkip(0), activeDocument(0)
     {}
 
-    void addCall(const QString&, int line);
+    void addCall(DebugDocument* doc, const QString&, int line);
     void updateCall(int line);
     void removeCall();
 

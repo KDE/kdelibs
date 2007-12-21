@@ -160,6 +160,8 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
             this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
+    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*, int)),
+            this, SLOT(displayScript(KJSDebugger::DebugDocument*, int)));
 
     m_breakAtNext = false;
     m_modalLevel  = 0;
@@ -604,6 +606,8 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
     // ### line number seems to be off-by-one here
+    InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
+    ctx->updateCall(firstLine - 1);
     return checkSourceLocation(exec, sourceId, firstLine - 1, lastLine);
 }
 
@@ -661,7 +665,7 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
         functionName = func->functionName().qstring();
     }
 
-    ctx->addCall(functionName.isEmpty() ? document->name() : functionName, lineno);
+    ctx->addCall(document, functionName.isEmpty() ? document->name() : functionName, lineno);
     ctx->execContexts.push(exec);
 
     return shouldContinue(ctx);
@@ -781,8 +785,12 @@ void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
     document->setMode("JavaScript");
 }
 
-
 void DebugWindow::displayScript(DebugDocument *document)
+{
+    displayScript(document, -1);
+}
+
+void DebugWindow::displayScript(DebugDocument *document, int line)
 {
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
@@ -791,6 +799,8 @@ void DebugWindow::displayScript(DebugDocument *document)
     {
         int idx = m_openDocuments.indexOf(document);
         m_tabWidget->setCurrentIndex(idx);
+        if (line != -1)
+            viewForDocument(document)->setCursorPosition(KTextEditor::Cursor(line - 1, 0));
         return;
     }
 
@@ -827,6 +837,9 @@ void DebugWindow::displayScript(DebugDocument *document)
         markInterface->setMarkPixmap(KTextEditor::MarkInterface::Execution, 
                                      SmallIcon("arrow-right"));
     }
+
+    if (line != -1)
+        view->setCursorPosition(KTextEditor::Cursor(line - 1, 0));
 
     m_openDocuments.append(document);
     int idx = m_tabWidget->addTab(view, document->name());
@@ -971,7 +984,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
 
     m_activeSessionCtxs.push(m_contexts[exec->dynamicInterpreter()]);
 
-    ctx()->updateCall(line);
     ctx()->activeDocument = document;
 
     setUIMode(Stopped);

@@ -42,8 +42,18 @@ CallStackDock::CallStackDock(QWidget *parent)
     m_view->verticalHeader()->hide();
     m_view->setShowGrid(false);
     m_view->setAlternatingRowColors(true);
+    m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_view->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    connect(m_view, SIGNAL(itemClicked(QTableWidgetItem*)),
+            this, SLOT(slotViewItem(QTableWidgetItem*)));
+    connect(m_view, SIGNAL(itemDoubleClicked(QTableWidgetItem*)),
+            this, SLOT(slotViewItem(QTableWidgetItem*)));
+
 
     setWidget(m_view);
+
+    m_activeCtx = 0;
 }
 
 CallStackDock::~CallStackDock()
@@ -52,12 +62,14 @@ CallStackDock::~CallStackDock()
 
 void CallStackDock::clearDisplay()
 {
+    m_activeCtx = 0;
     m_view->clearContents();
     m_view->setRowCount(0);
 }
 
 void CallStackDock::displayStack(InterpreterContext* ic)
 {
+    m_activeCtx = ic;
     m_view->clearContents();
     m_view->setRowCount(ic->callStack.count());
 
@@ -66,16 +78,25 @@ void CallStackDock::displayStack(InterpreterContext* ic)
     {
         int displayRow = ic->callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);
-        function->setFlags(Qt::ItemIsEnabled);
+        function->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 0, function);
         QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber));
-        lineNumber->setFlags(Qt::ItemIsEnabled);
+        lineNumber->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 1, lineNumber);
         row++;
     }
     m_view->resizeColumnsToContents();
     m_view->resizeRowsToContents();
 //    m_view->setColumnWidth(1, 20);
+}
+
+void CallStackDock::slotViewItem(QTableWidgetItem* item)
+{
+    if (!m_activeCtx)
+        return;
+
+    CallStackEntry& entry = m_activeCtx->callStack[m_view->rowCount() - m_view->row(item) - 1];
+    emit displayScript(entry.doc, entry.lineNumber);
 }
 
 }

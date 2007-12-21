@@ -284,7 +284,6 @@ void ConsoleDock::reportResult(const QString& src, const QString& msg)
 
 void ConsoleDock::slotPasteItem(QListWidgetItem* item)
 {
-    qDebug() << "#########################" << item->data(Qt::DisplayRole).toString();
     consoleInput->lineEdit()->setText(item->data(Qt::DisplayRole).toString());
 }
 

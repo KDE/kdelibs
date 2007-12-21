@@ -22,8 +22,8 @@
 
 #include <QDockWidget>
 
-
 class QTableWidget;
+class QTableWidgetItem;
 
 namespace KJSDebugger {
 class DebugDocument;
@@ -38,7 +38,12 @@ public:
 
     void displayStack(InterpreterContext* ctx);
     void clearDisplay();
+private slots:
+    void slotViewItem(QTableWidgetItem* item);
+signals:
+    void displayScript(KJSDebugger::DebugDocument* doc, int line);
 private:
+    InterpreterContext* m_activeCtx;
     QTableWidget *m_view;
 };
 

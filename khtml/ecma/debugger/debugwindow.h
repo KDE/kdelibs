@@ -121,6 +121,8 @@ protected:
 
 private Q_SLOTS:
     void displayScript(KJSDebugger::DebugDocument *document);
+    void displayScript(KJSDebugger::DebugDocument *document, int line); // -1 denotes not focusing on the line
+
     void closeTab();
     void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
                  KTextEditor::MarkInterface::MarkChangeAction action);
