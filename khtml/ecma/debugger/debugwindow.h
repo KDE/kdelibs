@@ -113,6 +113,8 @@ public Q_SLOTS:
     void stepOver();
 
 protected:
+    virtual void closeEvent(QCloseEvent* event);
+    
     bool eventFilter(QObject *object, QEvent *event);
     void disableOtherWindows();
     void enableOtherWindows();

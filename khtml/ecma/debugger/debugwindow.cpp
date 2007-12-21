@@ -401,6 +401,14 @@ DebugWindow::~DebugWindow()
     m_documentList.clear();
 }
 
+void DebugWindow::closeEvent(QCloseEvent* event)
+{
+    if (inSession())
+        event->setAccepted(false);
+    else
+        KXmlGuiWindow::closeEvent(event);
+}
+
 // -------------------------------------------------------------
 
 void DebugWindow::attach(Interpreter *interp)
