@@ -691,7 +691,6 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
         ic->execContexts.isEmpty() && ic->mode == Step)
     {
         setUIMode(Running);
-        ic->mode = Normal;
     }
 
     return shouldContinue(ic);
