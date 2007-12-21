@@ -342,7 +342,7 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
         m_cache[uri] = value;
 
         // update the store
-        QList<Statement> existingStatements = model->listStatements( m_uri, QUrl(uri), Node() ).allStatements();
+        QList<Statement> existingStatements = model->listStatements( Soprano::Statement( m_uri, QUrl(uri), Node() ) ).allStatements();
         for ( QList<Statement>::const_iterator it = existingStatements.constBegin();
               it != existingStatements.constEnd(); ++it ) {
             if ( !resourceStatements.contains( *it ) ) {
