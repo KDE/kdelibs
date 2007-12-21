@@ -21,9 +21,10 @@
 #define CONSOLEDOCK_H
 
 #include <QDockWidget>
+#include <QString>
 
 class QTextEdit;
-class QLineEdit;
+class KHistoryComboBox;
 class QPushButton;
 
 namespace KJSDebugger {
@@ -35,10 +36,20 @@ public:
     ConsoleDock(QWidget *parent = 0);
     ~ConsoleDock();
 
+    void reportResult(const QString& msg);
+
+signals: // Bah. This isn't a public header.
+    void requestEval(const QString& code);
+
+private slots:
+    void slotUserRequestedEval();
+
 private:
-    QTextEdit *consoleEdit;
-    QLineEdit *consoleInput;
+    QTextEdit *consoleView;
+    KHistoryComboBox *consoleInput;
     QPushButton *consoleInputButton;
+    bool    oddLine;
+    QString src; //The source currently being eval'd.
 };
 
 }
