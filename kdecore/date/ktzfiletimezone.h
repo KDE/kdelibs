@@ -54,7 +54,8 @@ public:
      * Creates a time zone.
      *
      * @param source      tzfile reader and parser
-     * @param name        time zone's unique name
+     * @param name        time zone's unique name, which must be the tzfile path relative
+     *                    to the location specified for @p source
      * @param countryCode ISO 3166 2-character country code, empty if unknown
      * @param latitude    in degrees (between -90 and +90), UNKNOWN if not known
      * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
@@ -139,6 +140,11 @@ class KDECORE_EXPORT KTzfileTimeZoneSource : public KTimeZoneSource
 public:
     /**
      * Constructs a time zone source.
+     *
+     * The directory containing the time zone definition files is given by the
+     * @p location parameter, which will usually be the zoneinfo directory. For
+     * tzfile files in other locations, bear in mind that the name generated
+     * for each KTzfileTimeZone is its file path relative to @p location.
      *
      * @param location the local directory containing the time zone definition files
      */
