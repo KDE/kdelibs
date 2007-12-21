@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -114,6 +114,8 @@ class KSystemTimeZonesPrivate : public KTimeZones
 {
 public:
     static KSystemTimeZonesPrivate *instance();
+    static KTzfileTimeZoneSource *tzfileSource();
+    static void setLocalZone();
     static void cleanup();
     static void readConfig(bool init);
 #ifndef Q_OS_WIN
@@ -125,7 +127,6 @@ public:
     static QString m_zoneinfoDir;
     static QString m_zonetab;
     static KSystemTimeZoneSource *m_source;
-    static KTzfileTimeZoneSource *m_tzfileSource;
 
 private:
     KSystemTimeZonesPrivate() {}
@@ -136,6 +137,7 @@ private:
 
     static KSystemTimeZones *m_parent;
     static KSystemTimeZonesPrivate *m_instance;
+    static KTzfileTimeZoneSource *m_tzfileSource;
 };
 
 KTimeZone                KSystemTimeZonesPrivate::m_localZone;
@@ -146,6 +148,16 @@ KSystemTimeZoneSource   *KSystemTimeZonesPrivate::m_source = 0;
 KTzfileTimeZoneSource   *KSystemTimeZonesPrivate::m_tzfileSource = 0;
 KSystemTimeZones        *KSystemTimeZonesPrivate::m_parent = 0;
 KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::m_instance = 0;
+
+KTzfileTimeZoneSource *KSystemTimeZonesPrivate::tzfileSource()
+{
+    if (!m_tzfileSource)
+    {
+        instance();
+        m_tzfileSource = new KTzfileTimeZoneSource(m_zoneinfoDir);
+    }
+    return m_tzfileSource;
+}
 
 
 KSystemTimeZones::KSystemTimeZones()
@@ -181,12 +193,7 @@ KTimeZones *KSystemTimeZones::timeZones()
 
 KTimeZone KSystemTimeZones::readZone(const QString &name)
 {
-    if (!KSystemTimeZonesPrivate::m_tzfileSource)
-    {
-        KSystemTimeZonesPrivate::instance();
-        KSystemTimeZonesPrivate::m_tzfileSource = new KTzfileTimeZoneSource(KSystemTimeZonesPrivate::m_zoneinfoDir);
-    }
-    return KTzfileTimeZone(KSystemTimeZonesPrivate::m_tzfileSource, name);
+    return KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), name);
 }
 
 const KTimeZones::ZoneMap KSystemTimeZones::zones()
@@ -218,11 +225,11 @@ void KSystemTimeZones::zonetabChanged(const QString &zonetab)
 
 void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
 {
-        // No need to do anything when the definition (as opposed to the
-        // identity) of the local zone changes, since the updated details
-        // will always be accessed by the system library calls to fetch
-        // local zone information.
-        Q_UNUSED(zone)
+    // No need to do anything when the definition (as opposed to the
+    // identity) of the local zone changes, since the updated details
+    // will always be accessed by the system library calls to fetch
+    // local zone information.
+    Q_UNUSED(zone)
 }
 
 // Perform initialization, create the unique KSystemTimeZones instance,
@@ -256,7 +263,7 @@ kDebug(161)<<"instance(): ... initialised";
         if (!m_zonetab.isEmpty())
             m_instance->readZoneTab(false);
 #endif
-        m_localZone = m_instance->zone(m_localZoneName);
+        setLocalZone();
         if (!m_localZone.isValid())
             m_localZone = KTimeZone::utc();   // ensure a time zone is always returned
 
@@ -275,8 +282,19 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     m_zonetab       = group.readEntry("Zonetab");
     m_localZoneName = group.readEntry("LocalZone");
     if (!init)
-        m_localZone = m_instance->zone(m_localZoneName);
+        setLocalZone();
     kDebug(161) << "readConfig(): local zone=" << m_localZoneName;
+}
+
+void KSystemTimeZonesPrivate::setLocalZone()
+{
+    if (m_localZoneName.startsWith('/'))
+    {
+        // The time zone is specified by a file outside the zoneinfo directory
+        m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), m_localZoneName);
+    }
+    else
+        m_localZone = m_instance->zone(m_localZoneName);
 }
 
 void KSystemTimeZonesPrivate::cleanup()

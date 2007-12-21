@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -141,6 +141,8 @@ public:
 KTzfileTimeZoneSource::KTzfileTimeZoneSource(const QString &location)
   : d(new KTzfileTimeZoneSourcePrivate(location))
 {
+    if (location.length() > 1  &&  location.endsWith('/'))
+        d->location.chop(1);
 }
 
 KTzfileTimeZoneSource::~KTzfileTimeZoneSource()
@@ -155,7 +157,15 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     quint8  is;
     quint8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
-    QFile f(d->location + '/' + zone.name());
+    QString path = zone.name();
+    if (!path.startsWith('/'))
+    {
+        if (d->location == QLatin1String("/"))
+            path.prepend(d->location);
+        else
+            path = d->location + '/' + path;
+    }
+    QFile f(path);
     if (!f.open(QIODevice::ReadOnly))
     {
         kError() << "Cannot open " << f.fileName() << endl;
@@ -385,11 +395,13 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
                 stdoffset = offset;   // keep note of latest standard time offset
         }
 
-//kDebug() << "Transition time "<<i<<": "<<tt->time;
         KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
+//kDebug(161) << "Transition time "<<i<<": "<<fromTime_t(tt->time)<<", offset="<<phase.utcOffset()/60;
         transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);
     }
     data->setTransitions(transitions);
+//for(int xxx=1;xxx<data->transitions().count();xxx++)
+//kDebug(161) << "Transition time "<<xxx<<": "<<data->transitions()[xxx].time()<<", offset="<<data->transitions()[xxx].phase().utcOffset()/60;
     delete[] localTimeTypes;
     delete[] transitionTimes;
 
