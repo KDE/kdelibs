@@ -25,6 +25,7 @@
 
 #include <QSharedData>
 #include <QDebug>
+#include <QtAlgorithms>
 
 #include <ktoolbar.h>
 #include <kstatusbar.h>
@@ -869,6 +870,9 @@ KTextEditor::Document* DebugWindow::buildViewerDocument(DebugDocument *document)
 
     enableKateHighlighting(doc);
     QList<SourceFragment> fragments = document->fragments();
+
+    // Order fragments by increasing base loc, to make the below faster
+    qSort(fragments);
 
     doc->setReadWrite(true);
     doc->clear();

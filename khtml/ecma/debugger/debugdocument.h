@@ -55,6 +55,10 @@ struct SourceFragment
     int sourceId;
     int baseLine;
     QString source;
+    bool operator < (const SourceFragment& other) const
+    {
+        return baseLine < other.baseLine;
+    }
 };
 
 }
