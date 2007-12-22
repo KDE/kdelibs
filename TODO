@@ -4,17 +4,6 @@ that we would like to make for the next binary incompatible release.
 - Check for forked classes in kde pim and other modules
   (Danimo)
 
-- Remove all KSocks references throughout KDE in favor of KNetwork's
-  socket implementations. 
-  (Thiago)
-
-- Remove all methods marked 'deprecated' in KDE 3.x.
-  (Martijn)
-
-- Make it possible to create a KSystemTray without a KMainWindow and instead lazily
-  create the main window on demand.
-  (Martijn)
-
 - Make KSystemTray add its own reference to KApp, so tray apps that adhere to the
   style guide can safely close their main window without having to worry about
   the app quitting instead.
@@ -52,9 +41,6 @@ that we would like to make for the next binary incompatible release.
   by the use of Q_DECLARE_FLAGS/Q_DECLARE_OPERATORS_FOR_FLAGS
   (Simon)
 
-- Merge kdelibs/kdecore/kuser.h and kdeadmin/kuser/kuser.h.
-  (Frans)
-
 - KParts: remove plugin loading from setInstance, add an explicit loadPlugins() call
   in all parts that should load plugins (at the end of the derived-part ctor).
   (David)
@@ -64,10 +50,6 @@ that we would like to make for the next binary incompatible release.
   into the class. With QTextEdit and QTextBrowser for instance, the inheritance is
   the other way around. E.g.: ReaderPart? ViewerPart?
   (David)
-
-- Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
-  (Contributors to that thread, please add specific items here.)
-  (Waldo)
 
 - Change classes that store bool data using strings ("true"/"false") to use bool 
   calls (readBoolEntry()).  Although not technicaly a binary incompatiblity... 
@@ -94,42 +76,6 @@ that we would like to make for the next binary incompatible release.
 	* Perhaps an own font section?
   (Frans)
 
-- K3Process needs a major facelift. Not all of these items need to be BIC, but not needing to
-  worry about legacy will certainly allow an overall cleaner solution.
-  - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
-    lots of protected members should be accessible only via accessors. the current model is
-    theoretically super-flexible, but in fact it is only super-fragile.
-  - clear up pipe() vs. socketpair() usage.
-  - move the draining loop from commClose() to wait()
-  - add additional "channels" beyond std*, with the built-in capability of passing the fd on the
-    command line
-  - redirections, including piping multiple kprocesses together. this should make most cases of
-    reimplementing commSetupDone{P,C} superfluous.
-  - possibly create KForkProcess that covers most/all of the remaining commSetupDoneC
-    reimplementations.
-  - do something about the NoRead comm mode
-  - add setComm(); remove comm arg from start(). as a side effect, this will allow for using
-    writeStdin() in Block mode.
-  - merge K3ProcIO into K3Process; add setBuffered() for separate channels.
-  - use QByteArray for writeStdin(). better than the buf+len arg, as it is ref-counted.
-  (Oswald)
-  - better than the buf+len arg, as it is ref-counted. See
-[http://lists.kde.org/?l=kde-core-devel&m=112775845325713&w=2|this thread] for some more
-informations
-
-- KKeyDialog needs to be improved. It should simplify using KKeyChooser by not having to instantiate
-  KDialogBase without restricting the possibilities of KKeyChooser (for instance, being able to
-  configure global and application accels in one dialog). If there is only little time, simply
-  expose the KKeyChooser object instead of making it private and inaccessible.
-  (Michael Brade)
-
-- Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
-  amount of bool-usage in the CTORs
-  (Michael Brade)
-
-- Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
-  (André Wöbbeking)
-
 - Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
   an alternative help->contents action)
   (George Staikos)
@@ -154,8 +100,6 @@ informations
   (Lubos)
 
 - Many instances of creating containers on the heap instead of stack, can be replaced? (Caleb Tennis) [where?]
-
-- Remove all of the (const char *name) arguments to QObject derived classes. (Caleb Tennis) [mostly done, what's missing?]
 
 - Add KAssistant - a new KDE standards-compliant wizard, (Jaroslaw Staniek (TODO/KAssistant|Details))
   Qt4 has no QWizard (only Q3Wizard left). Add a new KDE standards-compliant wizard with 
@@ -183,7 +127,6 @@ informations
   (David, Till etc.)
 
 - CMake:
-   * install man pages (e.g. doc/kdelibs/man-kbuildsycoca.8.docbook)
    * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
    * win32: fix path delimiter problem generated *.bat wrapper (using ' ' instead of ';')
 
