@@ -849,6 +849,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     QString name = _name;
     QString path;
     QPixmap pix;
+    bool unknownIcon = false;
     bool absolutePath = false;
     bool favIconOverlay = false;
 
@@ -891,6 +892,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                         iconPath(name, KIconLoader::User, canReturnNull);
         if (path.isEmpty())
         {
+            if (!canReturnNull) {
+                kWarning(264) << "No such icon" << _name;
+                unknownIcon = true;
+            }
             if (canReturnNull)
                 return pix;
             // We don't know the desired size: use small
@@ -912,6 +917,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
         pix = QPixmap::fromImage(img);
         d->drawOverlays(this, KIconLoader::Desktop, state, pix, overlays);
+#ifndef NDEBUG
+        // do not insert 'unknown' icons into cache in debug mode;
+        // thus warnings are displayed every time a broken icon has been requested
+        if (!unknownIcon)
+#endif
         d->mIconCache->insert(key, pix, path);
         return pix;
     }
@@ -1010,6 +1020,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                     return pix;
                 }
 
+                kWarning(264) << "No such icon" << _name;
+                unknownIcon = true;
                 icon = d->findMatchingIcon(str_unknown, size);
                 if (!icon.isValid())
                 {
@@ -1134,6 +1146,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     delete img;
 
+#ifndef NDEBUG
+    if (!unknownIcon)
+#endif
     d->mIconCache->insert(key, pix, path);
     return pix;
 }
