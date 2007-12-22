@@ -267,6 +267,26 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
 }
 
 
+void KGlobalAccelPrivate::_k_reRegisterAll()
+{
+    //### Special case for isUsingForeignComponentName?
+
+    //We clear all our data, assume that all data on the other side is clear too,
+    //and register each action as if it just was allowed to have global shortcuts.
+    //If the kded side still has the data it doesn't matter because of the
+    //autoloading mechanism. The worst case I can imagine is that an action's
+    //shortcut was changed but the kded side died before it got the message so
+    //autoloading will now assign an old shortcut to the action. Particularly
+    //picky apps might assert or misbehave.
+    QList<KAction *> allActions = actionToName.keys();
+    nameToAction.clear();
+    actionToName.clear();
+    foreach(KAction *const action, allActions) {
+        updateGlobalShortcutAllowed(action, 0/*flags*/);
+    }
+}
+
+
 //static
 QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 {

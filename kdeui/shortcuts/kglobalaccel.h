@@ -119,6 +119,7 @@ private:
 
     Q_PRIVATE_SLOT(d, void _k_invokeAction(const QStringList&))
     Q_PRIVATE_SLOT(d, void _k_shortcutGotChanged(const QStringList&, const QList<int>&))
+    Q_PRIVATE_SLOT(d, void _k_reRegisterAll())
 };
 
 #endif // _KGLOBALACCEL_H_

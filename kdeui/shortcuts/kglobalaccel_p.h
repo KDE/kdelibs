@@ -49,6 +49,7 @@ public:
 
     void _k_invokeAction(const QStringList&);
     void _k_shortcutGotChanged(const QStringList&, const QList<int>&);
+    void _k_reRegisterAll();
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
     QHash<QString, KAction *> nameToAction;
