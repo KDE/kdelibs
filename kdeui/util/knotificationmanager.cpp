@@ -17,6 +17,7 @@
 */
 
 #include "knotificationmanager_p.h"
+#include <ktoolinvocation.h>
 #include "knotification.h"
 
 #include <QHash>
@@ -48,6 +49,14 @@ KNotificationManager * KNotificationManager::self()
 KNotificationManager::KNotificationManager()
     : d(new Private)
 {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.knotify")) {
+        QString error;
+        int ret = KToolInvocation::startServiceByDesktopPath("knotify4.desktop",
+                                                             QStringList(), &error);
+        if (ret > 0) {
+            kError() << "Couldn't start knotify from knotify4.desktop: " << error << endl;
+        }
+    }
     d->knotify =
         new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"), QDBusConnection::sessionBus(), this);
     d->knotify->connection().connect(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
