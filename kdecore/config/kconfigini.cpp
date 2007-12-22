@@ -143,23 +143,18 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (groupSkip && !bDefault)
                 continue; // skip entry
 
-            int end = line.indexOf('=');
-
-            if (end == -1 && !line.contains("[$d]")) {
-                // no equals sign
-                qWarning() << warningProlog(file, lineNo) << "Invalid entry (missing '=')";
-                continue;
-            } else if (end == 1) {
-                // empty key
+            QByteArray aKey;
+            int eqpos = line.indexOf('=');
+            if (eqpos < 0) {
+                aKey = line;
+                line.clear();
+            } else {
+                aKey = line.left(eqpos).trimmed();
+                line.remove(0, eqpos + 1);
+            }
+            if (aKey.isEmpty()) {
                 qWarning() << warningProlog(file, lineNo) << "Invalid entry (empty key)";
                 continue;
-            }
-            QByteArray aKey = line.left(end);
-            QByteArray rawKey;
-            line = line.mid(end+1);
-            if (end != 1 && aKey.length() == 0) {
-                aKey = line;
-                line = "";
             }
 
             KEntryMap::EntryOptions entryOptions=0;
@@ -167,18 +162,14 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 entryOptions |= KEntryMap::EntryImmutable;
 
             QByteArray locale;
-            while (aKey.contains('[')) {
-                int start = aKey.indexOf('[');
-                end = aKey.indexOf(']', start);
-                if (start != -1 && end == -1) {
+            QByteArray rawKey;
+            while (int start = aKey.indexOf('[') >= 0) {
+                int end = aKey.indexOf(']', start);
+                if (end < 0) {
                     qWarning() << warningProlog(file, lineNo)
                             << "Invalid entry (missing ']')";
-                    continue;
-                } else if (end < start) {
-                    qWarning() << warningProlog(file, lineNo)
-                            << "Invalid entry (unmatched ']')";
-                    continue;
-                }else if (aKey.at(start+1) == '$') { // found option(s)
+                    goto next_line;
+                } else if (end > start + 1 && aKey.at(start + 1) == '$') { // found option(s)
                     int i = start+2;
                     while (i < end) {
                         switch (aKey.at(i)) {
@@ -204,15 +195,19 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                     if (!locale.isNull()) {
                         qWarning() << warningProlog(file, lineNo)
                                 << "Invalid entry (second locale!?)";
-                        continue;
+                        goto next_line;
                     }
 
                     locale = aKey.mid(start+1,end-start-1);
                     rawKey = aKey.left(end+1);
                 }
-                aKey = aKey.remove(start, end-start+1);
+                aKey.remove(start, end-start+1);
             }
 
+            if (eqpos < 0) { // Do this here after [$d] was checked
+                qWarning() << warningProlog(file, lineNo) << "Invalid entry (missing '=')";
+                continue;
+            }
             aKey = printableToString(aKey, file, lineNo);
             if (!locale.isEmpty()) {
                 if (locale != currentLocale) {
