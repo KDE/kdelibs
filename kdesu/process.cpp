@@ -317,6 +317,11 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         putenv(const_cast<char *>(d->env.at(i).constData()));
     }
     unsetenv("KDE_FULL_SESSION");
+    // for : Qt: Session management error
+    unsetenv("SESSION_MANAGER");
+    // QMutex::lock , deadlocks without that.
+    // <thiago> you cannot connect to the user's session bus from another UID
+    unsetenv("DBUS_SESSION_BUS_ADDRESS");
 
     // set temporarily LC_ALL to C, for su (to be able to parse "Password:")
     const char* old_lc_all = getenv( "LC_ALL" );
