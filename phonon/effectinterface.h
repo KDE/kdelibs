@@ -20,6 +20,7 @@
 #ifndef PHONON_EFFECTINTERFACE_H
 #define PHONON_EFFECTINTERFACE_H
 
+#include "phonon/phononnamespace.h"
 #include <QtCore/QVariant>
 
 QT_BEGIN_HEADER
