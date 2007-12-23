@@ -414,7 +414,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
 {
     QList<KMimeMagicRule> rules;
     QByteArray header = file->read(12);
-    if (header != "MIME-Magic\0\n") {
+    if (header != QByteArray::fromRawData("MIME-Magic\0\n", 12)) {
         kWarning(7009) << "Invalid magic file " << fileName << " starts with " << header;
         return rules;
     }
