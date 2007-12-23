@@ -1,5 +1,5 @@
 [Global]
-IconName=phonon
+IconName=preferences-desktop-sound
 Comment=Phonon: KDE's Multimedia Library
 Comment[bn_IN]=Phonon: KDE-র মাল্টিমিডিয়া লাইব্রেরি
 Comment[ca]=Phonon: biblioteca multimèdia del KDE
