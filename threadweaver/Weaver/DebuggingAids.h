@@ -131,7 +131,8 @@ namespace ThreadWeaver {
 	}
     }
 #else
-#define debug(x,...)
+    inline void debug(int, const char *, ...) {}
+    inline void debug(bool, int, const char *, ...) {}
 #endif
 
   inline bool invariant() { return true; }
