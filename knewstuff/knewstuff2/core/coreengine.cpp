@@ -96,7 +96,7 @@ bool CoreEngine::init(const QString &configfile)
     KConfigGroup group = conf.group("KNewStuff2");
     m_providersurl = group.readEntry("ProvidersUrl", QString());
     //m_componentname = group.readEntry("ComponentName", QString());
-    m_componentname = configfile.section(".", 0, 0);
+    m_componentname = configfile.section(".", 0, 0) + ":";
 
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
@@ -536,6 +536,7 @@ void CoreEngine::loadRegistry()
             QFile f(filepath);
 
             // first see if this file is even for this app
+            // because the registry contains entries for all apps
             QString thisAppName = QString::fromUtf8(QByteArray::fromBase64(info.baseName().toUtf8()));
 
             // NOTE: the ":" needs to always coincide with the separator character used in
@@ -593,17 +594,17 @@ void CoreEngine::loadProvidersCache()
 {
     KStandardDirs d;
 
-    //kDebug(550) << "Loading provider cache.";
+    kDebug(550) << "Loading provider cache.";
 
     // FIXME: one file per ProvidersUrl - put this into the filename
     // FIXME: e.g. http_foo_providers.xml.cache?
-    QString cachefile = d.findResource("cache", "knewstuff2-providers.cache.xml");
+    QString cachefile = d.findResource("cache", m_componentname + "kns2providers.cache.xml");
     if (cachefile.isEmpty()) {
-        //kDebug(550) << "Cache not present, skip loading.";
+        kDebug(550) << "Cache not present, skip loading.";
         return;
     }
 
-    //kDebug(550) << " + Load from file '" + cachefile + "'.";
+    kDebug(550) << "Load from file '" + cachefile + "'.";
 
     bool ret;
     QFile f(cachefile);
@@ -659,23 +660,23 @@ void CoreEngine::loadFeedCache(Provider *provider)
 {
     KStandardDirs d;
 
-    //kDebug(550) << "Loading feed cache.";
+    kDebug(550) << "Loading feed cache.";
 
-    QStringList cachedirs = d.findDirs("cache", "knewstuff2-feeds.cache");
+    QStringList cachedirs = d.findDirs("cache", m_componentname + "kns2feeds.cache");
     if (cachedirs.size() == 0) {
-        //kDebug(550) << "Cache directory not present, skip loading.";
+        kDebug(550) << "Cache directory not present, skip loading.";
         return;
     }
     QString cachedir = cachedirs.first();
 
     QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + m_componentname);
     if (entrycachedirs.size() == 0) {
-        //kDebug(550) << "Cache directory not present, skip loading.";
+        kDebug(550) << "Cache directory not present, skip loading.";
         return;
     }
     QString entrycachedir = entrycachedirs.first();
 
-    //kDebug(550) << " + Load from directory '" + cachedir + "'.";
+    kDebug(550) << "Load from directory '" + cachedir + "'";
 
     QStringList feeds = provider->feeds();
     for (int i = 0; i < feeds.count(); i++) {
@@ -687,7 +688,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
         QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
         QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
-        //kDebug(550) << "  + Load from file '" + cachefile + "'.";
+        kDebug(550) << "  + Load from file '" + cachefile + "'.";
 
         bool ret;
         QFile f(cachefile);
@@ -720,7 +721,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
             QString idbase64 = entryel.text();
             QString filepath = entrycachedir + '/' + idbase64 + ".meta";
 
-            //kDebug(550) << "   + Load entry from file '" + filepath + "'.";
+            kDebug(550) << "   + Load entry from file '" + filepath + "'.";
 
             // FIXME: pass feed and make loadEntryCache return void for consistency?
             Entry *entry = loadEntryCache(filepath);
@@ -866,17 +867,17 @@ void CoreEngine::mergeProviders(Provider::List providers)
         Provider *p = (*it);
 
         if (providerCached(p)) {
-            //kDebug(550) << "CACHE: hit provider " << p->name().representation();
+            kDebug(550) << "CACHE: hit provider " << p->name().representation();
             Provider *oldprovider = m_provider_index[pid(p)];
             if (providerChanged(oldprovider, p)) {
-                //kDebug(550) << "CACHE: update provider";
+                kDebug(550) << "CACHE: update provider";
                 cacheProvider(p);
                 emit signalProviderChanged(p);
                 // FIXME: oldprovider can now be deleted, see entry hit case
             }
         } else {
             if (m_cachepolicy != CacheNever) {
-                //kDebug(550) << "CACHE: miss provider " << p->name().representation();
+                kDebug(550) << "CACHE: miss provider " << p->name().representation();
                 cacheProvider(p);
             }
             emit signalProviderLoaded(p);
@@ -992,12 +993,12 @@ void CoreEngine::cacheProvider(Provider *provider)
 {
     KStandardDirs d;
 
-    //kDebug(550) << "Caching provider.";
+    kDebug(550) << "Caching provider.";
 
     QString cachedir = d.saveLocation("cache");
-    QString cachefile = cachedir + "knewstuff2-providers.cache.xml";
+    QString cachefile = cachedir + m_componentname + "kns2providers.cache.xml";
 
-    //kDebug(550) << " + Save to file '" + cachefile + "'.";
+    kDebug(550) << " + Save to file '" + cachefile + "'.";
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsproviders");
@@ -1035,16 +1036,16 @@ void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Fee
 
     Q_UNUSED(feed);
 
-    //kDebug(550) << "Caching feed.";
+    kDebug(550) << "Caching feed.";
 
-    QString cachedir = d.saveLocation("cache", "knewstuff2-feeds.cache");
+    QString cachedir = d.saveLocation("cache", m_componentname + "kns2feeds.cache");
 
-    //kDebug(550) << " + Save to directory '" + cachedir + "'.";
+    kDebug(550) << " + Save to directory '" + cachedir + "'.";
 
     QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
     QString cachefile = idbase64 + ".xml";
 
-    //kDebug(550) << " + Save to file '" + cachefile + "'.";
+    kDebug(550) << " + Save to file '" + cachefile + "'.";
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsfeeds");
@@ -1169,7 +1170,7 @@ QString CoreEngine::id(Entry *e)
     // This is the primary key of an entry:
     // A lookup on the name, which must exist but might be translated
     // This requires some care for comparison since translations might be added
-    return KGlobal::activeComponent().aboutData()->appName() + ":" + e->name().language() + ':' + e->name().representation();
+    return m_componentname + e->name().language() + ':' + e->name().representation();
 }
 
 QString CoreEngine::pid(const Provider *p)
@@ -1184,11 +1185,11 @@ QString CoreEngine::pid(const Provider *p)
         QString feedtype = feeds.at(i);
         Feed *f = p->downloadUrlFeed(feedtype);
         if (f->feedUrl().isValid())
-            return f->feedUrl().url();
+            return m_componentname + f->feedUrl().url();
     }
     if (p->webService().isValid())
-        return p->webService().url();
-    return QString();
+        return m_componentname + p->webService().url();
+    return m_componentname;
 }
 
 bool CoreEngine::install(const QString &payloadfile)
