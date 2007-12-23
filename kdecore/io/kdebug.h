@@ -218,13 +218,9 @@ public:
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)
 # define kDebug        KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)
-#else
-# define kDebug        if (1); else kDebug
 #endif
 #if !defined(KDE_NO_WARNING_OUTPUT)
 # define kWarning      KDebug(QtWarningMsg, __FILE__, __LINE__, Q_FUNC_INFO)
-#else
-# define kWarning      if (1); else kWarning
 #endif
 
 /** @} */
