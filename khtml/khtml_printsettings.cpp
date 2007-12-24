@@ -19,6 +19,7 @@
 
 #include "khtml_printsettings.h"
 
+#include <kdialog.h>
 #include <klocale.h>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
@@ -80,8 +81,8 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 	m_printheader->setChecked(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
-	l0->setMargin(0);
-	l0->setSpacing(10);
+	l0->setMargin(KDialog::marginHint());
+	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(m_printfriendly);
 	l0->addWidget(m_printimages);
 	l0->addWidget(m_printheader);
