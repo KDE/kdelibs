@@ -49,6 +49,7 @@ Comment[sv]=Text till tal-tjänst med ett D-bus gränssnitt
 Comment[ta]=D-Bus இடைமுகத்துடன் கூடிய உரைச் ஓசை மாற்றி
 Comment[te]=డి-బస్ ఇంటర్ఫేస్ కల్గిన వాచకం నుంచి మాటలకు మార్చు సేవ
 Comment[th]=บริการเปลี่ยนข้อความเป็นเสียงพูด พร้อมด้วยส่วนติดต่อกับ DCOP
+Comment[tr]=D-Bus Arayüzü Kullanan Metin Seslendirme Servisi
 Comment[uk]=Служба синтезу мовлення з інтерфейсом D-Bus
 Comment[vi]=Dịch vụ Văn bản sang Tiếng nói có giao diện D-Bus
 Comment[wa]=Siervice tecse-viè-vwès avou ene eterface D-Bus
