@@ -66,5 +66,5 @@ Comment[zh_CN]=都柏林核心术语
 Comment[zh_TW]=Dublin 核心術語
 URL=http://purl.org/dc/terms/
 Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/dcq.rdf
-MimeType=application/rdf+xml;
+MimeType=application/rdf+xml
 Type=Data

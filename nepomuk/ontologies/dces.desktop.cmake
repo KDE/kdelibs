@@ -68,5 +68,5 @@ Comment[zh_CN]=都柏林核心元素集 1.1 版本命名空间通过一种 RDF S
 Comment[zh_TW]=Dublin 核心元素集 1.1 版命名空間以 RDF 摘要方式提供其內容的存取
 URL=http://purl.org/dc/elements/1.1/
 Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/dces.rdf
-MimeType=application/rdf+xml;
+MimeType=application/rdf+xml
 Type=Data

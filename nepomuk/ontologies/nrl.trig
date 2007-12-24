@@ -272,19 +272,20 @@
 
 <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl/metadata>
 {
-    <http://semanticdesktop.org/ontologies/2007/08/15/nrl>
+    <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl>
           a       nrl:DocumentGraph , nrl:KnowledgeBase ;
-          nao:hasNamespace "http://semanticdesktop.org/ontologies/2007/08/15/nrl#" ;
-          nao:hasNamespaceAbbreviation "nrl" ;
+          nao:hasDefaultNamespace "http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#" ;
+          nao:hasDefaultNamespaceAbbreviation "nrl" ;
           nao:lastModified "2007-08-22T13:38:32.866Z" ;
           nao:serializationLanguage "TriG" ;
           nao:status "Testing" ;
           nrl:updatable "0" ;
           nao:version "2" .
 
-    <http://semanticdesktop.org/ontologies/2007/08/15/nrl/metadata>
+    <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl/metadata>
           a       nrl:GraphMetadata , nrl:DocumentGraph ;
           nao:serializationLanguage "TriG" ;
-          nrl:coreGraphMetadataFor <http://semanticdesktop.org/ontologies/2007/08/15/nrl> .
+          nrl:coreGraphMetadataFor <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl> .
 
 }
+

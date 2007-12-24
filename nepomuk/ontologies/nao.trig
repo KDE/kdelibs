@@ -243,13 +243,13 @@
 <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata> {
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata>
           a       nrl:GraphMetadata ;
-          nrl:coreGraphMetadataFor <http://semanticdesktop.org/ontologies/2007/08/15/nao> .
+          nrl:coreGraphMetadataFor <http://www.semanticdesktop.org/ontologies/2007/08/15/nao> .
 
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao>
           a       nrl:Ontology , nrl:DocumentGraph ;
-          nao:hasNamespace "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#" ;
-          nao:hasNamespaceAbbreviation "nao" ;
+          nao:hasDefaultNamespace "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#" ;
+          nao:hasDefaultNamespaceAbbreviation "nao" ;
           nao:lastModified "2007-08-22T17:35:34.881Z" ;
           nao:serializationLanguage "TriG" ;
           nao:status "Unstable" ;
