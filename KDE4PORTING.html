@@ -2046,6 +2046,18 @@ a listDir result.</li>
 <li>openPassDlg was renamed to openPasswordDialog</li>
 </ul>
 
+<h4>KIO::TCPSlaveBase</h4>
+<ul>
+<li>Removed distinction of SSL and TLS mode. You can now tell the slave via the constructor to start SSL right after connecting which is what was previously called "SSL mode". "TLS" is the same as starting SSL (using startSsl()) later than immediately after connecting. You can query if a slave was created with immediate SSL start enabled by calling isAutoSsl().</li>
+<li>Removed the notion of a default port. It was not used for any internal calculations - you can emulate it simply by having an "m_defaultPort" or similar member in a subclass.</li>
+<li>Renamed isConnectionValid() to isConnected().</li>
+<li>Renamed setBlockConnection() to setBlocking().</li>
+<li>Renamed closeDescriptor() to disconnectFromHost().</li>
+<li>startSsl() (formerly startTLS()) now just returns a bool instead of a numeric error code.</li>
+<li>connectToHost() lost its sendError parameter. It was only used for proxy support hacks in the HTTP ioslave and nowhere else. Proxy support is better implemented inside TCPSlaveBase than in protocol slaves.</li>
+<li>Metadata changes that should only concern the HTTP ioslave and the HTML KPart.</li>
+</ul>
+
 <h4>KMimeMagic</h4>
 <ul>
 <li>The KMimeMagic class is gone. Use the KMimeType API instead:
