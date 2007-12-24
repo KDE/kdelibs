@@ -163,7 +163,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
 
             QByteArray locale;
             QByteArray rawKey;
-            while (int start = aKey.indexOf('[') >= 0) {
+            int start;
+            while ((start = aKey.indexOf('[')) >= 0) {
                 int end = aKey.indexOf(']', start);
                 if (end < 0) {
                     qWarning() << warningProlog(file, lineNo)
