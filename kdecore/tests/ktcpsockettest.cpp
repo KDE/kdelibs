@@ -264,7 +264,7 @@ void KTcpSocketTest::states()
         QByteArray request(requestProlog);
         request.append(hosts[i % 4]);
         request.append(requestEpilog);
-        qDebug(hosts[i % 4]);
+        qDebug("%s", hosts[i % 4]);
         s->write(request);
 
         QCOMPARE(s->state(), KTcpSocket::HostLookupState);
