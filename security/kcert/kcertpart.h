@@ -26,7 +26,7 @@
 #include <Qt3Support/Q3ListView>
 #include <QtCore/QVariantList>
 
-class KSSLCertBox;
+class KSslCertificateBox;
 class QFrame;
 class QLabel;
 class KCertPartPrivate;
@@ -101,14 +101,14 @@ protected:
   QLabel *_p12_digest;
   KComboBox *_p12_chain;
   QTextEdit*_p12_pubkey, *_p12_sig;
-  KSSLCertBox *_p12_subject, *_p12_issuer;
+  KSslCertificateBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
   QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil,
          *_ca_serialNum, *_ca_certState;
   QLabel *_ca_digest;
   QTextEdit *_ca_pubkey, *_ca_sig;
-  KSSLCertBox *_ca_subject, *_ca_issuer;
+  KSslCertificateBox *_ca_subject, *_ca_issuer;
 
 
   // The rest

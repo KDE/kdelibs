@@ -34,6 +34,7 @@
 #include <kpassworddialog.h>
 #include <ksslall.h>
 #include <kopenssl.h>
+#include <ksslcertificatebox.h>
 #include <ksslpemcallback.h>
 #include <kfiledialog.h>
 #include <QtCore/Q_PID>
@@ -189,8 +190,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	grid->addWidget(new QLabel(i18n("Subject:"), _pkcsFrame), 2, 0);
 	grid->addWidget(new QLabel(i18n("Issued by:"), _pkcsFrame), 2, 3);
-	_p12_subject = KSSLInfoDialog::certInfoWidget(_pkcsFrame, QString(""));
-	_p12_issuer = KSSLInfoDialog::certInfoWidget(_pkcsFrame, QString(""));
+	_p12_subject = new KSslCertificateBox(_pkcsFrame);
+	_p12_issuer = new KSslCertificateBox(_pkcsFrame);
 	grid->addWidget(_p12_subject, 3, 0, 4, 3);
 	grid->addWidget(_p12_issuer, 3, 3, 4, 3);
 
@@ -280,8 +281,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	grid->addWidget(new QLabel(i18n("Subject:"), _x509Frame), 1, 0);
 	grid->addWidget(new QLabel(i18n("Issued by:"), _x509Frame), 1, 3);
-	_ca_subject = KSSLInfoDialog::certInfoWidget(_x509Frame, QString(""));
-	_ca_issuer = KSSLInfoDialog::certInfoWidget(_x509Frame, QString(""));
+	_ca_subject = new KSslCertificateBox(_x509Frame);
+	_ca_issuer = new KSslCertificateBox(_x509Frame);
 	grid->addWidget(_ca_subject, 2, 0, 4, 3);
 	grid->addWidget(_ca_issuer, 2, 3, 4, 3);
 
@@ -642,8 +643,8 @@ void KCertPart::displayPKCS12() {
 
 void KCertPart::displayCACert(KSSLCertificate *c) {
 	// We have the file, lets work with it.
-	_ca_subject->setValues(c->getSubject());
-	_ca_issuer->setValues(c->getIssuer());
+//### 	_ca_subject->setValues(c->getSubject());
+//### 	_ca_issuer->setValues(c->getIssuer());
 
 	// Set the valid period
 	QPalette cspl = _ca_validFrom->palette();
@@ -683,8 +684,8 @@ void KCertPart::displayCACert(KSSLCertificate *c) {
 
 void KCertPart::displayPKCS12Cert(KSSLCertificate *c) {
 	// We have the file, lets work with it.
-	_p12_subject->setValues(c->getSubject());
-	_p12_issuer->setValues(c->getIssuer());
+//### 	_p12_subject->setValues(c->getSubject());
+//### 	_p12_issuer->setValues(c->getIssuer());
 
 	// Set the valid period
 	QPalette cspl = _p12_validFrom->palette();

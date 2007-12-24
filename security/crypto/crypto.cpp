@@ -1025,7 +1025,7 @@ void KCryptoConfig::save()
     item = static_cast<CipherItem *>(item->nextSibling());
   }
 
-  KSSLCertificateCache _cc;
+//###   KSSLCertificateCache _cc;
 
   if (ciphercount == 0)
     KMessageBox::information(this, i18n("If you do not select at least one"
@@ -1035,7 +1035,7 @@ void KCryptoConfig::save()
   for (OtherCertItem *x = otherCertDelList.first(); x != 0; x = otherCertDelList.next()) {
      KSSLX509Map cert(x->configName());
      QString thisCN = cert.getValue("CN");
-     _cc.removeByCN(thisCN);
+//###      _cc.removeByCN(thisCN);
      otherCertDelList.remove(x);
   }
   // Go through the non-deleted ones and save them
@@ -1046,7 +1046,7 @@ void KCryptoConfig::save()
      KSSLX509Map cert(x->configName());
      QString thisCN = cert.getValue("CN");
      QDateTime expires = x->getExpires();
-     _cc.modifyByCN(thisCN, (KSSLCertificateCache::KSSLCertificatePolicy)x->getPolicy(), x->isPermanent(), expires);
+//###      _cc.modifyByCN(thisCN, (KSSLCertificateCache::KSSLCertificatePolicy)x->getPolicy(), x->isPermanent(), expires);
   }
 
   // SSL Personal certificates code
@@ -1337,13 +1337,13 @@ void KCryptoConfig::slotPolicyChanged(int id) {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 if (!x) return;
 
-   if (id == policyGroup->id(policyAccept)) {
-     x->setPolicy(KSSLCertificateCache::Accept);
-   } else if (id == policyGroup->id(policyReject)) {
-     x->setPolicy(KSSLCertificateCache::Reject);
-   } else if (id == policyGroup->id(policyPrompt)) {
-     x->setPolicy(KSSLCertificateCache::Prompt);
-   }
+//###    if (id == policyGroup->id(policyAccept)) {
+//###      x->setPolicy(KSSLCertificateCache::Accept);
+//###    } else if (id == policyGroup->id(policyReject)) {
+//###      x->setPolicy(KSSLCertificateCache::Reject);
+//###    } else if (id == policyGroup->id(policyPrompt)) {
+//###      x->setPolicy(KSSLCertificateCache::Prompt);
+//###    }
 
    configChanged();
 }
@@ -1419,17 +1419,17 @@ QString iss = QString();
          pHash->clear();
       }
 
-      switch(x->getPolicy()) {
-      case KSSLCertificateCache::Accept:
-        policyGroup->setButton(policyGroup->id(policyAccept));
-      break;
-      case KSSLCertificateCache::Reject:
-        policyGroup->setButton(policyGroup->id(policyReject));
-      break;
-      case KSSLCertificateCache::Prompt:
-        policyGroup->setButton(policyGroup->id(policyPrompt));
-      break;
-      }
+//###       switch(x->getPolicy()) {
+//###       case KSSLCertificateCache::Accept:
+//###         policyGroup->setButton(policyGroup->id(policyAccept));
+//###       break;
+//###       case KSSLCertificateCache::Reject:
+//###         policyGroup->setButton(policyGroup->id(policyReject));
+//###       break;
+//###       case KSSLCertificateCache::Prompt:
+//###         policyGroup->setButton(policyGroup->id(policyPrompt));
+//###       break;
+//###       }
 
       cachePerm->setChecked(x->isPermanent());
       cacheUntil->setChecked(!x->isPermanent());
