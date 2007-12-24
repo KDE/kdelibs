@@ -35,22 +35,46 @@ void KMimeFileParser::parseGlobs()
 {
     const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
     //kDebug() << globFiles;
+    parseGlobs(globFiles);
+}
+
+void KMimeFileParser::parseGlobs(const QStringList& globFiles)
+{
     QListIterator<QString> globIter(globFiles);
     globIter.toBack();
-    while (globIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
+    // At each level, we must be able to override (not just add to) the information that we read at higher levels.
+    // This is why we don't directly call mimetype->addPattern, nor can we use the same qhash for everything.
+    QHash<QString, QStringList> mimeTypeGlobs;
+    while (globIter.hasPrevious()) { // global first, then local
         const QString fileName = globIter.previous();
         QFile globFile(fileName);
         kDebug() << "Now parsing" << fileName;
-        parseGlobFile(&globFile, fileName);
+        const QHash<QString, QStringList> thisLevelGlobs = parseGlobFile(&globFile);
+        if (mimeTypeGlobs.isEmpty())
+            mimeTypeGlobs = thisLevelGlobs;
+        else {
+            // We insert stuff multiple times into the hash, and we only look at the last inserted later on.
+            mimeTypeGlobs.unite(thisLevelGlobs);
+        }
+    }
+
+    const QStringList keys = mimeTypeGlobs.uniqueKeys();
+    Q_FOREACH(const QString& mimeTypeName, keys) {
+        KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName);
+        if (!mimeType) {
+            kWarning(7012) << "one of glob files in" << globFiles << "refers to unknown mimetype" << mimeTypeName;
+        } else {
+            mimeType->setPatterns(mimeTypeGlobs.value(mimeTypeName));
+        }
     }
 }
 
 // uses a QIODevice to make unit tests possible
-// the filename is only there for the kWarning
-void KMimeFileParser::parseGlobFile(QIODevice* file, const QString& fileName)
+QHash<QString, QStringList> KMimeFileParser::parseGlobFile(QIODevice* file)
 {
+    QHash<QString, QStringList> globs;
     if (!file->open(QIODevice::ReadOnly))
-        return;
+        return globs;
     QTextStream stream(file);
     //stream.setCodec("UTF-8"); // should be all latin1
     QString line;
@@ -62,13 +86,9 @@ void KMimeFileParser::parseGlobFile(QIODevice* file, const QString& fileName)
         if (pos == -1) // syntax error
             continue;
         const QString mimeTypeName = line.left(pos);
-        KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName);
-        if (!mimeType)
-            kWarning(7012) << fileName << "refers to unknown mimetype" << mimeTypeName;
-        else {
-            const QString pattern = line.mid(pos+1);
-            Q_ASSERT(!pattern.isEmpty());
-            mimeType->addPattern(pattern);
-        }
+        const QString pattern = line.mid(pos+1);
+        Q_ASSERT(!pattern.isEmpty());
+        globs[mimeTypeName].append(pattern);
     }
+    return globs;
 }

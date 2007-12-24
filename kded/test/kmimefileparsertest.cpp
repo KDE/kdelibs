@@ -20,6 +20,7 @@
 #include <config.h>
 #include <kdefakes.h>
 #include "kmimefileparsertest.h"
+#include <ktemporaryfile.h>
 #include "kmimefileparsertest.moc"
 #include <qtest_kde.h>
 #include "kmimefileparser.h"
@@ -62,6 +63,19 @@ void KMimeFileParserTest::initTestCase()
 
 void KMimeFileParserTest::testParseGlobFile()
 {
+    const QString ext1 = "*.kmimefileparserunittest";
+    const QString ext2 = "*.kmimefileparserunittest2";
+
+    QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
+    QBuffer buf(&testFile);
+    const QHash<QString, QStringList> mimeTypeGlobs = KMimeFileParser::parseGlobFile(&buf);
+    QCOMPARE(mimeTypeGlobs.count(), 1);
+    QVERIFY(mimeTypeGlobs.contains("text/plain"));
+    QCOMPARE(mimeTypeGlobs.value("text/plain"), QStringList() << ext1 << ext2);
+}
+
+void KMimeFileParserTest::testParseGlobs()
+{
     KMimeFileParser parser(m_factory);
 
     const QString ext1 = "*.kmimefileparserunittest";
@@ -72,12 +86,51 @@ void KMimeFileParserTest::testParseGlobFile()
     QVERIFY(!textPlain->patterns().contains(ext1));
     QVERIFY(!textPlain->patterns().contains(ext2));
 
-    QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
-    QBuffer buf(&testFile);
-    parser.parseGlobFile(&buf, "testFile");
+    KTemporaryFile globTempFile;
+    QVERIFY(globTempFile.open());
+    const QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
+    globTempFile.write(testFile);
+    const QString fileName = globTempFile.fileName();
+    globTempFile.close();
+
+    parser.parseGlobs(QStringList() << fileName);
 
     QVERIFY(textPlain->patterns().contains(ext1));
     QVERIFY(textPlain->patterns().contains(ext2));
+}
 
+void KMimeFileParserTest::testDuplicateGlob()
+{
+    KMimeFileParser parser(m_factory);
+
+    const QString ext1 = "*.ext1";
+    const QString ext2 = "*.ext2";
+
+    KMimeType::Ptr textPlain = KMimeType::mimeType("text/plain");
+    QVERIFY(textPlain);
+    QVERIFY(!textPlain->patterns().contains(ext1));
+    QVERIFY(!textPlain->patterns().contains(ext2));
+
+    // "local" file
+    KTemporaryFile globTempFile1;
+    QVERIFY(globTempFile1.open());
+    const QByteArray testFile1 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.ext2";
+    globTempFile1.write(testFile1);
+    const QString fileName1 = globTempFile1.fileName();
+    globTempFile1.close();
+
+    // "global" file
+    KTemporaryFile globTempFile2;
+    QVERIFY(globTempFile2.open());
+    const QByteArray testFile2 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.exttoberemoved";
+    globTempFile2.write(testFile2);
+    const QString fileName2 = globTempFile2.fileName();
+    globTempFile2.close();
+
+    parser.parseGlobs(QStringList() << fileName1 << fileName2);
+
+    QVERIFY(textPlain->patterns().contains(ext1));
+    QVERIFY(textPlain->patterns().contains(ext2));
+    QVERIFY(!textPlain->patterns().contains("*.exttoberemoved"));
 }
 

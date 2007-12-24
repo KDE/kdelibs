@@ -20,6 +20,8 @@
 #ifndef KMIMEFILEPARSER_H
 #define KMIMEFILEPARSER_H
 
+#include <QtCore/QStringList>
+#include <QtCore/QHash>
 class QIODevice;
 class QString;
 class KMimeTypeFactory;
@@ -31,7 +33,10 @@ public:
 
     // Read globs (patterns) files
     void parseGlobs();
-    void parseGlobFile(QIODevice* file, const QString& fileName);
+
+    // Separate method, for unit test
+    void parseGlobs(const QStringList&);
+    static QHash<QString, QStringList> parseGlobFile(QIODevice* file);
 
 private:
     KMimeTypeFactory* m_mimeTypeFactory;

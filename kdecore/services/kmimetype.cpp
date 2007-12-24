@@ -623,10 +623,10 @@ QStringList KMimeType::patterns() const
     return d->m_lstPatterns;
 }
 
-void KMimeType::addPattern(const QString& pattern)
+void KMimeType::setPatterns(const QStringList& patterns)
 {
     Q_D(KMimeType);
-    d->m_lstPatterns.append(pattern);
+    d->m_lstPatterns = patterns;
 }
 
 void KMimeType::setParentMimeType(const QString& parent)

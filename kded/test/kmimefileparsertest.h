@@ -29,6 +29,8 @@ class KMimeFileParserTest : public QObject
 private Q_SLOTS:
     void initTestCase();
     void testParseGlobFile();
+    void testParseGlobs();
+    void testDuplicateGlob();
 private:
     KMimeTypeFactory* m_factory;
 };

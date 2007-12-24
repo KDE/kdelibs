@@ -563,6 +563,7 @@ void KMimeTypeTest::testPatterns_data()
     QTest::addColumn<QString>("patterns");
     QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf";
     QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr,*.kpt";
+    QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc,*.txt,*.doc";
     QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString();
 }
 
