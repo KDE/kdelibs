@@ -529,6 +529,13 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     bool shouldPaintBackgroundImage = bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage();
     QColor bgColor = c;
 
+    // the "bottom" of the page can't be transparent
+    if (isRoot())
+    {
+        if (bgColor.alpha() == 0)
+            bgColor = p->background().color();
+        bgColor.setAlpha(255);
+    }
     // Paint the color first underneath all images.
     if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgba()) > 0)
         p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
