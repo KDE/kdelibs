@@ -27,11 +27,12 @@
 #include "ksslx509map.h"
 #include "ksslcertificate.h"
 #include "kssl.h"
-#include <QtGui/QScrollArea>
+#include <QtNetwork/QSslError>
 
 class QWidget;
 class KSSLCertBox;
-
+class QSslCertificate;
+class KTcpSocket;
 
 /**
  * KDE SSL Information Dialog
@@ -52,13 +53,9 @@ public:
 	/**
 	 *  Construct a KSSL Information Dialog
 	 *
-	 *  @param secureConnection true if the connection is secured with SSL
 	 *  @param parent the parent widget
-	 *  @param name the internal name of this instance
-	 *  @param modal true if the dialog should be modal
 	 */
-	explicit KSSLInfoDialog(bool secureConnection, QWidget *parent=0L,
-                                const char *name=0L, bool modal=false);
+	explicit KSSLInfoDialog(QWidget *parent = 0);
 
 	/**
 	 *  Destroy this dialog
@@ -74,23 +71,26 @@ public:
 	void setSecurityInQuestion(bool isIt);
 
 	/**
-	 *  Setup the dialog before showing it.
+	 *  Set information to display about the SSL connection.
 	 *
-	 *  @param cert the certificate presented by the site
+	 *  @param certificateChain the certificate chain leading from the certificate
+     *         authority to the peer.
 	 *  @param ip the ip of the remote host
 	 *  @param url the url being accessed
+     *  @param sslProtocol the version of SSL in use (SSLv2, SSLv3, TLSv1)
 	 *  @param cipher the cipher in use
-	 *  @param cipherdesc text description of the cipher in use
-	 *  @param sslversion the version of SSL in use (SSLv2, SSLv3, TLSv1, etc)
-	 *  @param usedbits the number of bits in the cipher key being used
-	 *  @param bits the bit-size of the cipher in use
-	 *  @param certState the certificate state (valid, invalid, etc)
+	 *  @param usedBits the used bits of the key
+	 *  @param bits the key size of the cipher in use
+	 *  @param validationErrors errors validating the certificates, if any
 	 */
-	void setup(KSSLCertificate *cert,
-			const QString& ip, const QString& url,
-			const QString& cipher, const QString& cipherdesc,
-			const QString& sslversion, int usedbits, int bits,
-			KSSLCertificate::KSSLValidation certState);
+	void setSslInfo(const QList<QSslCertificate> &certificateChain,
+			        const QString &ip, const QString &url,
+			        const QString &sslProtocol, const QString &cipher,
+                    int usedBits, int bits,
+			        const QList<QSslError::SslError> &validationErrors);
+
+    void setMainPartEncrypted(bool);
+    void setAuxiliaryPartsEncrypted(bool);
 
 	/**
 	 *  Setup the dialog before showing it.  This is a convenience version
@@ -101,74 +101,17 @@ public:
 	 *  @param ip the ip of the remote host
 	 *  @param url the url being accessed
 	 */
-	void setup( KSSL & ssl, const QString & ip, const QString & url );
-
-        /**
-         *  Set the errors that were encountered while validating the site 
-         *  certificate.
-         */
-        void setCertState(const QString &errorNrs);
-
-	/**
-	 *  Utility function to generate the widget which displays the detailed
-	 *  information about an X.509 certificate.
-	 *
-	 *  @param parent the parent widget
-	 *  @param certName the name (subject) of the certificate
-	 *  @param mailCatcher the class which catches click events on e-mail
-	 *         addresses
-	 */
-	static KSSLCertBox *certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher=0);
+	void setup(const KTcpSocket &socket, const QString &ip, const QString &url);
 
 private:
-	QScrollArea *buildCertInfo(const QString &certName);
-	void displayCert(KSSLCertificate *x);
+    void updateWhichPartsEncrypted();
 
 	class KSSLInfoDialogPrivate;
 	KSSLInfoDialogPrivate* const d;
 
 private Q_SLOTS:
 	void launchConfig();
-	void urlClicked(const QString &url);
-	void mailClicked(const QString &url);
-	void slotChain(int x);
-};
-
-
-/**
- * KDE SSL Certificate Box
- *
- * This class creates a widget which formats and displays the contents of an
- * SSL X.509 certificate.  That is, it takes the "subject" of the certificate
- * and displays everything contained therein.
- *
- * @author George Staikos <staikos@kde.org>
- * @see KSSLInfoDialog
- * @short KDE SSL Certificate Box
- */
-
-class KIO_EXPORT KSSLCertBox : public QScrollArea {
-public:
-    /**
-     *  Construct a certificate box
-     *
-     *  @param parent the parent widget
-     *  @param name the internal name of this instance
-     *  @param f widget flags for the object
-     */
-    explicit KSSLCertBox(QWidget *parent=0L);
-
-    /**
-     *  Change the contents of the widget
-     *
-     *  @param certName the name ("subject") of the certificate
-     *  @param mailCatcher the widget which catches the url open events
-     */
-    void setValues(const QString &certName, QWidget *mailCatcher=0L);
-private:
-    class KSSLCertBoxPrivate;
-    class KSSLCertBoxPrivate* const d;
+	void displayFromChain(int);
 };
 
 #endif
-

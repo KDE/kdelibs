@@ -54,6 +54,7 @@ KDECORE_UNIT_TESTS(
  kprocesstest
  kconfigafterkglobaltest1
  kconfigafterkglobaltest2
+ ktcpsockettest
 )
 
 if(UNIX)

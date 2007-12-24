@@ -45,7 +45,6 @@
 #include <kconfiggroup.h>
 #include <kdesu/client.h>
 #include <klocale.h>
-#include <k3streamsocket.h>
 
 #include "kremoteencoding.h"
 
@@ -69,12 +68,20 @@ using namespace KIO;
 typedef QList<QByteArray> AuthKeysList;
 typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
-#define KIO_FILESIZE_T(x) qulonglong(x)
+#define KIO_FILESIZE_T(x) quint64(x)
 
 namespace KIO {
 
 class SlaveBasePrivate {
 public:
+    UDSEntryList pendingListEntries;
+    int listEntryCurrentSize;
+    long listEntry_sec, listEntry_usec;
+    Connection appConnection;
+    QString poolSocket;
+    bool isConnectedToApp;
+    static qlonglong s_seqNr;
+
     QString slaveid;
     bool resume:1;
     bool needSendCanResume:1;
@@ -84,7 +91,7 @@ public:
     bool exit_loop:1;
     MetaData configData;
     KConfig *config;
-    KConfigGroup* configGroup;
+    KConfigGroup *configGroup;
     KUrl onHoldUrl;
 
     struct timeval last_tv;
@@ -98,7 +105,7 @@ public:
 }
 
 static SlaveBase *globalSlave;
-qlonglong SlaveBase::s_seqNr;
+qlonglong SlaveBasePrivate::s_seqNr;
 
 static volatile bool slaveWriteError = false;
 
@@ -127,10 +134,11 @@ static void genericsig_handler(int sigNumber)
 SlaveBase::SlaveBase( const QByteArray &protocol,
                       const QByteArray &pool_socket,
                       const QByteArray &app_socket )
-    : mProtocol(protocol), m_pConnection(0),
-      mPoolSocket( QFile::decodeName(pool_socket)),
-      mAppSocket( QFile::decodeName(app_socket)),d(new SlaveBasePrivate)
+    : mProtocol(protocol),
+      d(new SlaveBasePrivate)
+
 {
+    d->poolSocket = QFile::decodeName(pool_socket);
     s_protocol = protocol.data();
 #ifdef Q_OS_UNIX
     if (!getenv("KDE_DEBUG"))
@@ -172,13 +180,12 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
 
     globalSlave=this;
 
-    appconn = new Connection();
-    listEntryCurrentSize = 100;
+    d->listEntryCurrentSize = 100;
     struct timeval tp;
     gettimeofday(&tp, 0);
-    listEntry_sec = tp.tv_sec;
-    listEntry_usec = tp.tv_usec;
-    mConnectedToApp = true;
+    d->listEntry_sec = tp.tv_sec;
+    d->listEntry_usec = tp.tv_usec;
+    d->isConnectedToApp = true;
 
     // by kahl for netmgr (need a way to identify slaves)
     d->slaveid = protocol;
@@ -186,6 +193,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->resume = false;
     d->needSendCanResume = false;
     d->config = new KConfig(QString(), KConfig::SimpleConfig);
+    // The KConfigGroup needs the KConfig to exist during its whole lifetime.
     d->configGroup = new KConfigGroup(d->config, QString());
     d->onHold = false;
     d->wasKilled=false;
@@ -195,7 +203,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->totalSize=0;
     d->sentListEntries=0;
     d->timeout = 0;
-    connectSlave(mAppSocket);
+    connectSlave(QFile::decodeName(app_socket));
 
     d->remotefile = 0;
     d->inOpenLoop = false;
@@ -220,18 +228,18 @@ void SlaveBase::dispatchLoop()
             special(data);
         }
 
-        Q_ASSERT(appconn->inited());
+        Q_ASSERT(d->appConnection.inited());
 
         int ms = -1;
         if (d->timeout)
             ms = 1000 * qMax<time_t>(d->timeout - time(0), 1);
 
         int ret = -1;
-        if (appconn->hasTaskAvailable() || appconn->waitForIncomingTask(ms)) {
+        if (d->appConnection.hasTaskAvailable() || d->appConnection.waitForIncomingTask(ms)) {
             // dispatch application messages
             int cmd;
             QByteArray data;
-            ret = appconn->read(&cmd, data);
+            ret = d->appConnection.read(&cmd, data);
 
             if (ret != -1) {
                 if (d->inOpenLoop)
@@ -240,16 +248,16 @@ void SlaveBase::dispatchLoop()
                     dispatch(cmd, data);
             }
         } else {
-            ret = appconn->isConnected() ? 0 : -1;
+            ret = d->appConnection.isConnected() ? 0 : -1;
         }
 
         if (ret == -1) { // some error occurred, perhaps no more applicationi
             // When the app exits, should the slave be put back in the pool ?
-            if (!d->exit_loop && mConnectedToApp && !mPoolSocket.isEmpty()) {
+            if (!d->exit_loop && d->isConnectedToApp && !d->poolSocket.isEmpty()) {
                 disconnectSlave();
-                mConnectedToApp = false;
+                d->isConnectedToApp = false;
                 closeConnection();
-                connectSlave(mPoolSocket);
+                connectSlave(d->poolSocket);
             } else {
                 return;
             }
@@ -263,35 +271,24 @@ void SlaveBase::dispatchLoop()
     }
 }
 
-void SlaveBase::setConnection( Connection* connection )
-{
-    m_pConnection = connection;
-}
-
-Connection *SlaveBase::connection() const
-{
-    return m_pConnection;
-}
-
 void SlaveBase::connectSlave(const QString &address)
 {
-    appconn->connectToRemote(address);
+    d->appConnection.connectToRemote(address);
 
-    if (!appconn->inited())
+    if (!d->appConnection.inited())
     {
         kDebug(7019) << "SlaveBase: failed to connect to " << address << endl
-		      << "Reason: " << appconn->errorString() << endl;
+		      << "Reason: " << d->appConnection.errorString() << endl;
         exit();
         return;
     }
 
     d->inOpenLoop = false;
-    setConnection(appconn);
 }
 
 void SlaveBase::disconnectSlave()
 {
-    appconn->close();
+    d->appConnection.close();
 }
 
 void SlaveBase::setMetaData(const QString &key, const QString &value)
@@ -329,6 +326,9 @@ KConfigGroup *SlaveBase::config()
 
 void SlaveBase::sendMetaData()
 {
+   if (mOutgoingMetaData.isEmpty())
+      return;
+
    KIO_DATA << mOutgoingMetaData;
 
    send( INF_META_DATA, data );
@@ -346,17 +346,13 @@ KRemoteEncoding *SlaveBase::remoteEncoding()
 
 void SlaveBase::data( const QByteArray &data )
 {
-   if (!mOutgoingMetaData.isEmpty())
-      sendMetaData();
+   sendMetaData();
    send( MSG_DATA, data );
 }
 
 void SlaveBase::dataReq( )
 {
-/*
-   if (!mOutgoingMetaData.isEmpty())
-      sendMetaData();
-*/
+   //sendMetaData();
    if (d->needSendCanResume)
       canResume(0);
    send( MSG_DATA_REQ );
@@ -364,8 +360,7 @@ void SlaveBase::dataReq( )
 
 void SlaveBase::opened()
 {
-   if (!mOutgoingMetaData.isEmpty())
-      sendMetaData();
+   sendMetaData();
    send( MSG_OPENED );
    d->inOpenLoop = true;
 }
@@ -378,7 +373,7 @@ void SlaveBase::error( int _errid, const QString &_text )
 
     send( MSG_ERROR, data );
     //reset
-    listEntryCurrentSize = 100;
+    d->listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
     d->inOpenLoop=false;
@@ -392,12 +387,11 @@ void SlaveBase::connected()
 void SlaveBase::finished()
 {
     mIncomingMetaData.clear(); // Clear meta data
-    if (!mOutgoingMetaData.isEmpty())
-       sendMetaData();
+    sendMetaData();
     send( MSG_FINISHED );
 
     // reset
-    listEntryCurrentSize = 100;
+    d->listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
     d->inOpenLoop=false;
@@ -439,8 +433,8 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
     //this one is usually called before the first item is listed in listDir()
     struct timeval tp;
     gettimeofday(&tp, 0);
-    listEntry_sec = tp.tv_sec;
-    listEntry_usec = tp.tv_usec;
+    d->listEntry_sec = tp.tv_sec;
+    d->listEntry_usec = tp.tv_usec;
     d->totalSize=_bytes;
     d->sentListEntries=0;
 }
@@ -545,8 +539,8 @@ void SlaveBase::mimeType( const QString &_type)
     {
        cmd = 0;
        int ret = -1;
-       if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
-           ret = m_pConnection->read( &cmd, data );
+       if (d->appConnection.hasTaskAvailable() || d->appConnection.waitForIncomingTask(-1)) {
+           ret = d->appConnection.read( &cmd, data );
        }
        if (ret == -1) {
            kDebug(7019) << "SlaveBase: mimetype: read error";
@@ -556,12 +550,10 @@ void SlaveBase::mimeType( const QString &_type)
        // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
-       if ( isSubCommand(cmd) )
-       {
-          dispatch( cmd, data );
-          continue; // Disguised goto
-       }
-       break;
+       if (!isSubCommand(cmd))
+          break;
+
+       dispatch( cmd, data );
     }
   }
   while (cmd != CMD_NONE);
@@ -624,38 +616,38 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
    static const int minimum_updatetime = 100;
 
    if (!_ready) {
-      pendingListEntries.append(entry);
+      d->pendingListEntries.append(entry);
 
-      if (pendingListEntries.count() > listEntryCurrentSize) {
+      if (d->pendingListEntries.count() > d->listEntryCurrentSize) {
          gettimeofday(&tp, 0);
 
-         long diff = ((tp.tv_sec - listEntry_sec) * 1000000 +
-                      tp.tv_usec - listEntry_usec) / 1000;
+         long diff = ((tp.tv_sec - d->listEntry_sec) * 1000000 +
+                      tp.tv_usec - d->listEntry_usec) / 1000;
          if (diff==0) diff=1;
 
          if (diff > maximum_updatetime) {
-            listEntryCurrentSize = listEntryCurrentSize * 3 / 4;
+            d->listEntryCurrentSize = d->listEntryCurrentSize * 3 / 4;
             _ready = true;
          }
 //if we can send all list entries of this dir which have not yet been sent
-//within maximum_updatetime, then make listEntryCurrentSize big enough for all of them
-         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > static_cast<long>(d->totalSize-d->sentListEntries))
-            listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
+//within maximum_updatetime, then make d->listEntryCurrentSize big enough for all of them
+         else if (((d->pendingListEntries.count()*maximum_updatetime)/diff) > static_cast<long>(d->totalSize-d->sentListEntries))
+            d->listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
 //if we are below minimum_updatetime, estimate how much we will get within
 //maximum_updatetime
          else if (diff < minimum_updatetime)
-            listEntryCurrentSize = (pendingListEntries.count() * maximum_updatetime) / diff;
+            d->listEntryCurrentSize = (d->pendingListEntries.count() * maximum_updatetime) / diff;
          else
             _ready=true;
       }
    }
    if (_ready) { // may happen when we started with !ready
-      listEntries( pendingListEntries );
-      pendingListEntries.clear();
+      listEntries( d->pendingListEntries );
+      d->pendingListEntries.clear();
 
       gettimeofday(&tp, 0);
-      listEntry_sec = tp.tv_sec;
-      listEntry_usec = tp.tv_usec;
+      d->listEntry_sec = tp.tv_sec;
+      d->listEntry_usec = tp.tv_usec;
    }
 }
 
@@ -787,9 +779,10 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 
     if (metaData("no-auth-prompt").toLower() == "true")
        reply = kps.call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
-                         qlonglong(windowId), s_seqNr, qlonglong(userTimestamp));
+                         qlonglong(windowId), SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
     else
-       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr, qlonglong(userTimestamp));
+       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId),
+                        SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
 
     bool callOK = reply.type() == QDBusMessage::ReplyMessage;
 
@@ -802,7 +795,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 
     QDataStream stream2( reply.arguments().at(0).toByteArray() );
     stream2 >> authResult;
-    s_seqNr = reply.arguments().at(1).toLongLong();
+    SlaveBasePrivate::s_seqNr = reply.arguments().at(1).toLongLong();
 
     if (!authResult.isModified())
        return false;
@@ -822,10 +815,11 @@ int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QStri
 }
 
 int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QString &caption,
-                           const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
+                           const QString &buttonYes, const QString &buttonNo,
+                           const QString &dontAskAgainName )
 {
     kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo;
-    KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
+    KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo;
     send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
@@ -865,8 +859,8 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
     int cmd, result = -1;
     for (;;)
     {
-        if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
-            result = m_pConnection->read( &cmd, data );
+        if (d->appConnection.hasTaskAvailable() || d->appConnection.waitForIncomingTask(-1)) {
+            result = d->appConnection.read( &cmd, data );
         }
         if (result == -1) {
             kDebug(7019) << "SlaveBase::waitForAnswer has read error.";
@@ -919,7 +913,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     switch( command ) {
     case CMD_HOST: {
         // Reset s_seqNr, see kpasswdserver/DESIGN
-        s_seqNr = 0;
+        SlaveBasePrivate::s_seqNr = 0;
         QString passwd;
         QString host, user;
         quint16 port;
@@ -942,9 +936,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         QString app_socket;
         QDataStream stream( data );
         stream >> app_socket;
-        appconn->send( MSG_SLAVE_ACK );
+        d->appConnection.send( MSG_SLAVE_ACK );
         disconnectSlave();
-        mConnectedToApp = true;
+        d->isConnectedToApp = true;
         connectSlave(app_socket);
     } break;
     case CMD_SLAVE_HOLD:
@@ -955,9 +949,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         d->onHoldUrl = url;
         d->onHold = true;
         disconnectSlave();
-        mConnectedToApp = false;
+        d->isConnectedToApp = false;
         // Do not close connection!
-        connectSlave(mPoolSocket);
+        connectSlave(d->poolSocket);
     } break;
     case CMD_REPARSECONFIGURATION:
         reparseConfiguration();
@@ -1243,7 +1237,7 @@ void SlaveBase::setKillFlag()
 void SlaveBase::send(int cmd, const QByteArray& arr )
 {
    slaveWriteError = false;
-   if (!m_pConnection->send(cmd, arr))
+   if (!d->appConnection.send(cmd, arr))
        // Note that slaveWriteError can also be set by sigpipe_handler
        slaveWriteError = true;
    if (slaveWriteError) exit();

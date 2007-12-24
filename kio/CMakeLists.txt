@@ -182,9 +182,10 @@ set(kssl_STAT_SRCS
   kssl/ksslcertificate.cpp
   kssl/ksslconnectioninfo.cpp
   kssl/ksslcertificatefactory.cpp
-  kssl/ksslcertificatecache.cpp
+  kssl/ksslcertificatemanager.cpp
   kssl/ksslpeerinfo.cpp
   kssl/ksslinfodialog.cpp
+  kssl/ksslcertificatebox.cpp
   kssl/ksslcertdialog.cpp
   kssl/ksslutils.cpp
   kssl/kopenssl.cpp
@@ -225,6 +226,8 @@ kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopbase.ui
    kssl/keygenwizard.ui
    kssl/keygenwizard2.ui
+   kssl/sslinfo.ui
+   kssl/certificateparty.ui
 )
 
 

@@ -52,7 +52,7 @@ to the application where it can do the complete download.
 
 Do we need to have a hard limit on the number of slaves/host?
 It seems so, because some protocols are about to fail if you
-have two slaves running in parralel (e.g. POP3) 
+have two slaves running in parallel (e.g. POP3)
 This has to be implemented in the daemon because only at daemon
 level all the slaves are known. As a consequence slaves must 
 be returned to the daemon before connecting to another host.
@@ -159,7 +159,7 @@ del: deletes a file or directory, recursively if the latter
 
 PROGRESS DISPLAYING :
 =====================
-Taj brought up the idea of deligating all progress informations to an extern
+Taj brought up the idea of delegating all progress informations to an extern
 GUI daemon which could be provided in several implementations - examples
 are popup dialogs (most are annoyed by them, like me :) or a kicker applet
 or something completely different. This would also remove the dependency on

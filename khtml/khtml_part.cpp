@@ -102,7 +102,6 @@ using namespace DOM;
 #include <kcodecaction.h>
 #include <kselectaction.h>
 
-#include <ksslcertchain.h>
 #include <ksslinfodialog.h>
 
 #include <kfileitem.h>
@@ -115,6 +114,7 @@ using namespace DOM;
 #include <QtCore/QMetaEnum>
 #include <QtGui/QTextDocument>
 #include <QtCore/QDate>
+#include <QtNetwork/QSslCertificate>
 
 #include "khtmlpart_p.h"
 #include "khtmlpartadaptor.h"
@@ -1580,7 +1580,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     {
     KHTMLPart *p = parentPart();
     if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
-	while (p->parentPart()) p = p->parentPart();
+        while (p->parentPart()) p = p->parentPart();
 
         p->setPageSecurity( NotCrypted );
     }
@@ -1591,15 +1591,13 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
     d->m_ssl_parent_ip = d->m_job->queryMetaData("ssl_parent_ip");
     d->m_ssl_parent_cert = d->m_job->queryMetaData("ssl_parent_cert");
-    d->m_ssl_peer_certificate = d->m_job->queryMetaData("ssl_peer_certificate");
     d->m_ssl_peer_chain = d->m_job->queryMetaData("ssl_peer_chain");
     d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
     d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
-    d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
-    d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
+    d->m_ssl_protocol_version = d->m_job->queryMetaData("ssl_protocol_version");
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
-    d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
+    d->m_ssl_cert_errors = d->m_job->queryMetaData("ssl_cert_errors");
 
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
@@ -4061,40 +4059,79 @@ void KHTMLPart::slotSecurity()
 //                   << d->m_ssl_cert_state
 //                   << endl;
 
+  //### reenable with new signature
+#if 0
   KSSLInfoDialog *kid = new KSSLInfoDialog(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
 
-  if (d->m_ssl_in_use) {
-    KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.toLocal8Bit());
-    if (x) {
-       // Set the chain back onto the certificate
-       const QStringList cl = d->m_ssl_peer_chain.split(QString("\n"));
-       QList<KSSLCertificate *> ncl;
+  const QStringList sl = d->m_ssl_peer_chain.split('\n', QString::SkipEmptyParts);
+  QList<QSslCertificate> certChain;
+  bool certChainOk = d->m_ssl_in_use;
+  if (certChainOk) {
+    foreach (const QString &s, sl) {
+      certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+      if (certChain.last().isNull()) {
+        certChainOk = false;
+        break;
+      }
+    }
+  }
+  if (certChainOk) {
+    kid->setup(certChain,
+               d->m_ssl_peer_ip,
+               url().url(),
+               d->m_ssl_cipher,
+               d->m_ssl_cipher_desc,
+               d->m_ssl_cipher_version,
+               d->m_ssl_cipher_used_bits.toInt(),
+               d->m_ssl_cipher_bits.toInt(),
+               (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt());
+  }
+  kid->exec();
+  //the dialog deletes itself on close
+#endif
 
-       QStringList::ConstIterator it = cl.begin();
-       const QStringList::ConstIterator itEnd = cl.end();
-       for (; it != itEnd; ++it) {
-          KSSLCertificate* const y = KSSLCertificate::fromString((*it).toLocal8Bit());
-          if (y) ncl.append(y);
-       }
+    KSSLInfoDialog *kid = new KSSLInfoDialog(0);
+    //### This is boilerplate code and it's copied from SlaveInterface.
+    QStringList sl = d->m_ssl_peer_chain.split('\x01', QString::SkipEmptyParts);
+    QList<QSslCertificate> certChain;
+    bool decodedOk = true;
+    foreach (const QString &s, sl) {
+        certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+        if (certChain.last().isNull()) {
+            decodedOk = false;
+            break;
+        }
+    }
 
-       if (ncl.count() > 0)
-          x->chain().setChain(ncl);
-       qDeleteAll(ncl);
+    sl = d->m_ssl_cert_errors.split('\n', QString::SkipEmptyParts);
+    QList<QSslError::SslError> errors;
+    foreach (const QString &s, sl) {
+        bool didConvert;
+        QSslError::SslError error = static_cast<QSslError::SslError>(s.toInt(&didConvert));
+        if (!didConvert) {
+            decodedOk = false;
+            break;
+        }
+        errors.append(error);
+    }
 
-       kid->setup(x,
-                  d->m_ssl_peer_ip,
-                  url().url(),
-                  d->m_ssl_cipher,
-                  d->m_ssl_cipher_desc,
-                  d->m_ssl_cipher_version,
-                  d->m_ssl_cipher_used_bits.toInt(),
-                  d->m_ssl_cipher_bits.toInt(),
-                  (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt()
-                  );
+    if (decodedOk || true /*H4X*/) {
+        kid->setSslInfo(certChain,
+                        d->m_ssl_peer_ip,
+                        url().url(),
+                        d->m_ssl_protocol_version,
+                        d->m_ssl_cipher,
+                        d->m_ssl_cipher_used_bits.toInt(),
+                        d->m_ssl_cipher_bits.toInt(),
+                        errors);
+        kDebug(7024) << "Showing SSL Info dialog";
         kid->exec();
-        delete x;
-     } else kid->exec();
-  } else kid->exec();
+        kDebug(7024) << "SSL Info dialog closed";
+    } else {
+        KMessageBox::information(0, i18n("The peer SSL certificate chain "
+                                         "appears to be corrupt."),
+                                 i18n("SSL"));
+    }
 }
 
 void KHTMLPart::slotSaveFrame()
@@ -5304,15 +5341,13 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   // Save ssl data
   stream << d->m_ssl_in_use
-         << d->m_ssl_peer_certificate
          << d->m_ssl_peer_chain
          << d->m_ssl_peer_ip
          << d->m_ssl_cipher
-         << d->m_ssl_cipher_desc
-         << d->m_ssl_cipher_version
+         << d->m_ssl_protocol_version
          << d->m_ssl_cipher_used_bits
          << d->m_ssl_cipher_bits
-         << d->m_ssl_cert_state
+         << d->m_ssl_cert_errors
          << d->m_ssl_parent_ip
          << d->m_ssl_parent_cert;
 
@@ -5393,15 +5428,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   // Restore ssl data
   stream >> d->m_ssl_in_use
-         >> d->m_ssl_peer_certificate
          >> d->m_ssl_peer_chain
          >> d->m_ssl_peer_ip
          >> d->m_ssl_cipher
-         >> d->m_ssl_cipher_desc
-         >> d->m_ssl_cipher_version
+         >> d->m_ssl_protocol_version
          >> d->m_ssl_cipher_used_bits
          >> d->m_ssl_cipher_bits
-         >> d->m_ssl_cert_state
+         >> d->m_ssl_cert_errors
          >> d->m_ssl_parent_ip
          >> d->m_ssl_parent_cert;
 

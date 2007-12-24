@@ -99,24 +99,6 @@ public:
 	bool warnOnMixed() const;
 
 	/**
-	 *  Do not use this
-	 *  @deprecated
-	 */
-	KDE_DEPRECATED bool warnOnSelfSigned() const;
-
-	/**
-	 *  Do not use this
-	 *  @deprecated
-	 */
-	KDE_DEPRECATED bool warnOnRevoked() const;
-
-	/**
-	 *  Do not use this
-	 *  @deprecated
-	 */
-	KDE_DEPRECATED bool warnOnExpired() const;
-
-	/**
 	 *  Does the user want to use the Entropy Gathering Daemon?
 	 *  @return true if the user wants to use EGD
 	 */

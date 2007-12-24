@@ -36,7 +36,9 @@
 #include <kmessagebox.h>
 #include <time.h>
 #include <QtDBus/QtDBus>
-#include <QPointer>
+#include <QtCore/QPointer>
+#include <QtNetwork/QSslCertificate>
+#include <QtNetwork/QSslError>
 
 using namespace KIO;
 
@@ -292,7 +294,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_MESSAGEBOX: {
 	kDebug(7007) << "needs a msg box";
 	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
-        int type;
+	int type;
 	stream >> type >> text >> caption >> buttonYes >> buttonNo;
 	if (stream.atEnd())
 	messageBox(type, text, caption, buttonYes, buttonNo);
@@ -305,19 +307,21 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_INFOMESSAGE: {
         QString msg;
         stream >> msg;
-        infoMessage(msg);
+        emit infoMessage(msg);
         break;
     }
     case INF_META_DATA: {
         MetaData meta_data;
         stream >> meta_data;
         d->m_incomingMetaData += meta_data;
-        metaData(meta_data);
+        kDebug() << "incoming metadata now" << d->m_incomingMetaData
+                 << "\n newly arrived metadata is" << meta_data;
+        emit metaData(meta_data);
         break;
     }
     case MSG_NET_REQUEST: {
         QString host;
-	QString slaveid;
+	    QString slaveid;
         stream >> host >> slaveid;
         requestNetwork(host, slaveid);
         break;
@@ -410,71 +414,83 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     KMessageBox::setDontShowAskAgainConfig(config);
 
     switch (type) {
-        case KIO::SlaveBase::QuestionYesNo:
-            result = KMessageBox::questionYesNo(0L, // parent ?
-                                               text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
-            break;
-        case KIO::SlaveBase::WarningYesNo:
-            result = KMessageBox::warningYesNo(0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
-            break;
-        case KIO::SlaveBase::WarningContinueCancel:
-            result = KMessageBox::warningContinueCancel(0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KStandardGuiItem::cancel(), dontAskAgainName);
-            break;
-        case KIO::SlaveBase::WarningYesNoCancel:
-            result = KMessageBox::warningYesNoCancel(0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), KStandardGuiItem::cancel(), dontAskAgainName);
-            break;
-        case KIO::SlaveBase::Information:
-            KMessageBox::information(0L, // parent ?
-                                      text, caption, dontAskAgainName);
-            result = 1; // whatever
-            break;
-        case KIO::SlaveBase::SSLMessageBox:
-        {
-            KIO::MetaData meta = m_incomingMetaData;
-            KSSLInfoDialog *kid = new KSSLInfoDialog(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
-            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
-            if (x) {
-               // Set the chain back onto the certificate
-               const QStringList cl = meta["ssl_peer_chain"].split('\n', QString::SkipEmptyParts);
-               QList<KSSLCertificate *> ncl;
-               for (QStringList::const_iterator it = cl.begin(); it != cl.end(); ++it) {
-                  KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
-                  if (y) ncl.append(y);
-               }
-
-               if (!ncl.isEmpty()) {
-                  x->chain().setChain(ncl);
-                  qDeleteAll(ncl);
-               }
-
-               kid->setup(x,
-                           meta["ssl_peer_ip"],
-                           text, // the URL
-                           meta["ssl_cipher"],
-                           meta["ssl_cipher_desc"],
-                           meta["ssl_cipher_version"],
-                           meta["ssl_cipher_used_bits"].toInt(),
-                           meta["ssl_cipher_bits"].toInt(),
-                           KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
-               kDebug(7024) << "Showing SSL Info dialog";
-               kid->exec();
-               delete x;
-               kDebug(7024) << "SSL Info dialog closed";
-            } else {
-               KMessageBox::information(0L, // parent ?
-                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL"));
+    case KIO::SlaveBase::QuestionYesNo:
+        result = KMessageBox::questionYesNo(
+                     0, text, caption, KGuiItem(buttonYes),
+                     KGuiItem(buttonNo), dontAskAgainName);
+        break;
+    case KIO::SlaveBase::WarningYesNo:
+        result = KMessageBox::warningYesNo(
+                     0, text, caption, KGuiItem(buttonYes),
+                     KGuiItem(buttonNo), dontAskAgainName);
+        break;
+    case KIO::SlaveBase::WarningContinueCancel:
+        result = KMessageBox::warningContinueCancel(
+                     0, text, caption, KGuiItem(buttonYes),
+                     KStandardGuiItem::cancel(), dontAskAgainName);
+        break;
+    case KIO::SlaveBase::WarningYesNoCancel:
+        result = KMessageBox::warningYesNoCancel(
+                     0, text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo),
+                     KStandardGuiItem::cancel(), dontAskAgainName);
+        break;
+    case KIO::SlaveBase::Information:
+        KMessageBox::information(0, text, caption, dontAskAgainName);
+        result = 1; // whatever
+        break;
+    case KIO::SlaveBase::SSLMessageBox:
+    {
+        KIO::MetaData meta = m_incomingMetaData;
+        KSSLInfoDialog *kid = new KSSLInfoDialog(0);
+        //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
+        QStringList sl = meta["ssl_peer_chain"].split('\x01', QString::SkipEmptyParts);
+        QList<QSslCertificate> certChain;
+        bool decodedOk = true;
+        foreach (const QString &s, sl) {
+            certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+            if (certChain.last().isNull()) {
+                decodedOk = false;
+                break;
             }
-            // This doesn't have to get deleted.  It deletes on it's own.
-            result = 1; // whatever
-            break;
         }
-        default:
-            kWarning() << "Observer::messageBox: unknown type " << type;
-            result = 0;
-            break;
+
+        sl = meta["ssl_cert_errors"].split('\n', QString::SkipEmptyParts);
+        QList<QSslError::SslError> errors;
+        foreach (const QString &s, sl) {
+            bool didConvert;
+            QSslError::SslError error = static_cast<QSslError::SslError>(s.toInt(&didConvert));
+            if (!didConvert) {
+                decodedOk = false;
+                break;
+            }
+            errors.append(error);
+        }
+
+        if (decodedOk || true/*H4X*/) {
+            kid->setSslInfo(certChain,
+                            meta["ssl_peer_ip"],
+                            text, // the URL
+                            meta["ssl_protocol_version"],
+                            meta["ssl_cipher"],
+                            meta["ssl_cipher_used_bits"].toInt(),
+                            meta["ssl_cipher_bits"].toInt(),
+                            errors);
+            kDebug(7024) << "Showing SSL Info dialog";
+            kid->exec();
+            kDebug(7024) << "SSL Info dialog closed";
+        } else {
+            KMessageBox::information(0, i18n("The peer SSL certificate chain"
+                                             "appears to be corrupt."),
+                                     i18n("SSL"));
+        }
+        // KSSLInfoDialog deletes itself (Qt::WA_DeleteOnClose).
+        result = 1; // whatever
+        break;
+    }
+    default:
+        kWarning() << "Observer::messageBox: unknown type " << type;
+        result = 0;
+        break;
     }
     KMessageBox::setDontShowAskAgainConfig(0);
     delete config;

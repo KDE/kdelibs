@@ -273,9 +273,6 @@ void KSSLSettings::setWarnOnUnencrypted(bool x) { m_bWarnOnUnencrypted = x; }
 bool KSSLSettings::warnOnLeave() const       { return m_bWarnOnLeave; }
 void KSSLSettings::setWarnOnLeave(bool x)    { m_bWarnOnLeave = x; }
 bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
-bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
-bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }
-bool KSSLSettings::warnOnExpired() const     { return m_bWarnExpired; }
 bool KSSLSettings::useEGD() const            { return d->m_bUseEGD;      }
 bool KSSLSettings::useEFile() const          { return d->m_bUseEFile;    }
 bool KSSLSettings::autoSendX509() const      { return d->m_bSendX509; }
@@ -291,4 +288,3 @@ QString& KSSLSettings::getEGDPath()       { return d->m_EGDPath; }
 #undef sk_pop
 #undef sk_dup
 #endif
-

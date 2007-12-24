@@ -20,6 +20,8 @@
  */
 
 #include "ksslinfodialog.h"
+#include "ui_sslinfo.h"
+#include "ksslcertificatebox.h"
 
 #include <kssl.h>
 
@@ -29,6 +31,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtCore/Q_PID>
+#include <QtNetwork/QSslCertificate>
 
 #include <kcombobox.h>
 #include <kglobal.h>
@@ -45,248 +48,185 @@
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
 #include "ksslsigners.h"
+#include "ktcpsocket.h"
 
 
-class KSSLInfoDialog::KSSLInfoDialogPrivate {
-    private:
-        friend class KSSLInfoDialog;
-        bool m_secCon;
-        QGridLayout *m_layout;
-        KComboBox *_chain;
-        KSSLCertificate *_cert;
-        KSSLCertificate::KSSLValidationList _cert_ksvl;
+class KSSLInfoDialog::KSSLInfoDialogPrivate
+{
+public:
+    QList<QSslCertificate> certificateChain;
 
-        bool inQuestion;
+    bool isMainPartEncrypted;
+    bool auxPartsEncrypted;
 
-        QLabel *_serialNum;
-        QLabel *_csl;
-        QLabel *_validFrom;
-        QLabel *_validUntil;
-        QLabel *_digest;
-
-        QLabel *pixmap;
-        QLabel *info;
-
-        KSSLCertBox *_subject, *_issuer;
+    Ui::SslInfo ui;
+    KSslCertificateBox *subject;
+    KSslCertificateBox *issuer;
 };
 
 
 
-KSSLInfoDialog::KSSLInfoDialog(bool secureConnection, QWidget *parent, const char *name, bool modal)
-	: KDialog(parent), d(new KSSLInfoDialogPrivate) {
-        setObjectName(name);
-        setModal(modal);
-        setAttribute(Qt::WA_DeleteOnClose);
-        QVBoxLayout *topLayout = new QVBoxLayout(this);
-        topLayout->setMargin(KDialog::marginHint());
-        topLayout->setSpacing(KDialog::spacingHint());
-        d->m_secCon = secureConnection;
-        d->m_layout = new QGridLayout();
-        topLayout->addLayout(d->m_layout);
-        d->m_layout->setSpacing(KDialog::spacingHint());
-        d->m_layout->setColumnStretch(1, 1);
-        d->m_layout->setColumnStretch(2, 1);
+KSSLInfoDialog::KSSLInfoDialog(QWidget *parent)
+ : KDialog(parent),
+   d(new KSSLInfoDialogPrivate)
+{
+    setCaption(i18n("KDE SSL Information"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-        d->pixmap = new QLabel(this);
-        d->m_layout->addWidget(d->pixmap, 0, 0);
+    d->ui.setupUi(mainWidget());
 
-        d->info = new QLabel(this);
-        d->m_layout->addWidget(d->info, 0, 1);
+    d->subject = new KSslCertificateBox(d->ui.certParties);
+    d->issuer = new KSslCertificateBox(d->ui.certParties);
+    d->ui.certParties->addTab(d->subject, i18n("Subject"));
+    d->ui.certParties->addTab(d->issuer, i18n("Issuer"));
 
-        if (KSSL::doesSSLWork()) {
-            if (d->m_secCon) {
-                d->pixmap->setPixmap(BarIcon("security-high"));
-                d->info->setText(i18n("Current connection is secured with SSL."));
-            } else {
-                d->pixmap->setPixmap(BarIcon("security-low"));
-                d->info->setText(i18n("Current connection is not secured with SSL."));
-            }
+    d->isMainPartEncrypted = true;
+    d->auxPartsEncrypted = true;
+    updateWhichPartsEncrypted();
+
+#if 0
+    if (KSSL::doesSSLWork()) {
+        if (d->m_secCon) {
+            d->pixmap->setPixmap(BarIcon("security-high"));
+            d->info->setText(i18n("Current connection is secured with SSL."));
         } else {
             d->pixmap->setPixmap(BarIcon("security-low"));
-            d->info->setText(i18n("SSL support is not available in this build of KDE."));
+            d->info->setText(i18n("Current connection is not secured with SSL."));
         }
-        d->m_layout->addItem(new QSpacerItem(0, 50), 0, 0); // give minimum height to look better
-
-        QHBoxLayout *buttonLayout = new QHBoxLayout();
-        buttonLayout->setSpacing(KDialog::spacingHint());
-        buttonLayout->addStretch( 1 );
-        topLayout->addLayout( buttonLayout );
-
-        KPushButton *button;
-
-        if (KSSL::doesSSLWork()) {
-            button = new KPushButton(KGuiItem(i18n("C&ryptography Configuration..."),"configure"), this);
-            connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
-            buttonLayout->addWidget( button );
-        }
-
-        button = new KPushButton(KStandardGuiItem::close(), this);
-        connect(button, SIGNAL(clicked()), SLOT(close()));
-        buttonLayout->addWidget( button );
-
-        button->setFocus();
-
-        setCaption(i18n("KDE SSL Information"));
-        d->inQuestion = false;
+    } else {
+        d->pixmap->setPixmap(BarIcon("security-low"));
+        d->info->setText(i18n("SSL support is not available in this build of KDE."));
     }
+#endif
+}
 
 
-KSSLInfoDialog::~KSSLInfoDialog() {
+KSSLInfoDialog::~KSSLInfoDialog()
+{
     delete d;
 }
 
-void KSSLInfoDialog::launchConfig() {
+
+//slot
+void KSSLInfoDialog::launchConfig()
+{
     QProcess::startDetached("kcmshell4", QStringList() << "crypto");
 }
 
 
-void KSSLInfoDialog::setSecurityInQuestion(bool isIt) {
-    d->inQuestion = isIt;
-    if (KSSL::doesSSLWork())
-        if (isIt) {
-            d->pixmap->setPixmap(BarIcon("security-medium"));
-            if (d->m_secCon) {
-                d->info->setText(i18n("The main part of this document is secured with SSL, but some parts are not."));
-            } else {
-                d->info->setText(i18n("Some of this document is secured with SSL, but the main part is not."));
-            }
+void KSSLInfoDialog::setMainPartEncrypted(bool mainEncrypted)
+{
+    d->isMainPartEncrypted = mainEncrypted;
+    updateWhichPartsEncrypted();
+}
+
+
+void KSSLInfoDialog::setAuxiliaryPartsEncrypted(bool auxEncrypted)
+{
+    d->auxPartsEncrypted = auxEncrypted;
+    updateWhichPartsEncrypted();
+}
+
+
+void KSSLInfoDialog::updateWhichPartsEncrypted()
+{
+    if (d->isMainPartEncrypted) {
+        if (d->auxPartsEncrypted) {
+            d->ui.encryptionIndicator->setPixmap(BarIcon("security-high"));
+            d->ui.explanation->setText(i18n("Current connection is secured with SSL."));
         } else {
-            if (d->m_secCon) {
-                d->pixmap->setPixmap(BarIcon("security-high"));
-                d->info->setText(i18n("Current connection is secured with SSL."));
-            } else {
-                d->pixmap->setPixmap(BarIcon("security-low"));
-                d->info->setText(i18n("Current connection is not secured with SSL."));
-            }
+            d->ui.encryptionIndicator->setPixmap(BarIcon("security-medium"));
+            d->ui.explanation->setText(i18n("The main part of this document is secured "
+                                            "with SSL, but some parts are not."));
         }
-}
-
-
-void KSSLInfoDialog::setup( KSSL & ssl, const QString & ip, const QString & url )
-{
-    setup(
-            &ssl.peerInfo().getPeerCertificate(),
-            ip,
-            url,
-            ssl.connectionInfo().getCipher(),
-            ssl.connectionInfo().getCipherDescription(),
-            ssl.connectionInfo().getCipherVersion(),
-            ssl.connectionInfo().getCipherUsedBits(),
-            ssl.connectionInfo().getCipherBits(),
-            ssl.peerInfo().getPeerCertificate().validate()
-         );
-}
-
-void KSSLInfoDialog::setup(KSSLCertificate *cert,
-        const QString& ip, const QString& url,
-        const QString& cipher, const QString& cipherdesc,
-        const QString& sslversion, int usedbits, int bits,
-        KSSLCertificate::KSSLValidation /*certState*/) {
-    // Needed to put the GUI stuff here to get the layouting right
-
-    d->_cert = cert;
-
-    QGridLayout *layout = new QGridLayout();
-
-    layout->setSpacing(KDialog::spacingHint());
-    layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
-    d->_chain = new KComboBox(this);
-    layout->addWidget(d->_chain, 1, 0, 1, 2);
-    connect(d->_chain, SIGNAL(activated(int)), this, SLOT(slotChain(int)));
-
-    d->_chain->clear();
-
-    if (cert->chain().isValid() && cert->chain().depth() > 1) {
-        d->_chain->setEnabled(true);
-        d->_chain->addItem(i18n("0 - Site Certificate"));
-        int cnt = 0;
-        QList<KSSLCertificate *> cl = cert->chain().getChain();
-        foreach (KSSLCertificate *c, cl) {
-            KSSLX509Map map(c->getSubject());
-            QString id;
-            id = map.getValue("CN");
-            if (id.length() == 0)
-                id = map.getValue("O");
-            if (id.length() == 0)
-                id = map.getValue("OU");
-            d->_chain->addItem(QString::number(++cnt)+" - "+id);
+    } else {
+        if (d->auxPartsEncrypted) {
+            d->ui.encryptionIndicator->setPixmap(BarIcon("security-medium"));
+            d->ui.explanation->setText(i18n("Some of this document is secured with SSL,"
+                                            "but the main part is not."));
+        } else {
+            d->ui.encryptionIndicator->setPixmap(BarIcon("security-low"));
+            d->ui.explanation->setText(i18n("Current connection is not secured with SSL."));
         }
-        qDeleteAll(cl);
-        d->_chain->setCurrentIndex(0);
-    } else d->_chain->setEnabled(false);
-
-    layout->addWidget(new QLabel(i18n("Peer certificate:"), this), 2, 0);
-    layout->addWidget(d->_subject = static_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
-    layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
-    layout->addWidget(d->_issuer = static_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
-    d->m_layout->addLayout(layout, 1, 0, 1, 3);
-
-    layout = new QGridLayout();
-    layout->setSpacing(KDialog::spacingHint());
-    layout->setColumnStretch(1, 1);
-    QLabel *ipl = new QLabel(i18n("IP address:"), this);
-    layout->addWidget(ipl, 0, 0);
-    if (ip.isEmpty()) {
-        ipl->hide();
     }
-    layout->addWidget(ipl = new QLabel(ip, this), 0, 1);
-    if (ip.isEmpty()) {
-        ipl->hide();
-    }
-    layout->addWidget(new QLabel(i18n("URL:"), this), 1, 0);
-    KSqueezedTextLabel *urlLabel = new KSqueezedTextLabel(url, this);
-    layout->addWidget(urlLabel, 1, 1);
-    layout->addWidget(new QLabel(i18n("Certificate state:"), this), 2, 0);
-
-    layout->addWidget(d->_csl = new QLabel("", this), 2, 1);
-
-    update();
-
-    layout->addWidget(new QLabel(i18n("Valid from:"), this), 3, 0);
-    layout->addWidget(d->_validFrom = new QLabel("", this), 3, 1);
-    layout->addWidget(new QLabel(i18n("Valid until:"), this), 4, 0);
-    layout->addWidget(d->_validUntil = new QLabel("", this), 4, 1);
-
-    layout->addWidget(new QLabel(i18n("Serial number:"), this), 5, 0);
-    layout->addWidget(d->_serialNum = new QLabel("", this), 5, 1);
-    layout->addWidget(new QLabel(i18n("MD5 digest:"), this), 6, 0);
-    layout->addWidget(d->_digest = new QLabel("", this), 6, 1);
-
-    layout->addWidget(new QLabel(i18n("Cipher in use:"), this), 7, 0);
-    layout->addWidget(new QLabel(cipher, this), 7, 1);
-    layout->addWidget(new QLabel(i18n("Details:"), this), 8, 0);
-    layout->addWidget(new QLabel(cipherdesc.simplified(), this), 8, 1);
-    layout->addWidget(new QLabel(i18n("SSL version:"), this), 9, 0);
-    layout->addWidget(new QLabel(sslversion, this), 9, 1);
-    layout->addWidget(new QLabel(i18n("Cipher strength:"), this), 10, 0);
-    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher", usedbits, bits), this), 10, 1);
-    d->m_layout->addLayout(layout, 2, 0, 1, 3);
-
-    displayCert(cert);
 }
 
-void KSSLInfoDialog::setCertState(const QString &errorNrs)
+
+void KSSLInfoDialog::setup(const KTcpSocket &socket, const QString &ip, const QString &url)
 {
-    d->_cert_ksvl.clear();
-    QStringList errors = errorNrs.split(':', QString::SkipEmptyParts);
-    for(QStringList::ConstIterator it = errors.begin();
-            it != errors.end(); ++it)
-    {
-        d->_cert_ksvl << (KSSLCertificate::KSSLValidation) (*it).toInt();
+    Q_ASSERT(false); //TODO, or maybe not
+#if 0
+    setup(&ssl.peerInfo().getPeerCertificate(),
+          ip, url,
+          ssl.connectionInfo().getCipher(),
+          ssl.connectionInfo().getCipherDescription(),
+          ssl.connectionInfo().getCipherVersion(),
+          ssl.connectionInfo().getCipherUsedBits(),
+          ssl.connectionInfo().getCipherBits(),
+          ssl.peerInfo().getPeerCertificate().validate());
+#endif
+}
+
+void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
+                                const QString &ip, const QString &url,
+                                const QString &sslProtocol, const QString &cipher,
+                                int usedBits, int bits,
+                                const QList<QSslError::SslError> &validationErrors/*###*/) {
+
+    d->certificateChain = certificateChain;
+    d->ui.certSelector->clear();
+    for (int i = 0; i < certificateChain.size(); i++) {
+        const QSslCertificate &cert = certificateChain[i];
+        QString name;
+        static const QSslCertificate::SubjectInfo si[] = {
+            QSslCertificate::CommonName,
+            QSslCertificate::Organization,
+            QSslCertificate::OrganizationalUnitName
+        };
+        for (int j = 0; j < 3 && name.isEmpty(); j++)
+            name = cert.subjectInfo(si[j]);
+        d->ui.certSelector->addItem(name);
+    }
+    if (certificateChain.size() < 2) {
+        d->ui.certSelector->setEnabled(false);
+    }
+    connect(d->ui.certSelector, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(displayFromChain(int)));
+    if (d->certificateChain.isEmpty())
+        d->certificateChain.append(QSslCertificate());
+    displayFromChain(0);
+
+    d->ui.ip->setText(ip);
+    d->ui.address->setText(url);
+    d->ui.sslVersion->setText(sslProtocol);
+
+    QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
+    if (cipherInfo.size() >= 4) {
+        d->ui.encryption->setText(QString("%1, using %2 bits of a %3 bit key")
+                                         .arg(cipherInfo[0], QString::number(usedBits),
+                                              QString::number(bits)));
+        d->ui.details->setText(QString("Auth = %1, Kx = %2, MAC = %3")
+                                      .arg(cipherInfo[1], cipherInfo[2],
+                                           cipherInfo[3]));
+    } else {
+        d->ui.encryption->setText("");
+        d->ui.details->setText("");
     }
 }
 
-void KSSLInfoDialog::displayCert(KSSLCertificate *x) {
+
+#if 0 //###
+void KSSLInfoDialog::displayCert(const QSslCertificate &x) {
     QPalette cspl;
 
-    d->_serialNum->setText(x->getSerialNumber());
+    d->_serialNum->setText(x.getSerialNumber());
 
     cspl = d->_validFrom->palette();
     if (x->getQDTNotBefore() > QDateTime::currentDateTime().toUTC())
         cspl.setColor(QPalette::Foreground, QColor(196,33,21));
     else cspl.setColor(QPalette::Foreground, QColor(42,153,59));
     d->_validFrom->setPalette(cspl);
-    d->_validFrom->setText(x->getNotBefore());
+    d->_validFrom->setText(x.getNotBefore());
 
     cspl = d->_validUntil->palette();
     if (x->getQDTNotAfter() < QDateTime::currentDateTime().toUTC())
@@ -347,44 +287,27 @@ void KSSLInfoDialog::displayCert(KSSLCertificate *x) {
 
     d->_digest->setText(x->getMD5DigestText());
 }
+#endif
 
 
-void KSSLInfoDialog::slotChain(int x) {
-    if (x == 0) {
-        displayCert(d->_cert);
-    } else {
-        QList<KSSLCertificate *> cl = d->_cert->chain().getChain();
-        for (int i = 0; i < x-1; ++i) {
-            delete cl.first();
-            cl.removeFirst();
-        }
-        KSSLCertificate* thisCert = cl.first();
-        cl.removeFirst();
-        thisCert->chain().setChain(cl);
-        qDeleteAll(cl);
-        displayCert(thisCert);
-        delete thisCert;
-    }
-}
-
-
-KSSLCertBox *KSSLInfoDialog::certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher) {
-    KSSLCertBox *result = new KSSLCertBox(parent);
-    if (!certName.isEmpty()) {
-        result->setValues(certName, mailCatcher);
-    }
-    return result;
-}
-
-
-KSSLCertBox::KSSLCertBox(QWidget *parent)
-    : QScrollArea(parent), d(0)
+void KSSLInfoDialog::displayFromChain(int i)
 {
-    setBackgroundRole(QPalette::Button);
-    setValues(QString(), 0L);
+    const QSslCertificate &cert = d->certificateChain[i];
+    d->ui.trusted->setText("TODO"); //TODO :)
+
+    QString vp = "%1 to %2";
+    vp = vp.arg(KGlobal::locale()->formatDateTime(cert.effectiveDate()));
+    vp = vp.arg(KGlobal::locale()->formatDateTime(cert.expiryDate()));
+    d->ui.validityPeriod->setText(vp);
+
+    d->ui.serial->setText(cert.serialNumber());
+    d->ui.digest->setText(cert.digest());
+
+    d->subject->setCertificate(cert, KSslCertificateBox::Subject);
+    d->issuer->setCertificate(cert, KSslCertificateBox::Issuer);
 }
 
-
+#if 0
 void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     if (certName.isEmpty()) {
         setWidget(new QFrame(this));
@@ -462,19 +385,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     setWidget(_frame);
     show();
 }
+#endif
 
-
-QScrollArea *KSSLInfoDialog::buildCertInfo(const QString &certName) {
-    return KSSLInfoDialog::certInfoWidget(this, certName, this);
-}
-
-void KSSLInfoDialog::urlClicked(const QString &url) {
-    KToolInvocation::invokeBrowser(url);
-}
-
-void KSSLInfoDialog::mailClicked(const QString &url) {
-    KToolInvocation::invokeMailer(url, QString());
-}
 
 #include "ksslinfodialog.moc"
-// vim: ts=4 sw=4 et

@@ -46,7 +46,7 @@ class Q3HButtonGroup;
 class KComboBox;
 class KCryptoConfig;
 class KPushButton;
-class KSSLCertBox;
+class KSslCertificateBox;
 class KSSLSigners;
 class KUrlLabel;
 class KUrlRequester;
@@ -313,8 +313,8 @@ private:
               *yourSSLUnlock, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
-  KSSLCertBox *oSubject, *oIssuer;
-  KSSLCertBox *ySubject, *yIssuer;
+  KSslCertificateBox *oSubject, *oIssuer;
+  KSslCertificateBox *ySubject, *yIssuer;
   QGridLayout *oGrid;
 
   Q3VButtonGroup *policyGroup;
@@ -347,7 +347,7 @@ private:
   QLabel *yHash, *pHash;
 
   /* CA stuff */
-  KSSLCertBox *caSubject, *caIssuer;
+  KSslCertificateBox *caSubject, *caIssuer;
   QPushButton *caSSLImport, *caSSLRemove, *caSSLRestore;
   QCheckBox *caSite, *caEmail, *caCode;
   KSSLSigners *_signers;

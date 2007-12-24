@@ -45,50 +45,52 @@ namespace KIO {
 class KIO_EXPORT TCPSlaveBase : public SlaveBase
 {
 public:
-    TCPSlaveBase(unsigned short int defaultPort, const QByteArray &protocol,
-                 const QByteArray &poolSocket, const QByteArray &appSocket, bool useSSL = false);
+    /**
+     * Constructor.
+     *
+     * @param autoSsl if true, will automatically invoke startSsl() right after
+     *                connecting. In the absence of errors the use of SSL will
+     *                therefore be transparent to higher layers.
+     */
+    TCPSlaveBase(const QByteArray &protocol,
+                 const QByteArray &poolSocket, const QByteArray &appSocket,
+                 bool autoSsl = false);
 
     virtual ~TCPSlaveBase();
 
 protected:
+    enum SslResult {
+        ResultOk = 1,
+        ResultFailed = 0,
+        ResultOverridden = 2
+    };
 
     /**
-     * This function acts like standard write function call
-     * except it is also capable of making SSL or SOCKS
-     * connections.
+     * Send data to the remote host.
      *
-     * @param data info to be sent to remote machine
-     * @param len the length of the data to be sent
+     * @param data data to be sent to remote machine
+     * @param len the length (in bytes) of the data to be sent
      *
      * @return the actual size of the data that was sent
      */
+    using SlaveBase::write; //Silence incompatible virtual override warning
     ssize_t write(const char *data, ssize_t len);
 
     /**
-     * This function acts like standard read function call
-     * except it is also capable of deciphering SSL data as
-     * well as handling data over SOCKSified connections.
+     * Read incoming data from the remote host.
      *
-     * @param data storage for the info read from server
-     * @param len length of the info to read from the server
+     * @param data storage for the data read from server
+     * @param len length of the data (in bytes) to read from the server
      *
      * @return the actual size of data that was obtained
      */
+    using SlaveBase::read;
     ssize_t read(char *data, ssize_t len);
 
     /**
-     * Same as above except it reads data one line at a time.
+     * Same as read() except it reads data one line at a time.
      */
     ssize_t readLine(char *data, ssize_t len);
- 
-    /**
-     * Sets the maximum size of blocks read in during calls to readLine().
-     * This allows a slave to optimize for the protocol which it implements.
-     * Ideally this should be (common_line_length+1) or so.
-     * Making this too large will have adverse effects on performance.
-     * Initial/default value is 256(bytes)
-     */
-    void setBlockSize(int sz);
 
     /**
      * Performs the initial TCP connection stuff and/or
@@ -103,27 +105,13 @@ protected:
      * @param protocol the protocol being used
      * @param host hostname
      * @param port port number
-     * @param sendError if true sends error message to calling app.
+     * @param sendError if true sends error message to calling app on error.
      *
      * @return on succes, true is returned.
      *         on failure, false is returned and an appropriate
-     *         error message is send to the application.
+     *         error message is sent to the application.
      */
-    bool connectToHost( const QString &protocol, const QString& host, quint16 port,
-                        bool sendError = true );
-
-
-    /**
-     * set the default port for this service
-     *
-     */
-    void setDefaultPort(quint16 port);
-
-    /**
-     * the current default port for this service
-     *
-     */
-    quint16 defaultPort() const;
+    bool connectToHost(const QString &protocol, const QString& host, quint16 port);
 
     /**
      * the current port for this service
@@ -132,106 +120,52 @@ protected:
     quint16 port() const;
 
     /**
-     * Are we using SSL?
+     * Will start SSL after connecting?
      *
      * @return if so, true is returned.
-     *         if not, true isn't returned.
+     *         if not, false is returned.
      */
-    bool usingSSL() const;
+    bool isAutoSsl() const;
 
     /**
-     * Are we using TLS?
+     * Is the current connection using SSL?
      *
      * @return if so, true is returned.
-     *         if not, true isn't returned.
+     *         if not, false is returned.
      */
-    bool usingTLS() const;
+    bool isUsingSsl() const;
 
     /**
-     * Can we use TLS?
+     * Start using SSL on the connection. You can use it right after connecting
+     * for classic, transparent to the protocol SSL. Calling it later can be
+     * used to implement e.g. SMTP's STARTTLS feature.
      *
-     * @return if so, true is returned.
-     *         if not, true isn't returned.
+     * @return on success, true is returned.
+     *         on failure, false is returned.
      */
-    bool canUseTLS() const;
+    bool startSsl();
 
     /**
-     * Start using TLS on the connection.
-     *
-     * @return on success, 1 is returned.
-     *         on failure, 0 is returned.
-     *         on TLS init failure, -1 is returned.
-     *         on connect failure, -2 is returned.
-     *         on certificate failure, -3 is returned.
+     * Close the connection and forget non-permanent data like the peer host.
      */
-    int startTLS();
+    void disconnectFromHost();
 
     /**
-     * Stop using TLS on the connection.
-     */
-    void stopTLS();
-
-    /**
-     * Closes the current file descriptor.
-     *
-     * Call this function to properly close up the socket
-     * since it also takes care to prroperly close the stdio
-     * fstream stuff, as well as sets the socket back to -1
-     */
-    void closeDescriptor();
-
-
-    /**
-     * Returns true when end of data is reached
+     * Returns true when end of data is reached.
      */
     bool atEnd() const;
-
-
-    /**
-     * Call this if you use persistent connections and want all the
-     * metadata restored.  This is particularly important for SSL
-     * sessions since the app needs to know the state of connection,
-     * certificates, etc.
-     */
-    void setSSLMetaData();
-
-
-    /**
-     * Initializs all SSL variables
-     */
-    bool initializeSSL();
-
-
-    /**
-     * Cleans up all SSL settings.
-     */
-    void cleanSSL();
 
     /**
      * Determines whether or not we are still connected
      * to the remote machine.
      *
-     * This method may fail to detect a closed SSL connection.
-     *
      * return @p true if the socket is still active or
      *           false otherwise.
      */
-    bool isConnectionValid();
+    bool isConnected() const;
 
     /**
-     * Returns the status of the connection.
-     *
-     * This function allows you to invoke ConnectToHost
-     * with the @p sendError flag set to false so that you
-     * can send the appropriate error message back to the
-     * calling io-slave.
-     *
-     * @return the error code after the connection
-     */
-    int connectResult();
-
-    /**
-     * Wait for some type of activity on the socket
+     * Wait for incoming data on the socket
      * for the period specified by @p t.
      *
      * @param t  length of time in seconds that we should monitor the
@@ -251,64 +185,7 @@ protected:
      *
      * @param b true to make the connection a blocking one, false otherwise.
      */
-    void setBlockConnection( bool b );
-
-    /**
-     * Sets how long to wait for orignally connecting to
-     * the requested before timinig out.
-     *
-     * Be sure to call this function before calling ConnectToHost,
-     * otherwise the setting will not take effect until the next call
-     * to @p ConnectToHost.
-     *
-     * @param t timeout value
-     */
-    void setConnectTimeout( int t );
-
-    /**
-     * Returns true if SSL tunneling is enabled.
-     *
-     * @see setEnableSSlTunnel
-     */
-    bool isSSLTunnelEnabled() const;
-
-    /**
-     * Set up SSL tunneling mode.
-     *
-     * Calling this function with a @p true argument will allow
-     * you to temprarly ignore the @p m_bIsSSL flag setting and
-     * make a non-SSL connection.  It is mostly useful for making
-     * connections to SSL sites through a non-transparent proxy
-     * server (i.e. most proxy servers out there).
-     *
-     * Note that once you have successfully "tunneled" through the
-     * proxy server you must call this function with its argument
-     * set to false to properly connect to the SSL site.
-     *
-     * @param enable if true SSL Tunneling will be enabled
-     */
-    void setEnableSSLTunnel( bool enable );
-
-    /**
-     * Sets up the the real hostname for an SSL connection
-     * that goes through a proxy server.
-     *
-     * This function is essential in making sure that the
-     * real hostname is used for validating certificates from
-     * SSL sites!
-     *
-     * @param realHost the actual host name we are connecting to
-     */
-    void setRealHost( const QString& realHost );
-
-    // For the certificate verification code
-    int verifyCertificate();
-
-    // For prompting for the certificate to use
-    void certificatePrompt();
-
-    // Did the user abort (as the reason for connectToHost returning false)
-    bool userAborted() const;
+    void setBlocking( bool b );
 
     /**
      * Return the socket object, if the class ever needs to do anything to it
@@ -319,8 +196,13 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
-    bool doSSLHandShake( bool sendError );
-    void init();
+    // For the certificate verification code
+    SslResult verifyServerCertificate();
+
+    // For prompting for the client certificate to use
+    void selectClientCertificate();
+
+    SslResult startTLSInternal();
 
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate* const d;

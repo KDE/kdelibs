@@ -312,15 +312,13 @@ public:
 
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
-  QString m_ssl_peer_certificate,
-          m_ssl_peer_chain,
+  QString m_ssl_peer_chain,
           m_ssl_peer_ip,
           m_ssl_cipher,
-          m_ssl_cipher_desc,
-          m_ssl_cipher_version,
+          m_ssl_protocol_version,
           m_ssl_cipher_used_bits,
           m_ssl_cipher_bits,
-          m_ssl_cert_state,
+          m_ssl_cert_errors,
           m_ssl_parent_ip,
           m_ssl_parent_cert;
   bool m_ssl_in_use;

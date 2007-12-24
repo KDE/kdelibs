@@ -395,9 +395,7 @@ public:
    MetaData & operator+= ( const QMap<QString,QString> &metaData )
    {
       QMap<QString,QString>::ConstIterator it;
-      for( it = metaData.begin();
-           it !=  metaData.end();
-           ++it)
+      for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
       {
          insert(it.key(), it.value());
       }

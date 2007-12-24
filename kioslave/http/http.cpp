@@ -29,13 +29,10 @@
 #include <config.h>
 #include <config-gssapi.h>
 
-#include <limits.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <utime.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h> // must be explicitly included for MacOSX
@@ -192,7 +189,8 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 
 HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
                             const QByteArray &app )
-    : TCPSlaveBase(0, protocol, pool, app, (protocol=="https"||protocol=="webdavs"))
+    : TCPSlaveBase(protocol, pool, app, (protocol=="https"||protocol=="webdavs"))
+    , m_defaultPort(0)
     , m_iSize(NO_SIZE)
     , m_lineBufUnget(0)
     , m_bBusy(false)
@@ -201,8 +199,6 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE/2)
     , m_bProxyAuthValid(false)
     , m_protocol(protocol)
-    , m_proxyConnTimeout(DEFAULT_PROXY_CONNECT_TIMEOUT)
-    , m_remoteConnTimeout(DEFAULT_CONNECT_TIMEOUT)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
   reparseConfiguration();
@@ -225,11 +221,11 @@ void HTTPProtocol::reparseConfiguration()
     m_bUseProxy = false;
 
     if (m_protocol == "https" || m_protocol == "webdavs")
-        setDefaultPort(DEFAULT_HTTPS_PORT);
+        m_defaultPort = DEFAULT_HTTPS_PORT;
     else if (m_protocol == "ftp")
-        setDefaultPort(DEFAULT_FTP_PORT);
+        m_defaultPort = DEFAULT_FTP_PORT;
     else
-        setDefaultPort(DEFAULT_HTTP_PORT);
+        m_defaultPort = DEFAULT_HTTP_PORT;
 }
 
 void HTTPProtocol::resetConnectionSettings()
@@ -365,21 +361,6 @@ void HTTPProtocol::resetSessionSettings()
   if ( m_request.bUseCache )
     cleanCache();
 
-  // Deal with HTTP tunneling
-  if ( usingSSL() && m_bUseProxy && m_proxyURL.protocol() != "https" &&
-       m_proxyURL.protocol() != "webdavs")
-  {
-    m_bNeedTunnel = true;
-    setRealHost( m_request.hostname );
-    kDebug(7113) << "SSL tunnel: Setting real hostname to:"
-                  << m_request.hostname;
-  }
-  else
-  {
-    m_bNeedTunnel = false;
-    setRealHost( QString());
-  }
-
   m_responseCode = 0;
   m_prevResponseCode = 0;
 
@@ -387,16 +368,14 @@ void HTTPProtocol::resetSessionSettings()
   m_strAuthorization.clear();
   Authentication = AUTH_None;
 
-  // Obtain the proxy and remote server timeout values
-  m_proxyConnTimeout = proxyConnectTimeout();
-  m_remoteConnTimeout = connectTimeout();
+  // Obtain timeout values
   m_remoteRespTimeout = responseTimeout();
 
   // Bounce back the actual referrer sent
   setMetaData("referrer", m_request.referrer);
 
   // Set the SSL meta-data here...
-  setSSLMetaData();
+  //setSSLMetaData(); //TODO reimplement better
 
   // Follow HTTP/1.1 spec and enable keep-alive by default
   // unless the remote side tells us otherwise or we determine
@@ -439,7 +418,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
         // don't send the scope-id in IPv6 addresses to the server
         m_request.encoded_hostname = '[' + host.left(pos) + ']';
     }
-  m_request.port = (port <= 0) ? defaultPort() : port;
+  m_request.port = (port <= 0) ? m_defaultPort : port;
   m_request.user = user;
   m_request.passwd = pass;
 
@@ -472,12 +451,12 @@ bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 
   if ( m_protocol != u.protocol().toLatin1() )
   {
-    short unsigned int oldDefaultPort = defaultPort();
+    short unsigned int oldDefaultPort = m_defaultPort;
     m_protocol = u.protocol().toLatin1();
     reparseConfiguration();
-    if ( defaultPort() != oldDefaultPort &&
+    if ( m_defaultPort != oldDefaultPort &&
          m_request.port == oldDefaultPort )
-        m_request.port = defaultPort();
+        m_request.port = m_defaultPort;
   }
 
   resetSessionSettings();
@@ -526,11 +505,13 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       if ( m_bError )
         return false;
 
+#if 0
       if (m_bIsTunneled)
       {
         kDebug(7113) << "Re-establishing SSL tunnel...";
         httpCloseConnection();
       }
+#endif
     }
     else
     {
@@ -539,13 +520,14 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       kDebug(7113) << "Previous Response:" << m_prevResponseCode;
       kDebug(7113) << "Current Response:" << m_responseCode;
 
+#if 0 //what a mess
       if (isSSLTunnelEnabled() && usingSSL() && !m_bUnauthorized && !m_bError)
       {
         // If there is no error, disable tunneling
         if ( m_responseCode < 400 )
         {
           kDebug(7113) << "Unset tunneling flag!";
-          setEnableSSLTunnel( false );
+          setSSLTunnelEnabled( false );
           m_bIsTunneled = true;
           // Reset the CONNECT response code...
           m_responseCode = m_prevResponseCode;
@@ -563,6 +545,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           kDebug(7113) << "Sending an error page!";
         }
       }
+#endif
 
       if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
           m_prevResponseCode == 407))
@@ -1808,17 +1791,12 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
   {
     int n = TCPSlaveBase::write(buf, nbytes);
 
-    if ( n <= 0 )
-    {
-      // remote side closed connection ?
-      if ( n == 0 )
-        break;
-      // a valid exception(s) occurred, let's retry...
-      if (n < 0 && ((errno == EINTR) || (errno == EAGAIN)))
-        continue;
-      // some other error occurred ?
+    // remote side closed connection ?
+    if ( n == 0 )
+      break;
+    // some other error occurred ?
+    if ( n < 0 )
       return -1;
-    }
 
     nbytes -= n;
     buf += n;
@@ -1906,13 +1884,9 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     return read(b, 1); // Read from buffer
   }
 
-  do
-  {
-    ret = TCPSlaveBase::read( ( char* )b, nbytes);
-    if (ret == 0)
-      m_bEOF = true;
-
-  } while ((ret == -1) && (errno == EAGAIN || errno == EINTR));
+  ret = TCPSlaveBase::read( ( char* )b, nbytes);
+  if (ret < 1)
+    m_bEOF = true;
 
   return ret;
 }
@@ -1921,10 +1895,10 @@ void HTTPProtocol::httpCheckConnection()
 {
   kDebug(7113) << "Keep Alive:" << m_bKeepAlive << "First:" << m_bFirstRequest;
 
-  if ( !m_bFirstRequest && isConnectionValid() )
+  if ( !m_bFirstRequest && isConnected() )
   {
      bool closeDown = false;
-     if ( !isConnectionValid())
+     if ( !isConnected())
      {
         kDebug(7113) << "Connection lost!";
         closeDown = true;
@@ -1968,78 +1942,10 @@ bool HTTPProtocol::httpOpenConnection()
 
   kDebug(7113);
 
-  setBlockConnection( true );
+  setBlocking( true );
 
-  if ( m_state.doProxy )
-  {
-    QString proxy_host = m_proxyURL.host();
-    int proxy_port = m_proxyURL.port();
-
-    kDebug(7113) << "Connecting to proxy server: "
-                  << proxy_host << ", port: " << proxy_port;
-
-    infoMessage( i18n("Connecting to %1...", m_state.hostname) );
-
-    setConnectTimeout( m_proxyConnTimeout );
-
-    if ( !connectToHost("http-proxy", proxy_host, proxy_port, false) )
-    {
-      if (userAborted()) {
-        error(ERR_NO_CONTENT, "");
-        return false;
-      }
-
-      switch ( connectResult() )
-      {
-        case QAbstractSocket::HostNotFoundError:
-          errMsg = proxy_host;
-          errCode = ERR_UNKNOWN_PROXY_HOST;
-          break;
-        case QAbstractSocket::SocketTimeoutError:
-          errMsg = i18n("Proxy %1 at port %2", proxy_host, proxy_port);
-          errCode = ERR_SERVER_TIMEOUT;
-          break;
-        default:
-          errMsg = i18n("Proxy %1 at port %2", proxy_host, proxy_port);
-          errCode = ERR_COULD_NOT_CONNECT;
-      }
-      error( errCode, errMsg );
-      return false;
-    }
-  }
-  else
-  {
-    // Apparently we don't want a proxy.  let's just connect directly
-    setConnectTimeout(m_remoteConnTimeout);
-
-    if ( !connectToHost(m_protocol, m_state.hostname, m_state.port, false ) )
-    {
-      if (userAborted()) {
-        error(ERR_NO_CONTENT, "");
-        return false;
-      }
-
-      switch ( connectResult() )
-      {
-/*/        case IO_LookupError:
-          errMsg = m_state.hostname;
-          errCode = ERR_UNKNOWN_HOST;
-          break;
-        case IO_TimeOutError:
-          errMsg = i18n("Connection was to %1 at port %2").arg(m_state.hostname).arg(m_state.port);
-          errCode = ERR_SERVER_TIMEOUT;
-          break;*/
-        default:
-          errCode = ERR_COULD_NOT_CONNECT;
-          if (m_state.port != defaultPort())
-            errMsg = i18n("%1 (port %2)", m_state.hostname, m_state.port);
-          else
-            errMsg = m_state.hostname;
-      }
-      error( errCode, errMsg );
-      return false;
-    }
-  }
+  if ( !connectToHost(m_protocol, m_state.hostname, m_state.port ) )
+    return false;
 
 #if 0                           // QTcpSocket doesn't support this
   // Set our special socket option!!
@@ -2079,10 +1985,9 @@ bool HTTPProtocol::httpOpen()
 {
   kDebug(7113);
 
-  // Cannot have an https request without the m_bIsSSL being set!  This can
-  // only happen if TCPSlaveBase::InitializeSSL() function failed in which it
-  // means the current installation does not support SSL...
-  if ( (m_protocol == "https" || m_protocol == "webdavs") && !usingSSL() )
+  // Cannot have an https request without autoSsl!  This can
+  // only happen if  the current installation does not support SSL...
+  if ( (m_protocol == "https" || m_protocol == "webdavs") && !isAutoSsl() )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
     return false;
@@ -2154,9 +2059,10 @@ bool HTTPProtocol::httpOpen()
   // Check the validity of the current connection, if one exists.
   httpCheckConnection();
 
+#if 0 //waaaaaah
   if ( !m_bIsTunneled && m_bNeedTunnel )
   {
-    setEnableSSLTunnel( true );
+    setSSLTunnelEnabled( true );
     // We send a HTTP 1.0 header since some proxies refuse HTTP 1.1 and we don't
     // need any HTTP 1.1 capabilities for CONNECT - Waba
     header = QString("CONNECT %1:%2 HTTP/1.0"
@@ -2169,13 +2075,14 @@ bool HTTPProtocol::httpOpen()
     /* Add hostname information */
     header += "Host: " + m_state.encoded_hostname;
 
-    if (m_state.port != defaultPort())
+    if (m_state.port != m_defaultPort)
       header += QString(":%1").arg(m_state.port);
     header += "\r\n";
 
     header += proxyAuthenticationHeader();
   }
   else
+#endif
   {
     // Determine if this is a POST or GET method
     switch (m_request.method)
@@ -2308,7 +2215,7 @@ bool HTTPProtocol::httpOpen()
         u.setUser (m_state.user);
 
       u.setHost( m_state.hostname );
-      if (m_state.port != defaultPort())
+      if (m_state.port != m_defaultPort)
          u.setPort( m_state.port );
       u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath) );
       header += u.url();
@@ -2393,7 +2300,7 @@ bool HTTPProtocol::httpOpen()
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: " + m_state.encoded_hostname;
 
-    if (m_state.port != defaultPort())
+    if (m_state.port != m_defaultPort)
       header += QString(":%1").arg(m_state.port);
     header += "\r\n";
 
@@ -2495,7 +2402,7 @@ bool HTTPProtocol::httpOpen()
     if ( m_state.doProxy && !m_bIsTunneled )
     {
       if ( m_bPersistentProxyConnection )
-	header += "Proxy-Connection: Keep-Alive\r\n";
+        header += "Proxy-Connection: Keep-Alive\r\n";
 
       header += proxyAuthenticationHeader();
     }
@@ -2533,7 +2440,7 @@ bool HTTPProtocol::httpOpen()
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
   // not already have one...
-  if ( !isConnectionValid() )
+  if ( !isConnected() )
   {
     if (!httpOpenConnection())
     {
@@ -2543,10 +2450,13 @@ bool HTTPProtocol::httpOpen()
   }
 
   // Send the data to the remote machine...
-  bool sendOk = (write(header.toLatin1(), header.length()) == (ssize_t) header.length());
+  ssize_t written = write(header.toLatin1(), header.length());
+  bool sendOk = (written == (ssize_t) header.length());
   if (!sendOk)
   {
-    kDebug(7113) << "Connection broken! (" << m_state.hostname << ")";
+    kDebug(7113) << "Connection broken! (" << m_state.hostname << ")"
+                 << "  -- intended to write " << header.length()
+                 << " bytes but wrote " << (int)written << ".";
 
     // With a Keep-Alive connection this can happen.
     // Just reestablish the connection.
@@ -2558,7 +2468,9 @@ bool HTTPProtocol::httpOpen()
 
     if (!sendOk)
     {
-       kDebug(7113) << "sendOk==false. Connnection broken !";
+       kDebug(7113) << "sendOk==false. Connnection broken !"
+                    << "  -- intended to write " << header.length()
+                    << " bytes but wrote " << (int)written << ".";
        error( ERR_CONNECTION_BROKEN, m_state.hostname );
        return false;
     }
@@ -2703,7 +2615,7 @@ try_again:
   bool hasCacheDirective = false;
   bool bCanResume = false;
 
-  if ( !isConnectionValid() )
+  if ( !isConnected() )
   {
      kDebug(7113) << "No connection.";
      return false; // Restablish connection and try again
@@ -3312,7 +3224,7 @@ try_again:
   for( ; opt != upgradeOffers.end(); ++opt) {
      if (*opt == "TLS/1.0") {
         if(upgradeRequired) {
-           if (!startTLS() && !usingTLS()) {
+           if (!startSsl()) {
               error(ERR_UPGRADE_REQUIRED, *opt);
               return false;
            }
@@ -3531,7 +3443,7 @@ try_again:
      // Do not cache secure pages or pages
      // originating from password protected sites
      // unless the webserver explicitly allows it.
-     if (usingSSL() || (Authentication != AUTH_None) )
+     if (isUsingSsl() || (Authentication != AUTH_None) )
      {
         m_request.bCachedWrite = false;
         mayCache = false;
@@ -3870,7 +3782,7 @@ void HTTPProtocol::httpCloseConnection ()
   kDebug(7113);
   m_bIsTunneled = false;
   m_bKeepAlive = false;
-  closeDescriptor();
+  disconnectFromHost();
   setTimeoutSpecialCommand(-1); // Cancel any connection timeout
 }
 
@@ -3878,10 +3790,10 @@ void HTTPProtocol::slave_status()
 {
   kDebug(7113);
 
-  if ( !isConnectionValid() )
+  if ( !isConnected() )
      httpCloseConnection();
 
-  slaveStatus( m_state.hostname, isConnectionValid() );
+  slaveStatus( m_state.hostname, isConnected() );
 }
 
 void HTTPProtocol::mimetype( const KUrl& url )

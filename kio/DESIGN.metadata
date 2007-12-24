@@ -17,7 +17,7 @@ modified        string          The modification date of the document (set by ht
 
 accept          string          List of mimetypes to accept separated by a ", ". (read by http)
 
-SendUserAgent	bool		Whether to send a User-Agent (read by http)
+SendUserAgent   bool            Whether to send a User-Agent (read by http)
 UserAgent       string          The user agent name to send to remote host (read by http)
 
 content-type    string          The content type of the data to be uploaded (read by http)
@@ -46,40 +46,42 @@ Languages       string          Language(s) send in the "Accept-Language:" HTTP 
 content-
 disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
-request-id	number		Sequence number to identify requests in a MultiGet command.
+request-id	number              Sequence number to identify requests in a MultiGet command.
 
-expire-date	number		Date on which a cache entry needs validation.
+expire-date	number              Date on which a cache entry needs validation.
 
-cache-creation-date	number	Date on which a cache entry has been created.
+cache-creation-date  number     Date on which a cache entry has been created.
 
 http-refresh    string          Passes HTTP Refresh meta-data back to the application.
 
-cookies		"auto"		Use kcookiejar to lookup and collect cookies (default)
-		"manual"	Cookies set in "setcookies" are send, received cookies are reported via "setcookies".
-		"none"		No cookies are send, received cookies are discarded.
+cookies         "auto"          Use kcookiejar to lookup and collect cookies (default)
+                "manual"        Cookies set in "setcookies" are send, received cookies are reported
+                                via "setcookies".
+                "none"          No cookies are sent, received cookies are discarded.
 
-setcookies	string		Used to send/receive HTTP cookies when "cookies" is set to "manual".
+setcookies      string          Used to send/receive HTTP cookies when "cookies" is set to "manual".
 
-errorPage	bool		Flag that indicates that an errorPage() is preferred over an error(). (default:true)
+errorPage       bool            Flag that indicates that an errorPage() is preferred over an error().                                      (default:true)
 
-no-auth		bool		Flag that indicates that no authentication attempts should be made.
-no-auth-prompt	bool		Flag that indicates that only cached authentication tokens should be used.
+no-auth         bool            Flag that indicates that no authentication attempts should be made.
+no-auth-prompt  bool            Flag that indicates that only cached authentication tokens should be used.
 
-ssl_activate_warnings	bool	Flag that disables SSL warning dialogs if set to false.  (default: true)
+ssl_activate_warnings bool      Flag that disables SSL warning dialogs if set to false.  (default: true)
 
-ssl_was_in_use	bool		Flag to tell TCPSlaveBase if SSL was in use in the previous transaction.  (default: false)
+ssl_was_in_use  bool            Flag to tell TCPSlaveBase if SSL was in use in the previous transaction.
+                                (default: false)
 
-ssl_in_use	bool		Set in TCPSlaveBase to tell the caller if SSL is in use.  (default: assume false)
+ssl_in_use      bool            Set in TCPSlaveBase to tell the caller if SSL is in use.
+                                (default: assume false)
 
-ssl_using_client_cert	bool	Set in TCPSlaveBase to tell the caller if the session is using a client certificate   (default: assume false)
+ssl_using_client_cert  bool     Set in TCPSlaveBase to tell the caller if the session is using a client                                    certificate   (default: assume false)
 
-ssl_no_client_cert	bool	Flag to tell TCPSlaveBase if it should, under no circumstances, use a client certificate.  (default: false)
-
-ssl_force_cert_prompt	bool	Flag to tell TCPSlaveBase to force the client certificate dialog to appear on this connection.  ssl_no_client_cert overrides this flag.  This does not force the user to actually choose a certificate.  (default: false)
+ssl_no_client_cert  bool        Flag to tell TCPSlaveBase if it should, under no circumstances, use a
+                                client certificate.  (default: false)
 
 ssl_demand_certificate	bool	Flag to tell TCPSlaveBase to demand that a client certificate is used for this connection.  (default: false)
 
-ssl_militant	bool		Flag to tell TCPSlaveBase "do it right, or don't do it at all".  This means that if the certificate check or any other security test fails, just silently fail the connection.  This is of particular use to favicon code.  (default: false)
+ssl_no_ui	bool		Flag to tell TCPSlave that no user interaction should take place. Instead of asking security questions the connection will silently fail. This is of particular use to favicon code. (default: false)
 
 ssl_cipher	string		Set in TCPSlaveBase to tell the caller which cipher is currently being used.
 
@@ -99,15 +101,11 @@ ssl_peer_certificate	string	Set in TCPSlaveBase to relay the base64 encoding of 
 
 ssl_peer_chain	string		Set, if present, in TCPSlaveBase to relay the entire certificate chain presented by the peer.  The is base64 encoded and \n delimited.
 
-ssl_action	string		Set in TCPSlaveBase to determine what the user wishes to do about the connection.  Enumerated to {"accept", "reject"} currently.
-
 ssl_parent_ip	string		Set in TCPSlaveBase and in the caller.  If this is the parent frame of a frame of the session (really only applies to https), this variable is set so that it can be passed back to the child frames.  It is necessary to send it to child frames so that they can do a full certificate check.
 
 ssl_parent_cert	string		Set in TCPSlaveBase and in the caller.  As above, this must be passed to child frames by the caller so that it can compare against the certificate presented in the child frames.  It is a base64 encoding of the X.509 presented.
 
 ssl_session_id	string		Set in TCPSlaveBase to indicate the SSL session ID in base64 encoded ASN.1 encoded binary format.  Also set in the caller to indicate to TCPSlaveBase to reuse a particular session ID.
-
-ssl_proxied	bool		Presently exists only if true.  Set in TCPSlaveBase to indicate that a proxy is in use for this SSL connection.
 
 main_frame_request	bool	Actually for SSL, this is set in the caller to tell TCPSlaveBase if this is the request for the main frame of an html page. (dfault: true)
 

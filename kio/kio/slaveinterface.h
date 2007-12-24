@@ -146,7 +146,7 @@ Q_SIGNALS:
     void mimeType( const QString & );
     void warning( const QString & );
     void infoMessage( const QString & );
-    void connectFinished();
+    //void connectFinished(); //it does not get emitted anywhere
 
 protected:
     /////////////////
@@ -160,7 +160,8 @@ protected:
                      const QString &buttonYes, const QString &buttonNo );
 
     void messageBox( int type, const QString &text, const QString &caption,
-                     const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName );
+                     const QString &buttonYes, const QString &buttonNo,
+                     const QString &dontAskAgainName );
 
     // I need to identify the slaves
     void requestNetwork( const QString &, const QString &);

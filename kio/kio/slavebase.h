@@ -63,16 +63,6 @@ public:
      */
     void dispatchLoop();
 
-    /**
-     * @internal
-     */
-    void setConnection( Connection* connection );
-    /**
-     * @internal
-     */
-    Connection *connection() const;
-
-
     ///////////
     // Message Signals to send to the job
     ///////////
@@ -274,8 +264,8 @@ public:
      *                  The default is i18n("&No").
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
-     * @param dontAskAgainName A checkbox is added with which further confirmation can be turned off.
-     *        The string is used to lookup and store the setting in kioslaverc.
+     * @param dontAskAgain A checkbox is added with which further confirmation can be turned off.
+     *        If the checkbox was ticked @p*dontAskAgain will be set to true, otherwise false.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
      */
     int messageBox( const QString &text, MessageBoxType type,
@@ -763,15 +753,6 @@ public:
      */
     void sendMetaData();
 
-    /**
-     * Name of the protocol supported by this slave
-     */
-    QByteArray mProtocol;
-
-    Connection * m_pConnection;
-
-    MetaData mOutgoingMetaData;
-    MetaData mIncomingMetaData;
 
     /** If your ioslave was killed by a signal, wasKilled() returns true.
      Check it regularly in lengthy functions (e.g. in get();) and return
@@ -786,14 +767,14 @@ public:
     void setKillFlag();
 
 protected:
-    UDSEntryList pendingListEntries;
-    int listEntryCurrentSize;
-    long listEntry_sec, listEntry_usec;
-    Connection *appconn;
-    QString mPoolSocket;
-    QString mAppSocket;
-    bool mConnectedToApp;
-    static qlonglong s_seqNr;
+    /**
+     * Name of the protocol supported by this slave
+     */
+    QByteArray mProtocol;
+    //Often used by TcpSlaveBase and unlikely to change
+    MetaData mOutgoingMetaData;
+    MetaData mIncomingMetaData;
+
     virtual void virtual_hook( int id, void* data );
 
 private:

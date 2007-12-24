@@ -29,7 +29,7 @@
 #include <ksslcertificate.h>
 #include <ksslconnectioninfo.h>
 #include <ksslsettings.h>
-#include <ksslcertificatecache.h>
+#include <ksslcertificatemanager.h>
 #include <ksslutils.h>
 #include <ksslpkcs7.h>
 #include <ksslpkcs12.h>

@@ -476,6 +476,7 @@ protected:
   HTTPState m_state;
   HTTPRequest m_request;
   QList<HTTPRequest*> m_requestQueue;
+  quint16 m_defaultPort;
 
   // Processing related
   KIO::filesize_t m_iSize; // Expected size of message
@@ -576,8 +577,6 @@ protected:
   unsigned int m_prevResponseCode;
 
   // Values that determine the remote connection timeouts.
-  int m_proxyConnTimeout;
-  int m_remoteConnTimeout;
   int m_remoteRespTimeout;
 };
 #endif
