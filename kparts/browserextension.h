@@ -280,8 +280,6 @@ private:
   * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
   * @li @p paste : Paste clipboard into view URL.
   * @li @p pasteTo(const KUrl &) : Paste clipboard into given URL.
-  * @li @p properties : Show file/document properties.
-  * @li @p editMimeType : show file/document's mimetype properties.
   * @li @p searchProvider : Lookup selected text at default search provider
   *
   * [normal actions]
