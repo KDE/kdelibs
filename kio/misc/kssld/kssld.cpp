@@ -239,6 +239,7 @@ void KSSLD::setRootCertificates(const QList<QSslCertificate> &rootCertificates)
 QList<QSslCertificate> KSSLD::rootCertificates() const
 {
     //TODO
+    return QList<QSslCertificate>();
 }
 
 
