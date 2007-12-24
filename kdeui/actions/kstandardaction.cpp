@@ -112,6 +112,12 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
 
       if ( id == Next )
         iconName = "edit-find-previous";
+
+      if ( id == DocumentBack )
+        iconName = "go-next";
+
+      if ( id == DocumentForward )
+        iconName = "go-previous";
     }
 
     QIcon icon = iconName.isEmpty() ? KIcon() : KIcon(iconName);
@@ -390,6 +396,16 @@ KAction *firstPage( const QObject *recvr, const char *slot, QObject *parent )
 KAction *lastPage( const QObject *recvr, const char *slot, QObject *parent )
 {
   return KStandardAction::create( LastPage, recvr, slot, parent );
+}
+
+KAction *documentBack( const QObject *recvr, const char *slot, QObject *parent )
+{
+  return KStandardAction::create( DocumentBack, recvr, slot, parent );
+}
+
+KAction *documentForward( const QObject *recvr, const char *slot, QObject *parent )
+{
+  return KStandardAction::create( DocumentForward, recvr, slot, parent );
 }
 
 KAction *addBookmark( const QObject *recvr, const char *slot, QObject *parent )

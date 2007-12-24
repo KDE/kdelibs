@@ -127,6 +127,9 @@
     <Action name="go_first"/>
     <Action name="go_last"/>
     <Separator/>
+    <Action name="go_document_back"/>
+    <Action name="go_document_forward"/>
+    <Separator/>
     <MergeLocal/>
   </Menu>
   <MergeLocal/>

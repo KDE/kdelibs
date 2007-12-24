@@ -136,7 +136,7 @@ namespace KStandardAction
 
     // Go Menu
     Up, Back, Forward, Home /*Home page*/, Prior, Next, Goto, GotoPage, GotoLine,
-    FirstPage, LastPage,
+    FirstPage, LastPage, DocumentBack, DocumentForward,
 
     // Bookmarks Menu
     AddBookmark, EditBookmarks,
@@ -451,6 +451,16 @@ namespace KStandardAction
    * Jump to the last page.
    */
   KDEUI_EXPORT KAction *lastPage(const QObject *recvr, const char *slot, QObject *parent);
+
+  /**
+   * Move back (document style menu).
+   */
+  KDEUI_EXPORT KAction *documentBack(const QObject *recvr, const char *slot, QObject *parent);
+
+  /**
+   * Move forward (document style menu).
+   */
+  KDEUI_EXPORT KAction *documentForward(const QObject *recvr, const char *slot, QObject *parent);
 
   /**
    * Add the current page to the bookmarks tree.
