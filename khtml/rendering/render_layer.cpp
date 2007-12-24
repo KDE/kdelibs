@@ -942,6 +942,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 {
     assert( rootLayer != this || !m_object->canvas()->view()->clipHolder() );
 
+    if (!m_object->style()->opacity())
+        return;
+
     // Calculate the clip rects we should use.
     QRect layerBounds, damageRect, clipRectToApply;
     calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
