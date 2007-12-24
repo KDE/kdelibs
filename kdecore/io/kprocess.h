@@ -95,13 +95,6 @@ public:
     OutputChannelMode outputChannelMode() const;
 
     /**
-     * @reimp
-     *
-     * Unlike the QProcess::setReadChannel(), this does not lose data.
-     */
-    void setReadChannel(ProcessChannel channel);
-
-    /**
      * Set the QIODevice open mode the process will be opened in.
      *
      * This function must be called before starting the process, obviously.

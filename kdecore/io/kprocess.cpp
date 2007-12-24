@@ -132,21 +132,6 @@ KProcess::OutputChannelMode KProcess::outputChannelMode() const
     return d->outputChannelMode;
 }
 
-// this exists solely for the purpose of working around qprocess breakage
-void KProcess::setReadChannel(ProcessChannel channel)
-{
-    Q_D(KProcess);
-
-    if (readChannel() != channel) {
-        QByteArray b = readAll();
-        QProcess::setReadChannel(channel);
-        // how "efficient" ...
-        for (int i = d->otherBuf.size(); --i >= 0;)
-            ungetChar(d->otherBuf[i]);
-        d->otherBuf = b;
-    }
-}
-
 void KProcess::setNextOpenMode(QIODevice::OpenMode mode)
 {
     Q_D(KProcess);

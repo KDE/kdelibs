@@ -40,7 +40,6 @@ protected:
     QStringList args;
     KProcess::OutputChannelMode outputChannelMode;
     QIODevice::OpenMode openMode;
-    QByteArray otherBuf;
 
     KProcess *q_ptr;
 };
