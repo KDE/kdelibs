@@ -152,12 +152,10 @@
 4620        kviewcanvas
 4630        kview_plugin
 4640        kiconedit
-4650        okular (app)
-4653        okular (Poppler)
-4655        okular (libgs::Interpreter)
-4656        okular (libgs::InternalDocument)
-4656        okular (libgs::GVGenerator)
-4658        okular (XpsGenerator)
+4700        okular (app)
+4710        okular (Poppler)
+4711        okular (Spectre)
+4712        okular (XpsGenerator)
 
 # kdenetwork
 5001        kget
