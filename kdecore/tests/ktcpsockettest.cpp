@@ -222,7 +222,7 @@ void KTcpSocketTest::states()
     s->close();
     //What happens is that during waitForReadyRead() the write buffer is written out
     //completely so that the socket can shut down without having to wait for writeout.
-    QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
+    QCOMPARE((int)s->state(), (int)KTcpSocket::UnconnectedState);
 
     //Now again an internal connection
     invokeOnServer("states");
