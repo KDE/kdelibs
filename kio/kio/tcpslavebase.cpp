@@ -132,7 +132,7 @@ public:
 
 
 //### uh, is this a good idea??
-QIODevice *TCPSlaveBase::socket() const
+KTcpSocket *TCPSlaveBase::socket() const
 {
     return &d->socket;
 }

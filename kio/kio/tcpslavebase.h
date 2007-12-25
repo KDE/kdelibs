@@ -29,7 +29,7 @@
 
 #include <kio/slavebase.h>
 
-class QIODevice;
+class KTcpSocket;
 
 namespace KIO {
 
@@ -190,7 +190,7 @@ protected:
     /**
      * Return the socket object, if the class ever needs to do anything to it
      */
-    QIODevice *socket() const;
+    KTcpSocket *socket() const;
 
 protected:
     virtual void virtual_hook( int id, void* data );
