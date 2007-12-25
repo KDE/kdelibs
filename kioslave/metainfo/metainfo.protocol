@@ -6,4 +6,4 @@ output=stream
 reading=true
 writing=true
 source=false
-Icon=help
+Icon=help-about

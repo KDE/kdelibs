@@ -68,7 +68,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	setButtons(Yes|No|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
-    setWindowIcon( KIcon("cookie") );
+    setWindowIcon( KIcon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
 # ifdef Q_WS_X11
     if( cookieList.first()->windowIds().count() > 0 )
