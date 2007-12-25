@@ -254,7 +254,6 @@ Notes:
     <magic priority="80">
       <match type="string" value="&lt;FictionBook" offset="0:256"/>
     </magic>
-    <root-XML namespaceURI='http://www.gribuser.ru/xml/fictionbook/2.0' localName='FictionBook'/>
   </mime-type>
   <mime-type type="application/epub+zip"> <!-- fdo #12625 -->
     <comment>eBook document</comment>
