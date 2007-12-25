@@ -2,6 +2,7 @@
     This file is part of the KDE Libraries
 
     Copyright (C) 2006 Tobias Koenig (tokoe@kde.org)
+    Copyright (C) 2007 Rafael Fernández López (ereslibre@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,12 +21,14 @@
 */
 
 #include "kpageview_p.h"
+#include <kdialog.h>
 
 #include <QApplication>
 #include <QHeaderView>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <kiconloader.h>
+#include <kpagewidgetmodel.h>
 
 using namespace KDEPrivate;
 
@@ -198,15 +201,28 @@ KPageTabbedView::KPageTabbedView( QWidget *parent )
 
   setFrameShape( NoFrame );
 
-  QGridLayout *layout = new QGridLayout( this );
+  QVBoxLayout *layout = new QVBoxLayout( this );
   layout->setMargin( 0 );
   layout->setSpacing( 0 );
 
-  mTabBar = new QTabBar( this );
-  connect( mTabBar, SIGNAL( currentChanged( int ) ), this, SLOT( currentPageChanged( int ) ) );
+  mTabWidget = new QTabWidget( this );
+  connect( mTabWidget, SIGNAL( currentChanged( int ) ), this, SLOT( currentPageChanged( int ) ) );
 
-  layout->addWidget( mTabBar, 0, 0, Qt::AlignBottom );
-  layout->setColumnStretch( 1, 1 );
+  layout->addWidget( mTabWidget );
+}
+
+KPageTabbedView::~KPageTabbedView()
+{
+  if (model()) {
+    for ( int i = 0; i < mTabWidget->count(); ++i ) {
+        QWidget *page = qvariant_cast<QWidget*>( model()->data( model()->index( i, 0 ), KPageModel::WidgetRole ) );
+
+        if (page) {
+            page->setVisible(false);
+            page->setParent(0); // reparent our childs before they are deleted
+        }
+    }
+  }
 }
 
 void KPageTabbedView::setModel( QAbstractItemModel *model )
@@ -231,7 +247,7 @@ void KPageTabbedView::scrollTo( const QModelIndex &index, ScrollHint )
   if ( !index.isValid() )
     return;
 
-  mTabBar->setCurrentIndex( index.row() );
+  mTabWidget->setCurrentIndex( index.row() );
 }
 
 QRect KPageTabbedView::visualRect( const QModelIndex& ) const
@@ -256,7 +272,7 @@ int KPageTabbedView::verticalOffset() const
 
 bool KPageTabbedView::isIndexHidden( const QModelIndex &index ) const
 {
-  return ( mTabBar->currentIndex() != index.row() );
+  return ( mTabWidget->currentIndex() != index.row() );
 }
 
 void KPageTabbedView::setSelection( const QRect&, QFlags<QItemSelectionModel::SelectionFlag> )
@@ -281,12 +297,12 @@ void KPageTabbedView::currentPageChanged( int index )
 void KPageTabbedView::layoutChanged()
 {
   // save old position
-  int pos = mTabBar->currentIndex();
+  int pos = mTabWidget->currentIndex();
 
   // clear tab bar
-  int count = mTabBar->count();
+  int count = mTabWidget->count();
   for ( int i = 0; i < count; ++i ) {
-    mTabBar->removeTab( 0 );
+    mTabWidget->removeTab( 0 );
   }
 
   if ( !model() )
@@ -296,12 +312,21 @@ void KPageTabbedView::layoutChanged()
   for ( int i = 0; i < model()->rowCount(); ++i ) {
     const QString title = model()->data( model()->index( i, 0 ) ).toString();
     const QIcon icon = model()->data( model()->index( i, 0 ), Qt::DecorationRole ).value<QIcon>();
-    mTabBar->addTab( icon, title );
+    QWidget *page = qvariant_cast<QWidget*>( model()->data( model()->index( i, 0 ), KPageModel::WidgetRole ) );
+    if (page) {
+        QWidget *widget = new QWidget(this);
+        QVBoxLayout *layout = new QVBoxLayout(widget);
+        widget->setLayout(layout);
+        layout->setMargin(KDialog::marginHint());
+        layout->setSpacing(KDialog::spacingHint());
+        layout->addWidget(page);
+        page->setVisible(true);
+        mTabWidget->addTab( widget, icon, title );
+    }
   }
 
-  mTabBar->setCurrentIndex( pos );
-
-  setFixedHeight( mTabBar->minimumSizeHint().height() );
+  setMinimumSize(mTabWidget->minimumSizeHint());
+  mTabWidget->setCurrentIndex( pos );
 }
 
 void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& )
@@ -309,14 +334,14 @@ void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& 
   if ( !index.isValid() )
     return;
 
-  if ( index.row() < 0 || index.row() >= mTabBar->count() )
+  if ( index.row() < 0 || index.row() >= mTabWidget->count() )
     return;
 
   const QString title = model()->data( index ).toString();
   const QIcon icon = model()->data( index, Qt::DecorationRole ).value<QIcon>();
 
-  mTabBar->setTabText( index.row(), title );
-  mTabBar->setTabIcon( index.row(), icon );
+  mTabWidget->setTabText( index.row(), title );
+  mTabWidget->setTabIcon( index.row(), icon );
 }
 
 /**

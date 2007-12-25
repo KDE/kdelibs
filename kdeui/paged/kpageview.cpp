@@ -2,6 +2,7 @@
     This file is part of the KDE Libraries
 
     Copyright (C) 2006 Tobias Koenig (tokoe@kde.org)
+    Copyright (C) 2007 Rafael Fernández López (ereslibre@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 #include "kpageview_p.h"
 
 #include "kpagemodel.h"
+#include "kpagewidgetmodel.h"
 
 #include <kdialog.h>
 #include <kiconloader.h>
@@ -39,9 +41,12 @@ void KPageViewPrivate::_k_rebuildGui()
 {
   // clean up old view
     Q_Q(KPageView);
+
+  QModelIndex currentLastIndex;
   if ( view && view->selectionModel() ) {
         QObject::disconnect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
                 q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
+        currentLastIndex = view->selectionModel()->currentIndex();
   }
 
   delete view;
@@ -58,18 +63,27 @@ void KPageViewPrivate::_k_rebuildGui()
 
   // setup new view
   if ( view->selectionModel() ) {
-        QObject::connect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-                q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
+    QObject::connect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
 
-    if ( model )
+    if ( currentLastIndex.isValid() )
+      view->selectionModel()->setCurrentIndex( currentLastIndex, QItemSelectionModel::Select );
+    else if ( model )
       view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
+  }
+
+  if (faceType == KPageView::Tabbed) {
+    stack->setVisible(false);
+    layout->removeWidget( stack );
+  } else {
+    layout->addWidget( stack, 2, 1 );
+    stack->setVisible(true);
   }
 
     titleWidget->setVisible(q->showPageHeader());
 
     Qt::Alignment alignment = q->viewPosition();
   if ( alignment & Qt::AlignTop )
-    layout->addWidget( view, 0, 1 );
+    layout->addWidget( view, 2, 1 );
   else if ( alignment & Qt::AlignRight )
     layout->addWidget( view, 1, 2, 2, 1 );
   else if ( alignment & Qt::AlignBottom )
@@ -202,6 +216,7 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
   if ( !index.isValid() )
     return;
 
+  if (faceType != KPageView::Tabbed) {
   QWidget *widget = qvariant_cast<QWidget*>( model->data( index, KPageModel::WidgetRole ) );
   if ( widget ) {
     if ( stack->indexOf( widget ) == -1 ) { // not included yet
@@ -214,9 +229,10 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
   }
 
   updateTitleWidget(index);
+  }
 
-    Q_Q(KPageView);
-    emit q->currentPageChanged(index, previous);
+  Q_Q(KPageView);
+  emit q->currentPageChanged(index, previous);
 }
 
 void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)

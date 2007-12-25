@@ -993,6 +993,17 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         painter->setBrush(gradient);
         painter->fillPath(path, gradient);
 
+        int iconSize = KIconLoader::global()->currentSize(KIconLoader::Small);
+
+        if (option.direction == Qt::LeftToRight)
+        {
+            optionCopy.rect.setLeft(optionCopy.rect.left() + (iconSize / 4));
+        }
+        else
+        {
+            optionCopy.rect.setRight(optionCopy.rect.width() - (iconSize / 4));
+        }
+
         QRect auxRect2(optionCopy.rect.left() + leftMargin,
                        option.rect.top(),
                        optionCopy.rect.width() - leftMargin - rightMargin,
@@ -1659,6 +1670,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             QGridLayout *gridLayout = new QGridLayout;
             gridLayout->setSpacing(KDialog::spacingHint());
             gridLayout->setColumnStretch(1, 1);
+            gridLayout->setRowStretch(1, 1);
             layout->addLayout(gridLayout);
 
             if (!pluginInfo.comment().isEmpty())

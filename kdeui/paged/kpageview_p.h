@@ -2,6 +2,7 @@
     This file is part of the KDE Libraries
 
     Copyright (C) 2006 Tobias Koenig (tokoe@kde.org)
+    Copyright (C) 2007 Rafael Fernández López (ereslibre@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -151,6 +152,7 @@ class KPageTabbedView : public QAbstractItemView
 
   public:
     KPageTabbedView( QWidget *parent = 0 );
+    virtual ~KPageTabbedView();
 
     virtual void setModel( QAbstractItemModel *model );
 
@@ -172,7 +174,7 @@ class KPageTabbedView : public QAbstractItemView
     virtual void dataChanged( const QModelIndex&, const QModelIndex& );
 
   private:
-    QTabBar *mTabBar;
+    QTabWidget *mTabWidget;
 };
 
 class KPageListViewDelegate : public QAbstractItemDelegate
