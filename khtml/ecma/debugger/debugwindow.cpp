@@ -479,7 +479,7 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 }
 
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsSourceURL,
-                               const UString &source, int startingLineNumber , int errorLine, const UString &/* errorMsg */)
+                               const UString &source, int startingLineNumber, int errorLine, const UString &/* errorMsg */)
 {
     Q_UNUSED(exec);
 
@@ -500,7 +500,25 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
     // If we don't have a document, make a new one.
     if (!document)
     {
-        document = new DebugDocument(sourceURL, key);
+        // If there is no URL, try to figure one out from the caller ---
+        // useful for function constructor and eval.
+        QString uiURL = sourceURL;
+
+        if (uiURL.isEmpty())
+        {
+            // Scan through all contexts, and see which one matches
+            foreach (InterpreterContext* ic, m_contexts)
+            {
+                if (!ic->execContexts.isEmpty() && ic->execContexts.top() == exec)
+                {
+                    uiURL = ic->callStack.top().doc->url();
+                    break;
+                }
+            }
+
+        }
+
+        document = new DebugDocument(uiURL, key);
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
         m_docsForIntrp[exec->dynamicInterpreter()].append(document);
@@ -657,14 +675,17 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
 
     // First update call stack.
     DebugDocument::Ptr document = m_docForSid[sourceId];
-    QString functionName;
+    QString stackEntry = document->name();
     if (function && function->inherits(&InternalFunctionImp::info))
     {
         KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
-        functionName = func->functionName().qstring();
+        stackEntry = func->functionName().qstring();
     }
 
-    ctx->addCall(document, functionName.isEmpty() ? document->name() : functionName, lineno);
+    if (exec->context()->codeType() == EvalCode)
+        stackEntry = "eval";
+
+    ctx->addCall(document, stackEntry, lineno);
     ctx->execContexts.push(exec);
 
     return shouldContinue(ctx);
@@ -701,6 +722,15 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
         ic->execContexts.isEmpty() && ic->mode == Step)
     {
         setUIMode(Running);
+    }
+
+    // Also, if we exit from an eval context, we probably want to
+    // clear the corresponding document, unless it's open
+    if (exec->context()->codeType() == EvalCode)
+    {
+        DebugDocument::Ptr doc = m_docForSid[sourceId];
+        if (!m_openDocuments.contains(doc.get()))
+            cleanupDocument(doc);
     }
 
     return shouldContinue(ic);

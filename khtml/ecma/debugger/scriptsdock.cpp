@@ -27,6 +27,7 @@
 #include <QHeaderView>
 
 #include <kdebug.h>
+#include <kurl.h>
 
 #include "debugwindow.h"
 #include "debugdocument.h"
@@ -79,9 +80,18 @@ void ScriptsDock::addDocument(DebugDocument *document)
         return;
 
     QString name = document->name();
-    QString domain = QUrl(document->url()).host();
-    if (domain.isEmpty())
-        domain = "unknown";
+    QString domain;
+
+    if (document->url().isEmpty())
+        domain = "????"; // ### KDE4.1: proper i18n'able string
+    else
+    {
+        KUrl kurl(document->url());
+        if (kurl.hasHost())
+            domain = kurl.host();
+        else
+            domain = "localhost";
+    }
 
     QTreeWidgetItem *parent = 0;
     if (m_headers.contains(domain))
