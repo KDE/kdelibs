@@ -43,6 +43,7 @@ DebugDocument::DebugDocument(const QString& url, const QString& iuKey)
 
     m_kteDoc  = 0;
     m_kteView = 0;
+    m_rebuilding = false;
 }
 
 DebugDocument::~DebugDocument()
@@ -100,11 +101,15 @@ void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &s
 
 void DebugDocument::setBreakpoint(int lineNumber)
 {
+    if (m_rebuilding) return;
+
     breakpoints().append(lineNumber);
 }
 
 void DebugDocument::removeBreakpoint(int lineNumber)
 {
+    if (m_rebuilding) return;
+
     QVector<int>& br = breakpoints();
     int idx = breakpoints().indexOf(lineNumber);
     if (idx != -1)
@@ -218,30 +223,29 @@ void DebugDocument::buildViewerDocument()
         }
     }
 
+    m_rebuilding = true;
+
     if (!m_kteDoc)
     {
         m_kteDoc = kate()->createDocument(this);
         setupViewerDocument();
-
-        m_kteDoc->setReadWrite(true);
-
-        // Check off the pending/URL-based breakpoints
-        KTextEditor::MarkInterface* imark = qobject_cast<KTextEditor::MarkInterface*>(m_kteDoc);
-        if (imark)
-        {
-            QVector<int>& bps = breakpoints();
-            foreach (int bpLine, bps)
-                imark->addMark(bpLine - 1, KTextEditor::MarkInterface::BreakpointActive);
-        }
     }
-    else
+
+    m_kteDoc->setReadWrite(true);
+    m_kteDoc->setText(lines.join("\n"));
+
+    // Check off the pending/URL-based breakpoints. We have to do even
+    // when the document is being updated as they may be on later lines
+    KTextEditor::MarkInterface* imark = qobject_cast<KTextEditor::MarkInterface*>(m_kteDoc);
+    if (imark)
     {
-        m_kteDoc->setReadWrite(true);
-        m_kteDoc->clear();
+        QVector<int>& bps = breakpoints();
+        foreach (int bpLine, bps)
+            imark->addMark(bpLine - 1, KTextEditor::MarkInterface::BreakpointActive);
     }
-
-    m_kteDoc->insertLines(0, lines);
+    
     m_kteDoc->setReadWrite(false);
+    m_rebuilding = false;
 }
 
 void DebugDocument::setupViewerDocument()

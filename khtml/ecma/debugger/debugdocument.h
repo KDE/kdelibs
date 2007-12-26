@@ -68,6 +68,12 @@ private:
     QString m_iuKey;
     QString m_name;
 
+    // This is set to true when we are rebuilding the document.
+    // in that case, the UI might get undesired mark add/remove events,
+    // and update the breakpoint set accordingly --- such as removing all of them
+    // on clear. 
+    bool m_rebuilding;
+
     void buildViewerDocument();
     void setupViewerDocument();
 
