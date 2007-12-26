@@ -120,22 +120,6 @@ namespace KJS {
                               const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
 
     /**
-     * Called when all functions/programs associated with a particular
-     * sourceId have been deleted. After this function has been called for
-     * a particular sourceId, that sourceId will not be used again.
-     *
-     * The default implementation does nothing. Override this method if
-     * you want to process this event.
-     *
-     * @param exec The current execution state
-     * @param sourceId The ID of the source code (corresponds to the
-     * sourceId supplied in other functions such as atLine()
-     * @return true if execution should be continue, false if it should
-     * be aborted
-     */
-    virtual bool sourceUnused(ExecState *exec, int sourceId);
-
-    /**
      * Called when an exception is thrown during script execution.
      *
      * The default implementation does nothing. Override this method if

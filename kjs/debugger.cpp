@@ -101,11 +101,6 @@ bool Debugger::sourceParsed(ExecState * /*exec*/, int /*sourceId*/, const UStrin
   return true;
 }
 
-bool Debugger::sourceUnused(ExecState * /*exec*/, int /*sourceId*/)
-{
-  return true;
-}
-
 bool Debugger::exception(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
                          JSValue * /*exception*/)
 {
