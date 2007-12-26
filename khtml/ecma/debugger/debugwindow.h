@@ -50,7 +50,6 @@ class KAction;
 class QTabWidget;
 class QFrame;
 
-using namespace KJS;
 
 namespace KJSDebugger {
 
@@ -95,17 +94,20 @@ public:
     // to prevent some kinds of accidental recursion. Should go 
     // if proper modal dialog manager shows up
     bool inSession() const { return !m_activeSessionCtxs.isEmpty(); }
+
+    // Serializes an exception for human consumption.
+    static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
 public:
 
     // All of the below are overriden from KJS::Debugger
-    bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                      const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
-    bool exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj);
-    bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
-    bool enterContext(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
-    bool exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function);
-    void attach(Interpreter *interp);
-    void detach(Interpreter *interp);
+    bool sourceParsed(KJS::ExecState *exec, int sourceId, const KJS::UString &sourceURL,
+                      const KJS::UString &source, int startingLineNumber, int errorLine, const KJS::UString &errorMsg);
+    bool exception(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSValue *exceptionObj);
+    bool atStatement(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine);
+    bool enterContext(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSObject *function, const KJS::List &args);
+    bool exitContext(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSObject *function);
+    void attach(KJS::Interpreter *interp);
+    void detach(KJS::Interpreter *interp);
 
     // Called by KJSProxy when we navigate away from a page
     void clearInterpreter(KJS::Interpreter* interp);
@@ -161,9 +163,6 @@ private:
     // mode and breakpoints. Returns false if we should abort
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
 
-    // Serializes an exception for human consumption.
-    QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
-
     // Standard actions
     KAction *m_exitAct;
 
@@ -217,7 +216,7 @@ private:
 
     // Some of the state we want to keep track of while debugging, such as backtraces,
     // is per-interpreter, and this lets us look uit up.
-    QHash<Interpreter*, InterpreterContext*> m_contexts;
+    QHash<KJS::Interpreter*, InterpreterContext*> m_contexts;
 
     // This keeps track of the contexts for the various debuggers
     // we may be in session for. It's needed because the same window is

@@ -124,6 +124,8 @@ using namespace DOM;
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
 
+#include "ecma/debugger/debugwindow.h"
+
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
@@ -1097,7 +1099,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
     d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
-    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("bug"));
+    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("kbugbuster"));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedUrl()), SLOT(launchJSErrorDialog()));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedUrl()), SLOT(jsErrorDialogContextMenu()));
   }
@@ -1181,8 +1183,9 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   if (comp.complType() == KJS::Throw && comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
-      dlg->addError(i18n("<b>Error</b>: %1: %2", filename, msg.qstring()));
+      QString msg = KJSDebugger::DebugWindow::exceptionToString(
+                              proxy->interpreter()->globalExec(), comp.value());
+      dlg->addError(i18n("<b>Error</b>: %1: %2", filename, msg));
     }
   }
 
@@ -1228,8 +1231,9 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (comp.complType() == KJS::Throw && !comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
-      KJS::UString msg = comp.value()->toString(proxy->interpreter()->globalExec());
-      dlg->addError(i18n("<b>Error</b>: node %1: %2", n.nodeName().string(), msg.qstring()));
+      QString msg = KJSDebugger::DebugWindow::exceptionToString(
+                              proxy->interpreter()->globalExec(), comp.value());
+      dlg->addError(i18n("<b>Error</b>: node %1: %2", n.nodeName().string(), msg));
     }
   }
 
