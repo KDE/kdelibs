@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QObject>
 #include <QVector>
+#include <QStringList>
 
 #include "misc/shared.h"
 
@@ -22,8 +23,22 @@ namespace KJSDebugger {
 struct SourceFragment
 {
     int sourceId;
-    int baseLine;
-    QString source;
+    int baseLine; // Note: this is stored 0-based
+    QStringList sourceLines;
+
+    int lastLine()
+    {
+        return baseLine + sourceLines.size() - 1;
+    }
+
+    bool inRange(int otherFirst, int otherLast)
+    {
+        if (lastLine() < otherFirst)
+            return false;
+        if (baseLine > otherLast)
+            return false;
+        return true;
+    }
 };
 
 class DebugDocument : public QObject, public khtml::Shared<DebugDocument>
@@ -74,7 +89,7 @@ private:
     // on clear. 
     bool m_rebuilding;
 
-    void buildViewerDocument();
+    void rebuildViewerDocument(int firstLine = 0, int lastLine = -1);
     void setupViewerDocument();
 
     QHash<int, SourceFragment> m_codeFragments;

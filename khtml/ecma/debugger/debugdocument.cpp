@@ -90,13 +90,16 @@ void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &s
 {
     SourceFragment code;
     code.sourceId = sourceId;
-    code.baseLine = baseLine;
-    code.source = source;
+    code.baseLine = baseLine - 1;
+    if (code.baseLine < 0) //(messed up debug info)
+        code.baseLine = 0;
+
+    code.sourceLines = source.split("\n"); //### is \n enough?
 
     m_codeFragments[sourceId] = code;
 
     if (m_kteDoc) // Update docu if needed
-        buildViewerDocument();
+        rebuildViewerDocument(code.baseLine, code.lastLine());
 }
 
 void DebugDocument::setBreakpoint(int lineNumber)
@@ -147,7 +150,7 @@ QVector<int>& DebugDocument::breakpoints()
 KTextEditor::Document* DebugDocument::viewerDocument()
 {
     if (!m_kteDoc)
-        buildViewerDocument();
+        rebuildViewerDocument();
     return m_kteDoc;
 }
 
@@ -188,38 +191,47 @@ KTextEditor::Editor* DebugDocument::kate()
 }
 
 
-void DebugDocument::buildViewerDocument()
+void DebugDocument::rebuildViewerDocument(int firstLine, int lastLine)
 {
-    // First, we collect the lines ourselves, not to bother katepart
-    // so much.
+    // We collect the lines ourselves, not to bother katepart so much
+    bool fullDoc = (firstLine == 0) && (lastLine == -1);
+
+    // Figure out our last line if not specified..
+    if (lastLine == -1)
+    {
+        lastLine = 0;
+        foreach(SourceFragment fragment, m_codeFragments)
+            lastLine = qMax(fragment.lastLine(), lastLine);
+    }
+
     QStringList lines;
     foreach (SourceFragment fragment, m_codeFragments)
     {
-        // Note: the KTextEditor interface counts the lines/columns from 0,
-        // but the UI shows them from 1,1.
-        // KHTML appears to report lines from 1 up.
-        int baseLine = fragment.baseLine - 1;
-        if (baseLine < 0)
-            baseLine = 0;
+        // See if this fragment is in the [firstLine, lastLine] range.
+        if (!fragment.inRange(firstLine, lastLine))
+            continue;
 
-        QString source = fragment.source;
+        QStringList& sourceLines = fragment.sourceLines;
 
-        // ### can we guarantee this as a separator? probably not
-        QStringList sourceLines = source.split("\n");
-
+        // Now scan through the fragment, and incorporate all the lines that
+        // are in range.
         for (int scanLine = 0; scanLine < sourceLines.size(); ++scanLine)
         {
-            int absLine = baseLine + scanLine;
+            int absLine = fragment.baseLine + scanLine;
+            int outLine = absLine - firstLine;
+
+            if (absLine  < firstLine || absLine > lastLine)
+                continue;
 
             // We have to be a bit careful here, since
             // in an ultra-stupid HTML documents, there may be more than
             // one script tag on a line. So we try to append things. 
-            if (scanLine == 0 && !getLine(lines, absLine).isEmpty())
-                setLine(lines, absLine, getLine(lines, absLine) + "  " + sourceLines[0]);
-            else if (scanLine == sourceLines.size() -1 && !getLine(lines, absLine).isEmpty())
-                setLine(lines, absLine, sourceLines[scanLine] + " " + getLine(lines, absLine));
+            if (scanLine == 0 && !getLine(lines, outLine).isEmpty())
+                setLine(lines, outLine, getLine(lines, outLine) + "  " + sourceLines[0]);
+            else if (scanLine == sourceLines.size() - 1 && !getLine(lines, outLine).isEmpty())
+                setLine(lines, outLine, sourceLines[scanLine] + " " + getLine(lines, outLine));
             else
-                setLine(lines, absLine, sourceLines[scanLine]);
+                setLine(lines, outLine, sourceLines[scanLine]);
         }
     }
 
@@ -231,8 +243,30 @@ void DebugDocument::buildViewerDocument()
         setupViewerDocument();
     }
 
+    KTextEditor::Cursor oldPos;
+    if (m_kteView)
+        oldPos = m_kteView->cursorPosition();
+
     m_kteDoc->setReadWrite(true);
-    m_kteDoc->setText(lines.join("\n"));
+
+    if (fullDoc)
+        m_kteDoc->setText(lines.join("\n"));
+    else
+    {
+        // Expand the document if needed..
+        while (lastLine + 1 > m_kteDoc->lines())
+            m_kteDoc->insertLine(m_kteDoc->lines(), " ");
+
+        // Update text
+        m_kteDoc->replaceText(KTextEditor::Range(
+                                KTextEditor::Cursor(firstLine, 0),
+                                KTextEditor::Cursor(lastLine, m_kteDoc->line(lastLine).length())),
+                              lines.join("\n"));
+    }
+
+    // Restore cursor pos, if there is a view
+    if (m_kteView)
+        m_kteView->setCursorPosition(oldPos);
 
     // Check off the pending/URL-based breakpoints. We have to do even
     // when the document is being updated as they may be on later lines
@@ -243,7 +277,7 @@ void DebugDocument::buildViewerDocument()
         foreach (int bpLine, bps)
             imark->addMark(bpLine - 1, KTextEditor::MarkInterface::BreakpointActive);
     }
-    
+
     m_kteDoc->setReadWrite(false);
     m_rebuilding = false;
 }
