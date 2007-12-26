@@ -894,31 +894,29 @@ void KOpenWithDialogPrivate::_k_slotOK()
   cg.writeEntry("InitialPreference", maxPreference + 1);
 
 
-    if (bRemember || saveNewApps)
-  {
-    QStringList mimeList = cg.readXdgListEntry("MimeType");
-    if (!qMimeType.isEmpty() && !mimeList.contains(qMimeType))
-      mimeList.append(qMimeType);
-    cg.writeXdgListEntry("MimeType", mimeList);
+    if (bRemember || saveNewApps) {
+        // Add mimetype to the service desktop file
+        QStringList mimeList = cg.readXdgListEntry("MimeType");
+        if (!qMimeType.isEmpty() && !mimeList.contains(qMimeType))
+            mimeList.append(qMimeType);
+        cg.writeXdgListEntry("MimeType", mimeList);
 
-    if ( !qMimeType.isEmpty() )
-    {
-      // Also make sure the "auto embed" setting for this mimetype is off
-      KDesktopFile mimeDesktop( KStandardDirs::locateLocal( "mime", qMimeType + ".desktop" ) );
-      mimeDesktop.desktopGroup().writeEntry( "X-KDE-AutoEmbed", false );
-      mimeDesktop.sync();
+        if ( !qMimeType.isEmpty() ) {
+            // Also make sure the "auto embed" setting for this mimetype is off
+            KSharedConfig::Ptr fileTypesConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
+            fileTypesConfig->group("EmbedSettings").writeEntry(QString("embed-")+qMimeType, false);
+            fileTypesConfig->sync();
+        }
     }
-  }
 
-  // write it all out to the file
-  cg.sync();
-  delete desktop;
+    // write it all out to the file
+    cg.sync();
+    delete desktop;
 
     KBuildSycocaProgressDialog::rebuildKSycoca(q);
 
-  m_pService = KService::serviceByMenuId( menuId );
-
-  Q_ASSERT( m_pService );
+    m_pService = KService::serviceByMenuId( menuId );
+    Q_ASSERT( m_pService );
 
     q->accept();
 }
