@@ -1099,7 +1099,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
     d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
-    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("kbugbuster"));
+    d->m_statusBarJSErrorLabel->setPixmap(SmallIcon("script-error"));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(leftClickedUrl()), SLOT(launchJSErrorDialog()));
     connect(d->m_statusBarJSErrorLabel, SIGNAL(rightClickedUrl()), SLOT(jsErrorDialogContextMenu()));
   }
@@ -1107,7 +1107,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_jsedlg = new KJSErrorDlg;
     d->m_jsedlg->setURL(url().prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
-      d->m_jsedlg->_clear->setIcon(KIcon("edit-clear-locationbar"));
+      d->m_jsedlg->_clear->setIcon(KIcon("edit-clear-locationbar-ltr"));
       d->m_jsedlg->_close->setIcon(KIcon("window-close"));
     }
   }
@@ -6440,7 +6440,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KUrl( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
-      pix = KIconLoader::global()->loadIcon("image-png", KIconLoader::Desktop);
+      pix = KIconLoader::global()->loadIcon("image-x-generic", KIconLoader::Desktop);
     }
     else
     {
