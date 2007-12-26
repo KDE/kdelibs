@@ -390,7 +390,7 @@ void DebugWindow::stepOver()
 
 DebugWindow::~DebugWindow()
 {
-    assert(m_sidsForIntrp.isEmpty());
+    assert(m_docsForIntrp.isEmpty());
     assert(m_docForSid.isEmpty());
     assert(m_docForIUKey.isEmpty());
 }
@@ -413,30 +413,30 @@ void DebugWindow::attach(Interpreter *interp)
     KJS::Debugger::attach(interp);
 }
 
+void DebugWindow::cleanupDocument(DebugDocument::Ptr doc)
+{
+    // Remove all fragments from the sid map
+    foreach (int sid, doc->fragments())
+    {
+        m_docForSid.remove(sid);
+        // Remove from the IU-key map if needed.
+        if (!doc->url().isEmpty())
+            m_docForIUKey.remove(doc->iuKey());
+    }
+    m_scripts->documentDestroyed(doc.get());
+}
+
 void DebugWindow::detach(KJS::Interpreter* interp)
 {
     assert(interp); //detach(0) should never get here, since only ~Debugger calls it
 
     // Go through, and kill all the fragments from here.
-    QList<int>& outSids = m_sidsForIntrp[interp];
+    QList<DebugDocument::Ptr> docs = m_docsForIntrp[interp];
 
-    foreach (int sid, outSids)
-    {
-        // Cleanup all the fragments we have loaded.
-        DebugDocument::Ptr doc = m_docForSid[sid];
+    foreach (DebugDocument::Ptr doc, docs)
+        cleanupDocument(doc);
 
-        if (doc->deleteFragment(sid) == DebugDocument::LastFragment)
-        {
-            // Remove from the IU-key map if needed.
-            if (!doc->url().isEmpty())
-                m_docForIUKey.remove(doc->iuKey());
-            m_scripts->documentDestroyed(doc.get());
-        }
-
-        m_docForSid.remove(sid);
-    }
-
-    m_sidsForIntrp.remove(interp);
+    m_docsForIntrp.remove(interp);
 
     // See if we're the active session...
     InterpreterContext* ctx = m_contexts[interp];
@@ -471,6 +471,23 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 {
     InterpreterContext* ctx = m_contexts[interp];
     assert (!m_activeSessionCtxs.contains(ctx));
+
+    // Cleanup any docs that are not open, and mark others
+    // as having finished their current load incarnation
+    QMutableListIterator<DebugDocument::Ptr> i(m_docsForIntrp[interp]);
+    while (i.hasNext())
+    {
+        DebugDocument::Ptr doc = i.next();
+        if (m_openDocuments.contains(doc.get()))
+        {
+            doc->requestDeferredClear(); // Any new fragments will be from a new load..
+        }
+        else
+        {
+            cleanupDocument(doc);
+            i.remove();
+        }
+    }
 }
 
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsSourceURL,
@@ -498,13 +515,13 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         document = new DebugDocument(sourceURL, key);
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
+        m_docsForIntrp[exec->dynamicInterpreter()].append(document);
     }
 
     // Memorize the document..
     m_docForSid[sourceId] = document;
     if (!sourceURL.isEmpty())
         m_docForIUKey[key] = document;
-    m_sidsForIntrp[exec->dynamicInterpreter()].append(sourceId);
 
     // Tell it about this portion..
     document->addCodeFragment(sourceId, startingLineNumber, source.qstring());

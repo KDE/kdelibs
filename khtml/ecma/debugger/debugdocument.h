@@ -58,24 +58,17 @@ public:
     KTextEditor::View*     viewerView();
 
     SourceFragment fragment(int sourceId);
-
     void addCodeFragment(int sourceId, int baseLine, const QString &source);
+    QList<int> fragments() const;
 
-    enum FragmentInfo
-    {
-        LastFragment,
-        NonLastFragment
-    };
-
-    /**
-     Tells the document that the fragment with this ID no longer exists.
-     Returns whether it was the last fragment or not.
-    */
-    FragmentInfo deleteFragment(int sourceId);
+    // Tells the document that any new updates will come on a fresh
+    // load, so the fragments have to be discarded on a next addCodeFragment
+    void requestDeferredClear();
 
     void setBreakpoint(int lineNumber);
     void removeBreakpoint(int lineNumber);
     bool hasBreakpoint(int lineNumber);
+
 signals:
     void documentDestroyed(KJSDebugger::DebugDocument*);
 private:
@@ -88,6 +81,9 @@ private:
     // and update the breakpoint set accordingly --- such as removing all of them
     // on clear. 
     bool m_rebuilding;
+
+    // see requestDeferredClear
+    bool m_deferredClear;
 
     void rebuildViewerDocument(int firstLine = 0, int lastLine = -1);
     void setupViewerDocument();

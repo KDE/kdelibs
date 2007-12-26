@@ -43,7 +43,8 @@ DebugDocument::DebugDocument(const QString& url, const QString& iuKey)
 
     m_kteDoc  = 0;
     m_kteView = 0;
-    m_rebuilding = false;
+    m_rebuilding    = false;
+    m_deferredClear = false;
 }
 
 DebugDocument::~DebugDocument()
@@ -69,13 +70,9 @@ QString DebugDocument::iuKey() const
     return m_iuKey;
 }
 
-DebugDocument::FragmentInfo DebugDocument::deleteFragment(int sourceId)
+QList<int> DebugDocument::fragments() const
 {
-    m_codeFragments.remove(sourceId);
-    if (m_codeFragments.isEmpty())
-        return LastFragment;
-    else
-        return NonLastFragment;
+    return m_codeFragments.keys();
 }
 
 SourceFragment DebugDocument::fragment(int sourceId)
@@ -88,6 +85,12 @@ SourceFragment DebugDocument::fragment(int sourceId)
 
 void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &source)
 {
+    if (m_deferredClear)
+    {
+        m_codeFragments.clear();
+        m_deferredClear = false;
+    }
+
     SourceFragment code;
     code.sourceId = sourceId;
     code.baseLine = baseLine - 1;
@@ -100,6 +103,11 @@ void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &s
 
     if (m_kteDoc) // Update docu if needed
         rebuildViewerDocument(code.baseLine, code.lastLine());
+}
+
+void DebugDocument::requestDeferredClear()
+{
+    m_deferredClear = true;
 }
 
 void DebugDocument::setBreakpoint(int lineNumber)

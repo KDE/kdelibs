@@ -155,6 +155,8 @@ private:
     void setUIMode        (RunMode mode);
     void updateStoppedMark(RunMode mode);
 private:
+    void cleanupDocument(DebugDocument::Ptr document);
+
     // Checks to see whether we should stop at the given location, based on the current 
     // mode and breakpoints. Returns false if we should abort
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
@@ -201,11 +203,6 @@ private:
 
     InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }
 
-    QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
-    QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
-    QHash<KTextEditor::Document*, DebugDocument*> m_documentLut; // map KTextEditor::Document's to DebugDocuments
-    QHash<DebugDocument*, KTextEditor::Document*> m_debugLut; // map DebugDocument's to KTextEditor::Document's
-
     // We look documents up 2 ways: by sourceId, and by interpreter + url key.
     // The former is used when handling the various debugger events, and is the best
     // we can do in that case. We need the later to combine the fragments into
@@ -214,9 +211,9 @@ private:
     QHash<int,     DebugDocument::Ptr> m_docForSid;
     QHash<QString, DebugDocument::Ptr> m_docForIUKey;
 
-    // For each interpreter, we keep track of what sourceIds correspond to it,
-    // so we can discard them on detach, perhaps killing the debug doc as well
-    QHash<KJS::Interpreter*, QList<int> > m_sidsForIntrp;
+    // For each interpreter, we keep track of what documents belong to it
+    // so we can discard them when needed, as well as flush for reload
+    QHash<KJS::Interpreter*, QList<DebugDocument::Ptr> > m_docsForIntrp;
 
     // Some of the state we want to keep track of while debugging, such as backtraces,
     // is per-interpreter, and this lets us look uit up.
