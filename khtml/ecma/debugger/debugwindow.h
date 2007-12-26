@@ -96,15 +96,19 @@ public:
     // if proper modal dialog manager shows up
     bool inSession() const { return !m_activeSessionCtxs.isEmpty(); }
 public:
+
+    // All of the below are overriden from KJS::Debugger
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                       const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
-    bool sourceUnused(ExecState *exec, int sourceId);
     bool exception(ExecState *exec, int sourceId, int lineno, JSValue *exceptionObj);
     bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
     bool enterContext(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
     bool exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function);
     void attach(Interpreter *interp);
     void detach(Interpreter *interp);
+
+    // Called by KJSProxy when we navigate away from a page
+    void clearInterpreter(KJS::Interpreter* interp);
 
 public Q_SLOTS:
     void stopAtNext();

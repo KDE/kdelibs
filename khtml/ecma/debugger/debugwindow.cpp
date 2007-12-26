@@ -118,7 +118,6 @@ DebugWindow::DebugWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, false);
     setObjectName(QLatin1String("DebugWindow"));
     setCaption(i18n("JavaScript Debugger"));
-    kDebug() << "creating DebugWindow";
 
     m_editor = KTextEditor::EditorChooser::editor();
     if ( !m_editor )
@@ -414,7 +413,7 @@ void DebugWindow::attach(Interpreter *interp)
     KJS::Debugger::attach(interp);
 }
 
-void DebugWindow::detach(Interpreter *interp)
+void DebugWindow::detach(KJS::Interpreter* interp)
 {
     assert(interp); //detach(0) should never get here, since only ~Debugger calls it
 
@@ -468,6 +467,11 @@ void DebugWindow::detach(Interpreter *interp)
     KJS::Debugger::detach(interp);
 }
 
+void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
+{
+    InterpreterContext* ctx = m_contexts[interp];
+    assert (!m_activeSessionCtxs.contains(ctx));
+}
 
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsSourceURL,
                                const UString &source, int startingLineNumber , int errorLine, const UString &/* errorMsg */)
