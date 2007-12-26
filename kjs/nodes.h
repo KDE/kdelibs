@@ -155,9 +155,6 @@ namespace KJS {
     Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg);
     Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg, const Identifier &);
 
-    Node* createErrorNode(ErrorType e, const UString& msg);
-    Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
-
     JSValue* throwError(ExecState*, ErrorType, const UString& msg);
     JSValue* throwError(ExecState*, ErrorType, const UString& msg, const char* string);
     JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*);
@@ -171,6 +168,7 @@ namespace KJS {
     void handleException(ExecState*);
     void handleException(ExecState*, JSValue*);
 
+    void copyDebugInfo(Node* otherNode);
   protected:
     /* Nodes that can do semantic checking should override this,
        and return an appropriate error node if appropriate. The reimplementations
@@ -207,6 +205,9 @@ namespace KJS {
     bool hitStatement(ExecState*);
     virtual Completion execute(ExecState *exec) = 0;
 
+    void copyDebugInfo(StatementNode* otherNode);
+    Node* createErrorNode(ErrorType e, const UString& msg);
+    Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
   protected:
     /* This implementation of checkSemantics applies the accumulated labels to
        this statement, manages the targets for labelless break and continue,
@@ -569,7 +570,7 @@ namespace KJS {
 
   class PostfixErrorNode : public Node { 
   public: 
-    PostfixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {} 
+    PostfixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {}
     JSValue* evaluate(ExecState*); 
     virtual void streamTo(SourceStream&) const; 
   private: 
@@ -1293,8 +1294,8 @@ namespace KJS {
   */
   class ErrorNode : public StatementNode {
   public:
-    ErrorNode(Node* k, ErrorType e, const UString& m) :
-        kid(k), errorType(e), message(m) {}
+    ErrorNode(StatementNode* k, ErrorType e, const UString& m) :
+        kid(k), errorType(e), message(m) { copyDebugInfo(k); }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:

@@ -228,18 +228,6 @@ Completion Node::createErrorCompletion(ExecState *exec, ErrorType e, const UStri
     return Completion(Throw, Error::create(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec)));
 }
 
-Node* Node::createErrorNode(ErrorType e, const UString& msg)
-{
-    return new ErrorNode(this, e, msg);
-}
-
-Node* Node::createErrorNode(ErrorType e, const UString& msg, const Identifier &ident)
-{
-    UString message = msg;
-    substitute(message, ident.ustring());
-    return new ErrorNode(this, e, message);
-}
-
 JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg)
 {
     return KJS::throwError(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec));
@@ -319,6 +307,11 @@ Node *Node::nodeInsideAllParens()
     return this;
 }
 
+void Node::copyDebugInfo(Node* otherNode)
+{
+    m_line = otherNode->m_line;
+}
+
 class VarDeclVisitor: public NodeVisitor {
   private:
     ExecState* m_exec;
@@ -393,6 +386,12 @@ void StatementNode::setLoc(int firstLine, int lastLine)
     m_lastLine = lastLine;
 }
 
+void StatementNode::copyDebugInfo(StatementNode* otherNode)
+{
+    m_line     = otherNode->m_line;
+    m_lastLine = otherNode->m_lastLine;
+}
+
 // return true if the debugger wants us to stop at this point
 bool StatementNode::hitStatement(ExecState* exec)
 {
@@ -402,6 +401,20 @@ bool StatementNode::hitStatement(ExecState* exec)
   else
     return true; // continue
 }
+
+Node* StatementNode::createErrorNode(ErrorType e, const UString& msg)
+{
+    return new ErrorNode(this, e, msg);
+}
+
+Node* StatementNode::createErrorNode(ErrorType e, const UString& msg, const Identifier &ident)
+{
+    UString message = msg;
+    substitute(message, ident.ustring());
+    return new ErrorNode(this, e, message);
+}
+
+
 
 // ------------------------------ NullNode -------------------------------------
 
@@ -524,6 +537,7 @@ Reference VarAccessNode::evaluateReference(ExecState* exec) {
 Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
 {
   int index = node->lookupSymbolID(ident);
+  Node* out = 0;
 
   // If the symbol isn't local, we can still optimize 
   // a bit, and skip the local scope for lookup.
@@ -531,12 +545,16 @@ Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node
   // is careful about that)
   if (index == -1) {
     if (ident == exec->propertyNames().arguments)
-      return 0; //Dynamic property..
+      out = 0; //Dynamic property..
     else
-      return new NonLocalVarAccessNode(ident);
+      out = new NonLocalVarAccessNode(ident);
   } else {
-      return new LocalVarAccessNode(ident, index);
+      out = new LocalVarAccessNode(ident, index);
   }
+
+  if (out)
+    out->copyDebugInfo(this);
+  return out;
 }
 
 int VarAccessNode::localID(FunctionBodyNode* node)
@@ -1179,8 +1197,11 @@ Node* PostfixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* no
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
     int id = ident->localID(node);
-    if (id != -1)
-      return new LocalPostfixNode(m_loc.get(), m_oper, id);
+    if (id != -1) {
+      Node* out = new LocalPostfixNode(m_loc.get(), m_oper, id);
+      out->copyDebugInfo(this);
+      return out;
+    }
   }
   return 0;
 }
@@ -1361,8 +1382,11 @@ Node* PrefixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* nod
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
     int id = ident->localID(node);
-    if (id != -1)
-      return new LocalPrefixNode(m_loc.get(), m_oper, id);
+    if (id != -1) {
+      Node* out = new LocalPrefixNode(m_loc.get(), m_oper, id);
+      out->copyDebugInfo(this);
+      return out;
+    }
   }
   return 0;
 }
@@ -1771,7 +1795,9 @@ Node* AssignNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* nod
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
     int id = ident->localID(node);
     if (id != -1) {
-        return new LocalAssignNode(m_loc.get(), m_right.get(), id);
+      Node* out = new LocalAssignNode(m_loc.get(), m_right.get(), id);
+      out->copyDebugInfo(this);
+      return out;
     }
   }
   return 0;
@@ -2066,6 +2092,7 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
       staticVer->initializers.append(init);
     }
   }
+  staticVer->copyDebugInfo(this);
   return staticVer;
 }
 
