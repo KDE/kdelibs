@@ -426,9 +426,19 @@ void DebugWindow::cleanupDocument(DebugDocument::Ptr doc)
     m_scripts->documentDestroyed(doc.get());
 }
 
+static void fatalAssert(bool shouldBeTrue, const char* error)
+{
+    if (!shouldBeTrue)
+        kFatal() << error;
+}
+
 void DebugWindow::detach(KJS::Interpreter* interp)
 {
     assert(interp); //detach(0) should never get here, since only ~Debugger calls it
+
+    // Make sure no weird recursions can still happen!
+    InterpreterContext* ctx = m_contexts[interp];
+    assert (!m_activeSessionCtxs.contains(ctx));
 
     // Go through, and kill all the fragments from here.
     QList<DebugDocument::Ptr> docs = m_docsForIntrp[interp];
@@ -437,29 +447,6 @@ void DebugWindow::detach(KJS::Interpreter* interp)
         cleanupDocument(doc);
 
     m_docsForIntrp.remove(interp);
-
-    // See if we're the active session...
-    InterpreterContext* ctx = m_contexts[interp];
-    if (m_activeSessionCtxs.contains(ctx))
-    {
-        kDebug() << "### detach while session active!";
-        // Hopefully, we're the last one. In this case,
-        // we merely behave as if someone clicked continue,
-        // and leave the session.
-        if (m_activeSessionCtxs.top() == ctx)
-        {
-            leaveDebugSession();
-        }
-        else
-        {
-            // Here, we want to remove the old context, drop out
-            // one event loop level, but not actually
-            // leave the session, since it's unrelated.
-            // ### This is all wrong!
-            m_activeSessionCtxs.remove(m_activeSessionCtxs.indexOf(ctx));
-            exitLoop();
-        }
-    }
 
     delete m_contexts.take(interp);
     resetTimeoutsIfNeeded();
@@ -470,7 +457,8 @@ void DebugWindow::detach(KJS::Interpreter* interp)
 void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 {
     InterpreterContext* ctx = m_contexts[interp];
-    assert (!m_activeSessionCtxs.contains(ctx));
+
+    fatalAssert(!m_activeSessionCtxs.contains(ctx), "Interpreter clear on active session");
 
     // Cleanup any docs that are not open, and mark others
     // as having finished their current load incarnation
