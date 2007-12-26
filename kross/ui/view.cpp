@@ -312,7 +312,7 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
     d->collection->addAction("stop", stopaction);
     connect(stopaction, SIGNAL(triggered()), this, SLOT(slotStop()));
 
-    KAction* editaction = new KAction(KIcon("object-edit"), i18n("Edit..."), this);
+    KAction* editaction = new KAction(KIcon("document-properties"), i18n("Edit..."), this);
     editaction->setObjectName("edit");
     editaction->setToolTip( i18n("Edit selected script.") );
     editaction->setEnabled(false);

@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isCaretMode());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleNavigable(bool) ));
-    ta = new KToggleAction( KIcon("object-edit"), "Editable", doc );
+    ta = new KToggleAction( KIcon("document-properties"), "Editable", doc );
     doc->actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isEditable());

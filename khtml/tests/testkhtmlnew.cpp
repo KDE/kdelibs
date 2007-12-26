@@ -171,7 +171,7 @@ void TestKHTML::setupActions()
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT( toggleNavigable(bool) ));
 
-    ta = new KToggleAction( KIcon("object-edit"), "Editable", this );
+    ta = new KToggleAction( KIcon("document-properties"), "Editable", this );
     actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isEditable());
