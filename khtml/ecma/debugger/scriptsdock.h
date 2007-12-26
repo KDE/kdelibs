@@ -37,8 +37,6 @@ public:
     ~ScriptsDock();
 
     void addDocument(DebugDocument *document);
-
-public Q_SLOTS:
     void documentDestroyed(DebugDocument *document);
 
 Q_SIGNALS:

@@ -41,8 +41,10 @@
 #include "dom/dom_misc.h"
 
 #include <QStack>
+#include <QVector>
 
 #include "interpreter_ctx.h"
+#include "debugdocument.h"
 
 class KAction;
 class QTabWidget;
@@ -58,7 +60,6 @@ class LocalVariablesDock;
 class ScriptsDock;
 class BreakpointsDock;
 class ConsoleDock;
-class DebugDocument;
 
 
 /**
@@ -112,6 +113,9 @@ public Q_SLOTS:
     void stepOut();
     void stepOver();
 
+    void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+                 KTextEditor::MarkInterface::MarkChangeAction action);
+
 protected:
     virtual void closeEvent(QCloseEvent* event);
     
@@ -122,17 +126,11 @@ protected:
 private Q_SLOTS:
     void displayScript(KJSDebugger::DebugDocument *document);
     void displayScript(KJSDebugger::DebugDocument *document, int line); // -1 denotes not focusing on the line
-
     void closeTab();
-    void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
-                 KTextEditor::MarkInterface::MarkChangeAction action);
+    void documentDestroyed(KJSDebugger::DebugDocument* doc);
 
     void doEval(const QString& code);
 private:
-    // Constructs or updates the peer KTextEditor::Document to display
-    // this DebugDocument
-    KTextEditor::Document* buildViewerDocument(DebugDocument *document);
-    
     void createActions();
     void createMenus();
     void createToolBars();
@@ -141,7 +139,6 @@ private:
 
     void enterDebugSession(KJS::ExecState *exec, DebugDocument *document, int line);
     void leaveDebugSession();
-    void enableKateHighlighting(KTextEditor::Document *document);
 
     void enterModality();
     void leaveModality();
@@ -160,8 +157,6 @@ private:
 
     // Serializes an exception for human consumption.
     QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
-
-    KTextEditor::View* viewForDocument(DebugDocument* debugDoc);
 
     // Standard actions
     KAction *m_exitAct;
@@ -200,21 +195,38 @@ private:
     // should work globally. 
     bool m_breakAtNext;
 
+    InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }
+
+    QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
+    QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
+    QHash<KTextEditor::Document*, DebugDocument*> m_documentLut; // map KTextEditor::Document's to DebugDocuments
+    QHash<DebugDocument*, KTextEditor::Document*> m_debugLut; // map DebugDocument's to KTextEditor::Document's
+
+    // We look documents up 2 ways: by sourceId, and by interpreter + url key.
+    // The former is used when handling the various debugger events, and is the best
+    // we can do in that case. We need the later to combine the fragments into
+    // one view. Persistence of breakpoints/pending breakpoints
+    // are handled by DebugDocument itself.
+    QHash<int,     DebugDocument::Ptr> m_docForSid;
+    QHash<QString, DebugDocument::Ptr> m_docForIUKey;
+
+    // For each interpreter, we keep track of what sourceIds correspond to it,
+    // so we can discard them on detach, perhaps killing the debug doc as well
+    QHash<KJS::Interpreter*, QList<int> > m_sidsForIntrp;
+
+    // Some of the state we want to keep track of while debugging, such as backtraces,
+    // is per-interpreter, and this lets us look uit up.
+    QHash<Interpreter*, InterpreterContext*> m_contexts;
+
     // This keeps track of the contexts for the various debuggers
     // we may be in session for. It's needed because the same window is
     // used for all, so we may occassionally be a few levels of recursion in,
     // so we need to know exactly how to unwind, etc.
     QStack<InterpreterContext*> m_activeSessionCtxs;
 
-    InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }
 
-    QHash<Interpreter*, InterpreterContext*> m_contexts;
-
-    QList<KTextEditor::Document*>  m_documentList;
-    QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
-    QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
-    QHash<KTextEditor::Document*, DebugDocument*> m_documentLut; // map KTextEditor::Document's to DebugDocuments
-    QHash<DebugDocument*, KTextEditor::Document*> m_debugLut; // map DebugDocument's to KTextEditor::Document's
+    // The documents that are currently open for viewing.
+    // The index matches that of the tab widget;
     QList<DebugDocument*> m_openDocuments;
 
     static DebugWindow *s_debugger;

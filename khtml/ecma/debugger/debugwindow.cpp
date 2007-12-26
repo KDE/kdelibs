@@ -99,6 +99,7 @@ DebugWindow *DebugWindow::createInstance()
 void DebugWindow::destroyInstance()
 {
     Q_ASSERT(s_debugger);
+    Q_ASSERT(s_debugger->m_activeSessionCtxs.isEmpty());
     s_debugger->hide();
     delete s_debugger;
 }
@@ -254,33 +255,23 @@ void DebugWindow::createStatusBar()
 
 void DebugWindow::updateStoppedMark(RunMode mode)
 {
-    // Figure out where we're stopped or stoping.
-    KTextEditor::MarkInterface* imark = 0;
-    KTextEditor::View*          view  = 0;
-    int                         line  = 0;
+    if (!ctx() || !ctx()->activeDocument)
+        return;
 
-    if (ctx() && ctx()->activeDocument)
-    {
-        if (mode == Stopped)
-            displayScript(ctx()->activeDocument); // Create view, we will need it
-        DebugDocument* document = ctx()->activeDocument;
-        KTextEditor::Document* ddoc = m_debugLut[document];
-        view  = viewForDocument(document);
-        imark = qobject_cast<KTextEditor::MarkInterface*>(ddoc);
-        line  = ctx()->activeLine() - 1; // -1 since KTextEditor 0-based, other 1-based
-    }
+    DebugDocument* doc = ctx()->activeDocument;
+    KTextEditor::MarkInterface* imark = qobject_cast<KTextEditor::MarkInterface*>(doc->viewerDocument());
 
     if (mode == Running)
     {
         // No longer stopped there.
         if (imark)
-            imark->removeMark(line, KTextEditor::MarkInterface::Execution);
+            imark->removeMark(ctx()->activeLine() - 1, KTextEditor::MarkInterface::Execution);
     }
     else
     {
-        view->setCursorPosition(KTextEditor::Cursor(line, 0));
+        displayScript(doc, ctx()->activeLine());
         if (imark)
-            imark->addMark(line, KTextEditor::MarkInterface::Execution);
+            imark->addMark(ctx()->activeLine() - 1, KTextEditor::MarkInterface::Execution);
     }
 }
 
@@ -400,8 +391,9 @@ void DebugWindow::stepOver()
 
 DebugWindow::~DebugWindow()
 {
-    qDeleteAll(m_documentList);
-    m_documentList.clear();
+    assert(m_sidsForIntrp.isEmpty());
+    assert(m_docForSid.isEmpty());
+    assert(m_docForIUKey.isEmpty());
 }
 
 void DebugWindow::closeEvent(QCloseEvent* event)
@@ -424,98 +416,97 @@ void DebugWindow::attach(Interpreter *interp)
 
 void DebugWindow::detach(Interpreter *interp)
 {
-    if (interp)
+    assert(interp); //detach(0) should never get here, since only ~Debugger calls it
+
+    // Go through, and kill all the fragments from here.
+    QList<int>& outSids = m_sidsForIntrp[interp];
+
+    foreach (int sid, outSids)
     {
-        // See if we're the active session...
-        InterpreterContext* ctx = m_contexts[interp];
-        if (m_activeSessionCtxs.contains(ctx))
+        // Cleanup all the fragments we have loaded.
+        DebugDocument::Ptr doc = m_docForSid[sid];
+
+        if (doc->deleteFragment(sid) == DebugDocument::LastFragment)
         {
-            kDebug() << "### detach while session active!";
-            // Hopefully, we're the last one. In this case,
-            // we merely behave as if someone clicked continue,
-            // and leave the session.
-            if (m_activeSessionCtxs.top() == ctx)
-            {
-                leaveDebugSession();
-            }
-            else
-            {
-                // Here, we want to remove the old context, drop out
-                // one event loop level, but not actually
-                // leave the session, since it's unrelated.
-                m_activeSessionCtxs.remove(m_activeSessionCtxs.indexOf(ctx));
-                exitLoop();
-            }
+            // Remove from the IU-key map if needed.
+            if (!doc->url().isEmpty())
+                m_docForIUKey.remove(doc->iuKey());
+            m_scripts->documentDestroyed(doc.get());
         }
 
-        delete m_contexts.take(interp);
-    }
-    else //All
-    {
-        assert(m_activeSessionCtxs.isEmpty());
-        qDeleteAll(m_contexts);
-        m_contexts.clear();
+        m_docForSid.remove(sid);
     }
 
+    m_sidsForIntrp.remove(interp);
+
+    // See if we're the active session...
+    InterpreterContext* ctx = m_contexts[interp];
+    if (m_activeSessionCtxs.contains(ctx))
+    {
+        kDebug() << "### detach while session active!";
+        // Hopefully, we're the last one. In this case,
+        // we merely behave as if someone clicked continue,
+        // and leave the session.
+        if (m_activeSessionCtxs.top() == ctx)
+        {
+            leaveDebugSession();
+        }
+        else
+        {
+            // Here, we want to remove the old context, drop out
+            // one event loop level, but not actually
+            // leave the session, since it's unrelated.
+            // ### This is all wrong!
+            m_activeSessionCtxs.remove(m_activeSessionCtxs.indexOf(ctx));
+            exitLoop();
+        }
+    }
+
+    delete m_contexts.take(interp);
     resetTimeoutsIfNeeded();
 
     KJS::Debugger::detach(interp);
 }
 
 
-bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
+bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsSourceURL,
                                const UString &source, int startingLineNumber , int errorLine, const UString &/* errorMsg */)
 {
     Q_UNUSED(exec);
 
     kDebug() << "***************************** sourceParsed **************************************************" << endl
              << "      sourceId: " << sourceId << endl
-             << "     sourceURL: " << sourceURL.qstring() << endl
+             << "     sourceURL: " << jsSourceURL.qstring() << endl
              << "startingLineNumber: " << startingLineNumber << endl
              << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
 
-    // Determine key
-    QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(sourceURL.qstring());
+    QString sourceURL = jsSourceURL.qstring();
+    QString key       = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(sourceURL);
 
-    DebugDocument *document = 0;
-    if (!sourceURL.isEmpty())
-        document = m_documents[key];
-    else
-        key = key + "|" + sourceId; // Give separate entries for EvalCode 
-                                    // and function-ctor created things;
-                                    // this is quite suboptimal, unfortunately
+    DebugDocument::Ptr document;
+    if (!sourceURL.isEmpty()) // Perhaps we already have a document for this url...
+        document = m_docForIUKey[key];
+
+    // If we don't have a document, make a new one.
     if (!document)
     {
-        document = new DebugDocument(sourceURL.qstring(), exec->dynamicInterpreter());
-        m_documents[key] = document;
+        document = new DebugDocument(sourceURL, key);
+        connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
+                this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
     }
 
-    m_sourceIdLookup[sourceId] = document;
+    // Memorize the document..
+    m_docForSid[sourceId] = document;
+    if (!sourceURL.isEmpty())
+        m_docForIUKey[key] = document;
+    m_sidsForIntrp[exec->dynamicInterpreter()].append(sourceId);
 
+    // Tell it about this portion..
     document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
-    m_scripts->addDocument(document);
 
-    // Rebuild document if it was built before
-    if (m_debugLut[document])
-        buildViewerDocument(document);
-
-    return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
-}
-
-bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
-{
-    Q_UNUSED(exec);
-
-    // Remove the debug document associated with this sourceId
-    DebugDocument *document = m_sourceIdLookup[sourceId];
-    if (document)
-    {
-        m_scripts->documentDestroyed(document);
-        if (!document->deleteFragment(sourceId))   // this means we've removed all the source fragments
-            delete document;
-        m_sourceIdLookup.remove(sourceId);
-    }
+    // Show it in the script list view
+    m_scripts->addDocument(document.get());
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -579,7 +570,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     QString exceptionMsg = exceptionToString(exec, exceptionObj);
 
     // Look up fragment info from sourceId
-    DebugDocument* doc = m_sourceIdLookup[sourceId];
+    DebugDocument::Ptr doc = m_docForSid[sourceId];
 
     // Figure out filename.
     QString url = "????";
@@ -598,7 +589,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     resetTimeoutsIfNeeded();
     if (dlg.debugSelected())
         // We want to stop at the current line, to see what's going on.
-        enterDebugSession(exec, doc, lineNo);
+        enterDebugSession(exec, doc.get(), lineNo);
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -636,10 +627,8 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
             enterDebugMode = true;
     }
 
-    //### test StepOver on top level, etc.
-
-    DebugDocument *document = m_sourceIdLookup[sourceId];
-    assert(document);
+    DebugDocument::Ptr document = m_docForSid[sourceId];
+    assert(!document.isNull());
 
     // Now check for breakpoints if needed
     if (document->hasBreakpoint(firstLine))
@@ -647,7 +636,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
 
     // Block the UI, and enable all the debugging buttons, etc.
     if (enterDebugMode)
-        enterDebugSession(exec, document, firstLine);
+        enterDebugSession(exec, document.get(), firstLine);
 
     // re-checking the abort mode here, in case it got change when recursing
     return shouldContinue(candidateCtx);
@@ -658,7 +647,7 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
     InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
 
     // First update call stack.
-    DebugDocument *document = m_sourceIdLookup[sourceId];
+    DebugDocument::Ptr document = m_docForSid[sourceId];
     QString functionName;
     if (function && function->inherits(&InternalFunctionImp::info))
     {
@@ -675,9 +664,8 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
 bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
     InterpreterContext* ic  = m_contexts[exec->dynamicInterpreter()];
-    DebugDocument *document = m_sourceIdLookup[sourceId];
-    ic->removeCall();
 
+    ic->removeCall();
     assert(ic->execContexts.top() == exec);
     ic->execContexts.pop();
 
@@ -713,30 +701,16 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::doEval(const QString& qcode)
 {
-    // Work out which execution state to use. If we're currently in a debugging session,
-    // use the current context - otherwise, use the global execution state from the interpreter
-    // corresponding to the currently displayed source file.
-    ExecState* exec;
-    JSObject*  thisObj;
+    // Work out which execution state to use. Currently, limit ourselves to
+    // working inside an active session. It's not clear what behavior
+    // would be appropriate otherwise.
+    if (!inSession())
+        m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+
+    InterpreterContext* ctx = m_activeSessionCtxs.top();
+    ExecState* exec    = ctx->execContexts.top();
+    JSObject*  thisObj = exec->context()->thisValue();
     JSValue*   oldException = 0;
-    if (inSession())
-    {
-        InterpreterContext* ctx = m_activeSessionCtxs.top();
-        exec    = ctx->execContexts.top();
-        thisObj = exec->context()->thisValue();
-    }
-    else
-    {
-        int idx = m_tabWidget->currentIndex();
-        if (idx < 0)
-        {
-            m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
-            return;
-        }
-        DebugDocument* document = m_openDocuments[idx];
-        exec    = document->interpreter()->globalExec();
-        thisObj = document->interpreter()->globalObject();
-    }
 
     UString code(qcode);
 
@@ -778,172 +752,67 @@ void DebugWindow::doEval(const QString& qcode)
     m_console->reportResult(qcode, msg);
 }
 
-void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
-{
-    if (!document)
-        return;
-
-    document->setMode("JavaScript");
-}
-
-void DebugWindow::displayScript(DebugDocument *document)
+void DebugWindow::displayScript(DebugDocument* document)
 {
     displayScript(document, -1);
 }
 
-void DebugWindow::displayScript(DebugDocument *document, int line)
+void DebugWindow::displayScript(DebugDocument* document, int line)
 {
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
 
-    if (m_openDocuments.contains(document))
+    KTextEditor::View* view = document->viewerView();
+
+    if (!m_openDocuments.contains(document))
     {
-        int idx = m_openDocuments.indexOf(document);
-        m_tabWidget->setCurrentIndex(idx);
-        if (line != -1)
-            viewForDocument(document)->setCursorPosition(KTextEditor::Cursor(line - 1, 0));
-        return;
+        m_openDocuments.append(document);
+        m_tabWidget->addTab(view, document->name());
     }
 
-    // Here, we are responsible for initial creation of the document.
-    // updates will be handled in sourceParsed
-    if (!m_debugLut[document])
-        buildViewerDocument(document);
+    // Focus the tab
+    int idx = m_openDocuments.indexOf(document);
+    m_tabWidget->setCurrentIndex(idx);
 
-    KTextEditor::Document *doc = m_debugLut[document];
-
-    KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
-    KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
-    if (configInterface)
-    {
-        if (configInterface->configKeys().contains("line-numbers"))
-            configInterface->setConfigValue("line-numbers", true);
-        if (configInterface->configKeys().contains("icon-bar"))
-            configInterface->setConfigValue("icon-bar", true);
-        if (configInterface->configKeys().contains("dynamic-word-wrap"))
-            configInterface->setConfigValue("dynamic-word-wrap", true);
-    }
-
-    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
-    if (markInterface)
-    {
-        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
-        connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
-                this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
-        // ### KDE4.1: fix this hack used to avoid new string
-        markInterface->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive, 
-                                          i18n("Breakpoints"));
-        markInterface->setMarkPixmap(KTextEditor::MarkInterface::BreakpointActive, 
-                                     SmallIcon("flag-red"));
-        markInterface->setMarkPixmap(KTextEditor::MarkInterface::Execution, 
-                                     SmallIcon("arrow-right"));
-    }
-
+    // Go to line..
     if (line != -1)
         view->setCursorPosition(KTextEditor::Cursor(line - 1, 0));
-
-    m_openDocuments.append(document);
-    int idx = m_tabWidget->addTab(view, document->name());
-    m_tabWidget->setCurrentIndex(idx);
 }
 
-KTextEditor::View* DebugWindow::viewForDocument(DebugDocument* document)
+void DebugWindow::documentDestroyed(KJSDebugger::DebugDocument* doc)
 {
-    assert (m_openDocuments.contains(document));
+    //### this is likely to be very ugly UI-wise
+    // Close this document..
+    int idx = m_openDocuments.indexOf(doc);
+    if (idx == -1)
+        return;
 
-    int idx = m_openDocuments.indexOf(document);
-    return qobject_cast<KTextEditor::View*>(m_tabWidget->widget(idx));
+    m_tabWidget->removeTab(idx);
+    m_openDocuments.removeAt(idx);
+    if (m_openDocuments.isEmpty())
+        m_tabWidget->hide();
 }
 
-KTextEditor::Document* DebugWindow::buildViewerDocument(DebugDocument *document)
+void DebugWindow::closeTab()
 {
-    KTextEditor::Document *doc = 0;
-    doc = m_debugLut[document];     // Check to see if we've already worked on this document
-    if (!doc)
-    {
-        doc = m_editor->createDocument(0);
-        m_documentList.append(doc);
-
-        m_debugLut[document] = doc;
-        m_documentLut[doc] = document;
-    }
-
-    enableKateHighlighting(doc);
-    QList<SourceFragment> fragments = document->fragments();
-
-    // Order fragments by increasing base loc, to make the below faster
-    qSort(fragments);
-
-    doc->setReadWrite(true);
-    doc->clear();
-
-    // Note: in case there are fragments on the same line, and some 
-    // are inline code, the order will not match the document.
-    // This needs column information to work right; with corresponding 
-    // adjustments for breakpoints
-    foreach (SourceFragment fragment, fragments)
-    {
-        // Note: the KTextEditor interface counts the lines/columns from 0,
-        // but the UI shows them from 1,1.
-        // KHTML appears to report lines from 1 up.
-        int line = fragment.baseLine - 1;
-        if (line < 0)
-            line = 0;
-
-        // We have to be a bit careful here, since
-        // in an ultra-stupid HTML documents, there may be more than
-        // one script tag on a line. So we try to append things. 
-        QString source = fragment.source;
-
-        // ### can we guarantee this as a separator? probably not
-        QStringList sourceLines = source.split("\n");
-
-        if (line <= doc->lines() - 1) {
-            // There is actually something there, so we want to combine,
-            // taking care that there may be fragments already there are beginning and end.
-            sourceLines[0] = doc->line(line) + "  " + sourceLines[0];
-
-            int lastLine = line + sourceLines.size() - 1;
-            if (lastLine < doc->lines())
-                sourceLines[sourceLines.size() - 1] += "  " + doc->line(lastLine);
-
-            // Now get rid of all the lines in this range..
-            int linesToRemove = sourceLines.size();
-            if (lastLine >= doc->lines())
-                linesToRemove = doc->lines() - line;
-
-            while (linesToRemove > 0) {
-                doc->removeLine(line);
-                --linesToRemove;
-            }
-        }
-
-        // Insert enough blank lines to get us to the end. Kind of sucks.
-        while (doc->lines() - 1 < line) {
-            doc->insertLine(doc->lines(), "");
-        }
-
-        // Now put in our code
-        doc->insertLines(line, sourceLines);
-    }
-
-    doc->setReadWrite(false);
-    return doc;
+    int idx = m_tabWidget->currentIndex();
+    m_tabWidget->removeTab(idx);
+    m_openDocuments.removeAt(idx);
+    if (m_openDocuments.isEmpty())
+        m_tabWidget->hide();
 }
 
-void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+void DebugWindow::markSet(KTextEditor::Document* document, KTextEditor::Mark mark,
                           KTextEditor::MarkInterface::MarkChangeAction action)
 {
     if (mark.type != KTextEditor::MarkInterface::BreakpointActive)
         return;
 
-    DebugDocument *debugDocument = m_documentLut[document];
-    if (!debugDocument)
-        return;
+    // ### ugleeee -- get our docu from viewer docu's parent, to avoid book keeping
+    DebugDocument* debugDocument = qobject_cast<DebugDocument*>(document->parent());
+    assert(debugDocument);
 
-    int lineNumber = mark.line + 1;         // we do this because bookmarks are technically set
-                                            // the line before what looks like the line you chose..
-
+    int lineNumber = mark.line + 1;
     switch(action)
     {
         case KTextEditor::MarkInterface::MarkAdded:
@@ -957,23 +826,8 @@ void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mar
 
     kDebug() << "breakpoint set for: " << endl
              << "document: " << document->documentName() << endl
-             << "line: " << lineNumber << " type: " << mark.type << endl;
-
-    kDebug() << "breakpoints at lines:";
-    QVector<int> bpoints = debugDocument->breakpoints();
-    foreach (int bpoint, bpoints)
-        kDebug() << " > " << bpoint;
+             << "line: " << lineNumber;
 }
-
-void DebugWindow::closeTab()
-{
-    int idx = m_tabWidget->currentIndex();
-    m_tabWidget->removeTab(idx);
-    m_openDocuments.removeAt(idx);
-    if (m_openDocuments.isEmpty())
-        m_tabWidget->hide();
-}
-
 
 void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *document, int line)
 {

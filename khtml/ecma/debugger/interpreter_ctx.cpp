@@ -23,7 +23,7 @@
 
 namespace KJSDebugger {
 
-void InterpreterContext::addCall(DebugDocument* doc, const QString &function, int lineNumber)
+void InterpreterContext::addCall(DebugDocument::Ptr doc, const QString &function, int lineNumber)
 {
     CallStackEntry entry;
     entry.doc  = doc;

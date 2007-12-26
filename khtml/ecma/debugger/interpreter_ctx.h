@@ -22,6 +22,7 @@
 
 #include <QStack>
 #include <QString>
+#include "debugdocument.h"
 
 namespace KJS {
     class ExecState;
@@ -32,8 +33,6 @@ namespace KTextEditor {
 }
 
 namespace KJSDebugger {
-
-class DebugDocument;
 
 enum Mode
 {
@@ -49,7 +48,7 @@ struct CallStackEntry
 {
     QString name;
     int lineNumber;
-    DebugDocument* doc;
+    DebugDocument::Ptr doc;
 
     bool operator==(const CallStackEntry& other) const
     {
@@ -77,7 +76,7 @@ struct InterpreterContext
     InterpreterContext() : mode(Normal), depthAtSkip(0), activeDocument(0)
     {}
 
-    void addCall(DebugDocument* doc, const QString&, int line);
+    void addCall(DebugDocument::Ptr doc, const QString&, int line);
     void updateCall(int line);
     void removeCall();
 

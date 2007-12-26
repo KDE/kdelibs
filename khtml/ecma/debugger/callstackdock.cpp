@@ -96,7 +96,7 @@ void CallStackDock::slotViewItem(QTableWidgetItem* item)
         return;
 
     CallStackEntry& entry = m_activeCtx->callStack[m_view->rowCount() - m_view->row(item) - 1];
-    emit displayScript(entry.doc, entry.lineNumber);
+    emit displayScript(entry.doc.get(), entry.lineNumber);
 }
 
 }
