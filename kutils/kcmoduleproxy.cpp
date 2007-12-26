@@ -115,7 +115,8 @@ void KCModuleProxyPrivate::loadModule()
 			kcm->layout()->setMargin( 0 );
 		}
 		topLayout->addWidget( kcm );
-        QDBusConnection::sessionBus().registerObject(dbusPath, new KSettingsWidgetAdaptor(parent), QDBusConnection::ExportAllSlots);
+		if( !modInfo.handle().isEmpty() )
+			QDBusConnection::sessionBus().registerObject(dbusPath, new KSettingsWidgetAdaptor(parent), QDBusConnection::ExportAllSlots);
 
 		if ( !rootInfo && /* If it's not already done */
 				kcm->useRootOnlyMessage() && /* kcm wants root message */
