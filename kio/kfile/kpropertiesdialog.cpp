@@ -421,7 +421,6 @@ bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
   return KFilePropsPlugin::supports( _items ) ||
          KFilePermissionsPropsPlugin::supports( _items ) ||
          KDesktopPropsPlugin::supports( _items ) ||
-         KBindingPropsPlugin::supports( _items ) ||
          KUrlPropsPlugin::supports( _items ) ||
          KDevicePropsPlugin::supports( _items ) ||
          KFileMetaPropsPlugin::supports( _items ) ||
@@ -505,12 +504,6 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
   if ( KDesktopPropsPlugin::supports( m_items ) )
   {
         KPropertiesDialogPlugin *p = new KDesktopPropsPlugin(q);
-        q->insertPlugin(p);
-  }
-
-  if ( KBindingPropsPlugin::supports( m_items ) )
-  {
-        KPropertiesDialogPlugin *p = new KBindingPropsPlugin(q);
         q->insertPlugin(p);
   }
 
@@ -821,8 +814,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       directory = properties->currentDir().prettyUrl();
     }
 
-    if (d->bDesktopFile ||
-        KBindingPropsPlugin::supports(properties->items())) {
+    if (d->bDesktopFile) {
       determineRelativePath( path );
     }
 
@@ -1190,29 +1182,14 @@ void KFilePropsPlugin::nameFileChanged(const QString &text )
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
     // now let's make it relative
-    QStringList dirs;
-    if (KBindingPropsPlugin::supports(properties->items()))
+    d->m_sRelativePath = KGlobal::dirs()->relativeLocation("apps", path);
+    if (d->m_sRelativePath.startsWith('/'))
     {
-       d->m_sRelativePath =KGlobal::dirs()->relativeLocation("mime", path);
-       if (d->m_sRelativePath.startsWith('/'))
-          d->m_sRelativePath.clear();
-    }
-    else
-    {
-       d->m_sRelativePath =KGlobal::dirs()->relativeLocation("apps", path);
-       if (d->m_sRelativePath.startsWith('/'))
-       {
-          d->m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-          if (d->m_sRelativePath.startsWith('/'))
-             d->m_sRelativePath.clear();
-          else
-             d->m_sRelativePath = path;
-       }
-    }
-    if ( d->m_sRelativePath.isEmpty() )
-    {
-      if (KBindingPropsPlugin::supports(properties->items()))
-        kWarning(250) << "Warning : editing a mimetype file out of the mimetype dirs!";
+        d->m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
+        if (d->m_sRelativePath.startsWith('/'))
+            d->m_sRelativePath.clear();
+        else
+            d->m_sRelativePath = path;
     }
 }
 
@@ -1413,13 +1390,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
   assert( !properties->item().url().isEmpty() );
 
   // Save the file where we can -> usually in ~/.kde/...
-  if (KBindingPropsPlugin::supports(properties->items()) && !d->m_sRelativePath.isEmpty())
-  {
-    KUrl newURL;
-    newURL.setPath( KStandardDirs::locateLocal("mime", d->m_sRelativePath) );
-    properties->updateUrl( newURL );
-  }
-  else if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
+  if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
   {
     kDebug(250) << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
     KUrl newURL;
@@ -2677,176 +2648,6 @@ void KUrlPropsPlugin::applyChanges()
   }
 }
 
-
-/* ----------------------------------------------------
- *
- * KBindingPropsPlugin
- *
- * -------------------------------------------------- */
-
-class KBindingPropsPlugin::KBindingPropsPluginPrivate
-{
-public:
-  KBindingPropsPluginPrivate()
-  {
-  }
-  ~KBindingPropsPluginPrivate()
-  {
-  }
-
-  QFrame *m_frame;
-
-  QLineEdit *commentEdit;
-  QLineEdit *patternEdit;
-  QLineEdit *mimeEdit;
-  QString m_sMimeStr;
-
-  QCheckBox * cbAutoEmbed;
-};
-
-KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropertiesDialogPlugin( _props ),d(new KBindingPropsPluginPrivate)
-{
-  d->m_frame = new QFrame();
-  properties->addPage(d->m_frame, i18n("A&ssociation"));
-
-  QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame);
-  mainlayout->setMargin(0);
-  mainlayout->setSpacing(KDialog::spacingHint());
-  QLabel* tmpQLabel;
-
-  tmpQLabel = new QLabel( d->m_frame );
-  tmpQLabel->setObjectName( QLatin1String( "Label_1" ) );
-  tmpQLabel->setText(  i18n("Pattern ( example: *.html;*.htm )") );
-  tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
-  mainlayout->addWidget(tmpQLabel, 1);
-
-  d->patternEdit = new KLineEdit( d->m_frame );
-  //d->patternEdit->setGeometry( 10, 40, 210, 30 );
-  //d->patternEdit->setText( "" );
-  d->patternEdit->setMaxLength( 512 );
-  d->patternEdit->setMinimumSize( d->patternEdit->sizeHint() );
-  d->patternEdit->setFixedHeight( fontHeight() );
-  mainlayout->addWidget(d->patternEdit, 1);
-
-  tmpQLabel = new QLabel( d->m_frame );
-  tmpQLabel->setObjectName( QLatin1String( "Label_2" ) );
-  tmpQLabel->setText(  i18n("Mime Type") );
-  tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
-  mainlayout->addWidget(tmpQLabel, 1);
-
-  d->mimeEdit = new KLineEdit( d->m_frame );
-  //d->mimeEdit->setGeometry( 10, 160, 210, 30 );
-  d->mimeEdit->setMaxLength( 256 );
-  d->mimeEdit->setMinimumSize( d->mimeEdit->sizeHint() );
-  d->mimeEdit->setFixedHeight( fontHeight() );
-  mainlayout->addWidget(d->mimeEdit, 1);
-
-  tmpQLabel = new QLabel( d->m_frame );
-  tmpQLabel->setObjectName( QLatin1String( "Label_3" ) );
-  tmpQLabel->setText(  i18n("Comment") );
-  tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
-  mainlayout->addWidget(tmpQLabel, 1);
-
-  d->commentEdit = new KLineEdit( d->m_frame );
-  //d->commentEdit->setGeometry( 10, 100, 210, 30 );
-  d->commentEdit->setMaxLength( 256 );
-  d->commentEdit->setMinimumSize( d->commentEdit->sizeHint() );
-  d->commentEdit->setFixedHeight( fontHeight() );
-  mainlayout->addWidget(d->commentEdit, 1);
-
-  d->cbAutoEmbed = new QCheckBox( i18n("Left click previews"), d->m_frame );
-  d->cbAutoEmbed->setObjectName( QLatin1String( "cbAutoEmbed" ) );
-  mainlayout->addWidget(d->cbAutoEmbed, 1);
-
-  mainlayout->addStretch (10);
-  mainlayout->activate();
-
-  QFile f( _props->kurl().path() );
-  if ( !f.open( QIODevice::ReadOnly ) )
-    return;
-  f.close();
-
-  const KDesktopFile _config( _props->kurl().path() );
-  const KConfigGroup config = _config.desktopGroup();
-  QString patternStr = config.readEntry( "Patterns" );
-  QString iconStr = config.readEntry( "Icon" );
-  QString commentStr = config.readEntry( "Comment" );
-  d->m_sMimeStr = config.readEntry( "MimeType" );
-
-  if ( !patternStr.isEmpty() )
-    d->patternEdit->setText( patternStr );
-  if ( !commentStr.isEmpty() )
-    d->commentEdit->setText( commentStr );
-  if ( !d->m_sMimeStr.isEmpty() )
-    d->mimeEdit->setText( d->m_sMimeStr );
-  d->cbAutoEmbed->setTristate();
-  if ( config.hasKey( "X-KDE-AutoEmbed" ) )
-      d->cbAutoEmbed->setChecked( config.readEntry( "X-KDE-AutoEmbed", false ) );
-  else
-      d->cbAutoEmbed->setCheckState(Qt::PartiallyChecked);
-
-  connect( d->patternEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( d->commentEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( d->mimeEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( d->cbAutoEmbed, SIGNAL( toggled( bool ) ),
-           this, SIGNAL( changed() ) );
-}
-
-KBindingPropsPlugin::~KBindingPropsPlugin()
-{
-  delete d;
-}
-
-// QString KBindingPropsPlugin::tabName () const
-// {
-//   return i18n ("A&ssociation");
-// }
-
-bool KBindingPropsPlugin::supports( const KFileItemList& _items )
-{
-  if ( _items.count() != 1 )
-    return false;
-  const KFileItem item = _items.first();
-  // check if desktop file
-  if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
-    return false;
-
-  // open file and check type
-  KDesktopFile config( item.url().path() );
-  return config.hasMimeTypeType();
-}
-
-void KBindingPropsPlugin::applyChanges()
-{
-  QString path = properties->kurl().path();
-  QFile f( path );
-
-  if ( !f.open( QIODevice::ReadWrite ) )
-  {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>", path));
-    return;
-  }
-  f.close();
-
-  KDesktopFile config( path );
-  KConfigGroup dg = config.desktopGroup();
-  dg.writeEntry( "Type", QString::fromLatin1("MimeType") );
-
-  dg.writeEntry( "Patterns",  d->patternEdit->text() );
-  dg.writeEntry( "Comment", d->commentEdit->text() );
-  dg.writeEntry( "Comment",
-		     d->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
-  dg.writeEntry( "MimeType", d->mimeEdit->text() );
-  if ( d->cbAutoEmbed->checkState() == Qt::PartiallyChecked )
-      dg.deleteEntry( "X-KDE-AutoEmbed" );
-  else
-      dg.writeEntry( "X-KDE-AutoEmbed", d->cbAutoEmbed->isChecked() );
-  dg.sync();
-}
 
 /* ----------------------------------------------------
  *

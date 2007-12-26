@@ -193,31 +193,6 @@ private:
 
 
 /**
- * Used to edit the files containing
- * [Desktop Entry]
- * Type=MimeType
- * @internal
- */
-class KBindingPropsPlugin : public KPropertiesDialogPlugin
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor
-   */
-  KBindingPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KBindingPropsPlugin();
-
-  virtual void applyChanges();
-  static bool supports( const KFileItemList& _items );
-
-private:
-
-  class KBindingPropsPluginPrivate;
-  KBindingPropsPluginPrivate* const d;
-};
-
-/**
  * Properties plugin for device .desktop files
  * @internal
  */
