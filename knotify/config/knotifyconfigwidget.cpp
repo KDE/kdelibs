@@ -67,7 +67,6 @@ void KNotifyConfigWidget::setApplication (const QString & app, const QString & c
 
 void KNotifyConfigWidget::slotEventSelected( KNotifyConfigElement * e )
 {
-	emit changed( true ); //TODO
 	if(d->currentElement)
 	{
 		d->actionsconfig->save( d->currentElement );
