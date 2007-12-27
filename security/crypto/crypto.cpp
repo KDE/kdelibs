@@ -322,21 +322,21 @@ QString whatstr;
 #endif
 
   mWarnOnEnter = new QCheckBox(i18n("Warn on &entering SSL mode"), tabSSL);
-  connect(mWarnOnEnter, SIGNAL(clicked()), SLOT(configChanged()));
+  connect(mWarnOnEnter, SIGNAL(toggled(bool)), SLOT(configChanged()));
   grid->addWidget(mWarnOnEnter, 5, 0);
   whatstr = i18n("If selected, you will be notified when entering an SSL"
                 " enabled site");
   mWarnOnEnter->setWhatsThis( whatstr);
 
   mWarnOnLeave = new QCheckBox(i18n("Warn on &leaving SSL mode"), tabSSL);
-  connect(mWarnOnLeave, SIGNAL(clicked()), SLOT(configChanged()));
+  connect(mWarnOnLeave, SIGNAL(toggled(bool)), SLOT(configChanged()));
   grid->addWidget(mWarnOnLeave, 5, 1);
   whatstr = i18n("If selected, you will be notified when leaving an SSL"
                 " based site.");
   mWarnOnLeave->setWhatsThis( whatstr);
 
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
-  connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
+  connect(mWarnOnUnencrypted, SIGNAL(toggled(bool)), SLOT(configChanged()));
   grid->addWidget(mWarnOnUnencrypted, 6, 0);
   whatstr = i18n("If selected, you will be notified before sending"
                 " unencrypted data via a web browser.");
@@ -381,9 +381,9 @@ QString whatstr;
   QFrame *eFrame = new QFrame(tabOSSL);
   QVBoxLayout *egrid = new QVBoxLayout(eFrame);
   mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
-  connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
+  connect(mUseEGD, SIGNAL(toggled(bool)), SLOT(slotUseEGD()));
   mUseEFile = new QCheckBox(i18n("Use entropy file"), eFrame);
-  connect(mUseEFile, SIGNAL(clicked()), SLOT(slotUseEFile()));
+  connect(mUseEFile, SIGNAL(toggled(bool)), SLOT(slotUseEFile()));
   vbox->addWidget(eFrame);
   egrid->addWidget(mUseEGD);
   egrid->addWidget(mUseEFile);
