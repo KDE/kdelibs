@@ -1254,18 +1254,25 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
 
     path.arcTo(rect, startAngle, sweepLength);
 
-    // When drawing the arc, Safari will loop around the circle several times if the
-    // sweep length is greater than 360 degrees, leaving the current position in
-    // the path at endAngle. QPainterPath::arcTo() will stop when it reaches 360
-    // degrees, leaving the current position at that point. To match Safari behavior,
-    // we insert an extra MoveTo element in the path, to make sure that the current
-    // position is where the script expects it to be after the arc is completed.
+    // When drawing the arc, Safari will loop around the circle several times if
+    // the sweep length is greater than 360 degrees, leaving the current position
+    // in the path at endAngle. QPainterPath::arcTo() will stop when it reaches
+    // 360 degrees, thus leaving the current position at that point. To match
+    // Safari behavior, we call QPainterPath::arcTo() twice in this case, to make
+    // the arc continue to the intended end point. Adding a MoveTo element will
+    // not suffice, since this will not produce correct results if additional
+    // elements are added to the path before it is stroked or filled.
     if (sweepLength > 360.0 || sweepLength < -360.0)
     {
-        QPointF endPoint(x + std::cos(endAngle) * radius,
-                         y + std::sin(endAngle) * radius);
-        if (path.currentPosition() != endPoint)
-            path.moveTo(endPoint);
+        if (sweepLength < 0) {
+            sweepLength += 360.0;
+            startAngle -= 360.0;
+        } else {
+            sweepLength -= 360.0;
+            startAngle += 360.0;
+        }
+
+        path.arcTo(rect, startAngle, sweepLength);
     }
 }
 
