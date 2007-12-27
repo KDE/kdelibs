@@ -919,11 +919,13 @@ void RenderFileButton::calcMinMaxWidth()
     int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
     KLineEdit* edit = static_cast<KUrlRequester*>( m_widget )->lineEdit();
 
-    QStyleOption opt;
-    opt.init(edit);
+    QStyleOptionFrame opt;
+    opt.initFrom(edit);
+    if (edit->hasFrame())
+        opt.lineWidth = edit->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, edit);
     QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
                                              &opt,
-          QSize(w + 2 + 2, qMax(h, 14) + 2 + 2), edit)
+          QSize(w, qMax(h, 14)), edit)
         .expandedTo(QApplication::globalStrut());
     QSize bs = static_cast<KUrlRequester*>( m_widget )->minimumSizeHint() - edit->minimumSizeHint();
 
