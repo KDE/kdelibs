@@ -225,17 +225,18 @@ void KUrlRequester::KUrlRequesterPrivate::init()
         edit->setClearButtonShown( true );
     }
 
+    QWidget *widget = combo ? (QWidget*) combo : (QWidget*) edit;
+
     myButton = new KUrlDragPushButton(m_parent);
-    myButton->setIcon(KIcon(QLatin1String("document-open")));
-    const int pixmapSize = m_parent->style()->pixelMetric(QStyle::PM_SmallIconSize);
-    myButton->setFixedSize(pixmapSize + 8, pixmapSize + 8);
+    myButton->setIcon(KIcon("document-open"));
+    int buttonSize = widget->sizeHint().height();
+    myButton->setFixedSize(buttonSize, buttonSize);
     myButton->setToolTip(i18n("Open file dialog"));
 
     m_parent->connect(myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
 
     m_parent->setSpacing( KDialog::spacingHint() );
 
-    QWidget *widget = combo ? (QWidget*) combo : (QWidget*) edit;
     widget->installEventFilter( m_parent );
     m_parent->setFocusProxy( widget );
     m_parent->setFocusPolicy(Qt::StrongFocus);
