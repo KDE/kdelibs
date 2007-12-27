@@ -679,7 +679,9 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
     if (function && function->inherits(&InternalFunctionImp::info))
     {
         KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
-        stackEntry = func->functionName().qstring();
+        QString functionName = func->functionName().qstring();
+        if (!functionName.isEmpty())
+            stackEntry = functionName;
     }
 
     if (exec->context()->codeType() == EvalCode)
