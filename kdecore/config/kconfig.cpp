@@ -216,9 +216,13 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
 
         for (; it != theEnd && it.key().mGroup == theGroup; ++it) {
             // leave the default values and deleted entries out
-            if (!it->bDeleted && !it.key().bDefault)
-                theMap.insert(QString::fromUtf8(it.key().mKey.constData()),
-                              QString::fromUtf8(it->mValue.constData()));
+            if (!it->bDeleted && !it.key().bDefault) {
+                const QString key = QString::fromUtf8(it.key().mKey.constData());
+                // the localized entry should come first, so don't overwrite it
+                // with the non-localized entry
+                if (!theMap.contains(key))
+                    theMap.insert(key,QString::fromUtf8(it->mValue.constData()));
+            }
         }
     }
 
