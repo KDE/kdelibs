@@ -40,6 +40,7 @@
 #include <kmenubar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <ktoggleaction.h>
 #include <kglobalsettings.h>
 #include <kshortcut.h>
 #include <kconfig.h>
@@ -166,6 +167,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     m_breakAtNext = false;
     m_modalLevel  = 0;
+    m_runningSessionCtx = 0;
 }
 
 void DebugWindow::createActions()
@@ -178,10 +180,9 @@ void DebugWindow::createActions()
     m_continueAct->setEnabled(false);
     connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
 
-    m_stopAct = new KAction(KIcon(":/images/stop.png"), i18n("Stop"), this );
+    m_stopAct = new KToggleAction(KIcon(":/images/stop.png"), i18n("&Break at Next Statement"), this );
+    m_stopAct->setIconText(i18n("Stop"));
     actionCollection()->addAction( "stop", m_stopAct );
-    m_stopAct->setStatusTip(i18n("Stop script execution"));
-    m_stopAct->setToolTip(i18n("Stop script execution"));
     m_stopAct->setEnabled(true);
     // ### Actually we use this for stop-at-next
     connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopAtNext()));
@@ -254,10 +255,11 @@ void DebugWindow::createStatusBar()
 
 void DebugWindow::updateStoppedMark(RunMode mode)
 {
-    if (!ctx() || !ctx()->activeDocument)
+    if (!ctx())
         return;
 
-    DebugDocument* doc = ctx()->activeDocument;
+    DebugDocument::Ptr doc = ctx()->activeDocument();
+    assert(doc);
     KTextEditor::MarkInterface* imark = qobject_cast<KTextEditor::MarkInterface*>(doc->viewerDocument());
 
     if (mode == Running)
@@ -268,7 +270,7 @@ void DebugWindow::updateStoppedMark(RunMode mode)
     }
     else
     {
-        displayScript(doc, ctx()->activeLine());
+        displayScript(doc.get(), ctx()->activeLine());
         if (imark)
             imark->addMark(ctx()->activeLine() - 1, KTextEditor::MarkInterface::Execution);
     }
@@ -280,10 +282,10 @@ void DebugWindow::setUIMode(RunMode mode)
     {
         // Toggle buttons..
         m_continueAct->setEnabled(false);
-        m_stopAct->setEnabled(true);
         m_stepIntoAct->setEnabled(false);
         m_stepOutAct->setEnabled(false);
         m_stepOverAct->setEnabled(false);
+        m_runningSessionCtx = ctx();
     }
     else
     {
@@ -293,10 +295,10 @@ void DebugWindow::setUIMode(RunMode mode)
 
         // Toggle buttons..
         m_continueAct->setEnabled(true);
-        m_stopAct->setEnabled(false);
         m_stepIntoAct->setEnabled(true);
         m_stepOutAct->setEnabled(true);
         m_stepOverAct->setEnabled(true);
+        m_runningSessionCtx = 0;
     }
 
     updateStoppedMark(mode);
@@ -329,7 +331,7 @@ void DebugWindow::resetTimeoutsIfNeeded()
 
 void DebugWindow::stopAtNext()
 {
-    m_breakAtNext = true;
+    m_breakAtNext = m_stopAct->isChecked();
 }
 
 bool DebugWindow::shouldContinue(InterpreterContext* ic)
@@ -339,29 +341,21 @@ bool DebugWindow::shouldContinue(InterpreterContext* ic)
 
 void DebugWindow::leaveDebugSession()
 {
-    // Update UI for running mode, unless we expect things to
-    // be quick; in which case we'll only update if we have to, due to
-    // finishing running
+    // Update UI for running mode, unless we expect things to be quick;
+    // in which case we'll only update if we have to, when running stops
     if (ctx()->mode != Step)
         setUIMode(Running);
     else  // In the other case, we still want to remove the old running marker, however
         updateStoppedMark(Running);
+
     m_activeSessionCtxs.pop();
     resetTimeoutsIfNeeded();
-
-    // There may be a previous session in progress --- in
-    // that case we need to update the UI to reflect that.
-    if (!m_activeSessionCtxs.isEmpty())
-        setUIMode(Running);
-
     exitLoop();
 }
 
 void DebugWindow::continueExecution()
 {
     if (!ctx()) return; //In case we're in the middle of a step.. Hardly ideal, but..
-    ctx()->mode   = Normal;
-    m_breakAtNext = false;
     leaveDebugSession();
 }
 
@@ -641,10 +635,7 @@ bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int fi
 
     // We stop when breakAtNext is set regardless of the context.
     if (m_breakAtNext)
-    {
         enterDebugMode = true;
-        m_breakAtNext  = false;
-    }
 
     if (candidateCtx->mode == Step)
         enterDebugMode = true;
@@ -734,6 +725,20 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
         setUIMode(Running);
     }
 
+    // On the other hand, UI may be in running mode, but we've just
+    // ran out of all the code for this interpreter. In this case,
+    // reactive the previous session in stopped mode.
+    if (!m_activeSessionCtxs.isEmpty() && m_runningSessionCtx == ic)
+    {
+        if (ic->execContexts.isEmpty())
+            setUIMode(Stopped);
+        else
+            fatalAssert(exec->context()->callingContext(), "Apparent event re-entry");
+            // Sanity check: the modality protection should disallow us to exit
+            // from a context called by KHTML unless it's at very top level
+            // (e.g. no other execs on top)
+    }
+
     // Also, if we exit from an eval context, we probably want to
     // clear the corresponding document, unless it's open
     if (exec->context()->codeType() == EvalCode)
@@ -797,11 +802,16 @@ void DebugWindow::doEval(const QString& qcode)
         msg = valueToString(retVal);
     }
 
-    // Restore old exception if need be
+    // Restore old exception if need be, and always clear ours
+    exec->clearException();
     if (oldException)
         exec->setException(oldException);
 
     m_console->reportResult(qcode, msg);
+
+    // Make sure to re-activate the line we were stopped in,
+    // in case a nested session was active
+    setUIMode(Stopped);
 }
 
 void DebugWindow::displayScript(DebugDocument* document)
@@ -893,8 +903,9 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
         show();
 
     m_activeSessionCtxs.push(m_contexts[exec->dynamicInterpreter()]);
-
-    ctx()->activeDocument = document;
+    ctx()->mode   = Normal;
+    m_breakAtNext = false;
+    m_stopAct->setChecked(false);
 
     setUIMode(Stopped);
     enterLoop();
@@ -939,17 +950,21 @@ bool DebugWindow::eventFilter(QObject *object, QEvent *event)
 void DebugWindow::enterLoop()
 {
     QEventLoop eventLoop;
-    connect(this, SIGNAL(quitLoop()), &eventLoop, SLOT(quit()));
-    enterModality();
+    m_activeEventLoops.push(&eventLoop);
+
+    if (m_activeSessionCtxs.size() == 1)
+        enterModality();
 
 //    eventLoop.exec(QEventLoop::X11ExcludeTimers | QEventLoop::ExcludeSocketNotifiers);
     eventLoop.exec();
+    m_activeEventLoops.pop();
 }
 
 void DebugWindow::exitLoop()
 {
-    leaveModality();
-    emit quitLoop();
+    if (m_activeSessionCtxs.isEmpty())
+        leaveModality();
+    m_activeEventLoops.top()->quit();
 }
 
 void DebugWindow::enterModality()

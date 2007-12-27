@@ -68,12 +68,11 @@ struct InterpreterContext
                       // our stepOver.
     QStack<CallStackEntry> callStack;
 
-    // Denotes the document we're stopped in (the line can be found 
-    // from the call stack);
-    DebugDocument* activeDocument;
-    int            activeLine();
+    // Document and line we're currently in
+    DebugDocument::Ptr activeDocument();
+    int                activeLine();
 
-    InterpreterContext() : mode(Normal), depthAtSkip(0), activeDocument(0)
+    InterpreterContext() : mode(Normal), depthAtSkip(0)
     {}
 
     void addCall(DebugDocument::Ptr doc, const QString&, int line);

@@ -49,6 +49,11 @@ int InterpreterContext::activeLine()
     return callStack.top().lineNumber;
 }
 
+DebugDocument::Ptr InterpreterContext::activeDocument()
+{
+    return callStack.top().doc;
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

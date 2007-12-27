@@ -49,6 +49,7 @@
 class KAction;
 class QTabWidget;
 class QFrame;
+class QEventLoop;
 
 
 namespace KJSDebugger {
@@ -73,9 +74,6 @@ class ConsoleDock;
 class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponentData
 {
     Q_OBJECT
-
-Q_SIGNALS:
-    void quitLoop();
 
 public:
     DebugWindow(QWidget *parent = 0);
@@ -192,6 +190,9 @@ private:
     // that may disable the CPU guard.
     int m_modalLevel;
 
+    // This is all the nested event loops that are active
+    QStack<QEventLoop*> m_activeEventLoops;
+
     void resetTimeoutsIfNeeded();
 
     // The handling of debugger modes is a bit funny.
@@ -223,6 +224,10 @@ private:
     // used for all, so we may occassionally be a few levels of recursion in,
     // so we need to know exactly how to unwind, etc.
     QStack<InterpreterContext*> m_activeSessionCtxs;
+
+    // This denotes the session we were in once we entered the running UI
+    // mode. May be null
+    InterpreterContext* m_runningSessionCtx;
 
 
     // The documents that are currently open for viewing.
