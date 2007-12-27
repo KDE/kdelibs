@@ -70,7 +70,7 @@ void ScriptsDock::documentDestroyed(DebugDocument *document)
         m_headers[parent->text(0)];
     }
 
-    m_documents[document] = 0;
+    m_documents.remove(document);
 
 }
 
