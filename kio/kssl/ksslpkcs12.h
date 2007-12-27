@@ -30,7 +30,11 @@
 #else
 class PKCS12;
 class EVP_PKEY;
+#if !defined(QT_NO_OPENSSL)
+#include <QtNetwork/QSslCertificate>
+#else
 class X509;
+#endif
 #endif
 
 #include <ksslcertificate.h>
