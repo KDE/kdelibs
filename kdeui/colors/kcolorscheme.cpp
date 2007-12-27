@@ -83,15 +83,16 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
     // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
     if(! group.isEmpty()) {
         KConfigGroup cfg(config, group);
-        _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityNoEffect );
+        _effects[Intensity] = cfg.readEntry( "IntensityEffect",
+                (int)(state == QPalette::Disabled ?  IntensityDarken : IntensityNoEffect));
         _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
         _effects[Contrast]  = cfg.readEntry(  "ContrastEffect",
                 (int)(state == QPalette::Disabled ?  ContrastFade : ContrastNoEffect));
-        _amount[Intensity]  = cfg.readEntry( "IntensityAmount", 0.0 );
+        _amount[Intensity]  = cfg.readEntry( "IntensityAmount", state == QPalette::Disabled ? 0.10 : 0.0 );
         _amount[Color]      = cfg.readEntry(     "ColorAmount", 0.0 );
-        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.7 : 0.0 );
+        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.65 : 0.0 );
         if (_effects[Color] > ColorNoEffect)
-            _color = cfg.readEntry( "Color", QColor(128, 128, 128) );
+            _color = cfg.readEntry( "Color", QColor(112, 111, 110) );
     }
 }
 
@@ -147,57 +148,88 @@ struct SetDefaultColors {
     int AlternateBackground[3];
     int NormalText[3];
     int InactiveText[3];
+    int ActiveText[3];
+    int LinkText[3];
+    int VisitedText[3];
+    int NegativeText[3];
+    int NeutralText[3];
+    int PositiveText[3];
 };
 
-typedef int RoleDefaultColors[3];
+struct DecoDefaultColors {
+    int Hover[3];
+    int Focus[3];
+};
 
 SetDefaultColors defaultViewColors = {
-    { 255, 255, 255 },
-    { 241, 241, 239 },
-    {   0,   0,   0 },
-    { 152, 152, 152 }
+    { 255, 255, 255 }, // Background
+    { 248, 247, 246 }, // Alternate
+    {  20,  19,  18 }, // Normal
+    { 136, 136, 136 }, // Inactive
+    { 255, 128, 224 }, // Active
+    {   0,  87, 174 }, // Link
+    { 100,  74, 155 }, // Visited
+    { 191,   3,   3 }, // Negative
+    { 176, 128,   0 }, // Neutral
+    {   0, 110,  40 }  // Positive
 };
 
 SetDefaultColors defaultWindowColors = {
-    { 227, 227, 227 },
-    { 227, 227, 227 },
-    {   0,   0,   0 },
-    { 152, 152, 152 }
+    { 224, 223, 222 }, // Background
+    { 218, 217, 216 }, // Alternate
+    {  20,  19,  18 }, // Normal
+    { 136, 136, 136 }, // Inactive
+    { 255, 128, 224 }, // Active
+    {   0,  87, 174 }, // Link
+    { 100,  74, 155 }, // Visited
+    { 191,   3,   3 }, // Negative
+    { 176, 128,   0 }, // Neutral
+    {   0, 110,  40 }  // Positive
 };
 
 SetDefaultColors defaultButtonColors = {
-    { 218, 221, 215 },
-    { 218, 221, 215 },
-    {   0,   0,   0 },
-    { 152, 154, 149 }
+    { 232, 231, 230 }, // Background
+    { 224, 223, 222 }, // Alternate
+    {  20,  19,  18 }, // Normal
+    { 136, 136, 136 }, // Inactive
+    { 255, 128, 224 }, // Active
+    {   0,  87, 174 }, // Link
+    { 100,  74, 155 }, // Visited
+    { 191,   3,   3 }, // Negative
+    { 176, 128,   0 }, // Neutral
+    {   0, 110,  40 }  // Positive
 };
 
 SetDefaultColors defaultSelectionColors = {
-    {  60, 131, 208 },
-    {  60, 131, 208 },
-    { 255, 255, 255 },
-    { 177, 202, 232 }
+    {  65, 139, 212 }, // Background
+    {  62, 138, 204 }, // Alternate
+    { 255, 255, 255 }, // Normal
+    { 165, 193, 228 }, // Inactive
+    { 255, 128, 224 }, // Active
+    {   0,  49, 110 }, // Link
+    {  69,  40, 134 }, // Visited
+    { 156,  14,  14 }, // Negative
+    { 255, 221,   0 }, // Neutral
+    { 128, 255, 128 }  // Positive
 };
 
 SetDefaultColors defaultTooltipColors = {
-    { 255, 248, 209 },
-    { 255, 248, 209 },
-    {   0,   0,   0 },
-    { 232, 185, 149 }
+    { 191, 218, 255 }, // Background
+    { 195, 222, 255 }, // Alternate
+    {  20,  19,  18 }, // Normal
+    { 136, 136, 136 }, // Inactive
+    { 255, 128, 224 }, // Active
+    {   0,  87, 174 }, // Link
+    { 100,  74, 155 }, // Visited
+    { 191,   3,   3 }, // Negative
+    { 176, 128,   0 }, // Neutral
+    {   0, 110,  40 }  // Positive
 };
 
-RoleDefaultColors defaultForegroundColors[] = {
-    { 255,   0,   0 }, // Active
-    {   0,   0, 255 }, // Link
-    {  88,  55, 150 }, // Visited
-    { 107,   0,   0 }, // Negative
-    {   0,  90,  95 }, // Neutral
-    {   0,  95,   0 }, // Positive
-};
 
-RoleDefaultColors defaultDecorationColors[] = {
-    {  72, 177,  60 }, // Hover
-    { 239, 132,  65 }, // Focus
+DecoDefaultColors defaultDecorationColors = {
+    { 119, 183, 255 }, // Hover
+    {  43, 116, 199 }, // Focus
 };
 //END default colors
 
@@ -219,24 +251,12 @@ private:
     } _brushes;
     qreal _contrast;
 
-    enum DefaultIndex {
-        Active = 0,
-        Link = 1,
-        Visited = 2,
-        Negative = 3,
-        Neutral = 4,
-        Positive = 5,
-        Hover = 0,
-        Focus = 1
-    };
-
     void init(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors);
 };
 
 #define DEFAULT(c) QColor( c[0], c[1], c[2] )
 #define  SET_DEFAULT(a) DEFAULT( defaults.a )
-#define   FG_DEFAULT(a) DEFAULT( defaultForegroundColors[a] )
-#define DECO_DEFAULT(a) DEFAULT( defaultDecorationColors[a] )
+#define DECO_DEFAULT(a) DEFAULT( defaultDecorationColors.a )
 
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          QPalette::ColorGroup state,
@@ -285,12 +305,12 @@ void KColorSchemePrivate::init(const KSharedConfigPtr &config,
     // loaded-from-config colors
     _brushes.fg[0] = cfg.readEntry( "ForegroundNormal", SET_DEFAULT(NormalText) );
     _brushes.fg[1] = cfg.readEntry( "ForegroundInactive", SET_DEFAULT(InactiveText) );
-    _brushes.fg[2] = cfg.readEntry( "ForegroundActive", FG_DEFAULT(Active) );
-    _brushes.fg[3] = cfg.readEntry( "ForegroundLink", FG_DEFAULT(Link) );
-    _brushes.fg[4] = cfg.readEntry( "ForegroundVisited", FG_DEFAULT(Visited) );
-    _brushes.fg[5] = cfg.readEntry( "ForegroundNegative", FG_DEFAULT(Negative) );
-    _brushes.fg[6] = cfg.readEntry( "ForegroundNeutral", FG_DEFAULT(Neutral) );
-    _brushes.fg[7] = cfg.readEntry( "ForegroundPositive", FG_DEFAULT(Positive) );
+    _brushes.fg[2] = cfg.readEntry( "ForegroundActive", SET_DEFAULT(ActiveText) );
+    _brushes.fg[3] = cfg.readEntry( "ForegroundLink", SET_DEFAULT(LinkText) );
+    _brushes.fg[4] = cfg.readEntry( "ForegroundVisited", SET_DEFAULT(VisitedText) );
+    _brushes.fg[5] = cfg.readEntry( "ForegroundNegative", SET_DEFAULT(NegativeText) );
+    _brushes.fg[6] = cfg.readEntry( "ForegroundNeutral", SET_DEFAULT(NeutralText) );
+    _brushes.fg[7] = cfg.readEntry( "ForegroundPositive", SET_DEFAULT(PositiveText) );
 
     _brushes.deco[0] = cfg.readEntry( "DecorationHover", DECO_DEFAULT(Hover) );
     _brushes.deco[1] = cfg.readEntry( "DecorationFocus", DECO_DEFAULT(Focus) );

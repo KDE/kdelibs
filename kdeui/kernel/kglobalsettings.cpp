@@ -85,9 +85,6 @@ static QFont *_windowTitleFont = 0;
 static QFont *_taskbarFont = 0;
 static QFont *_largeFont = 0;
 static QFont *_smallestReadableFont = 0;
-static QColor *_inactiveBackground = 0;
-static QColor *_inactiveForeground = 0;
-static QColor *_activeBackground = 0;
 //static QColor *_buttonBackground = 0;
 
 static KGlobalSettings::KMouseSettings *s_mouseSettings = 0;
@@ -247,49 +244,47 @@ int KGlobalSettings::contextMenuKey ()
     return QKeySequence::fromString(s)[0];
 }
 
+// NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTitleColor()
 {
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTION));
 #else
-    if (!_inactiveBackground)
-        _inactiveBackground = new QColor(157, 170, 186);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "inactiveBackground", *_inactiveBackground );
+    return g.readEntry( "inactiveBackground", QColor(224, 223, 222) );
 #endif
 }
 
+// NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTextColor()
 {
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 #else
-    if (!_inactiveForeground)
-       _inactiveForeground = new QColor(221,221,221);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "inactiveForeground", *_inactiveForeground );
+    return g.readEntry( "inactiveForeground", QColor(20, 19, 18) );
 #endif
 }
 
+// NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::activeTitleColor()
 {
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
-    if (!_activeBackground)
-      _activeBackground = new QColor(65,142,220);
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "activeBackground", *_activeBackground);
+    return g.readEntry( "activeBackground", QColor(96, 148, 207));
 #endif
 }
 
+// NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::activeTextColor()
 {
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KGlobal::config(), "WM" );
-    return g.readEntry( "activeForeground", QColor(Qt::white) );
+    return g.readEntry( "activeForeground", QColor(255, 255, 255) );
 #endif
 }
 
