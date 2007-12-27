@@ -79,7 +79,7 @@
 #include <QtGui/QImage>
 #include <QDebug>
 #include <cmath>
-#include <climits>
+#include <limits>
 
 using namespace DOM;
 using namespace khtml;
@@ -932,6 +932,13 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
         p->strokePath(path, p->pen());
 }
 
+inline bool CanvasContext2DImpl::isPathEmpty() const
+{
+    // For an explanation of this, see the comment in beginPath()
+    const QPointF pos = path.currentPosition();
+    return KJS::isInf(pos.x()) && KJS::isInf(pos.y());
+}
+
 // Path ops
 //
 void CanvasContext2DImpl::beginPath()
@@ -939,12 +946,14 @@ void CanvasContext2DImpl::beginPath()
     path = QPainterPath();
     path.setFillRule(Qt::WindingFill);
 
-    // Unfortunately QPainterPath always contains an intial MoveTo element to (0, 0),
-    // so we have no reliable way to check if the path is empty. We'll therefor
-    // insert a MoveTo to (-INT_MAX, -INT_MAX) each time the path is reset, and check
-    // the current position for this value in all functions that are supposed to do
-    // nothing when the path is empty.
-    path.moveTo(-INT_MAX, -INT_MAX);
+    // QPainterPath always contains an initial MoveTo element to (0, 0), and there is
+    // no way to tell that apart from an explicitly inserted MoveTo to that position.
+    // This means that we have no reliable way of checking if the path is empty.
+    // To work around this, we insert a MoveTo to (infinity, infinity) each time the
+    // path is reset, and check the current position for this value in all functions
+    // that are supposed to do nothing when the path is empty.
+    path.moveTo(QPointF(std::numeric_limits<qreal>::infinity(),
+                        std::numeric_limits<qreal>::infinity()));
 }
 
 void CanvasContext2DImpl::closePath()
@@ -959,19 +968,19 @@ void CanvasContext2DImpl::moveTo(float x, float y)
 
 void CanvasContext2DImpl::lineTo(float x, float y)
 {
-    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+    if (!isPathEmpty())
         path.lineTo(x, y);
 }
 
 void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float y)
 {
-    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+    if (!isPathEmpty())
         path.quadTo(cpx, cpy, x, y);
 }
 
 void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
 {
-    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+    if (!isPathEmpty())
         path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y);
 }
 
@@ -1126,7 +1135,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
     }
 
-    if (path.currentPosition() == QPointF(-INT_MAX, -INT_MAX))
+    if (isPathEmpty())
         return;
 
     QLineF line1(QPointF(x1, y1), path.currentPosition());
@@ -1245,7 +1254,7 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
             sweepLength = 360;
     }
 
-    if (path.currentPosition() == QPointF(-INT_MAX, -INT_MAX))
+    if (isPathEmpty())
     {
         QPointF initialPoint(x + std::cos(startAngle) * radius,
                              y + std::sin(startAngle) * radius);
