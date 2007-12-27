@@ -359,6 +359,7 @@ void DebugWindow::leaveDebugSession()
 
 void DebugWindow::continueExecution()
 {
+    if (!ctx()) return; //In case we're in the middle of a step.. Hardly ideal, but..
     ctx()->mode   = Normal;
     m_breakAtNext = false;
     leaveDebugSession();
@@ -366,12 +367,14 @@ void DebugWindow::continueExecution()
 
 void DebugWindow::stepInto()
 {
+    if (!ctx()) return; //In case we're in the middle of a step.. Hardly ideal, but..
     ctx()->mode = Step;
     leaveDebugSession();
 }
 
 void DebugWindow::stepOut()
 {
+    if (!ctx()) return; //In case we're in the middle of a step.. Hardly ideal, but..
     ctx()->mode        = StepOut;
     ctx()->depthAtSkip = ctx()->execContexts.size();
     leaveDebugSession();
@@ -379,6 +382,7 @@ void DebugWindow::stepOut()
 
 void DebugWindow::stepOver()
 {
+    if (!ctx()) return; //In case we're in the middle of a step.. Hardly ideal, but..
     ctx()->mode        = StepOver;
     ctx()->depthAtSkip = ctx()->execContexts.size();
     leaveDebugSession();
