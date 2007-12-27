@@ -522,6 +522,9 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
         m_docsForIntrp[exec->dynamicInterpreter()].append(document);
+
+        // Show it in the script list view
+        m_scripts->addDocument(document.get());
     }
 
     // Memorize the document..
@@ -531,9 +534,6 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 
     // Tell it about this portion..
     document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
-
-    // Show it in the script list view
-    m_scripts->addDocument(document.get());
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -730,7 +730,10 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
     {
         DebugDocument::Ptr doc = m_docForSid[sourceId];
         if (!m_openDocuments.contains(doc.get()))
+        {
             cleanupDocument(doc);
+            m_docsForIntrp[exec->dynamicInterpreter()].removeAll(doc);
+        }
     }
 
     return shouldContinue(ic);
