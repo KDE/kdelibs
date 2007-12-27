@@ -1285,13 +1285,13 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
                 config.writeEntry( "Type", QString::fromLatin1("Link") );
                 QString protocol = uSource.protocol();
                 if ( protocol == QLatin1String("ftp") )
-                    config.writeEntry( "Icon", QString::fromLatin1("ftp") );
+                    config.writeEntry( "Icon", QString::fromLatin1("folder-remote") );
                 else if ( protocol == QLatin1String("http") )
-                    config.writeEntry( "Icon", QString::fromLatin1("www") );
+                    config.writeEntry( "Icon", QString::fromLatin1("text-html") );
                 else if ( protocol == QLatin1String("info") )
-                    config.writeEntry( "Icon", QString::fromLatin1("info") );
+                    config.writeEntry( "Icon", QString::fromLatin1("text-x-texinfo") );
                 else if ( protocol == QLatin1String("mailto") )   // sven:
-                    config.writeEntry( "Icon", QString::fromLatin1("kmail") ); // added mailto: support
+                    config.writeEntry( "Icon", QString::fromLatin1("internet-mail") ); // added mailto: support
                 else
                     config.writeEntry( "Icon", QString::fromLatin1("unknown") );
                 config.sync();
