@@ -243,7 +243,12 @@ void HTMLObjectBaseElementImpl::attach() {
 
     _style->deref();
     NodeBaseImpl::attach();
+    
+    if (m_render) QTimer::singleShot( 0, this, SLOT( slotEmitLoadEvent() ) );
+}
 
+void HTMLObjectBaseElementImpl::slotEmitLoadEvent()
+{
     // ### do this when we are actually finished loading instead
     if (m_render) dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
 }

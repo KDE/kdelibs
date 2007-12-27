@@ -62,6 +62,7 @@ public:
     virtual void removeId(const QString& id);
 protected Q_SLOTS:
     void slotRenderAlternative();
+    void slotEmitLoadEvent();
 protected:
     DOMString     m_name;
 };
