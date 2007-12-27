@@ -54,8 +54,7 @@ ScriptsDock::~ScriptsDock()
 
 void ScriptsDock::documentDestroyed(DebugDocument *document)
 {
-    if (!m_documents.contains(document))
-        return;
+    assert (m_documents.contains(document));
 
     QTreeWidgetItem *child = m_documents[document];
     QTreeWidgetItem *parent = child->parent();
@@ -76,8 +75,7 @@ void ScriptsDock::documentDestroyed(DebugDocument *document)
 
 void ScriptsDock::addDocument(DebugDocument *document)
 {
-    if (m_documents.contains(document))
-        return;
+    assert (!m_documents.contains(document));
 
     QString name = document->name();
     QString domain;
