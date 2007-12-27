@@ -81,6 +81,12 @@ extern "C" {
 # ifdef HAVE_UTMPX
 #  include <utmpx.h>
 # endif
+# if !defined(_PATH_UTMPX) && defined(_UTMPX_FILE)
+#  define _PATH_UTMPX _UTMPX_FILE
+# endif
+# if !defined(_PATH_WTMPX) && defined(_WTMPX_FILE)
+#  define _PATH_WTMPX _WTMPX_FILE
+# endif
 #endif
 
 /* for HP-UX (some versions) the extern C is needed, and for other
