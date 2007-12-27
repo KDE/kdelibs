@@ -40,6 +40,7 @@ public:
     ~LocalVariablesDock();
 
     void updateDisplay(KJS::ExecState *exec);
+    KJS::ExecState* currentlyDisplaying() { return m_execState; }
 
 private Q_SLOTS:
     void slotItemExpanded(QTreeWidgetItem* item);

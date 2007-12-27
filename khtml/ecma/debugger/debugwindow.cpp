@@ -278,10 +278,6 @@ void DebugWindow::setUIMode(RunMode mode)
 {
     if (mode == Running)
     {
-        // Clear local variable and stack display..
-        m_localVariables->updateDisplay(0);
-        m_callStack->clearDisplay();
-
         // Toggle buttons..
         m_continueAct->setEnabled(false);
         m_stopAct->setEnabled(true);
@@ -696,6 +692,14 @@ bool DebugWindow::enterContext(ExecState *exec, int sourceId, int lineno, JSObje
 bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
     InterpreterContext* ic  = m_contexts[exec->dynamicInterpreter()];
+
+    if (m_localVariables->currentlyDisplaying() == exec)
+    {
+        // Clear local variable and stack display when exiting a function
+        // it corresponds to
+        m_localVariables->updateDisplay(0);
+        m_callStack->clearDisplay();
+    }
 
     ic->removeCall();
     assert(ic->execContexts.top() == exec);
