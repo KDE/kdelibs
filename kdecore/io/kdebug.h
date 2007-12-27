@@ -106,21 +106,46 @@ static inline QString kBacktrace(int=-1) { return QString(); }
  */
 KDECORE_EXPORT void kClearDebugConfig();
 
+#ifndef KDE_DEFAULT_DEBUG_AREA
+# define KDE_DEFAULT_DEBUG_AREA 0
+#endif
+
+/*!
+  \macro KDE_DEFAULT_DEBUG_AREA
+  \relates KGlobal
+
+  Denotes the debug area to use in kDebug/kWarning etc when not
+  explicitly specified. The default is 0 (zero).
+
+  Define this macro to the debug area of your application/component
+  before including any KDE headers. Usually, you want to add code like
+  this to your \c CMakeLists.txt:
+
+  \code
+  ...
+  add_definitions( -DKDE_DEFAULT_DEBUG_AREA=1234 )
+  ...
+  \endcode
+
+  This way, you save repeating the debug area all over your source
+  code, in each debug/warning statement.
+*/
+
 #if !defined(KDE_NO_DEBUG_OUTPUT)
 /**
  * \relates KGlobal
  * Returns a debug stream. You can use it to print debug
  * information.
- * @param area an id to identify the output, 0 for default
+ * @param area an id to identify the output, KDE_DEFAULT_DEBUG_AREA for default
  */
-static inline QDebug kDebug(int area = 0)
+static inline QDebug kDebug(int area = KDE_DEFAULT_DEBUG_AREA)
 { return kDebugStream(QtDebugMsg, area); }
-static inline QDebug kDebug(bool cond, int area = 0)
+static inline QDebug kDebug(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
 { return cond ? kDebug(area) : kDebugDevNull(); }
 
 #else  // KDE_NO_DEBUG_OUTPUT
-static inline QDebug kDebug(int = 0) { return kDebugDevNull(); }
-static inline QDebug kDebug(bool, int = 0) { return kDebugDevNull(); }
+static inline QDebug kDebug(int = KDE_DEFAULT_DEBUG_AREA) { return kDebugDevNull(); }
+static inline QDebug kDebug(bool, int = KDE_DEFAULT_DEBUG_AREA) { return kDebugDevNull(); }
 #endif
 
 #if !defined(KDE_NO_WARNING_OUTPUT)
@@ -128,38 +153,38 @@ static inline QDebug kDebug(bool, int = 0) { return kDebugDevNull(); }
  * \relates KGlobal
  * Returns a warning stream. You can use it to print warning
  * information.
- * @param area an id to identify the output, 0 for default
+ * @param area an id to identify the output, KDE_DEFAULT_DEBUG_AREA for default
  */
-static inline QDebug kWarning(int area = 0)
+static inline QDebug kWarning(int area = KDE_DEFAULT_DEBUG_AREA)
 { return kDebugStream(QtWarningMsg, area); }
-static inline QDebug kWarning(bool cond, int area = 0)
+static inline QDebug kWarning(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
 { return cond ? kWarning(area) : kDebugDevNull(); }
 
 #else  // KDE_NO_WARNING_OUTPUT
-static inline QDebug kWarning(int = 0) { return kDebugDevNull(); }
-static inline QDebug kWarning(bool, int = 0) { return kDebugDevNull(); }
+static inline QDebug kWarning(int = KDE_DEFAULT_DEBUG_AREA) { return kDebugDevNull(); }
+static inline QDebug kWarning(bool, int = KDE_DEFAULT_DEBUG_AREA) { return kDebugDevNull(); }
 #endif
 
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to print error
  * information.
- * @param area an id to identify the output, 0 for default
+ * @param area an id to identify the output, KDE_DEFAULT_DEBUG_AREA for default
  */
-static inline QDebug kError(int area = 0)
+static inline QDebug kError(int area = KDE_DEFAULT_DEBUG_AREA)
 { return kDebugStream(QtCriticalMsg, area); }
-static inline QDebug kError(bool cond, int area = 0)
+static inline QDebug kError(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
 { return cond ? kError(area) : kDebugDevNull(); }
 
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to print fatal error
  * information.
- * @param area an id to identify the output, 0 for default
+ * @param area an id to identify the output, KDE_DEFAULT_DEBUG_AREA for default
  */
-static inline QDebug kFatal(int area = 0)
+static inline QDebug kFatal(int area = KDE_DEFAULT_DEBUG_AREA)
 { return kDebugStream(QtFatalMsg, area); }
-static inline QDebug kFatal(bool cond, int area = 0)
+static inline QDebug kFatal(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
 { return cond ? kFatal(area) : kDebugDevNull(); }
 
 struct KDebugTag { }; ///! @internal just a tag class
@@ -187,10 +212,10 @@ KDECORE_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
 class KDE_DEPRECATED kndbgstream { };
 typedef QDebug kdbgstream;
 
-static inline KDE_DEPRECATED QDebug kdDebug(int area = 0) { return kDebug(area); }
-static inline KDE_DEPRECATED QDebug kdWarning(int area = 0) { return kWarning(area); }
-static inline KDE_DEPRECATED QDebug kdError(int area = 0) { return kError(area); }
-static inline KDE_DEPRECATED QDebug kdFatal(int area = 0) { return kFatal(area); }
+static inline KDE_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) { return kDebug(area); }
+static inline KDE_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
+static inline KDE_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
+static inline KDE_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
 static inline KDE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
 static inline KDE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
@@ -210,9 +235,9 @@ public:
     explicit inline KDebug(QtMsgType type, const char *f = 0, int l = -1, const char *info = 0)
         : file(f), funcinfo(info), line(l), level(type)
         { }
-    inline QDebug operator()(int area = 0)
+    inline QDebug operator()(int area = KDE_DEFAULT_DEBUG_AREA)
         { return kDebugStream(level, area, file, line, funcinfo); }
-    inline QDebug operator()(bool cond, int area = 0)
+    inline QDebug operator()(bool cond, int area = KDE_DEFAULT_DEBUG_AREA)
         { if (cond) return operator()(area); return kDebugDevNull(); }
 };
 

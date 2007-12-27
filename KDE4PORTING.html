@@ -401,6 +401,25 @@ Internally it is reference counted and the data deleted when the last reference 
 <li>newIconLoader() was moved to KApplication</li>
 </ul>
 
+<h4>kdDebug/kdWarning/kdFatal</h4>
+<p>These functions have been renamed to <code>kDebug</code>,
+<code>kWarning</code>, <code>kFatal</code>, resp. They now print the
+function info, so printing the function name by hand, or using
+<code>k_funcinfo</code> is now deprecated. An <code>endl</code> is
+performed implicitly. The type of stream used is now
+<code>QDebug</code>.</p>
+
+<p>Instead of repeating the debug area all over the place, define
+<code>KDE_DEFAULT_DEBUG_AREA</code> instead:</p>
+<pre>
+- kdDebug( 1234 ) << k_funcinfo << "entered" << endl;
++ kDebug() << "entered";
+</pre>
+<p>And, in your <code>CMakeLists.txt</code>:</p>
+<pre>
++ add_definitions( -DKDE_DEFAULT_DEBUG_AREA=1234 )
+</pre>
+
 <h4>KDesktopFile</h4>
 <ul>
 <li>QString filename() const -&gt; QString fileName() const</li>
