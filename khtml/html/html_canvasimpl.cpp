@@ -646,8 +646,22 @@ CanvasPatternImpl::CanvasPatternImpl(const QImage& inImg, bool rx, bool ry):
 
 QBrush CanvasPatternImpl::toBrush() const
 {
-    //### how do we do repetition?
     return QBrush(img);
+}
+
+QRectF CanvasPatternImpl::clipForRepeat(const QPointF &origin, const QRectF &fillBounds) const
+{
+    if (repeatX && repeatY)
+        return QRectF();
+
+    if (!repeatX && !repeatY)
+        return QRectF(origin, img.size());
+
+    if (repeatX)
+        return QRectF(fillBounds.x(), origin.y(), fillBounds.width(), img.height());
+
+    // repeatY
+    return QRectF(origin.x(), fillBounds.y(), img.width(), fillBounds.height());
 }
 
 //-------
@@ -904,13 +918,11 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
     }
 
     QPainter* p = acquirePainter();
+
     QPainterPath path;
     path.addRect(x, y, w, h);
 
-    if (needsShadow())
-        drawPathWithShadow(p, path, FillPath);
-    else
-        p->fillPath(path, p->brush());
+    drawPath(p, path, FillPath);
 }
 
 void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& exceptionCode)
@@ -926,10 +938,7 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
     QPainterPath path;
     path.addRect(x, y, w, h);
 
-    if (needsShadow())
-        drawPathWithShadow(p, path, StrokePath);
-    else
-        p->strokePath(path, p->pen());
+    drawPath(p, path, StrokePath);
 }
 
 inline bool CanvasContext2DImpl::isPathEmpty() const
@@ -1000,7 +1009,48 @@ inline bool CanvasContext2DImpl::needsShadow() const
     return activeState().shadowColor.alpha() > 0;
 }
 
-void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &path, PathPaintOp op) const
+QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, const QPainterPath &path, const PathPaintOp op) const
+{
+    const CanvasStyleBaseImpl *style = op == FillPath ?
+                activeState().fillStyle.get() : activeState().strokeStyle.get();
+
+    if (style->type() != CanvasStyleBaseImpl::Pattern)
+        return QRectF();
+
+    const CanvasPatternImpl *pattern = static_cast<const CanvasPatternImpl*>(style);
+
+    float penWidth = qMax(p->pen().widthF(), 1.0);
+    const QRectF rect = path.controlPointRect().adjusted(-penWidth, -penWidth, penWidth, penWidth);
+
+    return pattern->clipForRepeat(p->brushOrigin(), rect);
+}
+
+void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const PathPaintOp op) const
+{
+    if (needsShadow()) {
+        drawPathWithShadow(p, path, op);
+        return;
+    }
+
+    QRectF repeatClip = clipForRepeat(p, path, op);
+    QPainterPath savedClip;
+
+    if (!repeatClip.isEmpty()) {
+        savedClip = p->clipPath();
+        p->setClipRect(repeatClip, Qt::IntersectClip);
+    }
+
+    if (op == FillPath)
+        p->fillPath(path, p->brush());
+    else
+        p->strokePath(path, p->pen());
+
+    if (!repeatClip.isEmpty())
+        p->setClipPath(savedClip);
+}
+
+void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &path, PathPaintOp op,
+                                             PaintFlags flags) const
 {
     QPainterPathStroker stroker;
     QPainterPath fillPath;
@@ -1035,7 +1085,17 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     qreal xoffset = radius * 2;
     qreal yoffset = radius * 2;
 
-    QRect shapeBounds = p->worldTransform().map(fillPath).controlPointRect().toAlignedRect();
+    bool honorRepeat = !(flags & NotUsingCanvasPattern);
+    QRectF repeatClip = clipForRepeat(p, path, op);
+    QPainterPath transformedPath = p->transform().map(fillPath);
+
+    if (honorRepeat && !repeatClip.isEmpty()) {
+        QPainterPath clipPath;
+        clipPath.addRect(repeatClip);
+        transformedPath = transformedPath.intersected(p->transform().map(clipPath));
+    }
+
+    QRect shapeBounds = transformedPath.controlPointRect().toAlignedRect();
 
     QRect clipRect = state.clipPath.controlPointRect().toAlignedRect();
     clipRect &= QRect(QPoint(), canvasImage->size());
@@ -1061,7 +1121,9 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     painter.setRenderHints(p->renderHints());
     painter.setBrushOrigin(p->brushOrigin());
     painter.translate(-shapeRect.x(), -shapeRect.y());
-    painter.setWorldTransform(p->worldTransform(), true);
+    painter.setTransform(p->transform(), true);
+    if (honorRepeat && !repeatClip.isEmpty())
+        painter.setClipRect(repeatClip);
     painter.fillPath(fillPath, brush);
     painter.end();
 
@@ -1078,31 +1140,23 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     ImageFilter::shadowBlur(shadow, radius, state.shadowColor);
 
     // Draw the shadow on the canvas first, then composite the original image over it.
-    QTransform save = p->worldTransform();
-    p->setWorldTransform(QTransform());
+    QTransform save = p->transform();
+    p->resetTransform();
     p->drawImage(shadowRect.topLeft(), shadow);
     p->drawImage(shapeRect.topLeft(), shape);
-    p->setWorldTransform(save);
+    p->setTransform(save);
 }
 
 void CanvasContext2DImpl::fill()
 {
     QPainter* p = acquirePainter();
-
-    if (needsShadow())
-        drawPathWithShadow(p, path, FillPath);
-    else
-        p->fillPath(path, p->brush());
+    drawPath(p, path, FillPath);
 }
 
 void CanvasContext2DImpl::stroke()
 {
     QPainter* p = acquirePainter();
-
-    if (needsShadow())
-        drawPathWithShadow(p, path, StrokePath);
-    else
-        p->strokePath(path, p->pen());
+    drawPath(p, path, StrokePath);
 }
 
 void CanvasContext2DImpl::clip()
@@ -1305,7 +1359,7 @@ void CanvasContext2DImpl::drawImageWithShadow(QPainter *p, const QRectF &dstRect
 
     p->save();
     p->setBrush(brush);
-    drawPathWithShadow(p, path, FillPath);
+    drawPathWithShadow(p, path, FillPath, NotUsingCanvasPattern);
     p->restore();
 }
 

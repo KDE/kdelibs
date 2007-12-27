@@ -133,6 +133,11 @@ public:
     
     virtual Type type() const { return Pattern; }
     virtual QBrush toBrush() const;
+
+    // Returns the rectangle that should be filled with the pattern, given the
+    // repeat settings and the indicated brush origin and shape bounding rect.
+    QRectF clipForRepeat(const QPointF &origin, const QRectF &bounds) const;
+
 private:
     QImage img;
     bool   repeatX, repeatY;
@@ -249,6 +254,7 @@ private:
     friend class HTMLCanvasElementImpl;
 
     enum PathPaintOp { FillPath, StrokePath };
+    enum PaintFlags { NoPaintFlags = 0, NotUsingCanvasPattern = 1 };
 
     // initialize canvas for new size
     void resetContext(int width, int height);
@@ -257,8 +263,18 @@ private:
 
     bool needsShadow() const;
 
+    // Returns the clip rect that should be used to ensure that only the parts of the
+    // path that should be filled by the pattern are filled, given the repeat setting.
+    QRectF clipForRepeat(QPainter *painter, const QPainterPath &path,
+                         const PathPaintOp op) const;
+
+    // Helper function that fills or strokes a path, honoring shadow and pattern
+    // repeat settings.
+    void drawPath(QPainter *painter, const QPainterPath &path, PathPaintOp op) const;
+
     // Draws a shadowed path using the painter.
-    void drawPathWithShadow(QPainter *painter, const QPainterPath &path, PathPaintOp op) const;
+    void drawPathWithShadow(QPainter *painter, const QPainterPath &path, PathPaintOp op,
+                            PaintFlags flags = NoPaintFlags) const;
 
     // Draws a shadowed image
     void drawImageWithShadow(QPainter *painter, const QRectF &dstRect, const QImage &image,
