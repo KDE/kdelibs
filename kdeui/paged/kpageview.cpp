@@ -24,7 +24,6 @@
 #include "kpageview_p.h"
 
 #include "kpagemodel.h"
-#include "kpagewidgetmodel.h"
 
 #include <kdialog.h>
 #include <kiconloader.h>

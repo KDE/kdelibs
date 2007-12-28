@@ -21,14 +21,16 @@
 */
 
 #include "kpageview_p.h"
-#include <kdialog.h>
 
-#include <QApplication>
-#include <QHeaderView>
-#include <QPainter>
-#include <QVBoxLayout>
+#include <QtGui/QApplication>
+#include <QtGui/QHeaderView>
+#include <QtGui/QPainter>
+#include <QtGui/QVBoxLayout>
+
+#include <kdialog.h>
 #include <kiconloader.h>
-#include <kpagewidgetmodel.h>
+
+#include "kpagemodel.h"
 
 using namespace KDEPrivate;
 
