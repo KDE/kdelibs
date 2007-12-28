@@ -32,7 +32,7 @@ namespace KNS
 {
 
 /* -- FIXME: not used at all by the library? -- */
-class KNEWSTUFF_EXPORT KDXSView : public KDialog
+class KDXSView : public KDialog
 {
 Q_OBJECT
 public:
