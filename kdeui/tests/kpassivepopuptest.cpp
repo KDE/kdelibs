@@ -79,7 +79,7 @@ int main( int argc, char **argv )
     pb5->show();
 
     icon = new KSystemTrayIcon();
-    icon->setIcon(icon->loadIcon("x"));
+    icon->setIcon(icon->loadIcon("xorg"));
     icon->connect( icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), t, SLOT( showIt6(QSystemTrayIcon::ActivationReason) ) );
     icon->show();
 

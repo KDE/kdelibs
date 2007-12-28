@@ -657,7 +657,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
         // If the icon is still a null pixmap, load the icon for X applications
         // as a last resort:
         if ( result.isNull() ) {
-            QPixmap pm = KIconLoader::global()->loadIcon( "x", KIconLoader::Small, iconWidth,
+            QPixmap pm = KIconLoader::global()->loadIcon( "xorg", KIconLoader::Small, iconWidth,
                                                           KIconLoader::DefaultState, QStringList(), 0, true );
 	    if( scale && !pm.isNull() )
 		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
