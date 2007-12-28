@@ -49,7 +49,7 @@ KStatusBarOfflineIndicator::KStatusBarOfflineIndicator( QWidget * parent)
     layout->setMargin( 3 );
     layout->setSpacing( 1 );
     QLabel * label = new QLabel( this );
-    label->setPixmap( SmallIcon("connect-no") );
+    label->setPixmap( SmallIcon("network-disconnect") );
     label->setToolTip( i18n( "The desktop is offline" ) );
     layout->addWidget( label );
     d->initialize();
