@@ -14,7 +14,7 @@ set(testkjs_static_SRCS testkjs.cpp )
 
 kde4_add_executable(testkjs_static TEST ${testkjs_static_SRCS})
 
-target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES} ${QT_QTCORE_LIBRARY})
 
 ########### testkjs ###############
 
@@ -22,6 +22,6 @@ set(testkjs_SRCS testkjs.cpp )
 
 kde4_add_executable(testkjs TEST ${testkjs_SRCS})
 
-target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES} ${QT_QTCORE_LIBRARY})
 
 
