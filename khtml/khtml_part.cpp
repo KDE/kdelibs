@@ -338,7 +338,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
   actionCollection()->addAction( "useStylesheet", d->m_paUseStylesheet );
-  connect( d->m_paUseStylesheet, SIGNAL( triggered( bool ) ), this, SLOT( slotUseStylesheet() ) );
+  connect( d->m_paUseStylesheet, SIGNAL( triggered( int ) ), this, SLOT( slotUseStylesheet() ) );
 
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "zoom-in", i18n( "Enlarge Font" ), this );
