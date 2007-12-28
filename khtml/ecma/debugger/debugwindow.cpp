@@ -259,7 +259,7 @@ void DebugWindow::updateStoppedMark(RunMode mode)
         return;
 
     DebugDocument::Ptr doc = ctx()->activeDocument();
-    assert(doc);
+    assert(!doc.isNull());
     KTextEditor::MarkInterface* imark = qobject_cast<KTextEditor::MarkInterface*>(doc->viewerDocument());
 
     if (mode == Running)
