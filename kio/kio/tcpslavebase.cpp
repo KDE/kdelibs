@@ -200,9 +200,11 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
     }
 
     if (d->isBlocking) {
-        d->socket.waitForReadyRead(-1);
+        if (!d->socket.bytesAvailable()) {
+            d->socket.waitForReadMore(-1);
+        }
     } else {
-        d->socket.waitForReadyRead(0);
+        d->socket.waitForReadMore(0);
     }
 
     return d->socket.read(data, len);
@@ -217,21 +219,30 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
         return -1;
     }
 
-    if (d->isBlocking) {
-        d->socket.waitForReadyRead(-1);
-    } else {
-        d->socket.waitForReadyRead(0);
+    //FIXME! Old client code expects waitForResponse(long time); readLine();
+    //to return error *only* on real errors even in nonblocking mode and
+    //never an incomplete line. That doesn't make sense to me.
+#ifdef PIGS_CAN_FLY
+    if (!d->isBlocking) {
+        d->socket.waitForReadMore(0);
+        return d->socket.readLine(data, len);
     }
+#endif
+    ssize_t readTotal = 0;
+    do {
+        if (!d->socket.bytesAvailable())
+            d->socket.waitForReadMore(-1);
+        ssize_t readStep = d->socket.readLine(&data[readTotal], len-readTotal);
+        if (readStep == -1) {
+            return -1;
+        }
+        readTotal += readStep;
+    } while (readTotal == 0 || data[readTotal-1] != '\n');
 
-    return d->socket.readLine(data, len);
+    return readTotal;
 }
 
-// This function is simply a wrapper to establish the connection
-// to the server.  It's a bit more complicated than ::connect
-// because we first have to check to see if the user specified
-// a port, and if so use it, otherwise we check to see if there
-// is a port specified in /etc/services, and if so use that
-// otherwise as a last resort use the supplied default port.
+
 bool TCPSlaveBase::connectToHost(const QString &protocol,
                                  const QString &host,
                                  quint16 port)
@@ -837,7 +848,10 @@ bool TCPSlaveBase::isConnected() const
 
 bool TCPSlaveBase::waitForResponse(int t)
 {
-    return d->socket.waitForReadyRead(t * 1000);
+    if (d->socket.bytesAvailable()) {
+        return true;
+    }
+    return d->socket.waitForReadMore(t * 1000);
 }
 
 void TCPSlaveBase::setBlocking(bool b)
