@@ -30,7 +30,7 @@
 namespace WTF {
 
     template<typename T> struct DefaultHash;
-    template<typename T> class StrHash;
+    template<typename T> struct StrHash;
 
     template<> struct StrHash<KJS::UString::Rep *> {
         static unsigned hash(const KJS::UString::Rep *key) { return key->hash(); }
