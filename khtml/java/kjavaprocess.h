@@ -24,7 +24,6 @@
 #ifndef KJAVAPROCESS_H
 #define KJAVAPROCESS_H
 
-#include <khtml_export.h>
 #include <kprocess.h>
 
 /**
@@ -39,7 +38,7 @@
  */
 
 class KJavaProcessPrivate;
-class KHTML_EXPORT KJavaProcess : public KProcess //QObject
+class KJavaProcess : public KProcess //QObject
 {
 Q_OBJECT
 

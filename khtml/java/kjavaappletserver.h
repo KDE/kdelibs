@@ -24,7 +24,6 @@
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
-#include <khtml_export.h>
 #include "kjavaprocess.h"
 #include <QtCore/QObject>
 #include <QtCore/QMap>
@@ -40,7 +39,7 @@ class KJavaAppletContext;
 class KJavaAppletServerPrivate;
 class JSStackFrame;
 
-class KHTML_EXPORT KJavaAppletServer : public QObject
+class KJavaAppletServer : public QObject
 {
 Q_OBJECT
 
@@ -163,7 +162,7 @@ private:
 };
 
 
-class KHTML_EXPORT PermissionDialog : public QObject
+class PermissionDialog : public QObject
 {
     Q_OBJECT
 public:

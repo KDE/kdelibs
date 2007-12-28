@@ -21,12 +21,11 @@
 #ifndef KXEVENTUTIL_H
 #define KXEVENTUTIL_H
 
-#include <khtml_export.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <QtCore/QString>
 
-class KHTML_EXPORT KXEventUtil {
+class KXEventUtil {
     public:
         static QString getXEventName(XEvent *e);
         static QString getXAnyEventInfo(XEvent *xevent);

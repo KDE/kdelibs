@@ -24,7 +24,6 @@
 #ifndef KJAVAAPPLETWIDGET_H
 #define KJAVAAPPLETWIDGET_H
 
-#include <khtml_export.h>
 #include <QtGui/QImage>
 
 #include "java/kjavaappletcontext.h"
@@ -80,7 +79,7 @@
 
 class KJavaAppletWidgetPrivate;
 
-class KHTML_EXPORT KJavaAppletWidget : public QX11EmbedContainer
+class KJavaAppletWidget : public QX11EmbedContainer
 {
     Q_OBJECT
 public:

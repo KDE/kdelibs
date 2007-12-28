@@ -23,12 +23,11 @@
 #ifndef KQEVENTUTIL_H
 #define KQEVENTUTIL_H
 
-#include <khtml_export.h>
 #include <QtCore/QString>
 
 class QEvent;
 
-class KHTML_EXPORT KQEventUtil {
+class KQEventUtil {
     public:
         static QString getQtEventName(QEvent *e);
 };

@@ -24,7 +24,6 @@
 #ifndef KJAVAAPPLETCONTEXT_H
 #define KJAVAAPPLETCONTEXT_H
 
-#include <khtml_export.h>
 #include <QtCore/QObject>
 
 /**
@@ -43,7 +42,7 @@ class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
 
-class KHTML_EXPORT KJavaAppletContext : public QObject
+class KJavaAppletContext : public QObject
 {
 Q_OBJECT
 
