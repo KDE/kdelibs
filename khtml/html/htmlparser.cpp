@@ -649,7 +649,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             {
             case ID_TABLE:
                 popBlock(ID_TABLE); // end the table
-                handled = checkChild( current->id(), id, !doc()->inCompatMode());
+                handled = checkChild( current->id(), id, doc()->inStrictMode());
                 break;
             default:
             {

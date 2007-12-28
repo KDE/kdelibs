@@ -851,7 +851,7 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
     if (isXMLElementNode() || newChild->isXMLElementNode())
 	return true;
     else
-	return checkChild(id(), newChild->id(), !getDocument()->inCompatMode());
+	return checkChild(id(), newChild->id(), getDocument()->inStrictMode());
 }
 
 bool ElementImpl::childTypeAllowed( unsigned short type )
@@ -891,7 +891,7 @@ void ElementImpl::createNonCSSDecl()
     m_hasCombinedStyle = true;
 }
 
-CSSStyleDeclarationImpl *ElementImpl::getInlineStyleDecls() 
+CSSStyleDeclarationImpl *ElementImpl::getInlineStyleDecls()
 {
     if (!inlineStyleDecls()) createInlineDecl();
         return inlineStyleDecls();
@@ -900,7 +900,7 @@ CSSStyleDeclarationImpl *ElementImpl::getInlineStyleDecls()
 void ElementImpl::createInlineDecl( )
 {
     assert( !m_style.inlineDecls || (m_hasCombinedStyle && !m_style.combinedDecls->inlineDecls) );
-    
+
     CSSStyleDeclarationImpl *dcl = new CSSStyleDeclarationImpl(0);
     dcl->ref();
     dcl->setParent(getDocument()->elementSheet());
