@@ -517,7 +517,7 @@ KAboutData::translators() const
     QStringList emailList;
     if( !translatorEmail.isEmpty() && translatorEmail != QString::fromUtf8( EMAIL_OF_TRANSLATORS ) )
     {
-       emailList = translatorName.split( ',', QString::KeepEmptyParts );
+       emailList = translatorEmail.split( ',', QString::KeepEmptyParts );
     }
 
     QStringList::const_iterator nit;
