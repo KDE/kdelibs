@@ -72,7 +72,8 @@ libxml2 \
 This is the most obvious library to reuse as it is currently used to generate\
 the KDE documentation, and is also a very complete and fast\
 implementation. The down side of using this code is that it would either need\
-a new DOM implementation in KHTML (which used the libxml2 structures), a \
+"
+"a new DOM implementation in KHTML (which used the libxml2 structures), a \
 wrapper library that made on of the DOM trees support the API of the other, or\
 binding layer that parsed the XML twice and somehow maintained a mapping\
 between the two DOM trees. Unfortunately the documentation of this library is\
