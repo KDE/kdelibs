@@ -530,12 +530,17 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     QColor bgColor = c;
 
     // the "bottom" of the page can't be transparent
-    if (isRoot())
+    // unless this is a subframe
+    if (!bgLayer->next() && isRoot())
     {
-        if (bgColor.alpha() == 0)
-            bgColor = p->background().color();
-        bgColor.setAlpha(255);
+        KHTMLView* v = canvas()->view();
+        if (!v || !v->m_kwp->isRedirected()) {
+            if (bgColor.alpha() == 0)
+                bgColor = p->background().color();
+            bgColor.setAlpha(255);
+        }
     }
+
     // Paint the color first underneath all images.
     if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgba()) > 0)
         p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
