@@ -153,6 +153,9 @@ public:
     int id() const;
     virtual ~KMultiTabBarButton();
 
+public Q_SLOTS:
+    void setText(const QString &text);
+
 Q_SIGNALS:
     /**
      * this is emitted if  the button is clicked

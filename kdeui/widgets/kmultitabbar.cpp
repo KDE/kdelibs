@@ -153,6 +153,11 @@ KMultiTabBarButton::~KMultiTabBarButton()
 {
 }
 
+void KMultiTabBarButton::setText(const QString &text)
+{
+	QPushButton::setText(text);
+}
+
 void KMultiTabBarButton::slotClicked()
 {
 	updateGeometry();
