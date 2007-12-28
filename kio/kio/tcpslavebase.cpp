@@ -101,8 +101,8 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 public:
 
     TcpSlaveBasePrivate()
-     : sslNoUi(false),
-       autoSSL(false)
+     : autoSSL(false),
+       sslNoUi(false)
     {}
     ~TcpSlaveBasePrivate() {}
 
