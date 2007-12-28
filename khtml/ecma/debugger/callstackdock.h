@@ -27,7 +27,7 @@ class QTableWidgetItem;
 
 namespace KJSDebugger {
 class DebugDocument;
-class InterpreterContext;
+struct InterpreterContext;
 
 class CallStackDock : public QDockWidget
 {

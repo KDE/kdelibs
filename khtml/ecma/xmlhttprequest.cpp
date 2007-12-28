@@ -843,7 +843,7 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
             body = doc->toString().string();
             // FIXME: also need to set content type, including encoding!
   
-          } catch(DOM::DOMException& e) {
+          } catch(DOM::DOMException&) {
             return throwError(exec, GeneralError, "Exception serializing document");
           }
         } else {

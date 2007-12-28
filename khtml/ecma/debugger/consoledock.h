@@ -30,7 +30,7 @@ class QPushButton;
 
 namespace KJSDebugger {
 
-class InterpreterContext;
+struct InterpreterContext;
 
 class ConsoleDock : public QDockWidget
 {
