@@ -372,7 +372,7 @@ bool KTcpSocket::waitForBytesWritten(int msecs)
 }
 
 
-bool KTcpSocket::waitForReadMore(int msecs)
+bool KTcpSocket::waitForReadyRead(int msecs)
 {
     return d->sock.waitForReadyRead(msecs);
 }

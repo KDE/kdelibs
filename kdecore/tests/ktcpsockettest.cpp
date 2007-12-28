@@ -143,7 +143,7 @@ void KTcpSocketTest::read()
     KTcpSocket *s = new KTcpSocket(this);
     s->connectToHost("127.0.0.1", testPort);
     s->waitForConnected(40);
-    s->waitForReadMore(40);
+    s->waitForReadyRead(40);
     QCOMPARE((int)s->bytesAvailable(), TESTDATA.size());
     QCOMPARE(s->readAll(), TESTDATA);
     s->deleteLater();
@@ -169,7 +169,7 @@ void KTcpSocketTest::write()
     s->waitForConnected(40);
     s->write(TESTDATA);
     QCOMPARE((int)s->bytesToWrite(), TESTDATA.size());
-    s->waitForReadMore(150);
+    s->waitForReadyRead(150);
     QCOMPARE((int)s->bytesAvailable(), TESTDATA.size());
     QCOMPARE(s->readAll(), TESTDATA);
 
@@ -213,14 +213,14 @@ void KTcpSocketTest::states()
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
     s->waitForBytesWritten(2500);
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
-    s->waitForReadMore(2500);
+    s->waitForReadyRead(2500);
     //I actually assume that the page delivered by example.com will not change for years
     QVERIFY(s->bytesAvailable() > 200);
 
     s->write(HTTPREQUEST);
-    s->waitForReadMore();
+    s->waitForReadyRead();
     s->close();
-    //What happens is that during waitForReadMore() the write buffer is written out
+    //What happens is that during waitForReadyRead() the write buffer is written out
     //completely so that the socket can shut down without having to wait for writeout.
     QCOMPARE((int)s->state(), (int)KTcpSocket::UnconnectedState);
 
@@ -233,7 +233,7 @@ void KTcpSocketTest::states()
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
 
     s->write(HTTPREQUEST);
-    s->waitForReadMore();
+    s->waitForReadyRead();
     QCOMPARE((int)s->bytesAvailable(), HTTPREQUEST.size()); //for good measure...
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
 
@@ -270,7 +270,7 @@ void KTcpSocketTest::states()
         QCOMPARE(s->state(), KTcpSocket::HostLookupState);
         s->waitForBytesWritten(-1);
         QCOMPARE(s->state(), KTcpSocket::ConnectedState);
-        s->waitForReadMore(-1);
+        s->waitForReadyRead(-1);
         QVERIFY(s->bytesAvailable() > 1000);
         if (i % 5) {
             s->readAll();

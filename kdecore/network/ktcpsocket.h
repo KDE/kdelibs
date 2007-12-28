@@ -249,7 +249,8 @@ QSslError::NoSslSupport                             Never happens :)
     virtual bool isSequential() const;
     virtual bool open(QIODevice::OpenMode open);
     virtual bool waitForBytesWritten(int msecs);
-    virtual bool waitForReadMore(int msecs = 30000);    //an IMHO better name for waitForReadyRead
+    //### Document that this actually tries to read *more* data
+    virtual bool waitForReadyRead(int msecs = 30000);
 protected:
     virtual qint64 readData (char *data, qint64 maxSize);
     virtual qint64 writeData (const char *data, qint64 maxSize);

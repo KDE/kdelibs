@@ -201,10 +201,10 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 
     if (d->isBlocking) {
         if (!d->socket.bytesAvailable()) {
-            d->socket.waitForReadMore(-1);
+            d->socket.waitForReadyRead(-1);
         }
     } else {
-        d->socket.waitForReadMore(0);
+        d->socket.waitForReadyRead(0);
     }
 
     return d->socket.read(data, len);
@@ -224,14 +224,14 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
     //never an incomplete line. That doesn't make sense to me.
 #ifdef PIGS_CAN_FLY
     if (!d->isBlocking) {
-        d->socket.waitForReadMore(0);
+        d->socket.waitForReadyRead(0);
         return d->socket.readLine(data, len);
     }
 #endif
     ssize_t readTotal = 0;
     do {
         if (!d->socket.bytesAvailable())
-            d->socket.waitForReadMore(-1);
+            d->socket.waitForReadyRead(-1);
         ssize_t readStep = d->socket.readLine(&data[readTotal], len-readTotal);
         if (readStep == -1) {
             return -1;
@@ -851,7 +851,7 @@ bool TCPSlaveBase::waitForResponse(int t)
     if (d->socket.bytesAvailable()) {
         return true;
     }
-    return d->socket.waitForReadMore(t * 1000);
+    return d->socket.waitForReadyRead(t * 1000);
 }
 
 void TCPSlaveBase::setBlocking(bool b)
