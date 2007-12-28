@@ -108,10 +108,10 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
 
     if ( QApplication::isRightToLeft() ) {
       if ( id == Prior )
-        iconName = "edit-find-next";
+        iconName = "go-next";
 
       if ( id == Next )
-        iconName = "edit-find-previous";
+        iconName = "go-previous";
 
       if ( id == DocumentBack )
         iconName = "go-next";
