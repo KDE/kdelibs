@@ -275,6 +275,7 @@ public:
 
     // This method is needed because we might emit readyRead() due to this QIODevice
     // having some data buffered, so we need to care about blocking, too.
+    //### useless ATM as readyRead() now just calls d->sock.readyRead().
     void reemitReadyRead()
     {
         if (!emittedReadyRead) {
@@ -371,12 +372,8 @@ bool KTcpSocket::waitForBytesWritten(int msecs)
 }
 
 
-bool KTcpSocket::waitForReadyRead(int msecs)
+bool KTcpSocket::waitForReadMore(int msecs)
 {
-    if (bytesAvailable()) {
-        d->reemitReadyRead();
-        return true;
-    }
     return d->sock.waitForReadyRead(msecs);
 }
 
