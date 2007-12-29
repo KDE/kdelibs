@@ -399,7 +399,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         } else {
             // paint a day of the current month
             if ( d->useCustomColors ) {
-                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[cellDate.toString()];
+                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[calendar()->formatDate(cellDate)];
                 if ( mode ) {
                     if ( mode->bgMode != NoBgMode ) {
                         QBrush oldbrush = painter->brush();
