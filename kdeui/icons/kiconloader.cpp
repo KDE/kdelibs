@@ -262,7 +262,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
             break;
         case 2:
             // top right corner
-            startPoint = QPoint(2, iconSize - overlaySize - 2);
+            startPoint = QPoint(iconSize - overlaySize - 2, 2);
             break;
         case 3:
             // top left corner
