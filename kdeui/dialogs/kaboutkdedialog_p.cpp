@@ -48,7 +48,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     KTitleWidget *titleWidget = new KTitleWidget(this);
     titleWidget->setText(i18n("<html><font size=\"5\">K Desktop Environment</font><br /><b>Version %1</b></html>",
                          QString(KDE_VERSION_STRING)));
-    titleWidget->setPixmap(KIcon("start-here").pixmap(48), KTitleWidget::ImageLeft);
+    titleWidget->setPixmap(KIcon("kde").pixmap(48), KTitleWidget::ImageLeft);
 
     QLabel *about = new QLabel;
     about->setMargin(10);
