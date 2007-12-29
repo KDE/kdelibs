@@ -51,6 +51,7 @@ Version=4
 [Context/group]
 Name=Group
 Name[be]=Група
+Name[bg]=Група
 Name[bn_IN]=দল
 Name[ca]=Grup
 Name[cs]=Skupina
@@ -100,6 +101,7 @@ Name[x-test]=xxGroupxx
 Name[zh_CN]=组
 Name[zh_TW]=群組
 Comment=The group
+Comment[bg]=Група
 Comment[bn_IN]=দল
 Comment[ca]=El grup
 Comment[cs]=Skupina
@@ -151,6 +153,7 @@ Icon=folder
 [Event/online]
 Name=Online
 Name[be]=У сеціве
+Name[bg]=Включен
 Name[bn_IN]=অনলাইন অবস্থা
 Name[ca]=Connectat
 Name[el]=Σε σύνδεση

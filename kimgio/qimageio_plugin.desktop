@@ -3,6 +3,7 @@ Type=ServiceType
 X-KDE-ServiceType=QImageIOPlugins
 Comment=QImageIOHandler plugin
 Comment[ar]=ملحق QImageIOHandler
+Comment[bg]=Приставка за QImageIOHandler
 Comment[bn_IN]=QImageIOHandler প্লাগ-ইন
 Comment[ca]=Connector del QImageIOHandler
 Comment[cs]=Modul QImageIOHandler

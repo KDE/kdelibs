@@ -8,6 +8,7 @@ X-KDE-PluginInfo-Name=kspell_aspell
 X-KDE-PluginInfo-Version=0.0.1
 X-KDE-PluginInfo-Website=http://www.kde.org
 X-KDE-PluginInfo-Category=Clients
+X-KDE-PluginInfo-Category[bg]=Клиенти
 X-KDE-PluginInfo-Category[bn_IN]=ক্লায়েন্ট
 X-KDE-PluginInfo-Category[el]=Πελάτες
 X-KDE-PluginInfo-Category[eo]=Klientoj

@@ -3,6 +3,7 @@ Type=ServiceType
 X-KDE-ServiceType=PhononBackend
 Name=KDE Multimedia Backend
 Name[ar]=خلفية وسائطية كيدي
+Name[bg]=Заден план за мултимедия (KDE)
 Name[bn_IN]=KDE মাল্টিমিডিয়া ব্যাক-এন্ড
 Name[ca]=Dorsal multimèdia del KDE
 Name[csb]=Spòdlé KDE multimedów
