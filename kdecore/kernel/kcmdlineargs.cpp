@@ -531,7 +531,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    s->removeArgs("qt");
    s->removeArgs("kde");
 
-   QString qCwd = QFile::encodeName(s->mCwd);
+   QByteArray qCwd = QFile::encodeName(s->mCwd);
    ds << qCwd;
 
    uint count = s->argsList ? s->argsList->count() : 0;
