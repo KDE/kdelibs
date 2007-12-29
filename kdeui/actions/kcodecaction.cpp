@@ -47,7 +47,6 @@ public:
         : q(parent),
           defaultAction(0),
           currentSubAction(0)
-//         , configureAction(0)
     {
     }
 
@@ -58,7 +57,6 @@ public:
     KCodecAction *q;
     QAction *defaultAction;
     QAction *currentSubAction;
-//     QAction *configureAction;
 };
 
 KCodecAction::KCodecAction(QObject *parent,bool showAutoOptions)
@@ -91,13 +89,7 @@ void KCodecAction::Private::init(bool showAutoOptions)
 {
     q->setToolBarMode(MenuMode);
     defaultAction = q->addAction(i18n("Default"));
-//     if (showAutoOptions)
-//         defaultAction->setData(QVariant((uint)KEncodingDetector::SemiautomaticDetection));
 
-
-    //kWarning() << "defaultAction.menu()" << (int)defaultAction->menu();
-//     int localeCodec=QTextCodec::codecForLocale()->mibEnum();
-//     bool success;
     int i;
     foreach(const QStringList &encodingsForScript, KGlobal::charsets()->encodingsByScript())
     {
@@ -113,22 +105,13 @@ void KCodecAction::Private::init(bool showAutoOptions)
         }
         for (i=1; i<encodingsForScript.size(); ++i)
         {
-//            tmp->addAction(encodingsForScript.at(i))/*.setChecked( localeCodec==mibForName(encodingsForScript.at(i),&success))*/;
-            //kWarning() << "encodingsForScript.at(i) "<< success;
             tmp->addAction(encodingsForScript.at(i));
         }
         q->connect(tmp,SIGNAL(triggered(QAction*)),q,SLOT(_k_subActionTriggered(QAction*)));
         tmp->setCheckable(true);
         q->addAction(tmp);
     }
-#if 0
-    q->addSeparator();
-    configureAction = q->addAction(i18n("Configure"));
-    configureAction->setCheckable(false);
-#endif
     q->setCurrentItem(0);
-
-//    q->setEditable(true);
 }
 
 int KCodecAction::mibForName(const QString &codecName, bool *ok) const
@@ -184,13 +167,6 @@ void KCodecAction::actionTriggered(QAction *action)
         emit triggered(KEncodingDetector::SemiautomaticDetection);
         emit defaultItemTriggered();
     }
-/*
-    if (action == d->configureAction)
-    {
-        // Configure the menu content
-        return;
-    }
-*/
 }
 
 void KCodecAction::Private::_k_subActionTriggered(QAction *action)
@@ -209,14 +185,7 @@ void KCodecAction::Private::_k_subActionTriggered(QAction *action)
     {
         if (!action->data().isNull())
             emit q->triggered((KEncodingDetector::AutoDetectScript) action->data().toUInt());
-        //emit q->triggered(action->text());
     }
-#if 0
-    else
-    {
-//        Warn the user in the gui somehow ?
-    }
-#endif
 }
 
 QTextCodec *KCodecAction::currentCodec() const
@@ -226,13 +195,6 @@ QTextCodec *KCodecAction::currentCodec() const
 
 bool KCodecAction::setCurrentCodec( QTextCodec *codec )
 {
-//     if (codec)
-//         return setCurrentCodec(QLatin1String(codec->name()));
-//     else
-//     {
-//         kWarning() << "Codec is not selectable.";
-//         return false;
-//     }
     if (!codec)
         return false;
 
@@ -245,8 +207,6 @@ bool KCodecAction::setCurrentCodec( QTextCodec *codec )
             {
                 if (!j && !actions().at(i)->menu()->actions().at(j)->data().isNull())
                     continue;
-//                 kWarning() << "codec " << (int)codec << "  "<< actions().at(i)->menu()->actions().at(j)->text() << (int)KGlobal::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text());
-//                 kWarning() << "codecMib " << codec->mibEnum() << "  "<< KGlobal::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text())->mibEnum();
                 if (codec==KGlobal::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text()))
                 {
                     d->currentSubAction=actions().at(i)->menu()->actions().at(j);
@@ -268,31 +228,6 @@ QString KCodecAction::currentCodecName() const
 bool KCodecAction::setCurrentCodec( const QString &codecName )
 {
     return setCurrentCodec(KGlobal::charsets()->codecForName(codecName));
-
-//     if (setCurrentAction(codecName, Qt::CaseInsensitive))
-//         return true;
-//// Maybe we got an encoding , not a description name
-    //QString name=KGlobal::charsets()->encodingForName(codecName).toLower();
-    /*QString name=QTextCodec::codecForName(codecName.toLatin1())->name().toLower();
-    kWarning() << "setCurrentCodec. was: " << codecName << " searching for: " << name;
-
-    int i,j;
-    for (i=0;i<actions().size();++i)
-    {
-        if (actions().at(0)->menu())
-        {
-            for (j=0;j<actions().at(0)->menu()->actions().size();++j)
-            {
-                if (name==actions().at(0)->menu()->actions().at(j)->text().toLower())
-                {
-                    d->currentSubAction=actions().at(0)->menu()->actions().at(j);
-                    d->currentSubAction->trigger();
-                    return true;
-                }
-            }
-        }
-    }
-    return false;*/
 }
 
 int KCodecAction::currentCodecMib() const
@@ -342,6 +277,5 @@ bool KCodecAction::setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScrip
     }
     return false;
 }
-
 
 #include "kcodecaction.moc"
