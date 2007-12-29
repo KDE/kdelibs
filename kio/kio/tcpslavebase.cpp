@@ -382,17 +382,22 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
        before connecting would be rather insecure. */
     d->socket.ignoreSslErrors();
     d->socket.startClientEncryption();
-    d->socket.waitForEncrypted(-1);
-
-    if (d->socket.encryptionMode() != KTcpSocket::SslClientMode) { //TODO user visible diagnostics
-        d->usingSSL = false;
-        setMetaData("ssl_in_use", "FALSE");
-        kDebug(7029) << "initial SSL handshake failed.";
-        return ResultFailed;
-    }
+    const bool encryptionStarted = d->socket.waitForEncrypted(-1);
 
     //Set metadata, among other things for the "SSL Details" dialog
     KSslCipher cipher = d->socket.sessionCipher();
+
+    if (!encryptionStarted || d->socket.encryptionMode() != KTcpSocket::SslClientMode
+        || cipher.isNull() || cipher.usedBits() == 0) {
+         //TODO error(foo, bar);
+        d->usingSSL = false;
+        setMetaData("ssl_in_use", "FALSE");
+        kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
+                     << encryptionStarted << ", cipher.isNull() is" << cipher.isNull()
+                     << ", cipher.usedBits() is" << cipher.usedBits()
+                     <<", the socket says:" << d->socket.errorString();
+        return ResultFailed;
+    }
 
     kDebug(7029) << "Cipher info - "
                  << " authenticationMethod:" << cipher.authenticationMethod()
