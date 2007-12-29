@@ -308,6 +308,9 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
         SslResult res = startTLSInternal();
         if (res == ResultFailed) {
             //### more?
+            //TODO proper i18n, maybe a special error code.
+            error(ERR_COULD_NOT_CONNECT, 
+                  host + QLatin1String(": SSL negotiation failed."));
             return false;
         }
     }
