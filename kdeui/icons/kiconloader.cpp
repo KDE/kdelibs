@@ -1007,7 +1007,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         else
         {
             if (!name.isEmpty())
-                icon = d->findMatchingIcon(favIconOverlay ? QString("www") : name, size);
+                icon = d->findMatchingIcon(favIconOverlay ? QString("text-html") : name, size);
 
             if (!icon.isValid())
             {
