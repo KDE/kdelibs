@@ -155,12 +155,20 @@ public:
     int marginHeight() { return _marginHeight; }
 
     /**
-     * Sets verticals scrollbar mode. Reimplemented for internal reasons.
+     * Sets vertical scrollbar mode. 
+     *
+     * WARNING: do not call this method on a base class pointer unless you
+     *          specifically want QAbstractScrollArea's variant (not recommended).
+     *          QAbstractScrollArea::setVerticalScrollBarPolicy is *not* virtual.
      */
     virtual void setVerticalScrollBarPolicy( Qt::ScrollBarPolicy policy );
 
     /**
-     * Sets horizontal scrollbar mode. Reimplemented for internal reasons.
+     * Sets horizontal scrollbar mode.
+     *
+     * WARNING: do not call this method on a base class pointer unless you
+     *          specifically want QAbstractScrollArea's variant (not recommended).
+     *          QAbstractScrollArea::setHorizontalScrollBarPolicy is *not* virtual.
      */
     virtual void setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy policy );
 

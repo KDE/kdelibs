@@ -673,24 +673,27 @@ RenderFrame::RenderFrame( DOM::HTMLFrameElementImpl *frame )
 
 void RenderFrame::slotViewCleared()
 {
-    if(m_widget->inherits("QScrollArea")) {
+    if (QScrollArea *view = qobject_cast<QScrollArea*>(m_widget)) {
 #ifdef DEBUG_LAYOUT
-        kDebug(6031) << "frame is a scrollview!";
+        kDebug(6031) << "frame is a scrollarea!";
 #endif
-        QScrollArea *view = static_cast<QScrollArea *>(m_widget);
         if(!element()->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(element()->parentNode()))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
-	    view->setVerticalScrollBarPolicy(element()->scrolling ); // ?? ###
-	    view->setHorizontalScrollBarPolicy(element()->scrolling );
-        if(view->inherits("KHTMLView")) {
+        if(KHTMLView *htmlView = qobject_cast<KHTMLView*>(view)) {
 #ifdef DEBUG_LAYOUT
             kDebug(6031) << "frame is a KHTMLview!";
 #endif
-            KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+	    htmlView->setVerticalScrollBarPolicy(element()->scrolling );
+	    htmlView->setHorizontalScrollBarPolicy(element()->scrolling );
             if(element()->marginWidth != -1) htmlView->setMarginWidth(element()->marginWidth);
             if(element()->marginHeight != -1) htmlView->setMarginHeight(element()->marginHeight);
+        } else {
+          // those are no more virtual in Qt4 ;(
+    	    view->setVerticalScrollBarPolicy(element()->scrolling );
+	    view->setHorizontalScrollBarPolicy(element()->scrolling );
         }
     }
+
 }
 
 /****************************************************************************************/
@@ -975,11 +978,10 @@ void RenderPartObject::layout( )
 
 void RenderPartObject::slotViewCleared()
 {
-  if(m_widget->inherits("QScrollArea") ) {
+  if(QScrollArea *view = qobject_cast<QScrollArea*>(m_widget)) {
 #ifdef DEBUG_LAYOUT
       kDebug(6031) << "iframe is a scrollview!";
 #endif
-      QScrollArea *view = static_cast<QScrollArea *>(m_widget);
       int frameStyle = QFrame::NoFrame;
       Qt::ScrollBarPolicy scroll = Qt::ScrollBarAsNeeded;
       int marginw = -1;
@@ -993,17 +995,21 @@ void RenderPartObject::slotViewCleared()
 	  marginh = frame->marginHeight;
       }
       view->setFrameStyle(frameStyle);
-      view->setVerticalScrollBarPolicy(scroll );
-      view->setHorizontalScrollBarPolicy(scroll );
-      if(view->inherits("KHTMLView")) {
+      if (KHTMLView *htmlView = qobject_cast<KHTMLView*>(view)) {
 #ifdef DEBUG_LAYOUT
           kDebug(6031) << "frame is a KHTMLview!";
 #endif
-          KHTMLView *htmlView = static_cast<KHTMLView *>(view);
           htmlView->setIgnoreWheelEvents( element()->id() == ID_IFRAME );
+          htmlView->setVerticalScrollBarPolicy(scroll );
+          htmlView->setHorizontalScrollBarPolicy(scroll );
           if(marginw != -1) htmlView->setMarginWidth(marginw);
           if(marginh != -1) htmlView->setMarginHeight(marginh);
-        }
+      } else {
+          // those are no more virtual in Qt4 ;(
+          view->setVerticalScrollBarPolicy(scroll );
+          view->setHorizontalScrollBarPolicy(scroll );
+      }
+
   }
 }
 

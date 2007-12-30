@@ -933,14 +933,14 @@ void KHTMLView::layout()
                 if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             } else if (ref->style()->overflowX() == OSCROLL ) {
                 if (d->hpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-            } else {
+            } else if (horizontalScrollBarPolicy() != d->hpolicy) {
                 QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
             }
             if ( ref->style()->overflowY() == OHIDDEN ) {
                 if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
             } else if (ref->style()->overflowY() == OSCROLL ) {
                 if (d->vpolicy == Qt::ScrollBarAsNeeded) QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-            } else {
+            } else if (verticalScrollBarPolicy() != d->vpolicy) {
                 QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
             }
         }
