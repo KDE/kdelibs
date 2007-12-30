@@ -395,7 +395,9 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
         kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
                      << encryptionStarted << ", cipher.isNull() is" << cipher.isNull()
                      << ", cipher.usedBits() is" << cipher.usedBits()
-                     <<", the socket says:" << d->socket.errorString();
+                     << ", the socket says:" << d->socket.errorString()
+                     << "and the list of SSL errors contains"
+                     << d->socket.sslErrors().count() << "items.";
         return ResultFailed;
     }
 
