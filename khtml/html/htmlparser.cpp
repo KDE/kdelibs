@@ -1075,21 +1075,21 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLTableColElementImpl(document, t->tid);
         break;
     case ID_TR:
-        popOptionalBlock(ID_TR);
+        popBlock(ID_TR);
         n = new HTMLTableRowElementImpl(document);
         break;
     case ID_TD:
     case ID_TH:
-        popOptionalBlock(ID_TH);
-        popOptionalBlock(ID_TD);
+        popBlock(ID_TH);
+        popBlock(ID_TD);
         n = new HTMLTableCellElementImpl(document, t->tid);
         break;
     case ID_TBODY:
     case ID_THEAD:
     case ID_TFOOT:
-        popOptionalBlock( ID_THEAD );
-        popOptionalBlock( ID_TBODY );
-        popOptionalBlock( ID_TFOOT );
+        popBlock( ID_THEAD );
+        popBlock( ID_TBODY );
+        popBlock( ID_TFOOT );
         n = new HTMLTableSectionElementImpl(document, t->tid, false);
         break;
 
