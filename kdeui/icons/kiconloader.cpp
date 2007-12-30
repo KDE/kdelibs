@@ -1117,26 +1117,39 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         *img = d->mpEffect.apply(*img, group, state);
     }
 
+    bool addToCache = true;
     if (favIconOverlay)
     {
         QImage favIcon(name, "PNG");
-        int x = img->width() - favIcon.width() - 1,
-            y = img->height() - favIcon.height() - 1;
-        favIcon = favIcon.convertToFormat(QImage::Format_ARGB32);
-        *img = img->convertToFormat(QImage::Format_ARGB32);
-        for( int line = 0;
-             line < favIcon.height();
-             ++line )
+        if (favIcon.isNull())
         {
-            QRgb* fpos = reinterpret_cast< QRgb* >( favIcon.scanLine( line ));
-            QRgb* ipos = reinterpret_cast< QRgb* >( img->scanLine( line + y )) + x;
-            for( int i = 0;
-                 i < favIcon.width();
-                 ++i, ++fpos, ++ipos )
-                *ipos = qRgba( ( qRed( *ipos ) * ( 255 - qAlpha( *fpos )) + qRed( *fpos ) * qAlpha( *fpos )) / 255,
-                               ( qGreen( *ipos ) * ( 255 - qAlpha( *fpos )) + qGreen( *fpos ) * qAlpha( *fpos )) / 255,
-                               ( qBlue( *ipos ) * ( 255 - qAlpha( *fpos )) + qBlue( *fpos ) * qAlpha( *fpos )) / 255,
-                               ( qAlpha( *ipos ) * ( 255 - qAlpha( *fpos )) + qAlpha( *fpos ) * qAlpha( *fpos )) / 255 );
+            // favIcon not there yet, don't try to blend it and don't cache the
+            // result
+            addToCache = false;
+        }
+        else
+        {
+            // Blend favIcon over img.
+            // FIXME: This code should be updated to use modern QPainter
+            // features.
+            int x = img->width() - favIcon.width() - 1,
+                y = img->height() - favIcon.height() - 1;
+            favIcon = favIcon.convertToFormat(QImage::Format_ARGB32);
+            *img = img->convertToFormat(QImage::Format_ARGB32);
+            for( int line = 0;
+                 line < favIcon.height();
+                 ++line )
+            {
+                QRgb* fpos = reinterpret_cast< QRgb* >( favIcon.scanLine( line ));
+                QRgb* ipos = reinterpret_cast< QRgb* >( img->scanLine( line + y )) + x;
+                for( int i = 0;
+                     i < favIcon.width();
+                     ++i, ++fpos, ++ipos )
+                    *ipos = qRgba( ( qRed( *ipos ) * ( 255 - qAlpha( *fpos )) + qRed( *fpos ) * qAlpha( *fpos )) / 255,
+                                   ( qGreen( *ipos ) * ( 255 - qAlpha( *fpos )) + qGreen( *fpos ) * qAlpha( *fpos )) / 255,
+                                   ( qBlue( *ipos ) * ( 255 - qAlpha( *fpos )) + qBlue( *fpos ) * qAlpha( *fpos )) / 255,
+                                   ( qAlpha( *ipos ) * ( 255 - qAlpha( *fpos )) + qAlpha( *fpos ) * qAlpha( *fpos )) / 255 );
+            }
         }
     }
 
@@ -1147,9 +1160,15 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     delete img;
 
 #ifndef NDEBUG
-    if (!unknownIcon)
+    if (unknownIcon)
+    {
+        addToCache = false;
+    }
 #endif
-    d->mIconCache->insert(key, pix, path);
+    if (addToCache)
+    {
+        d->mIconCache->insert(key, pix, path);
+    }
     return pix;
 }
 
