@@ -78,8 +78,7 @@ void RenderReplaced::calcMinMaxWidth()
     kDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown();
 #endif
 
-    m_width = calcReplacedWidth();
-    m_width = calcBoxWidth( m_width );
+    m_width = calcReplacedWidth() + borderLeft() + borderRight() + paddingLeft() + paddingRight();
 
     if ( style()->width().isPercent() || style()->height().isPercent() ||
 		    style()->maxWidth().isPercent() || style()->maxHeight().isPercent() ||
