@@ -304,6 +304,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
     titlePane->setText( i18n( "Did you know...?\n" ) );
     titlePane->setFont( QFont( KGlobalSettings::generalFont().family(), 20, QFont::Bold ) );
     titlePane->setAlignment( Qt::AlignCenter );
+    titlePane->setAutoFillBackground(true);
     pl->addWidget( titlePane, 100 );
   }
 
