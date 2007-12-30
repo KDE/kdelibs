@@ -1994,7 +1994,7 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
 	    if ( _tx + table()->columnPos[col_idx] > _x )
 		break;
 	}
-	if (col_idx >= (int)totalCols) col_idx = (int)totalCols + 1;
+	if (col_idx >= (int)totalCols) col_idx = (int)totalCols-1;
     }
 
     FindSelectionResult pos = SelectionPointBefore;
