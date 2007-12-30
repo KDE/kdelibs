@@ -274,13 +274,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->database = database;
 
-  QIcon icon;
-  QPixmap pixmap = KIconLoader::global()->loadIcon( "idea", KIconLoader::NoGroup, 32 );
-  icon.addPixmap( pixmap, QIcon::Normal, QIcon::On );
-
-  pixmap = KIconLoader::global()->loadIcon( "idea", KIconLoader::NoGroup, 16 );
-  icon.addPixmap( pixmap, QIcon::Normal, QIcon::On );
-  setWindowIcon( icon );
+  setWindowIcon(KIcon("help-hint"));
 
   QFrame *frame = new QFrame( this );
   setMainWidget( frame );
