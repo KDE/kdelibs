@@ -1286,6 +1286,9 @@ void RenderSelect::layout( )
             size = qMin(static_cast<KListWidget*>(m_widget)->count(), 10);
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
+        int lhs = m_widget->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
+        if (lhs>0)
+            width += lhs;
         height = size*height + 2*w->frameWidth();
 
         setIntrinsicWidth( width );
