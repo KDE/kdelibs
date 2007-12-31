@@ -96,7 +96,7 @@ bool CoreEngine::init(const QString &configfile)
     KConfigGroup group = conf.group("KNewStuff2");
     m_providersurl = group.readEntry("ProvidersUrl", QString());
     //m_componentname = group.readEntry("ComponentName", QString());
-    m_componentname = configfile.section(".", 0, 0) + ":";
+    m_componentname = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ":";
 
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
@@ -517,9 +517,9 @@ void CoreEngine::loadRegistry()
 {
     KStandardDirs d;
 
-    //kDebug(550) << "Loading registry in all directories named 'knewstuff2-entries.registry'.";
+    //kDebug(550) << "Loading registry of files for the component: " << m_componentname;
 
-    QString realAppName = KGlobal::activeComponent().aboutData()->appName();
+    QString realAppName = m_componentname.split(":")[0];
 
     // this must be same as in registerEntry()
     QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
@@ -1390,7 +1390,11 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
     entry->setStatus(Entry::Deleted);
 
     foreach(QString file, entry->installedFiles()) {
-        QFile::remove(file);
+        bool worked = QFile::remove(file);
+        if (!worked) {
+            kWarning(550) << "unable to delete file " << file;
+            return false;
+        }
     }
     entry->setInstalledFiles(QStringList());
 

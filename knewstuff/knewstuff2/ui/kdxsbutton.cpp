@@ -480,10 +480,11 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_uninstall)
 	{
-		m_engine->uninstall(m_entry);
-		setText(i18n("Install"));
-		action_uninstall->setVisible(false);
-		action_install->setVisible(true);
+		if (m_engine->uninstall(m_entry)) {
+			setText(i18n("Install"));
+			action_uninstall->setVisible(false);
+			action_install->setVisible(true);
+		}
 	}
 	if(action == action_install)
 	{
