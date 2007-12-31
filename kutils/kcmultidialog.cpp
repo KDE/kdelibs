@@ -278,6 +278,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   item->setIcon( KIcon( moduleInfo.icon() ) );
     item->setProperty("_k_weight", moduleInfo.weight());
 
+    bool updateCurrentPage = false;
     const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(pageWidget()->model());
     Q_ASSERT(model);
     if (parentItem) {
@@ -307,6 +308,9 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
                 // the item we found is heavier than the new module
                 kDebug(710) << "adding KCM " << item->name() << " before " << siblingItem->name();
                 insertPage(siblingItem, item);
+                if ( siblingItem == currentPage() )
+                    updateCurrentPage = true;
+
                 break;
             }
         }
@@ -327,7 +331,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   cm.componentNames = moduleInfo.service()->property( "X-KDE-ParentComponents" ).toStringList();
   d->modules.append( cm );
 
-  if ( d->modules.count() == 1 )
+  if ( d->modules.count() == 1 || updateCurrentPage )
     setCurrentPage( item );
 
   return item;
