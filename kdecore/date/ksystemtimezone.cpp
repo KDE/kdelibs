@@ -292,6 +292,16 @@ void KSystemTimeZonesPrivate::setLocalZone()
     {
         // The time zone is specified by a file outside the zoneinfo directory
         m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), m_localZoneName);
+        if (m_localZone.isValid() && m_instance)
+        {
+            // Add the new time zone to the list
+            KTimeZone oldzone = m_instance->zone(m_localZoneName);
+            if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone")
+            {
+                m_instance->remove(oldzone);
+                m_instance->add(m_localZone);
+            }
+        }
     }
     else
         m_localZone = m_instance->zone(m_localZoneName);
