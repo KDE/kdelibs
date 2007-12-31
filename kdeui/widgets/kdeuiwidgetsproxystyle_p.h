@@ -19,9 +19,11 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kdeui_export.h>
+
 #include <QtGui/QStyle>
 
-class KdeUiProxyStyle : public QStyle
+class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
 {
 public:
     KdeUiProxyStyle(QWidget *parent);
