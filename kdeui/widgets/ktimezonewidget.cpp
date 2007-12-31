@@ -44,6 +44,11 @@ public:
     };
 };
 
+static bool localeLessThan (const QString &a, const QString &b)
+{
+    return QString::localeAwareCompare(a, b) < 0;
+}
+
 KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   : QTreeWidget( parent ),
     d( 0 )
@@ -55,9 +60,21 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   setRootIsDecorated(false);
   setHeaderLabels( QStringList() << i18n( "Area" ) << i18n( "Region" ) << i18n( "Comment" ) );
 
+  // Collect zones by localized city names, so that they can be sorted properly.
   const KTimeZones::ZoneMap zones = db->zones();
+  QStringList cities;
+  QHash<QString, KTimeZone> zonesByCity;
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
     KTimeZone zone = it.value();
+    QStringList continentCity = displayName( zone ).split( '/' );
+    QString city = continentCity[ continentCity.count() - 1 ];
+    cities.append( city );
+    zonesByCity.insert( city, zone );
+  }
+  qSort( cities.begin(), cities.end(), localeLessThan );
+
+  foreach ( const QString &city, cities ) {
+    KTimeZone zone = zonesByCity[city];
     QString tzName = zone.name();
     QString comment = zone.comment();
 
