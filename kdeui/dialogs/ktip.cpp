@@ -274,7 +274,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->database = database;
 
-  setWindowIcon(KIcon("help-hint"));
+  setWindowIcon(KIcon("ktip"));
 
   QFrame *frame = new QFrame( this );
   setMainWidget( frame );
