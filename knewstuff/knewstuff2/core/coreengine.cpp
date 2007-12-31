@@ -1304,7 +1304,7 @@ bool CoreEngine::install(const QString &payloadfile)
         const KArchiveDirectory *dir = archive->directory();
         dir->copyTo(installdir);
 
-        installedFiles << archiveEntries(payloadfile, dir);
+        installedFiles << archiveEntries(installdir, dir);
 
         archive->close();
         QFile::remove(payloadfile);
