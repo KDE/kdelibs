@@ -3780,7 +3780,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         scheduleRepaint(0, 0, 0, 0);
     }
 
-    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
+    if ((dx || dy) && m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
     d->contentsX = QApplication::isRightToLeft() ?
