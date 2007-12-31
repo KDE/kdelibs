@@ -29,7 +29,6 @@
 #define QT_NO_TRANSLATION
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtGui/QIcon>
 #include <QtGui/QSessionManager>
 #include <QtGui/QStyleFactory>
 #include <QtCore/QTimer>
@@ -48,7 +47,7 @@
 #include "kglobalsettings.h"
 #include "kdebug.h"
 #include "kglobal.h"
-#include "kiconloader.h"
+#include "kicon.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
 #include "kstandarddirs.h"
@@ -120,10 +119,6 @@ static Atom atom_NetSupported;
 static Atom kde_xdnd_drop;
 static QByteArray* startup_id_tmp;
 #endif
-
-// duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
-// replaced by unpatched one
-KDEUI_EXPORT bool qt_qclipboard_bailout_hack = false;
 
 template class QList<KSessionManager*>;
 
@@ -605,12 +600,10 @@ void KApplicationPrivate::init(bool GUIenabled)
 #ifdef Q_WS_MAC
   if (q->type() == KApplication::GuiClient) {
       QSystemTrayIcon *trayIcon;
-      QPixmap pixmap = KIconLoader::global()->loadIcon( KCmdLineArgs::appName(),
-              KIconLoader::NoGroup, KIconLoader::SizeEnormous, KIconLoader::DefaultState, QStringList(), false );
-      if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
+      if (QSystemTrayIcon::isSystemTrayAvailable())
       {
           trayIcon = new QSystemTrayIcon(q);
-          trayIcon->setIcon(QIcon(pixmap));
+          trayIcon->setIcon(KIcon(KCmdLineArgs::appName()));
           /* it's counter-intuitive, but once you do setIcon it's already set the
              dock icon... ->show actually shows an icon in the menu bar too  :P */
           // trayIcon->show();
@@ -842,16 +835,10 @@ void KApplicationPrivate::parseCommandLine( )
     if ( q->type() != KApplication::Tty ) {
         if (args && args->isSet("icon"))
         {
-            QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
-            QIcon icon =  q->windowIcon();
-            icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-            q->setWindowIcon(icon);
+            q->setWindowIcon(KIcon(args->getOption("icon")));
         }
         else {
-            QIcon icon = q->windowIcon();
-            QPixmap largeIcon = DesktopIcon(componentData.componentName());
-            icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-            q->setWindowIcon(icon);
+            q->setWindowIcon(KIcon(componentData.componentName()));
         }
     }
 
@@ -976,7 +963,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                     }
                 }
         }
-	default: break;
+        default: break;
     }
 
     if (x11Filter) {
