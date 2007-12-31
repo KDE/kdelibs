@@ -177,6 +177,7 @@ void RenderWidget::detach()
     if ( node() && node()->renderer() == this)
         node()->setRenderer(0);
 
+    setDetached();
     deref();
 }
 
@@ -1025,6 +1026,11 @@ void RenderWidget::deref()
     if (_ref) _ref--;
 //     qDebug( "deref(%p): width get count is %d", this, _ref);
     if (!_ref) {
+        if (attached()) {
+            _ref++;
+            detach(); // will perform the final deref.
+            return;
+        }
         SharedPtr<RenderArena> guard(m_arena); //Since delete on us gets called -first-,
                                                //before the arena free
         arenaDelete(m_arena.get());

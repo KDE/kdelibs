@@ -793,6 +793,7 @@ protected:
 
     virtual QRect viewRect() const;
     void remove() { if (m_parent) m_parent->removeChild(this); }
+    void setDetached() { m_attached = false; }
     void invalidateVerticalPosition();
     bool attemptDirectLayerTranslation();
     void updateWidgetMasks();
