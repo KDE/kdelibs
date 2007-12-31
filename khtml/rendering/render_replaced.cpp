@@ -864,12 +864,21 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         absolutePosition(absx, absy);
         absx += borderLeft()+paddingLeft();
         absy += borderTop()+paddingTop();
+
         QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
 
         QWidget* target = 0;
         target = m_widget->childAt(p);
-
+        
+        if ( includesPadding() && ::qobject_cast<QAbstractScrollArea*>(m_widget) )
+        {
+            QAbstractScrollArea *w = static_cast<QAbstractScrollArea*>(m_widget);
+            // childAt returns the wrong child in this case?
+            if (target == w->viewport())
+                p -= QPoint(RenderWidget::paddingLeft(), RenderWidget::paddingTop());
+        }
+        
         if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
             if (m_underMouse) {
                 QEvent moe( QEvent::Leave );
@@ -909,6 +918,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 target = m_widget;
             }
         }
+
         p = target->mapFrom(m_widget, p);
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);

@@ -122,6 +122,8 @@ protected:
     virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
     virtual bool canHaveBorder() const { return false; }
+    virtual bool includesPadding() const { return false; }
+
     bool shouldPaintBorder() const { 
         // Don't paint borders if the border-style is native
         // or borders are not supported on this widget    

@@ -7,6 +7,7 @@
  *           (C) 2006 Maksim Orlovich (maksim@kde.org)
  *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2007 Mitz Pettel (mitz@webkit.org)
+ *           (C) 2007 Charles Samuels (charles@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,6 +45,7 @@
 #include <kwindowsystem.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
+#include <kdeuiwidgetsproxystyle_p.h>
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>
@@ -69,6 +71,7 @@ using namespace khtml;
 RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     : RenderWidget(element)
 //     , m_state(0)
+    , proxyStyle(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -79,15 +82,97 @@ RenderFormElement::~RenderFormElement()
 {
 }
 
+void RenderFormElement::setStyle(RenderStyle *style)
+{
+    RenderWidget::setStyle(style);
+    setPadding();
+}
+
+int RenderFormElement::paddingTop() const
+{
+    return !includesPadding() ? RenderWidget::paddingTop() : 0;
+}
+int RenderFormElement::paddingBottom() const
+{
+    return !includesPadding() ? RenderWidget::paddingBottom() : 0;
+}
+int RenderFormElement::paddingLeft() const
+{
+    return !includesPadding() ? RenderWidget::paddingLeft() : 0;
+}
+int RenderFormElement::paddingRight() const
+{
+    return !includesPadding() ? RenderWidget::paddingRight() : 0;
+}
+
+bool RenderFormElement::includesPadding() const
+{
+    return style()->boxSizing() == BORDER_BOX;
+} 
+
+
+void RenderFormElement::setPadding()
+{
+    if (!includesPadding())
+        return;
+    
+    struct AddPadding : public KdeUiProxyStyle
+    {
+        AddPadding(QWidget *parent)
+            : KdeUiProxyStyle(parent)
+        { }
+        QSize sizeFromContents(
+                ContentsType type, const QStyleOption * option, const QSize &contentsSize,
+                const QWidget * widget
+            ) const
+        {
+            QSize s = KdeUiProxyStyle::sizeFromContents(type, option, contentsSize, widget);
+            return s + QSize(left+right, top+bottom);
+        }
+        QRect subElementRect(
+                SubElement element, const QStyleOption *option, const QWidget *widget
+            ) const
+        {
+            QRect r = KdeUiProxyStyle::subElementRect(element, option, widget);
+            r.adjust(left, top, -right, -bottom);
+            return r;
+        }
+        
+        int left, right, top, bottom;
+    };
+
+
+    AddPadding *style = new AddPadding(widget());
+    style->left = RenderWidget::paddingLeft();
+    style->right = RenderWidget::paddingRight();
+    style->top = RenderWidget::paddingTop();
+    style->bottom = RenderWidget::paddingBottom();
+    
+    widget()->setStyle(style);
+    delete proxyStyle;
+    proxyStyle = style;
+}
+
 short RenderFormElement::baselinePosition( bool f ) const
 {
     return RenderWidget::baselinePosition( f ) - 2 - style()->fontMetrics().descent();
+}
+
+void RenderFormElement::setQWidget( QWidget *w )
+{
+    // sets the Qt Object Name for the purposes
+    // of setPadding() -- this is because QStyleSheet
+    // will propagate children of 'w' even if they are toplevel, like
+    // the "find" dialog or the popup menu
+    w->setObjectName("RenderFormElementWidget");
+    RenderWidget::setQWidget(w);
 }
 
 void RenderFormElement::updateFromElement()
 {
     m_widget->setEnabled(!element()->disabled());
     RenderWidget::updateFromElement();
+    setPadding();
 }
 
 void RenderFormElement::layout()
@@ -104,7 +189,7 @@ void RenderFormElement::layout()
     if ( m_widget )
         resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
-
+    
     setNeedsLayout(false);
 }
 
@@ -308,19 +393,26 @@ void RenderSubmitButton::calcMinMaxWidth()
     QStyleOptionButton butOpt;
     butOpt.init(pb);
     butOpt.text = raw;
-    QSize s(pb->style()->sizeFromContents( QStyle::CT_PushButton, &butOpt, ts, pb )
-            .expandedTo(QApplication::globalStrut()));
+    QSize s = pb->style()->sizeFromContents( QStyle::CT_PushButton, &butOpt, ts, pb );
+    
+    s = s.expandedTo(QApplication::globalStrut());
     int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
-		 pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
+              pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
     int w = ts.width() + margin;
+    
     int h = s.height();
     if (pb->isDefault() || pb->autoDefault()) {
-	int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
-	w += dbw;
+        int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
+        w += dbw;
     }
-
     // add 30% margins to the width (heuristics to make it look similar to IE)
-    s = QSize( w*13/10, h ).expandedTo(QApplication::globalStrut());
+    w = w*13/10;
+    
+    // the crazy heuristic code overrides some changes made by the
+    // AddPadding proxy style, so reapply them
+    w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    
+    s = QSize(w,h).expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -342,6 +434,8 @@ short RenderSubmitButton::baselinePosition( bool f ) const
 {
     return RenderFormElement::baselinePosition( f );
 }
+
+
 
 // -------------------------------------------------------------------------------
 
@@ -1399,6 +1493,12 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
 void RenderSelect::setOptionsChanged(bool _optionsChanged)
 {
     m_optionsChanged = _optionsChanged;
+}
+
+void RenderSelect::setPadding()
+{
+    if (m_size > 1 || m_multiple)
+        RenderFormElement::setPadding();
 }
 
 ListBoxWidget* RenderSelect::createListBox()

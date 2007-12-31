@@ -49,6 +49,7 @@ class KFind;
 class KReplace;
 class KAction;
 class KUrlRequester;
+class KdeUiProxyStyle;
 
 namespace DOM {
     class HTMLInputElementImpl;
@@ -69,14 +70,20 @@ public:
     virtual ~RenderFormElement();
 
     virtual const char *renderName() const { return "RenderForm"; }
+    virtual void setStyle(RenderStyle *style);
 
     virtual bool isFormElement() const { return true; }
 
-    // form elements never have padding
-    virtual int paddingTop() const { return 0; }
-    virtual int paddingBottom() const { return 0; }
-    virtual int paddingLeft() const { return 0; }
-    virtual int paddingRight() const { return 0; }
+    // form elements apply the padding themselves, so
+    // the rest of the layout should disregard it
+    virtual int paddingTop() const;
+    virtual int paddingBottom() const;
+    virtual int paddingLeft() const;
+    virtual int paddingRight() const;
+
+    // some widgets don't apply padding, and thus it is ignored
+    // entirely, this function allows them to opt out
+    virtual bool includesPadding() const;
 
     virtual void updateFromElement();
 
@@ -85,14 +92,20 @@ public:
 
     DOM::HTMLGenericFormElementImpl *element() const
     { return static_cast<DOM::HTMLGenericFormElementImpl*>(RenderObject::element()); }
+    
+    // this is not a virtual function
+    void setQWidget(QWidget *w);
 
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
 	Qt::AlignmentFlag textAlignment() const;
 
+    virtual void setPadding();
+
 //     QPoint m_mousePos;
 //     int m_state;
+    KdeUiProxyStyle *proxyStyle;
 };
 
 // -------------------------------------------------------------------------
@@ -352,7 +365,9 @@ protected:
     virtual bool isEditable() const { return true; }
     virtual bool canHaveBorder() const { return true; }
     virtual bool acceptsSyntheticEvents() const { return false; }
-
+    
+    virtual bool includesPadding() const { return false; }
+    
     bool m_clicked;
     bool m_haveFocus;
 };
@@ -433,6 +448,7 @@ public:
     { return static_cast<DOM::HTMLSelectElementImpl*>(RenderObject::element()); }
 
 protected:
+    void setPadding();
     ListBoxWidget *createListBox();
     ComboBoxWidget *createComboBox();
 
