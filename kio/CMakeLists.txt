@@ -172,6 +172,7 @@ if(NOT WIN32)
     kfile/kfsprocess.cpp
   )
 endif(NOT WIN32)
+qt4_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
 # kio/kssl/Makefile.am: kssl
 
