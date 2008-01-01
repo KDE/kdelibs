@@ -286,6 +286,14 @@ private:
     void loadFeedCache(Provider *provider);
     void cacheProvider(Provider *provider);
     void cacheEntry(Entry *entry);
+
+    /** generate a cache file for the given feed
+      feed cache file is a list of entry-id's that are part of this feed
+      @param provider the provider the feed comes from
+      @param feedname the name of the feed, used for keying the feed cache filename
+      @param feed feed to be cached
+      @param entries entries to cache in the feed file
+    */
     void cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries);
     void registerEntry(Entry *entry);
     void unregisterEntry(Entry *entry);
