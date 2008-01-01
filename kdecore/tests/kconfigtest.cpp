@@ -405,8 +405,9 @@ void KConfigTest::testPath()
   QCOMPARE(group.readPathEntry("homePath", QString()), HOMEPATH);
   QVERIFY(group.hasKey("homePath2"));
   QCOMPARE(group.readPathEntry("homePath2", QString()), QString("file://") + HOMEPATH );
-#ifndef Q_OS_WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
   // I don't know if this will work on windows
+  // This test hangs on OS X
   QVERIFY(group.hasKey("hostname"));
   QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
 #endif
