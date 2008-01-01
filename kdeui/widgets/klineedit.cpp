@@ -257,7 +257,7 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
     if (qApp->isLeftToRight()) {
         d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-rtl", 0, clearButtonState));
     } else {
-        d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar", 0, clearButtonState));
+        d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
     }
 }
 
