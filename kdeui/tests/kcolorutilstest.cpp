@@ -91,10 +91,10 @@ void tst_KColorUtils::testHCY()
 
 void tst_KColorUtils::testContrast()
 {
-    QCOMPARE(21.0, KColorUtils::contrastRatio(Qt::black, Qt::white));
-    QCOMPARE(21.0, KColorUtils::contrastRatio(Qt::white, Qt::black));
-    QCOMPARE(1.0, KColorUtils::contrastRatio(Qt::black, Qt::black));
-    QCOMPARE(1.0, KColorUtils::contrastRatio(Qt::white, Qt::white));
+    QCOMPARE(qreal(21.0), KColorUtils::contrastRatio(Qt::black, Qt::white));
+    QCOMPARE(qreal(21.0), KColorUtils::contrastRatio(Qt::white, Qt::black));
+    QCOMPARE(qreal(1.0), KColorUtils::contrastRatio(Qt::black, Qt::black));
+    QCOMPARE(qreal(1.0), KColorUtils::contrastRatio(Qt::white, Qt::white));
 
     // TODO better tests :-)
 }
