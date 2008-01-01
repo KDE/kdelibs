@@ -159,7 +159,7 @@ KMenu* KHelpMenu::menu()
 
     if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-      d->mWhatsThisAction = new KAction(KIcon("help-whatsthis"), i18n( "What's &This" ), d->mMenu);
+      d->mWhatsThisAction = new KAction(KIcon("help-contextual"), i18n( "What's &This" ), d->mMenu);
       d->mWhatsThisAction->setShortcut(Qt::SHIFT + Qt::Key_F1);
       connect(d->mWhatsThisAction, SIGNAL(triggered(bool)), this, SLOT(contextHelpActivated()));
       need_separator = true;
@@ -192,7 +192,7 @@ KMenu* KHelpMenu::menu()
 
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
-      d->mAboutKDEAction = d->mMenu->addAction( KIcon("help-about-kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
+      d->mAboutKDEAction = d->mMenu->addAction( KIcon("kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
     }
   }
 

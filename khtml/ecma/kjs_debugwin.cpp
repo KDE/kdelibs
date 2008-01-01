@@ -298,7 +298,7 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
   setCaption( i18n("JavaScript Error") );
   setModal( true );
   setButtons( showDebug ? KDialog::Ok | KDialog::User1 : KDialog::Ok );
-  setButtonGuiItem( KDialog::User1, KGuiItem("&Debug","gear") );
+  setButtonGuiItem( KDialog::User1, KGuiItem("&Debug","system-run") );
   setDefaultButton( KDialog::Ok );
   showButtonSeparator( false );
 
