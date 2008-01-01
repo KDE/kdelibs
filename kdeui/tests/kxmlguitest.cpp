@@ -44,7 +44,7 @@ int main( int argc, char **argv )
     shell->setComponentData(KComponentData("konqueror"));
     shell->componentData().dirs()->addResourceDir( "data", QDir::currentPath() );
 
-    a = new KAction( KIcon( "view-left-right" ), "Split", shell );
+    a = new KAction( KIcon( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );
 
     shell->setXMLFile( KDESRCDIR "/kxmlguitest_shell.rc" );
@@ -55,7 +55,7 @@ int main( int argc, char **argv )
 
     a = new KAction( KIcon( "zoom-out" ), "decfont", part );
     part->actionCollection()->addAction( "decFontSizes", a );
-    a = new KAction( KIcon( "unlock" ), "sec", part );
+    a = new KAction( KIcon( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT( slotSec() ) );
