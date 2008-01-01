@@ -3,6 +3,7 @@
 Copyright (c) 2000-2003 Matthias Hoelzer-Kluepfel <mhk@kde.org>
                         Tobias Koenig <tokoe@kde.org>
                         Daniel Molkentin <molkentin@kde.org>
+Copyright (c) 2008 Urs Wolfer <uwolfer @ kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,34 +26,23 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ktip.h"
 
-#include <QtCore/QDateTime>
-#include <QtCore/QEvent>
 #include <QtCore/QFile>
-#include <QtCore/QRegExp>
 #include <QtGui/QCheckBox>
-#include <QtGui/QImage>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
 #include <kaboutdata.h>
-#include <kcolorscheme.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
-#include <khbox.h>
-#include <kiconeffect.h>
-#include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <krandom.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
-#include <kstandardguiitem.h>
 #include <ktextbrowser.h>
-#include <kconfiggroup.h>
 
 class KTipDatabase::Private
 {
@@ -200,9 +190,6 @@ class KTipDialog::Private
 
     KTipDialog *parent;
     KTipDatabase *database;
-    QColor baseColor;
-    QColor blendedColor;
-    QColor textColor;
     QCheckBox *tipOnStart;
     KTextBrowser *tipText;
 
@@ -214,18 +201,14 @@ KTipDialog *KTipDialog::Private::mInstance = 0;
 void KTipDialog::Private::_k_prevTip()
 {
   database->prevTip();
-  tipText->setHtml( QString::fromLatin1( "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>" )
-                  .arg( textColor.name() )
-                  .arg( baseColor.name() )
+  tipText->setHtml( QString::fromLatin1( "<html><center>%1</center></html>" )
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
 void KTipDialog::Private::_k_nextTip()
 {
   database->nextTip();
-  tipText->setHtml( QString::fromLatin1( "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>" )
-                  .arg( textColor.name() )
-                  .arg( baseColor.name() )
+  tipText->setHtml( QString::fromLatin1( "<html><center>%1</center></html>" )
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
@@ -248,119 +231,53 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
    */
   bool isTipDialog = (parent != 0);
 
-  QImage img;
-  int h, s, v;
-
-  d->blendedColor = KGlobalSettings::activeTitleColor();
-  d->blendedColor.getHsv( &h, &s, &v );
-  d->blendedColor.setHsv( h, int(s * (71 / 76.0)), int(v * (67 / 93.0)) );
-
-  if ( !isTipDialog ) {
-    img = QImage(KStandardDirs::locate( "data", "kdewizard/pics/wizard_small.png" ) );
-    // colorize and check to figure the correct color
-    KIconEffect::colorize( img, d->blendedColor, 1.0 );
-    QRgb colPixel( img.pixel( 0, 0 ) );
-
-    d->blendedColor = QColor( qRed( colPixel ), qGreen( colPixel ), qBlue( colPixel ) );
-  }
-
-  KColorScheme colorScheme(QPalette::Active, KColorScheme::View);
-
-  d->baseColor = colorScheme.background(KColorScheme::AlternateBackground).color();
-  d->baseColor.getHsv( &h, &s, &v );
-  d->baseColor.setHsv( h, int(s * (10 / 6.0)), int(v * (93 / 99.0)) );
-
-  d->textColor = colorScheme.foreground().color();
-
   d->database = database;
 
   setWindowIcon(KIcon("ktip"));
 
-  QFrame *frame = new QFrame( this );
-  setMainWidget( frame );
-  QVBoxLayout *vbox = new QVBoxLayout( frame );
-  vbox->setMargin( 0 );
-  vbox->setSpacing( spacingHint() );
+  QWidget *widget = new QWidget( this );
+  setMainWidget( widget );
+  QVBoxLayout *mainLayout = new QVBoxLayout( widget );
+  mainLayout->setMargin( 0 );
+  mainLayout->setSpacing( spacingHint() );
 
   if ( isTipDialog ) {
-    QHBoxLayout *pl = new QHBoxLayout();
-    pl->setMargin( 0 );
-    pl->setSpacing( 0 );
-
-    vbox->addLayout( pl );
-
-    QLabel *bulb = new QLabel( this );
-    bulb->setPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-bulb.png" ) );
-    pl->addWidget( bulb );
-
-    QLabel *titlePane = new QLabel( this );
-
-    QBrush brush;
-    brush.setTexture( QPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-background.png" ) ) );
-
-    QPalette palette = titlePane->palette();
-    palette.setBrush( QPalette::Window, brush );
-    titlePane->setPalette( palette );
-    titlePane->setText( i18n( "Did you know...?\n" ) );
-    titlePane->setFont( QFont( KGlobalSettings::generalFont().family(), 20, QFont::Bold ) );
-    titlePane->setAlignment( Qt::AlignCenter );
-    titlePane->setAutoFillBackground(true);
-    pl->addWidget( titlePane, 100 );
+    QLabel *titleLabel = new QLabel( this );
+    titleLabel->setText( i18n( "Did you know...?\n" ) );
+    titleLabel->setFont( QFont( KGlobalSettings::generalFont().family(), 20, QFont::Bold ) );
+    titleLabel->setAlignment( Qt::AlignCenter );
+    mainLayout->addWidget( titleLabel );
   }
 
-  KHBox *hbox = new KHBox;
-  hbox->setSpacing( 0 );
-  hbox->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-  QPalette pal;
-  pal.setColor( QPalette::Window, d->blendedColor );
-  hbox->setPalette( pal );
-  hbox->setAutoFillBackground( true );
-  vbox->addWidget( hbox );
+  QHBoxLayout *browserLayout = new QHBoxLayout();
+  browserLayout->setMargin( marginHint() );
+  mainLayout->addLayout( browserLayout );
 
-  KHBox *tl = new KHBox( hbox );
-  tl->setMargin( 7 );
-  QPalette palette = tl->palette();
-  palette.setColor( QPalette::Window, d->blendedColor );
-  tl->setAutoFillBackground( true );
-  tl->setPalette( palette );
-
-  KHBox *topLeft = new KHBox( tl );
-  topLeft->setMargin( 15 );
-  palette = topLeft->palette();
-  palette.setColor( QPalette::Window, d->baseColor );
-  topLeft->setPalette( palette );
-  topLeft->setAutoFillBackground( true );
-
-  d->tipText = new KTextBrowser( topLeft );
+  d->tipText = new KTextBrowser( this );
 
   d->tipText->setOpenExternalLinks( true );
 
   d->tipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
 
   QStringList paths;
-  paths << KGlobal::dirs()->resourceDirs("icon")
-        << KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/";
+  paths << KGlobal::dirs()->resourceDirs( "icon" )
+        << KGlobal::dirs()->findResourceDir( "data", "kdewizard/pics" ) + "kdewizard/pics/";
 
   d->tipText->setSearchPaths( paths );
 
-  d->tipText->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
+  d->tipText->setFrameStyle( QFrame::NoFrame );
   d->tipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+  d->tipText->setStyleSheet( "KTextBrowser { background: transparent; }" );
 
-  palette = d->tipText->palette();
-  palette.setColor( QPalette::Active, QPalette::Link, d->blendedColor );
-  palette.setColor( QPalette::Inactive, QPalette::Link, d->blendedColor );
-  d->tipText->setPalette( palette );
+  browserLayout->addWidget( d->tipText );
+
+  QLabel *label = new QLabel( this );
+  label->setPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-bulb.png" ) );
+  label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+  browserLayout->addWidget( label );
 
   if ( !isTipDialog ) {
-    QLabel *label = new QLabel( hbox );
-    label->setPixmap( QPixmap::fromImage( img ) );
-    label->setAlignment( Qt::AlignRight | Qt::AlignBottom );
-
-    QPalette palette = label->palette();
-    palette.setColor( QPalette::Window, d->blendedColor );
-    label->setPalette( palette );
-
-    resize( 550, 230 );
+    resize( 520, 280 );
     QSize sh = size();
 
     QRect rect = KGlobalSettings::splashScreenDesktopGeometry();
@@ -370,28 +287,26 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   }
 
   KSeparator* sep = new KSeparator( Qt::Horizontal );
-  vbox->addWidget( sep );
+  mainLayout->addWidget( sep );
 
-  QHBoxLayout *hbox2 = new QHBoxLayout();
-  hbox->setMargin( 4 );
-  hbox->setSpacing( 0 );
+  QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-  vbox->addLayout( hbox2 );
+  mainLayout->addLayout( buttonLayout );
 
   d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
-  hbox2->addWidget( d->tipOnStart, 1 );
+  buttonLayout->addWidget( d->tipOnStart, 1 );
 
   KPushButton *prev = new KPushButton( KStandardGuiItem::back( KStandardGuiItem::UseRTL ) );
   prev->setText( i18n( "&Previous" ) );
-  hbox2->addWidget( prev );
+  buttonLayout->addWidget( prev );
 
   KPushButton *next = new KPushButton( KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
   next->setText( i18nc( "Opposite to Previous", "&Next" ) );
-  hbox2->addWidget( next );
+  buttonLayout->addWidget( next );
 
   KPushButton *ok = new KPushButton( KStandardGuiItem::close());
   ok->setDefault( true );
-  hbox2->addWidget( ok );
+  buttonLayout->addWidget( ok );
 
   KConfigGroup config( KGlobal::config(), "TipOfDay" );
   d->tipOnStart->setChecked( config.readEntry( "RunOnStart", true ) );
