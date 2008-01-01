@@ -39,6 +39,7 @@
 #include <QMetaObject>
 #include <QMetaMethod>
 #include <QPointer>
+#include <QTextCodec>
 
 using namespace Kross;
 
@@ -268,12 +269,14 @@ void KjsScript::execute()
         return;
     }
 
-    QString code = action()->code();
+    QByteArray code = action()->code();
     if(code.startsWith("#!")) // remove optional shebang-line
         code.remove(0, code.indexOf('\n'));
 
-    //krossdebug( QString("KjsScript::execute code=\n%1").arg(code.qstring()) );
-    KJSEmbed::Engine::ExitStatus exitstatus = d->m_engine->execute( KJS::UString(code) );
+    QTextCodec *codec = QTextCodec::codecForLocale();
+    KJS::UString c = codec ? KJS::UString(codec->toUnicode(code)) : KJS::UString(code.data(), code.size());
+    //krossdebug( QString("KjsScript::execute code=\n%1").arg(c.qstring()) );
+    KJSEmbed::Engine::ExitStatus exitstatus = d->m_engine->execute(c);
 
     KJS::Completion completion = d->m_engine->completion();
     KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
