@@ -1562,12 +1562,12 @@ void KDirOperator::setupActions()
 
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
     d->actionCollection->addAction("short view",  shortAction);
-    shortAction->setIcon(KIcon(QLatin1String("fileview-multicolumn")));
+    shortAction->setIcon(KIcon(QLatin1String("view-list-icons")));
     connect(shortAction, SIGNAL(activated()), SLOT(_k_slotSimpleView()));
 
     KToggleAction *detailedAction = new KToggleAction(i18n("Detailed View"), this);
     d->actionCollection->addAction("detailed view", detailedAction);
-    detailedAction->setIcon(KIcon(QLatin1String("fileview-detailed")));
+    detailedAction->setIcon(KIcon(QLatin1String("view-list-details")));
     connect(detailedAction, SIGNAL(activated()), SLOT(_k_slotDetailedView()));
 
     QActionGroup* viewGroup = new QActionGroup(this);
@@ -1586,6 +1586,7 @@ void KDirOperator::setupActions()
 
     action = new KAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
+    action->setIcon(KIcon("document-properties"));
     action->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(_k_slotProperties()));
 
