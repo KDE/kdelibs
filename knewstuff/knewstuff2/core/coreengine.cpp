@@ -55,7 +55,7 @@ CoreEngine::CoreEngine(QObject* parent)
 {
     m_initialized = false;
     m_cachepolicy = CacheNever;
-    m_automationpolicy = AutomationOff;
+    m_automationpolicy = AutomationOn;
 
     m_uploadedentry = NULL;
     m_uploadprovider = NULL;
@@ -220,8 +220,9 @@ void CoreEngine::loadEntries(Provider *provider)
     for (int i = 0; i < feeds.count(); i++) {
         Feed *feed = provider->downloadUrlFeed(feeds.at(i));
         if (feed) {
+            ++m_activefeeds;
+
             EntryLoader *entry_loader = new EntryLoader(this);
-            entry_loader->load(provider, feed);
 
             connect(entry_loader,
                     SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
@@ -230,7 +231,7 @@ void CoreEngine::loadEntries(Provider *provider)
                     SIGNAL(signalEntriesFailed()),
                     SLOT(slotEntriesFailed()));
 
-            m_activefeeds++;
+            entry_loader->load(provider, feed);
         }
     }
 }
@@ -353,6 +354,7 @@ void CoreEngine::slotEntriesLoaded(KNS::Entry::List list)
     const Feed *feed = loader->feed();
     delete loader;
     m_activefeeds--;
+    kDebug(550) << "entriesloaded m_activefeeds: " << m_activefeeds;
 
     //kDebug(550) << "Provider source " << provider->name().representation();
     //kDebug(550) << "Feed source " << feed->name().representation();
@@ -365,6 +367,7 @@ void CoreEngine::slotEntriesFailed()
     EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
     delete loader;
     m_activefeeds--;
+    kDebug(550) << "entriesfailed m_activefeeds: " << m_activefeeds;
 
     emit signalEntriesFailed();
 }
@@ -580,12 +583,22 @@ void CoreEngine::loadRegistry()
 
             Entry *e = handler.entryptr();
             e->setStatus(Entry::Installed);
-            m_entry_cache.append(e);
-            m_entry_index[id(e)] = e;
+            QString thisid = id(e);
 
-            // FIXME: we must overwrite cache entries with registered entries
+
+            // we must overwrite cache entries with registered entries
             // and not just append the latter ones
-            // (m_entry_index is correct here but m_entry_cache not yet)
+            if (m_entry_index.contains(thisid)) {
+                // it's in the cache, so replace the cache entry with the registered entry
+                Entry * oldEntry = m_entry_index[thisid];
+                int index = m_entry_cache.indexOf(oldEntry);
+                m_entry_cache[index] = e;
+                delete oldEntry;
+            }
+            else {
+                m_entry_cache.append(e);
+            }
+            m_entry_index[thisid] = e;
         }
     }
 }
@@ -594,18 +607,16 @@ void CoreEngine::loadProvidersCache()
 {
     KStandardDirs d;
 
-    kDebug(550) << "Loading provider cache.";
-
-    // FIXME: one file per ProvidersUrl - put this into the filename
-    // FIXME: e.g. http_foo_providers.xml.cache?
+    // use the componentname so we get the cache specific to this knsrc (kanagram, wallpaper, etc.)
     QString cachefile = d.findResource("cache", m_componentname + "kns2providers.cache.xml");
     if (cachefile.isEmpty()) {
         kDebug(550) << "Cache not present, skip loading.";
         return;
     }
 
-    kDebug(550) << "Load from file '" + cachefile + "'.";
+    kDebug(550) << "Loading provider cache from file '" + cachefile + "'.";
 
+    // make sure we can open and read the file
     bool ret;
     QFile f(cachefile);
     ret = f.open(QIODevice::ReadOnly);
@@ -614,6 +625,7 @@ void CoreEngine::loadProvidersCache()
         return;
     }
 
+    // make sure it's valid xml
     QDomDocument doc;
     ret = doc.setContent(&f);
     if (!ret) {
@@ -621,18 +633,21 @@ void CoreEngine::loadProvidersCache()
         return;
     }
 
+    // make sure there's a root tag
     QDomElement root = doc.documentElement();
     if (root.tagName() != "ghnsproviders") {
         kWarning(550) << "The file doesn't seem to be of interest.";
         return;
     }
 
+    // get the first provider
     QDomElement provider = root.firstChildElement("provider");
     if (provider.isNull()) {
         kWarning(550) << "Missing provider entries in the cache.";
         return;
     }
 
+    // handle each provider
     while (!provider.isNull()) {
         ProviderHandler handler(provider);
         if (!handler.isValid()) {
@@ -648,9 +663,10 @@ void CoreEngine::loadProvidersCache()
 
         loadFeedCache(p);
 
-        if (m_automationpolicy == AutomationOn) {
-            loadEntries(p);
-        }
+        // no longer needed because EnginePrivate::slotProviderLoaded calls loadEntries
+        //if (m_automationpolicy == AutomationOn) {
+        //    loadEntries(p);
+        //}
 
         provider = provider.nextSiblingElement("provider");
     }
@@ -669,7 +685,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
     }
     QString cachedir = cachedirs.first();
 
-    QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + m_componentname);
+    QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache/");
     if (entrycachedirs.size() == 0) {
         kDebug(550) << "Cache directory not present, skip loading.";
         return;
@@ -683,8 +699,6 @@ void CoreEngine::loadFeedCache(Provider *provider)
         Feed *feed = provider->downloadUrlFeed(feeds.at(i));
         QString feedname = feeds.at(i);
 
-        // FIXME: hack because we saved with wrong name!
-        feedname = "???";
         QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
         QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
@@ -719,9 +733,11 @@ void CoreEngine::loadFeedCache(Provider *provider)
 
         while (!entryel.isNull()) {
             QString idbase64 = entryel.text();
+            kDebug(550) << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
+
             QString filepath = entrycachedir + '/' + idbase64 + ".meta";
 
-            kDebug(550) << "   + Load entry from file '" + filepath + "'.";
+            kDebug(550) << "from file '" + filepath + "'.";
 
             // FIXME: pass feed and make loadEntryCache return void for consistency?
             Entry *entry = loadEntryCache(filepath);
@@ -874,6 +890,7 @@ void CoreEngine::mergeProviders(Provider::List providers)
                 cacheProvider(p);
                 emit signalProviderChanged(p);
                 // FIXME: oldprovider can now be deleted, see entry hit case
+                // also need to take it out of m_provider_cache and m_provider_index
             }
         } else {
             if (m_cachepolicy != CacheNever) {
@@ -882,9 +899,10 @@ void CoreEngine::mergeProviders(Provider::List providers)
             }
             emit signalProviderLoaded(p);
 
-            if (m_automationpolicy == AutomationOn) {
-                loadEntries(p);
-            }
+            // no longer needed, because slotProviderLoaded calls loadEntries()
+            //if (m_automationpolicy == AutomationOn) {
+            //    loadEntries(p);
+            //}
         }
 
         m_provider_cache.append(p);
@@ -944,7 +962,7 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
             if (entryChanged(oldentry, e)) {
                 e->setStatus(Entry::Updateable);
             } else {
-                e->setStatus(Entry::Installed);
+                e->setStatus(oldentry->status());
             }
             emit signalEntryLoaded(e, feed, provider);
         } else {
@@ -953,16 +971,16 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
             if (entryCached(e)) {
                 //kDebug(550) << "CACHE: hit entry " << e->name().representation();
                 // FIXME: separate version updates from server-side translation updates?
-                Entry *oldentry = m_entry_index[id(e)];
-                if (entryChanged(oldentry, e)) {
+                Entry *cachedentry = m_entry_index[id(e)];
+                if (entryChanged(cachedentry, e)) {
                     //kDebug(550) << "CACHE: update entry";
                     e->setStatus(Entry::Updateable);
                     // entry has changed
-                    // FIXME: important: for cache filename, whole-content comparison
-                    // is harmful, still needs id-based one!
-                    cacheEntry(e);
+                    if (m_cachepolicy != CacheNever) {
+                        cacheEntry(e);
+                    }
                     emit signalEntryChanged(e);
-                    // FIXME: oldentry can now be deleted, but it's still in the list!
+                    // FIXME: cachedentry can now be deleted, but it's still in the list!
                     // FIXME: better: assigne all values to 'e', keeps refs intact
                 }
             } else {
@@ -979,8 +997,19 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
     }
 
     if (m_cachepolicy != CacheNever) {
-        // FIXME: feed name?
-        cacheFeed(provider, "???", feed, entries);
+        // extra code to get the feedname from the provider, we could use feed->name().representation()
+        // but would need to remove spaces, and latinize it since it can be any encoding
+        // besides feeds.size() has a max of 4 currently (unsorted, score, downloads, and latest)
+        QStringList feeds = provider->feeds();
+        QString feedname;
+        for (int i = 0; i < feeds.size(); ++i)
+        {
+            if (provider->downloadUrlFeed(feeds[i]) == feed)
+            {
+                feedname = feeds[i];
+            }
+        }
+        cacheFeed(provider, feedname, feed, entries);
     }
 
     emit signalEntriesFeedFinished(feed);
@@ -1032,20 +1061,17 @@ void CoreEngine::cacheProvider(Provider *provider)
 
 void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries)
 {
+    // feed cache file is a list of entry-id's that are part of this feed
     KStandardDirs d;
 
     Q_UNUSED(feed);
 
-    kDebug(550) << "Caching feed.";
-
     QString cachedir = d.saveLocation("cache", m_componentname + "kns2feeds.cache");
-
-    kDebug(550) << " + Save to directory '" + cachedir + "'.";
 
     QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
     QString cachefile = idbase64 + ".xml";
 
-    kDebug(550) << " + Save to file '" + cachefile + "'.";
+    kDebug(550) << "Caching feed to file '" + cachefile + "'.";
 
     QDomDocument doc;
     QDomElement root = doc.createElement("ghnsfeeds");
@@ -1072,19 +1098,16 @@ void CoreEngine::cacheEntry(Entry *entry)
 {
     KStandardDirs d;
 
-    //kDebug(550) << "Caching entry.";
+    QString cachedir = d.saveLocation("cache", "knewstuff2-entries.cache/");
 
-    QString cachedir = d.saveLocation("cache", "knewstuff2-entries.cache/" + m_componentname);
+    kDebug(550) << "Caching entry in directory '" + cachedir + "'.";
 
-    //kDebug(550) << " + Save to directory '" + cachedir + "'.";
-
-    //QString cachefile = KRandom::randomString(10) + ".meta";
     //FIXME: this must be deterministic, but it could also be an OOB random string
     //which gets stored into <ghnscache> just like preview...
     QString idbase64 = QString(id(entry).toUtf8().toBase64());
     QString cachefile = idbase64 + ".meta";
 
-    //kDebug(550) << " + Save to file '" + cachefile + "'.";
+    kDebug(550) << "Caching to file '" + cachefile + "'.";
 
     // FIXME: adhere to meta naming rules as discussed
     // FIXME: maybe related filename to base64-encoded id(), or the reverse?
