@@ -25,7 +25,11 @@ XVHandler::XVHandler()
 
 bool XVHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("xv");
+        return true;
+    }
+    return false;
 }
 
 bool XVHandler::read(QImage *retImage)

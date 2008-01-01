@@ -946,7 +946,11 @@ DDSHandler::DDSHandler()
 
 bool DDSHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("dds");
+        return true;
+    }
+    return false;
 }
 
 bool DDSHandler::read(QImage *image)

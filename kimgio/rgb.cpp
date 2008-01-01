@@ -539,7 +539,11 @@ RGBHandler::RGBHandler()
 
 bool RGBHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("rgb");
+        return true;
+    }
+    return false;
 }
 
 

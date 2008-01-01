@@ -133,7 +133,11 @@ EPSHandler::EPSHandler()
 
 bool EPSHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("eps");
+        return true;
+    }
+    return false;
 }
 
 bool EPSHandler::read(QImage *image)

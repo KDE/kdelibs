@@ -437,7 +437,12 @@ PCXHandler::PCXHandler()
 
 bool PCXHandler::canRead() const
 {
-    return canRead(device());
+  if (canRead(device()))
+  {
+    setFormat("pcx");
+    return true;
+  }
+  return false;
 }
 
 bool PCXHandler::read(QImage *outImage)

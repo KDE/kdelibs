@@ -318,7 +318,11 @@ TGAHandler::TGAHandler()
 
 bool TGAHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("tga");
+        return true;
+    }
+    return false;
 }
 
 bool TGAHandler::read(QImage *outImage)

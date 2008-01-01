@@ -242,7 +242,11 @@ PSDHandler::PSDHandler()
 
 bool PSDHandler::canRead() const
 {
-     return canRead(device());
+    if (canRead(device())) {
+        setFormat("psd");
+        return true;
+    }
+    return false;
 }
 
 bool PSDHandler::read(QImage *image)

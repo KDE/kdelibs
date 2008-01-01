@@ -249,7 +249,11 @@ ICOHandler::ICOHandler()
 
 bool ICOHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("ico");
+        return true;
+    }
+    return false;
 }
 
 bool ICOHandler::read(QImage *outImage)

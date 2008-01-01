@@ -2032,7 +2032,11 @@ XCFHandler::XCFHandler()
 
 bool XCFHandler::canRead() const
 {
-    return canRead(device());
+    if (canRead(device())) {
+        setFormat("xcf");
+        return true;
+    }
+    return false;
 }
 
 bool XCFHandler::read(QImage *image)

@@ -152,7 +152,11 @@ EXRHandler::EXRHandler()
 
 bool EXRHandler::canRead() const
 {
-	return canRead( device() );
+	if (canRead(device())) {
+		setFormat("exr");
+		return true;
+	}
+	return false;
 }
 
 QByteArray EXRHandler::name() const
