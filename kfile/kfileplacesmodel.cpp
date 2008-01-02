@@ -652,7 +652,7 @@ QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) cons
         }
 
         QString text;
-        QString label = data(index, Qt::DisplayRole).toString();
+        QString label = data(index, Qt::DisplayRole).toString().replace('&',"&&");
 
         if (device.is<Solid::OpticalDisc>()) {
             text = i18n("&Eject '%1'", label);

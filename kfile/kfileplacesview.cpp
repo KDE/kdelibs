@@ -354,7 +354,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     if (placesModel==0) return;
 
     QModelIndex index = indexAt(event->pos());
-    QString label = placesModel->text(index);
+    QString label = placesModel->text(index).replace('&',"&&");
 
     QMenu menu;
 
