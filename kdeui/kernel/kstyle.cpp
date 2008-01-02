@@ -3604,12 +3604,13 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     }
                     else
                     {
+						// The width of the accelerator is not included here since
+						// Qt will add that on separately after obtaining the 
+						// sizeFromContents() for each menu item in the menu to be shown
+						// ( see QMenuPrivate::calcActionRects() )
                         QString text = miOpt->text.left(tabPos);
-                        QString accl = miOpt->text.mid (tabPos + 1);
-
-                        textW = fm.width(text) +
-                                fm.width(accl) +
-                                widgetLayoutProp(WT_MenuItem, MenuItem::AccelSpace, option, widget);
+                        textW = fm.width(text) + 
+								widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
                     }
 
 
