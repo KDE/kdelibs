@@ -1328,6 +1328,7 @@ bool CoreEngine::install(const QString &payloadfile)
         dir->copyTo(installdir);
 
         installedFiles << archiveEntries(installdir, dir);
+        installedFiles << installdir + "/";
 
         archive->close();
         QFile::remove(payloadfile);
@@ -1364,6 +1365,7 @@ bool CoreEngine::install(const QString &payloadfile)
             return false;
         }
         installedFiles << installpath;
+        installedFiles << installdir + "/";
     }
     entry->setInstalledFiles(installedFiles);
 
@@ -1413,10 +1415,19 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
     entry->setStatus(Entry::Deleted);
 
     foreach(QString file, entry->installedFiles()) {
-        bool worked = QFile::remove(file);
-        if (!worked) {
-            kWarning(550) << "unable to delete file " << file;
-            return false;
+        if (file.endsWith("/")) {
+            QDir dir;
+            bool worked = dir.rmdir(file);
+            if (!worked) {
+                // Maybe directory contains user created files, ignore it
+                continue;
+            }
+        } else {
+            bool worked = QFile::remove(file);
+            if (!worked) {
+                kWarning(550) << "unable to delete file " << file;
+                return false;
+            }
         }
     }
     entry->setInstalledFiles(QStringList());
@@ -1460,6 +1471,7 @@ QStringList KNS::CoreEngine::archiveEntries(const QString& path, const KArchiveD
         if (dir->entry(entry)->isDirectory()) {
             const KArchiveDirectory* childDir = static_cast<const KArchiveDirectory*>(dir->entry(entry));
             files << archiveEntries(childPath, childDir);
+            files << childPath + "/";
         }
     }
     return files;
