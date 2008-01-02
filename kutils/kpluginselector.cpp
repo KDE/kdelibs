@@ -78,7 +78,6 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginDelegate->setSeparatorPixels(8);
 
     QFont title(parent->font());
-    title.setPointSize(title.pointSize() + 2);
     title.setWeight(QFont::Bold);
 
     QFontMetrics titleMetrics(title);
@@ -806,7 +805,6 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     QFont previousFont(painter->font());
     QFont configureFont(painter->font());
 
-    title.setPointSize(title.pointSize() + 2);
     title.setWeight(QFont::Bold);
 
     if (index.internalPointer())
@@ -968,16 +966,15 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
         QFont painterFont = painter->font();
         painterFont.setWeight(QFont::Bold);
-        painterFont.setPointSize(painterFont.pointSize() + 2);
         QFontMetrics metrics(painterFont);
         painter->setFont(painterFont);
 
         opt.fontMetrics = painter->fontMetrics();
 
         QRect auxRect(optionCopy.rect.left() + leftMargin,
-                      optionCopy.rect.bottom() - 2,
+                      optionCopy.rect.bottom() - 1,
                       optionCopy.rect.width() - leftMargin - rightMargin,
-                      2);
+                      1);
 
         QPainterPath path;
         path.addRect(auxRect);
@@ -994,15 +991,6 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         painter->fillPath(path, gradient);
 
         int iconSize = KIconLoader::global()->currentSize(KIconLoader::Small);
-
-        if (option.direction == Qt::LeftToRight)
-        {
-            optionCopy.rect.setLeft(optionCopy.rect.left() + (iconSize / 4));
-        }
-        else
-        {
-            optionCopy.rect.setRight(optionCopy.rect.width() - (iconSize / 4));
-        }
 
         QRect auxRect2(optionCopy.rect.left() + leftMargin,
                        option.rect.top(),
@@ -1021,7 +1009,6 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
     Q_UNUSED(option);
 
     QFont title(option.font);
-    title.setPointSize(title.pointSize() + 2);
     title.setWeight(QFont::Bold);
 
     QFontMetrics titleMetrics(title);
@@ -1042,7 +1029,7 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
         return QSize(minimumItemWidth, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 3) + qMax(titleMetrics.height(), opt.rect.height()) + currentMetrics.height()));
     }
 
-    return QSize(minimumItemWidth, separatorPixels + titleMetrics.height() + 2);
+    return QSize(minimumItemWidth, separatorPixels + titleMetrics.height() + 1);
 }
 
 void KPluginSelector::Private::PluginDelegate::setIconSize(int width, int height)
