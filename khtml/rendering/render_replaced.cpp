@@ -626,7 +626,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool buffered = p->combinedMatrix().m22() != 1.0;
+    bool buffered = p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);

@@ -3160,9 +3160,7 @@ void KHTMLView::print(bool quick)
         int page = 1;
         while(top < root->docHeight()) {
             if(top > 0) printer.newPage();
-#ifdef __GNUC__
-#warning "This could not be tested when merge was done, suspect"
-#endif
+            p->save();
             p->setClipRect(0, 0, pageWidth, headerHeight);
             if (printHeader)
             {
@@ -3177,16 +3175,11 @@ void KHTMLView::print(bool quick)
                 p->drawText(0, 0, printer.width(), dy, Qt::AlignRight, headerRight);
             }
 
-
 #ifndef QT_NO_TRANSFORMATIONS
             if (scalePage)
                 p->scale(scale, scale);
 #endif
-
-#ifdef __GNUC__
-#warning "This could not be tested when merge was done, suspect"
-#endif
-            p->setClipRect(0, (int)(headerHeight/scale), (int)(pageWidth/scale), (int)(pageHeight/scale));
+            p->restore();
             p->translate(0, headerHeight-top);
 
             bottom = top+pageHeight;
@@ -3196,13 +3189,10 @@ void KHTMLView::print(bool quick)
             root->setPageNumber(page);
 
             root->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
-//             m_part->xmlDocImpl()->renderer()->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
-//             root->repaint();
-//             p->flush();
             kDebug(6000) << "printed: page " << page <<" bottom At = " << bottom;
 
             top = bottom;
-            p->resetMatrix();
+            p->resetTransform();
             page++;
         }
 
