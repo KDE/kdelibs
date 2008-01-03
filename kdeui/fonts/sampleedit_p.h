@@ -83,7 +83,8 @@ void SampleEdit::m_setMargins ()
     m_signalsAllowed = false;
 
     // Repeat setting margins until they no longer change between iterations.
-    while (true) {
+    int maxIterations=6;
+    while (maxIterations--) {
         if (m_resetMargins) {
             // Reset viewport margins to determine max viewport height.
             m_tbMargin = 0;
