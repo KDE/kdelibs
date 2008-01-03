@@ -589,6 +589,13 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
     cg.writeEntry("State", state.toBase64());
     // One day will need to save the version number, but for now, assume 0
 
+    if ( !autoSaveSettings() || configGroup == autoSaveGroup() ) {
+        if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
+            cg.revertToDefault("ToolBarsMovable");
+        else
+            cg.writeEntry("ToolBarsMovable", KToolBar::toolBarsLocked() ? "Disabled" : "Enabled");    
+    }
+
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {
         QString group;
@@ -672,6 +679,14 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     }
 
     QString configGroup = cg.name();
+
+    if ( !autoSaveSettings() || configGroup == autoSaveGroup() ) {
+        QString entry = cg.readEntry ("ToolBarsMovable", "Enabled");
+        if ( entry == "Disabled" )
+            KToolBar::setToolBarsLocked(true);
+        else
+            KToolBar::setToolBarsLocked(false);
+    }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {

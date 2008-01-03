@@ -194,6 +194,8 @@ void KToolBar::Private::init( bool readConfig, bool _honorStyle )
 
   if ( !KAuthorized::authorize( "movable_toolbars" ) )
     parent->setMovable( false );
+  else
+    parent->setMovable( !KToolBar::toolBarsLocked() );
 
   connect( parent, SIGNAL( movableChanged( bool ) ),
            parent, SLOT( slotMovableChanged( bool ) ) );
@@ -609,11 +611,6 @@ void KToolBar::Private::slotContextIconSize()
 void KToolBar::Private::slotLockToolBars( bool lock )
 {
   parent->setToolBarsLocked( lock );
-
-  if(lock)
-    contextLockAction->setText(i18n( "Unlock Toolbars" ));
-  else
-    contextLockAction->setText(i18n( "Lock Toolbars" ));
 }
 
 
@@ -1367,8 +1364,12 @@ void KToolBar::setToolBarsLocked( bool locked )
     KToolBar::Private::s_locked = locked;
 
     foreach ( KMainWindow* mw, KMainWindow::memberList() )
-      foreach ( KToolBar* toolbar, mw->findChildren<KToolBar*>() )
+      foreach ( KToolBar* toolbar, mw->findChildren<KToolBar*>() ) {
         toolbar->d->setLocked( locked );
+        if (toolbar->d->contextLockAction)
+            toolbar->d->contextLockAction->setText(locked ? i18n( "Unlock Toolbars" ) : i18n( "Lock Toolbars" ));
+      }
+
   }
 }
 
