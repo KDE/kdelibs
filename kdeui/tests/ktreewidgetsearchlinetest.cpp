@@ -11,10 +11,9 @@
 #include <khbox.h>
 
 KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
+    : KDialog()
 {
-    QWidget* container = new QWidget(this);
-    (new QVBoxLayout(this))->addWidget(container);
-
+    QWidget* container = mainWidget();
     tw = new QTreeWidget(container);
     tw->setColumnCount(4);
     tw->setHeaderLabels(QStringList() << "Item" << "Price" << "HIDDEN COLUMN" << "Source");
@@ -24,6 +23,8 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     m_searchLine = searchWidget->searchLine();
 
     QTreeWidgetItem* red = new QTreeWidgetItem( tw, QStringList() << "Red");
+    red->setWhatsThis( 0, "This item is red" );
+    red->setWhatsThis( 1, "This item is pricy" );
     tw->expandItem(red);
     QTreeWidgetItem* blue = new QTreeWidgetItem( tw, QStringList() << "Blue");
     tw->expandItem(blue);
@@ -39,20 +40,22 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
 
     QVBoxLayout* layout = new QVBoxLayout(container);
     layout->setMargin(0);
-    KHBox* hbox = new KHBox(container);
+    QHBoxLayout* hbox = new QHBoxLayout();
 
-    QPushButton* caseSensitive = new QPushButton("&Case Sensitive", hbox);
+    QPushButton* caseSensitive = new QPushButton("&Case Sensitive", container);
+    hbox->addWidget(caseSensitive);
     caseSensitive->setCheckable(true);
     connect(caseSensitive, SIGNAL(toggled(bool)), SLOT(switchCaseSensitivity(bool)));
 
-    QPushButton* keepParentsVisible = new QPushButton("Keep &Parents Visible", hbox);
+    QPushButton* keepParentsVisible = new QPushButton("Keep &Parents Visible", container);
+    hbox->addWidget(keepParentsVisible);
     keepParentsVisible->setCheckable(true);
     keepParentsVisible->setChecked(true);
     connect(keepParentsVisible, SIGNAL(toggled(bool)), m_searchLine, SLOT(setKeepParentsVisible(bool)));
 
     layout->addWidget(searchWidget);
     layout->addWidget(tw);
-    layout->addWidget(hbox);
+    layout->addLayout(hbox);
 
     m_searchLine->setFocus();
 
