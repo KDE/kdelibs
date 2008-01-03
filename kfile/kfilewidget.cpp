@@ -429,7 +429,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // the Automatically Select Extension checkbox
     // (the text, visibility etc. is set in updateAutoSelectExtension(), which is called by readConfig())
     d->autoSelectExtCheckBox = new QCheckBox (this);
-    d->autoSelectExtCheckBox->setStyleSheet(QString("QCheckBox { spacing-top: %1px; }").arg(KDialog::spacingHint()));
+    d->autoSelectExtCheckBox->setStyleSheet(QString("QCheckBox { padding-top: %1px; }").arg(KDialog::spacingHint()));
     connect(d->autoSelectExtCheckBox, SIGNAL(clicked()), SLOT(_k_slotAutoSelectExtClicked()));
 
     d->initGUI(); // activate GM
