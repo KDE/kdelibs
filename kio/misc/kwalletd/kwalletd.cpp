@@ -305,6 +305,7 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
+		wiz->setWindowTitle(i18n("KDE Wallet Service"));
 		setupDialog( wiz, (WId)wId, appid, modal );
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
