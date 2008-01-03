@@ -91,7 +91,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { DocumentForward, KStandardShortcut::AccelNone, "go_document_forward", I18N_NOOP("&Forward in the Document"), 0, "go-next" },
 
   { AddBookmark,   KStandardShortcut::AddBookmark, "bookmark_add", I18N_NOOP("&Add Bookmark"), 0, "bookmark-new" },
-  { EditBookmarks, KStandardShortcut::AccelNone, "bookmark_edit", I18N_NOOP("&Edit Bookmarks"), 0, "bookmark" },
+  { EditBookmarks, KStandardShortcut::AccelNone, "bookmark_edit", I18N_NOOP("&Edit Bookmarks"), 0, "bookmarks" },
 
   { Spelling,      KStandardShortcut::AccelNone, "tools_spelling", I18N_NOOP("&Spelling..."), 0, "tools-check-spelling" },
 

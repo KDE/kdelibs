@@ -320,7 +320,7 @@ KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
     : QTreeWidgetItem(tree), m_address("")
 {
     setText(0, i18n("Bookmarks"));
-    setIcon(0, SmallIcon("bookmark"));
+    setIcon(0, SmallIcon("bookmarks"));
     tree->expandItem(this);
     tree->setCurrentItem( this );
     tree->setItemSelected( this, true );

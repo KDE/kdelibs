@@ -2004,7 +2004,7 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
         q->connect( bookmarkHandler, SIGNAL( openUrl( const QString& )),
                     SLOT( _k_enterUrl( const QString& )));
 
-        bookmarkButton = new KActionMenu(KIcon("bookmark"),i18n("Bookmarks"), q);
+        bookmarkButton = new KActionMenu(KIcon("bookmarks"),i18n("Bookmarks"), q);
         bookmarkButton->setDelayed(false);
         q->actionCollection()->addAction("bookmark", bookmarkButton);
         bookmarkButton->setMenu(bookmarkHandler->menu());
