@@ -320,7 +320,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               Q_FOREACH(client, e->m_clients) {
                   if (client->m_watchModes & flag) {
                       addEntry (client->instance, tpath, 0, isDir,
-                                client->m_watchModes);
+                                isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
                       counter++;
                     }
               }
@@ -1354,7 +1354,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           Q_FOREACH(client, e->m_clients) {
             if (client->m_watchModes & flag) {
               addEntry (client->instance, tpath, 0, isDir,
-                        client->m_watchModes);
+                        isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
               counter++;
             }
           }
