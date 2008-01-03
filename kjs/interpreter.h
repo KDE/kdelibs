@@ -470,6 +470,37 @@ private:
     static void setToUpperFunction(StringConversionFunction f);
   };
 
+  /**
+   * Define a Qt-based version of the Unicode support functions.
+   *
+   * @internal
+   */
+#define KJS_QT_UNICODE_IMPL \
+namespace KJS { \
+  static bool qtIdentStart(int c) { if (c & 0xffff0000) return false; QChar::Category cat = QChar((unsigned short)c).category(); return cat == QChar::Letter_Uppercase || cat == QChar::Letter_Lowercase || cat == QChar::Letter_Titlecase || cat == QChar::Letter_Modifier || cat == QChar::Letter_Other || c == '$' || c == '_'; } \
+  static bool qtIdentPart(int c) { if (c & 0xffff0000) return false; QChar::Category cat = QChar((unsigned short)c).category(); return cat == QChar::Letter_Uppercase || cat == QChar::Letter_Lowercase || cat == QChar::Letter_Titlecase || cat == QChar::Letter_Modifier | cat == QChar::Letter_Other | cat == QChar::Mark_NonSpacing | cat == QChar::Mark_SpacingCombining | cat == QChar::Number_DecimalDigit | cat == QChar::Punctuation_Connector || c == '$' || c == '_'; } \
+  static int qtToLower(uint16_t* str, int strLength, uint16_t*& destIfNeeded) { \
+      destIfNeeded = 0; \
+      for (int i = 0; i < strLength; ++i) \
+        str[i] = QChar(str[i]).toLower().unicode(); \
+      return strLength; } \
+  static int qtToUpper(uint16_t* str, int strLength, uint16_t*& destIfNeeded) { \
+      destIfNeeded = 0; \
+      for (int i = 0; i < strLength; ++i) \
+        str[i] = QChar(str[i]).toUpper().unicode(); \
+      return strLength; } \
+}
+
+  /**
+   * Set the Qt-based version of the Unicode support functions.
+   *
+   * @internal
+   */
+#define KJS_QT_UNICODE_SET \
+  { KJS::UnicodeSupport::setIdentStartChecker(KJS::qtIdentStart); \
+    KJS::UnicodeSupport::setIdentPartChecker(KJS::qtIdentPart); \
+    KJS::UnicodeSupport::setToLowerFunction(KJS::qtToLower); \
+    KJS::UnicodeSupport::setToUpperFunction(KJS::qtToUpper); }
   
 } // namespace
 

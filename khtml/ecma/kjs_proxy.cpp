@@ -308,6 +308,8 @@ void KJSProxyImpl::dataReceived()
 #endif
 }
 
+KJS_QT_UNICODE_IMPL
+
 void KJSProxyImpl::initScript()
 {
   if (m_script)
@@ -318,6 +320,7 @@ void KJSProxyImpl::initScript()
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_frame);
+  KJS_QT_UNICODE_SET;
   globalObject->setPrototype(m_script->builtinObjectPrototype());
 
 #ifdef KJS_DEBUGGER
