@@ -561,11 +561,14 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
         error.append(merr + '\n');
 }
 
+KJS_QT_UNICODE_IMPL
+
 #define SFNAME "Ts"
 void KTranscriptImp::setupInterpreter (const QString &lang)
 {
     // Create new interpreter.
     Interpreter *jsi = new Interpreter;
+    KJS_QT_UNICODE_SET;
     jsi->initGlobalObject();
     jsi->ref();
 
