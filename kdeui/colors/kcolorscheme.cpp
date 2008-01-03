@@ -165,7 +165,7 @@ SetDefaultColors defaultViewColors = {
     { 255, 255, 255 }, // Background
     { 248, 247, 246 }, // Alternate
     {  20,  19,  18 }, // Normal
-    { 136, 136, 136 }, // Inactive
+    { 136, 135, 134 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
     { 100,  74, 155 }, // Visited
@@ -178,7 +178,7 @@ SetDefaultColors defaultWindowColors = {
     { 224, 223, 222 }, // Background
     { 218, 217, 216 }, // Alternate
     {  20,  19,  18 }, // Normal
-    { 136, 136, 136 }, // Inactive
+    { 136, 135, 134 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
     { 100,  74, 155 }, // Visited
@@ -191,7 +191,7 @@ SetDefaultColors defaultButtonColors = {
     { 232, 231, 230 }, // Background
     { 224, 223, 222 }, // Alternate
     {  20,  19,  18 }, // Normal
-    { 136, 136, 136 }, // Inactive
+    { 136, 135, 134 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
     { 100,  74, 155 }, // Visited
@@ -214,10 +214,10 @@ SetDefaultColors defaultSelectionColors = {
 };
 
 SetDefaultColors defaultTooltipColors = {
-    { 191, 218, 255 }, // Background
-    { 195, 222, 255 }, // Alternate
+    { 192, 218, 255 }, // Background
+    { 196, 224, 255 }, // Alternate
     {  20,  19,  18 }, // Normal
-    { 136, 136, 136 }, // Inactive
+    {  96, 112, 128 }, // Inactive
     { 255, 128, 224 }, // Active
     {   0,  87, 174 }, // Link
     { 100,  74, 155 }, // Visited
