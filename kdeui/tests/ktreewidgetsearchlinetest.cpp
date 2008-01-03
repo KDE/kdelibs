@@ -14,6 +14,8 @@ KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     : KDialog()
 {
     QWidget* container = mainWidget();
+    // to test KWhatsThisManager too:
+    container->setWhatsThis("This is a test dialog for KTreeWidgetSearchLineTest");
     tw = new QTreeWidget(container);
     tw->setColumnCount(4);
     tw->setHeaderLabels(QStringList() << "Item" << "Price" << "HIDDEN COLUMN" << "Source");

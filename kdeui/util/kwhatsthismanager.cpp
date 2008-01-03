@@ -18,6 +18,7 @@
  */
 
 #include "kwhatsthismanager_p.h"
+#include <kdebug.h>
 
 #include <QtCore/QVariant>
 #include <QtGui/QApplication>
@@ -90,30 +91,27 @@ KWhatsThisManager::KWhatsThisManager()
 
 bool KWhatsThisManager::eventFilter( QObject *object, QEvent *event )
 {
-  if ( event->type() == QEvent::WhatsThis ) {
-    QHelpEvent *he = (QHelpEvent*)event;
-    QWidget *widget = qobject_cast<QWidget*>( object );
-    if ( widget ) {
-      if ( widget->whatsThis().isEmpty() ) {
-        for ( QWidget *w = widget->parentWidget();  w;  w = w->parentWidget() ) {
-          if ( !w->whatsThis().isEmpty() ) {
-            return false;
-          }
+    if ( event->type() == QEvent::WhatsThis ) {
+        QHelpEvent *he = static_cast<QHelpEvent* >(event);
+        QWidget *widget = qobject_cast<QWidget*>( object );
+        if ( widget ) {
+            QHelpEvent queryEvent(QEvent::QueryWhatsThis, he->pos(), he->globalPos());
+            const bool sentEvent = QApplication::sendEvent(widget, &queryEvent);
+            if (!sentEvent || !queryEvent.isAccepted()) {
+                // No whats-this defined by the widget (at this position): show fallback one
+                QWhatsThis::showText(he->globalPos(), text());
+            }
         }
-        QWhatsThis::showText(he->globalPos(), text() );
-        return true;
-      }
+    } else if ( event->type() == QEvent::WhatsThisClicked ) {
+        QWhatsThisClickedEvent *wte = static_cast<QWhatsThisClickedEvent* >(event);
+        QWidget *widget = qobject_cast<QWidget*>( object );
+        if ( widget ) {
+            clicked( wte->href(), widget );
+            return true;
+        }
     }
-  } else if ( event->type() == QEvent::WhatsThisClicked ) {
-    QWhatsThisClickedEvent *wte = (QWhatsThisClickedEvent*)event;
-    QWidget *widget = qobject_cast<QWidget*>( object );
-    if ( widget ) {
-      clicked( wte->href(), widget );
-      return true;
-    }
-  }
 
-  return false;
+    return false;
 }
 
 #include "kwhatsthismanager_p.moc"
