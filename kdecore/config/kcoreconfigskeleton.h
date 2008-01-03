@@ -1297,7 +1297,7 @@ public:
    *          false to make it reflect the actual values.
    * @return The state prior to this call
    */
-  bool useDefaults(bool b);
+  virtual bool useDefaults(bool b);
 
 Q_SIGNALS:
   /**
