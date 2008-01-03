@@ -96,7 +96,7 @@ KShortcut::KShortcut(const QString &s)
 
     QStringList sCuts = s.split("; ");
     if (sCuts.count() > 2)
-        kWarning() << "KShortcut: asked to store more than two key sequences but can only hold two.";
+        kWarning() << "asked to store more than two key sequences but can only hold two.";
 
     //TODO: what is the "(default)" thingie used for?
     for( int i=0; i < sCuts.count(); i++)
@@ -106,12 +106,12 @@ KShortcut::KShortcut(const QString &s)
     if (sCuts.count() >= 1) {
         d->primary = QKeySequence::fromString(sCuts.at(0));
 	if (d->primary.isEmpty())
-	    kWarning() << "KShortcut: unusable primary shortcut sequence " << sCuts[0];
+	    kWarning() << "unusable primary shortcut sequence " << sCuts[0];
     }
     if (sCuts.count() >= 2) {
         d->alternate = QKeySequence::fromString(sCuts.at(1));
 	if (d->alternate.isEmpty())
-	    kWarning() << "KShortcut: unusable alternate shortcut sequence " << sCuts[1];
+	    kWarning() << "unusable alternate shortcut sequence " << sCuts[1];
     }
 }
 
