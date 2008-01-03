@@ -23,38 +23,133 @@
 #include "paintbuffer.h"
 #include <QPixmap>
 #include <QTimerEvent>
-#include <assert.h>
 
 using namespace khtml;
 
-const int PaintBuffer::maxPixelBuffering = 320*200;
-const int PaintBuffer::leaseTime = 20*1000;
+const int PaintBuffer::maxPixelBuffering = 200*200;
+const int PaintBuffer::leaseTime = 2*1000;
+const int PaintBuffer::cleanupTime = 10*1000;
+const int PaintBuffer::maxBuffers = 10;
+
+namespace khtml {
+
+class BufferSweeper: public QObject
+{
+public:
+    BufferSweeper(): QObject() { m_timer = 0; m_reset = false; }
+    
+    void timerEvent(QTimerEvent* e) {
+        assert( m_timer == e->timerId() );
+        if (m_reset) {
+            m_reset = false;
+            return;
+        }
+        if (PaintBuffer::s_avail) {
+            while (PaintBuffer::s_avail->count()>1)
+                delete PaintBuffer::s_avail->pop();
+            if (PaintBuffer::s_avail->count())
+                PaintBuffer::s_avail->top()->reset();
+        }
+        if (!PaintBuffer::s_grabbed)
+            stop();
+    }
+    void start() {
+        if (m_timer) return;
+        m_timer = startTimer( PaintBuffer::cleanupTime );
+    }
+    void stop() {
+        if (m_timer)
+            killTimer( m_timer );
+        m_timer = 0;
+    }
+    void restart() {
+        stop();
+        start();
+    }
+    void reset() {
+        m_reset = true;
+    }
+    bool stopped() const { return !m_timer; }
+    int m_timer;
+    bool m_reset;
+};
+
+}
 
 PaintBuffer::PaintBuffer()
 :   m_overflow(false), 
     m_grabbed(false),
-    m_timer(0), 
+    m_renewTimer(false),
+    m_timer(0),
     m_resetWidth(0), 
     m_resetHeight(0)
 {
 
 }
 
+// static
 void PaintBuffer::cleanup()
 {
-    delete m_inst;
+    if (s_avail) {
+        qDeleteAll( *s_avail );
+        delete s_avail;
+        s_avail = 0;
+    }
+    if (s_grabbed) {
+        qDeleteAll( *s_grabbed );
+        delete s_grabbed;
+        s_grabbed = 0;
+    }
+    if (s_full) {
+        qDeleteAll( *s_full );
+        delete s_full;
+        s_full = 0;
+    }
+    if (s_sweeper) {
+        s_sweeper->deleteLater();
+        s_sweeper = 0;
+    }
 }
 
+// static
 QPixmap *PaintBuffer::grab( QSize s ) 
 {
-    if (!m_inst)
-        m_inst = new PaintBuffer;
-    return m_inst->getBuf( s );
+    if (!s_avail) {
+        s_avail = new QStack<PaintBuffer*>;
+        s_grabbed = new QStack<PaintBuffer*>;
+        s_sweeper = new BufferSweeper;
+    }
+
+    if (s_sweeper->stopped())
+        s_sweeper->start();
+    else
+        s_sweeper->reset();
+
+    if ( s_grabbed->count()+s_avail->count() >= maxBuffers ) {
+        if (!s_full)
+            s_full = new QStack<QPixmap*>;
+        s_full->push( new QPixmap(s.width(), s.height()) );
+        return s_full->top();
+    }
+
+    s_grabbed->push( s_avail->count() ? s_avail->pop() : new PaintBuffer );
+    QPixmap *ret = s_grabbed->top()->getBuf( s );
+    //kDebug() << "requested size:" << s << "real size:" << ret->size();
+    return ret;
 }
 
-void PaintBuffer::release()
-{ 
-    m_inst->m_grabbed = false;
+// static
+void PaintBuffer::release( QPixmap *px )
+{
+    if (s_full && s_full->count()) {
+        assert( px == s_full->top() );
+        delete s_full->top();
+        s_full->pop();
+        return;
+    }
+    assert(px == &s_grabbed->top()->m_buf);
+    s_grabbed->top()->m_grabbed = false;
+    s_avail->push( s_grabbed->pop() );
 }
 
 void PaintBuffer::timerEvent(QTimerEvent* e)
@@ -62,8 +157,24 @@ void PaintBuffer::timerEvent(QTimerEvent* e)
     assert( m_timer == e->timerId() );
     if (m_grabbed)
         return;
+    if (m_renewTimer) {
+        m_renewTimer = false;
+        return;
+    }
     m_buf = QPixmap(m_resetWidth, m_resetHeight);
     m_resetWidth = m_resetHeight = 0;
+    m_overflow = false;
+    killTimer( m_timer );
+    m_timer = 0;
+}
+
+void PaintBuffer::reset()
+{
+    if (m_grabbed|m_renewTimer)
+        return;
+    m_resetWidth = m_resetHeight = 0;
+    m_buf = QPixmap();
+    m_overflow = false;
     killTimer( m_timer );
     m_timer = 0;
 }
@@ -89,17 +200,49 @@ QPixmap *PaintBuffer::getBuf( QSize s )
         m_overflow = true;
         m_timer = startTimer( leaseTime );
     } else if (m_overflow) {
-        if( s.width()*s.height() > maxPixelBuffering ) {
-            killTimer( m_timer );
-            m_timer = startTimer( leaseTime );
-        } else {
-            if (s.width() > m_resetWidth)
-                m_resetWidth = s.width();
-            if (s.height() > m_resetHeight)
-                m_resetHeight = s.height();
+        int numPx = s.width()*s.height();
+        if( numPx > maxPixelBuffering ) {
+            m_renewTimer = true;
+        } else if (numPx > m_resetWidth*m_resetHeight) {
+             m_resetWidth = s.width();
+             m_resetHeight = s.height();
         }
     }
     return &m_buf;
 }
 
-PaintBuffer *PaintBuffer::m_inst = 0;
+QStack<PaintBuffer*> *PaintBuffer::s_avail = 0;
+QStack<PaintBuffer*> *PaintBuffer::s_grabbed = 0;
+QStack<QPixmap*> *    PaintBuffer::s_full = 0;
+BufferSweeper*        PaintBuffer::s_sweeper = 0;
+
+// ### benchark me in release mode
+#define USE_PIXMAP_CACHE
+
+// static
+BufferedPainter* BufferedPainter::start(QPainter*&p, const QRegion&rr)
+{
+    if (rr.isEmpty())
+        return 0;
+#ifdef USE_PIXMAP_CACHE
+    QPixmap *pm = PaintBuffer::grab(rr.boundingRect().size());
+#else
+    QPixmap *pm =  new QPixmap( rr.boundingRect().size() );
+#endif
+    if (!pm || pm->isNull())
+        return 0;
+    return new BufferedPainter(pm, p, rr, true /*replacePainter*/);
+}
+
+// static
+void BufferedPainter::end(QPainter*&p, BufferedPainter* bp, float opacity)
+{
+    bp->transfer( opacity );
+    p = bp->originalPainter();
+#ifdef USE_PIXMAP_CACHE
+    PaintBuffer::release( bp->buffer() );
+#else
+    delete bp->buffer();
+#endif
+    delete bp;
+}

@@ -1196,14 +1196,14 @@ public:
         return background->m_outline._offset;
     }
     ShadowData* textShadow() const { return css3InheritedData->textShadow; }
-    float opacity() { return css3NonInheritedData->opacity; }
+    float opacity() const { return css3NonInheritedData->opacity; }
     EUserInput userInput() const { return KDE_CAST_BF_ENUM(EUserInput, inherited_flags.f._user_input); }
 
-    Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
-    int marqueeSpeed() { return css3NonInheritedData->marquee->speed; }
-    int marqueeLoopCount() { return css3NonInheritedData->marquee->loops; }
-    EMarqueeBehavior marqueeBehavior() { return css3NonInheritedData->marquee->behavior; }
-    EMarqueeDirection marqueeDirection() { return css3NonInheritedData->marquee->direction; }
+    Length marqueeIncrement() const { return css3NonInheritedData->marquee->increment; }
+    int marqueeSpeed() const { return css3NonInheritedData->marquee->speed; }
+    int marqueeLoopCount() const { return css3NonInheritedData->marquee->loops; }
+    EMarqueeBehavior marqueeBehavior() const { return css3NonInheritedData->marquee->behavior; }
+    EMarqueeDirection marqueeDirection() const { return css3NonInheritedData->marquee->direction; }
     bool textOverflow() const { return noninherited_flags.f._textOverflow; }
     // End CSS3 Getters
 

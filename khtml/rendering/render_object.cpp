@@ -1351,11 +1351,12 @@ void RenderObject::setStyle(RenderStyle *style)
 
     // only honor z-index for non-static objects and objects with opacity
     if ( style->position() == STATIC && style->opacity() == 1.0f ) {
-        if ( isRoot() )
-            style->setZIndex( 0 );
-        else
-            style->setHasAutoZIndex();
+        style->setHasAutoZIndex();
     }
+    // force establishment of a stacking context by transparent objects, as those define
+    // the bounds of an atomically painted region.
+    if (style->hasAutoZIndex() && (isRoot() || style->opacity() < 1.0f))
+        style->setZIndex( 0 );
 
     RenderStyle *oldStyle = m_style;
     m_style = style;

@@ -583,10 +583,11 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPaintDevice *d = p->device();
     QPaintDevice *x = d;
     qreal op = p->opacity();
+    QPixmap* pm = 0;
     if (buffered) {
         if (!widget->size().isValid())
             return;
-        QPixmap* pm = PaintBuffer::grab(widget->size());
+        pm = PaintBuffer::grab(widget->size());
         QPainter pp(pm);
         pp.setCompositionMode(QPainter::CompositionMode_Clear);
         pp.eraseRect(r);
@@ -616,7 +617,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         // transfer results
         QPoint off(r.x(), r.y());
         p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
-        PaintBuffer::release();
+        PaintBuffer::release(pm);
     }
 }
 

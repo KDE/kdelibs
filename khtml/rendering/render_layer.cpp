@@ -56,6 +56,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
+#include "misc/paintbuffer.h"
 #include "html/html_blockimpl.h"
 #include "xml/dom_restyler.h"
 
@@ -171,14 +172,21 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
 {
     updateZOrderLists();
     QRegion r;
-    if (m_negZOrderList && m_hasVisibleDescendant) {
+    const RenderStyle *s= renderer()->style();
+    bool isTrans = (s->opacity() < 1.0);
+    if (isTrans && m_hasVisibleDescendant) {
+        if (!s->opacity())
+            return r;
+        for (RenderLayer* ch = firstChild(); ch ; ch = ch->nextSibling())
+            r += ch->paintedRegion(rootLayer);
+    } else if (m_negZOrderList && m_hasVisibleDescendant) {
         uint count = m_negZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_negZOrderList->at(i);
             r += child->paintedRegion(rootLayer);
         }
     }
-    const RenderStyle *s= renderer()->style();
+
     if (m_hasVisibleContent) {
         int x = 0; int y = 0;
         convertToLayerCoords(rootLayer,x,y);
@@ -191,7 +199,7 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
         }
     }
     
-    if (m_posZOrderList && m_hasVisibleDescendant) {
+    if (!isTrans && m_posZOrderList && m_hasVisibleDescendant) {
         uint count = m_posZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_posZOrderList->at(i);
@@ -956,10 +964,14 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     updateOverflowList();
 
     // Set our transparency if we need to.
-    float previousOpacity = p->opacity();
-    if (isTransparent())
-        p->setOpacity(renderer()->style()->opacity());
-
+    khtml::BufferedPainter *bPainter = 0;
+    if (isTransparent()) {
+        //### cache paintedRegion
+        QRegion rr = paintedRegion( rootLayer ) & damageRect;
+        if (p->hasClipping())
+            rr &= p->clipRegion();
+        bPainter = khtml::BufferedPainter::start(p, rr);
+    }
     // We want to paint our layer, but only if we intersect the damage rect.
     bool shouldPaint = intersectsDamageRect(layerBounds, damageRect) && m_hasVisibleContent;
     if (shouldPaint && !selectionOnly) {
@@ -1055,8 +1067,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 #endif
 
     // End our transparency layer
-    if (isTransparent())
-        p->setOpacity(previousOpacity);
+    if (bPainter) {
+        khtml::BufferedPainter::end( p, bPainter , m_object->style()->opacity() );
+    }
 
     if (rootLayer == this && m_object->canvas()->view()->clipHolder()) {
         KHTMLView* const v = m_object->canvas()->view();
