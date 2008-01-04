@@ -1111,6 +1111,8 @@ bool QXEmbed::x11Event( XEvent* e)
             if( !d->xplain )
                 XRemoveFromSaveSet( qt_xdisplay(), window );
         } else if ( e->xreparent.parent == winId()){
+            if( window == 0 ) // something started embedding from the outside
+                window = e->xcreatewindow.window;
             // L2020: We got a window. Complete the embedding process.
             if( e->xreparent.window == window )
                 handleEmbed();
