@@ -432,7 +432,8 @@ bool Ftp::ftpLogin()
   AuthInfo info;
   info.url.setProtocol( "ftp" );
   info.url.setHost( m_host );
-  info.url.setPort( m_port );
+  if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
+      info.url.setPort( m_port );
   info.url.setUser( user );
 
   QByteArray tempbuf;
@@ -1381,7 +1382,8 @@ void Ftp::listDir( const KUrl &url )
     if ( m_pass != FTP_PASSWD )
       realURL.setPass( m_pass );
     realURL.setHost( m_host );
-    realURL.setPort( m_port );
+    if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
+        realURL.setPort( m_port );
     if ( m_initialPath.isEmpty() )
         m_initialPath = "/";
     realURL.setPath( m_initialPath );
