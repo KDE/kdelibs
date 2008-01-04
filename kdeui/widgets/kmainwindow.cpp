@@ -43,16 +43,13 @@
 #include <QtGui/QSessionManager>
 #include <QtGui/QStyle>
 #include <QtGui/QWidget>
-#if 0
-#include <qdom.h>
-#endif
 
 #include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kedittoolbar.h>
+#include <kdialog.h>
 #include <khelpmenu.h>
 #include <klocale.h>
 #include <kmenubar.h>

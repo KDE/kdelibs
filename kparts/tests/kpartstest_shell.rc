@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="Shell">
+<kpartgui name="Shell" version="4">
 <MenuBar>
   <Menu name="file"><Text>&amp;File</Text>
    <Action name="open_local_file"/>
