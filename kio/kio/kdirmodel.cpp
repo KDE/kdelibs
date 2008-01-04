@@ -151,13 +151,20 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
     //kDebug(7008) << url;
+    KUrl nodeUrl = m_dirLister->url();
+    // For a URL without a path, like "applications:" or "settings://",
+    // we want to resolve here "no path" to "/ assumed".
+    // We don't do it before (e.g. in KDirLister) because we want to
+    // give the ioslave a chance for a redirect (e.g. kio_ftp redirects "no path"
+    // to the user's home dir)
+    if (nodeUrl.path().isEmpty())
+        nodeUrl.setPath("/");
 
-    if (url == m_dirLister->url())
+    if (url == nodeUrl)
         return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
 
     const QString urlStr = url.url();
     KDirModelDirNode* dirNode = m_rootNode;
-    KUrl nodeUrl = m_dirLister->url();
 
     if ( !urlStr.startsWith(nodeUrl.url()) ) {
         return qMakePair(0, static_cast<KDirModelNode*>(0));
