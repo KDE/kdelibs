@@ -95,9 +95,9 @@ static QDate checkDate(int year, int month, int day, Status&);
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
 static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
 
-#ifndef NDEBUG
-KDE_EXPORT int KDateTime_utcCacheHit  = 0;
-KDE_EXPORT int KDateTime_zoneCacheHit = 0;
+#ifdef COMPILING_TESTS
+extern KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
+extern KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 #endif
 
 /*----------------------------------------------------------------------------*/
@@ -644,7 +644,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone &local) const
             if (specZone == loc)
             {
 //                kDebug() << "toUtc(): cached -> " << utc() << endl,
-#ifndef NDEBUG
+#ifdef COMPILING_TESTS
                 ++KDateTime_utcCacheHit;
 #endif
                 return utc();
@@ -653,7 +653,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone &local) const
         else
         {
 //            kDebug() << "toUtc(): cached -> " << utc() << endl,
-#ifndef NDEBUG
+#ifdef COMPILING_TESTS
             ++KDateTime_utcCacheHit;
 #endif
             return utc();
@@ -713,7 +713,7 @@ QDateTime KDateTimePrivate::toZone(const KTimeZone &zone, const KTimeZone &local
     if (convertedCached  &&  converted.tz == zone)
     {
         // Converted value is already cached
-#ifndef NDEBUG
+#ifdef COMPILING_TESTS
 //        kDebug() << "KDateTimePrivate::toZone(" << zone->name() << "): " << mDt << " cached";
         ++KDateTime_zoneCacheHit;
 #endif
