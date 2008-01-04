@@ -34,8 +34,8 @@
 
 QTEST_KDEMAIN_CORE(KDateTimeTest)
 
-KDE_IMPORT extern int KDateTime_utcCacheHit;
-KDE_IMPORT extern int KDateTime_zoneCacheHit;
+extern KDECORE_EXPORT int KDateTime_utcCacheHit;
+extern KDECORE_EXPORT int KDateTime_zoneCacheHit;
 
 
 void KDateTimeTest::initTestCase()

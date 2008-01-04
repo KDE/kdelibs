@@ -26,6 +26,11 @@ if(WIN32)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KDEWIN32_LIBRARIES})
 endif(WIN32)
 
+# Needed for the kdatetime test in release mode
+if(KDE4_BUILD_TESTS)
+    add_definitions(-DCOMPILING_TESTS)
+endif(KDE4_BUILD_TESTS)
+
 # compile bzip2 support if available
 if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})
