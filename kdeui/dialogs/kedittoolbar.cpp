@@ -989,9 +989,9 @@ void KEditToolBarWidgetPrivate::loadToolBarCombo( const QString& defaultToolBar 
     ToolBarList::const_iterator it = (*xit).barList().begin();
     for ( ; it != (*xit).barList().end(); ++it)
     {
-        const QString name = (*it).attribute(attrName);
         const QString text = (*xit).toolBarText( *it );
-        m_toolbarCombo->addItem( text, name );
+        m_toolbarCombo->addItem( text );
+        const QString name = (*it).attribute(attrName);
         if (defaultToolBarId == -1 && name == defaultToolBar)
             defaultToolBarId = count;
         count++;
@@ -1118,17 +1118,23 @@ KActionCollection *KEditToolBarWidget::actionCollection() const
 void KEditToolBarWidgetPrivate::slotToolBarSelected(int index)
 {
     const QLatin1String attrName( "name" );
-    const QString selectedToolbar = m_toolbarCombo->itemData(index).toString();
-    // iterate through everything
+    // We need to find the XmlData and toolbar element for this index
+    // To do that, we do the same iteration as the one which filled in the combobox.
+
+    int toolbarNumber = 0;
     XmlDataList::iterator xit = m_xmlFiles.begin();
     for ( ; xit != m_xmlFiles.end(); ++xit) {
+
+        // skip the local one in favor of the merged
+        if ( (*xit).type() == XmlData::Local )
+            continue;
 
         // each xml file may have any number of toolbars
         ToolBarList::Iterator it = (*xit).barList().begin();
         for ( ; it != (*xit).barList().end(); ++it) {
 
             // is this our toolbar?
-            if ((*it).attribute(attrName) == selectedToolbar) {
+            if (toolbarNumber == index) {
 
                 // save our current settings
                 m_currentXmlData = & (*xit);
@@ -1147,6 +1153,8 @@ void KEditToolBarWidgetPrivate::slotToolBarSelected(int index)
                     m_widget->setDOMDocument( (*xit).domDocument() );
                 return;
             }
+            ++toolbarNumber;
+
         }
     }
 }
