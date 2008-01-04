@@ -341,7 +341,7 @@ public:
      * Unlike regular shortcuts, the application's window does not need focus
      * for them to be activated.
      *
-     * When an action is assigned
+     * When an action, identified by main component name and text(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
      * be saved. The shortcut will then be restored every time the action's 
      * globalShortcutAllowed flag becomes true.
@@ -353,16 +353,6 @@ public:
      * setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
      *                   KAction::NoAutoloading)
      * \endcode
-     * Note that actions will be recognized by their objectName() internally.
-     * In case of an empty objectName() text() will be used as a fallback.
-     * This fallback should be avoided if possible because it breaks
-     * when the application language is changed.
-     * Inserting an action into a KActionCollection with
-     * QAction *KActionCollection::addAction(const QString &name, QAction *action) or
-     * KAction *KActionCollection::addAction(const QString &name, KAction *action)
-     * will set the objectName() to @p name so you don't have to explicitly set an
-     * objectName after you have already done that.
-
      * \param shortcut global shortcut(s) to assign
      * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
      *             or both (the default).
