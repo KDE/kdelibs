@@ -144,11 +144,15 @@ void KGlobalAccelPrivate::updateGlobalShortcutAllowed(KAction *action, uint flag
     if (oldEnabled == newEnabled)
         return;
 
-    if (action->text().isEmpty())
-        return;
+    QString actionName(action->objectName());
+    if (actionName.isEmpty()) {
+        if (action->text().isEmpty()) {
+            return;
+        }
+        actionName = action->text();    //### breaks badly on change of language
+    }
     QStringList actionId(mainComponentName);
-    actionId.append(action->text());
-    //TODO: what about i18ned names?
+    actionId.append(actionName);
 
     if (!oldEnabled && newEnabled) {
         uint setterFlags = KdedGlobalAccel::SetPresent;
@@ -180,11 +184,15 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
     if (!action)
         return;
 
-    if (action->text().isEmpty())
-        return;
+    QString actionName(action->objectName());
+    if (actionName.isEmpty()) {
+        if (action->text().isEmpty()) {
+            return;
+        }
+        actionName = action->text();    //### breaks badly on change of language
+    }
     QStringList actionId(mainComponentName);
-    actionId.append(action->text());
-    //TODO: what about i18ned names?
+    actionId.append(actionName);
 
     uint setterFlags = 0;
     if (flags & KAction::NoAutoloading)
