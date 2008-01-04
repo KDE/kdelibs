@@ -981,8 +981,10 @@ void KEditToolBarWidgetPrivate::loadToolBarCombo( const QString& defaultToolBar 
   XmlDataList::const_iterator xit = m_xmlFiles.begin();
   for ( ; xit != m_xmlFiles.end(); ++xit)
   {
-    // skip the local one in favor of the merged
-    if ( (*xit).type() == XmlData::Local )
+      // skip the merged one in favor of the local one,
+      // so that we can change icons
+      // This also makes the app-defined named for "mainToolBar" appear rather than the ui_standards-defined name.
+    if ( (*xit).type() == XmlData::Merged )
       continue;
 
     // each xml file may have any number of toolbars
@@ -1125,8 +1127,9 @@ void KEditToolBarWidgetPrivate::slotToolBarSelected(int index)
     XmlDataList::iterator xit = m_xmlFiles.begin();
     for ( ; xit != m_xmlFiles.end(); ++xit) {
 
-        // skip the local one in favor of the merged
-        if ( (*xit).type() == XmlData::Local )
+        // skip the merged one in favor of the local one,
+        // so that we can change icons
+        if ( (*xit).type() == XmlData::Merged )
             continue;
 
         // each xml file may have any number of toolbars
