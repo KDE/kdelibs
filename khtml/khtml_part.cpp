@@ -405,6 +405,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
+  d->m_paSelectAll->setShortcutContext( Qt::WidgetShortcut );
   if ( parentPart() )
       d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
@@ -426,6 +427,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // Set the meta-refresh flag...
   d->m_metaRefreshEnabled = d->m_settings->isAutoDelayedActionsEnabled ();
+
+  actionCollection()->associateWidget(view);
 
   connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );
 
