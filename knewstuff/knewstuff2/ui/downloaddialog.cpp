@@ -439,8 +439,8 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     sortCombo->setEnabled( false );
     //sortCombo->addItem( i18n("Name") );
     //sortCombo->addItem( i18n("Rating") );
-    //sortCombo->addItem( i18n("Most recent") );
-    //sortCombo->addItem( i18n("Most downloads") );
+    //sortCombo->addItem( i18n("Most Recent") );
+    //sortCombo->addItem( i18n("Most Downloads") );
     connect( sortCombo, SIGNAL( activated(int) ), SLOT( slotSortingSelected(int) ) );
 
     QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );

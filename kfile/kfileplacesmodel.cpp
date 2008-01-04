@@ -657,7 +657,7 @@ QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) cons
         if (device.is<Solid::OpticalDisc>()) {
             text = i18n("&Eject '%1'", label);
         } else if (removable || hotpluggable) {
-            text = i18n("&Safely remove '%1'", label);
+            text = i18n("&Safely Remove '%1'", label);
         } else {
             text = i18n("&Unmount '%1'", label);
         }
