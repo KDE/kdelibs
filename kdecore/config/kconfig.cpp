@@ -37,7 +37,7 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
-#include <qbytearray.h>Hello äöü
+#include <qbytearray.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qdatetime.h>
