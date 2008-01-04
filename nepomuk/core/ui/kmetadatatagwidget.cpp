@@ -167,7 +167,7 @@ void Nepomuk::TagWidget::slotShowTagMenu()
     QList<Tag> allTags = Tag::allTags();
     QList<Tag> assignedTags = d->intersectTags();
 
-    QMenu* popup = new QMenu( i18n( "Tag resource..." ), this );
+    QMenu* popup = new QMenu( i18n( "Tag Resource" ), this );
     QMap<QAction*, Tag> tagMap;
     foreach( Tag tag,  allTags ) {
         if ( tag.label().isEmpty() ) {
@@ -180,12 +180,12 @@ void Nepomuk::TagWidget::slotShowTagMenu()
         a->setChecked( assignedTags.contains( tag ) );
     }
 
-    QAction* newTagAction = new QAction( i18n( "Create new tag..." ), popup );
+    QAction* newTagAction = new QAction( i18n( "Create New Tag..." ), popup );
     popup->addAction( newTagAction );
 
     if ( QAction* a = popup->exec( mapToGlobal( d->button->geometry().topRight() ) ) ) {
         if ( a == newTagAction ) {
-            QString s = KInputDialog::getText( i18n("New Tag"), i18n("Please insert the name of the new tag"), QString(), 0, this );
+            QString s = KInputDialog::getText( i18n("New Tag"), i18n("Please insert the name of the new tag:"), QString(), 0, this );
             if( !s.isEmpty() ) {
                 // see if the tag exists
                 QList<Tag> l = Tag::allTags();
@@ -194,7 +194,7 @@ void Nepomuk::TagWidget::slotShowTagMenu()
                     const Nepomuk::Tag& tag = tagIt.next();
                     if( tag.label() == s ||
                         tag.identifiers().contains( s ) ) {
-                        KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag exists") );
+                        KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag Exists") );
                         return;
                     }
                 }
