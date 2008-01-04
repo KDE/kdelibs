@@ -326,7 +326,7 @@ public Q_SLOTS:
      *                                actionCollection() );
      * \endcode
      */
-    virtual void configureToolbars(); // TODO KDE4: reimplement in KParts::MainWindow
+    virtual void configureToolbars();
 
     /**
      * Apply a state change

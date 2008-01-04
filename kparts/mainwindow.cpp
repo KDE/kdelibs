@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "mainwindow.h"
+#include <kedittoolbar.h>
 #include <kparts/mainwindow.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
@@ -41,19 +43,21 @@ namespace KParts
 class MainWindowPrivate
 {
 public:
-  MainWindowPrivate()
-  {
-    m_activePart = 0;
-    m_bShellGUIActivated = false;
-    m_helpMenu = 0;
-  }
-  ~MainWindowPrivate()
-  {
-  }
+    MainWindowPrivate()
+        : m_activePart(0),
+          m_bShellGUIActivated(false),
+          m_helpMenu(0),
+          toolBarEditor(0)
+    {
+    }
+    ~MainWindowPrivate()
+    {
+    }
 
-  QPointer<Part> m_activePart;
-  bool m_bShellGUIActivated;
-  KHelpMenu *m_helpMenu;
+    QPointer<Part> m_activePart;
+    bool m_bShellGUIActivated;
+    KHelpMenu *m_helpMenu;
+    QPointer<KEditToolBar> toolBarEditor;
 };
 }
 
@@ -181,6 +185,18 @@ void KParts::MainWindow::saveNewToolbarConfig()
     createGUI( d->m_activePart );
     KConfigGroup cg(KGlobal::config(), "");
     applyMainWindowSettings(cg);
+}
+
+void KParts::MainWindow::configureToolbars()
+{
+    KConfigGroup cg(KGlobal::config(), QString());
+    saveMainWindowSettings(cg);
+    if (!d->toolBarEditor) {
+      d->toolBarEditor = new KEditToolBar(guiFactory(), this);
+      d->toolBarEditor->setAttribute(Qt::WA_DeleteOnClose);
+      connect(d->toolBarEditor, SIGNAL(newToolBarConfig()), SLOT(saveNewToolbarConfig()));
+    }
+    d->toolBarEditor->show();
 }
 
 #include "mainwindow.moc"

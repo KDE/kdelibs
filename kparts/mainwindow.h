@@ -58,6 +58,9 @@ class KPARTS_EXPORT MainWindow : public KXmlGuiWindow, virtual public PartBase
    */
   virtual ~MainWindow();
 
+public Q_SLOTS:
+  virtual void configureToolbars();
+
 protected Q_SLOTS:
 
   /**

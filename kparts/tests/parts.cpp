@@ -2,6 +2,7 @@
 #include <kparts/event.h>
 
 #include "parts.h"
+#include <kactioncollection.h>
 
 #include <QtGui/QCheckBox>
 #include <QtCore/QFile>
@@ -32,7 +33,8 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "kpartstest_part1.rc" );
 
-    /*KAction * paBlah = */ //new KAction( "Blah", "filemail", 0, actionCollection(), "p1_blah" );
+    KAction* testAction = actionCollection()->addAction("p1_blah");
+    testAction->setText("Part1's action");
 }
 
 Part1::~Part1()

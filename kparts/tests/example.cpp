@@ -10,6 +10,7 @@
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
+#include <kxmlguifactory.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -17,6 +18,7 @@
 #include <kicon.h>
 
 Shell::Shell()
+    : KParts::MainWindow()
 {
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
@@ -61,6 +63,9 @@ Shell::Shell()
 
 //  (void)new KAction( "Yet another menu item", coll, "shell_yami" );
 //  (void)new KAction( "Yet another submenu item", coll, "shell_yasmi" );
+
+    KStandardAction::configureToolbars(this, SLOT(configureToolbars() ), actionCollection());
+    KStandardAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
 
     setCentralWidget( m_splitter );
     m_splitter->setMinimumSize( 400, 300 );
