@@ -268,8 +268,11 @@ QString lookForCache( const QString &filename )
 {
     kDebug() << "lookForCache " << filename;
     assert( filename.endsWith( ".docbook" ) );
+#ifndef Q_WS_WIN
+    // this check fails always on win32 : if it is for testing absolute path, QFileInfo::isAbsolute() should be used 
+    // anyway - why should a relative path not be valid 
     assert( filename.at( 0 ) == '/' );
-
+#endif
     QString cache = filename.left( filename.length() - 7 );
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
