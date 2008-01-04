@@ -476,12 +476,12 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     gbLayout->addWidget( maskType );
     m_buttonGroup->addButton( maskType );
     m_buttonIds.insert( maskType, KACLListView::Mask );
-    QRadioButton *namedUserType = new QRadioButton( i18n("Named User"), gb );
+    QRadioButton *namedUserType = new QRadioButton( i18n("Named user"), gb );
     namedUserType->setObjectName( QLatin1String( "namesUserType" ) );
     gbLayout->addWidget( namedUserType );
     m_buttonGroup->addButton( namedUserType );
     m_buttonIds.insert( namedUserType, KACLListView::NamedUser );
-    QRadioButton *namedGroupType = new QRadioButton( i18n("Named Group"), gb );
+    QRadioButton *namedGroupType = new QRadioButton( i18n("Named group"), gb );
     namedGroupType->setObjectName( QLatin1String( "namedGroupType" ) );
     gbLayout->addWidget( namedGroupType );
     m_buttonGroup->addButton( namedGroupType );

@@ -45,7 +45,7 @@ namespace KDEPrivate {
 KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
   : QObject() , m_builder(builder)
 {
-  m_toolbarAction = new KSelectAction(i18n("Add to toolbar"), this);
+  m_toolbarAction = new KSelectAction(i18n("Add to Toolbar"), this);
   connect(m_toolbarAction , SIGNAL(triggered(int)) , this , SLOT(slotAddToToolBar(int)));
 }
 
@@ -53,7 +53,7 @@ KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
 
 void KMenuMenuHandler::insertKMenu( KMenu *popup )
 {
-  popup->contextMenu()->addAction( i18n("Configure Shortcut") , this , SLOT( slotSetShortcut() ));
+  popup->contextMenu()->addAction( i18n("Configure Shortcut...") , this , SLOT( slotSetShortcut() ));
 
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(window)

@@ -13,7 +13,7 @@
    <item row="0" column="0" >
     <widget class="QLabel" name="commonNameTag" >
      <property name="text" >
-      <string>Common Name:</string>
+      <string>Common name:</string>
      </property>
     </widget>
    </item>
@@ -67,7 +67,7 @@
    <item row="2" column="0" >
     <widget class="QLabel" name="organizationalUnitTag" >
      <property name="text" >
-      <string>Organizational Unit:</string>
+      <string>Organizational unit:</string>
      </property>
     </widget>
    </item>
