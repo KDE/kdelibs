@@ -37,7 +37,7 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
-#include <qbytearray.h>
+#include <qbytearray.h>Hello äöü
 #include <qfile.h>
 #include <qdir.h>
 #include <qdatetime.h>
@@ -111,6 +111,34 @@ bool KConfigPrivate::lockLocal()
     }
     // anonymous object - pretend we locked it
     return true;
+}
+
+void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& destination,
+                                KConfigGroup *otherGroup) const
+{
+    KEntryMap& otherMap = otherGroup->config()->d_ptr->entryMap;
+    const int len = source.length();
+    const bool sameName = (destination == source);
+
+    foreach (const KEntryKey& key, entryMap.keys()) {
+        const QByteArray& group = key.mGroup;
+
+        if (!group.startsWith(source)) // nothing to do
+            continue;
+
+        // don't copy groups that start with the same prefix, but are not sub-groups
+        if (group.length() > len && group[len] != '\x1d')
+            continue;
+
+        KEntryKey newKey = key;
+
+        if (!sameName)
+            newKey.mGroup.replace(0, len, destination);
+
+        KEntry entry = entryMap[key];
+        entry.bDirty = true;
+        otherMap[newKey] = entry;
+    }
 }
 
 KConfig::KConfig( const QString& file, OpenFlags mode,

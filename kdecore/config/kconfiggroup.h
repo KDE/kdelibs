@@ -128,6 +128,21 @@ public:
     KDE_DEPRECATED void changeGroup( const QString &group );
     KDE_DEPRECATED void changeGroup( const char *group);
 
+    /**
+     * Copies the entries in this group to another config object.
+     * @param other The other config object to copy this group's entries to. @note @p other
+     *        @em can be either another group or a different file.
+     */
+    void copyTo(KConfigBase *other) const;
+
+    /**
+     * Changes the group that this group belongs to.
+     *
+     * @param parent the config object to place this group under. If @p parent is a KConfig it will be
+     *               promoted to a top-level group.
+     */
+    void reparent(KConfigBase* parent);
+
     /** 
      * @reimp
      */

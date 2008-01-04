@@ -57,6 +57,9 @@ public:
     void putData(const QByteArray& group, const char* key, const QByteArray& value,
                  KConfigBase::WriteConfigFlags flags, bool expand=false);
     QStringList groupList(const QByteArray& group) const;
+    // copies the entries from @p source to @p otherGroup changing all occurrences
+    // of @p source with @p destination
+    void copyGroup(const QByteArray& source, const QByteArray& destination, KConfigGroup *otherGroup) const;
 
 protected:
     KSharedPtr<KConfigBackend> mBackend;

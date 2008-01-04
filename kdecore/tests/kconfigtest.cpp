@@ -849,6 +849,47 @@ void KConfigTest::testAddConfigSources()
     QCOMPARE(basegrp2.readEntry("New Entry Base Only", ""), QString("SomeValue"));
 }
 
+void KConfigTest::testCopyTo()
+{
+    KConfig cf1("kconfigtest");
+    KConfigGroup original = cf1.group("Enum Types");
+
+    KConfigGroup copy = cf1.group("Enum Types Copy");
+    original.copyTo(&copy); // copy from one group to another
+    QCOMPARE(copy.entryMap(), original.entryMap());
+
+    KConfig cf2("copy_of_kconfigtest", KConfig::SimpleConfig);
+    QVERIFY(!cf2.hasGroup(original.name()));
+    QVERIFY(!cf2.hasGroup(copy.name()));
+
+    KConfigGroup newGroup = cf2.group(original.name());
+    original.copyTo(&newGroup); // copy from one file to another
+    QVERIFY(cf2.hasGroup(original.name()));
+    QVERIFY(!cf2.hasGroup(copy.name())); // make sure we didn't copy more than we wanted
+    QCOMPARE(newGroup.entryMap(), original.entryMap());
+}
+
+void KConfigTest::testReparent()
+{
+    KConfig cf("kconfigtest");
+    const QString name("Enum Types");
+    KConfigGroup group = cf.group(name);
+    const QMap<QString, QString> originalMap = group.entryMap();
+    KConfigGroup parent = cf.group("Parent Group");
+
+    QVERIFY(!parent.hasGroup(name));
+
+    QVERIFY(group.entryMap() == originalMap);
+
+    group.reparent(&parent); // see if it can be made a sub-group of another group
+    QVERIFY(parent.hasGroup(name));
+    QCOMPARE(group.entryMap(), originalMap);
+
+    group.reparent(&cf); // see if it can make it a top-level group again
+//    QVERIFY(!parent.hasGroup(name));
+    QCOMPARE(group.entryMap(), originalMap);
+}
+
 void KConfigTest::testKAboutDataOrganizationDomain()
 {
     KAboutData data( "app", 0, ki18n("program"), "version",
@@ -879,3 +920,4 @@ QList<QByteArray> KConfigTest::readLines()
     } while(!line.isEmpty());
     return lines;
 }
+
