@@ -5,6 +5,7 @@ Require=exec:/gs
 Comment=PDF to PostScript Converter
 Comment[bg]=Конвертор от PDF в PostScript 
 Comment[ca]=Convertidor de PDF a PostScript
+Comment[da]=PDF-til-PostScript-konvertering
 Comment[de]=Umwandlung von PDF in PostScript
 Comment[el]=Μετατροπέας από PostScript σε PDF
 Comment[eo]=Konvertilo de la dokumenttipo PDF al PS
