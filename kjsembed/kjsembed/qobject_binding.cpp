@@ -28,6 +28,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QVector>
 #include <QtCore/QDebug>
+#include <QWidget>
 
 #include "slotproxy.h"
 #include "eventproxy.h"
@@ -672,6 +673,9 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                 case QMetaType::QWidgetStar:
                 case QMetaType::QObjectStar: {
                     QVariant v(tp, param[0]);
+                    QWidget* widget = v.value< QWidget* >();
+                    if( widget )
+                        return KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned);
                     QObject* obj = v.value< QObject* >();
                     if( obj )
                         return KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
