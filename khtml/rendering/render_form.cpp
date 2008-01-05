@@ -498,7 +498,7 @@ void LineEditWidget::slotCheckSpelling()
     Sonnet::Dialog *spellDialog = new Sonnet::Dialog(new Sonnet::BackgroundChecker(this), 0);
     connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)), this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
     connect(spellDialog, SIGNAL(misspelling( const QString&, int)), this, SLOT(spellCheckerMisspelling(const QString &,int)));
-    connect(spellDialog, SIGNAL(done(const QString&)), this, SLOT(spellCheckerDone(const QString&)));
+    connect(spellDialog, SIGNAL(done(const QString&)), this, SLOT(slotSpellCheckDone(const QString&)));
     connect(spellDialog, SIGNAL(cancel()), this, SLOT(spellCheckerFinished()));
     connect(spellDialog, SIGNAL(stop()), this, SLOT(spellCheckerFinished()));
     spellDialog->setBuffer(text());
