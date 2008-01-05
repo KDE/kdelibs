@@ -180,7 +180,7 @@ Word Filter::wordAtPosition( unsigned int pos ) const
     // currentPosition == -1 means we reached the beginning
     int start = (currentPosition < 0) ? 0 : ++currentPosition;
     currentPosition = pos ;
-    if ( m_buffer.at( currentPosition ).isLetter() ) {
+    if ( currentPosition < m_buffer.length() && m_buffer.at( currentPosition ).isLetter() ) {
         while ( m_buffer.at( currentPosition ).isLetter() ) {
             foundWord.append( m_buffer.at( currentPosition ) );
             ++currentPosition;
