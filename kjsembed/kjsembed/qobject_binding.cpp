@@ -670,12 +670,14 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         case QVariant::UserType: {
             int tp = QMetaType::type( metaMember.typeName() );
             switch( tp ) {
-                case QMetaType::QWidgetStar:
-                case QMetaType::QObjectStar: {
+                case QMetaType::QWidgetStar: {
                     QVariant v(tp, param[0]);
                     QWidget* widget = v.value< QWidget* >();
                     if( widget )
                         return KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned);
+                } // fall through
+                case QMetaType::QObjectStar: {
+                    QVariant v(tp, param[0]);
                     QObject* obj = v.value< QObject* >();
                     if( obj )
                         return KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
