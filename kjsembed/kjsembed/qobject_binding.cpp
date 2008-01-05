@@ -28,6 +28,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QVector>
 #include <QtCore/QDebug>
+#include <QWidget>
 
 #include "slotproxy.h"
 #include "eventproxy.h"
