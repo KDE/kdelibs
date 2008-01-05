@@ -222,6 +222,17 @@ namespace Kross {
             bool setButtons(const QString& buttons);
 
             /**
+             * Set the text of a button.
+             *
+             * \param buttons string that defines the displayed buttons. For example the
+             * string may look like "Ok" or "Ok|Cancel" or "Yes|No|Cancel".
+             * \param text string that should be used as button text.
+             * \return true if the passed \p buttons string was valid and setting the
+             * button text was successfully else false is returned.
+             */
+            bool setButtonText(const QString& button, const QString& text);
+
+            /**
              * Set the face type of the dialog.
              *
              * \param facetype the face type which could be "Auto", "Plain", "List",
@@ -261,6 +272,12 @@ namespace Kross {
              * \return the new QWidget page instance.
              */
             QWidget* addPage(const QString& name, const QString& header = QString(), const QString& iconname = QString());
+
+            /**
+             * Set the \p newMainWidget QWidget as main widget. This is only needed if
+             * you like to replace the KPageDialog page-widget with your own widget.
+             */
+            void setMainWidget(QWidget *newMainWidget);
 
             /**
              * Shows the dialog as a modal dialog, blocking until the user

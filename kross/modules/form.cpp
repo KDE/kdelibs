@@ -339,6 +339,18 @@ bool FormDialog::setButtons(const QString& buttons)
     return true;
 }
 
+bool FormDialog::setButtonText(const QString& button, const QString& text)
+{
+    int i = metaObject()->indexOfEnumerator("ButtonCode");
+    Q_ASSERT( i >= 0 );
+    QMetaEnum e = metaObject()->enumerator(i);
+    int v = e.keysToValue( button.toUtf8() );
+    if( v < 0 )
+        return false;
+    KDialog::setButtonText( (KDialog::ButtonCode) v, text);
+    return true;
+}
+
 bool FormDialog::setFaceType(const QString& facetype)
 {
     int i = KPageView::staticMetaObject.indexOfEnumerator("FaceType");
@@ -385,6 +397,11 @@ QWidget* FormDialog::addPage(const QString& name, const QString& header, const Q
     d->items.insert(name, item);
 
     return item->widget();
+}
+
+void FormDialog::setMainWidget(QWidget *newMainWidget)
+{
+    KDialog::setMainWidget(newMainWidget);
 }
 
 QString FormDialog::result()
