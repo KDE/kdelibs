@@ -224,8 +224,15 @@ namespace Kross {
             /**
              * Set the text of a button.
              *
-             * \param buttons string that defines the displayed buttons. For example the
-             * string may look like "Ok" or "Ok|Cancel" or "Yes|No|Cancel".
+             * Sample how to change the buttons of a dialog;
+             * \code
+             * dialog.setButtons("Yes|No|Cancel")
+             * dialog.setButtonText("Yes","Overwrite")
+             * dialog.setButtonText("No","Skip")
+             * dialog.setButtonText("Cancel","Abort")
+             * \endcode
+             *
+             * \param button string that defines the button that should be changed.
              * \param text string that should be used as button text.
              * \return true if the passed \p buttons string was valid and setting the
              * button text was successfully else false is returned.
