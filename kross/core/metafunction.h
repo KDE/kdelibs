@@ -78,7 +78,7 @@ namespace Kross {
                 m_data[20] = 0;    // eod
 
                 // data
-                m_stringData = QByteArray("PythonFunction\0", 15);
+                m_stringData = QByteArray("ScriptFunction\0", 15);
                 m_stringData += m_signature;
                 m_stringData += QByteArray("\0\0", 2);
 
