@@ -256,7 +256,7 @@ void PreviewJobPrivate::startPreview()
 
   // Read configuration value for the maximum allowed size
     KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
-    maximumSize = cg.readEntry( "MaximumSize", 1024*1024LL /* 1MB */ );
+    maximumSize = cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
 
     if (bNeedCache)
     {
