@@ -296,7 +296,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     connect( d->m_treeView, SIGNAL( customContextMenuRequested( const QPoint & )),
              SLOT( _k_slotContextMenu( const QPoint & )));
 
-    connect( d->m_urlCombo, SIGNAL( textChanged( const QString& ) ),
+    connect( d->m_urlCombo, SIGNAL( editTextChanged( const QString& ) ),
              SLOT( _k_slotComboTextChanged( const QString& ) ));
     connect( d->m_urlCombo, SIGNAL( activated( const QString& )),
              SLOT( _k_slotUrlActivated( const QString& )));
