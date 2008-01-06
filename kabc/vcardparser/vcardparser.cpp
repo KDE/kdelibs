@@ -19,6 +19,7 @@
 */
 
 #include <qregexp.h>
+#include <qtextcodec.h>
 
 #include <kmdcodec.h>
 
@@ -129,31 +130,44 @@ VCard::List VCardParser::parseVCards( const QString& text )
 
         removeEscapes( value );
 
+        QByteArray output;
+        bool wasBase64Encoded = false;
+
         params = vCardLine.parameterList();
         if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
-          QByteArray input, output;
-          input = value.local8Bit();
+          QByteArray input;
+          input = QCString(value.latin1());
           if ( vCardLine.parameter( "encoding" ).lower() == "b" ||
-               vCardLine.parameter( "encoding" ).lower() == "base64" )
+               vCardLine.parameter( "encoding" ).lower() == "base64" ) {
             KCodecs::base64Decode( input, output );
+            wasBase64Encoded = true;
+          }
           else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" ) {
             // join any qp-folded lines
             while ( value.at( value.length() - 1 ) == '=' && it != linesEnd ) {
               value = value.remove( value.length() - 1, 1 ) + (*it);
               ++it;
             }
-            input = value.local8Bit();
+            input = QCString(value.latin1());
             KCodecs::quotedPrintableDecode( input, output );
           }
-          if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
-            vCardLine.setValue( QString::fromUtf8( output.data(), output.size() ) );
+        } else {
+          output = QCString(value.latin1());
+        }
+
+        if ( params.findIndex( "charset" ) != -1 ) { // have to convert the data
+          QTextCodec *codec =
+            QTextCodec::codecForName( vCardLine.parameter( "charset" ).latin1() );
+          if ( codec ) {
+            vCardLine.setValue( codec->toUnicode( output ) );
           } else {
-            vCardLine.setValue( output );
+            vCardLine.setValue( QString::fromUtf8( output ) );
           }
-        } else if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
-          vCardLine.setValue( QString::fromUtf8( value.ascii() ) );
-        } else
-          vCardLine.setValue( value );
+        } else if ( wasBase64Encoded ) {
+            vCardLine.setValue( output );
+        } else {  // if charset not given, assume it's in UTF-8 (as used in previous KDE versions)
+            vCardLine.setValue( QString::fromUtf8( output ) );
+        }
 
         currentVCard.addLine( vCardLine );
       }

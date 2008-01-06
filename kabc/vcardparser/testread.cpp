@@ -70,7 +70,7 @@ int main( int argc, char **argv )
   QString text;
 
   QTextStream s( &file );
-  s.setEncoding( QTextStream::UnicodeUTF8 );
+  s.setEncoding( QTextStream::Latin1 );
   text = s.read();
   file.close();
 

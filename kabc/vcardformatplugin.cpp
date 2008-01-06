@@ -41,7 +41,7 @@ bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
   QString data;
 
   QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t.setEncoding( QTextStream::Latin1 );
   data = t.read();
 
   VCardConverter converter;
@@ -60,7 +60,7 @@ bool VCardFormatPlugin::loadAll( AddressBook*, Resource *resource, QFile *file )
   QString data;
 
   QTextStream t( file );
-  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t.setEncoding( QTextStream::Latin1 );
   data = t.read();
 
   VCardConverter converter;
