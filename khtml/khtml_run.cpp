@@ -50,7 +50,14 @@ void KHTMLRun::foundMimeType( const QString &_type )
 {
     Q_ASSERT(!hasFinished());
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
-    if ( static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KRun::url(), mimeType ) )
+
+    // Disable autoDelete for processObjectRequest, because it may open a
+    // dialog
+    bool autoDeleteWasEnabled = autoDelete();
+    setAutoDelete( false );
+    bool requestProcessed = static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KRun::url(), mimeType );
+    setAutoDelete( autoDeleteWasEnabled );
+    if ( requestProcessed )
         setFinished( true );
     else {
         if ( hasFinished() ) // abort was called (this happens with the activex fallback for instance)
