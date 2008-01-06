@@ -40,10 +40,7 @@ namespace KABC {
   QFile file( "myfile.vcf" );
   file.open( IO_ReadOnly );
   
-  QTextStream s( &file );
-  s.setEncoding( QTextStream::UnicodeUTF8 );
-
-  QString data = s.read();
+  QString data = file.readAll();
 
   VCardConverter converter;
   Addressee::List list = converter.parseVCards( data );
