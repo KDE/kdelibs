@@ -392,7 +392,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), this);
     d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true, this);
-    connect( d->locationEdit, SIGNAL( textChanged( const QString& ) ),
+    connect( d->locationEdit, SIGNAL( editTextChanged( const QString& ) ),
              SLOT( _k_slotLocationChanged( const QString& )) );
 
     d->updateLocationWhatsThis();
@@ -989,10 +989,10 @@ void KFileWidgetPrivate::setLocationText( const QString& text )
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
     // the KDirOperator's view-selection in there
-    QObject::disconnect( locationEdit, SIGNAL( textChanged( const QString& ) ),
+    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
                          q, SLOT( _k_slotLocationChanged( const QString& ) ) );
     locationEdit->setCurrentIndex( 0 );
-    QObject::connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
+    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
                       q, SLOT( _k_slotLocationChanged( const QString& )) );
     locationEdit->setEditText( text );
 
