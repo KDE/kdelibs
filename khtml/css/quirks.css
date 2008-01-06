@@ -16,7 +16,7 @@ img[align="right"] {
     margin-left: 3px;
 }
 
-input:not([type="image"]), textarea, button, select {
+input:not([type="image"]):not([type="radio"]):not([type="checkbox"]):not([type="file"]), textarea, button, select:not([size="0"]):not([size="1"]), select[multiple] {
   box-sizing: border-box;
 }
 
