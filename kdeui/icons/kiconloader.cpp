@@ -217,15 +217,18 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
     }
 
     int iconSize = pix.size().width();
-    int overlaySize = 22;
-    if (iconSize >= 256) {
-        overlaySize = 64;
-    } else if (iconSize >= 128) {
-        overlaySize = 32;
-    } else if (iconSize <= 22) {
+    int overlaySize;
+
+    if (iconSize < 32) {
         overlaySize = 8;
-    } else if (iconSize < 32) {
-        overlaySize = 12;
+    } else if (iconSize <= 48) {
+        overlaySize = 16;
+    } else if (iconSize <= 96) {
+        overlaySize = 22;
+    } else if (iconSize < 256) {
+        overlaySize = 32;
+    } else {
+        overlaySize = 64;
     }
 
     QPainter painter(&pix);
