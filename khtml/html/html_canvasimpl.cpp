@@ -1210,15 +1210,15 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     float angle2 = std::atan2(line2.dy(), line2.dx());
 
     // The angle between by line1 and line2
-    float span = angle2 - angle1;
-    if (span < -M_PI)
-        span = (2 * M_PI + span);
-    else if (span > M_PI)
-        span = -(2 * M_PI - span);
+    float theta = angle2 - angle1;
+    if (theta < -M_PI)
+        theta = (2 * M_PI + theta);
+    else if (theta > M_PI)
+        theta = -(2 * M_PI - theta);
 
     // If the angle between the lines is 180 degrees, we'll just add a line
     // segment to (x1, y1).
-    if (qFuzzyCompare(qAbs(span), float(M_PI)))
+    if (qFuzzyCompare(qAbs(theta), float(M_PI)))
     {
         path.lineTo(x1, y1);
         return;
@@ -1227,7 +1227,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     // If the angle between the lines is 0 degrees, we'll add an infinitely
     // long line segment from the current position in the direction of line2.
     // This is to match Safari behavior.
-    if (qFuzzyCompare(span, float(0.0)))
+    if (qFuzzyCompare(theta, float(0.0)))
     {
         // ### We'll define infinity as 100,000 coordinate space units from
         //     the current position for now.
@@ -1239,33 +1239,24 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     }
 
     // The angle to the center of the circle
-    float angle = angle1 + span / 2.0;
+    float angle = angle1 + theta / 2.0;
 
     // The length of the hypotenuse of the right triangle formed by the points
     // (x1, y1), the center point of the circle, and one of the tangent points.
     float h = radius / std::sin(qAbs(angle1 - angle));
 
     // The distance from (x1, y1) to the tangent points on line1 and line2.
-    float tDist = std::cos(qAbs(angle1 -angle)) * h;
-
-    // QLineF::length() uses sqrt() to compute the length, so we'll save the results
-    // since we need them twice.
-    float line1Len = line1.length();
-    float line2Len = line2.length();
-
-    // If either of the lines is too short, we can't do it
-    if (line1Len < tDist || (line2Len + .01) < tDist)
-    {
-       path.lineTo(x1, y1);
-       return;
-    }
+    float tDist = std::cos(qAbs(angle1 - angle)) * h;
 
     // The center point of the circle
     QPointF centerPoint(x1 + std::cos(angle) * h, y1 + std::sin(angle) * h);
 
-    // The tangent points on line1 and line2
-    QPointF t1 = line1.pointAt(tDist / line1Len);
-    QPointF t2 = line2.pointAt(tDist / line2Len);
+    // The tangent points on line1 and line2.
+    // Note that we don't check if the lines are long enough for the circle to actually
+    // tangent them; like CoreGraphics, we treat the points as points on two infinitely
+    // long lines that intersect one another at (x1, y1).
+    QPointF t1 = line1.pointAt(tDist / line1.length());
+    QPointF t2 = line2.pointAt(tDist / line2.length());
 
     // The lines from the center point of the circle to the tangent points on line1 and line2.
     QLineF toT1(centerPoint, t1);
@@ -1274,7 +1265,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     // The start and end angles of the arc
     float startAngle = std::atan2(toT1.dy(), toT1.dx());
     float endAngle   = std::atan2(toT2.dy(), toT2.dx());
-    bool counterClockWise = span > 0;
+    bool counterClockWise = theta > 0;
 
     int dummy; // Exception code from arc()
     arc(centerPoint.x(), centerPoint.y(), radius, startAngle, endAngle, counterClockWise, dummy);
