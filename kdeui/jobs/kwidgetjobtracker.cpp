@@ -100,7 +100,7 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
         return;
     }
 
-    if (!d->progressWidget[job]->keepOpenChecked) {
+    if (!d->progressWidget[job]->keepOpenChecked && !d->progressWidget[job]->beingDeleted) {
         delete d->progressWidget[job];
     }
 

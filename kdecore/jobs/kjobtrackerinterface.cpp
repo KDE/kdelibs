@@ -99,10 +99,6 @@ void KJobTrackerInterface::unregisterJob(KJob *job)
                         this, SLOT(totalAmount(KJob*, KJob::Unit, qulonglong)));
     QObject::disconnect(job, SIGNAL(processedAmount(KJob*, KJob::Unit, qulonglong)),
                         this, SLOT(processedAmount(KJob*, KJob::Unit, qulonglong)));
-    QObject::disconnect(job, SIGNAL(totalSize(KJob*, qulonglong)),
-                        this, SLOT(totalSize(KJob*, qulonglong)));
-    QObject::disconnect(job, SIGNAL(processedSize(KJob*, qulonglong)),
-                        this, SLOT(processedSize(KJob*, qulonglong)));
     QObject::disconnect(job, SIGNAL(percent(KJob*, unsigned long)),
                         this, SLOT(percent(KJob*, unsigned long)));
     QObject::disconnect(job, SIGNAL(speed(KJob*, unsigned long)),
