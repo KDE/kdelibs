@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     for(int i = 0; i < args->count(); ++i)
         files << args->arg(i);
 
-if(files.count() < 1) files << "/home/kde4/svn/_src/kdelibs/kross/ext/test.es";
+//if(files.count() < 1) files << "/home/kde4/svn/_src/kdelibs/kross/ext/test.es";
 
     // If no options are defined.
     if(files.count() < 1) {
