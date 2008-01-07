@@ -89,11 +89,12 @@
 1201        konqtree
 1202        konqueror
 1203        libkonq
-1204        kdesktop
+1204        plasma
 1205        kdesud
 1206        kdesu
-1207        kdesktop (Minicli)
+1207        krunner
 1208        kcontrol
+1209        libplasma
 1211        konsole
 1212        kwin
 1213        kappfinder
