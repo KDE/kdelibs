@@ -57,6 +57,20 @@ void KStatusBarJobTracker::registerJob(KJob *job)
     d->progressWidget.insert(job, vi);
 }
 
+void KStatusBarJobTracker::unregisterJob(KJob *job)
+{
+    if (!d->progressWidget.contains(job))
+        return;
+
+    if (d->currentProgressWidget == d->progressWidget[job])
+        d->currentProgressWidget = 0;
+
+    if (!d->progressWidget[job]->beingDeleted)
+        delete d->progressWidget[job];
+
+    d->progressWidget.remove(job);
+}
+
 QWidget *KStatusBarJobTracker::widget(KJob *job)
 {
     if (!d->progressWidget.contains(job)) {

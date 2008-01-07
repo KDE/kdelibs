@@ -63,14 +63,17 @@ class KStatusBarJobTracker::Private::ProgressWidget
 public:
     ProgressWidget(KJob *job, KStatusBarJobTracker *object, QWidget *parent)
         : q(object), job(job), widget(0), progressBar(0), label(0), button(0),
-          box(0), stack(0), /*totalSize(-1),*/ mode(NoInformation)
+          box(0), stack(0), /*totalSize(-1),*/ mode(NoInformation), beingDeleted(false)
     {
         init(job, parent);
     }
 
     ~ProgressWidget()
     {
+        beingDeleted = true;
         delete widget;
+
+        q->unregisterJob(job);
     }
 
     KStatusBarJobTracker *const q;
@@ -86,6 +89,7 @@ public:
     //qlonglong totalSize;
 
     StatusBarModes mode;
+    bool beingDeleted;
 
     void init(KJob *job, QWidget *parent);
 

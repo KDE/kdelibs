@@ -62,6 +62,13 @@ public:
     virtual void registerJob(KJob *job);
 
     /**
+     * Unregister a job from this tracker.
+     *
+     * @param job the job to unregister
+     */
+    virtual void unregisterJob(KJob *job);
+
+    /**
      * The widget associated to this tracker.
      *
      * @return the widget displaying the job progresses
