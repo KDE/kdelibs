@@ -32,6 +32,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <QtCore/QFileInfo>
 #include <kshell.h>
 #include <QtCore/QList>
+#include <QtCore/QUrl>
 
 class MyPair {
 public:
@@ -135,12 +136,12 @@ int main(int argc, char **argv) {
         QString pwd_buffer = QDir::currentPath();
         QFileInfo file( args->arg( 0 ) );
 
-        QString catalogs;
-        catalogs += KStandardDirs::locate( "dtd", "customization/catalog" );
+        QByteArray catalogs;
+        catalogs += QUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
         catalogs += ' ';
-        catalogs += KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
+        catalogs += QUrl::fromLocalFile( KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/catalog.xml" ) ).toEncoded();
 
-        setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).constData(), 1);
+        setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
         QString exe;
 #if defined( XMLLINT )
         exe = XMLLINT;
@@ -153,7 +154,7 @@ int main(int argc, char **argv) {
         if ( QFileInfo( exe ).isExecutable() ) {
             QDir::setCurrent( file.absolutePath() );
             QString cmd = exe;
-            cmd += " --catalogs --valid --noout ";
+            cmd += " --valid --noout ";
 #ifdef Q_OS_WIN
             cmd += file.fileName();
 #else

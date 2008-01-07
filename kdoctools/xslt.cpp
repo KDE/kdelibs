@@ -178,21 +178,22 @@ QString splitOut(const QString &parsed, int index)
 }
 
 void fillInstance(KComponentData &ins, const QString &srcdir) {
-    QString catalogs;
+    QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
-        catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
+        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         catalogs += ' ';
-        catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
+        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
         ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
-        catalogs += srcdir +"/customization/catalog";
+        catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         catalogs += ' ';
-        catalogs += srcdir + "/docbook/xml-dtd-4.2/docbook.cat";
+        catalogs += QUrl::fromLocalFile( srcdir + "/docbook/xml-dtd-4.2/catalog.xml" ).toEncoded();
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
-    xmlLoadCatalogs(QFile::encodeName(catalogs).constData());
+    setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
+    xmlInitializeCatalog();
 }
 
 static QIODevice *getBZip2device(const QString &fileName )
