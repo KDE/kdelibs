@@ -10,7 +10,7 @@ set(krosscore_LIB_SRCS
 )
 
 kde4_add_library(krosscore SHARED ${krosscore_LIB_SRCS})
-target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
+target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} QtScript)
 set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS krosscore DESTINATION ${LIB_INSTALL_DIR})
 

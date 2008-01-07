@@ -326,3 +326,10 @@ var testobj2 = TestObject2
 
 // print the test-results
 tester.printResult();
+
+/*
+    f = Kross.module('forms');
+    d = f.createDialog('TestGuiFormDialog');
+    d.setButtons('Ok|Cancel');
+    d.exec_loop();
+*/

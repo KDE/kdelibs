@@ -20,12 +20,11 @@
 #ifndef KROSS_SCRIPT_H
 #define KROSS_SCRIPT_H
 
+#include "errorinterface.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtCore/QObject>
-
-#include "errorinterface.h"
 
 namespace Kross {
 

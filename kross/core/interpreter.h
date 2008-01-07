@@ -20,12 +20,12 @@
 #ifndef KROSS_INTERPRETER_H
 #define KROSS_INTERPRETER_H
 
+#include "errorinterface.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtCore/QMap>
-
-#include "errorinterface.h"
+#include <QtCore/QObject>
 
 namespace Kross {
 
@@ -40,7 +40,7 @@ namespace Kross {
      * a \a Interpreter before the interpreter-backend itself is
      * loaded.
      */
-    class KROSSCORE_EXPORT InterpreterInfo : public ErrorInterface
+    class KROSSCORE_EXPORT InterpreterInfo
     {
         public:
 
@@ -55,12 +55,13 @@ namespace Kross {
                     /**
                     * Map of options.
                     */
-                    typedef QMap<QString, Option* > Map;
+                    typedef QMap< QString, Option* > Map;
 
                     /**
                      * Constructor.
                      *
-                     * \param comment A comment that describes the option.
+                     * \param comment A localized comment that describes
+                     * the option.
                      * \param value The QVariant value this option has.
                      */
                     Option(const QString& comment, const QVariant& value)
@@ -75,8 +76,30 @@ namespace Kross {
 
             /**
              * Constructor.
+             *
+             * \param interpretername The name of the interpreter. The name is
+             * used internaly as unique identifier for the interpreter and
+             * could be for example "python", "ruby" or "javascript".
+             * \param funcPtr A pointer to the entry function within the
+             * library. The entry function each interpreter-backend does
+             * provide looks like this;
+             * \code
+             * typedef void* (*def_interpreter_func)(int version, Kross::InterpreterInfo*);
+             * \endcode
+             * The def_interpreter_func function will be used by Kross to load
+             * the interpreter's library. The passed version is used to be able
+             * to versioning details and we use the KROSS_VERSION defined within
+             * the krossconfig.h file here.
+             * \param wildcard File wildcard that identifies a by the interpreter
+             * supported scripting files. As example Python does define here
+             * "*.py" while Java does define "*.java *.class".
+             * \param mimetypes The file mimetype that identifies a by the interpreter
+             * supported scripting files. As example Python does define "text/x-python"
+             * here while Ruby defines "application/x-ruby" and Java "application/java".
+             * \param options The optional list of options supported by the interpreter
+             * to configure the backend.
              */
-            InterpreterInfo(const QString& interpretername, const QString& library, const QString& wildcard, QStringList mimetypes, Option::Map options);
+            InterpreterInfo(const QString& interpretername, void* funcPtr, const QString& wildcard, const QStringList& mimetypes, const Option::Map& options = Option::Map());
 
             /**
              * Destructor.
@@ -98,21 +121,24 @@ namespace Kross {
 
             /**
              * List of mimetypes this interpreter supports.
-             *
-             * \return QStringList with mimetypes like
-             *         "application/javascript".
+             * \return QStringList with mimetypes like "application/javascript".
              */
             const QStringList mimeTypes() const;
 
             /**
              * \return true if an \a Option with that \p key exists else false.
              */
-            bool hasOption(const QString& key) const;
+            bool hasOption(const QString& name) const;
 
             /**
              * \return the option defined with \p name .
              */
             Option* option(const QString& name) const;
+
+            /**
+             * \return the reference to the intenal used map with all options.
+             */
+            Option::Map& options();
 
             /**
              * \return the value of the option defined with \p name . If there
@@ -122,13 +148,12 @@ namespace Kross {
             const QVariant optionValue(const QString& name, const QVariant& defaultvalue = QVariant()) const;
 
             /**
-             * \return a map of options.
-             */
-            Option::Map options();
-
-            /**
              * \return the \a Interpreter instance this \a InterpreterInfo
-             * is the describer for.
+             * is the describer for. If the interpreter that implements the
+             * scripting backend isn't loaded yet, this method will trigger
+             * the loading of the interpreter's library. Note that this
+             * mthod may return NULL if there is no library for that
+             * interpreter installed or if the library is incompatible.
              */
             Interpreter* interpreter();
 
@@ -145,11 +170,13 @@ namespace Kross {
      * Each scripting backend needs to inheritate it's own
      * interpreter and implement it.
      *
-     * The Interpreter will be managed by the \a Kross::Manager
-     * class.
+     * The Interpreter will be managed by the \a Manager
+     * class and does provide a factory method to create
+     * \a Script implementations.
      */
-    class KROSSCORE_EXPORT Interpreter : public ErrorInterface
+    class KROSSCORE_EXPORT Interpreter : public QObject, public ErrorInterface
     {
+            Q_OBJECT
         public:
 
             /**
@@ -180,9 +207,6 @@ namespace Kross {
              * \return The from \a Script inherited instance.
              */
             virtual Script* createScript(Action* Action) = 0;
-
-            /// \internal hook to keep easier binary compatibility.
-            virtual void virtual_hook(int id, void* data);
 
         private:
             /// \internal d-pointer class.

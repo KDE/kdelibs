@@ -20,9 +20,9 @@
 #ifndef KROSS_ERRORINTERFACE_H
 #define KROSS_ERRORINTERFACE_H
 
-
-
 #include "krossconfig.h"
+
+#include <QtCore/QString>
 
 namespace Kross {
 

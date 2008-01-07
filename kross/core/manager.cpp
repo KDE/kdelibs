@@ -21,15 +21,17 @@
 #include "interpreter.h"
 #include "action.h"
 #include "actioncollection.h"
-//#include "variant.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QArgument>
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
 #include <QtCore/QFileInfo>
+#include <QtCore/QPointer>
+#include <QtCore/QLibrary>
+#include <QtCore/QCoreApplication>
 
-#include <klibloader.h>
+#include <kstandarddirs.h>
 
 extern "C"
 {
@@ -59,15 +61,59 @@ namespace Kross {
 
 }
 
+Q_GLOBAL_STATIC(Manager, _self);
 
 Manager& Manager::self()
 {
-    K_GLOBAL_STATIC(Manager, _self)
-    return *_self;
+    return *_self();
+}
+
+void* loadLibrary(const char* libname, const char* functionname)
+{
+    QLibrary lib(libname);
+    lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
+    if( ! lib.load() ) {
+        const QString err = QString("Error: %1").arg(lib.errorString());
+
+        //TODO move that functionality out of Kross since we like to be Qt-only
+        foreach(QString dir, KStandardDirs().resourceDirs("module")) {
+            lib.setFileName( QFileInfo(dir, libname).filePath() );
+            lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
+            if( lib.load() )
+                break;
+        }
+
+        /*
+        if( ! lib.isLoaded() ) {
+            foreach(QString path, QCoreApplication::instance()->libraryPaths()) {
+                lib.setFileName( QFileInfo(path, libname).filePath() );
+                lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
+                if( lib.load() )
+                    break;
+            }
+        }
+        */
+
+        if( ! lib.isLoaded() ) {
+            //#ifdef KROSS_INTERPRETER_DEBUG
+            if( strcmp(functionname, "krossinterpreter") == 0 )
+                krossdebug( QString("Kross Interpreter '%1' not available: %2").arg(libname).arg(err) );
+            else if( strcmp(functionname, "krossmodule") == 0 )
+                krossdebug( QString("Kross Module '%1' not available: %2").arg(libname).arg(err) );
+            else
+                krosswarning( QString("Failed to load unknown type of '%1' library: %2").arg(libname).arg(err) );
+            //#endif
+            return 0;
+        }
+    }
+    void* funcPtr = lib.resolve(functionname);
+    Q_ASSERT(funcPtr);
+    return funcPtr;
 }
 
 Manager::Manager()
     : QObject()
+    , QScriptable()
     , ChildrenInterface()
     , d( new Private() )
 {
@@ -75,109 +121,79 @@ Manager::Manager()
     d->collection = new ActionCollection("main");
 
 #ifdef KROSS_PYTHON_LIBRARY
-    QString pythonlib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_PYTHON_LIBRARY)) );
-    if(! pythonlib.isEmpty()) { // If the Kross Python plugin exists we offer is as supported scripting language.
-        InterpreterInfo::Option::Map pythonoptions;
+    if( void* funcPtr = loadLibrary(KROSS_PYTHON_LIBRARY, "krossinterpreter") ) {
         d->interpreterinfos.insert("python",
             new InterpreterInfo("python",
-                pythonlib, // library
+                funcPtr, // library
                 "*.py", // file filter-wildcard
-                QStringList() << "text/x-python", // mimetypes
-                pythonoptions // options
+                QStringList() << "text/x-python" // mimetypes
             )
         );
-    } else {
-        #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("Python interpreter for kross is unavailable");
-        #endif
     }
 #endif
 
 #ifdef KROSS_RUBY_LIBRARY
-    QString rubylib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_RUBY_LIBRARY)) );
-    if(! rubylib.isEmpty()) { // If the Kross Ruby plugin exists we offer is as supported scripting language.
-        InterpreterInfo::Option::Map rubyoptions;
-        rubyoptions.insert("safelevel",
-            new InterpreterInfo::Option(
-                i18n("Level of safety of the Ruby interpreter"),
-                QVariant(0) // 0 -> unsafe, 4 -> very safe
-            )
-        );
+    if( void* funcPtr = loadLibrary(KROSS_RUBY_LIBRARY, "krossinterpreter") ) {
+        InterpreterInfo::Option::Map options;
+        options.insert("safelevel", new InterpreterInfo::Option(
+            i18n("Level of safety of the Ruby interpreter"),
+            QVariant(0) )); // 0 -> unsafe, 4 -> very safe
         d->interpreterinfos.insert("ruby",
             new InterpreterInfo("ruby",
-                rubylib, // library
+                funcPtr, // library
                 "*.rb", // file filter-wildcard
                 QStringList() << /* "text/x-ruby" << */ "application/x-ruby", // mimetypes
-                rubyoptions // options
+                options // options
             )
         );
-    } else {
-        #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("Ruby interpreter for kross is unavailable");
-        #endif
     }
 #endif
 
 #ifdef KROSS_JAVA_LIBRARY
-    QString javalib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_JAVA_LIBRARY)) );
-    if(! javalib.isEmpty()) {
-        InterpreterInfo::Option::Map javaoptions;
+    if( void* funcPtr = loadLibrary(KROSS_JAVA_LIBRARY, "krossinterpreter") ) {
         d->interpreterinfos.insert("java",
             new InterpreterInfo("java",
-                javalib, // library
+                funcPtr, // library
                 "*.java *.class *.jar", // file filter-wildcard
-                QStringList() << "application/java", // mimetypes
-                javaoptions // options
+                QStringList() << "application/java" // mimetypes
             )
         );
-    } else {
-        #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("KDE Java interpreter for kross is unavailable");
-        #endif
     }
 #endif
 
 #ifdef KROSS_KJS_LIBRARY
-    QString kjslib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_KJS_LIBRARY)) );
-    if(! kjslib.isEmpty()) { // If the Kjs plugin exists we offer is as supported scripting language.
-        InterpreterInfo::Option::Map kjsoptions;
-        kjsoptions.insert("restricted",
-            new InterpreterInfo::Option(
-                i18n("Restricted mode for untrusted scripts"),
-                QVariant(true) // per default enabled
-            )
-        );
+    if( void* funcPtr = loadLibrary(KROSS_KJS_LIBRARY, "krossinterpreter") ) {
         d->interpreterinfos.insert("javascript",
             new InterpreterInfo("javascript",
-                kjslib, // library
+                funcPtr, // library
                 "*.js", // file filter-wildcard
-                QStringList() << "application/javascript", // mimetypes
-                kjsoptions // options
+                QStringList() << "application/javascript" // mimetypes
             )
         );
-    } else {
-        #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("KDE JavaScript interpreter for kross is unavailable");
-        #endif
     }
 #endif
 
 #ifdef KROSS_FALCON_LIBRARY
-    QString falconlib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_FALCON_LIBRARY)) );
-    if(! falconlib.isEmpty()) {
-        InterpreterInfo::Option::Map falconptions;
+    if( void* funcPtr = loadLibrary(KROSS_FALCON_LIBRARY, "krossinterpreter") ) {
         d->interpreterinfos.insert("falcon",
             new InterpreterInfo("falcon",
-                falconlib, // library
+                funcPtr, // library
                 "*.fal", // file filter-wildcard
-                QStringList() << "application/x-falcon", // mimetypes
-                falconptions // options
-                )
-            );
-    } else {
-        #ifdef KROSS_INTERPRETER_DEBUG
-            krossdebug("Falcon interpreter for kross is unavailable");
-        #endif
+                QStringList() << "application/x-falcon" // mimetypes
+            )
+        );
+    }
+#endif
+
+#ifdef KROSS_QTSCRIPT_LIBRARY
+    if( void* funcPtr = loadLibrary(KROSS_QTSCRIPT_LIBRARY, "krossinterpreter") ) {
+        d->interpreterinfos.insert("qtscript",
+            new InterpreterInfo("qtscript",
+                funcPtr, // library
+                "*.es", // file filter-wildcard
+                QStringList() << "application/ecmascript" // mimetypes
+            )
+        );
     }
 #endif
 
@@ -186,7 +202,7 @@ Manager::Manager()
     for(; it != d->interpreterinfos.end(); ++it)
         if( it.value() )
             d->interpreters << it.key();
-    //d->interpreters.sort();
+    d->interpreters.sort();
 
     // publish ourself.
     ChildrenInterface::addObject(this, "Kross");
@@ -280,7 +296,9 @@ QObject* Manager::module(const QString& modulename)
         return 0;
     }
 
-    QString libraryname = QString("krossmodule%1").arg(modulename).toLower();
+    QByteArray libraryname = QString("krossmodule%1").arg(modulename).toLower().toLatin1();
+
+#if 0
     KLibLoader* loader = KLibLoader::self();
     KLibrary* lib = loader->library( libraryname, QLibrary::ExportExternalSymbolsHint );
     if( ! lib ) { //FIXME this fallback-code should be in KLibLoader imho.
@@ -305,20 +323,46 @@ QObject* Manager::module(const QString& modulename)
         krosswarning( QString("Failed to load module object '%1'").arg(modulename) );
         return 0;
     }
-
-    //krossdebug( QString("Manager::module Module successfully loaded: modulename=%1 module.objectName=%2 module.className=%3").arg(modulename).arg(module->objectName()).arg(module->metaObject()->className()) );
-    d->modules.insert(modulename, module);
-    return module;
+#else
+    if( void* funcPtr = loadLibrary(libraryname, "krossmodule") ) {
+        def_module_func func = (def_module_func) funcPtr;
+        Q_ASSERT( func );
+        QObject* module = (QObject*) (func)(); // call the function
+        Q_ASSERT( module );
+        //krossdebug( QString("Manager::module Module successfully loaded: modulename=%1 module.objectName=%2 module.className=%3").arg(modulename).arg(module->objectName()).arg(module->metaObject()->className()) );
+        d->modules.insert(modulename, module);
+        return module;
+    }
+    else {
+        krosswarning( QString("Failed to load module '%1'").arg(modulename) );
+    }
+#endif
+    return 0;
 }
 
-bool Manager::executeScriptFile(const QString& file)
+bool Manager::executeScriptFile(const QUrl& file)
 {
-    krossdebug( QString("Manager::executeScriptFile() file='%1'").arg(file) );
-    Action* action = new Action(0 /*no parent*/, QUrl(file));
+    krossdebug( QString("Manager::executeScriptFile() file='%1'").arg(file.toString()) );
+    Action* action = new Action(0 /*no parent*/, file);
     action->trigger();
     bool ok = ! action->hadError();
     delete action; //action->delayedDestruct();
     return ok;
+}
+
+void Manager::addQObject(QObject* obj, const QString &name)
+{
+    this->addObject(obj, name);
+}
+
+QObject* Manager::qobject(const QString &name) const
+{
+    return this->object(name);
+}
+
+QStringList Manager::qobjectNames() const
+{
+    return this->objects().keys();
 }
 
 #include "manager.moc"

@@ -22,7 +22,6 @@
 
 #include <kross/core/kross_export.h>
 
-
 #include <klocale.h>
 #include <kicon.h>
 
@@ -59,7 +58,7 @@ namespace Kross {
     // The version number of Kross. For example the interpreters use
     // it do be sure there are linked against the correct core version
     // and if the numbers don't match, the interpreter is not loaded.
-    #define KROSS_VERSION 6
+    #define KROSS_VERSION 7
 
     // The export macro for interpreter plugins.
     #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \
@@ -83,6 +82,7 @@ namespace Kross {
     #define KROSS_KJS_LIBRARY "krosskjs"
     #define KROSS_JAVA_LIBRARY "libkrossjava"
     #define KROSS_FALCON_LIBRARY "krossfalcon"
+    #define KROSS_QTSCRIPT_LIBRARY "krossqts"
 
 }
 

@@ -25,6 +25,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
+#include <klocale.h>
+#include <kicon.h>
 #include <kmimetype.h>
 
 using namespace Kross;
@@ -98,6 +100,7 @@ namespace Kross {
 
 Action::Action(QObject* parent, const QString& name, const QDir& packagepath)
     : QAction(parent)
+    , QScriptable()
     , ChildrenInterface()
     , ErrorInterface()
     , d( new Private() )
@@ -323,9 +326,24 @@ QString Action::currentPath() const
     return d->currentpath;
 }
 
-QMap<QString, QVariant>& Action::options() const
+QVariantMap Action::options() const
 {
     return d->options;
+}
+
+void Action::addQObject(QObject* obj, const QString &name)
+{
+    this->addObject(obj, name);
+}
+
+QObject* Action::qobject(const QString &name) const
+{
+    return this->object(name);
+}
+
+QStringList Action::qobjectNames() const
+{
+    return this->objects().keys();
 }
 
 QVariant Action::option(const QString& name, const QVariant& defaultvalue)
@@ -392,7 +410,7 @@ bool Action::initialize()
     if( ! interpreter ) {
         InterpreterInfo* info = Manager::self().interpreterInfo(d->interpretername);
         if( info )
-            setError(i18n("Failed to load interpreter \"%1\": %2", d->interpretername, info->errorMessage()));
+            setError(i18n("Failed to load interpreter \"%1\"", d->interpretername));
         else
             setError(i18n("No such interpreter \"%1\"", d->interpretername));
         return false;

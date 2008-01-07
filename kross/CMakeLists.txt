@@ -13,3 +13,6 @@ add_subdirectory( test )
 # KDE Javascript using kjs and kjsembed
 # test kjsembed I think
 add_subdirectory( kjs )
+
+# QtScript backend
+add_subdirectory( qts )

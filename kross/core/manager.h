@@ -20,14 +20,14 @@
 #ifndef KROSS_MANAGER_H
 #define KROSS_MANAGER_H
 
-
 #include <QtCore/QStringList>
 #include <QtCore/QMap>
 #include <QtCore/QObject>
+#include <QtCore/QUrl>
+#include <QtScript/QScriptable>
 
 #include "krossconfig.h"
 #include "childreninterface.h"
-
 
 namespace Kross {
 
@@ -45,24 +45,14 @@ namespace Kross {
      * interpreter like python or ruby. While \a Action implements
      * a flexible abstract container to deal with single script files.
      */
-    class KROSSCORE_EXPORT Manager : public QObject, public ChildrenInterface
+    class KROSSCORE_EXPORT Manager
+        : public QObject
+        , public QScriptable
+        , public ChildrenInterface
     {
             Q_OBJECT
 
-        protected:
-
-            /**
-             * Protected constructor. Use \a self() to access the Manager
-             * singleton instance.
-             */
-            Manager();
-
         public:
-
-            /**
-             * Destructor.
-             */
-            ~Manager();
 
             /**
              * Return the Manager instance. Always use this
@@ -157,7 +147,11 @@ namespace Kross {
             * Execute a script file.
             * \param file The script file that should be executed.
             */
-            bool executeScriptFile(const QString& file = QString());
+            bool executeScriptFile(const QUrl& file = QUrl());
+
+            void addQObject(QObject* obj, const QString &name = QString());
+            QObject* qobject(const QString &name) const;
+            QStringList qobjectNames() const;
 
         Q_SIGNALS:
 
@@ -176,9 +170,24 @@ namespace Kross {
             class Private;
             /// \internal d-pointer instance.
             Private* const d;
+
+        public:
+
+            /**
+             * The constructor. Use \a self() to access the Manager
+             * singleton instance and don't call this direct.
+             */
+            explicit Manager();
+
+            /**
+             * Destructor.
+             */
+            virtual ~Manager();
     };
 
 }
+
+Q_DECLARE_METATYPE(Kross::Manager*)
 
 #endif
 

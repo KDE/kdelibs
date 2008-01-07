@@ -32,8 +32,8 @@ namespace Kross {
      * Interface for managing \a Object collections.
      *
      * The \a Manager as well as the \a Action class inherit this interface
-     * to allow to attach QObject instances that should be published to
-     * the scripting code.
+     * to allow to attach QObject to a global or a local context related
+     * instances that should be published to the scripting code.
      */
     class KROSSCORE_EXPORT ChildrenInterface
     {

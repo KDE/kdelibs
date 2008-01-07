@@ -20,13 +20,13 @@
 #ifndef KROSS_ACTION_H
 #define KROSS_ACTION_H
 
-
 #include <QtCore/QVariant>
 #include <QtCore/QObject>
 #include <QtCore/QDir>
-#include <QtXml/QDomAttr>
-#include <QtGui/QAction>
 #include <QtCore/QUrl>
+#include <QtGui/QAction>
+#include <QtXml/QDomAttr>
+#include <QtScript/QScriptable>
 
 #include "errorinterface.h"
 #include "childreninterface.h"
@@ -89,7 +89,11 @@ namespace Kross {
      * QVariant result = action->callFunction("myfunction", QVariantList()<<"Arg");
      * \endcode
      */
-    class KROSSCORE_EXPORT Action : public QAction, public ChildrenInterface, public ErrorInterface
+    class KROSSCORE_EXPORT Action
+        : public QAction
+        , public QScriptable
+        , public ChildrenInterface
+        , public ErrorInterface
     {
             Q_OBJECT
 
@@ -136,38 +140,6 @@ namespace Kross {
              * of this \a Action instance.
              */
             QDomElement toDomElement() const;
-
-            /**
-             * \return a map of options this \a Action defines.
-             * The options are returned call-by-ref, so you are able to
-             * manipulate them.
-             */
-            QMap<QString, QVariant>& options() const;
-
-            /**
-             * \return the value of the option defined with \p name .
-             * If there doesn't exists an option with such a name,
-             * the \p defaultvalue is returned.
-             */
-            QVariant option(const QString& name, const QVariant& defaultvalue = QVariant());
-
-            /**
-             * Set the \a Interpreter::Option value.
-             */
-            bool setOption(const QString& name, const QVariant& value);
-
-            /**
-             * \return the list of functionnames.
-             */
-            QStringList functionNames();
-
-            /**
-             * Call a function in the script.
-             *
-             * \param name The name of the function which should be called.
-             * \param args The optional list of arguments.
-             */
-            QVariant callFunction(const QString& name, const QVariantList& args = QVariantList());
 
             /**
              * Initialize the \a Script instance.
@@ -274,6 +246,42 @@ namespace Kross {
              */
             QString currentPath() const;
 
+            void addQObject(QObject* obj, const QString &name = QString());
+            QObject* qobject(const QString &name) const;
+            QStringList qobjectNames() const;
+
+            /**
+             * \return a map of options this \a Action defines.
+             * The options are returned call-by-ref, so you are able to
+             * manipulate them.
+             */
+            QVariantMap options() const;
+
+            /**
+             * \return the value of the option defined with \p name .
+             * If there doesn't exists an option with such a name,
+             * the \p defaultvalue is returned.
+             */
+            QVariant option(const QString& name, const QVariant& defaultvalue = QVariant());
+
+            /**
+             * Set the \a Interpreter::Option value.
+             */
+            bool setOption(const QString& name, const QVariant& value);
+
+            /**
+             * \return the list of functionnames.
+             */
+            QStringList functionNames();
+
+            /**
+             * Call a function in the script.
+             *
+             * \param name The name of the function which should be called.
+             * \param args The optional list of arguments.
+             */
+            QVariant callFunction(const QString& name, const QVariantList& args = QVariantList());
+
         Q_SIGNALS:
 
             /**
@@ -316,6 +324,8 @@ namespace Kross {
     };
 
 }
+
+Q_DECLARE_METATYPE(Kross::Action*)
 
 #endif
 
