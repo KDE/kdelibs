@@ -206,8 +206,9 @@ void CanvasContext2DImpl::resetContext(int width, int height)
     PaintState defaultState;
     beginPath();
     defaultState.infinityTransform = false;
-    defaultState.clipPath.addRect(0, 0, width, height);
+    defaultState.clipPath = QPainterPath();
     defaultState.clipPath.setFillRule(Qt::WindingFill);
+    defaultState.clipping = false;
 
     defaultState.globalAlpha = 1.0f;
     defaultState.globalCompositeOperation = QPainter::CompositionMode_SourceOver;
@@ -257,13 +258,16 @@ QPainter* CanvasContext2DImpl::acquirePainter()
     PaintState& state = activeState();
 
     if (dirty & DrtClip) {
-        // Reset the transform so the clip path is in the
-        // right coordinate system
-        workPainter.resetTransform();
-        workPainter.setClipPath(state.clipPath);
+        if (state.clipping) {
+            // Reset the transform so the clip path is in the
+            // right coordinate system
+            workPainter.resetTransform();
+            workPainter.setClipPath(state.clipPath);
 
-        // Restore the transform..
-        dirty |= DrtTransform;
+            // Restore the transform..
+            dirty |= DrtTransform;
+        } else
+            workPainter.setClipping(false);
     }
 
     if (dirty & DrtTransform) {
@@ -1097,8 +1101,12 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
 
     QRect shapeBounds = transformedPath.controlPointRect().toAlignedRect();
 
-    QRect clipRect = state.clipPath.controlPointRect().toAlignedRect();
-    clipRect &= QRect(QPoint(), canvasImage->size());
+    QRect clipRect;
+    if (state.clipping) {
+        clipRect = state.clipPath.controlPointRect().toAlignedRect();
+        clipRect &= QRect(QPoint(), canvasImage->size());
+    } else
+        clipRect = QRect(QPoint(), canvasImage->size());
 
     // We need the clip rect to be large enough so that items that are partially or
     // completely outside the canvas will still cast shadows into it when they should.
@@ -1170,8 +1178,13 @@ void CanvasContext2DImpl::clip()
     t.translate(-0.0001*cnt, cnt*0.0001);
     pathCopy = t.map(pathCopy);*/
 
-    state.clipPath = state.clipPath.intersected(state.transform.map(pathCopy));
+    if (state.clipping)
+        state.clipPath = state.clipPath.intersected(state.transform.map(pathCopy));
+    else
+        state.clipPath = state.transform.map(pathCopy);
+
     state.clipPath.setFillRule(Qt::WindingFill);
+    state.clipping = true;
     dirty |= DrtClip;
 }
 

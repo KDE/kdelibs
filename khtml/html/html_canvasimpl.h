@@ -311,6 +311,7 @@ private:
         bool          infinityTransform; // Marks that the transform has become invalid,
                                          // and should be treated as identity.
         QPainterPath  clipPath; // This is in -physical- coordinates
+        bool          clipping; // If clipping is enabled
 
         // Compositing state
         float globalAlpha;
