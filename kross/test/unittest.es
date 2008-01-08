@@ -170,15 +170,27 @@ tester.assert(self.callFunction("name"), self.name());
 tester.assert(self.callFunction("code"), self.code());
 tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
-//TODO: WTF? seems the actual length of the returned array is always undefined. Looks like a QtScript bug :-(
-var stringlist = self.callFunction("functionNames")
+//TODO work around it somehow or wait for a fix
+// following test fails;
+// 1. We return a QStringList within a QVariant.
+// 2. While QtScript presents us a Variant type, the content can't be accessed other then as string.
+// 3. according to the dox this should work.
+// 4. The whole problem seems to be that the Variant prototype is to unflexible.
+// 5. Where is the documentation for such types and how to deal with them? :-(
+//var stringlist = self.callFunction("functionNames");
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails
 //println(stringlist.prototype); //undefined
 //println(stringlist instanceof Object); //true
 //println(stringlist instanceof String); //false
 //println(stringlist instanceof Array); //false
+//println(stringlist instanceof Variant); //true
 //for(a in stringlist) { println(a); } //nothing
 //println(stringlist); //prints the correct output of the stringlist
+//println(stringlist.toString()); //prints the correct output of the stringlist as string
+
+//println( testobj1.func_qvariant_qvariant( Variant(new Array("One","Two")) ) );
+//println( Variant(new Array("One","Two")) );
+//println( Variant("test"));
 
 self.callFunction("setIconName",new Array("MyIconName"));
 tester.assert(self.callFunction("iconName"), "variant(QString, MyIconName)");
