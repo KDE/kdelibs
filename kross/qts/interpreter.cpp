@@ -59,7 +59,7 @@ namespace Kross {
                 m_kross = m_engine->importExtension("kross");
                 if( m_engine->hasUncaughtException() ) {
                     handleException();
-                    return m_engine;
+                    delete m_engine;
                     m_engine = 0;
                     return false;
                 }
