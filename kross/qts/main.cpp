@@ -74,8 +74,6 @@ int main(int argc, char **argv)
     for(int i = 0; i < args->count(); ++i)
         files << args->arg(i);
 
-//if(files.count() < 1) files << "/home/kde4/svn/_src/kdelibs/kross/ext/test.es";
-
     // If no options are defined.
     if(files.count() < 1) {
         qWarning() << "Syntax:" << KCmdLineArgs::appName() << "scriptfile1 [scriptfile2] [scriptfile3] ...";
@@ -87,7 +85,7 @@ int main(int argc, char **argv)
     QScriptEngine* engine = new QScriptEngine();
     QScriptValue global = engine->globalObject();
 
-    qDebug()<<"QLibraryInfo::PluginsPath="<<QLibraryInfo::location(QLibraryInfo::PluginsPath);
+    //qDebug()<<"QLibraryInfo::PluginsPath="<<QLibraryInfo::location(QLibraryInfo::PluginsPath);
     //app->addLibraryPath("/home/kde4/kde4/lib/kde4/");
 
     engine->importExtension("kross").toString();

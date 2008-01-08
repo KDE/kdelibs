@@ -54,9 +54,7 @@ namespace Kross {
                 delete m_engine;
                 m_engine = new QScriptEngine();
 
-//kapp->addLibraryPath("/home/kde4/kde4/lib/kde4/");
-
-                m_kross = m_engine->importExtension("kross");
+                m_engine->importExtension("kross");
                 if( m_engine->hasUncaughtException() ) {
                     handleException();
                     delete m_engine;
@@ -64,12 +62,14 @@ namespace Kross {
                     return false;
                 }
 
-                Q_ASSERT( m_kross.isValid() );
-
                 QScriptValue global = m_engine->globalObject();
+                m_kross = global.property("Kross");
+                Q_ASSERT( m_kross.isValid() );
+                Q_ASSERT( m_kross.isObject() );
+                Q_ASSERT( m_kross.isQObject() );
 
                 m_self = m_engine->newQObject( m_script->action() );
-                global.property("Kross").setProperty("self", m_self);
+                global.setProperty("self", m_self, QScriptValue::ReadOnly|QScriptValue::Undeletable);
 
                 { // publish the global objects.
                     QHash< QString, QObject* > objects = Manager::self().objects();
@@ -148,8 +148,7 @@ QStringList EcmaScript::functionNames()
         return QStringList();
     }
     QStringList names;
-    QScriptValue global = d->m_engine->globalObject();
-    QScriptValueIterator it(global);
+    QScriptValueIterator it( d->m_self );
     while( it.hasNext() ) {
         it.next();
         if( it.value().isFunction() )
@@ -165,18 +164,17 @@ QVariant EcmaScript::callFunction(const QString& name, const QVariantList& args)
         return QVariant();
     }
 
-    QScriptValue global = d->m_engine->globalObject();
-    QScriptValue function = global.property(name);
+    QScriptValue function = d->m_self.property(name);
     if( ! function.isFunction() ) {
         krosswarning( QString("EcmaScript::callFunction No such function '%1'").arg(name) );
         return QVariant();
     }
 
     QScriptValueList arguments;
-    //TODO args=>arguments
-    QScriptValue result = function.call(global, arguments);
-    //TODO return result
-    return QVariant();
+    foreach(QVariant v, args)
+        arguments << d->m_engine->newVariant(v);
+    QScriptValue result = function.call(d->m_self, arguments);
+    return result.toVariant();
 }
 
 /******************************************************************************************

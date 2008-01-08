@@ -37,7 +37,7 @@ function UnitTest()
     this.assertArray = function(actual, expected) {
         if(actual.length != expected.length) {
             this.failed(actual, expected);
-            print("Array-Length does not match");
+            print("Array-Length does not match: actual=" + actual.length + " expected=" + expected.length);
         }
         else {
             var failed = false;
@@ -164,6 +164,17 @@ v["key10"] = ["one","two"];
 v["key9"] = [];
 tester.assertMap(testobj1.func_qvariantmap_qvariantmap(v), v)
 tester.assertMap(testobj1.func_qvariantmap_qvariantmap([]), [])
+
+// misc tests
+tester.assert(self.callFunction("name"), self.name());
+tester.assert(self.callFunction("code"), self.code());
+tester.assert(self.callFunction("isEnabled"), self.isEnabled());
+
+//TODO: WTF? seems the actual length of the returned array is always undefined. Looks like a QtScript bug :-(
+//tester.assertArray(self.callFunction("functionNames"), self.functionNames());
+
+println( self.callFunction("setIconName",new Array("MyIconName")) );
+tester.assert(self.callFunction("iconName"), "variant(QString, MyIconName)");
 
 // print the test-results
 tester.printResult();
