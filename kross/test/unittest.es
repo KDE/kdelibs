@@ -173,8 +173,13 @@ tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 //TODO: WTF? seems the actual length of the returned array is always undefined. Looks like a QtScript bug :-(
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames());
 
-println( self.callFunction("setIconName",new Array("MyIconName")) );
+self.callFunction("setIconName",new Array("MyIconName"));
 tester.assert(self.callFunction("iconName"), "variant(QString, MyIconName)");
+
+var objectCountBefore = self.qobjectNames().length;
+self.addQObject(self);
+tester.assert(objectCountBefore + 1, self.qobjectNames().length);
+tester.assert(self.qobject(self.name()).file(), self.file());
 
 // print the test-results
 tester.printResult();
