@@ -171,7 +171,14 @@ tester.assert(self.callFunction("code"), self.code());
 tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
 //TODO: WTF? seems the actual length of the returned array is always undefined. Looks like a QtScript bug :-(
-//tester.assertArray(self.callFunction("functionNames"), self.functionNames());
+var stringlist = self.callFunction("functionNames")
+//tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails
+//println(stringlist.prototype); //undefined
+//println(stringlist instanceof Object); //true
+//println(stringlist instanceof String); //false
+//println(stringlist instanceof Array); //false
+//for(a in stringlist) { println(a); } //nothing
+//println(stringlist); //prints the correct output of the stringlist
 
 self.callFunction("setIconName",new Array("MyIconName"));
 tester.assert(self.callFunction("iconName"), "variant(QString, MyIconName)");
