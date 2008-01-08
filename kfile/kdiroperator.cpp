@@ -1563,12 +1563,12 @@ void KDirOperator::setupActions()
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
     d->actionCollection->addAction("short view",  shortAction);
     shortAction->setIcon(KIcon(QLatin1String("view-list-icons")));
-    connect(shortAction, SIGNAL(activated()), SLOT(_k_slotSimpleView()));
+    connect(shortAction, SIGNAL(triggered()), SLOT(_k_slotSimpleView()));
 
     KToggleAction *detailedAction = new KToggleAction(i18n("Detailed View"), this);
     d->actionCollection->addAction("detailed view", detailedAction);
     detailedAction->setIcon(KIcon(QLatin1String("view-list-details")));
-    connect(detailedAction, SIGNAL(activated()), SLOT(_k_slotDetailedView()));
+    connect(detailedAction, SIGNAL(triggered ()), SLOT(_k_slotDetailedView()));
 
     QActionGroup* viewGroup = new QActionGroup(this);
     shortAction->setActionGroup(viewGroup);
