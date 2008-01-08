@@ -150,7 +150,8 @@ KPageWidgetItem* KConfigDialog::KConfigDialogPrivate::addPageInternal(QWidget *p
 
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
-  item->setIcon( KIcon( pixmapName ) );
+  if ( !pixmapName.isEmpty() )
+    item->setIcon( KIcon( pixmapName ) );
 
   q->KPageDialog::addPage( item );
   return item;
