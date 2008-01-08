@@ -103,6 +103,13 @@ public:
     void addEntry(Entry *entry);
 
     /**
+     * Removes an association to an entry
+     * 
+     * @param entry Entry to remove from this feed
+     */
+    void removeEntry(Entry * entry);
+
+    /**
      * Retrieves the list of associated entries.
      *
      * If the feed loading hasn't completed yet, this method may return

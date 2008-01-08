@@ -76,7 +76,7 @@ public:
      *
      * @return Feed used by this loader
      */
-    const Feed *feed() const;
+    Feed *feed() const;
 
 Q_SIGNALS:
     /**

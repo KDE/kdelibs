@@ -298,7 +298,7 @@ private:
     void registerEntry(Entry *entry);
     void unregisterEntry(Entry *entry);
     void mergeProviders(Provider::List providers);
-    void mergeEntries(Entry::List entries, const Feed *feed, const Provider *provider);
+    void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
     void shutdown();
 
     bool entryCached(Entry *entry);

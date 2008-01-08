@@ -50,7 +50,7 @@ void EntryLoader::load(const Provider *provider, Feed *feed)
     m_jobdata.clear();
 
     KUrl stuffurl = feed->feedUrl();
-    //kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
+    kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
 
     KIO::TransferJob *job = KIO::get(stuffurl, KIO::NoReload, KIO::HideProgressInfo);
     connect(job, SIGNAL(result(KJob *)),
@@ -59,7 +59,7 @@ void EntryLoader::load(const Provider *provider, Feed *feed)
             SLOT(slotJobData(KIO::Job *, const QByteArray &)));
 }
 
-const Feed *EntryLoader::feed() const
+Feed *EntryLoader::feed() const
 {
     return m_feed;
 }

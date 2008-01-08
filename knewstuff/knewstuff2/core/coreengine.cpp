@@ -216,6 +216,13 @@ void CoreEngine::loadEntries(Provider *provider)
         return;
     }
 
+    if (provider != m_provider_index[pid(provider)]) {
+        // this is the cached provider, and a new provider has been loaded from the internet
+        // also, this provider's feeds have already been loaded including it's entries
+        m_provider_cache.removeAll(provider); // just in case it's still in there
+        return;
+    }
+
     QStringList feeds = provider->feeds();
     for (int i = 0; i < feeds.count(); i++) {
         Feed *feed = provider->downloadUrlFeed(feeds.at(i));
@@ -351,13 +358,14 @@ void CoreEngine::slotEntriesLoaded(KNS::Entry::List list)
     EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
     if (!loader) return;
     const Provider *provider = loader->provider();
-    const Feed *feed = loader->feed();
+    Feed *feed = loader->feed();
     delete loader;
     m_activefeeds--;
     kDebug(550) << "entriesloaded m_activefeeds: " << m_activefeeds;
 
-    //kDebug(550) << "Provider source " << provider->name().representation();
-    //kDebug(550) << "Feed source " << feed->name().representation();
+    kDebug(550) << "Provider source " << provider->name().representation();
+    kDebug(550) << "Feed source " << feed->name().representation();
+    kDebug(550) << "Feed data: " << feed;
 
     mergeEntries(list, feed, provider);
 }
@@ -892,8 +900,8 @@ void CoreEngine::mergeProviders(Provider::List providers)
             }
             // oldprovider can now be deleted, see entry hit case
             // also take it out of m_provider_cache and m_provider_index
-            m_provider_cache.removeAll(oldprovider);
-            delete oldprovider;
+            //m_provider_cache.removeAll(oldprovider);
+            //delete oldprovider;
         } else {
             if (m_cachepolicy != CacheNever) {
                 kDebug(550) << "CACHE: miss provider " << p->name().representation();
@@ -949,13 +957,15 @@ bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
     return false;
 }
 
-void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provider *provider)
+void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
 {
+    kDebug(550) << "merging entries: ";
     for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
         // TODO: find entry in entrycache, replace if needed
         // don't forget marking as 'updateable'
         Entry *e = (*it);
         // set it to Installed if it's in the registry
+        // FIXME: just because it's in m_entry_index, does not mean it's in the registry...
         if (m_entry_index.contains(id(e))) {
             // see if the one online is newer (higher version, release, or release date)
             Entry *oldentry = m_entry_index[id(e)];
@@ -963,10 +973,12 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 
             if (entryChanged(oldentry, e)) {
                 e->setStatus(Entry::Updateable);
+                emit signalEntryChanged(e);
             } else {
                 e->setStatus(oldentry->status());
             }
             emit signalEntryLoaded(e, feed, provider);
+            feed->removeEntry(oldentry);
         } else {
             e->setStatus(Entry::Downloadable);
 
@@ -985,6 +997,9 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
                     // FIXME: cachedentry can now be deleted, but it's still in the list!
                     // FIXME: better: assigne all values to 'e', keeps refs intact
                 }
+                kDebug() << "removing entry " << cachedentry->name().representation() << " from feed";
+                // take cachedentry out of the feed
+                feed->removeEntry(cachedentry);
             } else {
                 if (m_cachepolicy != CacheNever) {
                     //kDebug(550) << "CACHE: miss entry " << e->name().representation();
