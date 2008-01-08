@@ -889,9 +889,11 @@ void CoreEngine::mergeProviders(Provider::List providers)
                 kDebug(550) << "CACHE: update provider";
                 cacheProvider(p);
                 emit signalProviderChanged(p);
-                // FIXME: oldprovider can now be deleted, see entry hit case
-                // also need to take it out of m_provider_cache and m_provider_index
             }
+            // oldprovider can now be deleted, see entry hit case
+            // also take it out of m_provider_cache and m_provider_index
+            m_provider_cache.removeAll(oldprovider);
+            delete oldprovider;
         } else {
             if (m_cachepolicy != CacheNever) {
                 kDebug(550) << "CACHE: miss provider " << p->name().representation();
