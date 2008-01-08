@@ -1465,7 +1465,7 @@ QString iss = QString();
 
 void KCryptoConfig::slotYourImport() {
 
-   QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-pkcs12");
+   QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-pkcs12", this);
    if (certFile.isEmpty())
       return;
 
@@ -1551,7 +1551,8 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
 
    // For now, we will only export to PKCS#12
    QString certFile = KFileDialog::getSaveFileName(QString(),
-		                                   "application/x-pkcs12");
+		                                   "application/x-pkcs12",
+                                                   this);
    if (!certFile.isEmpty() && !pkcs->toFile(certFile))
       KMessageBox::sorry(this, i18n("Export failed."), i18n("SSL"));
 
@@ -1761,7 +1762,7 @@ void KCryptoConfig::slotYourPass() {
 
 
 void KCryptoConfig::slotCAImport() {
-    QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-x509-ca-cert");
+    QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-x509-ca-cert", this);
 
     if (certFile.isEmpty())
         return;
