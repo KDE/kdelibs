@@ -150,8 +150,8 @@ void ItemsView::buildContents()
 
     m_root = new QWidget(this);
     m_root->setBackgroundRole(QPalette::Base);
-    QGridLayout* _layout = new QGridLayout(m_root);
-    _layout->setVerticalSpacing (10);
+    QVBoxLayout* _layout = new QVBoxLayout(m_root);
+    _layout->setSpacing (10);
 
     if (m_currentFeed != NULL) {
         Entry::List entries = m_currentFeed->entries();
@@ -176,9 +176,15 @@ void ItemsView::buildContents()
             Entry* entry = (*it);
 
             if (entry->name().representation().toLower().contains(m_searchText.toLower())) {
+                QHBoxLayout * itemLayout = new QHBoxLayout(m_root);
+                _layout->addLayout(itemLayout);
+
                 EntryView *part = new EntryView(m_root);
                 part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
-                _layout->addWidget(part, row*2, 1, 2, 1);
+                itemLayout->addWidget(part);
+
+                QVBoxLayout * previewLayout = new QVBoxLayout(m_root);
+                itemLayout->insertLayout(0, previewLayout);
 
                 KDXSButton *dxsbutton = new KDXSButton(m_root);
                 dxsbutton->setEntry(entry);
@@ -193,10 +199,9 @@ void ItemsView::buildContents()
                     f->setFixedSize(64, 64);
                     connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
                             f, SLOT(setPixmap(const QPixmap&)));
-                    _layout->addWidget(f, row*2, 0);
+                    previewLayout->addWidget(f);
                 }
-                _layout->setRowStretch(row*2, 1);
-                _layout->addWidget(dxsbutton, row*2+1, 0);
+                previewLayout->addWidget(dxsbutton);
 
                 part->setEntry(entry);
                 m_views.insert(entry, part);
