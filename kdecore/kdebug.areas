@@ -437,6 +437,7 @@
 
 # Kopete
 14000       kopete
+14001       kopete (contactlist)
 14010       libkopete
 14100       kopete (gadu)
 14101       kopete (gadu - raw protocol)
