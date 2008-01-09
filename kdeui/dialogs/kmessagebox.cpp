@@ -43,6 +43,38 @@
 #include <X11/Xlib.h>
 #endif
 
+// Some i18n filters, that standard button texts are piped through
+// (the new KGuiItem object with filtered text is created from the old one).
+
+// i18n: Filter for the Yes-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_YES(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-yes", "%1", src.text() ) );
+
+// i18n: Filter for the No-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_NO(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-no", "%1", src.text() ) );
+
+// i18n: Filter for the Continue-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_CONTINUE(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-continue", "%1", src.text() ) );
+
+// i18n: Filter for the Cancel-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_CANCEL(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-cancel", "%1", src.text() ) );
+
+// i18n: Called after the button texts in standard message dialogs
+// have been filtered by the messages above. Not visible to user.
+#define I18N_POST_BUTTON_FILTER \
+    Q_UNUSED( i18nc( "@action:button post-filter", "." ) );
+
  /**
   * Easy MessageBox Dialog.
   *
@@ -352,8 +384,8 @@ int KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
 int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
-                           const KGuiItem &buttonYes,
-                           const KGuiItem &buttonNo,
+                           const KGuiItem &buttonYes_,
+                           const KGuiItem &buttonNo_,
                            const QString &dontAskAgainName,
                            Options options)
 {
@@ -361,6 +393,10 @@ int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     if ( !shouldBeShownYesNo(dontAskAgainName, res) ) {
         return res;
     }
+
+    I18N_FILTER_BUTTON_YES(buttonYes_, buttonYes)
+    I18N_FILTER_BUTTON_NO(buttonNo_, buttonNo)
+    I18N_POST_BUTTON_FILTER
 
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
@@ -410,9 +446,9 @@ int KMessageBox::questionYesNoCancel(QWidget *parent,
 int KMessageBox::questionYesNoCancelWId(WId parent_id,
                           const QString &text,
                           const QString &caption,
-                          const KGuiItem &buttonYes,
-                          const KGuiItem &buttonNo,
-                          const KGuiItem &buttonCancel,
+                          const KGuiItem &buttonYes_,
+                          const KGuiItem &buttonNo_,
+                          const KGuiItem &buttonCancel_,
                           const QString &dontAskAgainName,
                           Options options)
 {
@@ -420,6 +456,11 @@ int KMessageBox::questionYesNoCancelWId(WId parent_id,
     if ( !shouldBeShownYesNo(dontAskAgainName, res) ) {
         return res;
     }
+
+    I18N_FILTER_BUTTON_YES(buttonYes_, buttonYes)
+    I18N_FILTER_BUTTON_NO(buttonNo_, buttonNo)
+    I18N_FILTER_BUTTON_CANCEL(buttonCancel_, buttonCancel)
+    I18N_POST_BUTTON_FILTER
 
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog= new KDialog(parent, Qt::Dialog);
@@ -498,8 +539,8 @@ int KMessageBox::warningYesNoList(QWidget *parent, const QString &text,
 int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
                               const QStringList &strlist,
                               const QString &caption,
-                              const KGuiItem &buttonYes,
-                              const KGuiItem &buttonNo,
+                              const KGuiItem &buttonYes_,
+                              const KGuiItem &buttonNo_,
                               const QString &dontAskAgainName,
                               Options options)
 {
@@ -512,6 +553,10 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     if ( !shouldBeShownYesNo(dontAskAgainName, res) ) {
         return res;
     }
+
+    I18N_FILTER_BUTTON_YES(buttonYes_, buttonYes)
+    I18N_FILTER_BUTTON_NO(buttonNo_, buttonNo)
+    I18N_POST_BUTTON_FILTER
 
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
@@ -584,13 +629,17 @@ int KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
 int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
                              const QStringList &strlist,
                              const QString &caption,
-                             const KGuiItem &buttonContinue,
-                             const KGuiItem &buttonCancel,
+                             const KGuiItem &buttonContinue_,
+                             const KGuiItem &buttonCancel_,
                              const QString &dontAskAgainName,
                              Options options)
 {
     if ( !shouldBeShownContinue(dontAskAgainName) )
         return Continue;
+
+    I18N_FILTER_BUTTON_CONTINUE(buttonContinue_, buttonContinue)
+    I18N_FILTER_BUTTON_CANCEL(buttonCancel_, buttonCancel)
+    I18N_POST_BUTTON_FILTER
 
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
@@ -666,9 +715,9 @@ int KMessageBox::warningYesNoCancelList(QWidget *parent, const QString &text,
 int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
                                     const QStringList &strlist,
                                     const QString &caption,
-                                    const KGuiItem &buttonYes,
-                                    const KGuiItem &buttonNo,
-                                    const KGuiItem &buttonCancel,
+                                    const KGuiItem &buttonYes_,
+                                    const KGuiItem &buttonNo_,
+                                    const KGuiItem &buttonCancel_,
                                     const QString &dontAskAgainName,
                                     Options options)
 {
@@ -676,6 +725,11 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     if ( !shouldBeShownYesNo(dontAskAgainName, res) ) {
         return res;
     }
+
+    I18N_FILTER_BUTTON_YES(buttonYes_, buttonYes)
+    I18N_FILTER_BUTTON_NO(buttonNo_, buttonNo)
+    I18N_FILTER_BUTTON_CANCEL(buttonCancel_, buttonCancel)
+    I18N_POST_BUTTON_FILTER
 
     QWidget* parent = QWidget::find( parent_id );
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
