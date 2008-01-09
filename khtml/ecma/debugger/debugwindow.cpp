@@ -527,7 +527,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         m_docForIUKey[key] = document;
 
     // Tell it about this portion..
-    document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
+    QString qsource =  source.qstring();
+    if (qsource.contains("function")) // Approximate knowledge of whether code has functions. Ewwww...
+        document->setHasFunctions();
+    document->addCodeFragment(sourceId, startingLineNumber, qsource);
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -740,11 +743,13 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
     }
 
     // Also, if we exit from an eval context, we probably want to
-    // clear the corresponding document, unless it's open
+    // clear the corresponding document, unless it's open.
+    // We can not do it safely if there are any functions declared, 
+    // however, since they can escape.
     if (exec->context()->codeType() == EvalCode)
     {
         DebugDocument::Ptr doc = m_docForSid[sourceId];
-        if (!m_openDocuments.contains(doc.get()))
+        if (!m_openDocuments.contains(doc.get()) && !doc->hasFunctions())
         {
             cleanupDocument(doc);
             m_docsForIntrp[exec->dynamicInterpreter()].removeAll(doc);
