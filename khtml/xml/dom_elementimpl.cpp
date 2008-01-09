@@ -518,6 +518,9 @@ void ElementImpl::removeAttribute( const DOMString &name, int& exceptioncode )
     if (!id) return;
 
     attributes(false)->removeNamedItem(id, false, name.implementation(), exceptioncode);
+    // it's allowed to remove attributes that don't exist.
+    if ( exceptioncode == DOMException::NOT_FOUND_ERR )
+        exceptioncode = 0;
 }
 
 AttrImpl* ElementImpl::getAttributeNode( const DOMString &name )
