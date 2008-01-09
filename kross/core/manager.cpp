@@ -61,7 +61,7 @@ namespace Kross {
 
 }
 
-Q_GLOBAL_STATIC(Manager, _self);
+Q_GLOBAL_STATIC(Manager, _self)
 
 Manager& Manager::self()
 {
