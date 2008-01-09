@@ -562,7 +562,7 @@ KeyEventBaseImpl::KeyEventBaseImpl(EventId id, bool canBubbleArg, bool cancelabl
 
     //Here, we need to map Qt's internal info to browser-style info.
     m_detail = key->count();
-    m_keyVal = key->key();
+    m_keyVal = 0; // Set below unless virtual...
     m_virtKeyVal = virtKeyToQtKey()->toLeft(key->key());
 
     // m_keyVal should contain the unicode value
