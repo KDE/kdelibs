@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
     "$Revision$",
     ki18n("KDE Translator for XML"));
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
+    KCmdLineArgs::init(argc, argv, &aboutData, KCmdLineArgs::CmdLineArgKDE);
     KCmdLineArgs::addCmdLineOptions( options );
 
     KComponentData ins("meinproc4");
