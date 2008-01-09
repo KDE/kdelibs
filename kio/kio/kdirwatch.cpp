@@ -609,7 +609,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
        (*it).m_entries.append(sub_entry);
        kDebug(7001) << "Added already watched Entry " << path
                     << " (for " << sub_entry->path << ")";
-#ifdef HAVE_SYS_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
        Entry* e = &(*it);
        if( (e->m_mode == INotifyMode) && (e->wd > 0) ) {
          int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
