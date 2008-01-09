@@ -298,6 +298,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("qws", ki18n("forces the application to run as QWS Server"));
 #endif
     qt_options.add("reverse", ki18n("mirrors the whole layout of widgets"));
+    qt_options.add("stylesheet <file.qss>", ki18n("applies the Qt stylesheet to the application widgets"));
 
     // KDE options
     kde_options.add("caption <caption>",   ki18n("Use 'caption' as name in the titlebar"));
