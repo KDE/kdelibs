@@ -166,7 +166,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
                     (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return leftModifiedTime > rightModifiedTime; // newer items go first
+        return leftModifiedTime < rightModifiedTime;
     }
 
     case KDirModel::Permissions: {
