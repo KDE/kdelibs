@@ -55,11 +55,6 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
   : KDialog(parent),
     d(new Private(this))
 {
-    setPlainCaption(i18n("About %1", aboutData->programName()));
-    setButtons(KDialog::Close);
-    setDefaultButton(KDialog::Close);
-    setModal(false);
-
     if (aboutData == 0)
         aboutData = KGlobal::mainComponent().aboutData();
 
@@ -71,6 +66,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         setMainWidget(errorLabel);
         return;
     }
+
+    setPlainCaption(i18n("About %1", aboutData->programName()));
+    setButtons(KDialog::Close);
+    setDefaultButton(KDialog::Close);
+    setModal(false);
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
 
