@@ -272,6 +272,26 @@ public:
      */
     unsigned long percent() const;
 
+    /**
+     * set the auto-delete property of the job. If @p autodelete is
+     * set to false the job will not delete itself once its finished.
+     *
+     * The default for any KJob is to automatically delete itself.
+     *
+     * @param autodelete set to false to disable automatic deletion
+     * of the job.
+     */
+    void setAutoDelete( bool autodelete );
+
+    /**
+     * Returns wether this job automatically deletes itself once
+     * the job is finished.
+     *
+     * @return whether the job is deleted automatically after
+     * finishing.
+     */
+    bool isAutoDelete() const;
+
 Q_SIGNALS:
 #ifndef Q_MOC_RUN
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

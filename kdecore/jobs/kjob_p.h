@@ -49,6 +49,7 @@ public:
     bool suspended;
     KJob::Capabilities capabilities;
     QTimer *speedTimer;
+    bool isAutoDelete;
 
     void _k_speedTimeout();
 

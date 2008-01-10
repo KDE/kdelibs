@@ -35,7 +35,7 @@ KJobPrivate::KJobPrivate()
     : q_ptr(0), uiDelegate(0), error(KJob::NoError),
       progressUnit(KJob::Bytes), percentage(0),
       suspended(false), capabilities(KJob::NoCapabilities),
-      speedTimer(0)
+      speedTimer(0), isAutoDelete(true)
 {
     if (!_k_kjobUnitEnumRegistered) {
         _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
@@ -116,7 +116,8 @@ bool KJob::kill( KillVerbosity verbosity )
             // If we are displaying a progress dialog, remove it first.
             emit finished(this);
 
-            deleteLater();
+            if ( isAutoDelete() )
+                deleteLater();
         }
 
         return true;
@@ -288,7 +289,8 @@ void KJob::emitResult()
 
     emit result( this );
 
-    deleteLater();
+    if ( isAutoDelete() )
+        deleteLater();
 }
 
 void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
@@ -323,6 +325,18 @@ void KJobPrivate::_k_speedTimeout()
     // timer will be restarted only when we receive another speed event
     emit q->speed(q, 0);
     speedTimer->stop();
+}
+
+bool KJob::isAutoDelete() const
+{
+    Q_D(const KJob);
+    return d->isAutoDelete;
+}
+
+void KJob::setAutoDelete( bool autodelete )
+{
+    Q_D(KJob);
+    d->isAutoDelete = autodelete;
 }
 
 #include "kjob.moc"
