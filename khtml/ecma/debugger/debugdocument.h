@@ -47,7 +47,7 @@ class DebugDocument : public QObject, public khtml::Shared<DebugDocument>
 public:
     typedef SharedPtr<DebugDocument> Ptr;
 
-    DebugDocument(const QString& url, const QString& iuKey);
+    DebugDocument(KJS::Interpreter* interp, const QString& url, const QString& iuKey);
     ~DebugDocument();
 
     QString name() const;
@@ -73,6 +73,8 @@ public:
     // eval contexts that do
     bool hasFunctions();
     void setHasFunctions();
+    
+    KJS::Interpreter* interpreter(); 
 
 signals:
     void documentDestroyed(KJSDebugger::DebugDocument*);
@@ -80,6 +82,7 @@ private:
     QString m_url;
     QString m_iuKey;
     QString m_name;
+    KJS::Interpreter* m_interpreter;
     
     bool m_hasFunctions;
 

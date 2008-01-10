@@ -512,7 +512,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 
         }
 
-        document = new DebugDocument(uiURL, key);
+        document = new DebugDocument(exec->dynamicInterpreter(), uiURL, key);
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
         m_docsForIntrp[exec->dynamicInterpreter()].append(document);
@@ -763,15 +763,31 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::doEval(const QString& qcode)
 {
-    // Work out which execution state to use. Currently, limit ourselves to
-    // working inside an active session. It's not clear what behavior
-    // would be appropriate otherwise.
-    if (!inSession())
-        m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+    // Work out which execution state to use. If we're currently in a debugging session,
+    // use the current context - otherwise, use the global execution state from the interpreter
+    // corresponding to the currently displayed source file.
+    ExecState* exec;
+    JSObject*  thisObj;
 
-    InterpreterContext* ctx = m_activeSessionCtxs.top();
-    ExecState* exec    = ctx->execContexts.top();
-    JSObject*  thisObj = exec->context()->thisValue();
+    if (inSession())
+    {
+        InterpreterContext* ctx = m_activeSessionCtxs.top();
+        exec    = ctx->execContexts.top();
+        thisObj = exec->context()->thisValue();
+    }
+    else
+    {
+        int idx = m_tabWidget->currentIndex();
+        if (idx < 0)
+        {
+            m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+            return;
+        }
+        DebugDocument* document = m_openDocuments[idx];
+        exec    = document->interpreter()->globalExec();
+        thisObj = document->interpreter()->globalObject();
+    }
+
     JSValue*   oldException = 0;
 
     UString code(qcode);
@@ -816,7 +832,8 @@ void DebugWindow::doEval(const QString& qcode)
 
     // Make sure to re-activate the line we were stopped in,
     // in case a nested session was active
-    setUIMode(Stopped);
+    if (inSession())
+        setUIMode(Stopped);
 }
 
 void DebugWindow::displayScript(DebugDocument* document)
