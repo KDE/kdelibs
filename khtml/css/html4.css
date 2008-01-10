@@ -517,10 +517,8 @@ bdo[dir="rtl"]  {
 	unicode-bidi: bidi-override;
 }
 
-/* ### this selector seems to be still broken ...
       *[dir="ltr"]    { direction: ltr; unicode-bidi: embed }
       *[dir="rtl"]    { direction: rtl; unicode-bidi: embed }
-*/
 
 /* elements that are block-level in html4 */
 /* ### don't support unicode-bidi at the moment

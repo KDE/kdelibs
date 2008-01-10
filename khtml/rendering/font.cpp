@@ -68,9 +68,19 @@ static inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str,
 static inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
     int x, int y, const QString &str)
 {
+    QString qs = str;
+    if (d == Qt::RightToLeft)
+    {
+        // Qt doesn't have a function to force a direction,
+        // so we have to use a the unicode "RTO" character to
+        //  (no, setLayoutDirection isn't enough)
+        if (str[0].direction() == QChar::DirL)
+            qs.prepend(QChar(0x202E));
+    }
+    
     Qt::LayoutDirection saveDir = p->layoutDirection();
     p->setLayoutDirection(d);
-    p->drawText(x, y, str);
+    p->drawText(x, y, qs);
     p->setLayoutDirection(saveDir);
 }
 

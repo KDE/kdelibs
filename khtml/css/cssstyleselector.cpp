@@ -4119,3 +4119,5 @@ void CSSStyleSelector::checkForGenericFamilyChange(RenderStyle* aStyle, RenderSt
 #endif
 
 } // namespace khtml
+
+// kate: space-indent on; indent-width 4; tab-width 8;

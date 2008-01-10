@@ -92,8 +92,8 @@ static uint sCurrMidpoint;
 static bool betweenMidpoints;
 
 static bool isLineEmpty = true;
-static bool previousLineBrokeAtBR = true;
-static QChar::Direction dir;
+static bool previousLineBrokeAtBR = false;
+static QChar::Direction dir = QChar::DirON;
 static bool adjustEmbedding;
 static bool emptyRun = true;
 static int numSpaces;
@@ -935,7 +935,6 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     bidi.last = bidi.current;
     bool atEnd = false;
     while( 1 ) {
-
         QChar::Direction dirCurrent;
         if (atEnd) {
             //kDebug(6041) << "atEnd";
@@ -944,7 +943,11 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
                 while ( c->parent )
                     c = c->parent;
             dirCurrent = c->dir;
-        } else {
+        }
+        else if (bidi.context->override) {
+            dirCurrent = bidi.context->dir;
+        }
+        else {
             dirCurrent = bidi.current.direction();
         }
 
@@ -2492,3 +2495,4 @@ void RenderBlock::checkLinesForTextOverflow()
 #undef DEBUG_LAYOUT
 
 }
+// kate: space-indent on; indent-width 4; tab-width 8;
