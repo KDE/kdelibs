@@ -151,6 +151,24 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       break;
     }
 
+    switch ( id ) {
+    case Quit:
+      pAction->setMenuRole(QAction::QuitRole);
+      break;
+
+    case Preferences:
+      pAction->setMenuRole(QAction::PreferencesRole);
+      break;
+
+    case AboutApp:
+      pAction->setMenuRole(QAction::AboutRole);
+      break;
+
+    default:
+      pAction->setMenuRole(QAction::NoRole);
+      break;
+    }
+
     pAction->setText(sLabel);
     pAction->setIcon(icon);
 
