@@ -459,12 +459,12 @@ JSValue *Window::retrieve(KParts::ReadOnlyPart *p)
     proxy = part->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window::retrieve part=" << part << " '" << part->name() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
+    kDebug(6070) << "Window::retrieve part=" << part << " '" << part->objectName() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   } else {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window::retrieve part=" << p << " '" << p->name() << "' no jsproxy.";
+    kDebug(6070) << "Window::retrieve part=" << p << " '" << p->objectName() << "' no jsproxy.";
 #endif
     return jsUndefined(); // This can happen with JS disabled on the domain of that window
   }
@@ -918,7 +918,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
         return getDOMEvent(exec,m_evt);
       else {
 #ifdef KJS_VERBOSE
-        kDebug(6070) << "WARNING: window(" << this << "," << part->name() << ").event, no event!";
+        kDebug(6070) << "WARNING: window(" << this << "," << part->objectName() << ").event, no event!";
 #endif
         return jsUndefined();
       }
