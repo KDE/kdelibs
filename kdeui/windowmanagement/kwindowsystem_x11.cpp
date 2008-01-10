@@ -109,7 +109,6 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
 {
     kapp->installX11EventFilter( this );
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
-    activate();
     updateStackingOrder();
 }
 
@@ -350,11 +349,15 @@ void KWindowSystem::init(int what)
        what = INFO_BASIC;
 
     if ( !s_d )
+    {
         g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer->d->activate();
+    }
     else if (s_d->what < what)
     {
         delete s_d;
         g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer->d->activate();
     }
 }
 
