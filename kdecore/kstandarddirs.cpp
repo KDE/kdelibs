@@ -923,13 +923,13 @@ QString KStandardDirs::findExe( const QString& appname,
 #endif
     QFileInfo info;
 
-    // absolute path ?
-    if (!QDir::isRelativePath(real_appname))
+    // absolute or relative path given
+    if (real_appname.find(QDir::separator()) >= 0)
     {
         info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
-            return real_appname;
+            return info.absFilePath();
         }
         return QString::null;
     }
