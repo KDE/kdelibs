@@ -2548,8 +2548,8 @@ bool HTTPProtocol::readHeaderFromCache() {
             QString value = header.mid(18);
             setMetaData("content-language", value);
         } else
-        if (header.startsWith("content-disposition: ")) {
-            parseContentDisposition(header.mid(21));
+        if (header.startsWith("content-disposition:")) {
+            parseContentDisposition(header.mid(20));
         }
     }
     forwardHttpResponseHeader();
@@ -3599,27 +3599,91 @@ try_again:
   return true;
 }
 
+static void skipLWS(const QString &str, int &pos)
+{
+    
+    while (pos < str.length() && (str[pos] == ' ' || str[pos] == '\t'))
+        ++pos;
+}
+
+// Extracts token-like input until terminator char or EOL.. Also skips over the terminator. 
+// We don't try to be strict or anything..
+static QString extractUntil(const QString &str, unsigned char term, int &pos)
+{
+    QString out;
+    skipLWS(str, pos);
+    while (pos < str.length() && (str[pos] != term)) {
+        out += str[pos];
+        ++pos;
+    }
+    
+    if (pos < str.length()) // Stopped due to finding term
+        ++pos;
+    
+    // Remove trailing linear whitespace...
+    while (out.endsWith(' ') || out.endsWith('\t'))
+        out.chop(1);
+        
+    return out;
+}
+
+// As above, but also handles quotes..
+static QString extractMaybeQuotedUntil(const QString &str, unsigned char term, int &pos)
+{
+    skipLWS(str, pos);
+    
+    // Are we quoted?
+    if (pos < str.length() && str[pos] == '"') {
+        QString out;
+        
+        // Skip the quote...
+        ++pos;
+        
+        // Parse until trailing quote...
+        while (pos < str.length()) {
+            if (str[pos] == '\\' && pos + 1 < str.length()) {
+                // quoted-pair = "\" CHAR
+                out += str[pos + 1];
+                pos += 2; // Skip both...
+            } else if (str[pos] == '"') {
+                ++pos;
+                break;
+            }  else {
+                out += str[pos];
+                ++pos;
+            }
+        }
+        
+        // Skip until term..
+        while (pos < str.length() && (str[pos] != term))
+            ++pos;    
+
+        if (pos < str.length()) // Stopped due to finding term
+            ++pos;
+
+        return out;
+    } else {
+        return extractUntil(str, term, pos);
+    }
+}
+
 void HTTPProtocol::parseContentDisposition(const QString &disposition)
 {
+    kDebug(7113) << "disposition: " << disposition;
     QString strDisposition;
     QString strFilename;
 
-    QStringList parts = disposition.split(';');
-
-    bool first = true;
-    foreach(QString part, parts) {
-        part = part.trimmed();
-        if (first) {
-            strDisposition = part;
-            first = false;
-        } else
-        if (part.startsWith("filename")) {
-            int i = part.indexOf('=');
-            if (i == -1) break;
-            strFilename = part.mid(i);
-        }
+    int pos = 0;
+    
+    strDisposition = extractUntil(disposition, ';', pos);
+    
+    while (pos < disposition.length()) {
+        QString key = extractUntil(disposition, '=', pos);
+        QString val = extractMaybeQuotedUntil(disposition, ';', pos);
+        if (key == "filename")
+            strFilename = val;
     }
-
+    
     // Content-Dispostion is not allowed to dictate directory
     // path, thus we extract the filename only.
     if ( !strFilename.isEmpty() )
@@ -5857,3 +5921,4 @@ QString HTTPProtocol::proxyAuthenticationHeader()
 }
 
 #include "http.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
