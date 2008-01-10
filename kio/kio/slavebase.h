@@ -780,6 +780,7 @@ protected:
 private:
     void send(int cmd, const QByteArray& arr = QByteArray());
     SlaveBasePrivate* const d;
+    friend class SlaveBasePrivate;
 };
 
 }

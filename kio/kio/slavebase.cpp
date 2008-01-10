@@ -74,6 +74,9 @@ namespace KIO {
 
 class SlaveBasePrivate {
 public:
+    SlaveBase* q;
+    SlaveBasePrivate(SlaveBase* owner): q(owner) {}
+
     UDSEntryList pendingListEntries;
     int listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
@@ -100,6 +103,22 @@ public:
     KRemoteEncoding *remotefile;
     time_t timeout;
     QByteArray timeoutData;
+ 
+    // Reconstructs configGroup from configData and mIncomingMetaData
+    void rebuildConfig()
+    {
+        configGroup->deleteGroup(KConfigGroup::WriteConfigFlags());
+        
+        // mIncomingMetaData cascades over config, so we write config first,
+        // to let it be overwritten
+        MetaData::ConstIterator end = configData.constEnd();
+        for (MetaData::ConstIterator it = configData.constBegin(); it != end; ++it)
+            configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
+
+        end = q->mIncomingMetaData.constEnd();
+        for (MetaData::ConstIterator it = q->mIncomingMetaData.constBegin(); it != end; ++it)
+            configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
+    }
 };
 
 }
@@ -135,7 +154,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
                       const QByteArray &pool_socket,
                       const QByteArray &app_socket )
     : mProtocol(protocol),
-      d(new SlaveBasePrivate)
+      d(new SlaveBasePrivate(this))
 
 {
     d->poolSocket = QFile::decodeName(pool_socket);
@@ -368,6 +387,7 @@ void SlaveBase::opened()
 void SlaveBase::error( int _errid, const QString &_text )
 {
     mIncomingMetaData.clear(); // Clear meta data
+    d->rebuildConfig();
     mOutgoingMetaData.clear();
     KIO_DATA << (qint32) _errid << _text;
 
@@ -387,6 +407,7 @@ void SlaveBase::connected()
 void SlaveBase::finished()
 {
     mIncomingMetaData.clear(); // Clear meta data
+    d->rebuildConfig();
     sendMetaData();
     send( MSG_FINISHED );
 
@@ -957,17 +978,11 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         reparseConfiguration();
         break;
     case CMD_CONFIG: {
-        if (!d->configData.isEmpty()) { // delete the old data
-            foreach (const QString& key, d->configData.keys())
-                d->configGroup->deleteEntry(key, KConfigGroup::WriteConfigFlags());
-        }
         stream >> d->configData;
+        d->rebuildConfig();
 #if 0 //TODO: decide what to do in KDE 4.1
         KSocks::setConfig(d->configGroup);
 #endif
-        const MetaData::ConstIterator end = d->configData.constEnd();
-        for (MetaData::ConstIterator it = d->configData.constBegin(); it != end; ++it)
-            d->configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
         delete d->remotefile;
         d->remotefile = 0;
         break;
@@ -1071,14 +1086,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_META_DATA: {
         //kDebug(7019) << "(" << getpid() << ") Incoming meta-data...";
-        if (!mIncomingMetaData.isEmpty()) { // delete the old data
-            foreach(const QString& key, mIncomingMetaData.keys())
-                d->configGroup->deleteEntry(key, KConfigGroup::WriteConfigFlags());
-        }
         stream >> mIncomingMetaData;
-        MetaData::ConstIterator end = mIncomingMetaData.constEnd();
-        for (MetaData::ConstIterator it=mIncomingMetaData.constBegin(); it != end; ++it)
-            d->configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
+        d->rebuildConfig();
         break;
     }
     case CMD_SUBURL:
