@@ -192,7 +192,7 @@ KNS::Entry::List Engine::download()
 
 KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
-	//kDebug(550) << "Engine: downloadDialogModal";
+	kDebug() << "Engine: downloadDialogModal";
 
 	d->m_command = EnginePrivate::command_download;
 	d->m_modal = true;
@@ -204,11 +204,11 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
 void Engine::downloadDialog()
 {
-	//kDebug(550) << "Engine: downloadDialog";
+	kDebug() << "Engine: downloadDialog";
 
 	if(d->m_command != EnginePrivate::command_none)
 	{
-		kError(550) << "Engine: asynchronous workflow already going on" << endl;
+		kError() << "Engine: asynchronous workflow already going on" << endl;
 	}
 
 	d->m_command = EnginePrivate::command_download;
@@ -257,7 +257,7 @@ KNS::Entry *Engine::upload(const QString& file)
 
 KNS::Entry *Engine::uploadDialogModal(const QString& file)
 {
-    //kDebug(550) << "Engine: uploadDialogModal";
+    //kDebug() << "Engine: uploadDialogModal";
 
     d->m_command = EnginePrivate::command_upload;
     d->m_modal = true;
@@ -270,11 +270,11 @@ KNS::Entry *Engine::uploadDialogModal(const QString& file)
 
 void Engine::uploadDialog(const QString& file)
 {
-    //kDebug(550) << "Engine: uploadDialog";
+    //kDebug() << "Engine: uploadDialog";
 
     if(d->m_command != EnginePrivate::command_none)
     {
-        kError(550) << "Engine: asynchronous workflow already going on" << endl;
+        kError() << "Engine: asynchronous workflow already going on" << endl;
     }
 
     d->m_command = EnginePrivate::command_upload;
@@ -286,7 +286,7 @@ void Engine::uploadDialog(const QString& file)
 
 void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 {
-    //kDebug(550) << "Engine: slotProviderLoaded";
+    kDebug() << "Engine: slotProviderLoaded" << m_command;
 
     if(m_command == command_download)
     {
@@ -303,13 +303,13 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
     }
     else
     {
-        kError(550) << "Engine: invalid command" << endl;
+        kError() << "Engine: invalid command" << endl;
     }
 }
 
 void EnginePrivate::slotProvidersFailed()
 {
-    //kDebug(550) << "Engine: slotProvidersFailed";
+    kDebug() << "Engine: slotProvidersFailed";
 
     m_command = command_none;
     stopLoop();
@@ -317,19 +317,19 @@ void EnginePrivate::slotProvidersFailed()
 
 void EnginePrivate::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
-    //kDebug(550) << "Engine: slotEntryLoaded";
+    kDebug() << "Engine: slotEntryLoaded";
 
     m_downloaddialog->addEntry(entry, feed, provider);
 }
 
 void EnginePrivate::slotEntriesFailed()
 {
-    //kDebug(550) << "Engine: slotEntriesFailed";
+    kDebug() << "Engine: slotEntriesFailed";
 }
 
 void EnginePrivate::slotEntryUploaded()
 {
-    //kDebug(550) << "Engine: slotEntryUploaded";
+    //kDebug() << "Engine: slotEntryUploaded";
 
     m_command = command_none;
 
@@ -342,7 +342,7 @@ void EnginePrivate::slotEntryUploaded()
 
 void EnginePrivate::slotEntryFailed()
 {
-    //kDebug(550) << "Engine: slotEntryFailed";
+    kDebug() << "Engine: slotEntryFailed";
 
     m_command = command_none;
 
@@ -351,7 +351,7 @@ void EnginePrivate::slotEntryFailed()
 
 void EnginePrivate::slotProvidersFinished()
 {
-	//kDebug(550) << "Engine: slotProvidersFinished";
+	kDebug() << "Engine: slotProvidersFinished";
 
 	int ret;
 
@@ -401,7 +401,7 @@ void EnginePrivate::slotProvidersFinished()
 	QByteArray ar;
 	QTextStream txt(&ar);
 	txt << xml;
-	//kDebug(550) << "Upload: " << QString(ar);
+	//kDebug() << "Upload: " << QString(ar);
 
 	connect(this,
 		SIGNAL(signalEntryUploaded()),
@@ -415,7 +415,7 @@ void EnginePrivate::slotProvidersFinished()
 
 void EnginePrivate::slotEntriesFeedFinished(const KNS::Feed *feed)
 {
-    //kDebug(550) << "Engine: slotEntriesFeedFinished";
+    //kDebug() << "Engine: slotEntriesFeedFinished";
 
     Q_UNUSED(feed);
     //m_downloaddialog->refresh();
@@ -429,7 +429,7 @@ void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
 
 void EnginePrivate::slotEntriesFinished()
 {
-    //kDebug(550) << "Engine: slotEntriesFinished";
+    //kDebug() << "Engine: slotEntriesFinished";
 
     m_downloaddialog->refresh();
 }
