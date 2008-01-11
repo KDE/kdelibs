@@ -47,6 +47,7 @@
 #include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>
 #include <ktoolinvocation.h>
+#include <kstandarddirs.h>
 
 #include <config.h>
 #ifdef Q_WS_X11
@@ -134,7 +135,6 @@ KHelpMenu::~KHelpMenu()
   delete d;
 }
 
-
 KMenu* KHelpMenu::menu()
 {
   if( !d->mMenu )
@@ -175,10 +175,13 @@ KMenu* KHelpMenu::menu()
 
     if (KAuthorized::authorizeKAction("switch_application_language"))
     {
-      if (need_separator)
-        d->mMenu->addSeparator();
-      d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch Application &Language..." ), this, SLOT(switchApplicationLanguage()) );
-      need_separator = true;
+      if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 1)
+      {
+        if (need_separator)
+          d->mMenu->addSeparator();
+        d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch Application &Language..." ), this, SLOT(switchApplicationLanguage()) );
+        need_separator = true;
+      }
     }
 
     if (need_separator)
