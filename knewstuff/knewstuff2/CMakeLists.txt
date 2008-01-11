@@ -1,5 +1,7 @@
 project(knewstuff2)
 
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
+
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set(knewstuff2_core_SRCS
@@ -32,6 +34,7 @@ set(knewstuff2_ui_SRCS
   ui/kdxschanges.cpp
   ui/kdxstranslation.cpp
   ui/downloaddialog.cpp
+  ui/itemsview.cpp
   ui/qasyncpixmap.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
@@ -46,6 +49,7 @@ set(knewstuff2_SRCS
   engine.cpp
 )
 
+kde4_add_ui_files(knewstuff2_ui_SRCS ui/DownloadDialog.ui)
 
 kde4_add_library(knewstuff2 SHARED ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 
