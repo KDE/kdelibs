@@ -32,6 +32,8 @@
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
 
+#include "ui_DownloadDialog.h"
+
 class KJob;
 class KLineEdit;
 class QComboBox;
@@ -43,76 +45,7 @@ namespace KNS
 
     class DownloadDialog;
     class EntryView;
-
-/** GUI/CORE: HTML Widget to operate on AvailableItem::List */
-class ItemsView : public QScrollArea
-{
-    Q_OBJECT
-public:
-    ItemsView(QWidget * parentWidget);
-    ~ItemsView();
-
-    void setEngine(DxsEngine *engine);
-
-    /** set the provider to show entries from with the feed also
-     * @param provider the provider to show
-     */
-    void setProvider(const Provider * provider, const Feed * feed);
-
-    /** set which feed from the current provider to show
-     * @param feed the feed to use
-     */
-    void setFeed( const Feed* );
-
-public slots:
-    /** set the search text to filter the shown entries by
-     * @param text filter text
-     */
-    void setSearchText( const QString & text );
-    /** update the given item because it has changed
-     * @param entry the entry to update
-     */
-    void updateItem( Entry *entry );
-
-    // not used because the ui doesn't support it yet
-    void setSorting( int sortType );
-
-private:
-
-    void buildContents();
-
-    const Provider* m_currentProvider;
-    const Feed* m_currentFeed;
-
-    QWidget *m_root;
-    int m_sorting;
-    DxsEngine *m_engine;
-    QMap<Entry*, EntryView*> m_views;
-    QString m_searchText;
-};
-
-
-/** GUI/CORE: HTML Widget for exactly one AvailableItem::List */
-class EntryView : public QLabel
-{
-    Q_OBJECT
-public:
-    EntryView( QWidget * parentWidget );
-
-    void setEntry( Entry *entry );
-    void updateEntry( Entry *entry );
-
-private slots:
-    void urlSelected( const QString &link);
-
-private:
-    // generate the HTML contents to be displayed by the class itself
-    void buildContents();
-
-    void setTheAaronnesqueStyle();
-
-    Entry *m_entry;
-};
+    class ItemsView;
 
 /**
  * KNewStuff download dialog.
@@ -132,7 +65,7 @@ private:
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT DownloadDialog : public KDialog
+class KNEWSTUFF_EXPORT DownloadDialog : public KDialog, public Ui::DownloadDialog
 {
     Q_OBJECT
 
@@ -179,18 +112,12 @@ private:
 
     // Contents
     // gui related vars
-    KLineEdit * searchLine;
-    QComboBox * m_typeCombo;
-    QComboBox * sortCombo;
-    QLabel    * statusLabel;
-    ItemsView * itemsView;
-    QProgressIndicator * m_progress;
+    //Ui::DownloadDialog * m_ui;
 
     // other classes
     QTimer * searchTimer;
     QTimer * messageTimer;
     QTimer * networkTimer;
-    KTitleWidget* titleWidget;
 
     DxsEngine *m_engine;
     QMap<QString, QString> categorymap;
