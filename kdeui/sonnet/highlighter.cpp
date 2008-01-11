@@ -61,6 +61,7 @@ public:
     int wordCount, errorCount;
     QTimer *rehighlightRequest;
     QColor spellColor;
+    int suggestionListeners; // #of connections for the newSuggestions signal
 };
 
 Highlighter::Highlighter(QTextEdit *textEdit,
@@ -79,6 +80,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->completeRehighlightRequired = false;
     d->spellCheckerFound = true;
     d->spellColor = _col.isValid() ? _col : Qt::red;
+    d->suggestionListeners = 0;
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -123,10 +125,29 @@ bool Highlighter::spellCheckerFound() const
     return d->spellCheckerFound;
 }
 
+// Since figuring out spell correction suggestions is extremely costly,
+// we keep track of whether the user actually wants some, and only offer them 
+// in that case
+void Highlighter::connectNotify(const char* signal)
+{
+    if (QLatin1String(signal) == SIGNAL(newSuggestions(QString,QStringList)))
+        ++d->suggestionListeners;
+    QSyntaxHighlighter::connectNotify(signal);
+}
+
+void Highlighter::disconnectNotify(const char* signal)
+{
+    if (QLatin1String(signal) == SIGNAL(newSuggestions(QString,QStringList)))
+        --d->suggestionListeners;
+    QSyntaxHighlighter::disconnectNotify(signal);
+}
+
 void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()";
     if (d->completeRehighlightRequired) {
+        d->wordCount  = 0;
+        d->errorCount = 0;
         rehighlight();
 
     } else {
@@ -188,7 +209,7 @@ void Highlighter::slotAutoDetection()
 
     if ( d->automatic ) {
 	// tme = Too many errors
-        bool tme = ( d->wordCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
+        bool tme = ( d->errorCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
 	if ( d->active && tme )
 	    d->active = false;
 	else if ( !d->active && !tme )
@@ -236,7 +257,7 @@ void Highlighter::highlightBlock ( const QString & text )
     int index = cursor.position();
 
     const int lengthPosition = text.length() - 1;
-
+    
     if ( index != lengthPosition ||
          ( lengthPosition > 0 && !text[lengthPosition-1].isLetter() ) ) {
         d->filter->setBuffer( text );
@@ -246,7 +267,8 @@ void Highlighter::highlightBlock ( const QString & text )
             if (d->dict->isMisspelled(w.word)) {
                 ++d->errorCount;
                 setMisspelled(w.start, w.word.length());
-		emit newSuggestions(w.word, d->dict->suggest(w.word));
+                if (d->suggestionListeners)
+                    emit newSuggestions(w.word, d->dict->suggest(w.word));
             } else
                 unsetMisspelled(w.start, w.word.length());
             w = d->filter->nextWord();
