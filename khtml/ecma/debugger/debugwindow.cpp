@@ -450,7 +450,12 @@ void DebugWindow::detach(KJS::Interpreter* interp)
 
 void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 {
-    InterpreterContext* ctx = m_contexts[interp];
+    // We may get a clear when we weren't even attached, if the 
+    // interpreter gets created but nothing gets run in it.
+    // Be careful not to insert a bogus null into contexts map then
+    InterpreterContext* ctx = m_contexts.value(interp);
+    if (!ctx)
+        return;
 
     fatalAssert(!m_activeSessionCtxs.contains(ctx), "Interpreter clear on active session");
 
