@@ -108,6 +108,8 @@ namespace Sonnet
         void slotAutoDetection();
         void slotRehighlight();
     private:
+        virtual void connectNotify(const char* signal);
+        virtual void disconnectNotify(const char* signal);
         class Private;
         Private *const d;
         Q_DISABLE_COPY( Highlighter )
