@@ -121,15 +121,15 @@ initialPreference=35
 
 # Intel Corporation 82801G (ICH7 Family) High Definition Audio Controller Samsung Electronics Co Ltd HDA Intel AD198x Analog
 [pci:8086:27d8:144d:c024:both:oss]
-name=Analog Devices AD1986A
+name=HDA Intel (AD1986A)
 initialPreference=20
 
 [pci:8086:27d8:144d:c024:capture:alsa:0]
-name=Analog Devices AD1986A
+name=HDA Intel (AD1986A)
 initialPreference=36
 
 [pci:8086:27d8:144d:c024:playback:alsa:0]
-name=Analog Devices AD1986A
+name=HDA Intel (AD1986A)
 initialPreference=36
 
 # Logitech USB Audio Interface Logitech Logitech USB Headset USB Audio
@@ -270,3 +270,15 @@ initialPreference=36
 name=Intel ICH6 with AD1981B S/PDIF
 initialPreference=15
 
+# ATI Technologies Inc SB450 HDA Audio  HDA ATI SB AD198x Analog
+[pci:1002:437b:30b0:103c:both:oss]
+name=ATI SB450 HDA Audio (AD1981)
+initialPreference=20
+
+[pci:1002:437b:30b0:103c:capture:alsa:0]
+name=ATI SB450 HDA Audio (AD1981)
+initialPreference=36
+
+[pci:1002:437b:30b0:103c:playback:alsa:0]
+name=ATI SB450 HDA Audio (AD1981)
+initialPreference=36
