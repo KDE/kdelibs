@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2006 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2006, 2007 Apple Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -26,12 +26,16 @@
 #define Parser_h
 
 #include <wtf/Forward.h>
+#include <wtf/Noncopyable.h>
+#include <wtf/RefPtr.h>
 
 namespace KJS {
 
     class Node;
+    class FunctionBodyNode;
     class ProgramNode;
     class UString;
+
     struct UChar;
 
     /**
@@ -42,23 +46,37 @@ namespace KJS {
      * checked with a semantic analyzer. This class provides a convenient
      * workaround for the problem of the bison parser working in a static context.
      */
-    class Parser {
+    class Parser : Noncopyable {
     public:
-        static PassRefPtr<ProgramNode> parse(const UString& sourceURL, int startingLineNumber,
+        PassRefPtr<ProgramNode> parseProgram(const UString& sourceURL, int startingLineNumber,
             const UChar* code, unsigned length,
             int* sourceId = 0, int* errLine = 0, UString* errMsg = 0);
 
-	static UString prettyPrint(const UString&, int* errLine = 0, UString* errMsg = 0);
+        PassRefPtr<FunctionBodyNode> parseFunctionBody(const UString& sourceURL, int startingLineNumber,
+            const UChar* code, unsigned length,
+            int* sourceId = 0, int* errLine = 0, UString* errMsg = 0);
 
-        static void accept(PassRefPtr<ProgramNode>);
+        int sourceId() { return m_sourceId; }
 
-        static void saveNewNode(Node*);
+        void didFinishParsing(PassRefPtr<ProgramNode>);
+
         static void noteNodeCycle(Node*);
         static void removeNodeCycle(Node*);
 
-        static int sid;
+    private:
+	friend Parser& parser();
+
+        Parser(); // Use parser() instead.
+        void parse(const UString& sourceURL, int startingLineNumber,
+            const UChar* code, unsigned length,
+            int* sourceId = 0, int* errLine = 0, UString* errMsg = 0);
+
+        int m_sourceId;
+        RefPtr<ProgramNode> m_progNode;
     };
 
-} // namespace
+    Parser& parser(); // Returns the singleton JavaScript parser.
 
-#endif
+} // namespace KJS
+
+#endif // Parser_h

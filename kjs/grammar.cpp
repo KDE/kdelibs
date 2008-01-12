@@ -2326,18 +2326,18 @@ yyreduce:
   case 7:
 #line 189 "grammar.y"
     {
-                                            Lexer *l = Lexer::curr();
-                                            if (!l->scanRegExp()) YYABORT;
-                                            (yyval.node) = new RegExpNode(l->pattern, l->flags);
+                                            Lexer& l = lexer();
+                                            if (!l.scanRegExp()) YYABORT;
+                                            (yyval.node) = new RegExpNode(l.pattern(), l.flags());
                                         ;}
     break;
 
   case 8:
 #line 194 "grammar.y"
     {
-                                            Lexer *l = Lexer::curr();
-                                            if (!l->scanRegExp()) YYABORT;
-                                            (yyval.node) = new RegExpNode("=" + l->pattern, l->flags);
+                                            Lexer& l = lexer();
+                                            if (!l.scanRegExp()) YYABORT;
+                                            (yyval.node) = new RegExpNode("=" + l.pattern(), l.flags());
                                         ;}
     break;
 
@@ -3470,12 +3470,12 @@ yyreduce:
 
   case 306:
 #line 854 "grammar.y"
-    { Parser::accept(new ProgramNode(0)); ;}
+    { parser().didFinishParsing(new ProgramNode(0)); ;}
     break;
 
   case 307:
 #line 855 "grammar.y"
-    { Parser::accept(new ProgramNode((yyvsp[(1) - (1)].srcs))); ;}
+    { parser().didFinishParsing(new ProgramNode((yyvsp[(1) - (1)].srcs))); ;}
     break;
 
   case 308:
@@ -3726,13 +3726,13 @@ yyreturn:
 /* called by yyparse on error */
 int yyerror(const char *)
 {
-// fprintf(stderr, "ERROR: %s at line %d\n", s, KJS::Lexer::curr()->lineNo());
+// fprintf(stderr, "ERROR: %s at line %d\n", s, lexer().lineNo());
     return 1;
 }
 
 /* may we automatically insert a semicolon ? */
 static bool allowAutomaticSemicolon()
 {
-    return yychar == '}' || yychar == 0 || Lexer::curr()->prevTerminator();
+    return yychar == '}' || yychar == 0 || lexer().prevTerminator();
 }
 

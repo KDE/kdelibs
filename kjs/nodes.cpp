@@ -121,7 +121,7 @@ Node::Node()
 #ifndef NDEBUG
     ++NodeCounter::count;
 #endif
-  m_line = Lexer::curr()->lineNo();
+  m_line = lexer().lineNo();
   if (!newNodes)
       newNodes = new HashSet<Node*>;
   newNodes->add(this);
@@ -2776,8 +2776,8 @@ void ParameterNode::recurseVisit(NodeVisitor *visitor)
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     : BlockNode(s)
-    , m_sourceURL(Lexer::curr()->sourceURL())
-    , m_sourceId(Parser::sid)
+    , m_sourceURL(lexer().sourceURL())
+    , m_sourceId(parser().sourceId())
     , m_builtSymbolList(false)
 {
 

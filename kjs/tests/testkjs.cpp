@@ -297,9 +297,6 @@ int kjsmain(int argc, char** argv)
   if (success)
     fprintf(stderr, "OK.\n");
 
-#ifdef KJS_DEBUG_MEM
-  Interpreter::finalCheck();
-#endif
   return success ? 0 : 3;
 }
 
