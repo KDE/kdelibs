@@ -6,7 +6,7 @@
       <!ENTITY FDLFCTTitles "title 4, title 5, title 6">
       <!ENTITY % FDLBCT "INCLUDE">
       <!ENTITY FDLBCTTitles "title 7, title 7b">
-      <!ENTITY % ents "-//KDE//ENTITIES Application-Variable Entities V1.0//ZHCN">
+      <!ENTITY % ents "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
       %ents;
       ...
      ]>
@@ -25,7 +25,7 @@
  -->
 <para>Permission is granted to copy, distribute and/or modify this
 document under the terms of the GNU Free Documentation License,
-Version 1.1 or any later version published by the Free Software
+Version 1.2 or any later version published by the Free Software
 Foundation; with &FDLInvariantSections;, with &FDLFrontCoverText;, and
 with &FDLBackCoverText;.  A copy of the license is included in <xref linkend="gnu-fdl"/>.</para>
 

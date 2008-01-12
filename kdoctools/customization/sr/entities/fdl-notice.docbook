@@ -1,4 +1,4 @@
-<!-- This file can be used to include the notice in documentation
+<!-- This file can be used to include the notice in documentation 
      <!DOCTYPE book ... [
       <!ENTITY % FDLIS "INCLUDE">
       <!ENTITY FDLISTitles "title 1, title 2, title 3">
@@ -23,8 +23,11 @@
 
     Include a copy of the license in the documentation distribution.
  -->
-
-<para>Дозвољава се копирање, расподела и/или измена овог документа под одредбама &GNU-gjz; &FDLexp-g;, верзије 1.1 или било које следеће верзије коју објави Задужбина за слободни софтвер; &FDLInvariantSections;, и &FDLBackCoverText;. Копија лиценце је укључена у <xref linkend="gnu-fdl"/>.</para>
+<para>Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.2 or any later version published by the Free Software
+Foundation; with &FDLInvariantSections;, with &FDLFrontCoverText;, and
+with &FDLBackCoverText;.  A copy of the license is included in <xref linkend="gnu-fdl"/>.</para>
 
 <!-- If you have no Invariant Sections, don't add any FDLIS entities.
      If you have no Front-Cover Texts, don't add any FDLFCT; likewise
