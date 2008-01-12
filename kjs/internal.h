@@ -57,6 +57,7 @@ namespace KJS {
     JSType type() const { return StringType; }
 
     JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
+    virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
@@ -75,6 +76,7 @@ namespace KJS {
     JSType type() const { return NumberType; }
 
     JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
+    virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
     bool toBoolean(ExecState *exec) const;
     double toNumber(ExecState *exec) const;
     UString toString(ExecState *exec) const;
@@ -84,6 +86,8 @@ namespace KJS {
     NumberImp(double v) : val(v) { }
 
     virtual bool getUInt32(uint32_t&) const;
+    virtual bool getTruncatedInt32(int32_t&) const;
+    virtual bool getTruncatedUInt32(uint32_t&) const;
 
     double val;
   };

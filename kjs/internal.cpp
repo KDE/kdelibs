@@ -65,6 +65,21 @@ JSValue *StringImp::toPrimitive(ExecState *, JSType) const
   return const_cast<StringImp *>(this);
 }
 
+bool GetterSetterImp::getPrimitiveNumber(ExecState*, double& number, JSValue*& value)
+{
+    ASSERT_NOT_REACHED();
+    number = 0;
+    value = 0;
+    return true;
+}
+
+bool StringImp::getPrimitiveNumber(ExecState*, double& number, JSValue*& value)
+{
+    value = this;
+    number = val.toDouble();
+    return false;
+}
+
 bool StringImp::toBoolean(ExecState *) const
 {
   return (val.size() > 0);
@@ -97,6 +112,13 @@ JSValue *NumberImp::toPrimitive(ExecState *, JSType) const
   return const_cast<NumberImp *>(this);
 }
 
+bool NumberImp::getPrimitiveNumber(ExecState*, double& number, JSValue*& value)
+{
+    number = val;
+    value = this;
+    return true;
+}
+
 bool NumberImp::toBoolean(ExecState *) const
 {
   return val < 0.0 || val > 0.0; // false for NaN
@@ -121,12 +143,26 @@ JSObject *NumberImp::toObject(ExecState *exec) const
   return static_cast<JSObject *>(exec->lexicalInterpreter()->builtinNumber()->construct(exec,args));
 }
 
-// FIXME: We can optimize this to work like JSValue::getUInt32. I'm ignoring it for now
-// because it never shows up on profiles.
 bool NumberImp::getUInt32(uint32_t& uint32) const
 {
-  uint32 = (uint32_t)val;
-  return (double)uint32 == val;
+    uint32 = static_cast<uint32_t>(val);
+    return uint32 == val;
+}
+
+bool NumberImp::getTruncatedInt32(int32_t& int32) const
+{
+    if (!(val >= -2147483648.0 && val < 2147483648.0))
+        return false;
+    int32 = static_cast<int32_t>(val);
+    return true;
+}
+
+bool NumberImp::getTruncatedUInt32(uint32_t& uint32) const
+{
+    if (!(val >= 0.0 && val < 4294967296.0))
+        return false;
+    uint32 = static_cast<uint32_t>(val);
+    return true;
 }
 
 // --------------------------- GetterSetterImp ---------------------------------

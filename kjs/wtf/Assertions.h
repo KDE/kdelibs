@@ -30,5 +30,6 @@
 #include <assert.h>
 
 #define ASSERT(x) assert(x)
+#define ASSERT_NOT_REACHED() assert(!"Should not be reached")
 
 #endif // WTF_Assertions_h
