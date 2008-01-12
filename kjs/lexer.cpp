@@ -227,7 +227,7 @@ int Lexer::lex()
         record16(current);
         state = InIdentifierOrKeyword;
       } else if (current == '\\') {
-        state = InIdentifierUnicodeEscapeStart;
+        state = InIdentifierStartUnicodeEscapeStart;
       } else if (current == '0') {
         record8(current);
         state = InNum0;
@@ -356,7 +356,7 @@ int Lexer::lex()
       if (isIdentPart(current))
         record16(current);
       else if (current == '\\')
-        state = InIdentifierUnicodeEscapeStart;
+        state = InIdentifierPartUnicodeEscapeStart;
       else
         setDone(state == InIdentifierOrKeyword ? IdentifierOrKeyword : Identifier);
       break;
@@ -433,20 +433,45 @@ int Lexer::lex()
       } else
         setDone(Number);
       break;
-    case InIdentifierUnicodeEscapeStart:
+    case InIdentifierStartUnicodeEscapeStart:
       if (current == 'u')
-        state = InIdentifierUnicodeEscape;
+        state = InIdentifierStartUnicodeEscape;
       else
         setDone(Bad);
       break;
-    case InIdentifierUnicodeEscape:
-      if (isHexDigit(current) && isHexDigit(next1) && isHexDigit(next2) && isHexDigit(next3)) {
-        record16(convertUnicode(current, next1, next2, next3));
-        shift(3);
-        state = InIdentifier;
-      } else {
+    case InIdentifierPartUnicodeEscapeStart:
+      if (current == 'u')
+        state = InIdentifierPartUnicodeEscape;
+      else
         setDone(Bad);
+      break;
+    case InIdentifierStartUnicodeEscape:
+      if (!isHexDigit(current) || !isHexDigit(next1) || !isHexDigit(next2) || !isHexDigit(next3)) {
+        setDone(Bad);
+        break;
       }
+      token = convertUnicode(current, next1, next2, next3).uc;
+      shift(3);
+      if (!isIdentStart(token)) {
+        setDone(Bad);
+        break;
+      }
+      record16(token);
+      state = InIdentifier;
+      break;
+    case InIdentifierPartUnicodeEscape:
+      if (!isHexDigit(current) || !isHexDigit(next1) || !isHexDigit(next2) || !isHexDigit(next3)) {
+        setDone(Bad);
+        break;
+      }
+      token = convertUnicode(current, next1, next2, next3).uc;
+      shift(3);
+      if (!isIdentPart(token)) {
+        setDone(Bad);
+        break;
+      }
+      record16(token);
+      state = InIdentifier;
       break;
     default:
       assert(!"Unhandled state in switch statement");
