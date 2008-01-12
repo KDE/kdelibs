@@ -262,6 +262,7 @@ uint16_t toUInt16(double dd)
 #ifndef NDEBUG
 void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
 {
+  UString vString;
   if (!o)
     fprintf(stderr, "KJS: %s: (null)", s);
   else {
@@ -298,6 +299,7 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
 
       if ( obj->inherits(&ArrayInstance::info) )
         arrayLength = obj->get(exec, exec->propertyNames().length)->toUInt32(exec);
+      vString = "[object " + name + "]";
       break;
     }
     case GetterSetterType:
@@ -305,11 +307,10 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
       break;
     }
     
-    UString vString;
     // Avoid calling toString on a huge array (e.g. 4 billion elements, in mozilla/js/js1_5/Array/array-001.js)
     if ( arrayLength > 100 )
       vString = UString( "[ Array with " ) + UString::from( arrayLength ) + " elements ]";
-    else
+    else if ( v->type() != ObjectType ) // Don't want to call a user toString function!
       vString = v->toString(exec);
     if ( !hadExcep )
       exec->clearException();
