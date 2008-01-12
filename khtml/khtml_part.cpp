@@ -1166,7 +1166,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
 {
 #ifdef KJS_VERBOSE
   // The script is now printed by KJS's Parser::parse
-  kDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine /*<< " script=" << script*/;
+  kDebug(6070) << "executeScript: caller='" << objectName() << "' filename=" << filename << " baseLine=" << baseLine /*<< " script=" << script*/;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1215,7 +1215,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().toLatin1().constData() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */;
+  kDebug(6070) << "KHTMLPart::executeScript caller='" << objectName() << "' node=" << n.nodeName().string().toLatin1().constData() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */;
 #endif
   KJSProxy *proxy = jScript();
 
