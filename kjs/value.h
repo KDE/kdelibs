@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003-2005 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2007 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -195,7 +195,7 @@ inline JSValue *jsBoolean(bool b)
     return b ? JSImmediate::trueImmediate() : JSImmediate::falseImmediate();
 }
 
-inline JSValue *jsNumber(double d)
+ALWAYS_INLINE JSValue* jsNumber(double d)
 {
     JSValue *v = JSImmediate::fromDouble(d);
     return v ? v : jsNumberCell(d);
@@ -242,16 +242,16 @@ inline void JSCell::mark()
     return Collector::markCell(this);
 }
 
-inline JSCell *JSValue::asCell()
+ALWAYS_INLINE JSCell* JSValue::asCell()
 {
     ASSERT(!JSImmediate::isImmediate(this));
-    return static_cast<JSCell *>(this);
+    return static_cast<JSCell*>(this);
 }
 
-inline const JSCell *JSValue::asCell() const
+ALWAYS_INLINE const JSCell* JSValue::asCell() const
 {
     ASSERT(!JSImmediate::isImmediate(this));
-    return static_cast<const JSCell *>(this);
+    return static_cast<const JSCell*>(this);
 }
 
 inline bool JSValue::isUndefined() const
@@ -339,7 +339,7 @@ inline const JSObject *JSValue::getObject() const
     return JSImmediate::isImmediate(this) ? 0 : asCell()->getObject();
 }
 
-inline bool JSValue::getUInt32(uint32_t& v) const
+ALWAYS_INLINE bool JSValue::getUInt32(uint32_t& v) const
 {
     if (JSImmediate::isImmediate(this)) {
         double d = JSImmediate::toDouble(this);
@@ -377,7 +377,7 @@ inline bool JSValue::toBoolean(ExecState *exec) const
     return JSImmediate::isImmediate(this) ? JSImmediate::toBoolean(this) : asCell()->toBoolean(exec);
 }
 
-inline double JSValue::toNumber(ExecState *exec) const
+ALWAYS_INLINE double JSValue::toNumber(ExecState *exec) const
 {
     return JSImmediate::isImmediate(this) ? JSImmediate::toDouble(this) : asCell()->toNumber(exec);
 }

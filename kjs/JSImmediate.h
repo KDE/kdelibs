@@ -25,6 +25,7 @@
 #include <kjs/global.h>
 #include "JSType.h"
 #include <wtf/Assertions.h>
+#include <wtf/AlwaysInline.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
@@ -38,46 +39,45 @@ class JSValue;
 class UString;
 
 /*
- * A JSValue * is either a pointer to a cell (a heap-allocated object) or an immediate (a type-tagged 
- * IEEE floating point bit pattern masquerading as a pointer). The low two bits in a JSValue * are available 
+ * A JSValue*  is either a pointer to a cell (a heap-allocated object) or an immediate (a type-tagged 
+ * signed int masquerading as a pointer). The low two bits in a JSValue* are available 
  * for type tagging because allocator alignment guarantees they will be 00 in cell pointers.
  *
  * For example, on a 32 bit system:
  *
- * JSCell *:      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                 00
+ * JSCell*:       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                 00
  *               [ high 30 bits: pointer address ]  [ low 2 bits -- always 0 ]
  *
  * JSImmediate:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                 TT
- *             [ high 30 bits: IEEE encoded float ] [ low 2 bits -- type tag ]
+ *               [ high 30 bits: signed int ]       [ low 2 bits -- type tag ]
  *
- * The bit "payload" (the hight 30 bits) of a non-numeric immediate is its numeric equivalent. For example, 
- * the payload of null is 0.0. This makes JSValue::toNumber() a simple bitmask for all immediates.
+ * The bit "payload" (the high 30 bits) is a 30 bit signed int for immediate numbers, a flag to distinguish true/false
+ * and undefined/null.
  *
  * Notice that the JSType value of NullType is 4, which requires 3 bits to encode. Since we only have 2 bits 
  * available for type tagging, we tag the null immediate with UndefinedType, and JSImmediate::type() has 
- * to sort them out. Null and Undefined don't otherwise get confused because the numeric value of Undefined is 
- * NaN, not 0.0.
+ * to sort them out.
  */
 
 class KJS_EXPORT JSImmediate {
 public:
-    static bool isImmediate(const JSValue *v)
+    static ALWAYS_INLINE bool isImmediate(const JSValue* v)
     {
         return getTag(v) != 0;
     }
     
-    static bool isNumber(const JSValue *v)
+    static ALWAYS_INLINE bool isNumber(const JSValue* v)
     {
         return (getTag(v) == NumberType);
     }
     
-    static bool isBoolean(const JSValue *v)
+    static ALWAYS_INLINE bool isBoolean(const JSValue* v)
     {
         return (getTag(v) == BooleanType);
     }
     
     // Since we have room for only 3 unique tags, null and undefined have to share.
-    static bool isUndefinedOrNull(const JSValue *v)
+    static ALWAYS_INLINE bool isUndefinedOrNull(const JSValue* v)
     {
         return (getTag(v) == UndefinedType);
     }
@@ -160,17 +160,17 @@ public:
 private:
     enum TagMaskEnum { TagMask = 3 /* type tags are 2 bits long */ };
     
-    static JSValue *tag(uintptr_t bits, uintptr_t tag)
+    static ALWAYS_INLINE JSValue* tag(uintptr_t bits, uintptr_t tag)
     {
-        return reinterpret_cast<JSValue *>(bits | tag);
+        return reinterpret_cast<JSValue*>(bits | tag);
     }
     
-    static uintptr_t unTag(const JSValue *v)
+    static ALWAYS_INLINE uintptr_t unTag(const JSValue* v)
     {
         return reinterpret_cast<uintptr_t>(v) & ~TagMask;
     }
     
-    static uintptr_t getTag(const JSValue *v)
+    static ALWAYS_INLINE uintptr_t getTag(const JSValue* v)
     {
         return reinterpret_cast<uintptr_t>(v) & TagMask;
     }
