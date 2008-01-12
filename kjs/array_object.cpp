@@ -979,7 +979,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
       // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf 
 
     int index = length - 1;
-    double d = args[1]->toInteger(exec);
+    double d = args[1]->toIntegerPreserveNaN(exec);
 
     if (d < 0) {
         d += length;
