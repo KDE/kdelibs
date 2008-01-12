@@ -33,6 +33,9 @@
 
 namespace KJS {
 
+static const double D16 = 65536.0;
+static const double D32 = 4294967296.0;
+
 void *JSCell::operator new(size_t size)
 {
     return Collector::allocate(size);
@@ -43,49 +46,80 @@ bool JSCell::getUInt32(uint32_t&) const
     return false;
 }
 
+bool JSCell::getTruncatedInt32(int32_t&) const
+{
+    return false;
+}
+
+bool JSCell::getTruncatedUInt32(uint32_t&) const
+{
+    return false;
+}
+
 // ECMA 9.4
 double JSValue::toInteger(ExecState *exec) const
 {
-    uint32_t i;
-    if (getUInt32(i))
+    int32_t i;
+    if (getTruncatedInt32(i))
         return i;
-    return roundValue(exec, const_cast<JSValue*>(this));
+    double d = toNumber(exec);
+    return isNaN(d) ? 0.0 : trunc(d);
 }
 
-inline int32_t JSValue::toInt32Inline(ExecState* exec, bool& ok) const
+double JSValue::toIntegerPreserveNaN(ExecState *exec) const
+{
+    int32_t i;
+    if (getTruncatedInt32(i))
+        return i;
+    return trunc(toNumber(exec));
+}
+
+int32_t JSValue::toInt32SlowCase(double d, bool& ok)
 {
     ok = true;
 
-    uint32_t i;
-    if (getUInt32(i))
-        return i;
+    if (d >= -D32 / 2 && d < D32 / 2)
+        return static_cast<int32_t>(d);
 
-    double d = const_cast<JSValue*>(this)->toNumber(exec);
     if (isNaN(d) || isInf(d)) {
         ok = false;
         return 0;
     }
-    return KJS::toInt32(d);
+
+    double d32 = fmod(trunc(d), D32);
+    if (d32 >= D32 / 2)
+        d32 -= D32;
+    else if (d32 < -D32 / 2)
+        d32 += D32;
+    return static_cast<int32_t>(d32);
 }
 
-int32_t JSValue::toInt32(ExecState* exec) const
+int32_t JSValue::toInt32SlowCase(ExecState* exec, bool& ok) const
 {
-    bool ok;
-    return toInt32Inline(exec, ok);
+    return JSValue::toInt32SlowCase(toNumber(exec), ok);
 }
 
-int32_t JSValue::toInt32(ExecState* exec, bool& ok) const
+uint32_t JSValue::toUInt32SlowCase(double d, bool& ok)
 {
-    return toInt32Inline(exec, ok);
+    ok = true;
+
+    if (d >= 0.0 && d < D32)
+        return static_cast<uint32_t>(d);
+
+    if (isNaN(d) || isInf(d)) {
+        ok = false;
+        return 0;
+    }
+
+    double d32 = fmod(trunc(d), D32);
+    if (d32 < 0)
+        d32 += D32;
+    return static_cast<uint32_t>(d32);
 }
 
-uint32_t JSValue::toUInt32(ExecState *exec) const
+uint32_t JSValue::toUInt32SlowCase(ExecState* exec, bool& ok) const
 {
-    uint32_t i;
-    if (getUInt32(i))
-        return i;
-
-    return KJS::toUInt32(const_cast<JSValue*>(this)->toNumber(exec));
+    return JSValue::toUInt32SlowCase(toNumber(exec), ok);
 }
 
 uint16_t JSValue::toUInt16(ExecState *exec) const
