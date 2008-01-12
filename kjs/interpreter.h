@@ -286,13 +286,6 @@ namespace KJS {
      */
     virtual int rtti() { return 0; }
 
-#ifdef KJS_DEBUG_MEM
-    /**
-     * @internal
-     */
-    static void finalCheck();
-#endif
-
     static bool shouldPrintExceptions();
     static void setShouldPrintExceptions(bool);
 

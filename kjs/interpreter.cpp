@@ -431,7 +431,7 @@ Completion Interpreter::checkSyntax(const UString& sourceURL, int startingLineNu
 
     int errLine;
     UString errMsg;
-    RefPtr<ProgramNode> progNode = Parser::parse(sourceURL, startingLineNumber, code, codeLength, 0, &errLine, &errMsg);
+    RefPtr<ProgramNode> progNode = parser().parseProgram(sourceURL, startingLineNumber, code, codeLength, 0, &errLine, &errMsg);
     if (!progNode)
         return Completion(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, 0, sourceURL));
     return Completion(Normal);
@@ -451,21 +451,21 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         return Completion(Throw, Error::create(&m_globalExec, GeneralError, "Recursion too deep"));
     
     // parse the source code
-    int sid;
+    int sourceId;
     int errLine;
     UString errMsg;
-    RefPtr<ProgramNode> progNode = Parser::parse(sourceURL, startingLineNumber, code, codeLength, &sid, &errLine, &errMsg);
+    RefPtr<ProgramNode> progNode = parser().parseProgram(sourceURL, startingLineNumber, code, codeLength, &sourceId, &errLine, &errMsg);
     
     // notify debugger that source has been parsed
     if (m_debugger) {
-        bool cont = m_debugger->sourceParsed(&m_globalExec, sid, sourceURL, UString(code, codeLength), startingLineNumber, errLine, errMsg);
+        bool cont = m_debugger->sourceParsed(&m_globalExec, sourceId, sourceURL, UString(code, codeLength), startingLineNumber, errLine, errMsg);
         if (!cont)
             return Completion(Break);
     }
     
     // no program node means a syntax error occurred
     if (!progNode) {
-        Completion res(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, sid, sourceURL));
+        Completion res(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, sourceId, sourceURL));
 	if (shouldPrintExceptions())
 	  printException(res, sourceURL);
 	return res;
@@ -491,7 +491,7 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         Context ctx(globalObj, this, thisObj, progNode.get());
         ExecState newExec(this, &ctx);
 
-        if (m_debugger && !m_debugger->enterContext(&newExec, sid, startingLineNumber, 0, List::empty())) {
+        if (m_debugger && !m_debugger->enterContext(&newExec, sourceId, startingLineNumber, 0, List::empty())) {
             // debugger requested we stop execution.
             m_debugger->imp()->abort();
             return Completion(Break);
@@ -500,7 +500,7 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         progNode->processDecls(&newExec);
         res = progNode->execute(&newExec);
 
-        if (m_debugger && !m_debugger->exitContext(&newExec, sid, startingLineNumber, 0)) {
+        if (m_debugger && !m_debugger->exitContext(&newExec, sourceId, startingLineNumber, 0)) {
             // debugger requested we stop execution.
             m_debugger->imp()->abort();
             return Completion(Break);
@@ -693,8 +693,6 @@ void Interpreter::finalCheck()
 
 //  Node::finalCheck();
   Collector::finalCheck();
-  Lexer::globalClear();
-  UString::globalClear();
 }
 #endif
 

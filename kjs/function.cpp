@@ -143,15 +143,15 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   activation->setupFunctionLocals(&newExec);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
-  int sid = -1;
-  int lineno = -1;
+  int sourceId = -1;
+  int lineNo = -1;
   if (dbg) {
     if (inherits(&DeclaredFunctionImp::info)) {
-      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
-      lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
+      sourceId = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
+      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
     }
 
-    bool cont = dbg->enterContext(&newExec,sid,lineno,this,args);
+    bool cont = dbg->enterContext(&newExec, sourceId, lineNo, this, args);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -180,12 +180,12 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   if (dbg) {
     if (inherits(&DeclaredFunctionImp::info))
-      lineno = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
+      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
 
     if (comp.complType() == Throw)
         newExec.setException(comp.value());
 
-    int cont = dbg->exitContext(&newExec,sid,lineno,this);
+    int cont = dbg->exitContext(&newExec, sourceId, lineNo, this);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -912,21 +912,21 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
       else {
         UString s = x->toString(exec);
 
-        int sid;
+        int sourceId;
         int errLine;
         UString errMsg;
-        RefPtr<ProgramNode> progNode(Parser::parse(UString(), 0, s.data(),s.size(),&sid,&errLine,&errMsg));
+        RefPtr<ProgramNode> progNode(parser().parseProgram(UString(), 0, s.data(), s.size(), &sourceId, &errLine, &errMsg));
 
         Debugger *dbg = exec->dynamicInterpreter()->debugger();
         if (dbg) {
-          bool cont = dbg->sourceParsed(exec, sid, UString(), s, 0, errLine, errMsg);
+          bool cont = dbg->sourceParsed(exec, sourceId, UString(), s, 0, errLine, errMsg);
           if (!cont)
             return jsUndefined();
         }
 
         // no program node means a syntax occurred
         if (!progNode)
-          return throwError(exec, SyntaxError, errMsg, errLine, sid, NULL);
+          return throwError(exec, SyntaxError, errMsg, errLine, sourceId, NULL);
 
         // enter a new execution context
         Context ctx(exec->dynamicInterpreter()->globalObject(),
@@ -941,7 +941,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
             newExec.setException(exec->exception());
 
         if (dbg) {
-            bool cont = dbg->enterContext(&newExec, sid, 0, 0, List::empty());
+            bool cont = dbg->enterContext(&newExec, sourceId, 0, 0, List::empty());
             if (!cont) {
                 dbg->imp()->abort();
                 return jsUndefined();
@@ -954,7 +954,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
 
         dbg = exec->dynamicInterpreter()->debugger();
         if (dbg) {
-            bool cont = dbg->exitContext(&newExec, sid, 0, 0);
+            bool cont = dbg->exitContext(&newExec, sourceId, 0, 0);
             if (!cont) {
                 dbg->imp()->abort();
                 return jsUndefined();
