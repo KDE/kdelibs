@@ -282,3 +282,20 @@ initialPreference=36
 [pci:1002:437b:30b0:103c:playback:alsa:0]
 name=ATI SB450 HDA Audio (AD1981)
 initialPreference=36
+
+# Intel Corporation 82801G (ICH7 Family) High Definition Audio Controller  HDA Intel AD198x Analog
+[pci:8086:27d8:1631:c022:both:oss]
+name=HDA Intel (AD1986A)
+initialPreference=20
+
+[pci:8086:27d8:1631:c022:capture:alsa:0]
+name=HDA Intel (AD1986A)
+initialPreference=36
+
+[pci:8086:27d8:1631:c022:playback:alsa:0]
+name=HDA Intel (AD1986A)
+initialPreference=36
+
+[pci:8086:27d8:1631:c022:playback:alsa:1]
+name=HDA Intel S/PDIF (AD1986A)
+initialPreference=15
