@@ -803,9 +803,13 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
         if (exceptioncode)
             return;
         m_startContainer->parentNode()->insertBefore( newNode, newText, exceptioncode );
+	// ### adapt range?
     }
     else {
         m_startContainer->insertBefore( newNode, m_startContainer->childNode( m_startOffset ), exceptioncode );
+	if (exceptioncode)
+	    return;
+	++m_endOffset;
     }
 }
 
