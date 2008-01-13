@@ -44,34 +44,31 @@ void DxsEngine::setDxsPolicy(Policy policy)
 
 void DxsEngine::loadEntries(Provider *provider)
 {
+    kDebug() << "loading entries";
     // Ensure that the provider offers DXS at all
     // Match DXS offerings with the engine's policy
-    if(provider->webService().isValid())
-    {
-        if(m_dxspolicy == DxsNever)
-        {
+    if (provider->webService().isValid()) {
+        if (m_dxspolicy == DxsNever) {
             CoreEngine::loadEntries(provider);
             return;
         }
     }
-    else
-    {
-        if(m_dxspolicy != DxsAlways)
-        {
+    else {
+        if (m_dxspolicy != DxsAlways) {
             CoreEngine::loadEntries(provider);
             return;
         }
-        else
-        {
-            kError(550) << "DxsEngine: DXS requested but not offered" << endl;
+        else {
+            kError() << "DxsEngine: DXS requested but not offered" << endl;
             return;
         }
     }
 
     // From here on, it's all DXS now
 
-    if(!m_dxs)
+    if (!m_dxs) {
         m_dxs = new Dxs(this);
+    }
 
     m_dxs->setEndpoint(provider->webService());
 
@@ -89,18 +86,17 @@ void DxsEngine::loadEntries(Provider *provider)
 
 void DxsEngine::slotEntriesLoaded(KNS::Entry::List list)
 {
-	// FIXME: we circumvent the cache now...
-	for(Entry::List::Iterator it = list.begin(); it != list.end(); ++it)
-	{
-		Entry *entry = (*it);
-		// FIXME: the association to feed and provider is missing here
-		emit signalEntryLoaded(entry, NULL, NULL);
-	}
+    // FIXME: we circumvent the cache now...
+    for (Entry::List::Iterator it = list.begin(); it != list.end(); ++it) {
+        Entry *entry = (*it);
+        // FIXME: the association to feed and provider is missing here
+        emit signalEntryLoaded(entry, NULL, NULL);
+    }
 }
 
 void DxsEngine::slotEntriesFailed()
 {
-	emit signalEntriesFailed();
+    emit signalEntriesFailed();
 }
 
 // Unneeded for now
