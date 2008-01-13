@@ -568,24 +568,37 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
     {
         exception = true;
     }
+    
+    if (!exception)
+        return exceptionMsg;
+    
+    // Clear exceptions temporarily so we can get/call a few things.
+    // We memorize the old exception first, of course. Note that 
+    // This is not always the same as exceptionObj since we may be
+    //  asked to translate a non-active exception
+    JSValue* oldExceptionObj = exec->exception();
+    exec->clearException();
 
-    // Extract messages for exceptions --- add syntax error properly
-    if (exception)
+    // We want to serialize the syntax errors ourselves, to provide the line number.
+    // The URL is in "sourceURL" and the line is in "line"
+    // ### TODO: Perhaps we want to use 'sourceId' in case of eval contexts.
+    if (syntaxError)
     {
-        JSValue* oldExceptionObj = exec->exception(); // This is not always the same
-                                                      // as exceptionObj since we may be
-                                                      // asked to translate a non-active exception
-                                                      
-        // ### it's still not 100% safe to call toString here, 
-        // since someone might have changed the toString property of the 
-        // exception prototype, but I'll punt on this case for now.
-        // We also need to clear exception temporarily so that JSObject::toString
-        // does not do a "oy, and exception" routine for us
-        exec->clearException();
-        exceptionMsg = exceptionObj->toString(exec).qstring();
-        exec->setException(oldExceptionObj);
+        JSValue* lineValue = valueObj->get(exec, "line");
+        JSValue* urlValue  = valueObj->get(exec, "sourceURL");
+        
+        int      line = lineValue->toNumber(exec);
+        QString  url  = urlValue->toString(exec).qstring();
+        exceptionMsg = i18n("Parse error at %1 line %2", url, line - 1);
     }
-
+    else
+    {
+        // ### it's still not 100% safe to call toString here, even on 
+        // native exception objects, since someone might have changed the toString property
+        // of the exception prototype, but I'll punt on this case for now.
+        exceptionMsg = exceptionObj->toString(exec).qstring();
+    }
+    exec->setException(oldExceptionObj);
     return exceptionMsg;
 }
 
