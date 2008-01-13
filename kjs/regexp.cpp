@@ -4,6 +4,7 @@
  *  Copyright (C) 1999-2001,2004 Harri Porten (porten@kde.org)
  *  Copyright (C) 2003,2004 Apple Computer, Inc.
  *  Copyright (C) 2006      Maksim Orlovich (maksim@kde.org)
+ *  Copyright (C) 2007      Sune Vuorela (debian@pusling.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -41,9 +42,7 @@ using std::memcpy;
 
 namespace KJS {
 
-#ifdef PCRE_CONFIG_UTF8
 RegExp::UTF8SupportState RegExp::utf8Support = RegExp::Unknown;
-#endif
 
 // JS regexps can contain Unicode escape sequences (\uxxxx) which
 // are rather uncommon elsewhere. As our regexp libs don't understand
@@ -132,13 +131,11 @@ RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
 {
   // Determine whether libpcre has unicode support if need be..
-#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Unknown) {
     int supported;
     pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
     utf8Support = supported ? Supported : Unsupported;
   }
-#endif
 
   UString intern = sanitizePattern(p);
 
@@ -283,11 +280,9 @@ void RegExp::prepareMatch(const UString &s)
 {
   delete[] _originalPos; // Just to be sure..
   delete[] _buffer;
-#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported)
     prepareUtf8(s);
   else
-#endif
     prepareASCII(s);
 
 #ifndef NDEBUG
@@ -301,7 +296,7 @@ void RegExp::doneMatch()
   delete[] _buffer;      _buffer      = 0;
 }
 
-UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
+UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovector)
 {
 #ifndef NDEBUG
   assert(s.data() == _originalS.data()); // Make sure prepareMatch got called right..
@@ -347,7 +342,24 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   }
 
   int baseFlags = utf8Support == Supported ? PCRE_NO_UTF8_CHECK : 0;
-  const int numMatches = pcre_exec(_regex, NULL, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
+  
+  // See if we have to limit stack space...
+  *error = false;  
+  int stackGlutton = 0;
+  pcre_config(PCRE_CONFIG_STACKRECURSE, (void*)&stackGlutton);
+  pcre_extra limits;
+  if (stackGlutton) {
+    limits.flags = PCRE_EXTRA_MATCH_LIMIT_RECURSION;
+    // libPCRE docs claim that it munches about 500 bytes per recursion.
+    // My measurements suggest it's actually 800
+    // So the usual 8MiB rlimit on Linux produces about 10485 frames.
+    // We go somewhat conservative, and use about 2/3rds of that,
+    // especially since we're not exactly light on the stack, either
+    // ### TODO: get some build system help to use getrlimit.
+    limits.match_limit_recursion = 7000;
+  }
+  
+  const int numMatches = pcre_exec(_regex, stackGlutton ? &limits : 0, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
 
   //Now go through and patch up the offsetVector
   if (utf8Support == Supported)
@@ -362,6 +374,8 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 #endif
     if (offsetVector != fixedSizeOffsetVector)
       delete [] offsetVector;
+    if (numMatches == PCRE_ERROR_MATCHLIMIT || numMatches == PCRE_ERROR_RECURSIONLIMIT)
+      *error = true;
     return UString::null();
   }
 

@@ -106,8 +106,11 @@ JSValue *RegExpProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 
     int foundIndex;
     regExp->prepareMatch(input);
-    UString match = regExpObj->performMatch(regExp, input, static_cast<int>(lastIndex), &foundIndex);
+    UString match = regExpObj->performMatch(regExp, exec, input, static_cast<int>(lastIndex), &foundIndex);
     regExp->doneMatch();
+    if (exec->hadException())
+      return jsUndefined();
+
     bool didMatch = !match.isNull();
 
     // Test
@@ -231,16 +234,29 @@ RegExpObjectImp::RegExpObjectImp(ExecState* exec,
   putDirect(exec->propertyNames().length, jsNumber(2), ReadOnly | DontDelete | DontEnum);
 }
 
+void RegExpObjectImp::throwRegExpError(ExecState* exec)
+{
+    throwError(exec, RangeError, "Resource exhaustion trying to perform regexp match.");
+}
+
 /* 
   To facilitate result caching, exec(), test(), match(), search(), and replace() dipatch regular
   expression matching through the performMatch function. We use cached results to calculate, 
   e.g., RegExp.lastMatch and RegExp.leftParen.
 */
-UString RegExpObjectImp::performMatch(RegExp* r, const UString& s, int startOffset, int *endOffset, int **ovector)
+UString RegExpObjectImp::performMatch(RegExp* r, ExecState* exec, const UString& s, 
+                                      int startOffset, int *endOffset, int **ovector)
 {
   int tmpOffset;
   int *tmpOvector;
-  UString match = r->match(s, startOffset, &tmpOffset, &tmpOvector);
+  bool error = false;
+  UString match = r->match(s, &error, startOffset, &tmpOffset, &tmpOvector);
+  if (error) {
+    if (endOffset)
+      *endOffset = -1;
+    throwRegExpError(exec);
+    return match;
+  }
 
   if (endOffset)
     *endOffset = tmpOffset;

@@ -38,10 +38,19 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Provide better regular expression support in KJS.")
+macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)
    include_directories(${PCRE_INCLUDE_DIR})
+   CHECK_SYMBOL_EXISTS(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
+   CHECK_SYMBOL_EXISTS(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
+ 
+   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
+   # recent enough, and we don't want to fallback to a completely crippled 
+   # POSIX code just like that. 
+   if (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
+      message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
+   endif (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
 else(PCRE_FOUND)
 # if pcre is not installed, at least the posix regex.h has to be available
    if(APPLE)
