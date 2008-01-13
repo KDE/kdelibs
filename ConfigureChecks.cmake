@@ -196,7 +196,6 @@ if (UNIX)
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
 
-    check_function_exists(ptsname    HAVE_PTSNAME)
     check_function_exists(revoke     HAVE_REVOKE)
     check_function_exists(_getpty    HAVE__GETPTY)
     check_function_exists(getpt      HAVE_GETPT)
@@ -214,6 +213,7 @@ endif (UNIX)
 #check_function_exists(crypt "" HAVE_CRYPT)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
+check_function_exists(ptsname    HAVE_PTSNAME)           # kpty
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
 check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
