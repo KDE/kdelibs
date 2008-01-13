@@ -99,7 +99,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     }
 
     connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
-    connect( m_engine, SIGNAL( signalPayloadProgress( KUrl, int ) ), SLOT( slotPayloadProgress( KUrl, int ) ) );
+    connect( m_engine, SIGNAL( signalPayloadProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
     connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotDownloadItem( KNS::Entry* ) ));
 }
 
@@ -299,9 +299,9 @@ XXX inform the user
 */
 }
 
-void DownloadDialog::slotPayloadProgress(KUrl payload, int percentage)
+void DownloadDialog::slotProgress(const QString & text, int percentage)
 {
-    m_progress->addProgress(payload, percentage);
+    m_progress->addProgress(text, percentage);
 }
 
 /*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )

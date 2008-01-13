@@ -65,25 +65,25 @@ void QProgressIndicator::slotClicked()
 		m_details->show();
 }
 
-void QProgressIndicator::addProgress(KUrl url, int percentage)
+void QProgressIndicator::addProgress(const QString & message, int percentage)
 {
 	QProgressBar *pb;
 
-	m_progress[url] = percentage;
+	m_progress[message] = percentage;
 
-	if(!m_progresswidgets.contains(url))
+	if(!m_progresswidgets.contains(message))
 	{
 		QWidget *pbcontainer = new QWidget();
 
 		// make a label to show the url
 		QLabel * urlLabel = new QLabel(pbcontainer);
-		urlLabel->setText(url.fileName());
+		urlLabel->setText(message);
 
 		// make a progress bar
 		pb = new QProgressBar(pbcontainer);
 		pb->setMinimum(0);
 		pb->setMaximum(100);
-		m_progresswidgets.insert(url, pb);
+		m_progresswidgets.insert(message, pb);
 
 		// make a cancel button
 		QPushButton *pbcancel = new QPushButton();
@@ -101,28 +101,28 @@ void QProgressIndicator::addProgress(KUrl url, int percentage)
 	}
 	else
 	{
-		pb = m_progresswidgets[url];
+		pb = m_progresswidgets[message];
 	}
 
 	pb->setValue(percentage);
 
-	if(m_progress.count() > 0)
+	if (m_progress.count() > 0)
 		m_pbdetails->setEnabled(true);
 
-	if(percentage == 100)
-		removeProgress(url);
+	if (percentage == 100)
+		removeProgress(message);
 
 	calculateAverage();
 }
 
-void QProgressIndicator::removeProgress(KUrl url)
+void QProgressIndicator::removeProgress(const QString & message)
 {
-	m_progress.remove(url);
+	m_progress.remove(message);
 
-	if (m_progresswidgets[url])
+	if (m_progresswidgets[message])
 	{
-		delete m_progresswidgets[url]->parentWidget();
-		m_progresswidgets.remove(url);
+		delete m_progresswidgets[message]->parentWidget();
+		m_progresswidgets.remove(message);
 	}
 
 	if(m_progress.count() == 0)
@@ -143,7 +143,7 @@ void QProgressIndicator::calculateAverage()
 	}
 
 	int average = 0;
-	QHashIterator<KUrl, int> it(m_progress);
+	QHashIterator<QString, int> it(m_progress);
 	while(it.hasNext())
 	{
 		it.next();

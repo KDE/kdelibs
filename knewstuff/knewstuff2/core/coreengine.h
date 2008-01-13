@@ -260,7 +260,7 @@ Q_SIGNALS:
     void signalInstallationFinished();
     void signalInstallationFailed();
 
-    void signalPayloadProgress(KUrl payload, int percentage);
+    void signalPayloadProgress(const QString & filename, int percentage);
 
 private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);

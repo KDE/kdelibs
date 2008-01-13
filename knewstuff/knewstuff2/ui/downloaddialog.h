@@ -105,7 +105,7 @@ private Q_SLOTS:
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
-    void slotPayloadProgress(KUrl payload, int percentage);
+    void slotProgress(const QString & text, int percentage);
 
 private:
     void populateSortCombo(const Provider * provider);

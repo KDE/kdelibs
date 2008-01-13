@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,7 +25,7 @@
 #include <QtGui/QFrame>
 #include <QtCore/QHash>
 
-#include <kurl.h>
+#include <QtCore/QString>
 
 class QVBoxLayout;
 class QProgressBar;
@@ -43,17 +44,17 @@ class QProgressIndicator : public QFrame
 Q_OBJECT
 public:
 	QProgressIndicator(QWidget *parent);
-	void addProgress(KUrl url, int percentage);
-	void removeProgress(KUrl url);
+	void addProgress(const QString & message, int percentage);
+	void removeProgress(const QString & message);
 public Q_SLOTS:
 	void slotClicked();
 signals:
-	void signalJobCanceled(KUrl url);
+	void signalJobCanceled(const QString & message);
 private:
 	void calculateAverage();
 
-	QHash<KUrl, int> m_progress;
-	QHash<KUrl, QProgressBar*> m_progresswidgets;
+	QHash<QString, int> m_progress;
+	QHash<QString, QProgressBar*> m_progresswidgets;
 	QWidget *m_details;
 	QVBoxLayout *m_detailsvbox;
 	QProgressBar *m_pb;

@@ -386,7 +386,7 @@ void CoreEngine::slotEntriesFailed()
 
 void CoreEngine::slotPayloadProgress(KJob *job, unsigned long percent)
 {
-    emit signalPayloadProgress((qobject_cast<KIO::FileCopyJob*>(job))->srcUrl(), percent);
+    emit signalPayloadProgress((qobject_cast<KIO::FileCopyJob*>(job))->srcUrl().fileName(), percent);
 }
 
 void CoreEngine::slotPayloadResult(KJob *job)
