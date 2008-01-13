@@ -404,10 +404,12 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
     // ### perhaps disable node deletion notification for this range while we do this?
 
-    if (collapsed(exceptioncode))
+    // shortcut for special case
+    if (collapsed(exceptioncode) || exceptioncode) {
+	if (action == CLONE_CONTENTS || action == EXTRACT_CONTENTS) 
+	    return new DocumentFragmentImpl(m_ownerDocument);
         return 0;
-    if (exceptioncode)
-        return 0;
+    }
 
     NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
     if (exceptioncode)
