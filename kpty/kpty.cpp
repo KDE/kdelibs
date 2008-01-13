@@ -23,7 +23,6 @@
 #include "kpty_p.h"
 
 #include <config.h>
-#include <config-pty.h>
 
 #ifdef __sgi
 #define __svr4__
@@ -153,11 +152,13 @@ KPtyPrivate::KPtyPrivate() :
 {
 }
 
+#ifndef HAVE_OPENPTY
 bool KPtyPrivate::chownpty(bool grant)
 {
     return !QProcess::execute(KStandardDirs::findExe("kgrantpty"),
         QStringList() << (grant?"--grant":"--revoke") << QString::number(masterFd));
 }
+#endif
 
 /////////////////////////////
 // public member functions //
@@ -367,6 +368,7 @@ void KPty::close()
    if (d->masterFd < 0)
       return;
    closeSlave();
+#ifndef HAVE_OPENPTY
    // don't bother resetting unix98 pty, it will go away after closing master anyway.
    if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
       if (!geteuid()) {
@@ -380,6 +382,7 @@ void KPty::close()
          d->chownpty(false);
       }
    }
+#endif
    ::close(d->masterFd);
    d->masterFd = -1;
 }

@@ -23,13 +23,17 @@
 
 #include "kpty.h"
 
+#include <config-pty.h>
+
 #include <QtCore/QByteArray>
 
 struct KPtyPrivate {
     Q_DECLARE_PUBLIC(KPty)
 
     KPtyPrivate();
+#ifndef HAVE_OPENPTY
     bool chownpty(bool grant);
+#endif
 
     int masterFd;
     int slaveFd;

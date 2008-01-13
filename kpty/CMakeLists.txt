@@ -26,8 +26,10 @@ install( FILES
 
 ########### next target ###############
 
-kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
-target_link_libraries(kgrantpty  kdefakes )
-install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR} )
+if (NOT HAVE_OPENPTY)
+   kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
+   target_link_libraries(kgrantpty kdefakes)
+   install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR})
+endif (NOT HAVE_OPENPTY)
 
 add_subdirectory( tests )
