@@ -187,10 +187,10 @@ class TestFunctionImp : public JSObject {
 public:
   TestFunctionImp() : JSObject() {}
   virtual bool implementsCall() const { return true; }
-  virtual JSValue *call(ExecState *exec, JSObject *thisObj, const List &args);
+  virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 };
 
-JSValue *TestFunctionImp::call(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue *TestFunctionImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
 {
   fprintf(stderr,"--> %s\n",args[0]->toString(exec).ascii());
   return jsUndefined();
