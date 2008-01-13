@@ -260,7 +260,7 @@ Q_SIGNALS:
     void signalInstallationFinished();
     void signalInstallationFailed();
 
-    void signalPayloadProgress(const QString & filename, int percentage);
+    void signalProgress(const QString & message, int percentage);
 
 private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
@@ -272,7 +272,7 @@ private Q_SLOTS:
     void slotUploadPayloadResult(KJob *job);
     void slotUploadPreviewResult(KJob *job);
     void slotUploadMetaResult(KJob *job);
-    void slotPayloadProgress(KJob *job, unsigned long percent);
+    void slotProgress(KJob *job, unsigned long percent);
 
     void slotInstallationVerification(int result);
 

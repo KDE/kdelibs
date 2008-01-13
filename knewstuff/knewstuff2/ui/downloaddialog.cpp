@@ -99,7 +99,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     }
 
     connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
-    connect( m_engine, SIGNAL( signalPayloadProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
+    connect( m_engine, SIGNAL( signalProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
     connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotDownloadItem( KNS::Entry* ) ));
 }
 

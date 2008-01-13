@@ -50,13 +50,16 @@ void EntryLoader::load(const Provider *provider, Feed *feed)
     m_jobdata.clear();
 
     KUrl stuffurl = feed->feedUrl();
-    kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
+    //kDebug() << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
 
     KIO::TransferJob *job = KIO::get(stuffurl, KIO::NoReload, KIO::HideProgressInfo);
     connect(job, SIGNAL(result(KJob *)),
             SLOT(slotJobResult(KJob *)));
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
             SLOT(slotJobData(KIO::Job *, const QByteArray &)));
+    bool worked = connect(job, SIGNAL(percent(KJob*, unsigned long)),
+            this, SIGNAL(signalProgress(KJob*, unsigned long)));
+    kDebug() << "io job progress connected to signalProgress" << worked;
 }
 
 Feed *EntryLoader::feed() const

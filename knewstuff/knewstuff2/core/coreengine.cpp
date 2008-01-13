@@ -241,6 +241,10 @@ void CoreEngine::loadEntries(Provider *provider)
             connect(entry_loader,
                     SIGNAL(signalEntriesFailed()),
                     SLOT(slotEntriesFailed()));
+            bool worked = connect(entry_loader,
+                    SIGNAL(signalProgress(KJob*, unsigned long)),
+                    SLOT(slotProgress(KJob*, unsigned long)));
+            kDebug() << "signalprogress on entryloader " << worked;
 
             entry_loader->load(provider, feed);
         }
@@ -271,6 +275,10 @@ void CoreEngine::downloadPreview(Entry *entry)
     connect(job,
             SIGNAL(result(KJob*)),
             SLOT(slotPreviewResult(KJob*)));
+    bool worked = connect(job,
+            SIGNAL(progress(KJob*, unsigned long)),
+            SLOT(slotProgress(KJob*, unsigned long)));
+    kDebug() << "download payload slotProgress connection: " << worked;
 
     m_entry_jobs[job] = entry;
 }
@@ -303,7 +311,7 @@ void CoreEngine::downloadPayload(Entry *entry)
             SLOT(slotPayloadResult(KJob*)));
     connect(job,
             SIGNAL(percent(KJob*, unsigned long)),
-            SLOT(slotPayloadProgress(KJob*, unsigned long)));
+            SLOT(slotProgress(KJob*, unsigned long)));
 
     m_entry_jobs[job] = entry;
 }
@@ -365,11 +373,11 @@ void CoreEngine::slotEntriesLoaded(KNS::Entry::List list)
     Feed *feed = loader->feed();
     delete loader;
     m_activefeeds--;
-    kDebug() << "entriesloaded m_activefeeds: " << m_activefeeds;
+    //kDebug() << "entriesloaded m_activefeeds: " << m_activefeeds;
 
-    kDebug() << "Provider source " << provider->name().representation();
-    kDebug() << "Feed source " << feed->name().representation();
-    kDebug() << "Feed data: " << feed;
+    //kDebug() << "Provider source " << provider->name().representation();
+    //kDebug() << "Feed source " << feed->name().representation();
+    //kDebug() << "Feed data: " << feed;
 
     mergeEntries(list, feed, provider);
 }
@@ -379,14 +387,24 @@ void CoreEngine::slotEntriesFailed()
     EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
     delete loader;
     m_activefeeds--;
-    kDebug() << "entriesfailed m_activefeeds: " << m_activefeeds;
 
     emit signalEntriesFailed();
 }
 
-void CoreEngine::slotPayloadProgress(KJob *job, unsigned long percent)
+void CoreEngine::slotProgress(KJob *job, unsigned long percent)
 {
-    emit signalPayloadProgress((qobject_cast<KIO::FileCopyJob*>(job))->srcUrl().fileName(), percent);
+    QString url;
+    KIO::FileCopyJob * copyJob = qobject_cast<KIO::FileCopyJob*>(job);
+    KIO::TransferJob * transferJob = qobject_cast<KIO::TransferJob*>(job);
+    if (copyJob != NULL) {
+        url = copyJob->srcUrl().fileName();
+    }
+    else if (transferJob != NULL) {
+        url = transferJob->url().fileName();
+    }
+    
+    QString message = QString("loading %1").arg(url);
+    emit signalProgress(message, percent);
 }
 
 void CoreEngine::slotPayloadResult(KJob *job)
@@ -963,7 +981,7 @@ bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 
 void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
 {
-    kDebug() << "merging entries: ";
+    //kDebug() << "merging entries: ";
     for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
         // TODO: find entry in entrycache, replace if needed
         // don't forget marking as 'updateable'

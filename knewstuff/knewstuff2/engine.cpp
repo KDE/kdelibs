@@ -317,7 +317,7 @@ void EnginePrivate::slotProvidersFailed()
 
 void EnginePrivate::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
-    kDebug() << "Engine: slotEntryLoaded";
+    //kDebug() << "Engine: slotEntryLoaded";
 
     m_downloaddialog->addEntry(entry, feed, provider);
 }

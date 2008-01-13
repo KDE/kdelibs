@@ -89,6 +89,11 @@ Q_SIGNALS:
      */
     void signalEntriesFailed();
 
+    /**
+     * report progress loading
+     */
+    void signalProgress(KJob*, unsigned long);
+
 protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
     void slotJobResult(KJob *);

@@ -73,13 +73,13 @@ KUrl Feed::feedUrl() const
 
 void Feed::addEntry(Entry *entry)
 {
-    kDebug() << "adding entry: " << entry->name().representation() << " to feed: " << this;
+    //kDebug() << "adding entry: " << entry->name().representation() << " to feed: " << this;
     d->mEntries.append(entry);
 }
 
 void Feed::removeEntry(Entry * entry)
 {
-    kDebug() << "removing entry: " << entry->name().representation() << " from feed: " << this;
+    //kDebug() << "removing entry: " << entry->name().representation() << " from feed: " << this;
     d->mEntries.removeAll(entry);
 }
 
