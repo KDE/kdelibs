@@ -73,7 +73,7 @@
 // i18n: Called after the button texts in standard message dialogs
 // have been filtered by the messages above. Not visible to user.
 #define I18N_POST_BUTTON_FILTER \
-    Q_UNUSED( i18nc( "@action:button post-filter", "." ) );
+    i18nc( "@action:button post-filter", "." );
 
  /**
   * Easy MessageBox Dialog.
