@@ -29,6 +29,7 @@
 #include <wtf/FastMalloc.h>
 #include <wtf/RefPtr.h>
 #include <wtf/PassRefPtr.h>
+#include <wtf/Vector.h>
 
 #include <assert.h>
 #ifdef HAVE_STDINT_H
@@ -215,6 +216,9 @@ namespace KJS {
      * Copy constructor. Makes a shallow copy only.
      */
     UString(const UString &s) : m_rep(s.m_rep) {}
+
+    UString(const Vector<UChar>& buffer);
+
     /**
      * Convenience declaration only ! You'll be on your own to write the
      * implementation for a construction from QString.

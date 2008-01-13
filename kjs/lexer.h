@@ -94,15 +94,12 @@ namespace KJS {
   private:
     friend Lexer& lexer();
     Lexer();
-    ~Lexer();
-    
+
     int yylineno;
     UString m_sourceURL;
     bool done;
-    char *buffer8;
-    UChar *buffer16;
-    unsigned int size8, size16;
-    unsigned int pos8, pos16;
+    Vector<char> m_buffer8;
+    Vector<UChar> m_buffer16;
     bool terminator;
     bool restrKeyword;
     // encountered delimiter like "'" and "}" on last run
@@ -132,8 +129,8 @@ namespace KJS {
     void record16(int c);
     void record16(UChar c);
 
-    KJS::Identifier *makeIdentifier(UChar *buffer, unsigned int pos);
-    UString *makeUString(UChar *buffer, unsigned int pos);
+    KJS::Identifier* makeIdentifier(const Vector<UChar>& buffer);
+    UString* makeUString(const Vector<UChar>& buffer);
 
     const UChar *code;
     unsigned int length;
@@ -146,13 +143,8 @@ namespace KJS {
     // current and following unicode characters (int to allow for -1 for end-of-file marker)
     int current, next1, next2, next3;
 
-    UString **strings;
-    unsigned int numStrings;
-    unsigned int stringsCapacity;
-
-    KJS::Identifier **identifiers;
-    unsigned int numIdentifiers;
-    unsigned int identifiersCapacity;
+    Vector<UString*> m_strings;
+    Vector<KJS::Identifier*> m_identifiers;
     
     UString m_pattern;
     UString m_flags;
