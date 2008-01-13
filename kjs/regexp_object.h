@@ -81,8 +81,13 @@ namespace KJS {
     void putValueProperty(ExecState *, int token, JSValue *, int attr);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *, int token) const;
-    UString performMatch(RegExp *, const UString&, int startOffset = 0, int *endOffset = 0, int **ovector = 0);
+    
+    // If resources are exhaused during a match, exec parameter will have an exception
+    // set, and endOffset will be -1
+    UString performMatch(RegExp *, ExecState *, const UString&, int startOffset = 0, int *endOffset = 0, int **ovector = 0);
     JSObject *arrayOfMatches(ExecState *exec, const UString &result) const;
+    
+    static void throwRegExpError(ExecState *);
     
     virtual const ClassInfo *classInfo() const { return &info; }
     

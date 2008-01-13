@@ -50,7 +50,7 @@ namespace KJS {
     char flags() const { return _flags; }
     bool isValid() const { return _valid; }
 
-    UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
+    UString match(const UString &s, bool *error, int i, int *pos = 0, int **ovector = 0);
     unsigned subPatterns() const { return _numSubPatterns; }
     UString  pattern() const { return _pat; }
 
