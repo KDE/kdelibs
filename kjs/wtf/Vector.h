@@ -238,6 +238,12 @@ namespace WTF {
         {
             deallocateBuffer(m_buffer);
         }
+
+        void swap(VectorBuffer<T, 0>& other)
+        {
+            std::swap(m_buffer, other.m_buffer);
+            std::swap(m_capacity, other.m_capacity);
+        }
         
         void deallocateBuffer(T* buffer)
         {
@@ -405,6 +411,12 @@ namespace WTF {
 
         void fill(const T& val, size_t size);
         void fill(const T& val) { fill(val, size()); }
+
+        void swap(Vector<T, inlineCapacity>& other)
+        {
+            std::swap(m_size, other.m_size);
+            m_impl.swap(other.m_impl);
+        }
 
     private:
         void expandCapacity(size_t newMinCapacity);
@@ -596,6 +608,12 @@ namespace WTF {
         iterator end = collection.end();
         for (iterator it = collection.begin(); it != end; ++it)
             delete *it;
+    }
+
+    template<typename T, size_t inlineCapacity>
+    inline void swap(Vector<T, inlineCapacity>& a, Vector<T, inlineCapacity>& b)
+    {
+        a.swap(b);
     }
 
 } // namespace WTF
