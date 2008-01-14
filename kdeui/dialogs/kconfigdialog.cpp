@@ -21,6 +21,7 @@
  */
 #include "kconfigdialog.h"
 
+#include <kcomponentdata.h>
 #include <kconfigdialogmanager.h>
 #include <kconfigskeleton.h>
 #include <kdebug.h>
@@ -68,6 +69,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
   setCaption( i18n("Configure") );
   setFaceType( List );
   setButtons( Default|Ok|Apply|Cancel|Help );
+  setHelp( QString(), KGlobal::mainComponent().componentName() );
   setDefaultButton( Ok );
   setObjectName( name );
 
