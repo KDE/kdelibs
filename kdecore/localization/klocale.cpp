@@ -348,7 +348,7 @@ void KLocalePrivate::initFormat(KConfig *config)
 {
   Q_ASSERT(config);
 
-  kDebug(173) << "KLocalePrivate::KLocalePrivate";
+  //kDebug(173) << "KLocalePrivate::KLocalePrivate";
 
   config->setLocale(language);
 
