@@ -148,6 +148,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_resizePending = false;
     m_discardResizes = false;
     m_needsMask = false;
+    m_ownsWidget = true;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -187,7 +188,8 @@ RenderWidget::~RenderWidget()
 
     if(m_widget) {
         m_widget->hide();
-        m_widget->deleteLater();
+        if (m_ownsWidget)
+            m_widget->deleteLater();
     }
 }
 
@@ -262,7 +264,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             m_widget->removeEventFilter(this);
             disconnect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->hide();
-            m_widget->deleteLater(); //Might happen due to event on the widget, so be careful
+            if (m_ownsWidget)
+                m_widget->deleteLater(); //Might happen due to event on the widget, so be careful
             m_widget = 0;
         }
         m_widget = widget;
