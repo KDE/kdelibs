@@ -4425,8 +4425,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     if ( !part )
     {
         if ( child->m_frame )
-          if (child->m_frame->partLoadingErrorNotify( child, url, mimetype ))
-            return true; // we succeeded after all (a fallback was used)
+          child->m_frame->partLoadingErrorNotify( child, url, mimetype );
 
         checkEmitLoadEvent();
         return false;
