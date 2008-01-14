@@ -27,10 +27,10 @@ check_symbol_exists(isnan   "math.h" HAVE_FUNC_ISNAN)
 check_symbol_exists(isinf   "math.h" HAVE_FUNC_ISINF)
 MACRO_POP_REQUIRED_VARS()
 
-
-
-macro_optional_find_package(PCRE)
+find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
+
+option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support ")
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
@@ -40,19 +40,31 @@ include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_
 
 macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
 # the check for pcre is in kdelibs/CMakeLists.txt
-if(PCRE_FOUND)
+if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
+   
+   # tell check_symbol_exists to -I pcre dirs.
+   MACRO_PUSH_REQUIRED_VARS()
+   SET(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
+
    CHECK_SYMBOL_EXISTS(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
    CHECK_SYMBOL_EXISTS(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
- 
+   
+   MACRO_POP_REQUIRED_VARS()
+    
    # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
    # recent enough, and we don't want to fallback to a completely crippled 
    # POSIX code just like that. 
    if (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
    endif (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
-else(PCRE_FOUND)
-# if pcre is not installed, at least the posix regex.h has to be available
+else (PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
+   # if we're here, either PCRE support is disabled, or it's not found...
+   # it better be disabled.
+   if (NOT KJS_DISABLE_PCRE)
+        message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
+   endif (NOT KJS_DISABLE_PCRE)
+   # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
    else(APPLE)
@@ -61,7 +73,7 @@ else(PCRE_FOUND)
    if (NOT HAVE_REGEX_H)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
    endif (NOT HAVE_REGEX_H)
-endif(PCRE_FOUND)
+endif(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
 
 ########### next target ###############
 add_definitions(-DBUILDING_KDE__)

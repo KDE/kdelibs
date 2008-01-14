@@ -130,17 +130,18 @@ static UString sanitizePattern(const UString &p)
 RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
 {
+#ifdef HAVE_PCREPOSIX
   // Determine whether libpcre has unicode support if need be..
   if (utf8Support == Unknown) {
     int supported;
     pcre_config(PCRE_CONFIG_UTF8, (void*)&supported);
     utf8Support = supported ? Supported : Unsupported;
   }
+#endif
 
   UString intern = sanitizePattern(p);
 
 #ifdef HAVE_PCREPOSIX
-
   int options = 0;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute.
   // FIXME: That last comment is dubious. Not all RegExps get run through RegExpProtoFunc::execute.
