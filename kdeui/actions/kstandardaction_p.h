@@ -48,7 +48,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { Revert,        KStandardShortcut::AccelNone, "file_revert", I18N_NOOP("Re&vert"), 0, "document-revert" },
   { Close,         KStandardShortcut::Close, "file_close", I18N_NOOP("&Close"), 0, "window-close" },
   { Print,         KStandardShortcut::Print, "file_print", I18N_NOOP("&Print..."), 0, "document-print" },
-  { PrintPreview,  KStandardShortcut::AccelNone, "file_print_preview", I18N_NOOP("Print Previe&w..."), 0, "document-print-preview" },
+  { PrintPreview,  KStandardShortcut::AccelNone, "file_print_preview", I18N_NOOP("Print Previe&w"), 0, "document-print-preview" },
   { Mail,          KStandardShortcut::AccelNone, "file_mail", I18N_NOOP("&Mail..."), 0, "mail-send" },
   { Quit,          KStandardShortcut::Quit, "file_quit", I18N_NOOP("&Quit"), 0, "application-exit" },
 
