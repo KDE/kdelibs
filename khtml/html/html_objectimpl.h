@@ -139,7 +139,7 @@ public:
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *token);
-    virtual void attach();
+    virtual void computeContent();
 protected:
     khtml::VAlign valign;
 };
