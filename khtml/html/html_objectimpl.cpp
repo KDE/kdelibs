@@ -59,12 +59,12 @@ HTMLPartContainerElementImpl::HTMLPartContainerElementImpl(DocumentImpl *doc)
 
 HTMLPartContainerElementImpl::~HTMLPartContainerElementImpl()
 {
-    // Kill the renderer here, since we are asking for a widget to be deleed (later, though)
+    // Kill the renderer here, since we are asking for a widget to be deleted
     if (m_render)
         detach();
 
-    if (m_childWidget)
-        m_childWidget->deleteLater();
+    // This has to be deleted immediately for proper exit cleanup..
+    delete m_childWidget;
 }
 
 void HTMLPartContainerElementImpl::recalcStyle(StyleChange ch)
@@ -76,6 +76,7 @@ void HTMLPartContainerElementImpl::recalcStyle(StyleChange ch)
 
 void HTMLPartContainerElementImpl::close()
 {
+    HTMLElementImpl::close(); // Do it first, to make sure closed() is set.
     computeContentIfNeeded();
 }
 
@@ -443,7 +444,13 @@ void HTMLObjectBaseElementImpl::computeContent()
     // If we aren't permitted to load this by security policy, render alternative content instead. 
     if (!getDocument()->isURLAllowed(effectiveURL))
         newRenderAlternative = true;
-
+        
+    // If Java is off, render alternative as well...
+    if (effectiveServiceType == "application/x-java-applet") {
+        KHTMLView* w = getDocument()->view();
+        if (!w || !w->part()->javaEnabled())
+            newRenderAlternative = true;
+    }
 
     // If there is no <embed> (here or as a child), and we don't have a type + url to go on,
     // we need to render alternative as well
@@ -458,15 +465,20 @@ void HTMLObjectBaseElementImpl::computeContent()
     if (m_renderAlternative)
         return;
 
-    // Finally, try requesting the KPart.
+    // Finally, we want to try requesting the KPart. However, params matter here,
+    // so we want to defer until closed.
+    if (!closed()) {
+        setNeedComputeContent();
+        return;
+    }
+    
     KHTMLPart* part = getDocument()->part();
     clearChildWidget();
+    
+    kDebug(6031) << effectiveURL << effectiveServiceType << params;
 
     if (!part->requestObject( this, effectiveURL, effectiveServiceType, params)) {
         // Looks like we are gonna need alternative content after all...
-        if (m_renderAlternative)
-            return; // Already used it...
-
         m_renderAlternative = true;
     }
 
@@ -596,23 +608,15 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLAppletElementImpl::attach()
+void HTMLAppletElementImpl::computeContent()
 {
-    KHTMLView* w = getDocument()->view();
-
-#ifndef Q_WS_QWS // FIXME?
     DOMString codeBase = getAttribute( ATTR_CODEBASE );
     DOMString code = getAttribute( ATTR_CODE );
     if ( !codeBase.isEmpty() )
         url = codeBase.string();
     if ( !code.isEmpty() )
         url = code.string();
-
-    if (!w || !w->part()->javaEnabled())
-#endif
-        m_renderAlternative = true;
-
-    HTMLObjectBaseElementImpl::attach();
+    HTMLObjectBaseElementImpl::computeContent();
 }
 
 // -------------------------------------------------------------------------
