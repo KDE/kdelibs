@@ -118,6 +118,9 @@ public Q_SLOTS:
     void slotWidgetDestructed();
 
 protected:
+    // Should be called by subclasses to ensure we don't memory-manage this..
+    void setDoesNotOwnWidget() { m_ownsWidget = false; }
+
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
@@ -154,6 +157,7 @@ protected:
     bool m_resizePending;
     bool m_discardResizes;
     bool m_needsMask;
+    bool m_ownsWidget;
 
 public:
     virtual int borderTop() const { return canHaveBorder() ? RenderReplaced::borderTop() : 0; }
