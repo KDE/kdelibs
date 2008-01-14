@@ -161,8 +161,6 @@ void KDialogPrivate::init(KDialog *q)
 
     q->connect(q, SIGNAL(layoutHintChanged()), q, SLOT(updateGeometry()));
     q->connect(&mButtonSignalMapper, SIGNAL(mapped(int)), q, SLOT(slotButtonClicked(int)));
-
-    mHelpApp = KGlobal::mainComponent().componentName();
 }
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
