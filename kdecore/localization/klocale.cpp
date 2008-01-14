@@ -306,13 +306,19 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
   // Collect languages read from environment variables by gettext(3).
   if (useEnv) {
     // Collect by same order of priority as for gettext(3).
+
+    // LANGUAGE should contain colon-separated list of exact language codes,
+    // so add them directly.
+    list += QFile::decodeName(getenv("LANGUAGE")).split(':');
+
+    // Other environment variables contain locale string, which should
+    // be checked for all combinations yielding language codes.
     QStringList rawList;
-    rawList += QFile::decodeName(getenv("LANGUAGE")).split(':');
     rawList += QFile::decodeName(getenv("LC_ALL"));
     rawList += QFile::decodeName(getenv("LC_MESSAGES"));
-    rawList += QFile::decodeName(getenv("LANG")).split(':');
+    rawList += QFile::decodeName(getenv("LANG"));
 
-    // Process the raw list to create possible fallback combinations.
+    // Process the raw list to create possible combinations.
     foreach (const QString &ln, rawList) {
       QString lang, ctry, modf, cset;
       KLocale::splitLocale(ln, lang, ctry, modf, cset);
@@ -333,15 +339,8 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
     }
   }
 
-  // Insert possible transliteration fallbacks after each collected language.
-  QStringList nlist;
-  foreach (const QString &lang, list) {
-    nlist += lang;
-    nlist += KTranslit::fallbackList(lang);
-  }
-
   // Send the list to filter for really present languages on the system.
-  setLanguage(nlist);
+  setLanguage(list);
 }
 
 void KLocalePrivate::initFormat(KConfig *config)
@@ -611,11 +610,18 @@ void KLocalePrivate::updateCatalogs( )
 
   catalogs.clear();
 
+  // Insert possible transliteration fallbacks after each set language.
+  QStringList languageListFB;
+  foreach (const QString &lang, languageList) {
+    languageListFB += lang;
+    languageListFB += KTranslit::fallbackList(lang);
+  }
+
   // now iterate over all languages and all wanted catalog names and append or create them in the right order
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
   // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
-  foreach ( const QString &lang, languageList )
+  foreach ( const QString &lang, languageListFB )
     foreach ( const KCatalogName &name, catalogNames )
       // create and add catalog for this name and language if it exists
       if ( ! KCatalog::catalogLocaleDir( name.name, lang ).isEmpty() )
@@ -625,7 +631,7 @@ void KLocalePrivate::updateCatalogs( )
       }
 
   // notify KLocalizedString of catalog update.
-  KLocalizedString::notifyCatalogsUpdated(languageList, catalogNames);
+  KLocalizedString::notifyCatalogsUpdated(languageListFB, catalogNames);
 }
 
 void KLocale::removeCatalog(const QString &catalog)
