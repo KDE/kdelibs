@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Stefan Schimanski (1Stein@gmx.de)
+ *           (C) 2007, 2008 Maks Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -63,8 +64,8 @@ HTMLPartContainerElementImpl::~HTMLPartContainerElementImpl()
     if (m_render)
         detach();
 
-    // This has to be deleted immediately for proper exit cleanup..
-    delete m_childWidget;
+    if (m_childWidget)
+        m_childWidget->deleteLater();
 }
 
 void HTMLPartContainerElementImpl::recalcStyle(StyleChange ch)
@@ -118,6 +119,11 @@ void HTMLPartContainerElementImpl::partLoadingErrorNotify()
 void HTMLPartContainerElementImpl::clearChildWidget()
 {
     setWidget(0);
+}
+
+bool HTMLPartContainerElementImpl::mimetypeHandledInternally(const QString&)
+{
+    return false;
 }
 
 // -------------------------------------------------------------------------
@@ -311,6 +317,20 @@ HTMLEmbedElementImpl* HTMLObjectBaseElementImpl::relevantEmbed()
     }
 
     return 0;
+}
+
+bool HTMLObjectBaseElementImpl::mimetypeHandledInternally(const QString& mime)
+{
+    QStringList supportedImageTypes = khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes();
+
+    bool newImageLike = supportedImageTypes.contains(mime);
+
+    if (newImageLike != m_imageLike) {
+        m_imageLike = newImageLike;
+        requestRerender();
+    }
+    
+    return newImageLike; // No need for kpart for that.
 }
 
 void HTMLObjectBaseElementImpl::computeContent()
