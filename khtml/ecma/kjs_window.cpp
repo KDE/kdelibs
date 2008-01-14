@@ -761,8 +761,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
       }
       return getDOMNode(exec,part->document().handle());
     case FrameElement:
-      if (m_frame->m_frame)
-        return getDOMNode(exec,m_frame->m_frame->element());
+      if (m_frame->m_partContainerElement)
+        return getDOMNode(exec,m_frame->m_partContainerElement);
       else
         return jsUndefined();
     case Node:
@@ -1480,10 +1480,10 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
                                   dstUrl,
                                   lockHistory);
     }
-  } else if (!part && !m_frame->m_part.isNull()) {
+  } else if (!part && m_frame->m_partContainerElement) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      emit b->openUrlRequest(m_frame->m_frame->element()->getDocument()->completeURL(url));
+      emit b->openUrlRequest(m_frame->m_partContainerElement->getDocument()->completeURL(url));
     kDebug() << "goURL for ROPart";
   }
 }

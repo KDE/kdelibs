@@ -100,16 +100,6 @@ public:
 
     virtual void setWidget( QWidget *widget );
 
-    /**
-     * Called by KHTMLPart to notify the frame object that loading the
-     * part was not successfuly. (called either asyncroniously after a
-     * after the servicetype of the given url (the one passed with requestObject)
-     * has been determined or syncroniously from within requestObject)
-     *
-     * The default implementation does nothing.
-     */
-    virtual void partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
-
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
@@ -148,19 +138,12 @@ public:
 
     virtual const char *renderName() const { return "RenderPartObject"; }
 
-    virtual void close();
-
     virtual void layout( );
-    virtual void updateWidget();
     
     virtual bool canHaveBorder() const { return true; }
 
-    virtual void partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
-
 public Q_SLOTS:
     void slotViewCleared();
-private Q_SLOTS:
-    void slotPartLoadingErrorNotify();
 };
 
 }

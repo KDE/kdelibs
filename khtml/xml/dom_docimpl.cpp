@@ -2659,10 +2659,8 @@ ElementImpl *DocumentImpl::ownerElement() const
     ChildFrame *childFrame = childPart->d->m_frame;
     if (!childFrame)
         return 0;
-    RenderPart *renderPart = childFrame->m_frame;
-    if (!renderPart)
-        return 0;
-    return static_cast<ElementImpl *>(renderPart->element());
+    ElementImpl *el = childFrame->m_partContainerElement;
+    return el;
 }
 
 DOMString DocumentImpl::domain() const

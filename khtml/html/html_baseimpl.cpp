@@ -237,7 +237,7 @@ void HTMLBodyElementImpl::attach()
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
-    : HTMLElementImpl(doc)
+    : HTMLPartContainerElementImpl(doc)
 {
     frameBorder = true;
     frameBorderSet = false;
@@ -255,6 +255,24 @@ HTMLFrameElementImpl::~HTMLFrameElementImpl()
 NodeImpl::Id HTMLFrameElementImpl::id() const
 {
     return ID_FRAME;
+}
+
+void HTMLFrameElementImpl::ensureUniqueName()
+{
+    // Grab initial name if need be..
+    if (name.isEmpty()) {
+        name = getAttribute(ATTR_NAME);
+        if (name.isNull())
+            name = getAttribute(ATTR_ID);
+    }
+
+    // Ensure uniqueness...
+    KHTMLPart* parentPart = getDocument()->part();
+    if (parentPart) {
+        // we need a unique name for every frame in the frameset. Hope that's unique enough.
+        if (name.isEmpty() || parentPart->frameExists( name.string() ) )
+            name = DOMString(parentPart->requestFrameName());
+    }
 }
 
 void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
@@ -316,9 +334,7 @@ void HTMLFrameElementImpl::attach()
     assert(!attached());
     assert(parentNode());
 
-    name = getAttribute(ATTR_NAME);
-    if (name.isNull())
-        name = getAttribute(ATTR_ID);
+    computeContentIfNeeded();
 
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
@@ -345,49 +361,59 @@ void HTMLFrameElementImpl::attach()
         _style->deref();
     }
 
-    NodeBaseImpl::attach();
+    // If we already have a widget, set it.
+    if (m_render && childWidget())
+        static_cast<RenderFrame*>(m_render)->setWidget(childWidget());
 
-    if (!m_render)
+    NodeBaseImpl::attach();
+}
+
+void HTMLFrameElementImpl::setWidgetNotify(QWidget* widget)
+{
+    if (m_render)
+        static_cast<RenderFrame*>(m_render)->setWidget(widget);
+}
+
+void HTMLFrameElementImpl::computeContent()
+{
+    KHTMLPart* parentPart = getDocument()->part();
+
+    if (!parentPart)
         return;
 
-    KHTMLView* w = getDocument()->view();
-    if (w) {
-	// we need a unique name for every frame in the frameset. Hope that's unique enough.
-	if(name.isEmpty() || w->part()->frameExists( name.string() ) )
-	    name = DOMString(w->part()->requestFrameName());
+    ensureUniqueName();
 
-	// load the frame contents
-	w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+    // Bail out on any disallowed URLs
+    if( !getDocument()->isURLAllowed(url.string()) )
+        return;
+
+    // If we have a part already, make sure it's in the right spot...
+    // (can happen if someone asks to change location while we're in process 
+    // of loading the original one)
+    if ( contentPart() ) {
+        setLocation(url);
+        return;
     }
+
+    // Go ahead and load a part...
+    // ### double-check how multiple requests are handled in the part!
+    clearChildWidget();
+    parentPart->requestFrame( this, url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
-
     url = str;
-
-    if( !attached() )
-        return;
-
-    if( !m_render ) {
-        detach();
-        attach();
-        return;
-    }
 
     if( !getDocument()->isURLAllowed(url.string()) )
         return;
 
-    // load the frame contents
-    KHTMLView *w = getDocument()->view();
-    if (w) {
-	KHTMLPart *part = w->part()->findFrame(  name.string() );
-	if ( part ) {
-	    part->openUrl( KUrl( getDocument()->completeURL( url.string() ) ) );
-	} else {
-	    w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
-	}
-    }
+    // if we already have a child part, ask it to go there..
+    KHTMLPart* childPart = contentPart();
+    if ( childPart )
+        childPart->openUrl( KUrl( getDocument()->completeURL( url.string() ) ) );
+    else
+        setNeedComputeContent(); // otherwise, request it.. 
 }
 
 bool HTMLFrameElementImpl::isFocusable() const
@@ -409,15 +435,25 @@ void HTMLFrameElementImpl::setFocus(bool received)
 
 DocumentImpl* HTMLFrameElementImpl::contentDocument() const
 {
-    if ( !m_render ) return 0;
+    if (!childWidget()) return 0;
 
-    RenderPart* render = static_cast<RenderPart*>( m_render );
-
-    if(render->widget() && qobject_cast<KHTMLView*>( render->widget()) )
-        return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
+    if (::qobject_cast<KHTMLView*>( childWidget() ) )
+        return static_cast<KHTMLView*>( childWidget() )->part()->xmlDocImpl();
 
     return 0;
 }
+
+KHTMLPart*   HTMLFrameElementImpl::contentPart() const
+{
+    if (!childWidget()) return 0;
+
+    if (::qobject_cast<KHTMLView*>( childWidget() ) )
+        return static_cast<KHTMLView*>( childWidget() )->part();
+
+    return 0;
+}
+
+// -------------------------------------------------------------------------
 
 DOMString HTMLBodyElementImpl::aLink() const
 {
@@ -468,19 +504,6 @@ void HTMLBodyElementImpl::setVLink( const DOMString &value )
 {
     setAttribute(ATTR_VLINK, value);
 }
-
-KHTMLPart*   HTMLFrameElementImpl::contentPart() const
-{
-    if ( !m_render ) return 0;
-
-    RenderPart* render = static_cast<RenderPart*>( m_render );
-
-    if(render->widget() && ::qobject_cast<KHTMLView*>( render->widget()) )
-        return static_cast<KHTMLView*>( render->widget() )->part();
-
-    return 0;
-}
-
 
 // -------------------------------------------------------------------------
 
@@ -649,7 +672,6 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameEleme
     frameBorder = false;
     marginWidth = 0;
     marginHeight = 0;
-    needWidgetUpdate = false;
     m_frame = true;
 }
 
@@ -709,7 +731,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         addHTMLAlignment( attr->value() );
         break;
     case ATTR_SRC:
-        needWidgetUpdate = true; // ### do this for scrolling, margins etc?
+        setNeedComputeContent();
         HTMLFrameElementImpl::parseAttribute( attr );
         break;
     case ATTR_FRAMEBORDER:
@@ -747,9 +769,6 @@ void HTMLIFrameElementImpl::attach()
     assert(parentNode());
 
     updateFrame();
-    name = getAttribute(ATTR_NAME);
-    if (name.isNull())
-        name = getAttribute(ATTR_ID);
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
@@ -763,23 +782,27 @@ void HTMLIFrameElementImpl::attach()
 
     NodeBaseImpl::attach();
 
-    if (m_render) {
-        // we need a unique name for every frame in the frameset. Hope that's unique enough.
-        KHTMLView* w = getDocument()->view();
-        if(w && (name.isEmpty() || w->part()->frameExists( name.string() )))
-            name = DOMString(w->part()->requestFrameName());
-
-        needWidgetUpdate = false;
-        static_cast<RenderPartObject*>(m_render)->updateWidget();
-    }
+    if (m_render && childWidget())
+        static_cast<RenderPartObject*>(m_render)->setWidget(childWidget());
 }
 
-void HTMLIFrameElementImpl::recalcStyle( StyleChange ch )
+void HTMLIFrameElementImpl::computeContent()
 {
-    if (needWidgetUpdate) {
-        needWidgetUpdate = false;
-        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
-    }
-    HTMLElementImpl::recalcStyle( ch );
+    KHTMLPart* parentPart = getDocument()->part();
+
+    if (!parentPart)
+        return;
+
+    if (!getDocument()->isURLAllowed(url.string()))
+        return;
+
+    ensureUniqueName();
+    clearChildWidget();
+    parentPart->requestFrame(this, url.string(), name.string(), QStringList(), true);
 }
 
+void HTMLIFrameElementImpl::setWidgetNotify(QWidget* widget)
+{
+    if (m_render)
+        static_cast<RenderPartObject*>(m_render)->setWidget(widget);
+}

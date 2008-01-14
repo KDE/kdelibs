@@ -624,6 +624,9 @@ RenderPart::RenderPart(DOM::HTMLElementImpl* node)
 {
     // init RenderObject attributes
     setInline(false);
+
+    // HTMLPartContainerElementImpl does memory management, not us
+    setDoesNotOwnWidget();
 }
 
 void RenderPart::setWidget( QWidget *widget )
@@ -633,9 +636,11 @@ void RenderPart::setWidget( QWidget *widget )
 #endif
 
     setQWidget( widget );
-    widget->setFocusPolicy(Qt::WheelFocus);
-    if(widget->inherits("KHTMLView"))
-        connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+    if (widget) {
+        widget->setFocusPolicy(Qt::WheelFocus);
+        if(widget->inherits("KHTMLView"))
+            connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+    }
 
     setNeedsLayoutAndMinMaxRecalc();
 
@@ -643,9 +648,6 @@ void RenderPart::setWidget( QWidget *widget )
     // ### find better fix
     slotViewCleared();
 }
-
-void RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KUrl& , const QString& )
-{}
 
 short RenderPart::intrinsicWidth() const
 {
@@ -701,252 +703,6 @@ RenderPartObject::RenderPartObject( DOM::HTMLElementImpl* element )
 {
     // init RenderObject attributes
     setInline(true);
-}
-
-void RenderPartObject::updateWidget()
-{
-  QString url;
-  KHTMLPart *part = m_view->part();
-
-  setNeedsLayoutAndMinMaxRecalc();
-
-  if (element()->id() == ID_IFRAME) {
-
-      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
-      url = o->url.string();
-      if (!o->getDocument()->isURLAllowed(url)) return;
-      part->requestFrame( this, url, o->name.string(), QStringList(), true );
-  // ### this should be constant true - move iframe to somewhere else
-  } else {
-
-      QStringList params;
-      HTMLObjectBaseElementImpl * objbase = static_cast<HTMLObjectBaseElementImpl *>(element());
-      url = objbase->url;
-
-      for (NodeImpl* child = element()->firstChild(); child; child=child->nextSibling()) {
-          if ( child->id() == ID_PARAM ) {
-              HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-
-              QString aStr = p->name();
-              aStr += QLatin1String("=\"");
-              aStr += p->value();
-              aStr += QLatin1String("\"");
-              QString name_lower = p->name().toLower();
-              if (name_lower == QLatin1String("type") && objbase->id() != ID_APPLET) {
-                  objbase->setServiceType(p->value());
-              } else if (url.isEmpty() &&
-                         (name_lower == QLatin1String("src") ||
-                          name_lower == QLatin1String("movie") ||
-                          name_lower == QLatin1String("code"))) {
-                  url = p->value();
-              }
-              params.append(aStr);
-          }
-      }
-      if (element()->id() != ID_OBJECT) {
-          // add all attributes set on the embed object
-          NamedAttrMapImpl* a = objbase->attributes();
-          if (a) {
-              for (unsigned long i = 0; i < a->length(); ++i) {
-                  NodeImpl::Id id = a->idAt(i);
-                  DOMString value = a->valueAt(i);
-              params.append(objbase->getDocument()->getName(NodeImpl::AttributeId, id).string() + "=\"" + value.string() + "\"");
-              }
-          }
-      }
-      params.append( QLatin1String("__KHTML__PLUGINEMBED=\"YES\"") );
-      params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(element()->getDocument()->baseURL().url()));
-
-      HTMLEmbedElementImpl *embed = 0;
-      QString classId;
-      QString serviceType = objbase->serviceType;
-      if ( element()->id() == ID_EMBED ) {
-
-          embed = static_cast<HTMLEmbedElementImpl *>( objbase );
-
-      }
-      else { // if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET)
-
-          // check for embed child object
-          for (NodeImpl *child = objbase->firstChild(); child; child = child->nextSibling())
-              if ( child->id() == ID_EMBED ) {
-                  embed = static_cast<HTMLEmbedElementImpl *>( child );
-                  break;
-              }
-          classId = objbase->classId;
-
-          params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( classId ) );
-          params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( objbase->getAttribute(ATTR_CODEBASE).string() ) );
-          if (!objbase->getAttribute(ATTR_WIDTH).isEmpty())
-              params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( objbase->getAttribute(ATTR_WIDTH).string() ) );
-          else if (embed && !embed->getAttribute(ATTR_WIDTH).isEmpty()) {
-              params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( embed->getAttribute(ATTR_WIDTH).string() ) );
-              objbase->setAttribute(ATTR_WIDTH, embed->getAttribute(ATTR_WIDTH));
-          }
-          if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
-              params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
-          else if (embed && !embed->getAttribute(ATTR_HEIGHT).isEmpty()) {
-              params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( embed->getAttribute(ATTR_HEIGHT).string() ) );
-              objbase->setAttribute(ATTR_HEIGHT, embed->getAttribute(ATTR_HEIGHT));
-          }
-
-          if ( embed ) {
-              // render embed object
-              url = embed->url;
-              if (!embed->serviceType.isEmpty())
-                  serviceType = embed->serviceType;
-          } else if (url.isEmpty() && objbase->classId.startsWith("java:")) {
-              serviceType = "application/x-java-applet";
-              url = objbase->classId.mid(5);
-          }
-          if ( (serviceType.isEmpty() ||
-                      serviceType == "application/x-oleobject") &&
-                  !objbase->classId.isEmpty())
-          {
-#if 0
-              // We have a clsid, means this is activex (Niko)
-              serviceType = "application/x-activex-handler";
-#endif
-
-              if(classId.indexOf(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000")) >= 0) {
-                  // It is ActiveX, but the nsplugin system handling
-                  // should also work, that's why we don't override the
-                  // serviceType with application/x-activex-handler
-                  // but let the KTrader in khtmlpart::createPart() detect
-                  // the user's preference: launch with activex viewer or
-                  // with nspluginviewer (Niko)
-                  serviceType = "application/x-shockwave-flash";
-              }
-              else if(classId.indexOf(QLatin1String("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")) >= 0)
-                  serviceType = "audio/x-pn-realaudio-plugin";
-              else if(classId.indexOf(QLatin1String("8AD9C840-044E-11D1-B3E9-00805F499D93")) >= 0 ||
-                      classId.indexOf(QLatin1String("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")) >= 0)
-                  serviceType = "application/x-java-applet";
-              // http://www.apple.com/quicktime/tools_tips/tutorials/activex.html
-              else if(classId.indexOf(QLatin1String("02BF25D5-8C17-4B23-BC80-D3488ABDDC6B")) >= 0)
-                  serviceType = "video/quicktime";
-              // http://msdn.microsoft.com/library/en-us/dnwmt/html/adding_windows_media_to_web_pages__etse.asp?frame=true
-              else if(classId.indexOf(QString::fromLatin1("6BF52A52-394A-11d3-B153-00C04F79FAA6")) >= 0 ||
-                      classId.indexOf(QString::fromLatin1("22D6f312-B0F6-11D0-94AB-0080C74C7E95")) >= 0)
-                  serviceType = "video/x-msvideo";
-
-              else
-                  kDebug(6031) << "ActiveX classId " << objbase->classId;
-
-              // TODO: add more plugins here
-          }
-      }
-      if ((url.isEmpty() && !embed &&
-                  (serviceType.isEmpty() || classId.isEmpty())) ||
-              !document()->isURLAllowed(url) ||
-              !part->requestObject( this, url, serviceType, params ))
-          objbase->renderAlternative();
-  }
-}
-
-// ugly..
-void RenderPartObject::close()
-{
-    RenderPart::close();
-
-    if ( element()->id() != ID_IFRAME )
-        updateWidget();
-    // deleted here
-}
-
-
-void RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType )
-{
-    KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-    kDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType;
-    // Check if we just tried with e.g. nsplugin
-    // and fallback to the activexhandler if there is a classid
-    // and a codebase, where we may download the ocx if it's missing
-    if( serviceType != "application/x-activex-handler" && element()->id()==ID_OBJECT ) {
-
-        // check for embed child object
-        HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(element());
-        HTMLEmbedElementImpl *embed = 0;
-        NodeImpl *child = o->firstChild();
-        while ( child ) {
-            if ( child->id() == ID_EMBED )
-                embed = static_cast<HTMLEmbedElementImpl *>( child );
-
-            child = child->nextSibling();
-        }
-    }
-    // Dissociate ourselves from the current event loop (to prevent crashes
-    // due to the message box staying up)
-    QTimer::singleShot( 0, this, SLOT( slotPartLoadingErrorNotify() ) );
-#if 0
-    Tokenizer *tokenizer = static_cast<DOM::DocumentImpl *>(part->document().handle())->tokenizer();
-    if (tokenizer) tokenizer->setOnHold( true );
-    slotPartLoadingErrorNotify();
-    if (tokenizer) tokenizer->setOnHold( false );
-#endif
-}
-
-void RenderPartObject::slotPartLoadingErrorNotify()
-{
-    // First we need to find out the servicetype - again - this code is too duplicated !
-    HTMLEmbedElementImpl *embed = 0;
-    QString serviceType;
-    if( element()->id()==ID_OBJECT ) {
-
-        // check for embed child object
-        HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(element());
-        serviceType = o->serviceType;
-        NodeImpl *child = o->firstChild();
-        while ( child ) {
-            if ( child->id() == ID_EMBED )
-                embed = static_cast<HTMLEmbedElementImpl *>( child );
-
-            child = child->nextSibling();
-        }
-
-    } else if( element()->id()==ID_EMBED ) {
-        embed = static_cast<HTMLEmbedElementImpl *>(element());
-    }
-    if ( embed )
-	serviceType = embed->serviceType;
-
-    // prepare for the local eventloop in KMessageBox
-    ref();
-
-    KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-    KParts::BrowserExtension *ext = part->browserExtension();
-    if( embed && !embed->pluginPage.isEmpty() && ext ) {
-        // Prepare the mimetype to show in the question (comment if available, name as fallback)
-        QString mimeName = serviceType;
-        KMimeType::Ptr mime = KMimeType::mimeType(serviceType);
-        if ( mime && mime->name() != KMimeType::defaultMimeType() )
-            mimeName = mime->comment();
-
-        // Check if we already asked the user, for this page
-        if (!mimeName.isEmpty() && part->docImpl() && !part->pluginPageQuestionAsked( serviceType ) )
-        {
-            part->setPluginPageQuestionAsked( serviceType );
-            // Prepare the URL to show in the question (host only if http, to make it short)
-            KUrl pluginPageURL( embed->pluginPage );
-            QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyUrl();
-            int res = KMessageBox::questionYesNo( m_view,
-                                                  i18n("No plugin found for '%1'.\nDo you want to download one from %2?", mimeName, shortURL),
-                                                  i18n("Missing Plugin"), KGuiItem(i18n("Download")), KGuiItem(i18n("Do Not Download")), QString("plugin-")+serviceType);
-            if ( res == KMessageBox::Yes )
-            {
-                // Display vendor download page
-                ext->createNewWindow( pluginPageURL );
-                return;
-            }
-        }
-    }
-
-    // didn't work, render alternative content.
-    if ( element() && (
-         element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET))
-        static_cast<HTMLObjectBaseElementImpl*>( element() )->renderAlternative();
-
-    deref();
 }
 
 void RenderPartObject::layout( )

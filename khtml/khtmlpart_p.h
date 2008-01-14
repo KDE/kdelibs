@@ -41,6 +41,7 @@
 #include <QtCore/QList>
 
 #include "html/html_formimpl.h"
+#include "html/html_objectimpl.h"
 #include "khtml_run.h"
 #include "khtml_global.h"
 #include "khtml_events.h"
@@ -96,7 +97,7 @@ namespace khtml
 #endif
       }
 
-    QPointer<khtml::RenderPart> m_frame;
+    QPointer<DOM::HTMLPartContainerElementImpl> m_partContainerElement;
     QPointer<KParts::ReadOnlyPart> m_part;
     QPointer<KParts::BrowserExtension> m_extension;
     QPointer<KParts::LiveConnectExtension> m_liveconnect;

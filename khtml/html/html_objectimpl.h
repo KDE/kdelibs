@@ -30,11 +30,56 @@
 
 
 // -------------------------------------------------------------------------
+class KHTMLPart;
+
 namespace DOM {
 
 class HTMLFormElementImpl;
+class HTMLEmbedElementImpl;
 
-class HTMLObjectBaseElementImpl : public QObject, public HTMLElementImpl
+// Base class of all objects that are displayed as KParts:
+// frames, objects, applets, etc. 
+class HTMLPartContainerElementImpl : public QObject, public HTMLElementImpl
+{
+public:
+    HTMLPartContainerElementImpl(DocumentImpl *doc);
+    ~HTMLPartContainerElementImpl();
+
+    void computeContentIfNeeded();
+    void setNeedComputeContent();
+
+    virtual void recalcStyle(StyleChange ch);
+    virtual void close();
+
+    // These methods will be called to notify the element of 
+    // any progress in loading of the document: setWidgetNotify if the 
+    // KPart was created, and partLoadingErrorNotify when 
+    // there was a problem with creating the part or loading the data
+    // (hence setWidgetNotify may be followed by partLoadingErrorNotify).
+    // This class take care of all the memory management, and during 
+    // the setWidgetNotify call, both old (if any) and new widget are alive
+    // Note: setWidgetNotify may be called with 0...
+    virtual void setWidgetNotify(QWidget *widget) = 0; 
+    virtual void partLoadingErrorNotify();
+
+    // IMPORTANT: you should call this when requesting a URL, to make sure 
+    // that we don't get stale references to iframes or such.
+    void clearChildWidget();
+    QWidget* childWidget() const { return m_childWidget; }
+
+private:
+    friend class ::KHTMLPart;
+    // This is called by KHTMLPart to notify us of the new widget.
+    void setWidget(QWidget* widget);
+private:
+    virtual void computeContent() = 0;
+    bool m_needToComputeContent; // This flag is set to true when 
+                                 // we may have to load a new KPart, due to 
+                                 // source changing, etc.
+    QWidget* m_childWidget;
+};
+
+class HTMLObjectBaseElementImpl : public HTMLPartContainerElementImpl
 {
     Q_OBJECT
 public:
@@ -44,24 +89,39 @@ public:
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *e);
 
-    virtual void recalcStyle( StyleChange ch );
-
-    void renderAlternative();
-
     void setServiceType(const QString &);
 
     QString url;
     QString classId;
     QString serviceType;
-    bool needWidgetUpdate;
+
+    bool m_rerender; // This is set to true if a reattach is pending, 
+                     // due to a change in how we need to display this...
+
     bool m_renderAlternative;
+    bool m_imageLike;
 
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
     virtual void addId(const QString& id);
     virtual void removeId(const QString& id);
-protected Q_SLOTS:
-    void slotRenderAlternative();
+
+    HTMLEmbedElementImpl* relevantEmbed();
+
+    virtual void setWidgetNotify( QWidget *widget );
+    virtual void partLoadingErrorNotify();
+
+    // This method figures out what to render -- perhaps KPart, perhaps an image, perhaps 
+    // alternative content, and forces a reattach if need be.
+    virtual void computeContent();
+
+    // Ask for a reattach, since we may need a different renderer..
+    void requestRerender();
+
+    void renderAlternative();
+protected slots:
+    void slotRerender();
+    void slotPartLoadingErrorNotify();
     void slotEmitLoadEvent();
 protected:
     DOMString     m_name;
@@ -96,6 +156,8 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
+
+    virtual HTMLEmbedElementImpl* relevantEmbed();
 
     QString pluginPage;
     bool hidden;
