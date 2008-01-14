@@ -213,8 +213,8 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     if( path.startsWith(mPath) &&
         (
          (path.length() == mPath.length() ) || 	// Paths are exact match
-         (path[mPath.length()-1] == '/') || 	// mPath ended with a slash
-         (path[mPath.length()] == '/')		// A slash follows.
+          mPath.endsWith('/') || 	        // mPath ended with a slash
+         (path[mPath.length()] == '/')		// A slash follows
          ))
         return true; // Path of URL starts with cookie-path
 
@@ -604,6 +604,9 @@ bool KCookieJar::parseUrl(const QString &_url,
 void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains)
 {
+    if (_fqdn.isEmpty()) // localhost...
+        return;
+
     // Return numeric IPv6 addresses as is...
     if (_fqdn[0] == '[')
     {
@@ -1025,7 +1028,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     {
        QString domain = *it;
        // Check if a policy for the FQDN/domain is set.
-       if ( domain[0] == '.' || isFQDN )
+       if ( domain.startsWith('.') || isFQDN )
        {
           isFQDN = false;
           KHttpCookieList *cookieList = m_cookieDomains.value(domain);
