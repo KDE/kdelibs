@@ -311,7 +311,7 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
   if (proxy) {
     ExecState *exec = proxy->interpreter()->globalExec();
     Object acceptNodeFunc = Object::dynamicCast( filter.get(exec, "acceptNode") );
-    if (acceptNodeFunc.implementsCall()) {
+    if (!acceptNodeFunc.isNull() && acceptNodeFunc.implementsCall()) {
       List args;
       args.append(getDOMNode(exec,n));
       Value result = acceptNodeFunc.call(exec,filter,args);
