@@ -1212,7 +1212,7 @@ KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HT
   DOM::DocumentImpl* doc = element.getDocument();
   KHTMLView *view = doc->view();
   if (view)
-    return view->part()->liveConnectExtension(static_cast<khtml::RenderPart*>(element.renderer()));
+    return view->part()->liveConnectExtension(&element);
   return 0L;
 }
 

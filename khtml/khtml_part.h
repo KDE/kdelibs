@@ -62,6 +62,8 @@ namespace DOM
   class Node;
   class HTMLEventListener;
   class EventListener;
+  class HTMLPartContainerElementImpl;
+  class HTMLObjectBaseElementImpl;  
 }
 
 namespace KJS
@@ -74,9 +76,8 @@ namespace khtml
 {
   class DocLoader;
   class RenderPart;
-  class RenderPartObject;
   class ChildFrame;
-    class MousePressEvent;
+  class MousePressEvent;
   class MouseDoubleClickEvent;
   class MouseMoveEvent;
   class MouseReleaseEvent;
@@ -189,13 +190,13 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLTitleElementImpl;
   friend class DOM::HTMLFrameElementImpl;
   friend class DOM::HTMLIFrameElementImpl;
+  friend class DOM::HTMLObjectBaseElementImpl;
   friend class DOM::HTMLObjectElementImpl;
   friend class DOM::HTMLAnchorElementImpl;
   friend class DOM::HTMLMetaElementImpl;
   friend class DOM::NodeImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
-  friend class khtml::RenderPartObject;
   friend class KJS::Window;
   friend class KJS::ScheduledAction;
   friend class KJS::JSNodeFilter;
@@ -1550,7 +1551,7 @@ private:
   void resetHoverText(); // Undo overURL and reset HoverText
 
   bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
-  KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *);
+  KParts::LiveConnectExtension *liveConnectExtension( const DOM::NodeImpl *);
 
   KWallet::Wallet* wallet();
 
@@ -1586,7 +1587,7 @@ private:
   QVariant crossFrameExecuteScript(const QString& target, const QString& script);
   QVariant executeScheduledScript();
 
-  bool requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
+  bool requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
                      const QStringList &args = QStringList(), bool isIFrame = false );
 
   /**
@@ -1598,7 +1599,7 @@ private:
    */
   QString requestFrameName();
 
-  bool requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
+  bool requestObject(  DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &serviceType,
                       const QStringList &args = QStringList() );
 
   bool requestObject( khtml::ChildFrame *child, const KUrl &url,

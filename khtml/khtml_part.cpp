@@ -159,7 +159,7 @@ namespace khtml {
 
 void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
 {
-    if (!m_part || !m_frame || !m_liveconnect)
+    if (!m_part || !m_partContainerElement || !m_liveconnect)
         // hmmm
         return;
 
@@ -193,7 +193,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
         KJS::Completion cmp;
         m_jscript->evaluate(QString(), 1, script, 0L, &cmp);
     } else
-        part->executeScript(m_frame->element(), script);
+        part->executeScript(DOM::Node(m_partContainerElement), script);
 }
 
 KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
@@ -1820,15 +1820,15 @@ void KHTMLPart::slotFinished( KJob * job )
   }
   KIO::TransferJob *tjob = ::qobject_cast<KIO::TransferJob*>(job);
   if (tjob && tjob->isErrorPage()) {
-    khtml::RenderPart *renderPart = d->m_frame ? d->m_frame->m_frame : QPointer<khtml::RenderPart>();
-    if (renderPart) {
-      HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
-      if (!elt)
-        return;
-      elt->renderAlternative();
-      checkCompleted();
-     }
-     if (d->m_bComplete) return;
+    HTMLPartContainerElementImpl *elt = d->m_frame ? 
+        (HTMLPartContainerElementImpl*)d->m_frame->m_partContainerElement : 0;
+
+    if (!elt)
+      return;
+      
+    elt->partLoadingErrorNotify();
+    checkCompleted();
+    if (d->m_bComplete) return;
   }
 
   //kDebug( 6050 ) << "slotFinished";
@@ -4236,16 +4236,16 @@ void KHTMLPart::updateActions()
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
 }
 
-KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) {
+KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const DOM::NodeImpl *frame) {
     const ConstFrameIt end = d->m_objects.end();
     for(ConstFrameIt it = d->m_objects.begin(); it != end; ++it )
-        if ((*it)->m_frame == frame)
+        if ((*it)->m_partContainerElement == frame)
             return (*it)->m_liveconnect;
     return 0L;
 }
 
-bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
-                              const QStringList &params, bool isIFrame )
+bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url, 
+                              const QString &frameName, const QStringList &params, bool isIFrame )
 {
   //kDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )";
   FrameIt it = d->m_frames.find( frameName );
@@ -4258,7 +4258,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   }
 
   (*it)->m_type = isIFrame ? khtml::ChildFrame::IFrame : khtml::ChildFrame::Frame;
-  (*it)->m_frame = frame;
+  (*it)->m_partContainerElement = frame;
   (*it)->m_params = params;
 
   // Support for <frame src="javascript:string">
@@ -4288,13 +4288,13 @@ QString KHTMLPart::requestFrameName()
    return QString::fromLatin1("<!--frame %1-->").arg(d->m_frameNameId++);
 }
 
-bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
-                               const QStringList &params )
+bool KHTMLPart::requestObject( DOM::HTMLPartContainerElementImpl *frame, const QString &url, 
+                               const QString &serviceType, const QStringList &params )
 {
   //kDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame;
   khtml::ChildFrame *child = new khtml::ChildFrame;
   FrameIt it = d->m_objects.insert( d->m_objects.end(), child );
-  (*it)->m_frame = frame;
+  (*it)->m_partContainerElement = frame;
   (*it)->m_type = khtml::ChildFrame::Object;
   (*it)->m_params = params;
 
@@ -4318,8 +4318,8 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   if ( child->m_bPreloaded )
   {
     kDebug(6005) << "KHTMLPart::requestObject preload";
-    if ( child->m_frame && child->m_part )
-      child->m_frame->setWidget( child->m_part->widget() );
+    if ( child->m_partContainerElement && child->m_part )
+      child->m_partContainerElement->setWidget( child->m_part->widget() );
 
     child->m_bPreloaded = false;
     return true;
@@ -4424,8 +4424,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
     if ( !part )
     {
-        if ( child->m_frame )
-          child->m_frame->partLoadingErrorNotify( child, url, mimetype );
+        if ( child->m_partContainerElement )
+          child->m_partContainerElement->partLoadingErrorNotify();
 
         checkEmitLoadEvent();
         return false;
@@ -4447,8 +4447,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     }
 
     child->m_serviceType = mimetype;
-    if ( child->m_frame  && part->widget() )
-      child->m_frame->setWidget( part->widget() );
+    if ( child->m_partContainerElement && part->widget() )
+      child->m_partContainerElement->setWidget( part->widget() );
 
     if ( child->m_type != khtml::ChildFrame::Object )
       partManager()->addPart( part, false );
@@ -4459,7 +4459,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
     if (qobject_cast<KHTMLPart*>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
-    } else if (child->m_frame) {
+    } else if (child->m_partContainerElement) {
       child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
       if (child->m_liveconnect)
         connect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
@@ -4515,9 +4515,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
   }
-  else if ( child->m_frame && child->m_part &&
-            child->m_frame->widget() != child->m_part->widget() )
-    child->m_frame->setWidget( child->m_part->widget() );
+  else if ( child->m_partContainerElement && child->m_part &&
+            child->m_partContainerElement->childWidget() != child->m_part->widget() )
+    child->m_partContainerElement->setWidget( child->m_part->widget() );
 
   checkEmitLoadEvent();
   // Some JS code in the load event may have destroyed the part
@@ -4527,8 +4527,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
   if ( child->m_bPreloaded )
   {
-    if ( child->m_frame && child->m_part )
-      child->m_frame->setWidget( child->m_part->widget() );
+    if ( child->m_partContainerElement && child->m_part )
+      child->m_partContainerElement->setWidget( child->m_part->widget() );
 
     child->m_bPreloaded = false;
     return true;
@@ -5014,7 +5014,7 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
   khtml::ChildFrame *child = frame( sender() );
 
   if ( child ) {
-    kDebug(6050) << this << " slotChildCompleted child=" << child << " m_frame=" << child->m_frame;
+    kDebug(6050) << this << " slotChildCompleted child=" << child << " m_partContainerElement=" << child->m_partContainerElement;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::OpenUrlArguments();
@@ -5247,7 +5247,7 @@ bool KHTMLPart::frameExists( const QString &frameName )
   // WABA: We only return true if the child actually has a frame
   // set. Otherwise we might find our preloaded-selve.
   // This happens when we restore the frameset.
-  return (!(*it)->m_frame.isNull());
+  return (!(*it)->m_partContainerElement.isNull());
 }
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)

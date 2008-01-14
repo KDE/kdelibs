@@ -29,6 +29,7 @@
 
 #include "html/dtd.h"
 #include "html/html_elementimpl.h"
+#include "html/html_objectimpl.h"
 #include "misc/khtmllayout.h"
 
 class KHTMLPart;
@@ -82,7 +83,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLFrameElementImpl : public HTMLElementImpl
+class HTMLFrameElementImpl : public HTMLPartContainerElementImpl
 {
     friend class khtml::RenderFrame;
     friend class khtml::RenderPartObject;
@@ -116,6 +117,10 @@ public:
     bool frameBorder : 1;
     bool frameBorderSet : 1;
     bool noresize : 1;
+
+    void ensureUniqueName();
+    virtual void computeContent();
+    virtual void setWidgetNotify(QWidget *widget);
 };
 
 // -------------------------------------------------------------------------
@@ -198,14 +203,13 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
-    virtual void recalcStyle( StyleChange ch );
     virtual void defaultEventHandler(EventImpl *evt);
 
+    virtual void computeContent();
+    virtual void setWidgetNotify(QWidget *widget);
 protected:
 
     void updateFrame();
-
-    bool needWidgetUpdate;
     bool m_frame;
 };
 
