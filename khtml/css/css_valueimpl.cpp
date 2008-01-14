@@ -1039,7 +1039,11 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_NUMBER:
-	    text = DOMString(QString::number( (int)m_value.num ));
+	    // We want to output integral values w/o a period, but others as-is
+	    if ( m_value.num == (int)m_value.num )
+		text = DOMString(QString::number( (int)m_value.num ));
+	    else
+		text = DOMString(QString::number( m_value.num ));
 	    break;
 	case CSSPrimitiveValue::CSS_PERCENTAGE:
 	    text = DOMString(QString::number( m_value.num ) + "%");	//krazy:exclude=doublequote_chars DOM demands chars
