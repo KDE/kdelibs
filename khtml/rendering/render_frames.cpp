@@ -644,10 +644,8 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KUrl& , const QString& )
-{
-    return false;
-}
+void RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KUrl& , const QString& )
+{}
 
 short RenderPart::intrinsicWidth() const
 {
@@ -857,7 +855,7 @@ void RenderPartObject::close()
 }
 
 
-bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType )
+void RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType )
 {
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
     kDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType;
@@ -876,17 +874,6 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
 
             child = child->nextSibling();
         }
-        if( embed && !o->classId.isEmpty() &&
-            !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
-        {
-            KParts::OpenUrlArguments args;
-            args.setMimeType("application/x-activex-handler");
-            kDebug(6031) << "set to activex";
-            if (part->requestObject( childFrame, url, args ))
-                return true; // success
-
-            return false;
-        }
     }
     // Dissociate ourselves from the current event loop (to prevent crashes
     // due to the message box staying up)
@@ -897,7 +884,6 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
     slotPartLoadingErrorNotify();
     if (tokenizer) tokenizer->setOnHold( false );
 #endif
-    return false;
 }
 
 void RenderPartObject::slotPartLoadingErrorNotify()

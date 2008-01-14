@@ -107,11 +107,8 @@ public:
      * has been determined or syncroniously from within requestObject)
      *
      * The default implementation does nothing.
-     *
-     * Return false in the normal case, return true if a fallback was found
-     * and the url was successfully opened.
      */
-    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
+    virtual void partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
 
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
@@ -158,7 +155,7 @@ public:
     
     virtual bool canHaveBorder() const { return true; }
 
-    virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
+    virtual void partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KUrl& url, const QString& serviceType );
 
 public Q_SLOTS:
     void slotViewCleared();
