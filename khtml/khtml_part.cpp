@@ -1483,7 +1483,11 @@ void KHTMLPart::clear()
     const ConstFrameIt oiEnd = objects.end();
 
     for (; oi != oiEnd; ++oi )
+    {
+      if ( (*oi)->m_part )
+          delete (KParts::ReadOnlyPart *)(*oi)->m_part;
       delete *oi;
+    }
   }
 
   // Listen to part changes again
@@ -4392,6 +4396,15 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
   if ( child->m_serviceType != mimetype || !child->m_part || (child->m_run && child->m_run->serverSuggestsSave()))
   {
+    // This may have come from a delayed response from KHTMLPart, in regards to 
+    // an object/iframe/etc. In this case, let the element veto this.
+    if ( child->m_partContainerElement && 
+         child->m_partContainerElement->mimetypeHandledInternally(mimetype) ) {
+      child->m_bCompleted = true;
+      checkCompleted();
+      return true;
+    }
+  
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.
     // However we don't want to ask for flash and other plugin things..

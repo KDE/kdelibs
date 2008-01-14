@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2007, 2008 Maks Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +27,9 @@
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QStringList>
+#include <QtGui/QWidget>
 
 
 // -------------------------------------------------------------------------
@@ -61,6 +64,10 @@ public:
     // Note: setWidgetNotify may be called with 0...
     virtual void setWidgetNotify(QWidget *widget) = 0; 
     virtual void partLoadingErrorNotify();
+    
+    // This is called when a mimetype is discovered, and should return true 
+    // if KHTMLPart should not make a kpart for it, but rather let it be handled directly.
+    virtual bool mimetypeHandledInternally(const QString& mime);
 
     // IMPORTANT: you should call this when requesting a URL, to make sure 
     // that we don't get stale references to iframes or such.
@@ -76,7 +83,7 @@ private:
     bool m_needToComputeContent; // This flag is set to true when 
                                  // we may have to load a new KPart, due to 
                                  // source changing, etc.
-    QWidget* m_childWidget;
+    QPointer<QWidget> m_childWidget; // may be deleted by global child widget cleanup on us..
 };
 
 class HTMLObjectBaseElementImpl : public HTMLPartContainerElementImpl
@@ -110,6 +117,7 @@ public:
 
     virtual void setWidgetNotify( QWidget *widget );
     virtual void partLoadingErrorNotify();
+    virtual bool mimetypeHandledInternally(const QString& mime);
 
     // This method figures out what to render -- perhaps KPart, perhaps an image, perhaps 
     // alternative content, and forces a reattach if need be.
