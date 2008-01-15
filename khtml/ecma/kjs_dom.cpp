@@ -1342,7 +1342,9 @@ JSValue* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, JSObject
 
       DOM::DocumentTypeImpl* docType = static_cast<DOM::DocumentTypeImpl*>(supposedDocType);
 
-      DOM::DocumentImpl* doc = implementation.createDocument(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),docType,exception);
+      DOM::DocumentImpl* doc = implementation.createDocument(valueToStringWithNullCheck(exec, args[0]),
+                                                             valueToStringWithNullCheck(exec, args[1]),
+                                                             docType, exception);
       if (!doc)
         return jsNull();
       KUrl url = static_cast<DocumentImpl*>(part->document().handle())->URL();

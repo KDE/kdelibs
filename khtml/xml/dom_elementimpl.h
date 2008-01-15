@@ -373,7 +373,7 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
     int colonpos = -1;
     uint i;
     DOMStringImpl *qname = qualifiedName.implementation();
-    for (i = 0 ; i < qname->l ; i++) {
+    for (i = 0 ; i < (qname ? qname->l : 0); i++) {
         if ((*qname)[i] == QLatin1Char(':')) {
             colonpos = i;
             break;
