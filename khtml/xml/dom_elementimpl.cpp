@@ -462,7 +462,7 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
             if (!clone->m_hasCombinedStyle)
                 clone->createNonCSSDecl();
             if (m_style.combinedDecls->inlineDecls)
-                *clone->m_style.combinedDecls->inlineDecls = *m_style.combinedDecls->inlineDecls;
+                *(clone->getInlineStyleDecls()) = *m_style.combinedDecls->inlineDecls;
             *clone->m_style.combinedDecls->nonCSSDecls = *m_style.combinedDecls->nonCSSDecls;
         } else {
             *(clone->getInlineStyleDecls()) = *m_style.inlineDecls;
