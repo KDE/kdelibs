@@ -4408,7 +4408,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.
     // However we don't want to ask for flash and other plugin things..
-    if ( child->m_type != khtml::ChildFrame::Object )
+    if ( child->m_type != khtml::ChildFrame::Object && child->m_type != khtml::ChildFrame::IFrame )
     {
       QString suggestedFileName;
       int disposition = 0;
@@ -5374,6 +5374,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
   KUrl::List frameURLLst;
   QList<QByteArray> frameStateBufferLst;
+  QList<int> frameTypeLst;
 
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
@@ -5394,11 +5395,13 @@ void KHTMLPart::saveState( QDataStream &stream )
       (*it)->m_extension->saveState( frameStream );
 
     frameStateBufferLst << state;
+
+    frameTypeLst << int( (*it)->m_type );
   }
 
   // Save frame data
   stream << (quint32) frameNameLst.count();
-  stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
+  stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst << frameTypeLst;
 #ifndef NDEBUG
   s_saveStateIndentLevel = indentLevel;
 #endif
@@ -5410,6 +5413,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   qint32 xOffset, yOffset, wContents, hContents, mWidth, mHeight;
   quint32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
+  QList<int> frameTypes;
   KUrl::List frameURLs;
   QList<QByteArray> frameStateBuffers;
   QList<int> fSizes;
@@ -5460,7 +5464,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   setPageSecurity( d->m_ssl_in_use ? Encrypted : NotCrypted );
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
-         >> frameURLs >> frameStateBuffers;
+         >> frameURLs >> frameStateBuffers >> frameTypes;
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
@@ -5487,8 +5491,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KUrl::List::ConstIterator fURLIt = frameURLs.begin();
     QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    QList<int>::ConstIterator fFrameTypeIt = frameTypes.begin();
 
-    for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
+    for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt, ++fFrameTypeIt )
     {
       khtml::ChildFrame* const child = *fIt;
 
@@ -5499,6 +5504,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
         child->m_bPreloaded = true;
         child->m_name = *fNameIt;
         child->m_serviceName = *fServiceNameIt;
+        child->m_type = static_cast<khtml::ChildFrame::Type>(*fFrameTypeIt);
         processObjectRequest( child, *fURLIt, *fServiceTypeIt );
       }
       if ( child->m_part )
@@ -5546,13 +5552,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KUrl::List::ConstIterator fURLIt = frameURLs.begin();
     QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    QList<int>::ConstIterator fFrameTypeIt = frameTypes.begin();
 
-    for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
+    for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt, ++fFrameTypeIt )
     {
       khtml::ChildFrame* const newChild = new khtml::ChildFrame;
       newChild->m_bPreloaded = true;
       newChild->m_name = *fNameIt;
       newChild->m_serviceName = *fServiceNameIt;
+      newChild->m_type = static_cast<khtml::ChildFrame::Type>(*fFrameTypeIt);
 
 //      kDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt;
 
