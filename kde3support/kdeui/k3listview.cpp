@@ -1275,8 +1275,7 @@ void K3ListView::moveItem(Q3ListViewItem *item, Q3ListViewItem *parent, Q3ListVi
 
 void K3ListView::contentsDragEnterEvent(QDragEnterEvent *event)
 {
-  if (acceptDrag (event))
-    event->accept();
+  event->accept();
 }
 
 void K3ListView::contentsContextMenuEvent( QContextMenuEvent *event )
