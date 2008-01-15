@@ -194,9 +194,9 @@ void ItemsView::buildContents()
 
                 QString imageurl = entry->preview().representation();
                 if (!imageurl.isEmpty()) {
-                    QLabel *f = new QLabel(this);
+                    QLabel *f = new QLabel(m_root);
                     f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
+                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl, m_root);
                     f->setFixedSize(64, 64);
                     connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
                             f, SLOT(setPixmap(const QPixmap&)));
