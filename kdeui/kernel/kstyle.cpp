@@ -2181,6 +2181,12 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_TabBarScrollButtonWidth:
             return widgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, option, widget);
 
+        case PM_TabBarTabShiftVertical:
+            return 1;
+
+        case PM_TabBarTabShiftHorizontal:
+            return 0;
+
         case PM_SliderControlThickness:
             return widgetLayoutProp(WT_Slider, Slider::HandleThickness, option, widget);
 
