@@ -248,6 +248,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
                                      const KEntryMap& map, bool defaultGroup, bool &firstEntry)
 {
     QByteArray currentGroup;
+    bool groupIsImmutable = false;
     const KEntryMapConstIterator end = map.constEnd();
     for (KEntryMapConstIterator it = map.constBegin(); it != end; ++it) {
         const KEntryKey& key = it.key();
@@ -256,9 +257,11 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
         if ((key.mGroup != "<default>") == defaultGroup)
             continue; // skip
 
-        // Skip group headers
-        if (key.mKey.isNull())
+        // the only thing we care about groups is, is it immutable?
+        if (key.mKey.isNull()) {
+            groupIsImmutable = it->bImmutable;
             continue; // skip
+        }
 
         const KEntry& currentEntry = *it;
         if (!defaultGroup && currentGroup != key.mGroup) {
@@ -281,7 +284,11 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
                     }
                   nope:
                     file.write(stringToPrintable(currentGroup.mid(start), GroupString));
-                    file.write("]\n", 2);
+                    file.putChar(']');
+                    if (groupIsImmutable) {
+                        file.write("[$i]", 4);
+                    }
+                    file.putChar('\n');
                     break;
                 } else {
                     file.write(stringToPrintable(currentGroup.mid(start, end - start), GroupString));
@@ -353,7 +360,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     }
     const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
-        if (!it->bDirty) // not dirty, doesn't overwrite entry in writeMap. skips default entries, too.
+        if (!it.key().mKey.isEmpty() && !it->bDirty) // not dirty, doesn't overwrite entry in writeMap. skips default entries, too.
             continue;
 
         const KEntryKey& key = it.key();
