@@ -282,7 +282,6 @@ void KjsScript::execute()
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
     if(exitstatus != KJSEmbed::Engine::Success) {
-Q_ASSERT(false);
         ErrorInterface error = extractError(completion, exec);
         setError(&error);
         return;
