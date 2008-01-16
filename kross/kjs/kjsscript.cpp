@@ -62,14 +62,13 @@ namespace Kross {
         }
 
         KJS::JSValue* value = completion.value();
-        Q_ASSERT(value);
         int lineno = -1;
-        if( value->type() == KJS::ObjectType ) {
+        if( value && value->type() == KJS::ObjectType ) {
             KJS::JSValue* linevalue = value->getObject()->get(exec, "line");
             if( linevalue && linevalue->type() == KJS::NumberType )
                 lineno = linevalue->toInt32(exec);
         }
-        const QString message = QString("%1%2: %3").arg( type ).arg((lineno >= 0) ? QString(" line %1").arg(lineno) : "").arg(value->toString(exec).qstring());
+        const QString message = QString("%1%2: %3").arg( type ).arg((lineno >= 0) ? QString(" line %1").arg(lineno) : "").arg(value ? value->toString(exec).qstring() : "NULL");
 
         ErrorInterface err;
         err.setError(message, QString(), lineno);
@@ -283,6 +282,7 @@ void KjsScript::execute()
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
     if(exitstatus != KJSEmbed::Engine::Success) {
+Q_ASSERT(false);
         ErrorInterface error = extractError(completion, exec);
         setError(&error);
         return;
@@ -388,9 +388,23 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
 
     KJS::List kjsargs;
     foreach(QVariant variant, args) {
+        if( qVariantCanConvert< QWidget* >(variant) ) {
+            if( QWidget* widget = qvariant_cast< QWidget* >(variant) ) {
+                kjsargs.append( KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned) );
+                Q_ASSERT( ! exec->hadException() );
+                continue;
+            }
+        }
+        if( qVariantCanConvert< QObject* >(variant) ) {
+            if( QObject* obj = qvariant_cast< QObject* >(variant) ) {
+                kjsargs.append( KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned) );
+                Q_ASSERT( ! exec->hadException() );
+                continue;
+            }
+        }
         KJS::JSValue* jsvalue = KJSEmbed::convertToValue(exec, variant);
         Q_ASSERT( ! exec->hadException() );
-        kjsargs.append(jsvalue);
+        kjsargs.append( jsvalue );
     }
 
     KJS::JSValue *retValue = function->call(exec, kjsglobal, kjsargs);
