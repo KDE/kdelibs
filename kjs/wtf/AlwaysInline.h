@@ -22,7 +22,7 @@
 #include <wtf/Platform.h>
 
 #ifndef ALWAYS_INLINE
-#if COMPILER(GCC)
+#if COMPILER(GCC) && __GNUC__ > 3
 #define ALWAYS_INLINE inline __attribute__ ((__always_inline__))
 #else
 #define ALWAYS_INLINE inline
