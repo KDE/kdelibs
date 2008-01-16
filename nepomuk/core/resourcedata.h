@@ -73,14 +73,24 @@ namespace Nepomuk {
          * The URI of the resource. This might be empty if the resource was not synced yet.
          * \sa kickoffUriOrId
          */
-        QString uri() const;
+        QUrl uri() const;
 
-        QUrl type() const;
+        /**
+         * \return The main type of the resource. ResourceData tries hard to make this the
+         * most important type, i.e. that which is furthest down the hierachy.
+         */
+        // FIXME: return Nepomuk::Class here
+        QUrl type();
+
+        QList<QUrl> allTypes();
 
         QHash<QString, Variant> allProperties();
 
         bool hasProperty( const QString& uri );
 
+        /**
+         * Does also check for subClass relations.
+         */
         bool hasType( const QUrl& uri );
 
         Variant property( const QString& uri );
@@ -133,7 +143,7 @@ namespace Nepomuk {
          * hierarchy, then the more detailed one is used. Otherwise the type is
          * not changed.
          */
-        void updateType();
+//        void updateType();
 
         void invalidateCache() { m_cacheDirty = true; }
 
@@ -185,7 +195,8 @@ namespace Nepomuk {
          * yet this value is empty. Otherwise it equals m_kickoffUriOrId
          */
         QString m_kickoffIdentifier;
-        QUrl m_type;
+        QUrl m_mainType;
+        QList<QUrl> m_types;
 
         int m_ref;
 

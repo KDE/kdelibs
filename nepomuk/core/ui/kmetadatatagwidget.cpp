@@ -40,7 +40,7 @@
 
 uint qHash( const Nepomuk::Tag& res )
 {
-    return qHash( res.uri() );
+    return qHash( res.resourceUri().toString() );
 }
 
 
@@ -171,7 +171,7 @@ void Nepomuk::TagWidget::slotShowTagMenu()
     QMap<QAction*, Tag> tagMap;
     foreach( Tag tag,  allTags ) {
         if ( tag.label().isEmpty() ) {
-            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+            tag.setLabel( tag.genericLabel() );
         }
         QAction* a = new QAction( tag.label(), popup );
         a->setCheckable( true );

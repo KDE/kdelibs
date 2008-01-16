@@ -19,6 +19,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QDebug>
+#include <QtCore/QUrl>
 #include <QtCore/QStringList>
 
 
@@ -484,7 +485,7 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         }
 
         ms << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 3*4 ) << endl;
-        ms << "            " << "static QString " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
+        ms << "            " << "static QUrl " << p->name()[0].toLower() << p->name().mid(1) << "Uri();" << endl;
         ms << endl;
 
         if( !p->hasSimpleType() )
@@ -595,9 +596,9 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
             ms << p->adderDefinition( this ) << endl;
 
         // write the static method that returns the property's Uri
-        ms << "QString " << name( true ) << "::" << p->name()[0].toLower() << p->name().mid(1) << "Uri()" << endl
+        ms << "QUrl " << name( true ) << "::" << p->name()[0].toLower() << p->name().mid(1) << "Uri()" << endl
            << "{" << endl
-           << "    return \"" << p->uri << "\";" << endl
+           << "    return QUrl(\"" << p->uri << "\");" << endl
            << "}" << endl << endl;
     }
 

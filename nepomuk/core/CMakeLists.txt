@@ -18,6 +18,7 @@ set(nepomuk_LIB_SRCS
   variant.cpp
   resourcedata.cpp
   resourcemanager.cpp
+  resourcefiltermodel.cpp
   tools.cpp
   ui/kratingwidget.cpp
   ui/ktagcloudwidget.cpp
@@ -35,12 +36,12 @@ set(nepomuk_LIB_SRCS
   ontology/property.cpp
   ontology/literal.cpp
   ontology/ontologyloader.cpp
-  ontology/qurlhash.cpp
   ontology/ontologymanager.cpp
   ontology/nepomukontologyloader.cpp
   ontology/fileontologyloader.cpp
   ontology/desktopontologyloader.cpp
   ontology/global.cpp
+  ontology/entitymanager.cpp
 )
 
 

@@ -26,6 +26,18 @@
 #include <QtCore/QVariant>
 #include <QtCore/QSharedData>
 
+class Nepomuk::Types::Literal::Private : public QSharedData
+{
+ public:
+    Private()
+	: dataType( QVariant::Invalid ) {
+    }
+
+    QUrl dataTypeUri;
+    QVariant::Type dataType;  
+};
+
+
 class Nepomuk::Literal::Private : public QSharedData
 {
  public:

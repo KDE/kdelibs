@@ -27,13 +27,14 @@
 #include "nepomuk_export.h"
 
 namespace Nepomuk {
-    /**
-     * \brief Defines a literal type based on XML Schema.
-     *
-     * Each valid Literal represents the literal type
-     * as XML Schema URI and as QVariant type.
-     */
-    class NEPOMUK_EXPORT Literal
+    namespace Types {
+        /**
+         * \brief Defines a literal type based on XML Schema.
+         *
+         * Each valid Literal represents the literal type
+         * as XML Schema URI and as QVariant type.
+         */
+        class NEPOMUK_EXPORT Literal
 	{
 	public:
 	    /**
@@ -50,7 +51,7 @@ namespace Nepomuk {
 	    /**
 	     * The XML Schema type URI.
 	     */
-	    const QUrl& dataTypeUri() const;
+	    QUrl dataTypeUri() const;
 
 	    /**
 	     * The type converted to a QVariant::Type.
@@ -61,8 +62,51 @@ namespace Nepomuk {
 
 	private:
 	    class Private;
-	    QSharedDataPointer<Private> d;
+	    QExplicitlySharedDataPointer<Private> d;
 	};
+    }
+}
+
+
+namespace Nepomuk {
+    /**
+     * \brief Defines a literal type based on XML Schema.
+     *
+     * Each valid Literal represents the literal type
+     * as XML Schema URI and as QVariant type.
+     *
+     * \deprecated in favor of Nepomuk::Types::Literal
+     */
+    class KDE_DEPRECATED NEPOMUK_EXPORT Literal
+    {
+    public:
+        /**
+         * Default constructor.
+         * Creates an empty Literal
+         */
+        Literal();
+        Literal( const Literal& );
+        Literal( const QUrl& dataTypeUri );
+        ~Literal();
+
+        Literal& operator=( const Literal& );
+
+        /**
+         * The XML Schema type URI.
+         */
+        const QUrl& dataTypeUri() const;
+
+        /**
+         * The type converted to a QVariant::Type.
+         * \return The QVariant::Type that corresponds to the XML Schema type or
+         * QVariant::Invalid if it could not be matched.
+         */
+        QVariant::Type dataType() const;
+
+    private:
+        class Private;
+        QSharedDataPointer<Private> d;
+    };
 }
 
 #endif

@@ -28,7 +28,11 @@
 
 
 namespace Nepomuk {
-    class NEPOMUK_EXPORT FileOntologyLoader : public OntologyLoader
+    /**
+     * \deprecated Ontologies should now be handled using the classes
+     * in the Nepomuk::Types namespace.
+     */
+    class KDE_DEPRECATED NEPOMUK_EXPORT FileOntologyLoader : public OntologyLoader
     {
     public:
 	/**

@@ -20,10 +20,40 @@
 #ifndef _NEPOMUK_CLASS_PRIVATE_H_
 #define _NEPOMUK_CLASS_PRIVATE_H_
 
+#include "entity_p.h"
 #include "class.h"
+#include "property.h"
 
 #include <QtCore/QHash>
 #include <QtCore/QSharedData>
+
+
+namespace Nepomuk {
+    namespace Types {
+        class ClassPrivate : public EntityPrivate
+        {
+        public:
+            ClassPrivate( const QUrl& uri = QUrl() );
+
+            QList<Property> domainOf;
+            QList<Property> rangeOf;
+
+            QList<Class> parents;
+            QList<Class> children;
+
+            // -1 - unknown
+            // 0  - no
+            // 1  - yes
+            int propertiesAvailable;
+
+            bool addProperty( const QUrl& property, const Soprano::Node& value );
+            bool addAncestorProperty( const QUrl& property, const Soprano::Node& value );
+
+            void initProperties();
+            bool loadProperties();
+        };
+    }
+}
 
 
 namespace Nepomuk {
@@ -31,14 +61,14 @@ namespace Nepomuk {
     class Property;
     
     class Class::Private : public QSharedData
-	{
-	public:
-	    QHash<QUrl, const Property*> domainOf;
-	    QHash<QUrl, const Property*> rangeOf;
+    {
+    public:
+        QHash<QUrl, const Property*> domainOf;
+        QHash<QUrl, const Property*> rangeOf;
 
-	    QList<const Nepomuk::Class*> parents;
-	    QList<const Nepomuk::Class*> children;
-	};
+        QList<const Nepomuk::Class*> parents;
+        QList<const Nepomuk::Class*> children;
+    };
 }
 
 #endif

@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -119,7 +119,12 @@ NEPOMUK_OTHERCLASSES
          * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
          * the related resource.
          */
-        Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+        Resource( const QString& uriOrIdentifier, const QUrl& type = QUrl() );
+
+        /**
+         * \deprecated use Resource( const QString&, const QUrl& )
+         */
+        KDE_DEPRECATED Resource( const QString& uriOrIdentifier, const QString& type );
 
         /**
          * Creates a new Resource object.
@@ -148,21 +153,71 @@ NEPOMUK_OTHERCLASSES
          * namespace and some identifier.
          *
          * the most important thing to remember is that the URI of for example
-         * a file has no relation to its local path.
+         * a file does not necessarily have a relation to its local path.
+         * (Although Nepomuk tries to keep the URI of file resources in sync
+         * with the file URL for convinience.)
          *
-         * \sa getIdentifiers
+         * For historical reasons the method does return a URI as QString instead
+         * of QUrl. The value equals resourceUri().toString().
+         *
+         * \sa resourceUri, getIdentifiers
+         *
+         * \deprecated use resourceUri instead
          */
-        QString uri() const;
+        KDE_DEPRECATED QString uri() const;
 
         /**
-         * The main type of the resource.
+         * The URI of the resource, uniquely identifying it. This URI in most
+         * cases is a virtual one which has been created from a generic base
+         * namespace and some identifier.
          *
-         * \sa name(), hasType()
+         * the most important thing to remember is that the URI of for example
+         * a file does not necessarily have a relation to its local path.
+         * (Although Nepomuk tries to keep the URI of file resources in sync
+         * with the file URL for convinience.)
+         *
+         * \sa uri, getIdentifiers
          */
-        QString type() const;
+        QUrl resourceUri() const;
 
         /**
-         * Check if the resource is of a certain type.
+         * The main type of the resource. Nepomuk tries hard to make this
+         * the type furthest down the hierarchy. In case the resource has only
+         * one type, this is no problem. However, if the resource has multiple
+         * types from different type hierarchies, there is no guarantee which
+         * one will be used here.
+         *
+         * For historical reasons the method does return a URI as QString instead
+         * of QUrl. The value equals resourceType().toString().
+         *
+         * \sa name(), hasType(), types()
+         *
+         * \deprecated use resourceType instead
+         */
+        KDE_DEPRECATED QString type() const;
+
+        /**
+         * The main type of the resource. Nepomuk tries hard to make this
+         * the type furthest down the hierarchy. In case the resource has only
+         * one type, this is no problem. However, if the resource has multiple
+         * types from different type hierarchies, there is no guarantee which
+         * one will be used here.
+         *
+         * \sa name(), hasType(), types()
+         */
+        QUrl resourceType() const;
+
+        /**
+         * \return The list of all stored types for this resource. This may
+         * also include types that lie in the same hierachy.
+         *
+         * \sa type(), hasType()
+         */
+        QList<QUrl> types() const;
+
+        /**
+         * Check if the resource is of a certain type. The type hierarchy
+         * is checked including subclass relations.
          */
         bool hasType( const QUrl& typeUri ) const;
 

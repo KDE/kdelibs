@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -32,10 +32,8 @@ namespace Nepomuk {
 
     class ResourceData;
     class Variant;
-
-    // do not remove. Will be replaced with class declarations by the Nepomuk class generator.
-        class Tag;
-        class Resource;
+    class Tag;
+    class Resource;
 
 
     enum ErrorCode {
@@ -121,7 +119,12 @@ namespace Nepomuk {
          * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
          * the related resource.
          */
-        Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+        Resource( const QString& uriOrIdentifier, const QUrl& type = QUrl() );
+
+        /**
+         * \deprecated use Resource( const QString&, const QUrl& )
+         */
+        KDE_DEPRECATED Resource( const QString& uriOrIdentifier, const QString& type );
 
         /**
          * Creates a new Resource object.
@@ -150,21 +153,71 @@ namespace Nepomuk {
          * namespace and some identifier.
          *
          * the most important thing to remember is that the URI of for example
-         * a file has no relation to its local path.
+         * a file does not necessarily have a relation to its local path.
+         * (Although Nepomuk tries to keep the URI of file resources in sync
+         * with the file URL for convinience.)
          *
-         * \sa getIdentifiers
+         * For historical reasons the method does return a URI as QString instead
+         * of QUrl. The value equals resourceUri().toString().
+         *
+         * \sa resourceUri, getIdentifiers
+         *
+         * \deprecated use resourceUri instead
          */
-        QString uri() const;
+        KDE_DEPRECATED QString uri() const;
 
         /**
-         * The main type of the resource.
+         * The URI of the resource, uniquely identifying it. This URI in most
+         * cases is a virtual one which has been created from a generic base
+         * namespace and some identifier.
          *
-         * \sa name(), hasType()
+         * the most important thing to remember is that the URI of for example
+         * a file does not necessarily have a relation to its local path.
+         * (Although Nepomuk tries to keep the URI of file resources in sync
+         * with the file URL for convinience.)
+         *
+         * \sa uri, getIdentifiers
          */
-        QString type() const;
+        QUrl resourceUri() const;
 
         /**
-         * Check if the resource is of a certain type.
+         * The main type of the resource. Nepomuk tries hard to make this
+         * the type furthest down the hierarchy. In case the resource has only
+         * one type, this is no problem. However, if the resource has multiple
+         * types from different type hierarchies, there is no guarantee which
+         * one will be used here.
+         *
+         * For historical reasons the method does return a URI as QString instead
+         * of QUrl. The value equals resourceType().toString().
+         *
+         * \sa name(), hasType(), types()
+         *
+         * \deprecated use resourceType instead
+         */
+        KDE_DEPRECATED QString type() const;
+
+        /**
+         * The main type of the resource. Nepomuk tries hard to make this
+         * the type furthest down the hierarchy. In case the resource has only
+         * one type, this is no problem. However, if the resource has multiple
+         * types from different type hierarchies, there is no guarantee which
+         * one will be used here.
+         *
+         * \sa name(), hasType(), types()
+         */
+        QUrl resourceType() const;
+
+        /**
+         * \return The list of all stored types for this resource. This may
+         * also include types that lie in the same hierachy.
+         *
+         * \sa type(), hasType()
+         */
+        QList<QUrl> types() const;
+
+        /**
+         * Check if the resource is of a certain type. The type hierarchy
+         * is checked including subclass relations.
          */
         bool hasType( const QUrl& typeUri ) const;
 
@@ -267,247 +320,246 @@ namespace Nepomuk {
          */
         bool operator==( const Resource& ) const;
 
-        // do not remove. Will be replaced with method declarations by the Nepomuk class generator.
-            /**
-             * Get property 'description'. Everything can be annotated with 
-             * a simple string comment. 
-             */
-            QString description() const;
+        /**
+         * Get property 'description'. Everything can be annotated with 
+         * a simple string comment. 
+         */
+        QString description() const;
 
-            /**
-             * Set property 'description'. Everything can be annotated with 
-             * a simple string comment. 
-             */
-            void setDescription( const QString& value );
+        /**
+         * Set property 'description'. Everything can be annotated with 
+         * a simple string comment. 
+         */
+        void setDescription( const QString& value );
 
-            /**
-             * \return The URI of the property 'description'. 
-             */
-            static QString descriptionUri();
+        /**
+         * \return The URI of the property 'description'. 
+         */
+        static QString descriptionUri();
 
-            /**
-             * Get property 'identifier'. 
-             */
-            QStringList identifiers() const;
+        /**
+         * Get property 'identifier'. 
+         */
+        QStringList identifiers() const;
 
-            /**
-             * Set property 'identifier'. 
-             */
-            void setIdentifiers( const QStringList& value );
+        /**
+         * Set property 'identifier'. 
+         */
+        void setIdentifiers( const QStringList& value );
 
-            /**
-             * Add a value to property 'identifier'. 
-             */
-            void addIdentifier( const QString& value );
+        /**
+         * Add a value to property 'identifier'. 
+         */
+        void addIdentifier( const QString& value );
 
-            /**
-             * \return The URI of the property 'identifier'. 
-             */
-            static QString identifierUri();
+        /**
+         * \return The URI of the property 'identifier'. 
+         */
+        static QString identifierUri();
 
-            /**
-             * Get property 'altLabel'. 
-             */
-            QStringList altLabels() const;
+        /**
+         * Get property 'altLabel'. 
+         */
+        QStringList altLabels() const;
 
-            /**
-             * Set property 'altLabel'. 
-             */
-            void setAltLabels( const QStringList& value );
+        /**
+         * Set property 'altLabel'. 
+         */
+        void setAltLabels( const QStringList& value );
 
-            /**
-             * Add a value to property 'altLabel'. 
-             */
-            void addAltLabel( const QString& value );
+        /**
+         * Add a value to property 'altLabel'. 
+         */
+        void addAltLabel( const QString& value );
 
-            /**
-             * \return The URI of the property 'altLabel'. 
-             */
-            static QString altLabelUri();
+        /**
+         * \return The URI of the property 'altLabel'. 
+         */
+        static QString altLabelUri();
 
-            /**
-             * Get property 'annotation'. 
-             */
-            QList<Resource> annotations() const;
+        /**
+         * Get property 'annotation'. 
+         */
+        QList<Resource> annotations() const;
 
-            /**
-             * Set property 'annotation'. 
-             */
-            void setAnnotations( const QList<Resource>& value );
+        /**
+         * Set property 'annotation'. 
+         */
+        void setAnnotations( const QList<Resource>& value );
 
-            /**
-             * Add a value to property 'annotation'. 
-             */
-            void addAnnotation( const Resource& value );
+        /**
+         * Add a value to property 'annotation'. 
+         */
+        void addAnnotation( const Resource& value );
 
-            /**
-             * \return The URI of the property 'annotation'. 
-             */
-            static QString annotationUri();
+        /**
+         * \return The URI of the property 'annotation'. 
+         */
+        static QString annotationUri();
 
-            /**
-             * Get property 'Tag'. Each Resource can be tagged with an arbitrary 
-             * number of Tags. This allows a simple grouping of resources. 
-             */
-            QList<Tag> tags() const;
+        /**
+         * Get property 'Tag'. Each Resource can be tagged with an arbitrary 
+         * number of Tags. This allows a simple grouping of resources. 
+         */
+        QList<Tag> tags() const;
 
-            /**
-             * Set property 'Tag'. Each Resource can be tagged with an arbitrary 
-             * number of Tags. This allows a simple grouping of resources. 
-             */
-            void setTags( const QList<Tag>& value );
+        /**
+         * Set property 'Tag'. Each Resource can be tagged with an arbitrary 
+         * number of Tags. This allows a simple grouping of resources. 
+         */
+        void setTags( const QList<Tag>& value );
 
-            /**
-             * Add a value to property 'Tag'. Each Resource can be tagged with 
-             * an arbitrary number of Tags. This allows a simple grouping of 
-             * resources. 
-             */
-            void addTag( const Tag& value );
+        /**
+         * Add a value to property 'Tag'. Each Resource can be tagged with 
+         * an arbitrary number of Tags. This allows a simple grouping of 
+         * resources. 
+         */
+        void addTag( const Tag& value );
 
-            /**
-             * \return The URI of the property 'Tag'. 
-             */
-            static QString tagUri();
+        /**
+         * \return The URI of the property 'Tag'. 
+         */
+        static QString tagUri();
 
-            /**
-             * Get property 'Topic'. 
-             */
-            QList<Resource> topics() const;
+        /**
+         * Get property 'Topic'. 
+         */
+        QList<Resource> topics() const;
 
-            /**
-             * Set property 'Topic'. 
-             */
-            void setTopics( const QList<Resource>& value );
+        /**
+         * Set property 'Topic'. 
+         */
+        void setTopics( const QList<Resource>& value );
 
-            /**
-             * Add a value to property 'Topic'. 
-             */
-            void addTopic( const Resource& value );
+        /**
+         * Add a value to property 'Topic'. 
+         */
+        void addTopic( const Resource& value );
 
-            /**
-             * \return The URI of the property 'Topic'. 
-             */
-            static QString topicUri();
+        /**
+         * \return The URI of the property 'Topic'. 
+         */
+        static QString topicUri();
 
-            /**
-             * Get property 'isTopicOf'. 
-             */
-            QList<Resource> isTopicOfs() const;
+        /**
+         * Get property 'isTopicOf'. 
+         */
+        QList<Resource> isTopicOfs() const;
 
-            /**
-             * Set property 'isTopicOf'. 
-             */
-            void setIsTopicOfs( const QList<Resource>& value );
+        /**
+         * Set property 'isTopicOf'. 
+         */
+        void setIsTopicOfs( const QList<Resource>& value );
 
-            /**
-             * Add a value to property 'isTopicOf'. 
-             */
-            void addIsTopicOf( const Resource& value );
+        /**
+         * Add a value to property 'isTopicOf'. 
+         */
+        void addIsTopicOf( const Resource& value );
 
-            /**
-             * \return The URI of the property 'isTopicOf'. 
-             */
-            static QString isTopicOfUri();
+        /**
+         * \return The URI of the property 'isTopicOf'. 
+         */
+        static QString isTopicOfUri();
 
-            /**
-             * Get property 'isRelated'. 
-             */
-            QList<Resource> isRelateds() const;
+        /**
+         * Get property 'isRelated'. 
+         */
+        QList<Resource> isRelateds() const;
 
-            /**
-             * Set property 'isRelated'. 
-             */
-            void setIsRelateds( const QList<Resource>& value );
+        /**
+         * Set property 'isRelated'. 
+         */
+        void setIsRelateds( const QList<Resource>& value );
 
-            /**
-             * Add a value to property 'isRelated'. 
-             */
-            void addIsRelated( const Resource& value );
+        /**
+         * Add a value to property 'isRelated'. 
+         */
+        void addIsRelated( const Resource& value );
 
-            /**
-             * \return The URI of the property 'isRelated'. 
-             */
-            static QString isRelatedUri();
+        /**
+         * \return The URI of the property 'isRelated'. 
+         */
+        static QString isRelatedUri();
 
-            /**
-             * Get property 'label'. 
-             */
-            QString label() const;
+        /**
+         * Get property 'label'. 
+         */
+        QString label() const;
 
-            /**
-             * Set property 'label'. 
-             */
-            void setLabel( const QString& value );
+        /**
+         * Set property 'label'. 
+         */
+        void setLabel( const QString& value );
 
-            /**
-             * \return The URI of the property 'label'. 
-             */
-            static QString labelUri();
+        /**
+         * \return The URI of the property 'label'. 
+         */
+        static QString labelUri();
 
-            /**
-             * Get property 'Rating'. 
-             */
-            quint32 rating() const;
+        /**
+         * Get property 'Rating'. 
+         */
+        quint32 rating() const;
 
-            /**
-             * Set property 'Rating'. 
-             */
-            void setRating( const quint32& value );
+        /**
+         * Set property 'Rating'. 
+         */
+        void setRating( const quint32& value );
 
-            /**
-             * \return The URI of the property 'Rating'. 
-             */
-            static QString ratingUri();
+        /**
+         * \return The URI of the property 'Rating'. 
+         */
+        static QString ratingUri();
 
-            /**
-             * Get property 'Symbol'. Each resource can have a symbol assigned. 
-             * For now this is a simple string which can either be the patch to 
-             * an actual pixmap file or just the name of an icon as defined by 
-             * the freedesktop.org standard. 
-             */
-            QStringList symbols() const;
+        /**
+         * Get property 'Symbol'. Each resource can have a symbol assigned. 
+         * For now this is a simple string which can either be the patch to 
+         * an actual pixmap file or just the name of an icon as defined by 
+         * the freedesktop.org standard. 
+         */
+        QStringList symbols() const;
 
-            /**
-             * Set property 'Symbol'. Each resource can have a symbol assigned. 
-             * For now this is a simple string which can either be the patch to 
-             * an actual pixmap file or just the name of an icon as defined by 
-             * the freedesktop.org standard. 
-             */
-            void setSymbols( const QStringList& value );
+        /**
+         * Set property 'Symbol'. Each resource can have a symbol assigned. 
+         * For now this is a simple string which can either be the patch to 
+         * an actual pixmap file or just the name of an icon as defined by 
+         * the freedesktop.org standard. 
+         */
+        void setSymbols( const QStringList& value );
 
-            /**
-             * Add a value to property 'Symbol'. Each resource can have a symbol 
-             * assigned. For now this is a simple string which can either be 
-             * the patch to an actual pixmap file or just the name of an icon as 
-             * defined by the freedesktop.org standard. 
-             */
-            void addSymbol( const QString& value );
+        /**
+         * Add a value to property 'Symbol'. Each resource can have a symbol 
+         * assigned. For now this is a simple string which can either be 
+         * the patch to an actual pixmap file or just the name of an icon as 
+         * defined by the freedesktop.org standard. 
+         */
+        void addSymbol( const QString& value );
 
-            /**
-             * \return The URI of the property 'Symbol'. 
-             */
-            static QString symbolUri();
+        /**
+         * \return The URI of the property 'Symbol'. 
+         */
+        static QString symbolUri();
 
-            /**
-             * Get all resources that have this resource set as property 'annotation'. 
-             * \sa ResourceManager::allResourcesWithProperty 
-             */
-            QList<Resource> annotationOf() const;
+        /**
+         * Get all resources that have this resource set as property 'annotation'. 
+         * \sa ResourceManager::allResourcesWithProperty 
+         */
+        QList<Resource> annotationOf() const;
 
-            /**
-             * Get all resources that have this resource set as property 'isRelated'. 
-             * \sa ResourceManager::allResourcesWithProperty 
-             */
-            QList<Resource> isRelatedOf() const;
+        /**
+         * Get all resources that have this resource set as property 'isRelated'. 
+         * \sa ResourceManager::allResourcesWithProperty 
+         */
+        QList<Resource> isRelatedOf() const;
 
-            /**
-             * Retrieve a list of all available Resource resources. This list 
-             * consists of all resource of type Resource that are stored in 
-             * the local Nepomuk meta data storage and any changes made locally. 
-             * Be aware that in some cases this list can get very big. Then it 
-             * might be better to use libKNep directly. 
-             */
-            static QList<Resource> allResources();
+        /**
+         * Retrieve a list of all available Resource resources. This list 
+         * consists of all resource of type Resource that are stored in 
+         * the local Nepomuk meta data storage and any changes made locally. 
+         * Be aware that in some cases this list can get very big. Then it 
+         * might be better to use libKNep directly. 
+         */
+        static QList<Resource> allResources();
 
 
     private:

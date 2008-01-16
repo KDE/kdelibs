@@ -20,15 +20,224 @@
 #include "class.h"
 #include "class_p.h"
 #include "ontology.h"
-#include "ontologymanager.h"
+#include "resourcemanager.h"
 #include "property.h"
-#include "qurlhash.h"
-#include "global.h"
+#include "entitymanager.h"
 
-#include <QtCore/QHash>
+#include <QtCore/QList>
 
 #include <kdebug.h>
 
+#include <Soprano/QueryResultIterator>
+#include <Soprano/Model>
+#include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/RDF>
+
+
+#define D static_cast<Nepomuk::Types::ClassPrivate*>( d.data() )
+
+Nepomuk::Types::ClassPrivate::ClassPrivate( const QUrl& uri )
+    : EntityPrivate( uri ),
+      propertiesAvailable( uri.isValid() ? -1 : 0 )
+{
+}
+
+
+bool Nepomuk::Types::ClassPrivate::addProperty( const QUrl& property, const Soprano::Node& value )
+{
+    if( property == Soprano::Vocabulary::RDFS::subClassOf() ) {
+        parents.append( Class( value.uri() ) );
+        return true;
+    }
+
+    return false;
+}
+
+
+bool Nepomuk::Types::ClassPrivate::addAncestorProperty( const QUrl& property, const Soprano::Node& value )
+{
+    if ( property == Soprano::Vocabulary::RDFS::subClassOf() ) {
+        children.append( Class( value.uri() ) );
+        return true;
+    }
+
+    return false;
+}
+
+
+void Nepomuk::Types::ClassPrivate::initProperties()
+{
+    if ( propertiesAvailable < 0 ) {
+        propertiesAvailable = loadProperties() ? 1 : 0;
+    }
+}
+
+
+bool Nepomuk::Types::ClassPrivate::loadProperties()
+{
+    // load domains
+    Soprano::QueryResultIterator it
+        = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
+                                                                          "graph ?g { ?p <%1> <%2> . } . "
+                                                                          "?g a <%3> . }")
+                                                                  .arg( Soprano::Vocabulary::RDFS::domain().toString() )
+                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
+                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                  Soprano::Query::QueryLanguageSparql );
+    bool success = false;
+    while ( it.next() ) {
+        success = true;
+        domainOf.append( Property( it.binding( "p" ).uri() ) );
+    }
+
+
+    // load ranges
+    it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
+                                                                          "graph ?g { ?p <%1> <%2> . } . "
+                                                                          "?g a <%3> . }")
+                                                                  .arg( Soprano::Vocabulary::RDFS::range().toString() )
+                                                                 .arg( QString::fromAscii( uri.toEncoded() ) )
+                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                  Soprano::Query::QueryLanguageSparql );
+    while ( it.next() ) {
+        success = true;
+        rangeOf.append( Property( it.binding( "p" ).uri() ) );
+    }
+
+    return success;
+}
+
+
+
+Nepomuk::Types::Class::Class()
+    : Entity()
+{
+    d = new ClassPrivate();
+}
+
+
+Nepomuk::Types::Class::Class( const QUrl& uri )
+    : Entity()
+{
+    d = EntityManager::self()->getClass( uri );
+}
+
+
+Nepomuk::Types::Class::Class( const Class& other )
+    : Entity( other )
+{
+}
+
+
+Nepomuk::Types::Class::~Class()
+{
+}
+
+
+Nepomuk::Types::Class& Nepomuk::Types::Class::operator=( const Class& other )
+{
+    d = other.d;
+    return *this;
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Class::allProperties()
+{
+    D->initProperties();
+    return D->domainOf;
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByName( const QString& name )
+{
+    D->initProperties();
+    for ( QList<Property>::const_iterator it = D->domainOf.constBegin();
+          it != D->domainOf.constEnd(); ++it ) {
+        const Property& p = *it;
+        if ( p.name() == name ) {
+            return p;
+        }
+    }
+
+    return Property();
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QString& label, const QString& language )
+{
+    D->initProperties();
+    for ( QList<Property>::iterator it = D->domainOf.begin();
+          it != D->domainOf.end(); ++it ) {
+        Property& p = *it;
+        if ( p.label( language ) == label ) {
+            return p;
+        }
+    }
+
+    return Property();
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::parentClasses()
+{
+    D->initAncestors();
+    return D->parents;
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::subClasses()
+{
+    D->init();
+    return D->children;
+}
+
+
+bool Nepomuk::Types::Class::isParentOf( const Class& other )
+{
+    D->init();
+
+    if ( D->children.contains( other ) ) {
+        return true;
+    }
+    else {
+        for ( QList<Nepomuk::Types::Class>::iterator it = D->children.begin();
+              it != D->children.end(); ++it ) {
+            if ( ( *it ).isParentOf( other ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+bool Nepomuk::Types::Class::isSubClassOf( const Class& other )
+{
+    D->initAncestors();
+
+    if ( D->parents.contains( other ) ) {
+        return true;
+    }
+    else {
+        for ( QList<Nepomuk::Types::Class>::iterator it = D->parents.begin();
+              it != D->parents.end(); ++it ) {
+            if ( ( *it ).isSubClassOf( other ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+
+
+// Start of code for deprecated Class
+// ----------------------------------
+
+#include "global.h"
+#include "ontologymanager.h"
 
 Nepomuk::Class::Class()
     : Entity()
@@ -166,4 +375,3 @@ const Nepomuk::Class* Nepomuk::Class::load( const QUrl& uri )
         return 0;
     }
 }
-

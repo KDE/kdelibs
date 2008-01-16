@@ -19,7 +19,6 @@
 
 #include "desktopontologyloader.h"
 #include "fileontologyloader.h"
-#include "qurlhash.h"
 
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
@@ -30,6 +29,11 @@
 #include <QtCore/QDir>
 
 #include <soprano/statement.h>
+
+inline uint qHash( const QUrl& url )
+{
+    return qHash( ( QString )url.toString() );
+}
 
 struct OntoBuffer
 {

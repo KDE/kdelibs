@@ -27,6 +27,40 @@
 #include <QtCore/QUrl>
 #include <QtCore/QSharedData>
 
+namespace Nepomuk {
+    namespace Types {
+        class EntityPrivate : public QSharedData
+        {
+        public:
+            EntityPrivate( const QUrl& uri = QUrl() );
+            virtual ~EntityPrivate() {}
+
+            QUrl uri;
+            QString label;
+            QString comment;
+            QHash<QString, QString> l10nLabels;
+            QHash<QString, QString> l10nComments;
+        
+            // -1 - unknown
+            // 0  - no
+            // 1  - yes
+            int available;
+            int ancestorsAvailable;
+
+            void init();
+            void initAncestors();
+
+            virtual bool addProperty( const QUrl& property, const Soprano::Node& value ) = 0;
+            virtual bool addAncestorProperty( const QUrl& property, const Soprano::Node& value ) = 0;
+
+        private:
+            bool load();
+            bool loadAncestors();
+        };
+    }
+}
+
+
 
 class Nepomuk::Entity::Private : public QSharedData
 {

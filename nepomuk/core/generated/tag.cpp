@@ -44,11 +44,21 @@ Nepomuk::Tag::Tag( const Nepomuk::Resource& res )
 
 
 Nepomuk::Tag::Tag( const QString& uri )
-  : Resource( uri, "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag" )
+  : Resource( uri, QUrl::fromEncoded("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag") )
 {
 }
 
-Nepomuk::Tag::Tag( const QString& uri, const QString& type )
+Nepomuk::Tag::Tag( const QUrl& uri )
+  : Resource( uri, QUrl::fromEncoded("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag") )
+{
+}
+
+Nepomuk::Tag::Tag( const QString& uri, const QUrl& type )
+  : Resource( uri, type )
+{
+}
+
+Nepomuk::Tag::Tag( const QUrl& uri, const QUrl& type )
   : Resource( uri, type )
 {
 }

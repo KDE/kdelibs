@@ -24,7 +24,11 @@
 #include "nepomuk_export.h"
 
 namespace Nepomuk {
-    class NEPOMUK_EXPORT NepomukOntologyLoader : public OntologyLoader
+    /**
+     * \deprecated Ontologies should now be handled using the classes
+     * in the Nepomuk::Types namespace.
+     */
+    class KDE_DEPRECATED NEPOMUK_EXPORT NepomukOntologyLoader : public OntologyLoader
     {
     public:
 	NepomukOntologyLoader();

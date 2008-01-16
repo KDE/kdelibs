@@ -52,7 +52,7 @@ void SpeedTest::testKMetaData()
 
     // check that everything has been saved properly
     foreach( Resource r, rl ) {
-        QVERIFY( rr->containsAnyStatement( Statement( QUrl( r.uri() ), Node(), Node() ) ) );
+        QVERIFY( rr->containsAnyStatement( Statement( r.resourceUri(), Node(), Node() ) ) );
     }
 
     t.start();
@@ -65,7 +65,7 @@ void SpeedTest::testKMetaData()
 
     // check that there actually is nothing left
     foreach( Resource r, rl ) {
-        QVERIFY( !rr->containsAnyStatement( Statement( QUrl( r.uri() ), Node(), Node() ) ) );
+        QVERIFY( !rr->containsAnyStatement( Statement( r.resourceUri(), Node(), Node() ) ) );
     }
 }
 

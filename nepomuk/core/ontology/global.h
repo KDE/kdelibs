@@ -26,7 +26,7 @@
 #include <QtCore/QUrl>
 
 namespace Nepomuk {
-    NEPOMUK_EXPORT QUrl extractNamespace( const QUrl& url );
+    KDE_DEPRECATED NEPOMUK_EXPORT QUrl extractNamespace( const QUrl& url );
 }
 
 #endif

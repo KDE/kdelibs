@@ -17,58 +17,43 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _NEPOMUK_ONTOLOGY_PRIVATE_H_
-#define _NEPOMUK_ONTOLOGY_PRIVATE_H_
+#ifndef _NEPOMUK_ENTITY_MANAGER_H_
+#define _NEPOMUK_ENTITY_MANAGER_H_
 
-#include "entity_p.h"
-#include "class.h"
-#include "property.h"
-
-#include <QtCore/QList>
+#include <QtCore/QHash>
 #include <QtCore/QUrl>
 #include <QtCore/QSharedData>
 
-namespace Nepomuk {
-    namespace Types {
-        class Class;
-        class Property;
-
-        class OntologyPrivate : public EntityPrivate
-        {
-        public:
-            OntologyPrivate( const QUrl& uri = QUrl() );
-
-            QList<Class> classes;
-            QList<Property> properties;
-
-            // -1 - unknown
-            // 0  - no
-            // 1  - yes
-            int entitiesAvailable;
-
-            bool addProperty( const QUrl& property, const Soprano::Node& value );
-            bool addAncestorProperty( const QUrl& property, const Soprano::Node& value );
-
-            void initEntities();
-            bool loadEntities();
-        };
-    }
+inline uint qHash( const QUrl& url ) {
+    return qHash( url.toString() );
 }
 
-
-#include "ontology.h"
 namespace Nepomuk {
+    namespace Types {
+        class ClassPrivate;
+        class PropertyPrivate;
+        class OntologyPrivate;
 
-    class Class;
-    class Property;
+        /**
+         * Cache for all loaded entities.
+         */
+        class EntityManager
+        {
+        public:
+            EntityManager();
 
-    class Ontology::Private : public QSharedData
-    {
-    public:
-        QUrl uri;
-        QHash<QUrl, const Class*> classes;
-        QHash<QUrl, const Property*> properties;
-    };
+            ClassPrivate* getClass( const QUrl& uri );
+            PropertyPrivate* getProperty( const QUrl& uri );
+            OntologyPrivate* getOntology( const QUrl& uri );
+
+            static EntityManager* self();
+
+        private:
+            QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> > m_classMap;
+            QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> > m_propertyMap;
+            QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> > m_ontologyMap;
+        };
+    }
 }
 
 #endif

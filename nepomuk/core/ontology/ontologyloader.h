@@ -36,8 +36,11 @@ namespace Nepomuk {
      *
      * Typical implementations read RDF statements from RDF files or from the
      * Nepomuk-KDE RDF store.
+     *
+     * \deprecated Ontologies should now be handled using the classes
+     * in the Nepomuk::Types namespace.
      */
-    class NEPOMUK_EXPORT OntologyLoader
+    class KDE_DEPRECATED NEPOMUK_EXPORT OntologyLoader
     {
     public:
 	virtual ~OntologyLoader();

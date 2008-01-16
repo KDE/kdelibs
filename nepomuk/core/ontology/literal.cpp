@@ -23,27 +23,10 @@
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
 
+namespace {
+QHash<QString, QVariant::Type> s_xmlSchemaTypes;
 
-Nepomuk::Literal::Literal()
-{
-    d = new Private();
-}
-
-
-Nepomuk::Literal::Literal( const Literal& other )
-{
-    d = other.d;
-}
-
-
-static QHash<QString, QVariant::Type> s_xmlSchemaTypes;
-
-Nepomuk::Literal::Literal( const QUrl& dataType )
-{
-    d = new Private();
-    d->dataTypeUri = dataType;
-
-    // now determine the QVariant type
+void initXmlSchemaTypes() {
     if( s_xmlSchemaTypes.isEmpty() ) {
         s_xmlSchemaTypes.insert( "int", QVariant::Int );
         s_xmlSchemaTypes.insert( "integer", QVariant::Int );
@@ -62,6 +45,83 @@ Nepomuk::Literal::Literal( const QUrl& dataType )
         s_xmlSchemaTypes.insert( "dateTime", QVariant::DateTime );
         //    s_xmlSchemaTypes.insert( "", QVariant::Url );
     }
+}
+}
+
+
+Nepomuk::Types::Literal::Literal()
+{
+    d = new Private();
+}
+
+
+Nepomuk::Types::Literal::Literal( const Literal& other )
+{
+    d = other.d;
+}
+
+
+Nepomuk::Types::Literal::Literal( const QUrl& dataType )
+{
+    d = new Private();
+    d->dataTypeUri = dataType;
+
+    // now determine the QVariant type
+    initXmlSchemaTypes();
+
+    // check if it is a known type, otherwise leave it as QVariant::Invalid
+    QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );
+    if ( it != s_xmlSchemaTypes.constEnd() ) {
+        d->dataType = it.value();
+    }
+}
+
+
+Nepomuk::Types::Literal::~Literal()
+{
+}
+
+
+Nepomuk::Types::Literal& Nepomuk::Types::Literal::operator=( const Literal& other )
+{
+    d = other.d;
+    return *this;
+}
+
+
+QUrl Nepomuk::Types::Literal::dataTypeUri() const
+{
+    return d->dataTypeUri;
+}
+
+
+QVariant::Type Nepomuk::Types::Literal::dataType() const
+{
+    return d->dataType;
+}
+
+
+
+
+Nepomuk::Literal::Literal()
+{
+    d = new Private();
+}
+
+
+Nepomuk::Literal::Literal( const Literal& other )
+{
+    d = other.d;
+}
+
+
+Nepomuk::Literal::Literal( const QUrl& dataType )
+{
+    d = new Private();
+    d->dataTypeUri = dataType;
+
+    // now determine the QVariant type
+    initXmlSchemaTypes();
 
     // check if it is a known type, otherwise leave it as QVariant::Invalid
     QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );

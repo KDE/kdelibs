@@ -109,7 +109,7 @@ bool Nepomuk::ResourceManager::initialized() const
 
 Nepomuk::Resource Nepomuk::ResourceManager::createResourceFromUri( const QString& uri )
 {
-    return Resource( uri, QString() );
+    return Resource( uri, QUrl() );
 }
 
 void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
@@ -168,7 +168,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         // check remote data
         Soprano::Node n;
         if( v.isResource() ) {
-            n = QUrl( v.toResource().uri() );
+            n = v.toResource().resourceUri();
         }
         else {
             n = valueToRDFNode(v);
@@ -231,7 +231,7 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 
 void Nepomuk::ResourceManager::slotStoreChanged()
 {
-    kDebug();
+//    kDebug();
     Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
         data->invalidateCache();
     }

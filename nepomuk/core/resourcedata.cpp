@@ -22,12 +22,14 @@
 #include "resourcemanager.h"
 #include "generated/resource.h"
 #include "tools.h"
+#include "resourcefiltermodel.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/Xesam>
 
 #include "ontology/class.h"
 
@@ -39,8 +41,15 @@
 using namespace Soprano;
 
 
+inline uint qHash( const QUrl& url )
+{
+    return qHash( url.toString() );
+}
+
+
 typedef QHash<QString, Nepomuk::ResourceData*> ResourceDataHash;
 
+// FIXME: make these things thread-safe. Even better: put them into the ResourceManager and make that thread-safe!
 Q_GLOBAL_STATIC( ResourceDataHash, initializedData )
 Q_GLOBAL_STATIC( ResourceDataHash, kickoffData )
 
@@ -65,13 +74,15 @@ static Nepomuk::Variant nodeToVariant( const Soprano::Node& node )
 Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, const QUrl& type )
     : m_kickoffUriOrId( uriOrId ),
       m_uri( uri ),
-      m_type( type ),
+      m_mainType( type ),
       m_ref(0),
       m_proxyData(0),
       m_cacheDirty(true)
 {
-    if( m_type.isEmpty() && !( uriOrId.isEmpty() && uri.isEmpty() ) )
-        m_type = Soprano::Vocabulary::RDFS::Resource();
+    if( m_mainType.isEmpty() && !( uriOrId.isEmpty() && uri.isEmpty() ) )
+        m_mainType = Soprano::Vocabulary::RDFS::Resource();
+
+    m_types << m_mainType;
 
     // TODO: handle the caching in a decent Cache class and not this ugly.
     if ( s_dataCnt >= 1000 ) {
@@ -105,19 +116,29 @@ QString Nepomuk::ResourceData::kickoffUriOrId() const
 }
 
 
-QString Nepomuk::ResourceData::uri() const
+QUrl Nepomuk::ResourceData::uri() const
 {
     if( m_proxyData )
         return m_proxyData->uri();
-    return m_uri.toString();
+    return m_uri;
 }
 
 
-QUrl Nepomuk::ResourceData::type() const
+QUrl Nepomuk::ResourceData::type()
 {
     if( m_proxyData )
         return m_proxyData->type();
-    return m_type;
+    load();
+    return m_mainType;
+}
+
+
+QList<QUrl> Nepomuk::ResourceData::allTypes()
+{
+    if( m_proxyData )
+        return m_proxyData->allTypes();
+    load();
+    return m_types;
 }
 
 
@@ -183,12 +204,19 @@ bool Nepomuk::ResourceData::hasType( const QUrl& uri )
     if( m_proxyData )
         return m_proxyData->hasType( uri );
 
-    if ( determineUri() ) {
-        return ResourceManager::instance()->mainModel()->containsAnyStatement( Soprano::Statement( m_uri, Soprano::Vocabulary::RDF::type(), QUrl( uri ) ) );
+    if ( load() ) {
+        Types::Class requestedType( uri );
+        for ( QList<QUrl>::const_iterator it = m_types.constBegin();
+              it != m_types.constEnd(); ++it ) {
+            Types::Class availType( *it );
+            if ( availType == requestedType ||
+                 availType.isSubClassOf( requestedType ) ) {
+                return true;
+            }
+        }
     }
-    else {
-        return false;
-    }
+
+    return false;
 }
 
 
@@ -232,9 +260,9 @@ bool Nepomuk::ResourceData::store()
         if ( !exists() ) {
             QList<Statement> statements;
 
-            // save type
-            // FIXME: handle multiple types
-            statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_type ) );
+            // save type (There should be no need to save all the types since there is only one way
+            // that m_types contains more than one element: if we loaded them)
+            statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
 
             // save the kickoff identifier (other identifiers are stored via setProperty)
             if ( !m_kickoffIdentifier.isEmpty() ) {
@@ -245,7 +273,7 @@ bool Nepomuk::ResourceData::store()
             // Dolphin and co.
             if ( QFile::exists( m_uri.toLocalFile())) {
                 statements.append( Statement( m_uri,
-                                              QUrl("http://freedesktop.org/standards/xesam/1.0/core#url"),
+                                              Soprano::Vocabulary::Xesam::url(),
                                               LiteralValue( m_uri.toLocalFile() ) ) );
             }
 
@@ -272,7 +300,28 @@ bool Nepomuk::ResourceData::load()
 
             while ( it.next() ) {
                 Statement statement = *it;
-                if ( statement.predicate().uri() != Soprano::Vocabulary::RDF::type() ) {
+                if ( statement.predicate().uri() == Soprano::Vocabulary::RDF::type() ) {
+                    if ( statement.object().isResource() ) {
+                        QUrl storedType = statement.object().uri();
+                        if ( !m_types.contains( storedType ) ) {
+                            m_types << storedType;
+                        }
+                        if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+                            Q_ASSERT( !storedType.isEmpty() );
+                            m_mainType = storedType;
+                        }
+                        else {
+                            Types::Class wantedTypeClass = m_mainType;
+                            Types::Class storedTypeClass = storedType;
+
+                            // Keep the type that is further down the hierarchy
+                            if ( wantedTypeClass.isSubClassOf( storedTypeClass ) ) {
+                                m_mainType = wantedTypeClass.uri();
+                            }
+                        }
+                    }
+                }
+                else {
                     m_cache[statement.predicate().uri()].append( nodeToVariant( statement.object() ) );
                 }
             }
@@ -297,9 +346,7 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
 
     // step 0: make sure this resource is in the store
     if ( store() ) {
-        Soprano::Model* model = ResourceManager::instance()->mainModel();
-
-        QList<Statement> resourceStatements;
+        QList<Node> valueNodes;
 
         // make sure resource values are in the store
         if ( value.simpleType() == qMetaTypeId<Resource>() ) {
@@ -313,48 +360,33 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
 
         // one-to-one Resource
         if( value.isResource() ) {
-            resourceStatements.append( Statement( m_uri, QUrl(uri), QUrl( value.toResource().uri() ) ) );
+            valueNodes.append( value.toResource().resourceUri() );
         }
 
         // one-to-many Resource
         else if( value.isResourceList() ) {
             const QList<Resource>& l = value.toResourceList();
             for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-                resourceStatements.append( Statement( m_uri, QUrl(uri), QUrl( (*resIt).uri() ) ) );
+                valueNodes.append( (*resIt).resourceUri() );
             }
         }
 
         // one-to-many literals
         else if( value.isList() ) {
-            QList<Node> nl = Nepomuk::valuesToRDFNodes( value );
-            for( QList<Node>::const_iterator nIt = nl.constBegin(); nIt != nl.constEnd(); ++nIt ) {
-                resourceStatements.append( Statement( m_uri, QUrl(uri), *nIt ) );
-            }
+            valueNodes += Nepomuk::valuesToRDFNodes( value );
         }
 
         // one-to-one literal
         else {
-            resourceStatements.append( Statement( m_uri, QUrl(uri),
-                                                  Nepomuk::valueToRDFNode( value ) ) );
+            valueNodes.append( Nepomuk::valueToRDFNode( value ) );
         }
 
         // update the cache for now
         m_cache[uri] = value;
 
         // update the store
-        QList<Statement> existingStatements = model->listStatements( Soprano::Statement( m_uri, QUrl(uri), Node() ) ).allStatements();
-        for ( QList<Statement>::const_iterator it = existingStatements.constBegin();
-              it != existingStatements.constEnd(); ++it ) {
-            if ( !resourceStatements.contains( *it ) ) {
-                model->removeStatement( *it );
-            }
-        }
-        for ( QList<Statement>::const_iterator it = resourceStatements.constBegin();
-              it != resourceStatements.constEnd(); ++it ) {
-            if ( !existingStatements.contains( *it ) ) {
-                model->addStatement( *it );
-            }
-        }
+        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+        fm.updateProperty( m_uri, QUrl(uri), valueNodes );
     }
 }
 
@@ -365,7 +397,8 @@ void Nepomuk::ResourceData::removeProperty( const QString& uri )
         return m_proxyData->removeProperty( uri );
 
     if ( determineUri() ) {
-        ResourceManager::instance()->mainModel()->removeAllStatements( Statement( m_uri, QUrl(uri), Node() ) );
+        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+        fm.removeProperty( m_uri, QUrl(uri) );
     }
 }
 
@@ -376,10 +409,11 @@ void Nepomuk::ResourceData::remove( bool recursive )
         return m_proxyData->remove();
 
     if ( determineUri() ) {
-        Soprano::Model* model = ResourceManager::instance()->mainModel();
-        model->removeAllStatements( Statement( m_uri, Node(), Node() ) );
+        // FIXME: make sure no dangling graphs are left
+        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+        fm.removeAllStatements( Statement( m_uri, Node(), Node() ) );
         if ( recursive ) {
-            model->removeAllStatements( Statement( Node(), Node(), m_uri ) );
+            fm.removeAllStatements( Statement( Node(), Node(), m_uri ) );
         }
     }
 }
@@ -404,7 +438,7 @@ bool Nepomuk::ResourceData::isValid() const
         return m_proxyData->isValid();
 
     // FIXME: check namespaces and stuff
-    return( !m_type.isEmpty() );
+    return( !m_mainType.isEmpty() );
 }
 
 
@@ -426,7 +460,6 @@ bool Nepomuk::ResourceData::determineUri()
             //
             m_uri = kickoffUriOrId();
             kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
-            updateType();
         }
         else {
             //
@@ -452,41 +485,35 @@ bool Nepomuk::ResourceData::determineUri()
             //
             // TODO: basically it is perfectly valid to store both types in the first case
             //
-            Q_ASSERT( !m_type.isEmpty() );
+            Q_ASSERT( !m_mainType.isEmpty() );
             if ( it.next() ) {
-                const Nepomuk::Class* wantedType = Nepomuk::Class::load( m_type );
-                if ( wantedType && m_type != Soprano::Vocabulary::RDFS::Resource() ) {
+                // At this point we only have one type since without a uri we could not have loaded other types
+                // than the one used on construction
+                Types::Class wantedType( m_mainType );
+
+                if ( m_mainType != Soprano::Vocabulary::RDFS::Resource() && wantedType.isAvailable() ) {
                     do {
                         // get the type of the stored resource
                         StatementIterator resourceSl = model->listStatements( Statement( it.current().subject(),
                                                                                          Soprano::Vocabulary::RDF::type(),
                                                                                          Node() ) );
-                        if ( resourceSl.next() && resourceSl.current().object().isResource() ) {
-                            const Nepomuk::Class* storedType = Nepomuk::Class::load( resourceSl.current().object().uri() );
-                            if ( storedType ) {
-                                if ( storedType == wantedType ) {
-                                    // great. :)
-                                    m_uri = it.current().subject().uri();
-                                }
-                                else if ( wantedType->isSubClassOf( storedType ) ) {
-                                    // Keep the type that is further down the hierarchy
-                                    m_type = wantedType->uri();
-                                    m_uri = it.current().subject().uri();
-                                    break;
-                                }
-                                else if ( storedType->isSubClassOf( wantedType ) ) {
-                                    // just use the existing data with the finer grained type
+                        while ( resourceSl.next() ) {
+                            if ( resourceSl.current().object().isResource() ) {
+                                Types::Class storedType = resourceSl.current().object().uri();
+                                if ( storedType == wantedType ||
+                                     wantedType.isSubClassOf( storedType ) ||
+                                     storedType.isSubClassOf( wantedType ) ) {
+                                    // in load() The type will be updated properly
                                     m_uri = it.current().subject().uri();
                                     break;
                                 }
                             }
                         }
-                    } while ( it.next() );
+                    } while ( it.next() && m_uri.isEmpty() );
                 }
                 else {
                     m_uri = it.current().subject().uri();
                     kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
-                    updateType();
                 }
             }
 
@@ -519,50 +546,47 @@ bool Nepomuk::ResourceData::determineUri()
         // Move us to the final data hash now that the URI is known
         //
         if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
-            if( !initializedData()->contains( uri() ) )
-                initializedData()->insert( uri(), this );
+            if( !initializedData()->contains( uri().toString() ) )
+                initializedData()->insert( uri().toString(), this );
             else {
-                m_proxyData = initializedData()->value( uri() );
+                m_proxyData = initializedData()->value( uri().toString() );
                 m_proxyData->ref();
             }
         }
 
         m_modificationMutex.unlock();
-
-        return !uri().isEmpty();
     }
-    else
-        return true;
+
+    return !m_uri.isEmpty();
 }
 
 
-void Nepomuk::ResourceData::updateType()
-{
-    Soprano::Model* model = ResourceManager::instance()->mainModel();
+// void Nepomuk::ResourceData::updateType()
+// {
+//     Soprano::Model* model = ResourceManager::instance()->mainModel();
 
-    // get the type of the stored resource
-    StatementIterator typeStatements = model->listStatements( Statement( m_uri,
-                                                                         Soprano::Vocabulary::RDF::type(),
-                                                                         Node() ) );
-    if ( typeStatements.next() && typeStatements.current().object().isResource() ) {
-        // FIXME: handle multple types, maybe select the one type that fits best
-        QUrl storedType = typeStatements.current().object().uri();
-        if ( m_type == Soprano::Vocabulary::RDFS::Resource() ) {
-            m_type = storedType;
-        }
-        else {
-            const Nepomuk::Class* wantedTypeClass = Nepomuk::Class::load( m_type );
-            const Nepomuk::Class* storedTypeClass = Nepomuk::Class::load( storedType );
+//     // get the type of the stored resource
+//     StatementIterator typeStatements = model->listStatements( Statement( m_uri,
+//                                                                          Soprano::Vocabulary::RDF::type(),
+//                                                                          Node() ) );
+//     if ( typeStatements.next() && typeStatements.current().object().isResource() ) {
+//         // FIXME: handle multple types, maybe select the one type that fits best
+//         QUrl storedType = typeStatements.current().object().uri();
+//         if ( m_type == Soprano::Vocabulary::RDFS::Resource() ) {
+//             Q_ASSERT( !storedType.isEmpty() );
+//             m_type = storedType;
+//         }
+//         else {
+//             Types::Class wantedTypeClass = m_type;
+//             Types::Class storedTypeClass = storedType;
 
-            if ( wantedTypeClass && storedTypeClass ) {
-                // Keep the type that is further down the hierarchy
-                if ( wantedTypeClass->isSubClassOf( storedTypeClass ) ) {
-                    m_type = wantedTypeClass->uri();
-                }
-            }
-        }
-    }
-}
+//             // Keep the type that is further down the hierarchy
+//             if ( wantedTypeClass.isSubClassOf( storedTypeClass ) ) {
+//                 m_type = wantedTypeClass.uri();
+//             }
+//         }
+//     }
+// }
 
 
 bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
@@ -575,7 +599,7 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
         return true;
 
     if( that->m_uri != other.m_uri ||
-        that->m_type != other.m_type ) {
+        that->m_mainType != other.m_mainType ) {
         kDebug(300004) << "different uri or type";
         return false;
     }
@@ -647,22 +671,13 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
 
         // check if the type matches (see determineUri for details)
         if ( !type.isEmpty() && type != Soprano::Vocabulary::RDFS::Resource() ) {
-            const Nepomuk::Class* wantedType = Nepomuk::Class::load( type );
-            if ( wantedType ) {
-                while ( it != kickoffData()->end() &&
-                        it.key() == uriOrId ) {
-                    const Nepomuk::Class* storedType = Nepomuk::Class::load( it.value()->type() );
-                    if ( storedType ) {
-                        if ( storedType->isSubClassOf( wantedType ) ) {
-                            break;
-                        }
-                        else if ( wantedType->isSubClassOf( storedType ) ) {
-                            it.value()->m_type = type;
-                            break;
-                        }
-                    }
-                    ++it;
+            Types::Class wantedType = type;
+            while ( it != kickoffData()->end() &&
+                    it.key() == uriOrId ) {
+                if ( it.value()->hasType( type ) ) {
+                    break;
                 }
+                ++it;
             }
         }
 

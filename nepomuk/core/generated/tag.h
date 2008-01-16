@@ -49,9 +49,14 @@ namespace Nepomuk {
         Tag( const Resource& );
         /**
          * Create a new Tag instance representing the resource
+         * referenced by \a uriOrIdentifier.
+         */
+        Tag( const QString& uriOrIdentifier );
+        /**
+         * Create a new Tag instance representing the resource
          * referenced by \a uri.
          */
-        Tag( const QString& uri );
+        Tag( const QUrl& uri );
         ~Tag();
 
         Tag& operator=( const Tag& );
@@ -79,7 +84,8 @@ namespace Nepomuk {
         static QString resourceTypeUri();
 
     protected:
-       Tag( const QString& uri, const QString& type );
+       Tag( const QString& uri, const QUrl& type );
+       Tag( const QUrl& uri, const QUrl& type );
    };
 }
 

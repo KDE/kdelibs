@@ -19,10 +19,189 @@
 
 #include "ontology.h"
 #include "ontology_p.h"
-#include "ontologymanager.h"
 #include "class.h"
 #include "property.h"
-#include "qurlhash.h"
+#include "entitymanager.h"
+#include "resourcemanager.h"
+
+#include <Soprano/QueryResultIterator>
+#include <Soprano/Model>
+#include <Soprano/Vocabulary/NAO>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/XMLSchema>
+
+
+#define D static_cast<Nepomuk::Types::OntologyPrivate*>( d.data() )
+
+Nepomuk::Types::OntologyPrivate::OntologyPrivate( const QUrl& uri )
+    : EntityPrivate( uri ),
+      entitiesAvailable( uri.isValid() ? -1 : 0 )
+{
+}
+
+
+void Nepomuk::Types::OntologyPrivate::initEntities()
+{
+    if ( entitiesAvailable < 0 ) {
+        entitiesAvailable = loadEntities() ? 1 : 0;
+    }
+}
+
+
+bool Nepomuk::Types::OntologyPrivate::loadEntities()
+{
+    // load classes
+    Soprano::QueryResultIterator it
+        = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?c where { "
+                                                                          "graph ?g { ?c a <%1> . } . "
+                                                                          "?g <%2> \"%3\"^^<%4> . }" )
+                                                                  .arg( Soprano::Vocabulary::RDFS::Class().toString() )
+                                                                  .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
+                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
+                                                                  .arg( Soprano::Vocabulary::XMLSchema::string().toString() ),
+                                                                  Soprano::Query::QueryLanguageSparql );
+    bool success = false;
+    while ( it.next() ) {
+        success = true;
+        classes.append( Class( it.binding( "c" ).uri() ) );
+    }
+
+
+    // load properties
+    it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
+                                                                         "graph ?g { ?p a <%1> . } . "
+                                                                         "?g <%2> \"%3\"^^<%4> . }" )
+                                                                 .arg( Soprano::Vocabulary::RDF::Property().toString() )
+                                                                 .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
+                                                                 .arg( QString::fromAscii( uri.toEncoded() ) )
+                                                                 .arg( Soprano::Vocabulary::XMLSchema::string().toString() ),
+                                                                 Soprano::Query::QueryLanguageSparql );
+    while ( it.next() ) {
+        success = true;
+        properties.append( Property( it.binding( "p" ).uri() ) );
+    }
+
+    return success;
+}
+
+
+bool Nepomuk::Types::OntologyPrivate::addProperty( const QUrl&, const Soprano::Node& )
+{
+    return false;
+}
+
+
+bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const Soprano::Node& )
+{
+    return false;
+}
+
+
+
+Nepomuk::Types::Ontology::Ontology()
+{
+    d = new OntologyPrivate();
+}
+
+
+Nepomuk::Types::Ontology::Ontology( const QUrl& uri )
+{
+    d = EntityManager::self()->getOntology( uri );
+}
+
+
+Nepomuk::Types::Ontology::Ontology( const Ontology& other )
+    : Entity( other )
+{
+}
+
+
+Nepomuk::Types::Ontology::~Ontology()
+{
+}
+
+
+Nepomuk::Types::Ontology& Nepomuk::Types::Ontology::operator=( const Ontology& other )
+{
+    d = other.d;
+    return *this;
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Ontology::allClasses()
+{
+    return D->classes;
+}
+
+
+Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByName( const QString& name )
+{
+    for ( QList<Class>::const_iterator it = D->classes.constBegin();
+          it != D->classes.constEnd(); ++it ) {
+        const Class& c = *it;
+        if ( c.name() == name ) {
+            return c;
+        }
+    }
+
+    return Class();
+}
+
+
+Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByLabel( const QString& label, const QString& language )
+{
+    for ( QList<Class>::iterator it = D->classes.begin();
+          it != D->classes.constEnd(); ++it ) {
+        Class& c = *it;
+        if ( c.label( language ) == label ) {
+            return c;
+        }
+    }
+
+    return Class();
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Ontology::allProperties()
+{
+    return D->properties;
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByName( const QString& name )
+{
+    for ( QList<Property>::const_iterator it = D->properties.constBegin();
+          it != D->properties.constEnd(); ++it ) {
+        const Property& p = *it;
+        if ( p.name() == name ) {
+            return p;
+        }
+    }
+
+    return Property();
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByLabel( const QString& label, const QString& language )
+{
+    for ( QList<Property>::iterator it = D->properties.begin();
+          it != D->properties.constEnd(); ++it ) {
+        Property& p = *it;
+        if ( p.label( language ) == label ) {
+            return p;
+        }
+    }
+
+    return Property();
+}
+
+
+
+// Start of code for deprecated Ontology
+// -------------------------------------
+#include "global.h"
+#include "ontologymanager.h"
 
 
 Nepomuk::Ontology::Ontology()

@@ -17,11 +17,45 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _NEPOMUK_QURL_HASH_
-#define _NEPOMUK_QURL_HASH_
+#include "entitytest.h"
+#include "../class.h"
+#include "../property.h"
 
-#include <QtCore/QUrl>
+#include <kdebug.h>
+#include <qtest_kde.h>
 
-uint qHash( const QUrl& url );
+#include <Soprano/Vocabulary/RDFS>
 
-#endif
+using namespace Nepomuk::Types;
+
+
+void EntityTest::testClass()
+{
+    Class c1( Soprano::Vocabulary::RDFS::Resource() );
+    Class c2( Soprano::Vocabulary::RDFS::Resource() );
+
+    QVERIFY( c1.isValid() );
+    QVERIFY( c2.isValid() );
+
+    QVERIFY( c1.isAvailable() );
+    QVERIFY( c2.isAvailable() );
+
+    QCOMPARE( c1.uri(), c2.uri() );
+    QCOMPARE( c1.name(), c2.name() );
+    QCOMPARE( c1.label(), c2.label() );
+    QCOMPARE( c1.comment(), c2.comment() );
+
+    QVERIFY( !c1.label().isEmpty() );
+
+    qDebug() << c1.label() << c1.comment();
+}
+
+
+void EntityTest::testProperty()
+{
+}
+
+
+QTEST_KDEMAIN(EntityTest, NoGUI)
+
+#include "entitytest.moc"

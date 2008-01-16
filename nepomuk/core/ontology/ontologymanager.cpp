@@ -25,7 +25,6 @@
 #include "class_p.h"
 #include "property_p.h"
 #include "entity_p.h"
-#include "qurlhash.h"
 #include "global.h"
 
 #include <Soprano/Statement>
@@ -33,6 +32,12 @@
 #include <Soprano/Vocabulary/XMLSchema>
 
 #include <QtCore/QDebug>
+
+
+uint qHash( const QUrl& url )
+{
+    return qHash( ( QString )url.toString() );
+}
 
 
 using namespace Soprano;

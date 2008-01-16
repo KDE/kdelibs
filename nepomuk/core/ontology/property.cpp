@@ -20,11 +20,185 @@
 #include "property.h"
 #include "property_p.h"
 #include "class.h"
-#include "ontologymanager.h"
 #include "ontology.h"
 #include "literal.h"
-#include "global.h"
+#include "entitymanager.h"
 
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/XMLSchema>
+
+
+#define D static_cast<Nepomuk::Types::PropertyPrivate*>( d.data() )
+
+Nepomuk::Types::PropertyPrivate::PropertyPrivate( const QUrl& uri )
+    : EntityPrivate( uri ),
+      minCardinality( -1 ),
+      maxCardinality( -1 ),
+      cardinality( -1 )
+{
+}
+
+
+bool Nepomuk::Types::PropertyPrivate::addProperty( const QUrl& property, const Soprano::Node& value )
+{
+    if( property == Soprano::Vocabulary::RDFS::subPropertyOf() ) {
+        parents.append( value.uri() );
+        return true;
+    }
+
+    else if( property == Soprano::Vocabulary::RDFS::domain() ) {
+        domain = value.uri();
+        return true;
+    }
+
+    else if( property == Soprano::Vocabulary::RDFS::range() ) {
+        if ( value.toString().startsWith( Soprano::Vocabulary::XMLSchema::xsdNamespace().toString() ) ) {
+            literalRange = Literal( value.uri() );
+        }
+        else {
+            range = value.uri();
+        }
+        return true;
+    }
+
+    else if( property == Soprano::Vocabulary::NRL::minCardinality() ) {
+        minCardinality = value.literal().toInt();
+        return true;
+    }
+
+    else if( property == Soprano::Vocabulary::NRL::maxCardinality() ) {
+        maxCardinality = value.literal().toInt();
+        return true;
+    }
+
+    else if ( property == Soprano::Vocabulary::NRL::cardinality() ) {
+        cardinality = value.literal().toInt();
+        return true;
+    }
+
+    else if ( property == Soprano::Vocabulary::NRL::inverseProperty() ) {
+        inverse = value.uri();
+        return true;
+    }
+
+    return false;
+}
+
+
+bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& property, const Soprano::Node& value )
+{
+    if( property == Soprano::Vocabulary::RDFS::subPropertyOf() ) {
+        parents.append( value.uri() );
+        return true;
+    }
+
+    return false;
+}
+
+
+
+Nepomuk::Types::Property::Property()
+    : Entity()
+{
+    d = new PropertyPrivate();
+}
+
+
+Nepomuk::Types::Property::Property( const QUrl& uri )
+    : Entity()
+{
+    d = EntityManager::self()->getProperty( uri );
+}
+
+
+Nepomuk::Types::Property::Property( const Property& other )
+    : Entity( other )
+{
+}
+
+
+Nepomuk::Types::Property::~Property()
+{
+}
+
+
+Nepomuk::Types::Property& Nepomuk::Types::Property::operator=( const Property& other )
+{
+    d = other.d;
+    return *this;
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties()
+{
+    D->init();
+    return D->parents;
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
+{
+    D->initAncestors();
+    return D->children;
+}
+
+
+Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty()
+{
+    D->init();
+    return D->inverse;
+}
+
+
+Nepomuk::Types::Class Nepomuk::Types::Property::range()
+{
+    D->init();
+    return D->range;
+}
+
+
+Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType()
+{
+    D->init();
+    return D->literalRange;
+}
+
+
+Nepomuk::Types::Class Nepomuk::Types::Property::domain()
+{
+    D->init();
+    return D->domain;
+}
+
+
+int Nepomuk::Types::Property::cardinality()
+{
+    D->init();
+    return D->cardinality;
+}
+
+
+int Nepomuk::Types::Property::minCardinality()
+{
+    D->init();
+    return D->minCardinality;
+}
+
+
+int Nepomuk::Types::Property::maxCardinality()
+{
+    D->init();
+    return D->maxCardinality;
+}
+
+
+
+
+// Start of code for deprecated Property
+// -------------------------------------
+#include "global.h"
+#include "ontologymanager.h"
 
 Nepomuk::Property::Property()
     : Entity()

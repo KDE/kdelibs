@@ -37,8 +37,11 @@ namespace Nepomuk {
      * The OntologyManager is the central ontology cache handler.
      * It is modeled as a singleton and its instance can be accessed
      * through OntologyManager::instance.
+     *
+     * \deprecated Ontologies should be handled via the classes in
+     * Nepomuk::Types.
      */
-    class NEPOMUK_EXPORT OntologyManager
+    class KDE_DEPRECATED NEPOMUK_EXPORT OntologyManager
     {
     public:
 	~OntologyManager();

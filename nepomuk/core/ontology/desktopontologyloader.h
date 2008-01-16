@@ -32,8 +32,11 @@ namespace Nepomuk {
      * ontologies on the desktop using KStandardDirs.
      * All possible ontology installation folders are searched for
      * ontology desktop files.
+     *
+     * \deprecated Ontologies should now be handled using the classes
+     * in the Nepomuk::Types namespace.
      */
-    class NEPOMUK_EXPORT DesktopOntologyLoader : public OntologyLoader
+    class KDE_DEPRECATED NEPOMUK_EXPORT DesktopOntologyLoader : public OntologyLoader
     {
     public:
 	DesktopOntologyLoader();

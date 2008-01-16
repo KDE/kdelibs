@@ -791,8 +791,8 @@ QString Nepomuk::Variant::toString() const
         return toUrl().toString();
     else if( isResource() ) {
         Resource r = toResource();
-        if( !r.uri().isEmpty() )
-            return r.uri();
+        if( !r.resourceUri().isEmpty() )
+            return r.resourceUri().toString();
         else
             return r.identifiers().first();
     }

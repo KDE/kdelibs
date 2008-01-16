@@ -73,7 +73,7 @@ void Nepomuk::TagCloud::updateTags()
          it != tags.end(); ++it ) {
         Tag& tag = *it;
         if ( tag.label().isEmpty() ) {
-            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+            tag.setLabel( tag.genericLabel() );
         }
         addTag( tag.label(), tag.tagOf().count() );
     }

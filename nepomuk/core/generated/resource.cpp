@@ -50,6 +50,14 @@ Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 }
 
 
+Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
+{
+    m_data = ResourceData::data( uri, type );
+    if ( m_data )
+        m_data->ref();
+}
+
+
 Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceData::data( uri, type );
@@ -99,24 +107,46 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 
 QString Nepomuk::Resource::uri() const
 {
+    return resourceUri().toString();
+}
+
+
+QUrl Nepomuk::Resource::resourceUri() const
+{
     if ( m_data ) {
         m_data->determineUri();
         return m_data->uri();
     }
     else {
-        return QString();
+        return QUrl();
     }
 }
 
 
 QString Nepomuk::Resource::type() const
 {
+    return resourceType().toString();
+}
+
+
+QUrl Nepomuk::Resource::resourceType() const
+{
     if ( m_data ) {
-        m_data->determineUri();
-        return m_data->type().toString();
+        return m_data->type();
     }
     else {
-        return QString();
+        return QUrl();
+    }
+}
+
+
+QList<QUrl> Nepomuk::Resource::types() const
+{
+    if ( m_data ) {
+        return m_data->allTypes();
+    }
+    else {
+        return QList<QUrl>();
     }
 }
 
@@ -129,7 +159,7 @@ bool Nepomuk::Resource::hasType( const QUrl& typeUri ) const
 
 QString Nepomuk::Resource::className() const
 {
-    return type().section( QRegExp( "[#:]" ), -1 );
+    return resourceType().toString().section( QRegExp( "[#:]" ), -1 );
 }
 
 
@@ -199,7 +229,7 @@ bool Nepomuk::Resource::isValid() const
 
 QString Nepomuk::Resource::genericLabel() const
 {
-    QString label = property( Soprano::Vocabulary::NAO::prefLabel().toString() ).toString();
+    QString label = this->label();
     if ( label.isEmpty() ) {
         label = property( Soprano::Vocabulary::RDFS::label().toString() ).toString();
 
@@ -214,7 +244,7 @@ QString Nepomuk::Resource::genericLabel() const
 
                     if ( label.isEmpty() ) {
                         // ugly fallback
-                        label = uri();
+                        label = resourceUri().toString();
                     }
                 }
             }
@@ -242,6 +272,11 @@ QString Nepomuk::Resource::genericDescription() const
         return s;
     }
 
+    s = property( Soprano::Vocabulary::Xesam::asText().toString() ).toString();
+    if ( !s.isEmpty() ) {
+        return s;
+    }
+
     s = property( Soprano::Vocabulary::RDFS::comment().toString() ).toString();
 
     return s;
@@ -263,8 +298,8 @@ QString Nepomuk::Resource::genericIcon() const
     }
 
     if ( hasType( Soprano::Vocabulary::Xesam::File() ) ||
-         uri().startsWith( "file://" ) ) {
-        return KMimeType::iconNameForUrl( uri() );
+         resourceUri().scheme() == "file" ) {
+        return KMimeType::iconNameForUrl( resourceUri() );
     }
 
     return QString();
@@ -286,7 +321,7 @@ bool Nepomuk::Resource::operator==( const Resource& other ) const
 
     m_data->determineUri();
     other.m_data->determineUri();
-    return uri() == other.uri();
+    return resourceUri() == other.resourceUri();
 }
 
 

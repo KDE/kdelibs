@@ -17,11 +17,18 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qurlhash.h"
+#ifndef _ENTITY_TEST_H_
+#define _ENTITY_TEST_H_
 
-#include <QtCore/QHash>
+#include <QtCore/QObject>
 
-uint qHash( const QUrl& url )
+class EntityTest : public QObject
 {
-    return qHash( ( QString )url.toString() );
-}
+    Q_OBJECT
+
+private Q_SLOTS:
+    void testClass();
+    void testProperty();
+};
+
+#endif
