@@ -107,7 +107,8 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
       strutSignalConnected( false ),
       what( _what )
 {
-    kapp->installX11EventFilter( this );
+    if (kapp)
+        kapp->installX11EventFilter( this );
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
     updateStackingOrder();
 }
@@ -238,7 +239,7 @@ bool KWindowSystemPrivate::mapViewport()
 {
 // compiz claims support even though it doesn't use virtual desktops :(
 //    if( isSupported( NET::DesktopViewport ) && !isSupported( NET::NumberOfDesktops ))
-    
+
     if( isSupported( NET::DesktopViewport ) && numberOfDesktops( true ) <= 1
         && ( desktopGeometry( currentDesktop( true )).width > QApplication::desktop()->width()
             || desktopGeometry( currentDesktop( true )).height > QApplication::desktop()->height()))
@@ -266,7 +267,7 @@ static void create_atoms( Display* dpy = QX11Info::display()) {
 
         atoms[n] = &_wm_protocols;
         names[n++] = "WM_PROTOCOLS";
-        
+
         atoms[n] = &kwm_utf8_string;
         names[n++] = "UTF8_STRING";
 
