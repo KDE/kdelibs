@@ -190,9 +190,6 @@ public:
     :   actionRestrictions( false ), blockEverything(false),mutex(QMutex::Recursive)
   {
     Q_ASSERT_X(QCoreApplication::instance(),"KAuthorizedPrivate()","There has to be an existing QCoreApplication::instance() pointer");
-    // Why is this comment there? Seems unnecessary, applicationName isn't used in here
-    // It's a fallback in KGlobal, but only a fallback: if we have a KComponentData then setApplicationName isn't needed
-    Q_ASSERT_X(!QCoreApplication::instance()->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QCoreApplication::instance()->setApplicationName)");
 
     KSharedConfig::Ptr config = KGlobal::config();
 
