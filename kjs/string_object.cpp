@@ -664,23 +664,28 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     res->put(exec, exec->propertyNames().length, jsNumber(i));
     }
     break;
-  case Substr: {
-    double d = a0->toInteger(exec);
-    double d2 = a1->toInteger(exec);
-    if (!(d >= 0)) { // true for NaN
-      d += len;
-      if (!(d >= 0)) // true for NaN
-        d = 0;
+  case Substr: { //B.2.3
+    // Note: NaN is effectively handled as 0 here for both length
+    // and start, hence toInteger does fine, and removes worries
+    // about weird comparison results below.
+    int len = s.size();
+    double start  = a0->toInteger(exec);
+    double length = a1->isUndefined() ? len : a1->toInteger(exec);
+
+    if (start >= len)
+      return jsString("");
+    if (length < 0)
+      return jsString("");
+    if (start < 0) {
+      start += s.size();
+      if (start < 0)
+       start = 0;
     }
-    if (isNaN(d2))
-      d2 = len - d;
-    else {
-      if (d2 < 0)
-        d2 = 0;
-      if (d2 > len - d)
-        d2 = len - d;
-    }
-    result = jsString(s.substr(static_cast<int>(d), static_cast<int>(d2)));
+
+    if (length > len - start)
+      length = len - start;
+
+    result = jsString(s.substr(static_cast<int>(start), static_cast<int>(length)));
     break;
   }
   case Substring: {
