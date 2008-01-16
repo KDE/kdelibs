@@ -329,21 +329,21 @@ DOMString CSSSelector::selectorText() const
     while (true) {
         if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
         {
-            str += "#";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += "#";
             str += cs->value;
         }
         else if ( cs->match == CSSSelector::Class )
         {
-            str += ".";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += ".";
             str += cs->value;
         }
         else if ( cs->match == CSSSelector::PseudoClass )
         {
-            str += ":";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += ":";
             str += cs->value;
             if (!cs->string_arg.isEmpty()) { // e.g :nth-child(...)
                 str += cs->string_arg;
-                str += ")";	//krazy:exclude=doublequote_chars DOM demands chars
+                str += ")";
             } else if (cs->simpleSelector && !op) { // :not(...)
                 op = cs;
                 cs = cs->simpleSelector;
@@ -358,11 +358,11 @@ DOMString CSSSelector::selectorText() const
         // optional attribute
         else if ( cs->attr ) {
             DOMString attrName = getAttrName( cs->attr );
-            str += "[";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += "[";
             str += attrName;
             switch (cs->match) {
             case CSSSelector::Exact:
-                str += "=";	//krazy:exclude=doublequote_chars DOM demands chars
+                str += "=";
                 break;
             case CSSSelector::Set:
                 break;
@@ -389,12 +389,12 @@ DOMString CSSSelector::selectorText() const
                 str += cs->value;
                 str += "\"";
             }
-            str += "]";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += "]";
         }
         if (op && !cs->tagHistory) {
             cs=op;
             op=0;
-            str += ")";	//krazy:exclude=doublequote_chars DOM demands chars
+            str += ")";
         }
 
         if ((cs->relation != CSSSelector::SubSelector && !op) || !cs->tagHistory)
@@ -411,7 +411,7 @@ DOMString CSSSelector::selectorText() const
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;
         else // Descendant
-            str = tagHistoryText + " " + str;	//krazy:exclude=doublequote_chars DOM demands chars
+            str = tagHistoryText + " " + str;
     }
     return str;
 }

@@ -333,7 +333,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
           QString name = it.key();
           QString url = it.value();
 
-          if (url.startsWith("!"))	//krazy:exclude=doublequote_chars DOM demands chars
+          if (url.startsWith("!"))
               continue;
 
           if (name.startsWith("Filter"))

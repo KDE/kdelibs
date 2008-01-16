@@ -1462,7 +1462,7 @@ void LineIterator::prevBlock()
     }/*end if*/
     InlineFlowBox *flowBox = cb->lastLineBox();
 #if DEBUG_CARETMODE > 0
-    kDebug(6200) << "--: flowBox " << flowBox << " cb " << cb << "[" << (cb?cb->renderName()+QString(".node ")+QString::number((unsigned)cb->element(),16)+(cb->element()?"@"+cb->element()->nodeName().string():QString()):QString()) << "]";	//krazy:exclude=doublequote_chars DOM demands chars
+    kDebug(6200) << "--: flowBox " << flowBox << " cb " << cb << "[" << (cb?cb->renderName()+QString(".node ")+QString::number((unsigned)cb->element(),16)+(cb->element()?"@"+cb->element()->nodeName().string():QString()):QString()) << "]";
 #endif
     Q_ASSERT(flowBox);
     if (!flowBox) {	// ### utter emergency (why is this possible at all?)

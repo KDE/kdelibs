@@ -172,7 +172,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
 
     for ( ; i != argsEnd; ++i) {
         if (i != argsBegin)
-            script += ",";	//krazy:exclude=doublequote_chars DOM demands chars
+            script += ",";
         if ((*i).first == KParts::LiveConnectExtension::TypeString) {
             script += "\"";
             script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
@@ -180,7 +180,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
         } else
             script += (*i).second;
     }
-    script += ")";	//krazy:exclude=doublequote_chars DOM demands chars
+    script += ")";
     kDebug(6050) << "khtml::ChildFrame::liveConnectEvent " << script;
 
     KHTMLPart * part = qobject_cast<KHTMLPart*>(m_part->parent());
@@ -1824,12 +1824,12 @@ void KHTMLPart::slotFinished( KJob * job )
   }
   KIO::TransferJob *tjob = ::qobject_cast<KIO::TransferJob*>(job);
   if (tjob && tjob->isErrorPage()) {
-    HTMLPartContainerElementImpl *elt = d->m_frame ? 
+    HTMLPartContainerElementImpl *elt = d->m_frame ?
         (HTMLPartContainerElementImpl*)d->m_frame->m_partContainerElement : 0;
 
     if (!elt)
       return;
-      
+
     elt->partLoadingErrorNotify();
     checkCompleted();
     if (d->m_bComplete) return;
@@ -3394,7 +3394,7 @@ QString KHTMLPart::selectedText() const
 	    text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
 	    break;
           case ID_BR:
-            text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += "\n";
             hasNewLine = true;
             break;
           case ID_IMG:
@@ -3414,7 +3414,7 @@ QString KHTMLPart::selectedText() const
           case ID_BLOCKQUOTE:
           case ID_DIV:
             if (!hasNewLine)
-               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+               text += "\n";
             hasNewLine = true;
             break;
           case ID_P:
@@ -3426,7 +3426,7 @@ QString KHTMLPart::selectedText() const
           case ID_H5:
           case ID_H6:
             if (!hasNewLine)
-               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+               text += "\n";
             hasNewLine = true;
             break;
         }
@@ -3455,7 +3455,7 @@ QString KHTMLPart::selectedText() const
           case ID_DIV:
 	    seenTDTag = false;
             if (!hasNewLine)
-               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+               text += "\n";
             hasNewLine = true;
             break;
           case ID_P:
@@ -3467,7 +3467,7 @@ QString KHTMLPart::selectedText() const
           case ID_H5:
           case ID_H6:
             if (!hasNewLine)
-               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+               text += "\n";
 //            text += "\n";
             hasNewLine = true;
             break;
@@ -4248,7 +4248,7 @@ KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const DOM::NodeIm
     return 0L;
 }
 
-bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url, 
+bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
                               const QString &frameName, const QStringList &params, bool isIFrame )
 {
   //kDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )";
@@ -4292,7 +4292,7 @@ QString KHTMLPart::requestFrameName()
    return QString::fromLatin1("<!--frame %1-->").arg(d->m_frameNameId++);
 }
 
-bool KHTMLPart::requestObject( DOM::HTMLPartContainerElementImpl *frame, const QString &url, 
+bool KHTMLPart::requestObject( DOM::HTMLPartContainerElementImpl *frame, const QString &url,
                                const QString &serviceType, const QStringList &params )
 {
   //kDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame;
@@ -4396,15 +4396,15 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
   if ( child->m_serviceType != mimetype || !child->m_part || (child->m_run && child->m_run->serverSuggestsSave()))
   {
-    // This may have come from a delayed response from KHTMLPart, in regards to 
+    // This may have come from a delayed response from KHTMLPart, in regards to
     // an object/iframe/etc. In this case, let the element veto this.
-    if ( child->m_partContainerElement && 
+    if ( child->m_partContainerElement &&
          child->m_partContainerElement->mimetypeHandledInternally(mimetype) ) {
       child->m_bCompleted = true;
       checkCompleted();
       return true;
     }
-  
+
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.
     // However we don't want to ask for flash and other plugin things..
@@ -5704,7 +5704,7 @@ void KHTMLPart::zoomOut(const int stepping[], int count)
 
 void KHTMLPart::setZoomFactor (int percent)
 {
-  // ### zooming under 100% is majorly botched, 
+  // ### zooming under 100% is majorly botched,
   //     so disable that for now.
   if (percent < 100) percent = 100;
   // ### if (percent < minZoom) percent = minZoom;
@@ -5832,7 +5832,7 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
   if (tobe.isEmpty()) {
     tobe = d->m_statusBarText[BarDefaultText];
     if (!tobe.isEmpty() && d->m_jobspeed)
-      tobe += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+      tobe += " ";
     if (d->m_jobspeed)
       tobe += i18n( "(%1/s)" ,  KIO::convertSize( d->m_jobspeed ) );
   }

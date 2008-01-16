@@ -348,11 +348,11 @@ DOM::DOMString RenderStyleDeclarationImpl::cssText() const
 
     for (unsigned i = 0; i < numComputedProperties; i++) {
         if (i != 0)
-            result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            result += " ";
         result += getPropertyName(computedProperties[i]);
         result += ": ";
         result += getPropertyValue(computedProperties[i]);
-        result += ";";	//krazy:exclude=doublequote_chars DOM demands chars
+        result += ";";
     }
 
     return result;
@@ -419,13 +419,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         DOMString string;
         Length length(style->backgroundXPosition());
         if (length.isPercent())
-            string = QString::number(length.value()) + "%";	//krazy:exclude=doublequote_chars DOM demands chars
+            string = QString::number(length.value()) + "%";
         else
             string = QString::number(length.minWidth(renderer->contentWidth()));
-        string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+        string += " ";
         length = style->backgroundYPosition();
         if (length.isPercent())
-            string += QString::number(length.value()) + "%";	//krazy:exclude=doublequote_chars DOM demands chars
+            string += QString::number(length.value()) + "%";
         else
             string += QString::number(length.minWidth(renderer->contentWidth()));
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
@@ -674,12 +674,12 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_LINE_HEIGHT:
     {
         // Note: internally a specified <number> value gets encoded as a percentage,
-        // so the isPercent() case corresponds to the <number> case; 
+        // so the isPercent() case corresponds to the <number> case;
         // values < 0  are used to mark "normal"; and specified %%
-        // get computed down to px by the time they get to RenderStyle 
+        // get computed down to px by the time they get to RenderStyle
         // already
         Length length(style->lineHeight());
-        if (length.value() < 0) 
+        if (length.value() < 0)
             return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
         if (length.isPercent()) {
             //XXX: merge from webcore the computedStyle/specifiedStyle distinction in rendering/font.h
@@ -900,17 +900,17 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             string += "underline";
         if (style->textDecoration() & khtml::OVERLINE) {
             if (string.length() > 0)
-                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+                string += " ";
             string += "overline";
         }
         if (style->textDecoration() & khtml::LINE_THROUGH) {
             if (string.length() > 0)
-                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+                string += " ";
             string += "line-through";
         }
         if (style->textDecoration() & khtml::BLINK) {
             if (string.length() > 0)
-                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+                string += " ";
             string += "blink";
         }
         if (string.length() == 0)

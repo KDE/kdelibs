@@ -128,7 +128,7 @@ JSValue* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, JSObject *thisObj
     for (int i = 0; i < args.size(); i++)
       str += args[i]->toString(exec);
     if (id == HTMLDocument::WriteLn)
-      str += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
+      str += "\n";
 #ifdef KJS_VERBOSE
     kDebug(6070) << "document.write: " << str.qstring();
 #endif
@@ -1260,7 +1260,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
       KParts::LiveConnectExtension::Type rtype;
       unsigned long robjid;
       if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
-        return getImmediateValueSlot(this, 
+        return getImmediateValueSlot(this,
                   getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid), slot);
 
       break;
@@ -1799,11 +1799,11 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       if (url.port()<=0)
         return jsString(url.host());
       else
-        return jsString(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
+        return jsString(url.host() + ":" + QString::number(url.port()));
     }
     case AnchorPathName:        return jsString(KUrl(href).path());
     case AnchorPort:            return jsString(QString::number(KUrl(href).port()));
-    case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
+    case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
                                   if (q.length() == 1)
@@ -1863,13 +1863,13 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         if (url.port()<=0)
           return jsString(url.host());
         else
-          return jsString(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
+          return jsString(url.host() + ":" + QString::number(url.port()));
       }
       case AreaPathName:        {
         return jsString(url.path());
       }
       case AreaPort:            return jsString(QString::number(url.port()));
-      case AreaProtocol:        return jsString(url.isEmpty() ? "" : url.protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
+      case AreaProtocol:        return jsString(url.isEmpty() ? "" : url.protocol()+":");
       case AreaSearch:          return jsString(url.query());
     }
   }
@@ -2000,7 +2000,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
   else if (impl()->id() == ID_IMG) {
     DOMString alt = impl()->getAttribute(ATTR_ALT);
     if (!alt.isEmpty())
-      return UString(alt) + " " + DOMElement::toString(exec);	//krazy:exclude=doublequote_chars DOM demands chars
+      return UString(alt) + " " + DOMElement::toString(exec);
   }
   return DOMElement::toString(exec);
 }

@@ -56,7 +56,7 @@ namespace KJS {
 
 UString DOMObject::toString(ExecState *) const
 {
-  return "[object " + className() + "]";	//krazy:exclude=doublequote_chars DOM demands chars
+  return "[object " + className() + "]";
 }
 
 typedef QList<ScriptInterpreter*> InterpreterList;
