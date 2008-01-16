@@ -226,7 +226,7 @@ class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 * a JSObject with a prototype of jsNull (that is, the ECMAScript "null" value,
 * not a null object pointer) if we failed to provide any binding for it.
 */
-KJS::JSObject *createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned);
+KJSEMBED_EXPORT KJS::JSObject *createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned);
 
 
 }
