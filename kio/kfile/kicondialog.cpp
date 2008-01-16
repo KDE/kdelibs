@@ -236,7 +236,7 @@ class KIconDialog::KIconDialogPrivate
     QStringList mFileList;
     QComboBox *mpCombo;
     QPushButton *mpBrowseBut;
-    QRadioButton *mpRb1, *mpRb2;
+    QRadioButton *mpSystemIcons, *mpOtherIcons;
     QProgressBar *mpProgress;
     int mNumOfSteps;
     KIconLoader *mpLoader;
@@ -302,15 +302,15 @@ void KIconDialog::KIconDialogPrivate::init()
     grid->setSpacing(KDialog::spacingHint());
     bgroup->layout()->addItem(grid);
 
-    mpRb1 = new QRadioButton(i18n("S&ystem icons:"), bgroup);
-    connect(mpRb1, SIGNAL(clicked()), q, SLOT(_k_slotSystemIconClicked()));
-    grid->addWidget(mpRb1, 1, 0);
+    mpSystemIcons = new QRadioButton(i18n("S&ystem icons:"), bgroup);
+    connect(mpSystemIcons, SIGNAL(clicked()), q, SLOT(_k_slotSystemIconClicked()));
+    grid->addWidget(mpSystemIcons, 1, 0);
     mpCombo = new QComboBox(bgroup);
     connect(mpCombo, SIGNAL(activated(int)), q, SLOT(_k_slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
-    mpRb2 = new QRadioButton(i18n("O&ther icons:"), bgroup);
-    connect(mpRb2, SIGNAL(clicked()), q, SLOT(_k_slotOtherIconClicked()));
-    grid->addWidget(mpRb2, 2, 0);
+    mpOtherIcons = new QRadioButton(i18n("O&ther icons:"), bgroup);
+    connect(mpOtherIcons, SIGNAL(clicked()), q, SLOT(_k_slotOtherIconClicked()));
+    grid->addWidget(mpOtherIcons, 2, 0);
     mpBrowseBut = new QPushButton(i18n("&Browse..."), bgroup);
     connect(mpBrowseBut, SIGNAL(clicked()), q, SLOT(_k_slotBrowse()));
     grid->addWidget(mpBrowseBut, 2, 1);
@@ -416,7 +416,7 @@ void KIconDialog::KIconDialogPrivate::showIcons()
 {
     mpCanvas->clear();
     QStringList filelist;
-    if (mpRb1->isChecked())
+    if (mpSystemIcons->isChecked())
         if (m_bStrictIconSize)
             filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
@@ -478,10 +478,10 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
     d->m_bLockUser = lockUser;
     d->m_bLockCustomDir = lockCustomDir;
     d->mGroupOrSize = (iconSize == 0) ? group : -iconSize;
-    d->mpRb1->setChecked(!user);
-    d->mpRb1->setEnabled(!lockUser || !user);
-    d->mpRb2->setChecked(user);
-    d->mpRb2->setEnabled(!lockUser || user);
+    d->mpSystemIcons->setChecked(!user);
+    d->mpSystemIcons->setEnabled(!lockUser || !user);
+    d->mpOtherIcons->setChecked(user);
+    d->mpOtherIcons->setEnabled(!lockUser || user);
     d->mpCombo->setEnabled(!user);
     d->mpBrowseBut->setEnabled(user && !lockCustomDir);
     d->setContext(context);
@@ -514,11 +514,11 @@ QString KIconDialog::openDialog()
         if (!d->custom.isNull())
             return d->custom;
         QString name = d->mpCanvas->getCurrent();
-        if (name.isEmpty() || (d->mpRb2->isChecked())) {
+        if (name.isEmpty() || d->mpOtherIcons->isChecked()) {
             return name;
         }
-	QFileInfo fi(name);
-	return fi.baseName();
+        QFileInfo fi(name);
+        return fi.baseName();
     }
     return QString();
 }
@@ -540,7 +540,7 @@ void KIconDialog::slotOk()
     else
     {
         name = d->mpCanvas->getCurrent();
-        if (!name.isEmpty() && (d->mpRb2->isChecked())) {
+        if (!name.isEmpty() && d->mpSystemIcons->isChecked()) {
             QFileInfo fi(name);
             name = fi.baseName();
         }
@@ -581,7 +581,7 @@ void KIconDialog::KIconDialogPrivate::_k_slotBrowse()
     if (!file.isEmpty())
     {
         custom = file;
-        if (mpRb1->isChecked()) {
+        if (mpSystemIcons->isChecked()) {
             customLocation = QFileInfo(file).absolutePath();
         }
         q->slotOk();
