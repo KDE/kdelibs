@@ -194,7 +194,7 @@
 <!ENTITY Geert.Jansen '<personname><firstname>Geert</firstname><surname>Jansen</surname></personname>'>
 <!ENTITY Geert.Jansen.mail '<email>g.t.jansen@stud.tue.nl</email>'>
 <!ENTITY David.Jarvie '<personname><firstname>David</firstname><surname>Jarvie</surname></personname>'>
-<!ENTITY David.Jarvie.mail '<email>software@astrojar.org.uk</email>'>
+<!ENTITY David.Jarvie.mail '<email>djarvie@kde.org</email>'>
 <!ENTITY Stephan.Johach '<personname><firstname>Stephan</firstname><surname>Johach</surname></personname>'>
 <!ENTITY Stephan.Johach.mail '<email>hunsum@gmx.de</email>'>
 <!ENTITY Antonio.Larrosa.Jimenez '<personname><firstname>Antonio</firstname><othername>Larrosa</othername><surname>Jim&eacute;nez</surname></personname>'>
