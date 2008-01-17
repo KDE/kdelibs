@@ -45,6 +45,10 @@ namespace Sonnet
         void slotChanged();
 
     Q_SIGNALS:
+        /*
+         * Signal sends when config was changed
+         * @since 4.1
+         */
         void configChanged();
 
     private:
