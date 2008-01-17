@@ -95,7 +95,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * Selects the characters at the specified position. Any previous
      * selection will be lost. The cursor is moved to the first character
      * of the new selection.
-     * 
+     *
      * @param length The length of the selection, in number of characters
      * @param pos The position of the first character of the selection
      */
@@ -156,6 +156,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * @param highLighter the new highlighter which will be used now
      */
     void setHighlighter(Sonnet::Highlighter *_highLighter);
+
+  Q_SIGNALS:
+    /**
+     * emit signal when we activate or not autospellchecking
+     */
+     void checkSpellingChanged( bool );
 
   public Q_SLOTS:
     /**

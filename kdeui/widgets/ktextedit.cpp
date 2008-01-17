@@ -362,6 +362,7 @@ void KTextEdit::setHighlighter(Sonnet::Highlighter *_highLighter)
 
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
+  emit checkSpellingChanged( check );
   if ( check == d->checkSpellingEnabled || acceptRichText() )
     return;
 
