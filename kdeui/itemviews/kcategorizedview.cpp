@@ -436,6 +436,16 @@ void KCategorizedView::Private::updateScrollbars()
 
     listView->horizontalScrollBar()->setRange(0, 0);
 
+    if (listView->verticalScrollMode() == QAbstractItemView::ScrollPerItem)
+    {
+        listView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
+
+    if (listView->horizontalScrollMode() == QAbstractItemView::ScrollPerItem)
+    {
+        listView->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
+
     listView->verticalScrollBar()->setSingleStep(listView->viewport()->height() / 10);
     listView->verticalScrollBar()->setPageStep(listView->viewport()->height());
     listView->verticalScrollBar()->setRange(0, lastItemBottom);
@@ -519,8 +529,6 @@ KCategorizedView::KCategorizedView(QWidget *parent)
     : QListView(parent)
     , d(new Private(this))
 {
-    setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
 KCategorizedView::~KCategorizedView()
