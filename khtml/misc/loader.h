@@ -134,6 +134,7 @@ namespace khtml
 	int size() const { return m_size; }
 
         bool isLoaded() const { return !m_loading; }
+        bool hadError() const { return m_hadError; }
 
         bool free() const { return m_free; }
 
