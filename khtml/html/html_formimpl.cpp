@@ -1116,7 +1116,14 @@ NodeImpl::Id HTMLButtonElementImpl::id() const
 
 DOMString HTMLButtonElementImpl::type() const
 {
-    return getAttribute(ATTR_TYPE);
+    switch (m_type) {
+        case SUBMIT:
+            return "submit";
+        case RESET:
+            return "reset";
+        case BUTTON:
+            return "button";
+    }
 }
 
 void HTMLButtonElementImpl::blur()
@@ -1135,9 +1142,10 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_TYPE:
-        if ( strcasecmp( attr->value(), "submit" ) == 0 )
-            m_type = SUBMIT;
-        else if ( strcasecmp( attr->value(), "reset" ) == 0 )
+        // Per WF2.0, any invalid values are to be ignored -- and hence
+        // handled as the default, SUBMIT.
+        m_type = SUBMIT;
+        if ( strcasecmp( attr->value(), "reset" ) == 0 )
             m_type = RESET;
         else if ( strcasecmp( attr->value(), "button" ) == 0 )
             m_type = BUTTON;
