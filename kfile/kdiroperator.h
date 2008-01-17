@@ -587,6 +587,8 @@ protected:
 
     virtual void changeEvent(QEvent *event);
 
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
 public Q_SLOTS:
     /**
      * Goes one step back in the history and opens that url.
@@ -784,7 +786,6 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
     Q_PRIVATE_SLOT( d, void _k_openContextMenu(const QPoint&) )
     Q_PRIVATE_SLOT( d, void _k_triggerPreview(const QModelIndex&) )
-    Q_PRIVATE_SLOT( d, void _k_cancelPreview() )
     Q_PRIVATE_SLOT( d, void _k_showPreview() )
     Q_PRIVATE_SLOT( d, void _k_slotSplitterMoved(int, int) )
     Q_PRIVATE_SLOT( d, void _k_assureVisibleSelection() )

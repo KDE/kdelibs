@@ -74,6 +74,8 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 
         Q_PRIVATE_SLOT( d, void _k_slotResult( KJob* ) )
         Q_PRIVATE_SLOT( d, void _k_slotFailed( const KFileItem& ) )
+        Q_PRIVATE_SLOT( d, void _k_slotStepAnimation( int frame ) )
+        Q_PRIVATE_SLOT( d, void _k_slotFinished( ) )
 };
 
 #endif // KIMAGEFILEPREVIEW_H

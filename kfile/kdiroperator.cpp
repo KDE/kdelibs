@@ -206,7 +206,6 @@ public:
     void _k_slotSelectionChanged();
     void _k_openContextMenu(const QPoint&);
     void _k_triggerPreview(const QModelIndex&);
-    void _k_cancelPreview();
     void _k_showPreview();
     void _k_slotSplitterMoved(int, int);
     void _k_assureVisibleSelection();
@@ -241,7 +240,6 @@ public:
     QProgressBar *progressBar;
 
     KPreviewWidgetBase *preview;
-    QTimer *previewTimer;
     KUrl previewUrl;
     int previewWidth;
 
@@ -267,7 +265,6 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     proxyModel(0),
     progressBar(0),
     preview(0),
-    previewTimer(0),
     previewUrl(),
     previewWidth(0),
     leftButtonPressed(false),
@@ -318,10 +315,6 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
             this, SLOT(_k_slotSplitterMoved(int, int)));
 
     d->preview = 0;
-    d->previewTimer = new QTimer(this);
-    d->previewTimer->setSingleShot(true);
-    connect(d->previewTimer, SIGNAL(timeout()),
-            this, SLOT(_k_showPreview()));
 
     d->mode = KFile::File;
     d->viewKind = KFile::Simple;
@@ -569,7 +562,6 @@ void KDirOperator::Private::_k_togglePreview(bool on)
     } else if (preview != 0) {
         viewKind = viewKind & ~KFile::PreviewContents;
         preview->hide();
-        previewTimer->stop();
     }
 }
 
@@ -1157,6 +1149,19 @@ void KDirOperator::changeEvent(QEvent *event)
     }
 }
 
+bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
+{
+    if ((event->type() == QEvent::MouseMove) && (d->preview != 0)) {
+        QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+
+        if (!hoveredIndex.isValid()) {
+            d->preview->clearPreview();
+        }
+    }
+
+    return false;
+}
+
 bool KDirOperator::Private::checkPreviewInternal() const
 {
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
@@ -1323,6 +1328,8 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->itemView = view;
     d->itemView->setModel(d->proxyModel);
 
+    view->viewport()->installEventFilter(this);
+
     KFileItemDelegate *delegate = new KFileItemDelegate(d->itemView);
     d->itemView->setItemDelegate(delegate);
     d->itemView->viewport()->setAttribute(Qt::WA_Hover);
@@ -1342,8 +1349,6 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_openContextMenu(const QPoint&)));
     connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(viewportEntered()),
-            this, SLOT(_k_cancelPreview()));
     // assure that the sorting state d->sorting matches with the current action
     const bool descending = d->actionCollection->action("descending")->isChecked();
     if (!descending && d->sorting & QDir::Reversed) {
@@ -2049,14 +2054,11 @@ void KDirOperator::Private::_k_triggerPreview(const QModelIndex& index)
 
         if (!item.isDir()) {
             previewUrl = item.url();
-            previewTimer->start(300);
+            _k_showPreview();
+        } else {
+            preview->clearPreview();
         }
     }
-}
-
-void KDirOperator::Private::_k_cancelPreview()
-{
-    previewTimer->stop();
 }
 
 void KDirOperator::Private::_k_showPreview()
