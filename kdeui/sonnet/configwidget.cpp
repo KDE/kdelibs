@@ -82,6 +82,11 @@ void ConfigWidget::init(KConfig *config)
     connect( d->ui.m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
     layout->addWidget( d->wdg );
+    connect(d->ui.m_langCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(configChanged()));
+    connect(d->ui.m_bgSpellCB, SIGNAL(clicked(bool)),this,SIGNAL(configChanged()));
+    connect(d->ui.m_skipUpperCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
+    connect(d->ui.m_skipRunTogetherCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
+    connect(d->ui.m_ignoreListBox, SIGNAL(changed()), this, SIGNAL(configChanged()));
 }
 
 void ConfigWidget::save()

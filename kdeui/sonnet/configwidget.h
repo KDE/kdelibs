@@ -44,6 +44,9 @@ namespace Sonnet
     protected Q_SLOTS:
         void slotChanged();
 
+    Q_SIGNALS:
+        void configChanged();
+
     private:
         void init(KConfig *config);
         void setFromGui();
