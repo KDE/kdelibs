@@ -158,9 +158,10 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
                 {
                 if( force_kill_P )
                     {
-                    KXErrorHandler err; // ignore errors when killing
+                    KXErrorHandler err;
 //                    kDebug() << "Killing previous owner";
                     XKillClient( dpy, prev_owner );
+                    err.error( false ); // ignore errors when killing
                     }
                 break;
                 }
