@@ -44,7 +44,9 @@
 #include <QtGui/QTreeView>
 #include <QtGui/QPushButton>
 #include <QtGui/QProgressBar>
+#include <QtGui/QScrollBar>
 #include <QtGui/QSplitter>
+#include <QtGui/QWheelEvent>
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -92,6 +94,7 @@ protected:
     virtual QStyleOptionViewItem viewOptions() const;
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
 };
 
 KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
@@ -143,6 +146,22 @@ void KDirOperatorIconView::mousePressEvent(QMouseEvent *event)
     }
 
     QListView::mousePressEvent(event);
+}
+
+void KDirOperatorIconView::wheelEvent(QWheelEvent *event)
+{
+    QListView::wheelEvent(event);
+
+    // apply the vertical wheel event to the horizontal scrollbar, as
+    // the items are aligned from left to right
+    if (event->orientation() == Qt::Vertical) {
+        QWheelEvent horizEvent(event->pos(),
+                               event->delta(),
+                               event->buttons(),
+                               event->modifiers(),
+                               Qt::Horizontal);
+        QApplication::sendEvent(horizontalScrollBar(), &horizEvent);
+    }
 }
 
 class KDirOperator::Private
