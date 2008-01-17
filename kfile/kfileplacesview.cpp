@@ -377,21 +377,23 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         showAll->setChecked(d->showAll);
     }
 
-    menu.addSeparator();
-
     QAction* remove = 0L;
     QAction* teardown = 0L;
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
+            menu.addSeparator();
             remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
         } else {
             teardown = placesModel->teardownActionForIndex(index);
             if (teardown!=0) {
                 teardown->setParent(&menu);
+                menu.addSeparator();
                 menu.addAction(teardown);
             }
         }
     }
+
+    if (menu.isEmpty()) return;
 
     QAction *result = menu.exec(event->globalPos());
 
