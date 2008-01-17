@@ -39,7 +39,7 @@ Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUr
     else {
         QExplicitlySharedDataPointer<ClassPrivate> cp( new ClassPrivate( uri ) );
         m_classMap.insert( uri, cp );
-        return cp;
+        return cp.data();
     }
 }
 
@@ -53,7 +53,7 @@ Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::getProperty( con
     else {
         QExplicitlySharedDataPointer<PropertyPrivate> cp( new PropertyPrivate( uri ) );
         m_propertyMap.insert( uri, cp );
-        return cp;
+        return cp.data();
     }
 }
 
@@ -67,7 +67,7 @@ Nepomuk::Types::OntologyPrivate* Nepomuk::Types::EntityManager::getOntology( con
     else {
         QExplicitlySharedDataPointer<OntologyPrivate> cp( new OntologyPrivate( uri ) );
         m_ontologyMap.insert( uri, cp );
-        return cp;
+        return cp.data();
     }
 }
 
