@@ -240,6 +240,7 @@ bool KWindowSystemPrivate::mapViewport()
 // compiz claims support even though it doesn't use virtual desktops :(
 //    if( isSupported( NET::DesktopViewport ) && !isSupported( NET::NumberOfDesktops ))
 
+// this test is duplicated in KWindowSystem::mapViewport()
     if( isSupported( NET::DesktopViewport ) && numberOfDesktops( true ) <= 1
         && ( desktopGeometry( currentDesktop( true )).width > QApplication::desktop()->width()
             || desktopGeometry( currentDesktop( true )).height > QApplication::desktop()->height()))
@@ -963,8 +964,19 @@ void KWindowSystem::doNotManage( const QString& title )
 
 bool KWindowSystem::mapViewport()
 {
-    init( INFO_BASIC );
-    return s_d_func()->mapViewport();
+    KWindowSystemPrivate* const s_d = s_d_func();
+    if( s_d )
+        return s_d->mapViewport();
+    // avoid creating KWindowSystemPrivate
+    NETRootInfo infos( QX11Info::display(), NET::Supported );
+    if( !infos.isSupported( NET::DesktopViewport ))
+        return false;
+    NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops | NET::CurrentDesktop | NET::DesktopGeometry );
+    if( info.numberOfDesktops( true ) <= 1
+        && ( info.desktopGeometry( info.currentDesktop( true )).width > QApplication::desktop()->width()
+            || info.desktopGeometry( info.currentDesktop( true )).height > QApplication::desktop()->height()))
+        return true;
+    return false;
 }
 
 int KWindowSystem::viewportToDesktop( const QPoint& p )
