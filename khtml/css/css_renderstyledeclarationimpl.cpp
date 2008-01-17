@@ -819,13 +819,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return 0;
     }
     case CSS_PROP_PADDING_TOP:
-        return new CSSPrimitiveValueImpl(renderer->paddingTop(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength(style->paddingTop(), renderer->contentHeight());
     case CSS_PROP_PADDING_RIGHT:
-        return new CSSPrimitiveValueImpl(renderer->paddingRight(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength(style->paddingRight(), renderer->contentWidth());
     case CSS_PROP_PADDING_BOTTOM:
-        return new CSSPrimitiveValueImpl(renderer->paddingBottom(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength(style->paddingBottom(), renderer->contentHeight());
     case CSS_PROP_PADDING_LEFT:
-        return new CSSPrimitiveValueImpl(renderer->paddingLeft(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength(style->paddingLeft(), renderer->contentWidth());
     case CSS_PROP_PAGE_BREAK_AFTER:
         switch (style->pageBreakAfter()) {
         case PBAUTO:
