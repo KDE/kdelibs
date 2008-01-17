@@ -334,11 +334,13 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
+    m_hadError = false;
 }
 
 CachedScript::CachedScript(const DOMString &url, const QString &script_data)
     : CachedObject(url, Script, KIO::CC_Verify, script_data.length())
 {
+    m_hadError = false;
     m_loading = false;
     m_status = Persistent;
     m_script = DOMString(script_data);
@@ -374,7 +376,8 @@ void CachedScript::checkNotify()
 
 void CachedScript::error( int /*err*/, const char* /*text*/ )
 {
-    m_loading = false;
+    m_hadError = true;
+    m_loading  = false;
     checkNotify();
 }
 

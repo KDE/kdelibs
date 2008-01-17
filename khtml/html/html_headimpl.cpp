@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2003, 2004, 2005, 2006, 2007 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@
 #include "html/html_headimpl.h"
 #include "html/html_documentimpl.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -342,6 +343,31 @@ NodeImpl::Id HTMLScriptElementImpl::id() const
     return ID_SCRIPT;
 }
 
+void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    switch(attr->id())
+    {
+    case ATTR_ONLOAD:
+        setHTMLEventListener(EventImpl::LOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+        break;
+    case ATTR_SRC: {
+        // We want to evaluate scripts on src attr change when a fresh script element
+        // is inserted into document, and then has its source changed -after-.
+        // If the source is manipulated while we're outside the document,
+        // we'll only start doing things once we get insertedIntoDocument()
+        if (m_evaluated || m_cachedScript || m_createdByParser || !inDocument())
+            return;
+        DOMString url = attr->value();
+        if (!url.isEmpty())
+            loadFromUrl(url);
+        break;
+    }
+    default:
+        HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
 bool HTMLScriptElementImpl::isURLAttribute(AttributeImpl *attr) const
 {
     return attr->id() == ATTR_SRC;
@@ -356,6 +382,14 @@ void HTMLScriptElementImpl::childrenChanged()
         evaluateScript(getDocument()->URL().url(), text());
 }
 
+void HTMLScriptElementImpl::loadFromUrl(const DOMString &url)
+{
+    QString charset = getAttribute(ATTR_CHARSET).string();
+    m_cachedScript = getDocument()->docLoader()->requestScript(url, charset);
+    if (m_cachedScript)
+        m_cachedScript->ref(this);    
+}
+
 void HTMLScriptElementImpl::insertedIntoDocument()
 {
     HTMLElementImpl::insertedIntoDocument();
@@ -365,12 +399,9 @@ void HTMLScriptElementImpl::insertedIntoDocument()
     if (m_createdByParser)
         return;
 
-    QString url = getAttribute(ATTR_SRC).string();
+    DOMString url = getAttribute(ATTR_SRC).string();
     if (!url.isEmpty()) {
-        QString charset = getAttribute(ATTR_CHARSET).string();
-        m_cachedScript = getDocument()->docLoader()->requestScript(DOMString(url), charset);
-        if (m_cachedScript)
-            m_cachedScript->ref(this);
+        loadFromUrl(url);
         return;
     }
 
@@ -403,7 +434,12 @@ void HTMLScriptElementImpl::notifyFinished(CachedObject* o)
     cs->deref(this);
     m_cachedScript = 0;
 
-    evaluateScript(URL, script);
+    ref(); // Pin so we don't destroy oursleves.
+    if (!cs->hadError()) {
+        evaluateScript(URL, script);
+        dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
+    }
+    deref();
 }
 
 void HTMLScriptElementImpl::evaluateScript(const QString &URL, const DOMString &script)

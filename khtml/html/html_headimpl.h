@@ -139,6 +139,7 @@ public:
     HTMLScriptElementImpl(DocumentImpl *doc);
     ~HTMLScriptElementImpl();
 
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
     virtual void notifyFinished(khtml::CachedObject *finishedObj);
@@ -173,6 +174,7 @@ public:
     void setType(const DOMString &);
 
 private:
+    void loadFromUrl(const DOMString &url);
     khtml::CachedScript *m_cachedScript;
     bool m_createdByParser;
     bool m_evaluated;
