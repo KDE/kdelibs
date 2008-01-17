@@ -51,12 +51,20 @@ void KHTMLRun::foundMimeType( const QString &_type )
     Q_ASSERT(!hasFinished());
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
 
-    // Disable autoDelete for processObjectRequest, because it may open a
-    // dialog
+    // Disable autoDelete for processObjectRequest(), because it may open a
+    // dialog which would start an event loop, causing the autoDelete timer
+    // slot to be called before leaving processObjectRequest()
     bool autoDeleteWasEnabled = autoDelete();
     setAutoDelete( false );
     bool requestProcessed = static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KRun::url(), mimeType );
-    setAutoDelete( autoDeleteWasEnabled );
+
+    if (autoDeleteWasEnabled ) {
+        // Reenable autoDelete and restart timer to make sure our instance
+        // eventually get deleted
+        setAutoDelete( true );
+        timer().start( 0 );
+    }
+
     if ( requestProcessed )
         setFinished( true );
     else {
