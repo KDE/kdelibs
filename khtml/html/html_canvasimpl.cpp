@@ -1214,71 +1214,57 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
 
     // If the second line is a point, we'll add a line segment to (x1, y1).
-    if (line2.p1() == line2.p2())
-    {
-        path.lineTo(x1, y1);
+    if (line2.p1() == line2.p2()) {
+        currentPoint = QPointF(x1, y1);
+        path.lineTo(currentPoint * activeState().transform);
         return;
     }
 
     float angle1 = std::atan2(line1.dy(), line1.dx());
     float angle2 = std::atan2(line2.dy(), line2.dx());
 
-    // The angle between by line1 and line2
+    // The smallest angle between the lines
     float theta = angle2 - angle1;
     if (theta < -M_PI)
         theta = (2 * M_PI + theta);
     else if (theta > M_PI)
         theta = -(2 * M_PI - theta);
 
-    // If the angle between the lines is 180 degrees, we'll just add a line
-    // segment to (x1, y1).
-    if (qFuzzyCompare(qAbs(theta), float(M_PI)))
-    {
-        path.lineTo(x1, y1);
+    // If the angle between the lines is 180 degrees, the span of the arc becomes
+    // zero, causing the tangent points to converge to the same point at (x1, y1).
+    if (qFuzzyCompare(qAbs(theta), float(M_PI))) {
+        currentPoint = QPointF(x1, y1);
+        path.lineTo(currentPoint * activeState().transform);
         return;
     }
-
-    // If the angle between the lines is 0 degrees, we'll add an infinitely
-    // long line segment from the current position in the direction of line2.
-    // This is to match Safari behavior.
-    if (qFuzzyCompare(theta, float(0.0)))
-    {
-        // ### We'll define infinity as 100,000 coordinate space units from
-        //     the current position for now.
-        QLineF line(path.currentPosition(),
-                    path.currentPosition() + QPointF(line2.dx(), line2.dy()));
-        line.setLength(100000.0);
-        path.lineTo(line.p2());
-        return;
-    }
-
-    // The angle to the center of the circle
-    float angle = angle1 + theta / 2.0;
 
     // The length of the hypotenuse of the right triangle formed by the points
-    // (x1, y1), the center point of the circle, and one of the tangent points.
-    float h = radius / std::sin(qAbs(angle1 - angle));
+    // (x1, y1), the center point of the circle, and either of the two tangent points.
+    float h = radius / std::sin(qAbs(theta / 2.0));
 
     // The distance from (x1, y1) to the tangent points on line1 and line2.
-    float tDist = std::cos(qAbs(angle1 - angle)) * h;
+    float tDist = std::cos(theta / 2.0) * h;
+
+    // As theta approaches 0, the distance to the two tangent points approach infinity.
+    // If we exceeded the limit, draw a long line toward the first tangent point.
+    // This matches CoreGraphics and Postscript behavior, but violates the HTML5 spec,
+    // which says we should do nothing in this case.
+    if (KJS::isInf(h) || KJS::isInf(tDist)) {
+        currentPoint = QPointF(line1.p2().x() + std::cos(angle1) * 1e10,
+                               line1.p2().y() + std::sin(angle1) * 1e10);
+        path.lineTo(currentPoint * activeState().transform);
+        return;
+    }
 
     // The center point of the circle
+    float angle = angle1 + theta / 2.0;
     QPointF centerPoint(x1 + std::cos(angle) * h, y1 + std::sin(angle) * h);
 
-    // The tangent points on line1 and line2.
     // Note that we don't check if the lines are long enough for the circle to actually
-    // tangent them; like CoreGraphics, we treat the points as points on two infinitely
-    // long lines that intersect one another at (x1, y1).
-    QPointF t1 = line1.pointAt(tDist / line1.length());
-    QPointF t2 = line2.pointAt(tDist / line2.length());
-
-    // The lines from the center point of the circle to the tangent points on line1 and line2.
-    QLineF toT1(centerPoint, t1);
-    QLineF toT2(centerPoint, t2);
-
-    // The start and end angles of the arc
-    float startAngle = std::atan2(toT1.dy(), toT1.dx());
-    float endAngle   = std::atan2(toT2.dy(), toT2.dx());
+    // tangent them; like CoreGraphics and Postscript, we treat the points as points on
+    // two infinitely long lines that intersect one another at (x1, y1).
+    float startAngle = theta < 0 ? angle1 + M_PI_2 : angle1 - M_PI_2;
+    float endAngle   = theta < 0 ? angle2 - M_PI_2 : angle2 + M_PI_2;
     bool counterClockWise = theta > 0;
 
     int dummy; // Exception code from arc()
