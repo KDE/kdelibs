@@ -1441,7 +1441,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_OBJECT,   ObjectBorder,     T_String, ATTR_BORDER},
   {ID_OBJECT,   ObjectCodeBase,   T_String, ATTR_CODEBASE},
   {ID_OBJECT,   ObjectCodeType,   T_String, ATTR_CODETYPE},
-  {ID_OBJECT,   ObjectData,       T_String, ATTR_DATA},
+  {ID_OBJECT,   ObjectData,       T_URL,    ATTR_DATA},
   {ID_OBJECT,   ObjectDeclare,    T_Bool,   ATTR_DECLARE},
   {ID_OBJECT,   ObjectHeight,     T_String, ATTR_HEIGHT},
   {ID_OBJECT,   ObjectHspace,     T_Int,    ATTR_HSPACE},
