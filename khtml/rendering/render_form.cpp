@@ -242,6 +242,7 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     b->setChecked(element->checked());
 
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
+    m_ignoreStateChanged = false;
 }
 
 
@@ -260,14 +261,19 @@ void RenderCheckBox::calcMinMaxWidth()
 
 void RenderCheckBox::updateFromElement()
 {
-    if (widget()->isChecked() != element()->checked())
+    if (widget()->isChecked() != element()->checked()) {
+        m_ignoreStateChanged = true; // We don't want an onchange here,
+                                     // or us getting yanked in a recalcStyle in the process, etc.
         widget()->setChecked(element()->checked());
+        m_ignoreStateChanged = false;
+    }
 
     RenderButton::updateFromElement();
 }
 
 void RenderCheckBox::slotStateChanged(int state)
 {
+    if (m_ignoreStateChanged) return;
     element()->setChecked(state == Qt::Checked);
 
     ref();
@@ -294,7 +300,7 @@ bool RenderCheckBox::handleEvent(const DOM::EventImpl& ev)
 
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
-{
+{    
     RadioButtonWidget* b = new RadioButtonWidget(view()->widget());
     b->setMouseTracking(true);
     b->setAutoExclusive(false);
@@ -304,11 +310,14 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     b->setChecked(element->checked());
 
     connect(b,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
+    m_ignoreToggled = false;
 }
 
 void RenderRadioButton::updateFromElement()
 {
+    m_ignoreToggled = true;
     widget()->setChecked(element()->checked());
+    m_ignoreToggled = false;
 
     RenderButton::updateFromElement();
 }
@@ -328,6 +337,9 @@ void RenderRadioButton::calcMinMaxWidth()
 
 void RenderRadioButton::slotToggled(bool activated)
 {
+    if (m_ignoreToggled)
+      return;
+
     if(activated) {
       ref();
       element()->onChange();
