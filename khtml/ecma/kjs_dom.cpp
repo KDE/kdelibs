@@ -1046,11 +1046,11 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::ImportNode: // DOM2
     return getDOMNode(exec,doc.importNode(toNode(args[0]), args[1]->toBoolean(exec), exception));
   case DOMDocument::CreateElementNS: // DOM2
-    return getDOMNode(exec,doc.createElementNS(args[0]->toString(exec).domString(), args[1]->toString(exec).domString(), exception));
+    return getDOMNode(exec,doc.createElementNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(), exception));
   case DOMDocument::CreateAttributeNS: // DOM2
-    return getDOMNode(exec,doc.createAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception));
+    return getDOMNode(exec,doc.createAttributeNS(valueToStringWithNullCheck(exec, args[0]),args[1]->toString(exec).domString(), exception));
   case DOMDocument::GetElementsByTagNameNS: // DOM2
-    return getDOMNodeList(exec,doc.getElementsByTagNameNS(args[0]->toString(exec).domString(),
+    return getDOMNodeList(exec,doc.getElementsByTagNameNS(valueToStringWithNullCheck(exec, args[0]),
                                                           args[1]->toString(exec).domString()));
   case DOMDocument::GetElementById:
 #ifdef KJS_VERBOSE
@@ -1252,23 +1252,24 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
     case DOMElement::HasAttribute: // DOM2
       return jsBoolean(element.hasAttribute(args[0]->toString(exec).domString()));
     case DOMElement::GetAttributeNS: // DOM2
-      return jsString(element.getAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception));
+      return jsString(element.getAttributeNS(valueToStringWithNullCheck(exec, args[0]),args[1]->toString(exec).domString(), exception));
     case DOMElement::SetAttributeNS: // DOM2
-      element.setAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),args[2]->toString(exec).domString(),exception);
+      element.setAttributeNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(),
+                             args[2]->toString(exec).domString(), exception);
       return jsUndefined();
     case DOMElement::RemoveAttributeNS: // DOM2
-      element.removeAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception);
+      element.removeAttributeNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(), exception);
       return jsUndefined();
    case DOMElement::GetAttributeNodeNS: // DOM2
-      return getDOMNode(exec,element.getAttributeNodeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception));
+      return getDOMNode(exec,element.getAttributeNodeNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(),exception));
     case DOMElement::SetAttributeNodeNS: {
       DOM::Attr toRet = element.setAttributeNodeNS(KJS::toAttr(args[0]), exception);
       return getDOMNode(exec, toRet.handle());
     }
     case DOMElement::GetElementsByTagNameNS: // DOM2
-      return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
+      return getDOMNodeList(exec,element.getElementsByTagNameNS(valueToStringWithNullCheck(exec, args[0]),args[1]->toString(exec).domString()));
     case DOMElement::HasAttributeNS: // DOM2
-      return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
+      return jsBoolean(element.hasAttributeNS(valueToStringWithNullCheck(exec, args[0]),args[1]->toString(exec).domString()));
   default:
     return jsUndefined();
   }
