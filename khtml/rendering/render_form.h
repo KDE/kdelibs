@@ -153,6 +153,8 @@ public:
 
 public Q_SLOTS:
     virtual void slotStateChanged(int state);
+private:
+    bool m_ignoreStateChanged;
 };
 
 // -------------------------------------------------------------------------
@@ -180,6 +182,8 @@ public:
 
 public Q_SLOTS:
     virtual void slotToggled(bool);
+private:
+    bool m_ignoreToggled;
 };
 
 
