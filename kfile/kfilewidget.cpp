@@ -1256,6 +1256,8 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 
 void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
 {
+    locationEdit->lineEdit()->setModified( true );
+
     if ( text.isEmpty() && ops->view() )
         ops->view()->clearSelection();
 
