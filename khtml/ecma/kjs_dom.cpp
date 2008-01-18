@@ -1046,9 +1046,9 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::ImportNode: // DOM2
     return getDOMNode(exec,doc.importNode(toNode(args[0]), args[1]->toBoolean(exec), exception));
   case DOMDocument::CreateElementNS: // DOM2
-    return getDOMNode(exec,doc.createElementNS(args[0]->toString(exec).domString(), args[1]->toString(exec).domString(), exception));
+    return getDOMNode(exec,doc.createElementNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(), exception));
   case DOMDocument::CreateAttributeNS: // DOM2
-    return getDOMNode(exec,doc.createAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception));
+    return getDOMNode(exec,doc.createAttributeNS(valueToStringWithNullCheck(exec, args[0]), args[1]->toString(exec).domString(), exception));
   case DOMDocument::GetElementsByTagNameNS: // DOM2
     return getDOMNodeList(exec,doc.getElementsByTagNameNS(args[0]->toString(exec).domString(),
                                                           args[1]->toString(exec).domString()));
