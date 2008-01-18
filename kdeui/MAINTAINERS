@@ -9,7 +9,7 @@ kaboutapplication.cpp
 kaboutdialog.cpp
 kaboutkde.cpp
 kaction.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
-kanimwidget.cpp		Waldo Bastian <bastian@kde.org>
+kanimwidget.cpp		
 karrowbutton.cpp	Frerich Raabe <raabe@kde.org>
 kauthicon.cpp
 kbugreport.cpp
@@ -19,25 +19,23 @@ kcmenumngr.cpp
 kcmodule.cpp
 kcolorbutton.cpp
 kcolorcombo.cpp
-kcolordialog.cpp	Waldo Bastian <bastian@kde.org>
+kcolordialog.cpp	
 kcolordrag.cpp
 kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
-kcommand.cpp		Werner Trobin <trobin@kde.org>
+kcommand.cpp		David Faure <faure@kde.org>
 kcompletionbox.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
 kcursor.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 kdatepicker.cpp
 kdatetbl.cpp
 kdatetimewidget.cpp     Hans Petter Bieker <bieker@kde.org>
-kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
+kdatewidget.cpp		
 kdcopactionproxy.cpp
 kdialog.cpp         Olivier Goffart <ogoffart@kde.org>
-kdialogbase.cpp		Waldo Bastian <bastian@kde.org>
+kdialogbase.cpp		
 kdockwidget.cpp         Joseph Wenninger <jowenn@kde.org>
 kdockwidget_private.cpp Joseph Wenninger <jowenn@kde.org>
-keditcl1.cpp		Waldo Bastian <bastian@kde.org>
-keditcl2.cpp		Waldo Bastian <bastian@kde.org>
 keditlistbox.cpp
-kedittoolbar.cpp
+kedittoolbar.cpp	David Faure <faure@kde.org>
 kfontcombo.cpp
 kfontdialog.cpp
 kglobalsettings.cpp       David Faure <faure@kde.org>
@@ -55,7 +53,7 @@ kmainwindow.cpp
 kmainwindowiface.cpp
 kmenu.cpp		Holger Freyther <freyther@kde.org>
 kmenubar.cpp
-kmessagebox.cpp		Waldo Bastian <bastian@kde.org>
+kmessagebox.cpp		
 knotification.cpp       Olivier Goffert <ogoffart@kde.org>
 knuminput.cpp           Dirk Mueller <mueller@kde.org>
 knumvalidator.cpp
@@ -63,13 +61,13 @@ kpanelapplet.cpp
 kpanelappmenu.cpp
 kpanelextension.cpp
 kpanelmenu.cpp
-kpassdlg.cpp		Waldo Bastian <bastian@kde.org>
+kpassdlg.cpp		
 kprogressdialog.cpp     Urs Wolfer <uwolfer @ fwo.ch>
 kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>, Martijn Klingens <klingens@kde.org>
 krestrictedline.cpp
 kruler.cpp
 kselect.cpp
-kseparator.cpp		Waldo Bastian <bastian@kde.org>
+kseparator.cpp		
 kshortcutdialog.cpp	Ellis Whitehead <ellis@kde.org>
 ksqueezedtextlabel.cpp
 kstatusbar.cpp
@@ -80,7 +78,7 @@ ksystemtray.cpp
 ktabctl.cpp
 ktextbrowser.cpp
 ktip.cpp
-ktoolbar.cpp		Waldo Bastian <bastian@kde.org>
+ktoolbar.cpp		
 kurllabel.cpp
 kwindowlistmenu.cpp
 kassistantdialog.cpp
