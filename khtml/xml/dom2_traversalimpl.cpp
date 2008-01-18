@@ -585,8 +585,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n
 
     // What would can our siblings be? Well, they can be our actual siblings,
     // or if those are 'skip' their first kid. We may also have to walk up
-    // through any skipped nodes. (The behavior of going through rejected nodes is unspecified,
-    // we'll keep backwards compat and stop).
+    // through any skipped nodes.
     NodePtr cursor;
     for (cursor = n->nextSibling(); cursor; cursor = cursor->nextSibling()) {
         switch (isAccepted(cursor)) {
