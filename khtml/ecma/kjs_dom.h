@@ -261,7 +261,7 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  DEFINE_PSEUDO_CONSTRUCTOR(DOMExceptionPseudoCtor);
+  DEFINE_PSEUDO_CONSTRUCTOR(DOMExceptionPseudoCtor)
 
   class JSDOMException : public DOMObject {
   public:

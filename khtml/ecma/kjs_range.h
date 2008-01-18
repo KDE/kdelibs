@@ -68,7 +68,7 @@ namespace KJS {
    */
   DOM::RangeImpl* toRange(JSValue*);
 
-  DEFINE_PSEUDO_CONSTRUCTOR(RangeExceptionPseudoCtor);
+  DEFINE_PSEUDO_CONSTRUCTOR(RangeExceptionPseudoCtor)
 
   class RangeException : public DOMObject {
   public:
