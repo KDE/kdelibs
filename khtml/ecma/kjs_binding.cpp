@@ -32,6 +32,7 @@
 
 
 #include "kjs_dom.h"
+#include "kjs_range.h"
 
 #include <dom/css_stylesheet.h>
 #include <dom/dom_exception.h>
@@ -314,6 +315,7 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   const char *type = "DOM";
   int code = DOMExceptionCode;
 
+  JSObject *errorObject = 0;
   const char* const* nameTable;
   int nameTableSize;
 
@@ -322,6 +324,10 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
     code -= DOM::RangeException::_EXCEPTION_OFFSET;
     nameTable = rangeExceptionNames;
     nameTableSize = sizeof(rangeExceptionNames) / sizeof(rangeExceptionNames[0]);
+    errorObject = new RangeException(exec);
+    exec->setException(errorObject);
+    errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
+    errorObject->put(exec, exec->propertyNames().message, jsString(nameTable[code]));
   } else if (code >= DOM::CSSException::_EXCEPTION_OFFSET && code <= DOM::CSSException::_EXCEPTION_MAX) {
     type = "CSS";
     code -= DOM::CSSException::_EXCEPTION_OFFSET;
@@ -353,7 +359,8 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   else
     snprintf(buffer, 99, "%s Exception %d", type, code);
 
-  JSObject *errorObject = throwError(exec, GeneralError, buffer);
+  if (!errorObject)
+    errorObject = throwError(exec, GeneralError, buffer);
   errorObject->put(exec, "code", jsNumber(code));
 }
 

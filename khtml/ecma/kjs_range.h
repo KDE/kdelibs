@@ -61,11 +61,21 @@ namespace KJS {
 
   JSValue* getDOMRange(ExecState *exec, DOM::RangeImpl* r);
   JSValue* getRangeConstructor(ExecState *exec);
+  JSObject* getRangeExceptionConstructor(ExecState *exec);
 
   /**
    * Convert an object to a RangeImpl. Returns 0 if not possible
    */
   DOM::RangeImpl* toRange(JSValue*);
+
+  DEFINE_PSEUDO_CONSTRUCTOR(RangeExceptionPseudoCtor);
+
+  class RangeException : public DOMObject {
+  public:
+    RangeException(ExecState* exec);
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+  };
 
 } // namespace
 

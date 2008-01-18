@@ -326,6 +326,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   Range		Window::Range		DontDelete
   NodeFilter	Window::NodeFilter	DontDelete
   DOMException	Window::DOMException	DontDelete
+  RangeException Window::RangeException	DontDelete
   CSSRule	Window::CSSRule		DontDelete
   MutationEvent Window::MutationEventCtor   DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontDelete
@@ -773,6 +774,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
       return getNodeFilterConstructor(exec);
     case DOMException:
       return getDOMExceptionConstructor(exec);
+    case RangeException:
+      return RangeExceptionPseudoCtor::self(exec);
     case CSSRule:
       return getCSSRuleConstructor(exec);
     case ElementCtor:
