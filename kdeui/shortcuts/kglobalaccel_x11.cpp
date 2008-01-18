@@ -186,6 +186,17 @@ void KGlobalAccelImpl::x11MappingNotify()
 
 bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 {
+	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, otherwise
+        // it becomes frozen. There is a chance this will ungrab even when it should
+        // not, if some code calls XGrabKeyboard() directly, but doing so in kded
+        // should be very unlikely, and probably stupid.
+        // If this code is again moved out of kded for some reason, this needs
+        // to be revisited (I'm pretty sure this used to break KWin).
+	if( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget()) {
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+		XFlush( QX11Info::display()); // avoid X(?) bug
+	}
+
 	uchar keyCodeX = pEvent->xkey.keycode;
 	uint keyModX = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
 
@@ -225,17 +236,6 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	int keyQt = keyCodeQt | keyModQt;
 	
 	kDebug(125) << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
-
-
-	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, but only in such case.
-	//
-	// The || keyQt == 184549378 part is there to not grab the keyboard forever in the
-	// case of Alt+Shift+Tab not creating that key sequence, due to X11 not creating a Tab
-	// keysym for the Alt+Shift+Tab sequence. See Bugreport #153211
-	if( m_owner->isHandled(keyQt) && !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() || keyQt == 184549378 ) {
-		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
-		XFlush( QX11Info::display()); // avoid X(?) bug
-	}
 
 	// All that work for this hey... argh...
 	if (m_owner->keyPressed(keyQt))

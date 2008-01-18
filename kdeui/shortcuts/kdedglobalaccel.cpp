@@ -472,13 +472,6 @@ QString KdedGlobalAccel::stringFromKeys(const QList<int> &keys)
 }
 
 
-bool KdedGlobalAccel::isHandled(int keyQt)
-{
-    actionData *ad = d->keyToAction.value(keyQt);
-    return ad && ad->isPresent;
-}
-
-
 bool KdedGlobalAccel::keyPressed(int keyQt)
 {
     actionData *ad = d->keyToAction.value(keyQt);

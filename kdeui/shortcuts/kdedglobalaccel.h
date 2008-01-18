@@ -58,11 +58,8 @@ public:
     //conflict resolution but won't trigger.
     void setInactive(const QStringList &actionId);
 
-    //do we have this key registered for an action that is present?
-    bool isHandled(int keyQt);
-
     //called by the implementation to inform us about key presses
-    //return value like isHandled()
+    //returns true when the key was handled
     bool keyPressed(int keyQt);
 
     //not implementetd ATM, TODO: why does it even exist?
