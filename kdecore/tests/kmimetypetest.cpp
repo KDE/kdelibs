@@ -413,6 +413,8 @@ void KMimeTypeTest::testMimeTypeParent()
     QCOMPARE(wordperfect->parentMimeType(), QString("application/octet-stream"));
     QVERIFY(wordperfect->is("application/octet-stream"));
 
+    QVERIFY(KMimeType::mimeType("image/svg+xml-compressed")->is("application/x-gzip"));
+
     // Check that msword derives from ole-storage [it didn't in 0.20, but we added it to kde.xml]
     const KMimeType::Ptr msword = KMimeType::mimeType("application/msword");
     QVERIFY(msword);
