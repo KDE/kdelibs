@@ -265,8 +265,7 @@ private:
 
     // Returns the clip rect that should be used to ensure that only the parts of the
     // path that should be filled by the pattern are filled, given the repeat setting.
-    QRectF clipForRepeat(QPainter *painter, const QPainterPath &path,
-                         const PathPaintOp op) const;
+    QRectF clipForRepeat(QPainter *painter, const PathPaintOp op) const;
 
     // Helper function that fills or strokes a path, honoring shadow and pattern
     // repeat settings.
@@ -276,9 +275,8 @@ private:
     void drawPathWithShadow(QPainter *painter, const QPainterPath &path, PathPaintOp op,
                             PaintFlags flags = NoPaintFlags) const;
 
-    // Draws a shadowed image
-    void drawImageWithShadow(QPainter *painter, const QRectF &dstRect, const QImage &image,
-                             const QRectF &srcRect) const;
+    void drawImage(QPainter *painter, const QRectF &dstRect, const QImage &image,
+                   const QRectF &srcRect) const;
 
     // Cleared by canvas dtor..
     HTMLCanvasElementImpl* canvasElement;
@@ -299,6 +297,12 @@ private:
     // The path is global, and never saved/restored
     QPainterPath path;
 
+    // The initial (untransformed) point in the path
+    QPointF firstPoint;
+
+    // The current (untransformed) point in the path
+    QPointF currentPoint;
+
     // We keep track of non-path state ourselves. There are two reasons:
     // 1) The painter may have to be end()ed so we can not rely on it to remember
     //    things
@@ -311,6 +315,7 @@ private:
         bool          infinityTransform; // Marks that the transform has become invalid,
                                          // and should be treated as identity.
         QPainterPath  clipPath; // This is in -physical- coordinates
+        bool          clipping; // If clipping is enabled
 
         // Compositing state
         float globalAlpha;

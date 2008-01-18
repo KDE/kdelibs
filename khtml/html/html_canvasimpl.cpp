@@ -206,8 +206,9 @@ void CanvasContext2DImpl::resetContext(int width, int height)
     PaintState defaultState;
     beginPath();
     defaultState.infinityTransform = false;
-    defaultState.clipPath.addRect(0, 0, width, height);
+    defaultState.clipPath = QPainterPath();
     defaultState.clipPath.setFillRule(Qt::WindingFill);
+    defaultState.clipping = false;
 
     defaultState.globalAlpha = 1.0f;
     defaultState.globalCompositeOperation = QPainter::CompositionMode_SourceOver;
@@ -257,23 +258,10 @@ QPainter* CanvasContext2DImpl::acquirePainter()
     PaintState& state = activeState();
 
     if (dirty & DrtClip) {
-        // Reset the transform so the clip path is in the
-        // right coordinate system
-        workPainter.resetTransform();
-        workPainter.setClipPath(state.clipPath);
-
-        // Restore the transform..
-        dirty |= DrtTransform;
-    }
-
-    if (dirty & DrtTransform) {
-        if (state.infinityTransform) {
-            // Make stuff disappear. Cliprect should avoid this ever showing..
-            state.transform.reset();
-            state.transform.translate(-canvasImage->size().width() * 2, -canvasImage->size().height() * 2);
-        }
-
-        workPainter.setTransform(state.transform);
+        if (state.clipping)
+            workPainter.setClipPath(state.clipPath);
+        else
+            workPainter.setClipping(false);
     }
 
     if (dirty & DrtAlpha)
@@ -920,7 +908,8 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
     QPainter* p = acquirePainter();
 
     QPainterPath path;
-    path.addRect(x, y, w, h);
+    path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
+    path.closeSubpath();
 
     drawPath(p, path, FillPath);
 }
@@ -936,7 +925,8 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
     QPainter* p = acquirePainter();
 
     QPainterPath path;
-    path.addRect(x, y, w, h);
+    path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
+    path.closeSubpath();
 
     drawPath(p, path, StrokePath);
 }
@@ -944,7 +934,7 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
 inline bool CanvasContext2DImpl::isPathEmpty() const
 {
     // For an explanation of this, see the comment in beginPath()
-    const QPointF pos = path.currentPosition();
+    const QPointF pos = currentPoint;
     return KJS::isInf(pos.x()) && KJS::isInf(pos.y());
 }
 
@@ -961,36 +951,50 @@ void CanvasContext2DImpl::beginPath()
     // To work around this, we insert a MoveTo to (infinity, infinity) each time the
     // path is reset, and check the current position for this value in all functions
     // that are supposed to do nothing when the path is empty.
-    path.moveTo(QPointF(std::numeric_limits<qreal>::infinity(),
-                        std::numeric_limits<qreal>::infinity()));
+    firstPoint = currentPoint = QPointF(std::numeric_limits<qreal>::infinity(),
+                                        std::numeric_limits<qreal>::infinity());
+    path.moveTo(currentPoint);
 }
 
 void CanvasContext2DImpl::closePath()
 {
     path.closeSubpath();
+    currentPoint = firstPoint;
 }
 
 void CanvasContext2DImpl::moveTo(float x, float y)
 {
-    path.moveTo(x, y);
+    firstPoint = currentPoint = QPointF(x, y);
+    path.moveTo(currentPoint * activeState().transform);
 }
 
 void CanvasContext2DImpl::lineTo(float x, float y)
 {
-    if (!isPathEmpty())
-        path.lineTo(x, y);
+    if (isPathEmpty())
+        return;
+
+    currentPoint = QPointF(x, y);
+    path.lineTo(currentPoint * activeState().transform);
 }
 
 void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float y)
 {
-    if (!isPathEmpty())
-        path.quadTo(cpx, cpy, x, y);
+    if (isPathEmpty())
+        return;
+
+    const QTransform &xform = activeState().transform;
+    currentPoint = QPointF(x, y);
+    path.quadTo(QPointF(cpx, cpy) * xform, currentPoint * xform);
 }
 
 void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
 {
-    if (!isPathEmpty())
-        path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y);
+    if (isPathEmpty())
+        return;
+
+    const QTransform &xform = activeState().transform;
+    currentPoint = QPointF(x, y);
+    path.cubicTo(QPointF(cp1x, cp1y) * xform, QPointF(cp2x, cp2y) * xform, currentPoint * xform);
 }
 
 void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptionCode)
@@ -1001,7 +1005,10 @@ void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptio
         return;
     }
 
-    path.addRect(x, y, w, h);
+    path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
+    path.closeSubpath();
+
+    firstPoint = currentPoint = QPointF(x, y);
 }
 
 inline bool CanvasContext2DImpl::needsShadow() const
@@ -1009,7 +1016,7 @@ inline bool CanvasContext2DImpl::needsShadow() const
     return activeState().shadowColor.alpha() > 0;
 }
 
-QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, const QPainterPath &path, const PathPaintOp op) const
+QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, PathPaintOp op) const
 {
     const CanvasStyleBaseImpl *style = op == FillPath ?
                 activeState().fillStyle.get() : activeState().strokeStyle.get();
@@ -1018,63 +1025,64 @@ QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, const QPainterPath &path,
         return QRectF();
 
     const CanvasPatternImpl *pattern = static_cast<const CanvasPatternImpl*>(style);
-
-    float penWidth = qMax(p->pen().widthF(), 1.0);
-    const QRectF rect = path.controlPointRect().adjusted(-penWidth, -penWidth, penWidth, penWidth);
-
-    return pattern->clipForRepeat(p->brushOrigin(), rect);
+    QRectF fillBounds = activeState().transform.inverted().mapRect(QRectF(QPointF(), canvasImage->size()));
+    return pattern->clipForRepeat(p->brushOrigin(), fillBounds);
 }
 
 void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const PathPaintOp op) const
 {
-    if (needsShadow()) {
-        drawPathWithShadow(p, path, op);
-        return;
-    }
-
-    QRectF repeatClip = clipForRepeat(p, path, op);
-    QPainterPath savedClip;
-
-    if (!repeatClip.isEmpty()) {
-        savedClip = p->clipPath();
-        p->setClipRect(repeatClip, Qt::IntersectClip);
-    }
-
-    if (op == FillPath)
-        p->fillPath(path, p->brush());
-    else
-        p->strokePath(path, p->pen());
-
-    if (!repeatClip.isEmpty())
-        p->setClipPath(savedClip);
-}
-
-void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &path, PathPaintOp op,
-                                             PaintFlags flags) const
-{
+    const PaintState &state = activeState();
     QPainterPathStroker stroker;
     QPainterPath fillPath;
     QBrush brush;
 
-    const PaintState &state = activeState();
+    if (state.infinityTransform)
+        return;
 
     switch (op)
     {
-    case FillPath:
-        fillPath = path;
-        brush = p->brush();
-        break;
-
     case StrokePath:
+        brush = p->pen().brush();
         stroker.setCapStyle(state.lineCap);
         stroker.setJoinStyle(state.lineJoin);
         stroker.setMiterLimit(state.miterLimit);
         stroker.setWidth(state.lineWidth);
-        fillPath = stroker.createStroke(path);
-        brush = p->pen().brush();
+        if (!state.transform.isIdentity() && state.transform.isInvertible())
+            fillPath = stroker.createStroke(path * state.transform.inverted()) * state.transform;
+        else
+            fillPath = stroker.createStroke(path);
+        break;
+
+    case FillPath:
+        brush = p->brush();
+        fillPath = path;
         break;
     }
 
+    brush.setTransform(state.transform);
+
+    p->save();
+    p->setPen(Qt::NoPen);
+    p->setBrush(brush);
+
+    if (needsShadow())
+        drawPathWithShadow(p, fillPath, op);
+    else
+    {
+        QRectF repeatClip = clipForRepeat(p, op);
+        if (!repeatClip.isEmpty()) {
+            QPainterPath clipPath;
+            clipPath.addRect(repeatClip);
+            p->setClipPath(clipPath * state.transform, Qt::IntersectClip);
+        }
+        p->drawPath(fillPath);
+    }
+    p->restore();
+}
+
+void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &path, PathPaintOp op, PaintFlags flags) const
+{
+    const PaintState &state = activeState();
     float radius = shadowBlur();
 
     // This seems to produce a shadow that's a fairly close approximation
@@ -1086,19 +1094,22 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     qreal yoffset = radius * 2;
 
     bool honorRepeat = !(flags & NotUsingCanvasPattern);
-    QRectF repeatClip = clipForRepeat(p, path, op);
-    QPainterPath transformedPath = p->transform().map(fillPath);
+    QRectF repeatClip = clipForRepeat(p, op);
+    QRect shapeBounds;
 
     if (honorRepeat && !repeatClip.isEmpty()) {
         QPainterPath clipPath;
         clipPath.addRect(repeatClip);
-        transformedPath = transformedPath.intersected(p->transform().map(clipPath));
-    }
+        shapeBounds = path.intersected(clipPath * state.transform).controlPointRect().toAlignedRect();
+    } else
+        shapeBounds = path.controlPointRect().toAlignedRect();
 
-    QRect shapeBounds = transformedPath.controlPointRect().toAlignedRect();
-
-    QRect clipRect = state.clipPath.controlPointRect().toAlignedRect();
-    clipRect &= QRect(QPoint(), canvasImage->size());
+    QRect clipRect;
+    if (state.clipping) {
+        clipRect = state.clipPath.controlPointRect().toAlignedRect();
+        clipRect &= QRect(QPoint(), canvasImage->size());
+    } else
+        clipRect = QRect(QPoint(), canvasImage->size());
 
     // We need the clip rect to be large enough so that items that are partially or
     // completely outside the canvas will still cast shadows into it when they should.
@@ -1120,11 +1131,12 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     painter.begin(&shape);
     painter.setRenderHints(p->renderHints());
     painter.setBrushOrigin(p->brushOrigin());
+    painter.setBrush(p->brush());
+    painter.setPen(Qt::NoPen);
     painter.translate(-shapeRect.x(), -shapeRect.y());
-    painter.setTransform(p->transform(), true);
     if (honorRepeat && !repeatClip.isEmpty())
         painter.setClipRect(repeatClip);
-    painter.fillPath(fillPath, brush);
+    painter.drawPath(path);
     painter.end();
 
     // Create the shadow image and draw the original image on it
@@ -1140,11 +1152,8 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     ImageFilter::shadowBlur(shadow, radius, state.shadowColor);
 
     // Draw the shadow on the canvas first, then composite the original image over it.
-    QTransform save = p->transform();
-    p->resetTransform();
     p->drawImage(shadowRect.topLeft(), shadow);
     p->drawImage(shapeRect.topLeft(), shape);
-    p->setTransform(save);
 }
 
 void CanvasContext2DImpl::fill()
@@ -1170,8 +1179,13 @@ void CanvasContext2DImpl::clip()
     t.translate(-0.0001*cnt, cnt*0.0001);
     pathCopy = t.map(pathCopy);*/
 
-    state.clipPath = state.clipPath.intersected(state.transform.map(pathCopy));
+    if (state.clipping)
+        state.clipPath = state.clipPath.intersected(pathCopy);
+    else
+        state.clipPath = pathCopy;
+
     state.clipPath.setFillRule(Qt::WindingFill);
+    state.clipping = true;
     dirty |= DrtClip;
 }
 
@@ -1192,7 +1206,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     if (isPathEmpty())
         return;
 
-    QLineF line1(QPointF(x1, y1), path.currentPosition());
+    QLineF line1(QPointF(x1, y1), currentPoint);
     QLineF line2(QPointF(x1, y1), QPointF(x2, y2));
 
     // If the first line is a point, we'll do nothing.
@@ -1200,81 +1214,58 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
 
     // If the second line is a point, we'll add a line segment to (x1, y1).
-    if (line2.p1() == line2.p2())
-    {
-        path.lineTo(x1, y1);
+    if (line2.p1() == line2.p2()) {
+        currentPoint = QPointF(x1, y1);
+        path.lineTo(currentPoint * activeState().transform);
         return;
     }
 
     float angle1 = std::atan2(line1.dy(), line1.dx());
     float angle2 = std::atan2(line2.dy(), line2.dx());
 
-    // The angle between by line1 and line2
-    float span = angle2 - angle1;
-    if (span < -M_PI)
-        span = (2 * M_PI + span);
-    else if (span > M_PI)
-        span = -(2 * M_PI - span);
+    // The smallest angle between the lines
+    float theta = angle2 - angle1;
+    if (theta < -M_PI)
+        theta = (2 * M_PI + theta);
+    else if (theta > M_PI)
+        theta = -(2 * M_PI - theta);
 
-    // If the angle between the lines is 180 degrees, we'll just add a line
-    // segment to (x1, y1).
-    if (qFuzzyCompare(qAbs(span), float(M_PI)))
-    {
-        path.lineTo(x1, y1);
+    // If the angle between the lines is 180 degrees, the span of the arc becomes
+    // zero, causing the tangent points to converge to the same point at (x1, y1).
+    if (qFuzzyCompare(qAbs(theta), float(M_PI))) {
+        currentPoint = QPointF(x1, y1);
+        path.lineTo(currentPoint * activeState().transform);
         return;
     }
-
-    // If the angle between the lines is 0 degrees, we'll add an infinitely
-    // long line segment from the current position in the direction of line2.
-    // This is to match Safari behavior.
-    if (qFuzzyCompare(span, float(0.0)))
-    {
-        // ### We'll define infinity as 100,000 coordinate space units from
-        //     the current position for now.
-        QLineF line(path.currentPosition(),
-                    path.currentPosition() + QPointF(line2.dx(), line2.dy()));
-        line.setLength(100000.0);
-        path.lineTo(line.p2());
-        return;
-    }
-
-    // The angle to the center of the circle
-    float angle = angle1 + span / 2.0;
 
     // The length of the hypotenuse of the right triangle formed by the points
-    // (x1, y1), the center point of the circle, and one of the tangent points.
-    float h = radius / std::sin(qAbs(angle1 - angle));
+    // (x1, y1), the center point of the circle, and either of the two tangent points.
+    float h = radius / std::sin(qAbs(theta / 2.0));
 
     // The distance from (x1, y1) to the tangent points on line1 and line2.
-    float tDist = std::cos(qAbs(angle1 -angle)) * h;
+    float tDist = std::cos(theta / 2.0) * h;
 
-    // QLineF::length() uses sqrt() to compute the length, so we'll save the results
-    // since we need them twice.
-    float line1Len = line1.length();
-    float line2Len = line2.length();
-
-    // If either of the lines is too short, we can't do it
-    if (line1Len < tDist || (line2Len + .01) < tDist)
-    {
-       path.lineTo(x1, y1);
-       return;
+    // As theta approaches 0, the distance to the two tangent points approach infinity.
+    // If we exceeded the limit, draw a long line toward the first tangent point.
+    // This matches CoreGraphics and Postscript behavior, but violates the HTML5 spec,
+    // which says we should do nothing in this case.
+    if (KJS::isInf(h) || KJS::isInf(tDist)) {
+        currentPoint = QPointF(line1.p2().x() + std::cos(angle1) * 1e10,
+                               line1.p2().y() + std::sin(angle1) * 1e10);
+        path.lineTo(currentPoint * activeState().transform);
+        return;
     }
 
     // The center point of the circle
+    float angle = angle1 + theta / 2.0;
     QPointF centerPoint(x1 + std::cos(angle) * h, y1 + std::sin(angle) * h);
 
-    // The tangent points on line1 and line2
-    QPointF t1 = line1.pointAt(tDist / line1Len);
-    QPointF t2 = line2.pointAt(tDist / line2Len);
-
-    // The lines from the center point of the circle to the tangent points on line1 and line2.
-    QLineF toT1(centerPoint, t1);
-    QLineF toT2(centerPoint, t2);
-
-    // The start and end angles of the arc
-    float startAngle = std::atan2(toT1.dy(), toT1.dx());
-    float endAngle   = std::atan2(toT2.dy(), toT2.dx());
-    bool counterClockWise = span > 0;
+    // Note that we don't check if the lines are long enough for the circle to actually
+    // tangent them; like CoreGraphics and Postscript, we treat the points as points on
+    // two infinitely long lines that intersect one another at (x1, y1).
+    float startAngle = theta < 0 ? angle1 + M_PI_2 : angle1 - M_PI_2;
+    float endAngle   = theta < 0 ? angle2 - M_PI_2 : angle2 + M_PI_2;
+    bool counterClockWise = theta > 0;
 
     int dummy; // Exception code from arc()
     arc(centerPoint.x(), centerPoint.y(), radius, startAngle, endAngle, counterClockWise, dummy);
@@ -1290,8 +1281,16 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
         return;
     }
 
-    const QRectF rect(x - radius, y - radius, radius * 2, radius * 2);
+    QPainterPath arcPath;
+    bool wasEmpty = isPathEmpty();
 
+    if (wasEmpty) {
+        QPointF initialPoint(x + std::cos(startAngle) * radius,
+                             y + std::sin(startAngle) * radius);
+        arcPath.moveTo(initialPoint);
+    }
+
+    const QRectF rect(x - radius, y - radius, radius * 2, radius * 2);
     float sweepLength = -degrees(endAngle - startAngle);
     startAngle = -degrees(startAngle);
 
@@ -1308,14 +1307,7 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
             sweepLength = 360;
     }
 
-    if (isPathEmpty())
-    {
-        QPointF initialPoint(x + std::cos(startAngle) * radius,
-                             y + std::sin(startAngle) * radius);
-        path.moveTo(initialPoint);
-    }
-
-    path.arcTo(rect, startAngle, sweepLength);
+    arcPath.arcTo(rect, startAngle, sweepLength);
 
     // When drawing the arc, Safari will loop around the circle several times if
     // the sweep length is greater than 360 degrees, leaving the current position
@@ -1335,15 +1327,45 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
             startAngle += 360.0;
         }
 
-        path.arcTo(rect, startAngle, sweepLength);
+        arcPath.arcTo(rect, startAngle, sweepLength);
+    }
+
+    currentPoint = arcPath.currentPosition();
+    arcPath = arcPath * activeState().transform;
+
+    // Add the transformed arc to the path.
+    // Unfortunately we can't use QPainterPath::addPath(), since it adds the
+    // path as a closed sub path, and that's not what we want.
+    for (int i = 0; i < arcPath.elementCount();)
+    {
+        QPainterPath::Element e = arcPath.elementAt(i++);
+        switch (e.type)
+        {
+        case QPainterPath::MoveToElement:
+            if (i != 1 || wasEmpty)
+                path.moveTo(e);
+            break;
+
+        case QPainterPath::LineToElement:
+            path.lineTo(e); break;
+
+        default: { // QPainterPath::CurveToElement
+            QPointF c2 = arcPath.elementAt(i++);
+            QPointF p  = arcPath.elementAt(i++);
+            path.cubicTo(e, c2, p);
+        }
+        }
     }
 }
 
-void CanvasContext2DImpl::drawImageWithShadow(QPainter *p, const QRectF &dstRect, const QImage &image,
-                                              const QRectF &srcRect) const
+void CanvasContext2DImpl::drawImage(QPainter *p, const QRectF &dstRect, const QImage &image, const QRectF &srcRect) const
 {
+    if (activeState().infinityTransform)
+        return;
+
     QPainterPath path;
     path.addRect(dstRect);
+    path = path * activeState().transform;
 
     QTransform transform;
     transform.translate(dstRect.x(), dstRect.y());
@@ -1355,11 +1377,15 @@ void CanvasContext2DImpl::drawImageWithShadow(QPainter *p, const QRectF &dstRect
     }
 
     QBrush brush(srcRect == image.rect() ? image : image.copy(srcRect.toRect()));
-    brush.setTransform(transform);
+    brush.setTransform(transform * activeState().transform);
 
     p->save();
     p->setBrush(brush);
-    drawPathWithShadow(p, path, FillPath, NotUsingCanvasPattern);
+    p->setPen(Qt::NoPen);
+    if (needsShadow())
+        drawPathWithShadow(p, path, FillPath, NotUsingCanvasPattern);
+    else
+        p->drawPath(path);
     p->restore();
 }
 
@@ -1372,11 +1398,7 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, int&
         return;
 
     QPainter* p = acquirePainter();
-
-    if (needsShadow())
-        drawImageWithShadow(p, QRectF(dx, dy, img.width(), img.height()), img, img.rect());
-    else
-        p->drawImage(QPointF(dx, dy), img);
+    drawImage(p, QRectF(dx, dy, img.width(), img.height()), img, img.rect());
 }
 
 void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, float dw, float dh,
@@ -1389,11 +1411,7 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, floa
         return;
 
     QPainter* p = acquirePainter();
-
-    if (needsShadow())
-        drawImageWithShadow(p, QRectF(dx, dy, dw, dh), img, img.rect());
-    else
-        p->drawImage(QRectF(dx, dy, dw, dh), img);
+    drawImage(p, QRectF(dx, dy, dw, dh), img, img.rect());
 }
 
 void CanvasContext2DImpl::drawImage(ElementImpl* image,
@@ -1408,11 +1426,7 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
         return;
 
     QPainter* p = acquirePainter();
-
-    if (needsShadow())
-        drawImageWithShadow(p, QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
-    else
-        p->drawImage(QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
+    drawImage(p, QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
