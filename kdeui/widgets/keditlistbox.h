@@ -253,6 +253,8 @@ public:
        * is used as representation. A KComboBox or a KUrlRequester have a
        * KLineEdit as child-widget for example, so the KComboBox is used as
        * the representation widget.
+       *
+       * @since 4.1
        */
       void setCustomEditor( const CustomEditor& editor );
 
