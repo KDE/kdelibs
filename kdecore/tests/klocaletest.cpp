@@ -250,6 +250,8 @@ KLocaleTest::formatDateTime()
 	fullsecs = "%A %d %B %Y %H:%M:%S";
 	KDateTime kdt;
 	const KTimeZone tz = KSystemTimeZones::zone("Pacific/Fiji");
+        if (!tz.isValid())
+            QSKIP( "Pacific/Fiji timezone not available", SkipAll );
 	kdt = KDateTime::currentDateTime(tz);
 	today = kdt.date();
 	nowt = kdt.time();
