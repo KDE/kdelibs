@@ -89,6 +89,12 @@ class KDEUI_EXPORT KXErrorHandler
          *             when the last X request required a roundtrip.
          */
         bool error( bool sync ) const;
+        /**
+         * This function returns the error code for the first X error that occured.
+         * The return value is useful only if error() returned true.
+         * @since 4.1.0
+         */
+        int errorCode() const;
         ~KXErrorHandler();
     private:
         void addHandler();

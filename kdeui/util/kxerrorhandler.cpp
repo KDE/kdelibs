@@ -34,12 +34,14 @@ public:
     KXErrorHandlerPrivate( Display* dpy ) :
         first_request( XNextRequest( dpy )),
         display( dpy ),
-        was_error( false )
+        was_error( false ),
+        error_code( 0 )
     {
     }
     unsigned long first_request;
     Display* display;
     bool was_error;
+    int error_code;
 };
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;
@@ -97,7 +99,12 @@ bool KXErrorHandler::error( bool sync ) const
         XSync( d->display, False );
     return d->was_error;
     }
-    
+
+int KXErrorHandler::errorCode() const
+    {
+    return d->error_code;
+    }
+
 int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
     {
     --pos;
@@ -114,11 +121,23 @@ int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
         if( user_handler1 != NULL && user_handler1( e->request_code, e->error_code, e->resourceid ))
+            {
             d->was_error = true;
+            if( d->error_code == 0 ) // only remember the first
+                d->error_code = e->error_code;
+            }
         if( user_handler2 != NULL && user_handler2( dpy, e ) != 0 )
+            {
             d->was_error = true;
+            if( d->error_code == 0 ) // only remember the first
+                d->error_code = e->error_code;
+            }
         else // no handler set, simply set that there was an error
+            {
             d->was_error = true;
+            if( d->error_code == 0 ) // only remember the first
+                d->error_code = e->error_code;
+            }
         return 0;
         }
     //qDebug( "Going deeper: %p", static_cast< void* >( this ));
