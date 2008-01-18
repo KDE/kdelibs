@@ -445,7 +445,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousNode(  )
 
     NodePtr n = getPreviousSibling(m_currentNode);
     if (n) {
-        // Find the last kid in the tree's preorder traversal, if any,
+        // Find the last kid in the subtree's preorder traversal, if any,
         // by following the lastChild links.
         NodePtr desc = getLastChild(n);
         while (desc) {
@@ -455,7 +455,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousNode(  )
         return n;
     }
 
-    return getParentNode(n);
+    return getParentNode(m_currentNode);
 }
 
 TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextNode()
@@ -508,15 +508,20 @@ short TreeWalkerImpl::isAccepted(TreeWalkerImpl::NodePtr n)
 
 TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n)
 {
-    NodePtr cursor = n;
+    // Already on top of root's subtree tree...
+    if (n == m_rootNode)
+        return 0;
 
     // Walk up, to find the first visible node != n, until we run out of
     // document or into the root (which we don't have to be inside of!)
-    while (cursor && cursor != m_rootNode) {
-        if (cursor != n && isAccepted(cursor) == NodeFilter::FILTER_ACCEPT)
+    NodePtr cursor = n->parentNode();
+    while (cursor) {
+        if (isAccepted(cursor) == NodeFilter::FILTER_ACCEPT)
             return cursor;
-        else
-            cursor = cursor->parentNode();
+
+        if (cursor == m_rootNode) // We just checked root -- no where else to go up.
+            return 0;
+        cursor = cursor->parentNode();
     }
 
     return 0;

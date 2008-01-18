@@ -273,7 +273,7 @@ JSValue* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, JSObject *thisO
     case DOMTreeWalker::NextSibling:
       return getDOMNode(exec,treeWalker.nextSibling());
     case DOMTreeWalker::PreviousNode:
-      return getDOMNode(exec,treeWalker.previousSibling());
+      return getDOMNode(exec,treeWalker.previousNode());
     case DOMTreeWalker::NextNode:
       return getDOMNode(exec,treeWalker.nextNode());
   }
