@@ -454,7 +454,7 @@ QList<KSslError> KTcpSocket::sslErrors() const
     //    duplicates even though there were none in the original list because KSslError
     //    has a smallest common denominator range of SSL error codes.
     QList<KSslError> ret;
-    foreach (const QSslError e, d->sock.sslErrors())
+    foreach (const QSslError &e, d->sock.sslErrors())
         ret.append(KSslError(e));
     return ret;
 }

@@ -174,7 +174,7 @@ QList<KSslError::Error> KSslCertificateRule::filterErrors(const QList<KSslError:
 QList<KSslError> KSslCertificateRule::filterErrors(const QList<KSslError> &errors) const
 {
     QList<KSslError> ret;
-    foreach (KSslError error, errors) {
+    foreach (const KSslError &error, errors) {
         if (!isErrorIgnored(error.error()))
             ret.append(error);
     }
