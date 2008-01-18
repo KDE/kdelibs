@@ -261,13 +261,11 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  // Constructor for DOMException - constructor stuff not implemented yet
-  class DOMExceptionConstructor : public DOMObject {
+  DEFINE_PSEUDO_CONSTRUCTOR(DOMExceptionPseudoCtor);
+
+  class JSDOMException : public DOMObject {
   public:
-    DOMExceptionConstructor(ExecState *);
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    JSValue* getValueProperty(ExecState *exec, int token) const;
-    // no put - all read-only
+    JSDOMException(ExecState* exec);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };

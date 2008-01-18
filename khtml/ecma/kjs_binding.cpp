@@ -319,6 +319,9 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   const char* const* nameTable;
   int nameTableSize;
 
+  // ### clean up after harmonizing exception objects. maybe use a
+  // ### single class? Some human readable message would be nice, too.
+
   if (code >= DOM::RangeException::_EXCEPTION_OFFSET && code <= DOM::RangeException::_EXCEPTION_MAX) {
     type = "DOM Range";
     code -= DOM::RangeException::_EXCEPTION_OFFSET;
@@ -341,6 +344,10 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   } else {
     nameTable = exceptionNames;
     nameTableSize = sizeof(exceptionNames) / sizeof(exceptionNames[0]);
+    errorObject = new JSDOMException(exec);
+    exec->setException(errorObject);
+    errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
+    errorObject->put(exec, exec->propertyNames().message, jsString(nameTable[code]));
   }
 
   const char* name = (code >= 0 && code < nameTableSize) ? nameTable[code] : 0;

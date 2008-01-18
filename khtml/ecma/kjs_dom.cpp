@@ -1702,10 +1702,8 @@ JSValue* KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementationImp
 IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOMNodeProto, DOMNodeConstants)
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };
-
-/* Source for DOMExceptionConstructorTable.
-@begin DOMExceptionConstructorTable 15
+/* Source for DOMExceptionProtoTable.
+@begin DOMExceptionProtoTable 15
   INDEX_SIZE_ERR		DOM::DOMException::INDEX_SIZE_ERR		DontDelete|ReadOnly
   DOMSTRING_SIZE_ERR		DOM::DOMException::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
   HIERARCHY_REQUEST_ERR		DOM::DOMException::HIERARCHY_REQUEST_ERR	DontDelete|ReadOnly
@@ -1726,62 +1724,23 @@ const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 
 @end
 */
 
-DOMExceptionConstructor::DOMExceptionConstructor(ExecState* exec)
-  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
+DEFINE_CONSTANT_TABLE(DOMExceptionProto)
+IMPLEMENT_CONSTANT_TABLE(DOMExceptionProto, "DOMException")
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(DOMExceptionPseudoCtor,
+                             "DOMException",
+                             DOMExceptionProto, DOMExceptionProto)
+
+JSDOMException::JSDOMException(ExecState* exec)
+  : DOMObject(DOMExceptionProto::self(exec))
 {
 }
 
-bool DOMExceptionConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
-{
-  return getStaticValueSlot<DOMExceptionConstructor, DOMObject>(exec, &DOMExceptionConstructorTable, this, propertyName, slot);
-}
-
-JSValue* DOMExceptionConstructor::getValueProperty(ExecState *, int token) const
-{
-  // We use the token as the value to return directly
-  return jsNumber((unsigned int)token);
-#if 0
-  switch (token) {
-  case INDEX_SIZE_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
-  case DOMSTRING_SIZE_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::DOMSTRING_SIZE_ERR);
-  case HIERARCHY_REQUEST_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::HIERARCHY_REQUEST_ERR);
-  case WRONG_DOCUMENT_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::WRONG_DOCUMENT_ERR);
-  case INVALID_CHARACTER_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INVALID_CHARACTER_ERR);
-  case NO_DATA_ALLOWED_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::NO_DATA_ALLOWED_ERR);
-  case NO_MODIFICATION_ALLOWED_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::NO_MODIFICATION_ALLOWED_ERR);
-  case NOT_FOUND_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::NOT_FOUND_ERR);
-  case NOT_SUPPORTED_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::NOT_SUPPORTED_ERR);
-  case INUSE_ATTRIBUTE_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INUSE_ATTRIBUTE_ERR);
-  case INVALID_STATE_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INVALID_STATE_ERR);
-  case SYNTAX_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::SYNTAX_ERR);
-  case INVALID_MODIFICATION_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INVALID_MODIFICATION_ERR);
-  case NAMESPACE_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::NAMESPACE_ERR);
-  case INVALID_ACCESS_ERR:
-    return jsNumber((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
-  default:
-    kDebug(6070) << "WARNING: DOMExceptionConstructor::getValueProperty unhandled token " << token;
-    return jsNull();
-  }
-#endif
-}
+const ClassInfo JSDOMException::info = { "DOMException", 0, 0, 0 };
 
 JSObject *KJS::getDOMExceptionConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<DOMExceptionConstructor>(exec, "[[DOMException.constructor]]");
+  return DOMExceptionPseudoCtor::self(exec);
 }
 
 // -------------------------------------------------------------------------
