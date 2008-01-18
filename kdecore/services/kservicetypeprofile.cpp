@@ -131,7 +131,7 @@ static void initStatic()
         //  appId = pService->storageId();
 
         const QString type = config.readEntry( "ServiceType" );
-        const QString type2 = config.readEntry( "GenericServiceType" );
+        const QString type2 = config.readEntry( "GenericServiceType", "Application" );
         int pref = config.readEntry( "Preference", 0 );
 
         if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
