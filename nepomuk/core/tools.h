@@ -29,26 +29,29 @@
 
 #include <soprano/node.h>
 
+#include <kdemacros.h>
+
 namespace Nepomuk {
     /**
-     * Set a custom default repository to use. It is not recommended to use this
-     * method in production code. It should only be used for testing purposes.
+     * \deprecated Has no effect anymore.
      */
-    NEPOMUK_EXPORT void setDefaultRepository( const QString& s );
+    KDE_DEPRECATED NEPOMUK_EXPORT void setDefaultRepository( const QString& s );
 
     /**
      * Used internally by Resource.
      * \return The URI of the RDF graph meta data is stored in.
+     *
+     * \deprecated Use Nepomuk::ResourceManager::mainModel()
      */
-    // FIXME: this should be called defaultRepository and once we use the OntologyService
-    // it can be removed anyway
-    NEPOMUK_EXPORT QString defaultGraph();
+    KDE_DEPRECATED NEPOMUK_EXPORT QString defaultGraph();
 
     /**
      * Used internally by Resource.
      * \return The URI of the predicate used to state the type of a resource.
+     *
+     * \deprecated Use Soprano::Vocabulary::RDF::type()
      */
-    NEPOMUK_EXPORT QString typePredicate();
+    KDE_DEPRECATED NEPOMUK_EXPORT QString typePredicate();
 
     /**
      * Used internally by Resource.
@@ -81,10 +84,25 @@ namespace Nepomuk {
         return rl;
     }
 
-    NEPOMUK_EXPORT QString rdfNamepace();
-    NEPOMUK_EXPORT QString rdfsNamespace();
-    NEPOMUK_EXPORT QString nrlNamespace();
-    NEPOMUK_EXPORT QString naoNamespace();
+    /**
+     * \deprecated Use Soprano::Vocabulary::RDF::rdfNamepace()
+     */
+    KDE_DEPRECATED NEPOMUK_EXPORT QString rdfNamepace();
+
+    /**
+     * \deprecated Use Soprano::Vocabulary::RDFS::rdfsNamepace()
+     */
+    KDE_DEPRECATED NEPOMUK_EXPORT QString rdfsNamespace();
+
+    /**
+     * \deprecated Use Soprano::Vocabulary::NRL::nrlNamepace()
+     */
+    KDE_DEPRECATED NEPOMUK_EXPORT QString nrlNamespace();
+
+    /**
+     * \deprecated Use Soprano::Vocabulary::NAO::naoNamepace()
+     */
+    KDE_DEPRECATED NEPOMUK_EXPORT QString naoNamespace();
 }
 
 #endif
