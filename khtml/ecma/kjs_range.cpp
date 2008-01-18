@@ -225,3 +225,23 @@ DOM::RangeImpl* KJS::toRange(JSValue *val)
   const DOMRange *dobj = static_cast<const DOMRange*>(obj);
   return dobj->impl();
 }
+
+/* Source for RangeExceptionProtoTable.
+@begin RangeExceptionProtoTable 2
+BAD_BOUNDARYPOINTS_ERR  DOM::RangeException::BAD_BOUNDARYPOINTS_ERR    DontDelete|ReadOnly
+INVALID_NODE_TYPE_ERR   DOM::RangeException::INVALID_NODE_TYPE_ERR     DontDelete|ReadOnly
+@end
+*/
+
+DEFINE_CONSTANT_TABLE(RangeExceptionProto)
+IMPLEMENT_CONSTANT_TABLE(RangeExceptionProto, "RangeException")
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(RangeExceptionPseudoCtor, "RangeException",
+                             RangeExceptionProto, RangeExceptionProto)
+
+RangeException::RangeException(ExecState* exec)
+  : DOMObject(RangeExceptionProto::self(exec))
+{
+}
+
+const ClassInfo RangeException::info = { "RangeException", 0, 0, 0 };
