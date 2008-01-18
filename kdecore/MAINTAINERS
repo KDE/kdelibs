@@ -7,19 +7,19 @@ more logical grouping.
 
 dmalloc.cpp
 kaboutdata.cpp		David Faure <faure@kde.org>
-kallocator.cpp		Waldo Bastian <bastian@kde.org>
+kallocator.cpp		
 kappdcopiface.cpp
-kapplication.cpp	Waldo Bastian <bastian@kde.org>
+kapplication.cpp	
 kcatalog.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp		Lars Knoll <knoll@kde.org>
 kckey.cpp
-kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>
+kcmdlineargs.cpp	
 kcompletion.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 kcompletionbase.cpp
-kconfig.cpp		Waldo Bastian <bastian@kde.org>
-kconfigbackend.cpp	Waldo Bastian <bastian@kde.org>
-kconfigbase.cpp		Waldo Bastian <bastian@kde.org>
-kcrash.cpp		Waldo Bastian <bastian@kde.org>
+kconfig.cpp		
+kconfigbackend.cpp	
+kconfigbase.cpp		
+kcrash.cpp		
 kdcoppropertyproxy.cpp
 kdebug.cpp		Stephan Kulow <coolo@kde.org>
 kdatetime.cpp		David Jarvie <djarvie@kde.org>
@@ -38,32 +38,32 @@ kmdcodec.cpp
 kmimesourcefactory.cpp
 kmultipledrag.cpp	David Faure <faure@kde.org>
 knotifyclient.cpp
-kpalette.cpp		Waldo Bastian <bastian@kde.org>
+kpalette.cpp		
 kpixmapprovider.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
-kprocctrl.cpp		Waldo Bastian <bastian@kde.org>
-kprocess.cpp		Waldo Bastian <bastian@kde.org>
-kprocio.cpp		Waldo Bastian <bastian@kde.org>
-krandomsequence.cpp	Waldo Bastian <bastian@kde.org>
-krfcdate.cpp		Waldo Bastian <bastian@kde.org>
+kprocctrl.cpp		
+kprocess.cpp		
+kprocio.cpp		
+krandomsequence.cpp	
+krfcdate.cpp		
 krootprop.cpp   	Lubos Lunak <l.lunak@kde.org>
-ksavefile.cpp		Waldo Bastian <bastian@kde.org>
+ksavefile.cpp		
 kshortcut.cpp		Ellis Whitehead <ellis@kde.org>
-ksimpleconfig.cpp	Waldo Bastian <bastian@kde.org>
+ksimpleconfig.cpp	
 ksocks.cpp
-kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
+kstandarddirs.cpp	
 kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
 kstaticdeleter.cpp	Stephan Kulow <coolo@kde.org>
 kstdaccel.cpp		Ellis Whitehead <ellis@kde.org>
 kstringhandler.cpp
-ksycoca.cpp		Waldo Bastian <bastian@kde.org>
-ksycocadict.cpp		Waldo Bastian <bastian@kde.org>
-ksycocafactory.cpp	Waldo Bastian <bastian@kde.org>
+ksycoca.cpp		David Faure <faure@kde.org>
+ksycocadict.cpp		David Faure <faure@kde.org>
+ksycocafactory.cpp	David Faure <faure@kde.org>
 ktemporaryfile.cpp	Jaison Lee <lee.jaison@gmail.com>
 ktimezone.cpp
 ksystemtimezone.cpp
 ktzfiletimezone.cpp	David Jarvie <djarvie@kde.org>
-kuniqueapplication.cpp	Waldo Bastian <bastian@kde.org>
-kurl.cpp		Waldo Bastian <bastian@kde.org>
+kuniqueapplication.cpp	
+kurl.cpp		David Faure <faure@kde.org>
 kurldrag.cpp		David Faure <faure@kde.org>
 kwin.cpp        	Lubos Lunak <l.lunak@kde.org>
 kwinmodule.cpp  	Lubos Lunak <l.lunak@kde.org>
@@ -94,13 +94,13 @@ kdebugdcopiface.cpp	Andreas Beckermann (b_mann@gmx.de) (copyright)
 kdeversion.cpp
 kglobalaccel_win.cpp	Ellis Whitehead <ellis@kde.org> (copyright)
 kkeyserver_x11.cpp
-klockfile.cpp		Waldo Bastian <bastian@kde.org> (copyright)
+klockfile.cpp		
 kmacroexpander.cpp
 kmanagerselection.cpp	Lubos Lunak        <l.lunak@kde.org> (copyright)
-kmountpoint.cpp		Waldo Bastian <bastian@kde.org> (copyright)
-kprotocolinfo_kdecore.cpp	Torben Weis <weis@kde.org> (copyright)
-kprotocolinfofactory.cpp	Torben Weis <weis@kde.org> (copyright)
-kprotocolinfofactory.cpp	Waldo Bastian <bastian@kde.org> (copyright)
+kmountpoint.cpp		David Faure <faure@kde.org>
+kprotocolinfo_kdecore.cpp	David Faure <faure@kde.org>
+kprotocolinfofactory.cpp	David Faure <faure@kde.org>
+kprotocolinfofactory.cpp	David Faure <faure@kde.org>
 kpty.cpp
 kshell.cpp		Oswald Buddenhagen <ossi@kde.org> (copyright)
 kshortcutmenu.cpp	Ellis Whitehead <ellis@kde.org> (copyright)
