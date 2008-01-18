@@ -151,44 +151,6 @@ JSValue *KJS::getNodeFilterConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMNodeFilter::info = { "NodeFilter", 0, 0, 0 };
-/*
-@begin DOMNodeFilterProtoTable 1
-  acceptNode	DOMNodeFilter::AcceptNode	DontDelete|Function 0
-@end
-*/
-KJS_DEFINE_PROTOTYPE(DOMNodeFilterProto)
-KJS_IMPLEMENT_PROTOFUNC(DOMNodeFilterProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMNodeFilter",DOMNodeFilterProto,DOMNodeFilterProtoFunc)
-
-DOMNodeFilter::DOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
-  : m_impl(nf) {
-  setPrototype(DOMNodeFilterProto::self(exec));
-}
-
-DOMNodeFilter::~DOMNodeFilter()
-{
-  ScriptInterpreter::forgetDOMObject(m_impl.get());
-}
-
-JSValue *DOMNodeFilterProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
-{
-  KJS_CHECK_THIS( KJS::DOMNodeFilter, thisObj );
-  DOM::NodeFilterImpl& nodeFilter = *static_cast<DOMNodeFilter *>(thisObj)->impl();
-  switch (id) {
-    case DOMNodeFilter::AcceptNode:
-      return jsNumber(nodeFilter.acceptNode(toNode(args[0])));
-  }
-  return jsUndefined();
-}
-
-JSValue *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
-{
-  return cacheDOMObject<DOM::NodeFilterImpl, DOMNodeFilter>(exec, nf);
-}
-
-// -------------------------------------------------------------------------
-
 const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, &DOMTreeWalkerTable, 0 };
 /*
 @begin DOMTreeWalkerTable 5
@@ -220,6 +182,13 @@ DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
 DOMTreeWalker::~DOMTreeWalker()
 {
   ScriptInterpreter::forgetDOMObject(m_impl.get());
+}
+
+void DOMTreeWalker::mark()
+{
+  JSNodeFilter* filt = JSNodeFilter::fromDOMFilter(impl()->getFilter());
+  if (filt)
+    filt->mark();
 }
 
 bool DOMTreeWalker::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
@@ -273,7 +242,7 @@ JSValue* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, JSObject *thisO
     case DOMTreeWalker::NextSibling:
       return getDOMNode(exec,treeWalker.nextSibling());
     case DOMTreeWalker::PreviousNode:
-      return getDOMNode(exec,treeWalker.previousSibling());
+      return getDOMNode(exec,treeWalker.previousNode());
     case DOMTreeWalker::NextNode:
       return getDOMNode(exec,treeWalker.nextNode());
   }
@@ -285,24 +254,68 @@ JSValue *KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
   return cacheDOMObject<DOM::TreeWalkerImpl, DOMTreeWalker>(exec, tw);
 }
 
+// -------------------------------------------------------------------------
+
+
 DOM::NodeFilterImpl* KJS::toNodeFilter(JSValue *val)
 {
   JSObject *obj = val->getObject();
-  if (!obj || !obj->inherits(&DOMNodeFilter::info))
+  if (!obj)
     return 0;
 
-  const DOMNodeFilter *dobj = static_cast<const DOMNodeFilter*>(obj);
-  return dobj->impl();
+  JSNodeFilter* predicate = new JSNodeFilter(obj);
+  DOM::NodeFilterImpl* filt = new DOM::NodeFilterImpl();
+  filt->setCustomNodeFilter(predicate);
+  return filt;
 }
 
-// -------------------------------------------------------------------------
+JSValue *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
+{
+  // We want to return the encapsulated object inside JS filters.
+  JSNodeFilter* jsFilt = JSNodeFilter::fromDOMFilter(nf);
+  if (jsFilt)
+    return jsFilt->filter();
+  
+  return jsNull();
+}
 
-JSNodeFilter::JSNodeFilter(JSObject *_filter) : DOM::CustomNodeFilter(), filter( _filter )
+JSNodeFilter::JSNodeFilter(JSObject *_filter) : DOM::CustomNodeFilter(), m_filter( _filter )
 {
 }
 
 JSNodeFilter::~JSNodeFilter()
 {
+}
+
+void JSNodeFilter::mark()
+{
+  if (!m_filter->marked())
+    m_filter->mark();
+}
+
+DOM::DOMString JSNodeFilter::customNodeFilterType()
+{
+  return jsNodeFilterType();
+}
+
+DOM::DOMString JSNodeFilter::jsNodeFilterType()
+{
+  return "__khtml_jsNodeFilter";
+}
+
+JSNodeFilter* JSNodeFilter::fromDOMFilter(DOM::NodeFilterImpl* nf)
+{
+  if (!nf)
+    return 0;
+
+  DOM::CustomNodeFilter* realFilter = nf->customNodeFilter();
+  if (!realFilter)
+    return 0;
+
+  if (realFilter->customNodeFilterType() == JSNodeFilter::jsNodeFilterType())
+    return static_cast<JSNodeFilter*>(realFilter);
+
+  return 0;
 }
 
 short JSNodeFilter::acceptNode(const DOM::Node &n)
@@ -315,12 +328,22 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
   KJSProxy *proxy = part->jScript();
   if (proxy) {
     ExecState *exec = proxy->interpreter()->globalExec();
-    JSObject *acceptNodeFunc = filter->get(exec, "acceptNode")->getObject();
-    if (acceptNodeFunc && acceptNodeFunc->implementsCall()) {
+    JSObject* fn = 0;
+
+    // Use a function given directly, or extract it from the acceptNode field
+    if (m_filter->implementsCall()) {
+      fn = m_filter;
+    } else {
+      JSObject *acceptNodeFunc = m_filter->get(exec, "acceptNode")->getObject();
+      if (acceptNodeFunc && acceptNodeFunc->implementsCall())
+        fn = acceptNodeFunc;
+    }
+
+    if (fn) {
       List args;
       args.append(getDOMNode(exec,n.handle()));
-      JSValue *result = acceptNodeFunc->call(exec,filter,args);
-      if (exec->hadException())
+      JSValue *result = fn->call(exec, m_filter,args);
+      if (exec->hadException()) //### FIXME!
 	exec->clearException();
       return result->toInteger(exec);
     }

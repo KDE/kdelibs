@@ -4,6 +4,7 @@
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * (C) 2001 Peter Kelly (pmk@post.com)
+ * (C) 2008 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +24,14 @@
 
 #include "dom/dom_exception.h"
 #include "xml/dom_docimpl.h"
+
+/**
+ Robustness notes: we protect the object we hold on to, to
+ prevent crashes. To ensure termination in JS used, we propagate exceptions,
+ and rely on the JS CPU guard to set one to force us to bail out.
+
+ ### TODO/CHECKONE
+*/
 
 using namespace DOM;
 
@@ -316,7 +325,7 @@ TreeWalkerImpl::~TreeWalkerImpl()
 
 NodeImpl *TreeWalkerImpl::getRoot() const
 {
-    return m_rootNode;
+    return m_rootNode.get();
 }
 
 unsigned long TreeWalkerImpl::getWhatToShow() const
@@ -336,7 +345,7 @@ bool TreeWalkerImpl::getExpandEntityReferences() const
 
 NodeImpl *TreeWalkerImpl::getCurrentNode() const
 {
-    return m_currentNode;
+    return m_currentNode.get();
 }
 
 void TreeWalkerImpl::setWhatToShow(long _whatToShow)
@@ -371,81 +380,85 @@ void TreeWalkerImpl::setCurrentNode( NodeImpl *n )
 
 NodeImpl *TreeWalkerImpl::parentNode(  )
 {
-    NodeImpl *n = getParentNode( m_currentNode );
+    NodePtr n = getParentNode( m_currentNode );
     if ( n )
         m_currentNode = n;
-    return n;
+    return n.get();
 }
 
 
 NodeImpl *TreeWalkerImpl::firstChild(  )
 {
-    NodeImpl *n = getFirstChild( m_currentNode );
+    NodePtr n = getFirstChild( m_currentNode );
     if ( n )
         m_currentNode = n;
-    return n;
+    return n.get();
 }
 
 
 NodeImpl *TreeWalkerImpl::lastChild(  )
 {
-    NodeImpl *n = getLastChild(m_currentNode);
+    NodePtr n = getLastChild(m_currentNode);
     if( n )
         m_currentNode = n;
-    return n;
+    return n.get();
 }
 
 NodeImpl *TreeWalkerImpl::previousSibling(  )
 {
-    NodeImpl *n = getPreviousSibling( m_currentNode );
+    NodePtr n = getPreviousSibling( m_currentNode );
     if( n )
         m_currentNode = n;
-    return n;
+    return n.get();
 }
 
 NodeImpl *TreeWalkerImpl::nextSibling(  )
 {
-    NodeImpl *n = getNextSibling( m_currentNode );
+    NodePtr n = getNextSibling( m_currentNode );
     if( n )
         m_currentNode = n;
-    return n;
+    return n.get();
+}
+
+NodeImpl *TreeWalkerImpl::nextNode(  )
+{
+    NodePtr n = getNextNode();
+    if( n )
+        m_currentNode = n;
+    return n.get();
 }
 
 NodeImpl *TreeWalkerImpl::previousNode(  )
 {
-/* 1. my previous sibling.lastchild
- * 2. my previous sibling
+    NodePtr n = getPreviousNode();
+    if( n )
+        m_currentNode = n;
+    return n.get();
+}
+
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousNode(  )
+{
+/* 1. last node in my previous sibling's subtree
+ * 2. my previous sibling (special case of the above)
  * 3. my parent
  */
 
-    NodeImpl *n = getPreviousSibling( m_currentNode );
-    if( !n )
-    {
-        n = getParentNode( m_currentNode );
-        if( n )      //parent
-        {
-            m_currentNode = n;
-            return m_currentNode;
+    NodePtr n = getPreviousSibling(m_currentNode);
+    if (n) {
+        // Find the last kid in the subtree's preorder traversal, if any,
+        // by following the lastChild links.
+        NodePtr desc = getLastChild(n);
+        while (desc) {
+            n    = desc;
+            desc = getLastChild(desc);
         }
-        else                  // parent failed.. no previous node
-            return 0;
+        return n;
     }
 
-    NodeImpl *child = getLastChild( n );
-    if( child )     // previous siblings last child
-    {
-        m_currentNode = child;
-        return m_currentNode;
-    }
-    else                      // previous sibling
-    {
-        m_currentNode = n;
-        return m_currentNode;
-    }
-    return 0;            // should never get here!
+    return getParentNode(m_currentNode);
 }
 
-NodeImpl *TreeWalkerImpl::nextNode(  )
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextNode()
 {
 /*  1. my first child
  *  2. my next sibling
@@ -453,215 +466,189 @@ NodeImpl *TreeWalkerImpl::nextNode(  )
  *  4. not found
  */
 
-    NodeImpl *n = getFirstChild( m_currentNode );
-    if( n ) // my first child
-    {
-        m_currentNode = n;
+    NodePtr n = getFirstChild(m_currentNode);
+    if (n) // my first child
         return n;
-    }
 
-    n = getNextSibling( m_currentNode ); // my next sibling
-    if( n )
+    n = getNextSibling(m_currentNode); // my next sibling
+    if (n)
+        return n;
+
+    NodePtr parent = getParentNode(m_currentNode);
+    while (parent) // parent's sibling
     {
-        m_currentNode = n;
-        return m_currentNode;
-    }
-    NodeImpl *parent = getParentNode( m_currentNode );
-    while( parent ) // parents sibling
-    {
-        n = getNextSibling( parent );
-        if( n )
-        {
-          m_currentNode = n;
-          return m_currentNode;
-        }
-        else
-            parent = getParentNode( parent );
+        n = getNextSibling(parent);
+        if (n)
+          return n;
+        parent = getParentNode(parent);
     }
     return 0;
 }
 
-short TreeWalkerImpl::isAccepted(NodeImpl *n)
+short TreeWalkerImpl::isAccepted(TreeWalkerImpl::NodePtr n)
 {
     // if XML is implemented we have to check expandEntityRerefences in this function
     if( ( ( 1 << ( n->nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
         if(m_filter)
-            return m_filter->acceptNode(n);
+            return m_filter->acceptNode(n.get());
         else
             return NodeFilter::FILTER_ACCEPT;
     }
     return NodeFilter::FILTER_SKIP;
 }
 
-NodeImpl *TreeWalkerImpl::getParentNode(NodeImpl *n)
+/**
+ This is quite a bit more complicated than it would at first seem, due to the following note:
+ "Note that the structure of a TreeWalker's filtered view of a document may differ significantly from that of the document itself. For example, a TreeWalker with only SHOW_TEXT specified in its whatToShow parameter would present all the Text nodes as if they were siblings of each other yet had no parent."
+
+ My read of this is that e.g. that when a node is  FILTER_SKIP'd, its children are handled
+ as the children of its parent. -M.O.
+*/
+
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n)
 {
-    short _result = NodeFilter::FILTER_ACCEPT;
-
-    if( n == m_rootNode /*|| !n*/ )
-      return 0;
-
-    NodeImpl *_tempCurrent = n->parentNode();
-
-    if( !_tempCurrent )
+    // Already on top of root's subtree tree...
+    if (n == m_rootNode)
         return 0;
 
-    _result = isAccepted( _tempCurrent );
-    if ( _result == NodeFilter::FILTER_ACCEPT )
-        return _tempCurrent;       // match found
+    // Walk up, to find the first visible node != n, until we run out of
+    // document or into the root (which we don't have to be inside of!)
+    NodePtr cursor = n->parentNode();
+    while (cursor) {
+        if (isAccepted(cursor) == NodeFilter::FILTER_ACCEPT)
+            return cursor;
 
-    return getParentNode( _tempCurrent );
-}
-
-NodeImpl *TreeWalkerImpl::getFirstChild(NodeImpl *n)
-{
-    short _result;
-
-    if( !n || !n->firstChild() )
-        return 0;
-    n = n->firstChild();
-
-    _result = isAccepted( n );
-
-    switch( _result )
-    {
-    case NodeFilter::FILTER_ACCEPT:
-        return n;
-        break;
-    case NodeFilter::FILTER_SKIP:
-        if( n->hasChildNodes() )
-            return getFirstChild( n );
-        else
-            return getNextSibling( n );
-        break;
-
-    case NodeFilter::FILTER_REJECT:
-        return getNextSibling( n );
-        break;
+        if (cursor == m_rootNode) // We just checked root -- no where else to go up.
+            return 0;
+        cursor = cursor->parentNode();
     }
-    return 0;      // should never get here!
-}
 
-NodeImpl *TreeWalkerImpl::getLastChild(NodeImpl *n)
-{
-    short _result;
-
-    if( !n || !n->lastChild() )
-        return 0;
-    n = n->lastChild();
-    _result = isAccepted( n );
-
-    switch( _result )
-    {
-    case NodeFilter::FILTER_ACCEPT:
-        return n;
-        break;
-
-    case NodeFilter::FILTER_SKIP:
-        if( n->hasChildNodes() )
-            return getLastChild( n );
-        else
-            return getPreviousSibling( n );
-        break;
-
-    case NodeFilter::FILTER_REJECT:
-        return getPreviousSibling( n );
-        break;
-    }
     return 0;
 }
 
-NodeImpl *TreeWalkerImpl::getPreviousSibling(NodeImpl *n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getFirstChild(TreeWalkerImpl::NodePtr n)
 {
-    short _result;
-    NodeImpl *_tempCurrent;
-
-    if( !n )
-        return 0;
-    //first the cases if we have a previousSibling
-    _tempCurrent = n->previousSibling();
-    if( _tempCurrent )
-    {
-        _result = isAccepted( _tempCurrent );
-        switch ( _result )
-        {
+    NodePtr cursor;
+    for (cursor = n->firstChild(); cursor; cursor = cursor->nextSibling()) {
+        switch (isAccepted(cursor)) {
         case NodeFilter::FILTER_ACCEPT:
-            return _tempCurrent;
-            break;
-
-        case NodeFilter::FILTER_SKIP:
-        {
-            NodeImpl *nskip = getLastChild( _tempCurrent );
-            if( nskip )
-                return nskip;
-            return getPreviousSibling( _tempCurrent );
+            return cursor;
+        case NodeFilter::FILTER_SKIP: {
+            // We ignore this candidate proper, but perhaps it has a kid?
+            NodePtr cand = getFirstChild(cursor);
+            if (cand)
+                return cand;
             break;
         }
-
         case NodeFilter::FILTER_REJECT:
-            return getPreviousSibling( _tempCurrent );
+            // It effectively doesn't exist..
             break;
         }
+        // ### this is unclear: what should happen if we "pass through" the root??
     }
-    // now the case if we don't have previous sibling
-    else
-    {
-        _tempCurrent = n->parentNode();
-        if( !_tempCurrent || _tempCurrent == m_rootNode)
-            return 0;
-        _result = isAccepted( _tempCurrent );
-        if ( _result == NodeFilter::FILTER_SKIP )
-            return getPreviousSibling( _tempCurrent );
 
-        return 0;
-
-    }
-    return 0;  // should never get here!
+    // Nothing found..    
+    return 0;
 }
 
-NodeImpl *TreeWalkerImpl::getNextSibling(NodeImpl *n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getLastChild(TreeWalkerImpl::NodePtr n)
 {
-    NodeImpl *_tempCurrent = 0;
-    short _result;
-
-    if( !n )
-        return 0;
-
-    _tempCurrent = n->nextSibling();
-    if( _tempCurrent )
-    {
-        _result = isAccepted( _tempCurrent );
-        switch ( _result )
-        {
+    TreeWalkerImpl::NodePtr cursor;
+    for (cursor = n->lastChild(); cursor; cursor = cursor->previousSibling()) {
+        switch (isAccepted(cursor)) {
         case NodeFilter::FILTER_ACCEPT:
-            return _tempCurrent;
-            break;
-
-        case NodeFilter::FILTER_SKIP:
-        {
-            NodeImpl *nskip = getFirstChild( _tempCurrent );
-            if( nskip )
-                return nskip;
-            return getNextSibling( _tempCurrent );
+            return cursor;
+        case NodeFilter::FILTER_SKIP: {
+            // We ignore this candidate proper, but perhaps it has a kid?
+            TreeWalkerImpl::NodePtr cand = getLastChild(cursor);
+            if (cand)
+                return cand;
             break;
         }
-
         case NodeFilter::FILTER_REJECT:
-            return getNextSibling( _tempCurrent );
+            // It effectively doesn't exist..
+            break;
+        }
+        // ### this is unclear: what should happen if we "pass through" the root??
+    }
+
+    // Nothing found..
+    return 0;
+}
+
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n)
+{
+    // If we're the root node, clearly we don't have any siblings.
+    if (n == m_rootNode)
+        return 0;
+
+    // What would can our siblings be? Well, they can be our actual siblings,
+    // or if those are 'skip' their first kid. We may also have to walk up
+    // through any skipped nodes.
+    NodePtr cursor;
+    for (cursor = n->nextSibling(); cursor; cursor = cursor->nextSibling()) {
+        switch (isAccepted(cursor)) {
+        case NodeFilter::FILTER_ACCEPT:
+            return cursor;
+        case NodeFilter::FILTER_SKIP: {
+            NodePtr cand = getFirstChild(cursor);
+            if (cand)
+                return cand;
+            break;
+        }
+        case NodeFilter::FILTER_REJECT:
             break;
         }
     }
-    else
-    {
-        _tempCurrent = n->parentNode();
-        if( !_tempCurrent || _tempCurrent == m_rootNode)
-            return 0;
-        _result = isAccepted( _tempCurrent );
-        if( _result == NodeFilter::FILTER_SKIP )
-            return getNextSibling( _tempCurrent );
 
+    // Now, we have scanned through all of our parent's kids. Our siblings may also be
+    // above if we could have skipped the parent, and are not captured by it.
+    NodePtr parent = n->parentNode();
+    if (!parent || parent == m_rootNode)
         return 0;
+
+    /* "In particular: If the currentNode becomes part of a subtree that would otherwise have
+        been Rejected by the filter, that entire subtree may be added as transient members of the
+        logical view. You will be able to navigate within that subtree (subject to all the usual
+        filtering) until you move upward past the Rejected ancestor. The behavior is as if the Rejected
+        node had only been Skipped (since we somehow wound up inside its subtree) until we leave it;
+        thereafter, standard filtering applies.*/
+    if (isAccepted(parent) == NodeFilter::FILTER_ACCEPT)
+        return 0;
+
+    return getNextSibling(parent);
+}
+
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousSibling(TreeWalkerImpl::NodePtr n)
+{
+    // See the above for all the comments :-)
+    if (n == m_rootNode)
+        return 0;
+
+    NodePtr cursor;
+    for (cursor = n->previousSibling(); cursor; cursor = cursor->previousSibling()) {
+        switch (isAccepted(cursor)) {
+        case NodeFilter::FILTER_ACCEPT:
+            return cursor;
+        case NodeFilter::FILTER_SKIP: {
+            NodePtr cand = getLastChild(cursor);
+            if (cand)
+                return cand;
+            break;
+        }
+        case NodeFilter::FILTER_REJECT:
+            break;
+        }
     }
-    return 0;
+
+    NodePtr parent = n->parentNode();
+    if (!parent || parent == m_rootNode)
+        return 0;
+
+    if (isAccepted(parent) == NodeFilter::FILTER_ACCEPT)
+        return 0;
+
+    return getPreviousSibling(parent);
 }
 

@@ -343,39 +343,3 @@ bool TreeWalker::isNull() const
     return (impl == 0);
 }
 
-// -----------------------------------------------------------------------
-
-/*DocumentTraversal::DocumentTraversal()
-{
-}
-
-DocumentTraversal::DocumentTraversal(const DocumentTraversal &other)
-{
-}
-
-DocumentTraversal &DocumentTraversal::operator = (const DocumentTraversal &other)
-{
-    DocumentTraversal::operator = (other);
-    return *this;
-}
-
-DocumentTraversal::~DocumentTraversal()
-{
-}
-
-NodeIterator DocumentTraversal::createNodeIterator( const Node &root, long whatToShow,
-						    const NodeFilter &filter,
-						    bool entityReferenceExpansion )
-{
-    return NodeIterator();
-}
-
-TreeWalker DocumentTraversal::createTreeWalker( const Node &root, long whatToShow,
-						const NodeFilter &filter,
-						bool entityReferenceExpansion )
-{
-    return TreeWalker();
-}
-
-*/
-

@@ -137,13 +137,20 @@ public:
     void setFilter(NodeFilterImpl *_filter);
     void setExpandEntityReferences(bool value);
 
-    NodeImpl *getParentNode(NodeImpl *n);
-    NodeImpl *getFirstChild(NodeImpl *n);
-    NodeImpl *getLastChild(NodeImpl *n);
-    NodeImpl *getPreviousSibling(NodeImpl *n);
-    NodeImpl *getNextSibling(NodeImpl *n);
+    typedef SharedPtr<NodeImpl> NodePtr; // lazy Maks...
+    
+    // These methods attempt to find the next node in given direction from
+    // the given reference point, w/o affecting the current node.
+    NodePtr getParentNode(NodePtr n);
+    NodePtr getFirstChild(NodePtr n);
+    NodePtr getLastChild(NodePtr n);
+    NodePtr getPreviousSibling(NodePtr n);
+    NodePtr getNextSibling(NodePtr n);
 
-    short isAccepted(NodeImpl *n);
+    NodePtr getNextNode();
+    NodePtr getPreviousNode();
+
+    short isAccepted(NodePtr n);
 
 protected:
     /**
@@ -184,10 +191,9 @@ protected:
      * type.
      *
      */
-    NodeImpl *m_currentNode;
-
-    NodeImpl *m_rootNode;
-    DocumentImpl *m_doc;
+    SharedPtr<NodeImpl> m_currentNode;
+    SharedPtr<NodeImpl> m_rootNode;
+    DocumentImpl *m_doc; // always alive as long as the root is...
 };
 
 

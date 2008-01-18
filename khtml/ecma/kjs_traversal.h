@@ -54,25 +54,13 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  class DOMNodeFilter : public DOMObject {
-  public:
-    DOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf);
-    ~DOMNodeFilter();
-    // no put - all read-only
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-    virtual DOM::NodeFilterImpl* impl() const { return m_impl.get(); }
-    enum { AcceptNode };
-  protected:
-    SharedPtr<DOM::NodeFilterImpl> m_impl;
-  };
-
   class DOMTreeWalker : public DOMObject {
   public:
     DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw);
     ~DOMTreeWalker();
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     JSValue* getValueProperty(ExecState *exec, int token) const;
+    virtual void mark();
     virtual void put(ExecState *exec, const Identifier &propertyName,
                         JSValue* value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -100,8 +88,23 @@ namespace KJS {
     JSNodeFilter(JSObject* _filter);
     virtual ~JSNodeFilter();
     virtual short acceptNode (const DOM::Node &n);
+
+    void mark();
+
+    virtual DOM::DOMString customNodeFilterType();
+    static DOM::DOMString jsNodeFilterType();
+
+    JSObject* filter() const { return m_filter; }
+
+    // Extracts a JSNodeFilter contained insode a DOM::NodeFilterImpl,
+    // if any (or returns 0);
+    static JSNodeFilter* fromDOMFilter(DOM::NodeFilterImpl* nf);
   protected:
-    JSObject* filter;
+    // The filter here can be either a function or
+    // an object with the acceptNode property. We will use either one.
+
+    // Memory management note: we expect the wrapper object to mark us.
+    JSObject* m_filter;
   };
 
 } // namespace
