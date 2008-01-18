@@ -293,6 +293,10 @@ public:
      * since an application that handles the specific type doesn't necessarily handle
      * the base type. The opposite is true though.
      *
+     * WARNING: this method does not support multiple inheritance,
+     * which is actually part of the shared-mime-info standard.
+     * Use is() instead of parentMimeType()
+     *
      * @return the parent mime type, or QString() if not set
      */
     QString parentMimeType() const;
