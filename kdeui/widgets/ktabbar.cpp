@@ -27,10 +27,13 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPushButton>
 #include <QtGui/QStyle>
+#include <QtGui/QStyleOption>
 
 #include <kglobalsettings.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kstyle.h>
 
 class KTabBar::Private
 {
@@ -38,11 +41,11 @@ class KTabBar::Private
     Private()
       : mReorderStartTab( -1 ),
         mReorderPreviousTab( -1 ),
-        // mHoverCloseButtonTab( 0 ),
         mDragSwitchTab( -1 ),
-        // mHoverCloseButton( 0 ),
-        // mHoverCloseButtonEnabled( false ),
-        // mHoverCloseButtonDelayed( true ),
+        mHoverCloseButtonTab( -1 ),
+        mHoverCloseButton( 0 ),
+        mHoverCloseButtonEnabled( false ),
+        mHoverCloseButtonDelayed( true ),
         mTabReorderingEnabled( false ),
         mTabCloseActivatePrevious( false )
     {
@@ -52,13 +55,14 @@ class KTabBar::Private
     int mReorderStartTab;
     int mReorderPreviousTab;
     int mDragSwitchTab;
-    //QTab *mHoverCloseButtonTab, *mDragSwitchTab;
-    //QPushButton *mHoverCloseButton;
-    //QTimer mEnableCloseButtonTimer;
+    int mHoverCloseButtonTab;
+    //QTab *mDragSwitchTab;
+    QPushButton *mHoverCloseButton;
+    QTimer *mEnableCloseButtonTimer;
     QTimer *mActivateDragSwitchTabTimer;
 
-    //bool mHoverCloseButtonEnabled;
-    //bool mHoverCloseButtonDelayed;
+    bool mHoverCloseButtonEnabled;
+    bool mHoverCloseButtonDelayed;
     bool mTabReorderingEnabled : 1;
     bool mTabCloseActivatePrevious : 1;
 
@@ -71,8 +75,9 @@ KTabBar::KTabBar( QWidget *parent )
   setAcceptDrops( true );
   setMouseTracking( true );
 
-  //d->mEnableCloseButtonTimer = new QTimer( this );
-  //connect( d->mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
+  d->mEnableCloseButtonTimer = new QTimer( this );
+  d->mEnableCloseButtonTimer->setSingleShot( true );
+  connect( d->mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
 
   d->mActivateDragSwitchTabTimer = new QTimer( this );
   d->mActivateDragSwitchTabTimer->setSingleShot( true );
@@ -104,7 +109,7 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *event )
 void KTabBar::mousePressEvent( QMouseEvent *event )
 {
   if ( event->button() == Qt::LeftButton ) {
-    //d->mEnableCloseButtonTimer->stop();
+    d->mEnableCloseButtonTimer->stop();
     d->mDragStart = event->pos();
   } else if( event->button() == Qt::RightButton ) {
     int tab = selectTab( event->pos() );
@@ -167,24 +172,39 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
     }
   }
 
-  /*if ( d->mHoverCloseButtonEnabled && d->mReorderStartTab == -1 ) {
-      QTab *t = selectTab( event->pos() );
-      if ( t && t->iconSet() && t->isEnabled() ) {
-        QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, QIcon::Normal );
-        QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() +4);
+  if ( d->mHoverCloseButtonEnabled && d->mReorderStartTab == -1 ) {
+      int t = selectTab( event->pos() );
+      if ( t != -1 && !tabIcon(t).isNull() && isTabEnabled(t) ) {
+        QPixmap pixmap = tabIcon(t).pixmap(  KIconLoader::SizeSmall, QIcon::Normal );
+        QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() + 4 );
 
+        QStyleOption option;
+        option.initFrom(this);
+        QStyle* st = style();
         int xoff = 0, yoff = 0;
-        // The additional offsets were found by try and error, TODO: find the rational behind them
-        if ( t == tab( currentTab() ) ) {
-            xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
-            yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 4;
-        } else {
-            xoff = 7;
-            yoff = 0;
+        // The place for the icon was found by try and error, by trying to have good results with
+        // all styles
+        // TODO: find the rational behind them
+        if ( t == currentIndex() ) {
+            xoff = st->pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, &option, this );
+            yoff = st->pixelMetric( QStyle::PM_TabBarTabShiftVertical, &option, this ) - 1;
+        }        
+        
+        int xPos = 0;
+        if (qobject_cast<KStyle *>(style()) && layoutDirection() == Qt::RightToLeft) {
+            //KStyle paints the tab icon on the right in RTL mode
+            xPos = st->pixelMetric( QStyle::PM_TabBarBaseOverlap, &option, this ) + st->pixelMetric( QStyle::PM_TabBarTabOverlap, &option, this ) + 4 + rect.width();
+            rect.moveLeft( tabRect(t).right() - xPos );
+        } else
+        {
+            xPos = st->pixelMetric( QStyle::PM_TabBarBaseOverlap, &option, this ) - st->pixelMetric( QStyle::PM_TabBarTabOverlap, &option, this ) + 5;
+            rect.moveLeft( tabRect(t).left() + xPos );
         }
+        int yPos = st->pixelMetric( QStyle::PM_TabBarBaseHeight, &option, this ) - st->pixelMetric( QStyle::PM_TabBarTabVSpace, &option, this ) + 1;
+         
+        rect.moveTop( tabRect(t).center().y() - pixmap.height() / 2 - yoff - yPos );
+        
 
-        rect.moveLeft( t->rect().left() + 2 + xoff );
-        rect.moveTop( t->rect().center().y() - pixmap.height() / 2 + yoff );
         if ( rect.contains( event->pos() ) ) {
           if ( d->mHoverCloseButton ) {
             if ( d->mHoverCloseButtonTab == t )
@@ -195,14 +215,14 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
           }
 
           d->mHoverCloseButton = new QPushButton( this );
-          d->mHoverCloseButton->setIcon( KGlobal::iconLoader()->loadIconSet( "window-close", KIconLoader::Toolbar, KIconLoader::SizeSmall ) );
+          d->mHoverCloseButton->setIcon( KIcon( "window-close" ) );
           d->mHoverCloseButton->setGeometry( rect );
           d->mHoverCloseButton->setToolTip( i18n( "Close this tab" ) );
           d->mHoverCloseButton->setFlat( true );
           d->mHoverCloseButton->show();
           if ( d->mHoverCloseButtonDelayed ) {
             d->mHoverCloseButton->setEnabled( false );
-            d->mEnableCloseButtonTimer->start( QApplication::doubleClickInterval(), true );
+            d->mEnableCloseButtonTimer->start( QApplication::doubleClickInterval() );
           }
 
           d->mHoverCloseButtonTab = t;
@@ -216,17 +236,17 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
         d->mHoverCloseButton->deleteLater();
         d->mHoverCloseButton = 0;
       }
-  }*/
+  }
 
   QTabBar::mouseMoveEvent( event );
 }
 
-/*
+
 void KTabBar::enableCloseButton()
 {
   d->mHoverCloseButton->setEnabled( true );
 }
-*/
+
 
 void KTabBar::activateDragSwitchTab()
 {
@@ -327,55 +347,40 @@ void KTabBar::setTabCloseActivatePrevious( bool on )
   d->mTabCloseActivatePrevious = on;
 }
 
-/*
+
 void KTabBar::closeButtonClicked()
 {
-  emit closeRequest( indexOf( d->mHoverCloseButtonTab->identifier() ) );
+  emit closeRequest( d->mHoverCloseButtonTab );
 }
-*/
 
-void KTabBar::setHoverCloseButton( bool /*button*/ )
+void KTabBar::setHoverCloseButton( bool button )
 {
-  // KDE4 porting: disabled
-  return;
-
-/*
   d->mHoverCloseButtonEnabled = button;
   if ( !button )
     tabLayoutChange();
-*/
 }
 
 bool KTabBar::hoverCloseButton() const
 {
-  // KDE4 porting: disabled
-  return false;
-
-  //return d->mHoverCloseButtonEnabled;
+  return d->mHoverCloseButtonEnabled;
 }
 
-void KTabBar::setHoverCloseButtonDelayed( bool /*delayed*/ )
+void KTabBar::setHoverCloseButtonDelayed( bool delayed )
 {
-  // KDE4 porting: disabled
-  return;
-
-  //d->mHoverCloseButtonDelayed = delayed;
+  d->mHoverCloseButtonDelayed = delayed;
 }
 
 bool KTabBar::hoverCloseButtonDelayed() const
 {
-  // KDE4 porting: disabled
-  return false;
-
-  //return d->mHoverCloseButtonDelayed;
+  return d->mHoverCloseButtonDelayed;
 }
 
 void KTabBar::tabLayoutChange()
 {
-  //d->mEnableCloseButtonTimer->stop();
-  //delete d->mHoverCloseButton;
-  //d->mHoverCloseButton = 0;
-  //d->mHoverCloseButtonTab = 0;
+  d->mEnableCloseButtonTimer->stop();
+  delete d->mHoverCloseButton;
+  d->mHoverCloseButton = 0;
+  d->mHoverCloseButtonTab = 0;
   d->mActivateDragSwitchTabTimer->stop();
   d->mDragSwitchTab = 0;
 }
