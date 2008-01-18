@@ -37,7 +37,7 @@
 #include <klocale.h>
 #include <kdialog.h>
 #include <QMenu>
-
+#include <kmessagebox.h>
 
 class KTextEdit::Private
 {
@@ -294,16 +294,16 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   if( !isReadOnly() )
   {
       QList<QAction *> actionList = popup->actions();
-      enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs }; 
+      enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
       QAction *separatorAction = 0L;
       int idx = actionList.indexOf( actionList[SelectAllAct] ) + 1;
       if ( idx < actionList.count() )
-          separatorAction = actionList.at( idx );         
+          separatorAction = actionList.at( idx );
       if ( separatorAction )
       {
           KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
           if ( toPlainText().isEmpty() )
-              clearAllAction->setEnabled( false );    
+              clearAllAction->setEnabled( false );
           popup->insertAction( separatorAction, clearAllAction );
       }
   }
@@ -431,6 +431,11 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
+  if(toPlainText().isEmpty())
+  {
+      KMessageBox::information(this, i18n("There is not word to spell."));
+      return;
+  }
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
       new Sonnet::BackgroundChecker(this), 0);
   connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)),
