@@ -48,7 +48,6 @@ krfcdate.cpp
 krootprop.cpp   	Lubos Lunak <l.lunak@kde.org>
 ksavefile.cpp		
 kshortcut.cpp		Ellis Whitehead <ellis@kde.org>
-ksimpleconfig.cpp	
 ksocks.cpp
 kstandarddirs.cpp	
 kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
