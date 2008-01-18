@@ -120,8 +120,8 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     virtual void dropEvent( QDropEvent *event );
 
   protected Q_SLOTS:
-    virtual void closeButtonClicked();
-    virtual void enableCloseButton();
+    void closeButtonClicked();
+    void enableCloseButton();
     virtual void activateDragSwitchTab();
 
   protected:
