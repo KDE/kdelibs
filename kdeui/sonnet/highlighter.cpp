@@ -117,6 +117,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
 
 Highlighter::~Highlighter()
 {
+    qDeleteAll(d->dictCache);
     delete d;
 }
 
