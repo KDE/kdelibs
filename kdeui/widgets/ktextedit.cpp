@@ -431,7 +431,7 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  if(toPlainText().isEmpty())
+  if(document()->isEmpty())
   {
       KMessageBox::information(this, i18n("There is not word to spell."));
       return;
