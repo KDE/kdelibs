@@ -144,7 +144,7 @@ public:
        * KLineEdit as child-widget for example, so the KComboBox is used as
        * the representation widget.
        *
-       * @see KUrlRequester::customEditor()
+       * @see KUrlRequester::customEditor(), setCustomEditor
        */
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,
@@ -245,6 +245,22 @@ public:
        */
       bool checkAtEntering();
 
+      /**
+       * Allows to use a custom editing widget
+       * instead of the standard KLineEdit widget. E.g. you can use a
+       * KUrlRequester or a KComboBox as input widget. The custom
+       * editor must consist of a lineedit and optionally another widget that
+       * is used as representation. A KComboBox or a KUrlRequester have a
+       * KLineEdit as child-widget for example, so the KComboBox is used as
+       * the representation widget.
+       */
+      void setCustomEditor( const CustomEditor& editor );
+
+      /**
+       * Reimplented for interal reasons. The API is not affected.
+       */
+      bool eventFilter( QObject* o, QEvent* e );
+
    Q_SIGNALS:
       void changed();
 
@@ -268,10 +284,8 @@ public:
       void enableMoveButtons(const QModelIndex&, const QModelIndex&);
       void typedSomething(const QString& text);
 
-   private:
-      //this is called in both ctors, to avoid code duplication
-      void init( bool checkAtEntering = false, Buttons buttons = All,
-                 QWidget *representationWidget = 0 );
+   private Q_SLOTS:
+      void slotSelectionChanged( const QItemSelection& selected, const QItemSelection& deselected );
 
    private:
       friend class KEditListBoxPrivate;
