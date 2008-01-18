@@ -433,7 +433,7 @@ void KTextEdit::checkSpelling()
 {
   if(document()->isEmpty())
   {
-      KMessageBox::information(this, i18n("There is no word to spell."));
+      KMessageBox::information(this, i18n("Nothing to spell check."));
       return;
   }
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
