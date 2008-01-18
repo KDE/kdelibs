@@ -21,6 +21,7 @@
 
 #include <kdebug.h>
 #include <QtCore/QIODevice>
+#include <kmimetype.h>
 #include "kgzipfilter.h"
 #ifdef HAVE_BZIP2_SUPPORT
 #include "kbzip2filter.h"
@@ -82,13 +83,15 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 
 KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 {
-    if ( mimeType == QLatin1String( "application/x-gzip" ) )
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    if ( mimeType == QLatin1String( "application/x-gzip" ) || (mime && mime->is("application/x-gzip")) )
     {
         return new KGzipFilter;
     }
 #ifdef HAVE_BZIP2_SUPPORT
     else if ( mimeType == QLatin1String( "application/x-bzip" )
-              || mimeType == QLatin1String( "application/x-bzip2" ) ) // old name, kept for compatibility
+              || mimeType == QLatin1String( "application/x-bzip2" ) // old name, kept for compatibility
+              || (mime && mime->is("application/x-bzip")) )
     {
         return new KBzip2Filter;
     }

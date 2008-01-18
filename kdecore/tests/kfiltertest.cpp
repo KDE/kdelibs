@@ -177,6 +177,8 @@ void KFilterTest::test_readall()
     test_readall(pathgz, QString::fromLatin1("application/x-gzip"));
     kDebug() << " -- test_readall bzip2 -- ";
     test_readall(pathbz2, QString::fromLatin1("application/x-bzip"));
+    kDebug() << " -- test_readall gzip-derived -- ";
+    test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"));
 }
 
 void KFilterTest::test_uncompressed()
