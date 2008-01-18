@@ -1155,8 +1155,11 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             if (cache->checkValidity(optv3.state))
             {
                 const QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
-                painter->drawPixmap(option.rect.topLeft(), pixmap);
-                return;
+                if (pixmap.width() == option.rect.width() && pixmap.height() == option.rect.height())
+                {
+                    painter->drawPixmap(option.rect.topLeft(), pixmap);
+                    return;
+                }
             }
 
             // If it wasn't valid, delete it
