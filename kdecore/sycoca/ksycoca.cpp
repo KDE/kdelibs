@@ -308,7 +308,7 @@ bool KSycoca::isChanged(const char *type)
 void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
 {
     d->changeList = changeList;
-    //kDebug() << "got a notifyDatabaseChanged signal !";
+    //kDebug() << "got a notifyDatabaseChanged signal" << changeList;
     // kded tells us the database file changed
     // Close the database and forget all about what we knew
     // The next call to any public method will recreate

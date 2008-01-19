@@ -175,7 +175,7 @@ Q_SIGNALS:
     * Connect to this to get notified when the database changes
     * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
     */
-   void databaseChanged();
+    void databaseChanged(); // KDE5 TODO: pass const QStringList& changedList here, remove isChanged()
 
 protected:
     KSycocaFactoryList* factories();
