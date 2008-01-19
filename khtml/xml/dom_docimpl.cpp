@@ -106,18 +106,22 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().toLower();
     if ((lower == "html" || lower == "xml") &&
-        (version.isEmpty() || version == "1.0" || version == "2.0" || version == "null"))
+        (version.isEmpty() || version == "1.0" || version == "2.0"))
         return true;
 
     // ## Do we support Core Level 3 ?
     if ((lower == "core" ) &&
-        (version.isEmpty() || version == "2.0" || version == "null"))
+        (version.isEmpty() || version == "2.0"))
+        return true;
+
+    if ((lower == "traversal") &&
+        (version.isEmpty() || version == "2.0"))
         return true;
 
     if ((lower == "events" || lower == "uievents" ||
          lower == "mouseevents" || lower == "mutationevents" ||
          lower == "htmlevents" || lower == "textevents" ) &&
-        (version.isEmpty() || version == "2.0" || version == "3.0" || version == "null"))
+        (version.isEmpty() || version == "2.0" || version == "3.0"))
         return true;
     return false;
 }
