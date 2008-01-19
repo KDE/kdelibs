@@ -22,7 +22,6 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QTextEdit>
 #include <QtGui/QRadioButton>
 #include <QtCore/QRegExp>
 #include <QGroupBox>
@@ -44,6 +43,7 @@
 #include <kcomponentdata.h>
 #include <kurl.h>
 #include <kurllabel.h>
+#include <ktextedit.h>
 
 #include "kdeversion.h"
 
@@ -73,7 +73,7 @@ public:
     QProcess * m_process;
     const KAboutData * m_aboutData;
     
-    QTextEdit * m_lineedit;
+    KTextEdit * m_lineedit;
     QLineEdit * m_subject;
     QLabel * m_from;
     QLabel * m_version;
@@ -274,7 +274,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
 
     // The multiline-edit
-    d->m_lineedit = new QTextEdit( parent);
+    d->m_lineedit = new KTextEdit( parent);
     d->m_lineedit->setMinimumHeight( 180 ); // make it big
     d->m_lineedit->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
     d->m_lineedit->setLineWrapMode(QTextEdit::WidgetWidth);
@@ -315,12 +315,16 @@ KBugReport::~KBugReport()
 
 QString KBugReport::messageBody() const
 {
-  return d->m_lineedit->toPlainText();
+  if ( !d->submitBugButton )
+    return d->m_lineedit->toPlainText();
+  else
+    return QString();
 }
 
 void KBugReport::setMessageBody(const QString &messageBody)
 {
-  d->m_lineedit->setPlainText(messageBody);
+  if ( !d->submitBugButton )
+    d->m_lineedit->setPlainText(messageBody);
 }
 
 void KBugReportPrivate::_k_updateUrl()
