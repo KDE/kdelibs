@@ -35,23 +35,23 @@
 #ifdef _WIN32
 #include <kde_file_win.h>
 #endif
- 
-#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE)
+
+#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE)
 /*
  * This section provides portable defines for large file support.
- * To use this you must compile your code with _LARGEFILE64_SOURCE 
+ * To use this you must compile your code with _LARGEFILE64_SOURCE
  * defined and use the KDE_xxx defines instead of the normal
  * C functions and structures.
  *
  * Please note that not every platform supports 64 bit file structures,
  * in that case the normal 32 bit functions will be used.
  *
- * @see http://www.suse.de/~aj/linux_lfs.html 
+ * @see http://www.suse.de/~aj/linux_lfs.html
  * @see http://ftp.sas.com/standards/large.file/xopen/x_open.05Mar96.html
  *
  * KDE makes use of the "Transitional Extensions" since we can not ensure
  * that all modules and libraries used by KDE will be compiled with
- * 64-bit support. 
+ * 64-bit support.
  * (A.3.2.3 Mixed API and Compile Environments within a Single Process)
  */
 #define KDE_stat		::stat64
@@ -64,7 +64,7 @@
 #define KDE_fgetpos		::fgetpos64
 #define KDE_fsetpos		::fsetpos64
 #define KDE_readdir		::readdir64
-#define KDE_sendfile	::sendfile64
+#define KDE_sendfile		::sendfile64
 #define KDE_struct_stat 	struct stat64
 #define KDE_struct_dirent	struct dirent64
 #define KDE_rename		::rename
@@ -97,20 +97,19 @@
 #define KDE_fgetpos		::fgetpos
 #define KDE_fsetpos		::fsetpos
 #define KDE_readdir		::readdir
-#define KDE_sendfile	::sendfile
+#define KDE_sendfile		::sendfile
 #define KDE_struct_stat 	struct stat
 #define KDE_struct_dirent	struct dirent
 #endif
 
-
 #ifdef _LFS64_STDIO
 #define KDE_fopen		::fopen64
-#define KDE_freopen	::freopen64
+#define KDE_freopen		::freopen64
 /* TODO: define for win32 */
 #else
 #ifdef _WIN32
 #define KDE_fopen		kdewin32_fopen
-#define KDE_freopen	kdewin32_freopen
+#define KDE_freopen		kdewin32_freopen
 #else /* unix */
 #define KDE_fopen		::fopen
 #endif
