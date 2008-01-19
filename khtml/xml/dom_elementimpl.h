@@ -382,6 +382,7 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
 
     if ((!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName)) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
+        colonpos == 0 || // prefix has to consist of at least a letter
         (qualifiedName.isNull() && !namespaceURI.isNull()) ||
         (colonpos == 3 && qualifiedName[0] == QLatin1Char('x') && qualifiedName[1] == QLatin1Char('m') && qualifiedName[2] == QLatin1Char('l') &&
          namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
