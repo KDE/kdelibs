@@ -286,6 +286,7 @@ install( FILES
   KPluginSelector
   KPopupFrame
   KPreviewWidgetBase
+  KPrintPreview
   KProcess
   KProgressDialog
   KPropertiesDialog
