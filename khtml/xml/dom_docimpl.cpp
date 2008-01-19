@@ -1826,13 +1826,26 @@ bool DocumentImpl::childTypeAllowed( unsigned short type )
     return false;
 }
 
-NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
+NodeImpl *DocumentImpl::cloneNode ( bool deep )
 {
-    // Spec says cloning Document nodes is "implementation dependent"
-    // so we do not support it...
-    return 0;
-}
+#if 0
+    NodeImpl *dtn = m_doctype->cloneNode(deep);
+    DocumentTypeImpl *dt = static_cast<DocumentTypeImpl*>(dtn);
+#endif
 
+    int exceptioncode;
+    DocumentImpl *clone = m_implementation->createDocument("",
+							   "",
+							   0, exceptioncode);
+    assert( exceptioncode == 0 );
+
+    // ### attributes, styles, ...
+
+    if (deep)
+	cloneChildNodes(clone);
+
+    return clone;
+}
 
 typedef const char* (*NameLookupFunction)(unsigned short id);
 typedef int (*IdLookupFunction)(const char *tagStr, int len);
@@ -2901,9 +2914,12 @@ bool DocumentTypeImpl::childTypeAllowed( unsigned short /*type*/ )
 
 NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
 {
-    // Spec says cloning Document nodes is "implementation dependent"
-    // so we do not support it...
-    return 0;
+    DocumentTypeImpl *clone = new DocumentTypeImpl(implementation(),
+						   0,
+						   name(), publicId(),
+						   systemId());
+    // ### copy entities etc.
+    return clone;
 }
 
 NamedNodeMapImpl * DocumentTypeImpl::entities() const
