@@ -44,7 +44,7 @@ NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,
     m_expandEntityReferences = _entityReferenceExpansion;
 
     m_referenceNode = _root;
-    m_inFront = false;
+    m_position = ITER_BEFORE_REF;
 
     m_doc = m_root->getDocument();
     m_doc->attachNodeIterator(this);
@@ -61,7 +61,7 @@ NodeIteratorImpl::~NodeIteratorImpl()
 
 NodeImpl *NodeIteratorImpl::root()
 {
-    return m_root;
+    return m_root.get();
 }
 
 unsigned long NodeIteratorImpl::whatToShow()
@@ -86,61 +86,23 @@ NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode )
 	return 0;
     }
 
-    if (!m_referenceNode) {
-	m_inFront = true;
-	return 0;
+    // If we're before a node, it's the next node to return, and we'll
+    // be positioned after.
+    if (m_position == ITER_BEFORE_REF) {
+        m_position = ITER_AFTER_REF;
+        if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
+            return m_referenceNode;
     }
 
-    if (!m_inFront) {
-	m_inFront = true;
-	if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
-	    return m_referenceNode;
+    // Robustness note here: the filter could potentially yank any nodes out,
+    // so we can't keep any state in the temporaries. We hence always rely on
+    // m_referenceNode, which would be sync'd by the delete handler
+    while (NodeImpl* cand = getNextNode(m_referenceNode)) {
+        m_referenceNode = cand;
+        if (isAccepted(cand) == NodeFilter::FILTER_ACCEPT)
+            return m_referenceNode;
     }
-
-    NodeImpl *_tempCurrent = getNextNode(m_referenceNode);
-    while( _tempCurrent ) {
-	m_referenceNode = _tempCurrent;
-	if(isAccepted(_tempCurrent) == NodeFilter::FILTER_ACCEPT)
-	    return m_referenceNode;
-      _tempCurrent = getNextNode(_tempCurrent);
-    }
-
     return 0;
-}
-
-NodeImpl *NodeIteratorImpl::getNextNode(NodeImpl *n)
-{
-  /*  1. my first child
-   *  2. my next sibling
-   *  3. my parents sibling, or their parents sibling (loop)
-   *  4. not found
-   */
-
-  if( !n )
-    return 0;
-
-  if( n->hasChildNodes() )
-    return n->firstChild();
-
-  if( m_root == n)
-     return 0;
-
-  if( n->nextSibling() )
-    return n->nextSibling();
-
-  NodeImpl *parent = n->parentNode();
-  while( parent )
-    {
-      if( m_root == parent )
-           return 0;
-
-      n = parent->nextSibling();
-      if( n )
-        return n;
-
-      parent = parent->parentNode();
-    }
-  return 0;
 }
 
 NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
@@ -150,54 +112,39 @@ NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
 	return 0;
     }
 
-    if (!m_referenceNode) {
-	m_inFront = false;
-	return 0;
-    }
-
-    if (m_inFront) {
-	m_inFront = false;
+    if (m_position == ITER_AFTER_REF) {
+	m_position = ITER_BEFORE_REF;
 	if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
 	    return m_referenceNode;
     }
 
-    NodeImpl *_tempCurrent = getPreviousNode(m_referenceNode);
-    while( _tempCurrent ) {
-	m_referenceNode = _tempCurrent;
-	if(isAccepted(_tempCurrent) == NodeFilter::FILTER_ACCEPT)
-	    return m_referenceNode;
-	_tempCurrent = getPreviousNode(_tempCurrent);
+    while (NodeImpl* cand = getPrevNode(m_referenceNode)) {
+        m_referenceNode = cand;
+        if (isAccepted(cand) == NodeFilter::FILTER_ACCEPT)
+            return m_referenceNode;
     }
-
+    
     return 0;
 }
 
-NodeImpl *NodeIteratorImpl::getPreviousNode(NodeImpl *n)
+NodeImpl* NodeIteratorImpl::getNextNode(NodeImpl* from)
 {
-/* 1. my previous sibling.lastchild
- * 2. my previous sibling
- * 3. my parent
- */
-  NodeImpl *_tempCurrent;
+    return from->traverseNextNode(m_root.get());
+}
 
-  if( !n || m_root == n )
-    return 0;
+NodeImpl* NodeIteratorImpl::getPrevNode(NodeImpl* from)
+{
+    if (from == m_root)
+        return 0;
+    else
+        return from->traversePreviousNode();
+}
 
-  _tempCurrent = n->previousSibling();
-  if( _tempCurrent )
-    {
-      if( _tempCurrent->lastChild() )
-        {
-          while( _tempCurrent->lastChild() )
-            _tempCurrent = _tempCurrent->lastChild();
-          return _tempCurrent;
-        }
-      else
-        return _tempCurrent;
-    }
-
-  return n->parentNode();
-
+NodeImpl *NodeIteratorImpl::getLastNode(NodeImpl *in)
+{
+    while (NodeImpl* cand = in->lastChild())
+        in = cand;
+    return in;
 }
 
 void NodeIteratorImpl::detach(int &/*exceptioncode*/)
@@ -209,48 +156,42 @@ void NodeIteratorImpl::detach(int &/*exceptioncode*/)
 
 void NodeIteratorImpl::notifyBeforeNodeRemoval(NodeImpl *removed)
 {
-    // make sure the deleted node is with the root (but not the root itself)
+    // We care about removals if they happen on the path between us and root,
+    // and not if it's just the root being yanked out.
     if (removed == m_root)
 	return;
 
-    NodeImpl *maybeRoot = removed->parentNode();
-    while (maybeRoot && maybeRoot != m_root)
-	maybeRoot = maybeRoot->parentNode();
-    if (!maybeRoot)
-	return;
+    // Scan up from the reference node to root see if the removed node is there..
+    NodeImpl* c;
+    for (c = m_referenceNode; c != m_root; c = c->parentNode()) {
+        if (c == removed)
+            break;
+    }
 
-    // did I get deleted, or one of my parents?
-    NodeImpl *_tempDeleted = m_referenceNode;
-    while( _tempDeleted && _tempDeleted != removed)
-        _tempDeleted = _tempDeleted->parentNode();
-
-    if( !_tempDeleted )  // someone that didn't consern me got deleted
+    // If nothing was found, we were unaffected.
+    if (c == m_root)
         return;
 
-    if( !m_inFront)
-    {
-        NodeImpl *_next = getNextNode(_tempDeleted);
-        if( _next )
-            m_referenceNode = _next;
-        else
-        {
-	    // deleted node was at end of list
-            m_inFront = true;
-            m_referenceNode = getPreviousNode(_tempDeleted);
+    // Update the position.. Thankfully we don't have to call filters here.
+    if (m_position == ITER_BEFORE_REF) {
+        // We were positioned before some node in the removed subtree...
+        // We want to be positioned before the first node after the
+        // removed subtree.
+        NodeImpl* next = getNextNode(getLastNode(removed));
+        if (next) {
+            m_referenceNode = next;
+        } else {
+            // There is no where to go after this --- pick a node before the tree,
+            // which in preorder is the immediate pred. of the remove root.
+            m_position = ITER_AFTER_REF;
+            m_referenceNode = getPrevNode(removed);
         }
+    } else { // Iterator after ref.
+        // We were after some node in the removed subtree, we want to be
+        // after the node immediately before it. There -must- be one,
+        // since at least the root preceeds it!
+        m_referenceNode = getPrevNode(removed);
     }
-    else {
-	NodeImpl *_prev = getPreviousNode(_tempDeleted);
-	if ( _prev )
-	    m_referenceNode = _prev;
-	else
-	{
-	    // deleted node was at start of list
-	    m_inFront = false;
-	    m_referenceNode = getNextNode(_tempDeleted);
-	}
-    }
-
 }
 
 short NodeIteratorImpl::isAccepted(NodeImpl *n)
