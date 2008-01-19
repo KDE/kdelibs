@@ -587,7 +587,7 @@ KTreeWidgetSearchLineWidget::KTreeWidgetSearchLineWidget( QWidget *parent, QTree
 
   // can't call createWidgets directly because it calls virtual functions
   // that might not work if called directly from here due to how inheritance works
-  QMetaObject::invokeMethod(this, SLOT(createWidgets()), Qt::QueuedConnection);
+  QMetaObject::invokeMethod(this, "createWidgets", Qt::QueuedConnection);
 }
 
 KTreeWidgetSearchLineWidget::~KTreeWidgetSearchLineWidget()
