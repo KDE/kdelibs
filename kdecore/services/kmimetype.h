@@ -280,22 +280,48 @@ public:
     bool isDefault() const;
 
     /**
-     * If this mimetype inherits from ("is also") another mimetype,
+     * If this mimetype is a subclass of another mimetype,
      * return the name of the parent.
      *
-     * For instance a text/x-log is a special kind of text/plain,
-     * so the definition of text/x-log can say
-     *      sub-class-of type="text/plain"
-     * Or an smb-workgroup is a special kind of inode/directory, etc.
-     * This mechanism can also be used to rename mimetypes and preserve compat.
-     *
-     * Note that this notion doesn't map to the servicetype inheritance mechanism,
-     * since an application that handles the specific type doesn't necessarily handle
-     * the base type. The opposite is true though.
-     *
      * @return the parent mime type, or QString() if not set
+     *
+     * @deprecated this method does not support multiple inheritance,
+     * which is actually part of the shared-mime-info standard.
+     * Use is(), parentMimeTypes(), or allParentMimeTypes() instead of parentMimeType()
      */
-    QString parentMimeType() const;
+    KDE_DEPRECATED QString parentMimeType() const;
+
+    /**
+     * If this mimetype is a subclass of one or more other mimetypes,
+     * return the list of those mimetypes.
+     *
+     * For instance a application/javascript is a special kind of text/plain,
+     * so the definition of application/javascript says
+     *      sub-class-of type="text/plain"
+     *
+     * Another example: application/x-shellscript is a subclass of two other mimetypes,
+     * application/x-executable and text/plain.
+     *
+     * (Note that this notion doesn't map to the servicetype inheritance mechanism,
+     * since an application that handles the specific type doesn't necessarily handle
+     * the base type. The opposite is true though.)
+     *
+     * @return the list of parent mimetypes
+     * @since 4.1
+     */
+    QStringList parentMimeTypes() const;
+
+    /**
+     * Return all parent mimetypes of this mimetype, direct or indirect.
+     * This includes the parent(s) of its parent(s), etc.
+     * If this mimetype is an alias, the list also contains the canonical
+     * name for this mimetype.
+     *
+     * The usual reason to use this method is to look for a setting which
+     * is stored per mimetype (like PreviewJob does).
+     * @since 4.1
+     */
+    QStringList allParentMimeTypes() const;
 
     /**
      * Do not use name()=="somename" anymore, to check for a given mimetype.

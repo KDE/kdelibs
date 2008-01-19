@@ -436,6 +436,24 @@ void KMimeTypeTest::testMimeTypeParent()
     QVERIFY( derived->is("text/plain") );
     QVERIFY( derived->is("application/octet-stream") );
 
+    // Check that application/x-shellscript inherits from application/x-executable
+    // (Otherwise KRun cannot start shellscripts...)
+    // This is a test for multiple inheritance...
+    const KMimeType::Ptr shellscript = KMimeType::mimeType("application/x-shellscript");
+    QVERIFY(shellscript);
+    QVERIFY(shellscript->is("text/plain"));
+    QVERIFY(shellscript->is("application/x-executable"));
+    const QStringList shellParents = shellscript->parentMimeTypes();
+    QVERIFY(shellParents.contains("text/plain"));
+    QVERIFY(shellParents.contains("application/x-executable"));
+    QCOMPARE(shellParents.count(), 2); // only the above two
+    const QStringList allShellParents = shellscript->allParentMimeTypes();
+    QVERIFY(allShellParents.contains("text/plain"));
+    QVERIFY(allShellParents.contains("application/x-executable"));
+    QVERIFY(allShellParents.contains("application/octet-stream"));
+    // Must be least-specific last, i.e. breadth first.
+    QCOMPARE(allShellParents.last(), QString("application/octet-stream"));
+
     // Check that text/mrml knows that it inherits from text/plain (implicitly)
     const KMimeType::Ptr mrml = KMimeType::mimeType("text/mrml");
     if (!mrml)

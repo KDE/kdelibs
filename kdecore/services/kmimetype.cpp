@@ -61,7 +61,12 @@ static void errorMissingMimeTypes( const QStringList& _types )
 
 void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
-    _str >> m_lstPatterns >> m_parentMimeType;
+    QString oldParentMimeTypeString;
+    _str >> m_lstPatterns >> oldParentMimeTypeString >> m_parentMimeTypes;
+
+    // kde-4.0 compatibility. Remove in kde5.
+    if (!oldParentMimeTypeString.isEmpty() && m_parentMimeTypes.isEmpty())
+        m_parentMimeTypes.append(oldParentMimeTypeString);
 }
 
 /**
@@ -482,7 +487,7 @@ void KMimeTypePrivate::save( QDataStream& _str )
     KServiceTypePrivate::save( _str );
     // Warning adding/removing fields here involves a binary incompatible change - update version
     // number in ksycoca.h
-    _str << m_lstPatterns << m_parentMimeType;
+    _str << m_lstPatterns << QString() << m_parentMimeTypes;
 }
 
 QVariant KMimeTypePrivate::property( const QString& _name ) const
@@ -566,43 +571,94 @@ QString KMimeType::parentMimeType() const
 {
     Q_D(const KMimeType);
 
-    if (!d->m_parentMimeType.isEmpty())
-        return d->m_parentMimeType;
-    const QString myName = name();
-    const QString myGroup = myName.left(myName.indexOf('/'));
+    if (!d->m_parentMimeTypes.isEmpty())
+        return d->m_parentMimeTypes.first();
+    return d->fallbackParent();
+}
+
+QString KMimeTypePrivate::fallbackParent() const
+{
+    const QString myGroup = m_strName.left(m_strName.indexOf('/'));
     // All text/* types are subclasses of text/plain.
-    if (myGroup == "text" && myName != "text/plain")
+    if (myGroup == "text" && m_strName != "text/plain")
         return "text/plain";
     // All real-file mimetypes implicitly derive from application/octet-stream
     if (myGroup != "inode" &&
         // kde extensions
-        myGroup != "all" && myGroup != "fonts" && myGroup != "media" && myGroup != "print" && myGroup != "uri"
-        && myName != "application/octet-stream")
+        myGroup != "all" && myGroup != "fonts" && myGroup != "print" && myGroup != "uri"
+        && m_strName != "application/octet-stream") {
         return "application/octet-stream";
+    }
     return QString();
+}
+
+bool KMimeTypePrivate::inherits(KMimeType::Ptr mime) const
+{
+    if (mime && m_strName == mime->d_func()->m_strName) {
+        return true;
+    }
+    foreach( const QString& parent, parentMimeTypes() ) {
+        KMimeType::Ptr parentMime = KMimeTypeFactory::self()->findMimeTypeByName(parent);
+        if (!parentMime) // error
+            return false;
+        if (parentMime->d_func()->inherits(mime)) // recurse
+            return true;
+    }
+    return false;
 }
 
 bool KMimeType::is( const QString& mimeTypeName ) const
 {
-  if (name() == mimeTypeName)
-      return true;
-  KMimeType::Ptr me = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);
-  if (me && name() == me->name())
-      return true;
-  QString st = parentMimeType();
-  //if (st.isEmpty()) kDebug(7009)<<"Parent mimetype is empty";
-  while ( !st.isEmpty() )
-  {
-      //kDebug(7009)<<"Checking parent mime type: "<<st;
-      KMimeType::Ptr ptr = KMimeType::mimeType( st );
-      if (!ptr) return false; //error
-      if ( ptr->name() == mimeTypeName )
-          return true;
-      st = ptr->parentMimeType();
-  }
-  return false;
+    Q_D(const KMimeType);
+    if (name() == mimeTypeName)
+        return true;
+    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);
+    return d->inherits(mime);
 }
 
+QStringList KMimeType::parentMimeTypes() const
+{
+    Q_D(const KMimeType);
+    return d->parentMimeTypes();
+}
+
+QStringList KMimeTypePrivate::parentMimeTypes() const
+{
+    QStringList parents = m_parentMimeTypes;
+    if (parents.isEmpty()) {
+        const QString myParent = fallbackParent();
+        if (!myParent.isEmpty())
+            parents.append(myParent);
+    }
+    return parents;
+}
+
+void KMimeTypePrivate::collectParentMimeTypes(QStringList& allParents) const
+{
+    QStringList parents = parentMimeTypes();
+    Q_FOREACH(const QString& parent, parents) {
+        // I would use QSet, but since order matters I better not
+        if (!allParents.contains(parent))
+            allParents.append(parent);
+    }
+    // We want a breadth-first search, so that the least-specific parent (octet-stream) is last
+    // This means iterating twice, unfortunately.
+    Q_FOREACH(const QString& parent, parents) {
+        KMimeType::Ptr parentMime = KMimeTypeFactory::self()->findMimeTypeByName(parent);
+        if (parentMime)
+            parentMime->d_func()->collectParentMimeTypes(allParents);
+    }
+}
+
+QStringList KMimeType::allParentMimeTypes() const
+{
+    QStringList allParents;
+    const QString canonical = KMimeTypeFactory::self()->resolveAlias(name());
+    if (!canonical.isEmpty())
+        allParents.append(canonical);
+    d_func()->collectParentMimeTypes(allParents);
+    return allParents;
+}
 
 QString KMimeType::defaultMimeType()
 {
@@ -632,13 +688,14 @@ void KMimeType::setPatterns(const QStringList& patterns)
 void KMimeType::setParentMimeType(const QString& parent)
 {
     Q_D(KMimeType);
-    d->m_parentMimeType = parent;
+    // kbuildmimetypefactory calls this multiple times, for each parent mimetype
+    d->m_parentMimeTypes.append(parent);
 }
 
 void KMimeType::internalClearData()
 {
     Q_D(KMimeType);
-    // Clear that data that KBuildMimeTypeFactory is going to refill - and only that data.
-    d->m_parentMimeType.clear();
+    // Clear the data that KBuildMimeTypeFactory is going to refill - and only that data.
+    d->m_parentMimeTypes.clear();
     d->m_lstPatterns.clear();
 }

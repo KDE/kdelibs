@@ -48,10 +48,15 @@ public:
     }
     return icon;
   }
-  
+
+    bool inherits(KMimeType::Ptr mime) const;
+    QString fallbackParent() const;
+    QStringList parentMimeTypes() const;
+    void collectParentMimeTypes(QStringList&) const;
+
   QStringList m_lstPatterns;
-  QString m_parentMimeType;
-  
+  QStringList m_parentMimeTypes; // shared-mime-info supports multiple inheritance
+
   void loadInternal( QDataStream& _str );
 };
 
