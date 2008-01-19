@@ -120,6 +120,17 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
         int w = d->imageLabel->contentsRect().width() - 4;
         int h = d->imageLabel->contentsRect().height() - 4;
 
+        if (d->m_job) {
+            disconnect(d->m_job, SIGNAL(result(KJob *)),
+                       this, SLOT( _k_slotResult( KJob * )));
+            disconnect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
+                                                   const QPixmap& )), this,
+                    SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+
+            disconnect(d->m_job, SIGNAL(failed(const KFileItem&)),
+                       this, SLOT(_k_slotFailed(const KFileItem&)));
+        }
+
         d->m_job = createJob(url, w, h);
         if ( force ) // explicitly requested previews shall always be generated!
             d->m_job->setIgnoreMaximumSize(true);
@@ -136,6 +147,7 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
 
 void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
+    QMetaObject::invokeMethod(this, "clearPreview", Qt::QueuedConnection);
     QMetaObject::invokeMethod(this, "showPreview", Qt::QueuedConnection);
 }
 
@@ -196,14 +208,13 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotStepAnimation( int fram
         p.setOpacity(m_pmTransitionOpacity);
         p.drawPixmap(QPoint(((float) pm.size().width() - m_pmTransition.size().width()) / 2.0,
                             ((float) pm.size().height() - m_pmTransition.size().height()) / 2.0), m_pmTransition);
-
-        m_pmTransitionOpacity = qMin(m_pmTransitionOpacity + 0.4, 1.0);
     }
     p.end();
 
     imageLabel->setPixmap(pm);
 
     m_pmCurrentOpacity = qMax(m_pmCurrentOpacity - 0.4, 0.0);
+    m_pmTransitionOpacity = qMin(m_pmTransitionOpacity + 0.4, 1.0);
 }
 
 void KImageFilePreview::KImageFilePreviewPrivate::_k_slotFinished()
@@ -212,6 +223,9 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotFinished()
     m_pmTransitionOpacity = 0;
     m_pmCurrentOpacity = 1;
     m_pmTransition = QPixmap();
+    // The animation might have lost some frames. Be sure that if the last one
+    // was dropped, the last image shown is the opaque one.
+    imageLabel->setPixmap(m_pmCurrent);
 }
 
 void KImageFilePreview::clearPreview()
