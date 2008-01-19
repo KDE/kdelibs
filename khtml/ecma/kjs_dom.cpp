@@ -1325,7 +1325,8 @@ JSValue* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, JSObject
 
   switch(id) {
   case DOMDOMImplementation::HasFeature:
-    return jsBoolean(implementation.hasFeature(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
+    return jsBoolean(implementation.hasFeature(args[0]->toString(exec).domString(),
+                                               valueToStringWithNullCheck(exec, args[1])));
   case DOMDOMImplementation::CreateDocumentType: // DOM2
     return getDOMNode(exec,implementation.createDocumentType(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),args[2]->toString(exec).domString(),exception));
   case DOMDOMImplementation::CreateDocument: { // DOM2
