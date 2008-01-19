@@ -342,9 +342,11 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
     if (fn) {
       List args;
       args.append(getDOMNode(exec,n.handle()));
-      JSValue *result = fn->call(exec, m_filter,args);
-      if (exec->hadException()) //### FIXME!
-	exec->clearException();
+      JSValue *result = fn->call(exec, m_filter, args);
+      if (exec->hadException()) {//### FIXME!
+        exec->clearException();
+        return DOM::NodeFilter::FILTER_REJECT; // throw '1' isn't accept :-)
+      }
       return result->toInteger(exec);
     }
   }

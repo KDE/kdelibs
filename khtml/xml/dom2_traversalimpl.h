@@ -52,6 +52,10 @@ public:
     NodeImpl *previousNode(int &exceptioncode);
     void detach(int &exceptioncode);
 
+    // pre-order traversal wrt to a node, captured w/in root
+    NodeImpl *getNextNode(NodeImpl *in);
+    NodeImpl *getPrevNode(NodeImpl *in);
+    NodeImpl *getLastNode(NodeImpl *in); //Last node in a tree..
 
     /**
      * This function has to be called if you delete a node from the
@@ -61,15 +65,13 @@ public:
     void notifyBeforeNodeRemoval(NodeImpl *removed);
 
     short isAccepted(NodeImpl *n);
-    NodeImpl *getNextNode(NodeImpl *n);
-    NodeImpl *getPreviousNode(NodeImpl *n);
 protected:
-    NodeImpl *m_root;
+    SharedPtr<NodeImpl> m_root; // must be kept alive for root() to be safe.
     long m_whatToShow;
     SharedPtr<NodeFilterImpl> m_filter;
     bool m_expandEntityReferences;
 
-    bool m_inFront;
+    enum { ITER_BEFORE_REF, ITER_AFTER_REF } m_position;
     NodeImpl *m_referenceNode;
     bool m_detached;
     DocumentImpl *m_doc;
