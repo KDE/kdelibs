@@ -60,6 +60,8 @@ UString DOMObject::toString(ExecState *) const
   return "[object " + className() + "]";	//krazy:exclude=doublequote_chars DOM demands chars
 }
 
+HashMap<void*, DOMObject*>* ScriptInterpreter::s_allDomObjects;
+
 typedef QList<ScriptInterpreter*> InterpreterList;
 static InterpreterList *interpreterList;
 
@@ -93,7 +95,8 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
   if( !interpreterList ) return;
 
   for (int i = 0; i < interpreterList->size(); ++i)
-    interpreterList->at(i)->deleteDOMObject( objectHandle );
+    interpreterList->at(i)->m_domObjects.remove( objectHandle );
+  allDomObjects()->remove( objectHandle );
 }
 
 void ScriptInterpreter::mark(bool isMain)

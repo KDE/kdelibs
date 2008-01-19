@@ -82,22 +82,31 @@ namespace KJS {
     ScriptInterpreter( JSObject *global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
-    DOMObject* getDOMObject( void* objectHandle ) const {
-      return m_domObjects.get( objectHandle );
+    // We need to keep track of wrappers in 2 ways:
+    //  - we want the same wrapper for the same node (see #145775)
+    //  - we want to drop all the references from this interpreter on clear, so
+    //  wrappers don't stick around. Hence we have a global set and a per-interpreter one.
+
+    // Reuses an existing wrapper, perhaps also updating the current map
+    // to refer to it as well.
+    DOMObject* getDOMObject( void* objectHandle ) {
+      DOMObject* existing = allDomObjects()->get( objectHandle );
+      if (existing)
+          m_domObjects.set(objectHandle, existing );
+      return existing;
     }
+    
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
+      allDomObjects()->set( objectHandle, obj );
       m_domObjects.set( objectHandle, obj );
     }
-    void deleteDOMObject( void* objectHandle ) {
-      m_domObjects.remove( objectHandle );
-    }
-    void clear() {
-      m_domObjects.clear();
-    }
-    /**
-     * Static method. Makes all interpreters forget about the object
-     */
+
     static void forgetDOMObject( void* objectHandle );
+    
+    void clear() {
+      m_domObjects.clear(); // Global set will be cleared at GC time.
+    }
+
 
     /**
      * Mark objects in the DOMObject cache.
@@ -132,6 +141,13 @@ namespace KJS {
   private:
     khtml::ChildFrame* m_frame;
     HashMap<void*, DOMObject*> m_domObjects;
+    static HashMap<void*, DOMObject*>* s_allDomObjects;
+    static HashMap<void*, DOMObject*>* allDomObjects() {
+        if (!s_allDomObjects)
+            s_allDomObjects = new HashMap<void*, DOMObject*>();
+        return s_allDomObjects;
+    }
+    
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;
