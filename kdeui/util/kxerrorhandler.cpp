@@ -223,8 +223,7 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
             ret = QByteArray( "error: " ) + (const char*)tmp + "[" + (const char*)extensions[ index ]
                 + "+" + QByteArray::number( event.error_code - base ) + "]";
         else
-            ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code )
-                 + "=<unknown>]";
+            ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code ) + "]";
         tmp[ 0 ] = '\0';
         for( int i = 0;
              i < nextensions;
