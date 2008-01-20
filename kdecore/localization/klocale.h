@@ -1052,10 +1052,20 @@ public:
   static void setMainCatalog(const char *catalog);
 
   /**
+   * @deprecated
+   *
    * Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
+   *
+   * Since KDE 4.1, this service is provided in a slightly different form,
+   * automatically by e.g. KStandardDirs::locate() and other KDE core classes
+   * dealing with paths. For manual use, it is replaced by localizedFilePath().
    *
    * @param fname relative path to find
    * @param rtype resource type to use
+   *
+   * @return path to localized resource
+   *
+   * @see localizedFilePath
    */
   static QString langLookup(const QString &fname, const char *rtype = "html");
 
@@ -1124,6 +1134,30 @@ public:
    * @return true if one of the specified languages were used
    */
   bool setLanguage(const QStringList &languages);
+
+  /**
+   * @since 4.1
+   *
+   * Tries to find a path to the localized file for the given original path.
+   * This is intended mainly for non-text resources (images, sounds, etc.),
+   * whereas text resources should be handled in more specific ways.
+   *
+   * The possible localized paths are checked in turn by priority of set
+   * languages, in form of dirname/l10n/ll/basename, where dirname and
+   * basename are those of the original path, and ll is the language code.
+   *
+   * KDE core classes which resolve paths internally (e.g. KStandardDirs)
+   * will usually perform this lookup behind the scene.
+   * In general, you should pipe resource paths through this method only
+   * on explicit translators' request, or when a resource is an obvious
+   * candidate for localization (e.g. a splash screen or a custom icon
+   * with some text drawn on it).
+   *
+   * @param filePath path to the original file
+   *
+   * @return path to the localized file if found, original path otherwise
+   */
+  QString localizedFilePath(const QString &filePath) const;
 
 private:
   KLocalePrivate * const d;

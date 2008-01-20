@@ -2304,3 +2304,36 @@ void KLocale::copyCatalogsTo(KLocale *locale)
     locale->d->catalogNames = d->catalogNames;
     locale->d->updateCatalogs();
 }
+
+QString KLocale::localizedFilePath(const QString &filePath) const
+{
+    // Stop here if the default language is primary.
+    if (d->useDefaultLanguage()) {
+        return filePath;
+    }
+
+    // Check if l10n sudir is present, stop if not.
+    QFileInfo fileInfo(filePath);
+    QString locDirPath = fileInfo.path() + "/l10n";
+    QFileInfo locDirInfo(locDirPath);
+    if (!locDirInfo.isDir()) {
+        return filePath;
+    }
+
+    // Go through possible localized paths by priority of languages,
+    // return first that exists.
+    QString fileName = fileInfo.fileName();
+    foreach (const QString &lang, d->languageList) {
+        // Stop when the default language is reached.
+        if (lang == KLocale::defaultLanguage()) {
+            return filePath;
+        }
+        QString locFilePath = locDirPath + '/' + lang + '/' + fileName;
+        QFileInfo locFileInfo(locFilePath);
+        if (locFileInfo.isFile() && locFileInfo.isReadable()) {
+            return locFilePath;
+        }
+    }
+
+    return filePath;
+}
