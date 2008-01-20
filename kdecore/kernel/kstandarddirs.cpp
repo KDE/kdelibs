@@ -32,6 +32,7 @@
 #include "kuser.h"
 #include "kde_file.h"
 #include "kkernel_win.h"
+#include "klocale.h"
 
 #include <config.h>
 #include <config-prefix.h>
@@ -411,7 +412,8 @@ QString KStandardDirs::findResource( const char *type,
                                      const QString& _filename ) const
 {
     if (!QDir::isRelativePath(_filename))
-        return _filename; // absolute dirs are absolute dirs, right? :-/
+      return !KGlobal::hasLocale() ? _filename // absolute dirs are absolute dirs, right? :-/
+                                   : KGlobal::locale()->localizedFilePath(_filename); // -- almost.
 
 #if 0
     kDebug(180) << "Find resource: " << type;
@@ -432,8 +434,10 @@ QString KStandardDirs::findResource( const char *type,
 #endif
     const QString dir = findResourceDir(type, filename);
     if (dir.isEmpty())
-        return dir;
-    else return dir + filename;
+      return dir;
+    else
+      return !KGlobal::hasLocale() ? dir + filename
+                                   : KGlobal::locale()->localizedFilePath(dir + filename);
 }
 
 static quint32 updateHash(const QString &file, quint32 hash)
