@@ -116,6 +116,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     void setSpellCheckingConfigFileName(const QString &fileName);
 
+     /*
+      * change default language for spell checking dialogbox
+      * @since 4.1
+      */
+    void setSpellCheckingLanguage(const QString &language);
+
     /**
      * Allows to create a specific highlighter if reimplemented.
      *

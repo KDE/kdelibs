@@ -76,6 +76,7 @@ class KTextEdit::Private
     bool checkSpellingEnabled : 1;
     QString originalBuffer;
     QString spellChechingConfigFileName;
+    QString spellCheckingLanguage;
     Sonnet::Highlighter *highlighter;
 };
 
@@ -163,6 +164,11 @@ void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
 {
     d->spellChechingConfigFileName = _fileName;
 }
+
+void KTextEdit::setSpellCheckingLanguage(const QString &_language)
+{
+    d->spellCheckingLanguage = _language;
+} 
 
 void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
@@ -436,8 +442,11 @@ void KTextEdit::checkSpelling()
       KMessageBox::information(this, i18n("Nothing to spell check."));
       return;
   }
+  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker(this);
+  if(!d->spellCheckingLanguage.isEmpty())
+     backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
-      new Sonnet::BackgroundChecker(this), 0);
+      backgroundSpellCheck, 0);
   connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)),
           this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
   connect(spellDialog, SIGNAL(misspelling( const QString&, int)),
