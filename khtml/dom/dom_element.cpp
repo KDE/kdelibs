@@ -363,9 +363,21 @@ bool Element::khtmlValidQualifiedName(const DOMString &name)
 
 bool Element::khtmlMalformedQualifiedName(const DOMString &name)
 {
-    // #### Not clearly defined in the DOM spec...
-    // But we know for sure that a null qualified name is malformed
-    return name.isNull();
+    // #### see XML Namespaces spec for possibly more
+
+    // ### does this disctinction make sense?
+    if (name.isNull())
+	return true;
+    if (name.isEmpty())
+	return false;
+
+    // a prefix is optional but both prefix as well as local part
+    // cannot be empty
+    int colonpos = name.find(':');
+    if (colonpos == 0 || colonpos == name.length() - 1)
+	return true;
+
+    return false;
 }
 
 bool Element::khtmlMalformedPrefix(const DOMString &/*name*/)
