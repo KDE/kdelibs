@@ -380,12 +380,22 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
         }
     }
 
+    bool hasXMLPrefix = colonpos == 3 && (*qname)[0] == QLatin1Char('x') &&
+      (*qname)[1] == QLatin1Char('m') && (*qname)[2] == QLatin1Char('l');
+    bool hasXMLNSPrefix = colonpos == 5 && (*qname)[0] == QLatin1Char('x') &&
+      (*qname)[1] == QLatin1Char('m') && (*qname)[2] == QLatin1Char('l') &&
+      (*qname)[3] == QLatin1Char('n') && (*qname)[4] == QLatin1Char('s');
+
     if ((!qualifiedName.isNull() && Element::khtmlMalformedQualifiedName(qualifiedName)) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
         colonpos == 0 || // prefix has to consist of at least a letter
         (qualifiedName.isNull() && !namespaceURI.isNull()) ||
-        (colonpos == 3 && qualifiedName[0] == QLatin1Char('x') && qualifiedName[1] == QLatin1Char('m') && qualifiedName[2] == QLatin1Char('l') &&
-         namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
+        (hasXMLPrefix &&
+         namespaceURI != "http://www.w3.org/XML/1998/namespace") ||
+        (hasXMLNSPrefix &&
+         namespaceURI != "http://www.w3.org/2000/xmlns/") ||
+        (namespaceURI == "http://www.w3.org/2000/xmlns/" &&
+         !hasXMLNSPrefix && qualifiedName != "xmlns")) {
         if (pExceptioncode)
             *pExceptioncode = DOMException::NAMESPACE_ERR;
         return false;
