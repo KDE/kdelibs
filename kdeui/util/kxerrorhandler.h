@@ -68,18 +68,19 @@ class KDEUI_EXPORT KXErrorHandler
          */
         explicit KXErrorHandler( Display* dpy = QX11Info::display());
         /**
-         * This constructor takes pointer to a function that will get request number,
-         * error code number and resource id of the failed request, as provided
-         * by XErrorEvent. If the function returns true, the error flag will be set.
-         */
-        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display());
-        /**
          * This constructor takes pointer to a function whose prototype matches
          * the one that's used with the XSetErrorHandler() Xlib function.
          * NOTE: For the error flag to be set, the function must return a non-zero
          * value.
          */
         explicit KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = QX11Info::display());
+        /**
+         * This constructor takes pointer to a function that will get request number,
+         * error code number and resource id of the failed request, as provided
+         * by XErrorEvent. If the function returns true, the error flag will be set.
+         * @deprecated Use the variant with XErrorEvent.
+         */
+        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDE_DEPRECATED;
         /**
          * This function returns true if the error flag is set (i.e. no custom handler
          * function was used and there was any error, or the custom handler indicated
@@ -90,11 +91,11 @@ class KDEUI_EXPORT KXErrorHandler
          */
         bool error( bool sync ) const;
         /**
-         * This function returns the error code for the first X error that occured.
+         * This function returns the error event for the first X error that occured.
          * The return value is useful only if error() returned true.
-         * @since 4.1.0
+         * @since 4.0.1
          */
-        int errorCode() const;
+        XErrorEvent errorEvent() const;
         ~KXErrorHandler();
     private:
         void addHandler();

@@ -34,14 +34,13 @@ public:
     KXErrorHandlerPrivate( Display* dpy ) :
         first_request( XNextRequest( dpy )),
         display( dpy ),
-        was_error( false ),
-        error_code( 0 )
+        was_error( false )
     {
     }
     unsigned long first_request;
     Display* display;
     bool was_error;
-    int error_code;
+    XErrorEvent error_event;
 };
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;
@@ -100,9 +99,9 @@ bool KXErrorHandler::error( bool sync ) const
     return d->was_error;
     }
 
-int KXErrorHandler::errorCode() const
+XErrorEvent KXErrorHandler::errorEvent() const
     {
-    return d->error_code;
+    return d->error_event;
     }
 
 int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
@@ -120,23 +119,23 @@ int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
         && NET::timestampCompare( e->serial, d->first_request ) >= 0 )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
-        if( user_handler1 != NULL && user_handler1( e->request_code, e->error_code, e->resourceid ))
+        bool error = false;
+        if( user_handler1 != NULL )
             {
-            d->was_error = true;
-            if( d->error_code == 0 ) // only remember the first
-                d->error_code = e->error_code;
+            if( user_handler1( e->request_code, e->error_code, e->resourceid ))
+                error = true;
             }
-        if( user_handler2 != NULL && user_handler2( dpy, e ) != 0 )
+        else if( user_handler2 != NULL )
             {
-            d->was_error = true;
-            if( d->error_code == 0 ) // only remember the first
-                d->error_code = e->error_code;
+            if( user_handler2( dpy, e ) != 0 )
+                error = true;
             }
         else // no handler set, simply set that there was an error
-            {
+            error = true;
+        if( error && !d->was_error )
+            { // only remember the first
             d->was_error = true;
-            if( d->error_code == 0 ) // only remember the first
-                d->error_code = e->error_code;
+            d->error_event = *e;
             }
         return 0;
         }
