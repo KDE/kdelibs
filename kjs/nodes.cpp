@@ -2885,7 +2885,7 @@ FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
-  proto->put(exec, exec->propertyNames().constructor, func, ReadOnly | DontDelete | DontEnum);
+  proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
   func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
 
   func->put(exec, exec->propertyNames().length, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
@@ -2924,7 +2924,7 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
 
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
-  proto->put(exec, exec->propertyNames().constructor, func, ReadOnly|DontDelete|DontEnum);
+  proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
   func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
 
   if (named) {
