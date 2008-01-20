@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,7 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "kdatetime.h"
+
+#include <config.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -26,9 +28,6 @@
 #ifdef HAVE_TIME_H
 #include <time.h>
 #endif
-
-#include "kdatetime.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
