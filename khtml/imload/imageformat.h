@@ -28,11 +28,15 @@
 #include <QColor>
 #include <QVector>
 #include <QImage>
+#include <assert.h>
 
 namespace khtmlImLoad {
 
 struct ImageFormat
 {
+    ImageFormat(): type(Image_INVALID)
+    {}
+
     enum Type
     {
         Image_RGB_32,     // 32-bit RGB
@@ -41,9 +45,10 @@ struct ImageFormat
         Image_ARGB_32_DontPremult,  // 32-bit ARGB that will be kept as-is
                                          // should only be used for interlaced images
                                          // as it is slower
-        Image_Palette_8   //8-bit paletted image
+        Image_Palette_8,   //8-bit paletted image
+        Image_INVALID
     } type;
-    
+
     int depth() const
     {
         switch (type)
@@ -74,6 +79,9 @@ struct ImageFormat
         case Image_Palette_8:
             toRet = QImage(width, height, QImage::Format_Indexed8);
             toRet.setColorTable(palette);
+            break;
+        default:
+            assert(false);
         }
 
         return toRet;
