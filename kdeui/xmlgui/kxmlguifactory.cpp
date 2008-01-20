@@ -194,7 +194,7 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
-    kDebug(260) << "KXMLGUIFactory::addClient( " << client << " )"; // ellis
+    //kDebug(260) << client;
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
     if ( client->factory() ) {
@@ -297,7 +297,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
-    kDebug(260) << "KXMLGUIFactory::removeClient( " << client << " )"; // ellis
+    //kDebug(260) << client;
 
     // don't try to remove the client's GUI if we didn't build it
     if ( !client || client->factory() != this )
@@ -312,7 +312,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, childClients)
         removeClient(child);
 
-    kDebug(260) << "KXMLGUIFactory::removeServant, calling removeRecursive";
+    //kDebug(260) << "calling removeRecursive";
 
     d->pushState();
 
