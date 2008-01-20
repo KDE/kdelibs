@@ -76,6 +76,12 @@ namespace Sonnet
         void stop();
         void cancel();
         void autoCorrect( const QString & currentWord, const QString & replaceWord );
+        /*
+         * Signal sends when spell checking is finished/stopped/completed
+         * @since 4.1
+         */
+        void spellCheckStatus(const QString &);
+
     private Q_SLOTS:
         void slotMisspelling(const QString& word, int start );
         void slotDone();

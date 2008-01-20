@@ -153,6 +153,7 @@ void Dialog::slotFinished()
     emit stop();
     //FIXME: should we emit done here?
     emit done(d->checker->text());
+    emit spellCheckStatus(i18n(" Spell check stopped."));
     accept();
 }
 
@@ -160,6 +161,7 @@ void Dialog::slotCancel()
 {
     kDebug();
     emit cancel();
+    emit spellCheckStatus(i18n(" Spell check canceled."));
     reject();
 }
 
@@ -292,7 +294,10 @@ void Dialog::slotDone()
         d->restart=false;
     }
     else
+    {
+        emit spellCheckStatus(i18n(" Spell check complete."));        
         accept();
+    }
 }
 
 }

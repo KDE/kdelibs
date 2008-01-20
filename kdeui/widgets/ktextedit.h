@@ -168,7 +168,11 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * emit signal when we activate or not autospellchecking
      */
      void checkSpellingChanged( bool );
-
+     /*
+      * Signal sends when spell checking is finished/stopped/completed
+      * @since 4.1
+      */
+     void spellCheckStatus(const QString &);
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
