@@ -21,6 +21,7 @@
 #cmakedefine HAVE_UTEMPTER 1
 #cmakedefine HAVE_LOGIN 1
 #cmakedefine HAVE_UTMPX 1
+#cmakedefine HAVE_LOGINX 1
 #cmakedefine HAVE_STRUCT_UTMP_UT_TYPE 1
 #cmakedefine HAVE_STRUCT_UTMP_UT_PID 1
 #cmakedefine HAVE_STRUCT_UTMP_UT_SESSION 1
