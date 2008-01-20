@@ -85,11 +85,12 @@ bool NodeIterator::expandEntityReferences()
 
 Node NodeIterator::nextNode(  )
 {
+    void* dummy;
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    NodeImpl *r = impl->nextNode(exceptioncode);
+    NodeImpl *r = impl->nextNode(exceptioncode, dummy);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;
@@ -97,11 +98,13 @@ Node NodeIterator::nextNode(  )
 
 Node NodeIterator::previousNode(  )
 {
+    void* dummy; // ### rely on C++ exception propagation --- might not be safe
+                 // we could probably proxy the DOM exceptions at the very least
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    NodeImpl *r = impl->previousNode(exceptioncode);
+    NodeImpl *r = impl->previousNode(exceptioncode, dummy);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     return r;
@@ -164,7 +167,8 @@ NodeFilter::~NodeFilter()
 
 short NodeFilter::acceptNode(const Node &n)
 {
-    if (impl) return impl->acceptNode(n);
+    void* dummy;
+    if (impl) return impl->acceptNode(n, dummy);
     return 0;
 }
 
@@ -288,48 +292,58 @@ Node TreeWalker::currentNode()
 
 void TreeWalker::setCurrentNode(const Node& _currentNode)
 {
-    if (impl) impl->setCurrentNode(_currentNode.handle());
+    int exceptionCode = 0;
+    if (impl) impl->setCurrentNode(_currentNode.handle(), exceptionCode);
+    if (exceptionCode)
+        throw DOMException(exceptionCode);
 }
 
 Node TreeWalker::parentNode()
 {
-    if (impl) return impl->parentNode();
+    void *dummy;
+    if (impl) return impl->parentNode(dummy);
     return 0;
 }
 
 Node TreeWalker::firstChild()
 {
-    if (impl) return impl->firstChild();
+    void *dummy;
+    if (impl) return impl->firstChild(dummy);
     return 0;
 }
 
 Node TreeWalker::lastChild()
 {
-    if (impl) return impl->lastChild();
+    void *dummy;
+    if (impl) return impl->lastChild(dummy);
     return 0;
 }
 
 Node TreeWalker::previousSibling()
 {
-    if (impl) return impl->previousSibling();
+    void *dummy;
+    if (impl) return impl->previousSibling(dummy);
     return 0;
 }
 
 Node TreeWalker::nextSibling()
 {
-    if (impl) return impl->nextSibling();
+    void *dummy;
+    if (impl) return impl->nextSibling(dummy);
     return 0;
 }
 
 Node TreeWalker::previousNode()
 {
-    if (impl) return impl->previousNode();
+    void *dummy;
+    if (impl) return impl->previousNode(dummy);
     return 0;
 }
 
 Node TreeWalker::nextNode()
 {
-    if (impl) return impl->nextNode();
+    void *dummy;
+    if (impl) return impl->nextNode(dummy);
     return 0;
 }
 

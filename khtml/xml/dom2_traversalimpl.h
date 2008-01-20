@@ -48,8 +48,8 @@ public:
     NodeFilterImpl* filter();
     bool expandEntityReferences();
 
-    NodeImpl *nextNode(int &exceptioncode);
-    NodeImpl *previousNode(int &exceptioncode);
+    NodeImpl *nextNode(int &exceptioncode, void* &propagatedExceptionObject);
+    NodeImpl *previousNode(int &exceptioncode, void* &propagatedExceptionObject);
     void detach(int &exceptioncode);
 
     // pre-order traversal wrt to a node, captured w/in root
@@ -64,7 +64,7 @@ public:
      */
     void notifyBeforeNodeRemoval(NodeImpl *removed);
 
-    short isAccepted(NodeImpl *n);
+    short isAccepted(NodeImpl *n, void* &propagatedExceptionObject);
 protected:
     SharedPtr<NodeImpl> m_root; // must be kept alive for root() to be safe.
     long m_whatToShow;
@@ -81,9 +81,10 @@ class NodeFilterImpl : public khtml::Shared<NodeFilterImpl>
 {
 public:
     NodeFilterImpl();
-    ~NodeFilterImpl();
+    virtual ~NodeFilterImpl();
 
-    short acceptNode(const Node &n);
+    virtual bool  isJSFilter() const;
+    virtual short acceptNode(const Node &n, void*& bindingsException);
 
     void setCustomNodeFilter(CustomNodeFilter *custom);
     CustomNodeFilter *customNodeFilter();
@@ -115,21 +116,21 @@ public:
 
     NodeImpl *getCurrentNode() const;
 
-    void setCurrentNode( NodeImpl *_currentNode);
+    void setCurrentNode( NodeImpl *_currentNode, int& exceptionCode );
 
-    NodeImpl *parentNode();
+    NodeImpl *parentNode( void*& filterException );
 
-    NodeImpl *firstChild();
+    NodeImpl *firstChild( void*& filterException );
 
-    NodeImpl *lastChild ();
+    NodeImpl *lastChild ( void*& filterException );
 
-    NodeImpl *previousSibling ();
+    NodeImpl *previousSibling ( void*& filterException );
 
-    NodeImpl *nextSibling();
+    NodeImpl *nextSibling( void*& filterException );
 
-    NodeImpl *previousNode();
+    NodeImpl *previousNode( void*& filterException );
 
-    NodeImpl *nextNode();
+    NodeImpl *nextNode( void*& filterException );
 
 
     /**
@@ -140,19 +141,19 @@ public:
     void setExpandEntityReferences(bool value);
 
     typedef SharedPtr<NodeImpl> NodePtr; // lazy Maks...
-    
+
     // These methods attempt to find the next node in given direction from
     // the given reference point, w/o affecting the current node.
-    NodePtr getParentNode(NodePtr n);
-    NodePtr getFirstChild(NodePtr n);
-    NodePtr getLastChild(NodePtr n);
-    NodePtr getPreviousSibling(NodePtr n);
-    NodePtr getNextSibling(NodePtr n);
+    NodePtr getParentNode(NodePtr n, void*& filterException);
+    NodePtr getFirstChild(NodePtr n, void*& filterException);
+    NodePtr getLastChild(NodePtr n, void*& filterException);
+    NodePtr getPreviousSibling(NodePtr n, void*& filterException);
+    NodePtr getNextSibling(NodePtr n, void*& filterException);
 
-    NodePtr getNextNode();
-    NodePtr getPreviousNode();
+    NodePtr getNextNode(void*& filterException);
+    NodePtr getPreviousNode(void*& filterException);
 
-    short isAccepted(NodePtr n);
+    short isAccepted(NodePtr n, void*& filterException);
 
 protected:
     /**
