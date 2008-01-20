@@ -34,7 +34,7 @@
 #include <QtCore/QDebug>
 
 
-uint qHash( const QUrl& url )
+static inline uint qHash( const QUrl& url )
 {
     return qHash( ( QString )url.toString() );
 }
