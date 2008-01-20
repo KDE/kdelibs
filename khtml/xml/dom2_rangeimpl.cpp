@@ -788,7 +788,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
     }
 
     // INVALID_NODE_TYPE_ERR: Raised if newNode is an Attr, Entity, Notation, or Document node.
-    if( newNode->nodeType() == Node::ATTRIBUTE_NODE ||
+    if (newNode->nodeType() == Node::ATTRIBUTE_NODE ||
         newNode->nodeType() == Node::ENTITY_NODE ||
         newNode->nodeType() == Node::NOTATION_NODE ||
         newNode->nodeType() == Node::DOCUMENT_NODE) {
@@ -796,21 +796,36 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
         return;
     }
 
-    if( m_startContainer->nodeType() == Node::TEXT_NODE ||
+    long endOffsetDelta = 0;
+    if (m_startContainer->nodeType() == Node::TEXT_NODE ||
         m_startContainer->nodeType() == Node::CDATA_SECTION_NODE )
     {
+        // ### leaks on exceptions
         TextImpl *newText = static_cast<TextImpl*>(m_startContainer)->splitText(m_startOffset,exceptioncode);
         if (exceptioncode)
             return;
+
+        if (m_startContainer == m_endContainer) {
+            endOffsetDelta = -m_startOffset;
+            setEndContainer(newText);
+            // ### what about border cases where start or end are at
+            // ### the margins of the text?
+        }
+
         m_startContainer->parentNode()->insertBefore( newNode, newText, exceptioncode );
-	// ### adapt range?
-    }
-    else {
+        if (exceptioncode)
+            return;
+    } else {
+        if (m_startContainer == m_endContainer) {
+            bool isFragment = newNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+            endOffsetDelta = isFragment ? newNode->childNodeCount() : 1;
+        }
+
         m_startContainer->insertBefore( newNode, m_startContainer->childNode( m_startOffset ), exceptioncode );
 	if (exceptioncode)
 	    return;
-	++m_endOffset;
     }
+    m_endOffset += endOffsetDelta;
 }
 
 DOMString RangeImpl::toString( int &exceptioncode )
@@ -869,8 +884,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
         if(n->nodeType() == DOM::Node::TEXT_NODE ||
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
 
-            DOMString str;
-            str = static_cast<TextImpl *>(n)->string();
+            DOMString str = static_cast<TextImpl *>(n)->string();
 	    if( n == m_endContainer || n == m_startContainer)	    
 	        str = str.copy();  //copy if we are going to modify.
 
