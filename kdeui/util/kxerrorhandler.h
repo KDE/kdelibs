@@ -96,6 +96,12 @@ class KDEUI_EXPORT KXErrorHandler
          * @since 4.0.1
          */
         XErrorEvent errorEvent() const;
+        /**
+         * Returns error message for the given error. The error message is not translated,
+         * as it is meant for debugging.
+         * @since 4.0.1
+         */
+        static QByteArray errorMessage( const XErrorEvent& e, Display* dpy = QX11Info::display());
         ~KXErrorHandler();
     private:
         void addHandler();
