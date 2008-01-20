@@ -1913,6 +1913,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (!tabOpt->text.isNull())
             {
                 TextOption lbOpt(tabOpt->text);
+                if (widget)
+                    lbOpt.color = widget->foregroundRole();
+
                 int primitive = Generic::Text; // For horizontal tabs
 
                 if (tabSd == East)
