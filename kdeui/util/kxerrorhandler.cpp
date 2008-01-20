@@ -40,6 +40,7 @@ public:
     unsigned long first_request;
     Display* display;
     bool was_error;
+    XErrorEvent error_event;
 };
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;
@@ -97,7 +98,12 @@ bool KXErrorHandler::error( bool sync ) const
         XSync( d->display, False );
     return d->was_error;
     }
-    
+
+XErrorEvent KXErrorHandler::errorEvent() const
+    {
+    return d->error_event;
+    }
+
 int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
     {
     --pos;
@@ -113,12 +119,24 @@ int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
         && NET::timestampCompare( e->serial, d->first_request ) >= 0 )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
-        if( user_handler1 != NULL && user_handler1( e->request_code, e->error_code, e->resourceid ))
-            d->was_error = true;
-        if( user_handler2 != NULL && user_handler2( dpy, e ) != 0 )
-            d->was_error = true;
+        bool error = false;
+        if( user_handler1 != NULL )
+            {
+            if( user_handler1( e->request_code, e->error_code, e->resourceid ))
+                error = true;
+            }
+        else if( user_handler2 != NULL )
+            {
+            if( user_handler2( dpy, e ) != 0 )
+                error = true;
+            }
         else // no handler set, simply set that there was an error
+            error = true;
+        if( error && !d->was_error )
+            { // only remember the first
             d->was_error = true;
+            d->error_event = *e;
+            }
         return 0;
         }
     //qDebug( "Going deeper: %p", static_cast< void* >( this ));
