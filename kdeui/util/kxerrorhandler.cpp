@@ -28,6 +28,8 @@
 
 #include "netwm_def.h"
 
+#include <stdio.h>
+
 class KXErrorHandlerPrivate
 {
 public:
@@ -141,6 +143,105 @@ int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
         }
     //qDebug( "Going deeper: %p", static_cast< void* >( this ));
     return old_handler( dpy, e );
+    }
+
+QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy )
+    { // "Error: <error> (<value>), Request: <request>(<value>), Resource: <value>"
+    QByteArray ret;
+    char tmp[ 256 ];
+    char num[ 256 ];
+    if( event.request_code < 128 ) // core request
+        {
+        XGetErrorText( dpy, event.error_code, tmp, 255 );
+        if( char* paren = strchr( tmp, '(' )) // the explanation in parentheses just makes
+            *paren = '\0';                     // it more verbose and is not really useful
+        // the various casts are to get overloads non-ambiguous :-/
+        ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code ) + "]";
+        sprintf( num, "%d", event.request_code );
+        XGetErrorDatabaseText( dpy, "XRequest", num, "<unknown>", tmp, 256 );
+        ret += QByteArray( ", request: " ) + (const char*)tmp + "[" + QByteArray::number( event.request_code ) + "]";
+        if( event.resourceid != 0 )
+            ret += QByteArray( ", resource: 0x" ) + QByteArray::number( (qlonglong)event.resourceid, 16 );
+        }
+    else // extensions
+        {
+        // XGetErrorText() currently has a bug that makes it fail to find text
+        // for some errors (when error==error_base), also XGetErrorDatabaseText()
+        // requires the right extension name, so it is needed to get info about
+        // all extensions. Xlib itself has it, but in internal data, so fetch
+        // it again. Additionally, xcb doesn't like normal Xlib calls inside
+        // the error handler, so open another connection. Both of these mean
+        // a bunch of roundtrips, but this is error reporting anyway, right?
+        Display* dpy2 = XOpenDisplay( XDisplayString( dpy ));
+        int nextensions;
+        char** extensions = XListExtensions( dpy2, &nextensions );
+        int* majors = NULL;
+        int* error_bases = NULL;
+        if( extensions == NULL )
+            nextensions = 0;
+        else
+            {
+            majors = new int[ nextensions ];
+            error_bases = new int[ nextensions ];
+            for( int i = 0;
+                 i < nextensions;
+                 ++i )
+                {
+                int dummy;
+                if( !XQueryExtension( dpy2, extensions[ i ], &majors[ i ], &dummy, &error_bases[ i ] ))
+                    {
+                    majors[ i ] = 0;
+                    error_bases[ i ] = 0;
+                    }
+                }
+            }
+        XGetErrorText( dpy, event.error_code, tmp, 255 );
+        if( tmp == QString::number( event.error_code )) // XGetErrorText() failed,
+            { // or it has a bug that causes not finding all errors, check ourselves
+            int index = -1;
+            int base = 0;
+            for( int i = 0;
+                 i < nextensions;
+                 ++i )
+                if( event.error_code >= error_bases[ i ] && ( base == 0 || event.error_code < base ))
+                    {
+                    index = i;
+                    base = error_bases[ i ];
+                    }
+            if( index != -1 )
+                {
+                snprintf( num, 255, "%s.%d", extensions[ index ], event.error_code - base );
+                XGetErrorDatabaseText( dpy, "XProtoError", num, "<unknown>", tmp, 255 );
+                }
+            else
+                strcpy( tmp, "<unknown>" );
+            }
+        if( char* paren = strchr( tmp, '(' ))
+            *paren = '\0';
+        ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code ) + "]";
+        tmp[ 0 ] = '\0';
+        for( int i = 0;
+             i < nextensions;
+             ++i )
+            if( majors[ i ] == event.request_code )
+                {
+                snprintf( num, 255, "%s.%d", extensions[ i ], event.minor_code );
+                XGetErrorDatabaseText( dpy, "XRequest", num, "<unknown>", tmp, 255 );
+                ret += QByteArray( ", request: " ) + (const char*)tmp + "[" + (const char*)extensions[ i ] + ":"
+                    + QByteArray::number( event.minor_code ) + "]";
+                }
+        if( tmp[ 0 ] == '\0' ) // not found???
+            ret += QByteArray( ", request <unknown> [" ) + QByteArray::number( event.request_code ) + ":"
+                + QByteArray::number( event.minor_code ) + "]";
+        if( event.resourceid != 0 )
+            ret += QByteArray( ", resource: 0x" ) + QByteArray::number( (qlonglong)event.resourceid, 16 );
+        if( extensions != NULL )
+            XFreeExtensionList( extensions );
+        delete[] majors;
+        delete[] error_bases;
+        XCloseDisplay( dpy2 );
+        }
+    return ret;
     }
 
 #endif
