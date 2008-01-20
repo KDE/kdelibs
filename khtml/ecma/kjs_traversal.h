@@ -83,16 +83,15 @@ namespace KJS {
    */
   DOM::NodeFilterImpl* toNodeFilter(JSValue*);
 
-  class JSNodeFilter : public DOM::CustomNodeFilter {
+  class JSNodeFilter : public DOM::NodeFilterImpl {
   public:
     JSNodeFilter(JSObject* _filter);
     virtual ~JSNodeFilter();
-    virtual short acceptNode (const DOM::Node &n);
+
+    virtual bool  isJSFilter() const;
+    virtual short acceptNode(const DOM::Node &n, void*& bindingsException);
 
     void mark();
-
-    virtual DOM::DOMString customNodeFilterType();
-    static DOM::DOMString jsNodeFilterType();
 
     JSObject* filter() const { return m_filter; }
 

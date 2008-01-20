@@ -79,8 +79,9 @@ bool NodeIteratorImpl::expandEntityReferences()
     return m_expandEntityReferences;
 }
 
-NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode )
+NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode, void* &propagatedExceptionObject )
 {
+    propagatedExceptionObject = 0;
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
 	return 0;
@@ -90,8 +91,9 @@ NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode )
     // be positioned after.
     if (m_position == ITER_BEFORE_REF) {
         m_position = ITER_AFTER_REF;
-        if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
+        if (isAccepted(m_referenceNode, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
             return m_referenceNode;
+        if (propagatedExceptionObject) return 0;
     }
 
     // Robustness note here: the filter could potentially yank any nodes out,
@@ -99,14 +101,16 @@ NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode )
     // m_referenceNode, which would be sync'd by the delete handler
     while (NodeImpl* cand = getNextNode(m_referenceNode)) {
         m_referenceNode = cand;
-        if (isAccepted(cand) == NodeFilter::FILTER_ACCEPT)
+        if (isAccepted(cand, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
             return m_referenceNode;
+        if (propagatedExceptionObject) return 0;
     }
     return 0;
 }
 
-NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
+NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode, void* &propagatedExceptionObject )
 {
+    propagatedExceptionObject = 0;
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
 	return 0;
@@ -114,16 +118,18 @@ NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode )
 
     if (m_position == ITER_AFTER_REF) {
 	m_position = ITER_BEFORE_REF;
-	if (isAccepted(m_referenceNode) == NodeFilter::FILTER_ACCEPT)
+	if (isAccepted(m_referenceNode, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
 	    return m_referenceNode;
+
+        if (propagatedExceptionObject) return 0;
     }
 
     while (NodeImpl* cand = getPrevNode(m_referenceNode)) {
         m_referenceNode = cand;
-        if (isAccepted(cand) == NodeFilter::FILTER_ACCEPT)
+        if (isAccepted(cand, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
             return m_referenceNode;
+        if (propagatedExceptionObject) return 0;
     }
-    
     return 0;
 }
 
@@ -194,13 +200,13 @@ void NodeIteratorImpl::notifyBeforeNodeRemoval(NodeImpl *removed)
     }
 }
 
-short NodeIteratorImpl::isAccepted(NodeImpl *n)
+short NodeIteratorImpl::isAccepted(NodeImpl *n, void* &propagatedExceptionObject)
 {
   // if XML is implemented we have to check expandEntityRerefences in this function
   if( ( ( 1 << ( n->nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
         if(!m_filter.isNull())
-            return m_filter->acceptNode(n);
+            return m_filter->acceptNode(n, propagatedExceptionObject);
         else
 	    return NodeFilter::FILTER_ACCEPT;
     }
@@ -221,7 +227,12 @@ NodeFilterImpl::~NodeFilterImpl()
 	m_customNodeFilter->deref();
 }
 
-short NodeFilterImpl::acceptNode(const Node &n)
+bool NodeFilterImpl::isJSFilter() const
+{
+    return false;
+}
+
+short NodeFilterImpl::acceptNode(const Node &n, void*& /*bindingsException*/)
 {
     if (m_customNodeFilter)
 	return m_customNodeFilter->acceptNode(n);
@@ -308,131 +319,139 @@ void TreeWalkerImpl::setExpandEntityReferences(bool value)
     m_expandEntityReferences = value;
 }
 
-void TreeWalkerImpl::setCurrentNode( NodeImpl *n )
+void TreeWalkerImpl::setCurrentNode( NodeImpl *n, int& exceptionCode  )
 {
     if ( n )
-    {
-        //m_rootNode = n;
         m_currentNode = n;
-    }
-//     else
-//         throw( DOMException::NOT_SUPPORTED_ERR );
+    else
+        exceptionCode = DOMException::NOT_SUPPORTED_ERR;
 }
 
-NodeImpl *TreeWalkerImpl::parentNode(  )
+NodeImpl *TreeWalkerImpl::parentNode( void*& filterException )
 {
-    NodePtr n = getParentNode( m_currentNode );
+    NodePtr n = getParentNode( m_currentNode, filterException );
     if ( n )
         m_currentNode = n;
     return n.get();
 }
 
 
-NodeImpl *TreeWalkerImpl::firstChild(  )
+NodeImpl *TreeWalkerImpl::firstChild( void*& filterException )
 {
-    NodePtr n = getFirstChild( m_currentNode );
+    NodePtr n = getFirstChild( m_currentNode, filterException );
     if ( n )
         m_currentNode = n;
     return n.get();
 }
 
 
-NodeImpl *TreeWalkerImpl::lastChild(  )
+NodeImpl *TreeWalkerImpl::lastChild( void*& filterException )
 {
-    NodePtr n = getLastChild(m_currentNode);
+    NodePtr n = getLastChild(m_currentNode, filterException);
     if( n )
         m_currentNode = n;
     return n.get();
 }
 
-NodeImpl *TreeWalkerImpl::previousSibling(  )
+NodeImpl *TreeWalkerImpl::previousSibling( void*& filterException )
 {
-    NodePtr n = getPreviousSibling( m_currentNode );
+    NodePtr n = getPreviousSibling( m_currentNode, filterException );
     if( n )
         m_currentNode = n;
     return n.get();
 }
 
-NodeImpl *TreeWalkerImpl::nextSibling(  )
+NodeImpl *TreeWalkerImpl::nextSibling( void*& filterException )
 {
-    NodePtr n = getNextSibling( m_currentNode );
+    NodePtr n = getNextSibling( m_currentNode, filterException );
     if( n )
         m_currentNode = n;
     return n.get();
 }
 
-NodeImpl *TreeWalkerImpl::nextNode(  )
+NodeImpl *TreeWalkerImpl::nextNode( void*& filterException )
 {
-    NodePtr n = getNextNode();
+    NodePtr n = getNextNode(filterException);
     if( n )
         m_currentNode = n;
     return n.get();
 }
 
-NodeImpl *TreeWalkerImpl::previousNode(  )
+NodeImpl *TreeWalkerImpl::previousNode( void*& filterException )
 {
-    NodePtr n = getPreviousNode();
+    NodePtr n = getPreviousNode(filterException);
     if( n )
         m_currentNode = n;
     return n.get();
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousNode(  )
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousNode( void*& filterException )
 {
+    filterException = 0;
 /* 1. last node in my previous sibling's subtree
  * 2. my previous sibling (special case of the above)
  * 3. my parent
  */
 
-    NodePtr n = getPreviousSibling(m_currentNode);
+    NodePtr n = getPreviousSibling(m_currentNode, filterException);
+    if (filterException) return 0;
     if (n) {
         // Find the last kid in the subtree's preorder traversal, if any,
         // by following the lastChild links.
-        NodePtr desc = getLastChild(n);
+        NodePtr desc = getLastChild(n, filterException);
+        if (filterException) return 0;
         while (desc) {
             n    = desc;
-            desc = getLastChild(desc);
+            desc = getLastChild(desc, filterException);
+            if (filterException) return 0;
         }
         return n;
     }
 
-    return getParentNode(m_currentNode);
+    return getParentNode(m_currentNode, filterException);
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextNode()
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextNode( void*& filterException )
 {
+    filterException = 0;
 /*  1. my first child
  *  2. my next sibling
  *  3. my parents sibling, or their parents sibling (loop)
  *  4. not found
  */
 
-    NodePtr n = getFirstChild(m_currentNode);
+    NodePtr n = getFirstChild(m_currentNode, filterException);
+    if (filterException) return 0;
     if (n) // my first child
         return n;
 
-    n = getNextSibling(m_currentNode); // my next sibling
+    n = getNextSibling(m_currentNode, filterException); // my next sibling
+    if (filterException) return 0;
     if (n)
         return n;
 
-    NodePtr parent = getParentNode(m_currentNode);
+    NodePtr parent = getParentNode(m_currentNode, filterException);
+    if (filterException) return 0;
     while (parent) // parent's sibling
     {
-        n = getNextSibling(parent);
+        n = getNextSibling(parent, filterException);
+        if (filterException) return 0;
         if (n)
           return n;
-        parent = getParentNode(parent);
+          
+        parent = getParentNode(parent, filterException);
+        if (filterException) return 0;
     }
     return 0;
 }
 
-short TreeWalkerImpl::isAccepted(TreeWalkerImpl::NodePtr n)
+short TreeWalkerImpl::isAccepted(TreeWalkerImpl::NodePtr n, void*& filterException)
 {
     // if XML is implemented we have to check expandEntityRerefences in this function
     if( ( ( 1 << ( n->nodeType()-1 ) ) & m_whatToShow) != 0 )
     {
         if(m_filter)
-            return m_filter->acceptNode(n.get());
+            return m_filter->acceptNode(n.get(), filterException);
         else
             return NodeFilter::FILTER_ACCEPT;
     }
@@ -447,8 +466,9 @@ short TreeWalkerImpl::isAccepted(TreeWalkerImpl::NodePtr n)
  as the children of its parent. -M.O.
 */
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n, void*& filterException )
 {
+    filterException = 0;
     // Already on top of root's subtree tree...
     if (n == m_rootNode)
         return 0;
@@ -457,8 +477,9 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n)
     // document or into the root (which we don't have to be inside of!)
     NodePtr cursor = n->parentNode();
     while (cursor) {
-        if (isAccepted(cursor) == NodeFilter::FILTER_ACCEPT)
+        if (isAccepted(cursor, filterException) == NodeFilter::FILTER_ACCEPT)
             return cursor;
+        if (filterException) return 0;
 
         if (cursor == m_rootNode) // We just checked root -- no where else to go up.
             return 0;
@@ -468,22 +489,25 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getParentNode(TreeWalkerImpl::NodePtr n)
     return 0;
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getFirstChild(TreeWalkerImpl::NodePtr n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getFirstChild(TreeWalkerImpl::NodePtr n, void*& filterException )
 {
+    filterException = 0;
     NodePtr cursor;
     for (cursor = n->firstChild(); cursor; cursor = cursor->nextSibling()) {
-        switch (isAccepted(cursor)) {
+        switch (isAccepted(cursor, filterException)) {
         case NodeFilter::FILTER_ACCEPT:
             return cursor;
         case NodeFilter::FILTER_SKIP: {
             // We ignore this candidate proper, but perhaps it has a kid?
-            NodePtr cand = getFirstChild(cursor);
+            NodePtr cand = getFirstChild(cursor, filterException);
+            if (filterException) return 0;
             if (cand)
                 return cand;
             break;
         }
         case NodeFilter::FILTER_REJECT:
-            // It effectively doesn't exist..
+            // It effectively doesn't exist, or exception
+            if (filterException) return 0;
             break;
         }
         // ### this is unclear: what should happen if we "pass through" the root??
@@ -493,22 +517,25 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getFirstChild(TreeWalkerImpl::NodePtr n)
     return 0;
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getLastChild(TreeWalkerImpl::NodePtr n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getLastChild(TreeWalkerImpl::NodePtr n, void*& filterException )
 {
+    filterException = 0;
     TreeWalkerImpl::NodePtr cursor;
     for (cursor = n->lastChild(); cursor; cursor = cursor->previousSibling()) {
-        switch (isAccepted(cursor)) {
+        switch (isAccepted(cursor, filterException)) {
         case NodeFilter::FILTER_ACCEPT:
             return cursor;
         case NodeFilter::FILTER_SKIP: {
             // We ignore this candidate proper, but perhaps it has a kid?
-            TreeWalkerImpl::NodePtr cand = getLastChild(cursor);
+            TreeWalkerImpl::NodePtr cand = getLastChild(cursor, filterException);
+            if (filterException) return 0;
             if (cand)
                 return cand;
             break;
         }
         case NodeFilter::FILTER_REJECT:
             // It effectively doesn't exist..
+            if (filterException) return 0;
             break;
         }
         // ### this is unclear: what should happen if we "pass through" the root??
@@ -518,8 +545,10 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getLastChild(TreeWalkerImpl::NodePtr n)
     return 0;
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n, void*& filterException )
 {
+    filterException = 0;
+
     // If we're the root node, clearly we don't have any siblings.
     if (n == m_rootNode)
         return 0;
@@ -529,16 +558,18 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n
     // through any skipped nodes.
     NodePtr cursor;
     for (cursor = n->nextSibling(); cursor; cursor = cursor->nextSibling()) {
-        switch (isAccepted(cursor)) {
+        switch (isAccepted(cursor, filterException)) {
         case NodeFilter::FILTER_ACCEPT:
             return cursor;
         case NodeFilter::FILTER_SKIP: {
-            NodePtr cand = getFirstChild(cursor);
+            NodePtr cand = getFirstChild(cursor, filterException);
+            if (filterException) return 0;
             if (cand)
                 return cand;
             break;
         }
         case NodeFilter::FILTER_REJECT:
+            if (filterException) return 0;        
             break;
         }
     }
@@ -555,30 +586,34 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n
         filtering) until you move upward past the Rejected ancestor. The behavior is as if the Rejected
         node had only been Skipped (since we somehow wound up inside its subtree) until we leave it;
         thereafter, standard filtering applies.*/
-    if (isAccepted(parent) == NodeFilter::FILTER_ACCEPT)
+    if (isAccepted(parent, filterException) == NodeFilter::FILTER_ACCEPT)
         return 0;
+    if (filterException) return 0;
 
-    return getNextSibling(parent);
+    return getNextSibling(parent, filterException);
 }
 
-TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousSibling(TreeWalkerImpl::NodePtr n)
+TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousSibling(TreeWalkerImpl::NodePtr n, void*& filterException )
 {
+    filterException = 0;
     // See the above for all the comments :-)
     if (n == m_rootNode)
         return 0;
 
     NodePtr cursor;
     for (cursor = n->previousSibling(); cursor; cursor = cursor->previousSibling()) {
-        switch (isAccepted(cursor)) {
+        switch (isAccepted(cursor, filterException)) {
         case NodeFilter::FILTER_ACCEPT:
             return cursor;
         case NodeFilter::FILTER_SKIP: {
-            NodePtr cand = getLastChild(cursor);
+            NodePtr cand = getLastChild(cursor, filterException);
+            if (filterException) return 0;
             if (cand)
                 return cand;
             break;
         }
         case NodeFilter::FILTER_REJECT:
+            if (filterException) return 0;
             break;
         }
     }
@@ -587,9 +622,10 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getPreviousSibling(TreeWalkerImpl::NodeP
     if (!parent || parent == m_rootNode)
         return 0;
 
-    if (isAccepted(parent) == NodeFilter::FILTER_ACCEPT)
+    if (isAccepted(parent, filterException) == NodeFilter::FILTER_ACCEPT)
         return 0;
+    if (filterException) return 0;
 
-    return getPreviousSibling(parent);
+    return getPreviousSibling(parent, filterException);
 }
 

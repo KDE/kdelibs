@@ -30,6 +30,19 @@
 
 using namespace KJS;
 
+namespace KJS {
+
+class TraversalExceptionForwarder {
+public:
+  explicit TraversalExceptionForwarder(ExecState *exec) : m_exec(exec), m_code(0) { }
+  ~TraversalExceptionForwarder() { if (m_code) m_exec->setException(static_cast<JSValue*>(m_code)); }
+  operator void* &() { return m_code; }
+private:
+  ExecState *m_exec;
+  void* m_code;
+};
+
+}
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, &DOMNodeIteratorTable, 0 };
@@ -84,13 +97,14 @@ JSValue *DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
 JSValue* DOMNodeIteratorProtoFunc::callAsFunction(ExecState *exec, JSObject* thisObj, const List &)
 {
   KJS_CHECK_THIS( KJS::DOMNodeIterator, thisObj );
-  DOMExceptionTranslator exception(exec);
+  DOMExceptionTranslator      exception(exec);
+  TraversalExceptionForwarder filterException(exec);
   DOM::NodeIteratorImpl& nodeIterator = *static_cast<DOMNodeIterator *>(thisObj)->impl();
   switch (id) {
   case DOMNodeIterator::PreviousNode:
-    return getDOMNode(exec,nodeIterator.previousNode(exception));
+    return getDOMNode(exec, nodeIterator.previousNode(exception, filterException));
   case DOMNodeIterator::NextNode:
-    return getDOMNode(exec,nodeIterator.nextNode(exception));
+    return getDOMNode(exec, nodeIterator.nextNode(exception, filterException));
   case DOMNodeIterator::Detach:
     nodeIterator.detach(exception);
     return jsUndefined();
@@ -219,8 +233,9 @@ JSValue *DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
 void DOMTreeWalker::put(ExecState *exec, const Identifier &propertyName,
                            JSValue *value, int attr)
 {
+  DOMExceptionTranslator exception(exec);
   if (propertyName == "currentNode") {
-    m_impl->setCurrentNode(toNode(value));
+    m_impl->setCurrentNode(toNode(value), exception);
   }
   else
     JSObject::put(exec, propertyName, value, attr);
@@ -230,21 +245,22 @@ JSValue* DOMTreeWalkerProtoFunc::callAsFunction(ExecState *exec, JSObject *thisO
 {
   KJS_CHECK_THIS( KJS::DOMTreeWalker, thisObj );
   DOM::TreeWalkerImpl& treeWalker = *static_cast<DOMTreeWalker *>(thisObj)->impl();
+  TraversalExceptionForwarder   filterException(exec);
   switch (id) {
     case DOMTreeWalker::ParentNode:
-      return getDOMNode(exec,treeWalker.parentNode());
+      return getDOMNode(exec,treeWalker.parentNode(filterException));
     case DOMTreeWalker::FirstChild:
-      return getDOMNode(exec,treeWalker.firstChild());
+      return getDOMNode(exec,treeWalker.firstChild(filterException));
     case DOMTreeWalker::LastChild:
-      return getDOMNode(exec,treeWalker.lastChild());
+      return getDOMNode(exec,treeWalker.lastChild(filterException));
     case DOMTreeWalker::PreviousSibling:
-      return getDOMNode(exec,treeWalker.previousSibling());
+      return getDOMNode(exec,treeWalker.previousSibling(filterException));
     case DOMTreeWalker::NextSibling:
-      return getDOMNode(exec,treeWalker.nextSibling());
+      return getDOMNode(exec,treeWalker.nextSibling(filterException));
     case DOMTreeWalker::PreviousNode:
-      return getDOMNode(exec,treeWalker.previousNode());
+      return getDOMNode(exec,treeWalker.previousNode(filterException));
     case DOMTreeWalker::NextNode:
-      return getDOMNode(exec,treeWalker.nextNode());
+      return getDOMNode(exec,treeWalker.nextNode(filterException));
   }
   return jsUndefined();
 }
@@ -263,29 +279,23 @@ DOM::NodeFilterImpl* KJS::toNodeFilter(JSValue *val)
   if (!obj)
     return 0;
 
-  JSNodeFilter* predicate = new JSNodeFilter(obj);
-  DOM::NodeFilterImpl* filt = new DOM::NodeFilterImpl();
-  filt->setCustomNodeFilter(predicate);
-  return filt;
+  return new JSNodeFilter(obj);
 }
 
 JSValue *KJS::getDOMNodeFilter(ExecState *exec, DOM::NodeFilterImpl* nf)
 {
-  // We want to return the encapsulated object inside JS filters.
-  JSNodeFilter* jsFilt = JSNodeFilter::fromDOMFilter(nf);
-  if (jsFilt)
-    return jsFilt->filter();
-  
+  if (nf->isJSFilter()) {
+    return static_cast<JSNodeFilter*>(nf)->filter();
+  }
+
   return jsNull();
 }
 
-JSNodeFilter::JSNodeFilter(JSObject *_filter) : DOM::CustomNodeFilter(), m_filter( _filter )
-{
-}
+JSNodeFilter::JSNodeFilter(JSObject *_filter) : m_filter( _filter )
+{}
 
 JSNodeFilter::~JSNodeFilter()
-{
-}
+{}
 
 void JSNodeFilter::mark()
 {
@@ -293,32 +303,20 @@ void JSNodeFilter::mark()
     m_filter->mark();
 }
 
-DOM::DOMString JSNodeFilter::customNodeFilterType()
+bool JSNodeFilter::isJSFilter() const
 {
-  return jsNodeFilterType();
-}
-
-DOM::DOMString JSNodeFilter::jsNodeFilterType()
-{
-  return "__khtml_jsNodeFilter";
+  return true;
 }
 
 JSNodeFilter* JSNodeFilter::fromDOMFilter(DOM::NodeFilterImpl* nf)
 {
-  if (!nf)
+  if (!nf || !nf->isJSFilter())
     return 0;
 
-  DOM::CustomNodeFilter* realFilter = nf->customNodeFilter();
-  if (!realFilter)
-    return 0;
-
-  if (realFilter->customNodeFilterType() == JSNodeFilter::jsNodeFilterType())
-    return static_cast<JSNodeFilter*>(realFilter);
-
-  return 0;
+  return static_cast<JSNodeFilter*>(nf);
 }
 
-short JSNodeFilter::acceptNode(const DOM::Node &n)
+short JSNodeFilter::acceptNode(const DOM::Node &n, void*& bindingsException)
 {
   KHTMLView *view = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr() )->view();
   if (!view)
@@ -343,7 +341,8 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
       List args;
       args.append(getDOMNode(exec,n.handle()));
       JSValue *result = fn->call(exec, m_filter, args);
-      if (exec->hadException()) {//### FIXME!
+      if (exec->hadException()) {
+        bindingsException = exec->exception();
         exec->clearException();
         return DOM::NodeFilter::FILTER_REJECT; // throw '1' isn't accept :-)
       }

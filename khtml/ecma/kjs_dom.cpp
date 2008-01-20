@@ -1060,24 +1060,10 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::CreateRange:
     return getDOMRange(exec,doc.createRange());
   case DOMDocument::CreateNodeIterator:
-    if (args[2]->type() == NullType) {
         return getDOMNodeIterator(exec,
                                   doc.createNodeIterator(toNode(args[0]),
                                                          (long unsigned int)(args[1]->toNumber(exec)),
-                                                         0,args[3]->toBoolean(exec), exception));
-    }
-    else {
-      JSObject *obj = args[2]->getObject();
-      if (obj)
-      {
-        DOM::CustomNodeFilter *customFilter = new JSNodeFilter(obj);
-        DOM::NodeFilter filter = DOM::NodeFilter::createCustom(customFilter);
-        return getDOMNodeIterator(exec,
-          doc.createNodeIterator(
-            toNode(args[0]),(long unsigned int)(args[1]->toNumber(exec)),
-            filter.handle(),args[3]->toBoolean(exec), exception));
-      }// else?
-    }
+                                                         toNodeFilter(args[2]),args[3]->toBoolean(exec), exception));
   case DOMDocument::CreateTreeWalker:
     return getDOMTreeWalker(exec,doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1]->toNumber(exec)),
              toNodeFilter(args[2]),args[3]->toBoolean(exec), exception));
