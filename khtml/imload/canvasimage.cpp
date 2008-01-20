@@ -52,11 +52,12 @@ void CanvasImage::setupOriginalPlane(int width, int height)
     fullyDecoded = true;
     this->width  = width;
     this->height = height;
-    
+
     RawImagePlane* imgPlane = new RawImagePlane(width, height, 1 /*already "loaded"*/);
+    imgPlane->format.type = ImageFormat::Image_ARGB_32;
     imgPlane->image = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
     original = new PixmapPlane(width, height, imgPlane);
-    
+
 }
 
 CanvasImage::CanvasImage(int width, int height): Image(trivialOwner())

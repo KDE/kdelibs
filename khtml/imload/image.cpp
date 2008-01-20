@@ -32,7 +32,6 @@
 
 #include <QtGui/QPainter>
 #include <limits.h>
-
 #include <kdebug.h>
 
 namespace khtmlImLoad {
@@ -44,10 +43,10 @@ Image::Image(ImageOwner* _owner)
     loaderPlane = 0;
     original    = 0;
     loaderScanline = 0;
-    
+
     fullyDecoded = false;
     inError      = false;
-    
+
     width = height = 0;
 
     noUpdates();
@@ -115,10 +114,10 @@ bool Image::processData(uchar* data, int length)
             int oldSize = bufferPreDetect.size();
             bufferPreDetect.resize(oldSize + length);
             memcpy(bufferPreDetect.data() + oldSize, data, length);
-            
+
             //Attempt to create a loader
             loader = ImageManager::loaderDatabase()->loaderFor(bufferPreDetect);
-            
+
             //if can't, return...
             if (!loader)
             {
@@ -133,21 +132,21 @@ bool Image::processData(uchar* data, int length)
             }
 
             loader->setImage(this);
-            
+
             //All the data is now in the buffer
             length = 0;
         }
     }
-    
+
     int pos = 0, stat = 0;
-    
+
     //If we got this far, we have the loader.
     //just feed it any buffered data, and the new data.
     if (!bufferPreDetect.isEmpty())
     {
         do
         {
-            stat = loader->processData(reinterpret_cast<uchar*>(bufferPreDetect.data() + pos), 
+            stat = loader->processData(reinterpret_cast<uchar*>(bufferPreDetect.data() + pos),
                                            bufferPreDetect.size() - pos);
             if (stat == bufferPreDetect.size() - pos)
                 break;
@@ -164,15 +163,15 @@ bool Image::processData(uchar* data, int length)
         do
         {
             stat = loader->processData(data + pos, length - pos);
-        
+
             if (stat == length - pos)
                 break;
-        
+
             pos  += stat;
         }
         while (stat > 0);
     }
-    
+
     //If we just finished decoding...
     if (stat == ImageLoader::Done)
     {
@@ -180,13 +179,13 @@ bool Image::processData(uchar* data, int length)
         owner->imageDone(this);
         return false;
     }
-    
+
     if (stat == ImageLoader::Error)
     {
         loadError();
         return false;
     }
-    
+
     return true; //Need more stuff
 }
 
@@ -201,14 +200,14 @@ void Image::processEOF()
         loadError();
         return;
     }
-    
+
     //Otherwise, simply tell the loader, and check whether we decoded all right
     bool decodedOK = loader->processEOF() == ImageLoader::Done;
-    
+
     //... and get rid of it
     delete loader;
     loader = 0;
-    
+
     if (!decodedOK)
     {
         loadError();
@@ -230,7 +229,7 @@ void Image::notifyImageInfo(int _width, int _height)
     }
     width  = _width;
     height = _height;
-    
+
     owner->imageHasGeometry(this, width, height);
 }
 
@@ -246,7 +245,7 @@ void Image::notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format
     QImage image = format.makeImage (fwidth, fheight);
     //IMPORTANT: we use image.width(), etc., below for security/paranoia
     //reasons -- so we e.g. end up with a size 0 image if QImage overflow
-    //checks kick in, etc. This is on top of the policy enforcement 
+    //checks kick in, etc. This is on top of the policy enforcement
     //enough, in case someone breaks it or such
     RawImagePlane* iplane = new RawImagePlane(image.width(), image.height());
     iplane->image         = image;
@@ -382,15 +381,14 @@ void Image::refSize(QSize size)
     }
     else
     {
-        // To avoid any overflow issues here, we use QImage's width/height to shrink our work
-        // area to something reasonable if stuff overruns. Further, ImagePainter enforces
-        // our maximum image size, much like the load code does.
+        // Note: ImagePainter enforces our maximum image size, much like the load code does,
+        // so we don't have to worry about extreme size.
 
-        // Compute scaling ratios. divide-by-zero should not happen 
+        // Compute scaling ratios. divide-by-zero should not happen
         // due to check above.
         double wRatio = size.width()  / double(width);
         double hRatio = size.height() / double(height);
-    
+
         //Go through and make scaled planes for each position
         PixmapPlane* first = 0, *prev = 0;
 
@@ -399,12 +397,22 @@ void Image::refSize(QSize size)
         {
             int newWidth  = qRound(cur->width  * wRatio);
             int newHeight = qRound(cur->height * hRatio);
-            QImage image  = cur->parent->format.makeImage(newWidth, newHeight);
+
+            // Make 100% sure we do it precisely for the original image
+            if (cur->width == width)
+                newWidth = size.width();
+            if (cur->height == height)
+                newHeight = size.height();
+
+            // Ensure non-empty..
+            if (newWidth  <= 0) newWidth  = 1;
+            if (newHeight <= 0) newHeight = 1;
+
             ScaledImagePlane* splane = new ScaledImagePlane(
-                    image.width(), image.height(),
+                    newWidth, newHeight,
                     static_cast<RawImagePlane*>(cur->parent));
             PixmapPlane*      plane  = new PixmapPlane(
-                    image.width(), image.height(), splane);
+                    newWidth, newHeight, splane);
             if (cur->animProvider)
                 plane->animProvider = cur->animProvider->clone(plane);
 
