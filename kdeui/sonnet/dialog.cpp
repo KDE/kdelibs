@@ -142,14 +142,14 @@ void Dialog::activeAutoCorrect( bool _active )
 
 void Dialog::slotAutocorrect()
 {
-    kDebug()<<"void Dialog::slotAutocorrect()\n";
+    kDebug();
     emit autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
     slotReplaceWord();
 }
 
 void Dialog::slotFinished()
 {
-    kDebug()<<"void Dialog::slotFinished() \n";
+    kDebug();
     emit stop();
     //FIXME: should we emit done here?
     emit done(d->checker->text());
@@ -158,7 +158,7 @@ void Dialog::slotFinished()
 
 void Dialog::slotCancel()
 {
-    kDebug()<<"void Dialog::slotCancel() \n";
+    kDebug();
     emit cancel();
     reject();
 }
