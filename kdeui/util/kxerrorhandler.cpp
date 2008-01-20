@@ -196,18 +196,19 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
                 }
             }
         XGetErrorText( dpy, event.error_code, tmp, 255 );
+        int index = -1;
+        int base = 0;
+        for( int i = 0;
+             i < nextensions;
+             ++i )
+            if( error_bases[ i ] != 0
+                && event.error_code >= error_bases[ i ] && ( index == -1 || error_bases[ i ] > base ))
+                {
+                index = i;
+                base = error_bases[ i ];
+                }
         if( tmp == QString::number( event.error_code )) // XGetErrorText() failed,
             { // or it has a bug that causes not finding all errors, check ourselves
-            int index = -1;
-            int base = 0;
-            for( int i = 0;
-                 i < nextensions;
-                 ++i )
-                if( event.error_code >= error_bases[ i ] && ( base == 0 || event.error_code < base ))
-                    {
-                    index = i;
-                    base = error_bases[ i ];
-                    }
             if( index != -1 )
                 {
                 snprintf( num, 255, "%s.%d", extensions[ index ], event.error_code - base );
@@ -218,7 +219,12 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
             }
         if( char* paren = strchr( tmp, '(' ))
             *paren = '\0';
-        ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code ) + "]";
+        if( index != -1 )
+            ret = QByteArray( "error: " ) + (const char*)tmp + "[" + (const char*)extensions[ index ]
+                + "+" + QByteArray::number( event.error_code - base ) + "]";
+        else
+            ret = QByteArray( "error: " ) + (const char*)tmp + "[" + QByteArray::number( event.error_code )
+                 + "=<unknown>]";
         tmp[ 0 ] = '\0';
         for( int i = 0;
              i < nextensions;
@@ -227,7 +233,7 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
                 {
                 snprintf( num, 255, "%s.%d", extensions[ i ], event.minor_code );
                 XGetErrorDatabaseText( dpy, "XRequest", num, "<unknown>", tmp, 255 );
-                ret += QByteArray( ", request: " ) + (const char*)tmp + "[" + (const char*)extensions[ i ] + ":"
+                ret += QByteArray( ", request: " ) + (const char*)tmp + "[" + (const char*)extensions[ i ] + "+"
                     + QByteArray::number( event.minor_code ) + "]";
                 }
         if( tmp[ 0 ] == '\0' ) // not found???
