@@ -14,6 +14,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QComboBox>
 #include <QtGui/QCheckBox>
+#include <QtGui/QResizeEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
 
@@ -39,6 +40,7 @@ class KImageFilePreview::KImageFilePreviewPrivate
 public:
     KImageFilePreviewPrivate()
         : m_job(0)
+        , clear(true)
     {
         m_timeLine = new QTimeLine(150);
         m_timeLine->setCurveShape(QTimeLine::EaseInCurve);
@@ -58,6 +60,7 @@ public:
     void _k_slotActuallyClear( );
 
     KUrl currentURL;
+    KUrl lastShownURL;
     QLabel *imageLabel;
     KIO::PreviewJob *m_job;
     QTimeLine *m_timeLine;
@@ -65,6 +68,7 @@ public:
     QPixmap m_pmTransition;
     float m_pmCurrentOpacity;
     float m_pmTransitionOpacity;
+    bool clear;
 };
 
 KImageFilePreview::KImageFilePreview( QWidget *parent )
@@ -110,45 +114,51 @@ void KImageFilePreview::showPreview( const KUrl& url )
 
 void KImageFilePreview::showPreview( const KUrl &url, bool force )
 {
-    if ( !url.isValid() ) {
-        clearPreview();
+    if (!url.isValid() ||
+        (d->lastShownURL.isValid() &&
+         url.equals(d->lastShownURL, KUrl::CompareWithoutTrailingSlash) &&
+         d->currentURL.isValid()))
         return;
+
+    d->clear = false;
+    d->currentURL = url;
+    d->lastShownURL = url;
+
+    int w = d->imageLabel->contentsRect().width() - 4;
+    int h = d->imageLabel->contentsRect().height() - 4;
+
+    if (d->m_job) {
+        disconnect(d->m_job, SIGNAL(result(KJob *)),
+                    this, SLOT( _k_slotResult( KJob * )));
+        disconnect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
+                                                const QPixmap& )), this,
+                SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+
+        disconnect(d->m_job, SIGNAL(failed(const KFileItem&)),
+                    this, SLOT(_k_slotFailed(const KFileItem&)));
+
+        d->m_job->kill();
     }
 
-        d->currentURL = url;
+    d->m_job = createJob(url, w, h);
+    if ( force ) // explicitly requested previews shall always be generated!
+        d->m_job->setIgnoreMaximumSize(true);
 
-        int w = d->imageLabel->contentsRect().width() - 4;
-        int h = d->imageLabel->contentsRect().height() - 4;
+    connect(d->m_job, SIGNAL(result(KJob *)),
+                this, SLOT( _k_slotResult( KJob * )));
+    connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
+                                        const QPixmap& )),
+                SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
 
-        if (d->m_job) {
-            disconnect(d->m_job, SIGNAL(result(KJob *)),
-                       this, SLOT( _k_slotResult( KJob * )));
-            disconnect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
-                                                   const QPixmap& )), this,
-                    SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
-
-            disconnect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                       this, SLOT(_k_slotFailed(const KFileItem&)));
-        }
-
-        d->m_job = createJob(url, w, h);
-        if ( force ) // explicitly requested previews shall always be generated!
-            d->m_job->setIgnoreMaximumSize(true);
-
-        connect(d->m_job, SIGNAL(result(KJob *)),
-                 this, SLOT( _k_slotResult( KJob * )));
-        connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
-                                            const QPixmap& )),
-                 SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
-
-        connect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                 this, SLOT(_k_slotFailed(const KFileItem&)));
+    connect(d->m_job, SIGNAL(failed(const KFileItem&)),
+                this, SLOT(_k_slotFailed(const KFileItem&)));
 }
 
-void KImageFilePreview::resizeEvent( QResizeEvent * )
+void KImageFilePreview::resizeEvent( QResizeEvent *e )
 {
-    QMetaObject::invokeMethod(this, "clearPreview", Qt::QueuedConnection);
-    QMetaObject::invokeMethod(this, "showPreview", Qt::QueuedConnection);
+    clearPreview();
+    d->currentURL = KUrl(); // force this to actually happen
+    showPreview( d->lastShownURL );
 }
 
 QSize KImageFilePreview::sizeHint() const
@@ -226,6 +236,7 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotFinished()
     // The animation might have lost some frames. Be sure that if the last one
     // was dropped, the last image shown is the opaque one.
     imageLabel->setPixmap(m_pmCurrent);
+    clear = false;
 }
 
 void KImageFilePreview::clearPreview()
@@ -235,7 +246,7 @@ void KImageFilePreview::clearPreview()
         d->m_job = 0L;
     }
 
-    if (d->m_timeLine->state() == QTimeLine::Running) {
+    if (d->clear || d->m_timeLine->state() == QTimeLine::Running) {
         return;
     }
 
@@ -243,6 +254,8 @@ void KImageFilePreview::clearPreview()
     d->m_timeLine->setCurrentTime(0);
     d->m_timeLine->setDirection(QTimeLine::Backward);
     d->m_timeLine->start();
+    d->currentURL = KUrl();
+    d->clear = true;
 }
 
 #include "kimagefilepreview.moc"

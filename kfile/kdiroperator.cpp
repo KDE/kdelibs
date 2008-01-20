@@ -216,6 +216,8 @@ public:
     QStack<KUrl*> backStack;    ///< Contains all URLs you can reach with the back button.
     QStack<KUrl*> forwardStack; ///< Contains all URLs you can reach with the forward button.
 
+    QModelIndex lastHoveredIndex;
+
     KDirLister *dirLister;
     KUrl currUrl;
 
@@ -1151,10 +1153,39 @@ void KDirOperator::changeEvent(QEvent *event)
 
 bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
 {
-    if ((event->type() == QEvent::MouseMove) && (d->preview != 0)) {
-        QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+    Q_UNUSED(watched);
 
-        if (!hoveredIndex.isValid()) {
+    // If we are not hovering any items, check if there is a current index
+    // set. In that case, we show the preview of that item.
+    if ((event->type() == QEvent::MouseMove) && (d->preview != 0)) {
+        const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+
+        if (d->lastHoveredIndex == hoveredIndex)
+            return false;
+
+        d->lastHoveredIndex = hoveredIndex;
+
+        const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
+                                                                       : QModelIndex();
+
+        if (!hoveredIndex.isValid() && focusedIndex.isValid() &&
+            d->itemView->selectionModel()->isSelected(focusedIndex) &&
+            (d->lastHoveredIndex != focusedIndex)) {
+            const QModelIndex sourceFocusedIndex = d->proxyModel->mapToSource(focusedIndex);
+            const KFileItem item = d->dirModel->itemForIndex(sourceFocusedIndex);
+            if (!item.isNull()) {
+                d->preview->showPreview(item.url());
+            }
+        }
+    }
+    else if (event->type() == QEvent::MouseButtonRelease) {
+        const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+        const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
+                                                                       : QModelIndex();
+
+        if (((!focusedIndex.isValid()) ||
+             !d->itemView->selectionModel()->isSelected(focusedIndex)) &&
+            (!hoveredIndex.isValid())) {
             d->preview->clearPreview();
         }
     }
@@ -1462,8 +1493,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
         if (!item.isNull()) {
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
-            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
-            selModel->select(proxyIndex, QItemSelectionModel::Select);
+            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
             d->_k_assureVisibleSelection();
         }
     }
