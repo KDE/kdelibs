@@ -460,7 +460,11 @@ void KPty::login(const char *user, const char *remotehost)
 # endif
 
 # ifdef HAVE_LOGIN
+#  ifdef HAVE_LOGINX
+    ::loginx(&l_struct);
+#  else
     ::login(&l_struct);
+#  endif
 # else
 #  ifdef HAVE_STRUCT_UTMP_UT_TYPE
     l_struct.ut_type = USER_PROCESS;
@@ -508,7 +512,11 @@ void KPty::logout()
     }
 # endif
 # ifdef HAVE_LOGIN
+#  ifdef HAVE_LOGINX
+    ::logoutx(str_ptr, 0, DEAD_PROCESS);
+#  else
     ::logout(str_ptr);
+#  endif
 # else
 #  ifdef HAVE_UTMPX
     struct utmpx l_struct, *ut;
