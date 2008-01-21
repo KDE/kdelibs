@@ -1178,7 +1178,7 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
             }
         }
     }
-    else if (event->type() == QEvent::MouseButtonRelease) {
+    else if ((event->type() == QEvent::MouseButtonRelease) && (d->preview != 0)) {
         const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
         const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
                                                                        : QModelIndex();
