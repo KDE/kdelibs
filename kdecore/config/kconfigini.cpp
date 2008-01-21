@@ -522,7 +522,6 @@ bool KConfigIniBackend::lock(const KComponentData& componentData)
     if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock
         lockFile->lock(KLockFile::ForceFlag);
     return lockFile->isLocked();
-    return true;
 }
 
 void KConfigIniBackend::unlock()
