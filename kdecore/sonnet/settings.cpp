@@ -199,9 +199,9 @@ void Settings::save(KConfig *config)
     conf.writeEntry("skipRunTogether", d->skipRunTogether);
     conf.writeEntry("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
     QString defaultLanguage = QString( "ignore_%1" ).arg(d->defaultLanguage);
-    if(conf.hasKey(defaultLanguage) && d->ignore.keys().isEmpty())
+    if(conf.hasKey(defaultLanguage) && d->ignore.isEmpty())
       conf.deleteEntry(defaultLanguage);
-    else if(!d->ignore.keys().isEmpty())
+    else if(!d->ignore.isEmpty())
       conf.writeEntry(QString( "ignore_%1" ).arg(d->defaultLanguage),
                     d->ignore.keys() );
 
