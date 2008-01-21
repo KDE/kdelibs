@@ -201,7 +201,7 @@ void Settings::save(KConfig *config)
     QString defaultLanguage = QString( "ignore_%1" ).arg(d->defaultLanguage);
     if(conf.hasKey(defaultLanguage) && d->ignore.keys().isEmpty())
       conf.deleteEntry(defaultLanguage);
-    else
+    else if(!d->ignore.keys().isEmpty())
       conf.writeEntry(QString( "ignore_%1" ).arg(d->defaultLanguage),
                     d->ignore.keys() );
 
