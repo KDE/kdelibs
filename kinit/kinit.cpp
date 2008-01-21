@@ -65,6 +65,10 @@
 #endif
 #endif
 
+#ifdef Q_OS_DARWIN
+#include <crt_externs.h>
+#endif
+
 #include <kdeversion.h>
 
 #include "klauncher_cmds.h"
@@ -1617,6 +1621,7 @@ int main(int argc, char **argv, char **envp)
 {
    int i;
    pid_t pid;
+   bool do_fork = true;
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
@@ -1631,6 +1636,8 @@ int main(int argc, char **argv, char **envp)
          launch_klauncher = 0;
       if (strcmp(safe_argv[i], "--no-kded") == 0)
          launch_kded = 0;
+      if (strcmp(safe_argv[i], "--no-fork") == 0)
+         do_fork = false;
       if (strcmp(safe_argv[i], "--suicide") == 0)
          d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
@@ -1639,6 +1646,7 @@ int main(int argc, char **argv, char **envp)
       {
         printf("Usage: kdeinit4 [options]\n");
      // printf("    --no-dcop         Do not start dcopserver\n");
+        printf("    --no-fork         Do not fork\n");
      // printf("    --no-klauncher    Do not start klauncher\n");
         printf("    --no-kded         Do not start kded\n");
         printf("    --suicide         Terminate when no KDE applications are left running\n");
@@ -1647,6 +1655,37 @@ int main(int argc, char **argv, char **envp)
       }
    }
 
+   if (do_fork) {
+#ifdef Q_OS_DARWIN
+      // we need to reexec ourselves because of stupid OSX crap crappity crap
+      int argc = *_NSGetArgc();
+      char ** argv = *_NSGetArgv();
+      char * newargv[argc+2];
+
+      for (int i = 0; i < argc; i++) {
+         newargv[i] = argv[i];
+      }
+      newargv[argc] = "--no-fork";
+      newargv[argc+1] = NULL;
+
+      int fork_result = fork();
+      switch(fork_result) {
+         case -1:
+#ifndef NDEBUG
+            fprintf(stderr, "kdeinit4: Mac OS X workaround fork() failed!");
+#endif
+            ::_exit(255);
+            break;
+         case 0:
+            // Child
+            execvp(argv[0], newargv);
+            break;
+         default:
+            // Parent
+            _exit(0);
+            break;
+      }
+#else
    pipe(d.initpipe);
 
    // Fork here and let parent process exit.
@@ -1668,6 +1707,9 @@ int main(int argc, char **argv, char **envp)
    }
    close(d.initpipe[0]);
    d.initpipe[0] = -1;
+#endif
+   }
+
    d.my_pid = getpid();
 
    /** Make process group leader (for shutting down children later) **/
