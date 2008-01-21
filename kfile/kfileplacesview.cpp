@@ -482,6 +482,8 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
         delegate->setAppearingItemProgress(0.0);
         d->itemAppearTimeline.start();
     }
+
+    d->adaptItemSize();
 }
 
 QSize KFilePlacesView::sizeHint() const
