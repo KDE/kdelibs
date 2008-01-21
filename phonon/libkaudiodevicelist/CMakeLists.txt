@@ -28,7 +28,8 @@ ENDIF(ALSA_FOUND)
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
 target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
 
-set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+#do not use GENERIC versioning in phonon
+set_target_properties(kaudiodevicelist PROPERTIES VERSION 5.2.0 SOVERSION 5)
 
 install(TARGETS kaudiodevicelist  DESTINATION ${LIB_INSTALL_DIR})
 install(FILES
