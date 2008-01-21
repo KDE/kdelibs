@@ -910,7 +910,7 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
     path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
     path.closeSubpath();
 
-    drawPath(p, path, FillPath);
+    drawPath(p, path, DrawFill);
 }
 
 void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& exceptionCode)
@@ -927,7 +927,7 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
     path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
     path.closeSubpath();
 
-    drawPath(p, path, StrokePath);
+    drawPath(p, path, DrawStroke);
 }
 
 inline bool CanvasContext2DImpl::isPathEmpty() const
@@ -1017,7 +1017,7 @@ inline bool CanvasContext2DImpl::needsShadow() const
 
 QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, PathPaintOp op) const
 {
-    const CanvasStyleBaseImpl *style = op == FillPath ?
+    const CanvasStyleBaseImpl *style = op == DrawFill ?
                 activeState().fillStyle.get() : activeState().strokeStyle.get();
 
     if (style->type() != CanvasStyleBaseImpl::Pattern)
@@ -1040,7 +1040,7 @@ void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const 
 
     switch (op)
     {
-    case StrokePath:
+    case DrawStroke:
         brush = p->pen().brush();
         stroker.setCapStyle(state.lineCap);
         stroker.setJoinStyle(state.lineJoin);
@@ -1052,7 +1052,7 @@ void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const 
             fillPath = stroker.createStroke(path);
         break;
 
-    case FillPath:
+    case DrawFill:
         brush = p->brush();
         fillPath = path;
         break;
@@ -1158,13 +1158,13 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
 void CanvasContext2DImpl::fill()
 {
     QPainter* p = acquirePainter();
-    drawPath(p, path, FillPath);
+    drawPath(p, path, DrawFill);
 }
 
 void CanvasContext2DImpl::stroke()
 {
     QPainter* p = acquirePainter();
-    drawPath(p, path, StrokePath);
+    drawPath(p, path, DrawStroke);
 }
 
 void CanvasContext2DImpl::clip()
@@ -1382,7 +1382,7 @@ void CanvasContext2DImpl::drawImage(QPainter *p, const QRectF &dstRect, const QI
     p->setBrush(brush);
     p->setPen(Qt::NoPen);
     if (needsShadow())
-        drawPathWithShadow(p, path, FillPath, NotUsingCanvasPattern);
+        drawPathWithShadow(p, path, DrawFill, NotUsingCanvasPattern);
     else
         p->drawPath(path);
     p->restore();
