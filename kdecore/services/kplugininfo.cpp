@@ -85,14 +85,14 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
 
     d->name = file.readName();
     d->comment = file.readComment();
-    d->icon = cg.readEntry( "Icon" );
-    d->author = cg.readEntry( "X-KDE-PluginInfo-Author" );
-    d->email = cg.readEntry( "X-KDE-PluginInfo-Email" );
-    d->pluginName = cg.readEntry( "X-KDE-PluginInfo-Name" );
-    d->version = cg.readEntry( "X-KDE-PluginInfo-Version" );
-    d->website = cg.readEntry( "X-KDE-PluginInfo-Website" );
-    d->category = cg.readEntry( "X-KDE-PluginInfo-Category" );
-    d->license = cg.readEntry( "X-KDE-PluginInfo-License" );
+    d->icon = cg.readEntryUntranslated( "Icon" );
+    d->author = cg.readEntryUntranslated( "X-KDE-PluginInfo-Author" );
+    d->email = cg.readEntryUntranslated( "X-KDE-PluginInfo-Email" );
+    d->pluginName = cg.readEntryUntranslated( "X-KDE-PluginInfo-Name" );
+    d->version = cg.readEntryUntranslated( "X-KDE-PluginInfo-Version" );
+    d->website = cg.readEntryUntranslated( "X-KDE-PluginInfo-Website" );
+    d->category = cg.readEntryUntranslated( "X-KDE-PluginInfo-Category" );
+    d->license = cg.readEntryUntranslated( "X-KDE-PluginInfo-License" );
     d->dependencies = cg.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
     d->enabledbydefault = cg.readEntry(
             "X-KDE-PluginInfo-EnabledByDefault", false);
