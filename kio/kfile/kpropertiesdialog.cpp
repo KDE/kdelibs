@@ -1674,7 +1674,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l = d->ownerPermCombo = new QComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 1, 1);
-  connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
+  connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
   l->setWhatsThis(i18n("Specifies the actions that the owner is allowed to do."));
 
   lbl = new QLabel( i18n("Gro&up:"), gb);
@@ -1682,7 +1682,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l = d->groupPermCombo = new QComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 2, 1);
-  connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
+  connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
   l->setWhatsThis(i18n("Specifies the actions that the members of the group are allowed to do."));
 
   lbl = new QLabel( i18n("O&thers:"), gb);
@@ -1690,7 +1690,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l = d->othersPermCombo = new QComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
-  connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
+  connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
   l->setWhatsThis(i18n("Specifies the actions that all users, who are neither "
 			  "owner nor in the group, are allowed to do."));
 
@@ -3330,7 +3330,7 @@ void KDesktopPropsPlugin::slotAdvanced()
            this, SIGNAL( changed() ) );
   connect( w.systrayCheck, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
-  connect( w.dbusCombo, SIGNAL( highlighted( int ) ),
+  connect( w.dbusCombo, SIGNAL( activated( int ) ),
            this, SIGNAL( changed() ) );
 
   if ( dlg.exec() == QDialog::Accepted )
