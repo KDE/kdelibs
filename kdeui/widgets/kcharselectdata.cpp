@@ -192,7 +192,7 @@ QStringList KCharSelectData::sectionList()
     QStringList list;
     quint32 i = stringBegin;
     while(i < stringEnd) {
-        list.append(data + i);
+        list.append(i18nc("KCharSelect section name", data + i));
         i += strlen(data + i) + 1;
     }
 
@@ -333,7 +333,7 @@ QString KCharSelectData::blockName(int index)
         currIndex++;
     }
 
-    return i18n(data + i);
+    return i18nc("KCharselect unicode block name", data + i);
 }
 
 QStringList KCharSelectData::aliases(const QChar& c)
