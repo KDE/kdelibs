@@ -120,23 +120,9 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
 
             parentMimeType = parentMimeInfo->parentMimeType();
         }
-
-        // check X-KDE-Text property
-        QVariant textProperty = mimeInfo->property( "X-KDE-text" );
-        if ( textProperty.isValid() && textProperty.type() == QVariant::Bool )
-        {
-            if ( textProperty.toBool() )
-            {
-                provider = m_previewProviders.value( "text/plain" );
-                if ( provider )
-                    return provider;
-
-                provider = m_previewProviders.value( "text/*" );
-                if ( provider )
-                    return provider;
-            }
-        }
     }
+    // The logic in this code duplicates the logic in PreviewJob.
+    // But why do we need multiple KPreviewWidgetBase instances anyway?
 
     return 0L;
 }

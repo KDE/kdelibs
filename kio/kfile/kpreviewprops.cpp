@@ -18,6 +18,7 @@
  */
 
 #include "kpreviewprops.h"
+#include <kio/previewjob.h>
 
 #include <QtGui/QLayout>
 
@@ -66,15 +67,18 @@ KPreviewPropsPlugin::~KPreviewPropsPlugin()
 
 bool KPreviewPropsPlugin::supports( const KFileItemList &_items )
 {
-    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
-    KMimeType::Ptr mt = KMimeType::findByUrl( _items.first().url() );
-
-    if ( _items.count() != 1 || !metaDataEnabled || mt->name() == "inode/directory" || mt->name().startsWith( "media/" ) )
+    if ( _items.count() != 1 )
         return false;
-
-    //TODO Copy everything of KFileMetaPreview::previewProviderFor() ?
-
+    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
+    if (!metaDataEnabled)
+        return false;
+    const KMimeType::Ptr mime = _items.first().mimeTypePtr();
+    const QStringList supportedMimeTypes = KIO::PreviewJob::supportedMimeTypes();
+    foreach(const QString& supportedMime, supportedMimeTypes) {
+        if (mime->is(supportedMime))
     return true;
+    }
+    return false;
 }
 
 void KPreviewPropsPlugin::currentPageChanged( KPageWidgetItem *current, KPageWidgetItem * )
