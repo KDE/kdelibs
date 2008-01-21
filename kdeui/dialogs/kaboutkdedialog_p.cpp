@@ -130,10 +130,6 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     tabWidget->addTab(support, i18n("&Support KDE"));
 
     QLabel *image = new QLabel;
-    image->setFrameShape(QFrame::StyledPanel);
-    image->setFrameShadow(QFrame::Plain);
-    image->setAutoFillBackground(true);
-    image->setBackgroundRole(QPalette::Base);
     image->setPixmap(KStandardDirs::locate("data", "kdeui/pics/aboutkde.png"));
 
     QHBoxLayout *midLayout = new QHBoxLayout;
