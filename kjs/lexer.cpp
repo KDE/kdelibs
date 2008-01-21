@@ -630,6 +630,7 @@ bool Lexer::isWhiteSpace() const
     case 0x202F:  // NARROW NO-BREAK SPACE
     case 0x205F:  // MEDIUM MATHEMATICAL SPACE
     case 0x3000:  // IDEOGRAPHIC SPACE
+    case 0xFEFF:  // BOM/ZWNBS
         return true;
     default:
         return false;
