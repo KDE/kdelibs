@@ -218,7 +218,7 @@ void CanvasContext2DImpl::resetContext(int width, int height)
 
     defaultState.lineWidth  = 1.0f;
     defaultState.lineCap    = Qt::FlatCap;
-    defaultState.lineJoin   = Qt::MiterJoin;
+    defaultState.lineJoin   = Qt::SvgMiterJoin;
     defaultState.miterLimit = 10.0f;
 
     defaultState.shadowOffsetX = 0.0f;
@@ -796,7 +796,7 @@ void CanvasContext2DImpl::setLineCap(const DOM::DOMString& cap)
 
 static const IDTranslator<QString, Qt::PenJoinStyle, const char*>::Info penJoinTranslatorTable[] = {
     {"round", Qt::RoundJoin},
-    {"miter", Qt::MiterJoin},
+    {"miter", Qt::SvgMiterJoin},
     {"bevel", Qt::BevelJoin},
     {0, (Qt::PenJoinStyle)0}
 };
