@@ -37,6 +37,7 @@
 #include <kservice.h>
 #include <kservicetypetrader.h>
 #include <kconfiggroup.h>
+#include <kstandarddirs.h>
 
 namespace Phonon
 {
@@ -137,6 +138,21 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
     }
 #else
     QObject *backend = newService->createInstance<QObject>(0, QVariantList(), &errorReason);
+
+    if (0 == backend) {
+        const KComponentData cData = KGlobal::mainComponent();
+        QStringList modulePathList = cData.dirs()->findAllResources("module",
+                newService->library() + QLatin1String(".*"));
+        foreach (QString libFile, modulePathList) {
+            QPluginLoader pluginLoader(libFile);
+            if (pluginLoader.load()) {
+                backend = pluginLoader.instance();
+                if (backend) {
+                    break;
+                }
+            }
+        }
+    }
 #endif
     if (0 == backend) {
         kError(600) << "Can not create backend object from factory for " <<
