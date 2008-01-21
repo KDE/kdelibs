@@ -198,7 +198,11 @@ void Settings::save(KConfig *config)
     conf.writeEntry("checkUppercase", d->checkUppercase);
     conf.writeEntry("skipRunTogether", d->skipRunTogether);
     conf.writeEntry("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
-    conf.writeEntry(QString( "ignore_%1" ).arg(d->defaultLanguage),
+    QString defaultLanguage = QString( "ignore_%1" ).arg(d->defaultLanguage);
+    if(conf.hasKey(defaultLanguage) && d->ignore.keys().isEmpty())
+      conf.deleteEntry(defaultLanguage);
+    else
+      conf.writeEntry(QString( "ignore_%1" ).arg(d->defaultLanguage),
                     d->ignore.keys() );
 
     conf.sync();
