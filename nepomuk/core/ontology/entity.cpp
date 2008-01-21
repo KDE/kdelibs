@@ -140,66 +140,81 @@ Nepomuk::Types::Entity& Nepomuk::Types::Entity::operator=( const Entity& other )
 
 QUrl Nepomuk::Types::Entity::uri() const
 {
-    return d->uri;
+    return d ? d->uri : QUrl();
 }
 
 
 QString Nepomuk::Types::Entity::name() const
 {
-    return d->uri.fragment();
+    return d ? d->uri.fragment() : QString();
 }
 
 
 QString Nepomuk::Types::Entity::label( const QString& language )
 {
-    d->init();
+    if ( d ) {
+        d->init();
 
-    QHash<QString, QString>::const_iterator it = d->l10nLabels.find( language );
-    if ( it != d->l10nLabels.constEnd() ) {
-        return it.value();
+        QHash<QString, QString>::const_iterator it = d->l10nLabels.find( language );
+        if ( it != d->l10nLabels.constEnd() ) {
+            return it.value();
+        }
+        else {
+            return d->label;
+        }
     }
     else {
-        return d->label;
+        return QString();
     }
 }
 
 
 QString Nepomuk::Types::Entity::comment( const QString& language )
 {
-    d->init();
+    if ( d ) {
+        d->init();
 
-    QHash<QString, QString>::const_iterator it = d->l10nComments.find( language );
-    if ( it != d->l10nComments.constEnd() ) {
-        return it.value();
+        QHash<QString, QString>::const_iterator it = d->l10nComments.find( language );
+        if ( it != d->l10nComments.constEnd() ) {
+            return it.value();
+        }
+        else {
+            return d->comment;
+        }
     }
     else {
-        return d->comment;
+        return QString();
     }
 }
 
 
 bool Nepomuk::Types::Entity::isValid() const
 {
-    return d->uri.isValid();
+    return d ? d->uri.isValid() : false;
 }
 
 
 bool Nepomuk::Types::Entity::isAvailable()
 {
-    d->init();
-    return d->available == 1;
+    if ( d ) {
+        d->init();
+        return d->available == 1;
+    }
+    else {
+        return false;
+    }
 }
 
 
 bool Nepomuk::Types::Entity::operator==( const Entity& other )
 {
-    return d->uri == other.d->uri;
+    return d && other.d && d->uri == other.d->uri;
 }
 
 
 bool Nepomuk::Types::Entity::operator!=( const Entity& other )
 {
-    return d->uri != other.d->uri;
+    return !d || !other.d || d->uri != other.d->uri;
 }
 
 

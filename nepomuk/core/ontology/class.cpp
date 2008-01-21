@@ -113,7 +113,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
 Nepomuk::Types::Class::Class()
     : Entity()
 {
-    d = new ClassPrivate();
+    d = 0;
 }
 
 
@@ -144,19 +144,26 @@ Nepomuk::Types::Class& Nepomuk::Types::Class::operator=( const Class& other )
 
 QList<Nepomuk::Types::Property> Nepomuk::Types::Class::allProperties()
 {
-    D->initProperties();
-    return D->domainOf;
+    if ( d ) {
+        D->initProperties();
+        return D->domainOf;
+    }
+    else {
+        return QList<Nepomuk::Types::Property>();
+    }
 }
 
 
 Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByName( const QString& name )
 {
-    D->initProperties();
-    for ( QList<Property>::const_iterator it = D->domainOf.constBegin();
-          it != D->domainOf.constEnd(); ++it ) {
-        const Property& p = *it;
-        if ( p.name() == name ) {
-            return p;
+    if ( d ) {
+        D->initProperties();
+        for ( QList<Property>::const_iterator it = D->domainOf.constBegin();
+              it != D->domainOf.constEnd(); ++it ) {
+            const Property& p = *it;
+            if ( p.name() == name ) {
+                return p;
+            }
         }
     }
 
@@ -166,12 +173,14 @@ Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByName( const QStrin
 
 Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QString& label, const QString& language )
 {
-    D->initProperties();
-    for ( QList<Property>::iterator it = D->domainOf.begin();
-          it != D->domainOf.end(); ++it ) {
-        Property& p = *it;
-        if ( p.label( language ) == label ) {
-            return p;
+    if ( d ) {
+        D->initProperties();
+        for ( QList<Property>::iterator it = D->domainOf.begin();
+              it != D->domainOf.end(); ++it ) {
+            Property& p = *it;
+            if ( p.label( language ) == label ) {
+                return p;
+            }
         }
     }
 
@@ -181,53 +190,69 @@ Nepomuk::Types::Property Nepomuk::Types::Class::findPropertyByLabel( const QStri
 
 QList<Nepomuk::Types::Class> Nepomuk::Types::Class::parentClasses()
 {
-    D->initAncestors();
-    return D->parents;
+    if ( d ) {
+        D->initAncestors();
+        return D->parents;
+    }
+    else {
+        return QList<Nepomuk::Types::Class>();
+    }
 }
 
 
 QList<Nepomuk::Types::Class> Nepomuk::Types::Class::subClasses()
 {
-    D->init();
-    return D->children;
+    if ( d ) {
+        D->init();
+        return D->children;
+    }
+    else {
+        return QList<Nepomuk::Types::Class>();
+    }
 }
 
 
 bool Nepomuk::Types::Class::isParentOf( const Class& other )
 {
-    D->init();
+    if ( d ) {
+        D->init();
 
-    if ( D->children.contains( other ) ) {
-        return true;
-    }
-    else {
-        for ( QList<Nepomuk::Types::Class>::iterator it = D->children.begin();
-              it != D->children.end(); ++it ) {
-            if ( ( *it ).isParentOf( other ) ) {
-                return true;
+        if ( D->children.contains( other ) ) {
+            return true;
+        }
+        else {
+            for ( QList<Nepomuk::Types::Class>::iterator it = D->children.begin();
+                  it != D->children.end(); ++it ) {
+                if ( ( *it ).isParentOf( other ) ) {
+                    return true;
+                }
             }
         }
-        return false;
     }
+
+    return false;
 }
 
 
 bool Nepomuk::Types::Class::isSubClassOf( const Class& other )
 {
-    D->initAncestors();
+    if ( d ) {
+        D->initAncestors();
 
-    if ( D->parents.contains( other ) ) {
-        return true;
-    }
-    else {
-        for ( QList<Nepomuk::Types::Class>::iterator it = D->parents.begin();
-              it != D->parents.end(); ++it ) {
-            if ( ( *it ).isSubClassOf( other ) ) {
-                return true;
+        if ( D->parents.contains( other ) ) {
+            return true;
+        }
+        else {
+            for ( QList<Nepomuk::Types::Class>::iterator it = D->parents.begin();
+                  it != D->parents.end(); ++it ) {
+                if ( ( *it ).isSubClassOf( other ) ) {
+                    return true;
+                }
             }
         }
-        return false;
     }
+
+    return false;
 }
 
 

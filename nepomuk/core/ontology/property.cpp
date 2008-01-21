@@ -101,7 +101,7 @@ bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& property,
 Nepomuk::Types::Property::Property()
     : Entity()
 {
-    d = new PropertyPrivate();
+    d = 0;
 }
 
 
@@ -132,64 +132,109 @@ Nepomuk::Types::Property& Nepomuk::Types::Property::operator=( const Property& o
 
 QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties()
 {
-    D->init();
-    return D->parents;
+    if ( d ) {
+        D->init();
+        return D->parents;
+    }
+    else {
+        return QList<Nepomuk::Types::Property>();
+    }
 }
 
 
 QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
 {
-    D->initAncestors();
-    return D->children;
+    if ( d ) {
+        D->initAncestors();
+        return D->children;
+    }
+    else {
+        return QList<Nepomuk::Types::Property>();
+    }
 }
 
 
 Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty()
 {
-    D->init();
-    return D->inverse;
+    if ( d ) {
+        D->init();
+        return D->inverse;
+    }
+    else {
+        return Property();
+    }
 }
 
 
 Nepomuk::Types::Class Nepomuk::Types::Property::range()
 {
-    D->init();
-    return D->range;
+    if ( d ) {
+        D->init();
+        return D->range;
+    }
+    else {
+        return Class();
+    }
 }
 
 
 Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType()
 {
-    D->init();
-    return D->literalRange;
+    if ( d ) {
+        D->init();
+        return D->literalRange;
+    }
+    else {
+        return Literal();
+    }
 }
 
 
 Nepomuk::Types::Class Nepomuk::Types::Property::domain()
 {
-    D->init();
-    return D->domain;
+    if ( d ) {
+        D->init();
+        return D->domain;
+    }
+    else {
+        return Class();
+    }
 }
 
 
 int Nepomuk::Types::Property::cardinality()
 {
-    D->init();
-    return D->cardinality;
+    if ( d ) {
+        D->init();
+        return D->cardinality;
+    }
+    else {
+        return -1;
+    }
 }
 
 
 int Nepomuk::Types::Property::minCardinality()
 {
-    D->init();
-    return D->minCardinality;
+    if ( d ) {
+        D->init();
+        return D->minCardinality;
+    }
+    else {
+        return -1;
+    }
 }
 
 
 int Nepomuk::Types::Property::maxCardinality()
 {
-    D->init();
-    return D->maxCardinality;
+    if ( d ) {
+        D->init();
+        return D->maxCardinality;
+    }
+    else {
+        return -1;
+    }
 }
 
 

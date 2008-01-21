@@ -39,8 +39,6 @@
 using namespace Soprano;
 
 
-static const char* NEPOMUK_NAMESPACE = "http://nepomuk.kde.org/resources#";
-
 
 class Nepomuk::ResourceManager::Private
 {
@@ -195,7 +193,7 @@ QString Nepomuk::ResourceManager::generateUniqueUri()
     QUrl s;
     while( 1 ) {
         // Should we use the Nepomuk localhost whatever namespace here?
-        s = NEPOMUK_NAMESPACE + KRandom::randomString( 20 );
+        s = "nepomuk:/" + KRandom::randomString( 20 );
         if( !model->containsContext( s ) &&
             !model->containsAnyStatement( Soprano::Statement( s, Soprano::Node(), Soprano::Node() ) ) &&
             !model->containsAnyStatement( Soprano::Statement( Soprano::Node(), s, Soprano::Node() ) ) &&

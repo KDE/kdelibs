@@ -32,8 +32,6 @@
 #include <Soprano/Vocabulary/NRL>
 #include <Soprano/Vocabulary/NAO>
 
-static QString s_customRep;
-
 
 static QString getLocaleLang()
 {
@@ -44,19 +42,16 @@ static QString getLocaleLang()
 }
 
 
-void Nepomuk::setDefaultRepository( const QString& s )
+void Nepomuk::setDefaultRepository( const QString& )
 {
-    s_customRep = s;
+    // deprecated - do nothing
 }
 
 
 QString Nepomuk::defaultGraph()
 {
     static QString s = "main";
-    if( s_customRep.isEmpty() )
-        return s;
-    else
-        return s_customRep;
+    return s;
 }
 
 
