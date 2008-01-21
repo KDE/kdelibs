@@ -1415,6 +1415,14 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, floa
     if (exceptionCode)
         return;
 
+    if (dw < 0 || dh < 0) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return;
+    }
+
+    if (qFuzzyCompare(dw, 0) || qFuzzyCompare(dh, 0))
+        return;
+
     QPainter* p = acquirePainter();
     drawImage(p, QRectF(dx, dy, dw, dh), img, img.rect());
 }
@@ -1428,6 +1436,17 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
     exceptionCode = 0;
     QImage img = extractImage(image, exceptionCode);
     if (exceptionCode)
+        return;
+
+    if (sx < 0 || sy < 0 || sw < 0 || sh < 0 || dw < 0 || dh < 0 ||
+        sx + sw > img.width() || sy + sh > img.height())
+    {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return;
+    }
+
+    if (qFuzzyCompare(sw, 0) || qFuzzyCompare(sh, 0) ||
+        qFuzzyCompare(dw, 0) || qFuzzyCompare(dh, 0))
         return;
 
     QPainter* p = acquirePainter();
