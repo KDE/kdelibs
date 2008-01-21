@@ -67,8 +67,10 @@ void DelayAudioEffect::setValue(int parameterId, QVariant _newValue)
         break;
     case 2:
         m_feedback = newValue;
+        break;
     case 3:
         m_level = newValue;
+        break;
     }
 }
 
