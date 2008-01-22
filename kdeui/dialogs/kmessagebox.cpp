@@ -24,7 +24,6 @@
 #include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QTextEdit>
 #include <QtGui/QListWidget>
 #include <QtGui/QScrollArea>
 
@@ -37,6 +36,7 @@
 #include <knotification.h>
 #include <kiconloader.h>
 #include <kconfiggroup.h>
+#include <ktextedit.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -166,87 +166,85 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    QWidget *topcontents = new QWidget (dialog);
-    QVBoxLayout* toplayout = new QVBoxLayout( topcontents );
-    toplayout->setSpacing( KDialog::spacingHint()*2 );
-    toplayout->setMargin(0);
+    QWidget *mainWidget = new QWidget(dialog);
+    QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget);
+    mainLayout->setSpacing(KDialog::spacingHint() * 2);
+    mainLayout->setMargin(0);
 
-    QWidget *contents = new QWidget(topcontents);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setMargin(0);
-    lay->setSpacing(KDialog::spacingHint());
-    toplayout->addWidget(contents);
-    toplayout->addStretch();
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->setMargin(0);
+    hLayout->setSpacing(KDialog::spacingHint());
+    mainLayout->addLayout(hLayout);
+    mainLayout->addStretch();
 
-    QLabel *label1 = new QLabel( contents);
+    QLabel *iconLabel = new QLabel(mainWidget);
 
     if (!icon.isNull()) {
        int size = IconSize(KIconLoader::Dialog);
-       label1->setPixmap(icon.pixmap(size, size));
+       iconLabel->setPixmap(icon.pixmap(size, size));
     }
 
-    lay->addWidget( label1, 0, Qt::AlignCenter );
-    lay->addSpacing(KDialog::spacingHint());
+    hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
+    hLayout->addSpacing(KDialog::spacingHint());
 
-    QLabel *label2 = new QLabel( text, 0 );
-    label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
-    label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    label2->setWordWrap(true);
+    QLabel *messageLabel = new QLabel(text, mainWidget);
+    messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
+    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    messageLabel->setWordWrap(true);
     QRect d = KGlobalSettings::desktopGeometry(dialog);
 
-    QScrollArea* textArea = new QScrollArea( contents );
-    textArea->setWidget( label2 );
-    textArea->setFrameShape( QFrame::NoFrame );
-    textArea->setWidgetResizable(true);
-    textArea->setStyleSheet("QAbstractScrollArea { background-color: none; }");
+    QScrollArea* messageScrollArea = new QScrollArea(mainWidget);
+    messageScrollArea->setWidget(messageLabel);
+    messageScrollArea->setFrameShape(QFrame::NoFrame);
+    messageScrollArea->setWidgetResizable(true);
+    messageScrollArea->setStyleSheet("QAbstractScrollArea { background-color: none; }");
 
-    lay->addWidget( textArea );
+    hLayout->addWidget(messageScrollArea);
 
-    QListWidget *listwidget = 0;
+    QListWidget *listWidget = 0;
     if (!strlist.isEmpty()) {
-        listwidget = new QListWidget(topcontents);
-        toplayout->addWidget(listwidget);
-        listwidget->addItems(strlist);
-        listwidget->setSelectionMode(QListWidget::NoSelection);
-        toplayout->setStretchFactor(listwidget, 1);
+        listWidget = new QListWidget(mainWidget);
+        mainLayout->addWidget(listWidget);
+        listWidget->addItems(strlist);
+        listWidget->setSelectionMode(QListWidget::NoSelection);
+        mainLayout->setStretchFactor(listWidget, 1);
     }
 
     QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty()) {
-        checkbox = new QCheckBox(ask, topcontents);
-        toplayout->addWidget(checkbox);
+        checkbox = new QCheckBox(ask, mainWidget);
+        mainLayout->addWidget(checkbox);
         if (checkboxReturn) {
             checkbox->setChecked(*checkboxReturn);
         }
     }
 
     if (!details.isEmpty()) {
-        QGroupBox *detailsGroup = new QGroupBox( i18n("Details"), dialog);
-        QVBoxLayout *layout = new QVBoxLayout;
-        if ( details.length() < 512 ) {
-            QLabel *label3 = new QLabel( details );
-            label3->setOpenExternalLinks(options & KMessageBox::AllowLink);
-            label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
-            //label3->setMinimumSize(label3->sizeHint());
-            label3->setWordWrap(true);
-            layout->addWidget( label3 );
+        QGroupBox *detailsGroup = new QGroupBox(i18n("Details"), mainWidget);
+        QVBoxLayout *detailsLayout = new QVBoxLayout;
+        if (details.length() < 512) {
+            QLabel *detailsLabel = new QLabel(details);
+            detailsLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
+            detailsLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+            detailsLabel->setWordWrap(true);
+            detailsLayout->addWidget(detailsLabel);
         } else {
-            QTextEdit* te = new QTextEdit(details);
-            te->setReadOnly( true );
-            te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
-            layout->addWidget( te );
+            KTextEdit *detailTextEdit = new KTextEdit(mainWidget);
+            detailTextEdit->setReadOnly(true);
+            detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);
+            detailsLayout->addWidget(detailTextEdit);
         }
-        detailsGroup->setLayout( layout );
+        detailsGroup->setLayout(detailsLayout);
         dialog->setDetailsWidget(detailsGroup);
     }
 
-    dialog->setMainWidget(topcontents);
+    dialog->setMainWidget(mainWidget);
     dialog->showButtonSeparator(false);
-    if (!listwidget) {
-        dialog->layout()->setSizeConstraint( QLayout::SetFixedSize );
+    if (!listWidget) {
+        dialog->layout()->setSizeConstraint(QLayout::SetFixedSize);
     }
 
-    if ( (options & KMessageBox::Dangerous) ) {
+    if ((options & KMessageBox::Dangerous)) {
         if (dialog->isButtonEnabled(KDialog::Cancel))
             dialog->setDefaultButton(KDialog::Cancel);
         else if (dialog->isButtonEnabled(KDialog::No))
@@ -254,12 +252,12 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
-    if ( defaultCode != KDialog::NoDefault ) {
-        dialog->setButtonFocus( defaultCode );
+    if (defaultCode != KDialog::NoDefault) {
+        dialog->setButtonFocus(defaultCode);
     }
 
-    if ( (options & KMessageBox::Notify) ) {
-        sendNotification( text, strlist, notifyType, dialog->topLevelWidget()->winId());
+    if ((options & KMessageBox::Notify)) {
+        sendNotification(text, strlist, notifyType, dialog->topLevelWidget()->winId());
     }
 
     if (KMessageBox_queue) {
@@ -267,13 +265,13 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         return KMessageBox::Cancel; // We have to return something.
     }
 
-    if ( (options & KMessageBox::NoExec) ) {
+    if ((options & KMessageBox::NoExec)) {
         return KMessageBox::Cancel; // We have to return something.
     }
 
-    // We use a QGuardedPtr because the dialog may get deleted
+    // We use a QPointer because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
-    // In that case the guarded ptr will reset to 0.
+    // In that case the QPointer will reset to 0.
     QPointer<KDialog> guardedDialog = dialog;
 
     int result = guardedDialog->exec();
