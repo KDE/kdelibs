@@ -49,6 +49,7 @@ public:
     KHelpMenu *helpMenu;
     KMainWindow *q;
     QObject* dockResizeListener;
+    QString dbusName;
 
     void _k_shuttingDown();
 
