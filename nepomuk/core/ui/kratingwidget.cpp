@@ -129,6 +129,7 @@ void KRatingWidget::mousePressEvent( QMouseEvent* e )
     if ( e->button() == Qt::LeftButton ) {
         d->hoverRating = d->rating = d->ratingPainter.fromPosition( contentsRect(), e->pos() );
         update();
+        emit ratingChanged( d->rating );
     }
 }
 
@@ -139,6 +140,7 @@ void KRatingWidget::mouseMoveEvent( QMouseEvent* e )
     d->hoverRating = d->ratingPainter.fromPosition( contentsRect(), e->pos() );
     if ( d->hoverRating >= 0 && e->buttons() & Qt::LeftButton ) {
         d->rating = d->hoverRating;
+        emit ratingChanged( d->rating );
     }
     update();
 }
