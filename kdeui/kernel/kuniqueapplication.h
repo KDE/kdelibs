@@ -141,12 +141,33 @@ public:
    * function is called and can be checked in the usual way.
    *
    * The default implementation ensures the mainwindow of the already
-   * running instance is shown and activated if necessary. You should
-   * prefer using it from your overridden method instead of doing
-   * it directly.
+   * running instance is shown and activated if necessary. If your
+   * application has only one mainwindow, you should call this default
+   * implementation and only add your special handling if needed.
    *
    * Note that newInstance() is called also in the first started
    * application process.
+   *
+   * For applications that share one process for several mainwindows,
+   * the reimplementation could be:
+   * \code
+    int MyApp::newInstance()
+    {
+    KCmdLineArgs::setCwd(QDir::currentPath().toUtf8());
+    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+    static bool first = true;
+    if (args->count() > 0) {
+        for (int i = 0; i < args->count(); ++i) {
+            openWindow(args->url(i));
+        }
+    } else if( !first || !isSessionRestored()) {
+        openWindow(KUrl()); // create a new window
+    }
+    first = false;
+    args->clear();
+    return 0;
+    }
+   * \encode
    *
    * @return An exit value. The calling process will exit with this value.
    */
