@@ -147,6 +147,7 @@ void KDXSButton::setEntry(Entry *e)
 		setText(i18n("Install"));
 		action_uninstall->setVisible(false);
 		action_install->setVisible(true);
+		break;
 	default:
 		setText(i18n("Install"));
 		action_uninstall->setVisible(false);
