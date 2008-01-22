@@ -118,8 +118,10 @@ void FakeBattery::setChargeState(Solid::Battery::ChargeState newState)
         break;
     case Solid::Battery::Discharging:
         name = "discharging";
+        break;
     case Solid::Battery::NoCharge:
         name = "noCharge";
+        break;
     }
 
     fakeDevice()->setProperty("chargeState", name);
