@@ -425,6 +425,11 @@ public:
      * Used from Konqueror when reusing the main window.
      */
     void ignoreInitialGeometry();
+    
+    /**
+     * @internal
+     */
+    QString dbusName() const;
 
 public Q_SLOTS:
     /**

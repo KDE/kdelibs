@@ -122,8 +122,7 @@ bool KXmlGuiWindow::event( QEvent* ev )
 {
     bool ret = KMainWindow::event(ev);
     if (ev->type()==QEvent::Polish) {
-        const QString pathname = '/' + objectName();
-        QDBusConnection::sessionBus().registerObject(pathname + "/actions", actionCollection(),
+        QDBusConnection::sessionBus().registerObject(dbusName() + "/actions", actionCollection(),
                                                      QDBusConnection::ExportScriptableSlots |
                                                      QDBusConnection::ExportScriptableProperties |
                                                      QDBusConnection::ExportNonScriptableSlots |

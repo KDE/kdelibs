@@ -262,6 +262,20 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     dockResizeListener = new DockResizeListener(_q);
 }
 
+static bool endsWithHashNumber( const QString& s )
+{
+    for( int i = s.length() - 1;
+         i > 0;
+         --i )
+    {
+        if( s[ i ] == '#' && i != s.length() - 1 )
+            return true; // ok
+        if( !s[ i ].isDigit())
+            break;
+    }
+    return false;
+}
+
 void KMainWindowPrivate::polish(KMainWindow *q)
 {
     // Set a unique object name. Required by session management, window management, and for the dbus interface.
@@ -270,13 +284,20 @@ void KMainWindowPrivate::polish(KMainWindow *q)
     int unusedNumber = 1;
     const QString name = q->objectName();
     bool startNumberingImmediately = true;
+    bool tryReuse = false;
     if ( name.isEmpty() )
     {   // no name given
-        objname = "MainWindow_";
+        objname = "MainWindow#";
     }
     else if( name.endsWith( QLatin1Char( '#' ) ) )
-    {   // trailing # - always add a number
-        objname = name.left( name.length() - 1 ); // lose the hash
+    {   // trailing # - always add a number  - KWin uses this for better grouping
+        objname = name;
+    }
+    else if( endsWithHashNumber( name ))
+    {   // trailing # with a number - like above, try to use the given number first
+        objname = name;
+        tryReuse = true;
+        startNumberingImmediately = false;
     }
     else
     {
@@ -284,14 +305,6 @@ void KMainWindowPrivate::polish(KMainWindow *q)
         startNumberingImmediately = false;
     }
 
-    // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
-    const int len = objname.length();
-    for ( int i = 0; i < len; ++i ) {
-        if ( !objname[i].isLetterOrNumber() )
-            objname[i] = QLatin1Char('_');
-    }
-
-    objname.prepend( qApp->applicationName() + '/' );
     s = objname;
     if ( startNumberingImmediately )
         s += '1';
@@ -308,13 +321,29 @@ void KMainWindowPrivate::polish(KMainWindow *q)
         }
         if( !found )
             break;
+        if( tryReuse ) {
+            objname = name.left( name.length() - 1 ); // lose the hash
+            unusedNumber = 0; // start from 1 below
+            tryReuse = false;
+        }
         s.setNum( ++unusedNumber );
         s = objname + s;
     }
     q->setObjectName( s );
+    q->winId(); // workaround for setWindowRole() crashing, and set also window role, just in case TT
+    q->setWindowRole( s ); // will keep insisting that object name suddenly should not be used for window role
 
-    const QString pathname = '/' + q->objectName();
-    QDBusConnection::sessionBus().registerObject(pathname, q, QDBusConnection::ExportScriptableSlots |
+    QString pathname = q->objectName();
+    // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
+    const int len = pathname.length();
+    for ( int i = 0; i < len; ++i ) {
+        if ( !pathname[i].isLetterOrNumber() )
+            pathname[i] = QLatin1Char('_');
+    }
+    pathname = '/' + qApp->applicationName() + '/' + pathname;
+
+    dbusName = pathname;
+    QDBusConnection::sessionBus().registerObject(dbusName, q, QDBusConnection::ExportScriptableSlots |
                                        QDBusConnection::ExportScriptableProperties |
                                        QDBusConnection::ExportNonScriptableSlots |
                                        QDBusConnection::ExportNonScriptableProperties |
@@ -1008,6 +1037,11 @@ QList<KToolBar*> KMainWindow::toolBars() const
 }
 
 QList<KMainWindow*> KMainWindow::memberList() { return *sMemberList; }
+
+QString KMainWindow::dbusName() const
+{
+    return k_func()->dbusName;
+}
 
 #include "kmainwindow.moc"
 
