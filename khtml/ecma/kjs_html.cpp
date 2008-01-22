@@ -2393,6 +2393,7 @@ bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, JSValue* val
       return true;
     case T_Bool:
       impl()->setAttribute(prop->attrId, value->toBoolean(exec) ? "" : 0);
+      return true;
     case T_TabIdx:
       impl()->setTabIndex(value->toInteger(exec));
       return true;
