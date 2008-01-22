@@ -1,6 +1,17 @@
 FIND_PACKAGE(Alsa)
 ALSA_CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/config-alsa.h)
 
+OPTION(KDE4_DISABLE_MULTIMEDIA "Disable multimedia support (default: off)" OFF)
+IF (KDE4_DISABLE_MULTIMEDIA)
+  MESSAGE(STATUS "Phonon multimedia support disabled by user.")
+  SET(HAVE_KDE4_MULTIMEDIA 0)
+ELSE (KDE4_DISABLE_MULTIMEDIA)
+  MESSAGE(STATUS "Phonon multimedia support is enabled.")
+  SET(HAVE_KDE4_MULTIMEDIA 1)
+ENDIF (KDE4_DISABLE_MULTIMEDIA)
+
+configure_file(config-phonon.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-phonon.h )
+
 # Those apply to all subdirs
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_BINARY_DIR}/solid)
 

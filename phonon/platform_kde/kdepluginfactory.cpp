@@ -17,6 +17,8 @@
 
 */
 
+#include "config-phonon.h"
+
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
 
@@ -178,7 +180,9 @@ QObject *KdePlatformPlugin::createBackend()
             "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
     if (offers.isEmpty()) {
         if (!has_shown) {
+#if defined(HAVE_KDE4_MULTIMEDIA)
             KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
+#endif
             has_shown = true;
         }
         return 0;
