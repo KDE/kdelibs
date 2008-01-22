@@ -17,7 +17,7 @@
 
 */
 
-#include "config-phonon.h"
+#include "phonon/config-phonon.h"
 
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
