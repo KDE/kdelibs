@@ -203,6 +203,7 @@
 5324        kdepimlibs (mailtransport)
 5325        kdepimlibs (kpimidentities)
 5326        kdepimlibs (kpgp)
+5327        kdepimlibs (kimap)
 5400        calendarsystem
 5500        knotes
 5510        kpilot
