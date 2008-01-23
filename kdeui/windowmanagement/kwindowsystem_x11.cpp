@@ -464,10 +464,12 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
     if( mapViewport()) {
         init( INFO_BASIC );
         QPoint p = desktopToViewport( desktop, false );
-        Window r;
+        Window dummy;
         int x, y;
-        unsigned int w, h, b, d;
-        XGetGeometry( QX11Info::display(), win, &r, &x, &y, &w, &h, &b, &d );
+        unsigned int w, h, b, dp;
+        XGetGeometry( QX11Info::display(), win, &dummy, &x, &y, &w, &h, &b, &dp );
+        // get global position
+        XTranslateCoordinates( QX11Info::display(), win, QX11Info::appRootWindow(), 0, 0, &x, &y, &dummy );
         x += w / 2; // center
         y += h / 2;
         // transform to coordinates on the current "desktop"
