@@ -270,7 +270,7 @@ public:
 private:
     friend class HTMLCanvasElementImpl;
 
-    enum PathPaintOp { FillPath, StrokePath };
+    enum PathPaintOp { DrawFill, DrawStroke };
     enum PaintFlags { NoPaintFlags = 0, NotUsingCanvasPattern = 1 };
 
     // initialize canvas for new size
