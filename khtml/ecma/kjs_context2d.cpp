@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2004 Apple Computer, Inc.
  *  Copyright (C) 2005 Zack Rusin <zack@kde.org>
- *  Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
+ *  Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,8 @@
 #include <html/html_listimpl.h>
 #include <html/html_objectimpl.h>
 #include <html/html_tableimpl.h>
+
+#include <imload/imagemanager.h>
 
 #include <khtml_part.h>
 #include <khtmlview.h>
@@ -455,8 +457,16 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         }
         break;
     }
+    case Context2D::GetImageData: {
+        KJS_REQUIRE_ARGS(4);
+        KJS_CHECK_FLOAT_ARGS(0, 3);
+        CanvasImageDataImpl* id = ctx->getImageData(args[0]->toFloat(exec), args[1]->toFloat(exec),
+                                                    args[2]->toFloat(exec), args[3]->toFloat(exec),
+                                                    exception);
+        return getWrapper<CanvasImageData>(exec, id);
+        break;
+    }
 
-    //### TODO: ImageData
     }
 
     return jsUndefined();
@@ -686,6 +696,183 @@ JSValue *CanvasPatternFunction::callAsFunction(ExecState *exec, JSObject *thisOb
 CanvasPattern::CanvasPattern(ExecState* exec, DOM::CanvasPatternImpl* impl) :
     WrapperBase(CanvasPatternProto::self(exec), impl)
 {}
+
+////////////////////// CanvasImageData[Array] Object /////////////////
+
+const ClassInfo CanvasImageData::info = { "ImageData", 0, 0, 0 };
+
+CanvasImageData::CanvasImageData(ExecState* exec, DOM::CanvasImageDataImpl* impl) :
+    WrapperBase(exec->lexicalInterpreter()->builtinObjectPrototype(), impl)
+{
+    data = new CanvasImageDataArray(exec, this);
+    // Set out properties from 
+    putDirect("width",  jsNumber(impl->width()),  DontDelete | ReadOnly);
+    putDirect("height", jsNumber(impl->height()), DontDelete | ReadOnly);
+    putDirect("data",   data, DontDelete | ReadOnly);
+}
+
+void CanvasImageData::mark()
+{
+    JSObject::mark();
+    if (!data->marked())
+        data->mark();
+}
+
+const ClassInfo CanvasImageDataArray::info = { "ImageDataArray", 0, 0, 0 };
+
+CanvasImageDataArray::CanvasImageDataArray(ExecState* exec, CanvasImageData* p) :
+        JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), parent(p)
+{
+    size = p->impl()->width() * p->impl()->height() * 4;
+    putDirect(exec->propertyNames().length, jsNumber(size), DontDelete | ReadOnly);
+}
+
+void CanvasImageDataArray::mark()
+{
+    JSObject::mark();
+    if (!parent->marked())
+        parent->mark();
+}
+
+JSValue* CanvasImageDataArray::indexGetter(ExecState* exec, unsigned index)
+{
+    if (index >= size) // paranoia..
+        return jsNull();
+
+    unsigned pixel = index / 4;
+    unsigned comp  = index % 4;
+    QColor color = parent->impl()->pixel(pixel);
+    //"... with each pixel's red, green, blue, and alpha components being given in that order"
+    switch (comp) {
+    case 0: return jsNumber(color.red());
+    case 1: return jsNumber(color.green());
+    case 2: return jsNumber(color.blue());
+    default:     // aka case 3, for quietness purposes
+            return jsNumber(color.alpha());
+    }
+}
+
+bool CanvasImageDataArray::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+{
+    // ### this doesn't behave exactly like array does --- should we care?
+    bool ok;
+    unsigned index = propertyName.toArrayIndex(&ok);
+    if (ok && index < size) {
+        slot.setCustomIndex(this, index, indexGetterAdapter<CanvasImageDataArray>);
+        return true;
+    }
+
+    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
+}
+
+bool CanvasImageDataArray::getOwnPropertySlot(ExecState* exec, unsigned index, PropertySlot& slot)
+{
+    if (index < size) {
+        slot.setCustomIndex(this, index, indexGetterAdapter<CanvasImageDataArray>);
+        return true;
+    }
+
+    return JSObject::getOwnPropertySlot(exec, index, slot);
+}
+
+void CanvasImageDataArray::put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attr)
+{
+  bool ok;
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    put(exec, index, value, attr);
+    return;
+  }
+
+  JSObject::put(exec, propertyName, value, attr);
+}
+
+unsigned char CanvasImageDataArray::decodeComponent(ExecState* exec, JSValue* jsVal)
+{
+    double val = jsVal->toNumber(exec);
+
+    if (jsVal == jsUndefined())
+        val = 0.0;
+    if (val < 0.0)
+        val = 0.0;
+    if (val > 255.0)
+        val = 255.0;
+
+    // ### fixme: round to even
+    return (unsigned char)qRound(val);
+}
+
+void CanvasImageDataArray::put(ExecState* exec, unsigned index, JSValue* value, int attr)
+{
+    if (index < size) {
+        unsigned char componentValue = decodeComponent(exec, value);
+        unsigned int  pixel = index / 4;
+        unsigned int  comp  = index % 4;
+        QColor cur = parent->impl()->pixel(pixel);
+        switch (comp) { //RGBA..
+        case 0:
+            cur.setRed(componentValue);
+            break;
+        case 1:
+            cur.setGreen(componentValue);
+            break;
+        case 2:
+            cur.setBlue(componentValue);
+            break;
+        default:
+            cur.setAlpha(componentValue);
+            break;
+        }
+        parent->impl()->setPixel(pixel, cur);
+        return;
+    }
+
+    JSObject::put(exec, index, value, attr);
+}
+
+DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val)
+{
+    JSObject* obj = val->getObject();
+    if (!obj) return 0;
+
+    if (obj->inherits(&CanvasImageData::info))
+        return static_cast<CanvasImageData*>(val)->impl();
+
+    // Uff. May be a fake one.
+    bool ok = true;
+    uint32_t width  = obj->get(exec, "width")->toUInt32(exec, ok);
+    if (!ok || !width || exec->hadException())
+        return 0;
+    uint32_t height = obj->get(exec, "height")->toUInt32(exec, ok);
+    if (!ok || !width || exec->hadException())
+        return 0;
+
+    // Perform safety check on the size.
+    if (!khtmlImLoad::ImageManager::isAcceptableSize(width, height))
+        return 0;
+
+    JSObject* data = obj->get(exec, "data")->getObject();
+    if (!data)
+        return 0;
+
+    uint32_t length = data->get(exec, "length")->toUInt32(exec, ok);
+    if (!ok || !width || exec->hadException())
+        return 0;
+
+    if (length != 4 * width * height)
+        return 0;
+
+    // Uff. Well, it sounds sane enough for us to decode..
+    CanvasImageDataImpl* id = new CanvasImageDataImpl(width, height);
+    for (unsigned pixel = 0; pixel < width * height; ++pixel) {
+        unsigned char r = CanvasImageDataArray::decodeComponent(exec, data->get(exec, pixel*4));
+        unsigned char g = CanvasImageDataArray::decodeComponent(exec, data->get(exec, pixel*4 + 1));
+        unsigned char b = CanvasImageDataArray::decodeComponent(exec, data->get(exec, pixel*4 + 2));
+        unsigned char a = CanvasImageDataArray::decodeComponent(exec, data->get(exec, pixel*4 + 3));
+        id->setPixel(pixel, QColor(r, g, b, a));
+    }
+    return id;
+}
 
 } // namespace
 

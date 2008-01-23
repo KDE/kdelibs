@@ -68,6 +68,7 @@
 #include <misc/translator.h>
 #include <misc/imagefilter.h>
 #include <imload/canvasimage.h>
+#include <imload/imagemanager.h>
 #include <kjs/global.h>
 #include <kjs/operations.h> //uglyyy: needs for inf/NaN tests
 
@@ -649,6 +650,48 @@ QRectF CanvasPatternImpl::clipForRepeat(const QPointF &origin, const QRectF &fil
 
     // repeatY
     return QRectF(origin.x(), fillBounds.y(), img.width(), fillBounds.height());
+}
+
+//-------
+
+CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32_Premultiplied)
+{}
+
+unsigned CanvasImageDataImpl::width() const
+{
+    return data.width();
+}
+
+unsigned CanvasImageDataImpl::height() const
+{
+    return data.height();
+}
+
+static inline unsigned char unpremulComponent(unsigned original, unsigned alpha)
+{
+    return alpha ? (unsigned char)(original * 255 / alpha) : 0;
+}
+
+QColor CanvasImageDataImpl::pixel(unsigned pixelNum) const
+{
+    QRgb code = data.pixel(pixelNum % data.width(), pixelNum / data.width());
+    unsigned char  a = qAlpha(code);    
+    return QColor(unpremulComponent(qRed(code),  a), unpremulComponent(qGreen(code), a),
+                  unpremulComponent(qBlue(code), a), a);
+}
+
+static inline unsigned char premulComponent(unsigned original, unsigned alpha)
+{
+    unsigned product = original * alpha; // this is conceptually 255 * intended value.
+    return (unsigned char)((product + product/256 + 128)/256);
+}
+
+void CanvasImageDataImpl::setPixel(unsigned pixelNum, const QColor& val)
+{
+    unsigned char a = val.alpha();
+    QRgb code = qRgba(premulComponent(val.red(), a), premulComponent(val.green(), a),
+                      premulComponent(val.blue(),a), a);
+    data.setPixel(pixelNum % data.width(), pixelNum / data.width(), code);
 }
 
 //-------
@@ -1427,5 +1470,49 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
     QPainter* p = acquirePainter();
     drawImage(p, QRectF(dx, dy, dw, dh), img, QRectF(sx, sy, sw, sh));
 }
+
+// Pixel stuff.
+CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float sw, float sh, int& exceptionCode)
+{
+    int w = qRound(sw);
+    int h = qRound(sh);
+
+    if (w <= 0 || h <= 0) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return 0;
+    }
+
+    if (!khtmlImLoad::ImageManager::isAcceptableSize(unsigned(w), unsigned(h))) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return 0;    
+    }
+
+    int x = qRound(sx);
+    int y = qRound(sy);
+
+    CanvasImageDataImpl* id = new CanvasImageDataImpl(w, h);
+    id->data.fill(Qt::transparent);
+
+    // Clip the source rect again the viewport.
+    QRect srcRect = QRect(x, y, w, h);
+    QRect clpRect = srcRect & QRect(0, 0, canvasElement->width(), canvasElement->height());
+    if (!clpRect.isEmpty()) {
+        QPainter p(&id->data);
+
+        // Flush our data..
+        if (workPainter.isActive())
+            workPainter.end();
+
+        // Copy it over..
+        QImage* backBuffer = canvasImage->qimage();
+        p.drawImage(clpRect.topLeft() - srcRect.topLeft(), *backBuffer, clpRect);
+    }
+
+    return id;
+}
+
+    //void putImageData(CanvasImageDataImpl* data, float dx, float dy, int& exceptionCode);
+
+
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

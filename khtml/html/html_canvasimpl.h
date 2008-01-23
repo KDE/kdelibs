@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
@@ -161,6 +161,19 @@ private:
     bool inverse; // For radial gradients only
 };
 
+class CanvasImageDataImpl : public khtml::Shared<CanvasImageDataImpl>
+{
+public:
+    // Creates an unitialized image..
+    CanvasImageDataImpl(unsigned width, unsigned height);
+
+    unsigned width()  const;
+    unsigned height() const;
+    QColor pixel(unsigned pixelNum) const;
+    void   setPixel(unsigned pixelNum, const QColor& val);
+    QImage data;
+};
+
 class CanvasContext2DImpl : public khtml::Shared<CanvasContext2DImpl>
 {
 public:
@@ -249,6 +262,10 @@ public:
     void drawImage(ElementImpl* image, float dx, float dy, float dw, float dh, int& exceptionCode);
     void drawImage(ElementImpl* image, float sx, float sy, float sw, float sh,
                    float dx, float dy, float dw, float dh, int& exceptionCode);
+
+    // Pixel ops
+    CanvasImageDataImpl* getImageData(float sx, float sy, float sw, float sh, int& exceptionCode);
+    void putImageData(CanvasImageDataImpl* data, float dx, float dy, int& exceptionCode);
 
 private:
     friend class HTMLCanvasElementImpl;
