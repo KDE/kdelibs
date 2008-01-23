@@ -495,6 +495,13 @@ public:
      * Returns topleft corner of the viewport area for the given mapped virtual desktop.
      */    
     static QPoint desktopToViewport( int desktop, bool absolute );
+    /**
+     * @internal
+     * @since 4.0.1
+     * Checks the relative difference used to move a window will still be inside
+     * valid desktop area.
+     */
+    static QPoint constrainViewportRelativePosition( const QPoint& pos );
 #endif
 
 Q_SIGNALS:

@@ -483,11 +483,10 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
         y += p.y();
         x -= w / 2; // from center back to topleft
         y -= h / 2;
-        KWindowSystemPrivate* const s_d = s_d_func();
+        p = constrainViewportRelativePosition( QPoint( x, y ));
         int flags = ( 0x20 << 12 ) | ( 0x03 << 8 ) | 10; // from tool(?), x/y, static gravity
-        // This actually doesn't work with Compiz, because it restricts all window movement
-        // to the currently visible area ... *shrug* .
-        s_d->moveResizeWindowRequest( win, flags, x, y, w, h );
+        KWindowSystemPrivate* const s_d = s_d_func();
+        s_d->moveResizeWindowRequest( win, flags, p.x(), p.y(), w, h );
         return;
     }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
@@ -1032,6 +1031,21 @@ QPoint KWindowSystem::desktopToViewport( int desktop, bool absolute )
             ret.setY( ret.y() + s.height );
     }
     return ret;
+}
+
+QPoint KWindowSystem::constrainViewportRelativePosition( const QPoint& pos )
+{
+    init( INFO_BASIC );
+    KWindowSystemPrivate* const s_d = s_d_func();
+    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    NETPoint c = s_d->desktopViewport( s_d->currentDesktop( true ));
+    int x = ( pos.x() + c.x ) % s.width;
+    int y = ( pos.y() + c.y ) % s.height;
+    if( x < 0 )
+        x += s.width;
+    if( y < 0 )
+        y += s.height;
+    return QPoint( x - c.x, y - c.y );
 }
 
 #include "kwindowsystem.moc"
