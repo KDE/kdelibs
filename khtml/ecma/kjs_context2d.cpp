@@ -275,7 +275,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
           return jsUndefined();
         }
 
-        CanvasPatternImpl* pat = ctx->createPattern(el, args[1]->toString(exec).domString(),
+        CanvasPatternImpl* pat = ctx->createPattern(el, valueToStringWithNullCheck(exec, args[1]),
                                                     exception);
 
         return getWrapper<CanvasPattern>(exec, pat);
@@ -851,7 +851,7 @@ DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val)
     if (!ok || !width || exec->hadException())
         return 0;
     uint32_t height = obj->get(exec, "height")->toUInt32(exec, ok);
-    if (!ok || !width || exec->hadException())
+    if (!ok || !height || exec->hadException())
         return 0;
 
     // Perform safety check on the size.
@@ -863,7 +863,7 @@ DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val)
         return 0;
 
     uint32_t length = data->get(exec, "length")->toUInt32(exec, ok);
-    if (!ok || !width || exec->hadException())
+    if (!ok || !length || exec->hadException())
         return 0;
 
     if (length != 4 * width * height)

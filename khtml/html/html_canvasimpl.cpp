@@ -1,8 +1,8 @@
 /*
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2005 Zack Rusin <zack@kde.org>
- * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
- * Copyright (C) 2007 Fredrik Höglund <fredrik@kde.org>
+ * Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2007, 2008 Fredrik Höglund <fredrik@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -527,9 +527,15 @@ static DOMString colorToString(const QColor& color)
     QString str;
     if (color.alpha() == 255)
         str.sprintf("#%02x%02x%02x", color.red(), color.green(), color.blue());
-    else
-        str.sprintf("rgba(%d, %d, %d, %f)", color.red(), color.green(), color.blue(), color.alphaF());
-        // ### CHECKME: risk of locale messing up . ?
+    else {
+        QString alphaColor = QString::number(color.alphaF());
+        // Ensure we always have a decimal period
+        if ((int)color.alphaF() == color.alphaF())
+            alphaColor = QString::number((int)color.alphaF()) + ".0";
+
+        str.sprintf("rgba(%d, %d, %d, ", color.red(), color.green(), color.blue());
+        str += alphaColor + ")";
+    }
     return str;
 }
 
@@ -1221,11 +1227,6 @@ void CanvasContext2DImpl::clip()
     PaintState& state = activeState();
     QPainterPath pathCopy = path;
     pathCopy.closeSubpath();
-
-    //### evil workaround for apparent Qt bug(?)
-/*    QTransform t;
-    t.translate(-0.0001*cnt, cnt*0.0001);
-    pathCopy = t.map(pathCopy);*/
 
     if (state.clipping)
         state.clipPath = state.clipPath.intersected(pathCopy);

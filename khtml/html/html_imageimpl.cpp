@@ -100,7 +100,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             }
 
             KUrl fullURL = getDocument()->completeURL(parsedURL.string());
-            if (getDocument()->domain() != fullURL.host())
+            if (getDocument()->URL().host() != fullURL.host() || getDocument()->URL().port() != fullURL.port())
                 unsafe = true;
         }
     }

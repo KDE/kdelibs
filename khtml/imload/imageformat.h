@@ -78,6 +78,9 @@ struct ImageFormat
             break;
         case Image_Palette_8:
             toRet = QImage(width, height, QImage::Format_Indexed8);
+            // Make sure we're completely robust if the loader is buggy..
+            while (palette.size() < 256)
+                palette.append(0);
             toRet.setColorTable(palette);
             break;
         default:
@@ -92,7 +95,7 @@ struct ImageFormat
         return  (type == Image_ARGB_32 || type == Image_ARGB_32_DontPremult);
     }
 
-    QVector<QRgb> palette;
+    mutable QVector<QRgb> palette;
 
     //A helper for setting up a format descriptor for 8-bit grayscale
     void greyscaleSetup()

@@ -268,6 +268,12 @@ void Image::notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format
     loaderScanline = 0;
 }
 
+static inline unsigned char premulComponent(unsigned original, unsigned alpha)
+{
+    unsigned product = original * alpha; // this is conceptually 255 * intended value.
+    return (unsigned char)((product + product/256 + 128)/256);
+}
+
 void Image::notifyScanline(uchar version, uchar* data)
 {
     RawImagePlane* plane = static_cast<RawImagePlane*>(loaderPlane->parent);
@@ -290,10 +296,12 @@ void Image::notifyScanline(uchar version, uchar* data)
         for (int x = 0; x < plane->image.width(); ++x)
         {
             QRgb col = src[x];
-            dst[x]  = (((qRed  (col)*qAlpha(col)) & 0xFF00)<<8) |
-                       ((qGreen(col)*qAlpha(col)) & 0xFF00)     |
-                       (((qBlue (col)*qAlpha(col))) >> 8)       |
-                       (col & 0xFF000000);
+            unsigned a = qAlpha(col);
+            unsigned r = qRed(col);
+            unsigned g = qGreen(col);
+            unsigned b = qBlue(col);
+            dst[x]  = qRgba(premulComponent(r, a), premulComponent(g, a),
+                            premulComponent(b, a), a);
         }
     }
 
