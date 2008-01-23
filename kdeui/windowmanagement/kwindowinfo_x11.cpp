@@ -280,10 +280,12 @@ bool KWindowInfo::isOnDesktop( int _desktop ) const
     if( KWindowSystem::mapViewport()) {
         if( onAllDesktops())
             return true;
-        Window r;
+        Window dummy;
         int x, y;
         unsigned int w, h, b, dp;
-        XGetGeometry( QX11Info::display(), d->win_, &r, &x, &y, &w, &h, &b, &dp );
+        XGetGeometry( QX11Info::display(), d->win_, &dummy, &x, &y, &w, &h, &b, &dp );
+        // get global position
+        XTranslateCoordinates( QX11Info::display(), d->win_, QX11Info::appRootWindow(), 0, 0, &x, &y, &dummy );
         return KWindowSystem::viewportWindowToDesktop( QRect( x, y, w, h )) == _desktop;
     }
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
