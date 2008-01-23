@@ -188,7 +188,7 @@ CanvasContext2DImpl::~CanvasContext2DImpl()
     delete canvasImage;
 }
 
-// Basic infrastructure.. 
+// Basic infrastructure..
 void CanvasContext2DImpl::resetContext(int width, int height)
 {
     // ### FIXME FIXME: use khtmlImLoad's limit policy
@@ -297,7 +297,7 @@ QPainter* CanvasContext2DImpl::acquirePainter()
 QImage CanvasContext2DImpl::extractImage(ElementImpl* el, int& exceptionCode) const
 {
     QImage pic;
-    
+
     exceptionCode = 0;
     if (el->id() == ID_CANVAS) {
         CanvasContext2DImpl* other = static_cast<HTMLCanvasElementImpl*>(el)->getContext2D();
@@ -358,7 +358,7 @@ static inline bool isInfArg(float x)
 void CanvasContext2DImpl::scale(float x, float y)
 {
     dirty |= DrtTransform;
-    
+
     bool& infinityTransform = activeState().infinityTransform;
     infinityTransform |= isInfArg(x) | isInfArg(y);
     if (infinityTransform) return;
@@ -391,7 +391,7 @@ void CanvasContext2DImpl::translate(float x, float y)
 void CanvasContext2DImpl::transform(float m11, float m12, float m21, float m22, float dx, float dy)
 {
     dirty |= DrtTransform;
-    
+
     bool& infinityTransform = activeState().infinityTransform;
     infinityTransform |= isInfArg(m11) | isInfArg(m12) | isInfArg(m21) | isInfArg(m22) |
                          isInfArg(dx)  | isInfArg(dy);
@@ -669,13 +669,14 @@ unsigned CanvasImageDataImpl::height() const
 
 static inline unsigned char unpremulComponent(unsigned original, unsigned alpha)
 {
-    return alpha ? (unsigned char)(original * 255 / alpha) : 0;
+    unsigned char val =  alpha ? (unsigned char)(original * 255 / alpha) : 0;
+    return val;
 }
 
 QColor CanvasImageDataImpl::pixel(unsigned pixelNum) const
 {
     QRgb code = data.pixel(pixelNum % data.width(), pixelNum / data.width());
-    unsigned char  a = qAlpha(code);    
+    unsigned char  a = qAlpha(code);
     return QColor(unpremulComponent(qRed(code),  a), unpremulComponent(qGreen(code), a),
                   unpremulComponent(qBlue(code), a), a);
 }
@@ -915,7 +916,7 @@ DOMString CanvasContext2DImpl::shadowColor() const
 
 void CanvasContext2DImpl::setShadowColor(const DOMString& newColor)
 {
-    // This not specified, it seems, but I presume setting 
+    // This not specified, it seems, but I presume setting
     // and invalid color does not change the state
     QColor cl = colorFromString(newColor);
     if (cl.isValid())
@@ -931,7 +932,7 @@ void CanvasContext2DImpl::clearRect (float x, float y, float w, float h, int& ex
         exceptionCode = DOMException::INDEX_SIZE_ERR;
         return;
     }
-    
+
     QPainter* p = acquirePainter();
     p->setCompositionMode(QPainter::CompositionMode_Source);
     dirty |= DrtCompOp; // We messed it up..
@@ -1514,7 +1515,7 @@ CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float
 
     if (!khtmlImLoad::ImageManager::isAcceptableSize(unsigned(w), unsigned(h))) {
         exceptionCode = DOMException::INDEX_SIZE_ERR;
-        return 0;    
+        return 0;
     }
 
     int x = qRound(sx);
@@ -1524,10 +1525,12 @@ CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float
     id->data.fill(Qt::transparent);
 
     // Clip the source rect again the viewport.
+
     QRect srcRect = QRect(x, y, w, h);
     QRect clpRect = srcRect & QRect(0, 0, canvasElement->width(), canvasElement->height());
     if (!clpRect.isEmpty()) {
         QPainter p(&id->data);
+        p.setCompositionMode(QPainter::CompositionMode_Source);
 
         // Flush our data..
         if (workPainter.isActive())
@@ -1536,13 +1539,31 @@ CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float
         // Copy it over..
         QImage* backBuffer = canvasImage->qimage();
         p.drawImage(clpRect.topLeft() - srcRect.topLeft(), *backBuffer, clpRect);
+        p.end();
     }
 
     return id;
 }
 
-    //void putImageData(CanvasImageDataImpl* data, float dx, float dy, int& exceptionCode);
+void CanvasContext2DImpl::putImageData(CanvasImageDataImpl* id, float dx, float dy, int& exceptionCode)
+{
+    if (!id) {
+        exceptionCode = DOMException::TYPE_MISMATCH_ERR;
+        return;
+    }
 
+    // Flush any previous changes
+    if (workPainter.isActive())
+        workPainter.end();
 
+    // We use our own painter here since we should not be affected by clipping, etc.
+    // Hence we need to mark ourselves dirty, too
+    needRendererUpdate();
+    QPainter p(canvasImage->qimage());
+    int x = qRound(dx);
+    int y = qRound(dy);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.drawImage(x, y, id->data);
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
