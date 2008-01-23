@@ -77,18 +77,23 @@ public:
     DOMString altText() const;
 
     DOMString imageMap() const { return usemap; }
-    /** See if the image has been completely downloaded. 
+    /** See if the image has been completely downloaded.
      * @return True if and only if the image is completely downloaded yet*/
     bool complete() const;
 
     virtual void notifyFinished(khtml::CachedObject *finishedObj);
     void dispatchLoadEvent();
-    
+
     khtml::CachedImage* image() { return m_image; }
+
+    // This returns true if this image has (or ever had!) cross-domain data; which will make
+    // it unsafe to getImageData() it in canvas;
+    bool isUnsafe() const { return unsafe; }
 protected:
     DOMString usemap;
-    bool ismap : 1;
-    bool loadEventSent : 1;
+    bool ismap;
+    bool loadEventSent;
+    bool unsafe;
     khtml::CachedImage  *m_image;
     HTMLFormElementImpl *m_form;
     DOMString            m_name;

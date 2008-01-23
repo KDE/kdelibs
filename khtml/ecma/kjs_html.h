@@ -105,7 +105,7 @@ namespace KJS {
            TextAreaAccessKey, TextAreaName, TextAreaDefaultValue, TextAreaSelect,
            TextAreaCols, TextAreaDisabled, TextAreaForm, TextAreaType,
            TextAreaTabIndex, TextAreaReadOnly, TextAreaRows, TextAreaValue,
-           TextAreaBlur, TextAreaFocus, TextAreaSelectionStart, TextAreaSelectionEnd, TextAreaSetSelectionRange, 
+           TextAreaBlur, TextAreaFocus, TextAreaSelectionStart, TextAreaSelectionEnd, TextAreaSetSelectionRange,
            TextAreaTextLength, ButtonBlur, ButtonFocus, ButtonForm, ButtonTabIndex, ButtonName,
            ButtonDisabled, ButtonAccessKey, ButtonType, ButtonValue, LabelHtmlFor,
            LabelForm, LabelAccessKey, FieldSetForm, LegendForm, LegendAccessKey,
@@ -118,7 +118,7 @@ namespace KJS {
            AnchorAccessKey, AnchorCoords, AnchorHref, AnchorProtocol, AnchorHost,
            AnchorCharset, AnchorHrefLang, AnchorHostname, AnchorType, AnchorFocus,
            AnchorPort, AnchorPathName, AnchorHash, AnchorSearch, AnchorName,
-           AnchorRev, AnchorTabIndex, AnchorTarget, AnchorText, AnchorBlur, AnchorClick, 
+           AnchorRev, AnchorTabIndex, AnchorTarget, AnchorText, AnchorBlur, AnchorClick,
            ImageName, ImageAlign, ImageHspace, ImageVspace, ImageUseMap, ImageAlt,
            ImageLowSrc, ImageWidth, ImageIsMap, ImageBorder, ImageHeight,
            ImageLongDesc, ImageSrc, ImageX, ImageY, ImageComplete, ObjectHspace, ObjectHeight, ObjectAlign,
@@ -156,7 +156,7 @@ namespace KJS {
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            IFrameContentDocument, IFrameContentWindow,
            MarqueeStart, MarqueeStop,
-           GetContext, CanvasWidth, CanvasHeight,
+           CanvasGetContext, CanvasWidth, CanvasHeight, CanvasToDataURL,
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument,
@@ -239,10 +239,10 @@ namespace KJS {
     HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
-    
+
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    
+
     DOM::HTMLSelectElementImpl* toElement() const { return element.get(); }
   private:
     SharedPtr<DOM::HTMLSelectElementImpl> element;

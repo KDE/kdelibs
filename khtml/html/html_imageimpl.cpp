@@ -52,7 +52,7 @@ using namespace khtml;
 // -------------------------------------------------------------------------
 
 HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
-    : HTMLElementImpl(doc), ismap(false), loadEventSent(true), m_image(0), m_form(f)
+    : HTMLElementImpl(doc), ismap(false), loadEventSent(true), unsafe(false), m_image(0), m_form(f)
 {
     if (m_form)
         m_form->registerImgElement(this);
@@ -88,7 +88,8 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         //Start loading the image already, to generate events
         DOMString url = attr->value();
         if (!url.isEmpty()) { //### why do we not hide or something when setting this?
-            CachedImage* newImage = getDocument()->docLoader()->requestImage(khtml::parseURL(url));
+            DOMString parsedURL = khtml::parseURL(url);
+            CachedImage* newImage = getDocument()->docLoader()->requestImage(parsedURL);
             if (newImage && newImage != m_image) {
                 CachedImage* oldImage = m_image;
                 loadEventSent = false;
@@ -97,6 +98,10 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
                 if (oldImage)
                     oldImage->deref(this);
             }
+
+            KUrl fullURL = getDocument()->completeURL(parsedURL.string());
+            if (getDocument()->domain() != fullURL.host())
+                unsafe = true;
         }
     }
     break;
@@ -319,7 +324,7 @@ QImage HTMLImageElementImpl::currentImage() const
 {
     if (!complete() || !m_image || !m_image->image())
         return QImage();
-        
+
     QImage* im = m_image->image()->qimage();
     if (im)
         return *im;
@@ -429,7 +434,7 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) {
             HTMLElementImpl::parseAttribute(attr);
             break;
-        } 
+        }
         else {
             // add name with full url:
             QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );

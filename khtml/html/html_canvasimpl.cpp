@@ -93,6 +93,7 @@ HTMLCanvasElementImpl::HTMLCanvasElementImpl(DocumentImpl *doc)
 {
     w = 300;
     h = 150;
+    unsafe = false;
 }
 
 HTMLCanvasElementImpl::~HTMLCanvasElementImpl()
@@ -173,6 +174,36 @@ khtmlImLoad::CanvasImage* HTMLCanvasElementImpl::getCanvasImage()
 {
     return getContext2D()->canvasImage;
 }
+
+bool HTMLCanvasElementImpl::isUnsafe() const
+{
+    return unsafe;
+}
+
+void HTMLCanvasElementImpl::markUnsafe()
+{
+    unsafe = true;
+}
+
+QString HTMLCanvasElementImpl::toDataURL(int& exceptionCode)
+{
+    if (isUnsafe()) {
+        exceptionCode = DOMException::INVALID_ACCESS_ERR;
+        return "";
+    }
+
+    khtmlImLoad::CanvasImage* ci = getCanvasImage();
+    context->syncBackBuffer();
+
+    QByteArray pngBytes;
+    QBuffer    pngSink(&pngBytes);
+    pngSink.open(QIODevice::WriteOnly);
+    ci->qimage()->save(&pngSink, "PNG");
+    pngSink.close();
+
+    return QString::fromLatin1("data:image/png;base64,") + pngBytes.toBase64();
+}
+
 
 // -------------------------------------------------------------------------
 CanvasContext2DImpl::CanvasContext2DImpl(HTMLCanvasElementImpl* element, int width, int height):
@@ -294,22 +325,29 @@ QPainter* CanvasContext2DImpl::acquirePainter()
     return &workPainter;
 }
 
-QImage CanvasContext2DImpl::extractImage(ElementImpl* el, int& exceptionCode) const
+QImage CanvasContext2DImpl::extractImage(ElementImpl* el, int& exceptionCode, bool& unsafeOut) const
 {
     QImage pic;
 
     exceptionCode = 0;
+
+    unsafeOut = false;
     if (el->id() == ID_CANVAS) {
         CanvasContext2DImpl* other = static_cast<HTMLCanvasElementImpl*>(el)->getContext2D();
-        if (other->workPainter.isActive())
-            other->workPainter.end();
+        other->syncBackBuffer();
         pic = *other->canvasImage->qimage();
+
+        if (static_cast<HTMLCanvasElementImpl*>(el)->isUnsafe())
+            unsafeOut = true;
     } else if (el->id() == ID_IMG) {
         HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>(el);
         if (img->complete())
             pic = img->currentImage();
         else
             exceptionCode = DOMException::INVALID_STATE_ERR;
+
+        if (img->isUnsafe())
+            unsafeOut = true;
     } else {
         exceptionCode = DOMException::TYPE_MISMATCH_ERR;
     }
@@ -324,11 +362,15 @@ void CanvasContext2DImpl::needRendererUpdate()
         canvasElement->setChanged();
 }
 
-void CanvasContext2DImpl::commit()
+void CanvasContext2DImpl::syncBackBuffer()
 {
-    // If painter is active, end it.
     if (workPainter.isActive())
         workPainter.end();
+}
+
+void CanvasContext2DImpl::commit()
+{
+    syncBackBuffer();
 
     // Flush caches if we have changes.
     if (needsCommit) {
@@ -627,8 +669,8 @@ QBrush CanvasGradientImpl::toBrush() const
 
 //-------
 
-CanvasPatternImpl::CanvasPatternImpl(const QImage& inImg, bool rx, bool ry):
-        img(inImg), repeatX(rx), repeatY(ry)
+CanvasPatternImpl::CanvasPatternImpl(const QImage& inImg, bool unsafe, bool rx, bool ry):
+        img(inImg), repeatX(rx), repeatY(ry), unsafe(unsafe)
 {}
 
 
@@ -701,6 +743,9 @@ void CanvasContext2DImpl::setStrokeStyle(CanvasStyleBaseImpl* strokeStyle)
 {
     if (!strokeStyle)
         return;
+    if (strokeStyle->isUnsafe())
+        canvas()->markUnsafe();
+
     activeState().strokeStyle = strokeStyle;
     dirty |= DrtStroke;
 }
@@ -714,6 +759,9 @@ void CanvasContext2DImpl::setFillStyle(CanvasStyleBaseImpl* fillStyle)
 {
     if (!fillStyle)
         return;
+    if (fillStyle->isUnsafe())
+        canvas()->markUnsafe();
+
     activeState().fillStyle = fillStyle;
     dirty |= DrtFill;
 }
@@ -793,11 +841,12 @@ CanvasPatternImpl* CanvasContext2DImpl::createPattern(ElementImpl* pat, const DO
         return 0;
     }
 
-    QImage pic = extractImage(pat, exceptionCode);
+    bool unsafe;
+    QImage pic = extractImage(pat, exceptionCode, unsafe);
     if (exceptionCode)
         return 0;
 
-    return new CanvasPatternImpl(pic, repeatX, repeatY);
+    return new CanvasPatternImpl(pic, unsafe, repeatX, repeatY);
 }
 
 // Pen style ops
@@ -1447,7 +1496,10 @@ void CanvasContext2DImpl::drawImage(QPainter *p, const QRectF &dstRect, const QI
 void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, int& exceptionCode)
 {
     exceptionCode = 0;
-    QImage img = extractImage(image, exceptionCode);
+    bool unsafe;
+    QImage img = extractImage(image, exceptionCode, unsafe);
+    if (unsafe)
+        canvas()->markUnsafe();
     if (exceptionCode)
         return;
 
@@ -1460,7 +1512,10 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, floa
 {
     //### do we need DoS protection here?
     exceptionCode = 0;
-    QImage img = extractImage(image, exceptionCode);
+    bool unsafe;
+    QImage img = extractImage(image, exceptionCode, unsafe);
+    if (unsafe)
+        canvas()->markUnsafe();
     if (exceptionCode)
         return;
 
@@ -1483,7 +1538,10 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
 {
     //### do we need DoS protection here?
     exceptionCode = 0;
-    QImage img = extractImage(image, exceptionCode);
+    bool unsafe;
+    QImage img = extractImage(image, exceptionCode, unsafe);
+    if (unsafe)
+        canvas()->markUnsafe();
     if (exceptionCode)
         return;
 
@@ -1507,6 +1565,11 @@ CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float
 {
     int w = qRound(sw);
     int h = qRound(sh);
+
+    if (canvas()->isUnsafe()) {
+        exceptionCode = DOMException::INVALID_ACCESS_ERR;
+        return 0;
+    }
 
     if (w <= 0 || h <= 0) {
         exceptionCode = DOMException::INDEX_SIZE_ERR;
@@ -1533,8 +1596,7 @@ CanvasImageDataImpl* CanvasContext2DImpl::getImageData(float sx, float sy, float
         p.setCompositionMode(QPainter::CompositionMode_Source);
 
         // Flush our data..
-        if (workPainter.isActive())
-            workPainter.end();
+        syncBackBuffer();
 
         // Copy it over..
         QImage* backBuffer = canvasImage->qimage();
@@ -1553,8 +1615,7 @@ void CanvasContext2DImpl::putImageData(CanvasImageDataImpl* id, float dx, float 
     }
 
     // Flush any previous changes
-    if (workPainter.isActive())
-        workPainter.end();
+    syncBackBuffer();
 
     // We use our own painter here since we should not be affected by clipping, etc.
     // Hence we need to mark ourselves dirty, too
