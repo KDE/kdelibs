@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Portions of this code are (c) by Apple Computer, Inc. and were licensed 
+ * Portions of this code are (c) by Apple Computer, Inc. and were licensed
  * under the following terms:
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@
 
 #include <QtGui/QRegion>
 #include <QtCore/QMap>
+#include <QtCore/QList>
 #include <QtCore/QStack>
 #include <QtGui/QPixmap>
 #include <QtGui/QGradient>
@@ -78,12 +79,20 @@ public:
 
     CanvasContext2DImpl* getContext2D();
 
+    // Note: we use QString here for efficiency reasons. We only need
+    // one version since we only do the required image/png
+    QString toDataURL(int& exceptionCode);
+
     // Returns the canvas image, but does not guarantee it's
     // up-to-date
     khtmlImLoad::CanvasImage* getCanvasImage();
+
+    bool isUnsafe() const;
+    void markUnsafe();
 private:
     int w, h;
     SharedPtr<CanvasContext2DImpl> context;
+    bool unsafe;
 };
 
 // Base class for representing styles for fill and stroke.
@@ -97,8 +106,9 @@ public:
         Pattern
     };
 
+    virtual bool isUnsafe() const { return false; }
     virtual ~CanvasStyleBaseImpl() {}
-    
+
     virtual Type   type() const = 0;
     virtual QBrush toBrush() const = 0;
 };
@@ -129,8 +139,8 @@ public:
 class CanvasPatternImpl : public CanvasStyleBaseImpl
 {
 public:
-    CanvasPatternImpl(const QImage& inImg, bool rx, bool ry);
-    
+    CanvasPatternImpl(const QImage& inImg, bool unsafe, bool rx, bool ry);
+
     virtual Type type() const { return Pattern; }
     virtual QBrush toBrush() const;
 
@@ -138,9 +148,11 @@ public:
     // repeat settings and the indicated brush origin and shape bounding rect.
     QRectF clipForRepeat(const QPointF &origin, const QRectF &bounds) const;
 
+    virtual bool isUnsafe() const { return unsafe; }
 private:
     QImage img;
     bool   repeatX, repeatY;
+    bool unsafe;
 };
 
 class CanvasGradientImpl : public CanvasStyleBaseImpl
@@ -225,7 +237,7 @@ public:
     void  setLineJoin(const DOMString& newJoin);
     float miterLimit() const;
     void  setMiterLimit(float newML);
-    
+
     // Shadow attributes
     float shadowOffsetX() const;
     void  setShadowOffsetX(float newOX);
@@ -297,10 +309,11 @@ private:
 
     // Cleared by canvas dtor..
     HTMLCanvasElementImpl* canvasElement;
-    
+
     // Helper for methods that take images via elements; this will extract them,
-    // and signal an exception if needed be
-    QImage extractImage(ElementImpl* el, int& exceptionCode) const;
+    // and signal an exception if needed be. It will also return if the
+    // image is unsafe
+    QImage extractImage(ElementImpl* el, int& exceptionCode, bool& unsafeOut) const;
 
     // This method will prepare a painter for use, making sure it's active,
     // that all the dirty state got sync'd, etc, and will mark the
@@ -385,6 +398,9 @@ private:
     // Tells the element and then the renderer that we changed, so need
     // repainting.
     void needRendererUpdate();
+
+    // Flushes changes to the backbuffer.
+    void syncBackBuffer();
 };
 
 

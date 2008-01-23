@@ -1202,7 +1202,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 
 @begin HTMLCanvasElementProtoTable 1
-  getContext      KJS::HTMLElement::GetContext                  DontDelete|Function 1
+  getContext      KJS::HTMLElement::CanvasGetContext            DontDelete|Function 1
+  toDataURL       KJS::HTMLElement::CanvasToDataURL             DontDelete|Function 0
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
@@ -2294,11 +2295,13 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       break;
     }
   case ID_CANVAS: {
-      if (id == KJS::HTMLElement::GetContext) {
-        DOM::HTMLCanvasElementImpl& canvasEl = static_cast<DOM::HTMLCanvasElementImpl&>(element);
+      DOM::HTMLCanvasElementImpl& canvasEl = static_cast<DOM::HTMLCanvasElementImpl&>(element);
+      if (id == KJS::HTMLElement::CanvasGetContext) {
         if (args[0]->toString(exec) == "2d")
           return getWrapper<Context2D>(exec, canvasEl.getContext2D());
         return jsNull();
+      } else if (id == KJS::HTMLElement::CanvasToDataURL) {
+        return jsString(canvasEl.toDataURL(exception));
       }
       break;
     }
