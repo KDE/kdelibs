@@ -170,7 +170,7 @@ static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxAr
 JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
     KJS_CHECK_THIS(Context2D, thisObj);
-    
+
 #ifdef KJS_VERBOSE
     kDebug(6070) << "KJS::Context2DFunction::callAsFunction " << functionName().qstring();
 #endif
@@ -178,7 +178,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     Context2D *jsContextObject = static_cast<KJS::Context2D *>(thisObj);
     CanvasContext2DImpl* ctx   = jsContextObject->impl();
     DOMExceptionTranslator exception(exec);
-    
+
     switch (id) {
     // State ops
     /////////////
@@ -186,7 +186,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         ctx->save();
         break;
     }
-    
+
     case Context2D::Restore: {
         ctx->restore();
         break;
@@ -205,7 +205,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         KJS_REQUIRE_ARGS(1);
         // Rotate actually rejects NaN/infinity as well
         KJS_CHECK_FLOAT_ARGS(0, 0);
-        
+
 
         ctx->rotate(args[0]->toFloat(exec));
         break;
@@ -229,7 +229,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
         break;
     }
-    
+
     case Context2D::SetTransform: {
         KJS_REQUIRE_ARGS(6);
         KJS_CHECK_FLOAT_OR_INF_ARGS(0, 5);
@@ -239,9 +239,9 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
                           args[4]->toFloat(exec), args[5]->toFloat(exec));
         break;
     }
-    
+
     // Composition state is properties --- not in prototype
-    
+
     // Color and style info..
     case Context2D::CreateLinearGradient: {
         KJS_REQUIRE_ARGS(4);
@@ -256,7 +256,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::CreateRadialGradient: {
         KJS_REQUIRE_ARGS(6);
         KJS_CHECK_FLOAT_ARGS(0, 5);
-        
+
         CanvasGradientImpl* grad = ctx->createRadialGradient(
               args[0]->toFloat(exec), args[1]->toFloat(exec),
               args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -280,14 +280,14 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
         return getWrapper<CanvasPattern>(exec, pat);
     }
-    
+
     // Line properties are all... properties!
-    
+
     // Rectangle ops
     case Context2D::ClearRect: {
         KJS_REQUIRE_ARGS(4);
         KJS_CHECK_FLOAT_ARGS(0, 3);
-        
+
         ctx->clearRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                        args[2]->toFloat(exec), args[3]->toFloat(exec),
                        exception);
@@ -298,7 +298,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::FillRect: {
         KJS_REQUIRE_ARGS(4);
         KJS_CHECK_FLOAT_ARGS(0, 3);
-        
+
         ctx->fillRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                       args[2]->toFloat(exec), args[3]->toFloat(exec),
                       exception);
@@ -309,7 +309,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::StrokeRect: {
         KJS_REQUIRE_ARGS(4);
         KJS_CHECK_FLOAT_ARGS(0, 3);
-        
+
         ctx->strokeRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                         args[2]->toFloat(exec), args[3]->toFloat(exec),
                         exception);
@@ -322,7 +322,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         ctx->beginPath();
         break;
     }
-    
+
     case Context2D::ClosePath: {
         ctx->closePath();
         break;
@@ -331,7 +331,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::MoveTo: {
         KJS_REQUIRE_ARGS(2);
         KJS_CHECK_FLOAT_ARGS(0, 1);
-        
+
         ctx->moveTo(args[0]->toFloat(exec), args[1]->toFloat(exec));
         break;
     }
@@ -339,7 +339,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::LineTo: {
         KJS_REQUIRE_ARGS(2);
         KJS_CHECK_FLOAT_ARGS(0, 1);
-            
+
         ctx->lineTo(args[0]->toFloat(exec), args[1]->toFloat(exec));
         break;
     }
@@ -347,7 +347,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::QuadraticCurveTo: {
         KJS_REQUIRE_ARGS(4);
         KJS_CHECK_FLOAT_ARGS(0, 3);
-            
+
         ctx->quadraticCurveTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                               args[2]->toFloat(exec), args[3]->toFloat(exec));
         break;
@@ -356,7 +356,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::BezierCurveTo: {
         KJS_REQUIRE_ARGS(6);
         KJS_CHECK_FLOAT_ARGS(0, 5);
-            
+
         ctx->bezierCurveTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                            args[2]->toFloat(exec), args[3]->toFloat(exec),
                            args[4]->toFloat(exec), args[5]->toFloat(exec));
@@ -376,7 +376,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::Rect: {
         KJS_REQUIRE_ARGS(4);
         KJS_CHECK_FLOAT_ARGS(0, 3);
-            
+
         ctx->rect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                   args[2]->toFloat(exec), args[3]->toFloat(exec),
                   exception);
@@ -386,7 +386,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::Arc: {
         KJS_REQUIRE_ARGS(6);
         KJS_CHECK_FLOAT_ARGS(0, 5);
-            
+
         ctx->arc(args[0]->toFloat(exec), args[1]->toFloat(exec),
                  args[2]->toFloat(exec), args[3]->toFloat(exec),
                  args[4]->toFloat(exec), args[5]->toBoolean(exec),
@@ -408,7 +408,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         ctx->clip();
         break;
     }
-    
+
     case Context2D::IsPointInPath: {
         KJS_REQUIRE_ARGS(2);
         KJS_CHECK_FLOAT_ARGS(0, 1);
@@ -427,7 +427,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
             setDOMException(exec, DOMException::NOT_SUPPORTED_ERR);
             break;
         }
-        
+
         if (args.size() < 5) { // 3 or 4 arguments
             KJS_CHECK_FLOAT_ARGS(1, 2);
             ctx->drawImage(el,
@@ -464,6 +464,13 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
                                                     args[2]->toFloat(exec), args[3]->toFloat(exec),
                                                     exception);
         return getWrapper<CanvasImageData>(exec, id);
+        break;
+    }
+    case Context2D::PutImageData: {
+        KJS_REQUIRE_ARGS(3);
+        KJS_CHECK_FLOAT_ARGS(1, 2);
+        SharedPtr<CanvasImageDataImpl> id = toCanvasImageData(exec, args[0]); // may need to delete..
+        ctx->putImageData(id.get(), args[1]->toFloat(exec), args[2]->toFloat(exec), exception);
         break;
     }
 
@@ -551,7 +558,7 @@ JSValue* Context2D::getValueProperty(ExecState* exec, int token) const
 
     case LineWidth:
         return jsNumber(ctx->lineWidth());
-    
+
     case LineCap:
         return jsString(ctx->lineCap());
 
@@ -705,7 +712,7 @@ CanvasImageData::CanvasImageData(ExecState* exec, DOM::CanvasImageDataImpl* impl
     WrapperBase(exec->lexicalInterpreter()->builtinObjectPrototype(), impl)
 {
     data = new CanvasImageDataArray(exec, this);
-    // Set out properties from 
+    // Set out properties from the image info..
     putDirect("width",  jsNumber(impl->width()),  DontDelete | ReadOnly);
     putDirect("height", jsNumber(impl->height()), DontDelete | ReadOnly);
     putDirect("data",   data, DontDelete | ReadOnly);
@@ -721,7 +728,7 @@ void CanvasImageData::mark()
 const ClassInfo CanvasImageDataArray::info = { "ImageDataArray", 0, 0, 0 };
 
 CanvasImageDataArray::CanvasImageDataArray(ExecState* exec, CanvasImageData* p) :
-        JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), parent(p)
+        JSObject(exec->lexicalInterpreter()->builtinArrayPrototype()), parent(p)
 {
     size = p->impl()->width() * p->impl()->height() * 4;
     putDirect(exec->propertyNames().length, jsNumber(size), DontDelete | ReadOnly);
