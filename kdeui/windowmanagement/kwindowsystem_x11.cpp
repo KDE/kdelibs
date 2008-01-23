@@ -127,11 +127,15 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
 
 	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
 	    emit s_q->currentDesktopChanged( currentDesktop() );
+	if (( m[ PROTOCOLS ] & DesktopViewport ) && mapViewport() && currentDesktop() != old_current_desktop )
+	    emit s_q->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
 	    emit s_q->activeWindowChanged( activeWindow() );
 	if ( m[ PROTOCOLS ] & DesktopNames )
 	    emit s_q->desktopNamesChanged();
 	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
+	    emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
+	if (( m[ PROTOCOLS ] & DesktopGeometry ) && mapViewport() && numberOfDesktops() != old_number_of_desktops )
 	    emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m[ PROTOCOLS ] & WorkArea )
 	    emit s_q->workAreaChanged();
@@ -391,6 +395,7 @@ int KWindowSystem::currentDesktop()
       return 1;
 
     if( mapViewport()) {
+        init( INFO_BASIC );
         KWindowSystemPrivate* const s_d = s_d_func();
         NETPoint p = s_d->desktopViewport( s_d->currentDesktop( true ));
         return viewportToDesktop( QPoint( p.x, p.y ));
@@ -409,6 +414,7 @@ int KWindowSystem::numberOfDesktops()
       return 1;
 
     if( mapViewport()) {
+        init( INFO_BASIC );
         KWindowSystemPrivate* const s_d = s_d_func();
         NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
         return s.width / qApp->desktop()->width() * s.height / qApp->desktop()->height();
@@ -424,6 +430,7 @@ int KWindowSystem::numberOfDesktops()
 void KWindowSystem::setCurrentDesktop( int desktop )
 {
     if( mapViewport()) {
+        init( INFO_BASIC );
         KWindowSystemPrivate* const s_d = s_d_func();
         NETRootInfo info( QX11Info::display(), 0 );
         QPoint pos = desktopToViewport( desktop, true );
@@ -455,6 +462,7 @@ void KWindowSystem::setOnAllDesktops( WId win, bool b )
 void KWindowSystem::setOnDesktop( WId win, int desktop )
 {
     if( mapViewport()) {
+        init( INFO_BASIC );
         QPoint p = desktopToViewport( desktop, false );
         Window r;
         int x, y;
