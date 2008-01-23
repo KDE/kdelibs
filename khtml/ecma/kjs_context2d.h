@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2004 Apple Computer, Inc.
  *  Copyright (C) 2005 Zack Rusin <zack@kde.org>
+ *  Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -126,6 +127,45 @@ namespace KJS {
     
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+  };
+
+  // Return 0 if conversion failed
+  DOM::CanvasImageDataImpl* toCanvasImageData(ExecState* exec, JSValue* val);
+
+  class CanvasImageDataArray;
+  class CanvasImageData : public DOMWrapperObject<DOM::CanvasImageDataImpl> {
+  public:
+    CanvasImageData(ExecState* exec, DOM::CanvasImageDataImpl* i);
+
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+
+    virtual void mark();
+  private:
+    CanvasImageDataArray* data;
+  };
+
+  class CanvasImageDataArray : public JSObject {
+  public:
+    CanvasImageDataArray(ExecState* exec, CanvasImageData* p);
+
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+
+    virtual void mark();
+
+    // Performs conversion/claming/rounding of color components as specified in HTML5 spec.
+    static unsigned char decodeComponent(ExecState* exec, JSValue* val);
+
+    virtual bool getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot);
+    virtual bool getOwnPropertySlot(ExecState* exec, unsigned index, PropertySlot& slot);
+    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr);
+    virtual void put(ExecState *exec, unsigned index, JSValue *value, int attr);
+
+    JSValue* indexGetter(ExecState* exec, unsigned index);
+  private:
+    unsigned size;
+    CanvasImageData* parent;
   };
 } // namespace
 
