@@ -63,6 +63,7 @@
 #include <css/csshelper.h>
 #include <xml/dom2_eventsimpl.h>
 #include <html/html_imageimpl.h>
+#include <misc/helper.h> // for colorFromCSSValue
 #include <misc/htmltags.h>
 #include <misc/htmlattrs.h>
 #include <misc/translator.h>
@@ -500,76 +501,25 @@ void CanvasContext2DImpl::setGlobalCompositeOperation(const DOM::DOMString& op)
 // Colors and styles.
 //
 
-static QList<qreal> parseNumbersList(QString::const_iterator &itr)
-{
-    QList<qreal> points;
-    QLocale c(QLocale::C);
-    QString temp;
-    bool percent = false;
-    while ((*itr).isSpace())
-        ++itr;
-    while ((*itr).isNumber() ||
-           (*itr) == '-' || (*itr) == '+' || (*itr) == '.') {
-        temp = QString();
-
-        if ((*itr) == '-')
-            temp += *itr++;
-        else if ((*itr) == '+')
-            temp += *itr++;
-        while ((*itr).isDigit())
-            temp += *itr++;
-        if ((*itr) == '.')
-            temp += *itr++;
-        while ((*itr).isDigit())
-            temp += *itr++;
-        while ((*itr).isSpace())
-            ++itr;
-        if ((*itr) == '%')
-            ++itr, percent = true;
-        while ((*itr).isSpace())
-            ++itr;
-        if ((*itr) == ',')
-            ++itr;
-        points.append(c.toDouble(temp) * (percent ? 2.55 : 1));
-        //eat spaces
-        while ((*itr).isSpace())
-            ++itr;
-        percent = false;
-    }
-
-    return points;
-}
-
 static QColor colorFromString(DOM::DOMString domStr)
 {
-    QString name = domStr.string().trimmed().toLower();
-    QString::const_iterator itr = name.constBegin();
-    QList<qreal> compo;
-    if ( name.startsWith( "rgba(" ) || name.startsWith( "hsva(" ) ) {
-        ++itr; ++itr; ++itr; ++itr; ++itr;
-        compo = parseNumbersList(itr);
-        if ( compo.size() != 4 ) {
-            return QColor();
-        }
-        return name.startsWith('h') ?
-            QColor::fromHsvF( compo[0]/255, compo[1]/255, compo[2]/255, compo[3] ) :
-            QColor::fromRgbF( compo[0]/255, compo[1]/255, compo[2]/255, compo[3] );
-    } else if ( name.startsWith( "rgb(" ) ||  name.startsWith( "hsv(" ) ) {
-        ++itr; ++itr; ++itr; ++itr;
-        compo = parseNumbersList(itr);
-        if ( compo.size() != 3 ) {
-            return QColor();
-        }
-        return name.startsWith('h') ?
-            QColor::fromHsv( compo[0], compo[1], compo[2] ) :
-            QColor::fromRgb( compo[0], compo[1], compo[2] );
-    } else {
-        QRgb color;
-        if (DOM::CSSParser::parseColor(name, color))
-            return QColor(color);
-        else
-            return QColor();
-    }
+    // We make a temporary CSS decl. object to parse the color using the CSS parser.
+    CSSStyleDeclarationImpl  tempStyle(0);
+    if (!tempStyle.setProperty(CSS_PROP_COLOR, domStr))
+        return QColor();
+
+    CSSValueImpl* val = tempStyle.getPropertyCSSValue(CSS_PROP_COLOR);
+    if (!val || val->cssValueType() != CSSValue::CSS_PRIMITIVE_VALUE)
+        return QColor();
+
+    CSSPrimitiveValueImpl* primVal = static_cast<CSSPrimitiveValueImpl*>(val);
+
+    if (primVal->primitiveType() == CSSPrimitiveValue::CSS_IDENT)
+        return colorForCSSValue(primVal->getIdent());
+
+    if (primVal->primitiveType() != CSSPrimitiveValue::CSS_RGBCOLOR)
+        return QColor();
+    return QColor::fromRgba(primVal->getRGBColorValue());
 }
 
 static DOMString colorToString(const QColor& color)
