@@ -1412,29 +1412,34 @@ void CanvasContext2DImpl::drawImage(QPainter *p, const QRectF &dstRect, const QI
     if (activeState().infinityTransform)
         return;
 
+    if (!needsShadow())
+    {
+        p->setTransform(activeState().transform);
+        p->drawImage(dstRect, image, srcRect);
+        p->resetTransform();
+        return;
+    }
+
+    float xscale = dstRect.width() / srcRect.width();
+    float yscale = dstRect.height() / srcRect.height();
+    float dx = dstRect.x() - srcRect.x() * xscale;
+    float dy = dstRect.y() - srcRect.y() * yscale;
+
+    QTransform transform;
+    transform.translate(dx, dy);
+    transform.scale(xscale, yscale);
+
+    QBrush brush(image);
+    brush.setTransform(transform * activeState().transform);
+
     QPainterPath path;
     path.addRect(dstRect);
     path = path * activeState().transform;
 
-    QTransform transform;
-    transform.translate(dstRect.x(), dstRect.y());
-    if (dstRect.size() != srcRect.size())
-    {
-        float xscale = dstRect.width()  / srcRect.width();
-        float yscale = dstRect.height() / srcRect.height();
-        transform.scale(xscale, yscale);
-    }
-
-    QBrush brush(srcRect == image.rect() ? image : image.copy(srcRect.toRect()));
-    brush.setTransform(transform * activeState().transform);
-
     p->save();
     p->setBrush(brush);
     p->setPen(Qt::NoPen);
-    if (needsShadow())
-        drawPathWithShadow(p, path, DrawFill, NotUsingCanvasPattern);
-    else
-        p->drawPath(path);
+    drawPathWithShadow(p, path, DrawFill, NotUsingCanvasPattern);
     p->restore();
 }
 
