@@ -1133,8 +1133,7 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     if (radius > 7)
         radius = qMin(7 + std::pow(float(radius - 7.0), float(.7)), float(127.0));
 
-    qreal xoffset = radius * 2;
-    qreal yoffset = radius * 2;
+    qreal offset = radius * 2;
 
     bool honorRepeat = !(flags & NotUsingCanvasPattern);
     QRectF repeatClip = clipForRepeat(p, op);
@@ -1143,7 +1142,8 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     if (honorRepeat && !repeatClip.isEmpty()) {
         QPainterPath clipPath;
         clipPath.addRect(repeatClip);
-        shapeBounds = path.intersected(clipPath * state.transform).controlPointRect().toAlignedRect();
+        shapeBounds = path.intersected(clipPath * state.transform)
+	                        .controlPointRect().toAlignedRect();
     } else
         shapeBounds = path.controlPointRect().toAlignedRect();
 
@@ -1154,15 +1154,15 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     } else
         clipRect = QRect(QPoint(), canvasImage->size());
 
-    // We need the clip rect to be large enough so that items that are partially or
-    // completely outside the canvas will still cast shadows into it when they should.
-    clipRect.adjust(qMin(-shadowOffsetX(), float(0)), qMin(-shadowOffsetY(), float(0)),
-                    qMax(-shadowOffsetX(), float(0)), qMax(-shadowOffsetY(), float(0)));
-    clipRect.adjust(-xoffset, -yoffset, xoffset, yoffset);
+    QRect shadowRect = shapeBounds.translated(shadowOffsetX(), shadowOffsetY())
+                        .adjusted(-offset, -offset, offset, offset) &
+                        clipRect.adjusted(-offset, -offset, offset, offset);
 
-    QRect shapeRect  = shapeBounds & clipRect;
-    QRect shadowRect = shapeRect.translated(shadowOffsetX(), shadowOffsetY());
-    shadowRect.adjust(-xoffset, -yoffset, xoffset, yoffset);
+    QRect shapeRect = QRect(shapeBounds & clipRect) | shadowRect
+                        .translated(-shadowOffsetX(), -shadowOffsetY()) & shapeBounds;
+
+    if (!shapeRect.isValid())
+        return;
 
     QPainter painter;
 
@@ -1183,19 +1183,25 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     painter.end();
 
     // Create the shadow image and draw the original image on it
-    QImage shadow(shadowRect.size(), QImage::Format_ARGB32_Premultiplied);
-    shadow.fill(0);
+    if (shadowRect.isValid()) {
+        QImage shadow(shadowRect.size(), QImage::Format_ARGB32_Premultiplied);
+        shadow.fill(0);
 
-    painter.begin(&shadow);
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
-    painter.drawImage(xoffset, yoffset, shape);
-    painter.end();
+        painter.begin(&shadow);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.translate(-shadowRect.x(), -shadowRect.y());
+        painter.drawImage(shapeRect.x() + shadowOffsetX(),
+                          shapeRect.y() + shadowOffsetY(), shape);
+        painter.end();
 
-    // Blur the alpha channel
-    ImageFilter::shadowBlur(shadow, radius, state.shadowColor);
+        // Blur the alpha channel
+        ImageFilter::shadowBlur(shadow, radius, state.shadowColor);
 
-    // Draw the shadow on the canvas first, then composite the original image over it.
-    p->drawImage(shadowRect.topLeft(), shadow);
+        // Draw the shadow on the canvas
+        p->drawImage(shadowRect.topLeft(), shadow);
+    }
+
+    // Composite the original image over the shadow.
     p->drawImage(shapeRect.topLeft(), shape);
 }
 
