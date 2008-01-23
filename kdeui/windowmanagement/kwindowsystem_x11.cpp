@@ -484,7 +484,7 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
         x -= w / 2; // from center back to topleft
         y -= h / 2;
         KWindowSystemPrivate* const s_d = s_d_func();
-        int flags = 0x20 | 0x03 | 10; // from tool(?), x/y, static gravity
+        int flags = ( 0x20 << 12 ) | ( 0x03 << 8 ) | 10; // from tool(?), x/y, static gravity
         // This actually doesn't work with Compiz, because it restricts all window movement
         // to the currently visible area ... *shrug* .
         s_d->moveResizeWindowRequest( win, flags, x, y, w, h );
