@@ -305,12 +305,24 @@ void EntryView::buildContents()
          statusIcon + Qt::escape(titleString) + "<br />"
          //+   "<span align='right'>" + starsString +  "</span><br />"
          +      Qt::escape(m_entry->summary().representation())
-         +   "<br />"
-         +     "<em>" + authorString + "</em>, "
-         +       KGlobal::locale()->formatDate( m_entry->releaseDate(), KLocale::ShortDate )
-         + "<br />";
+         +   "<br />";
 
-    t += "</body></html>";
+    if (m_entry->rating() > 0) {
+        t += i18n("Rating: ") + QString::number(m_entry->rating())
+            +   "<br />";
+    }
+
+    if (m_entry->downloads() > 0) {
+        t += i18n("Downloads: ") + QString::number(m_entry->downloads())
+            +   "<br />";
+    }
+
+    if (!authorString.isEmpty()) {
+        t += "<em>" + authorString + "</em>, ";
+    }
+    t += KGlobal::locale()->formatDate( m_entry->releaseDate(), KLocale::ShortDate )
+         + "<br />" + "</body></html>";
+
     setText(t);
 }
 
