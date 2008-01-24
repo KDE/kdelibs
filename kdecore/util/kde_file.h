@@ -36,7 +36,7 @@
 #include <kde_file_win.h>
 #endif
  
-#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE)
+#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE)
 /*
  * This section provides portable defines for large file support.
  * To use this you must compile your code with _LARGEFILE64_SOURCE 
