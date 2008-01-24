@@ -313,7 +313,7 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 {
     //get the shortcut, remove seq, and set the new shorctut
     const QStringList actionId = self()->d->iface.action(seq[0]);
-    if (actionId.isEmpty()) // not a global shortcut
+    if (actionId.size() < 2) // not a global shortcut
         return;
     QList<int> sc = self()->d->iface.shortcut(actionId);
 
