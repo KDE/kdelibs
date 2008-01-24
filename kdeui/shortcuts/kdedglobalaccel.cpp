@@ -115,6 +115,8 @@ actionData *KdedGlobalAccelPrivate::findAction(int key) const
 
 actionData *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) const
 {
+    if (actionId.isEmpty())
+        return 0;
     QHash<QString, actionData *> *componentHash = mainComponentHashes.value(actionId.at(ComponentField));
     if (!componentHash)
         return 0;
