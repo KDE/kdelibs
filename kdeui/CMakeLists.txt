@@ -300,7 +300,7 @@ if (Q_WS_MAC)
 install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 else (Q_WS_MAC)
 # maybe these shouldn't be installed on windows? they have been so far, so leaving it this way for now
-install( FILES util/fixx11.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
