@@ -1142,13 +1142,13 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
 
     bool honorRepeat = !(flags & NotUsingCanvasPattern);
     QRectF repeatClip = clipForRepeat(p, op);
+    QPainterPath clipPath;
     QRect shapeBounds;
 
     if (honorRepeat && !repeatClip.isEmpty()) {
-        QPainterPath clipPath;
         clipPath.addRect(repeatClip);
-        shapeBounds = path.intersected(clipPath * state.transform)
-	                        .controlPointRect().toAlignedRect();
+        clipPath = clipPath * state.transform;
+        shapeBounds = path.intersected(clipPath).controlPointRect().toAlignedRect();
     } else
         shapeBounds = path.controlPointRect().toAlignedRect();
 
@@ -1183,7 +1183,7 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     painter.setPen(Qt::NoPen);
     painter.translate(-shapeRect.x(), -shapeRect.y());
     if (honorRepeat && !repeatClip.isEmpty())
-        painter.setClipRect(repeatClip);
+        painter.setClipPath(clipPath);
     painter.drawPath(path);
     painter.end();
 
@@ -1240,7 +1240,7 @@ void CanvasContext2DImpl::clip()
 
 bool CanvasContext2DImpl::isPointInPath(float x, float y) const
 {
-    return activeState().transform.map(path).contains(QPointF(x, y));
+    return path.contains(QPointF(x, y));
 }
 
 void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float radius, int& exceptionCode)
