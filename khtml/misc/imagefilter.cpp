@@ -83,7 +83,6 @@ static const quint32 stack_blur8_shr[255] =
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24
 };
 
-
 inline static void blurHorizontal(QImage &image, unsigned int *stack, int div, int radius)
 {
     int stackindex;
@@ -260,15 +259,20 @@ void ImageFilter::shadowBlur(QImage &image, float radius, const QColor &color)
 
     // Correct the color and opacity of the shadow
     QPainter p(&image);
+
+    // ### Contrary to what the documentation says, QColor::rgb() doesn't strip
+    //     the alpha, and QColor::rgba() returns the components in ARGB order.
+    if ((color.rgba() & 0x00ffffff) != 0 || qFuzzyCompare(radius, 0))
+    {
+        QColor c = color;
+        c.setAlpha(255);
+        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        p.fillRect(image.rect(), c);
+    }
+
     if (color.alpha() < 255)
     {
         p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-        p.fillRect(image.rect(), color);
-    }
-
-    if (color.rgb() != 0 || qFuzzyCompare(radius, 0))
-    {
-        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
         p.fillRect(image.rect(), color);
     }
 }
