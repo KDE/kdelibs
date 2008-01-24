@@ -304,19 +304,19 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
 
     //### check for proxyAuthenticationRequiredError
 
+    d->ip = d->socket.peerAddress().toString();
+    d->port = d->socket.peerPort();
+
     if (d->autoSSL) {
         SslResult res = startTLSInternal();
         if (res == ResultFailed) {
             //### more?
             //TODO proper i18n, maybe a special error code.
             error(ERR_COULD_NOT_CONNECT, 
-                  host + QLatin1String(": SSL negotiation failed."));
+                  host + i18n(": SSL negotiation failed"));
             return false;
         }
     }
-    // store the IP for later
-    d->ip = d->socket.peerAddress().toString();
-    d->port = d->socket.peerPort();
 
     return true;
 }
@@ -435,7 +435,17 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
     }
     peerCertChain.chop(1);
     setMetaData("ssl_peer_chain", peerCertChain);
-    //Do this before the other side needs the data, e.g. for the SSL info dialog
+    //The metadata is usually sent automatically before any payload data (including that of
+    //messageBox()) so *theroretically* we just assume that metadata will make it to the other
+    //side when needed.
+    //In practice, calling sendMetaData() here
+    //a) makes the SSL info dialog work
+    //b) breaks Konqueror which then never displays the
+    //   SSL shield icon.
+    //Until I have figured out how to unbreak metadata semantics let's have a working SSL info
+    //dialog and no shield icon in Konqueror. If anyone feels like implementing hacks to
+    //make it work right now - go ahead, have [air quotes here] fun.
+    //Gold star of KDE for fixing it right!
     sendMetaData();
 
     SslResult rc = verifyServerCertificate();
@@ -465,7 +475,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
                                    i18n("C&onnect"),
                                    "WarnOnEnterSSLMode");
         if (msgResult == KMessageBox::Yes) {
-            messageBox(SSLMessageBox /*==the SSL info dialog*/, QString());
+            messageBox(SSLMessageBox /*==the SSL info dialog*/, d->host);
         }
     }
 
@@ -709,7 +719,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                                i18n("&Details"), i18n("Co&ntinue"));
         if (msgResult == KMessageBox::Yes) {
             //Details was chosen - we pop up the details dialog and present the choices again
-            messageBox(SSLMessageBox /*==the SSL info dialog*/, QString());
+            messageBox(SSLMessageBox /*==the SSL info dialog*/, d->host);
         } else if (msgResult == KMessageBox::Cancel) {
             return ResultFailed;
         }
