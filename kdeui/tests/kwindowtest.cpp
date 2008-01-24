@@ -190,8 +190,8 @@ void TestWindow::slotInsertClock()
 
 void TestWindow::slotNew()
 {
- tb1->actions()[0]->toggle();
- //toolBar()->removeAction( fileNewAction );
+    //tb1->actions()[0]->toggle();
+    //toolBar()->removeAction( fileNewAction );
 }
 void TestWindow::slotOpen()
 {
