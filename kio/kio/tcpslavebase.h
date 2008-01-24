@@ -171,7 +171,7 @@ protected:
      * @param t  length of time in seconds that we should monitor the
      *           socket before timing out.
      *
-     * @return true if any activity was seen on the socket before the
+     * @return true if any data arrived on the socket before the
      *              timeout value was reached, false otherwise.
      */
     bool waitForResponse( int t );
