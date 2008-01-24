@@ -268,7 +268,7 @@ void KLineEdit::updateClearButton()
     }
 
     QSize geom = size();
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth,0,this);
     int buttonWidth = d->clearButton->sizeHint().width();
     QSize newButtonSize(buttonWidth, geom.height());
 
