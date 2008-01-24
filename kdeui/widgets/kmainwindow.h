@@ -168,7 +168,7 @@ public:
      * Example (adding a standard help menu to your application):
      * \code
      * KMenu *help = helpMenu( <myTextString> );
-     * menuBar()->insertItem( i18n("&Help"), help );
+     * menuBar()->addMenu( help );
      * \endcode
      *
      * @param aboutAppText The string that is used in the application
@@ -198,7 +198,7 @@ public:
      *
      * Example (adding a help menu to your application):
      * \code
-     * menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
+     * menuBar()->addMenu( customHelpMenu() );
      * \endcode
      *
      * @param showWhatsThis Set this to @p false if you do not want to include
@@ -659,7 +659,7 @@ protected Q_SLOTS:
     * void MyMainLevel::setupInterface()
     * {
     *   ..
-    *   menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
+    *   menuBar()->addMenu( customHelpMenu() );
     *   ..
     * }
     *
