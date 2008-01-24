@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
+ * Copyright (C) 2007, 2008 Fredrik Höglund <fredrik@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
