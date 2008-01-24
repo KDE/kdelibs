@@ -215,6 +215,10 @@ public:
 
 };
 
+const char* imageMissingIcon =
+"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAzrAAAM6wHl1kTSAAAB2ElEQVQ4jZWTMWsiQRTHfxlDCln2iFhIClksRUIQC6t8BkurzTewEBGx2GKrICmsUsg218rBWV2xdQqLRVJYhUQkBCKLeN6iixB5d0WyYOKGcP9mmHm83/u/NzMHvOobcMz/6Tfw5/Btc+z7/oWIoJRCKQWwt0ZSSqHr+vddACLyZck44GFc8OnpiX6/z3Q6RSmFYRhUq1UMw9gDqF2AUorRaES73WYymVAsFsnlcnieR6PRwPO8dy3uAcIwxHEcADRNo1qt0mq16PV6ZDIZut0uYRh+Dri7u2O1WlGr1QCwLIsgCMhkMlQqFebzOePx+P1cdgG+7wNQKpWwbRsRodlsslgsOD8/R0R4fHyMdwBwcnKCiHBzc0M6neby8hIRoV6vMxwOERGy2eznDvL5PJqmMRgMmM1mpFIprq6uEBFs20bXdc7OzkgkEvvXGA2uVqth2zamaVIul9E0jeVyiVKKdrtNMplkvV7HAwDK5TLX19c4jsN4PEZEKBQKmKbJdrvl/v4e13UfgAXAwVueEYbhRdwzTiQSvLy8cHt7y+npKZ1O59myrB8RQH10EKcgCDg6OoqSf/L6keJbiNNms8F13QfLsn69Jf+NYlELGpD+grMAgo+H/wARELhn1VB8lwAAAABJRU5ErkJggg==";
+//r 727816 of oxygen's image-missing, base64'd PNG
+
 #include <kaction.h>
 #include <kcmdlineargs.h>
 #include <kio/job.h>
@@ -747,6 +751,12 @@ int main(int argc, char *argv[])
     dc.sync();
 
     kClearDebugConfig();
+
+    // make sure the missing image icon is independent of the icon theme..
+    QByteArray brokenImData = QByteArray::fromBase64(imageMissingIcon);
+    QImage brokenIm;
+    brokenIm.loadFromData(brokenImData);
+    khtml::Cache::brokenPixmap = new QPixmap(QPixmap::fromImage(brokenIm));
 
     // create widgets
     KMainWindow *toplevel = new KMainWindow();
