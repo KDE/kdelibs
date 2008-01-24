@@ -311,8 +311,10 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
 //static
 void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 {
-    //get the shortcut, remove &seq, and set the new shorctut
-    QStringList actionId = self()->d->iface.action(seq[0]);
+    //get the shortcut, remove seq, and set the new shorctut
+    const QStringList actionId = self()->d->iface.action(seq[0]);
+    if (actionId.isEmpty()) // not a global shortcut
+        return;
     QList<int> sc = self()->d->iface.shortcut(actionId);
 
     for (int i = 0; i < sc.count(); i++)
