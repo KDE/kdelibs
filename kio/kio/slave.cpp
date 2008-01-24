@@ -88,7 +88,8 @@ namespace KIO {
             m_refCount(1)
         {
             slaveconnserver->listenForRemote();
-            Q_ASSERT(slaveconnserver->isListening());
+            if ( !slaveconnserver->isListening() )
+                kWarning() << "Connection server not listening, could not connect" << endl;
         }
         ~SlavePrivate()
         {
