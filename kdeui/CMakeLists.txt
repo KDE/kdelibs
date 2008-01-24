@@ -296,6 +296,13 @@ set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SO
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR})
 ########### install files ###############
 
+if (Q_WS_MAC)
+install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+else (Q_WS_MAC)
+# maybe these shouldn't be installed on windows? they have been so far, so leaving it this way for now
+install( FILES util/fixx11.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+endif (Q_WS_MAC)
+
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect )
 install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
@@ -392,14 +399,12 @@ install( FILES
  shortcuts/kglobalaccel.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
- util/fixx11h.h
  util/kaccelgen.h
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
  util/kguiitem.h
  util/kkeyserver.h
- util/kkeyserver_x11.h
  util/kmanagerselection.h
  util/knotification.h
  util/knotificationrestrictions.h
