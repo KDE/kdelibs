@@ -183,8 +183,8 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
 void HTMLObjectBaseElementImpl::defaultEventHandler(EventImpl *e)
 {
     // ### duplicated in HTMLIFrameElementImpl
-     if ( e->target() == this && m_render && m_render->isWidget() 
-                                    && static_cast<RenderWidget*>(m_render)->isRedirectedWidget() 
+     if ( e->target() == this && m_render && m_render->isWidget()
+                                    && static_cast<RenderWidget*>(m_render)->isRedirectedWidget()
                                     && qobject_cast<KHTMLView*>(static_cast<RenderWidget*>(m_render)->widget())) {
         switch(e->id())  {
         case EventImpl::MOUSEDOWN_EVENT:
@@ -246,12 +246,12 @@ void HTMLObjectBaseElementImpl::slotRerender()
     if ( !inDocument() || !m_rerender ) return;
 
     // ### there can be a m_render if this is called from our attach indirectly
-    if ( attached() || m_render)
+    if ( attached() || m_render) {
         detach();
+        attach();
+    }
 
     m_rerender = false;
-
-    attach();
 }
 
 void HTMLObjectBaseElementImpl::attach() {
@@ -298,7 +298,7 @@ void HTMLObjectBaseElementImpl::attach() {
 
     _style->deref();
     NodeBaseImpl::attach();
-    
+
     if (m_render) QTimer::singleShot( 0, this, SLOT( slotEmitLoadEvent() ) );
 }
 
@@ -329,7 +329,7 @@ bool HTMLObjectBaseElementImpl::mimetypeHandledInternally(const QString& mime)
         m_imageLike = newImageLike;
         requestRerender();
     }
-    
+
     return newImageLike; // No need for kpart for that.
 }
 
@@ -345,7 +345,7 @@ void HTMLObjectBaseElementImpl::computeContent()
     for (NodeImpl* child = firstChild(); child; child = child->nextSibling()) {
         if (child->id() == ID_PARAM) {
             HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-    
+
             QString aStr = p->name();
             aStr += QLatin1String("=\"");
             aStr += p->value();
@@ -378,7 +378,7 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     params.append( QLatin1String("__KHTML__PLUGINEMBED=\"YES\"") );
     params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(getDocument()->baseURL().url()));
-    
+
     // Non-embed elements parse a bunch of attributes and inherit things off <embed>, if any
     HTMLEmbedElementImpl* embed = relevantEmbed();
     if (id() != ID_EMBED) {
@@ -444,7 +444,7 @@ void HTMLObjectBaseElementImpl::computeContent()
         }
     }
 
-    // Figure out if may be we're image-like. In this case, we don't need to load anything, 
+    // Figure out if may be we're image-like. In this case, we don't need to load anything,
     // but may need to do a detach/attach
     QStringList supportedImageTypes = khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes();
 
@@ -461,10 +461,10 @@ void HTMLObjectBaseElementImpl::computeContent()
     // Now see if we have to render alternate content.
     bool newRenderAlternative = false;
 
-    // If we aren't permitted to load this by security policy, render alternative content instead. 
+    // If we aren't permitted to load this by security policy, render alternative content instead.
     if (!getDocument()->isURLAllowed(effectiveURL))
         newRenderAlternative = true;
-        
+
     // If Java is off, render alternative as well...
     if (effectiveServiceType == "application/x-java-applet") {
         KHTMLView* w = getDocument()->view();
@@ -491,10 +491,10 @@ void HTMLObjectBaseElementImpl::computeContent()
         setNeedComputeContent();
         return;
     }
-    
+
     KHTMLPart* part = getDocument()->part();
     clearChildWidget();
-    
+
     kDebug(6031) << effectiveURL << effectiveServiceType << params;
 
     if (!part->requestObject( this, effectiveURL, effectiveServiceType, params)) {
@@ -502,14 +502,14 @@ void HTMLObjectBaseElementImpl::computeContent()
         m_renderAlternative = true;
     }
 
-    // Either way, we need to re-attach, either for alternative content, or because 
+    // Either way, we need to re-attach, either for alternative content, or because
     // we got the part..
     requestRerender();
 }
 
 void HTMLObjectBaseElementImpl::setWidgetNotify(QWidget *widget)
 {
-    // Ick. 
+    // Ick.
     if(m_render && strcmp( m_render->renderName(),  "RenderPartObject" ) == 0 )
         static_cast<RenderPartObject*>(m_render)->setWidget(widget);
 }
@@ -539,7 +539,7 @@ void HTMLObjectBaseElementImpl::partLoadingErrorNotify()
 
 void HTMLObjectBaseElementImpl::slotPartLoadingErrorNotify()
 {
-    // If we have an embed, we may be able to tell the user where to 
+    // If we have an embed, we may be able to tell the user where to
     // download the plugin.
 
     HTMLEmbedElementImpl *embed = relevantEmbed();
