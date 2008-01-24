@@ -301,7 +301,7 @@ void KSSLInfoDialog::displayFromChain(int i)
     d->ui.validityPeriod->setText(vp);
 
     d->ui.serial->setText(cert.serialNumber());
-    d->ui.digest->setText(cert.digest());
+    d->ui.digest->setText(cert.digest().toHex());
 
     d->subject->setCertificate(cert, KSslCertificateBox::Subject);
     d->issuer->setCertificate(cert, KSslCertificateBox::Issuer);
