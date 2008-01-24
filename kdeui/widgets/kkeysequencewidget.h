@@ -29,6 +29,7 @@
 
 class KKeySequenceWidgetPrivate;
 class QAction;
+class KActionCollection;
 
 /**
  * @short A widget to input a QKeySequence.
@@ -36,10 +37,10 @@ class QAction;
  * This widget lets the user choose a QKeySequence, which is usually used as a shortcut key,
  * by pressing the keys just like to trigger a shortcut. Calling captureKeySequence(), or
  * the user clicking into the widget, start recording.
- * 
- * A check for conflict with shortcut of this application can also be performed. 
- * call setCheckActionList() to set the list of action to check with, and applyStealShortcut
- * when applying changes.
+ *
+ * A check for conflict with shortcut of this application can also be performed.
+ * call setCheckActionCollections() to set the list of action collections to check with,
+ * and applyStealShortcut when applying changes.
  *
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
@@ -92,21 +93,29 @@ public:
 	 * Return the currently selected key sequence.
 	 */
 	QKeySequence keySequence() const;
-	
+
 	/**
-	 * set a list of action to check against for conflictuous shortcut.
-	 * 
-	 * If there is a conflictuous shortcut with a KAction, and that his shortcut can be configured
-	 * (KAction::isShortcutConfigurable() returns true) the user will be prompted for eventually steal 
-	 * the shortcut from this action
-	 * 
-	 * The action you are editing the shortcut shouldn't be in that list, or there may be unexcepted behaviour
-	 * 
+	 * Set a list of action collections to check against for conflictuous shortcut.
+	 *
+	 * If there is a conflictuous shortcut with a KAction, and its shortcut can be configured
+	 * (KAction::isShortcutConfigurable() returns true) the user will be prompted whether to steal
+	 * the shortcut from this action.
+	 *
 	 * Global shortcuts are automatically checked for conflicts
-	 * 
+	 *
 	 * Don't forget to call applyStealShortcut to actually steal the shortcut.
+	 *
+	 * @since 4.1
 	 */
-	void setCheckActionList(const QList<QAction*> &checkList);
+    void setCheckActionCollections(const QList<KActionCollection *>& actionCollections);
+
+    /**
+     * @deprecated since 4.1
+     * use setCheckActionCollections so that KKeySequenceWidget knows
+     * in which action collection to call the writeSettings method after stealing
+     * a shortcut from an action.
+     */
+    KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
 
 Q_SIGNALS:
 	/**
@@ -123,24 +132,26 @@ public Q_SLOTS:
 	 * @see setModifierlessAllowed()
 	 */
 	void captureKeySequence();
-	
+
 	/**
 	 * Set the key sequence.
-	 * 
+	 *
 	 * If @p val == Validate, and the call is actually changing the key sequence,
 	 * conflictuous shortcut will be checked.
 	 */
 	void setKeySequence(const QKeySequence &seq, Validation val = NoValidate);
-	
+
 	/**
 	 * Clear the key sequence.
 	 */
 	void clearKeySequence();
-	
+
 	/**
-	 * Actualy remove shortcut of action that the user wanted to steal.
-	 * 
-	 * To be called before you apply your changes.  No shortcut are stolen untill this function is called.
+	 * Actually remove the shortcut that the user wanted to steal, from the
+	 * action that was using it.
+	 *
+	 * To be called before you apply your changes.
+	 * No shortcuts are stolen until this function is called.
 	 */
 	void applyStealShortcut();
 private:

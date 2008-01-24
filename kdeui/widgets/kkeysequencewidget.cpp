@@ -22,17 +22,9 @@
 #include "kkeysequencewidget.h"
 #include "kkeysequencewidget_p.h"
 
-#include <config.h>
-
 #include "kkeyserver.h"
 #include "kiconloader.h"
 
-//TODO: remove unneeded includes
-#include <QtGui/QCursor>
-#include <QtGui/qdrawutil.h>
-#include <QtGui/QPainter>
-#include <QPolygon>
-#include <QStyle>
 #include <QKeyEvent>
 #include <QTimer>
 #include <QHBoxLayout>
@@ -93,7 +85,7 @@ public:
 	void startRecording();
 //private slot
 	void doneRecording(bool validate = true);
-	
+
 //members
 	KKeySequenceWidget *const q;
 	QHBoxLayout *layout;
@@ -107,19 +99,24 @@ public:
 	uint nKey;
 	uint modifierKeys;
 	bool isRecording;
-	
-	/**
-	 * The list of action to check against for conflict shortcut
-	 */
-	QList<QAction*> checkList;
+
+    /**
+     * The list of action to check against for conflict shortcut
+     */
+    QList<QAction*> checkList; // deprecated
+    /**
+     * The list of action collections to check against for conflict shortcut
+     */
+    QList<KActionCollection*> checkActionCollections;
+
 	/**
 	 * The action to steal the shortcut from.
 	 */
 	KAction* stealAction;
-	
+
 	bool stealShortcut(QAction *item, const QKeySequence &seq);
 	void wontStealShortcut(QAction *item, const QKeySequence &seq);
-			
+
 };
 
 bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence &seq)
@@ -130,7 +127,7 @@ bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence 
 
 	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue)
 		return false;
-	
+
 	return true;
 }
 
@@ -165,7 +162,7 @@ void KKeySequenceWidgetPrivate::init()
 	stealAction = 0;
 	isRecording = false;
 	allowModifierless = false;
-	
+
 	layout = new QHBoxLayout(q);
 
 	keyButton = new KKeySequenceButton(this, q);
@@ -206,9 +203,19 @@ void KKeySequenceWidget::setClearButtonShown(bool show)
 	d->clearButton->setVisible(show);
 }
 
-void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList)
+void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList) // deprecated
 {
-	d->checkList = checkList;
+    d->checkList = checkList;
+    Q_ASSERT(d->checkActionCollections.isEmpty()); // don't call this method if you call setCheckActionCollections!
+}
+
+void KKeySequenceWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
+{
+    d->checkActionCollections = actionCollections;
+    // For now, fill in d->checkList so that the main logic can still work with only checkList.
+    foreach(KActionCollection* collection, actionCollections) {
+        d->checkList += collection->actions();
+    }
 }
 
 //slot
@@ -246,10 +253,18 @@ void KKeySequenceWidget::applyStealShortcut()
 		KShortcut cut=d->stealAction->shortcut();
 		cut.remove(d->keySequence);
 		d->stealAction->setShortcut(cut, KAction::ActiveShortcut);
-		if(KActionCollection *collection = qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(d->stealAction->property("_k_ActionCollection"))))
-			collection->writeSettings();
+                // Find the collection where stealAction belongs
+                KActionCollection* parentCollection = 0;
+                foreach(KActionCollection* collection, d->checkActionCollections) {
+                    if (collection->actions().contains(d->stealAction)) {
+                        parentCollection = collection;
+                        break;
+                    }
+                }
+                if (parentCollection)
+			parentCollection->writeSettings();
 	}
-	KGlobalAccel::stealShortcutSystemwide(d->keySequence);	
+	KGlobalAccel::stealShortcutSystemwide(d->keySequence);
 }
 
 void KKeySequenceButton::setText(const QString &text)
@@ -298,8 +313,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 					}
 				}
 			} else {
-				if(qaction->shortcut() ==  keySequence)
-				{
+				if(qaction->shortcut() == keySequence) {
 					wontStealShortcut(qaction, keySequence);
 					goto reset;
 				}
@@ -317,7 +331,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	if (keySequence != oldKeySequence)
 		emit q->keySequenceChanged(keySequence);
 	return;
-	
+
 reset:
 	keySequence = oldKeySequence;
 	updateShortcutDisplay();

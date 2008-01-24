@@ -91,6 +91,12 @@ void KShortcutWidget::setCheckActionList(const QList<QAction*> &checkList)
     d->ui.altEditor->setCheckActionList(checkList);
 }
 
+void KShortcutWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
+{
+    d->ui.priEditor->setCheckActionCollections(actionCollections);
+    d->ui.altEditor->setCheckActionCollections(actionCollections);
+}
+
 //slot
 void KShortcutWidget::applyStealShortcut()
 {

@@ -22,6 +22,7 @@
 #include <QtGui/QWidget>
 #include "kshortcut.h"
 
+class KActionCollection;
 class KShortcutWidgetPrivate;
 
 class KDEUI_EXPORT KShortcutWidget : public QWidget
@@ -39,30 +40,41 @@ public:
     KShortcut shortcut() const;
 
     /**
-     * Set a list of action to check against for conflictuous shortcut.
-     * 
+     * Set a list of action collections to check against for conflictuous shortcut.
+     *
      * If there is a conflictuous shortcut with a KAction, and that his shortcut can be configured
-     * (KAction::isShortcutConfigurable() returns true) the user will be prompted for eventually steal 
+     * (KAction::isShortcutConfigurable() returns true) the user will be prompted for eventually steal
      * the shortcut from this action
-     * 
-     * The action you are editing the shortcut shouldn't be in that list, or there may be unexcepted behaviour
-     * 
+     *
      * Global shortcuts are automatically checked for conflicts
-     *  
+     *
      * Don't forget to call applyStealShortcut to actually steal the shortcut.
-    */
-    void setCheckActionList(const QList<QAction*> &checkList);
+     *
+     * @since 4.1
+     */
+    void setCheckActionCollections(const QList<KActionCollection *>& actionCollections);
+
+    /**
+     * @deprecated since 4.1
+     * Use setCheckActionCollections so that KShortcutWidget knows
+     * in which action collection to call the writeSettings method after stealing
+     * a shortcut from an action.
+     */
+    KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
+
 Q_SIGNALS:
     void shortcutChanged(const KShortcut &cut);
 
 public Q_SLOTS:
     void setShortcut(const KShortcut &cut);
     void clearShortcut();
-    
+
     /**
-     * Actualy remove shortcut of action that the user wanted to steal.
-     * 
-     * To be called before you apply your changes.  No shortcut are stolen untill this function is called.
+     * Actually remove the shortcut that the user wanted to steal, from the
+     * action that was using it.
+     *
+     * To be called before you apply your changes.
+     * No shortcuts are stolen until this function is called.
      */
     void applyStealShortcut();
 

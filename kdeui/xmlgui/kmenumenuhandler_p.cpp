@@ -78,6 +78,17 @@ void KMenuMenuHandler::buildToolbarAction()
   m_toolbarAction->setItems(toolbarlist);
 }
 
+static KActionCollection* findParentCollection(KXMLGUIFactory* factory, QAction* action)
+{
+    foreach(KXMLGUIClient *client, factory->clients()) {
+        KActionCollection* collection = client->actionCollection();
+        // if the call to actions() is too slow, add KActionCollection::contains(QAction*).
+        if (collection->actions().contains(action)) {
+            return collection;
+        }
+    }
+    return 0;
+}
 
 void KMenuMenuHandler::slotSetShortcut()
 {
@@ -87,26 +98,29 @@ void KMenuMenuHandler::slotSetShortcut()
     KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
     if(!action)
         return;
-    
+
     KDialog dialog(m_builder->widget());
     KShortcutWidget swidget(&dialog);
     swidget.setShortcut(action->shortcut());
     dialog.setMainWidget(&swidget);
+    KActionCollection* parentCollection = 0;
     if(dynamic_cast<KXMLGUIClient*>(m_builder))
     {
-        QList<QAction*> checklist;
+        QList<KActionCollection*> checkCollections;
         KXMLGUIFactory *factory=dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
-        foreach(KXMLGUIClient *client, factory->clients())
-            checklist+=client->actionCollection()->actions();
-        swidget.setCheckActionList(checklist);
+        parentCollection = findParentCollection(factory, action);
+        foreach(KXMLGUIClient *client, factory->clients()) {
+            checkCollections += client->actionCollection();
+        }
+        swidget.setCheckActionCollections(checkCollections);
     }
-    
+
     if(dialog.exec())
     {
         action->setShortcut(swidget.shortcut(), KAction::ActiveShortcut);
         swidget.applyStealShortcut();
-        if(KActionCollection *collection = qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(action->property("_k_ActionCollection"))))
-            collection->writeSettings();
+        if(parentCollection)
+            parentCollection->writeSettings();
     }
 }
 
@@ -123,15 +137,18 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     QAction *action= qobject_cast<QAction*>(menu->contextMenuFocusAction());
     if(!action)
         return;
-    
+
+    KXMLGUIFactory *factory = dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
     QString actionName = action->objectName(); // set by KActionCollection::addAction
-    KActionCollection *collection= qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(action->property("_k_ActionCollection")));
-    if(!collection)
-    {
-         kWarning(296) << "Cannot find the action collection for action " << action->objectName();
+    KActionCollection *collection = 0;
+    if (factory) {
+        collection = findParentCollection(factory, action);
+    }
+    if(!collection) {
+         kWarning(296) << "Cannot find the action collection for action " << actionName;
          return;
     }
-    
+
     KToolBar *toolbar=window->toolBars()[tb];
     toolbar->addAction(action);
 
@@ -140,11 +157,11 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     QDomDocument document;
     document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->componentData() ) );
     QDomElement elem = document.documentElement().toElement();
-    
+
     static const QString &tagToolBar = KGlobal::staticQString( "ToolBar" );
     static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
     static const QString &attrName     = KGlobal::staticQString( "name" );
-    
+
     QDomElement toolbarElem;
     QDomNode n=elem.firstChild();
     for( ; !n.isNull(); n = n.nextSibling() )
@@ -167,10 +184,10 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
         toolbarElem.setAttribute( attrName, toolbar->objectName() );
         elem.appendChild( toolbarElem );
     }
-    
+
     KXMLGUIFactory::findActionByName(toolbarElem, actionName, true);
     KXMLGUIFactory::saveConfigFile(document, xmlFile);
-    
+
 }
 
 
