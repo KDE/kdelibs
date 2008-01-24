@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2006, 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -92,28 +93,12 @@ QString KTranslatable::translated(const QString& lang) const
 
 QStringList KTranslatable::languages() const
 {
-    QStringList strlist;
-
-    QMapIterator<QString, QString> it(m_strings);
-    while (it.hasNext()) {
-        it.next();
-        strlist << it.key();
-    }
-
-    return strlist;
+    return m_strings.keys();
 }
 
 QStringList KTranslatable::strings() const
 {
-    QStringList strlist;
-
-    QMapIterator<QString, QString> it(m_strings);
-    while (it.hasNext()) {
-        it.next();
-        strlist << it.value();
-    }
-
-    return strlist;
+    return m_strings.values();
 }
 
 QMap<QString, QString> KTranslatable::stringmap() const
@@ -123,13 +108,11 @@ QMap<QString, QString> KTranslatable::stringmap() const
 
 bool KTranslatable::isTranslated() const
 {
-    if (m_strings.count() > 1) return true;
-    return false;
+    return m_strings.count() > 1;
 }
 
 bool KTranslatable::isEmpty() const
 {
-    if (m_strings.count() > 0) return false;
-    return true;
+    return m_strings.isEmpty();
 }
 
