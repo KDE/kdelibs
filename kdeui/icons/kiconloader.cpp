@@ -439,7 +439,7 @@ bool KIconLoaderPrivate::initIconThemes()
 
     // Insert application specific themes at the top.
     mpDirs->addResourceType("appicon", "data", appname + "/pics/");
-    // ################## KDE4: consider removing the toolbar directory
+    // ################## KDE5: consider removing the toolbar directory
     mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
 
     // Add legacy icon dirs.
