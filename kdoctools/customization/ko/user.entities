@@ -5,4 +5,32 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-<!ENTITY KdeKoTeam "KDE ���� �ѱ��� ����<email>kde-i18n@kldp.org</email>">
+<!ENTITY KdeKoTeam "KDE 번역 한국말 모임<email>kde-i18n@kldp.org</email>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM 드라이브</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY eg     "<abbrev>예:</abbrev>">
+<!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>기타</abbrev>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY infocenter	"<application>정보 센터</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; 제어판</application>">
+<!ENTITY kicon	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;의 K 아이콘</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> 아이콘"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> 메뉴">
+<!ENTITY LMB    "<mousebutton>왼쪽</mousebutton> 마우스 단추">
+<!ENTITY MMB    "<mousebutton>가운데</mousebutton> 마우스 단추">
+<!ENTITY OS	"운영 체제"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "<mousebutton>오른쪽</mousebutton> 마우스 단추">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemtray "<application>시스템 트레이</application>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
