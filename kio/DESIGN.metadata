@@ -118,6 +118,8 @@ HTTP-Headers		string	The HTTP headers, concatenated, \n delimited (set by http)
 
 CustomHTTPHeader	string	Custom HTTP headers to add to the request (read by http)
 
+UseProxy		string	URL representing the proxy settings (read by http)
+
 PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
                                 policies presented by the HTTP server
 
