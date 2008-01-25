@@ -2,7 +2,7 @@
     This file is a part of the KDE project
 
     Copyright © 2006 Zack Rusin <zack@kde.org>
-    Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
+    Copyright © 2006-2007, 2008 Fredrik Höglund <fredrik@kde.org>
 
     The stack blur algorithm was invented by Mario Klingemann <mario@quasimondo.com>
 

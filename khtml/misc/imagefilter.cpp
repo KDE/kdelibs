@@ -2,7 +2,7 @@
     This file is a part of the KDE project
 
     Copyright © 2006 Zack Rusin <zack@kde.org>
-    Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
+    Copyright © 2006-2007, 2008 Fredrik Höglund <fredrik@kde.org>
 
     The stack blur algorithm was invented by Mario Klingemann <mario@quasimondo.com>
 
@@ -259,22 +259,8 @@ void ImageFilter::shadowBlur(QImage &image, float radius, const QColor &color)
 
     // Correct the color and opacity of the shadow
     QPainter p(&image);
-
-    // ### Contrary to what the documentation says, QColor::rgb() doesn't strip
-    //     the alpha, and QColor::rgba() returns the components in ARGB order.
-    if ((color.rgba() & 0x00ffffff) != 0 || qFuzzyCompare(radius, 0))
-    {
-        QColor c = color;
-        c.setAlpha(255);
-        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        p.fillRect(image.rect(), c);
-    }
-
-    if (color.alpha() < 255)
-    {
-        p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-        p.fillRect(image.rect(), color);
-    }
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.fillRect(image.rect(), color);
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
