@@ -1,3 +1,16 @@
+<!-- This file can be used to include the notice in documentation 
+     <!DOCTYPE book ... >
+    ...
+     <bookinfo>
+       <legalnotice>
+         <para>Copyright (C) 20yy  [name of author]</para>
+         &GPLnotice;
+       </legalnotice>
+     </bookinfo>
+    ...
+
+    Alternatively, you can include the text literally.
+ -->
 <para>This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the
@@ -10,7 +23,7 @@ General Public License for more details.</para>
 
 <para>You should have received a copy of the GNU General Public
 License along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</para>
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.</para>
 <!--
 Local variables:
 mode: sgml
