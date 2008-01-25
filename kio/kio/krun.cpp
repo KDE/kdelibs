@@ -615,11 +615,17 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
               return false; // no startup notification at all
       }
       else
-      { // Create startup notification even for apps for which there shouldn't be any,
+      {
+#if 0
+        // Create startup notification even for apps for which there shouldn't be any,
         // just without any visual feedback. This will ensure they'll be positioned on the proper
         // virtual desktop, and will get user timestamp from the ASN ID.
           wmclass = "0";
           silent = true;
+#else   // That unfortunately doesn't work, when the launched non-compliant application
+        // launches another one that is compliant and there is any delay inbetween (bnc:#343359)
+          return false;
+#endif
       }
   }
   if( silent_arg != NULL )
