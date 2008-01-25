@@ -24,6 +24,10 @@
 #include <QtCore/QSettings>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
+#include "phonon/phonon_export.h"
+
+QT_BEGIN_HEADER
+QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
@@ -79,5 +83,8 @@ class QSettingsGroup
         QString m_group;
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
+QT_END_HEADER
 
 #endif // PHONON_QSETTINGSGROUP_H
