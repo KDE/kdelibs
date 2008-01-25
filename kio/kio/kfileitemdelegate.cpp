@@ -452,7 +452,7 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
     textoption.setAlignment(QStyle::visualAlignment(option.direction, alignment(option, index)));
-    textoption.setWrapMode(wordWrapText(option) ? QTextOption::WordWrap : QTextOption::NoWrap);
+    textoption.setWrapMode(wordWrapText(option) ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap);
 
     layout.setFont(font(option, index, item));
     layout.setTextOption(textoption);
