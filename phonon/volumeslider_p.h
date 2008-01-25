@@ -27,13 +27,13 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QToolButton>
 #include "factory.h"
+#include "audiooutput.h"
 #include <QtGui/QIcon>
 #include <QtCore/QPointer>
 #include "platform_p.h"
 
 namespace Phonon
 {
-class AudioOutput;
 class VolumeSliderPrivate
 {
     Q_DECLARE_PUBLIC(VolumeSlider)
