@@ -19,10 +19,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef K_SAMPLEEDIT_H
-#define K_SAMPLEEDIT_H
+#ifndef SAMPLEEDIT_P_H
+#define SAMPLEEDIT_P_H
 
-#include <QTextEdit>
+#include <ktextedit.h>
 #include <QFont>
 #include <QString>
 #include <QStringList>
@@ -32,7 +32,7 @@
 
 // Derived to keep text centered when there is not enough of it for scrolling.
 // Needed in KFontChooser for sample text.
-class SampleEdit : public QTextEdit
+class SampleEdit : public KTextEdit
 {
     Q_OBJECT
 
@@ -67,7 +67,7 @@ class SampleEdit : public QTextEdit
 };
 
 SampleEdit::SampleEdit (QWidget *parent_) :
-    QTextEdit(parent_),
+    KTextEdit(parent_),
     m_signalsAllowed(true),
     m_resetMargins(true)
 {
@@ -107,7 +107,7 @@ void SampleEdit::m_setMargins ()
             setViewportMargins(m_lrMargin, m_tbMargin, m_lrMargin, m_tbMargin);
 
             // To remind vertical scrollbar to disappear if not needed.
-            setLineWrapMode(QTextEdit::WidgetWidth);
+            setLineWrapMode(KTextEdit::WidgetWidth);
             setLineWrapColumnOrWidth(viewport()->width());
         }
         else {
@@ -120,7 +120,7 @@ void SampleEdit::m_setMargins ()
 
 void SampleEdit::setFont (const QFont &font)
 {
-    QTextEdit::setFont(font);
+    KTextEdit::setFont(font);
     m_setMargins();
 }
 
@@ -144,7 +144,7 @@ void SampleEdit::showEvent (QShowEvent *e)
         return;
     }
     m_setMargins();
-    QTextEdit::showEvent(e);
+    KTextEdit::showEvent(e);
 }
 
 void SampleEdit::resizeEvent (QResizeEvent *e)
@@ -153,7 +153,7 @@ void SampleEdit::resizeEvent (QResizeEvent *e)
         return;
     }
     m_setMargins();
-    QTextEdit::resizeEvent(e);
+    KTextEdit::resizeEvent(e);
 }
 
 QSize SampleEdit::sizeHint () const

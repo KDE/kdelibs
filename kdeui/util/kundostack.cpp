@@ -39,7 +39,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
     QAction* action = QUndoStack::createRedoAction(actionCollection);
 
     if(actionName.isEmpty()) {
-        action->setObjectName(KStandardAction::stdName(KStandardAction::Redo));
+        action->setObjectName(KStandardAction::name(KStandardAction::Redo));
     } else {
         action->setObjectName(actionName);
     }
@@ -58,7 +58,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
     QAction* action = QUndoStack::createUndoAction(actionCollection);
 
     if(actionName.isEmpty()) {
-        action->setObjectName(KStandardAction::stdName(KStandardAction::Undo));
+        action->setObjectName(KStandardAction::name(KStandardAction::Undo));
     } else {
         action->setObjectName(actionName);
     }

@@ -18,8 +18,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KDEUIPROXYSTYLE_H
-#define KDEUIPROXYSTYLE_H
+#ifndef KDEUIWIDGETSPROXYSTYLE_P_H
+#define KDEUIWIDGETSPROXYSTYLE_P_H
 
 #include <kdeui_export.h>
 

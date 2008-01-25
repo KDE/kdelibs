@@ -22,28 +22,20 @@
 
 #include "kcharselect_p.h"
 
-#include <QtGui/QColor>
 #include <QtGui/QFontComboBox>
-#include <QtGui/QComboBox>
 #include <QtGui/QActionEvent>
-#include <QtGui/QFont>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
 #include <QtGui/QDoubleSpinBox>
-#include <QtGui/QStyle>
-
+#include <QtGui/QHeaderView>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QSplitter>
-#include <QtGui/QTextBrowser>
 #include <QtGui/QPushButton>
-#include <QtCore/QTimer>
 
+#include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <QtGui/QHeaderView>
 #include <klineedit.h>
+#include <ktextbrowser.h>
 
 class KCharSelectTablePrivate
 {
@@ -70,7 +62,7 @@ public:
     QComboBox *sectionCombo;
     QComboBox *blockCombo;
     KCharSelectTable *charTable;
-    QTextBrowser *detailBrowser;
+    KTextBrowser *detailBrowser;
 
     KCharSelect *q;
 
@@ -315,10 +307,10 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
 
 
-    d->sectionCombo = new QComboBox(this);
+    d->sectionCombo = new KComboBox(this);
     d->sectionCombo->setToolTip(i18n("Select a category"));
     comboLayout->addWidget(d->sectionCombo);
-    d->blockCombo = new QComboBox(this);
+    d->blockCombo = new KComboBox(this);
     d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
     d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     comboLayout->addWidget(d->blockCombo, 1);
@@ -370,7 +362,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
 
     connect(d->charTable, SIGNAL(showCharRequested(QChar)), this, SLOT(setCurrentChar(QChar)));
 
-    d->detailBrowser = new QTextBrowser(this);
+    d->detailBrowser = new KTextBrowser(this);
     if (DetailBrowser & controls) {
         splitter->addWidget(d->detailBrowser);
     } else {

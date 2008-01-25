@@ -26,7 +26,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QHeaderView>
-#include <QtGui/QComboBox>
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QApplication>
@@ -46,6 +45,7 @@
 #include <kprocess.h>
 #include <ktoolbar.h>
 #include <kdeversion.h>
+#include <kcombobox.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -379,7 +379,7 @@ public:
     }
 #endif
 
-    QComboBox *m_toolbarCombo;
+    KComboBox *m_toolbarCombo;
 
     QToolButton *m_upAction;
     QToolButton *m_removeAction;
@@ -826,7 +826,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
 {
   // the toolbar name combo
   m_comboLabel = new QLabel(i18n("&Toolbar:"), m_widget);
-  m_toolbarCombo = new QComboBox(m_widget);
+  m_toolbarCombo = new KComboBox(m_widget);
   m_comboLabel->setBuddy(m_toolbarCombo);
   m_comboSeparator = new KSeparator(m_widget);
   QObject::connect(m_toolbarCombo, SIGNAL(activated(int)),

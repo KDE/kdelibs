@@ -100,7 +100,7 @@
 #undef Status
 #include <Carbon/Carbon.h>
 #include <QImage>
-#include <QSystemTrayIcon>
+#include <ksystemtrayicon.h>
 #endif
 
 #ifdef Q_OS_UNIX
@@ -599,10 +599,10 @@ void KApplicationPrivate::init(bool GUIenabled)
 
 #ifdef Q_WS_MAC
   if (q->type() == KApplication::GuiClient) {
-      QSystemTrayIcon *trayIcon;
-      if (QSystemTrayIcon::isSystemTrayAvailable())
+      KSystemTrayIcon *trayIcon;
+      if (KSystemTrayIcon::isSystemTrayAvailable())
       {
-          trayIcon = new QSystemTrayIcon(q);
+          trayIcon = new KSystemTrayIcon(q);
           trayIcon->setIcon(KIcon(KCmdLineArgs::appName()));
           /* it's counter-intuitive, but once you do setIcon it's already set the
              dock icon... ->show actually shows an icon in the menu bar too  :P */

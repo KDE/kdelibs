@@ -32,7 +32,6 @@
 #include <QMenuBar>
 #include <QMetaObject>
 #include <QPushButton>
-#include <QTextBrowser>
 #include <QTabBar>
 
 #include <kconfig.h>
@@ -40,6 +39,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kshortcut.h>
+#include <ktextbrowser.h>
 
 #include "kacceleratormanager.h"
 #include <kconfiggroup.h>
@@ -159,7 +159,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     QVBoxLayout* layout = new QVBoxLayout( drklash );
     layout->setMargin( 11 );
     layout->setSpacing( 6 );
-    drklash_view = new QTextBrowser( drklash );
+    drklash_view = new KTextBrowser( drklash );
     layout->addWidget( drklash );
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {

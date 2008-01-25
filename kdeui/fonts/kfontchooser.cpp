@@ -1,8 +1,4 @@
 /*
-
-Requires the Qt widget libraries, available at no cost at
-http://www.troll.no
-
 Copyright (C) 1996 Bernd Johannes Wuebben  <wuebben@kde.org>
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Mario Weilguni <mweilguni@kde.org>
@@ -26,25 +22,19 @@ Boston, MA 02110-1301, USA.
 #include "kfontchooser.h"
 #include "sampleedit_p.h"
 
-
-#include <QtGui/QComboBox>
 #include <QtGui/QCheckBox>
-#include <QtCore/QFile>
-#include <QtGui/QFont>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QSplitter>
-#include <QtGui/QLineEdit>
 #include <QtGui/QScrollBar>
-#include <QtCore/QMutableStringListIterator>
 #include <QtGui/QFontDatabase>
-#include <QList>
 #include <QtGui/QGroupBox>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <klineedit.h>
 #include <klistwidget.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -144,7 +134,7 @@ public:
     KIntNumInput *sizeOfFont;
 
     SampleEdit   *sampleEdit;
-    QLineEdit    *xlfdEdit;
+    KLineEdit    *xlfdEdit;
 
     QLabel       *familyLabel;
     QLabel       *styleLabel;
@@ -237,7 +227,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     } else {
         d->familyCheckbox = 0;
         d->familyLabel = new QLabel( i18nc("@label","Font:"), page );
-        d->familyLabel->setObjectName( "familyLabel" );
         familyLayout->addWidget(d->familyLabel, 1, Qt::AlignLeft);
     }
     gridLayout->addLayout(familyLayout, row, 0 );
@@ -254,7 +243,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     } else {
         d->styleCheckbox = 0;
         d->styleLabel = new QLabel(i18n("Font style:"), page );
-        d->styleLabel->setObjectName( "styleLabel" );
         styleLayout->addWidget(d->styleLabel, 1, Qt::AlignLeft);
     }
     styleLayout->addSpacing( checkBoxGap );
@@ -272,7 +260,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     } else {
         d->sizeCheckbox = 0;
         d->sizeLabel = new QLabel(i18nc("@label:listbox Font size", "Size:"), page );
-        d->sizeLabel->setObjectName( "sizeLabel" );
         sizeLayout->addWidget(d->sizeLabel, 1, Qt::AlignLeft);
     }
     sizeLayout->addSpacing( checkBoxGap );
@@ -285,7 +272,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     // now create the actual boxes that hold the info
     //
     d->familyListBox = new KListWidget( page );
-    d->familyListBox->setObjectName("familyListBox");
     d->familyListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget( d->familyListBox, row, 0 );
     QString fontFamilyWhatsThisText (
@@ -313,7 +299,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         minimumListHeight( d->familyListBox, visibleListSize  ) );
 
     d->styleListBox = new KListWidget( page );
-    d->styleListBox->setObjectName("styleListBox");
     d->styleListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget(d->styleListBox, row, 1);
     d->styleListBox->setWhatsThis(i18nc("@info:whatsthis","Here you can choose the font style to be used." ));
@@ -338,8 +323,7 @@ KFontChooser::KFontChooser( QWidget *parent,
 
 
     d->sizeListBox = new KListWidget( page );
-    d->sizeListBox->setObjectName("sizeListBox");
-    d->sizeOfFont = new KIntNumInput( page); // "sizeOfFont");
+    d->sizeOfFont = new KIntNumInput(page);
     d->sizeOfFont->setMinimum(4);
     d->sizeOfFont->setMaximum(999);
     d->sizeOfFont->setSliderEnabled(false);
@@ -357,11 +341,9 @@ KFontChooser::KFontChooser( QWidget *parent,
                  "environment (e.g. widget dimensions, paper size)." );
         d->sizeIsRelativeCheckBox = new QCheckBox( sizeIsRelativeCBText,
                                                 page );
-        d->sizeIsRelativeCheckBox->setObjectName( "sizeIsRelativeCheckBox" );
         d->sizeIsRelativeCheckBox->setTristate( flags & ShowDifferences );
         QGridLayout *sizeLayout2 = new QGridLayout();
         sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
-        sizeLayout2->setObjectName( "sizeLayout2" );
         gridLayout->addLayout(sizeLayout2, row, 2);
         sizeLayout2->setColumnStretch( 1, 1 ); // to prevent text from eating the right border
         sizeLayout2->addWidget( d->sizeOfFont, 0, 0, 1, 2);
@@ -374,7 +356,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         d->sizeIsRelativeCheckBox = 0L;
         QGridLayout *sizeLayout2 = new QGridLayout();
         sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
-        sizeLayout2->setObjectName( "sizeLayout2" );
         gridLayout->addLayout(sizeLayout2, row, 2);
         sizeLayout2->addWidget( d->sizeOfFont, 0, 0);
         sizeLayout2->addWidget(d->sizeListBox, 1,0);
@@ -411,7 +392,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     //
     d->sampleEdit = new SampleEdit(page);
     d->sampleEdit->setAcceptRichText(false);
-    d->sampleEdit->setObjectName("sampleEdit");
     QFont tmpFont( KGlobalSettings::generalFont().family(), 64, QFont::Black );
     d->sampleEdit->setFont(tmpFont);
     d->sampleEdit->setMinimumHeight( d->sampleEdit->fontMetrics().lineSpacing() );
@@ -454,8 +434,7 @@ KFontChooser::KFontChooser( QWidget *parent,
         vbox->addWidget( label );
     }
 
-    d->xlfdEdit = new QLineEdit( page );
-    d->xlfdEdit->setObjectName( "xlfdEdit" );
+    d->xlfdEdit = new KLineEdit( page );
     vbox->addWidget( d->xlfdEdit );
     //
     // Finished setting up the chooser layout.

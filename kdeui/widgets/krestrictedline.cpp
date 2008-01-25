@@ -47,11 +47,11 @@ KRestrictedLine::~KRestrictedLine()
 
 void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
-  // let QLineEdit process "special" keys and return/enter
+  // let KLineEdit process "special" keys and return/enter
   // so that we still can use the default key binding
   if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete || e->text().length() < 32)
     {
-      QLineEdit::keyPressEvent(e);
+      KLineEdit::keyPressEvent(e);
       return;
     }
 
@@ -64,8 +64,8 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
       return;
     }
   else
-	// valid char: let QLineEdit process this key as usual
-	QLineEdit::keyPressEvent(e);
+	// valid char: let KLineEdit process this key as usual
+	KLineEdit::keyPressEvent(e);
 
   return;
 }

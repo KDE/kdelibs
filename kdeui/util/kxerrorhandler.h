@@ -91,7 +91,7 @@ class KDEUI_EXPORT KXErrorHandler
          */
         bool error( bool sync ) const;
         /**
-         * This function returns the error event for the first X error that occured.
+         * This function returns the error event for the first X error that occurred.
          * The return value is useful only if error() returned true.
          * @since 4.0.1
          */

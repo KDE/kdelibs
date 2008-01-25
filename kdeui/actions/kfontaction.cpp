@@ -143,7 +143,7 @@ void KFontAction::setFont( const QString &family )
 {
     kDebug(129) << "KFontAction::setFont(" << family << ")";
 
-    // Supress triggered(QString) signal and prevent recursive call to ourself.
+    // Suppress triggered(QString) signal and prevent recursive call to ourself.
     d->settingFont++;
 
     foreach(QWidget *w, createdWidgets())

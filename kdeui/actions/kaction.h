@@ -75,7 +75,7 @@ class KRockerGesture;
  * GUI element you want.  The KAction class will then take care of
  * correctly defining the menu item (with icons, accelerators, text,
  * etc), toolbar button, or other.  From then on, if you
- * manipulate the action at all, the effect will propogate through all
+ * manipulate the action at all, the effect will propagate through all
  * GUI representations of it.  Back to the "cut" example: if you want
  * to disable the Cut Action, you would simply call
  * 'cutAction->setEnabled(false)' and both the menuitem and button would

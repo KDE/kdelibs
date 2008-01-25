@@ -173,8 +173,8 @@ namespace KStandardAction
    */
   KDEUI_EXPORT const char* name( StandardAction id );
 
-  /// @obsolete. Use name()
-  inline const char* stdName(StandardAction act_enum) { return name( act_enum ); }
+  /// @deprecated use name()
+  inline KDE_DEPRECATED const char* stdName(StandardAction act_enum) { return name( act_enum ); }
 
   /**
    * Returns a list of all standard names. Used by KAccelManager

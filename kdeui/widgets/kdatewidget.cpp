@@ -19,11 +19,12 @@
 
 #include "kdatewidget.h"
 
-#include <QtGui/QComboBox>
 #include <QtCore/QDate>
 #include <QtGui/QLayout>
 #include <QtGui/QLineEdit>
 #include <QtGui/QDoubleSpinBox>
+
+#include <kcombobox.h>
 
 #include "kcalendarsystem.h"
 #include "kdialog.h"
@@ -46,7 +47,7 @@ class KDateWidget::KDateWidgetPrivate
 {
 public:
     KDateWidgetSpinBox *m_day;
-    QComboBox *m_month;
+    KComboBox *m_month;
     KDateWidgetSpinBox *m_year;
     QDate m_dat;
     KCalendarSystem *m_cal;
@@ -86,7 +87,7 @@ void KDateWidget::init( const QDate &date )
 	// set the maximum day value in the day field, so that the day can
 	// be editted when the KDateWidget is constructed with an empty date
     d->m_day = new KDateWidgetSpinBox( 1, 31, this );
-    d->m_month = new QComboBox( this );
+    d->m_month = new KComboBox( this );
 
     for ( int i = 1; ; ++i ) {
         const QString str = calendar()->monthName( i, calendar()->year( initDate ) );

@@ -37,7 +37,6 @@
 #include <stdlib.h>
 
 #include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QRadioButton>
 #include <QtGui/qdrawutil.h>
@@ -55,6 +54,7 @@
 #include <QtGui/QDoubleValidator>
 
 #include <kapplication.h>
+#include <kcombobox.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -483,7 +483,7 @@ public:
 
   KColorTable *q;
   QString i18n_namedColors;
-  QComboBox *combo;
+  KComboBox *combo;
   KColorCells *cells;
   QScrollArea *sv;
   KListWidget *mNamedColorList;
@@ -516,7 +516,7 @@ KColorTable::KColorTable( QWidget *parent, int minWidth, int cols)
 
   QVBoxLayout *layout = new QVBoxLayout( this );
 
-  d->combo = new QComboBox( this );
+  d->combo = new KComboBox( this );
   d->combo->setEditable(false);
   d->combo->addItems( paletteList );
   layout->addWidget(d->combo);

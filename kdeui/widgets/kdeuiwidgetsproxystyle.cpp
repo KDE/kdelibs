@@ -19,10 +19,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kdeuiwidgetsproxystyle_p.h"
+
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
-
-#include "kdeuiwidgetsproxystyle_p.h"
 
 KdeUiProxyStyle::KdeUiProxyStyle(QWidget *parent)
     : QStyle(), parent(parent)
