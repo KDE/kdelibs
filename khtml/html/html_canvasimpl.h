@@ -328,12 +328,6 @@ private:
     // The path is global, and never saved/restored
     QPainterPath path;
 
-    // The initial (untransformed) point in the path
-    QPointF firstPoint;
-
-    // The current (untransformed) point in the path
-    QPointF currentPoint;
-
     // We keep track of non-path state ourselves. There are two reasons:
     // 1) The painter may have to be end()ed so we can not rely on it to remember
     //    things
@@ -374,6 +368,18 @@ private:
 
     const PaintState& activeState() const { return stateStack.top(); }
     PaintState& activeState() { return stateStack.top(); }
+
+    QPointF mapToDevice(const QPointF &point) const {
+        return point * stateStack.top().transform;
+    }
+
+    QPointF mapToDevice(float x, float y) const {
+        return QPointF(x, y) * stateStack.top().transform;
+    }
+
+    QPointF mapToUser(const QPointF &point) const {
+        return point * stateStack.top().transform.inverted();
+    }
 
     enum DirtyFlags {
         DrtTransform = 0x01,
