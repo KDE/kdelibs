@@ -75,6 +75,7 @@ Dialog::Dialog(BackgroundChecker *checker,
     initGui();
     initConnections();
     setMainWidget(d->wdg);
+    setHelp(QString(),"sonnet");
 }
 
 Dialog::~Dialog()
