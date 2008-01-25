@@ -406,7 +406,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
     // shortcut for special case
     if (collapsed(exceptioncode) || exceptioncode) {
-	if (action == CLONE_CONTENTS || action == EXTRACT_CONTENTS) 
+	if (action == CLONE_CONTENTS || action == EXTRACT_CONTENTS)
 	    return new DocumentFragmentImpl(m_ownerDocument);
         return 0;
     }
@@ -859,19 +859,19 @@ DOMString RangeImpl::toString( int &exceptioncode )
      *
      * loop from the start position:
      *     if the current node is text, add the text to our variable 'text', truncating/removing if at the end/start.
-     *     
+     *
      *     if the node has children, step to the first child.
      *     if the node has no children but does have siblings, step to the next sibling
      *     until we find a sibling, go to next the parent but:
      *         make sure this sibling isn't past the end of where we are supposed to go. (position > endOffset and the parent is the endContainer)
-     *         
+     *
      */
 
-    
+
     if( m_startContainer == m_endContainer && m_startOffset >= m_endOffset)
 	return text;
 
-    
+
     if(n->firstChild()) {
 	n = n->firstChild();
    	int current_offset = m_startOffset;
@@ -896,7 +896,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
 	    if (n == m_endContainer)
                 break;
         }
-        
+
 
 	NodeImpl *next = n->firstChild();
 	if(!next)
@@ -938,11 +938,11 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     int num_tables=0;
     bool in_li = false; //whether we have an li in the text, without an ol/ul
     int depth_difference = 0;
-    int lowest_depth_difference = 0; 
+    int lowest_depth_difference = 0;
 
     if( m_startContainer == m_endContainer && m_startOffset >= m_endOffset)
 	return text;
-    
+
     while(n) {
         /* First, we could have an tag <tagname key=value>otherstuff</tagname> */
 	if(n->nodeType() == DOM::Node::ELEMENT_NODE) {
@@ -956,12 +956,12 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	       text += static_cast<ElementImpl *>(n)->openTagStartToString(true /*safely expand img urls*/); // adds "<tagname key=value"
 	       if(n->hasChildNodes()) {
 	            depth_difference++;
-   	            text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+   	            text += ">";
                 } else {
           	    text += "/>";
 	        }
 	    }
-	} else 
+	} else
         if(n->nodeType() == DOM::Node::TEXT_NODE ||
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
             if(n->nodeType() == DOM::Node::CDATA_SECTION_NODE) text += "<![CDATA[ ";
@@ -992,7 +992,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	    }
 	} else {
             next = n->nextSibling();
-		
+
 	    if(n->parentNode() == m_endContainer) {
 	        unsigned long current_offset = 1;
 	        NodeImpl *it = n;
@@ -1015,7 +1015,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		if(lowest_depth_difference > depth_difference) lowest_depth_difference=depth_difference;
 	        if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables--;
 	        if(elementId == ID_OL || elementId == ID_UL) in_li=false;
- 	        text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+ 	        text += ">";
 	    }
             next = n->nextSibling();
         }
@@ -1033,18 +1033,18 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     //
     //  The difference in depths between the start and end is -1, and the lowest depth
     //  difference from the starting point is -2
-    //  
+    //
     //  So from the start of the selection, we want to go down to the lowest_depth_difference
     //  and prepend those tags.  (<p><b>)
     //
     //  From the end of the selection, we want to also go down to the lowest_depth_difference.
     //  We know the depth of the end of the selection - i.e. depth_difference.
     //
-    //  
+    //
     n = m_startContainer;
     int startdepth = 0; //by definition - we are counting from zero.
     while((n = n->parentNode()) && startdepth>lowest_depth_difference) {
-      if(n->nodeType() == DOM::Node::ELEMENT_NODE) { //This should always be true.. right? 
+      if(n->nodeType() == DOM::Node::ELEMENT_NODE) { //This should always be true.. right?
 	  switch (static_cast<ElementImpl *>(n)->id()) {
 	      case ID_TABLE:
 		 num_tables--;
@@ -1052,14 +1052,14 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	      case ID_BODY:
 	         hasBodyTag = true;
 		 break;
-	      case ID_HTML: 
+	      case ID_HTML:
 	         hasHtmlTag = true;
 		 break;
 	      case ID_LI:
 		 in_li = true;
 		 break;
 	  }
-          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"	//krazy:exclude=doublequote_chars DOM demands chars
+          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"
       }
       startdepth--;
     }
@@ -1077,7 +1077,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	  }
 	  text += "</";
 	  text += static_cast<ElementImpl *>(n)->tagName();
- 	  text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+ 	  text += ">";
       }
       depth_difference--;
     }
@@ -1085,9 +1085,9 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     // Now our text string is the same depth on both sides, with nothing lower (in other words all the
     // tags in it match up.)  This also means that the end value for n in the first loop is a sibling of the
     // end value for n in the second loop.
-    // 
+    //
     // We now need to go down the tree, and for certain tags, add them in on both ends of the text.
-    // For example, if have:  "<b>hello</b>"  and we select "ll", then we want to go down the tree and 
+    // For example, if have:  "<b>hello</b>"  and we select "ll", then we want to go down the tree and
     // add "<b>" and "</b>" to it, to produce "<b>ll</b>".
     //
     // I just guessed at which tags you'd want to keep (bold, italic etc) and which you wouldn't (tables etc).
@@ -1108,22 +1108,22 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_THEAD:
 		    if(num_tables>0) {
 		        if(elementId == ID_TABLE) num_tables--;
-			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
+			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
 			text += "</";
 			text += static_cast<ElementImpl *>(n)->tagName();
-			text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+			text += ">";
 
 		    }
 		    break;
 
                 case ID_LI:
 		    if(!in_li) break;
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
-		    text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+		    text += ">";
                     break;
-		    
+
 		case ID_UL:
 		case ID_OL:
 		    if(!in_li) break;
@@ -1144,19 +1144,19 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_H5:
 		    //should small, etc be here?   so hard to decide.  this is such a hack :(
 		    //There's probably tons of others you'd want here.
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
-		    text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
+		    text += ">";
                     break;
-	      }	    
+	      }
 	  }
       }
     }
 
 
     if(!hasBodyTag) text = DOMString("<body>") + text + "</body>";
-    else if(!hasHtmlTag) { 
+    else if(!hasHtmlTag) {
       text = DOMString("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
 		      "<head>\n"
 		      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n"
@@ -1166,7 +1166,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	    "</html>";
     }
     text = DOMString("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n") + text;
-	    
+
     return text;
 
 }

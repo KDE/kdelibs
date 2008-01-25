@@ -271,7 +271,7 @@ DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const
             return DOMString();
         }
         if ( i > 0 )
-            res += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            res += " ";
         res += value->cssText();
     }
     return res;
@@ -286,7 +286,7 @@ DOMString CSSStyleDeclarationImpl::getLayeredShortHandValue(const int* propertie
     // Begin by collecting the properties into an array.
     QVector<CSSValueImpl*> values(number);
     unsigned numLayers = 0;
-    
+
     for (i = 0; i < number; ++i) {
         values[i] = getPropertyCSSValue(properties[i]);
         if (values[i]) {
@@ -297,7 +297,7 @@ DOMString CSSStyleDeclarationImpl::getLayeredShortHandValue(const int* propertie
                 numLayers = qMax(1U, numLayers);
         }
     }
-    
+
     // Now stitch the properties together.  Implicit initial values are flagged as such and
     // can safely be omitted.
     for (i = 0; i < numLayers; i++) {
@@ -309,7 +309,7 @@ DOMString CSSStyleDeclarationImpl::getLayeredShortHandValue(const int* propertie
                     value = static_cast<CSSValueListImpl*>(values[j])->item(i);
                 else {
                     value = values[j];
-                    
+
                     // Color only belongs in the last layer.
                     if (properties[j] == CSS_PROP_BACKGROUND_COLOR) {
                         if (i != numLayers - 1)
@@ -318,14 +318,14 @@ DOMString CSSStyleDeclarationImpl::getLayeredShortHandValue(const int* propertie
                         value = 0;
                 }
             }
-            
+
             if (value && !value->isImplicitInitialValue()) {
                 if (!layerRes.isNull())
                     layerRes += " ";
                 layerRes += value->cssText();
             }
         }
-        
+
         if (!layerRes.isNull()) {
             if (!res.isNull())
                 res += ", ";
@@ -343,7 +343,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
         CSSValueImpl* value = getPropertyCSSValue( properties[i] );
         if ( value ) { // TODO provide default value if !value
             if ( !res.isNull() )
-                res += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+                res += " ";
             res += value->cssText();
         }
     }
@@ -582,7 +582,7 @@ void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned len
                 changed = true;
                 break;
             }
-        }        
+        }
     }
     if (changed)
         setChanged();
@@ -748,7 +748,7 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
             positionValue = getLayeredShortHandValue(properties, 2);
         else
             positionValue = positionXProp->value()->cssText() + " " + positionYProp->value()->cssText();
-        result += DOMString("background-position: ") + positionValue 
+        result += DOMString("background-position: ") + positionValue
                                                      + DOMString((positionXProp->isImportant() ? " !important" : ""))
                                                      + "; ";
     } else {
@@ -1046,7 +1046,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 		text = DOMString(QString::number( m_value.num ));
 	    break;
 	case CSSPrimitiveValue::CSS_PERCENTAGE:
-	    text = DOMString(QString::number( m_value.num ) + "%");	//krazy:exclude=doublequote_chars DOM demands chars
+	    text = DOMString(QString::number( m_value.num ) + "%");
 	    break;
 	case CSSPrimitiveValue::CSS_EMS:
 	    text = DOMString(QString::number( m_value.num ) + "em");
@@ -1085,7 +1085,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    text = DOMString(QString::number( m_value.num ) + "ms");
 	    break;
 	case CSSPrimitiveValue::CSS_S:
-	    text = DOMString(QString::number( m_value.num ) + "s");	//krazy:exclude=doublequote_chars DOM demands chars
+	    text = DOMString(QString::number( m_value.num ) + "s");
 	    break;
 	case CSSPrimitiveValue::CSS_HZ:
 	    text = DOMString(QString::number( m_value.num ) + "hz");
@@ -1102,7 +1102,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	case CSSPrimitiveValue::CSS_URI:
             text  = "url(";
 	    text += DOMString( m_value.string );
-            text += ")";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += ")";
 	    break;
 	case CSSPrimitiveValue::CSS_IDENT:
 	    text = getValueName(m_value.ident);
@@ -1113,17 +1113,17 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	case CSSPrimitiveValue::CSS_COUNTER:
             text = "counter(";
             text += m_value.counter->m_identifier;
-            text += ")";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += ")";
             // ### add list-style and separator
 	    break;
 	case CSSPrimitiveValue::CSS_RECT:
         {
             RectImpl* rectVal = getRectValue();
             text = "rect(";
-            text += rectVal->top()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
-            text += rectVal->right()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
-            text += rectVal->bottom()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
-            text += rectVal->left()->cssText() + ")";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += rectVal->top()->cssText() + " ";
+            text += rectVal->right()->cssText() + " ";
+            text += rectVal->bottom()->cssText() + " ";
+            text += rectVal->left()->cssText() + ")";
             break;
         }
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
@@ -1131,17 +1131,17 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 		if (m_value.rgbcolor == khtml::transparentColor)
 		    text = "transparent";
 		else
-		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
-				   + QString::number(qBlue (m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
-				   + QString::number(qGreen(m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
-				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";	//krazy:exclude=doublequote_chars DOM demands chars
+		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ","
+				   + QString::number(qBlue (m_value.rgbcolor)) + ","
+				   + QString::number(qGreen(m_value.rgbcolor)) + ","
+				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";
 	    } else {
 		text = QColor(m_value.rgbcolor).name();
 	    }
 	    break;
         case CSSPrimitiveValue::CSS_PAIR:
             text = m_value.pair->first()->cssText();
-            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += " ";
             text += m_value.pair->second()->cssText();
             break;
 	default:
@@ -1316,32 +1316,32 @@ DOMString FontValueImpl::cssText() const
     }
     if (variant) {
 	if (result.length() > 0) {
-	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+	    result += " ";
 	}
 	result += variant->cssText();
     }
     if (weight) {
 	if (result.length() > 0) {
-	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+	    result += " ";
 	}
 	result += weight->cssText();
     }
     if (size) {
 	if (result.length() > 0) {
-	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+	    result += " ";
 	}
 	result += size->cssText();
     }
     if (lineHeight) {
 	if (!size) {
-	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+	    result += " ";
 	}
-	result += "/";	//krazy:exclude=doublequote_chars DOM demands chars
+	result += "/";
 	result += lineHeight->cssText();
     }
     if (family) {
 	if (result.length() > 0) {
-	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+	    result += " ";
 	}
 	result += family->cssText();
     }
@@ -1409,19 +1409,19 @@ DOMString ShadowValueImpl::cssText() const
     }
     if (x) {
         if (text.length() > 0) {
-            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += " ";
         }
         text += x->cssText();
     }
     if (y) {
         if (text.length() > 0) {
-            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += " ";
         }
         text += y->cssText();
     }
     if (blur) {
         if (text.length() > 0) {
-            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += " ";
         }
         text += blur->cssText();
     }

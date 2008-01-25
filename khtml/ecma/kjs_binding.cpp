@@ -57,7 +57,7 @@ namespace KJS {
 
 UString DOMObject::toString(ExecState *) const
 {
-  return "[object " + className() + "]";	//krazy:exclude=doublequote_chars DOM demands chars
+  return "[object " + className() + "]";
 }
 
 HashMap<void*, DOMObject*>* ScriptInterpreter::s_allDomObjects;
