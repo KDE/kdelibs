@@ -417,7 +417,7 @@ void CanvasContext2DImpl::rotate(float angle)
     infinityTransform |= isInfArg(angle);
     if (infinityTransform) return;
 
-    activeState().transform.rotate(degrees(angle));
+    activeState().transform.rotateRadians(angle);
 }
 
 void CanvasContext2DImpl::translate(float x, float y)
@@ -982,7 +982,7 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
 inline bool CanvasContext2DImpl::isPathEmpty() const
 {
     // For an explanation of this, see the comment in beginPath()
-    const QPointF pos = currentPoint;
+    const QPointF pos = path.currentPosition();
     return KJS::isInf(pos.x()) && KJS::isInf(pos.y());
 }
 
@@ -999,21 +999,19 @@ void CanvasContext2DImpl::beginPath()
     // To work around this, we insert a MoveTo to (infinity, infinity) each time the
     // path is reset, and check the current position for this value in all functions
     // that are supposed to do nothing when the path is empty.
-    firstPoint = currentPoint = QPointF(std::numeric_limits<qreal>::infinity(),
-                                        std::numeric_limits<qreal>::infinity());
-    path.moveTo(currentPoint);
+    QPointF point(std::numeric_limits<qreal>::infinity(),
+                  std::numeric_limits<qreal>::infinity());
+    path.moveTo(point);
 }
 
 void CanvasContext2DImpl::closePath()
 {
     path.closeSubpath();
-    currentPoint = firstPoint;
 }
 
 void CanvasContext2DImpl::moveTo(float x, float y)
 {
-    firstPoint = currentPoint = QPointF(x, y);
-    path.moveTo(currentPoint * activeState().transform);
+    path.moveTo(mapToDevice(x, y));
 }
 
 void CanvasContext2DImpl::lineTo(float x, float y)
@@ -1021,8 +1019,7 @@ void CanvasContext2DImpl::lineTo(float x, float y)
     if (isPathEmpty())
         return;
 
-    currentPoint = QPointF(x, y);
-    path.lineTo(currentPoint * activeState().transform);
+    path.lineTo(mapToDevice(x, y));
 }
 
 void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float y)
@@ -1030,9 +1027,7 @@ void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float 
     if (isPathEmpty())
         return;
 
-    const QTransform &xform = activeState().transform;
-    currentPoint = QPointF(x, y);
-    path.quadTo(QPointF(cpx, cpy) * xform, currentPoint * xform);
+    path.quadTo(mapToDevice(cpx, cpy), mapToDevice(x, y));
 }
 
 void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
@@ -1040,9 +1035,7 @@ void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, floa
     if (isPathEmpty())
         return;
 
-    const QTransform &xform = activeState().transform;
-    currentPoint = QPointF(x, y);
-    path.cubicTo(QPointF(cp1x, cp1y) * xform, QPointF(cp2x, cp2y) * xform, currentPoint * xform);
+    path.cubicTo(mapToDevice(cp1x, cp1y), mapToDevice(cp2x, cp2y), mapToDevice(x, y));
 }
 
 void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptionCode)
@@ -1055,8 +1048,6 @@ void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptio
 
     path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
     path.closeSubpath();
-
-    firstPoint = currentPoint = QPointF(x, y);
 }
 
 inline bool CanvasContext2DImpl::needsShadow() const
@@ -1255,7 +1246,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     if (isPathEmpty())
         return;
 
-    QLineF line1(QPointF(x1, y1), currentPoint);
+    QLineF line1(QPointF(x1, y1), mapToUser(path.currentPosition()));
     QLineF line2(QPointF(x1, y1), QPointF(x2, y2));
 
     // If the first line is a point, we'll do nothing.
@@ -1264,8 +1255,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
 
     // If the second line is a point, we'll add a line segment to (x1, y1).
     if (line2.p1() == line2.p2()) {
-        currentPoint = QPointF(x1, y1);
-        path.lineTo(currentPoint * activeState().transform);
+        path.lineTo(mapToDevice(x1, y1));
         return;
     }
 
@@ -1282,8 +1272,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     // If the angle between the lines is 180 degrees, the span of the arc becomes
     // zero, causing the tangent points to converge to the same point at (x1, y1).
     if (qFuzzyCompare(qAbs(theta), float(M_PI))) {
-        currentPoint = QPointF(x1, y1);
-        path.lineTo(currentPoint * activeState().transform);
+        path.lineTo(mapToDevice(x1, y1));
         return;
     }
 
@@ -1299,9 +1288,9 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     // This matches CoreGraphics and Postscript behavior, but violates the HTML5 spec,
     // which says we should do nothing in this case.
     if (KJS::isInf(h) || KJS::isInf(tDist)) {
-        currentPoint = QPointF(line1.p2().x() + std::cos(angle1) * 1e10,
-                               line1.p2().y() + std::sin(angle1) * 1e10);
-        path.lineTo(currentPoint * activeState().transform);
+        QPointF point(line1.p2().x() + std::cos(angle1) * 1e10,
+                      line1.p2().y() + std::sin(angle1) * 1e10);
+        path.lineTo(mapToDevice(point));
         return;
     }
 
@@ -1379,7 +1368,6 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
         arcPath.arcTo(rect, startAngle, sweepLength);
     }
 
-    currentPoint = arcPath.currentPosition();
     arcPath = arcPath * activeState().transform;
 
     // Add the transformed arc to the path.
