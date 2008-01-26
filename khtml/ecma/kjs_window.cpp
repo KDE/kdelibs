@@ -1806,7 +1806,8 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
   caption += "JavaScript"; // TODO: i18n
   // functions that work everywhere
   switch(id) {
-  case Window::Alert:
+  case Window::Alert: {
+    TimerPauser pause(exec);
     if (!widget->dialogsAllowed())
       return jsUndefined();
     if ( part && part->xmlDocImpl() )
@@ -1815,7 +1816,9 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       emit part->browserExtension()->requestFocus(part);
     KMessageBox::error(widget, Qt::convertFromPlainText(str, Qt::WhiteSpaceNormal), caption);
     return jsUndefined();
-  case Window::Confirm:
+  }
+  case Window::Confirm: {
+    TimerPauser pause(exec);
     if (!widget->dialogsAllowed())
       return jsUndefined();
     if ( part && part->xmlDocImpl() )
@@ -1824,7 +1827,9 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       emit part->browserExtension()->requestFocus(part);
     return jsBoolean((KMessageBox::warningYesNo(widget, Qt::convertFromPlainText(str), caption,
                                                 KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::Yes));
-  case Window::Prompt:
+  }
+  case Window::Prompt: {
+    TimerPauser pause(exec);
 #ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
       return jsUndefined();
@@ -1848,6 +1853,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 #else
     return jsUndefined();
 #endif
+  }
   case Window::GetComputedStyle:  {
        if ( !part || !part->xmlDocImpl() )
          return jsUndefined();
@@ -2203,7 +2209,7 @@ WindowQObject::WindowQObject(Window *w)
   else
       connect( parent->m_frame, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );
-  pausedTime = 0;
+  pauseLevel  = 0;
   lastTimerId = 0;
   currentlyDispatching = false;
 }
@@ -2223,11 +2229,40 @@ void WindowQObject::parentDestroyed()
   scheduledActions.clear();
 }
 
+void WindowQObject::pauseTimers()
+{
+    ++pauseLevel;
+    if (pauseLevel == 1)
+        pauseStart = DateTimeMS::now();
+}
+
+void WindowQObject::resumeTimers()
+{
+    --pauseLevel;
+    if (pauseLevel == 0) {
+        // Adjust all timers by the delay length, making sure there is a minimum
+        // margin from current time, however, so we don't go stampeding off if
+        // there is some unwanted recursion, etc.
+        DateTimeMS curTime          = DateTimeMS::now();
+        DateTimeMS earliestDispatch = curTime.addMSecs(5);
+        int delay = pauseStart.msecsTo(curTime);
+        foreach (ScheduledAction *action, scheduledActions) {
+            action->nextTime = action->nextTime.addMSecs(delay);
+            if (earliestDispatch > action->nextTime)
+                action->nextTime = earliestDispatch;
+        }
+
+        // Dispatch any timers that may have been ignored if ::timerEvent fell in the middle
+        // of a pause..
+        timerEvent(0);
+    }
+}
+
 int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleShot)
 {
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
+  DateTimeMS nextTime = DateTimeMS::now().addMSecs(t);
 
   ScheduledAction *action = new ScheduledAction(handler.qstring(),nextTime,t,singleShot,id);
   scheduledActions.append(action);
@@ -2243,7 +2278,7 @@ int WindowQObject::installTimeout(JSValue *func, List args, int t, bool singleSh
   int id = ++lastTimerId;
   if (t < 10) t = 10;
 
-  DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
+  DateTimeMS nextTime = DateTimeMS::now().addMSecs(t);
   ScheduledAction *action = new ScheduledAction(objFunc,args,nextTime,t,singleShot,id);
   scheduledActions.append(action);
   setNextTimer();
@@ -2284,18 +2319,20 @@ void WindowQObject::timerEvent(QTimerEvent *)
   if (scheduledActions.isEmpty())
     return;
 
+  if (pauseLevel)
+    return;
+
   currentlyDispatching = true;
 
 
-  DateTimeMS currentActual = DateTimeMS::now();
-  DateTimeMS currentAdjusted = currentActual.addMSecs(-pausedTime);
+  DateTimeMS current = DateTimeMS::now();
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
   QList<ScheduledAction*> toExecute;
   foreach (ScheduledAction *action, scheduledActions)
   {
-    if (currentAdjusted >= action->nextTime)
+    if (current >= action->nextTime)
       toExecute.append(action);
   }
 
@@ -2323,8 +2360,6 @@ void WindowQObject::timerEvent(QTimerEvent *)
     else
       action->nextTime = action->nextTime.addMSecs(action->interval);
   }
-
-  pausedTime += currentActual.msecsTo(DateTimeMS::now());
 
   currentlyDispatching = false;
 
@@ -2408,8 +2443,7 @@ void WindowQObject::setNextTimer()
   }
 
 
-  DateTimeMS nextTimeActual = nextTime.addMSecs(pausedTime);
-  int nextInterval = DateTimeMS::now().msecsTo(nextTimeActual);
+  int nextInterval = DateTimeMS::now().msecsTo(nextTime);
   if (nextInterval < 0)
     nextInterval = 0;
   timerIds.append(startTimer(nextInterval));

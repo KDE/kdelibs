@@ -69,6 +69,7 @@
 #include <kjs/interpreter.h>
 #include <kjs/value.h>
 #include <kjs/context.h>
+#include <ecma/kjs_window.h>
 
 #include <QVBoxLayout>
 #include <QSplitter>
@@ -608,6 +609,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
                 KStringHandler::rsqueeze(url, 80), lineNo, exceptionMsg);
 
     KJSErrorDialog dlg(this /*dlgParent*/, msg, true);
+    TimerPauser pause(exec); // don't let any timers fire while we're doing this!
     ++m_modalLevel;
     dlg.exec();
     --m_modalLevel;
