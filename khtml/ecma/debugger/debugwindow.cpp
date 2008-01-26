@@ -69,6 +69,7 @@
 #include <kjs/interpreter.h>
 #include <kjs/value.h>
 #include <kjs/context.h>
+#include <ecma/kjs_window.h>
 
 #include <QVBoxLayout>
 #include <QSplitter>
@@ -220,7 +221,7 @@ void DebugWindow::createMenus()
 
     menuBar()->insertItem("&Debug", debugMenu);
 */
-    // ### KDE4.1: proper debug menu. Don't want to 
+    // ### KDE4.1: proper debug menu. Don't want to
     // add strings right now.
 }
 
@@ -450,7 +451,7 @@ void DebugWindow::detach(KJS::Interpreter* interp)
 
 void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 {
-    // We may get a clear when we weren't even attached, if the 
+    // We may get a clear when we weren't even attached, if the
     // interpreter gets created but nothing gets run in it.
     // Be careful not to insert a bogus null into contexts map then
     InterpreterContext* ctx = m_contexts.value(interp);
@@ -546,7 +547,7 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 
     // Since we purposefully bypass toString, we need to figure out
     // string serialization ourselves.
-    //### might be easier to export class info for ErrorInstance --- 
+    //### might be easier to export class info for ErrorInstance ---
 
     JSObject* valueObj = exceptionObj->getObject();
     JSValue*  protoObj = valueObj ? valueObj->prototype() : 0;
@@ -568,12 +569,12 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
     {
         exception = true;
     }
-    
+
     if (!exception)
         return exceptionMsg;
-    
+
     // Clear exceptions temporarily so we can get/call a few things.
-    // We memorize the old exception first, of course. Note that 
+    // We memorize the old exception first, of course. Note that
     // This is not always the same as exceptionObj since we may be
     //  asked to translate a non-active exception
     JSValue* oldExceptionObj = exec->exception();
@@ -586,14 +587,14 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
     {
         JSValue* lineValue = valueObj->get(exec, "line");
         JSValue* urlValue  = valueObj->get(exec, "sourceURL");
-        
+
         int      line = lineValue->toNumber(exec);
         QString  url  = urlValue->toString(exec).qstring();
         exceptionMsg = i18n("Parse error at %1 line %2", url, line - 1);
     }
     else
     {
-        // ### it's still not 100% safe to call toString here, even on 
+        // ### it's still not 100% safe to call toString here, even on
         // native exception objects, since someone might have changed the toString property
         // of the exception prototype, but I'll punt on this case for now.
         exceptionMsg = exceptionObj->toString(exec).qstring();
@@ -629,6 +630,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
                 KStringHandler::rsqueeze(url, 80), lineNo, exceptionMsg);
 
     KJSErrorDialog dlg(this /*dlgParent*/, msg, true);
+    TimerPauser pause(exec); // don't let any timers fire while we're doing this!
     ++m_modalLevel;
     dlg.exec();
     --m_modalLevel;
@@ -766,7 +768,7 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 
     // Also, if we exit from an eval context, we probably want to
     // clear the corresponding document, unless it's open.
-    // We can not do it safely if there are any functions declared, 
+    // We can not do it safely if there are any functions declared,
     // however, since they can escape.
     if (exec->context()->codeType() == EvalCode)
     {

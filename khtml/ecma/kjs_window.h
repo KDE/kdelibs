@@ -127,7 +127,7 @@ namespace KJS {
     Location *location() const;
     JSObject* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(JSValue* val, bool html = false);
-    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo, 
+    JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo,
                                                 const QString &name, DOM::NodeImpl* node);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
@@ -230,9 +230,9 @@ namespace KJS {
     DateTimeMS addMSecs(int s) const;
     bool operator >(const DateTimeMS &other) const;
     bool operator >=(const DateTimeMS &other) const;
-    
+
     int msecsTo(const DateTimeMS &other) const;
-    
+
     static DateTimeMS now();
   };
 
@@ -271,6 +271,9 @@ namespace KJS {
     void clearTimeout(int timerId);
     void mark();
     bool hasTimers() const;
+
+    void pauseTimers();
+    void resumeTimers();
   public Q_SLOTS:
     void timeoutClose();
   protected Q_SLOTS:
@@ -282,10 +285,35 @@ namespace KJS {
   private:
     Window *parent;
     QList<ScheduledAction*> scheduledActions;
-    int pausedTime;
+
+    /**
+     We need to pause timers when alerts are up; so we keep track
+     of recursion of that and the delay at topmost level.
+     */
+    int pauseLevel;
+    DateTimeMS pauseStart;
+
     int lastTimerId;
     QList<int> timerIds;
     bool currentlyDispatching;
+  };
+
+  /**
+   * Helper for pausing/resuming timers
+   */
+  class TimerPauser
+  {
+  public:
+    TimerPauser(ExecState* exec) {
+      win = Window::retrieveActive(exec);
+      win->winq->pauseTimers();
+    }
+
+    ~TimerPauser() {
+      win->winq->resumeTimers();
+    }
+  private:
+    Window* win;
   };
 
   class Location : public JSObject {
