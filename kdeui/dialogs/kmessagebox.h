@@ -32,7 +32,8 @@ class KDialog;
  /**
   * Easy message dialog box.
   *
-  * Provides convenience functions for some i18n'ed standard dialogs.
+  * Provides convenience functions for some i18n'ed standard dialogs,
+  * as well as audible notification via @ref KNotification
   *
   * The text in message boxes is wrapped automatically. The text may either
   * be plaintext or richtext. If the text is plaintext, a newline-character
@@ -50,6 +51,7 @@ class KDialog;
   *        warningYesNoCancel(), warningYesNoCancelWId(),
   *        warningYesNoCancelList(), warningYesNoCancelListWId(), messageBox(),
   *        messageBoxWId().
+  *
   * @author Waldo Bastian (bastian@kde.org)
   */
 class KDEUI_EXPORT KMessageBox
@@ -101,9 +103,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -149,11 +151,11 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param buttonCancel  The text for the third button.
-  *                  The default is i18n("&Cancel").
+  *                  The default is KStandardGuiItem::cancel().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -205,9 +207,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -259,9 +261,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -311,9 +313,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Question").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -365,7 +367,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button.
+  *                       The default is KStandardGuiItem::cont().
   * @param buttonCancel The text for the second button.
+  *                     The default is KStandardGuiItem::cancel().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -416,7 +420,9 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button.
+  *                       The default is KStandardGuiItem::cont().
   * @param buttonCancel The text for the second button.
+  *                     The default is KStandardGuiItem::cancel().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -467,11 +473,11 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param buttonCancel  The text for the third button.
-  *                  The default is i18n("&Cancel").
+  *                  The default is KStandardGuiItem::cancel().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further questions can be turned off. If turned off
   *                all questions will be automatically answered with the
@@ -529,11 +535,11 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button.
-  *                  The default is i18n("&Yes").
+  *                  The default is KStandardGuiItem::yes().
   * @param buttonNo  The text for the second button.
-  *                  The default is i18n("&No").
+  *                  The default is KStandardGuiItem::no().
   * @param buttonCancel  The text for the third button.
-  *                  The default is i18n("&Cancel").
+  *                  The default is KStandardGuiItem::cancel().
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further questions can be turned off. If turned off
   *                all questions will be automatically answered with the
@@ -941,11 +947,11 @@ public:
      * @param text Message string.
      * @param caption Message box title.
      * @param buttonYes The text for the first button.
-     *                  The default is i18n("&Yes").
+     *                  The default is KStandardGuiItem::yes().
      * @param buttonNo  The text for the second button.
-     *                  The default is i18n("&No").
+     *                  The default is KStandardGuiItem::no().
      * @param buttonCancel  The text for the third button.
-     *                  The default is i18n("&Cancel").
+     *                  The default is KStandardGuiItem::cancel().
      * @param dontShowAskAgainName If provided, a checkbox is added with which
      *                further questions/information can be turned off. If turned off
      *                all questions will be automatically answered with the

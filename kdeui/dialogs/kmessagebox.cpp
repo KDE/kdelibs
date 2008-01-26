@@ -75,15 +75,6 @@
 #define I18N_POST_BUTTON_FILTER \
     i18nc( "@action:button post-filter", "." );
 
- /**
-  * Easy MessageBox Dialog.
-  *
-  * Provides convenience functions for some i18n'ed standard dialogs,
-  * as well as audible notification via @ref KNotification
-  *
-  * @author Waldo Bastian (bastian@kde.org)
-  */
-
 static bool KMessageBox_queue = false;
 KConfig* KMessageBox_againConfig = 0;
 
@@ -400,7 +391,6 @@ int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
-    dialog->setObjectName( "questionYesNo" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
@@ -464,7 +454,6 @@ int KMessageBox::questionYesNoCancelWId(WId parent_id,
     KDialog *dialog= new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
-    dialog->setObjectName( "questionYesNoCancel" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
@@ -542,11 +531,6 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
                               const QString &dontAskAgainName,
                               Options options)
 {
-    // warningYesNo and warningYesNoList are always "dangerous"
-    // ### Remove this line for KDE 4, when the 'options' default parameter
-    // takes effects.
-    options |= Dangerous;
-
     ButtonCode res;
     if ( !shouldBeShownYesNo(dontAskAgainName, res) ) {
         return res;
@@ -560,7 +544,6 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
-    dialog->setObjectName( "warningYesNoList" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
@@ -643,7 +626,6 @@ int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No );
-    dialog->setObjectName( "warningYesNo" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonContinue );
@@ -733,7 +715,6 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
-    dialog->setObjectName( "warningYesNoCancel" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
@@ -793,7 +774,6 @@ void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStrin
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
     dialog->setButtons( KDialog::Yes );
-    dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
@@ -828,7 +808,6 @@ void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::Details );
-    dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
@@ -876,7 +855,6 @@ void KMessageBox::sorryWId(WId parent_id, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
     dialog->setButtons( KDialog::Yes );
-    dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
@@ -909,7 +887,6 @@ void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
     dialog->setButtons( KDialog::Yes | KDialog::Details );
-    dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
@@ -957,7 +934,6 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption.isEmpty() ? i18n("Information") : caption );
     dialog->setButtons( KDialog::Yes );
-    dialog->setObjectName( "information" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
@@ -1026,7 +1002,6 @@ void KMessageBox::about(QWidget *parent, const QString &text,
     KDialog *dialog = new KDialog(parent, Qt::Dialog);
     dialog->setCaption( caption );
     dialog->setButtons( KDialog::Yes );
-    dialog->setObjectName( "about" );
     dialog->setModal( true );
     dialog->showButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
