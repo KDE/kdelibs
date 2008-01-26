@@ -248,7 +248,7 @@ public:
 	accessKeysPreActivate = false;
 
         // the view might have been built before the part it will be assigned to,
-        // so exceptionally, we need to directly ref/deref KHTMLGlobal to 
+        // so exceptionally, we need to directly ref/deref KHTMLGlobal to
         // account for this transitory case.
         KHTMLGlobal::ref();
         accessKeysEnabled = KHTMLGlobal::defaultHTMLSettings()->accessKeysEnabled();
@@ -3631,7 +3631,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
         if (d->scrollingFromWheelTimerId)
             killTimer(d->scrollingFromWheelTimerId);
         d->scrollingFromWheelTimerId = startTimer(400);
-        
+
         if (m_part->parentPart()) {
             // don't propagate if we are a sub-frame and our scrollbars are already at end of range
             bool h = (static_cast<QWheelEvent*>(e)->orientation() == Qt::Horizontal);
@@ -3643,7 +3643,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
                 e->accept();
                 return;
             }
-        }            
+        }
         QScrollArea::wheelEvent( e );
     }
 
@@ -3652,27 +3652,13 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
 
 void KHTMLView::dragEnterEvent( QDragEnterEvent* ev )
 {
-    // Handle drops onto frames (#16820)
-    // Drops on the main html part is handled by Konqueror (and shouldn't do anything
-    // in e.g. kmail, so not handled here).
-    if ( m_part->parentPart() )
-    {
-    	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
-	return;
-    }
+    // Still overriden for BC reasons only...
     QScrollArea::dragEnterEvent( ev );
 }
 
 void KHTMLView::dropEvent( QDropEvent *ev )
 {
-    // Handle drops onto frames (#16820)
-    // Drops on the main html part is handled by Konqueror (and shouldn't do anything
-    // in e.g. kmail, so not handled here).
-    if ( m_part->parentPart() )
-    {
-    	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
-	return;
-    }
+    // Still overriden for BC reasons only...
     QScrollArea::dropEvent( ev );
 }
 
