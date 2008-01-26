@@ -154,6 +154,7 @@ install( FILES
   KEditListBox
   KEditToolBar
   KEncodingFileDialog
+  KExtendableItemDelegate
   KFile
   KFileDialog
   KFileFilterCombo

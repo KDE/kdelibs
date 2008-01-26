@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2006,2007 Andreas Hartmetz (ahartmetz@gmail.com)
+    Copyright (C) 2008 Urs Wolfer (uwolfer @ kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,22 +23,25 @@
 #define KEXTENDABLEITEMDELEGATE_H
 
 #include <QItemDelegate>
-#include <QHash>
+
+#include <kdeui_export.h>
 
 /**
-This delegate makes it possible to display an arbitrary QWidget ("extender") that spans all columns below a line of items.
-The extender will logically belong to a column in the row above it.
-
-
-It is your responsibility to devise a way to trigger extension and contraction of items, by calling
-extendItem() and contractItem(). You can e.g. reimplement itemActivated() and similar functions.
-*/
-
+  * This delegate makes it possible to display an arbitrary QWidget ("extender") that spans all columns below a line of items.
+  * The extender will logically belong to a column in the row above it.
+  *
+  *
+  * It is your responsibility to devise a way to trigger extension and contraction of items, by calling
+  * extendItem() and contractItem(). You can e.g. reimplement itemActivated() and similar functions.
+  *
+  * @author Andreas Hartmetz <ahartmetz@gmail.com>
+  *
+  * @since 4.1
+  */
 
 class QAbstractItemView;
-class KExtendableItemDelegatePrivate;
 
-class KExtendableItemDelegate : public QItemDelegate {
+class KDEUI_EXPORT KExtendableItemDelegate : public QItemDelegate {
 	Q_OBJECT
 
 public:
@@ -51,8 +55,14 @@ public:
 	KExtendableItemDelegate(QAbstractItemView *parent);
 	virtual ~KExtendableItemDelegate();
 
-	//reimplemented from QItemDelegate
+	/**
+	 * Re-implemented for internal reasons. API not affected.
+	 */
 	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+	/**
+	 * Re-implemented for internal reasons. API not affected.
+	 */
 	virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	
 	/**
@@ -97,20 +107,31 @@ protected:
 	 * You can place the returned rectangle of this function anywhere inside that area.
 	 */
 	QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	//these two must have the same (screen) size!
-	void setExtendIcon(const QPixmap &);
-	void setContractIcon(const QPixmap &);
-	QPixmap extendIcon();
-	QPixmap contractIcon();
 
-private Q_SLOTS:
-	void extenderDestructionHandler(QObject *destroyed);
+	/**
+	 * The pixmap that is displayed to extend an item. @p pixmap must have the same size as the pixmap in setContractPixmap.
+	 */
+	void setExtendPixmap(const QPixmap &pixmap);
+
+	/**
+	 * The pixmap that is displayed to contract an item. @p pixmap must have the same size as the pixmap in setExtendPixmap.
+	 */
+	void setContractPixmap(const QPixmap &pixmap);
+
+	/**
+	 * Return the pixmap that is displayed to extend an item.
+	 */
+	QPixmap extendPixmap();
+
+	/**
+	 * Return the pixmap that is displayed to contract an item.
+	 */
+	QPixmap contractPixmap();
 
 private:
-	inline QSize maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	QModelIndex indexOfExtendedColumnInSameRow(const QModelIndex &index) const;
-	inline void scheduleUpdateViewLayout() const;
-	
-	KExtendableItemDelegatePrivate *const d;
+	class Private;
+	Private *const d;
+
+	Q_PRIVATE_SLOT(d, void _k_extenderDestructionHandler(QObject *destroyed))
 };
 #endif // KEXTENDABLEITEMDELEGATE_H

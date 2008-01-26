@@ -371,6 +371,7 @@ install( FILES
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
+ itemviews/kextendableitemdelegate.h
  itemviews/kcategorizedsortfilterproxymodel.h
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h

@@ -195,11 +195,11 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 
 	bool isRtl = QApplication::isRightToLeft();
 	QApplication::style()->drawPrimitive( isRtl ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight, &option, &p );
-	setExtendIcon( pixmap );
+	setExtendPixmap( pixmap );
 
 	pixmap.fill( QColor( Qt::transparent ) );
 	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
-	setContractIcon( pixmap );
+	setContractPixmap( pixmap );
 
 	connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
