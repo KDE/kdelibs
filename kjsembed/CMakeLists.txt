@@ -7,5 +7,5 @@ include_directories(
 
 add_subdirectory( kjsembed )
 add_subdirectory( kjscmd )
-add_subdirectory( console )
-add_subdirectory( examples )
+#add_subdirectory( console )
+#add_subdirectory( examples )
