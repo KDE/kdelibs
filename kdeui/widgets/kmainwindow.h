@@ -425,9 +425,10 @@ public:
      * Used from Konqueror when reusing the main window.
      */
     void ignoreInitialGeometry();
-    
+
     /**
-     * @internal
+     * Returns the path under which this window's D-Bus object is exported.
+     * @since 4.0.1
      */
     QString dbusName() const;
 
