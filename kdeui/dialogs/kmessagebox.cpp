@@ -191,9 +191,12 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *label2 = new QLabel( text, 0 );
     label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
     label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    label2->setWordWrap(true);
-    QRect d = KGlobalSettings::desktopGeometry(dialog);
 
+    QRect desktop = KGlobalSettings::desktopGeometry(dialog);
+    if (desktop.width() / 3 < label2->fontMetrics().width(text)) {
+        // do only enable automatic wrapping for messages which are longer than one third of the current screen width
+        label2->setWordWrap(true);
+    }
     QScrollArea* textArea = new QScrollArea( contents );
     textArea->setWidget( label2 );
     textArea->setFrameShape( QFrame::NoFrame );
@@ -204,6 +207,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
 
     QListWidget *listwidget = 0;
     if (!strlist.isEmpty()) {
+        // enable automatic wrapping since the listwidget has already a good initial width
+        label2->setWordWrap(true);
         listwidget = new QListWidget(topcontents);
         toplayout->addWidget(listwidget);
         listwidget->addItems(strlist);
