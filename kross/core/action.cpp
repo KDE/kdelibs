@@ -222,6 +222,11 @@ QDomElement Action::toDomElement() const
     return e;
 }
 
+Kross::Script* Action::script() const
+{
+    return d->script;
+}
+
 QString Action::name() const
 {
     return objectName();

@@ -60,6 +60,8 @@ namespace Kross {
              */
             virtual ~Script();
 
+        public Q_SLOTS:
+
             /**
              * \return the \a Interpreter instance that was used to created
              * this \a Script .

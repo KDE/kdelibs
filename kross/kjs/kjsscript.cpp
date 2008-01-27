@@ -227,6 +227,7 @@ void KjsScript::finalize()
 {
     KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
     KJS::ExecState* exec = kjsinterpreter->globalExec();
+    Q_UNUSED(exec);
 
     QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator it( d->m_publishedObjects.begin() );
     QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator end( d->m_publishedObjects.end() );

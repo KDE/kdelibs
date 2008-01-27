@@ -36,12 +36,50 @@ namespace Kross {
     */
     class EcmaScript : public Kross::Script
     {
+            Q_OBJECT
         public:
+
+            /**
+            * Constructor.
+            *
+            * \param interpreter The \a EcmaInterpreter instance this
+            * script belongs to.
+            * \param action The \a Kross::Action instance that contains
+            * details about the script and that decorates this script.
+            */
             EcmaScript(Kross::Interpreter* interpreter, Kross::Action* action);
+
+            /**
+            * Destructor.
+            */
             virtual ~EcmaScript();
+
+        public Q_SLOTS:
+
+            /**
+            * Executes the script.
+            */
             virtual void execute();
+
+            /**
+            * \return a list of function-names.
+            */
             virtual QStringList functionNames();
+
+            /**
+            * Execute a function.
+            *
+            * \param name The name of the function that should be called.
+            * \param args The optional arguments for the function.
+            * \return The return value of the function.
+            */
             virtual QVariant callFunction(const QString& name, const QVariantList& args = QVariantList());
+
+            /**
+            * \return the internal used QScriptEngine instance.
+            */
+            QObject* engine() const;
+
         private:
             class Private;
             Private* const d;
@@ -56,9 +94,29 @@ namespace Kross {
     {
             friend class EcmaScript;
         public:
+
+            /**
+            * Constructor.
+            *
+            * \param info The \a Kross::InterpreterInfo instance that
+            * describes this interpreter.
+            */
             explicit EcmaInterpreter(Kross::InterpreterInfo* info);
+
+            /**
+            * Destructor.
+            */
             virtual ~EcmaInterpreter();
-            virtual Kross::Script* createScript(Kross::Action* Action);
+
+            /**
+            * Factory method to create a new \a EcmaScript instance.
+            *
+            * \param action The \a Kross::Action instance that decorates
+            * the script and contains details like the scripting code.
+            * \return a new \a EcmaScript instance.
+            */
+            virtual Kross::Script* createScript(Kross::Action* action);
+
         private:
             class Private;
             Private* const d;

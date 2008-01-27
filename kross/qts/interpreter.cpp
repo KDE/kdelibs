@@ -56,6 +56,8 @@ namespace Kross {
                 delete m_engine;
                 m_engine = new QScriptEngine();
 
+                // load the Kross QScriptExtensionPlugin plugin that provides
+                // us a bridge between Kross and QtScript.
                 m_engine->importExtension("kross");
                 if( m_engine->hasUncaughtException() ) {
                     handleException();
@@ -64,12 +66,13 @@ namespace Kross {
                     return false;
                 }
 
+                // the Kross QScriptExtensionPlugin exports the "Kross" property.
                 QScriptValue global = m_engine->globalObject();
                 m_kross = global.property("Kross");
-                Q_ASSERT( m_kross.isValid() );
-                Q_ASSERT( m_kross.isObject() );
                 Q_ASSERT( m_kross.isQObject() );
+                Q_ASSERT( ! m_engine->hasUncaughtException() );
 
+                // attach our Kross::Action instance to be able to access it in scripts.
                 m_self = m_engine->newQObject( m_script->action() );
                 global.setProperty("self", m_self, QScriptValue::ReadOnly|QScriptValue::Undeletable);
 
@@ -91,6 +94,8 @@ namespace Kross {
             }
 
             void handleException() {
+                Q_ASSERT( m_engine );
+                Q_ASSERT( m_engine->hasUncaughtException() );
                 const QString err = m_engine->uncaughtException().toString();
                 const int linenr = m_engine->uncaughtExceptionLineNumber();
                 const QString trace = m_engine->uncaughtExceptionBacktrace().join("\n");
@@ -100,12 +105,15 @@ namespace Kross {
 
             void addObject(QObject* object, const QString& name = QString()) {
                 Q_ASSERT( m_engine );
+                Q_ASSERT( ! m_engine->hasUncaughtException() );
                 QScriptValue global = m_engine->globalObject();
                 QScriptValue value = m_engine->newQObject(object);
                 global.setProperty(name.isEmpty() ? object->objectName() : name, value);
             }
 
             void connectFunctions(ChildrenInterface* children) {
+                Q_ASSERT( m_engine );
+                Q_ASSERT( ! m_engine->hasUncaughtException() );
                 QString eval;
                 QScriptValue global = m_engine->globalObject();
                 QHashIterator< QString, ChildrenInterface::Options > it( children->objectOptions() );
@@ -136,11 +144,9 @@ namespace Kross {
                         }
                     }
                 }
-                if( ! eval.isNull() ) {
+                if( ! eval.isNull() )
                     m_engine->evaluate(eval);
-                    if( m_engine->hasUncaughtException() )
-                        handleException();
-                }
+                Q_ASSERT( ! m_engine->hasUncaughtException() );
             }
 
     };
@@ -220,6 +226,11 @@ QVariant EcmaScript::callFunction(const QString& name, const QVariantList& args)
     return result.toVariant();
 }
 
+QObject* EcmaScript::engine() const
+{
+    return d->m_engine;
+}
+
 /******************************************************************************************
  * EcmaInterpreter
  */
@@ -235,12 +246,12 @@ namespace Kross {
 
 EcmaInterpreter::EcmaInterpreter(Kross::InterpreterInfo* info) : Kross::Interpreter(info), d(new Private())
 {
-    krossdebug( QString("EcmaInterpreter::EcmaInterpreter") );
+    //krossdebug( QString("EcmaInterpreter::EcmaInterpreter") );
 }
 
 EcmaInterpreter::~EcmaInterpreter()
 {
-    krossdebug( QString("EcmaInterpreter::~EcmaInterpreter") );
+    //krossdebug( QString("EcmaInterpreter::~EcmaInterpreter") );
     delete d;
 }
 
@@ -249,3 +260,4 @@ Kross::Script* EcmaInterpreter::createScript(Kross::Action* action)
     return new EcmaScript(this, action);
 }
 
+#include "interpreter.moc"

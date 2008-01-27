@@ -33,6 +33,8 @@
 
 namespace Kross {
 
+    class Script;
+
     /**
      * The Action class is an abstract container to deal with scripts
      * like a single standalone scriptfile. Each action holds a reference
@@ -166,6 +168,19 @@ namespace Kross {
              */
             bool isFinalized() const;
 
+            /**
+             * \return the \a Kross::Script implementation used by the scripting
+             * backend. This returns NULL till the action got triggered or if
+             * there was an error before.
+             *
+             * Normaly it shouldn't be needed to deal with the scripting backend
+             * depending instance of a \a Kross::Script implementation since this
+             * \a Action class does decorate already all the things needed. It
+             * may however useful to provide additional interpreter dependend
+             * functionality.
+             */
+            Script* script() const;
+
         public Q_SLOTS:
 
             /**
@@ -246,8 +261,20 @@ namespace Kross {
              */
             QString currentPath() const;
 
+            /**
+             * Add a QObject instance to the action. This instance will
+             * be published to scripts.
+             */
             void addQObject(QObject* obj, const QString &name = QString());
+
+            /**
+             * \return the QObject with the objectName \p name .
+             */
             QObject* qobject(const QString &name) const;
+
+            /**
+             * \return a list of QObject objectName's.
+             */
             QStringList qobjectNames() const;
 
             /**
