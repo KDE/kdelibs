@@ -223,3 +223,22 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeGraphIfEmpty( cons
     }
     return c;
 }
+
+
+Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::addStatements( const QList<Soprano::Statement>& statements )
+{
+    QUrl newContext = ResourceManager::instance()->generateUniqueUri();
+    QList<Statement> newStatements;
+    QList<Statement>::const_iterator end = statements.constEnd();
+    for ( QList<Statement>::const_iterator it = statements.constBegin(); it != end; ++it ) {
+        Statement s( *it );
+        s.setContext( newContext );
+        newStatements.append( s );
+    }
+
+    Soprano::Error::ErrorCode r = FilterModel::addStatements( newStatements );
+    if ( r == Error::ErrorNone ) {
+        r = addStatement( Statement( newContext, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase() ) );
+    }
+    return r;
+}

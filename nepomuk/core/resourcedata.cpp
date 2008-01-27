@@ -277,7 +277,8 @@ bool Nepomuk::ResourceData::store()
                                               LiteralValue( m_uri.toLocalFile() ) ) );
             }
 
-            return ResourceManager::instance()->mainModel()->addStatements( statements ) == Soprano::Error::ErrorNone;
+            ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+            return fm.addStatements( statements ) == Soprano::Error::ErrorNone;
         }
         else {
             return true;
@@ -311,12 +312,22 @@ bool Nepomuk::ResourceData::load()
                             m_mainType = storedType;
                         }
                         else {
-                            Types::Class wantedTypeClass = m_mainType;
+                            Types::Class currentTypeClass = m_mainType;
                             Types::Class storedTypeClass = storedType;
 
                             // Keep the type that is further down the hierarchy
-                            if ( wantedTypeClass.isSubClassOf( storedTypeClass ) ) {
-                                m_mainType = wantedTypeClass.uri();
+                            if ( storedTypeClass.isSubClassOf( currentTypeClass ) ) {
+                                m_mainType = storedTypeClass.uri();
+                            }
+                            else {
+                                // This is a little convenience hack since the user is most likely
+                                // more interested in the file content than the actual file
+                                Types::Class xesamContentClass( Soprano::Vocabulary::Xesam::Content() );
+                                if ( m_mainType == Soprano::Vocabulary::Xesam::File() &&
+                                     ( storedTypeClass == xesamContentClass ||
+                                       storedTypeClass.isSubClassOf( xesamContentClass ) ) ) {
+                                    m_mainType = storedTypeClass.uri();
+                                }
                             }
                         }
                     }

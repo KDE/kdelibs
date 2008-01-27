@@ -69,6 +69,11 @@ namespace Nepomuk {
         Soprano::Error::ErrorCode ensureResource( const QUrl& resource, const QUrl& type = Soprano::Vocabulary::RDFS::Resource() );
 
         /**
+         * Adds the statements into a new nrl:InstanceBase context.
+         */
+        Soprano::Error::ErrorCode addStatements( const QList<Soprano::Statement>& statements );
+
+        /**
          * Reimplemented to remove metadata about graphs.
          */
         Soprano::Error::ErrorCode removeStatement( const Soprano::Statement &statement );
