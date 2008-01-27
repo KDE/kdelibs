@@ -97,10 +97,6 @@ public:
    */
   void addAction(QAction* action, const KUrl& url, const QString& name);
 
-  // Don't warn about the virtual overload. As the comment above says,
-  // addAction( QAction* ) should not be used.
-  using KSelectAction::addAction;
-
   /**
    * Reimplemented for internal reasons.
    */
@@ -171,6 +167,11 @@ Q_SIGNALS:
   void urlSelected( const KUrl& url );
 
 private:
+
+    // Don't warn about the virtual overload. As the comment of the other
+    // addAction() says, addAction( QAction* ) should not be used.
+    using KSelectAction::addAction;
+
     Q_PRIVATE_SLOT( d_func(), void _k_urlSelected(QAction*) )
 };
 
