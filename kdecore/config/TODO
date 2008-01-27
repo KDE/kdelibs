@@ -8,8 +8,8 @@ bugs
   - should use entryMap.revertEntry()
   - map has no bRevert flag that could be set along with bDirty, so it
     is impossible to get rid of a once set key
-- KConfigGroup::deleteGroup
-  - the group still exists() afterwards
+- KConfigGroup::exists() should return true only if the group contains
+  any non-deleted entries (?)
 - immutable groups with no entries are not written out and thus lose
   their immutability.
 - "C" & "en_US" should be detected early and converted to a null string
@@ -27,6 +27,19 @@ wishes
     might become stale.
   - api to actively add comments to files, groups and keys
   - guaranteeing that write order of new keys is preserved
+- possibly: selective multi-level master diversion
+  - this is to support roaming profiles that have machine/user/etc. specific
+    settings
+  - files, groups and keys can have [$m] and [$s] markers; these cascade
+    within each file only. the least significant object (farthest away from
+    the master) with an effective $m mode becomes the master (i.e., is
+    written to and not read past)..
+    default is $m for the master file and $s for the default files.
+  - the CascadeConfig flag being unset doesn't make things exactly simpler
+  - can kdeglobals be handled by this?
+  - does this really make sense? promoting an object to profile wide status
+    is a conscious decision - which probably needs to be repeated every time
+    the value changes.
 
 internals
 =========
@@ -37,7 +50,13 @@ internals
   cases all over the place?
 - clear up bDeleted vs. isNull in entrymap
 - make entrymap truly hierarchical
-
+  - an entry map contains its flags, a map of keys and a map of submaps.
+    it does NOT contain its name and has no parent pointer.
+  - when creating a kconfiggroup, ask parent for the respective submap
+    and link it if it is present. if it is not, create one at write op,
+    link it and tell parent to add it to its entry map. both query and
+    creation are recursive, obviously.
+    a kconfiggroup DOES contain its name and has a parent pointer.
 
 overwriting semantics
 =====================
