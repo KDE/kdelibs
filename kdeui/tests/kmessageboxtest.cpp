@@ -208,7 +208,7 @@ case 20:
   strlist << "/dev/hda" << "/etc/inittab" << "/usr/somefile" << "/some/really/"
    "long/file/name/which/is/in/a/really/deep/directory/in/a/really/large/"
    "hard/disk/of/your/system" << "/and/another/one" ;
-  i = KMessageBox::questionYesNoList(0, "Do you want to delete the following files ?",strlist);
+  i = KMessageBox::questionYesNoList(0, "Do you want to delete the following files?",strlist);
   }
   break;
 case 21:
@@ -217,7 +217,7 @@ case 21:
   printf("Filling StringList...\n");  
   for (int j=1;j<=6000;j++) strlist.append(QString("/tmp/tmp.%1").arg(j));
   printf("Completed...\n");  
-  i = KMessageBox::questionYesNoList(0, "Do you want to delete the following files ?",strlist);
+  i = KMessageBox::questionYesNoList(0, "Do you want to delete the following files?",strlist);
   }
   break;
 
