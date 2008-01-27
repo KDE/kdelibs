@@ -69,10 +69,6 @@ bool KUniqueApplication::Private::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
 
-#ifdef Q_WS_MAC
-void KApplication_early_init_mac();
-#endif
-
 void
 KUniqueApplication::addCmdLineOptions()
 {
@@ -128,10 +124,6 @@ KUniqueApplication::start()
         appName.prepend(QLatin1Char('.'));
         appName.prepend(s);
      }
-
-#ifdef Q_WS_MAC
-  KApplication_early_init_mac();
-#endif
 
   if (Private::s_nofork)
   {
