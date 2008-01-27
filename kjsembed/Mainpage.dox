@@ -2,26 +2,19 @@
 
 Provides a method of binding JavaScript objects to QObjects,
 so you can script your applications.
-<p>
 
-KJSEmbed is likely to be removed in the near future, in favor
-or QtScript.
+The \a KJSEmbed::Engine class does provide the main interface
+for running embedded Javascript.
+
+\li http://websvn.kde.org/trunk/KDE/kdelibs/kjs
 
 @authors
-Ian Reinhart Geiser \<geiseri@kde.org\><br>
-Matt Broadstone \<mbroadst@gmail.com\><br>
-Richard J. Moore \<rich@kde.org\><br>
-Erik L. Bunce \<kde@bunce.us\>
-
-@maintainers
-[Unknown/None]
+Ian Reinhart Geiser (geiseri@kde.org)
+Matt Broadstone (mbroadst@gmail.com)
+Richard J. Moore (rich@kde.org)
+Erik L. Bunce (kde@bunce.us)
+Sebastian Sauer (mail@dipe.org)
 
 @licenses
 @lgpl
-
 */
-
-// DOXYGEN_REFERENCES = kdecore kjs
-// DOXYGEN_EXCLUDE = examples tests
-// DOXYGEN_SET_PROJECT_NAME = KJSEmbed
-// vim:ts=4:sw=4:expandtab:filetype=doxygen
