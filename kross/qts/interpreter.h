@@ -28,6 +28,12 @@
 
 namespace Kross {
 
+    /**
+    * The EcmaScript class implements a \a Kross::Script to handle
+    * a single script. Each script and script file will have it's
+    * own \a EcmaScript instance as container for a Ecma QtScript
+    * that is managed by the \a Kross::Action class.
+    */
     class EcmaScript : public Kross::Script
     {
         public:
@@ -41,6 +47,11 @@ namespace Kross {
             Private* const d;
     };
 
+    /**
+    * The EcmaInterpreter class implements a \a Kross::Interpreter to provide
+    * a factory for \a EcmaScript instances. The interpreter is a singleton
+    * managed by Kross to share informations between different script instances.
+    */
     class EcmaInterpreter : public Kross::Interpreter
     {
             friend class EcmaScript;

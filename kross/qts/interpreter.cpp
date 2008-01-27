@@ -19,6 +19,8 @@
 
 #include "interpreter.h"
 
+#include <QMetaObject>
+#include <QMetaMethod>
 #include <QScriptEngine>
 #include <QScriptValueIterator>
 
@@ -103,6 +105,44 @@ namespace Kross {
                 global.setProperty(name.isEmpty() ? object->objectName() : name, value);
             }
 
+            void connectFunctions(ChildrenInterface* children) {
+                QString eval;
+                QScriptValue global = m_engine->globalObject();
+                QHashIterator< QString, ChildrenInterface::Options > it( children->objectOptions() );
+                while(it.hasNext()) {
+                    it.next();
+                    if( it.value() & ChildrenInterface::AutoConnectSignals ) {
+                        QObject* sender = children->object(it.key());
+                        if( ! sender )
+                            continue;
+                        QScriptValue obj = m_engine->globalObject().property(it.key());
+                        if( ! obj.isQObject() )
+                            continue;
+                        const QMetaObject* mo = sender->metaObject();
+                        const int count = mo->methodCount();
+                        for(int i = 0; i < count; ++i) {
+                            QMetaMethod mm = mo->method(i);
+                            const QString signature = mm.signature();
+                            const QString name = signature.left(signature.indexOf('('));
+                            if( mm.methodType() == QMetaMethod::Signal ) {
+                                QScriptValue func = global.property(name);
+                                if( ! func.isFunction() ) {
+                                    //krossdebug( QString("EcmaScript::connectFunctions No function to connect with %1.%2").arg(it.key()).arg(name) );
+                                    continue;
+                                }
+                                krossdebug( QString("EcmaScript::connectFunctions Connecting with %1.%2").arg(it.key()).arg(name) );
+                                eval += QString("try { %1.%2.connect(%3); } catch(e) { print(e); }\n").arg(it.key()).arg(name).arg(name);
+                            }
+                        }
+                    }
+                }
+                if( ! eval.isNull() ) {
+                    m_engine->evaluate(eval);
+                    if( m_engine->hasUncaughtException() )
+                        handleException();
+                }
+            }
+
     };
 
 }
@@ -137,8 +177,11 @@ void EcmaScript::execute()
     d->m_engine->evaluate( scriptCode, fileName );
     if( d->m_engine->hasUncaughtException() ) {
         d->handleException();
-        //return;
+        return;
     }
+
+    //d->connectFunctions( &Manager::self() );
+    d->connectFunctions( action() );
 }
 
 QStringList EcmaScript::functionNames()
@@ -148,7 +191,7 @@ QStringList EcmaScript::functionNames()
         return QStringList();
     }
     QStringList names;
-    QScriptValueIterator it( d->m_self );
+    QScriptValueIterator it( d->m_self ); //d->m_engine->globalObject()
     while( it.hasNext() ) {
         it.next();
         if( it.value().isFunction() )
