@@ -141,10 +141,6 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 void KApplication_init_windows();
 #endif
 
-#ifdef Q_WS_MAC
-void KApplication_early_init_mac();
-#endif
-
 /*
   Private data to make keeping binary compatibility easier
  */
