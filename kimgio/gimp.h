@@ -69,6 +69,8 @@ typedef enum
   INDEXEDA_GIMAGE
 } GimpImageType;
 
+// From GIMP "libgimp/gimpenums.h" v2.4
+
 //! Effect to apply when layers are merged together.
 
 typedef enum
@@ -89,9 +91,12 @@ typedef enum
   COLOR_MODE,
   VALUE_MODE,
   DIVIDE_MODE,
-  ERASE_MODE,
-  REPLACE_MODE,
-  ANTI_ERASE_MODE
+  DODGE_MODE,
+  BURN_MODE,
+  HARDLIGHT_MODE,
+  SOFTLIGHT_MODE,
+  GRAIN_EXTRACT_MODE,
+  GRAIN_MERGE_MODE
 } LayerModeEffects;
 
 // From GIMP "xcf.c" v1.2
@@ -157,7 +162,7 @@ inline int INT_MULT ( int a, int b )
 /*!
  * Blend the two color components in the proportion alpha:
  *
- * result = alpha a + ( 1 - alpha b)
+ * result = alpha a + ( 1 - alpha ) b
  *
  * \param a first component.
  * \param b second component.

@@ -52,9 +52,12 @@ const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
 	{false},	// COLOR_MODE
 	{false},	// VALUE_MODE
 	{false},	// DIVIDE_MODE
-	{true},		// ERASE_MODE
-	{true},		// REPLACE_MODE
-	{true},		// ANTI_ERASE_MODE
+	{false},	// DODGE_MODE
+	{false},	// BURN_MODE
+	{false},	// HARDLIGHT_MODE
+	{false},	// SOFTLIGHT_MODE
+	{false},	// GRAIN_EXTRACT_MODE
+	{false},	// GRAIN_MERGE_MODE
 };
 
 
@@ -1413,6 +1416,8 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
 
 	PixelMergeOperation merge = 0;
 
+	if (!layer.opacity) return; // don't bother doing anything
+
 	switch (layer.type) {
 		case RGB_GIMAGE:
 		case RGBA_GIMAGE:
@@ -1504,6 +1509,8 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 	uchar dst_g = qGreen(dst);
 	uchar dst_b = qBlue(dst);
 	uchar dst_a = qAlpha(dst);
+
+	if (!src_a) return; // nothing to merge
 
 	switch (layer.mode) {
 		case MULTIPLY_MODE: {
@@ -1642,6 +1649,136 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_a = qMin(src_a, dst_a);
 			}
 			break;
+		case DODGE_MODE: {
+			uint tmp;
+
+			tmp = dst_r << 8;
+			tmp /= 256 - src_r;
+			src_r = (uchar) qMin(tmp, 255u);
+
+			tmp = dst_g << 8;
+			tmp /= 256 - src_g;
+			src_g = (uchar) qMin(tmp, 255u);
+
+			tmp = dst_b << 8;
+			tmp /= 256 - src_b;
+			src_b = (uchar) qMin(tmp, 255u);
+
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case BURN_MODE: {
+			uint tmp;
+
+			tmp = (255 - dst_r) << 8;
+			tmp /= src_r + 1;
+			src_r = (uchar) qMin(tmp, 255u);
+			src_r = 255 - src_r;
+
+			tmp = (255 - dst_g) << 8;
+			tmp /= src_g + 1;
+			src_g = (uchar) qMin(tmp, 255u);
+			src_g = 255 - src_g;
+
+			tmp = (255 - dst_b) << 8;
+			tmp /= src_b + 1;
+			src_b = (uchar) qMin(tmp, 255u);
+			src_b = 255 - src_b;
+
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case HARDLIGHT_MODE: {
+			uint tmp;
+			if (src_r > 128) {
+				tmp = ((int)255-dst_r) * ((int) 255 - ((src_r-128) << 1));
+				src_r = (uchar) qMin(255 - (tmp >> 8), 255u);
+			} else {
+				tmp = (int) dst_r * ((int) src_r << 1);
+				src_r = (uchar) qMin(tmp >> 8, 255u);
+			}
+
+			if (src_g > 128) {
+				tmp = ((int)255-dst_g) * ((int) 255 - ((src_g-128) << 1));
+				src_g = (uchar) qMin(255 - (tmp >> 8), 255u);
+			} else {
+				tmp = (int) dst_g * ((int) src_g << 1);
+				src_g = (uchar) qMin(tmp >> 8, 255u);
+			}
+
+			if (src_b > 128) {
+				tmp = ((int)255-dst_b) * ((int) 255 - ((src_b-128) << 1));
+				src_b = (uchar) qMin(255 - (tmp >> 8), 255u);
+			} else {
+				tmp = (int) dst_b * ((int) src_b << 1);
+				src_b = (uchar) qMin(tmp >> 8, 255u);
+			}
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case SOFTLIGHT_MODE: {
+			uint tmpS, tmpM;
+
+			tmpM = INT_MULT(dst_r, src_r);
+			tmpS = 255 - INT_MULT((255 - dst_r), (255-src_r));
+			src_r = INT_MULT((255 - dst_r), tmpM)
+				+ INT_MULT(dst_r, tmpS);
+
+			tmpM = INT_MULT(dst_g, src_g);
+			tmpS = 255 - INT_MULT((255 - dst_g), (255-src_g));
+			src_g = INT_MULT((255 - dst_g), tmpM)
+				+ INT_MULT(dst_g, tmpS);
+
+			tmpM = INT_MULT(dst_b, src_b);
+			tmpS = 255 - INT_MULT((255 - dst_b), (255-src_b));
+			src_b = INT_MULT((255 - dst_b), tmpM)
+				+ INT_MULT(dst_b, tmpS);
+
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case GRAIN_EXTRACT_MODE: {
+			int tmp;
+			
+			tmp = dst_r - src_r + 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_r = (uchar) tmp;
+
+			tmp = dst_g - src_g + 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_g = (uchar) tmp;
+
+			tmp = dst_b - src_b + 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_b = (uchar) tmp;
+
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case GRAIN_MERGE_MODE: {
+			int tmp;
+			
+			tmp = dst_r + src_r - 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_r = (uchar) tmp;
+
+			tmp = dst_g + src_g - 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_g = (uchar) tmp;
+
+			tmp = dst_b + src_b - 128;
+			tmp = qMin(tmp, 255);
+			tmp = qMax(tmp, 0);
+			src_b = (uchar) tmp;
+
+			src_a = qMin(src_a, dst_a);
+			}
+			break;
 	}
 
 	src_a = INT_MULT(src_a, layer.opacity);
@@ -1707,6 +1844,8 @@ void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l
 
 	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
 
+	if (!src_a) return; // nothing to merge
+
 	switch (layer.mode) {
 		case MULTIPLY_MODE: {
 				src = INT_MULT( src, dst );
@@ -1742,6 +1881,60 @@ void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l
 			break;
 		case LIGHTEN_ONLY_MODE: {
 				src = dst < src ? src : dst;
+			}
+			break;
+		case DODGE_MODE: {
+				uint tmp = dst << 8;
+				tmp /= 256 - src;
+				src = (uchar) qMin(tmp, 255u);
+			}
+			break;
+		case BURN_MODE: {
+				uint tmp = (255-dst) << 8;
+				tmp /= src + 1;
+				src = (uchar) qMin(tmp, 255u);
+				src = 255 - src;
+			}
+			break;
+		case HARDLIGHT_MODE: {
+				uint tmp;
+				if (src > 128) {
+					tmp = ((int)255-dst) * ((int) 255 - ((src-128) << 1));
+					src = (uchar) qMin(255 - (tmp >> 8), 255u);
+				} else {
+					tmp = (int) dst * ((int) src << 1);
+					src = (uchar) qMin(tmp >> 8, 255u);
+				}
+			}
+			break;
+		case SOFTLIGHT_MODE: {
+				uint tmpS, tmpM;
+
+				tmpM = INT_MULT(dst, src);
+				tmpS = 255 - INT_MULT((255-dst), (255-src));
+				src = INT_MULT((255 - dst), tmpM)
+					+ INT_MULT(dst, tmpS);
+
+			}
+			break;
+		case GRAIN_EXTRACT_MODE: {
+				int tmp;
+				
+				tmp = dst - src + 128;
+				tmp = qMin(tmp, 255);
+				tmp = qMax(tmp, 0);
+
+				src = (uchar) tmp;
+			}
+			break;
+		case GRAIN_MERGE_MODE: {
+				int tmp;
+				
+				tmp = dst + src - 128;
+				tmp = qMin(tmp, 255);
+				tmp = qMax(tmp, 0);
+
+				src = (uchar) tmp;
 			}
 			break;
 	}
@@ -1809,6 +2002,8 @@ void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
 	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
 	uchar dst_a = qAlpha(image.pixel(m, n));
 
+	if (!src_a) return; // nothing to merge
+
 	switch (layer.mode) {
 		case MULTIPLY_MODE: {
 				src = INT_MULT(src, dst);
@@ -1852,6 +2047,66 @@ void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
 			break;
 		case LIGHTEN_ONLY_MODE: {
 				src = dst < src ? src : dst;
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case DODGE_MODE: {
+				uint tmp = dst << 8;
+				tmp /= 256 - src;
+				src = (uchar) qMin(tmp, 255u);
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case BURN_MODE: {
+				uint tmp = (255-dst) << 8;
+				tmp /= src + 1;
+				src = (uchar) qMin(tmp, 255u);
+				src = 255 - src;
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case HARDLIGHT_MODE: {
+				uint tmp;
+				if (src > 128) {
+					tmp = ((int)255-dst) * ((int) 255 - ((src-128) << 1));
+					src = (uchar) qMin(255 - (tmp >> 8), 255u);
+				} else {
+					tmp = (int) dst * ((int) src << 1);
+					src = (uchar) qMin(tmp >> 8, 255u);
+				}
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case SOFTLIGHT_MODE: {
+				uint tmpS, tmpM;
+
+				tmpM = INT_MULT(dst, src);
+				tmpS = 255 - INT_MULT((255 - dst), (255-src));
+				src = INT_MULT((255 - dst), tmpM)
+					+ INT_MULT(dst, tmpS);
+
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case GRAIN_EXTRACT_MODE: {
+				int tmp;
+				
+				tmp = dst - src + 128;
+				tmp = qMin(tmp, 255);
+				tmp = qMax(tmp, 0);
+
+				src = (uchar) tmp;
+				src_a = qMin(src_a, dst_a);
+			}
+			break;
+		case GRAIN_MERGE_MODE: {
+				int tmp;
+				
+				tmp = dst + src - 128;
+				tmp = qMin(tmp, 255);
+				tmp = qMax(tmp, 0);
+
+				src = (uchar) tmp;
 				src_a = qMin(src_a, dst_a);
 			}
 			break;
