@@ -70,7 +70,7 @@ public:
     KNS::Provider::List m_providers;
     bool m_modal;
     QWidget * m_parent;
-    QList<KNS::Entry*> m_changedEntries;
+    QSet<KNS::Entry*> m_changedEntries;
     QEventLoop* m_loop;
 
   private Q_SLOTS:
@@ -199,7 +199,7 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
 	d->workflow();
 
-	return d->m_changedEntries;
+	return QList<KNS::Entry*>::fromSet(d->m_changedEntries);
 }
 
 void Engine::downloadDialog()
