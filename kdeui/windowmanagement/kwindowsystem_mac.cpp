@@ -30,6 +30,8 @@
 #include <QtDBus/QtDBus>
 #include <kdebug.h>
 
+#include <Carbon/Carbon.h>
+
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId id )
 {
     kDebug() << "KWindowSystem::setMainWindow( QWidget*, WId ) isn't yet implemented!";
@@ -238,10 +240,30 @@ const QList<WId>& KWindowSystem::windows()
   return lst;
 }
 
-void KWindowSystem::setType( WId win, NET::WindowType windowType )
+void KWindowSystem::setType( WId winid, NET::WindowType windowType )
 {
- //TODO
- kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!";
+    static WindowGroupRef desktopGroup = 0;
+    static WindowGroupRef dockGroup = 0;
+
+    WindowRef win = HIViewGetWindow( (HIViewRef) winid );
+    //TODO: implement other types than Desktop and Dock
+    if (windowType != NET::Desktop && windowType != NET::Dock) {
+        kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented for the type you requested!";
+    } 
+    if (windowType == NET::Desktop) {
+        if (!desktopGroup) {
+            CreateWindowGroup(0, &desktopGroup);
+            SetWindowGroupLevel(desktopGroup, kCGDesktopIconWindowLevel);
+        }
+        SetWindowGroup(win, desktopGroup);
+    } else if (windowType == NET::Dock) {
+        if (!dockGroup) {
+            CreateWindowGroup(0, &dockGroup);
+            SetWindowGroupLevel(dockGroup, kCGDockWindowLevel);
+        }
+        SetWindowGroup(win, dockGroup);
+        ChangeWindowAttributes(win, kWindowNoTitleBarAttribute, kWindowNoAttributes);
+    }
 }
 
 #include "kwindowsystem.moc"
