@@ -476,10 +476,6 @@ void KApplicationPrivate::init(bool GUIenabled)
      ::exit(127);
   }
 
-#ifdef Q_WS_MAC
-  KApplication_early_init_mac();
-#endif
-
   if ( q->type() == KApplication::GuiClient )
   {
     QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
