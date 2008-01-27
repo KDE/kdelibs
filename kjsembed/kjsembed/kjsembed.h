@@ -40,6 +40,20 @@ namespace KJSEmbed {
 
 /**
  * The main interface for running embedded Javascript.
+ *
+ * \code
+ * KJSEmbed::Engine *engine = new KJSEmbed::Engine();
+ * KJS::Interpreter *interpreter = engine->interpreter();
+ * interpreter->setShouldPrintExceptions(true);
+ * KJS::ExecState *exec = interpreter->globalExec();
+ * KJS::UString code("print(\"Hello World\")");
+ * KJSEmbed::Engine::ExitStatus exitstatus = engine->execute(code);
+ * KJS::Completion completion = engine->completion();
+ * if(exitstatus != KJSEmbed::Engine::Success) {
+ *     KJS::JSValue* value = completion.value();
+ *     qDebug() << value->toString(exec).qstring();
+ * }
+ * \endcode
  */
 class KJSEMBED_EXPORT Engine
 {

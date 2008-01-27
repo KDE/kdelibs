@@ -6,15 +6,28 @@ so you can script your applications.
 The \a KJSEmbed::Engine class does provide the main interface
 for running embedded Javascript.
 
-\li http://websvn.kde.org/trunk/KDE/kdelibs/kjs
+\code
+KJSEmbed::Engine *engine = new KJSEmbed::Engine();
+KJS::Interpreter *interpreter = engine->interpreter();
+interpreter->setShouldPrintExceptions(true);
+KJS::ExecState *exec = interpreter->globalExec();
+KJS::UString code("print(\"Hello World\")");
+KJSEmbed::Engine::ExitStatus exitstatus = engine->execute(code);
+KJS::Completion completion = engine->completion();
+if(exitstatus != KJSEmbed::Engine::Success) {
+    KJS::JSValue* value = completion.value();
+    qDebug() << value->toString(exec).qstring();
+}
+\endcode
 
-@authors
-Ian Reinhart Geiser (geiseri@kde.org)
-Matt Broadstone (mbroadst@gmail.com)
-Richard J. Moore (rich@kde.org)
-Erik L. Bunce (kde@bunce.us)
-Sebastian Sauer (mail@dipe.org)
+\see http://websvn.kde.org/trunk/KDE/kdelibs/kjs
+\see http://websvn.kde.org/trunk/KDE/kdelibs/kjsembed
+\see http://websvn.kde.org/trunk/KDE/kdelibs/kross/kjs
 
-@licenses
-@lgpl
+\author Ian Reinhart Geiser (geiseri@kde.org)
+\author Matt Broadstone (mbroadst@gmail.com)
+\author Richard J. Moore (rich@kde.org)
+\author Erik L. Bunce (kde@bunce.us)
+\author Sebastian Sauer (mail@dipe.org)
+
 */

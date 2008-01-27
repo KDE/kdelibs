@@ -55,6 +55,7 @@ KJS::JSValue *callDump( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
     if( args.size() == 1)
     {
         KJS::JSObject *object = args[0]->toObject(exec);
+        Q_UNUSED(object);
     }
     return KJS::jsNull();
 }

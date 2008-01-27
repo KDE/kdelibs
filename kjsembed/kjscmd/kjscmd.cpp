@@ -80,14 +80,18 @@ int main( int argc, char **argv )
     KJS::List scriptArgs;
     bool gui = true;
 #ifndef QT_ONLY
-#ifdef __GNUC__
-#warning "KDE Support enabled"
-#endif
+    /*
+    #ifdef __GNUC__
+        #warning "KDE Support enabled"
+    #endif
+    */
     bool kde = true;
 #else
-#ifdef __GNUC__
-#warning "KDE Support disabled"
-#endif
+    /*
+    #ifdef __GNUC__
+        #warning "KDE Support disabled"
+    #endif
+    */
 #endif
 
     if (argc > 1)

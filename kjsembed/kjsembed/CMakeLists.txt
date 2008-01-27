@@ -1,4 +1,3 @@
-
 project(kjsembed-kjsembed)
 
 if (NOT QTONLY_WEBKIT)
@@ -53,7 +52,6 @@ set(kjsembed_LIB_SRCS
    QBrush_bind.cpp
    quiloader_binding.cpp
    )
-
 
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)
