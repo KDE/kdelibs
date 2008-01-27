@@ -34,9 +34,9 @@ KAction* KNS::standardAction(const QString& what,
 {
   QString data = what;
   if (data.isEmpty()) {
-    data = i18nc("Hot new stuff offers to Download New Data. Apps can fill in an individual string here, but Data is the default. This is in an action that gets displayed in the menu or toolbar for example.", "Data...");
+    data = i18nc("Hot new stuff offers to Download New Data. Apps can fill in an individual string here, but Data is the default. This is in an action that gets displayed in the menu or toolbar for example.", "Download New Data...");
   }
-  KAction *action = new KAction( i18n("Download New %1", data), parent );
+  KAction *action = new KAction( data, parent );
   parent->addAction(name, action);
   action->setIcon( KIcon( "get-hot-new-stuff" ) );
   QObject::connect( action, SIGNAL( triggered( bool ) ), recvr, slot );
