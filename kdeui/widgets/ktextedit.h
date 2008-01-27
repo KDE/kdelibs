@@ -166,9 +166,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking
+     *
+     * @since 4.1
      */
      void checkSpellingChanged( bool );
-     /*
+
+     /**
       * Signal sends when spell checking is finished/stopped/completed
       * @since 4.1
       */
