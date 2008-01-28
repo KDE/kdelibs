@@ -27,6 +27,7 @@ Comment[km]=Phonon ៖ បណ្ណាល័យ​ពហុព័ត៌មា�
 Comment[ko]=Phonon: KDE 멀티미디어 라이브러리
 Comment[lv]=Phonon: KDE multimedijas bibliotēka
 Comment[mk]=Phonon: Мултимедијалната библиотека на KDE
+Comment[ml]=ഫോണോണ്‍: കെഡിഇയുടെ മള്‍ട്ടിമീഡിയ ലൈബ്രറി
 Comment[nb]=Phonon: KDEs multimedia-bibliotek
 Comment[nds]=Phonon: KDE sien Multimedia-Bibliotheek
 Comment[ne]=फोनोन: केडीईको मल्टिमेडिया लाइब्रेरी
@@ -91,6 +92,7 @@ Name[lb]=Programm
 Name[lt]=Programa
 Name[lv]=Aplikācija
 Name[mk]=Апликација
+Name[ml]=പ്രയോഗം
 Name[ms]=Aplikasi
 Name[nb]=Program
 Name[nds]=Programm
@@ -152,6 +154,7 @@ Name[kk]=Қосалқы аудио құрылғысы
 Name[km]=ឧបករណ៍​អូឌីយ៉ូ Fallback
 Name[ko]=오디오 장치 폴백
 Name[lv]=Audio ierīces atkāpe
+Name[ml]=പകരമുള്ള ശബ്ദോപകരണം
 Name[nb]=Reservelydenhet
 Name[nds]=Opback-Klangreedschap
 Name[ne]=अडियो यन्त्र फलब्याक
@@ -196,6 +199,7 @@ Comment[ja]=優先デバイスが利用できないために自動的にフォ�
 Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[ko]=선호하는 장치를 사용할 수 없을 때 자동으로 다음 장치로 넘어가는 알림
 Comment[lv]=Paziņojums par automātisku atkāpsistēmas izmantošanu, ja vēlamā ierīce nav pieejama
+Comment[ml]=ഇഷ്ടപ്പെട്ട ശബ്ദോപകരണം ലഭ്യമല്ലെങ്കില്‍ സ്വയം പകരമുള്ളതിലേയ്ക്കു് മാറുമ്പോള്‍ അറിയിയ്ക്കുക
 Comment[nb]=Varsling ved automatisk overgang til reservelydenhet hvis foretrukket enhet ikke er tilgjengelig
 Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
 Comment[ne]=यदि रूचाइएको यन्त्र अनुपलब्ध छ भने स्वचालन फलब्याकमा सूचना

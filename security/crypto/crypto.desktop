@@ -33,6 +33,7 @@ Name[ko]=암호화
 Name[lt]=Šifravimas
 Name[lv]=Kriptogrāfija
 Name[mk]=Криптографија
+Name[ml]=ക്രിപ്റ്റോ
 Name[nb]=Kryptering
 Name[ne]=गुप्त
 Name[nn]=Kryptering
@@ -86,6 +87,7 @@ Comment[ko]=SSL과 같은 암호화를 설정하고, 인증서를 관리합니�
 Comment[lt]=Derina SSL, tvarko sertifikatus ir kitus šifravimo parametrus
 Comment[lv]=Konfigurēt SSL, pārvaldīt sertifikātus un citus kriptogrāfijas iestatījumus
 Comment[mk]=Конфигурација на SSL, менаџмент на сертификати\nи други криптографски поставувања
+Comment[ml]=എസ്എസ്എല്‍ ക്രമീകരിയ്ക്കുക, സാക്ഷ്യപത്ര നടത്തിപ്പുകാരന്‍, പിന്നെ ക്രിപ്റ്റോഗ്രഫി സജ്ജീകരണം
 Comment[nb]=Oppsett av SSL, behandling av sertifikater og andre innstillinger for kryptering
 Comment[nds]=SSL inrichten, Zertifikaten plegen un anner Verslötel-Instellen
 Comment[ne]=SSL कन्फिगरेसन, प्रमाणपत्र प्रबन्ध, र अन्य गुप्तिकरण सेटिङ
