@@ -51,6 +51,7 @@ class KTextEdit::Private
       : parent( _parent ),
         customPalette( false ),
         checkSpellingEnabled( false ),
+        findReplaceEnabled(true),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0)
     {
     }
@@ -86,6 +87,7 @@ class KTextEdit::Private
     bool customPalette : 1;
 
     bool checkSpellingEnabled : 1;
+    bool findReplaceEnabled: 1;
     QString originalBuffer;
     QString spellChechingConfigFileName;
     QString spellCheckingLanguage;
@@ -380,19 +382,22 @@ QMenu *KTextEdit::mousePopupMenu()
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
 
-      KAction *findAction = KStandardAction::find( this, SLOT( slotFind() ), this );
-      KAction *findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), this );
-      KAction *replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), this );
-      if (emptyDocument)
+      if (d->findReplaceEnabled)
       {
-          findAction->setEnabled(false);
-          findNextAction->setEnabled(d->find != 0 );
-          replaceAction->setEnabled(false);
+          KAction *findAction = KStandardAction::find( this, SLOT( slotFind() ), this );
+          KAction *findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), this );
+          KAction *replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), this );
+          if (emptyDocument)
+          {
+              findAction->setEnabled(false);
+              findNextAction->setEnabled(d->find != 0 );
+              replaceAction->setEnabled(false);
+          }
+          popup->addSeparator();
+          popup->addAction(findAction);
+          popup->addAction(findNextAction);
+          popup->addAction(replaceAction);
       }
-      popup->addSeparator();
-      popup->addAction(findAction);
-      popup->addAction(findNextAction);
-      popup->addAction(replaceAction);
   }
   return popup;
 }

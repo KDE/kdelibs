@@ -169,6 +169,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     QMenu *mousePopupMenu();
 
+    /**
+     * Enable find replace action.
+     * @since 4.1
+     */
+    void enableFindReplace( bool enabled);
+
 
   Q_SIGNALS:
     /**
