@@ -34,9 +34,12 @@
 
 #include "ui_DownloadDialog.h"
 
+#define ConfigGroup QLatin1String("DownloadDialog Settings")
+
 class KJob;
 class KLineEdit;
 class QComboBox;
+class QHideEvent;
 class QLabel;
 class QProgressIndicator;
 
@@ -107,7 +110,11 @@ private Q_SLOTS:
     //void slotItemResult( KJob * );
     void slotProgress(const QString & text, int percentage);
 
+protected:
+    virtual void hideEvent(QHideEvent * event);
+
 private:
+
     void populateSortCombo(const Provider * provider);
 
     // Contents

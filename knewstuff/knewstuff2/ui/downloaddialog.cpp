@@ -84,9 +84,10 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     m_list->setEngine(m_engine);
 
-    // start with a nice size
-    // FIXME: this should load the last size the user set it to.
-    resize( 700, 400 );
+    // load the last size from config
+    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    restoreDialogSize(group);
+    setMinimumSize(700, 400);
 
     setWindowTitle(i18n("Get Hot New Stuff!"));
     m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
@@ -105,6 +106,15 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
 DownloadDialog::~DownloadDialog()
 {
+    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    saveDialogSize(group, KConfigBase::Persistent);
+}
+
+void DownloadDialog::hideEvent(QHideEvent * event)
+{
+    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    saveDialogSize(group, KConfigBase::Persistent);
+    KDialog::hideEvent(event);
 }
 
 void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageType type, int timeOutMs )
