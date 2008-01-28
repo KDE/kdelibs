@@ -423,7 +423,7 @@ void KConfigPrivate::parseConfigFiles()
 
     // can only read the file if there is a backend and a file name
     if (mBackend && !fileName.isEmpty()) {
-        
+
         // don't do variable expansion for .desktop files
         bool allowExecutableValues = (qstrcmp(resourceType, "config") == 0) ||
                     !fileName.endsWith(".desktop");
@@ -475,12 +475,6 @@ KConfig::AccessMode KConfig::accessMode() const
     Q_D(const KConfig);
     return d->configState;
 }
-
-/*QStringList KConfig::extraConfigFiles() const
-{
-    Q_D(const KConfig);
-    return d->extraFiles.toList();
-}*/
 
 void KConfig::addConfigSources(const QStringList& files)
 {
