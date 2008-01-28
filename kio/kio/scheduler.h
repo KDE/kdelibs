@@ -214,9 +214,6 @@ namespace KIO {
         static bool disconnectSlave(KIO::Slave *slave);
 
         /**
-         * Send the slave that was put on hold back to KLauncher. This
-         * allows another process to take over the slave and resume the job
-         * the that was started.
          * Register the mainwindow @p wid with the KIO subsystem
          * Do not call this, it is called automatically from
          * void KIO::Job::setWindow(QWidget*).

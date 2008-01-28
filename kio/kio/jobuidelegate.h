@@ -33,8 +33,6 @@ class Job;
 
 /**
  * A UI delegate tuned to be used with KIO Jobs.
- *
- * It uses KIO::Observer to do the tracking.
  */
 class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate
 {
