@@ -108,14 +108,14 @@ int RenderFormElement::paddingRight() const
 bool RenderFormElement::includesPadding() const
 {
     return style()->boxSizing() == BORDER_BOX;
-} 
+}
 
 
 void RenderFormElement::setPadding()
 {
     if (!includesPadding())
         return;
-    
+
     struct AddPadding : public KdeUiProxyStyle
     {
         AddPadding(QWidget *parent)
@@ -137,7 +137,7 @@ void RenderFormElement::setPadding()
             r.adjust(left, top, -right, -bottom);
             return r;
         }
-        
+
         int left, right, top, bottom;
     };
 
@@ -147,7 +147,7 @@ void RenderFormElement::setPadding()
     style->right = RenderWidget::paddingRight();
     style->top = RenderWidget::paddingTop();
     style->bottom = RenderWidget::paddingBottom();
-    
+
     widget()->setStyle(style);
     delete proxyStyle;
     proxyStyle = style;
@@ -189,7 +189,7 @@ void RenderFormElement::layout()
     if ( m_widget )
         resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
-    
+
     setNeedsLayout(false);
 }
 
@@ -300,7 +300,7 @@ bool RenderCheckBox::handleEvent(const DOM::EventImpl& ev)
 
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
-{    
+{
     RadioButtonWidget* b = new RadioButtonWidget(view()->widget());
     b->setMouseTracking(true);
     b->setAutoExclusive(false);
@@ -406,12 +406,12 @@ void RenderSubmitButton::calcMinMaxWidth()
     butOpt.init(pb);
     butOpt.text = raw;
     QSize s = pb->style()->sizeFromContents( QStyle::CT_PushButton, &butOpt, ts, pb );
-    
+
     s = s.expandedTo(QApplication::globalStrut());
     int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
               pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
     int w = ts.width() + margin;
-    
+
     int h = s.height();
     if (pb->isDefault() || pb->autoDefault()) {
         int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
@@ -419,11 +419,11 @@ void RenderSubmitButton::calcMinMaxWidth()
     }
     // add 30% margins to the width (heuristics to make it look similar to IE)
     w = w*13/10;
-    
+
     // the crazy heuristic code overrides some changes made by the
     // AddPadding proxy style, so reapply them
     w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
-    
+
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
@@ -823,7 +823,7 @@ RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
 {
     m_intrinsicWidth = 0;
 }
- 
+
 void RenderFieldset::calcMinMaxWidth()
 {
     RenderBlock::calcMinMaxWidth();
@@ -1240,8 +1240,8 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListWidget*>(m_widget)->setSelectionMode(m_multiple ? 
-                                            QListWidget::ExtendedSelection 
+            static_cast<KListWidget*>(m_widget)->setSelectionMode(m_multiple ?
+                                            QListWidget::ExtendedSelection
                                           : QListWidget::SingleSelection);
         }
         m_selectionChanged = true;
@@ -1302,7 +1302,7 @@ void RenderSelect::updateFromElement()
                     l->insertItem(listIndex,text);
                     DOMString disabled = optElem->getAttribute(ATTR_DISABLED);
                     if (!disabled.isNull() && l->item( listIndex )) {
-                        l->item( listIndex )->setFlags( l->item(listIndex)->flags() 
+                        l->item( listIndex )->setFlags( l->item(listIndex)->flags()
                                                             & ~Qt::ItemIsSelectable );
                     }
                 }  else
@@ -1570,7 +1570,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : KTextEdit(parent)
 {
     m_kwp->setIsRedirected( true );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
@@ -1587,225 +1587,19 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     setAcceptRichText (false);
     setMouseTracking(true);
 
-    KActionCollection *ac = new KActionCollection(this);
-    m_findAction = KStandardAction::find( this, SLOT( slotFind() ), ac );
-    m_findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), ac );
-    m_replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), ac );
 }
 
 void TextAreaWidget::scrollContentsBy( int dx, int dy )
 {
     KTextEdit::scrollContentsBy(dx, dy);
     update();
-    
+
 }
 
 TextAreaWidget::~TextAreaWidget()
 {
-    delete m_replace;
-    m_replace = 0L;
-    delete m_find;
-    m_find = 0L;
-    delete m_repDlg;
-    m_repDlg = 0L;
-    delete m_findDlg;
-    m_findDlg = 0L;
 }
 
-void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
-{
-    QMenu *popup = KTextEdit::mousePopupMenu();
-
-    if (!isReadOnly()) {
-        popup->addSeparator();
-
-        popup->addAction( m_findAction );
-        m_findAction->setEnabled( !document()->isEmpty() );
-
-        popup->addAction( m_findNextAction );
-        m_findNextAction->setEnabled( m_find != 0 );
-
-        popup->addAction( m_replaceAction );
-        m_replaceAction->setEnabled( !document()->isEmpty() );
-    }
-
-    popup->exec(e->globalPos());
-    delete popup;
-}
-
-
-void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
-{
-    Q_UNUSED(text)
-    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength;
-    QTextCursor tc = textCursor();
-    tc.setPosition(matchingIndex);
-    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchingLength);
-    setTextCursor(tc);
-    ensureCursorVisible();
-}
-
-
-void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
-    Q_UNUSED(text)
-    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
-    QTextCursor tc = textCursor();
-    tc.setPosition(replacementIndex);
-    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
-    tc.removeSelectedText();
-    tc.insertText(m_repDlg->replacement());
-    setTextCursor(tc);
-    if (m_replace->options() & KReplaceDialog::PromptOnReplace) {
-        ensureCursorVisible();
-    }
-}
-
-
-void TextAreaWidget::slotDoReplace()
-{
-    if (!m_repDlg) {
-        // Should really assert()
-        return;
-    }
-
-    delete m_replace;
-    m_replace = new KReplace(m_repDlg->pattern(), m_repDlg->replacement(), m_repDlg->options(), this);
-    m_repIndex = 0;
-    if (m_replace->options() & KFind::FromCursor || m_replace->options() & KFind::FindBackwards) {
-        m_repIndex = textCursor().anchor();
-    }
-
-    // Connect highlight signal to code which handles highlighting
-    // of found text.
-    connect(m_replace, SIGNAL(highlight(const QString &, int, int)),
-            this, SLOT(slotFindHighlight(const QString &, int, int)));
-    connect(m_replace, SIGNAL(findNext()), this, SLOT(slotReplaceNext()));
-    connect(m_replace, SIGNAL(replace(const QString &, int, int, int)),
-            this, SLOT(slotReplaceText(const QString &, int, int, int)));
-
-    m_repDlg->close();
-    slotReplaceNext();
-}
-
-
-void TextAreaWidget::slotReplaceNext()
-{
-    if (!m_replace)
-        return;
-
-    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace))
-        viewport()->setUpdatesEnabled(false);
-
-    KFind::Result res = KFind::NoMatch;
-
-    if (m_replace->needData())
-        m_replace->setData(toPlainText(), m_repIndex);
-    res = m_replace->replace();
-    if (!(m_replace->options() & KReplaceDialog::PromptOnReplace)) {
-        viewport()->setUpdatesEnabled(true);
-        viewport()->update();
-    }
-
-    if (res == KFind::NoMatch) {
-        m_replace->displayFinalDialog();
-        m_replace->disconnect(this);
-        m_replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
-        m_replace = 0;
-        ensureCursorVisible();
-        //or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
-    } else {
-        //m_replace->closeReplaceNextDialog();
-    }
-}
-
-
-void TextAreaWidget::slotDoFind()
-{
-    if (!m_findDlg) {
-        // Should really assert()
-        return;
-    }
-
-    delete m_find;
-    m_find = new KFind(m_findDlg->pattern(), m_findDlg->options(), this);
-    m_findIndex = 0;
-    if (m_find->options() & KFind::FromCursor || m_find->options() & KFind::FindBackwards) {
-        m_findIndex = textCursor().anchor();
-    }
-
-    // Connect highlight signal to code which handles highlighting
-    // of found text.
-    connect(m_find, SIGNAL(highlight(const QString &, int, int)),
-            this, SLOT(slotFindHighlight(const QString &, int, int)));
-    connect(m_find, SIGNAL(findNext()), this, SLOT(slotFindNext()));
-
-    m_findDlg->close();
-    m_find->closeFindNextDialog();
-    slotFindNext();
-}
-
-
-void TextAreaWidget::slotFindNext()
-{
-    if (!m_find)
-        return;
-
-    KFind::Result res = KFind::NoMatch;
-    if (m_find->needData())
-        m_find->setData(toPlainText(), m_findIndex);
-    res = m_find->find();
-
-    if (res == KFind::NoMatch) {
-        m_find->displayFinalDialog();
-        m_find->disconnect(this);
-        m_find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
-        m_find = 0;
-        //or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
-    } else {
-        //m_find->closeFindNextDialog();
-    }
-}
-
-
-void TextAreaWidget::slotFind()
-{
-    if( document()->isEmpty() )  // saves having to track the text changes
-        return;
-
-    if ( m_findDlg ) {
-#ifdef Q_WS_X11
-      KWindowSystem::activateWindow( m_findDlg->winId() );
-#else
-      m_findDlg->activateWindow();
-#endif
-    } else {
-      m_findDlg = new KFindDialog(this);
-      m_findDlg->setObjectName("KHTML Text Area Find Dialog");
-      connect( m_findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
-    }
-    m_findDlg->show();
-}
-
-
-void TextAreaWidget::slotReplace()
-{
-    if( document()->isEmpty() )  // saves having to track the text changes
-        return;
-
-    if ( m_repDlg ) {
-#ifdef Q_WS_X11
-      KWindowSystem::activateWindow( m_repDlg->winId() );
-#else
-      m_repDlg->activateWindow();
-#endif
-    } else {
-      m_repDlg = new KReplaceDialog(this, 0,
-                                    QStringList(), QStringList(), false);
-      m_repDlg->setObjectName("KHTMLText Area Replace Dialog");
-      connect( m_repDlg, SIGNAL(okClicked()), this, SLOT(slotDoReplace()) );
-    }
-    m_repDlg->show();
-}
 
 
 bool TextAreaWidget::event( QEvent *e )
@@ -1925,7 +1719,7 @@ void RenderTextArea::setText(const QString& newText)
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
 
-    // When this is called, m_value in the element must have just 
+    // When this is called, m_value in the element must have just
     // been set to new value --- see if we have any work to do
     if ( newText != text() ) {
         bool blocked = w->blockSignals(true);
@@ -1949,7 +1743,7 @@ void RenderTextArea::updateFromElement()
 
 QString RenderTextArea::text()
 {
-    // ### We may want to cache this when physical, since the DOM no longer caches, 
+    // ### We may want to cache this when physical, since the DOM no longer caches,
     // but seeing how text() has always been called on textChanged(), it's probably not needed
 
     QString txt;
@@ -2015,7 +1809,7 @@ static void setPhysWrapPos(QTextCursor& otc, bool selStart, int idx)
         if (tc.position() >= idx)
             break;
     }
-    otc.setPosition(idx, selStart ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );   
+    otc.setPosition(idx, selStart ? QTextCursor::MoveAnchor : QTextCursor::KeepAnchor );
 }
 
 void RenderTextArea::setSelectionStart(long offset) {

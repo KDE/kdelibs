@@ -36,8 +36,13 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdialog.h>
+#include <kreplacedialog.h>
+#include <kfinddialog.h>
+#include <kfind.h>
+#include <kreplace.h>
 #include <QMenu>
 #include <kmessagebox.h>
+#include <kwindowsystem.h>
 
 class KTextEdit::Private
 {
@@ -46,13 +51,17 @@ class KTextEdit::Private
       : parent( _parent ),
         customPalette( false ),
         checkSpellingEnabled( false ),
-        highlighter( 0 )
+        highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0)
     {
     }
 
     ~Private()
     {
       delete highlighter;
+      delete findDlg;
+      delete find;
+      delete replace;
+      delete repDlg;
     }
 
     void slotSpellCheckDone( const QString &s );
@@ -61,6 +70,9 @@ class KTextEdit::Private
     void spellCheckerCorrected( const QString &, int,const QString &);
     void spellCheckerAutoCorrect(const QString&,const QString&);
     void spellCheckerCanceled();
+
+    void slotFindHighlight(const QString& text, int matchingIndex, int matchingLength);
+    void slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength);
 
     void spellCheckerFinished();
     void toggleAutoSpellCheck();
@@ -78,6 +90,11 @@ class KTextEdit::Private
     QString spellChechingConfigFileName;
     QString spellCheckingLanguage;
     Sonnet::Highlighter *highlighter;
+    KFindDialog *findDlg;
+    KFind *find;
+    KReplaceDialog *repDlg;
+    KReplace *replace;
+    int findIndex, repIndex;
 };
 
 void KTextEdit::Private::spellCheckerCanceled()
@@ -141,6 +158,33 @@ void KTextEdit::Private::menuActivated( QAction* action )
     toggleAutoSpellCheck();
   else if ( action == allowTab )
     slotAllowTab();
+}
+
+
+void KTextEdit::Private::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
+{
+    Q_UNUSED(text)
+    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength;
+    QTextCursor tc = parent->textCursor();
+    tc.setPosition(matchingIndex);
+    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchingLength);
+    parent->setTextCursor(tc);
+    parent->ensureCursorVisible();
+}
+
+
+void KTextEdit::Private::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
+    Q_UNUSED(text)
+    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
+    QTextCursor tc = parent->textCursor();
+    tc.setPosition(replacementIndex);
+    tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
+    tc.removeSelectedText();
+    tc.insertText(repDlg->replacement());
+    parent->setTextCursor(tc);
+    if (replace->options() & KReplaceDialog::PromptOnReplace) {
+        parent->ensureCursorVisible();
+    }
 }
 
 KTextEdit::KTextEdit( const QString& text, QWidget *parent )
@@ -297,6 +341,7 @@ QMenu *KTextEdit::mousePopupMenu()
   connect( popup, SIGNAL( triggered ( QAction* ) ),
              this, SLOT( menuActivated( QAction* ) ) );
 
+  bool emptyDocument = document()->isEmpty();
   if( !isReadOnly() )
   {
       QList<QAction *> actionList = popup->actions();
@@ -308,7 +353,7 @@ QMenu *KTextEdit::mousePopupMenu()
       if ( separatorAction )
       {
           KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
-          if ( document()->isEmpty() )
+          if ( emptyDocument )
               clearAllAction->setEnabled( false );
           popup->insertAction( separatorAction, clearAllAction );
       }
@@ -324,7 +369,7 @@ QMenu *KTextEdit::mousePopupMenu()
       {
           d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ) );
 
-          if ( document()->isEmpty() )
+          if ( emptyDocument )
               d->spellCheckAction->setEnabled( false );
            d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
           d->autoSpellCheckAction->setCheckable( true );
@@ -334,6 +379,20 @@ QMenu *KTextEdit::mousePopupMenu()
       d->allowTab = popup->addAction( i18n("Allow Tabulations") );
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
+
+      KAction *findAction = KStandardAction::find( this, SLOT( slotFind() ), this );
+      KAction *findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), this );
+      KAction *replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), this );
+      if (emptyDocument)
+      {
+          findAction->setEnabled(false);
+          findNextAction->setEnabled(d->find != 0 );
+          replaceAction->setEnabled(false);
+      }
+      popup->addSeparator();
+      popup->addAction(findAction);
+      popup->addAction(findNextAction);
+      popup->addAction(replaceAction);
   }
   return popup;
 }
@@ -475,6 +534,159 @@ void KTextEdit::highlightWord( int length, int pos )
   cursor.setPosition(pos);
   cursor.setPosition(pos+length,QTextCursor::KeepAnchor);
   setTextCursor (cursor);
+  ensureCursorVisible();
 }
+
+void KTextEdit::replace()
+{
+     if( document()->isEmpty() )  // saves having to track the text changes
+        return;
+
+    if ( d->repDlg ) {
+      KWindowSystem::activateWindow( d->repDlg->winId() );
+    } else {
+      d->repDlg = new KReplaceDialog(this, 0,
+                                    QStringList(), QStringList(), false);
+      connect( d->repDlg, SIGNAL(okClicked()), this, SLOT(slotDoReplace()) );
+    }
+    d->repDlg->show();
+}
+
+void KTextEdit::slotDoReplace()
+{
+    if (!d->repDlg) {
+        // Should really assert()
+        return;
+    }
+
+    delete d->replace;
+    d->replace = new KReplace(d->repDlg->pattern(), d->repDlg->replacement(), d->repDlg->options(), this);
+    d->repIndex = 0;
+    if (d->replace->options() & KFind::FromCursor || d->replace->options() & KFind::FindBackwards) {
+        d->repIndex = textCursor().anchor();
+    }
+
+    // Connect highlight signal to code which handles highlighting
+    // of found text.
+    connect(d->replace, SIGNAL(highlight(const QString &, int, int)),
+            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(d->replace, SIGNAL(findNext()), this, SLOT(slotReplaceNext()));
+    connect(d->replace, SIGNAL(replace(const QString &, int, int, int)),
+            this, SLOT(slotReplaceText(const QString &, int, int, int)));
+
+    d->repDlg->close();
+    slotReplaceNext();
+}
+
+
+void KTextEdit::slotReplaceNext()
+{
+    if (!d->replace)
+        return;
+
+    if (!(d->replace->options() & KReplaceDialog::PromptOnReplace))
+        viewport()->setUpdatesEnabled(false);
+
+    KFind::Result res = KFind::NoMatch;
+
+    if (d->replace->needData())
+        d->replace->setData(toPlainText(), d->repIndex);
+    res = d->replace->replace();
+    if (!(d->replace->options() & KReplaceDialog::PromptOnReplace)) {
+        viewport()->setUpdatesEnabled(true);
+        viewport()->update();
+    }
+
+    if (res == KFind::NoMatch) {
+        d->replace->displayFinalDialog();
+        d->replace->disconnect(this);
+        d->replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
+        d->replace = 0;
+        ensureCursorVisible();
+        //or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
+    } else {
+        //m_replace->closeReplaceNextDialog();
+    }
+}
+
+
+void KTextEdit::slotDoFind()
+{
+    if (!d->findDlg) {
+        // Should really assert()
+        return;
+    }
+
+    delete d->find;
+    d->find = new KFind(d->findDlg->pattern(), d->findDlg->options(), this);
+    d->findIndex = 0;
+    if (d->find->options() & KFind::FromCursor || d->find->options() & KFind::FindBackwards) {
+        d->findIndex = textCursor().anchor();
+    }
+
+    // Connect highlight signal to code which handles highlighting
+    // of found text.
+    connect(d->find, SIGNAL(highlight(const QString &, int, int)),
+            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(d->find, SIGNAL(findNext()), this, SLOT(slotFindNext()));
+
+    d->findDlg->close();
+    d->find->closeFindNextDialog();
+    slotFindNext();
+}
+
+
+void KTextEdit::slotFindNext()
+{
+    if (!d->find)
+        return;
+
+    KFind::Result res = KFind::NoMatch;
+    if (d->find->needData())
+        d->find->setData(toPlainText(), d->findIndex);
+    res = d->find->find();
+
+    if (res == KFind::NoMatch) {
+        d->find->displayFinalDialog();
+        d->find->disconnect(this);
+        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
+        d->find = 0;
+        //or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
+    } else {
+        //m_find->closeFindNextDialog();
+    }
+}
+
+
+void KTextEdit::slotFind()
+{
+    if( document()->isEmpty() )  // saves having to track the text changes
+        return;
+
+    if ( d->findDlg ) {
+      KWindowSystem::activateWindow( d->findDlg->winId() );
+    } else {
+      d->findDlg = new KFindDialog(this);
+      connect( d->findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
+    }
+    d->findDlg->show();
+}
+
+
+void KTextEdit::slotReplace()
+{
+    if( document()->isEmpty() )  // saves having to track the text changes
+        return;
+
+    if ( d->repDlg ) {
+      KWindowSystem::activateWindow( d->repDlg->winId() );
+    } else {
+      d->repDlg = new KReplaceDialog(this, 0,
+                                    QStringList(), QStringList(), false);
+      connect( d->repDlg, SIGNAL(okClicked()), this, SLOT(slotDoReplace()) );
+    }
+    d->repDlg->show();
+}
+
 
 #include "ktextedit.moc"

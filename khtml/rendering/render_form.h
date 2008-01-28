@@ -92,7 +92,7 @@ public:
 
     DOM::HTMLGenericFormElementImpl *element() const
     { return static_cast<DOM::HTMLGenericFormElementImpl*>(RenderObject::element()); }
-    
+
     // this is not a virtual function
     void setQWidget(QWidget *w);
 
@@ -131,8 +131,8 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class CheckBoxWidget: public QCheckBox, public KHTMLWidget 
-{ 
+class CheckBoxWidget: public QCheckBox, public KHTMLWidget
+{
 public:
     CheckBoxWidget(QWidget *p): QCheckBox(p) { m_kwp->setIsRedirected(true); }
 };
@@ -159,8 +159,8 @@ private:
 
 // -------------------------------------------------------------------------
 
-class RadioButtonWidget: public QRadioButton, public KHTMLWidget 
-{ 
+class RadioButtonWidget: public QRadioButton, public KHTMLWidget
+{
 public:
     RadioButtonWidget(QWidget* p): QRadioButton(p) { m_kwp->setIsRedirected(true); }
 };
@@ -189,8 +189,8 @@ private:
 
 // -------------------------------------------------------------------------
 
-class PushButtonWidget: public QPushButton, public KHTMLWidget 
-{ 
+class PushButtonWidget: public QPushButton, public KHTMLWidget
+{
 public:
     PushButtonWidget(QWidget* p): QPushButton(p) { m_kwp->setIsRedirected(true); }
 };
@@ -369,9 +369,9 @@ protected:
     virtual bool isEditable() const { return true; }
     virtual bool canHaveBorder() const { return true; }
     virtual bool acceptsSyntheticEvents() const { return false; }
-    
+
     virtual bool includesPadding() const { return false; }
-    
+
     bool m_clicked;
     bool m_haveFocus;
 };
@@ -417,8 +417,8 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class ListBoxWidget: public KListWidget, public KHTMLWidget 
-{ 
+class ListBoxWidget: public KListWidget, public KHTMLWidget
+{
 public:
     ListBoxWidget(QWidget* p): KListWidget(p) { m_kwp->setIsRedirected(true); }
 protected:
@@ -478,28 +478,8 @@ public:
 
 protected:
     virtual bool event (QEvent *e );
-    virtual void contextMenuEvent(QContextMenuEvent * e);
     virtual void scrollContentsBy(int dx, int dy);
 
-private Q_SLOTS:
-    void slotFind();
-    void slotDoFind();
-    void slotFindNext();
-    void slotReplace();
-    void slotDoReplace();
-    void slotReplaceNext();
-    void slotReplaceText(const QString&, int, int, int);
-    void slotFindHighlight(const QString&, int, int);
-private:
-    KFindDialog *m_findDlg;
-    KFind *m_find;
-    KReplaceDialog *m_repDlg;
-    KReplace *m_replace;
-    KAction *m_findAction;
-    KAction *m_findNextAction;
-    KAction *m_replaceAction;
-    int m_findIndex, m_findPara;
-    int m_repIndex, m_repPara;
 };
 
 

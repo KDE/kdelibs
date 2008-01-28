@@ -164,7 +164,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     void setHighlighter(Sonnet::Highlighter *_highLighter);
 
     /**
-     * Return standard KTextEdit popupMenu 
+     * Return standard KTextEdit popupMenu
      * @since 4.1
      */
     QMenu *mousePopupMenu();
@@ -189,6 +189,24 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * until spell checking has been completed.
      */
     void checkSpelling();
+
+    /**
+     * Create replace dialogbox
+     * @since 4.1
+     */
+    void replace();
+
+  protected Q_SLOTS:
+    /**
+     * @since 4.1
+     */
+    void slotDoReplace();
+    void slotReplaceNext();
+    void slotDoFind();
+    void slotFind();
+    void slotFindNext();
+    void slotReplace();
+
 
   protected:
     /**
@@ -240,6 +258,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     Q_PRIVATE_SLOT( d, void toggleAutoSpellCheck() )
     Q_PRIVATE_SLOT( d, void slotAllowTab() )
     Q_PRIVATE_SLOT( d, void menuActivated( QAction* ) )
+    Q_PRIVATE_SLOT( d, void slotFindHighlight(const QString&, int, int));
+    Q_PRIVATE_SLOT( d, void slotReplaceText(const QString &, int, int, int));
 };
 
 #endif // KTEXTEDIT_H
