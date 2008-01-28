@@ -132,41 +132,14 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
 KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
 {
     QString str( _str );
-
-    int i = 0;
-    while ( ( i = str.indexOf( '%', i ) ) != -1 ) {
-        str.replace( i, 1, "%%");
-        i += 2;
-    }
-    while ( ( i = str.indexOf( '/' ) ) != -1 )
-        str.replace( i, 1, "%2f");
+    str.replace('/', QChar(0x2044)); // "Fraction slash"
     return str;
 }
 
 KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
 {
-    const int len = _str.length();
-    QString text;
-    text.reserve(len);
-    for ( int i = 0; i < len ; ++i ) {
-        if ( _str[i] == '%' && i+1 < len ) {
-            const QChar nextChar = _str[i+1];
-            if ( nextChar == '%' ) { // %% -> %
-                text.append(QLatin1Char('%'));
-                ++i;
-            } else if ( nextChar == '2' && (i+2<len) && _str[i+2].toLower()=='f' ) { // %2f -> /
-                text.append(QLatin1Char('/'));
-                i += 2;
-            } else {
-                text.append(QLatin1Char('%'));
-            }
-        } else {
-            text.append(_str[i]);
-        }
-    }
-    text.squeeze();
-
-    return text;
+    // Nothing to decode. "Fraction slash" is fine in filenames.
+    return _str;
 }
 
 KIO_EXPORT QString KIO::Job::errorString() const

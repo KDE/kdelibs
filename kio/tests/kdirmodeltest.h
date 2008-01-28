@@ -58,7 +58,7 @@ private:
     KTempDir m_tempDir;
     KDirModel m_dirModel;
     QModelIndex m_fileIndex;
-    QModelIndex m_slashFileIndex;
+    QModelIndex m_specialFileIndex;
     QModelIndex m_secondFileIndex;
     QModelIndex m_dirIndex;
     QModelIndex m_fileInDirIndex;

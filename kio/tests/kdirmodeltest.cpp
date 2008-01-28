@@ -45,7 +45,7 @@ void KDirModelTest::initTestCase()
      * PATH/toplevelfile_1
      * PATH/toplevelfile_2
      * PATH/toplevelfile_3
-     * PATH/file%2fslash
+     * PATH/specialchars%:
      * PATH/subdir
      * PATH/subdir/testfile
      * PATH/subdir/subsubdir
@@ -55,7 +55,7 @@ void KDirModelTest::initTestCase()
     m_topLevelFileNames << "toplevelfile_1"
                         << "toplevelfile_2"
                         << "toplevelfile_3"
-                        << "file%2fslash";
+                        << "specialchars%:";
     foreach(QString f, m_topLevelFileNames) {
         createTestFile(path+f);
     }
@@ -87,13 +87,13 @@ void KDirModelTest::fillModel( bool reload )
             m_fileIndex = idx;
         else if (item.url().fileName() == "toplevelfile_2")
             m_secondFileIndex = idx;
-        else if (item.url().fileName().endsWith("slash"))
-            m_slashFileIndex = idx;
+        else if (item.url().fileName().startsWith("special"))
+            m_specialFileIndex = idx;
     }
     QVERIFY(m_dirIndex.isValid());
     QVERIFY(m_fileIndex.isValid());
     QVERIFY(m_secondFileIndex.isValid());
-    QVERIFY(m_slashFileIndex.isValid());
+    QVERIFY(m_specialFileIndex.isValid());
 
     // Now list subdir/
     QVERIFY(m_dirModel.canFetchMore(m_dirIndex));
@@ -179,8 +179,8 @@ void KDirModelTest::testNames()
     QString fileName = m_dirModel.data(m_fileIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileName, QString("toplevelfile_1"));
 
-    QString slashFileName = m_dirModel.data(m_slashFileIndex, Qt::DisplayRole).toString();
-    QCOMPARE(slashFileName, QString("file/slash"));
+    QString specialFileName = m_dirModel.data(m_specialFileIndex, Qt::DisplayRole).toString();
+    QCOMPARE(specialFileName, QString("specialchars%:"));
 
     QString dirName = m_dirModel.data(m_dirIndex, Qt::DisplayRole).toString();
     QCOMPARE(dirName, QString("subdir"));
