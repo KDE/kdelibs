@@ -313,6 +313,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_NUMFMT(Posix, "posix");
     SETUP_NUMFMT(US, "us");
     SETUP_NUMFMT(Euro, "euro");
+    SETUP_NUMFMT(Euro2, "euro2");
     SETUP_NUMFMT(Euro2ct, "euro2ct");
 
     // Known XML entities, direct/inverse mapping.
