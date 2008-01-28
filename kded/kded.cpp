@@ -847,7 +847,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // anyway, because it was too early, so let's send this signal
      // unconditionnally (David)
 
-     // FIXME: rename the signal
      QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
      msg << QStringList();
      QDBusConnection::sessionBus().send(msg);

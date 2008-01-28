@@ -369,7 +369,7 @@ bool KStandardDirs::addResourceType( const char *type,
 
     QString copy = relativename;
     if (basetype)
-        copy = QString("%%1/").arg(basetype) + relativename;
+        copy = QString('%') + basetype + '/' + relativename;
 
     if (copy.at(copy.length() - 1) != '/')
         copy += '/';
@@ -1251,7 +1251,7 @@ static int tokenize( QStringList& tokens, const QString& str,
 
 QString KStandardDirs::kde_default(const char *type)
 {
-    return QString("%%1/").arg(type);
+    return QString('%') + type + '/';
 }
 
 QString KStandardDirs::saveLocation(const char *type,
