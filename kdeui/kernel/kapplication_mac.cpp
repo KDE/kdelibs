@@ -40,7 +40,13 @@ void KApplication_early_init_mac()
     if (dbus_initialized)
         return;
 
-    QString dbusVar = QFile::decodeName(getenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
+    QString dbusVar = getenv("DBUS_SESSION_BUS_ADDRESS");
+    if (!dbusVar.isEmpty()) {
+        dbus_initialized = true;
+        return;
+    }
+
+    dbusVar = QFile::decodeName(getenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
     if (!dbusVar.isEmpty() && QFile::exists(dbusVar) && (QFile::permissions(dbusVar) & QFile::WriteUser)) {
         dbusVar = "unix:path=" + dbusVar;
         ::setenv("DBUS_SESSION_BUS_ADDRESS", dbusVar.toLocal8Bit(), 1);
