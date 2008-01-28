@@ -385,7 +385,6 @@ void KConfigTest::testPath()
 {
   KConfig sc2( "kconfigtest" );
   KConfigGroup sc3(&sc2, "Path Type");
-  QString p = sc3.readPathEntry("homepath", QString());
   QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
   QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
 
