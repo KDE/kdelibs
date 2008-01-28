@@ -141,9 +141,6 @@ void KEntryMapTest::testGlobal()
     QCOMPARE(map.findEntry(group1, key1)->bGlobal, true);
 
     map.setEntry(group1, key1, value2, EntryOptions());
-    // FIXME Should an entry read from kdeglobals be saved to the local config if it was modified
-    // without passing EntryGlobal?
-    QEXPECT_FAIL("", "", Continue);
     QVERIFY(map.findEntry(group1, key1)->bGlobal);
 }
 

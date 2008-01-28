@@ -223,9 +223,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                     << entryDataToQString(e).toLatin1().constData();*/
             e.mValue = value;
             e.bDirty = e.bDirty || (options&EntryDirty);
-            e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
-                                                //kdeglobals would be written to kdeglobals instead
-                                                //of the local config file, regardless of the globals flag
+            e.bGlobal = e.bGlobal || (options&EntryGlobal);
             e.bImmutable = e.bImmutable || (options&EntryImmutable);
             if (value.isNull())
                 e.bDeleted = e.bDeleted || (options&EntryDeleted);
