@@ -26,6 +26,7 @@
 #define HTTP_H_
 
 
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
