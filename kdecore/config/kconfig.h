@@ -123,7 +123,7 @@ public:
      * @note: Most specific config file is relative to this list, the overall
      * most specific file of this KConfig object is still the file it was
      * created with, no matter which file is passed last into this function.
-     * This includes that writing always goes to the file which was used to
+     * This means that writing always goes to the file which was used to
      * create the KConfig object.
      *
      * @param files A list of extra config files containing the full paths of the
@@ -139,9 +139,9 @@ public:
     QString locale() const;
     /**
      * Sets the locale to @p aLocale.
-     * The global locale is used as default.
+     * The global locale is used by default.
      * @note If set to the empty string, @b no locale will be matched. This effectively disables
-     * Native Language Support.
+     * reading translated entries.
      * @return @c true if locale was changed and configuration was reparsed.
      */
     bool setLocale(const QString& aLocale);
@@ -149,8 +149,8 @@ public:
 
     /// @{ defaults
     /**
-     * When set, all readEntry and readXXXEntry calls return the system
-     * wide (default) values instead of the user's preference.
+     * When set, all readEntry calls return the system-wide (default) values instead of
+     * the user's preference.
      * This is off by default.
      */
     void setReadDefaults(bool b);
@@ -184,11 +184,9 @@ public:
 
     /**
      * Returns a map (tree) of entries in a particular group.  Only the actual entry as a string
-     * is returned, none of the other internal data is included.
+     * is returned.
      *
-     * @param aGroup The group to get keys from
-     * - If @p aGroup is the empty string "", the entries from the @em default group are returned.
-     * - If @p aGroup is null, the entries from the current group are returned.
+     * @param aGroup The group to get entries from.
      *
      * @return A map of entries in the group specified, indexed by key.
      *         The returned map may be empty if the group is empty, or not found.
