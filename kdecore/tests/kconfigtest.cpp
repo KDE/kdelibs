@@ -306,7 +306,6 @@ void KConfigTest::testDefaults()
     group.sync();
 
     config.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", DEFAULTS));
-    config.reparseConfiguration();
 
     config.setReadDefaults(true);
     QCOMPARE(group.readEntry("entry1", QString()), Default);

@@ -479,8 +479,13 @@ KConfig::AccessMode KConfig::accessMode() const
 void KConfig::addConfigSources(const QStringList& files)
 {
     Q_D(KConfig);
-    foreach(const QString& file, files)
+    foreach(const QString& file, files) {
         d->extraFiles.push(file);
+    }
+
+    if (!files.isEmpty()) {
+        reparseConfiguration();
+    }
 }
 
 QString KConfig::locale() const

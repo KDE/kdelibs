@@ -1,7 +1,6 @@
 bugs
 ====
 
-- call reparseConfiguration() in addConfigSources()
 - make expandString stuff consistent
 - KConfigGroup::revertToDefault
   - does not match apidoc re. reverting to kdeglobals

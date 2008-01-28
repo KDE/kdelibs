@@ -118,7 +118,11 @@ public:
     /// @{ extra config files
     /**
      * Sets the merge stack to the list of files. The stack is last in first out with
-     * the top of the stack being the most specific config file.
+     * the top of the stack being the most specific config file. The files in the merge
+     * stack will be read before the file passed to the constructor and any files that
+     * cascade from that file. This means that the entries read from the files in the
+     * merge stack will be treated as defaults. This function will automatically call
+     * reparseConfiguration() for you.
      *
      * @note: Most specific config file is relative to this list, the overall
      * most specific file of this KConfig object is still the file it was
@@ -126,8 +130,7 @@ public:
      * This means that writing always goes to the file which was used to
      * create the KConfig object.
      *
-     * @param files A list of extra config files containing the full paths of the
-     * local config files to set.
+     * @param files A list of extra config files.
      */
     void addConfigSources(const QStringList &sources);
 
