@@ -85,7 +85,7 @@ void KDialogJobUiDelegate::showErrorMessage()
     }
 }
 
-void KDialogJobUiDelegate::slotWarning(KJob */*job*/, const QString &plain, const QString &/*rich*/)
+void KDialogJobUiDelegate::slotWarning(KJob* /*job*/, const QString &plain, const QString &/*rich*/)
 {
     if (isAutoWarningHandlingEnabled())
     {
