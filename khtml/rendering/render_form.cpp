@@ -1620,13 +1620,13 @@ void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
         popup->addSeparator();
 
         popup->addAction( m_findAction );
-        m_findAction->setEnabled( !toPlainText().isEmpty() );
+        m_findAction->setEnabled( !document()->isEmpty() );
 
         popup->addAction( m_findNextAction );
         m_findNextAction->setEnabled( m_find != 0 );
 
         popup->addAction( m_replaceAction );
-        m_replaceAction->setEnabled( !toPlainText().isEmpty() );
+        m_replaceAction->setEnabled( !document()->isEmpty() );
     }
 
     popup->exec(e->globalPos());
@@ -1769,7 +1769,7 @@ void TextAreaWidget::slotFindNext()
 
 void TextAreaWidget::slotFind()
 {
-    if( toPlainText().isEmpty() )  // saves having to track the text changes
+    if( document()->isEmpty() )  // saves having to track the text changes
         return;
 
     if ( m_findDlg ) {
@@ -1789,7 +1789,7 @@ void TextAreaWidget::slotFind()
 
 void TextAreaWidget::slotReplace()
 {
-    if( toPlainText().isEmpty() )  // saves having to track the text changes
+    if( document()->isEmpty() )  // saves having to track the text changes
         return;
 
     if ( m_repDlg ) {
