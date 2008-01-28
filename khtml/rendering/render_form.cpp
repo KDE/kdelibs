@@ -1614,7 +1614,7 @@ TextAreaWidget::~TextAreaWidget()
 
 void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
 {
-    QMenu *popup = createStandardContextMenu();
+    QMenu *popup = KTextEdit::mousePopupMenu();
 
     if (!isReadOnly()) {
         popup->addSeparator();

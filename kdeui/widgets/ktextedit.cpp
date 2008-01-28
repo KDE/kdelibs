@@ -168,7 +168,7 @@ void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
 void KTextEdit::setSpellCheckingLanguage(const QString &_language)
 {
     d->spellCheckingLanguage = _language;
-} 
+}
 
 void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
@@ -291,11 +291,11 @@ void KTextEdit::deleteWordForward()
   cursor.removeSelectedText();
 }
 
-void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
+QMenu *KTextEdit::mousePopupMenu()
 {
   QMenu *popup = createStandardContextMenu();
   connect( popup, SIGNAL( triggered ( QAction* ) ),
-           this, SLOT( menuActivated( QAction* ) ) );
+             this, SLOT( menuActivated( QAction* ) ) );
 
   if( !isReadOnly() )
   {
@@ -313,30 +313,34 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
           popup->insertAction( separatorAction, clearAllAction );
       }
   }
-
   KIconTheme::assignIconsToContextMenu( isReadOnly() ? KIconTheme::ReadOnlyText
-                                                     : KIconTheme::TextEditor,
-                                        popup->actions() );
+                                          : KIconTheme::TextEditor,
+                                          popup->actions() );
 
   if( !isReadOnly() )
   {
       popup->addSeparator();
       if(!acceptRichText())
       {
-        d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ) );
+          d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ) );
 
-        if ( document()->isEmpty() )
-           d->spellCheckAction->setEnabled( false );
-
-        d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
-        d->autoSpellCheckAction->setCheckable( true );
-        d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
-        popup->addSeparator();
+          if ( document()->isEmpty() )
+              d->spellCheckAction->setEnabled( false );
+           d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
+          d->autoSpellCheckAction->setCheckable( true );
+          d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
+          popup->addSeparator();
       }
       d->allowTab = popup->addAction( i18n("Allow Tabulations") );
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
   }
+  return popup;
+}
+
+void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
+{
+  QMenu *popup = mousePopupMenu();
   popup->exec( event->globalPos() );
 
   delete popup;

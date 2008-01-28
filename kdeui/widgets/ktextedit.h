@@ -163,6 +163,13 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     void setHighlighter(Sonnet::Highlighter *_highLighter);
 
+    /**
+     * Return standard KTextEdit popupMenu 
+     * @since 4.1
+     */
+    QMenu *mousePopupMenu();
+
+
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking
