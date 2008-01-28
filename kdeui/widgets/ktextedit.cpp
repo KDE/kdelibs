@@ -302,7 +302,7 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
       if ( separatorAction )
       {
           KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
-          if ( toPlainText().isEmpty() )
+          if ( document()->isEmpty() )
               clearAllAction->setEnabled( false );    
           popup->insertAction( separatorAction, clearAllAction );
       }
@@ -445,7 +445,7 @@ void KTextEdit::checkSpelling()
   connect(spellDialog, SIGNAL(stop()),
           this, SLOT(spellCheckerFinished()));
   d->originalBuffer = toPlainText();
-  spellDialog->setBuffer(toPlainText());
+  spellDialog->setBuffer(d->originalBuffer);
   spellDialog->show();
 }
 
