@@ -23,7 +23,7 @@ endif(GSSAPI_FOUND)
 configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
 
-include_directories( ${KDE4_KIO_INCLUDES} ${ZLIB_INCLUDE_DIR} )
+include_directories( ${KDE4_KIO_INCLUDES} ${ZLIB_INCLUDE_DIR} ${GSSAPI_INCS} )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 
 add_subdirectory( kcookiejar )
