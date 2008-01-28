@@ -109,7 +109,6 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	config = new KConfig(appname + ".notifyrc" , KConfig::NoGlobals);
         config->addConfigSources(KGlobal::dirs()->findAllResources("data",
                                  appname + '/' + appname + ".notifyrc"));
-        config->reparseConfiguration();
 
 	QStringList conflist = config->groupList();
 	QRegExp rx("^Event/([^/]*)$");
