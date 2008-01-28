@@ -264,8 +264,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     Q_PRIVATE_SLOT( d, void toggleAutoSpellCheck() )
     Q_PRIVATE_SLOT( d, void slotAllowTab() )
     Q_PRIVATE_SLOT( d, void menuActivated( QAction* ) )
-    Q_PRIVATE_SLOT( d, void slotFindHighlight(const QString&, int, int));
-    Q_PRIVATE_SLOT( d, void slotReplaceText(const QString &, int, int, int));
+    Q_PRIVATE_SLOT( d, void slotFindHighlight(const QString&, int, int))
+    Q_PRIVATE_SLOT( d, void slotReplaceText(const QString &, int, int, int))
 };
 
 #endif // KTEXTEDIT_H
