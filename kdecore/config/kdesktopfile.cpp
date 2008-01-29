@@ -23,6 +23,7 @@
 
 #include <QtCore/QDir>
 
+#include "config.h"
 #include "kdesktopfile.h"
 #include "kconfig_p.h"
 #include "kdebug.h"
@@ -31,6 +32,7 @@
 #include "kauthorized.h"
 #include "kstandarddirs.h"
 #include "kconfigini_p.h"
+#include "kde_file.h"
 
 class KDesktopFilePrivate : public KConfigPrivate
 {
@@ -274,15 +276,24 @@ bool KDesktopFile::tryExec() const
 	return false;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-      // Environment PATH may contain filenames in 8bit locale cpecified
+      // Environment PATH may contain filenames in 8bit locale specified
       // encoding (Like a filenames).
       QStringList dirs = QFile::decodeName(::getenv("PATH"))
-	      .split(':',QString::SkipEmptyParts);
+	      .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
-	QString fName = *it + '/' + te;
-	if (::access(QFile::encodeName(fName), X_OK) == 0)
+	QString fName = *it + KDIR_SEPARATOR + te;
+/* FIXME (js) todo: use ACL winapi because access(..,X_OK) is not available - asserts for msvc>=2k5;
+        in the meantime more costly KDE_stat is used...
+*/
+#ifdef Q_WS_WIN
+	struct stat st;
+	if (KDE_stat(QFile::encodeName(fName), &st) == 0
+		&& (st.st_mode & S_IXUSR))
+#else
+	if (::access(QFile::encodeName(fName).constData(), X_OK) == 0)
+#endif
 	{
 	  match = true;
 	  break;

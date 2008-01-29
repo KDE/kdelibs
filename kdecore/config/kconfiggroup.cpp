@@ -32,6 +32,7 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 #include "kconfigdata.h"
+#include "kde_file.h"
 #include <kdebug.h>
 
 #include <QtCore/QDate>
