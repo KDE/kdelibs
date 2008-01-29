@@ -18,6 +18,8 @@
 
 #include "ksqueezedtextlabel.h"
 
+#include <kglobalsettings.h>
+
 class KSqueezedTextLabelPrivate
 {
   public:
@@ -61,7 +63,13 @@ QSize KSqueezedTextLabel::minimumSizeHint() const
 
 QSize KSqueezedTextLabel::sizeHint() const
 {
-  return QSize(contentsRect().width(), QLabel::sizeHint().height());
+  int maxWidth = KGlobalSettings::desktopGeometry( this ).width() * 3 / 4;
+  QFontMetrics fm(fontMetrics());
+  int textWidth = fm.width(d->fullText);
+  if (textWidth > maxWidth) {
+    textWidth = maxWidth;
+  }
+  return QSize(textWidth, QLabel::sizeHint().height());
 }
 
 void KSqueezedTextLabel::setText( const QString &text ) {
