@@ -73,8 +73,10 @@ public:
     void _k_slotContextMenu(const QPoint&);
     void _k_slotUser1();
 
+    bool m_comboLocked:16;
+
+    bool m_localOnly:16;
     KDirSelectDialog *m_parent;
-    bool m_localOnly;
     KUrl m_rootUrl;
     KUrl m_startDir;
     KFileTreeView *m_treeView;
@@ -85,7 +87,6 @@ public:
     QString m_recentDirClass;
     KUrl m_startURL;
 
-    bool m_comboLocked : 1;
 };
 
 void KDirSelectDialog::Private::readConfig(const KSharedConfig::Ptr &config, const QString& group)
@@ -116,8 +117,8 @@ void KDirSelectDialog::Private::slotMkdir()
     if ( m_parent->url().isLocalFile() && QFileInfo( m_parent->url().path(KUrl::AddTrailingSlash) + name ).exists() )
         name = KIO::RenameDialog::suggestName( m_parent->url(), name );
 
-    QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
-                                         i18n( "Create new folder in:\n%1" ,  where ),
+    QString directory = KIO::encodeFileName( KInputDialog::getText( i18nc("@title:window", "New Folder" ),
+                                         i18nc("@label:textbox", "Create new folder in:\n%1" ,  where ),
                                          name, &ok, m_parent));
     if (!ok)
       return;
@@ -220,9 +221,9 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 #endif
       d( new Private( localOnly, this ) )
 {
-    setCaption( i18n("Select Folder") );
+    setCaption( i18nc("@title:window","Select Folder") );
     setButtons( Ok | Cancel | User1 );
-    setButtonGuiItem( User1, KGuiItem( i18n("New Folder..."), "folder-new" ) );
+    setButtonGuiItem( User1, KGuiItem( i18nc("@action:button","New Folder..."), "folder-new" ) );
     showButtonSeparator(false);
     setDefaultButton(Ok);
 
@@ -258,14 +259,14 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_urlCombo->setDuplicatesEnabled( false );
 
     d->m_contextMenu = new QMenu( this );
-    KAction* newFolder = new KAction( i18n("New Folder..."), this);
+    KAction* newFolder = new KAction( i18nc("@action:inmenu","New Folder..."), this);
     d->m_actions->addAction(newFolder->objectName(), newFolder);
     newFolder->setIcon( KIcon( "folder-new" ) );
     connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( _k_slotUser1() ) );
     d->m_contextMenu->addAction( newFolder );
     d->m_contextMenu->addSeparator();
 
-    KToggleAction *action = new KToggleAction( i18n( "Show Hidden Folders" ), this );
+    KToggleAction *action = new KToggleAction( i18nc("@option:check", "Show Hidden Folders" ), this );
     d->m_actions->addAction( action->objectName(), action );
     connect( action, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
     d->m_contextMenu->addAction( action );
@@ -346,7 +347,7 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
 
     if (url.protocol() != d->m_rootUrl.protocol()) {
         KUrl u( url );
-        u.cd("/");
+        u.cd("/");//NOTE portability?
         d->m_treeView->setRootUrl( u );
         d->m_rootUrl = u;
     }

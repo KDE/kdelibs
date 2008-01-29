@@ -428,6 +428,9 @@ public:
                              WhichItems which = FilteredItems ) const;
 
 Q_SIGNALS:
+
+  //please! SYNC signal changes with LoKalize hack for displaying <lang>/ and templates/ dirs merged
+
   /**
    * Tell the view that we started to list @p _url. NOTE: this does _not_ imply that there
    * is really a job running! I.e. KDirLister::jobs() may return an empty list. In this case
