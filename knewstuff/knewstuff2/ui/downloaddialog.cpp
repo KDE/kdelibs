@@ -42,6 +42,8 @@
 // local includes
 #include "ui_DownloadDialog.h"
 
+const char * ConfigGroup = "DownloadDialog Settings";
+
 using namespace KNS;
 
 DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )

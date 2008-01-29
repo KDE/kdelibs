@@ -34,8 +34,6 @@
 
 #include "ui_DownloadDialog.h"
 
-#define ConfigGroup QLatin1String("DownloadDialog Settings")
-
 class KJob;
 class KLineEdit;
 class QComboBox;
