@@ -37,6 +37,7 @@
 #include <config-prefix.h>
 #include <kconfiggroup.h>
 #include <kkernel_win.h>
+#include <kde_file.h>
 
 static void printResult(const QString &s)
 {
