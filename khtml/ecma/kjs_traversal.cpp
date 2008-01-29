@@ -101,10 +101,14 @@ JSValue* DOMNodeIteratorProtoFunc::callAsFunction(ExecState *exec, JSObject* thi
   TraversalExceptionForwarder filterException(exec);
   DOM::NodeIteratorImpl& nodeIterator = *static_cast<DOMNodeIterator *>(thisObj)->impl();
   switch (id) {
-  case DOMNodeIterator::PreviousNode:
-    return getDOMNode(exec, nodeIterator.previousNode(exception, filterException));
-  case DOMNodeIterator::NextNode:
-    return getDOMNode(exec, nodeIterator.nextNode(exception, filterException));
+  case DOMNodeIterator::PreviousNode: {
+    SharedPtr<DOM::NodeImpl> node = nodeIterator.previousNode(exception, filterException);
+    return getDOMNode(exec, node.get());
+  }
+  case DOMNodeIterator::NextNode: {
+    SharedPtr<DOM::NodeImpl> node = nodeIterator.nextNode(exception, filterException);
+    return getDOMNode(exec, node.get());
+  }
   case DOMNodeIterator::Detach:
     nodeIterator.detach(exception);
     return jsUndefined();

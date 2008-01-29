@@ -79,7 +79,7 @@ bool NodeIteratorImpl::expandEntityReferences()
     return m_expandEntityReferences;
 }
 
-NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode, void* &propagatedExceptionObject )
+SharedPtr<NodeImpl> NodeIteratorImpl::nextNode( int &exceptioncode, void* &propagatedExceptionObject )
 {
     propagatedExceptionObject = 0;
     if (m_detached) {
@@ -87,28 +87,32 @@ NodeImpl *NodeIteratorImpl::nextNode( int &exceptioncode, void* &propagatedExcep
 	return 0;
     }
 
-    // If we're before a node, it's the next node to return, and we'll
-    // be positioned after.
-    if (m_position == ITER_BEFORE_REF) {
-        m_position = ITER_AFTER_REF;
-        if (isAccepted(m_referenceNode, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
-            return m_referenceNode;
-        if (propagatedExceptionObject) return 0;
-    }
-
-    // Robustness note here: the filter could potentially yank any nodes out,
-    // so we can't keep any state in the temporaries. We hence always rely on
-    // m_referenceNode, which would be sync'd by the delete handler
-    while (NodeImpl* cand = getNextNode(m_referenceNode)) {
-        m_referenceNode = cand;
-        if (isAccepted(cand, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
-            return m_referenceNode;
-        if (propagatedExceptionObject) return 0;
+    while (true) {
+        SharedPtr<NodeImpl> cand = m_referenceNode;
+        // If we're before a node, it's the next node to return, and we'll
+        // be positioned after.
+        if (m_position == ITER_BEFORE_REF) {
+            m_position = ITER_AFTER_REF;
+            if (isAccepted(m_referenceNode.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
+                return cand;
+            if (propagatedExceptionObject) return 0;
+        } else {
+            // Robustness note here: the filter could potentially yank any nodes out,
+            // so we can't keep any state in the temporaries. We hence always rely on
+            // m_referenceNode, which would be sync'd by the delete handler
+            cand = getNextNode(m_referenceNode.get());
+            if (!cand)
+                return 0;
+            m_referenceNode = cand;
+            if (isAccepted(cand.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
+                return cand;
+            if (propagatedExceptionObject) return 0;
+        }
     }
     return 0;
 }
 
-NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode, void* &propagatedExceptionObject )
+SharedPtr<NodeImpl> NodeIteratorImpl::previousNode( int &exceptioncode, void* &propagatedExceptionObject )
 {
     propagatedExceptionObject = 0;
     if (m_detached) {
@@ -116,19 +120,24 @@ NodeImpl *NodeIteratorImpl::previousNode( int &exceptioncode, void* &propagatedE
 	return 0;
     }
 
-    if (m_position == ITER_AFTER_REF) {
-	m_position = ITER_BEFORE_REF;
-	if (isAccepted(m_referenceNode, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
-	    return m_referenceNode;
+    while (true) {
+        SharedPtr<NodeImpl> cand = m_referenceNode;
+        if (m_position == ITER_AFTER_REF) {
+            m_position = ITER_BEFORE_REF;
+            if (isAccepted(m_referenceNode.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
+                return cand;
 
-        if (propagatedExceptionObject) return 0;
-    }
+            if (propagatedExceptionObject) return 0;
+        } else {
+            cand = getPrevNode(m_referenceNode.get());
+            if (!cand)
+                return 0;
 
-    while (NodeImpl* cand = getPrevNode(m_referenceNode)) {
-        m_referenceNode = cand;
-        if (isAccepted(cand, propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
-            return m_referenceNode;
-        if (propagatedExceptionObject) return 0;
+            m_referenceNode = cand;
+            if (isAccepted(cand.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
+                return cand;
+            if (propagatedExceptionObject) return 0;
+        }
     }
     return 0;
 }
@@ -169,7 +178,7 @@ void NodeIteratorImpl::notifyBeforeNodeRemoval(NodeImpl *removed)
 
     // Scan up from the reference node to root see if the removed node is there..
     NodeImpl* c;
-    for (c = m_referenceNode; c != m_root; c = c->parentNode()) {
+    for (c = m_referenceNode.get(); c != m_root; c = c->parentNode()) {
         if (c == removed)
             break;
     }
@@ -438,7 +447,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextNode( void*& filterException )
         if (filterException) return 0;
         if (n)
           return n;
-          
+
         parent = getParentNode(parent, filterException);
         if (filterException) return 0;
     }
@@ -513,7 +522,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getFirstChild(TreeWalkerImpl::NodePtr n,
         // ### this is unclear: what should happen if we "pass through" the root??
     }
 
-    // Nothing found..    
+    // Nothing found..
     return 0;
 }
 
@@ -569,7 +578,7 @@ TreeWalkerImpl::NodePtr TreeWalkerImpl::getNextSibling(TreeWalkerImpl::NodePtr n
             break;
         }
         case NodeFilter::FILTER_REJECT:
-            if (filterException) return 0;        
+            if (filterException) return 0;
             break;
         }
     }
