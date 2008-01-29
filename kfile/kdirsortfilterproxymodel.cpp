@@ -85,8 +85,8 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
 
-    const KFileItem& leftFileItem  = dirModel->itemForIndex(left);
-    const KFileItem& rightFileItem = dirModel->itemForIndex(right);
+    const KFileItem leftFileItem  = dirModel->itemForIndex(left);
+    const KFileItem rightFileItem = dirModel->itemForIndex(right);
 
     // On our priority, folders go above regular files.
     if (leftFileItem.isDir() && !rightFileItem.isDir()) {
