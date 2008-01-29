@@ -154,13 +154,23 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
 
 QObject *KdePlatformPlugin::createBackend()
 {
+    // Within this process, display the warning about missing backends
+    // only once.
+    static bool has_shown = false;
     ensureMainComponentData();
     const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
             "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
     if (offers.isEmpty()) {
-        KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
+        if (!has_shown) {
+            KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
+            has_shown = true;
+        }
         return 0;
     }
+    // Flag the warning as not shown, since if the next time the
+    // list of backends is suddenly empty again the user should be
+    // told.
+    has_shown = false;
 
     KService::List::const_iterator it = offers.begin();
     const KService::List::const_iterator end = offers.end();
