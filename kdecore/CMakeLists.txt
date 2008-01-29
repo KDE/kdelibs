@@ -49,6 +49,9 @@ if (HAVE_RESOLV_LIBRARY)
 endif (HAVE_RESOLV_LIBRARY)
 
 if (APPLE)
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      kernel/kkernel_mac.cpp
+   )
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
 endif (APPLE)
 

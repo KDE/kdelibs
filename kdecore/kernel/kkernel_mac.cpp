@@ -1,0 +1,165 @@
+/*
+   This file is part of the KDE libraries
+   Copyright (C) 2008 Benjamin Reed <rangerrick@befunk.com>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
+#include "kkernel_mac.h"
+
+#include <config.h>
+#include <QtCore/qglobal.h>
+
+#ifdef Q_OS_MACX
+
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/param.h>
+#include <crt_externs.h>
+#include <mach-o/dyld.h>
+
+#include <QtCore/QFile>
+#include <QtCore/QProcess>
+#include <QtCore/QStringList>
+#include <kstandarddirs.h>
+#include <ksharedconfig.h>
+#include <kconfig.h>
+#include <kdebug.h>
+
+bool dbus_initialized = false;
+
+/**
+ Calling CoreFoundation APIs (which is unavoidable in Qt/Mac) has always had issues
+ on Mac OS X, but as of 10.5 is explicitly disallowed with an exception.  As a
+ result, in the case where we would normally fork and then dlopen code, or continue
+ to run other code, we must now fork-and-exec.
+ 
+ See "CoreFoundation and fork()" at http://developer.apple.com/releasenotes/CoreFoundation/CoreFoundation.html
+*/
+
+void
+mac_fork_and_reexec_self()
+{
+	int argc = *_NSGetArgc();
+	char ** argv = *_NSGetArgv();
+	char * newargv[argc+2];
+	char progname[PATH_MAX];
+	uint32_t buflen = PATH_MAX;
+	_NSGetExecutablePath(progname, &buflen);
+	bool found_psn = false;
+
+	for (int i = 0; i < argc; i++) {
+		newargv[i] = argv[i];
+	}
+
+	newargv[argc] = "--nofork";
+	newargv[argc+1] = NULL;
+
+	int x_fork_result = fork();
+	switch(x_fork_result) {
+
+		case -1:
+#ifndef NDEBUG
+			fprintf(stderr, "Mac OS X workaround fork() failed!\n");
+#endif
+			::_exit(255);
+			break;
+
+		case 0:
+			// Child
+			execvp(progname, newargv);
+			break;
+
+		default:
+			// Parent
+			_exit(0);
+			break;
+
+	}
+}
+
+/**
+ Make sure D-Bus is initialized, by any means necessary.
+*/
+
+void mac_initialize_dbus()
+{
+	if (dbus_initialized)
+		return;
+
+	QString dbusVar = getenv("DBUS_SESSION_BUS_ADDRESS");
+	if (!dbusVar.isEmpty()) {
+		dbus_initialized = true;
+		return;
+	}
+
+	dbusVar = QFile::decodeName(getenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
+	if (!dbusVar.isEmpty() && QFile::exists(dbusVar) && (QFile::permissions(dbusVar) & QFile::WriteUser)) {
+		dbusVar = "unix:path=" + dbusVar;
+		::setenv("DBUS_SESSION_BUS_ADDRESS", dbusVar.toLocal8Bit(), 1);
+		dbus_initialized = true;
+		return;
+	}
+
+	/* temporary until we implement autolaunch for dbus on Mac OS X */
+	QString dbusSession;
+	QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
+	path << QFile::decodeName(getenv("PATH")).split(':') << "/opt/kde4-deps/bin" << "/sw/bin" << "/usr/local/bin";
+	for (int i = 0; i < path.size(); ++i) {
+		// QString testSession = QString(newPath.at(i)).append("/start-session-bus.sh");
+		QString testSession = QString(path.at(i)).append("/start-session-bus.sh");
+		kDebug() << "trying " << testSession;
+		if (QFile(testSession).exists()) {
+			kDebug() << "found " << testSession;
+			dbusSession = testSession;
+			break;
+		}
+	}
+
+	if (!dbusSession.isEmpty()) {
+		kDebug() << "running " << dbusSession << " --kde-mac";
+		QString key, value, line;
+		QStringList keyvals;
+		QProcess qp;
+		qp.setProcessChannelMode(QProcess::MergedChannels);
+		qp.setTextModeEnabled(true);
+		qp.start(dbusSession, QStringList() << "--kde-mac");
+		if (!qp.waitForStarted(3000)) {
+			kDebug() << dbusSession << " never started";
+		} else {
+			while (qp.waitForReadyRead(-1)) {
+				while (qp.canReadLine()) {
+					line = qp.readLine().trimmed();
+					kDebug() << "line = " << line;
+					keyvals = line.split('=');
+					key = keyvals.takeFirst();
+					value = keyvals.join("=");
+					kDebug() << "key = " << key << ", value = " << value;
+					if (!key.isEmpty() && !value.isEmpty()) {
+						::setenv(key.toLocal8Bit(), value.toLocal8Bit(), 1);
+						kDebug() << "setenv(" << key << "," << value << ",1)";
+					}
+				}
+			}
+			qp.waitForFinished(-1);
+		}
+	}
+
+	dbus_initialized = true;
+}
+
+#endif

@@ -19,7 +19,6 @@ CHECK_FUNCTION_EXISTS(pstat HAVE_PSTAT)
 CHECK_FUNCTION_EXISTS(setproctitle HAVE_SETPROCTITLE)
 configure_file(config-kdeinit.h.cmake
 	       ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
-
 ########### kdeinit4 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp  )
@@ -29,7 +28,12 @@ else (WIN32)
   set(kdeinit_LIBS kparts)
 endif (WIN32)
 
-kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
+#if (APPLE)
+  # this has to be GUI on OSX because it launches GUI apps and need a quartz context
+#  kde4_add_executable(kdeinit4 ${kdeinit_SRCS})
+#else (APPLE)
+  kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
+#endif (APPLE)
 
 target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
 

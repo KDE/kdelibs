@@ -64,14 +64,14 @@
 #  endif
 #endif
 
+#ifdef Q_WS_MAC
+#include <kkernel_mac.h>
+#endif
+
 bool KUniqueApplication::Private::s_nofork = false;
 bool KUniqueApplication::Private::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
-
-#ifdef Q_WS_MAC
-void KApplication_early_init_mac();
-#endif
 
 void
 KUniqueApplication::addCmdLineOptions()
@@ -130,7 +130,7 @@ KUniqueApplication::start()
      }
 
 #ifdef Q_WS_MAC
-  KApplication_early_init_mac();
+  mac_initialize_dbus();
 #endif
 
   if (Private::s_nofork)
@@ -154,7 +154,14 @@ KUniqueApplication::start()
 
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
+
+#ifdef Q_WS_MACX
+  } else {
+    mac_fork_and_reexec_self();
+#endif
+
   }
+
 #ifndef Q_WS_WIN
   int fd[2];
   signed char result;

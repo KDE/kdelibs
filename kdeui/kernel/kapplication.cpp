@@ -101,6 +101,7 @@
 #include <Carbon/Carbon.h>
 #include <QImage>
 #include <ksystemtrayicon.h>
+#include <kkernel_mac.h>
 #endif
 
 #ifdef Q_OS_UNIX
@@ -139,10 +140,6 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 
 #ifdef Q_WS_WIN
 void KApplication_init_windows();
-#endif
-
-#ifdef Q_WS_MAC
-void KApplication_early_init_mac();
 #endif
 
 /*
@@ -481,7 +478,7 @@ void KApplicationPrivate::init(bool GUIenabled)
   }
 
 #ifdef Q_WS_MAC
-  KApplication_early_init_mac();
+  mac_initialize_dbus();
 #endif
 
   if ( q->type() == KApplication::GuiClient )
