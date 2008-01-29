@@ -73,9 +73,9 @@ public:
     void _k_slotContextMenu(const QPoint&);
     void _k_slotUser1();
 
-    bool m_comboLocked:16;
+    bool m_comboLocked;
 
-    bool m_localOnly:16;
+    bool m_localOnly;
     KDirSelectDialog *m_parent;
     KUrl m_rootUrl;
     KUrl m_startDir;
