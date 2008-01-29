@@ -342,7 +342,7 @@ QString Nepomuk::errorString( ErrorCode code )
 // do not remove, will be replaced with method definitions by the Nepomuk class generator
 QString Nepomuk::Resource::description() const
 {
-    return property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#description" ).toString();
+    return ( property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#description" ).toStringList() << QString() ).first();
 }
 
 void Nepomuk::Resource::setDescription( const QString& value )
@@ -571,7 +571,7 @@ QString Nepomuk::Resource::isRelatedUri()
 
 QString Nepomuk::Resource::label() const
 {
-    return property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#label" ).toString();
+    return ( property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#label" ).toStringList() << QString() ).first();
 }
 
 void Nepomuk::Resource::setLabel( const QString& value )
@@ -586,7 +586,7 @@ QString Nepomuk::Resource::labelUri()
 
 quint32 Nepomuk::Resource::rating() const
 {
-    return property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasRating" ).toUnsignedInt();
+    return ( property( "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasRating" ).toUnsignedIntList() << 0 ).first();
 }
 
 void Nepomuk::Resource::setRating( const quint32& value )

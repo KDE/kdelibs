@@ -236,38 +236,40 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
 
 QString Property::typeConversionMethod() const
 {
+    // for properties with cardinality == 1 we use a little hack since there will always be duplication of
+    // data.
     if ( typeString() == "QStringList" ) {
-        return QLatin1String("toStringList");
+        return QLatin1String("toStringList())");
     }
     else if ( typeString() == "QString" ) {
-        return QLatin1String("toString");
+        return QLatin1String("toStringList() << QString() ).first()");
     }
     else if ( typeString() == "qint32" ) {
-        return list ? QLatin1String("toIntList") : QLatin1String("toInt");
+        return list ? QLatin1String("toIntList())") : QLatin1String("toIntList() << 0 ).first()");
     }
     else if ( typeString() == "quint32" ) {
-        return list ? QLatin1String("toUnsignedIntList") : QLatin1String("toUnsignedInt");
+        return list ? QLatin1String("toUnsignedIntList())") : QLatin1String("toUnsignedIntList() << 0 ).first()");
     }
     else if ( typeString() == "qint64" ) {
-        return list ? QLatin1String("toInt64List") : QLatin1String("toInt64");
+        return list ? QLatin1String("toInt64List())") : QLatin1String("toInt64List() << 0 ).first()");
     }
     else if ( typeString() == "quint64" ) {
-        return list ? QLatin1String("toUnsignedInt64List") : QLatin1String("toUnsignedInt64");
+        return list ? QLatin1String("toUnsignedInt64List())") : QLatin1String("toUnsignedInt64List() << 0 ).first()");
     }
     else if ( typeString() == "bool" ) {
-        return list ? QLatin1String("toBoolList") : QLatin1String("toBool");
+        return list ? QLatin1String("toBoolList())") : QLatin1String("toBoolList() << false ).first()");
     }
     else if ( typeString() == "double" ) {
-        return list ? QLatin1String("toDoubleList") : QLatin1String("toDouble");
+        return list ? QLatin1String("toDoubleList())") : QLatin1String("toDoubleList() << 0.0 ).first()");
     }
     else if ( typeString() == "QDateTime" ) {
-        return list ? QLatin1String("toDateTimeList") : QLatin1String("toDateTime");
+        return list ? QLatin1String("toDateTimeList())") : QLatin1String("toDateTimeList() << QDateTime() ).first()");
     }
     else if ( typeString() == "QData" ) {
-        return list ? QLatin1String("toDateList") : QLatin1String("toDate");
+        return list ? QLatin1String("toDateList())") : QLatin1String("toDateList() << QDate() ).first()");
     }
     else if ( typeString() == "QTime" ) {
-        return list ? QLatin1String("toTimeList") : QLatin1String("toTime");
+        return list ? QLatin1String("toTimeList())") : QLatin1String("toTimeList() << QTime() ).first()");
     }
 
     return QString();
@@ -280,7 +282,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() ) {
         s += QString( "{\n"
-                      "    return property( \"%1\" ).%2();\n"
+                      "    return ( property( \"%1\" ).%2;\n"
                       "}\n" )
              .arg( uri )
              .arg( typeConversionMethod() );
