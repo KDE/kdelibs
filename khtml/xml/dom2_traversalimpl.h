@@ -48,8 +48,8 @@ public:
     NodeFilterImpl* filter();
     bool expandEntityReferences();
 
-    NodeImpl *nextNode(int &exceptioncode, void* &propagatedExceptionObject);
-    NodeImpl *previousNode(int &exceptioncode, void* &propagatedExceptionObject);
+    SharedPtr<NodeImpl> nextNode(int &exceptioncode, void* &propagatedExceptionObject);
+    SharedPtr<NodeImpl> previousNode(int &exceptioncode, void* &propagatedExceptionObject);
     void detach(int &exceptioncode);
 
     // pre-order traversal wrt to a node, captured w/in root
@@ -72,7 +72,7 @@ protected:
     bool m_expandEntityReferences;
 
     enum { ITER_BEFORE_REF, ITER_AFTER_REF } m_position;
-    NodeImpl *m_referenceNode;
+    SharedPtr<NodeImpl> m_referenceNode;
     bool m_detached;
     DocumentImpl *m_doc;
 };

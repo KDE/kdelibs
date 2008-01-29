@@ -22,6 +22,7 @@
 
 #include "dom/dom_exception.h"
 #include "dom/dom_string.h"
+#include "xml/dom_nodeimpl.h"
 #include "xml/dom2_traversalimpl.h"
 
 using namespace DOM;
@@ -90,10 +91,10 @@ Node NodeIterator::nextNode(  )
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    NodeImpl *r = impl->nextNode(exceptioncode, dummy);
+    SharedPtr<NodeImpl> r = impl->nextNode(exceptioncode, dummy);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-    return r;
+    return r.get();
 }
 
 Node NodeIterator::previousNode(  )
@@ -104,10 +105,10 @@ Node NodeIterator::previousNode(  )
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    NodeImpl *r = impl->previousNode(exceptioncode, dummy);
+    SharedPtr<NodeImpl> r = impl->previousNode(exceptioncode, dummy);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-    return r;
+    return r.get();
 }
 
 void NodeIterator::detach()
