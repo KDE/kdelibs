@@ -45,6 +45,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
+#include <QtGui/QTextDocument>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -133,7 +134,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
 	}
         else
 	{
-	    unicodeError( i18n("There is no documentation available for %1." , path) );
+	    unicodeError( i18n("There is no documentation available for %1." , Qt::escape(path)) );
 	    finished();
             return QString();
 	}
@@ -148,7 +149,7 @@ void HelpProtocol::unicodeError( const QString &t )
 {
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ) ).arg( t ) ) );
+        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ), t ) ) );
 }
 
 HelpProtocol *slave = 0;
@@ -366,9 +367,9 @@ void HelpProtocol::get_file( const KUrl& url )
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, url.path() );
+           error( KIO::ERR_ACCESS_DENIED, url.url() );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+           error( KIO::ERR_DOES_NOT_EXIST, url.url() );
 	return;
     }
 
