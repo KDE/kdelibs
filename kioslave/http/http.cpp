@@ -4367,10 +4367,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (sz <= 1)
   {
-    if (m_responseCode >= 500 && m_responseCode <= 599)
+    if (m_responseCode >= 500 && m_responseCode <= 599) {
       error(ERR_INTERNAL_SERVER, m_state.hostname);
-    else if (m_responseCode >= 400 && m_responseCode <= 499)
+      return false;
+    } else if (m_responseCode >= 400 && m_responseCode <= 499) {
       error(ERR_DOES_NOT_EXIST, m_state.hostname);
+      return false;
+    }
   }
 
   if (!dataInternal)
