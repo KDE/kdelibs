@@ -1124,6 +1124,7 @@ DOMString HTMLButtonElementImpl::type() const
         case BUTTON:
             return "button";
     }
+    return "";
 }
 
 void HTMLButtonElementImpl::blur()
