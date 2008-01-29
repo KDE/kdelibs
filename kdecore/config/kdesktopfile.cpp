@@ -272,32 +272,38 @@ bool KDesktopFile::tryExec() const
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
+#ifdef Q_WS_WIN /* FIXME read below (js) */
+        struct stat st;
+        if (KDE_stat(QFile::encodeName(te), &st) == 0
+          && (st.st_mode & S_IXUSR))
+#else
       if (::access(QFile::encodeName(te), X_OK))
-	return false;
+#endif
+        return false;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale specified
       // encoding (Like a filenames).
       QStringList dirs = QFile::decodeName(::getenv("PATH"))
-	      .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
+        .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
-	QString fName = *it + KDIR_SEPARATOR + te;
+        QString fName = *it + KDIR_SEPARATOR + te;
 /* FIXME (js) todo: use ACL winapi because access(..,X_OK) is not available - asserts for msvc>=2k5;
         in the meantime more costly KDE_stat is used...
 */
 #ifdef Q_WS_WIN
-	struct stat st;
-	if (KDE_stat(QFile::encodeName(fName), &st) == 0
-		&& (st.st_mode & S_IXUSR))
+        struct stat st;
+        if (KDE_stat(QFile::encodeName(fName), &st) == 0
+          && (st.st_mode & S_IXUSR))
 #else
-	if (::access(QFile::encodeName(fName).constData(), X_OK) == 0)
+        if (::access(QFile::encodeName(fName).constData(), X_OK) == 0)
 #endif
-	{
-	  match = true;
-	  break;
-	}
+        {
+          match = true;
+          break;
+        }
       }
       // didn't match at all
       if (!match)
