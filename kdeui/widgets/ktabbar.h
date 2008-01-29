@@ -57,11 +57,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      */
     bool isTabReorderingEnabled() const;
 
-    // KDE4 porting: disabled
     void setHoverCloseButton( bool );
     bool hoverCloseButton() const;
 
-    // KDE4 porting: disabled
     void setHoverCloseButtonDelayed( bool );
     bool hoverCloseButtonDelayed() const;
 
@@ -122,8 +120,8 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     virtual void dropEvent( QDropEvent *event );
 
   protected Q_SLOTS:
-    //virtual void closeButtonClicked();
-    //virtual void enableCloseButton();
+    void closeButtonClicked();
+    void enableCloseButton();
     virtual void activateDragSwitchTab();
 
   protected:
