@@ -69,18 +69,24 @@ static bool hasIPv6()
   extern void KNetwork_initSocket();
   KNetwork_initSocket();
 #endif 
-#ifndef AF_INET6
-  return false;
-#else
+#ifdef AF_INET6
   if (getenv("KDE_NO_IPV6") != 0L)
     return false;
 
+# ifdef Q_WS_WIN
+  SOCKET s = ::socket(AF_INET6, SOCK_STREAM, 0);
+  if (s == INVALID_SOCKET)
+    return false;
+  ::closesocket(s);
+# else
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
   if (fd == -1)
     return false;
-
   ::close(fd);
+# endif
   return true;
+#else
+  return false;
 #endif
 }
 
