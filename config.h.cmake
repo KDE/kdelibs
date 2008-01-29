@@ -174,14 +174,5 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 #cmakedefine HAVE_DIRENT_D_TYPE 1
 
 
-#if defined _WIN32 || defined _WIN64
-#define KPATH_SEPARATOR ';'
-#else
-#ifndef O_BINARY
-#define O_BINARY 0 /* for open() */
-#endif
-#define KPATH_SEPARATOR ':'
-#endif
-
 #include "kdecore/kdefakes.h"
 

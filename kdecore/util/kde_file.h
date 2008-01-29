@@ -32,7 +32,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 #include <kde_file_win.h>
 #endif
 
@@ -76,7 +76,7 @@
 /*
  * This section defines portable defines for standard file support.
  */
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 #define KDE_stat		kdewin32_stat
 #define KDE_lstat		kdewin32_lstat
 #define KDE_open		kdewin32_open
@@ -107,7 +107,7 @@
 #define KDE_freopen		::freopen64
 /* TODO: define for win32 */
 #else
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 #define KDE_fopen		kdewin32_fopen
 #define KDE_freopen		kdewin32_freopen
 #else /* unix */
@@ -116,10 +116,24 @@
 #endif
 
 /* functions without 64-bit version but wrapped for compatibility reasons */
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 #define KDE_fdopen	kdewin32_fdopen
+#define KDE_signal	kdewin32_signal
 #else /* unix */
 #define KDE_fdopen	::fdopen
+#define KDE_signal	::signal
+#endif
+
+
+#if defined _WIN32 || defined _WIN64
+#define KPATH_SEPARATOR ';'
+#define KDIR_SEPARATOR '\\' /* faster than QDir::separator() */
+#else
+#ifndef O_BINARY
+#define O_BINARY 0 /* for open() */
+#endif
+#define KPATH_SEPARATOR ':'
+#define KDIR_SEPARATOR '/' /* faster than QDir::separator() */
 #endif
 
 #endif /* _KDE_FILE_H_ */
