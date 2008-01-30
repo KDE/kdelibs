@@ -104,13 +104,13 @@ public:
     void addValue(const AnalysisResult* idx, const RegisteredField* field,
             uint32_t value) {
         if (idx->writerData()) {
-            addValue(idx, field, QVariant(value));
+            addValue(idx, field, QVariant((quint32)value));
         }
     }
     void addValue(const AnalysisResult* idx, const RegisteredField* field,
             int32_t value) {
         if (idx->writerData()) {
-            addValue(idx, field, QVariant(value));
+            addValue(idx, field, QVariant((qint32)value));
         }
     }
     void addValue(const AnalysisResult* idx, const RegisteredField* field,
