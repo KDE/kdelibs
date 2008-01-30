@@ -43,6 +43,9 @@ public:
     KdedGlobalAccel(QObject*, const QList<QVariant>&);
     ~KdedGlobalAccel();
 
+    QStringList allComponents();
+    QStringList allActionsForComponent(const QString& component);
+
     QList<int> allKeys();
     QStringList allKeysAsString();
 

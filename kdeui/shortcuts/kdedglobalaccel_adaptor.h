@@ -52,6 +52,10 @@ private:
     inline KdedGlobalAccel *p()
         { return static_cast<KdedGlobalAccel *>(parent()); }
 public Q_SLOTS:
+    inline QStringList allComponents()
+        { return p()->allComponents(); }
+    inline QStringList allActionsForComponent(const QString &component)
+        { return p()->allActionsForComponent(component); }
     //get all registered keys (mainly for debugging)
     inline QList<int> allKeys()
         { return p()->allKeys(); }

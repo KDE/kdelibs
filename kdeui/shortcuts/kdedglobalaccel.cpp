@@ -88,7 +88,6 @@ public:
 
     QHash<int, actionData *> keyToAction;
     QHash<QString, QHash<QString, actionData *> *> mainComponentHashes;
-    QList<actionData *> deletionQueue;
 
     KConfig config;
     KConfigGroup configGroup;
@@ -204,6 +203,16 @@ KdedGlobalAccel::~KdedGlobalAccel()
     delete d;
 }
 
+QStringList KdedGlobalAccel::allComponents()
+{
+    return d->mainComponentHashes.keys();
+}
+
+QStringList KdedGlobalAccel::allActionsForComponent(const QString& component)
+{
+    return d->mainComponentHashes[component]->keys();
+}
+
 QList<int> KdedGlobalAccel::allKeys()
 {
     QList<int> ret = d->keyToAction.keys();
@@ -266,10 +275,9 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     //now we are actually changing the shortcut of the action
 
     QList<int> added = d->nonemptyOnly(keys);
-    bool emptyShortcut = added.isEmpty();
 
     bool didCreate = false;
-    if (!ad && (!emptyShortcut || !isDefaultEmpty)) {
+    if (!ad) {
         didCreate = true;
         ad = d->addAction(actionId);
         ad->isPresent = false;
@@ -334,16 +342,6 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
     scheduleWriteSettings();
 
-    if (isDefaultEmpty && d->isEmpty(ad->keys)) {
-        d->takeAction(actionId);
-        if (didCreate)
-            delete ad;
-        else
-            d->deletionQueue.append(ad);
-
-        return QList<int>();
-    }
-
     return ad->keys;
 }
 
@@ -390,14 +388,6 @@ void KdedGlobalAccel::scheduleWriteSettings()
 //slot
 void KdedGlobalAccel::writeSettings()
 {
-    //entries scheduled for deletion are in deletionQueue
-    foreach (const actionData *const ad, d->deletionQueue) {
-        QString confKey = ad->actionId.join("\01");
-        d->configGroup.deleteEntry(confKey);
-        delete ad;
-    }
-    d->deletionQueue.clear();
-
     typedef QHash<QString, actionData*> adHash; //avoid comma in macro arguments
     foreach (const adHash *const mc, d->mainComponentHashes) {
         foreach (const actionData *const ad, *mc) {
