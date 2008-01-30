@@ -146,14 +146,14 @@ void SocketConnectionBackend::setSuspended(bool enable)
         if (socket->bytesAvailable() >= HeaderSize) {
             // there are bytes available
             QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
-        } else {
-            // We read all bytes here, but we don't use readAll() because we need
-            // to read at least one byte (even if there isn't any) so that the
-            // socket notifier is reenabled
-            QByteArray data = socket->read(socket->bytesAvailable() + 1);
-            for (int i = data.size(); --i >= 0; )
-                socket->ungetChar(data[i]);
         }
+
+        // We read all bytes here, but we don't use readAll() because we need
+        // to read at least one byte (even if there isn't any) so that the
+        // socket notifier is reenabled
+        QByteArray data = socket->read(socket->bytesAvailable() + 1);
+        for (int i = data.size(); --i >= 0; )
+            socket->ungetChar(data[i]);
     }
 }
 
@@ -324,54 +324,62 @@ AbstractConnectionBackend *SocketConnectionBackend::nextPendingConnection()
 
 void SocketConnectionBackend::socketReadyRead()
 {
-    if (!socket)
-        // might happen if the invokeMethods were delivered after we disconnected
-        return;
+    bool shouldReadAnother;
+    do {
+        if (!socket)
+            // might happen if the invokeMethods were delivered after we disconnected
+            return;
 
-    //kDebug() << "Got " << socket->bytesAvailable() << " bytes";
-    if (len == -1) {
-        // We have to read the header
-        static char buffer[HeaderSize];
+        // kDebug() << this << "Got " << socket->bytesAvailable() << " bytes";
+        if (len == -1) {
+            // We have to read the header
+            static char buffer[HeaderSize];
 
-        if (socket->bytesAvailable() < HeaderSize) {
-            return;             // wait for more data
+            if (socket->bytesAvailable() < HeaderSize) {
+                return;             // wait for more data
+            }
+
+            socket->read(buffer, sizeof buffer);
+            buffer[6] = 0;
+            buffer[9] = 0;
+
+            char *p = buffer;
+            while( *p == ' ' ) p++;
+            len = strtol( p, 0L, 16 );
+
+            p = buffer + 7;
+            while( *p == ' ' ) p++;
+            cmd = strtol( p, 0L, 16 );
+
+            // kDebug() << this << " Beginning of command " << hex << cmd << " of size "
+            //        << len << endl;
         }
 
-        socket->read(buffer, sizeof buffer);
-        buffer[6] = 0;
-        buffer[9] = 0;
+        QPointer<SocketConnectionBackend> that = this;
 
-        char *p = buffer;
-        while( *p == ' ' ) p++;
-        len = strtol( p, 0L, 16 );
+        // kDebug() << this <<  "Want to read " << len << " bytes";
+        if (socket->bytesAvailable() >= len) {
+            Task task;
+            task.cmd = cmd;
+            if (len)
+                task.data = socket->read(len);
+            len = -1;
 
-        p = buffer + 7;
-        while( *p == ' ' ) p++;
-        cmd = strtol( p, 0L, 16 );
+            signalEmitted = true;
+            emit commandReceived(task);
+        }
 
-        //kDebug() << this << id << " Beginning of command " << hex << cmd << " of size "
-        //         << len << endl;
+        // If we're dead, better don't try anything.
+        if (that.isNull())
+            return;
+
+        // Do we have enough for an another read?
+        if (len == -1)
+            shouldReadAnother = socket->bytesAvailable() >= HeaderSize;
+        else
+            shouldReadAnother = socket->bytesAvailable() >= len;
     }
-
-    QPointer<SocketConnectionBackend> that = this;
-
-    //kDebug() << "Want to read " << len << " bytes";
-    if (socket->bytesAvailable() >= len) {
-        Task task;
-        task.cmd = cmd;
-        if (len)
-            task.data = socket->read(len);
-        len = -1;
-
-        signalEmitted = true;
-        emit commandReceived(task);
-    }
-
-    if (!that.isNull() && socket->readBufferSize() == 0 &&
-        socket->bytesAvailable() >= HeaderSize) {
-        // we're still alive, we're not suspended and there are bytes available
-        QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
-    }
+    while (shouldReadAnother);
 }
 
 Connection::Connection(QObject *parent)
