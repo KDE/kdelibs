@@ -143,6 +143,11 @@ public:
      */
     void reparent(KConfigBase* parent);
 
+    /**
+     * Returns the group that this group belongs to, can be invalid if this is a top-level group.
+     */
+    KConfigGroup parent() const;
+
     /** 
      * @reimp
      */

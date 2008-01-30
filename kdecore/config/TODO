@@ -18,7 +18,6 @@ bugs
 wishes
 ======
 
-- add kconfiggroup::parentGroup()
 - use lazy loading
 - add $\\VAR and $\\(cmd) escapes to list-quote expanded string
 - possibly:

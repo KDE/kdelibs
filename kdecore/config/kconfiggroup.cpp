@@ -608,6 +608,17 @@ const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
     return newGroup;
 }
 
+KConfigGroup KConfigGroup::parent() const
+{
+    Q_ASSERT_X(isValid(), "KConfigGroup::parent", "accessing an invalid group");
+
+    KConfigGroup parentGroup;
+
+    parentGroup.d = d->mParent;
+
+    return parentGroup;
+}
+
 void KConfigGroup::deleteGroup(WriteConfigFlags flags)
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::deleteGroup", "accessing an invalid group");
