@@ -68,6 +68,9 @@ public Q_SLOTS:
     //get the keys registered to  action
     inline QList<int> shortcut(const QStringList &actionId)
         { return p()->shortcut(actionId); }
+    //get the default keys registered to action
+    inline QList<int> defaultShortcut(const QStringList &actionId)
+        { return p()->defaultShortcut(actionId); }
     //to be called by main components owning the action
     inline QList<int> setShortcut(const QStringList &actionId, const QList<int> &keys, uint flags)
         { return p()->setShortcut(actionId, keys, flags); }

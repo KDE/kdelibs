@@ -37,7 +37,8 @@ public:
     {
         IsDefaultEmpty = 1,
         SetPresent = 2,
-        NoAutoloading = 4
+        NoAutoloading = 4,
+        IsDefault = 8
     };
 
     KdedGlobalAccel(QObject*, const QList<QVariant>&);
@@ -52,6 +53,8 @@ public:
     QStringList actionId(int key);
     //to be called by main components not owning the action
     QList<int> shortcut(const QStringList &actionId);
+    //to be called by main components not owning the action
+    QList<int> defaultShortcut(const QStringList &actionId);
     //to be called by main components owning the action
     QList<int> setShortcut(const QStringList &actionId,
                            const QList<int> &keys, uint flags);
