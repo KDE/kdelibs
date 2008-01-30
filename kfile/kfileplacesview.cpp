@@ -184,12 +184,19 @@ public:
     KUrl currentUrl;
     bool showAll;
     bool smoothItemResizing;
+    bool dropOnPlace;
+    bool dragging;
     Solid::StorageAccess *lastClickedStorage;
     QPersistentModelIndex lastClickedIndex;
+
+    QRect dropRect;
 
     void setCurrentIndex(const QModelIndex &index);
     void adaptItemSize();
     void updateHiddenRows();
+    bool insertAbove(const QRect &itemRect, const QPoint &pos) const;
+    bool insertBelow(const QRect &itemRect, const QPoint &pos) const;
+    int insertIndicatorHeight(int itemHeight) const;
 
     void _k_placeClicked(const QModelIndex &index);
     void _k_placeActivated(const QModelIndex &index);
@@ -211,6 +218,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 {
     d->showAll = false;
     d->smoothItemResizing = false;
+    d->dropOnPlace = false;
+    d->dragging = false;
     d->lastClickedStorage = 0;
 
     setSelectionRectVisible(false);
@@ -218,7 +227,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     setDragEnabled(true);
     setAcceptDrops(true);
-    setDropIndicatorShown(true);
+    setDropIndicatorShown(false);
     setFrameStyle(QFrame::NoFrame);
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -257,6 +266,16 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 KFilePlacesView::~KFilePlacesView()
 {
     delete d;
+}
+
+void KFilePlacesView::setDropOnPlaceEnabled(bool enabled)
+{
+    d->dropOnPlace = enabled;
+}
+
+bool KFilePlacesView::isDropOnPlaceEnabled() const
+{
+    return d->dropOnPlace;
 }
 
 void KFilePlacesView::setUrl(const KUrl &url)
@@ -455,6 +474,91 @@ void KFilePlacesView::hideEvent(QHideEvent *event)
     d->smoothItemResizing = false;
 }
 
+void KFilePlacesView::dragEnterEvent(QDragEnterEvent *event)
+{
+    QListView::dragEnterEvent(event);
+    d->dragging = true;
+}
+
+void KFilePlacesView::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    QListView::dragLeaveEvent(event);
+    d->dragging = false;
+    setDirtyRegion(d->dropRect);
+}
+
+void KFilePlacesView::dragMoveEvent(QDragMoveEvent *event)
+{
+    QListView::dragMoveEvent(event);
+
+    // update the drop indicator
+    const QPoint pos = event->pos();
+    const QModelIndex index = indexAt(pos);
+    setDirtyRegion(d->dropRect);
+    if (index.isValid()) {
+        const QRect rect = visualRect(index);
+        const int gap = d->insertIndicatorHeight(rect.height());
+        if (d->insertAbove(rect, pos)) {
+            // indicate that the item will be inserted above the current place
+            d->dropRect = QRect(rect.left(), rect.top() - gap / 2,
+                                rect.width(), gap);
+        } else if (d->insertBelow(rect, pos)) {
+            // indicate that the item will be inserted below the current place
+            d->dropRect = QRect(rect.left(), rect.bottom() + 1 -  gap / 2,
+                                rect.width(), gap);
+        } else {
+            // indicate that the item be dropped above the current place
+            d->dropRect = rect;
+        }
+    }
+
+    setDirtyRegion(d->dropRect);
+}
+
+void KFilePlacesView::dropEvent(QDropEvent *event)
+{
+    const QPoint pos = event->pos();
+    const QModelIndex index = indexAt(pos);
+    if (index.isValid()) {
+        const QRect rect = visualRect(index);
+        if (!d->insertAbove(rect, pos) && !d->insertBelow(rect, pos)) {
+            KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+            Q_ASSERT(placesModel != 0);
+            emit urlsDropped(placesModel->url(index), event, this);
+            event->acceptProposedAction();
+        }
+    }
+
+    QListView::dropEvent(event);
+    d->dragging = false;
+}
+
+void KFilePlacesView::paintEvent(QPaintEvent* event)
+{
+    QListView::paintEvent(event);
+    if (d->dragging && !d->dropRect.isEmpty()) {
+        // draw drop indicator
+        QPainter painter(viewport());
+
+        const QModelIndex index = indexAt(d->dropRect.topLeft());
+        const int itemHeight = visualRect(index).height();
+        const bool drawInsertIndicator = !d->dropOnPlace ||
+                                         d->dropRect.height() <= d->insertIndicatorHeight(itemHeight);
+        if (drawInsertIndicator) {
+            // draw indicator for inserting items
+            const int y = (d->dropRect.top() + d->dropRect.bottom()) / 2;
+            painter.drawLine(d->dropRect.left(), y, d->dropRect.right(), y);
+        } else {
+            // draw indicator for copying/moving/linking to items
+            QBrush blendedBrush = viewOptions().palette.brush(QPalette::Normal, QPalette::Highlight);
+            QColor color = blendedBrush.color();
+            color.setAlpha(64);
+            blendedBrush.setColor(color);
+            painter.fillRect(d->dropRect, blendedBrush);
+        }
+    }
+}
+
 void KFilePlacesView::setModel(QAbstractItemModel *model)
 {
     QListView::setModel(model);
@@ -601,6 +705,38 @@ void KFilePlacesView::Private::updateHiddenRows()
     }
 
     adaptItemSize();
+}
+
+bool KFilePlacesView::Private::insertAbove(const QRect &itemRect, const QPoint &pos) const
+{
+    if (dropOnPlace) {
+        return pos.y() < itemRect.top() + insertIndicatorHeight(itemRect.height()) / 2;
+    }
+
+    return pos.y() < itemRect.top() + (itemRect.height() / 2);
+}
+
+bool KFilePlacesView::Private::insertBelow(const QRect &itemRect, const QPoint &pos) const
+{
+    if (dropOnPlace) {
+        return pos.y() > itemRect.bottom() - insertIndicatorHeight(itemRect.height()) / 2;
+    }
+
+    return pos.y() >= itemRect.top() + (itemRect.height() / 2);
+}
+
+int KFilePlacesView::Private::insertIndicatorHeight(int itemHeight) const
+{
+    const int min = 4;
+    const int max = 12;
+
+    int height = itemHeight / 4;
+    if (height < min) {
+        height = min;
+    } else if (height > max) {
+        height = max;
+    }
+    return height;
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)

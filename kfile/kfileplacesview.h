@@ -38,6 +38,18 @@ public:
     KFilePlacesView(QWidget *parent = 0);
     ~KFilePlacesView();
 
+    /**
+     * If \a enabled is true, it is allowed dropping items
+     * above a place for e. g. copy or move operations. The application
+     * has to take care itself to perform the operation
+     * (see KFilePlacesView::urlsDropped()). If
+     * \a enabled is false, it is only possible adding items
+     * as additional place. Per default dropping on a place is
+     * disabled.
+     */
+    void setDropOnPlaceEnabled(bool enabled);
+    bool isDropOnPlaceEnabled() const;
+
 public Q_SLOTS:
     void setUrl(const KUrl &url);
     void setShowAll(bool showAll);
@@ -49,6 +61,11 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
 
 protected Q_SLOTS:
     void rowsInserted(const QModelIndex &parent, int start, int end);
@@ -56,6 +73,13 @@ protected Q_SLOTS:
 
 Q_SIGNALS:
     void urlChanged(const KUrl &url);
+
+    /**
+     * Is emitted if items are dropped on the place \a dest.
+     * The application has to take care itself about performing the
+     * corresponding action like copying or moving.
+     */
+    void urlsDropped(const KUrl &dest, QDropEvent *event, QWidget *parent);
 
 private:
     Q_PRIVATE_SLOT(d, void _k_placeClicked(const QModelIndex &))
