@@ -1,5 +1,5 @@
 Name=Instant Messenger
-Name[af]=Oombliklike Boodskapper
+Name[af]=Kitsboodskapper
 Name[ar]=مرسال فوري
 Name[be]=Імгненны абвеснік
 Name[bg]=Съобщения в реално време
@@ -65,7 +65,7 @@ Name[zh_CN]=即时通讯程序
 Name[zh_HK]=即時通訊軟件
 Name[zh_TW]=即時通訊
 Comment=The instant messenger allows two-way chat between individuals and groups.
-Comment[af]=Die oombliklike boodskappe laat twee rigting kommunikasie tussen individue en groepe toe.
+Comment[af]=Die Kitsboodskapper laat twee rigting kommunikasie tussen individue en groepe toe.
 Comment[ar]=يسمح المرسال الفوري بمحادثات من اتجاهين بين الأفراد والمجموعات
 Comment[be]=Імгненны абвеснік дазваляе весці размову двум і больш асобам/гуртам.
 Comment[bg]=Разговор между различни хора в реално време.

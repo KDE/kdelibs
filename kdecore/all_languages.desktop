@@ -6411,6 +6411,7 @@ Name[zh_HK]=諾魯語
 Name[zh_TW]=諾魯語
 [nb]
 Name=Norwegian Bokmål
+Name[af]=Noorweegs Bokmål
 Name[ar]=نرويجية بوكمال
 Name[be]=Нарвежская (бокмаль)
 Name[bg]=Норвежки (букмол)
@@ -6624,6 +6625,7 @@ Name[zh_CN]=下撒克逊语
 Name[zh_TW]=薩克遜語
 [ne]
 Name=Nepali
+Name[af]=Nepalees
 Name[ar]=نيبالية
 Name[be]=Непальская
 Name[bg]=Непали
@@ -6726,7 +6728,7 @@ Name[zh_HK]=Ndonga語
 Name[zh_TW]=Ndonga語
 [nl]
 Name=Dutch
-Name[af]=Hollands
+Name[af]=Nederlands
 Name[ar]=هولندية
 Name[be]=Галандская
 Name[bg]=Холандски
@@ -6802,7 +6804,7 @@ Name[zh_HK]=荷蘭語
 Name[zh_TW]=荷蘭語
 [nn]
 Name=Norwegian Nynorsk
-Name[af]=Noörweese Nynorsk
+Name[af]=Noörweegse Nynorsk
 Name[ar]=نرويجية نينورسك
 Name[be]=Нарвежская (нюнорск)
 Name[bg]=Норвежки (нюнорск)
@@ -10726,7 +10728,7 @@ Name[zh_HK]=Zhuang語
 Name[zh_TW]=Zhuang語
 [zh]
 Name=Chinese
-Name[af]=Sjinese
+Name[af]=Sjinees
 Name[ar]=صينية
 Name[be]=Кітайская
 Name[bg]=Китайски
@@ -10802,7 +10804,7 @@ Name[zh_HK]=中文
 Name[zh_TW]=中文
 [zh_CN]
 Name=Chinese Simplified
-Name[af]=Sjinese vereenvoudig
+Name[af]=Sjinees vereenvoudig
 Name[ar]=صينية مبسطة
 Name[be]=Кітайская спрошчаная
 Name[bg]=Китайски опростен
@@ -10876,6 +10878,7 @@ Name[zh_HK]=簡體中文
 Name[zh_TW]=簡體中文
 [zh_HK]
 Name=Chinese (Hong Kong)
+Name[af]=Sjinees (Hong Kong)
 Name[ar]=صينية (هونغ كونغ)
 Name[be]=Кітайская (Гонг-Конг)
 Name[bg]=Китайски (Хонг Конг)
@@ -10947,7 +10950,7 @@ Name[zh_CN]=繁体中文(香港)
 Name[zh_TW]=正體中文（香港）
 [zh_TW]
 Name=Chinese Traditional
-Name[af]=Sjinese tradisioneel
+Name[af]=Sjinees tradisioneel
 Name[ar]=صينية تقليدية
 Name[be]=Кітайская традыцыйная
 Name[bg]=Китайски традиционен

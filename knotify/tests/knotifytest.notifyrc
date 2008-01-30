@@ -1,6 +1,7 @@
 [Global]
 IconName=knotifytest
 Comment=Test for Knotify
+Comment[af]=Toets vir Knotify
 Comment[bg]=Тест за Knotify
 Comment[bn_IN]=Knotify সংক্রান্ত পরীক্ষা
 Comment[ca]=Prova pel Knotify
@@ -51,6 +52,7 @@ Version=4
 
 [Context/group]
 Name=Group
+Name[af]=Groep
 Name[be]=Група
 Name[bg]=Група
 Name[bn_IN]=দল
@@ -104,6 +106,7 @@ Name[x-test]=xxGroupxx
 Name[zh_CN]=组
 Name[zh_TW]=群組
 Comment=The group
+Comment[af]=Die groep
 Comment[bg]=Група
 Comment[bn_IN]=দল
 Comment[ca]=El grup
@@ -158,6 +161,7 @@ Icon=folder
 
 [Event/online]
 Name=Online
+Name[af]=Aanlyn
 Name[be]=У сеціве
 Name[bg]=Включен
 Name[bn_IN]=অনলাইন অবস্থা
@@ -202,6 +206,7 @@ Name[x-test]=xxOnlinexx
 Name[zh_CN]=在线
 Name[zh_TW]=上線
 Comment=The contact is now connected
+Comment[af]=Die kontak is nou gekoppel
 Comment[bg]=Контактът е свързан
 Comment[bn_IN]=পরিচিতির সাথে সংযোগ স্থাপিত হয়েছে
 Comment[ca]=El contacte ara està connectat
@@ -257,6 +262,7 @@ Action=Popup
 
 [Event/message]
 Name=Message Received
+Name[af]=Boodkap ontvang
 Name[bg]=Съобшението е получено
 Name[bn_IN]=বার্তা প্রাপ্ত হয়েছে
 Name[ca]=Missatge rebut
@@ -310,6 +316,7 @@ Name[x-test]=xxMessage Receivedxx
 Name[zh_CN]=收到了消息
 Name[zh_TW]=接到訊息
 Comment=A Message has been received
+Comment[af]='n Boodskap is ontvang
 Comment[be]=Была атрымана паведамленне
 Comment[bg]=Получено е съобщение
 Comment[bn_IN]=একটি বার্তা প্রাপ্ত হয়েছে

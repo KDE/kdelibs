@@ -11,6 +11,7 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=computer-administration
 
 Name=Sound
+Name[af]=Klank
 Name[be]=Гук
 Name[bg]=Звук
 Name[bn_IN]=শব্দ
@@ -66,6 +67,7 @@ Name[x-test]=xxSoundxx
 Name[zh_CN]=声音
 Name[zh_TW]=音效
 Comment=Sound System Configuration
+Comment[af]=Klankstelsel konfigurasie
 Comment[ar]=ضبط نظام الصوت
 Comment[be]=Настаўленні гукавай сістэмы
 Comment[bg]=Системни съобщения

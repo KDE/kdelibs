@@ -2,7 +2,7 @@
 Type=ServiceType
 X-KDE-ServiceType=KFilePlugin
 Name=KFile Meta Data Plugin
-Name[af]=Klêer Meta Data Inprop module
+Name[af]=KFile Metadata inpropmodule
 Name[ar]=ملحق KFile Meta Data
 Name[bg]=Приставка за мета данни
 Name[bn]=কে-ফাইল মেটা-ডেটা প্লাগ-ইন
