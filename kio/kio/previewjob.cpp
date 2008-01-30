@@ -173,12 +173,13 @@ void PreviewJobPrivate::startPreview()
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
 
-    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it) {
         if (!enabledPlugins || enabledPlugins->contains((*it)->desktopEntryName()))
     {
         const QStringList mimeTypes = (*it)->serviceTypes();
         for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
             mimeMap.insert(*mt, *it);
+    }
     }
 
     // Look for images and store the items in our todo list :)
