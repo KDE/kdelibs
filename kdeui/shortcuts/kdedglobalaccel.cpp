@@ -60,6 +60,7 @@ struct actionData
     bool isDefaultEmpty : 1;
     QStringList actionId;
     QList<int> keys;
+    QList<int> defaultKeys;
 };
 
 enum IdField
@@ -88,7 +89,6 @@ public:
 
     QHash<int, actionData *> keyToAction;
     QHash<QString, QHash<QString, actionData *> *> mainComponentHashes;
-    QList<actionData *> deletionQueue;
 
     KConfig config;
     KConfigGroup configGroup;
@@ -204,6 +204,16 @@ KdedGlobalAccel::~KdedGlobalAccel()
     delete d;
 }
 
+QStringList KdedGlobalAccel::allComponents()
+{
+    return d->mainComponentHashes.keys();
+}
+
+QStringList KdedGlobalAccel::allActionsForComponent(const QString& component)
+{
+    return d->mainComponentHashes[component]->keys();
+}
+
 QList<int> KdedGlobalAccel::allKeys()
 {
     QList<int> ret = d->keyToAction.keys();
@@ -237,6 +247,15 @@ QList<int> KdedGlobalAccel::shortcut(const QStringList &action)
 }
 
 
+QList<int> KdedGlobalAccel::defaultShortcut(const QStringList &action)
+{
+    actionData *ad = d->findAction(action);
+    if (ad)
+        return ad->defaultKeys;
+    return QList<int>();
+}
+
+
 //TODO: make sure and document that we don't want trailing zero shortcuts in the list
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)
@@ -245,6 +264,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     const bool isDefaultEmpty = (flags & IsDefaultEmpty);
     const bool setPresent = (flags & SetPresent);
     const bool isAutoloading = !(flags & NoAutoloading);
+    const bool isDefault = (flags & IsDefault);
 
     actionData *ad = d->findAction(actionId);
 
@@ -266,10 +286,9 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     //now we are actually changing the shortcut of the action
 
     QList<int> added = d->nonemptyOnly(keys);
-    bool emptyShortcut = added.isEmpty();
 
     bool didCreate = false;
-    if (!ad && (!emptyShortcut || !isDefaultEmpty)) {
+    if (!ad) {
         didCreate = true;
         ad = d->addAction(actionId);
         ad->isPresent = false;
@@ -303,6 +322,8 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     ad->isDefaultEmpty = isDefaultEmpty;
     if (setPresent)
         ad->isPresent = true;
+    if (isDefault)
+        ad->defaultKeys = keys;
     ad->keys = keys;
 
     //update keyToAction and find conflicts with other actions
@@ -333,16 +354,6 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         }
 
     scheduleWriteSettings();
-
-    if (isDefaultEmpty && d->isEmpty(ad->keys)) {
-        d->takeAction(actionId);
-        if (didCreate)
-            delete ad;
-        else
-            d->deletionQueue.append(ad);
-
-        return QList<int>();
-    }
 
     return ad->keys;
 }
@@ -390,19 +401,17 @@ void KdedGlobalAccel::scheduleWriteSettings()
 //slot
 void KdedGlobalAccel::writeSettings()
 {
-    //entries scheduled for deletion are in deletionQueue
-    foreach (const actionData *const ad, d->deletionQueue) {
-        QString confKey = ad->actionId.join("\01");
-        d->configGroup.deleteEntry(confKey);
-        delete ad;
-    }
-    d->deletionQueue.clear();
-
     typedef QHash<QString, actionData*> adHash; //avoid comma in macro arguments
     foreach (const adHash *const mc, d->mainComponentHashes) {
         foreach (const actionData *const ad, *mc) {
             QString confKey = ad->actionId.join("\01");
-            if (!d->isEmpty(ad->keys))
+            if (ad->keys == ad->defaultKeys)
+            {
+                // If this is a default key, make sure we don't keep an old
+                // custom key in the config file
+                d->configGroup.deleteEntry(confKey);
+            }
+            else if (!d->isEmpty(ad->keys))
                 d->configGroup.writeEntry(confKey, stringFromKeys(ad->keys));
             else
                 d->configGroup.writeEntry(confKey, "none");

@@ -52,6 +52,10 @@ private:
     inline KdedGlobalAccel *p()
         { return static_cast<KdedGlobalAccel *>(parent()); }
 public Q_SLOTS:
+    inline QStringList allComponents()
+        { return p()->allComponents(); }
+    inline QStringList allActionsForComponent(const QString &component)
+        { return p()->allActionsForComponent(component); }
     //get all registered keys (mainly for debugging)
     inline QList<int> allKeys()
         { return p()->allKeys(); }
@@ -64,6 +68,9 @@ public Q_SLOTS:
     //get the keys registered to  action
     inline QList<int> shortcut(const QStringList &actionId)
         { return p()->shortcut(actionId); }
+    //get the default keys registered to action
+    inline QList<int> defaultShortcut(const QStringList &actionId)
+        { return p()->defaultShortcut(actionId); }
     //to be called by main components owning the action
     inline QList<int> setShortcut(const QStringList &actionId, const QList<int> &keys, uint flags)
         { return p()->setShortcut(actionId, keys, flags); }

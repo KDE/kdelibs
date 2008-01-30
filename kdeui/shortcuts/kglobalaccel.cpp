@@ -152,10 +152,14 @@ void KGlobalAccelPrivate::updateGlobalShortcutAllowed(KAction *action, uint flag
 
     if (!oldEnabled && newEnabled) {
         uint setterFlags = KdedGlobalAccel::SetPresent;
+        KShortcut defaultShortcut = action->globalShortcut(KAction::DefaultShortcut);
+        KShortcut activeShortcut = action->globalShortcut();
         if (flags & KAction::NoAutoloading)
             setterFlags |= KdedGlobalAccel::NoAutoloading;
-        if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
+        if (defaultShortcut.isEmpty())
             setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
+        if (defaultShortcut == activeShortcut)
+            setterFlags |= KdedGlobalAccel::IsDefault;
 
         nameToAction.insert(actionId.at(1), action);
         actionToName.insert(action, actionId.at(1));
@@ -187,10 +191,14 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
     //TODO: what about i18ned names?
 
     uint setterFlags = 0;
+    KShortcut defaultShortcut = action->globalShortcut(KAction::DefaultShortcut);
+    KShortcut activeShortcut = action->globalShortcut();
     if (flags & KAction::NoAutoloading)
         setterFlags |= KdedGlobalAccel::NoAutoloading;
-    if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
+    if (defaultShortcut.isEmpty())
         setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
+    if (defaultShortcut == activeShortcut)
+        setterFlags |= KdedGlobalAccel::IsDefault;
 
     QList<int> result = iface.setShortcut(actionId,
                                           intListFromShortcut(action->globalShortcut()),
