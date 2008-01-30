@@ -12,8 +12,8 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPrinter>
 #include <QtCore/QTextStream>
+#include <QtCore/QTemporaryFile>
 #include <kapplication.h>
-#include <ktemporaryfile.h>
 #include <kdebug.h>
 
 #define BUFLEN 200
@@ -165,7 +165,7 @@ bool EPSHandler::read(QImage *image)
         return false;
     }
 
-    KTemporaryFile tmpFile;
+    QTemporaryFile tmpFile;
     if( !tmpFile.open() ) {
         kError(399) << "kimgio EPS: no temp file!" << endl;
         return false;
@@ -251,8 +251,7 @@ bool EPSHandler::write(const QImage &image)
       psOut.setOutputFileName( "untitled_printer_document" );
 
     // Extension must be .eps so that Qt generates EPS file
-    KTemporaryFile tmpFile;
-    tmpFile.setSuffix(".eps");
+    QTemporaryFile tmpFile("XXXXXXXX.eps");
     if ( !tmpFile.open() )
         return false;
 
