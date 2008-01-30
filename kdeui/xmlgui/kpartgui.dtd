@@ -68,6 +68,7 @@
   group CDATA #IMPLIED
   hidden (true|false) "false"
   noEdit (true|false) "false"
+  noMerge (0|1) "0"
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
