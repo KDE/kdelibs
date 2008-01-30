@@ -296,6 +296,7 @@ void CoreEngine::downloadPayload(Entry *entry)
         // Remote resource
         //kDebug() << "Relaying remote payload '" << source << "'";
         entry->setStatus(Entry::Installed);
+        m_payloadfiles[entry] = entry->payload().representation();
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
         return;
@@ -1303,109 +1304,112 @@ bool CoreEngine::install(const QString &payloadfile)
     //kDebug() << "INSTALL + uncompression " << m_installation->uncompression();
     //kDebug() << "INSTALL + command " << m_installation->command();
 
-    // installdir is the target directory
-    QString installdir;
-    // installpath also contains the file name if it's a single file, otherwise equal to installdir
-    QString installpath;
-    int pathcounter = 0;
-    if (!m_installation->standardResourceDir().isEmpty()) {
-        if (m_installation->scope() == Installation::ScopeUser)
-            installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
-        else
-            installdir = KStandardDirs::locate(m_installation->standardResourceDir().toUtf8(), "/");
-        pathcounter++;
-    }
-    if (!m_installation->targetDir().isEmpty()) {
-        if (m_installation->scope() == Installation::ScopeUser)
-            installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
-        else
-            installdir = KStandardDirs::locate("data", m_installation->targetDir() + '/');
-        pathcounter++;
-    }
-    if (!m_installation->installPath().isEmpty()) {
-        installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
-        pathcounter++;
-    }
-
-    if (pathcounter != 1) {
-        kError() << "Wrong number of installation directories given." << endl;
-        return false;
-    }
-
     // Collect all files that were installed
     QStringList installedFiles;
+    QString installpath(payloadfile);
 
-    // respect the uncompress flag in the knsrc
-    if (!m_installation->uncompression().isEmpty()) {
-        // this is weird but a decompression is not a single name, so take the path instead
-        installpath = installdir;
-        KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
-        //kDebug() << "Postinstallation: uncompress the file";
+    if (!m_installation->isRemote()) {
+        // installdir is the target directory
+        QString installdir;
+        // installpath also contains the file name if it's a single file, otherwise equal to installdir
+        int pathcounter = 0;
+        if (!m_installation->standardResourceDir().isEmpty()) {
+            if (m_installation->scope() == Installation::ScopeUser)
+                installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
+            else
+                installdir = KStandardDirs::locate(m_installation->standardResourceDir().toUtf8(), "/");
+            pathcounter++;
+        }
+        if (!m_installation->targetDir().isEmpty()) {
+            if (m_installation->scope() == Installation::ScopeUser)
+                installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
+            else
+                installdir = KStandardDirs::locate("data", m_installation->targetDir() + '/');
+            pathcounter++;
+        }
+        if (!m_installation->installPath().isEmpty()) {
+            installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
+            pathcounter++;
+        }
+    
+        if (pathcounter != 1) {
+            kError() << "Wrong number of installation directories given." << endl;
+            return false;
+        }
 
-        // FIXME: check for overwriting, malicious archive entries (../foo) etc.
-        // FIXME: KArchive should provide "safe mode" for this!
-        KArchive *archive = 0;
-
-        if (mimeType->name() == "application/zip") {
-            archive = new KZip(payloadfile);
-        } else if (mimeType->name() == "application/tar"
-                   || mimeType->name() == "application/x-gzip"
-                   || mimeType->name() == "application/x-bzip") {
-            archive = new KTar(payloadfile);
-        } else {
+        // respect the uncompress flag in the knsrc
+        if (!m_installation->uncompression().isEmpty()) {
+            // this is weird but a decompression is not a single name, so take the path instead
+            installpath = installdir;
+            KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
+            //kDebug() << "Postinstallation: uncompress the file";
+    
+            // FIXME: check for overwriting, malicious archive entries (../foo) etc.
+            // FIXME: KArchive should provide "safe mode" for this!
+            KArchive *archive = 0;
+    
+            if (mimeType->name() == "application/zip") {
+                archive = new KZip(payloadfile);
+            } else if (mimeType->name() == "application/tar"
+                    || mimeType->name() == "application/x-gzip"
+                    || mimeType->name() == "application/x-bzip") {
+                archive = new KTar(payloadfile);
+            } else {
+                delete archive;
+                kError() << "Could not determine type of archive file '" << payloadfile << "'";
+                return false;
+            }
+    
+            bool success = archive->open(QIODevice::ReadOnly);
+            if (!success) {
+                kError() << "Cannot open archive file '" << payloadfile << "'";
+                return false;
+            }
+            const KArchiveDirectory *dir = archive->directory();
+            dir->copyTo(installdir);
+    
+            installedFiles << archiveEntries(installdir, dir);
+            installedFiles << installdir + "/";
+    
+            archive->close();
+            QFile::remove(payloadfile);
             delete archive;
-            kError() << "Could not determine type of archive file '" << payloadfile << "'";
-            return false;
-        }
-
-        bool success = archive->open(QIODevice::ReadOnly);
-        if (!success) {
-            kError() << "Cannot open archive file '" << payloadfile << "'";
-            return false;
-        }
-        const KArchiveDirectory *dir = archive->directory();
-        dir->copyTo(installdir);
-
-        installedFiles << archiveEntries(installdir, dir);
-        installedFiles << installdir + "/";
-
-        archive->close();
-        QFile::remove(payloadfile);
-        delete archive;
-
-    } else {
-        // no decompress but move to target
-
-        /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
-        // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-        KUrl source = KUrl(entry->payload().representation());
-        QString installfile;
-        QString ext = source.fileName().section('.', -1);
-        if (m_installation->customName()) {
-            installfile = entry->name().representation();
-            installfile += '-' + entry->version();
-            if (!ext.isEmpty()) installfile += '.' + ext;
+    
         } else {
-            installfile = source.fileName();
+            // no decompress but move to target
+    
+            /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
+            // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
+            KUrl source = KUrl(entry->payload().representation());
+            QString installfile;
+            QString ext = source.fileName().section('.', -1);
+            if (m_installation->customName()) {
+                installfile = entry->name().representation();
+                installfile += '-' + entry->version();
+                if (!ext.isEmpty()) installfile += '.' + ext;
+            } else {
+                installfile = source.fileName();
+            }
+            installpath = installdir + '/' + installfile;
+    
+            //kDebug() << "Install to file " << installpath;
+            // FIXME: copy goes here (including overwrite checking)
+            // FIXME: what must be done now is to update the cache *again*
+            //        in order to set the new payload filename (on root tag only)
+            //        - this might or might not need to take uncompression into account
+            // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
+            QFile file(payloadfile);
+    
+            bool success = file.rename(installpath);
+            if (!success) {
+                kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
+                return false;
+            }
+            installedFiles << installpath;
+            installedFiles << installdir + "/";
         }
-        installpath = installdir + '/' + installfile;
-
-        //kDebug() << "Install to file " << installpath;
-        // FIXME: copy goes here (including overwrite checking)
-        // FIXME: what must be done now is to update the cache *again*
-        //        in order to set the new payload filename (on root tag only)
-        //        - this might or might not need to take uncompression into account
-        // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
-        QFile file(payloadfile);
-
-        bool success = file.rename(installpath);
-        if (!success) {
-            kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
-            return false;
-        }
-        installedFiles << installpath;
-        installedFiles << installdir + "/";
     }
+
     entry->setInstalledFiles(installedFiles);
 
     if (!m_installation->command().isEmpty()) {

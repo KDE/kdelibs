@@ -591,7 +591,7 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 		action_install->setVisible(true);
 	}
 
-	m_engine->install(url.path());
+	m_engine->install(url.pathOrUrl());
 }
 
 void KDXSButton::slotPayloadFailed()
