@@ -80,12 +80,16 @@ KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
-    if(d->globalShortcutAllowed) {
-      //the combination of the following lines essentially
-      //- removes the action from KGlobalAccel
-      //- marks the action as inactive in the KDED module
-      d->globalShortcutAllowed = false;
-      KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
+    // When deleting actions in the configuration module, we don't want to
+    // unregister the global shortcut
+    if (property("isConfigurationAction").toBool() == false) {
+        if(d->globalShortcutAllowed) {
+            //the combination of the following lines essentially
+            //- removes the action from KGlobalAccel
+            //- marks the action as inactive in the KDED module
+            d->globalShortcutAllowed = false;
+            KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
+        }
     }
 
     KGestureMap::self()->removeGesture(d->shapeGesture, this);
