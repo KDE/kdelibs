@@ -179,7 +179,7 @@ void WeaverImpl::enqueue(Job* job)
     if (job)
     {
         debug ( 3, "WeaverImpl::enqueue: queueing job %p of type %s.\n",
-                job, job->metaObject()->className() );
+                (void*)job, job->metaObject()->className() );
         QMutexLocker l (m_mutex);
         job->aboutToBeQueued ( this );
         // find positiEon for insertion:;
@@ -245,9 +245,9 @@ bool WeaverImpl::dequeue ( Job* job )
             m_assignments.removeAt( i );
             result = true;
             debug( 3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n",
-                   job, m_assignments.size() );
+                   (void*)job, m_assignments.size() );
         } else {
-            debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", job );
+            debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
             result = false;
         }
     }
@@ -415,7 +415,7 @@ void WeaverImpl::dumpJobs()
     debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
     for ( int index = 0; index < m_assignments.size(); ++index )
     {
-        debug( 0, "--> %4i: %p %s (priority %i)\n", index, m_assignments.at( index ),
+        debug( 0, "--> %4i: %p %s (priority %i)\n", index, (void*)m_assignments.at( index ),
                m_assignments.at( index )->metaObject()->className(),
                m_assignments.at(index)->priority() );
     }

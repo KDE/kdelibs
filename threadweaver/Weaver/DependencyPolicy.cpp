@@ -167,10 +167,10 @@ void DependencyPolicy::free( Job* job )
     if ( job->success() )
     {
         resolveDependencies( job );
-        debug( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
+        debug( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", (void*)job);
     } else {
         debug( 3, "DependencyPolicy::free: not resolving dependencies for %p (execution not successful).\n",
-               job);
+               (void*)job);
     }
     ENSURE ( ( ! hasUnresolvedDependencies( job ) && job->success() ) || ! job->success() );
 }
@@ -194,10 +194,10 @@ void DependencyPolicy::dumpJobDependencies()
     for ( JobMultiMap::const_iterator it = d->dependencies().begin(); it != d->dependencies().end(); ++it )
     {
         debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
-               it.key(),
+               (void*)it.key(),
                it.key()->objectName().isEmpty() ? "" : qPrintable ( it.key()->objectName() + QObject::tr ( " of type " ) ),
                it.key()->metaObject()->className(),
-               it.value(),
+               (void*)it.value(),
                it.value()->objectName().isEmpty() ? "" : qPrintable ( it.value()->objectName() + QObject::tr ( " of type " ) ),
                it.value()->metaObject()->className() );
     }
