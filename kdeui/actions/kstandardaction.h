@@ -240,6 +240,10 @@ namespace KStandardAction
 
   /**
    * Quit the program.
+   *
+   * Note that you probably want to connect this action to QApplication::closeAllWindows()
+   * instead of QApplication::quit(), so that KMainWindow::queryClose() is called on any
+   * open window (to warn the user about unsaved changes for example).
    */
   KDEUI_EXPORT KAction *quit(const QObject *recvr, const char *slot, QObject *parent);
 
