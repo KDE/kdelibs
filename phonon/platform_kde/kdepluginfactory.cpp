@@ -22,6 +22,7 @@
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
 
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QtPlugin>
 #include <QtCore/QCoreApplication>
@@ -120,50 +121,45 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
     // This code is in here temporarily until NMM gets fixed.
     // Currently the NMM backend will fail with undefined symbols if
     // the backend is not loaded with global symbol resolution
+    QObject *backend = 0;
     factory = KLibLoader::self()->factory(newService->library(), QLibrary::ExportExternalSymbolsHint);
     if (!factory) {
         errorReason = KLibLoader::self()->lastErrorMessage();
-        kError(600) << "Can not create factory for " << newService->name() <<
-            ":\n" << errorReason << endl;
-
-        KMessageBox::error(0,
-                QLatin1String("<html>")
-                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
-                + QLatin1Char('\n')
-                + errorReason
-                + QLatin1String("</html>"));
-        return false;
-    }
-    QObject *backend = factory->create<QObject>();
-    if (0 == backend) {
-        errorReason = i18n("create method returned 0");
+    } else {
+        QObject *backend = factory->create<QObject>();
+        if (0 == backend) {
+            errorReason = i18n("create method returned 0");
+        }
     }
 #else
     QObject *backend = newService->createInstance<QObject>(0, QVariantList(), &errorReason);
-
+#endif
     if (0 == backend) {
-        const KComponentData cData = KGlobal::mainComponent();
-        QStringList modulePathList = cData.dirs()->findAllResources("module",
-                newService->library() + QLatin1String(".*"));
-        foreach (QString libFile, modulePathList) {
-            QPluginLoader pluginLoader(libFile);
-            if (pluginLoader.load()) {
+        const QLatin1String suffix("/phonon_backend/");
+        const QStringList libFilter(newService->library() + QLatin1String(".*"));
+        foreach (QString libPath, QCoreApplication::libraryPaths()) {
+            libPath += suffix;
+            const QDir dir(libPath);
+            foreach (const QString &pluginName, dir.entryList(libFilter, QDir::Files)) {
+                QPluginLoader pluginLoader(pluginName);
                 backend = pluginLoader.instance();
                 if (backend) {
                     break;
                 }
             }
+            if (backend) {
+                break;
+            }
         }
     }
-#endif
     if (0 == backend) {
         kError(600) << "Can not create backend object from factory for " <<
-            newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
+            newService->name() << ", " << newService->library() << ":\n" << errorReason;
 
         KMessageBox::error(0,
                 i18n("<qt>Unable to use the <b>%1</b> Multimedia Backend:<br/>%2</qt>",
                     newService->name(), errorReason));
-        return false;
+        return 0;
     }
 
     kDebug() << "using backend: " << newService->name();
