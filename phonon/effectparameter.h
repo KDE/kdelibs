@@ -205,7 +205,7 @@ class PHONON_EXPORT EffectParameter
          */
         int id() const;
 
-    private:
+    protected:
         /**
          * The data is implicitly shared.
          */

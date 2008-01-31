@@ -102,7 +102,7 @@ class PHONON_EXPORT MediaController : public QObject
         void availableTitlesChanged(int availableTitles);
         void titleChanged(int titleNumber);
 
-    private:
+    protected:
         MediaControllerPrivate *const d;
 };
 

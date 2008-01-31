@@ -180,9 +180,10 @@ class PHONON_EXPORT VideoPlayer : public QWidget
          */
         void finished();
 
-    private:
+    protected:
         VideoPlayerPrivate *const d;
 
+    private:
         Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };
 

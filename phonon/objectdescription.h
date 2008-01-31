@@ -266,7 +266,7 @@ class ObjectDescription
 
         ObjectDescription() : d(new ObjectDescriptionData(0)) {}
 
-    private:
+    protected:
         friend class ObjectDescriptionModel<T>;
         ObjectDescription(const QExplicitlySharedDataPointer<ObjectDescriptionData> &dd) : d(dd) {}
         QExplicitlySharedDataPointer<ObjectDescriptionData> d;

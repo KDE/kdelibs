@@ -59,6 +59,7 @@ if (!effectList.isEmpty()) {
  */
 class PHONON_EXPORT Path
 {
+    friend class FactoryPrivate;
     public:
         /**
          * Destroys this reference to the Path. If the path was valid the connection is not broken
@@ -200,7 +201,7 @@ class PHONON_EXPORT Path
          */
         bool operator!=(const Path &p) const;
 
-    private:
+    protected:
         friend class PathPrivate;
         QExplicitlySharedDataPointer<PathPrivate> d;
 };

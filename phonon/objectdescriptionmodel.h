@@ -338,7 +338,7 @@ namespace Phonon
              */
             inline QStringList mimeTypes() const { return d->mimeTypes(type); }
 
-        private:
+        protected:
             ObjectDescriptionModelData *const d;
     };
 

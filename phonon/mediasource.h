@@ -246,7 +246,7 @@ class PHONON_EXPORT MediaSource
         QList<MediaSource> substreams() const;
 */
 
-    private:
+    protected:
         QExplicitlySharedDataPointer<MediaSourcePrivate> d;
 };
 
