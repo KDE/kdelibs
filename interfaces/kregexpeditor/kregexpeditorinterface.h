@@ -28,7 +28,7 @@
 
 /**
  *  A graphical editor for regular expressions.
- * 
+ *
  * @author Jesper K. Pedersen blackie@kde.org
  *
  * The actual editor is located in kdeutils, with an interface in
@@ -36,7 +36,7 @@
  * instance of the editor, but only a little bit more complicated.
  *
  * To check if kregexpeditor in kdeutils is installed and available use this line:
- * 
+ *
  * \code
  * bool installed=!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty();
  * \endcode
@@ -50,7 +50,7 @@
  *   // kdeutils was installed, so the dialog was found fetch the editor interface
  *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorDialog->qt_cast( "KRegExpEditorInterface" ) );
  *   Q_ASSERT( editor ); // This should not fail!
- *   
+ *
  *   // now use the editor.
  *   editor->setRegExp("^kde$");
  *
@@ -72,13 +72,13 @@
  *
  * \code
  * QWidget *editorWidget =
- * KServiceTypeTrader::createInstanceFromQuery<QWidget>( 
+ * KServiceTypeTrader::createInstanceFromQuery<QWidget>(
  *     "KRegExpEditor/KRegExpEditor", QString(), parent );
  * if ( editorWidget ) {
  *   // kdeutils was installed, so the widget was found fetch the editor interface
  *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorWidget->qt_cast( "KRegExpEditorInterface" ) );
  *   Q_ASSERT( editor ); // This should not fail!
- *   
+ *
  *   // now use the editor.
  *   editor->setRegExp("^kde$");
 
@@ -136,23 +136,23 @@ public:
 
   /**
    * Set text to use when showing matches. NOT IMPLEMENTED YET!
-   *   
+   *
    * This method is not yet implemented. In later version of the widget
    * this method will be used to give the widget a text to show matches of
    * the regular expression on.
    */
   virtual void setMatchText( const QString& ) = 0;
-  
+
   /**
    * This method allows for future changes that will not break binary
-   * compatibility. DONT USE!
-   *   
+   * compatibility. DO NOT USE!
+   *
    * KDE has a policy of keeping binary compatibility for all major
    * version of KDE. This means that new methods can not be added to this
    * API before KDE version 4.0.
    *
    * This method is an escape door for that.
-   *   
+   *
    * Conclusion: You should not use this method in this version of KDE!
    */
   virtual void doSomething( QString method, void* arguments ) = 0;
