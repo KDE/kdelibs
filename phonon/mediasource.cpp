@@ -28,6 +28,11 @@
 namespace Phonon
 {
 
+MediaSource::MediaSource(MediaSourcePrivate &dd)
+    : d(&dd)
+{
+}
+
 MediaSource::MediaSource()
     : d(new MediaSourcePrivate(Invalid))
 {

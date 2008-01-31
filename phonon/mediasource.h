@@ -248,6 +248,7 @@ class PHONON_EXPORT MediaSource
 
     protected:
         QExplicitlySharedDataPointer<MediaSourcePrivate> d;
+        MediaSource(MediaSourcePrivate &);
 };
 
 } // namespace Phonon

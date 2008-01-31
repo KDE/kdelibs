@@ -33,7 +33,7 @@ class QFile;
 namespace Phonon
 {
 
-class MediaSourcePrivate : public QSharedData
+class PHONON_EXPORT MediaSourcePrivate : public QSharedData
 {
     public:
         MediaSourcePrivate(MediaSource::Type t)
@@ -43,7 +43,7 @@ class MediaSourcePrivate : public QSharedData
         {
         }
 
-        ~MediaSourcePrivate()
+        virtual ~MediaSourcePrivate()
         {
             if (autoDelete) {
                 delete stream;
