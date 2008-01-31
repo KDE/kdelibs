@@ -1284,9 +1284,8 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     float tDist = std::cos(theta / 2.0) * h;
 
     // As theta approaches 0, the distance to the two tangent points approach infinity.
-    // If we exceeded the limit, draw a long line toward the first tangent point.
-    // This matches CoreGraphics and Postscript behavior, but violates the HTML5 spec,
-    // which says we should do nothing in this case.
+    // If we exceeded the data type limit, draw a long line toward the first tangent point.
+    // This matches CoreGraphics and Postscript behavior.
     if (KJS::isInf(h) || KJS::isInf(tDist)) {
         QPointF point(line1.p2().x() + std::cos(angle1) * 1e10,
                       line1.p2().y() + std::sin(angle1) * 1e10);
