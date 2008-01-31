@@ -53,7 +53,7 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
 				     NET::CurrentDesktop |
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
-				     NET::WorkArea |
+				     NET::WorkArea, /**/
                                      NET::WM2ShowingDesktop };
 
 static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
@@ -64,7 +64,7 @@ static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
 				     NET::CurrentDesktop |
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
-				     NET::WorkArea |
+				     NET::WorkArea, /**/
                                      NET::WM2ShowingDesktop };
 
 class KWindowSystemPrivate
