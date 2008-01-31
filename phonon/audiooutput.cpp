@@ -91,6 +91,9 @@ void AudioOutput::setName(const QString &newName)
     setVolume(Platform::loadVolume(newName));
 }
 
+static const qreal LOUDNESS_TO_VOLTAGE_EXPONENT = 0.67;
+static const qreal VOLTAGE_TO_LOUDNESS_EXPONENT = 1.0/LOUDNESS_TO_VOLTAGE_EXPONENT;
+
 void AudioOutput::setVolume(qreal volume)
 {
     K_D(AudioOutput);
@@ -100,7 +103,7 @@ void AudioOutput::setVolume(qreal volume)
         // sound pressure is proportional to voltage:
         // p² \prop P \prop V²
         // => if a factor for loudness of x is requested
-        INTERFACE_CALL(setVolume(std::pow(volume, qreal(1.4925373))));
+        INTERFACE_CALL(setVolume(std::pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
     } else {
         emit volumeChanged(volume);
     }
@@ -113,7 +116,7 @@ qreal AudioOutput::volume() const
     if (d->muted || !d->m_backendObject) {
         return d->volume;
     }
-    return std::pow(INTERFACE_CALL(volume()), qreal(0.67));
+    return std::pow(INTERFACE_CALL(volume()), LOUDNESS_TO_VOLTAGE_EXPONENT);
 }
 
 #ifndef PHONON_LOG10OVER20
@@ -152,7 +155,7 @@ void AudioOutput::setMuted(bool mute)
             }
         } else {
             if (k_ptr->backendObject()) {
-                INTERFACE_CALL(setVolume(std::pow(d->volume, (qreal) 1.4925373)));
+                INTERFACE_CALL(setVolume(std::pow(d->volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
             }
             d->muted = mute;
         }
@@ -211,7 +214,7 @@ void AudioOutputPrivate::setupBackendObject()
     QObject::connect(m_backendObject, SIGNAL(audioDeviceFailed()), q, SLOT(_k_audioDeviceFailed()));
 
     // set up attributes
-    pINTERFACE_CALL(setVolume(std::pow(volume, qreal(1.4925373))));
+    pINTERFACE_CALL(setVolume(std::pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
 
     // if the output device is not available and the device was not explicitly set
     if (!pINTERFACE_CALL(setOutputDevice(outputDeviceIndex)) && !outputDeviceOverridden) {
