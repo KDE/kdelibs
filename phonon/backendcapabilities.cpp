@@ -122,13 +122,10 @@ QList<T ## Description> BackendCapabilities::available ## T ## s() \
 
 QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
 {
-    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
     QList<AudioOutputDevice> ret;
-    if (backendIface) {
-        QList<int> deviceIndexes = GlobalConfig().audioOutputDeviceListFor(Phonon::NoCategory);
-        foreach (int i, deviceIndexes) {
-            ret.append(AudioOutputDevice::fromIndex(i));
-        }
+    const QList<int> deviceIndexes = GlobalConfig().audioOutputDeviceListFor(Phonon::NoCategory);
+    foreach (int i, deviceIndexes) {
+        ret.append(AudioOutputDevice::fromIndex(i));
     }
     return ret;
 }
