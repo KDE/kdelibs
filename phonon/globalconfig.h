@@ -37,7 +37,12 @@ namespace Phonon
         GlobalConfig(QObject *parent = 0);
         ~GlobalConfig();
 
-        QList<int> audioOutputDeviceListFor(Phonon::Category category) const;
+        enum HideAdvancedDevicesOverride {
+            ShowAdvancedDevices = 0,
+            HideAdvancedDevices = 1,
+            FromSettings = 2
+        };
+        QList<int> audioOutputDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override = FromSettings) const;
         int audioOutputDeviceFor(Phonon::Category category) const;
 
 //        QList<int> audioCaptureDeviceList() const;

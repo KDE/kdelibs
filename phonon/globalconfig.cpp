@@ -53,12 +53,14 @@ static void filterAdvanced(BackendInterface *backendIface, QList<int> *list)
     }
 }
 
-QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) const
+QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override) const
 {
     //The devices need to be stored independently for every backend
     const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice")); // + Factory::identifier());
     const QSettingsGroup generalGroup(&m_config, QLatin1String("General"));
-    const bool hideAdvancedDevices = generalGroup.value(QLatin1String("HideAdvancedDevices"), true);
+    const bool hideAdvancedDevices = (override == FromSettings
+            ? generalGroup.value(QLatin1String("HideAdvancedDevices"), true)
+            : static_cast<bool>(override));
 
     //First we lookup the available devices directly from the backend
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
