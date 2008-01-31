@@ -25,7 +25,6 @@
 #include <QtCore/QIODevice>
 #include <kstandarddirs.h>
 #include <avahi-common/defs.h>
-#include <stdlib.h>
 #include "avahi_server_interface.h"
 #include "domainbrowser.h"
 #include "avahi_domainbrowser_interface.h"
@@ -62,9 +61,9 @@ void DomainBrowser::startBrowse()
 	connect(b,SIGNAL(ItemRemove(int,int,const QString&,uint)),d, SLOT(gotRemoveDomain(int,int,const QString&, uint)));
 	d->m_browser=b;
 	if (d->m_type==Browsing) {	
-    	    char* domains_evar=getenv("AVAHI_BROWSE_DOMAINS");
-	    if (domains_evar) {
-		QStringList edomains=QString::fromUtf8(domains_evar).split(':');
+    	    QString domains_evar=qgetenv("AVAHI_BROWSE_DOMAINS");
+	    if (!domains_evar.isEmpty()) {
+		QStringList edomains=domains_evar.split(':');
 		Q_FOREACH(QString s, edomains) d->gotNewDomain(-1,-1,s,0);
 	    }
 	    KStandardDirs dirs;
