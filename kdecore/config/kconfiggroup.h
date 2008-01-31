@@ -132,6 +132,8 @@ public:
      * Copies the entries in this group to another config object.
      * @param other The other config object to copy this group's entries to. @note @p other
      *        @em can be either another group or a different file.
+     *
+     * @since 4.1
      */
     void copyTo(KConfigBase *other) const;
 
@@ -140,11 +142,15 @@ public:
      *
      * @param parent the config object to place this group under. If @p parent is a KConfig it will be
      *               promoted to a top-level group.
+     *
+     * @since 4.1
      */
     void reparent(KConfigBase* parent);
 
     /**
      * Returns the group that this group belongs to, can be invalid if this is a top-level group.
+     *
+     * @since 4.1
      */
     KConfigGroup parent() const;
 
