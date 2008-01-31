@@ -41,7 +41,7 @@ class HTMLFormElementImpl;
 class HTMLEmbedElementImpl;
 
 // Base class of all objects that are displayed as KParts:
-// frames, objects, applets, etc. 
+// frames, objects, applets, etc.
 class HTMLPartContainerElementImpl : public QObject, public HTMLElementImpl
 {
 public:
@@ -54,22 +54,22 @@ public:
     virtual void recalcStyle(StyleChange ch);
     virtual void close();
 
-    // These methods will be called to notify the element of 
-    // any progress in loading of the document: setWidgetNotify if the 
-    // KPart was created, and partLoadingErrorNotify when 
+    // These methods will be called to notify the element of
+    // any progress in loading of the document: setWidgetNotify if the
+    // KPart was created, and partLoadingErrorNotify when
     // there was a problem with creating the part or loading the data
     // (hence setWidgetNotify may be followed by partLoadingErrorNotify).
-    // This class take care of all the memory management, and during 
+    // This class take care of all the memory management, and during
     // the setWidgetNotify call, both old (if any) and new widget are alive
     // Note: setWidgetNotify may be called with 0...
-    virtual void setWidgetNotify(QWidget *widget) = 0; 
+    virtual void setWidgetNotify(QWidget *widget) = 0;
     virtual void partLoadingErrorNotify();
-    
-    // This is called when a mimetype is discovered, and should return true 
+
+    // This is called when a mimetype is discovered, and should return true
     // if KHTMLPart should not make a kpart for it, but rather let it be handled directly.
     virtual bool mimetypeHandledInternally(const QString& mime);
 
-    // IMPORTANT: you should call this when requesting a URL, to make sure 
+    // IMPORTANT: you should call this when requesting a URL, to make sure
     // that we don't get stale references to iframes or such.
     void clearChildWidget();
     QWidget* childWidget() const { return m_childWidget; }
@@ -80,8 +80,8 @@ private:
     void setWidget(QWidget* widget);
 private:
     virtual void computeContent() = 0;
-    bool m_needToComputeContent; // This flag is set to true when 
-                                 // we may have to load a new KPart, due to 
+    bool m_needToComputeContent; // This flag is set to true when
+                                 // we may have to load a new KPart, due to
                                  // source changing, etc.
     QPointer<QWidget> m_childWidget; // may be deleted by global child widget cleanup on us..
 };
@@ -102,7 +102,7 @@ public:
     QString classId;
     QString serviceType;
 
-    bool m_rerender; // This is set to true if a reattach is pending, 
+    bool m_rerender; // This is set to true if a reattach is pending,
                      // due to a change in how we need to display this...
 
     bool m_renderAlternative;
@@ -119,7 +119,7 @@ public:
     virtual void partLoadingErrorNotify();
     virtual bool mimetypeHandledInternally(const QString& mime);
 
-    // This method figures out what to render -- perhaps KPart, perhaps an image, perhaps 
+    // This method figures out what to render -- perhaps KPart, perhaps an image, perhaps
     // alternative content, and forces a reattach if need be.
     virtual void computeContent();
 
@@ -164,6 +164,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
+    virtual void computeContent();
 
     virtual HTMLEmbedElementImpl* relevantEmbed();
 
