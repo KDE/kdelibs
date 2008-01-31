@@ -168,7 +168,7 @@ namespace Factory
     /**
      * registers the backend object
      */
-    QObject *registerQObject(QObject *o);
+    PHONON_EXPORT QObject *registerQObject(QObject *o);
 
     bool isMimeTypeAvailable(const QString &mimeType);
 
