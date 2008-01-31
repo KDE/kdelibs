@@ -6,6 +6,10 @@ set(phononexperimental_LIB_SRCS
     audiodataoutput.cpp
     videodataoutput.cpp
     visualization.cpp
+    mediasource.cpp
+    backendcapabilities.cpp
+    factory.cpp
+    globalconfig.cpp
     ../abstractaudiooutput_p.cpp
     ../abstractvideooutput_p.cpp
    )
@@ -22,4 +26,8 @@ install(FILES
     videoframe.h
     videodataoutput.h
     visualization.h
+    mediasource.h
+    backendcapabilities.h
+    backendinterface.h
+    factory.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/phonon/experimental)
