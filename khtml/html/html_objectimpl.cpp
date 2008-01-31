@@ -340,6 +340,13 @@ void HTMLObjectBaseElementImpl::computeContent()
                                     // if the URL isn't there
     QString     effectiveServiceType = serviceType;
 
+    // We need to wait until everything has parsed, since we need the <param>s,
+    // and the embedded <embed>
+    if (!closed()) {
+        setNeedComputeContent();
+        return;
+    }
+
     // Collect information from <param> children for ...
     // It also sometimes supplements or replaces some of the element's attributes
     for (NodeImpl* child = firstChild(); child; child = child->nextSibling()) {
@@ -484,13 +491,6 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     if (m_renderAlternative)
         return;
-
-    // Finally, we want to try requesting the KPart. However, params matter here,
-    // so we want to defer until closed.
-    if (!closed()) {
-        setNeedComputeContent();
-        return;
-    }
 
     KHTMLPart* part = getDocument()->part();
     clearChildWidget();
@@ -717,6 +717,12 @@ void HTMLEmbedElementImpl::attach()
         NodeBaseImpl::attach();
     else
         HTMLObjectBaseElementImpl::attach();
+}
+
+void HTMLEmbedElementImpl::computeContent()
+{
+    if (parentNode()->id() != ID_OBJECT)
+        HTMLObjectBaseElementImpl::computeContent();
 }
 
 // -------------------------------------------------------------------------
