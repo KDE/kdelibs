@@ -56,7 +56,9 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
 				     NET::WorkArea, /**/
                                      NET::WM2ShowingDesktop };
 
-static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
+// ClientList and ClientListStacking is not per-window information, but a desktop information,
+// so track it even with only INFO_BASIC
+static unsigned long desktop_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
                                      NET::Supported |
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
@@ -72,6 +74,7 @@ class KWindowSystemPrivate
 {
 public:
     KWindowSystemPrivate(int _what);
+    void activate();
     QList<WId> windows;
     QList<WId> stackingOrder;
 
@@ -110,6 +113,12 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
     if (kapp)
         kapp->installX11EventFilter( this );
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
+}
+
+// not virtual, but it's called directly only from init()
+void KWindowSystemPrivate::activate()
+{
+    NETRootInfo::activate();
     updateStackingOrder();
 }
 
@@ -324,8 +333,6 @@ void KWindowSystem::connectNotify( const char* signal )
     if( QLatin1String( signal ) == SIGNAL(workAreaChanged()))
         what = INFO_WINDOWS;
     else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
-        what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == SIGNAL(stackingOrderChanged()))
         what = INFO_WINDOWS;
     else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).data())
         what = INFO_WINDOWS;
