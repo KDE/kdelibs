@@ -260,7 +260,7 @@ public:
      * constructed from these which is used to create the a new style selector which collates all of the stylesheets
      * found and is used to calculate the derived styles for all rendering objects.
      *
-     * @param shallow If the stylesheet list for the document is unchanged, with only added or removed rules 
+     * @param shallow If the stylesheet list for the document is unchanged, with only added or removed rules
      * in existing sheets, then set this argument to true for efficiency.
      */
     void updateStyleSelector(bool shallow=false);
@@ -401,6 +401,7 @@ public:
     NodeImpl* hoverNode() const { return m_hoverNode; }
     void setHoverNode(NodeImpl *newHoverNode);
     NodeImpl *focusNode() const { return m_focusNode; }
+    void quietResetFocus(); // Removes focus from active node without attempting to emit any events
     void setFocusNode(NodeImpl *newFocusNode);
     NodeImpl* activeNode() const { return m_activeNode; }
     void setActiveNode(NodeImpl *newActiveNode);
@@ -647,7 +648,7 @@ protected:
     DOMString m_title;
     DOMString m_preferredStylesheetSet;
     khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
-    
+
     mutable ElementImpl* m_documentElement;
 
     //int m_decoderMibEnum;
