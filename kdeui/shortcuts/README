@@ -1,0 +1,37 @@
+# Overall summary of global shortcut implementation
+
+Disclaimer: I gathered this knowledge while fixing a few bugs in KDE 4.0.0
+code. I am not the original author.
+
+## KAction, KGlobalAccel and KdedGlobalAccel
+
+KAction instances talk to the KGlobalAccel singleton to make it aware of global
+shortcuts changes via KGlobalAccel::updateGlobalShortcuts() and
+KGlobalAccel::updateGlobalShortcutsAllowed() (I am still not sure why there are
+two methods).
+
+These two methods do the following:
+- Create an action "id" which is a QStringList of two items: the application
+component and the action text (this is bound to cause trouble with i18n)
+
+- Convert the KAction shortcuts to a QList<int>
+
+- Pass all this via DBus to the KdedGlobalAccel instance, which lives in the
+kded4 process.
+
+The KdedGlobalAccel is responsible for actually handling the shortcuts,
+loading and saving the shortcut keys to kglobalshortcutrc. It doesn't
+really know the actions, it just know what KGlobalAccel gave it.
+
+## kdebase side: keyboard shortcuts KCM
+
+The keyboard shortcuts KCM can be found in kdebase/workspace/kcontrol/keys/
+
+The KCM gets the global shortcut info from the KdedGlobalAccel instance via
+DBus. It uses KShortcutsEditor to let the user edit the shortcuts. Since
+KShortcutsEditor manipulates KAction instances, the kcm creates "fake" actions.
+
+--
+
+Aurélien Gâteau, 2008.02.01
+aurelien.gateau@free.fr
