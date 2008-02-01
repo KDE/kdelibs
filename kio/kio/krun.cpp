@@ -76,15 +76,23 @@ class KRun::KRunPrivate
 public:
     KRunPrivate(KRun *parent)
       : q(parent),
-        m_showingError(false)
+        m_showingDialog(false)
     {
     }
 
     void init (const KUrl& url, QWidget* window, mode_t mode,
                bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
 
+    // This helper method makes debugging easier: a single breakpoint for all
+    // the code paths that start the timer - at least from KRun itself.
+    // TODO: add public method startTimer() and deprecate timer() accessor,
+    // starting is the only valid use of the timer in subclasses (BrowserRun, KHTMLRun and KonqRun)
+    void startTimer() {
+        m_timer.start(0);
+    }
+
     KRun *q;
-    bool m_showingError;
+    bool m_showingDialog;
     bool m_runExecutables;
 
     QString m_preferredService;
@@ -827,7 +835,7 @@ void KRun::KRunPrivate::init ( const KUrl& url, QWidget* window, mode_t mode, bo
   // Reason: We must complete the constructor before we do anything else.
   m_bInit = true;
   q->connect( &m_timer, SIGNAL( timeout() ), q, SLOT( slotTimeout() ) );
-  m_timer.start( 0 );
+  startTimer();
   kDebug(7010) << " new KRun " << q << " " << url.prettyUrl() << " timer=" << &m_timer;
 
   KGlobal::ref();
@@ -838,23 +846,24 @@ void KRun::init()
   kDebug(7010) << "INIT called";
   if ( !d->m_strURL.isValid() )
   {
-    d->m_showingError = true;
+    // TODO KDE5: call virtual method on error (see BrowserRun::init)
+    d->m_showingDialog = true;
     KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1", d->m_strURL.url() ) );
-    d->m_showingError = false;
+    d->m_showingDialog = false;
     d->m_bFault = true;
     d->m_bFinished = true;
-    d->m_timer.start( 0 );
+    d->startTimer();
     return;
   }
   if ( !KAuthorized::authorizeUrlAction( "open", KUrl(), d->m_strURL) )
   {
     QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
-    d->m_showingError = true;
+    d->m_showingDialog = true;
     KMessageBoxWrapper::error( d->m_window, msg );
-    d->m_showingError = false;
+    d->m_showingDialog = false;
     d->m_bFault = true;
     d->m_bFinished = true;
-    d->m_timer.start( 0 );
+    d->startTimer();
     return;
   }
 
@@ -874,12 +883,12 @@ void KRun::init()
       KDE_struct_stat buff;
       if ( KDE_stat( QFile::encodeName(d->m_strURL.path()), &buff ) == -1 )
       {
-        d->m_showingError = true;
+        d->m_showingDialog = true;
         KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(d->m_strURL.prettyUrl()) ) );
-        d->m_showingError = false;
+        d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;
-        d->m_timer.start( 0 );
+        d->startTimer();
         return;
       }
       d->m_mode = buff.st_mode;
@@ -888,7 +897,7 @@ void KRun::init()
     KMimeType::Ptr mime = KMimeType::findByUrl( d->m_strURL, d->m_mode, d->m_bIsLocalFile );
     assert( mime );
     kDebug(7010) << "MIME TYPE is " << mime->name();
-    foundMimeType( mime->name() );
+    mimeTypeDetermined( mime->name() );
     return;
   }
   else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( d->m_strURL ) ) {
@@ -902,7 +911,7 @@ void KRun::init()
        exec = KProtocolInfo::exec( d->m_strURL.protocol() );
        if (exec.isEmpty())
        {
-          foundMimeType(KProtocolManager::defaultMimetype(d->m_strURL));
+          mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
           return;
        }
        run( exec, urls, d->m_window, false, QString(), d->m_asn );
@@ -929,7 +938,7 @@ void KRun::init()
     {
        d->m_bFinished = true;
        // will emit the error and autodelete this
-       d->m_timer.start( 0 );
+       d->startTimer();
        return;
     }
   }
@@ -937,7 +946,7 @@ void KRun::init()
   // Did we already get the information that it is a directory ?
   if ( S_ISDIR( d->m_mode ) )
   {
-    foundMimeType( "inode/directory" );
+    mimeTypeDetermined( "inode/directory" );
     return;
   }
 
@@ -975,7 +984,7 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  kDebug(7010) << "###### KRun::scanFile " << d->m_strURL.url();
+  kDebug(7010) << d->m_strURL;
   // First, let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   if ( d->m_strURL.query().isEmpty() )
@@ -985,7 +994,7 @@ void KRun::scanFile()
     if ( mime->name() != "application/octet-stream" || d->m_bIsLocalFile )
     {
       kDebug(7010) << "Scanfile: MIME TYPE is " << mime->name();
-      foundMimeType( mime->name() );
+      mimeTypeDetermined( mime->name() );
       return;
     }
   }
@@ -999,7 +1008,7 @@ void KRun::scanFile()
     kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
     d->m_bFault = true;
     d->m_bFinished = true;
-    d->m_timer.start( 0 );
+    d->startTimer();
     return;
   }
   kDebug(7010) << this << " Scanning file " << d->m_strURL.url();
@@ -1042,7 +1051,7 @@ void KRun::slotTimeout()
     else if ( d->m_bIsDirectory )
     {
       d->m_bIsDirectory = false;
-      foundMimeType( "inode/directory" );
+      mimeTypeDetermined( "inode/directory" );
       return;
     }
   }
@@ -1059,17 +1068,17 @@ void KRun::slotStatResult( KJob * job )
   d->m_job = 0L;
   if (job->error())
   {
-    d->m_showingError = true;
+    d->m_showingDialog = true;
     kError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
     job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
-    d->m_showingError = false;
+    d->m_showingDialog = false;
 
     d->m_bFault = true;
     d->m_bFinished = true;
 
     // will emit the error and autodelete this
-    d->m_timer.start( 0 );
+    d->startTimer();
 
   } else {
 
@@ -1091,7 +1100,7 @@ void KRun::slotStatResult( KJob * job )
 
     if ( !knownMimeType.isEmpty() )
     {
-        foundMimeType( knownMimeType );
+        mimeTypeDetermined( knownMimeType );
         d->m_bFinished = true;
     }
 
@@ -1101,7 +1110,7 @@ void KRun::slotStatResult( KJob * job )
     // Start the timer. Once we get the timer event this
     // protocol server is back in the pool and we can reuse it.
     // This gives better performance than starting a new slave
-    d->m_timer.start( 0 );
+    d->startTimer();
   }
 }
 
@@ -1109,7 +1118,7 @@ void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
 {
   if ( mimetype.isEmpty() )
     kWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug.";
-  foundMimeType( mimetype );
+  mimeTypeDetermined( mimetype );
   d->m_job = 0;
 }
 
@@ -1118,18 +1127,30 @@ void KRun::slotScanFinished( KJob *job )
   d->m_job = 0;
   if (job->error())
   {
-    d->m_showingError = true;
+    d->m_showingDialog = true;
     kError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
     job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
-    d->m_showingError = false;
+    d->m_showingDialog = false;
 
     d->m_bFault = true;
     d->m_bFinished = true;
 
     // will emit the error and autodelete this
-    d->m_timer.start( 0 );
+    d->startTimer();
   }
+}
+
+void KRun::mimeTypeDetermined(const QString& mimeType)
+{
+    // foundMimeType reimplementations might show a dialog box;
+    // make sure some timer doesn't kill us meanwhile (#137678, #156447)
+    Q_ASSERT(!d->m_showingDialog);
+    d->m_showingDialog = true;
+
+    foundMimeType(mimeType);
+
+    d->m_showingDialog = false;
 }
 
 void KRun::foundMimeType( const QString& type )
@@ -1233,7 +1254,7 @@ void KRun::foundMimeType( const QString& type )
     d->m_bFault = true;
   }
 
-  d->m_timer.start( 0 );
+  d->startTimer();
 }
 
 void KRun::killJob()
@@ -1248,11 +1269,11 @@ void KRun::killJob()
 
 void KRun::abort()
 {
-  kDebug(7010) << "KRun::abort " << this << " m_showingError=" << d->m_showingError;
+  kDebug(7010) << "KRun::abort " << this << " m_showingDialog=" << d->m_showingDialog;
   killJob();
   // If we're showing an error message box, the rest will be done
   // after closing the msgbox -> don't autodelete nor emit signals now.
-  if ( d->m_showingError )
+  if ( d->m_showingDialog )
     return;
   d->m_bFault = true;
   d->m_bFinished = true;
@@ -1260,7 +1281,7 @@ void KRun::abort()
   d->m_bScanFile = false;
 
   // will emit the error and autodelete this
-  d->m_timer.start( 0 );
+  d->startTimer();
 }
 
 bool KRun::hasError() const
@@ -1347,6 +1368,7 @@ bool KRun::progressInfo() const
 void KRun::setFinished( bool finished )
 {
     d->m_bFinished = finished;
+    // TODO d->startTimer(); (and later on remove it from callers...)
 }
 
 void KRun::setJob( KIO::Job *job )
