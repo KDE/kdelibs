@@ -367,6 +367,13 @@ protected Q_SLOTS:
   void slotScanMimeType( KIO::Job *, const QString &type );
 
   /**
+   * Call this from subclasses when you have determined the mimetype.
+   * It will call foundMimeType, but also sets up protection against deletion during message boxes.
+   * @since 4.0.2
+   */
+  void mimeTypeDetermined(const QString& mimeType);
+
+  /**
    * This slot is called when the 'stat' job has finished.
    */
   virtual void slotStatResult( KJob * );
@@ -387,9 +394,10 @@ protected:
   virtual void scanFile();
 
   /**
-   * Called if the mimetype has been detected. The function checks
-   * whether the document <XXX - what?> and appends the gzip protocol to the
-   * URL. Otherwise runUrl is called to finish the job.
+   * Called if the mimetype has been detected. The function runs
+   * the application associated with this mimetype.
+   * Reimplement this method to implement a different behavior,
+   * like opening the component for displaying the URL embedded.
    */
   virtual void foundMimeType( const QString& type );
 
@@ -424,7 +432,7 @@ protected:
   bool progressInfo() const;
 
   /**
-   * Marks the job as finished.
+   * Marks this 'KRun' instance as finished.
    */
   void setFinished( bool finished );
 
@@ -444,19 +452,22 @@ protected:
   QTimer& timer();
 
   /**
-   * Sets whether the file shall be scanned.
+   * Indicate that the next action is to scan the file.
+   * @deprecated not useful in public API
    */
-  void setDoScanFile( bool scanFile );
+  KDE_DEPRECATED void setDoScanFile( bool scanFile );
 
   /**
    * Returns whether the file shall be scanned.
+   * @deprecated not useful in public API
    */
-  bool doScanFile() const;
+  KDE_DEPRECATED bool doScanFile() const;
 
   /**
    * Sets whether it is a directory.
+   * @deprecated typo in the name, and not useful as a public method
    */
-  void setIsDirecory( bool isDirectory );
+  KDE_DEPRECATED void setIsDirecory( bool isDirectory );
 
   /**
    * Returns whether it is a directory.
@@ -464,14 +475,14 @@ protected:
   bool isDirectory() const;
 
   /**
-   * Returns whether the next action shall be initialized.
+   * @deprecated not useful in public API
    */
-  void setInitializeNextAction( bool initialize );
+  KDE_DEPRECATED void setInitializeNextAction( bool initialize );
 
   /**
-   * Returns whether the next action shall be initialized.
+   * @deprecated not useful in public API
    */
-  bool initializeNextAction() const;
+  KDE_DEPRECATED bool initializeNextAction() const;
 
   /**
    * Sets whether it is a local file.

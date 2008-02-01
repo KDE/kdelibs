@@ -122,7 +122,7 @@ void BrowserRun::scanFile()
     if ( mime->name() != "application/octet-stream" || isLocalFile() )
     {
       kDebug(1000) << "Scanfile: MIME TYPE is" << mime->name();
-      foundMimeType( mime->name() );
+      mimeTypeDetermined( mime->name() );
       return;
     }
   }
@@ -151,7 +151,7 @@ void BrowserRun::scanFile()
         job->addMetaData( "content-type", d->m_browserArgs.contentType() );
     } else {
         job = KIO::get(KRun::url(),
-                       d->m_args.reload() ? KIO::Reload : KIO::NoReload, 
+                       d->m_args.reload() ? KIO::Reload : KIO::NoReload,
                        KIO::HideProgressInfo);
   }
 
@@ -179,7 +179,7 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
       // Update our URL in case of a redirection
       KRun::setUrl( static_cast<KIO::TransferJob *>(job)->url() );
       setJob( 0 );
-      foundMimeType( "inode/directory" );
+      mimeTypeDetermined( "inode/directory" );
   }
   else
   {
@@ -212,7 +212,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   job->putOnHold();
   setJob( 0 );
 
-  foundMimeType( _type );
+  mimeTypeDetermined( _type );
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& _mimeType )
@@ -497,7 +497,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     //kDebug(1202) << "BrowserRun::handleError KRun::url()=" << ;
 
     setJob( 0 );
-    foundMimeType( "text/html" );
+    mimeTypeDetermined( "text/html" );
 }
 
 void BrowserRun::slotCopyToTempFileResult(KJob *job)
