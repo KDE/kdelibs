@@ -183,7 +183,6 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   }
 
   if ((type & ActiveShortcut) && d->globalShortcut != shortcut) {
-    KShortcut oldCut = d->globalShortcut;
     d->globalShortcut = shortcut;
     changed = true;
   }
