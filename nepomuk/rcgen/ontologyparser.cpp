@@ -156,7 +156,8 @@ bool OntologyParser::parse( const QString& filename )
             ResourceClass& rc = d->getResource( s.object().uri().toString() );
             Property& p = d->getProperty( s.subject().uri().toString() );
             p.domain = &rc;
-            rc.properties.append( &p );
+            if ( !rc.properties.contains( &p ) )
+                rc.properties.append( &p );
             rc.generate = true;
         }
         else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
@@ -176,13 +177,19 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // determine the reverse properties
-    for( QMap<QString, Property>::const_iterator propIt = d->properties.constBegin();
-         propIt != d->properties.constEnd(); ++propIt ) {
-        const Property& p = propIt.value();
+    for( QMap<QString, Property>::iterator propIt = d->properties.begin();
+         propIt != d->properties.end(); ++propIt ) {
+        Property& p = propIt.value();
         if( d->resources.contains( p.type ) ) {
             qDebug() << "Setting reverse property " << p.uri << " on type " << p.type << endl;
-            d->resources[p.type].reverseProperties.append( &p );
+            if ( !d->resources[p.type].reverseProperties.contains( &p ) )
+                d->resources[p.type].reverseProperties.append( &p );
         }
+        if ( !p.domain ) {
+            p.domain = &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        }
+
+        Q_ASSERT( d->properties.count( propIt.key() ) == 1 );
     }
 
     // now assign the comments to resources and properties
@@ -196,13 +203,18 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // testing stuff
-    for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
-         it != d->resources.constEnd(); ++it ) {
+    for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
+         it != d->resources.end(); ++it ) {
+        if( !it->parent ) {
+            it->parent = &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        }
         qDebug() << "Resource: " << (*it).name()
                  << "[" << (*it).uri << "]"
                  << " (->" << (*it).parent->name() << ")"
                  << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
                  << endl;
+
+        Q_ASSERT( d->resources.count( it.key() ) == 1 );
 
         QListIterator<const Property*> propIt( (*it).properties );
         while( propIt.hasNext() ) {

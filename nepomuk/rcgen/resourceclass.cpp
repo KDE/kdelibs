@@ -125,6 +125,8 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         xmlSchemaTypes.insert( "float", "float" );
         xmlSchemaTypes.insert( "double", "double" );
         xmlSchemaTypes.insert( "boolean", "bool" );
+        xmlSchemaTypes.insert( "date", "QDate" );
+        xmlSchemaTypes.insert( "time", "QTime" );
         xmlSchemaTypes.insert( "dateTime", "QDateTime" );
         xmlSchemaTypes.insert( "string", "QString" );
         t = xmlSchemaTypes[type.mid(type.lastIndexOf( "#" ) + 1 )];
@@ -144,6 +146,8 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         else
             return "QList<" + t + '>';
     }
+
+    Q_ASSERT( !t.isEmpty() );
 
     return t;
 }
@@ -189,6 +193,8 @@ QString Property::adderDeclaration( const ResourceClass* rc, bool withNamespace 
 
 QString Property::reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace ) const
 {
+    Q_ASSERT( rc );
+    Q_ASSERT( domain );
     return QString( "%1 %2%3%4Of() const" )
         .arg( QString("QList<") + domain->name( withNamespace ) + QString(">") )
         .arg( withNamespace ? QString("Nepomuk::%1::").arg(rc->name()) : QString() )
@@ -238,40 +244,42 @@ QString Property::typeConversionMethod() const
 {
     // for properties with cardinality == 1 we use a little hack since there will always be duplication of
     // data.
-    if ( typeString() == "QStringList" ) {
+    if ( typeString(false) == "QStringList" ) {
         return QLatin1String("toStringList())");
     }
-    else if ( typeString() == "QString" ) {
+    else if ( typeString(true) == "QString" ) {
         return QLatin1String("toStringList() << QString() ).first()");
     }
-    else if ( typeString() == "qint32" ) {
+    else if ( typeString(true) == "qint32" ) {
         return list ? QLatin1String("toIntList())") : QLatin1String("toIntList() << 0 ).first()");
     }
-    else if ( typeString() == "quint32" ) {
+    else if ( typeString(true) == "quint32" ) {
         return list ? QLatin1String("toUnsignedIntList())") : QLatin1String("toUnsignedIntList() << 0 ).first()");
     }
-    else if ( typeString() == "qint64" ) {
+    else if ( typeString(true) == "qint64" ) {
         return list ? QLatin1String("toInt64List())") : QLatin1String("toInt64List() << 0 ).first()");
     }
-    else if ( typeString() == "quint64" ) {
+    else if ( typeString(true) == "quint64" ) {
         return list ? QLatin1String("toUnsignedInt64List())") : QLatin1String("toUnsignedInt64List() << 0 ).first()");
     }
-    else if ( typeString() == "bool" ) {
+    else if ( typeString(true) == "bool" ) {
         return list ? QLatin1String("toBoolList())") : QLatin1String("toBoolList() << false ).first()");
     }
-    else if ( typeString() == "double" ) {
+    else if ( typeString(true) == "double" ) {
         return list ? QLatin1String("toDoubleList())") : QLatin1String("toDoubleList() << 0.0 ).first()");
     }
-    else if ( typeString() == "QDateTime" ) {
+    else if ( typeString(true) == "QDateTime" ) {
         return list ? QLatin1String("toDateTimeList())") : QLatin1String("toDateTimeList() << QDateTime() ).first()");
     }
-    else if ( typeString() == "QData" ) {
+    else if ( typeString(true) == "QDate" ) {
         return list ? QLatin1String("toDateList())") : QLatin1String("toDateList() << QDate() ).first()");
     }
-    else if ( typeString() == "QTime" ) {
+    else if ( typeString(true) == "QTime" ) {
         return list ? QLatin1String("toTimeList())") : QLatin1String("toTimeList() << QTime() ).first()");
     }
 
+    qDebug() << "Unknown type:" << typeString(true);
+    Q_ASSERT(0);
     return QString();
 }
 
@@ -576,7 +584,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
     s.replace( "NEPOMUK_PARENTRESOURCE", parent->name() );
 
     QString methods;
-    QString includes;
+    QStringList includes;
     QTextStream ms( &methods );
 
     QListIterator<const Property*> it( properties );
@@ -589,7 +597,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         }
 
         if ( !p->hasSimpleType() ) {
-            includes.append( QString( "#include \"%1.h\"\n" ).arg( p->typeString( true, false ).toLower() ) );
+            includes.append( QString( "#include \"%1.h\"" ).arg( p->typeString( true, false ).toLower() ) );
         }
 
         ms << p->getterDefinition( this ) << endl
@@ -620,7 +628,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
 
         ms << p->reversePropertyGetterDefinition( this ) << endl;
 
-        includes.append( QString( "#include \"%1\"\n" ).arg( p->domain->headerName() ) );
+        includes.append( QString( "#include \"%1\"" ).arg( p->domain->headerName() ) );
     }
 
     //
@@ -639,8 +647,12 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
 
     ms << allResourcesDefinition() << endl;
 
+    // HACK: remove duplicates and resource include
+    includes = includes.toSet().toList();
+    includes.removeAll( "#include \"resource.h\"" );
+
     s.replace( "NEPOMUK_METHODS", methods );
-    s.replace( "NEPOMUK_INCLUDES", includes );
+    s.replace( "NEPOMUK_INCLUDES", includes.join( "\n" ) );
 
     stream << s;
 
