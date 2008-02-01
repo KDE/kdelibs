@@ -33,7 +33,7 @@ class KShortcut;
 class KGlobalAccelPrivate
 {
 public:
-    KGlobalAccelPrivate();
+    KGlobalAccelPrivate(KGlobalAccel*);
 
     ///Propagate any shortcut changes to the KDED module that does the bookkeeping
     ///and the key grabbing.
@@ -49,7 +49,8 @@ public:
 
     void _k_invokeAction(const QStringList&);
     void _k_shortcutGotChanged(const QStringList&, const QList<int>&);
-    void _k_reRegisterAll();
+    void _k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner);
+    void reRegisterAll();
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
     QHash<QString, KAction *> nameToAction;
