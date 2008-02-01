@@ -21,8 +21,12 @@
 #include "outputdevicechoice.h"
 
 #include <QtCore/QList>
+#include <QtGui/QApplication>
+#include <QtGui/QPainter>
+#include <QtGui/QItemDelegate>
+#include <QtGui/QLabel>
+#include <QtGui/QVBoxLayout>
 #include <QtGui/QHeaderView>
-#include <QtGui/QPalette>
 
 #include <phonon/backendcapabilities.h>
 #include <phonon/objectdescription.h>
@@ -30,8 +34,14 @@
 #include "../libkaudiodevicelist/audiodeviceenumerator.h"
 #include "../libkaudiodevicelist/audiodevice.h"
 #include "../qsettingsgroup_p.h"
+#include "../globalconfig.h"
+#include "kwidgetblendanimation.h"
 
+#include <kdialog.h>
+#include <klistwidget.h>
 #include <klocale.h>
+#include <kmenu.h>
+#include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
@@ -46,7 +56,7 @@ using Phonon::QSettingsGroup;
 class CategoryItem : public QStandardItem {
     public:
         CategoryItem(Phonon::Category cat)
-            : QStandardItem(Phonon::categoryToString(cat)),
+            : QStandardItem(cat == Phonon::NoCategory ? i18n("Audio Output") : Phonon::categoryToString(cat)),
             m_cat(cat)
         {
         }
@@ -58,6 +68,109 @@ class CategoryItem : public QStandardItem {
         Phonon::Category m_cat;
 };
 
+class DeviceTreeDelegate : public QItemDelegate
+{
+    public:
+        DeviceTreeDelegate(QObject *parent = 0);
+        QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
+DeviceTreeDelegate::DeviceTreeDelegate(QObject *parent)
+    : QItemDelegate(parent)
+{
+}
+
+QSize DeviceTreeDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QVariant value = index.data(Qt::SizeHintRole);
+    if (value.isValid()) {
+        return qvariant_cast<QSize>(value);
+    }
+
+    QRect iconRect;
+    value = index.data(Qt::DecorationRole);
+    if (value.type() == QVariant::Icon) {
+        QIcon icon = qvariant_cast<QIcon>(value);
+        iconRect = QRect(QPoint(0, 0), icon.actualSize(option.decorationSize));
+    }
+
+    QRect textRect;
+    value = index.data(Qt::DisplayRole);
+    if (value.isValid()) {
+        QString text = value.toString();
+        const QSize size = option.fontMetrics.size(Qt::TextSingleLine, text);
+        const int textMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
+        textRect = QRect(0, 0, size.width() + 2 * textMargin, size.height());
+    }
+    QRect checkRect = rect(option, index, Qt::CheckStateRole);
+
+    doLayout(option, &checkRect, &iconRect, &textRect, true);
+
+    return (iconRect | textRect | checkRect).size();
+}
+
+void DeviceTreeDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItemV3 opt = setOptions(index, option);
+
+    const QStyleOptionViewItemV2 *v2 = qstyleoption_cast<const QStyleOptionViewItemV2 *>(&option);
+    const QStyleOptionViewItemV3 *v3 = qstyleoption_cast<const QStyleOptionViewItemV3 *>(&option);
+    opt.features = v2 ? v2->features : QStyleOptionViewItemV2::ViewItemFeatures(QStyleOptionViewItemV2::None);
+    opt.locale   = v3 ? v3->locale   : QLocale();
+    opt.widget   = v3 ? v3->widget   : 0;
+
+    painter->save();
+    // clip painter to the actual item - i.e. don't paint outside
+    painter->setClipRect(opt.rect);
+
+    QIcon icon;
+    QIcon::Mode mode = QIcon::Normal;
+    QIcon::State state = QIcon::Off;
+    QRect iconRect;
+    QVariant value = index.data(Qt::DecorationRole);
+    if (value.type() == QVariant::Icon) {
+        icon = qvariant_cast<QIcon>(value);
+        if (!(option.state & QStyle::State_Enabled)) {
+            mode = QIcon::Disabled;
+        } else if (option.state & QStyle::State_Selected) {
+            mode = QIcon::Selected;
+        }
+        if (option.state & QStyle::State_Open) {
+            state = QIcon::On;
+        }
+        iconRect = QRect(QPoint(0, 0), icon.actualSize(option.decorationSize, mode, state));
+    }
+
+    QString text;
+    QRect textRect;
+    value = index.data(Qt::DisplayRole);
+    if (value.isValid()) {
+        text = value.toString();
+        const QSize size = opt.fontMetrics.size(Qt::TextSingleLine, text);
+        const int textMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
+        textRect = QRect(0, 0, size.width() + 2 * textMargin, size.height());
+    }
+
+    QRect checkRect;
+    Qt::CheckState checkState = Qt::Unchecked;
+    value = index.data(Qt::CheckStateRole);
+    if (value.isValid()) {
+        checkState = static_cast<Qt::CheckState>(value.toInt());
+        checkRect = check(opt, opt.rect, value);
+    }
+
+    doLayout(opt, &checkRect, &iconRect, &textRect, false);
+
+    drawBackground(painter, opt, index);
+    drawCheck(painter, opt, checkRect, checkState);
+    icon.paint(painter, iconRect, option.decorationAlignment, mode, state);
+    drawDisplay(painter, opt, textRect, text);
+    drawFocus(painter, opt, textRect);
+
+    painter->restore();
+}
+
 /**
  * Need this to change the colors of the ListView if the Palette changed. With CSS set this won't
  * change automatically
@@ -66,19 +179,23 @@ void OutputDeviceChoice::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     if (e->type() == QEvent::PaletteChange) {
+        //deviceList->viewport()->setStyleSheet(deviceList->viewport()->styleSheet());
         deviceList->setStyleSheet(deviceList->styleSheet());
     }
 }
 
 OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+    m_headerModel(0, 1, 0)
 {
     setupUi(this);
+    deviceList->setItemDelegate(new DeviceTreeDelegate(deviceList));
     removeButton->setIcon(KIcon("list-remove"));
     deferButton->setIcon(KIcon("go-down"));
     preferButton->setIcon(KIcon("go-up"));
     deviceList->setDragDropMode(QAbstractItemView::InternalMove);
-    deviceList->setStyleSheet(QString("QListView {"
+    //deviceList->viewport()->setStyleSheet(QString("QWidget#qt_scrollarea_viewport {"
+    deviceList->setStyleSheet(QString("QTreeView {"
                 "background-color: palette(base);"
                 "background-image: url(%1);"
                 "background-position: bottom left;"
@@ -88,9 +205,10 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
             .arg(KStandardDirs::locate("data", "kcm_phonon/listview-background.png")));
     deviceList->setAlternatingRowColors(false);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
-    QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
+    QStandardItem *outputItem = new CategoryItem(Phonon::NoCategory);
+    m_outputModel[Phonon::NoCategory] = new Phonon::AudioOutputDeviceModel;
     outputItem->setEditable(false);
-    outputItem->setSelectable(false);
+    outputItem->setToolTip(i18n("Defines the default ordering of devices which can be overridden by individual categories."));
     parentItem->appendRow(outputItem);
     /*
     m_captureItem = new QStandardItem(i18n("Audio Capture"));
@@ -117,7 +235,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
             SIGNAL(currentChanged(const QModelIndex &,const QModelIndex &)),
             SLOT(updateDeviceList()));
 
-    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+    for (int i = -1; i <= Phonon::LastCategory; ++i) {
         connect(m_outputModel[i], SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SIGNAL(changed()));
         connect(m_outputModel[i], SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SIGNAL(changed()));
         connect(m_outputModel[i], SIGNAL(layoutChanged()), this, SIGNAL(changed()));
@@ -140,6 +258,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
 void OutputDeviceChoice::updateDeviceList()
 {
     QStandardItem *currentItem = m_categoryModel.itemFromIndex(categoryTree->currentIndex());
+    KWidgetBlendAnimation *animation = new KWidgetBlendAnimation(deviceList);
     if (deviceList->selectionModel()) {
         disconnect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
@@ -147,30 +266,40 @@ void OutputDeviceChoice::updateDeviceList()
     }
     if (currentItem->type() == 1001) {
         CategoryItem *catItem = static_cast<CategoryItem *>(currentItem);
-        deviceList->setModel(m_outputModel[catItem->category()]);
+        const Phonon::Category cat = catItem->category();
+        deviceList->setModel(m_outputModel[cat]);
+        if (cat == Phonon::NoCategory) {
+            m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Default Device Preference:"), Qt::DisplayRole);
+        } else {
+            m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Device Preference for the '%1' Category:", Phonon::categoryToString(cat)), Qt::DisplayRole);
+        }
         /*
     } else if (currentItem == m_captureItem) {
         deviceList->setModel(&m_captureModel);
         */
     } else {
+        m_headerModel.setHeaderData(0, Qt::Horizontal, QString(), Qt::DisplayRole);
         deviceList->setModel(0);
     }
+    deviceList->header()->setModel(&m_headerModel);
     updateButtonsEnabled();
     if (deviceList->selectionModel()) {
         connect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
                 this, SLOT(updateButtonsEnabled()));
     }
+    deviceList->resizeColumnToContents(0);
+    animation->start();
 }
 
 void OutputDeviceChoice::updateAudioOutputDevices()
 {
-    QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+    const QList<Phonon::AudioOutputDevice> list = availableAudioOutputDevices();
     QHash<int, Phonon::AudioOutputDevice> hash;
-    foreach (Phonon::AudioOutputDevice dev, list) {
+    foreach (const Phonon::AudioOutputDevice &dev, list) {
         hash.insert(dev.index(), dev);
     }
-    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+    for (int i = -1; i <= Phonon::LastCategory; ++i) {
         Phonon::AudioOutputDeviceModel *model = m_outputModel.value(i);
         Q_ASSERT(model);
 
@@ -198,6 +327,20 @@ void OutputDeviceChoice::updateAudioOutputDevices()
             model->setModelData(list);
         }
     }
+    deviceList->resizeColumnToContents(0);
+}
+
+QList<Phonon::AudioOutputDevice> OutputDeviceChoice::availableAudioOutputDevices() const
+{
+    QList<Phonon::AudioOutputDevice> ret;
+    const QList<int> deviceIndexes = Phonon::GlobalConfig().audioOutputDeviceListFor(Phonon::NoCategory,
+            showCheckBox->isChecked()
+            ? Phonon::GlobalConfig::ShowAdvancedDevices
+            : Phonon::GlobalConfig::HideAdvancedDevices);
+    foreach (int i, deviceIndexes) {
+        ret.append(Phonon::AudioOutputDevice::fromIndex(i));
+    }
+    return ret;
 }
 
 void OutputDeviceChoice::load()
@@ -205,22 +348,25 @@ void OutputDeviceChoice::load()
     QSettings phononConfig(QLatin1String("kde.org"), QLatin1String("libphonon"));
     QSettingsGroup outputDeviceGroup(&phononConfig, QLatin1String("AudioOutputDevice"));
     QSettingsGroup captureDeviceGroup(&phononConfig, QLatin1String("AudioCaptureDevice"));
+    QSettingsGroup generalGroup(&phononConfig, QLatin1String("General"));
+    showCheckBox->setChecked(!generalGroup.value(QLatin1String("HideAdvancedDevices"), true));
 
     // the following call returns ordered according to NoCategory
-    QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+    const QList<Phonon::AudioOutputDevice> list = availableAudioOutputDevices();
+    m_outputModel[Phonon::NoCategory]->setModelData(list);
+
     QHash<int, Phonon::AudioOutputDevice> hash;
-    foreach (Phonon::AudioOutputDevice dev, list) {
+    foreach (const Phonon::AudioOutputDevice &dev, list) {
         hash.insert(dev.index(), dev);
     }
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
         const QString configKey(QLatin1String("Category") + QString::number(i));
         if (!outputDeviceGroup.hasKey(configKey)) {
             m_outputModel[i]->setModelData(list); // use the NoCategory order
-            m_outputModel[i]->setProperty("dirty", false);
             continue;
         }
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
-        QList<int> order = outputDeviceGroup.value(configKey, QList<int>());
+        const QList<int> order = outputDeviceGroup.value(configKey, QList<int>());
         QList<Phonon::AudioOutputDevice> orderedList;
         foreach (int idx, order) {
             if (hashCopy.contains(idx)) {
@@ -252,21 +398,34 @@ void OutputDeviceChoice::load()
             }
         }
     }
-    foreach (Phonon::AudioCaptureDevice dev, list2) {
+    foreach (const Phonon::AudioCaptureDevice &dev, list2) {
         orderedList << dev;
     }
     m_captureModel.setModelData(orderedList);
     */
+
+    deviceList->resizeColumnToContents(0);
 }
 
 void OutputDeviceChoice::save()
 {
     QSettings config(QLatin1String("kde.org"), QLatin1String("libphonon"));
     {
+        QSettingsGroup generalGroup(&config, QLatin1String("General"));
+        generalGroup.setValue(QLatin1String("HideAdvancedDevices"), !showCheckBox->isChecked());
+    }
+    {
         QSettingsGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
+        const QList<int> noCategoryOrder = m_outputModel.value(Phonon::NoCategory)->tupleIndexOrder();
+        globalGroup.setValue(QLatin1String("Category") + QString::number(Phonon::NoCategory), noCategoryOrder);
         for (int i = 0; i <= Phonon::LastCategory; ++i) {
-            if (m_outputModel.value(i)) {
-                globalGroup.setValue(QLatin1String("Category") + QString::number(i), m_outputModel.value(i)->tupleIndexOrder());
+            Phonon::AudioOutputDeviceModel *model = m_outputModel.value(i);
+            Q_ASSERT(model);
+            const QList<int> order = m_outputModel.value(i)->tupleIndexOrder();
+            if (order == noCategoryOrder) {
+                globalGroup.removeEntry(QLatin1String("Category") + QString::number(i));
+            } else {
+                globalGroup.setValue(QLatin1String("Category") + QString::number(i), order);
             }
         }
     }
@@ -280,8 +439,8 @@ void OutputDeviceChoice::save()
 
 void OutputDeviceChoice::defaults()
 {
-    QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
-    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+    QList<Phonon::AudioOutputDevice> list = availableAudioOutputDevices();
+    for (int i = -1; i <= Phonon::LastCategory; ++i) {
         m_outputModel[i]->setModelData(list);
     }
 
@@ -289,6 +448,8 @@ void OutputDeviceChoice::defaults()
     QList<Phonon::AudioCaptureDevice> list2 = Phonon::BackendCapabilities::availableAudioCaptureDevices();
     m_captureModel.setModelData(list2);
     */
+
+    deviceList->resizeColumnToContents(0);
 }
 
 void OutputDeviceChoice::on_preferButton_clicked()
@@ -315,13 +476,13 @@ void OutputDeviceChoice::on_deferButton_clicked()
 
 void OutputDeviceChoice::on_removeButton_clicked()
 {
-    QModelIndex idx = deviceList->currentIndex();
+    const QModelIndex idx = deviceList->currentIndex();
 
     QAbstractItemModel *model = deviceList->model();
     Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel *>(model);
     if (playbackModel && idx.isValid()) {
-        Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
-        QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availablePlaybackDevices();
+        const Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
+        const QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availablePlaybackDevices();
         foreach (Phonon::AudioDevice dev, deviceList) {
             if (dev.index() == deviceToRemove.index()) {
                 // remove from persistent store
@@ -360,6 +521,100 @@ void OutputDeviceChoice::on_removeButton_clicked()
         }
         */
     }
+
+    deviceList->resizeColumnToContents(0);
+}
+
+void operator++(Phonon::Category &c)
+{
+    c = static_cast<Phonon::Category>(1 + static_cast<int>(c));
+}
+
+void OutputDeviceChoice::on_applyPreferencesButton_clicked()
+{
+    const QModelIndex idx = categoryTree->currentIndex();
+    const QStandardItem *item = m_categoryModel.itemFromIndex(idx);
+    Q_ASSERT(item->type() == 1001);
+    const CategoryItem *catItem = static_cast<const CategoryItem *>(item);
+    const QList<Phonon::AudioOutputDevice> modelData = m_outputModel.value(catItem->category())->modelData();
+
+    KDialog dialog(this);
+    dialog.setButtons(KDialog::Ok | KDialog::Cancel);
+    dialog.setDefaultButton(KDialog::Ok);
+
+    QWidget mainWidget(&dialog);
+    dialog.setMainWidget(&mainWidget);
+
+    QLabel label(&mainWidget);
+    label.setText(i18n("Apply the currently shown device preference list to the following other "
+                "audio output categories:"));
+    label.setWordWrap(true);
+
+    KListWidget list(&mainWidget);
+    for (Phonon::Category cat = Phonon::NoCategory; cat <= Phonon::LastCategory; ++cat) {
+        QListWidgetItem *item = new QListWidgetItem(cat == Phonon::NoCategory
+                ? i18n("Default/Unspecified Category") : Phonon::categoryToString(cat), &list, cat);
+        item->setCheckState(Qt::Checked);
+        if (cat == catItem->category()) {
+            item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+        }
+    }
+
+    QVBoxLayout layout(&mainWidget);
+    layout.setMargin(0);
+    layout.addWidget(&label);
+    layout.addWidget(&list);
+
+    switch (dialog.exec()) {
+    case QDialog::Accepted:
+        for (Phonon::Category cat = Phonon::NoCategory; cat <= Phonon::LastCategory; ++cat) {
+            if (cat != catItem->category()) {
+                QListWidgetItem *item = list.item(static_cast<int>(cat) + 1);
+                Q_ASSERT(item->type() == cat);
+                if (item->checkState() == Qt::Checked) {
+                    m_outputModel.value(cat)->setModelData(modelData);
+                }
+            }
+        }
+        break;
+    case QDialog::Rejected:
+        // nothing to do
+        break;
+    }
+}
+
+void OutputDeviceChoice::on_showCheckBox_toggled()
+{
+    // the following call returns ordered according to NoCategory
+    const QList<Phonon::AudioOutputDevice> list = availableAudioOutputDevices();
+    m_outputModel[Phonon::NoCategory]->setModelData(list);
+
+    QHash<int, Phonon::AudioOutputDevice> hash;
+    foreach (const Phonon::AudioOutputDevice &dev, list) {
+        hash.insert(dev.index(), dev);
+    }
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
+        const QList<int> order = m_outputModel[i]->tupleIndexOrder();
+        QList<Phonon::AudioOutputDevice> orderedList;
+        foreach (int idx, order) {
+            if (hashCopy.contains(idx)) {
+                orderedList << hashCopy.take(idx);
+            }
+        }
+        if (hashCopy.size() > 1) {
+            // keep the order of the original list
+            foreach (const Phonon::AudioOutputDevice &dev, list) {
+                if (hashCopy.contains(dev.index())) {
+                    orderedList << hashCopy.take(dev.index());
+                }
+            }
+        } else if (hashCopy.size() == 1) {
+            orderedList += hashCopy.values();
+        }
+        m_outputModel[i]->setModelData(orderedList);
+    }
+    deviceList->resizeColumnToContents(0);
 }
 
 void OutputDeviceChoice::updateButtonsEnabled()
@@ -378,5 +633,5 @@ void OutputDeviceChoice::updateButtonsEnabled()
     }
 }
 
-#include "outputdevicechoice.moc"
+#include "moc_outputdevicechoice.cpp"
 // vim: sw=4 ts=4

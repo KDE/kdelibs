@@ -1,6 +1,6 @@
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid)
 
-set(kcmphonon_SRCS main.cpp outputdevicechoice.cpp backendselection.cpp)
+set(kcmphonon_SRCS main.cpp kwidgetblendanimation.cpp outputdevicechoice.cpp backendselection.cpp ../globalconfig.cpp)
 kde4_add_ui_files(kcmphonon_SRCS outputdevicechoice.ui backendselection.ui)
 
 kde4_add_plugin(kcm_phonon ${kcmphonon_SRCS})

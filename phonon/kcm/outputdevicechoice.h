@@ -27,6 +27,7 @@
 #include <QtGui/QStandardItem>
 #include <QtCore/QMap>
 #include <QtCore/QList>
+class QLabel;
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
@@ -47,15 +48,20 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         void on_preferButton_clicked();
         void on_deferButton_clicked();
         void on_removeButton_clicked();
+        void on_showCheckBox_toggled();
+        void on_applyPreferencesButton_clicked();
         void updateButtonsEnabled();
         void updateDeviceList();
         void updateAudioOutputDevices();
 
     private:
+        QList<Phonon::AudioOutputDevice> availableAudioOutputDevices() const;
         QMap<int, Phonon::AudioOutputDeviceModel *> m_outputModel;
         //Phonon::AudioCaptureDeviceModel m_captureModel;
         QStandardItemModel m_categoryModel;
         //QStandardItem *m_captureItem;
+        QStandardItemModel m_headerModel;
+        bool m_noCategoryChangeEventQueued;
 };
 
 #endif // OUTPUTDEVICECHOICE_H_STUPID_UIC
