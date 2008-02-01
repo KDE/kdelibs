@@ -141,7 +141,7 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
             libPath += suffix;
             const QDir dir(libPath);
             foreach (const QString &pluginName, dir.entryList(libFilter, QDir::Files)) {
-                QPluginLoader pluginLoader(pluginName);
+                QPluginLoader pluginLoader(libPath + pluginName);
                 backend = pluginLoader.instance();
                 if (backend) {
                     break;
