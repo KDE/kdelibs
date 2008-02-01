@@ -61,19 +61,22 @@
 
 //TODO what was the problem that got fixed recently in the old version? - forward port if necessary
 
-KGlobalAccelPrivate::KGlobalAccelPrivate()
+KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
      : isUsingForeignComponentName(false),
        enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
 {
     // Make sure kded is running
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered("org.kde.kded")) {
         KToolInvocation::klauncher(); // this calls startKdeinit
     }
+    QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+            q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
 }
 
 KGlobalAccel::KGlobalAccel()
-    : d(new KGlobalAccelPrivate)
+    : d(new KGlobalAccelPrivate(this))
 {
     qDBusRegisterMetaType<QList<int> >();
 
@@ -274,8 +277,16 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
     action->d->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
 }
 
+void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner)
+{
+    Q_UNUSED(oldOwner);
+    if (name == QLatin1String("org.kde.kded") && !newOwner.isEmpty()) {
+        // kded was restarted (what? you mean it crashes sometimes?)
+        reRegisterAll();
+    }
+}
 
-void KGlobalAccelPrivate::_k_reRegisterAll()
+void KGlobalAccelPrivate::reRegisterAll()
 {
     //### Special case for isUsingForeignComponentName?
 
