@@ -96,7 +96,7 @@ public:
 
 
 
-KSSLD::KSSLD(QObject* parent, const QList<QVariant>&)
+KSSLD::KSSLD(QObject* parent, const QVariantList&)
  : KDEDModule(parent),
    d(new KSSLDPrivate())
 {

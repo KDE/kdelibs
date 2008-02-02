@@ -37,7 +37,7 @@ class KSSLD : public KDEDModule
 {
     Q_OBJECT
 public:
-    KSSLD(QObject *parent, const QList<QVariant> &);
+    KSSLD(QObject *parent, const QVariantList &);
     ~KSSLD();
 
     void setRule(const KSslCertificateRule &rule);
