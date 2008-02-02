@@ -21,7 +21,7 @@
 #include "ontologyparser.h"
 
 
-bool quiet = false;
+bool quiet = true;
 
 static int usage()
 {
@@ -100,8 +100,8 @@ int main( int argc, char** argv )
                 }
                 targetDir = paramArgs.first();
             }
-            else if ( arg == "--quiet" ) {
-                quiet = true;
+            else if ( arg == "--verbose" ) {
+                quiet = false;
             }
             else {
                 return usage();
