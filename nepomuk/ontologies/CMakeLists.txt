@@ -1,5 +1,6 @@
 configure_file(nrl.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/nrl.desktop)
 configure_file(nao.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/nao.desktop)
+configure_file(nie.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/nie.desktop)
 configure_file(nfo.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/nfo.desktop)
 configure_file(rdf.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/rdf.desktop)
 configure_file(rdfs.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/rdfs.desktop)
@@ -14,7 +15,9 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/nrl.desktop
   nao.trig
   ${CMAKE_CURRENT_BINARY_DIR}/nao.desktop
-  nfo.rdfs
+  nie.trig
+  ${CMAKE_CURRENT_BINARY_DIR}/nie.desktop
+  nfo.trig
   ${CMAKE_CURRENT_BINARY_DIR}/nfo.desktop
   rdf.rdfs
   ${CMAKE_CURRENT_BINARY_DIR}/rdf.desktop
