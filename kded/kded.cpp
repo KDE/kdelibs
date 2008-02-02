@@ -287,12 +287,14 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
             factoryName = "create_" + factoryName;
             KLibrary* lib = KLibLoader::self()->library(libname);
             KDEDModule* (*create)();
-            create = (KDEDModule* (*)())lib->resolveFunction(QFile::encodeName(factoryName));
-            if (create)
-                module = create();
+            if (lib) {
+                create = (KDEDModule* (*)())lib->resolveFunction(QFile::encodeName(factoryName));
+                if (create)
+                    module = create();
+            }
             if (!module) {
-                kWarning() << "Could not load library. [ "
-                           << loader.errorString() << " ]";
+                kWarning() << "Could not load library" << libname << ". ["
+                           << loader.errorString() << "]";
             }
         } else {
             // create the module
