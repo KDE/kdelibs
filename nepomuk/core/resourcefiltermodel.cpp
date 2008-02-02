@@ -194,9 +194,9 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeGraphIfEmpty( cons
     Soprano::Error::ErrorCode c = Error::ErrorNone;
 
     // metadata graphs contain type information about themselves. They do not count as "real" content.
-    if ( executeQuery( QString("ask where { graph <%1> { ?s ?p ?o . } . FILTER(?s != <%1>) .}")
-                              .arg( QString::fromAscii( graph.uri().toEncoded() ) ),
-                              Query::QueryLanguageSparql ).boolValue() ) {
+    if ( !executeQuery( QString("ask where { graph <%1> { ?s ?p ?o . } . FILTER(?s != <%1>) .}")
+                        .arg( QString::fromAscii( graph.uri().toEncoded() ) ),
+                        Query::QueryLanguageSparql ).boolValue() ) {
 
         // remove the graph itself (do not use the direct call which will result in a recursion)
         if ( ( c = parentModel()->removeContext( graph ) ) != Error::ErrorNone ) {
