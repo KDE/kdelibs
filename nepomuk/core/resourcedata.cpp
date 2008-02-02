@@ -79,7 +79,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_proxyData(0),
       m_cacheDirty(true)
 {
-    if( m_mainType.isEmpty() && !( uriOrId.isEmpty() && uri.isEmpty() ) )
+    if( m_mainType.isEmpty() )
         m_mainType = Soprano::Vocabulary::RDFS::Resource();
 
     m_types << m_mainType;
@@ -450,7 +450,7 @@ bool Nepomuk::ResourceData::isValid() const
         return m_proxyData->isValid();
 
     // FIXME: check namespaces and stuff
-    return( !m_mainType.isEmpty() );
+    return( !m_mainType.isEmpty() && ( !m_uri.isEmpty() || !m_kickoffIdentifier.isEmpty() ) );
 }
 
 
@@ -459,7 +459,15 @@ bool Nepomuk::ResourceData::determineUri()
     if( m_proxyData )
         return m_proxyData->determineUri();
 
-    if( m_uri.isEmpty() ) {
+    if ( m_uri.isEmpty() && m_kickoffIdentifier.isEmpty() ) {
+        // create a random URI and add us to the initialized data, i.e. make us "valid"
+        m_modificationMutex.lock();
+        m_uri = ResourceManager::instance()->generateUniqueUri();
+        initializedData()->insert( m_uri.toString(), this );
+        m_modificationMutex.unlock();
+    }
+
+    else if( m_uri.isEmpty() ) {
         Q_ASSERT( !m_kickoffUriOrId.isEmpty() );
 
         m_modificationMutex.lock();
@@ -623,7 +631,7 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
 Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl& type )
 {
     if ( uri.isEmpty() ) {
-        return 0;
+        return new ResourceData( uri, QString(), type );
     }
 
     // default to "file" scheme, i.e. we do not allow an empty scheme
@@ -660,7 +668,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
 Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, const QUrl& type )
 {
     if ( uriOrId.isEmpty() ) {
-        return 0;
+        return new ResourceData( QUrl(), QString(), type );
     }
 
     // special case: files (only absolute paths for now)

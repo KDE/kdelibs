@@ -37,8 +37,8 @@
 
 
 Nepomuk::Resource::Resource()
-    : m_data( 0 )
 {
+    m_data = ResourceData::data( QUrl(), QUrl() );
 }
 
 

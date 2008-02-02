@@ -68,7 +68,9 @@ namespace Nepomuk {
     {
     public:
         /**
-         * Creates an empty invalid Resource
+         * Creates an empty invalid Resource.
+         * An invalid resource will become valid (i.e. get a new random URI) once setProperty
+         * is called.
          */
         Resource();
 
@@ -285,6 +287,9 @@ namespace Nepomuk {
         /**
          * \return true if this Resource object is valid, i.e. has a proper URI and type and
          * can be synced with the local NEPOMUK RDF store.
+         *
+         * An invalid resource will become valid (i.e. get a new random URI) once setProperty
+         * is called.
          */
         bool isValid() const;
 
