@@ -101,7 +101,7 @@ KSSLD::KSSLD(QObject* parent, const QList<QVariant>&)
    d(new KSSLDPrivate())
 {
     new KSSLDAdaptor(this);
-    QDBusConnection::sessionBus().registerObject("/KdedGlobalAccel", this);
+    QDBusConnection::sessionBus().registerObject("/KdedKssl", this);
 }
 
 
