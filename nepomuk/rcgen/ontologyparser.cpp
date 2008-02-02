@@ -26,6 +26,8 @@
 #include <QtCore/QDir>
 
 
+extern bool quiet;
+
 
 class OntologyParser::Private
 {
@@ -91,11 +93,13 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
              it != d->resources.end(); ++it ) {
             // we use startsWith() for a hackish handling of such suffixes as ".in"
             if( filename.startsWith( it.value().headerName() ) ) {
-                qDebug() << "Using header template file " << tf << " for class " << it.value().name();
+                if ( !quiet )
+                    qDebug() << "Using header template file " << tf << " for class " << it.value().name();
                 it.value().headerTemplateFilePath = tf;
             }
             else if( filename.startsWith( it.value().sourceName() ) ) {
-                qDebug() << "Using source template file " << tf << " for class " << it.value().name();
+                if ( !quiet )
+                    qDebug() << "Using source template file " << tf << " for class " << it.value().name();
                 it.value().sourceTemplateFilePath = tf;
             }
         }
@@ -119,7 +123,8 @@ bool OntologyParser::parse( const QString& filename )
         return false;
     }
 
-    qDebug() << "(OntologyParser) Parsing " << filename << endl;
+    if ( !quiet )
+        qDebug() << "(OntologyParser) Parsing " << filename << endl;
 
     // get the namespaces the hacky way
     QFile f( filename );
@@ -128,7 +133,8 @@ bool OntologyParser::parse( const QString& filename )
         QRegExp nsr( "xmlns:(\\S*)=\"(\\S*\\#)\"" );
         int pos = 0;
         while( ( pos = s.indexOf( nsr, pos+1 ) ) > 0 ) {
-            qDebug() << "Found namespace abbrevation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
+            if ( !quiet )
+                qDebug() << "Found namespace abbrevation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
             d->namespaceAbbr.insert( nsr.cap(1), nsr.cap(2) );
         }
     }
@@ -181,7 +187,8 @@ bool OntologyParser::parse( const QString& filename )
          propIt != d->properties.end(); ++propIt ) {
         Property& p = propIt.value();
         if( d->resources.contains( p.type ) ) {
-            qDebug() << "Setting reverse property " << p.uri << " on type " << p.type << endl;
+            if ( !quiet )
+                qDebug() << "Setting reverse property " << p.uri << " on type " << p.type << endl;
             if ( !d->resources[p.type].reverseProperties.contains( &p ) )
                 d->resources[p.type].reverseProperties.append( &p );
         }
@@ -208,18 +215,20 @@ bool OntologyParser::parse( const QString& filename )
         if( !it->parent ) {
             it->parent = &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
         }
-        qDebug() << "Resource: " << (*it).name()
-                 << "[" << (*it).uri << "]"
-                 << " (->" << (*it).parent->name() << ")"
-                 << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
-                 << endl;
+        if ( !quiet )
+            qDebug() << "Resource: " << (*it).name()
+                     << "[" << (*it).uri << "]"
+                     << " (->" << (*it).parent->name() << ")"
+                     << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
+                     << endl;
 
         Q_ASSERT( d->resources.count( it.key() ) == 1 );
 
         QListIterator<const Property*> propIt( (*it).properties );
         while( propIt.hasNext() ) {
             const Property* p = propIt.next();
-            qDebug() << "          " << p->uri << " (->" << p->type << ")" << ( p->list ? QString("+") : QString("1") ) << endl;
+            if ( !quiet )
+                qDebug() << "          " << p->uri << " (->" << p->type << ")" << ( p->list ? QString("+") : QString("1") ) << endl;
         }
     }
 

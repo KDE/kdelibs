@@ -23,6 +23,8 @@
 #include <QtCore/QStringList>
 
 
+extern bool quiet;
+
 
 static const QString s_typeComment =
 "    // We always store all Resource types as plain Resource objects.\n"
@@ -278,8 +280,9 @@ QString Property::typeConversionMethod() const
         return list ? QLatin1String("toTimeList())") : QLatin1String("toTimeList() << QTime() ).first()");
     }
 
-    qDebug() << "Unknown type:" << typeString(true);
-    Q_ASSERT(0);
+    if ( !quiet )
+        qDebug() << "Unknown type:" << typeString(true);
+
     return QString();
 }
 
@@ -476,7 +479,8 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         const Property* p = it.next();
 
         if( p->type.isEmpty() ) {
-            qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+            if ( !quiet )
+                qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
             continue;
         }
 
@@ -508,7 +512,8 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         const Property* p = it.next();
 
         if( p->type.isEmpty() ) {
-            qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+            if ( !quiet )
+                qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
             continue;
         }
 
@@ -592,7 +597,8 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         const Property* p = it.next();
 
         if( p->type.isEmpty() ) {
-            qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+            if ( !quiet )
+                qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
             continue;
         }
 
@@ -617,7 +623,8 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         const Property* p = it.next();
 
         if( p->type.isEmpty() ) {
-            qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
+            if ( !quiet )
+                qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
             continue;
         }
 

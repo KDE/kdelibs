@@ -21,6 +21,8 @@
 #include "ontologyparser.h"
 
 
+bool quiet = false;
+
 static int usage()
 {
     QTextStream( stderr, QIODevice::WriteOnly )
@@ -98,6 +100,9 @@ int main( int argc, char** argv )
                 }
                 targetDir = paramArgs.first();
             }
+            else if ( arg == "--quiet" ) {
+                quiet = true;
+            }
             else {
                 return usage();
             }
@@ -133,7 +138,6 @@ int main( int argc, char** argv )
             return usage();
         }
 
-        qDebug() << "Writing sources to " << targetDir << endl;
         if( !prsr.writeSources( targetDir ) ) {
             qDebug() << "Writing sources to " << targetDir << " failed." << endl;
             return usage();

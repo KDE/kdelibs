@@ -104,7 +104,7 @@ static const QString sourceTemplate = gplTemplate +
 "NEPOMUK_INCLUDES"
 "\n"
 "Nepomuk::NEPOMUK_RESOURCENAME::NEPOMUK_RESOURCENAME()\n"
-"  : NEPOMUK_PARENTRESOURCE()\n"
+"  : NEPOMUK_PARENTRESOURCE( QUrl(), QUrl::fromEncoded(\"NEPOMUK_RESOURCETYPEURI\") )\n"
 "{\n"
 "}\n"
 "\n"
