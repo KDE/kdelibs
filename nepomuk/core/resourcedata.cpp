@@ -363,7 +363,8 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
         if ( value.simpleType() == qMetaTypeId<Resource>() ) {
             QList<Resource> l = value.toResourceList();
             for( QList<Resource>::iterator resIt = l.begin(); resIt != l.end(); ++resIt ) {
-                (*resIt).m_data->store();
+                if ( resIt->isValid() )
+                    resIt->m_data->store();
             }
         }
 
