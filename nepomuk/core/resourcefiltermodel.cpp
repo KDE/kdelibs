@@ -173,7 +173,7 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeAllStatements( con
     Soprano::Error::ErrorCode c = FilterModel::removeAllStatements( statement );
 
     // remove dangling graphs
-    if ( c != Error::ErrorNone ) {
+    if ( c == Error::ErrorNone ) {
         for ( QList<Statement>::const_iterator it = statementsToRemove.constBegin(); it != statementsToRemove.constEnd(); ++it ) {
             if ( ( c = removeGraphIfEmpty( (*it).context() ) ) != Error::ErrorNone ) {
                 return c;
