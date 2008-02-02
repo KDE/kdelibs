@@ -5,222 +5,152 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
-    <height>192</height>
+    <width>433</width>
+    <height>190</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" >
-   <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
-      <number>6</number>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" >
+    <widget class="QCheckBox" name="Sound_check" >
+     <property name="text" >
+      <string>Play a &amp;sound</string>
      </property>
-     <property name="leftMargin" >
-      <number>0</number>
-     </property>
-     <property name="topMargin" >
-      <number>0</number>
-     </property>
-     <property name="rightMargin" >
-      <number>0</number>
-     </property>
-     <property name="bottomMargin" >
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QCheckBox" name="Sound_check" >
-       <property name="text" >
-        <string>Play a &amp;sound</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="Sound_play" >
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
-       <property name="text" >
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="KUrlRequester" native="1" name="Sound_select" >
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip" >
-        <string>Select the sound to play</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
-   <item>
+   <item row="0" column="1" >
+    <widget class="QToolButton" name="Sound_play" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+     <property name="text" >
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2" colspan="2" >
+    <widget class="KUrlRequester" name="Sound_select" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip" >
+      <string>Select the sound to play</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="4" >
     <widget class="QCheckBox" name="Popup_check" >
      <property name="text" >
       <string>Show a message in a &amp;popup</string>
      </property>
     </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
-      <number>6</number>
+   <item row="2" column="0" >
+    <widget class="QCheckBox" name="Logfile_check" >
+     <property name="text" >
+      <string>Log to a file</string>
      </property>
-     <property name="leftMargin" >
-      <number>0</number>
-     </property>
-     <property name="topMargin" >
-      <number>0</number>
-     </property>
-     <property name="rightMargin" >
-      <number>0</number>
-     </property>
-     <property name="bottomMargin" >
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QCheckBox" name="Logfile_check" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text" >
-        <string>Log to a file</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="KUrlRequester" native="1" name="Logfile_select" >
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip" >
-        <string>Select the sound to play</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
-   <item>
+   <item row="2" column="1" colspan="3" >
+    <widget class="KUrlRequester" name="Logfile_select" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip" >
+      <string>Select the sound to play</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4" >
     <widget class="QCheckBox" name="Taskbar_check" >
      <property name="text" >
       <string>Mark &amp;taskbar entry</string>
      </property>
     </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" >
-     <property name="spacing" >
-      <number>6</number>
+   <item row="4" column="0" >
+    <widget class="QCheckBox" name="Execute_check" >
+     <property name="text" >
+      <string>Run &amp;command</string>
      </property>
-     <property name="leftMargin" >
-      <number>0</number>
-     </property>
-     <property name="topMargin" >
-      <number>0</number>
-     </property>
-     <property name="rightMargin" >
-      <number>0</number>
-     </property>
-     <property name="bottomMargin" >
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QCheckBox" name="Execute_check" >
-       <property name="text" >
-        <string>Run &amp;command</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="KUrlRequester" native="1" name="Execute_select" >
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip" >
-        <string>Select the command to run</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" >
+   <item row="4" column="1" colspan="3" >
+    <widget class="KUrlRequester" name="Execute_select" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip" >
+      <string>Select the command to run</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" >
+    <widget class="QCheckBox" name="KTTS_check" >
+     <property name="text" >
+      <string>Sp&amp;eech</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="2" >
+    <widget class="QComboBox" name="KTTS_combo" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="whatsThis" >
+      <string>&lt;qt>Specifies how KTTS should speak the event when received.  If you select "Speak custom text", enter the text in the box.  You may use the following substitution strings in the text:&lt;dl>&lt;dt>%e&lt;/dt>&lt;dd>Name of the event&lt;/dd>&lt;dt>%a&lt;/dt>&lt;dd>Application that sent the event&lt;/dd>&lt;dt>%m&lt;/dt>&lt;dd>The message sent by the application&lt;/dd>&lt;/dl>&lt;/qt></string>
+     </property>
      <item>
-      <widget class="QCheckBox" name="KTTS_check" >
-       <property name="text" >
-        <string>Sp&amp;eech</string>
-       </property>
-      </widget>
+      <property name="text" >
+       <string>Speak event message</string>
+      </property>
      </item>
      <item>
-      <widget class="QComboBox" name="KTTS_combo" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="whatsThis" >
-        <string>&lt;qt>Specifies how KTTS should speak the event when received.  If you select "Speak custom text", enter the text in the box.  You may use the following substitution strings in the text:&lt;dl>&lt;dt>%e&lt;/dt>&lt;dd>Name of the event&lt;/dd>&lt;dt>%a&lt;/dt>&lt;dd>Application that sent the event&lt;/dd>&lt;dt>%m&lt;/dt>&lt;dd>The message sent by the application&lt;/dd>&lt;/dl>&lt;/qt></string>
-       </property>
-       <item>
-        <property name="text" >
-         <string>Speak event message</string>
-        </property>
-       </item>
-       <item>
-        <property name="text" >
-         <string>Speak event name</string>
-        </property>
-       </item>
-       <item>
-        <property name="text" >
-         <string>Speak custom text</string>
-        </property>
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
-       </item>
-      </widget>
+      <property name="text" >
+       <string>Speak event name</string>
+      </property>
      </item>
      <item>
-      <widget class="QLineEdit" name="KTTS_select" >
-       <property name="whatsThis" >
-        <string>&lt;qt>Specifies how KTTS should speak the event when received.  If you select "Speak custom text", enter the text in the box.  You may use the following substitution strings in the text:&lt;dl>&lt;dt>%e&lt;/dt>&lt;dd>Name of the event&lt;/dd>&lt;dt>%a&lt;/dt>&lt;dd>Application that sent the event&lt;/dd>&lt;dt>%m&lt;/dt>&lt;dd>The message sent by the application&lt;/dd>&lt;/dl>&lt;/qt></string>
-       </property>
-      </widget>
+      <property name="text" >
+       <string>Speak custom text</string>
+      </property>
      </item>
-    </layout>
+    </widget>
+   </item>
+   <item row="5" column="3" >
+    <widget class="QLineEdit" name="KTTS_select" >
+     <property name="whatsThis" >
+      <string>&lt;qt>Specifies how KTTS should speak the event when received.  If you select "Speak custom text", enter the text in the box.  You may use the following substitution strings in the text:&lt;dl>&lt;dt>%e&lt;/dt>&lt;dd>Name of the event&lt;/dd>&lt;dt>%a&lt;/dt>&lt;dd>Application that sent the event&lt;/dd>&lt;dt>%m&lt;/dt>&lt;dd>The message sent by the application&lt;/dd>&lt;/dl>&lt;/qt></string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
    <class>KUrlRequester</class>
-   <extends>QWidget</extends>
+   <extends>QFrame</extends>
    <header>kurlrequester.h</header>
    <container>1</container>
   </customwidget>
