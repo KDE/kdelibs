@@ -459,7 +459,7 @@ bool Nepomuk::ResourceData::determineUri()
     if( m_proxyData )
         return m_proxyData->determineUri();
 
-    if ( m_uri.isEmpty() && m_kickoffIdentifier.isEmpty() ) {
+    if ( m_uri.isEmpty() && m_kickoffUriOrId.isEmpty() ) {
         // create a random URI and add us to the initialized data, i.e. make us "valid"
         m_modificationMutex.lock();
         m_uri = ResourceManager::instance()->generateUniqueUri();
@@ -631,6 +631,7 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
 Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl& type )
 {
     if ( uri.isEmpty() ) {
+        // return an invalid resource which may be activated by calling setProperty
         return new ResourceData( uri, QString(), type );
     }
 
