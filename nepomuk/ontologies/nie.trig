@@ -316,7 +316,7 @@ nie: {nie:characterSet
           nrl:inverseProperty nie:isLogicalPartOf .
 }
 
-<http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#> {nie:  a       "http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#Ontology" ;
+<http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#> {nie:  a  <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#Ontology> ;
           nao:creator "http://www.dfki.uni-kl.de/~mylka" ;
           nao:hasDefaultNamespace
                   "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#" ;
