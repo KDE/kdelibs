@@ -340,7 +340,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst ) {
             KUriFilterPlugin* plugin = findPluginByName( d->lstPlugins, *lst );
             if (plugin) {
-                //kDebug() << "Will use filter plugin named: " << plugin->name();
+                //kDebug() << "Will use filter plugin named: " << plugin->objectName();
                 use_plugins.append(plugin);
             }
         }
@@ -351,7 +351,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     bool filtered = false;
     for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
           it != end; ++it ) {
-        //kDebug() << "Using a filter plugin named: " << (*it)->name();
+        //kDebug() << "Using a filter plugin named: " << (*it)->objectName();
         if( (*it)->filterUri( data ))
             filtered = true;
     }
