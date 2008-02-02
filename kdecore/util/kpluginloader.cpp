@@ -146,11 +146,9 @@ KPluginFactory *KPluginLoader::factory()
     if (!isLoaded())
         return 0;
 
-    KPluginFactory *factory;
 
     if (d->lib) {
-        factory = d->lib->factory(d->name.toUtf8());
-        return factory;
+        return d->lib->factory(d->name.toUtf8());
     }
 
     QObject *obj = instance();
@@ -158,7 +156,7 @@ KPluginFactory *KPluginLoader::factory()
     if (!obj)
         return 0;
 
-    factory = qobject_cast<KPluginFactory *>(obj);
+    KPluginFactory *factory = qobject_cast<KPluginFactory *>(obj);
 
     if (factory == 0) {
         delete obj;
