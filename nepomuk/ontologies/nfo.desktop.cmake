@@ -65,5 +65,5 @@ Comment[zh_CN]=Nepomuk 文件实体定义了基本文件类型
 Comment[zh_TW]=Nepomuk File Ontology 定義基本的檔案型態
 URL=http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#
 Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/nfo.trug
-MimeType=application/trig
+MimeType=application/x-trig
 Type=Data
