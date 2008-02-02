@@ -81,6 +81,7 @@ public:
     int hideCursorDelay;
 
 private Q_SLOTS:
+    void slotViewportDestroyed(QObject *);
     void slotWidgetDestroyed( QObject* );
 
 private:
