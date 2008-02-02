@@ -378,8 +378,10 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
             return;
         KCursorPrivateAutoHideEventFilter* filter = new KCursorPrivateAutoHideEventFilter( w );
         m_eventFilters.insert( w, filter );
-        if (viewport)
+        if (viewport) {
             m_eventFilters.insert( viewport, filter );
+            connect(viewport, SIGNAL(destroyed(QObject *)), this, SLOT(slotViewportDestroyed(QObject *)));
+        }
         if ( !customEventFilter ) {
             w->installEventFilter( filter ); // for key events
             if (viewport)
@@ -396,6 +398,7 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
         w->removeEventFilter( filter );
         if (viewport) {
             m_eventFilters.remove( viewport );
+            disconnect(viewport, SIGNAL(destroyed(QObject *)), this, SLOT(slotViewportDestroyed(QObject *)));
             viewport->removeEventFilter( filter );
         }
         delete filter;
@@ -416,6 +419,11 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
         return false;
 
     return filter->eventFilter( o, e );
+}
+
+void KCursorPrivate::slotViewportDestroyed(QObject *o)
+{
+    m_eventFilters.remove(o);
 }
 
 void KCursorPrivate::slotWidgetDestroyed( QObject* o )
