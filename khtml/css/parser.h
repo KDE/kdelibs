@@ -162,7 +162,7 @@ typedef union YYSTYPE
     Value value;
     ValueList *valueList;
 }
-/* Line 1529 of yacc.c.  */
+/* Line 1489 of yacc.c.  */
 
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
