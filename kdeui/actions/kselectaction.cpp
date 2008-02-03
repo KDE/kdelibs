@@ -148,9 +148,9 @@ bool KSelectAction::setCurrentAction(QAction* action)
             setChecked(true);
         return true;
       } else
-        kWarning (129) << "Action do not have the correct properties to be current:" << action->text();
+        kWarning (129) << "Action does not have the correct properties to be current:" << action->text();
     } else
-      kWarning (129) << "Action do not belong to group:" << action->text();
+      kWarning (129) << "Action does not belong to group:" << action->text();
     return false;
   }
 
