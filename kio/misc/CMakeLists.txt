@@ -43,7 +43,7 @@ install( FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protoc
 if (UNIX)
    install(PROGRAMS fileshareset DESTINATION ${LIBEXEC_INSTALL_DIR} )
    # write a cmake script file which creates the symlink
-   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${LIBEXEC_INSTALL_DIR}/fileshareset ${LIBEXEC_INSTALL_DIR}/filesharelist)\n")
+   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${LIBEXEC_INSTALL_DIR}/fileshareset \"\$ENV{DESTDIR}${LIBEXEC_INSTALL_DIR}/filesharelist\")\n")
    # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
    set_target_properties(ktelnetservice PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
 endif (UNIX)
