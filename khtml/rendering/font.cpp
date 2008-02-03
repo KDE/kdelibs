@@ -69,13 +69,16 @@ static inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
     int x, int y, const QString &str)
 {
     QString qs = str;
-    if (d == Qt::RightToLeft)
+    // Qt doesn't have a function to force a direction,
+    // so we have to use a the unicode "RTO" character to
+    //  (no, setLayoutDirection isn't enough)
+    if (d == Qt::RightToLeft && str[0].direction() == QChar::DirL)
     {
-        // Qt doesn't have a function to force a direction,
-        // so we have to use a the unicode "RTO" character to
-        //  (no, setLayoutDirection isn't enough)
-        if (str[0].direction() == QChar::DirL)
-            qs.prepend(QChar(0x202E));
+        qs.prepend(QChar(0x202E)); // RIGHT-TO-LEFT OVERRIDE
+    }
+    else if (d == Qt::LeftToRight && str[0].direction() == QChar::DirR)
+    {
+        qs.prepend(QChar(0x202D)); // LEFT-TO-RIGHT OVERRIDE
     }
     
     Qt::LayoutDirection saveDir = p->layoutDirection();
