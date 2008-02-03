@@ -954,7 +954,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 #ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
-        kDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level;
+        kDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << bidi.status.last << " eor=" << bidi.status.eor << " lastStrong=" << bidi.status.lastStrong << " embedding=" << (int)bidi.context->dir << " level =" << (int)bidi.context->level;
 #endif
 
         switch(dirCurrent) {
@@ -1278,8 +1278,8 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 0
-    kDebug(6041) << "reached end of line current=" << current.obj << "/" << current.pos
-		  << ", eor=" << eor.obj << "/" << eor.pos << endl;
+    kDebug(6041) << "reached end of line current=" << bidi.current.obj << "/" << bidi.current.pos
+		  << ", eor=" << bidi.eor.obj << "/" << bidi.eor.pos << endl;
 #endif
     if ( !emptyRun && bidi.sor != bidi.current ) {
 	    bidi.eor = bidi.last;
@@ -1333,7 +1333,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 
 #if BIDI_DEBUG > 0
     kDebug(6041) << "visual order is:";
-    for (BidiRun* curr = sFirstRun; curr; curr = curr->nextRun)
+    for (BidiRun* curr = sFirstBidiRun; curr; curr = curr->nextRun)
         kDebug(6041) << "    " << curr;
 #endif
 }
