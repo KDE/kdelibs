@@ -445,6 +445,7 @@ namespace KJS {
     void putDirectFunction(InternalFunctionImp*, int attr = 0);
 
     void fillGetterPropertySlot(PropertySlot& slot, JSValue **location);
+    void fillDirectLocationSlot(PropertySlot& slot, JSValue **location);
 
     void defineGetter(ExecState *exec, const Identifier& propertyName, JSObject *getterFunc);
     void defineSetter(ExecState *exec, const Identifier& propertyName, JSObject *setterFunc);
@@ -547,6 +548,16 @@ inline bool JSObject::inherits(const ClassInfo *info) const
         if (ci == info)
             return true;
     return false;
+}
+
+inline void JSObject::fillDirectLocationSlot(PropertySlot& slot,
+                                             JSValue **location)
+{
+    if (_prop.hasGetterSetterProperties() &&
+        (*location)->type() == GetterSetterType)
+        fillGetterPropertySlot(slot, location);
+    else
+        slot.setValueSlot(this, location);
 }
 
 // this method is here to be after the inline declaration of JSObject::inherits
