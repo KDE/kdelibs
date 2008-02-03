@@ -27,6 +27,7 @@ private Q_SLOTS:
     void testUpdateProperty2();
     void testRemoveStatement();
     void testRemoveAllStatements();
+    void testInstanceQuery();
 };
 
 #endif

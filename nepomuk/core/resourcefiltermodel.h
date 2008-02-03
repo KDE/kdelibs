@@ -26,6 +26,7 @@
 #include <Soprano/Vocabulary/RDFS>
 
 #include <QtCore/QList>
+#include <QtCore/QDateTime>
 
 namespace Nepomuk {
     /**
@@ -82,6 +83,27 @@ namespace Nepomuk {
          * Reimplemented to remove metadata about graphs.
          */
         Soprano::Error::ErrorCode removeAllStatements( const Soprano::Statement &statement );
+
+        /**
+         * Perform a query on instance base graphs. The resource filter model will take care of all graph matching.
+         * Thus, queries have a rather restricted form which do not include any "graph" keywords. Basically
+         * queries look like:
+         *
+         * \code
+         * select ?v1 ?v2 .... where { ?v1 foo ?v2 . ?v2 bar 'xxx' . ... }
+         * \endcode
+         *
+         * \param start The results can be filtered on creation date. If the start date is set no results created
+         * before that date are returned.
+         * \param end If the end date is set no results created after that date are returned.
+         *
+         * \return An iterator iterating over the bindings requested in the original query filteres by nrl:InstanceBase
+         * and optionally nao:created.
+         *
+         * \warning This is a temporary method used until Soprano provides a full query API which does not
+         * rely on query strings.
+         */
+        Soprano::QueryResultIterator instanceQuery( const QString& query, const QDateTime& start = QDateTime(), const QDateTime& end = QDateTime() );
 
     private:
         Soprano::Error::ErrorCode removeGraphIfEmpty( const Soprano::Node& graph );

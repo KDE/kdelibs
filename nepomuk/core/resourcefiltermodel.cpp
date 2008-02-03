@@ -1,3 +1,4 @@
+
 /*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
@@ -28,9 +29,15 @@
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/NAO>
 
 #include <QtCore/QSet>
+#include <QtCore/QDateTime>
 
+#include <kdebug.h>
+
+
+// IDEA: Remember the last used named graph for N seconds and reuse it.
 
 using namespace Soprano;
 
@@ -79,6 +86,7 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
     Error::ErrorCode c = addStatement( Statement( resource, property, value, newContext ) );
     if ( c == Error::ErrorNone ) {
         c = addStatement( Statement( newContext, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase() ) );
+        c = addStatement( Statement( newContext, Soprano::Vocabulary::NAO::created(), LiteralValue( QDateTime::currentDateTime() ) ) );
     }
     return c;
 }
@@ -106,7 +114,9 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
         if ( ( c = addStatement( Statement( newContext, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase() ) ) ) != Error::ErrorNone ) {
             return c;
         }
-        // FIXME: provedence data!
+
+        // provedence data!
+        c = addStatement( Statement( newContext, Soprano::Vocabulary::NAO::created(), LiteralValue( QDateTime::currentDateTime() ) ) );
     }
 
     return c;
@@ -126,13 +136,6 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeProperty( const QU
     if ( c != Soprano::Error::ErrorNone ) {
         return c;
     }
-
-    // remove dangling graphs
-//     for( QList<Node>::const_iterator it = graphs.constBegin(); it != graphs.constEnd(); ++it ) {
-//         if ( ( c = removeGraphIfEmpty( *it ) ) != Error::ErrorNone ) {
-//             return c;
-//         }
-//     }
 
     return Error::ErrorNone;
 }
@@ -174,8 +177,12 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeAllStatements( con
 
     // remove dangling graphs
     if ( c == Error::ErrorNone ) {
+        QSet<QUrl> contexts;
         for ( QList<Statement>::const_iterator it = statementsToRemove.constBegin(); it != statementsToRemove.constEnd(); ++it ) {
-            if ( ( c = removeGraphIfEmpty( (*it).context() ) ) != Error::ErrorNone ) {
+            contexts.insert( it->context().uri() );
+        }
+        for ( QSet<QUrl>::const_iterator it = contexts.constBegin(); it != contexts.constEnd(); ++it ) {
+            if ( ( c = removeGraphIfEmpty( *it ) ) != Error::ErrorNone ) {
                 return c;
             }
         }
@@ -239,6 +246,84 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::addStatements( const QLi
     Soprano::Error::ErrorCode r = FilterModel::addStatements( newStatements );
     if ( r == Error::ErrorNone ) {
         r = addStatement( Statement( newContext, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase() ) );
+        r = addStatement( Statement( newContext, Soprano::Vocabulary::NAO::created(), LiteralValue( QDateTime::currentDateTime() ) ) );
     }
     return r;
+}
+
+
+Soprano::QueryResultIterator Nepomuk::ResourceFilterModel::instanceQuery( const QString& query, const QDateTime& start, const QDateTime& end )
+{
+    QString newQuery;
+    int pos = query.indexOf( '{' );
+    if ( pos < 0 ) {
+        kDebug() << "No opening bracket found.";
+        return 0;
+    }
+
+    // keep the select part
+    newQuery = query.left( pos+1 );
+
+    // extract the graph patterns (we need them to be separated by space + dot
+    int endPos = query.lastIndexOf( '}' );
+    QStringList patterns = query.mid( pos+1, endPos-pos-1 ).simplified().split( " .", QString::SkipEmptyParts );
+
+    // create the new graph patterns
+    QStringList graphPatterns;
+    int graphIndex = 1;
+    for ( int i = 0; i < patterns.count(); ++i ) {
+        graphPatterns << QString( "graph ?g%1 { %2 . }" ).arg(graphIndex++).arg( patterns[i].simplified() );
+    }
+
+    // create graph pattern for nrl:InstanceBase
+    graphIndex = 1;
+    for ( int i = 0; i < patterns.count(); ++i ) {
+        graphPatterns << QString( "?g%1 a <%2>" ).arg(graphIndex++).arg( Soprano::Vocabulary::NRL::InstanceBase().toString() );
+    }
+
+    // create date nao:created graph patterns for matching the creation date in the filters
+    if ( start.isValid() || end.isValid() ) {
+        graphIndex = 1;
+        for ( int i = 0; i < patterns.count(); ++i ) {
+            graphPatterns << QString( "?g%1 <%2> ?d%1" ).arg(graphIndex++).arg( Soprano::Vocabulary::NAO::created().toString() );
+        }
+    }
+
+    // create optional additional filters
+    QStringList filters;
+
+    // create start filter
+    if ( start.isValid() ) {
+        QString filter = "FILTER( ";
+        graphIndex = 1;
+        Soprano::LiteralValue startLiteral( start );
+        for ( int i = 0; i < patterns.count(); ++i ) {
+            filter += QString( "?d%1 >= '%2'^^<%3>" ).arg( graphIndex++ ).arg( startLiteral.toString() ).arg( startLiteral.dataTypeUri().toString() );
+            if ( i+1 < patterns.count() ) {
+                filter += " || ";
+            }
+        }
+        filter += " )";
+        filters << filter;
+    }
+
+    // create end filter
+    if ( end.isValid() ) {
+        QString filter = "FILTER( ";
+        graphIndex = 1;
+        Soprano::LiteralValue endLiteral( end );
+        for ( int i = 0; i < patterns.count(); ++i ) {
+            filter += QString( "?d%1 <= '%2'^^<%3>" ).arg( graphIndex++ ).arg( endLiteral.toString() ).arg( endLiteral.dataTypeUri().toString() );
+            if ( i+1 < patterns.count() ) {
+                filter += " || ";
+            }
+        }
+        filter += " )";
+        filters << filter;
+    }
+
+    newQuery += ' ' + ( graphPatterns + filters ).join( " . " );
+    newQuery += " . }";
+
+    return executeQuery( newQuery,  Soprano::Query::QueryLanguageSparql );
 }

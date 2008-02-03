@@ -18,6 +18,31 @@
 #include <qtest_kde.h>
 #include "../resourcefiltermodel.h"
 
+#include <Soprano/QueryResultIterator>
+#include <Soprano/Util/DummyModel>
+#include <Soprano/Vocabulary/XMLSchema>
+
+
+class TestModel : public Soprano::Util::DummyModel
+{
+public:
+    TestModel()
+        : DummyModel() {
+    }
+
+    QString lastQuery() const { return m_lastQuery; }
+
+    Soprano::QueryResultIterator executeQuery( const QString& query,
+                                               Soprano::Query::QueryLanguage language,
+                                               const QString& userQueryLanguage ) const {
+        m_lastQuery = query;
+        return 0;
+    }
+
+private:
+    mutable QString m_lastQuery;
+};
+
 
 void ResourceFilterModelTest::testEnsureResource()
 {
@@ -53,28 +78,28 @@ void ResourceFilterModelTest::testRemoveStatement()
     // remove the second statement
     // make sure the graph is gone
 
-    QUrl dataGraph( "http://www.nepomuk.org/test/dataGraph" );
-    QUrl metadataGraph( "http://www.nepomuk.org/test/metadataGraph" );
+//     QUrl dataGraph( "http://www.nepomuk.org/test/dataGraph" );
+//     QUrl metadataGraph( "http://www.nepomuk.org/test/metadataGraph" );
 
-    QUrl res1 = "http://www.nepomuk.org/test/res1";
-    QUrl res2 = "http://www.nepomuk.org/test/res2";
+//     QUrl res1 = "http://www.nepomuk.org/test/res1";
+//     QUrl res2 = "http://www.nepomuk.org/test/res2";
 
-    QUrl prop1 = Soprano::Vocabulary::RDFS::label();
-    QUrl prop2 = Soprano::Vocabulary::RDFS::label();
+//     QUrl prop1 = Soprano::Vocabulary::RDFS::label();
+//     QUrl prop2 = Soprano::Vocabulary::RDFS::label();
 
-    Soprano::LiteralValue val1( "test1" );
-    Soprano::LiteralValue val2( "test2" );
+//     Soprano::LiteralValue val1( "test1" );
+//     Soprano::LiteralValue val2( "test2" );
 
-    Soprano::Model* model = Soprano::createModel();
-    Q_VERIFY( model );
-    Nepomuk::ResourceFilterModel fm( model );
+//     Soprano::Model* model = Soprano::createModel();
+//     Q_VERIFY( model );
+//     Nepomuk::ResourceFilterModel fm( model );
 
-    model->addStatement( res1, prop1, val1, dataGraph );
-    model->addStatement( res1, prop2, val2, dataGraph );
+//     model->addStatement( res1, prop1, val1, dataGraph );
+//     model->addStatement( res1, prop2, val2, dataGraph );
 
-    // metadata
-    model->addStatement( dataGraph, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase(), metadataGraph );
-    model->addStatement( metadataGraph, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::GraphMetadata(), metadataGraph );
+//     // metadata
+//     model->addStatement( dataGraph, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase(), metadataGraph );
+//     model->addStatement( metadataGraph, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::GraphMetadata(), metadataGraph );
 
 }
 
@@ -82,6 +107,51 @@ void ResourceFilterModelTest::testRemoveStatement()
 void ResourceFilterModelTest::testRemoveAllStatements()
 {
 
+}
+
+
+void ResourceFilterModelTest::testInstanceQuery()
+{
+    TestModel testModel;
+    Nepomuk::ResourceFilterModel resFilterModel( &testModel );
+
+    QString query1 = "select ?r where { ?r ?p ?o . }";
+    QString query2 = QString( "select ?r where { ?r <%1> \"Horst\"^^<%2> . }" )
+                     .arg( Soprano::Vocabulary::RDFS::label().toString() )
+                     .arg( Soprano::Vocabulary::XMLSchema::string().toString() );
+    QString query3 = "select ?r ?n where { ?r nco:phoneNumber ?o . ?o nco:number ?n . }";
+
+    // test without data ranges
+    resFilterModel.instanceQuery( query1 );
+    qDebug() << query1 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query2 );
+    qDebug() << query2 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query3 );
+    qDebug() << query3 << "->" << testModel.lastQuery();
+
+    // test with start date range
+    resFilterModel.instanceQuery( query1, QDateTime::currentDateTime() );
+    qDebug() << query1 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query2, QDateTime::currentDateTime() );
+    qDebug() << query2 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query3, QDateTime::currentDateTime() );
+    qDebug() << query3 << "->" << testModel.lastQuery();
+
+    // test with end date range
+    resFilterModel.instanceQuery( query1, QDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query1 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query2, QDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query2 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query3, QDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query3 << "->" << testModel.lastQuery();
+
+    // test with start and end date ranges
+    resFilterModel.instanceQuery( query1, QDateTime::currentDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query1 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query2, QDateTime::currentDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query2 << "->" << testModel.lastQuery();
+    resFilterModel.instanceQuery( query3, QDateTime::currentDateTime(), QDateTime::currentDateTime() );
+    qDebug() << query3 << "->" << testModel.lastQuery();
 }
 
 QTEST_KDEMAIN(ResourceFilterModelTest, NoGUI)
