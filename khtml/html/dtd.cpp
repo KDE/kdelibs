@@ -535,8 +535,8 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         // DIV: %flow *
         return check_flow(childID, strict);
     case ID_MAP:
-        // MAP: ( %block | AREA ) +
-        return check_block(childID, true) || childID == ID_AREA ||
+        // MAP: ( %block | AREA ) (but "prose" in HTML5)
+        return check_flow(childID, true) || childID == ID_AREA ||
                (!strict && childID == ID_SCRIPT);
     case ID_OBJECT:
     case ID_EMBED:
