@@ -92,8 +92,8 @@ void KFontSizeAction::Private::init()
 void KFontSizeAction::setFontSize( int size )
 {
     if ( size == fontSize() ) {
-        QString test = QString::number( size );
-        foreach (QAction* action, actions())
+        const QString test = QString::number( size );
+        Q_FOREACH(QAction* action, actions())
         {
           if (action->text() == test)
           {
@@ -113,17 +113,15 @@ void KFontSizeAction::setFontSize( int size )
         // Insert at the correct position in the list (to keep sorting)
         QList<int> lst;
         // Convert to list of ints
-        QStringList itemsList = items();
-        for (QStringList::Iterator it = itemsList.begin() ; it != itemsList.end() ; ++it)
-            lst.append( (*it).toInt() );
+        QStringListIterator itemsIt( items() );
+        while ( itemsIt.hasNext() )
+            lst.append( itemsIt.next().toInt() );
         // New size
         lst.append( size );
         // Sort the list
         qSort( lst );
-        // Convert back to string list
-        QStringList strLst;
-        foreach ( int it, lst ) {
-            QAction* action = new QAction(QString::number(it), selectableActionGroup());
+        Q_FOREACH( int it, lst ) {
+            KAction* const action = addAction( QString::number(it) );
             if (it == size)
               setCurrentAction(action);
         }
