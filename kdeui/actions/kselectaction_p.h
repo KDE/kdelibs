@@ -56,6 +56,12 @@ public:
 
   virtual ~KSelectActionPrivate()
   {
+    // unhook the event filter, as the deletion of the actiongroup
+    // will trigger it
+    Q_FOREACH( KComboBox* box, m_comboBoxes )
+        box->removeEventFilter( q_ptr );
+    Q_FOREACH( QToolButton* button, m_buttons )
+        button->removeEventFilter( q_ptr );
     delete m_actionGroup;
   }
 
