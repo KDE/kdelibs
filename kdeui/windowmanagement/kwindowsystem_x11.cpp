@@ -455,7 +455,10 @@ void KWindowSystem::setCurrentDesktop( int desktop )
 void KWindowSystem::setOnAllDesktops( WId win, bool b )
 {
     if( mapViewport()) {
-        setState( b ? NET::Sticky : 0, NET::Sticky );
+        if( b )
+            setState( win, NET::Sticky );
+        else
+            clearState( win, NET::Sticky );
         return;
     }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
@@ -470,6 +473,10 @@ void KWindowSystem::setOnAllDesktops( WId win, bool b )
 void KWindowSystem::setOnDesktop( WId win, int desktop )
 {
     if( mapViewport()) {
+        if( desktop == NET::OnAllDesktops )
+            return setOnAllDesktops( win, true );
+        else
+            clearState( win, NET::Sticky );
         init( INFO_BASIC );
         QPoint p = desktopToViewport( desktop, false );
         Window dummy;
@@ -531,7 +538,7 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 }
 
@@ -717,13 +724,13 @@ void KWindowSystem::setType( WId win, NET::WindowType windowType )
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( state, state );
 }
 
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( 0, state );
 }
 
