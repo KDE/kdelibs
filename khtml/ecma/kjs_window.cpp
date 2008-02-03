@@ -540,7 +540,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   JSValue **val = getDirectLocation(propertyName);
   if (val) {
     if (isSafeScript(exec))
-      slot.setValueSlot(this, val);
+      fillDirectLocationSlot(slot, val);
     else
       slot.setUndefined(this);
     return true;
