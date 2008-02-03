@@ -57,8 +57,8 @@ public:
     Private( bool localOnly, KDirSelectDialog *parent )
         : m_parent( parent ),
           m_localOnly( localOnly ),
-          m_urlCombo( 0 ),
-          m_comboLocked( false )
+          m_comboLocked( false ),
+          m_urlCombo(0)
     {
     }
 
@@ -73,10 +73,9 @@ public:
     void _k_slotContextMenu(const QPoint&);
     void _k_slotUser1();
 
-    bool m_comboLocked;
-
-    bool m_localOnly;
     KDirSelectDialog *m_parent;
+    bool m_localOnly : 1;
+    bool m_comboLocked : 1;
     KUrl m_rootUrl;
     KUrl m_startDir;
     KFileTreeView *m_treeView;
