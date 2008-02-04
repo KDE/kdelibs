@@ -38,7 +38,9 @@ AutoStart::AutoStart()
   : m_phase(-1), m_phasedone(false)
 {
   m_startList = new AutoStartList;
-  KGlobal::dirs()->addResourceType("autostart", 0, "share/autostart");
+  KGlobal::dirs()->addResourceType("xdgconf-autostart", NULL, "autostart/"); // xdg ones
+  KGlobal::dirs()->addResourceType("autostart", "xdgconf-autostart", "/"); // merge them
+  KGlobal::dirs()->addResourceType("autostart", 0, "share/autostart"); // KDE ones are higher priority
 }
 
 AutoStart::~AutoStart()
