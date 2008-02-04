@@ -644,6 +644,7 @@ class KIconButton::KIconButtonPrivate
     KIconButton *q;
 
     int iconSize;
+    int buttonIconSize;
     bool m_bStrictIconSize;
 
     bool mbUser;
@@ -677,6 +678,7 @@ KIconButton::KIconButtonPrivate::KIconButtonPrivate(KIconButton *qq, KIconLoader
 {
     m_bStrictIconSize = false;
     iconSize = 0; // let KIconLoader choose the default
+    buttonIconSize = -1; //When buttonIconSize is -1, iconSize will be used for the button
 
     mGroup = KIconLoader::Desktop;
     mContext = KIconLoader::Application;
@@ -709,13 +711,27 @@ bool KIconButton::strictIconSize() const
 
 void KIconButton::setIconSize( int size )
 {
-    QPushButton::setIconSize(QSize(size, size));
+    if (d->buttonIconSize == -1) {
+        QPushButton::setIconSize(QSize(size, size));
+    }
+
     d->iconSize = size;
 }
 
 int KIconButton::iconSize() const
 {
     return d->iconSize;
+}
+
+void KIconButton::setButtonIconSize( int size )
+{
+    QPushButton::setIconSize(QSize(size, size));
+    d->buttonIconSize = size;
+}
+
+int KIconButton::buttonIconSize() const
+{
+    return QPushButton::iconSize().height();
 }
 
 void KIconButton::setIconType(KIconLoader::Group group, KIconLoader::Context context, bool user)

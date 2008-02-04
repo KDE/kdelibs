@@ -314,6 +314,19 @@ public:
      */
     int iconSize() const;
 
+    /**
+     * Sets the size of the icon to be shown on the button
+     * @see KIconLoader::StdSizes
+     * @see buttonIconSize
+     */
+    void setButtonIconSize( int size );
+
+    /**
+     * Returns the Button's Icon-Size
+     */
+    int buttonIconSize() const;
+     
+
 Q_SIGNALS:
     /**
      * Emitted when the icon has changed.
