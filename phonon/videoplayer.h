@@ -182,9 +182,6 @@ class PHONON_EXPORT VideoPlayer : public QWidget
 
     protected:
         VideoPlayerPrivate *const d;
-
-    private:
-        Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };
 
 } //namespace Phonon
