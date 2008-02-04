@@ -34,8 +34,8 @@ void KAutostartTest::testStartDetection_data()
 {
     QTest::addColumn<QString>("service");
     QTest::addColumn<bool>("doesAutostart");
-    if ( KAutostart::isServiceRegistered("panel") )
-        QTest::newRow("kicker") << "panel" << true;
+    if ( KAutostart::isServiceRegistered("plasma") )
+        QTest::newRow("plasma") << "plasma" << true;
     if ( KAutostart::isServiceRegistered("khotkeys") )
         QTest::newRow("khotkeys") << "khotkeys" << false;
     QTest::newRow("does not exist") << "doesnotexist" << false;
@@ -63,10 +63,10 @@ void KAutostartTest::testStartInEnvDetection()
     QFETCH(QString, env);
     QFETCH(bool, doesAutostart);
 
-    KAutostart autostart("panel");
-    // Let's see if panel.desktop actually exists
-    if ( KStandardDirs::locate("panel", "autostart").isEmpty() )
-        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
+    KAutostart autostart("plasma");
+    // Let's see if plasma.desktop actually exists
+    if ( KStandardDirs::locate("autostart", "plasma.desktop").isEmpty() )
+        QSKIP( "plasma.desktop not found, kdebase not installed", SkipSingle );
     else
         QCOMPARE(autostart.autostarts(env), doesAutostart);
 }
@@ -75,8 +75,8 @@ void KAutostartTest::testStartphase_data()
 {
     QTest::addColumn<QString>("service");
     QTest::addColumn<int>("startPhase");
-    if ( KAutostart::isServiceRegistered("kicker") )
-        QTest::newRow("kicker") << "panel" << (int)KAutostart::BaseDesktop;
+    if ( KAutostart::isServiceRegistered("plasma") )
+        QTest::newRow("plasma") << "plasma" << (int)KAutostart::BaseDesktop;
     if ( KAutostart::isServiceRegistered("klipper") )
         QTest::newRow("klipper") << "klipper" << (int)KAutostart::Applications;
     if ( KAutostart::isServiceRegistered("khotkeys") )
@@ -96,10 +96,10 @@ void KAutostartTest::testStartphase()
 
 void KAutostartTest::testStartName()
 {
-    if ( !KAutostart::isServiceRegistered("panel") )
-        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
-    KAutostart autostart("panel");
-    QCOMPARE(autostart.visibleName(), QString("KDE Panel"));
+    if ( !KAutostart::isServiceRegistered("plasma") )
+        QSKIP( "plasma.desktop not found, kdebase not installed", SkipSingle );
+    KAutostart autostart("plasma");
+    QCOMPARE(autostart.visibleName(), QString("Plasma"));
 }
 
 void KAutostartTest::testServiceRegistered()
@@ -107,9 +107,9 @@ void KAutostartTest::testServiceRegistered()
     KAutostart autostart;
     QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
 
-    if ( KStandardDirs::locate("autostart", "panel.desktop").isEmpty() )
-        QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
-    QCOMPARE(KAutostart::isServiceRegistered("panel"), true);
+    if ( KStandardDirs::locate("autostart", "plasma.desktop").isEmpty() )
+        QSKIP( "plasma.desktop not found, kdebase not installed", SkipSingle );
+    QCOMPARE(KAutostart::isServiceRegistered("plasma"), true);
 }
 
 void KAutostartTest::testRegisteringAndManipulatingANewService()
