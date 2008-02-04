@@ -318,11 +318,13 @@ public:
      * Sets the size of the icon to be shown on the button
      * @see KIconLoader::StdSizes
      * @see buttonIconSize
+     * @since 4.1
      */
     void setButtonIconSize( int size );
 
     /**
      * Returns the Button's Icon-Size
+     * @since 4.1
      */
     int buttonIconSize() const;
      
