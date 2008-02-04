@@ -21,6 +21,7 @@
 #define PHONONDEFS_P_H
 
 #include <QtCore/QMetaType>
+#include "medianode_p.h"
 
 #define K_D(Class) Class##Private *const d = k_func()
 
@@ -130,11 +131,82 @@ QMetaObject::invokeMethod(m_backendObject, methodName, Qt::DirectConnection, Q_A
 #define pBACKEND_CALL2(methodName, varType1, var1, varType2, var2) \
 QMetaObject::invokeMethod(m_backendObject, methodName, Qt::DirectConnection, Q_ARG(varType1, var1), Q_ARG(varType2, var2))
 
+namespace Phonon
+{
+    namespace
+    {
+        class NoIface;
+
+        /// undefined result if the condition is neither true nor false
+        template<bool condition, typename Then, typename Else> struct If;
+        /// If false Else is the Result
+        template<typename Then, typename Else> struct If<false, Then, Else> { typedef Else Result; };
+        /// If true Then is the Result
+        template<typename Then, typename Else> struct If<true, Then, Else> { typedef Then Result; };
+
+        /// All template arguments are valid
+        template<typename T> struct IsValid { enum { Result = true }; };
+        /// except NoIface
+        template<> struct IsValid<NoIface> { enum { Result = false }; };
+
+        template<class R, class T>
+        struct iface_cast_helper
+        {
+            static inline R *help(MediaNodePrivate *d)
+            {
+                return qobject_cast<T *>(d->m_backendObject);
+            }
+
+            static inline const R *help(const MediaNodePrivate *d)
+            {
+                return qobject_cast<T *>(d->m_backendObject);
+            }
+        };
+
+        template<class R>
+        struct iface_cast_helper<R, NoIface>
+        {
+            static inline R *help(const MediaNodePrivate *)
+            {
+                return 0;
+            }
+        };
+
+    } // anonymous namespace
+
+    template<class T0, class T1 = NoIface, class T2 = NoIface>
+    struct Iface
+    {
+        typedef typename If<IsValid<T2>::Result, T2, typename If<IsValid<T1>::Result, T1, T0>::Result>::Result Type;
+        static inline Type *cast(MediaNodePrivate *const d)
+        {
+            Type *ret;
+            ret = qobject_cast<T0 *>(d->m_backendObject);
+            if (ret) return ret;
+            ret = iface_cast_helper<Type, T1>::help(d);
+            if (ret) return ret;
+            ret = iface_cast_helper<Type, T2>::help(d);
+            return ret;
+        }
+
+        static inline const Type *cast(const MediaNodePrivate *const d)
+        {
+            const Type *ret;
+            ret = qobject_cast<T0 *>(d->m_backendObject);
+            if (ret) return ret;
+            ret = iface_cast_helper<Type, T1>::help(d);
+            if (ret) return ret;
+            ret = iface_cast_helper<Type, T2>::help(d);
+            return ret;
+        }
+    };
+} // namespace Phonon
+
 #define INTERFACE_CALL(function) \
-qobject_cast<PHONON_INTERFACENAME *>(d->m_backendObject)->function
+Iface<PHONON_INTERFACENAME >::cast(d)->function
 
 #define pINTERFACE_CALL(function) \
-qobject_cast<PHONON_INTERFACENAME *>(m_backendObject)->function
+Iface<PHONON_INTERFACENAME >::cast(this)->function
 
 #define PHONON_GETTER(rettype, name, retdefault) \
 rettype PHONON_CLASSNAME::name() const \
@@ -153,7 +225,7 @@ rettype PHONON_CLASSNAME::name() const \
     const PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) *d = k_func(); \
     if (!d->m_backendObject) \
         return retdefault; \
-    return qobject_cast<PHONON_INTERFACENAME *>(d->m_backendObject)->name(); \
+    return Iface<PHONON_INTERFACENAME >::cast(d)->name(); \
 }
 
 #define PHONON_GETTER1(rettype, name, retdefault, argtype1, argvar1) \
@@ -173,7 +245,7 @@ rettype PHONON_CLASSNAME::name(argtype1 argvar1) const \
     const PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) *d = k_func(); \
     if (!d->m_backendObject) \
         return retdefault; \
-    return qobject_cast<PHONON_INTERFACENAME *>(d->m_backendObject)->name(argvar1->k_ptr->backendObject()); \
+    return Iface<PHONON_INTERFACENAME >::cast(d)->name(argvar1->k_ptr->backendObject()); \
 }
 
 #define PHONON_SETTER(functionname, privatevar, argtype1) \
@@ -192,7 +264,7 @@ void PHONON_CLASSNAME::functionname(argtype1 x) \
     PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) *d = k_func(); \
     d->privatevar = x; \
     if (k_ptr->backendObject()) { \
-        qobject_cast<PHONON_INTERFACENAME *>(d->m_backendObject)->functionname(x); \
+        Iface<PHONON_INTERFACENAME >::cast(d)->functionname(x); \
     } \
 }
 

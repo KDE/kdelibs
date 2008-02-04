@@ -122,7 +122,9 @@ namespace Phonon
 
     protected:
         MediaNode *q_ptr;
+    public:
         QObject *m_backendObject;
+    protected:
         QList<Path> outputPaths;
         QList<Path> inputPaths;
 
