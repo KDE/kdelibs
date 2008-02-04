@@ -40,8 +40,6 @@ class VideoPlayerPrivate
         VideoWidget *voutput;
 
         MediaSource src;
-
-        void _k_stateChanged(Phonon::State, Phonon::State);
 };
 
 VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
@@ -61,8 +59,6 @@ VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
     Phonon::createPath(d->player, d->aoutput);
     Phonon::createPath(d->player, d->voutput);
 
-    connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
-            SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
     connect(d->player, SIGNAL(finished()), SIGNAL(finished()));
 }
 
@@ -155,12 +151,6 @@ bool VideoPlayer::isPlaying() const
 bool VideoPlayer::isPaused() const
 {
     return (d->player->state() == PausedState);
-}
-
-void VideoPlayerPrivate::_k_stateChanged(State ns, State os)
-{
-    if (os == LoadingState && ns == StoppedState)
-        player->play();
 }
 
 } // namespaces
