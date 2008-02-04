@@ -155,6 +155,7 @@ install( FILES
   KEditToolBar
   KEncodingFileDialog
   KExtendableItemDelegate
+  KFadeWidgetEffect
   KFile
   KFileDialog
   KFileFilterCombo
@@ -844,6 +845,7 @@ install( FILES
   Phonon/Effect
   Phonon/EffectDescription
   Phonon/EffectDescriptionModel
+  Phonon/EffectInterface
   Phonon/EffectParameter
   Phonon/EffectWidget
   Phonon/Global
