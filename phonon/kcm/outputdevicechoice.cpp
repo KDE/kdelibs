@@ -35,7 +35,7 @@
 #include "../libkaudiodevicelist/audiodevice.h"
 #include "../qsettingsgroup_p.h"
 #include "../globalconfig.h"
-#include "kwidgetblendanimation.h"
+#include <kfadewidgeteffect.h>
 
 #include <kdialog.h>
 #include <klistwidget.h>
@@ -258,7 +258,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
 void OutputDeviceChoice::updateDeviceList()
 {
     QStandardItem *currentItem = m_categoryModel.itemFromIndex(categoryTree->currentIndex());
-    KWidgetBlendAnimation *animation = new KWidgetBlendAnimation(deviceList);
+    KFadeWidgetEffect *animation = new KFadeWidgetEffect(deviceList);
     if (deviceList->selectionModel()) {
         disconnect(deviceList->selectionModel(),
                 SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
