@@ -404,7 +404,6 @@ void TestWindow::slotMakeItem3Current()
 
 int main( int argc, char *argv[] )
 {
-    int i;
     KCmdLineArgs::init(argc, argv, "kwindowtest", 0, ki18n("KWindowTest"), "version", ki18n("description"));
 
     KApplication myApp;
@@ -412,12 +411,14 @@ int main( int argc, char *argv[] )
 
     myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
 
-    i = QMessageBox::information(0, "Select", "Select type of mainwidget",
+#if 0
+    int i = QMessageBox::information(0, "Select", "Select type of mainwidget",
                                  "Fixed", "Y-fixed", "Resizable");
     if (i == 0)
         test->beFixed();
     else if (i == 1)
         test->beYFixed();
+#endif
 
     test->show();
     myApp.setQuitOnLastWindowClosed( true );
