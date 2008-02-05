@@ -36,6 +36,7 @@ private Q_SLOTS:
     void testChangeShortcut();
     void testStealShortcut();
     void testSaveRestore();
+    void testListActions();
     void cleanupTestCase();
 private:
     KAction *m_actionA;

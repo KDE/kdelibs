@@ -20,6 +20,7 @@
 */
 
 #include "kglobalshortcuttest.h"
+#include <qdbusinterface.h>
 #include <qtest_kde.h>
 #include <kaction.h>
 #include <kglobalaccel.h>
@@ -53,9 +54,15 @@ void KGlobalShortcutTest::testSetShortcut()
     m_actionA->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
     //kDebug() << m_actionA->globalShortcut().toString();
     QCOMPARE(m_actionA->globalShortcut(), cutA);
+    QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA);
 
-    m_actionB->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
+    m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().isEmpty());
+    QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty());
+
+    // Check that action B, which has no shortcut set, does appear when listing the actions
+    // (important for the kcontrol module)
+    testListActions();
 }
 
 
@@ -75,16 +82,25 @@ void KGlobalShortcutTest::testFindActionByKey()
 
 void KGlobalShortcutTest::testChangeShortcut()
 {
+    KShortcut newCutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::Key_F28, Qt::Key_F29); // same without the ALT
+    m_actionA->setGlobalShortcut(newCutA, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QCOMPARE(m_actionA->globalShortcut(), newCutA);
+    KShortcut cutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28, Qt::Key_F29);
+    QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA); // unchanged
+
+
     KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(Qt::META + Qt::Key_F29));
     m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
     QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(Qt::META + Qt::Key_F29));
+    QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty()); // unchanged
 
     cutB.setPrimary(Qt::META + Qt::ALT + Qt::Key_F30);
     m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QCOMPARE(m_actionB->globalShortcut(), cutB);
+    QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty()); // unchanged
 }
 
 
@@ -115,6 +131,24 @@ void KGlobalShortcutTest::testSaveRestore()
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 }
 
+
+void KGlobalShortcutTest::testListActions()
+{
+    // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    QDBusInterface* iface = new QDBusInterface( "org.kde.kded", "/KdedGlobalAccel", "org.kde.KdedGlobalAccel", bus, this );
+    QDBusReply<QStringList> reply = iface->call("allComponents");
+    QVERIFY(reply.isValid());
+    const QStringList components = reply.value();
+    QVERIFY(components.contains("qttest"));
+
+    reply = iface->call("allActionsForComponent", QString("qttest") );
+    QVERIFY(reply.isValid());
+    const QStringList actions = reply.value();
+    QVERIFY(!actions.isEmpty());
+    QVERIFY(actions.contains("Action A"));
+    QVERIFY(actions.contains("Action B"));
+}
 
 void KGlobalShortcutTest::cleanupTestCase()
 {
