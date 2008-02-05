@@ -348,11 +348,7 @@ public:
      * \e This \e includes \e calling \e setGlobalShortcut()!
      * If you actually want to change the global shortcut you have to set
      * @p loading to NoAutoloading. The new shortcut will be saved again.
-     * The only way to forget the action's global shortcut is to do
-     * \code
-     * setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
-     *                   KAction::NoAutoloading)
-     * \endcode
+     *
      * \param shortcut global shortcut(s) to assign. Will be ignored unless \p loading is set to NoAutoloading.
      * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
      *             or both (the default).

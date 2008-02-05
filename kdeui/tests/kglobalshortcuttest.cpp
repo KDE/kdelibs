@@ -23,9 +23,9 @@
 #include <qtest_kde.h>
 #include <kaction.h>
 #include <kglobalaccel.h>
+#include <kdebug.h>
 
 #include <QtDBus/QDBusConnectionInterface>
-#include <QtCore/QtDebug>
 
 
 /* These tests could be better. They don't include actually triggering actions,
@@ -39,25 +39,22 @@ void KGlobalShortcutTest::initTestCase()
 {
     m_actionA = new KAction("Action A", this);
     m_actionB = new KAction("Action B", this);
-    //purge previous config file entries of the actions by setting them to "empty and default empty"
-    //(this is the only safe situation to remove entries in normal operation)
-    m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
-                                 KAction::NoAutoloading);
-    m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
-                                 KAction::NoAutoloading);
-    QVERIFY(m_actionA->globalShortcut().isEmpty());
-    QVERIFY(m_actionB->globalShortcut().isEmpty());
 }
 
 
 void KGlobalShortcutTest::testSetShortcut()
 {
+    // We have to set the global shortcut with NoAutoloading to be independent from previous runs of the test.
+    // There is no way of making kdedglobalaccel "completely forget" a global shortcut currently, this would need new API.
+
     //possible modifiers are SHIFT META CTRL ALT
     KShortcut cutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28, Qt::Key_F29);
-    m_actionA->setGlobalShortcut(cutA);
+    //kDebug() << cutA.toString();
+    m_actionA->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
+    //kDebug() << m_actionA->globalShortcut().toString();
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 
-    m_actionB->setGlobalShortcut(cutA);
+    m_actionB->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().isEmpty());
 }
 
@@ -79,13 +76,13 @@ void KGlobalShortcutTest::testFindActionByKey()
 void KGlobalShortcutTest::testChangeShortcut()
 {
     KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(Qt::META + Qt::Key_F29));
-    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut | KAction::DefaultShortcut,
+    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
     QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(Qt::META + Qt::Key_F29));
 
     cutB.setPrimary(Qt::META + Qt::ALT + Qt::Key_F30);
-    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut | KAction::DefaultShortcut,
+    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QCOMPARE(m_actionB->globalShortcut(), cutB);
 }
@@ -121,11 +118,6 @@ void KGlobalShortcutTest::testSaveRestore()
 
 void KGlobalShortcutTest::cleanupTestCase()
 {
-    //purge config file entries, see initTestCase()
-    m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
-                                 KAction::NoAutoloading);
-    m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
-                                 KAction::NoAutoloading);
 }
 
 #include "kglobalshortcuttest.moc"
