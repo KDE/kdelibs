@@ -28,7 +28,6 @@
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
-#include <kio/kdirwatch.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <phonon/config-alsa.h>
@@ -64,7 +63,7 @@ AudioDeviceEnumerator *AudioDeviceEnumerator::self()
 void AudioDeviceEnumeratorPrivate::findDevices()
 {
     KConfigGroup globalConfigGroup(config, "Globals");
-    const int cacheVersion = globalConfigGroup.readEntry("CacheVersion", 0);
+    // for future use: const int cacheVersion = globalConfigGroup.readEntry("CacheVersion", 0);
     QSet<QString> alreadyFoundCards;
 
     // ask Solid for the available audio hardware
