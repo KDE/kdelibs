@@ -1148,7 +1148,7 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
     locationEdit->blockSignals( blocked );
 
-    urlNavigator->setUrl( directoryUrl( url ) );
+    urlNavigator->setUrl(  url );
 
     QString dir = url.url(KUrl::AddTrailingSlash);
     // is trigged in ctor before completion object is set
