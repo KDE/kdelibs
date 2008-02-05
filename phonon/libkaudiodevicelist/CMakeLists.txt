@@ -15,7 +15,7 @@ IF(NOT ALSA_FOUND)
    set(ASOUND_LIBRARY "")
 ENDIF(NOT ALSA_FOUND)
 
-include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${KDE4_KIO_INCLUDES} ${ALSA_INCLUDES})
+include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${ALSA_INCLUDES})
 
 set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
@@ -26,7 +26,7 @@ IF(ALSA_FOUND)
    QT4_ADD_RESOURCES(kaudiodevicelist_LIB_SRCS resources.qrc)
 ENDIF(ALSA_FOUND)
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
-target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
+target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${ASOUND_LIBRARY})
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
