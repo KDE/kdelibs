@@ -251,6 +251,8 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
     KAction *action = nameToAction.value(actionId.at(1));
     if (!action)
         return;
+    if (!action->isEnabled())
+        return;
 
 #ifdef Q_WS_X11
     // Update this application's X timestamp if needed.
