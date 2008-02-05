@@ -413,9 +413,9 @@ int KWindowSystem::currentDesktop()
 
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
-        return s_d->currentDesktop();
+        return s_d->currentDesktop( true );
     NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
-    return info.currentDesktop();
+    return info.currentDesktop( true );
 }
 
 int KWindowSystem::numberOfDesktops()
@@ -432,9 +432,9 @@ int KWindowSystem::numberOfDesktops()
 
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
-        return s_d->numberOfDesktops();
+        return s_d->numberOfDesktops( true );
     NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops );
-    return info.numberOfDesktops();
+    return info.numberOfDesktops( true );
 }
 
 void KWindowSystem::setCurrentDesktop( int desktop )
@@ -451,7 +451,7 @@ void KWindowSystem::setCurrentDesktop( int desktop )
         return;
     }
     NETRootInfo info( QX11Info::display(), 0 );
-    info.setCurrentDesktop( desktop );
+    info.setCurrentDesktop( desktop, true );
 }
 
 void KWindowSystem::setOnAllDesktops( WId win, bool b )
@@ -465,10 +465,10 @@ void KWindowSystem::setOnAllDesktops( WId win, bool b )
     }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     if ( b )
-	info.setDesktop( NETWinInfo::OnAllDesktops );
-    else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
+	info.setDesktop( NETWinInfo::OnAllDesktops, true );
+    else if ( info.desktop( true )  == NETWinInfo::OnAllDesktops ) {
 	NETRootInfo rinfo( QX11Info::display(), NET::CurrentDesktop );
-	info.setDesktop( rinfo.currentDesktop() );
+	info.setDesktop( rinfo.currentDesktop( true ), true );
     }
 }
 
@@ -507,7 +507,7 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
         return;
     }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
-    info.setDesktop( desktop );
+    info.setDesktop( desktop, true );
 }
 
 WId KWindowSystem::activeWindow()
