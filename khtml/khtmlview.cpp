@@ -485,6 +485,13 @@ bool KHTMLView::event( QEvent* e )
       // not permitting us to forward it up the part hiearchy in our dragEnterEvent,
       // etc. handlers
       return QWidget::event(e);
+    case QEvent::StyleChange:
+    case QEvent::LayoutRequest: {
+        bool ret = QScrollArea::event(e);
+        if (d->staticWidget && widget()->pos() != QPoint(0,0))
+            widget()->move(0,0);
+        return ret;
+    }
     default:
       return QScrollArea::event(e);
     }
@@ -2131,6 +2138,12 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     if (o == view) {
         if (widgetEvent(e))
             return true;
+        else if ( e->type() == QEvent::Resize ) {
+            bool ret = QScrollArea::eventFilter(o, e);
+            if (d->staticWidget && view->pos() != QPoint(0,0))
+                view->move(0,0);
+            return ret;
+        }
     } else if (o->isWidgetType()) {
 	QWidget *v = static_cast<QWidget *>(o);
         QWidget *c = v;
