@@ -266,6 +266,9 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     const bool isAutoloading = !(flags & NoAutoloading);
     const bool isDefault = (flags & IsDefault);
 
+    //kDebug() << actionId << keys << "isDefaultEmpty=" << isDefaultEmpty << "setPresent=" << setPresent
+    //         << "isAutoloading=" << isAutoloading << "isDefault=" << isDefault;
+
     actionData *ad = d->findAction(actionId);
 
     //the trivial and common case - synchronize the action from our data and exit
@@ -294,8 +297,6 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         ad->isPresent = false;
         //the rest will be initialized below
     }
-    if (!ad)
-        return QList<int>();
 
     //take care of stale keys and remove from added these that remain.
     foreach(int oldKey, ad->keys) {

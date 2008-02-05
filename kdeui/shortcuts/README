@@ -46,7 +46,7 @@ KGlobalAccel::updateGlobalShortcutsAllowed(true) sets the "SetPresent" flag when
 kdedglobalaccel, which makes kdedglobalaccel actually grab the key shortcut
 (so that the grab is done after the action has been defined, and only if it is enabled).
 kdedglobalaccel must know about inactive global shortcuts too (e.g. those defined in
-appliations not running at the moment), for conflict resolution.
+applications not running at the moment), for conflict resolution.
 
 ## kdebase side: keyboard shortcuts KCM
 

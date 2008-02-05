@@ -44,6 +44,9 @@ public:
     ///Register or unregister the action in this class, and notify the KDED module
     void updateGlobalShortcutAllowed(KAction *action, /*KAction::ShortcutTypes*/uint flags);
 
+    /// Helper method for the above two, takes care of the actual call to kded
+    QList<int> updateGlobalShortcutInKded(KAction* action, const QStringList& actionId, uint flags, uint initialSetterFlags);
+
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
 
