@@ -343,7 +343,7 @@ public:
      *
      * When an action, identified by main component name and text(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
-     * be saved. The shortcut will then be restored every time the action's 
+     * be saved. The shortcut will then be restored every time the action's
      * globalShortcutAllowed flag becomes true.
      * \e This \e includes \e calling \e setGlobalShortcut()!
      * If you actually want to change the global shortcut you have to set
@@ -353,11 +353,11 @@ public:
      * setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
      *                   KAction::NoAutoloading)
      * \endcode
-     * \param shortcut global shortcut(s) to assign
+     * \param shortcut global shortcut(s) to assign. Will be ignored unless \p loading is set to NoAutoloading.
      * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
      *             or both (the default).
-     * \param loading load the previous shortcut (Autoloading, the default) or really set a new
-     *                shortcut (NoAutoloading).
+     * \param loading load the previous shortcut, which might have been changed by the user (Autoloading, the default)
+     *                 or really set \param shortcut as the new shortcut (NoAutoloading).
      *
      * \sa KGlobalAccel
      * \sa globalShortcut()
@@ -377,9 +377,12 @@ public:
      * Defaults to false. Note that calling setGlobalShortcut() turns this on automatically.
      *
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
+     * \param loading (see setGlobalShortcut). Ignore this parameter.
      */
     void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
-    //^ TODO: document autoloading
+    //^ TODO: NoAutoloading would make little sense in this method, right? We don't have the shortcut to set...
+    // KDE5: remove loading parameter.
+
 
     KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
     KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;
