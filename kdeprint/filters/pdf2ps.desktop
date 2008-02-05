@@ -1,5 +1,6 @@
 [KDE Print Filter Entry]
 Name=pdf2ps
+Name[pl]=Konwersja PDF do PS
 Name[sv]=Pdf2ps
 Require=exec:/gs
 Comment=PDF to PostScript Converter
@@ -18,6 +19,7 @@ Comment[ja]=PDF から PostScript に変換
 Comment[km]=កម្មវិធីបម្លែង PDF ទៅ​ជា PostScript
 Comment[nds]=Wannelt PDF na PostScript üm
 Comment[nl]=Conversie van PDF naar PostScript
+Comment[pl]=Konwerter plików z formatu PDF do PostScriptu
 Comment[pt]=Conversor de PDF para PostScript
 Comment[pt_BR]=Conversor de PDF para PostScript
 Comment[ru]=Преобразование PDF в PostScript
