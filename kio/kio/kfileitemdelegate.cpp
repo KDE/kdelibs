@@ -699,21 +699,27 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
     QColor color;
     color.setAlphaF(amount);
 
-    // If the native paint engine supports CompositionMode_Plus
-    if (from.paintEngine()->hasFeature(QPaintEngine::BlendModes))
+    // If the native paint engine supports Porter/Duff compositing and CompositionMode_Plus
+    if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff) &&
+        from.paintEngine()->hasFeature(QPaintEngine::BlendModes))
     {
-        QPixmap temp = from;
+        QPixmap under = from;
+        QPixmap over  = to;
 
         QPainter p;
-        p.begin(&temp);
-        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-        p.fillRect(temp.rect(), color);
-        p.setCompositionMode(QPainter::CompositionMode_Plus);
-        p.setOpacity(amount);
-        p.drawPixmap(0, 0, to);
+        p.begin(&over);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        p.fillRect(over.rect(), color);
         p.end();
 
-        return temp;
+        p.begin(&under);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(under.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.drawPixmap(0, 0, over);
+        p.end();
+
+        return under;
     }
 #if defined(Q_WS_X11) && defined(HAVE_XRENDER)
     else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
@@ -766,19 +772,23 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
     else
     {
         // Fall back to using QRasterPaintEngine to do the transition.
-        QImage temp    = from.toImage();
-        QImage toImage = to.toImage();
+        QImage under = from.toImage();
+        QImage over  = to.toImage();
 
         QPainter p;
-        p.begin(&temp);
-        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-        p.fillRect(temp.rect(), color);
-        p.setCompositionMode(QPainter::CompositionMode_Plus);
-        p.setOpacity(amount);
-        p.drawImage(0, 0, toImage);
+        p.begin(&over);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        p.fillRect(over.rect(), color);
         p.end();
 
-        return QPixmap::fromImage(temp);
+        p.begin(&under);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(under.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.drawImage(0, 0, over);
+        p.end();
+
+        return QPixmap::fromImage(under);
     }
 }
 
