@@ -18,8 +18,8 @@
 
 */
 
-#ifndef PHONON_QSETTINGSGROUP_H
-#define PHONON_QSETTINGSGROUP_H
+#ifndef PHONON_QSETTINGSGROUP_P_H
+#define PHONON_QSETTINGSGROUP_P_H
 
 #include <QtCore/QSettings>
 #include <QtCore/QString>
@@ -87,4 +87,4 @@ class QSettingsGroup
 QT_END_NAMESPACE
 QT_END_HEADER
 
-#endif // PHONON_QSETTINGSGROUP_H
+#endif // PHONON_QSETTINGSGROUP_P_H
