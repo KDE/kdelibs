@@ -2,6 +2,7 @@
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000- Waldo Bastain <bastain@kde.org>
    Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2008 Jaroslaw Staniek <js@iidea.pl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,6 +22,7 @@
 #include "kprotocolmanager.h"
 
 #include <string.h>
+#include <unistd.h>
 #include <sys/utsname.h>
 #include <QtCore/QCoreApplication>
 #include <QtDBus/QtDBus>
@@ -441,23 +443,24 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   if (d->modifiers == modifiers)
      return d->useragent;
 
-  QString supp;
-  struct utsname nam;
-  if( uname(&nam) >= 0 )
+  QString systemName, systemVersion, machine, supp;
+  if (getSystemNameVersionAndMachine( systemName, systemVersion, machine ))
   {
     if( modifiers.contains('o') )
     {
-      supp += QString("; %1").arg(nam.sysname);
+      supp += QString("; %1").arg(systemName);
       if ( modifiers.contains('v') )
-        supp += QString(" %1").arg(nam.release);
+        supp += QString(" %1").arg(systemVersion);
     }
+#ifdef Q_WS_X11
     if( modifiers.contains('p') )
     {
-      supp += QLatin1String("; X11");  // TODO: determine this valye instead of hardcoding...
+      supp += QLatin1String("; X11");
     }
+#endif
     if( modifiers.contains('m') )
     {
-      supp += QString("; %1").arg(nam.machine);
+      supp += QString("; %1").arg(machine);
     }
     if( modifiers.contains('l') )
     {
@@ -467,6 +470,51 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   d->modifiers = modifiers;
   d->useragent = CFG_DEFAULT_UAGENT(supp);
   return d->useragent;
+}
+
+QString KProtocolManager::userAgentForApplication( const QString &appName, const QString& appVersion, 
+  const QStringList& extraInfo )
+{
+  QString systemName, systemVersion, machine;
+  QStringList info;
+  if (getSystemNameVersionAndMachine( systemName, systemVersion, machine ))
+    info += QString::fromLatin1("%1/%2").arg(systemName).arg(systemVersion);
+  info += QString::fromLatin1("KDE/%1.%2.%3").arg(KDE_VERSION_MAJOR)
+    .arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE);
+  if (!machine.isEmpty())
+    info += machine;
+  info += extraInfo;
+  return QString::fromLatin1("%1/%2 (%3)").arg(appName).arg(appVersion).arg(info.join("; "));
+}
+
+bool KProtocolManager::getSystemNameVersionAndMachine(
+  QString& systemName, QString& systemVersion, QString& machine )
+{
+  struct utsname unameBuf;
+  if ( 0 != uname( &unameBuf ) )
+    return false;
+#ifdef Q_WS_WIN
+  // we do not use unameBuf.sysname information constructed in kdewin32
+  // because we want to get separate name and version
+  systemName = QLatin1String( "Windows" );
+  OSVERSIONINFOEX versioninfo;
+  ZeroMemory(&versioninfo, sizeof(OSVERSIONINFOEX));
+  // try calling GetVersionEx using the OSVERSIONINFOEX, if that fails, try using the OSVERSIONINFO
+  versioninfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  bool ok = GetVersionEx( (OSVERSIONINFO *) &versioninfo );
+  if ( !ok ) {
+    versioninfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+    ok = GetVersionEx( (OSVERSIONINFO *) &versioninfo );
+  }
+  if ( ok )
+    systemVersion = QString::fromLatin1("%1.%2")
+      .arg(versioninfo.dwMajorVersion).arg(versioninfo.dwMinorVersion);
+#else
+  systemName = unameBuf.sysname;
+  systemVersion = unameBuf.release;
+#endif
+  machine = unameBuf.machine;
+  return true;
 }
 
 QString KProtocolManager::acceptLanguagesHeader()

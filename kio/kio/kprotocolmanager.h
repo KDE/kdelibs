@@ -2,6 +2,7 @@
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000- Waldo Bastain <bastain@kde.org>
    Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2008 Jaroslaw Staniek <js@iidea.pl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -64,19 +65,20 @@ public:
 
 
   /**
-   * Returns the default user-agent string.
+   * Returns the default user-agent string used for web browsing.
    *
    * @return the default user-agent string
    */
   static QString defaultUserAgent();
 
   /**
-   * Returns the default user-agent value.
+   * Returns the default user-agent value used for web browsing, for example
+   * "Mozilla/5.0 (compatible; Konqueror/4.0; Linux; X11; i686; en_US) KHTML/4.0.1 (like Gecko)"
    *
    * @param keys can be any of the following:
    * @li 'o'	Show OS
    * @li 'v'	Show OS Version
-   * @li 'p'	Show platform
+   * @li 'p'	Show platform (only for X11)
    * @li 'm'	Show machine architecture
    * @li 'l'	Show language
    * @return the default user-agent value with the given @p keys
@@ -84,7 +86,24 @@ public:
   static QString defaultUserAgent(const QString &keys);
 
   /**
-   * Returns the userAgent string configured for the
+   * Returns the application's user-agent string.
+   * Example string is "KMail/1.9.50 (Windows/6.0; KDE/3.97.1; i686; svn-762186; 2008-01-15)",
+   * where "KMail" is the @p appName parameter, "1.9.50" is the @p appVersion parameter,
+   * "Windows/6.0; KDE/3.97.1; i686" part is added automatically and "svn-762186; 2008-01-15"
+   * is provided by @p extraInfo list.
+   *
+   * @param appName name of the application
+   * @param appVersion name of the application
+   * @param extraInfo a list of elements that will be appended to the string as extra information
+   * @return the application's user-agent string
+   *
+   * @since 4.1
+   */
+  static QString userAgentForApplication( const QString &appName, const QString& appVersion, 
+    const QStringList& extraInfo = QStringList() );
+
+  /**
+   * Returns the user-agent string configured for the
    * specified host.
    *
    * If hostname is not found or is empty (i.e. "" or
@@ -92,9 +111,24 @@ public:
    * user agent.
    *
    * @param hostname name of the host
-   * @return specified userAgent string
+   * @return specified user-agent string
    */
   static QString userAgentForHost( const QString &hostname );
+
+  /*
+   * Returns system name, version and machine type, for example "Windows", "5.1", "i686".
+   * This information can be used for constructing custom user-agent strings.
+   *
+   * @param systemName system name
+   * @param systemVersion system version
+   * @param machine machine type
+
+   * @return true if system name, version and machine type has been provided
+   *
+   * @since 4.1
+   */
+  static bool getSystemNameVersionAndMachine(
+    QString& systemName, QString& systemVersion, QString& machine );
 
 
 /*=========================== TIMEOUT CONFIG ================================*/
