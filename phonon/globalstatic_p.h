@@ -108,7 +108,7 @@ class CleanUpGlobalStatic
  *
  * void doSomething()
  * {
- *     //  The first time you acess globalA a new instance of A will be created automatically.
+ *     //  The first time you access globalA a new instance of A will be created automatically.
  *     A *a = globalA;
  *     ...
  * }
@@ -237,7 +237,7 @@ class CleanUpGlobalStatic
  *
  * void doSomething()
  * {
- *     //  The first time you acess globalA a new instance of A will be created automatically.
+ *     //  The first time you access globalA a new instance of A will be created automatically.
  *     A *a = globalA;
  *     ...
  * }

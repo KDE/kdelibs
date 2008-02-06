@@ -183,10 +183,10 @@ class PHONON_EXPORT EffectParameter
          *
          * \param defaultValue The value that should be used as a default.
          *
-         * \param min The minium value allowed for this parameter. You only
+         * \param min The minimum value allowed for this parameter. You only
          * need to set this if the BoundedBelowHint is set.
          *
-         * \param max The maxium value allowed for this parameter. You only
+         * \param max The maximum value allowed for this parameter. You only
          * need to set this if the BoundedAboveHint is set.
          *
          * \param description A descriptive text for the parameter
