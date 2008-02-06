@@ -123,7 +123,7 @@ bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence 
 {
 	QString title = i18n("Key Conflict");
 	QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
-            "Do you want to reassign it from that action to the current one?", seq.toString(), item->text().remove('&'));
+            "Do you want to reassign it from that action to the current one?", seq.toString(QKeySequence::NativeText), item->text().remove('&'));
 
 	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue)
 		return false;
@@ -135,7 +135,7 @@ void KKeySequenceWidgetPrivate::wontStealShortcut(QAction *item, const QKeySeque
 {
 	QString title( i18n( "Shortcut conflict" ) );
 	QString msg( i18n( "<qt>The '%1' key combination is already used by the <b>%2</b> action.<br>"
-			"Please select a different one.</qt>", seq.toString() , item->text().remove('&') ) );
+			"Please select a different one.</qt>", seq.toString(QKeySequence::NativeText) , item->text().remove('&') ) );
 	KMessageBox::sorry( q, msg );
 }
 
@@ -342,7 +342,7 @@ reset:
 void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 {
 	//empty string if no non-modifier was pressed
-	QString s = keySequence.toString();
+	QString s = keySequence.toString(QKeySequence::NativeText);
 	s.replace('&', QLatin1String("&&"));
 
 	if (isRecording) {
