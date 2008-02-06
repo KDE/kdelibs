@@ -194,7 +194,7 @@ namespace Phonon
              *
              * \see QAbstractItemModel::rowCount
              */
-            inline int rowCount(const QModelIndex &parent = QModelIndex()) const { return d->rowCount(parent); }
+            inline int rowCount(const QModelIndex &parent = QModelIndex()) const { return d->rowCount(parent); } //krazy:exclude-inline
 
             /**
              * Returns data from the item with the given \p index for the specified
@@ -207,13 +207,13 @@ namespace Phonon
              * \see QAbstractItemModel::data
              * \see Qt::ItemDataRole
              */
-            inline QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const { return d->data(index, role); }
+            inline QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const { return d->data(index, role); } //krazy:exclude-inline
 
             /**
              * Reimplemented to show unavailable devices as disabled (but still
              * selectable).
              */
-            inline Qt::ItemFlags flags(const QModelIndex &index) const { return d->flags(index); }
+            inline Qt::ItemFlags flags(const QModelIndex &index) const { return d->flags(index); } //krazy:exclude-inline
 
             /**
              * Returns a list of indexes in the same order as they are in the
@@ -222,7 +222,7 @@ namespace Phonon
              *
              * This is useful to let the user define a list of preference.
              */
-            inline QList<int> tupleIndexOrder() const { return d->tupleIndexOrder(); }
+            inline QList<int> tupleIndexOrder() const { return d->tupleIndexOrder(); } //krazy:exclude-inline
 
             /**
              * Returns the ObjectDescription::index for the tuple
@@ -234,13 +234,13 @@ namespace Phonon
              *
              * \param positionIndex The position in the list.
              */
-            inline int tupleIndexAtPositionIndex(int positionIndex) const { return d->tupleIndexAtPositionIndex(positionIndex); }
+            inline int tupleIndexAtPositionIndex(int positionIndex) const { return d->tupleIndexAtPositionIndex(positionIndex); } //krazy:exclude-inline
 
             /**
              * Returns the MIME data that dropMimeData() can use to create new
              * items.
              */
-            inline QMimeData *mimeData(const QModelIndexList &indexes) const { return d->mimeData(type, indexes); }
+            inline QMimeData *mimeData(const QModelIndexList &indexes) const { return d->mimeData(type, indexes); } //krazy:exclude-inline
 
             /**
              * Moves the item at the given \p index up. In the resulting list
@@ -248,7 +248,7 @@ namespace Phonon
              *
              * Connected views are updated automatically.
              */
-            inline void moveUp(const QModelIndex &index) { d->moveUp(index); }
+            inline void moveUp(const QModelIndex &index) { d->moveUp(index); } //krazy:exclude-inline
 
             /**
              * Moves the item at the given \p index down. In the resulting list
@@ -256,19 +256,19 @@ namespace Phonon
              *
              * Connected views are updated automatically.
              */
-            inline void moveDown(const QModelIndex &index) { d->moveDown(index); }
+            inline void moveDown(const QModelIndex &index) { d->moveDown(index); } //krazy:exclude-inline
 
             /**
              * Constructs a ObjectDescription model with the
              * given \p parent.
              */
-            explicit inline ObjectDescriptionModel(QObject *parent = 0) : QAbstractListModel(parent), d(new ObjectDescriptionModelData(this)) {}
+            explicit inline ObjectDescriptionModel(QObject *parent = 0) : QAbstractListModel(parent), d(new ObjectDescriptionModelData(this)) {} //krazy:exclude-inline
 
             /**
              * Constructs a ObjectDescription model with the
              * given \p parent and the given \p data.
              */
-            explicit inline ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent = 0)
+            explicit inline ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent = 0) //krazy:exclude-inline
                 : QAbstractListModel(parent), d(new ObjectDescriptionModelData(this)) { setModelData(data); }
 
             /**
@@ -276,7 +276,7 @@ namespace Phonon
              *
              * All previous model data is cleared.
              */
-            inline void setModelData(const QList<ObjectDescription<type> > &data) {
+            inline void setModelData(const QList<ObjectDescription<type> > &data) { //krazy:exclude-inline
                 QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > list;
                 Q_FOREACH (const ObjectDescription<type> &desc, data) {
                     list << desc.d;
@@ -290,7 +290,7 @@ namespace Phonon
              * As the order of the list might have changed this can be different
              * to what was set using setModelData().
              */
-            inline QList<ObjectDescription<type> > modelData() const {
+            inline QList<ObjectDescription<type> > modelData() const { //krazy:exclude-inline
                 QList<ObjectDescription<type> > ret;
                 QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > list = d->modelData();
                 Q_FOREACH (const QExplicitlySharedDataPointer<ObjectDescriptionData> &data, list) {
@@ -302,13 +302,13 @@ namespace Phonon
             /**
              * Returns one ObjectDescription of the model data for the given \p index.
              */
-            inline ObjectDescription<type> modelData(const QModelIndex &index) const { return ObjectDescription<type>(d->modelData(index)); }
+            inline ObjectDescription<type> modelData(const QModelIndex &index) const { return ObjectDescription<type>(d->modelData(index)); } //krazy:exclude-inline
 
             /**
              * This model supports drag and drop to copy or move
              * items.
              */
-            inline Qt::DropActions supportedDropActions() const { return d->supportedDropActions(); }
+            inline Qt::DropActions supportedDropActions() const { return d->supportedDropActions(); } //krazy:exclude-inline
 
             /**
              * Accept drops from other models of the same ObjectDescriptionType.
@@ -316,7 +316,7 @@ namespace Phonon
              * If a valid \p parent is given the dropped items will be inserted
              * above that item.
              */
-            inline bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+            inline bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) { //krazy:exclude-inline
                 return d->dropMimeData(type, data, action, row, column, parent);
             }
 
@@ -328,7 +328,7 @@ namespace Phonon
              *
              * Returns true if the rows were successfully removed; otherwise returns false.
              */
-            inline bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) {
+            inline bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) { //krazy:exclude-inline
                 return d->removeRows(row, count, parent);
             }
 
@@ -336,7 +336,7 @@ namespace Phonon
              * Returns a list of supported drag and drop MIME types. Currently
              * it only supports one type used internally.
              */
-            inline QStringList mimeTypes() const { return d->mimeTypes(type); }
+            inline QStringList mimeTypes() const { return d->mimeTypes(type); } //krazy:exclude-inline
 
         protected:
             ObjectDescriptionModelData *const d;
