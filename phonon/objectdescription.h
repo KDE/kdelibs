@@ -197,7 +197,7 @@ class ObjectDescription
          * Returns a new description object that describes the
          * device/effect/codec/...  with the given \p index.
          */
-        static inline ObjectDescription<T> fromIndex(int index) { //krazy:exclude-inline
+        static inline ObjectDescription<T> fromIndex(int index) { //krazy:exclude=inline
             return ObjectDescription<T>(QExplicitlySharedDataPointer<ObjectDescriptionData>(ObjectDescriptionData::fromIndex(T, index)));
         }
 
@@ -205,7 +205,7 @@ class ObjectDescription
          * Returns \c true if this ObjectDescription describes the same
          * as \p otherDescription; otherwise returns \c false.
          */
-        inline bool operator==(const ObjectDescription &otherDescription) const { //krazy:exclude-inline
+        inline bool operator==(const ObjectDescription &otherDescription) const { //krazy:exclude=inline
             return *d == *otherDescription.d;
         }
 
@@ -213,7 +213,7 @@ class ObjectDescription
          * Returns \c false if this ObjectDescription describes the same
          * as \p otherDescription; otherwise returns \c true.
          */
-        inline bool operator!=(const ObjectDescription &otherDescription) const { //krazy:exclude-inline
+        inline bool operator!=(const ObjectDescription &otherDescription) const { //krazy:exclude=inline
             return !operator==(otherDescription);
         }
 
@@ -223,7 +223,7 @@ class ObjectDescription
          * \return A string that should be presented to the user to
          * choose the capture source.
          */
-        inline QString name() const { return d->name(); } //krazy:exclude-inline
+        inline QString name() const { return d->name(); } //krazy:exclude=inline
 
         /**
          * Returns a description of the capture source. This text should
@@ -232,7 +232,7 @@ class ObjectDescription
          *
          * \return A string describing the capture source.
          */
-        inline QString description() const { return d->description(); } //krazy:exclude-inline
+        inline QString description() const { return d->description(); } //krazy:exclude=inline
 
         /**
          * Returns a named property.
@@ -241,20 +241,20 @@ class ObjectDescription
          *
          * \see propertyNames()
          */
-        inline QVariant property(const char *name) const { return d->property(name); } //krazy:exclude-inline
+        inline QVariant property(const char *name) const { return d->property(name); } //krazy:exclude=inline
 
         /**
          * Returns all names that return valid data when property() is called.
          *
          * \see property()
          */
-        inline QList<QByteArray> propertyNames() const { return d->propertyNames(); } //krazy:exclude-inline
+        inline QList<QByteArray> propertyNames() const { return d->propertyNames(); } //krazy:exclude=inline
 
         /**
          * Returns \c true if the Tuple is valid (index != -1); otherwise returns
          * \c false.
          */
-        inline bool isValid() const { return d->isValid(); } //krazy:exclude-inline
+        inline bool isValid() const { return d->isValid(); } //krazy:exclude=inline
 
         /**
          * A unique identifier for this device/. Used internally
@@ -262,7 +262,7 @@ class ObjectDescription
          *
          * \return An integer that uniquely identifies every device/
          */
-        inline int index() const { return d->index(); } //krazy:exclude-inline
+        inline int index() const { return d->index(); } //krazy:exclude=inline
 
         ObjectDescription() : d(new ObjectDescriptionData(0)) {}
 
@@ -273,7 +273,7 @@ class ObjectDescription
 };
 
 template<ObjectDescriptionType T>
-inline QDebug operator<<(QDebug s, const ObjectDescription<T> &o) //krazy:exclude-inline
+inline QDebug operator<<(QDebug s, const ObjectDescription<T> &o) //krazy:exclude=inline
 {
     return s << o.name();
 }
