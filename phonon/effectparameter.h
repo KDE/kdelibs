@@ -219,7 +219,7 @@ uint PHONON_EXPORT qHash(const Phonon::EffectParameter &param);
 #if defined(Q_CC_MSVC) && _MSC_VER <= 1300
 //this ensures that code outside Phonon can use the hash function
 //it also a workaround for some compilers
-inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); }
+inline uint qHash(const Phonon::EffectParameter &param) { return Phonon::qHash(param); } //krazy:exclude-inline
 #endif
 Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::EffectParameter::Hints)
 

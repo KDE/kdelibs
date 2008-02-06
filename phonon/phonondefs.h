@@ -26,6 +26,9 @@
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
 
+// the following inlines are correct - exclude per line doesn't work for multiline-macros so exclude
+// the whole file for inline checks
+//krazy:excludeall-inline
 #define K_DECLARE_PRIVATE(Class) \
     inline Class##Private* k_func() { return reinterpret_cast<Class##Private *>(k_ptr); } \
     inline const Class##Private* k_func() const { return reinterpret_cast<const Class##Private *>(k_ptr); } \
