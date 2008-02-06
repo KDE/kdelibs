@@ -20,7 +20,7 @@
 #ifndef PHONONDEFS_H
 #define PHONONDEFS_H
 
-#include <QtCore/qglobal.h>
+#include <QtCore/QtGlobal>
 #include "phonon/phonon_export.h"
 
 QT_BEGIN_HEADER
