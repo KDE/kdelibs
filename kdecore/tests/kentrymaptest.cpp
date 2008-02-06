@@ -140,8 +140,9 @@ void KEntryMapTest::testGlobal()
     map.setEntry(group1, key1, value1, EntryGlobal);
     QCOMPARE(map.findEntry(group1, key1)->bGlobal, true);
 
+    // this should create a new key that is not "global"
     map.setEntry(group1, key1, value2, EntryOptions());
-    QVERIFY(map.findEntry(group1, key1)->bGlobal);
+    QVERIFY(!map.findEntry(group1, key1)->bGlobal);
 }
 
 void KEntryMapTest::testImmutable()
