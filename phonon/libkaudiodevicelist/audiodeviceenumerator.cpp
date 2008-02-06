@@ -237,7 +237,9 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
         }
     }
 #elif defined(HAVE_LIBASOUND2)
+#ifdef __GNUC__
 #warning "please update your libasound! this code is not supported"
+#endif
     snd_config_update();
     Q_ASSERT(snd_config);
     // after recreating the global configuration we can go and install custom configuration
