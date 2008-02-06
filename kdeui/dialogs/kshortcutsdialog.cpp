@@ -363,7 +363,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 	QGridLayout *layout = new QGridLayout(this);
 
 	m_defaultRadio = new QRadioButton(i18n("Default:"), this);
-	QString defaultText = defaultSeq.toString();
+	QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
 	if (defaultText.isEmpty())
 		defaultText = i18n("None");
 	QLabel *defaultLabel = new QLabel(defaultText, this);
@@ -665,7 +665,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 	item->setKeySequence(column, capture);
 	q->keyChange();
 	//force view update
-	item->setText(column, capture.toString());
+	item->setText(column, capture.toString(QKeySequence::NativeText));
 }
 
 
@@ -737,7 +737,7 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 	QString title = i18n("Key Conflict");
 	QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
 	                       "Do you want to reassign it from that action to the current one?",
-	                       seq.toString(), item->m_action->text());
+	                       seq.toString(QKeySequence::NativeText), item->m_action->text());
 
 	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign")))
         != KMessageBox::Continue)
@@ -755,7 +755,7 @@ void KShortcutsEditorPrivate::wontStealStandardShortcut(KStandardShortcut::Stand
 	QString message = i18n("The '%1' key combination has already been allocated to the standard action "
 	                       "\"%2\" that many applications use.\n"
 	                       "You cannot use it for global shortcuts for this reason.",
-	                       seq.toString(), KStandardShortcut::name(std));
+	                       seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
 
 	KMessageBox::sorry(q, message, title);
 }
