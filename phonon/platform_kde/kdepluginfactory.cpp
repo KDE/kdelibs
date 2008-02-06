@@ -17,10 +17,10 @@
 
 */
 
-#include "phonon/config-phonon.h"
-
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
+
+#include <phonon/config-phonon.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
