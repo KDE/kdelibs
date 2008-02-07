@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "delegateanimationhandler_p.h"
+
 #include <QListView>
 #include <QAbstractItemView>
 #include <QPersistentModelIndex>
@@ -27,7 +29,6 @@
 
 #include <cmath>
 
-#include "delegateanimationhandler_p.h"
 #include "delegateanimationhandler_p.moc"
 
 namespace KIO

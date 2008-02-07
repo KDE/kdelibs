@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QLinkedList>
 #include <QPersistentModelIndex>
+#include <QStyle>
 #include <QTimeLine>
 #include <QTime>
 
