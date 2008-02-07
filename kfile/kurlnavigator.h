@@ -267,6 +267,12 @@ Q_SIGNALS:
     void urlChanged(const KUrl& url);
 
     /**
+     * Is emitted, if the editable state for the URL has been changed
+     * (see KUrlNavigator::setUrlEditable()).
+     */
+    void editableStateChanged(bool editable);
+
+    /**
      * Is emitted, if the history has been changed. Usually
      * the history is changed if a new URL has been selected.
      */

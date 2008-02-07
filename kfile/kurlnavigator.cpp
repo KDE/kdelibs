@@ -487,6 +487,7 @@ void KUrlNavigator::Private::switchView()
         m_pathBox->setFocus();
     }
     emit q->requestActivation();
+    emit q->editableStateChanged(m_editable);
 }
 
 void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
