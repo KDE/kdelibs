@@ -20,7 +20,6 @@
 
 #include "mainwindow.h"
 #include <kedittoolbar.h>
-#include <kparts/mainwindow.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
