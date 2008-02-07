@@ -175,8 +175,9 @@ namespace Phonon
     } // anonymous namespace
 
     template<class T0, class T1 = NoIface, class T2 = NoIface>
-    struct Iface
+    class Iface
     {
+    public:
         typedef typename If<IsValid<T2>::Result, T2, typename If<IsValid<T1>::Result, T1, T0>::Result>::Result Type;
         static inline Type *cast(MediaNodePrivate *const d)
         {
@@ -199,6 +200,26 @@ namespace Phonon
             ret = iface_cast_helper<Type, T2>::help(d);
             return ret;
         }
+
+        inline Iface(MediaNodePrivate *const d) : iface(cast(d)) {}
+        inline operator       Type *()       { return iface; }
+        inline operator const Type *() const { return iface; }
+        inline       Type *operator->()       { return iface; }
+        inline const Type *operator->() const { return iface; }
+    private:
+        Type *const iface;
+    };
+
+    template<class T0, class T1 = NoIface, class T2 = NoIface>
+    class ConstIface
+    {
+    public:
+        typedef typename Iface<T0, T1, T2>::Type Type;
+        inline ConstIface(const MediaNodePrivate *const d) : iface(Iface<T0, T1, T2>::cast(d)) {}
+        inline operator const Type *() const { return iface; }
+        inline const Type *operator->() const { return iface; }
+    private:
+        const Type *const iface;
     };
 } // namespace Phonon
 
