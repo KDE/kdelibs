@@ -123,7 +123,6 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
                 comment = e.text();
             else
                 commentsByLanguage.insert(lang, e.text());
-            break;
         }
     }
     if (comment.isEmpty()) {
