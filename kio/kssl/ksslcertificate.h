@@ -122,7 +122,7 @@ class KIO_EXPORT KSSLCertificate
                                 SelfSigned, ErrorReadingRoot, NoSSL,
                                 Revoked, Untrusted, SignatureFailed,
                                 Rejected, PrivateKeyFailed, InvalidHost,
-                                Irrelevant, SelfSignedChain, InvalidCA,
+                                Irrelevant, SelfSignedChain,
                                 GetIssuerCertFailed, DecodeIssuerPublicKeyFailed,
                                 GetIssuerCertLocallyFailed,
                                 CertificateNotYetValid, CertificateHasExpired,
@@ -141,6 +141,7 @@ class KIO_EXPORT KSSLCertificate
                                 AuthAndSubjectKeyIDMismatched, OutOfMemory,
                                 GetCRLFailed, CertificateChainTooLong,
                                 KeyMayNotSignCertificate,
+                                IssuerSubjectMismatched
                                 };
 
         enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2,
