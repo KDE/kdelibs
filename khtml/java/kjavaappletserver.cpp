@@ -134,7 +134,7 @@ private:
 static KJavaAppletServer* self = 0;
 
 KJavaAppletServer::KJavaAppletServer()
-	:d(new KJavaAppletServerPrivate)
+    : d(new KJavaAppletServerPrivate)
 {
     process = new KJavaProcess();
 
@@ -263,7 +263,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     QString classes;
     {
         QStringList::ConstIterator it = entries.begin();
-	const QStringList::ConstIterator itEnd = entries.end();
+        const QStringList::ConstIterator itEnd = entries.end();
         for( ; it != itEnd; ++it )
         {
             if( !classes.isEmpty() )
@@ -660,43 +660,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                     if (cert) {
                         certs.prepend(cert);
                         if (cert->isSigner())
-                            text += i18n("Signed by (validation: ");
+                            text += i18n("Signed by (validation: %1)", KSSLCertificate::verifyText(cert->validate()));
                         else
-                            text += i18n("Certificate (validation: ");
-                        switch (cert->validate()) {
-                            case KSSLCertificate::Ok:
-                                text += i18n("Ok"); break;
-                            case KSSLCertificate::NoCARoot:
-                                text += i18n("NoCARoot"); break;
-                            case KSSLCertificate::InvalidPurpose:
-                                text += i18n("InvalidPurpose"); break;
-                            case KSSLCertificate::PathLengthExceeded:
-                                text += i18n("PathLengthExceeded"); break;
-                            case KSSLCertificate::InvalidCA:
-                                text += i18n("InvalidCA"); break;
-                            case KSSLCertificate::Expired:
-                                text += i18n("Expired"); break;
-                            case KSSLCertificate::SelfSigned:
-                                text += i18n("SelfSigned"); break;
-                            case KSSLCertificate::ErrorReadingRoot:
-                                text += i18n("ErrorReadingRoot"); break;
-                            case KSSLCertificate::Revoked:
-                                text += i18n("Revoked"); break;
-                            case KSSLCertificate::Untrusted:
-                                text += i18n("Untrusted"); break;
-                            case KSSLCertificate::SignatureFailed:
-                                text += i18n("SignatureFailed"); break;
-                            case KSSLCertificate::Rejected:
-                                text += i18n("Rejected"); break;
-                            case KSSLCertificate::PrivateKeyFailed:
-                                text += i18n("PrivateKeyFailed"); break;
-                            case KSSLCertificate::InvalidHost:
-                                text += i18n("InvalidHost"); break;
-                            case KSSLCertificate::Unknown:
-                            default:
-                                text += i18n("Unknown"); break;
-                        }
-                        text += QString(")\n");
+                            text += i18n("Certificate (validation: %1)", KSSLCertificate::verifyText(cert->validate()));
+                        text += "\n";
                         QString subject = cert->getSubject() + QChar('\n');
                         QRegExp reg(QString("/[A-Z]+="));
                         int pos = 0;
@@ -706,7 +673,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                     }
                 }
                 kDebug(6100) << "Security confirm " << args.first() << certs.count();
-		if ( !certs.isEmpty() ) {
+                if ( !certs.isEmpty() ) {
                     KSSLCertChain chain;
                     chain.setChain( certs );
                     if ( chain.isValid() )
@@ -740,7 +707,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
 void KJavaAppletServer::killTimers()
 {
-	QAbstractEventDispatcher::instance()->unregisterTimers(this);
+    QAbstractEventDispatcher::instance()->unregisterTimers(this);
 }
 
 void KJavaAppletServer::endWaitForReturnData() {
@@ -761,8 +728,9 @@ void KJavaAppletServer::waitForReturnData(JSStackFrame * frame) {
     kDebug(6100) << ">KJavaAppletServer::waitForReturnData";
     killTimers();
     startTimer(15000);
-    while (!frame->exit)
-		QAbstractEventDispatcher::instance()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
+    while (!frame->exit) {
+        QAbstractEventDispatcher::instance()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
+    }
     if (d->jsstack.size() <= 1)
         killTimers();
     kDebug(6100) << "<KJavaAppletServer::waitForReturnData stacksize:" << d->jsstack.size();
