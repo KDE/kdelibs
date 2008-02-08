@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -96,8 +96,8 @@ static const int MIN_YEAR = -4712;        // minimum year which QDate allows
 static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
 
 #ifdef COMPILING_TESTS
-extern KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
-extern KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
+KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
+KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 #endif
 
 /*----------------------------------------------------------------------------*/
@@ -1063,6 +1063,8 @@ void KDateTime::setSecondOccurrence(bool second)
 
 KDateTime KDateTime::addMSecs(qint64 msecs) const
 {
+    if (!msecs)
+        return *this;  // retain cache - don't create another instance
     if (!isValid())
         return KDateTime();
     if (d->dateOnly())
@@ -1098,6 +1100,8 @@ KDateTime KDateTime::addMSecs(qint64 msecs) const
 
 KDateTime KDateTime::addSecs(qint64 secs) const
 {
+    if (!secs)
+        return *this;  // retain cache - don't create another instance
     if (!isValid())
         return KDateTime();
     int days    = static_cast<int>(secs / 86400);
@@ -1121,6 +1125,8 @@ KDateTime KDateTime::addSecs(qint64 secs) const
 
 KDateTime KDateTime::addDays(int days) const
 {
+    if (!days)
+        return *this;  // retain cache - don't create another instance
     KDateTime result(*this);
     result.d->setDate(d->date().addDays(days));
     return result;
@@ -1128,6 +1134,8 @@ KDateTime KDateTime::addDays(int days) const
 
 KDateTime KDateTime::addMonths(int months) const
 {
+    if (!months)
+        return *this;  // retain cache - don't create another instance
     KDateTime result(*this);
     result.d->setDate(d->date().addMonths(months));
     return result;
@@ -1135,6 +1143,8 @@ KDateTime KDateTime::addMonths(int months) const
 
 KDateTime KDateTime::addYears(int years) const
 {
+    if (!years)
+        return *this;  // retain cache - don't create another instance
     KDateTime result(*this);
     result.d->setDate(d->date().addYears(years));
     return result;
