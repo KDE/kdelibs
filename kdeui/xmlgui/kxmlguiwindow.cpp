@@ -347,8 +347,8 @@ void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool for
         d->showStatusBarAction->setChecked(!sb->isHidden());
 }
 
-// why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
-// DF: because they compile KDE much faster :)
+// KDE5 TODO: change it to "using KXMLGUIBuilder::finalizeGUI;" in the header
+// and remove the reimplementation
 void KXmlGuiWindow::finalizeGUI( KXMLGUIClient *client )
 { KXMLGUIBuilder::finalizeGUI( client ); }
 

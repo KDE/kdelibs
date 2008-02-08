@@ -304,7 +304,7 @@ public:
      */
     void setupToolbarMenuActions();
 
-    // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
+    // KDE5 TODO: change it to "using KXMLGUIBuilder::finalizeGUI;"
     virtual void finalizeGUI( KXMLGUIClient *client );
 
     /**
