@@ -15,6 +15,7 @@
 #undef protected
 #include "misc/loader.h"
 #include <QtGui/QCursor>
+#include <QDomDocument>
 #include <dom_string.h>
 #include "dom/dom2_range.h"
 #include "dom/html_document.h"
