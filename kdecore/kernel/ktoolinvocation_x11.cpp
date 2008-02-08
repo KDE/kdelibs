@@ -63,6 +63,8 @@
 #include <QFile>
 #include <errno.h>
 #include <kconfiggroup.h>
+#include <kcomponentdata.h>
+#include <klockfile.h>
 
 void KToolInvocation::invokeHelp( const QString& anchor,
                                   const QString& _appname,
@@ -400,6 +402,13 @@ static int my_system (const char *command) {
 
 void KToolInvocation::startKdeinit()
 {
+  KComponentData inst( "startkdeinitlock" );
+  KLockFile lock( KStandardDirs::locateLocal( "tmp", "startkdeinitlock", inst ));
+  if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
+     lock.lock();
+     if( QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ))
+         return; // whoever held the lock has already started it
+  }
   // Try to launch kdeinit.
   QString srv = KStandardDirs::findExe(QLatin1String("kdeinit4"));
   if (srv.isEmpty())

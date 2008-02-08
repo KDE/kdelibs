@@ -27,6 +27,9 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtDBus/QtDBus>
+#include <kcomponentdata.h>
+#include <klockfile.h>
+#include <kstandarddirs.h>
 
 #include "windows.h"
 #include "shellapi.h"
@@ -154,6 +157,13 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
 void KToolInvocation::startKdeinit()
 {
+   KComponentData inst( "startkdeinitlock" );
+   KLockFile lock( KStandardDirs::locateLocal( "tmp", "startkdeinitlock", inst ));
+   if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
+     lock.lock();
+     if( QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ))
+         return; // whoever held the lock has already started it
+   }
    QProcess kdeinit;
    kdeinit.start("kdeinit4");
    kdeinit.waitForFinished();
