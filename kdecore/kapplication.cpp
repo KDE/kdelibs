@@ -1333,6 +1333,14 @@ bool KApplication::sessionSaving() const
 void KApplication::startKdeinit()
 {
 #ifndef Q_WS_WIN //TODO
+  KInstance inst( "startkdeinitlock" );
+  KLockFile lock( locateLocal( "tmp", "startkdeinitlock", &inst ));
+  if( lock.lock( KLockFile::LockNoBlock ) != KLockFile::LockOK ) {
+     lock.lock();
+     DCOPClient cl;
+     if( cl.attach())
+         return; // whoever held the lock has already started dcopserver
+  }
   // Try to launch kdeinit.
   QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
   if (srv.isEmpty())
