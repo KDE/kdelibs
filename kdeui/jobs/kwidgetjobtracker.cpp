@@ -388,7 +388,7 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
     if (tracker->stopOnClose(job)) {
         tracker->slotStop(job);
     } else if (tracker->autoDelete(job)) {
-        deleteLater();
+        delete this;
     } else {
         tracker->slotClean(job);
     }
@@ -586,7 +586,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
     tracker->slotStop(job);
-    tracker->widget(job)->deleteLater();
+    delete tracker->widget(job);
 }
 
 #include "kwidgetjobtracker.moc"
