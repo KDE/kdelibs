@@ -12,6 +12,7 @@
 #include <QtGui/QMovie>
 #include <QtGui/QLabel>
 #include <QtGui/QImage>
+#include <QtXml/QDomDocument>
 
 #include <kapplication.h>
 #include <kxmlguifactory.h>
