@@ -66,7 +66,7 @@ namespace ThreadWeaver {
         We use our own debugging method, since debugging threads is a more
         complicated experience than debugging single threaded
         contexts. This might change in future in the way that debug
-        prints it's messages to another logging facility provided by
+        prints its messages to another logging facility provided by
         the platform.
 	Use setDebugLevel () to integrate adapt debug () to your platform.
     */

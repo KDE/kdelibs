@@ -289,7 +289,7 @@ public:
      * @param type Specifies a short descriptive string to access files
      * of this type.
      * @param absdir Points to directory where to look for this specific
-     * type. Non-existant directories may be saved but pruned.
+     * type. Non-existent directories may be saved but pruned.
      * @param priority if true, the directory is added before any other,
      * otherwise after
      * @return true if successful, false otherwise.
@@ -747,7 +747,7 @@ public:
      * the directory. If yes, checkAccess() returns true.
      * In all other cases checkAccess() returns false.
      *
-     * Other than access() this function EXPLICITLY ignores non-existant
+     * Other than access() this function EXPLICITLY ignores non-existent
      * files if checking for write access.
      *
      * @param pathname The full path of the file you want to test

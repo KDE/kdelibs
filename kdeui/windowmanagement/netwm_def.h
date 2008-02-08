@@ -31,7 +31,7 @@
   Simple point class for NET classes.
 
   This class is a convenience class defining a point x, y.  The existence of
-  this class is to keep the implementation from being dependant on a
+  this class is to keep the implementation from being dependent on a
   separate framework/library.
 
   NETPoint is only used by the NET API. Usually QPoint is the 
@@ -58,7 +58,7 @@ struct NETPoint {
   Simple size class for NET classes.
 
   This class is a convenience class defining a size width by height.  The
-  existence of this class is to keep the implementation from being dependant
+  existence of this class is to keep the implementation from being dependent
   on a separate framework/library.
 
   NETSize is only used by the NET API. Usually QSize is the 
@@ -85,7 +85,7 @@ struct NETSize {
 
    This class is a convenience class defining a rectangle as a point x,y with a
    size width by height.  The existence of this class is to keep the implementation
-   from being dependant on a separate framework/library;
+   from being dependent on a separate framework/library;
 
    NETRect is only used by the NET API. Usually QRect is the 
    appropriate class for representing a rectangle.
@@ -112,7 +112,7 @@ struct NETRect {
 
    This class is a convenience class defining an icon of size width by height.
    The existence of this class is to keep the implementation from being
-   dependant on a separate framework/library.
+   dependent on a separate framework/library.
 
    NETIcon is only used by the NET API. Usually QIcon is the 
    appropriate class for representing an icon.
@@ -145,7 +145,7 @@ struct NETIcon {
 
    This class is a convenience class defining a strut with left, right, top and
    bottom border values, and ranges for them.  The existence of this class is to
-   keep the implementation from being dependant on a separate framework/library.
+   keep the implementation from being dependent on a separate framework/library.
    See the _NET_WM_STRUT_PARTIAL property in the NETWM spec.
 **/
 
@@ -187,7 +187,7 @@ struct NETExtendedStrut {
 
    This class is a convenience class defining a strut with left, right, top and
    bottom border values.  The existence of this class is to keep the implementation
-   from being dependant on a separate framework/library. See the _NET_WM_STRUT
+   from being dependent on a separate framework/library. See the _NET_WM_STRUT
    property in the NETWM spec.
 **/
 

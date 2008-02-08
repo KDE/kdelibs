@@ -45,7 +45,7 @@ namespace ThreadWeaver {
     public:
         WeaverThreadGrid ( QWidget *parent = 0 );
         ~WeaverThreadGrid ();
-	// attach this object to a Weaver to visualize it's activity:
+	// attach this object to a Weaver to visualize its activity:
 	void attach (Weaver *weaver);
     protected:
         // rewrite the paintEvent handler:

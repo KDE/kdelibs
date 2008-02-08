@@ -339,7 +339,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     void incrementInitialSize( const QSize &size );
 
     /**
-     * Restores the dialogs size from the configuration according to
+     * Restores the dialog's size from the configuration according to
      * the screen size.
      *
      * @note the group must be set before calling
@@ -349,7 +349,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     void restoreDialogSize( const KConfigGroup& config ) ;
 
     /**
-     * Saves the dialogs size dependant on the screen dimension either to the
+     * Saves the dialog's size dependent on the screen dimension either to the
      * global or application config file.
      *
      * @note the group must be set before calling

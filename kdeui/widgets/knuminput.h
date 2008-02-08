@@ -204,7 +204,7 @@ public:
      * this instance that it is visually put below some other KNumInput widget.
      * Note that these two KNumInput's need not to have the same parent widget
      * or be in the same layout group.
-     * The effect is that it'll adjust it's layout in correspondence
+     * The effect is that it'll adjust its layout in correspondence
      * with the layout of the other KNumInput's (you can build an arbitrary long
      * chain).
      *
@@ -473,7 +473,7 @@ public:
      * instance that it is visually put below some other KNumInput
      * widget.  Note that these two KNumInput's need not to have the
      * same parent widget or be in the same layout group.  The effect
-     * is that it'll adjust it's layout in correspondence with the
+     * is that it'll adjust its layout in correspondence with the
      * layout of the other KNumInput's (you can build an arbitrary long
      * chain).
      *

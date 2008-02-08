@@ -99,7 +99,7 @@ public:
      */
     void setTab(int id ,bool state);
     /**
-     * return the state of a tab, identified by it's ID
+     * return the state of a tab, identified by its ID
      */
     bool isTabRaised(int id) const;
     /**

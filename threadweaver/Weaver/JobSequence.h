@@ -40,7 +40,7 @@ namespace ThreadWeaver {
 
         JobSequence provides a handy cleanup and unwind mechanism: the stop()
         slot. If it is called, the processing of the sequence will stop, and
-        all it's remaining Jobs will be dequeued.
+        all its remaining Jobs will be dequeued.
     */
     class THREADWEAVER_EXPORT JobSequence : public JobCollection
     {

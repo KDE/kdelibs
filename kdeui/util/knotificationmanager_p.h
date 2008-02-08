@@ -56,7 +56,7 @@ public:
     void remove(int id);
 
     /**
-     * Insert the notification and it's id in the internal map
+     * Insert the notification and its id in the internal map
      */
     void insert(KNotification *n, int id);
 

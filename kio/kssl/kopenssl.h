@@ -544,7 +544,7 @@ public:
 
 
    /*
-    *  Convert an ASN1_INTEGER to it's text form
+    *  Convert an ASN1_INTEGER to its text form
     */
    char *i2s_ASN1_INTEGER(X509V3_EXT_METHOD *meth, ASN1_INTEGER *aint);
 

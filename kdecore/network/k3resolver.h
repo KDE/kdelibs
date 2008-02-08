@@ -592,7 +592,7 @@ public:
   /**
    * Sets the protocol we want.
    *
-   * Protocols are dependant on the selected address family, so you should know
+   * Protocols are dependent on the selected address family, so you should know
    * what you are doing if you use this function. Besides, protocols generally
    * are either stream-based or datagram-based, so the value of the socket
    * type is also important. The resolution will fail if these values don't match.

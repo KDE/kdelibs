@@ -182,7 +182,7 @@ protected:
 
   /**
    * The resize event resizes @p child0, @p child1 and the @p divider.
-   * The new sizes are dependant of
+   * The new sizes are dependent on
    *   - whether @p child0 or @p child1 is a K3DockContainer
    *   - the current mode which may be
    *     - Closed

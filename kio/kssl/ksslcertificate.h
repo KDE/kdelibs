@@ -28,7 +28,7 @@
 //
 //
 //  The biggest reason for making everything protected here is so that
-//  the class can have all it's methods available even if openssl is not
+//  the class can have all its methods available even if openssl is not
 //  available.  Also, to create a new certificate you should use the
 //  KSSLCertificateFactory, and to manage the user's database of certificates,
 //  you should go through the KSSLCertificateHome.

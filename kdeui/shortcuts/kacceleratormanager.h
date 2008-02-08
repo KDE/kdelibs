@@ -67,7 +67,7 @@ public:
     static void last_manage(QString &added,  QString &changed,  QString &removed);
 
     /**
-     * Use this method for a widget (and it's children) you want no accels to be set on.
+     * Use this method for a widget (and its children) you want no accels to be set on.
      */
     static void setNoAccel( QWidget *widget );
 };

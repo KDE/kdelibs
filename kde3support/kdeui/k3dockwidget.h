@@ -330,7 +330,7 @@ protected:
   K3DockButton_Private* stayButton;
 
   /**
-   * a little button for dock back the dockwidget to it's previous dockwidget
+   * a little button for dock back the dockwidget to its previous dockwidget
    */
   K3DockButton_Private* dockbackButton;
 

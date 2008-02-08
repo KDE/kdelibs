@@ -448,7 +448,7 @@ namespace Kross {
              *
              * \param parent the parent QWidget the new QWidget is a child of.
              * \param filename the full filename of the UI file which is readed
-             * and it's UI XML content is used to construct the new widget.
+             * and its UI XML content is used to construct the new widget.
              */
             QWidget* createWidgetFromUIFile(QWidget* parent, const QString& filename);
 

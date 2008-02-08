@@ -37,7 +37,7 @@ using namespace ThreadWeaver;
 
 
 // FIXME (0.7) it looks like we do not need this if the Thread object is
-// moved to it's own thread (weaverimpl does that)
+// moved to its own thread (weaverimpl does that)
 class ThreadWeaver::ThreadRunHelper : public QObject
 {
     Q_OBJECT

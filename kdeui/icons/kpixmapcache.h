@@ -170,7 +170,7 @@ public:
 
     /**
      * @return true when the cache is enabled.
-     * Cache will be disabled when e.g. it's data file cannot be created or
+     * Cache will be disabled when e.g. its data file cannot be created or
      *  read.
      **/
     bool isEnabled() const;

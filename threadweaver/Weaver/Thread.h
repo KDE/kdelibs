@@ -61,7 +61,7 @@ namespace ThreadWeaver {
         ~Thread();
 
         /** Overload to execute the assigned jobs.
-	    Whenever the thread is idle, it will ask it's Weaver parent for a
+	    Whenever the thread is idle, it will ask its Weaver parent for a
 	    Job to do. The Weaver will either return a Job or a Nil
 	    pointer. When a Nil pointer is returned, it tells the thread to
 	    exit.

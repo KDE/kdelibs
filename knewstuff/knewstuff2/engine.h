@@ -77,7 +77,7 @@ public:
      * to keep track of it.
      *
      * @return List of installed or deinstalled entries
-     * NOTE: this is a copy of each entry because this call deletes it's own
+     * NOTE: this is a copy of each entry because this call deletes its own
      * engine which deletes the original entries, so you need to delete the entries
      * returned in the list
      *

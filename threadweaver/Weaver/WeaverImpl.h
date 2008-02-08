@@ -45,7 +45,7 @@ namespace ThreadWeaver {
     class WeaverObserver;
 
     /** A WeaverImpl is the manager of worker threads (Thread objects) to
-        which it assigns jobs from it's queue. It extends the API of
+        which it assigns jobs from its queue. It extends the API of
         WeaverInterface to provide additional methods needed by the Thread
         objects. */
     class WeaverImpl : public WeaverInterface

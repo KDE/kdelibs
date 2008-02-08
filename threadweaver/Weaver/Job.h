@@ -102,11 +102,11 @@ namespace ThreadWeaver {
             derived classes if the derived Job class can fail.
 
             If a job fails (success() returns false), it will *NOT* resolve
-            it's dependencies when it finishes. This will make sure that Jobs
+            its dependencies when it finishes. This will make sure that Jobs
             that depend on the failed job will not be started.
 
             There is an important gotcha: When a Job object is deleted, it
-            will always resolve it's dependencies. If dependent jobs should
+            will always resolve its dependencies. If dependent jobs should
             not be executed after a failure, it is important to dequeue those
             before deleting the failed Job.
 

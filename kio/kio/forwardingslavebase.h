@@ -123,7 +123,7 @@ public:
 
 protected:
     /**
-     * Rewrite an url to it's forwarded counterpart. It should return
+     * Rewrite an url to its forwarded counterpart. It should return
      * true if everything was ok, and false otherwise.
      *
      * If a problem is detected it's up to this method to trigger error()

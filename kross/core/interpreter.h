@@ -152,7 +152,7 @@ namespace Kross {
              * is the describer for. If the interpreter that implements the
              * scripting backend isn't loaded yet, this method will trigger
              * the loading of the interpreter's library. Note that this
-             * mthod may return NULL if there is no library for that
+             * method may return NULL if there is no library for that
              * interpreter installed or if the library is incompatible.
              */
             Interpreter* interpreter();
@@ -167,7 +167,7 @@ namespace Kross {
     /**
      * Base class for interpreter implementations.
      *
-     * Each scripting backend needs to inheritate it's own
+     * Each scripting backend needs to inherit its own
      * interpreter and implement it.
      *
      * The Interpreter will be managed by the \a Manager

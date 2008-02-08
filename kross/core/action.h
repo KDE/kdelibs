@@ -37,8 +37,8 @@ namespace Kross {
 
     /**
      * The Action class is an abstract container to deal with scripts
-     * like a single standalone scriptfile. Each action holds a reference
-     * to by the matching @a Kross::Interpreter created @a Kross::Script
+     * like a single standalone script file. Each action holds a reference
+     * to the matching @a Kross::Interpreter created @a Kross::Script
      * instance.
      *
      * The \a Manager takes care of handling the \a Action instances
@@ -46,10 +46,10 @@ namespace Kross {
      * for those \a Action instances.
      *
      * Once you've such a Action instance you're able to perform actions
-     * with it like to execute scripting code.
+     * with it like executing scripting code.
      *
      * Following sample shows "Hello World." executed with the python
-     * interpreter;
+     * interpreter:
      * \code
      * # Create a new Kross::Action instance.
      * Kross::Action* action = new Kross::Action(0,"MyFirstScript");
@@ -62,7 +62,7 @@ namespace Kross {
      * \endcode
      *
      * Following sample demonstrates how to execute an external python script
-     * file. The script file itself is named "mytest.py" and contains;
+     * file. The script file itself is named "mytest.py" and contains:
      * \code
      * # this function got called from within C++
      * def myfunction(args):
@@ -75,7 +75,7 @@ namespace Kross {
      * MySecondQObject.someProperty = "Other string"
      * \endcode
      * Then you are able to load the script file, publish QObject instances
-     * and let the script do whatever it likes to do;
+     * and let the script do whatever it likes to do:
      * \code
      * # Publish a QObject instance for all Kross::Action instances.
      * Kross::Manager::self().addObject(myqobject1, "MyFirstQObject")
@@ -104,7 +104,7 @@ namespace Kross {
            /**
              * Constructor.
              *
-             * \param parent The parent QObject this \a Action is child of.
+             * \param parent The parent QObject this \a Action is a child of.
              * \param name The unique name this Action has. It's used
              * e.g. at the \a Manager to identify the Action. The
              * name is accessible via \a QObject::objectName .
@@ -114,11 +114,11 @@ namespace Kross {
             /**
              * Constructor.
              *
-             * \param parent The parent QObject this \a Action is child of.
-             * \param url The URL should point  to a valid scriptingfile.
+             * \param parent The parent QObject this \a Action is a child of.
+             * \param url The URL should point to a valid scripting file.
              * This \a Action will be filled with the content of the
-             * file (e.g. the file is readed and \a code should return
-             * it's content and it's also tried to determinate the
+             * file (e.g. the file is read and \a code should return
+             * its content and it's also tried to determine the
              * \a interpreter ). Remember to use QUrl c'tor explicitly.
              * The name will be set to url.path()
              */
@@ -146,37 +146,37 @@ namespace Kross {
             /**
              * Initialize the \a Script instance.
              *
-             * Normaly it's not needed to call this function direct cause
-             * if will be internaly called if needed (e.g. on \a execute ).
+             * Normally there is no need to call this function directly because
+             * if will be called internally if needed (e.g. on \a execute ).
              *
-             * \return true if the initialization was successfully else
+             * \return true if the initialization was successful else
              * false is returned.
              */
             bool initialize();
 
             /**
-             * Finalize the \a Script instance and free's any cached or still
-             * running executions. Normaly it's not needed to call this
-             * function direct cause the \a Action will take care
+             * Finalize the \a Script instance and frees any cached or still
+             * running executions. Normally there is no need to call this
+             * function directly because the \a Action will take care
              * of calling it if needed.
              */
             void finalize();
 
             /**
-             * \return true if the action is finalized what means the
+             * \return true if the action is finalized, which means the
              * action is currently not running.
              */
             bool isFinalized() const;
 
             /**
              * \return the \a Kross::Script implementation used by the scripting
-             * backend. This returns NULL till the action got triggered or if
-             * there was an error before.
+             * backend. This returns NULL until the action got triggered or if
+             * there was a error before that.
              *
-             * Normaly it shouldn't be needed to deal with the scripting backend
+             * Normaly it shouldn't be necessary to deal with the scripting backend
              * depending instance of a \a Kross::Script implementation since this
-             * \a Action class does decorate already all the things needed. It
-             * may however useful to provide additional interpreter dependend
+             * \a Action class already decorates all the things needed. It
+             * may however be useful to provide additional interpreter dependent
              * functionality.
              */
             Script* script() const;
@@ -225,12 +225,12 @@ namespace Kross {
             void setEnabled(bool enabled);
 
             /**
-             * \return the scriptfile that should be executed.
+             * \return the script file that should be executed.
              */
             QString file() const;
 
             /**
-             * Set the scriptfile that should be executed.
+             * Set the script file that should be executed.
              */
             bool setFile(const QString& scriptfile);
 
@@ -268,12 +268,12 @@ namespace Kross {
             void addQObject(QObject* obj, const QString &name = QString());
 
             /**
-             * \return the QObject with the objectName \p name .
+             * \return the QObject with the object name \p name .
              */
             QObject* qobject(const QString &name) const;
 
             /**
-             * \return a list of QObject objectName's.
+             * \return a list of QObject object names.
              */
             QStringList qobjectNames() const;
 
@@ -286,7 +286,7 @@ namespace Kross {
 
             /**
              * \return the value of the option defined with \p name .
-             * If there doesn't exists an option with such a name,
+             * If there doesn't exist an option with such a name,
              * the \p defaultvalue is returned.
              */
             QVariant option(const QString& name, const QVariant& defaultvalue = QVariant());
@@ -314,8 +314,8 @@ namespace Kross {
             /**
              * This signal is emitted if the content of the Action
              * was changed. The \a ActionCollection instances this Action
-             * is child of are connected with this signal to fire up
-             * there own updated signal if an Action of them was updated.
+             * is a child of are connected with this signal to fire up
+             * their own updated signal if an Action of them was updated.
              */
             void updated();
 

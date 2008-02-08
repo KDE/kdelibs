@@ -30,7 +30,7 @@ namespace Kross {
 
     /**
     * The EcmaScript class implements a \a Kross::Script to handle
-    * a single script. Each script and script file will have it's
+    * a single script. Each script and script file will have its
     * own \a EcmaScript instance as container for a Ecma QtScript
     * that is managed by the \a Kross::Action class.
     */
