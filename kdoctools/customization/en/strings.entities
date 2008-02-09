@@ -3,7 +3,7 @@
      Translate everything between quotes, except names of general 
      entities (&...;). -->
 
-<!ENTITY kappname "แอพพลิเคชันนี้">
+<!ENTITY kappname "this application">
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[

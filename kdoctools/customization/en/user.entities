@@ -8,17 +8,17 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom	'<hardware>CD-ROM</hardware>'>
+<!ENTITY cdrom	'<hardware>CD-ROM drive</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY eg     "<abbrev>ตัวอย่าง</abbrev>">
+<!ENTITY eg     "<abbrev>e.g.</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>ฯลฯ</abbrev>">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY ie     "<abbrev>คือ</abbrev>">
-<!ENTITY infocenter	"<application>ศูนย์ข้อมูล</application>">
-<!ENTITY kcontrolcenter	"<application>ศูนย์ควบคุม &kde;</application>">
+<!ENTITY ie     "<abbrev>i.e.</abbrev>">
+<!ENTITY infocenter	"<application>Info Center</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-icon</title></objectinfo>
@@ -27,11 +27,11 @@
 </inlinemediaobject>
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
-<!ENTITY kmenu  "เมนู <guimenu>K</guimenu>">
-<!ENTITY LMB    "ปุ่มเมาส์<mousebutton>ซ้าย</mousebutton>">
-<!ENTITY MMB    "ปุ่มเมาส์<mousebutton>กลาง</mousebutton>">
-<!ENTITY OS	"ระบบปฏิบัติการ"><!-- <acronym>OS</acronym>-->
-<!ENTITY RMB    "ปุ่มเมาส์<mousebutton>ขวา</mousebutton>">
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
+<!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
+<!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button">
+<!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY systemtray "<application>ถาดระบบ</application>">
+<!ENTITY systemtray "<application>system tray</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
