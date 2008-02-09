@@ -111,7 +111,7 @@ int main( int argc, char** argv )
             return usage();
     }
 
-    foreach( QString ontoFile, ontoFiles ) {
+    foreach( const QString &ontoFile, ontoFiles ) {
         if( !QFile::exists( ontoFile ) ) {
             qDebug() << "Ontology file " << ontoFile << " does not exist." << endl;
             return usage();
@@ -126,7 +126,7 @@ int main( int argc, char** argv )
     }
 
     OntologyParser prsr;
-    foreach( QString ontoFile, ontoFiles ) {
+    foreach( const QString &ontoFile, ontoFiles ) {
         if( !prsr.parse( ontoFile ) ) {
             qDebug() << "Parsing ontology file " << ontoFile << " failed." << endl;
             return usage();

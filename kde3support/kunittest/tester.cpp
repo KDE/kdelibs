@@ -70,7 +70,7 @@ namespace KUnitTest
         if ( allSlots.contains("setUp()") )
             invokeMember("setUp()");
 
-        foreach ( QByteArray sl, allSlots )
+        foreach ( const QByteArray &sl, allSlots )
         {
             if ( sl.startsWith("test") )
             {

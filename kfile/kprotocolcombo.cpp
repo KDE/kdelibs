@@ -132,7 +132,7 @@ void KProtocolCombo::updateMenu()
     menu->clear();
 
     int i = 0;
-    foreach (QString protocol, m_protocols) {
+    foreach (const QString &protocol, m_protocols) {
         QAction *action = menu->addAction(protocol);
         action->setData(i++);
     }

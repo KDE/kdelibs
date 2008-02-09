@@ -180,7 +180,7 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
 
    if (newEntries.count()==0) return; // Directory not accessible ??
 
-   foreach ( QFileInfo qFileInfo, newEntries ) {
+   foreach ( const QFileInfo &qFileInfo, newEntries ) {
        if (qFileInfo.isFile())
        {
           FileInfo *fileInfo = readEntry( strDir + '/' + qFileInfo.fileName());

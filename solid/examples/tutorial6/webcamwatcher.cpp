@@ -31,7 +31,7 @@ WebcamWatcher::WebcamWatcher( QObject * parent ) : QObject( parent )
 {
     // get a list of all the webcams in the system
     int found = 0;
-    foreach (Solid::Device device, Solid::Device::listFromType(Solid::DeviceInterface::Video, QString()))
+    foreach (const Solid::Device &device, Solid::Device::listFromType(Solid::DeviceInterface::Video, QString()))
     {
         m_videoDevices << device.udi();
         getDetails( device );

@@ -3105,7 +3105,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
     if (dlg.exec() == KDialog::Accepted)
     {
-        foreach(QString mimetype, dlg.chooser()->mimeTypes())
+        foreach(const QString &mimetype, dlg.chooser()->mimeTypes())
         {
             KMimeType::Ptr p = KMimeType::mimeType(mimetype);
             if (!p)

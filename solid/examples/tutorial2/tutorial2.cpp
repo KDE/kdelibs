@@ -40,7 +40,7 @@ int main(int args, char **argv)
     KComponentData componentData("tutorial2");
     
     //get a list of all devices that are AudioInterface
-    foreach (Solid::Device device, Solid::Device::listFromType(Solid::DeviceInterface::AudioInterface, QString()))
+    foreach (const Solid::Device &device, Solid::Device::listFromType(Solid::DeviceInterface::AudioInterface, QString()))
     {
         kDebug() << device.udi().toLatin1().constData();
     }

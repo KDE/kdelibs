@@ -139,16 +139,16 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     QStringList classes = input.groupList();
     classes.removeAll( "Global" );
 
-    foreach ( QString myInclude, classes )
+    foreach ( const QString &myInclude, classes )
       includes += buildWidgetInclude( myInclude, input );
 
-    foreach ( QString myInclude, includes)
+    foreach ( const QString &myInclude, includes)
         ts << "#include <" << myInclude << ">" << endl;
 
     ts << QLatin1String("\n\n");
 
     // Autogenerate widget defs here
-    foreach ( QString myClass, classes )
+    foreach ( const QString &myClass, classes )
         ts << buildWidgetClass( myClass, input, group ) << endl;
 
     ts << buildCollClass( input, classes );
@@ -167,7 +167,7 @@ QString buildCollClass( KConfig &_input, const QStringList& classes ) {
     defMap.insert( "CollName", input.readEntry( "PluginName" ) );
     QString genCode;
 
-    foreach ( QString myClass, classes )
+    foreach ( const QString &myClass, classes )
     {
       genCode += QString("\t\tm_plugins.append( new %1(this) );\n").arg(denamespace( myClass ) +"Plugin");
     }

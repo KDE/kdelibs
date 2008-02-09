@@ -452,7 +452,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!aliases.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
-        foreach(QString alias, aliases) {
+        foreach(const QString &alias, aliases) {
             html += "<li>" + Qt::escape(alias) + "</li>";
         }
         html += "</ul>";
@@ -460,7 +460,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!notes.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
-        foreach(QString note, notes) {
+        foreach(const QString &note, notes) {
             html += "<li>" + createLinks(Qt::escape(note)) + "</li>";
         }
         html += "</ul>";
@@ -468,7 +468,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!seeAlso.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
-        foreach(QChar c2, seeAlso) {
+        foreach(const QChar &c2, seeAlso) {
             html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
             if (c2.isPrint()) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
@@ -480,7 +480,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!equivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
-        foreach(QString equivalent, equivalents) {
+        foreach(const QString &equivalent, equivalents) {
             html += "<li>" + createLinks(Qt::escape(equivalent)) + "</li>";
         }
         html += "</ul>";
@@ -488,7 +488,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!approxEquivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
-        foreach(QString approxEquivalent, approxEquivalents) {
+        foreach(const QString &approxEquivalent, approxEquivalents) {
             html += "<li>" + createLinks(Qt::escape(approxEquivalent)) + "</li>";
         }
         html += "</ul>";
@@ -567,7 +567,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
     }
 
     QSet<QString> chars2 = QSet<QString>::fromList(chars);
-    foreach(QString c, chars2) {
+    foreach(const QString &c, chars2) {
         int unicode = c.toInt(0, 16);
         QString link = "<a href=\"" + c + "\">";
         if (QChar(unicode).isPrint()) {

@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
     engine->importExtension("kross").toString();
 
-    foreach(QString file, files)
+    foreach(const QString &file, files)
         runScriptFile(engine, file);
 
     delete engine;

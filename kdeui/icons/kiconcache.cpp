@@ -214,7 +214,7 @@ QSet<QString> KIconCache::existingIconThemeDirs(const QStringList& themeNames) c
 unsigned int KIconCache::mostRecentMTime(const QSet<QString>& dirNames) const
 {
     unsigned int timestamp = 0;
-    foreach (QString dir, dirNames) {
+    foreach (const QString &dir, dirNames) {
         unsigned int mtime = QFileInfo(dir).lastModified().toTime_t();
         if (timestamp < mtime) {
             timestamp = mtime;

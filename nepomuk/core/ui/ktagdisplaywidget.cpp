@@ -103,7 +103,7 @@ void KTagDisplayWidget::addTag( const QString& tag )
 
 void KTagDisplayWidget::addTags( const QStringList& tags )
 {
-    foreach( QString tag, tags )
+    foreach( const QString &tag, tags )
         if ( !d->tags.contains( tag ) )
             d->tags.append( tag );
     d->buildDisplay();

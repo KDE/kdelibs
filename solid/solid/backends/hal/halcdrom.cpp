@@ -89,7 +89,7 @@ QList<int> Cdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = m_device->property("storage.cdrom.write_speeds").toStringList();
 
-    foreach (const QString speed_str, speed_strlist)
+    foreach (const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }

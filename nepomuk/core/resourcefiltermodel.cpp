@@ -97,7 +97,7 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
     QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
 
     Error::ErrorCode c = Error::ErrorNone;
-    foreach( Node node, existingValues.toSet() - values.toSet() ) {
+    foreach( const Node &node, existingValues.toSet() - values.toSet() ) {
         if ( ( c = removeAllStatements( Statement( resource, property, node ) ) ) != Error::ErrorNone ) {
             return c;
         }
@@ -106,7 +106,7 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
     QSet<Node> newNodes = values.toSet() - existingValues.toSet();
     if ( !newNodes.isEmpty() ) {
         QUrl newContext = ResourceManager::instance()->generateUniqueUri();
-        foreach( Node node, newNodes ) {
+        foreach( const Node &node, newNodes ) {
             if ( ( c = addStatement( Statement( resource, property, node, newContext ) ) ) != Error::ErrorNone ) {
                 return c;
             }

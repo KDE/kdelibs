@@ -26,12 +26,12 @@ struct SourceFragment
     int baseLine; // Note: this is stored 0-based
     QStringList sourceLines;
 
-    int lastLine()
+    int lastLine() const
     {
         return baseLine + sourceLines.size() - 1;
     }
 
-    bool inRange(int otherFirst, int otherLast)
+    bool inRange(int otherFirst, int otherLast) const
     {
         if (lastLine() < otherFirst)
             return false;

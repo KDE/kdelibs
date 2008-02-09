@@ -340,7 +340,7 @@ QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
     QByteArray encodedData;
 
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    foreach(QModelIndex index, indexes) {
+    foreach(const QModelIndex &index, indexes) {
         //if( ! index.isValid() ) continue;
         //QString text = data(index, Qt::DisplayRole).toString();
         QString path = fullPath(index);

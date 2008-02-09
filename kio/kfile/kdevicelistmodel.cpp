@@ -193,7 +193,7 @@ void KDeviceListModel::Private::_k_initDeviceList()
                                              Solid::Device::listFromQuery(predicate)
                                            : Solid::Device::allDevices();
 
-    foreach(Solid::Device device, deviceList)
+    foreach(const Solid::Device &device, deviceList)
     {
         addDevice(device);
     }

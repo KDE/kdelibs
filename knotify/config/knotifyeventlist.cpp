@@ -71,7 +71,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	int mc_x=0;
 	QSize iconsSize = option.decorationSize;
-	foreach(KIcon icon, iconList)
+	foreach(const KIcon &icon, iconList)
 	{
 		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconsSize.height()) / 2, iconsSize.width(), iconsSize.height());
 		mc_x += iconsSize.width() + 4;

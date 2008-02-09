@@ -1457,7 +1457,7 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
 {
     entry->setStatus(Entry::Deleted);
 
-    foreach(QString file, entry->installedFiles()) {
+    foreach(const QString &file, entry->installedFiles()) {
         if (file.endsWith("/")) {
             QDir dir;
             bool worked = dir.rmdir(file);
@@ -1505,7 +1505,7 @@ void CoreEngine::setCachePolicy(CachePolicy policy)
 QStringList KNS::CoreEngine::archiveEntries(const QString& path, const KArchiveDirectory * dir)
 {
     QStringList files;
-    foreach(QString entry, dir->entries()) {
+    foreach(const QString &entry, dir->entries()) {
         QString childPath = path + '/' + entry;
         if (dir->entry(entry)->isFile()) {
             files << childPath;

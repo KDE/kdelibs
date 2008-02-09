@@ -1531,7 +1531,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     // Reset current domain settings first.
     //  (must make a copy because setDomainAdvice() might delete the domain from m_domainList inside the for loop)
     const QStringList domains = m_domainList;
-    foreach( QString domain, domains )
+    foreach( const QString &domain, domains )
     {
          setDomainAdvice(domain, KCookieDunno);
     }

@@ -107,7 +107,7 @@ KPluginSelector::Private::~Private()
 
 void KPluginSelector::Private::checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList)
 {
-    foreach (KPluginInfo pluginInfo, pluginInfoList)
+    foreach (const KPluginInfo &pluginInfo, pluginInfoList)
     {
         if (!KIconLoader::global()->iconPath(pluginInfo.icon(), KIconLoader::NoGroup, true).isNull())
         {
@@ -436,7 +436,7 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
 
             case Qt::DisplayRole:
                 int currentPosition = 0;
-                foreach (QString category, pluginInfoByCategory.keys())
+                foreach (const QString &category, pluginInfoByCategory.keys())
                 {
                     if (currentPosition == index.row())
                         return category;
@@ -468,7 +468,7 @@ QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, co
     if ((row < 0) || (row >= rowCount()))
         return QModelIndex();
 
-    foreach (QString category, pluginInfoByCategory.keys())
+    foreach (const QString &category, pluginInfoByCategory.keys())
     {
         if (currentPosition == row)
             return createIndex(row, column, 0); // Is a category
@@ -493,7 +493,7 @@ int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) c
 
     int retValue = pluginInfoByCategory.count(); // We have pluginInfoCategory.count() categories
 
-    foreach (QString category, pluginInfoByCategory.keys())
+    foreach (const QString &category, pluginInfoByCategory.keys())
     {
         if (pluginCount.contains(category))
             retValue += pluginCount[category];

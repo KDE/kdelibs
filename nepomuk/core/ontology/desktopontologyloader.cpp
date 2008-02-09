@@ -52,7 +52,7 @@ public:
 //        ontoCache.clear();
 
         QStringList allOntologies = KGlobal::dirs()->findAllResources( "data", "nepomuk/ontologies/*.desktop" );
-        foreach( QString ontoDesktopFilePath, allOntologies ) {
+        foreach( const QString &ontoDesktopFilePath, allOntologies ) {
             KDesktopFile ontoDesktopFile( ontoDesktopFilePath );
 
             if ( ontoDesktopFile.hasLinkType() ) {

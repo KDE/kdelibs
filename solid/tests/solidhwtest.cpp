@@ -59,7 +59,7 @@ void SolidHwTest::testAllDevices()
 
     expected_udis = QSet<QString>::fromList(fakeManager->allDevices());
 
-    foreach (Solid::Device dev , devices)
+    foreach (const Solid::Device &dev , devices)
     {
         received_udis << dev.udi();
     }

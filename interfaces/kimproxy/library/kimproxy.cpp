@@ -219,7 +219,7 @@ bool KIMProxy::initialize()
 			const KService::List offers = KServiceTypeTrader::self()->query( IM_SERVICE_TYPE );
 			KService::List::const_iterator offer;
 			QStringList registeredApps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
-			foreach (QString app, registeredApps)
+			foreach (const QString &app, registeredApps)
 			{
 				//kDebug( 790 ) << " considering: " << *app;
 				//for each offer

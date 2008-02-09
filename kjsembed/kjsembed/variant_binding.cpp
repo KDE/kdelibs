@@ -358,7 +358,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             KJS::List items;
             QList<QVariant> lst = value.toList();
-            foreach( QVariant item, lst)
+            foreach( const QVariant &item, lst)
             {
                 items.append( convertToValue( exec, item ) );
             }

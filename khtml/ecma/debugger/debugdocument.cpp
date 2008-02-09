@@ -208,18 +208,18 @@ void DebugDocument::rebuildViewerDocument(int firstLine, int lastLine)
     if (lastLine == -1)
     {
         lastLine = 0;
-        foreach(SourceFragment fragment, m_codeFragments)
+        foreach(const SourceFragment &fragment, m_codeFragments)
             lastLine = qMax(fragment.lastLine(), lastLine);
     }
 
     QStringList lines;
-    foreach (SourceFragment fragment, m_codeFragments)
+    foreach (const SourceFragment &fragment, m_codeFragments)
     {
         // See if this fragment is in the [firstLine, lastLine] range.
         if (!fragment.inRange(firstLine, lastLine))
             continue;
 
-        QStringList& sourceLines = fragment.sourceLines;
+        const QStringList& sourceLines = fragment.sourceLines;
 
         // Now scan through the fragment, and incorporate all the lines that
         // are in range.

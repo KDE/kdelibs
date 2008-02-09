@@ -220,7 +220,7 @@ QVariant EcmaScript::callFunction(const QString& name, const QVariantList& args)
     }
 
     QScriptValueList arguments;
-    foreach(QVariant v, args)
+    foreach(const QVariant &v, args)
         arguments << d->m_engine->newVariant(v);
     QScriptValue result = function.call(d->m_self, arguments);
     return result.toVariant();

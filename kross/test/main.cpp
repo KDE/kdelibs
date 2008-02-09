@@ -165,7 +165,7 @@ int main(int argc, char **argv)
     Kross::Manager::self().addObject( testobj1 );
     Kross::Manager::self().addObject( testobj2 );
 
-    foreach(QString file, scriptfiles) {
+    foreach(const QString &file, scriptfiles) {
         result = runScriptFile(file);
         if(result != ERROR_OK)
             break;

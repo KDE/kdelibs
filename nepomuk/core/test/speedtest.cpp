@@ -51,7 +51,7 @@ void SpeedTest::testKMetaData()
     qDebug( "Added %d resources in %d ms", TESTCNT, t.elapsed() );
 
     // check that everything has been saved properly
-    foreach( Resource r, rl ) {
+    foreach( const Resource &r, rl ) {
         QVERIFY( rr->containsAnyStatement( Statement( r.resourceUri(), Node(), Node() ) ) );
     }
 
@@ -64,7 +64,7 @@ void SpeedTest::testKMetaData()
     qDebug( "Removed %d resources in %d ms", TESTCNT, t.elapsed() );
 
     // check that there actually is nothing left
-    foreach( Resource r, rl ) {
+    foreach( const Resource &r, rl ) {
         QVERIFY( !rr->containsAnyStatement( Statement( r.resourceUri(), Node(), Node() ) ) );
     }
 }

@@ -193,7 +193,7 @@ void KFilePlacesSelector::dropEvent(QDropEvent* event)
     if (urlList.isEmpty()) {
         return;
     }
-    foreach(KUrl url, urlList) {
+    foreach(const KUrl &url, urlList) {
         KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
         if (mimetype->is("inode/directory")) {
             m_placesModel->addPlace(url.fileName(), url);

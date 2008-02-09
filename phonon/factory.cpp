@@ -77,7 +77,7 @@ bool FactoryPrivate::createBackend()
                 pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
                 continue;
             }
-            foreach (QString pluginName, dir.entryList(QDir::Files)) {
+            foreach (const QString &pluginName, dir.entryList(QDir::Files)) {
                 QPluginLoader pluginLoader(libPath + pluginName);
                 if (!pluginLoader.load()) {
                     pDebug() << Q_FUNC_INFO << "  load failed:"

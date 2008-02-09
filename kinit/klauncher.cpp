@@ -555,7 +555,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    
 // process.setEnvironment(envlist);
    QStringList args;
-   foreach (QString arg, request->arg_list)
+   foreach (const QString &arg, request->arg_list)
       args << arg;
 
    process->start(request->name,args);
@@ -585,10 +585,10 @@ KLauncher::requestStart(KLaunchRequest *request)
    appendLong(requestData, request->arg_list.count() + 1);
    requestData.append(request->name.toLocal8Bit());
    requestData.append('\0');
-   foreach (QString arg, request->arg_list)
+   foreach (const QString &arg, request->arg_list)
        requestData.append(arg.toLocal8Bit()).append('\0');
    appendLong(requestData, request->envs.count());
-   foreach (QString env, request->envs)
+   foreach (const QString &env, request->envs)
        requestData.append(env.toLocal8Bit()).append('\0');
    appendLong(requestData, 0); // avoid_loops, always false here
 #ifdef Q_WS_X11
@@ -794,7 +794,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     KStartupInfoId id;
     id.initId( startup_id.toLatin1() );
     QString dpy_str;
-    foreach (QString env, envs) {
+    foreach (const QString &env, envs) {
         if (env.startsWith(QLatin1String("DISPLAY=")))
             dpy_str = env.mid(8);
     }
@@ -842,7 +842,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& 
     if( !startup_id.isEmpty() && startup_id != "0" )
     {
         QString dpy_str;
-        foreach (QString env, envs) {
+        foreach (const QString &env, envs) {
             if (env.startsWith(QLatin1String("DISPLAY=")))
                 dpy_str = env.mid(8);
         }

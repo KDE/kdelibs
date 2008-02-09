@@ -477,7 +477,7 @@ KFileItemList KDirOperator::selectedItems() const
     const QItemSelection selection = d->proxyModel->mapSelectionToSource(d->itemView->selectionModel()->selection());
 
     const QModelIndexList indexList = selection.indexes();
-    foreach(QModelIndex index, indexList) {
+    foreach(const QModelIndex &index, indexList) {
         KFileItem item = d->dirModel->itemForIndex(index);
         if (!item.isNull()) {
             itemList.append(item);
@@ -703,7 +703,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
 
     KUrl::List urls;
     QStringList files;
-    foreach (const KFileItem item, items) {
+    foreach (const KFileItem &item, items) {
         const KUrl url = item.url();
         urls.append(url);
         files.append(url.pathOrUrl());
@@ -761,7 +761,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
 
     KUrl::List urls;
     QStringList files;
-    foreach (const KFileItem item, items) {
+    foreach (const KFileItem &item, items) {
         const KUrl url = item.url();
         urls.append(url);
         files.append(url.pathOrUrl());
@@ -1529,7 +1529,7 @@ void KDirOperator::prepareCompletionObjects()
 
     if (d->completeListDirty) {   // create the list of all possible completions
         const KFileItemList itemList = d->dirLister->items();
-        foreach (const KFileItem item, itemList) {
+        foreach (const KFileItem &item, itemList) {
             d->completion.addItem(item.name());
             if (item.isDir()) {
                 d->dirCompletion.addItem(item.name());

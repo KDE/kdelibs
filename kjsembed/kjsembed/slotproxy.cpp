@@ -165,7 +165,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 #ifdef DEBUG_SLOTPROXY
     qDebug() << "SlotProxy::convertArguments(): obj=" << this << " m_signature=" << m_signature << " offset=" << offset << " params=" << params ;
 #endif
-    foreach( QByteArray param, params )
+    foreach( const QByteArray &param, params )
     {
 #ifdef DEBUG_SLOTPROXY
         int type = QMetaType::type( param.constData() );

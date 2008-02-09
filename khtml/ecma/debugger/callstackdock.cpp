@@ -74,7 +74,7 @@ void CallStackDock::displayStack(InterpreterContext* ic)
     m_view->setRowCount(ic->callStack.count());
 
     int row = 0;
-    foreach (CallStackEntry entry, ic->callStack)
+    foreach (const CallStackEntry &entry, ic->callStack)
     {
         int displayRow = ic->callStack.count() - row - 1; //Want newest entry on top
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);

@@ -233,7 +233,7 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 		markup += keyAsMarkup( keys.first() );
 	} else {
 		markup += "<keycombo action=\"Simul\">";
-		foreach( QString key, keys ) {
+		foreach( const QString &key, keys ) {
 			if ( key.startsWith( "XF86" ) ) {
 				continue;
 			}

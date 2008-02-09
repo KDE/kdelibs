@@ -42,9 +42,9 @@ void SimpleTest::sanityChecks()
 void SimpleTest::listDevices()
 {
     QList<AudioDevice> deviceList = AudioDeviceEnumerator::availablePlaybackDevices();
-    foreach (AudioDevice dev, deviceList) {
+    foreach (const AudioDevice &dev, deviceList) {
         qDebug() << dev.cardName() << dev.deviceIds() << dev.iconName() << dev.isAvailable();
-        foreach (QString id, dev.deviceIds()) {
+        foreach (const QString &id, dev.deviceIds()) {
             QVERIFY(dev.deviceIds().count(id) == 1);
         }
     }

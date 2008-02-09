@@ -2246,7 +2246,7 @@ static QDomElement createListEntry(QDomDocument &doc, const QString &tagName,
 {
   QDomElement el = doc.createElement(tagName);
 
-  foreach( QString s, list )
+  foreach( const QString &s, list )
   {
     QDomElement subel = doc.createElement(subTagName);
     subel.appendChild(doc.createTextNode(s));
@@ -2819,7 +2819,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 
   // firstly, only the common dockwidgets,
   // they must be restored before e.g. tabgroups are restored
-  foreach( QString oname, nameList )
+  foreach( const QString &oname, nameList )
   {
     cg.changeGroup( group );
     QString type = cg.readEntry( oname + ":type", QString() );
@@ -2855,7 +2855,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
   }
 
   // secondly, after the common dockwidgets, restore the groups and tabgroups
-  foreach( QString oname, nameList )
+  foreach( const QString &oname, nameList )
   {
     cg.changeGroup( group );
     QString type = cg.readEntry( oname + ":type", QString() );
@@ -2906,7 +2906,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 
   // thirdly, now that all ordinary dockwidgets are created,
   // iterate them again and link the toplevel ones of them with their corresponding dockwidget for the dockback action
-  foreach( QString oname, nameList )
+  foreach( const QString &oname, nameList )
   {
     cg.changeGroup( group );
     QString type = cg.readEntry( oname + ":type", QString() );

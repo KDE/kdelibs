@@ -38,7 +38,7 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial1");
     
-    foreach (Solid::Device device, Solid::Device::allDevices())
+    foreach (const Solid::Device &device, Solid::Device::allDevices())
     {
         kDebug() << device.udi().toLatin1().constData();
     }

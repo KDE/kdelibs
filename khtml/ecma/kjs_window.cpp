@@ -1770,7 +1770,7 @@ void Window::showSuppressedWindows()
 
   QList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
   m_suppressedWindowInfo.clear();
-  foreach ( SuppressedWindowInfo info, suppressedWindowInfo ) {
+  foreach ( const SuppressedWindowInfo &info, suppressedWindowInfo ) {
     executeOpenWindow(exec, info.url, info.frameName, info.features);
   }
 }

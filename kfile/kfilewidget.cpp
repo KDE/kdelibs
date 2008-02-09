@@ -596,7 +596,7 @@ void KFileWidget::slotOk()
                 bool multi = (mode() & KFile::Files) != 0;
                 QString endQuote = QLatin1String("\" ");
                 QString name, files;
-                foreach (KFileItem fileItem, items) {
+                foreach (const KFileItem &fileItem, items) {
                     name = fileItem.name();
                     if ( multi ) {
                         name.prepend( QLatin1Char( '"' ) );
@@ -631,7 +631,7 @@ void KFileWidget::slotOk()
             else { // multi (dirs and/or files)
                 d->url = d->ops->url();
                 KUrl::List urlList;
-                foreach (KFileItem item, items) {
+                foreach (const KFileItem &item, items) {
                     urlList.append(item.url());
                 }
                 d->urlList = urlList;
@@ -968,7 +968,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
 
     static const QString &begin = KGlobal::staticQString(" \"");
     QString text;
-    foreach (KFileItem fileItem, list) {
+    foreach (const KFileItem &fileItem, list) {
         text.append( begin ).append( fileItem.name() ).append( QLatin1Char( '"' ) );
     }
 

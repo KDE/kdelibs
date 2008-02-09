@@ -60,7 +60,7 @@ void BackendCapabilitiesTest::checkMimeTypes()
     QStringList mimeTypes = BackendCapabilities::availableMimeTypes();
     QVERIFY(Factory::backend(false) != 0); // the backend should have been created at this point
     QVERIFY(mimeTypes.size() > 0); // a backend that doesn't know any mimetypes is useless
-    foreach (QString mimeType, mimeTypes) {
+    foreach (const QString &mimeType, mimeTypes) {
         qDebug("%s", qPrintable(mimeType));
         QVERIFY(BackendCapabilities::isMimeTypeAvailable(mimeType));
     }

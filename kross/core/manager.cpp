@@ -76,7 +76,7 @@ void* loadLibrary(const char* libname, const char* functionname)
         const QString err = QString("Error: %1").arg(lib.errorString());
 
         //TODO move that functionality out of Kross since we like to be Qt-only
-        foreach(QString dir, KStandardDirs().resourceDirs("module")) {
+        foreach(const QString &dir, KStandardDirs().resourceDirs("module")) {
             lib.setFileName( QFileInfo(dir, libname).filePath() );
             lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
             if( lib.load() )
@@ -238,7 +238,7 @@ const QString Manager::interpreternameForFile(const QString& file)
     for(QHash<QString, InterpreterInfo*>::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it) {
         if( ! it.value() )
             continue;
-        foreach(QString wildcard, it.value()->wildcard().split(" ", QString::SkipEmptyParts)) {
+        foreach(const QString &wildcard, it.value()->wildcard().split(" ", QString::SkipEmptyParts)) {
             rx.setPattern( wildcard );
             if( rx.exactMatch(file) )
                 return it.value()->interpreterName();

@@ -165,7 +165,7 @@ void KTagCloudWidget::buildTagCloud()
     qSort( tags.begin(), tags.end() );
 
     int x = 0;
-    foreach( QString tag, tags ) {
+    foreach( const QString &tag, tags ) {
         KUrlLabel* label = d->labelMap[tag];
         if( x + label->width() > width() ) {
             // new line

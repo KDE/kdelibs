@@ -179,7 +179,7 @@ int KBlockLayout::doLayout( const QRect& rect, bool testOnly ) const
 
     // 2. place the items
     y = rect.y();
-    foreach( Row row, rows ) {
+    foreach( const Row &row, rows ) {
         x = rect.x();
         if( alignment() & Qt::AlignRight )
             x += (rect.width() - row.width);

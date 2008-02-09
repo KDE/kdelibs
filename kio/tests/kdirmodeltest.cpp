@@ -56,7 +56,7 @@ void KDirModelTest::initTestCase()
                         << "toplevelfile_2"
                         << "toplevelfile_3"
                         << "specialchars%:";
-    foreach(QString f, m_topLevelFileNames) {
+    foreach(const QString &f, m_topLevelFileNames) {
         createTestFile(path+f);
     }
     createTestDirectory(path+"subdir");

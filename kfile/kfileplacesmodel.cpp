@@ -260,7 +260,7 @@ void KFilePlacesModel::Private::_k_initDeviceList()
 
     const QList<Solid::Device> &deviceList = Solid::Device::listFromQuery(predicate);
 
-    foreach(Solid::Device device, deviceList) {
+    foreach(const Solid::Device &device, deviceList) {
         availableDevices << device.udi();
     }
 
@@ -395,7 +395,7 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
     }
 
     // Add bookmarks for the remaining devices, they were previously unknown
-    foreach (QString udi, devices) {
+    foreach (const QString &udi, devices) {
         bookmark = KFilePlacesItem::createDeviceBookmark(bookmarkManager, udi);
 
         KFilePlacesItem *item = new KFilePlacesItem(bookmarkManager,
@@ -523,7 +523,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         KBookmarkGroup group = d->bookmarkManager->root();
 
-        foreach (KUrl url, urls) {
+        foreach (const KUrl &url, urls) {
             KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
 
             if (!mimetype->is("inode/directory")) {

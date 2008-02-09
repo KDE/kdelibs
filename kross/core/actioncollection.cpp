@@ -320,7 +320,7 @@ QDomElement ActionCollection::writeXml()
             element.appendChild(e);
     }
 
-    foreach(QString name, d->collectionnames) {
+    foreach(const QString &name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
         if( ! c ) continue;
         QDomElement e = c->writeXml();
@@ -342,7 +342,7 @@ bool ActionCollection::writeXml(QIODevice* device, int indent)
             root.appendChild(e);
     }
 
-    foreach(QString name, d->collectionnames) {
+    foreach(const QString &name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
         if( ! c ) continue;
         QDomElement e = c->writeXml();

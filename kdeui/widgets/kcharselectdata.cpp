@@ -541,7 +541,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     }
 
     QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
-    foreach(QString s, searchStrings) {
+    foreach(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
             res.append(regExp.cap(2).toInt(0, 16));
         }
@@ -560,7 +560,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
         QString name = data + offset;
         if (name.contains(firstString, Qt::CaseInsensitive)) {
             bool valid = true;
-            foreach(QString s, searchStrings) {
+            foreach(const QString &s, searchStrings) {
                 if (!name.contains(s, Qt::CaseInsensitive)) {
                     valid = false;
                     break;

@@ -200,7 +200,7 @@ void MediaObjectItem::updateMetaData()
     QString metaData;
     const QMultiMap<QString, QString> map = m_media.metaData();
     const QStringList keys = map.keys();
-    foreach (QString key, keys) {
+    foreach (const QString &key, keys) {
         metaData += key + QLatin1String(": ") + QStringList(map.values(key)).join(QLatin1String("\n")) + "\n";
     }
     m_metaDataLabel->setText(metaData.left(metaData.length() - 1));

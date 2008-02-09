@@ -210,7 +210,7 @@ void ActionCollectionEditor::initGui()
         d->fileedit = new KUrlRequester(w);
         filelabel->setBuddy(d->fileedit);
         QStringList mimetypes;
-        foreach(QString interpretername, Manager::self().interpreters()) {
+        foreach(const QString &interpretername, Manager::self().interpreters()) {
             InterpreterInfo* info = Manager::self().interpreterInfo(interpretername);
             Q_ASSERT( info );
             mimetypes.append( info->mimeTypes().join(" ").trimmed() );
@@ -413,7 +413,7 @@ void ActionCollectionView::slotSelectionChanged()
     bool startenabled = selectionModel()->hasSelection();
     bool stopenabled = false;
     bool hasselection = selectionModel()->selectedIndexes().count() > 0;
-    foreach(QModelIndex index, itemSelection().indexes()) {
+    foreach(const QModelIndex &index, itemSelection().indexes()) {
         Action* action = ActionCollectionModel::action(index);
         if( startenabled && ! action )
             startenabled = false;
@@ -452,7 +452,7 @@ void ActionCollectionView::slotRun()
     if( ! selectionModel() ) return;
     QAction* stopaction = d->collection->action("stop");
 
-    foreach(QModelIndex index, itemSelection().indexes()) {
+    foreach(const QModelIndex &index, itemSelection().indexes()) {
         if( ! index.isValid() )
             continue;
         if( stopaction ) {
@@ -471,7 +471,7 @@ void ActionCollectionView::slotRun()
 void ActionCollectionView::slotStop()
 {
     if( ! selectionModel() ) return;
-    foreach(QModelIndex index, itemSelection().indexes()) {
+    foreach(const QModelIndex &index, itemSelection().indexes()) {
         if( ! index.isValid() )
             continue;
         Action* action = ActionCollectionModel::action(index);
@@ -489,7 +489,7 @@ void ActionCollectionView::slotEdit()
     if( ! selectionModel() ) return;
     Action* action = 0;
     ActionCollection* collection = 0;
-    foreach(QModelIndex index, itemSelection().indexes()) {
+    foreach(const QModelIndex &index, itemSelection().indexes()) {
         if( ! index.isValid() ) continue;
         if( Action* a = ActionCollectionModel::action(index) )
             action = a;

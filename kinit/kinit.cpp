@@ -469,7 +469,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
               environ[tmp_env_count];
               tmp_env_count++)
              unset_envs.append( environ[ tmp_env_count ] );
-         foreach(QByteArray tmp, unset_envs)
+         foreach(const QByteArray &tmp, unset_envs)
          {
              int pos = tmp.indexOf( '=' );
              if( pos >= 0 )

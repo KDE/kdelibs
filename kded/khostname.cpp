@@ -126,7 +126,7 @@ void KHostName::changeX()
       }
    }
 
-   foreach ( QByteArray it, lines )
+   foreach ( const QByteArray &it, lines )
    {
       QList<QByteArray> entries = split(it);
       if (entries.count() != 3)

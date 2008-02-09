@@ -169,7 +169,7 @@ QStringList HalManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;
 
-    foreach (QString cap, cap_list)
+    foreach (const QString &cap, cap_list)
     {
         QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
 
@@ -182,7 +182,7 @@ QStringList HalManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
         {
             QStringList foundDevices ( reply );
             QStringList filtered;
-            foreach ( QString udi, foundDevices )
+            foreach ( const QString &udi, foundDevices )
             {
                 QDBusInterface device( "org.freedesktop.Hal", udi, "org.freedesktop.Hal.Device", QDBusConnection::systemBus() );
                 QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );

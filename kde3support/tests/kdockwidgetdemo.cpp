@@ -646,7 +646,7 @@ void Directory::setOpen( bool o )
 
     listView()->setUpdatesEnabled( false );
     QFileInfoList files = thisDir.entryInfoList();
-    foreach ( QFileInfo f, files ){
+    foreach ( const QFileInfo &f, files ){
       if ( f.fileName() != "." && f.fileName() != ".." && f.isDir() )
         (void)new Directory( this, f.fileName() );
     }

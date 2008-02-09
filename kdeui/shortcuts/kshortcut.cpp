@@ -210,7 +210,7 @@ QList<QKeySequence> KShortcut::toList(enum EmptyHandling handleEmpty) const
 QString KShortcut::toString() const
 {
     QString ret;
-    foreach(QKeySequence seq, toList()) {
+    foreach(const QKeySequence &seq, toList()) {
         ret.append(seq.toString());
         ret.append("; ");
     }

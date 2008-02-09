@@ -128,7 +128,7 @@ KUrl::List KFileTreeView::selectedUrls() const
         return urls;
 
     const QModelIndexList indexes = selectionModel()->selection().indexes();
-    foreach (const QModelIndex index, indexes) {
+    foreach (const QModelIndex &index, indexes) {
         const KUrl url = d->urlForProxyIndex(index);
         if (url.isValid())
             urls.append(url);

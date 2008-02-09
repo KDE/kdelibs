@@ -115,7 +115,7 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     if (!entry.checksum().isEmpty()) {
         (void)addElement(doc, el, "checksum", entry.checksum());
     }
-    foreach(QString file, entry.installedFiles()) {
+    foreach(const QString &file, entry.installedFiles()) {
         (void)addElement(doc, el, "installedfile", file);
     }
 

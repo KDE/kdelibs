@@ -74,7 +74,7 @@ void EffectWidgetPrivate::autogenerateUi()
     Q_Q(EffectWidget);
     QVBoxLayout *mainLayout = new QVBoxLayout(q);
     mainLayout->setMargin(0);
-    foreach (EffectParameter para, effect->parameters()) {
+    foreach (const EffectParameter &para, effect->parameters()) {
         QVariant value = effect->parameterValue(para);
         QHBoxLayout *pLayout = new QHBoxLayout;
         mainLayout->addLayout(pLayout);
