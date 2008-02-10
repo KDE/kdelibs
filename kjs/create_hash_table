@@ -188,6 +188,7 @@ sub hashValue($) {
     $hash   = (leftShift($hash, 16)% $EXP2_32) ^ $tmp;
     $s += 2;
     $hash += $hash >> 11;
+    $hash %= $EXP2_32;
   }
 
   # Handle end case
@@ -205,7 +206,7 @@ sub hashValue($) {
   $hash += ($hash >> 15);
   $hash = $hash% $EXP2_32;
   $hash ^= (leftShift($hash, 10)% $EXP2_32);
-  
+
   # this avoids ever returning a hash code of 0, since that is used to
   # signal "hash not computed yet", using a value that is likely to be
   # effectively the same as 0 when the low bits are masked
@@ -232,7 +233,7 @@ sub output() {
   print "\nstatic const struct KJS::HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   #print STDERR "writing out table with ".($#table+1)." entries\n";
-  
+
   if ($hashsize eq 0) {
     # To make the hash table lookup code fast, we don't allow tables of size 0.
     # That way it can do a modulo by the size without a special case to avoid division by 0.
@@ -260,7 +261,7 @@ sub output() {
         print "/* " . $hashes[$entry] . " */ ";
       } else {
         print "   \{ 0, 0, 0, 0, 0 \}";
-      }    
+      }
       print "," unless ($i == $size - 1);
       print "\n";
       $i++;

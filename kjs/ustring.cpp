@@ -333,7 +333,7 @@ unsigned UString::Rep::computeHash(const char* s)
 }
 
 // put these early so they can be inlined
-inline int UString::expandedSize(int size, int otherSize) 
+inline int UString::expandedSize(int size, int otherSize)
 {
   int s = (size * 11 / 10) + 1 + otherSize;
   return s;
@@ -669,16 +669,27 @@ UString UString::from(double d)
 
 UString UString::spliceSubstringsWithSeparators(const Range *substringRanges, int rangeCount, const UString *separators, int separatorCount) const
 {
-  int totalLength = 0;
+  if (rangeCount == 1 && separatorCount == 0) {
+    int thisSize = size();
+    int position = substringRanges[0].position;
+    int length = substringRanges[0].length;
+    if (position <= 0 && length >= thisSize)
+      return *this;
+    return UString::Rep::create(m_rep, maxInt(0, position), minInt(thisSize, length));
+  }
 
-  for (int i = 0; i < rangeCount; i++) {
+  int totalLength = 0;
+  for (int i = 0; i < rangeCount; i++)
     totalLength += substringRanges[i].length;
-  }
-  for (int i = 0; i < separatorCount; i++) {
+  for (int i = 0; i < separatorCount; i++)
     totalLength += separators[i].size();
-  }
+
+  if (totalLength == 0)
+    return "";
 
   UChar* buffer = allocChars(totalLength);
+  if (!buffer)
+      return null();
 
   int maxCount = max(rangeCount, separatorCount);
   int bufferPos = 0;
@@ -693,7 +704,7 @@ UString UString::spliceSubstringsWithSeparators(const Range *substringRanges, in
     }
   }
 
-  return UString(Rep::create(buffer, totalLength));
+  return UString::Rep::create(buffer, totalLength);
 }
 
 // Append a sub-string of <subStr> to this string.

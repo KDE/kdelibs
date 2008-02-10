@@ -345,7 +345,7 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
       int matchLen = matchString.size();
 
       pushSourceRange(sourceRanges, sourceRangeCount, sourceRangeCapacity, UString::Range(lastIndex, matchIndex - lastIndex));
-
+      UString substitutedReplacement;
       if (replacementFunction) {
           int completeMatchStart = ovector[0];
           List args;
@@ -362,11 +362,11 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
           args.append(jsNumber(completeMatchStart));
           args.append(jsString(source));
 
-          replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
+          substitutedReplacement = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
                                                         args)->toString(exec);
+      } else {
+          substitutedReplacement = substituteBackreferences(replacementString, source, ovector, reg);
       }
-
-      UString substitutedReplacement = substituteBackreferences(replacementString, source, ovector, reg);
       pushReplacement(replacements, replacementCount, replacementCapacity, substitutedReplacement);
 
       lastIndex = matchIndex + matchLen;
@@ -538,7 +538,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
     reg->prepareMatch(u);
     UString mstr = regExpObj->performMatch(reg, exec, u, 0, &pos);
-    
+
     if (id == Search) {
       result = jsNumber(pos);
     } else {
@@ -614,7 +614,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
       bool error = false;
       if (u.isEmpty() && !reg->match(u, &error, 0).isNull()) {
         reg->doneMatch();
-        
+
         // empty string matched by regexp -> empty array
         res->put(exec, exec->propertyNames().length, jsNumber(0));
         break;
@@ -638,7 +638,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
       reg->doneMatch();
       if (error)
         RegExpObjectImp::throwRegExpError(exec);
-      
+
     } else {
       u2 = a0->toString(exec);
       if (u2.isEmpty()) {

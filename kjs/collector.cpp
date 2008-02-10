@@ -86,7 +86,7 @@ const size_t ALLOCATIONS_PER_COLLECTION = 4000;
 
 
 // A whee bit like a WTF::Vector, but perfectly POD, so can be used in global context
-// w/o worries. 
+// w/o worries.
 struct BlockList {
     CollectorBlock** m_data;
     size_t m_used;
@@ -204,7 +204,7 @@ static void freeBlock(CollectorBlock* block)
 {
     // Unregister the block first
     heap.allBlocks.remove(block);
-    
+
 #if PLATFORM(DARWIN)
     vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(block), BLOCK_SIZE);
 #elif PLATFORM(WIN_OS)
@@ -248,7 +248,7 @@ static void* allocOversize(size_t s)
 
         if (last >= CELLS_PER_BLOCK) // No way it will fit
           break;
-        
+
         ++i;
         while (i <= last && !candidate->allocd.get(i))
           ++i;
@@ -273,7 +273,7 @@ static void* allocOversize(size_t s)
   }
 
   sufficientBlock->usedCells += cellsNeeded;
-  
+
   // Set proper bits for trailers and the head
   sufficientBlock->allocd.set(startOffset);
   for (size_t t = startOffset + 1; t < startOffset + cellsNeeded; ++t) {
@@ -294,7 +294,7 @@ void* Collector::allocate(size_t s)
 
   // collect if needed
   size_t numLiveObjects = heap.numLiveObjects;
-  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;  
+  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;
   size_t numNewObjects = numLiveObjects - numLiveObjectsAtLastCollect;
 
   if (numNewObjects >= ALLOCATIONS_PER_COLLECTION && numNewObjects >= numLiveObjectsAtLastCollect) {
@@ -620,7 +620,7 @@ bool Collector::collect()
   assert(JSLock::lockCount() > 0);
 
 #if USE(MULTIPLE_THREADS)
-    bool currentThreadIsMainThread = !pthread_is_threaded_np() || pthread_main_np();
+    bool currentThreadIsMainThread = pthread_main_np();
 #else
     bool currentThreadIsMainThread = true;
 #endif
@@ -664,8 +664,8 @@ bool Collector::collect()
         CollectorCell *cell = curBlock->cells + i;
         JSCell *imp = reinterpret_cast<JSCell *>(cell);
         if (!curBlock->marked.get(i) && currentThreadIsMainThread) {
-          // special case for allocated but uninitialized object 
-          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.) 
+          // special case for allocated but uninitialized object
+          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.)
           if (cell->u.freeCell.zeroIfFree == 0)
             continue;
           imp->~JSCell();
@@ -789,7 +789,7 @@ bool Collector::collect()
       }
     }
   } // each oversize block
-    
+
   bool deleted = heap.numLiveObjects != numLiveObjects;
 
   heap.numLiveObjects = numLiveObjects;
