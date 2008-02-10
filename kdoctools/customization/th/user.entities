@@ -19,6 +19,7 @@
 <!ENTITY ie     "<abbrev>คือ</abbrev>">
 <!ENTITY infocenter	"<application>ศูนย์ข้อมูล</application>">
 <!ENTITY kcontrolcenter	"<application>ศูนย์ควบคุม &kde;</application>">
+<!ENTITY khelpcentert	"<application>ศูนย์ช่วยเหลือ &kde;</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-icon</title></objectinfo>
