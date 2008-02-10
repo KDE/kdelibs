@@ -185,10 +185,14 @@ public:
 KJS_EXPORT JSValue *jsNumberCell(double);
 
 KJS_EXPORT JSCell* jsString(); // returns empty string
-KJS_EXPORT JSCell* jsString(const UString& s); // returns empty string if passed null string
-KJS_EXPORT JSCell* jsString(const char* s); // returns empty string if passed 0
+KJS_EXPORT JSCell* jsString(const UString&); // returns empty string if passed null string
+KJS_EXPORT JSCell* jsString(const char* = ""); // returns empty string if passed 0
 KJS_EXPORT JSCell* jsString(const char* s, int len);
-KJS_EXPORT JSCell* jsString(ExecState* exec, const JSValue* value);
+
+// should be used for strings that are owned by an object that will
+// likely outlive the JSValue this makes, such as the parse tree or a
+// DOM object that contains a UString
+JSCell *jsOwnedString(const UString&);
 
 extern const double NaN;
 extern const double Inf;

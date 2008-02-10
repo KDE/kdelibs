@@ -99,7 +99,7 @@ void SourceStream::flush()
 {
   if (bufUsed)
   {
-    str.append(reinterpret_cast<const UChar*>(buffer), bufUsed);
+    str.append(UString(reinterpret_cast<const UChar*>(buffer), bufUsed));
     bufUsed = 0;
   }
 }
@@ -178,7 +178,7 @@ SourceStream& SourceStream::append(const UTF16* src, int srcLen)
   if (kBufSize - bufUsed < srcLen)
     flush();
   if (kBufSize - bufUsed < srcLen)
-    str.append(reinterpret_cast<const UChar*>(src), srcLen);
+    str.append(UString(reinterpret_cast<const UChar*>(src), srcLen));
   else
   {
     UTF16* dst = &buffer[bufUsed];
@@ -303,7 +303,7 @@ void ArrayNode::streamTo(SourceStream &s) const
   s << '[' << element;
   for (int i = 0; i < elision; i++)
     s << ',';
-  // Parser consumes one elision comma if there's array elements 
+  // Parser consumes one elision comma if there's array elements
   // present in the expression.
   if (opt && element)
     s << ',';
@@ -455,13 +455,13 @@ void PrefixNode::streamTo(SourceStream &s) const
   s << m_oper << m_loc;
 }
 
-void PrefixErrorNode::streamTo(SourceStream& s) const 
-{ 
-  if (m_oper == OpPlusPlus) 
-    s << "++"; 
-  else 
-    s << "--"; 
-  s << m_expr; 
+void PrefixErrorNode::streamTo(SourceStream& s) const
+{
+  if (m_oper == OpPlusPlus)
+    s << "++";
+  else
+    s << "--";
+  s << m_expr;
 }
 
 void UnaryPlusNode::streamTo(SourceStream &s) const
@@ -640,11 +640,11 @@ void AssignDotNode::streamTo(SourceStream &s) const
 
 
 
-void AssignErrorNode::streamTo(SourceStream& s) const 
-{ 
-    s << m_left; 
-    streamAssignmentOperatorTo(s, m_oper); 
-    s << m_right; 
+void AssignErrorNode::streamTo(SourceStream& s) const
+{
+    s << m_left;
+    streamAssignmentOperatorTo(s, m_oper);
+    s << m_right;
 }
 
 void CommaNode::streamTo(SourceStream &s) const

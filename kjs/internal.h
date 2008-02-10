@@ -41,7 +41,7 @@
 
 namespace KJS {
 
-  
+
   // ---------------------------------------------------------------------------
   //                            Primitive impls
   // ---------------------------------------------------------------------------
@@ -49,7 +49,9 @@ namespace KJS {
   class StringImp : public JSCell {
   public:
     StringImp() : val(UString::empty) { }
-    StringImp(const UString& v) : val(v) { }
+    StringImp(const UString& v) : val(v) { Collector::reportExtraMemoryCost(v.cost()); }
+    enum HasOtherOwnerType { HasOtherOwner }; // e.g. storage cost already accounted for
+    StringImp(const UString& value, HasOtherOwnerType) : val(value) { }
     StringImp(const char* v) : val(v) { }
     StringImp(const char* v, int len) : val(v, len) { }
     const UString& value() const { return val; }

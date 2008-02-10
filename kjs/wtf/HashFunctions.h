@@ -40,7 +40,7 @@ namespace WTF {
     // integer hash function
 
     // Thomas Wang's 32 Bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
-    inline unsigned intHash(uint32_t key) 
+    inline unsigned intHash(uint32_t key)
     {
         key += ~(key << 15);
         key ^= (key >> 10);
@@ -50,7 +50,7 @@ namespace WTF {
         key ^= (key >> 16);
         return key;
     }
-    
+
     // Thomas Wang's 64 bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
     inline unsigned intHash(uint64_t key)
     {
@@ -68,17 +68,36 @@ namespace WTF {
     template<typename T> struct IntHash {
         static unsigned hash(T key) { return intHash(static_cast<typename IntTypes<sizeof(T)>::UnsignedType>(key)); }
         static bool equal(T a, T b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = true;
+    };
+
+    template<typename T> struct FloatHash {
+        static unsigned hash(T key) { return intHash(*reinterpret_cast<typename IntTypes<sizeof(T)>::UnsignedType*>(&key)); }
+        static bool equal(T a, T b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = true;
     };
 
     // pointer identity hash function
 
     template<typename T> struct PtrHash {
-        static unsigned hash(T key) { return IntHash<uintptr_t>::hash(reinterpret_cast<uintptr_t>(key)); }
+        static unsigned hash(T key)
+        {
+#if COMPILER(MSVC)
+#pragma warning(push)
+#pragma warning(disable: 4244) // work around what seems to be a bug in MSVC's conversion warnings
+#endif
+            return IntHash<uintptr_t>::hash(reinterpret_cast<uintptr_t>(key));
+#if COMPILER(MSVC)
+#pragma warning(pop)
+#endif
+        }
         static bool equal(T a, T b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = true;
     };
     template<typename P> struct PtrHash<RefPtr<P> > {
         static unsigned hash(const RefPtr<P>& key) { return PtrHash<P*>::hash(key.get()); }
         static bool equal(const RefPtr<P>& a, const RefPtr<P>& b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = true;
     };
 
     // default hash function for each type
@@ -94,6 +113,9 @@ namespace WTF {
     template<> struct DefaultHash<long long> { typedef IntHash<unsigned long long> Hash; };
     template<> struct DefaultHash<unsigned long long> { typedef IntHash<unsigned long long> Hash; };
 
+    template<> struct DefaultHash<float> { typedef FloatHash<float> Hash; };
+    template<> struct DefaultHash<double> { typedef FloatHash<double> Hash; };
+
     // make PtrHash the default hash function for pointer types that don't specialize
 
     template<typename P> struct DefaultHash<P*> { typedef PtrHash<P*> Hash; };
@@ -105,4 +127,4 @@ using WTF::DefaultHash;
 using WTF::IntHash;
 using WTF::PtrHash;
 
-#endif // KXLMCORE_HashFunctions_h
+#endif // WTF_HashFunctions_h

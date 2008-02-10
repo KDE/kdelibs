@@ -192,6 +192,11 @@ JSCell* jsString(const UString& s)
     return s.isNull() ? new StringImp() : new StringImp(s);
 }
 
+JSCell* jsOwnedString(const UString& s)
+{
+    return s.isNull() ? new StringImp(UString::empty, StringImp::HasOtherOwner) : new StringImp(s, StringImp::HasOtherOwner);
+}
+
 JSCell* jsString(ExecState* exec, const JSValue* value)
 {
     if (value->isString())

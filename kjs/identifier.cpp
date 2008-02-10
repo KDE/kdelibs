@@ -35,6 +35,7 @@ namespace WTF {
     template<> struct StrHash<KJS::UString::Rep *> {
         static unsigned hash(const KJS::UString::Rep *key) { return key->hash(); }
         static bool equal(const KJS::UString::Rep *a, const KJS::UString::Rep *b) { return KJS::Identifier::equal(a, b); }
+        static const bool safeToCompareToEmptyOrDeleted = false;
     };
 
     template<> struct DefaultHash<KJS::UString::Rep *> {
@@ -109,7 +110,7 @@ struct CStringTranslator
         for (size_t i = 0; i != length; i++)
             d[i] = c[i];
 
-        UString::Rep *r = &UString::Rep::create(d, static_cast<int>(length));
+        UString::Rep *r = UString::Rep::create(d, static_cast<int>(length)).releaseRef();
         r->isIdentifier = 1;
         r->rc = 0;
         r->_hash = hash;
@@ -120,11 +121,15 @@ struct CStringTranslator
 
 PassRefPtr<UString::Rep> Identifier::add(const char *c)
 {
-    if (!c)
-        return &UString::Rep::null;
-    size_t length = strlen(c);
-    if (length == 0)
+   if (!c) {
+       UString::Rep::null.hash();
+       return &UString::Rep::null;
+    }
+
+    if (!c[0]) {
+        UString::Rep::empty.hash();
         return &UString::Rep::empty;
+    }
 
     return *identifierTable().add<const char *, CStringTranslator>(c).first;
 }
@@ -152,7 +157,7 @@ struct UCharBufferTranslator
         for (unsigned i = 0; i != buf.length; i++)
             d[i] = buf.s[i];
 
-        UString::Rep *r = &UString::Rep::create(d, buf.length);
+        UString::Rep *r = UString::Rep::create(d, buf.length).releaseRef();
         r->isIdentifier = 1;
         r->rc = 0;
         r->_hash = hash;
@@ -163,23 +168,26 @@ struct UCharBufferTranslator
 
 PassRefPtr<UString::Rep> Identifier::add(const UChar *s, int length)
 {
-    if (length == 0)
-        return &UString::Rep::empty;
+    if (!length) {
+        UString::Rep::empty.hash();
+         return &UString::Rep::empty;
+    }
 
     UCharBuffer buf = {s, length};
     return *identifierTable().add<UCharBuffer, UCharBufferTranslator>(buf).first;
 }
 
-PassRefPtr<UString::Rep> Identifier::add(UString::Rep *r)
+PassRefPtr<UString::Rep> Identifier::addSlowCase(UString::Rep *r)
 {
-    if (r->isIdentifier)
-        return r;
+    assert(!r->isIdentifier);
 
-    if (r->len == 0)
-        return &UString::Rep::empty;
+    if (r->len == 0) {
+        UString::Rep::empty.hash();
+         return &UString::Rep::empty;
+    }
 
-    UString::Rep *result = *identifierTable().add(r).first;
-    if (result == r)
+     UString::Rep *result = *identifierTable().add(r).first;
+     if (result == r)
         r->isIdentifier = true;
     return result;
 }

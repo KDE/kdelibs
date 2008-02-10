@@ -35,12 +35,12 @@ namespace KJS {
     class KJS_EXPORT Identifier {
         friend class PropertyMap;
     public:
-	/** 
+	/**
 	* Creates an empty identifier
 	*/
         Identifier() { }
 	/**
-	* Creates an identifier with the name of the string 
+	* Creates an identifier with the name of the string
 	* @code
 	* KJS::Identifier method("someJSMethod");
 	* @endcode
@@ -113,9 +113,15 @@ namespace KJS {
 
         static PassRefPtr<UString::Rep> add(const char*);
         static PassRefPtr<UString::Rep> add(const UChar*, int length);
-        static PassRefPtr<UString::Rep> add(UString::Rep*);
+        static PassRefPtr<UString::Rep> add(UString::Rep* r)
+        {
+            if (r->isIdentifier)
+                return r;
+            return addSlowCase(r);
+        }
+        static PassRefPtr<UString::Rep> addSlowCase(UString::Rep *r);
     };
-    
+
     inline bool operator==(const Identifier& a, const Identifier& b)
         { return Identifier::equal(a, b); }
 

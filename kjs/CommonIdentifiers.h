@@ -77,6 +77,7 @@ namespace WTF {
             return PtrHash<KJS::UString::Rep*>::hash(key.ustring().rep());
         }
         static bool equal(const KJS::Identifier& a, const KJS::Identifier& b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = false;
     };
 
     template<> struct DefaultHash<KJS::Identifier> { typedef IdentHash Hash; };

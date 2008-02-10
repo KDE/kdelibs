@@ -233,11 +233,11 @@ JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg)
     return KJS::throwError(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const char* string) 
-{ 
-    UString message = msg; 
-    substitute(message, string); 
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec)); 
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const char* string)
+{
+    UString message = msg;
+    substitute(message, string);
+    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
 JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* expr)
@@ -441,7 +441,7 @@ JSValue *NumberNode::evaluate(ExecState *)
 
 JSValue *StringNode::evaluate(ExecState *)
 {
-    return jsString(value());
+    return jsOwnedString(value());
 }
 
 // ------------------------------ RegExpNode -----------------------------------
@@ -449,8 +449,8 @@ JSValue *StringNode::evaluate(ExecState *)
 JSValue *RegExpNode::evaluate(ExecState *exec)
 {
   List list;
-  list.append(jsString(pattern));
-  list.append(jsString(flags));
+  list.append(jsOwnedString(pattern));
+  list.append(jsOwnedString(flags));
 
   JSObject *reg = exec->lexicalInterpreter()->builtinRegExp();
   return reg->construct(exec,list);
@@ -539,7 +539,7 @@ Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node
   int index = node->lookupSymbolID(ident);
   Node* out = 0;
 
-  // If the symbol isn't local, we can still optimize 
+  // If the symbol isn't local, we can still optimize
   // a bit, and skip the local scope for lookup.
   // (unless 'eval' injects a new local, but NonLocalResolver
   // is careful about that)
@@ -791,7 +791,7 @@ JSValue *PropertyNameNode::evaluate(ExecState*)
   if (str.isNull()) {
     s = jsString(UString::from(numeric));
   } else {
-    s = jsString(str.ustring());
+    s = jsOwnedString(str.ustring());
   }
 
   return s;
@@ -826,7 +826,7 @@ Reference BracketAccessorNode::evaluateReference(ExecState* exec)
   JSObject *o = v1->toObject(exec);
   ref.base  = o;
   ref.found = true; //Always for these sorts of things..
-  
+
   // Special case for indices, to avoid converting double->string
   uint32_t i;
   if (v2->getUInt32(i)) {
@@ -1206,13 +1206,13 @@ Node* PostfixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* no
   return 0;
 }
 
-JSValue* PostfixErrorNode::evaluate(ExecState* exec) 
-{ 
-    throwError(exec, ReferenceError, "Postfix %s operator applied to value that is not a reference.", 
-	       m_oper == OpPlusPlus ? "++" : "--"); 
-    handleException(exec); 
-    return jsUndefined(); 
-} 
+JSValue* PostfixErrorNode::evaluate(ExecState* exec)
+{
+    throwError(exec, ReferenceError, "Postfix %s operator applied to value that is not a reference.",
+	       m_oper == OpPlusPlus ? "++" : "--");
+    handleException(exec);
+    return jsUndefined();
+}
 
 // ECMA 11.4.1
 
@@ -1391,12 +1391,12 @@ Node* PrefixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* nod
   return 0;
 }
 
-JSValue* PrefixErrorNode::evaluate(ExecState* exec) 
-{ 
-    throwError(exec, ReferenceError, "Prefix %s operator applied to value that is not a reference.", 
-	       m_oper == OpPlusPlus ? "++" : "--"); 
-    handleException(exec); 
-    return jsUndefined(); 
+JSValue* PrefixErrorNode::evaluate(ExecState* exec)
+{
+    throwError(exec, ReferenceError, "Prefix %s operator applied to value that is not a reference.",
+	       m_oper == OpPlusPlus ? "++" : "--");
+    handleException(exec);
+    return jsUndefined();
 }
 
 // ------------------------------ UnaryPlusNode --------------------------------
@@ -1471,7 +1471,7 @@ static inline JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2)
     // exception for the Date exception in defaultValue()
     JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
     JSValue *p2 = v2->toPrimitive(exec, UnspecifiedType);
-    
+
     if (p1->isString() || p2->isString()) {
         UString value = p1->toString(exec) + p2->toString(exec);
         if (value.isNull()) {
@@ -1481,7 +1481,7 @@ static inline JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2)
         } else
             return jsString(value);
     }
-    
+
     return jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
 }
 
@@ -1737,11 +1737,11 @@ static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSV
 
 // ------------------------------ AssignNode -----------------------------------
 
-// An special version where LHS is always local and where no 
+// An special version where LHS is always local and where no
 // read-modify-write is possible.
 class LocalAssignNode : public AssignNode {
 public:
-  LocalAssignNode(LocationNode* loc, Node *right, int idx) : 
+  LocalAssignNode(LocationNode* loc, Node *right, int idx) :
       AssignNode(loc, OpEqual, right), index(idx) {}
 
   JSValue* evaluate(ExecState* exec) {
@@ -1760,7 +1760,7 @@ JSValue* AssignNode::evaluate(ExecState* exec) {
 
   KJS_CHECKEXCEPTIONVALUE
 
-  //Lookup failure is OK for assignments, but not 
+  //Lookup failure is OK for assignments, but not
   //read-modify-write ops, e.g. +=
   if (!ref.found && m_oper != OpEqual)
     return throwUndefinedVariableError(exec, ref.ident);
@@ -1821,7 +1821,7 @@ JSValue *AssignDotNode::evaluate(ExecState *exec)
     KJS_CHECKEXCEPTIONVALUE
     JSValue *v2 = m_right->evaluate(exec);
     v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
-    
+
     //### can do direct write here..
   }
 
@@ -1898,12 +1898,12 @@ void AssignBracketNode::recurseVisit(NodeVisitor *visitor)
   recurseVisitLink(visitor, m_right);
 }
 
-JSValue* AssignErrorNode::evaluate(ExecState* exec) 
-{ 
-    throwError(exec, ReferenceError, "Left side of assignment is not a reference."); 
-    handleException(exec); 
-    return jsUndefined(); 
-} 
+JSValue* AssignErrorNode::evaluate(ExecState* exec)
+{
+    throwError(exec, ReferenceError, "Left side of assignment is not a reference.");
+    handleException(exec);
+    return jsUndefined();
+}
 
 
 // ------------------------------ CommaNode ------------------------------------
@@ -1989,9 +1989,9 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
 void VarDeclNode::processVarDecl(ExecState *exec)
 {
   JSObject* variable = exec->context()->variableObject();
-  
+
   // First, determine which flags we want to use..
-  int flags = DontDelete; 
+  int flags = DontDelete;
   if (varType == VarDeclNode::Constant)
     flags |= ReadOnly;
 
@@ -2010,7 +2010,7 @@ void VarDeclNode::processVarDecl(ExecState *exec)
       // eval may be trying to inject a variable that already exists..
       if (!variable->hasProperty(exec, ident)) {
         variable->put(exec, ident, jsUndefined(), flags);
-        // eval injected a new local into scope! Better mark that down, 
+        // eval injected a new local into scope! Better mark that down,
         // so that NonLocalResolver stops skipping the local scope
         variable->setLocalInjected();
       }
@@ -2077,8 +2077,8 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
   staticVer->originalStatement = this;
 
   for (VarDeclListNode *n = next.get(); n; n = n->next.get()) {
-    // We only care about things which have an initializer --- 
-    // everything else is a no-op at execution time, 
+    // We only care about things which have an initializer ---
+    // everything else is a no-op at execution time,
     // and only makes a difference at processVarDecl time
     if (n->var->init) {
       StaticVarStatementNode::Initializer init;
@@ -2399,7 +2399,7 @@ Completion ForInNode::execute(ExecState *exec)
     if (!v->hasProperty(exec, name))
         continue;
 
-    JSValue *str = jsString(name.ustring());
+    JSValue *str = jsOwnedString(name.ustring());
 
     assert (lexpr->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(lexpr.get());
@@ -2430,7 +2430,7 @@ Completion ForInNode::execute(ExecState *exec)
 void ForInNode::recurseVisit(NodeVisitor *visitor)
 {
   recurseVisitLink(visitor, init);
-  recurseVisitLink(visitor, lexpr); 
+  recurseVisitLink(visitor, lexpr);
   recurseVisitLink(visitor, expr);
   recurseVisitLink(visitor, varDecl);
   recurseVisitLink(visitor, statement);
@@ -2788,9 +2788,9 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
 void FunctionBodyNode::addVarDecl(const Identifier& ident, int attr, ExecState* exec)
 {
   // There is one nasty special case: ignore a 'var' declaration of 'arguments';
-  // it effectively doesn't do anything since the magic 'arguments' is already 
+  // it effectively doesn't do anything since the magic 'arguments' is already
   // in scope anyway, and if we allocated a local, we would have to worry about
-  // keeping track of whether it was initialized or not on what is supposed to be the 
+  // keeping track of whether it was initialized or not on what is supposed to be the
   // fast path. So we just make this go through the property map instead.
   // Note that this does not matter for parameters or function declarations,
   // since those overwrite the magic 'arguments' anyway.
@@ -2809,11 +2809,11 @@ int FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode
 {
 
   // We get symbols in the order specified in 10.1.3, but sometimes
-  // the later ones are supposed to lose. This -mostly- does not 
+  // the later ones are supposed to lose. This -mostly- does not
   // matter for us --- we primarily concern ourselves with name/ID
   // mapping, but there is an issue of attributes and funcDecl's.
-  // However, the only flag that matters here is ReadOnly -- 
-  // everything else just has DontDelete set; and it's from const, 
+  // However, the only flag that matters here is ReadOnly --
+  // everything else just has DontDelete set; and it's from const,
   // so we can just ignore it on repetitions, since var/const should lose
   // and are at the end.
   //
@@ -2824,7 +2824,7 @@ int FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode
       m_symbolList[oldId - 1].funcDecl = funcDecl;
     return oldId;
   }
-    
+
   int id = m_symbolList.size() + 1;         //First entry gets 1, etc.
   m_symbolTable.put(ident, jsNumber(id), 0);
   m_symbolList.append (Symbol(ident, flags, funcDecl));
@@ -2854,7 +2854,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 {
   Context *context = exec->context();
 
-  // See whether we just need to fill in the symbol table, 
+  // See whether we just need to fill in the symbol table,
   // or actually fiddle with objects.
   int flags = Internal | DontDelete;
   switch (exec->context()->codeType()) {
@@ -2865,14 +2865,14 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
     case EvalCode:
       // eval-injected symbols can be deleted...
       flags &= ~DontDelete;
-      
+
       // fallthrough intentional
     case GlobalCode:
       context->variableObject()->put(exec, ident, makeFunctionObject(exec), flags);
   };
 }
 
-void FuncDeclNode::addParams() 
+void FuncDeclNode::addParams()
 {
   for (ParameterNode *p = param.get(); p != 0L; p = p->nextParam())
     body->addParam(p->ident());
@@ -3076,7 +3076,7 @@ PackageObject* PackageNameNode::resolvePackage(ExecState* exec)
 	baseObject = ip->globalObject();
 	basePackage = ip->globalPackage();
     }
-    
+
     return resolvePackage(exec, baseObject, basePackage);
 }
 

@@ -49,6 +49,12 @@ StringInstance::StringInstance(JSObject *proto)
   setInternalValue(jsString(""));
 }
 
+StringInstance::StringInstance(JSObject *proto, StringImp* string)
+  : JSWrapperObject(proto)
+{
+  setInternalValue(string);
+}
+
 StringInstance::StringInstance(JSObject *proto, const UString &string)
   : JSWrapperObject(proto)
 {

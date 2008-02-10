@@ -45,6 +45,10 @@ namespace WTF {
         free(p);
     }
 
+    inline void *fastZeroedMalloc(size_t n) {
+        return calloc(n, 1);
+    }
+
     inline void *fastRealloc(void* p, size_t n) {
         return realloc(p, n);
     }
@@ -59,6 +63,7 @@ using WTF::fastMalloc;
 using WTF::fastCalloc;
 using WTF::fastRealloc;
 using WTF::fastFree;
+using WTF::fastZeroedMalloc;
 
 
 #endif /* WTF_FastMalloc_h */

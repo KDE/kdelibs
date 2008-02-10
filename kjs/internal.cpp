@@ -95,14 +95,9 @@ UString StringImp::toString(ExecState *) const
   return val;
 }
 
-JSObject *StringImp::toObject(ExecState *exec) const
+JSObject* StringImp::toObject(ExecState *exec) const
 {
-    // We may be garbage-collected during the invocation of the code 
-    // below, so protect our value to make sure it survives that
-    // See <http://bugs.webkit.org/show_bug.cgi?id=12535> 
-    UString valCopy = val; 
-
-    return new StringInstance(exec->lexicalInterpreter()->builtinStringPrototype(), valCopy);
+    return new StringInstance(exec->lexicalInterpreter()->builtinStringPrototype(), const_cast<StringImp*>(this));
 }
 
 // ------------------------------ NumberImp ------------------------------------
@@ -169,7 +164,7 @@ bool NumberImp::getTruncatedUInt32(uint32_t& uint32) const
 void GetterSetterImp::mark()
 {
     JSCell::mark();
-    
+
     if (getter && !getter->marked())
         getter->mark();
     if (setter && !setter->marked())
@@ -342,7 +337,7 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
       name = "GetterSetter";
       break;
     }
-    
+
     // Avoid calling toString on a huge array (e.g. 4 billion elements, in mozilla/js/js1_5/Array/array-001.js)
     if ( arrayLength > 100 )
       vString = UString( "[ Array with " ) + UString::from( arrayLength ) + " elements ]";

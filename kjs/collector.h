@@ -58,6 +58,11 @@ namespace KJS {
      * on each object and freeing the used memory.
      */
     static bool collect();
+
+    static const size_t minExtraCostSize = 256;
+
+    static void reportExtraMemoryCost(size_t cost);
+
     static size_t size();
     static bool isOutOfMemory() { return memoryFull; }
 
@@ -86,10 +91,10 @@ namespace KJS {
     static CollectorBlock* cellBlock(JSCell*);
     static size_t cellOffset(const JSCell*);
 
-
+    static void recordExtraCost(size_t);
     static void markProtectedObjects();
     static void markCurrentThreadConservatively();
-    static void markOtherThreadConservatively(Thread *thread);
+    static void markOtherThreadConservatively(Thread*);
     static void markStackObjectsConservatively();
     static void markStackObjectsConservatively(void *start, void *end);
 
@@ -107,7 +112,7 @@ namespace KJS {
 
   const size_t BLOCK_OFFSET_MASK = BLOCK_SIZE - 1;
   const size_t BLOCK_MASK = ~BLOCK_OFFSET_MASK;
-  
+
   const size_t CELL_SIZE = CellSize<sizeof(void*)>::m_value;
   const size_t CELL_ARRAY_LENGTH = (CELL_SIZE / sizeof(double));
   const size_t CELL_MASK = CELL_SIZE - 1;
@@ -124,9 +129,9 @@ namespace KJS {
 
   struct CollectorBitmap {
     uint32_t bits[BITMAP_WORDS];
-    bool get(size_t n) const { return !!(bits[n >> 5] & (1 << (n & 0x1F))); } 
-    void set(size_t n) { bits[n >> 5] |= (1 << (n & 0x1F)); } 
-    void clear(size_t n) { bits[n >> 5] &= ~(1 << (n & 0x1F)); } 
+    bool get(size_t n) const { return !!(bits[n >> 5] & (1 << (n & 0x1F))); }
+    void set(size_t n) { bits[n >> 5] |= (1 << (n & 0x1F)); }
+    void clear(size_t n) { bits[n >> 5] &= ~(1 << (n & 0x1F)); }
     void clearAll() { std::memset(bits, 0, sizeof(bits)); }
   };
 
@@ -175,7 +180,11 @@ namespace KJS {
     cellBlock(cell)->marked.set(cellOffset(cell));
   }
 
-
+  inline void Collector::reportExtraMemoryCost(size_t cost)
+  {
+    if (cost > minExtraCostSize)
+      recordExtraCost(cost / (CELL_SIZE * 2));
+  }
 }
 
 #endif /* _KJSCOLLECTOR_H_ */

@@ -84,6 +84,7 @@ ArrayInstance::ArrayInstance(JSObject *proto, unsigned initialLength)
   , storageLength(initialLength < sparseArrayCutoff ? initialLength : 0)
   , storage(allocateStorage(storageLength))
 {
+  Collector::reportExtraMemoryCost(storageLength * sizeof(JSValue*));
 }
 
 ArrayInstance::ArrayInstance(JSObject *proto, const List &list)
@@ -97,6 +98,8 @@ ArrayInstance::ArrayInstance(JSObject *proto, const List &list)
   for (unsigned i = 0; i < l; ++i) {
     storage[i] = it++;
   }
+  // When the array is created non-empty its cells are filled so it's really no worse than
+  // a property map. Therefore don't report extra memory cost.
 }
 
 ArrayInstance::~ArrayInstance()
@@ -134,7 +137,7 @@ bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& proper
     if (index < storageLength) {
       JSValue *v = storage[index];
       if (!v)
-        return false;      
+        return false;
       slot.setValueSlot(this, &storage[index]);
       return true;
     }
@@ -173,21 +176,21 @@ void ArrayInstance::put(ExecState *exec, const Identifier &propertyName, JSValue
     setLength(newLen, exec);
     return;
   }
-  
+
   bool ok;
   unsigned index = propertyName.toArrayIndex(&ok);
   if (ok) {
     put(exec, index, value, attr);
     return;
   }
-  
+
   JSObject::put(exec, propertyName, value, attr);
 }
 
 void ArrayInstance::put(ExecState *exec, unsigned index, JSValue *value, int attr)
 {
   //0xFFFF FFFF is a bit weird --- it should be treated as a non-array index, even when
-  //it's a string 
+  //it's a string
   if (index > MAX_ARRAY_INDEX) {
     put(exec, Identifier::from(index), value, attr);
     return;
@@ -205,7 +208,7 @@ void ArrayInstance::put(ExecState *exec, unsigned index, JSValue *value, int att
     storage[index] = value;
     return;
   }
-  
+
   assert(index >= sparseArrayCutoff);
   JSObject::put(exec, Identifier::from(index), value, attr);
 }
@@ -214,7 +217,7 @@ bool ArrayInstance::deleteProperty(ExecState *exec, const Identifier &propertyNa
 {
   if (propertyName == exec->propertyNames().length)
     return false;
-  
+
   bool ok;
   uint32_t index = propertyName.toArrayIndex(&ok);
   if (ok) {
@@ -225,7 +228,7 @@ bool ArrayInstance::deleteProperty(ExecState *exec, const Identifier &propertyNa
       return true;
     }
   }
-  
+
   return JSObject::deleteProperty(exec, propertyName);
 }
 
@@ -240,7 +243,7 @@ bool ArrayInstance::deleteProperty(ExecState *exec, unsigned index)
     storage[index] = 0;
     return true;
   }
-  
+
   return JSObject::deleteProperty(exec, Identifier::from(index));
 }
 
@@ -248,13 +251,13 @@ void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propert
 {
   // avoid fetching this every time through the loop
   JSValue* undefined = jsUndefined();
-  
+
   for (unsigned i = 0; i < storageLength; ++i) {
     JSValue* value = storage[i];
     if (value && value != undefined)
       propertyNames.add(Identifier::from(i));
   }
- 
+
   JSObject::getPropertyNames(exec, propertyNames);
 }
 
@@ -274,7 +277,7 @@ void ArrayInstance::resizeStorage(unsigned newLength)
           newCapacity = sparseArrayCutoff;
         }
       }
-      
+
       reallocateStorage(storage, newCapacity);
       memset(storage + cap, 0, sizeof(JSValue*) * (newCapacity - cap));
     }
@@ -289,11 +292,11 @@ void ArrayInstance::setLength(unsigned newLength, ExecState *exec)
 
   if (newLength < length) {
     PropertyNameArray sparseProperties;
-    
+
     _prop.getSparseArrayPropertyNames(sparseProperties);
-    
+
     PropertyNameArrayIterator end = sparseProperties.end();
-    
+
     for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
       Identifier name = *it;
       bool ok;
@@ -302,7 +305,7 @@ void ArrayInstance::setLength(unsigned newLength, ExecState *exec)
         deleteProperty(exec, name);
     }
   }
-  
+
   length = newLength;
 }
 
@@ -336,7 +339,7 @@ static int compareByStringForQSort(const void *a, const void *b)
 void ArrayInstance::sort(ExecState* exec)
 {
     size_t lengthNotIncludingUndefined = compactForSorting();
-      
+
     ExecState* oldExec = execForCompareByStringForQSort;
     execForCompareByStringForQSort = exec;
 #if HAVE(MERGESORT)
@@ -344,7 +347,7 @@ void ArrayInstance::sort(ExecState* exec)
     // however, becuase it requires extra copies of the storage buffer, don't use it for very
     // large arrays
     // FIXME: for sorting by string value, the fastest thing would actually be to convert all the
-    // values to string once up front, and then use a radix sort. That would be O(N) rather than 
+    // values to string once up front, and then use a radix sort. That would be O(N) rather than
     // O(N log N).
     if (lengthNotIncludingUndefined < sparseArrayCutoff) {
         JSValue** storageCopy = static_cast<JSValue**>(fastMalloc(capacity * sizeof(JSValue*)));
@@ -432,7 +435,7 @@ unsigned ArrayInstance::compactForSorting()
     JSValue *undefined = jsUndefined();
 
     unsigned o = 0;
-    
+
     for (unsigned i = 0; i != storageLength; ++i) {
         JSValue *v = storage[i];
         if (v && v != undefined) {
@@ -441,14 +444,14 @@ unsigned ArrayInstance::compactForSorting()
             o++;
         }
     }
-   
+
     PropertyNameArray sparseProperties;
     _prop.getSparseArrayPropertyNames(sparseProperties);
     unsigned newLength = o + sparseProperties.size();
-    
+
     if (newLength > storageLength)
         resizeStorage(newLength);
-    
+
     PropertyNameArrayIterator end = sparseProperties.end();
     for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
         Identifier name = *it;
@@ -456,10 +459,10 @@ unsigned ArrayInstance::compactForSorting()
         _prop.remove(name);
         o++;
     }
-    
+
     if (newLength != storageLength)
         memset(storage + o, 0, sizeof(JSValue *) * (storageLength - o));
-    
+
     return o;
 }
 
@@ -526,7 +529,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
   unsigned length = thisObj->get(exec, exec->propertyNames().length)->toUInt32(exec);
 
   JSValue *result = 0; // work around gcc 4.0 bug in uninitialized variable warning
-  
+
   switch (id) {
   case ToLocaleString:
   case ToString:
@@ -548,7 +551,12 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
-      
+      if (str.isNull()) {
+        JSObject *error = Error::create(exec, GeneralError, "Out of memory");
+        exec->setException(error);
+        break;
+      }
+
       JSValue *element = thisObj->get(exec, k);
       if (element->isUndefinedOrNull())
         continue;
@@ -577,6 +585,10 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
           }
         } else {
           str += element->toString(exec);
+        }
+        if (str.isNull()) {
+          JSObject *error = Error::create(exec, GeneralError, "Out of memory");
+          exec->setException(error);
         }
       }
 
@@ -647,7 +659,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
       JSValue *obj2 = getProperty(exec, thisObj, lk1);
       JSValue *obj = getProperty(exec, thisObj, k);
 
-      if (obj2) 
+      if (obj2)
         thisObj->put(exec, k, obj2);
       else
         thisObj->deleteProperty(exec, k);
@@ -732,7 +744,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
         if (!sortFunction->implementsCall())
           sortFunction = NULL;
       }
-    
+
     if (thisObj->classInfo() == &ArrayInstance::info) {
       if (sortFunction)
         ((ArrayInstance *)thisObj)->sort(exec, sortFunction);
@@ -862,44 +874,44 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
   case Filter:
   case Map: {
     JSObject *eachFunction = args[0]->toObject(exec);
-    
+
     if (!eachFunction->implementsCall())
       return throwError(exec, TypeError);
-    
+
     JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
     JSObject *resultArray;
-    
-    if (id == Filter) 
+
+    if (id == Filter)
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
     else {
       List args;
       args.append(jsNumber(length));
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
     }
-    
+
     unsigned filterIndex = 0;
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
       PropertySlot slot;
 
       if (!thisObj->getPropertySlot(exec, k, slot))
          continue;
-        
+
       JSValue *v = slot.getValue(exec, thisObj, k);
-      
+
       List eachArguments;
-      
+
       eachArguments.append(v);
       eachArguments.append(jsNumber(k));
       eachArguments.append(thisObj);
-      
+
       JSValue *result = eachFunction->call(exec, applyThis, eachArguments);
-      
+
       if (id == Map)
         resultArray->put(exec, k, result);
-      else if (result->toBoolean(exec)) 
+      else if (result->toBoolean(exec))
         resultArray->put(exec, filterIndex++, v);
     }
-    
+
     return resultArray;
   }
   case Every:
@@ -909,33 +921,33 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:every
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:forEach
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:some
-    
+
     JSObject *eachFunction = args[0]->toObject(exec);
-    
+
     if (!eachFunction->implementsCall())
       return throwError(exec, TypeError);
-    
+
     JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
-    
+
     if (id == Some || id == Every)
       result = jsBoolean(id == Every);
     else
       result = jsUndefined();
-    
+
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
       PropertySlot slot;
-        
+
       if (!thisObj->getPropertySlot(exec, k, slot))
         continue;
-      
+
       List eachArguments;
-      
+
       eachArguments.append(slot.getValue(exec, thisObj, k));
       eachArguments.append(jsNumber(k));
       eachArguments.append(thisObj);
-      
+
       bool predicateResult = eachFunction->call(exec, applyThis, eachArguments)->toBoolean(exec);
-      
+
       if (id == Every && !predicateResult) {
         result = jsBoolean(false);
         break;
@@ -976,19 +988,19 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
   }
   case LastIndexOf: {
        // JavaScript 1.6 Extension by Mozilla
-      // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf 
+      // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf
 
     int index = length - 1;
     double d = args[1]->toIntegerPreserveNaN(exec);
 
     if (d < 0) {
         d += length;
-        if (d < 0) 
+        if (d < 0)
             return jsNumber(-1);
     }
     if (d < length)
         index = static_cast<int>(d);
-          
+
     JSValue* searchElement = args[0];
     for (; index >= 0; --index) {
         JSValue* e = getProperty(exec, thisObj, index);
