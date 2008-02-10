@@ -62,6 +62,11 @@ void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *item )
 
   currentModule = module;
 
+  updateButtons(currentModule);
+}
+
+void KCMultiDialogPrivate::updateButtons(KCModuleProxy *currentModule)
+{
     Q_Q(KCMultiDialog);
     q->enableButton(KDialog::Help, currentModule->buttons() & KCModule::Help);
     q->enableButton(KDialog::Default, currentModule->buttons() & KCModule::Default);
@@ -332,8 +337,10 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   d->modules.append( cm );
 
   if ( d->modules.count() == 1 || updateCurrentPage )
+  {
     setCurrentPage( item );
-
+    d->updateButtons(kcm);
+  }
   return item;
 }
 

@@ -53,6 +53,7 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
         virtual void _k_clientChanged();
         void _k_dialogClosed();
 
+        void updateButtons(KCModuleProxy *currentModule);
     private:
         void init();
         void apply();
