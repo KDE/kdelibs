@@ -190,8 +190,8 @@ KJS_EXPORT JSCell* jsString(const char* s); // returns empty string if passed 0
 KJS_EXPORT JSCell* jsString(const char* s, int len);
 KJS_EXPORT JSCell* jsString(ExecState* exec, const JSValue* value);
 
-KJS_EXPORT extern const double NaN;
-KJS_EXPORT extern const double Inf;
+extern const double NaN;
+extern const double Inf;
 
 inline JSValue* jsUndefined()
 {

@@ -28,6 +28,13 @@
 #include <math.h>
 #include <time.h>
 
+#if PLATFORM(SOLARIS_OS)
+static inline int signbit(double x)
+{
+    return (x<0.0) ? 1 : 0;
+}
+#endif
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif  /*  M_PI  */

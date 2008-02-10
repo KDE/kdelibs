@@ -688,13 +688,13 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case SetSeconds:
   case SetMinutes:
   case SetHours:
-    ms = setTimeFields(exec, args, id, ms, &t);
+    ms = args.size() > 0 ? setTimeFields(exec, args, id, ms, &t) : NaN;
     break;
 
   case SetDate:
   case SetMonth:
   case SetFullYear:
-    ms = setDateFields(exec, args, id, ms, &t);
+    ms = args.size() > 0 ? setDateFields(exec, args, id, ms, &t) : NaN;
     break;
 
   case SetYear: {
@@ -707,7 +707,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    result = jsNumber(makeTime(&t, ms, utc));
+    result = jsNumber(isnan(ms) ? ms : makeTime(&t, ms, utc));
     thisDateObj->setInternalValue(result);
   }
 
