@@ -952,7 +952,7 @@ void UString::set(const char* c, int l)
     return;
   }
 
-  if (l == 1) {
+  if (l == 0) {
     m_rep = &Rep::empty;
     return;
   }
