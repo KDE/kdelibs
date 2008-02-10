@@ -54,11 +54,11 @@ namespace KJS {
   public:
     virtual ~NodeVisitor() {}
     /**
-     This method should be overridden by subclasses to process nodes, and 
-     perhaps return pointers for replacement nodes. If the node should not be 
+     This method should be overridden by subclasses to process nodes, and
+     perhaps return pointers for replacement nodes. If the node should not be
      changed, return 0. Otherwise, return the replacement node.
 
-     The default implementation asks the node to visit its kids, and do 
+     The default implementation asks the node to visit its kids, and do
      replacements on them if needed, but does not change anything for this node
     */
     virtual Node* visit(Node* node);
@@ -107,25 +107,25 @@ namespace KJS {
     virtual bool isIterationStatement()      const { return false; }
     virtual bool isSwitchStatement()         const { return false; }
     virtual bool isVarStatement()            const { return false; }
-    
+
     bool introducesNewScope() const { return introducesNewStaticScope() || introducesNewDynamicScope(); }
 
     virtual void breakCycle() { }
 
-    // Processes all function and variable declarations below this node, 
-    // adding them to symbol table or the current object depending on the 
+    // Processes all function and variable declarations below this node,
+    // adding them to symbol table or the current object depending on the
     // execution context..
     void processDecls(ExecState*);
-    
+
     /*
-      Implementations of this method should call visitor->visit on all the 
+      Implementations of this method should call visitor->visit on all the
       children nodes, and if they return value is non-0, update the link to the child.
       The recurseVisitLink helper takes care of this
     */
     virtual void recurseVisit(NodeVisitor * /*visitor*/) {}
 
     /*
-      Nodes that can be optimized to take advantage of numeric binding to 
+      Nodes that can be optimized to take advantage of numeric binding to
       locals should override this method.
     */
     virtual Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
@@ -167,6 +167,7 @@ namespace KJS {
 
     void handleException(ExecState*);
     void handleException(ExecState*, JSValue*);
+    Completion rethrowException(ExecState*);
 
     void copyDebugInfo(Node* otherNode);
   protected:
@@ -177,7 +178,7 @@ namespace KJS {
     */
     friend class SemanticChecker;
     virtual Node* checkSemantics(SemanticChecker* semanticChecker);
-  
+
     int m_line;
   private:
     virtual void processVarDecl (ExecState* state);
@@ -293,7 +294,7 @@ namespace KJS {
     virtual JSValue*  evaluate(ExecState*);
     virtual Reference evaluateReference(ExecState* exec);
 
-    // Returns the ID of the local this is bound to, 
+    // Returns the ID of the local this is bound to,
     // or -1 if non-local
     int localID(FunctionBodyNode* funcBody);
   protected:
@@ -303,7 +304,7 @@ namespace KJS {
   class LocalVarAccessNode : public VarAccessNode {
   public:
     LocalVarAccessNode(const Identifier& s, uint32_t i) : VarAccessNode(s), index(i) {}
-    
+
     virtual JSValue*  evaluate(ExecState*);
     virtual Reference evaluateReference(ExecState* exec);
   private:
@@ -568,15 +569,15 @@ namespace KJS {
     Operator m_oper;
   };
 
-  class PostfixErrorNode : public Node { 
-  public: 
+  class PostfixErrorNode : public Node {
+  public:
     PostfixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {}
-    JSValue* evaluate(ExecState*); 
-    virtual void streamTo(SourceStream&) const; 
-  private: 
-    RefPtr<Node> m_expr; 
-    Operator m_oper; 
-  }; 
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  private:
+    RefPtr<Node> m_expr;
+    Operator m_oper;
+  };
 
   class DeleteReferenceNode : public Node {
   public:
@@ -629,15 +630,15 @@ namespace KJS {
     RefPtr<Node> m_expr;
   };
 
-  class PrefixErrorNode : public Node { 
-  public: 
-    PrefixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {} 
-    JSValue* evaluate(ExecState*); 
-    virtual void streamTo(SourceStream&) const; 
-  private: 
-    RefPtr<Node> m_expr; 
-    Operator m_oper; 
-  }; 
+  class PrefixErrorNode : public Node {
+  public:
+    PrefixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {}
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  private:
+    RefPtr<Node> m_expr;
+    Operator m_oper;
+  };
 
   class PrefixNode : public Node {
   public:
@@ -738,15 +739,15 @@ namespace KJS {
     RefPtr<Node> expr2;
   };
 
-  class AssignErrorNode : public Node { 
-  public: 
-    AssignErrorNode(Node* left, Operator oper, Node* right) 
-      : m_left(left), m_oper(oper), m_right(right) {} 
-    JSValue* evaluate(ExecState*); 
-    virtual void streamTo(SourceStream&) const; 
-  protected: 
-    RefPtr<Node> m_left; 
-    Operator m_oper; 
+  class AssignErrorNode : public Node {
+  public:
+    AssignErrorNode(Node* left, Operator oper, Node* right)
+      : m_left(left), m_oper(oper), m_right(right) {}
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  protected:
+    RefPtr<Node> m_left;
+    Operator m_oper;
     RefPtr<Node> m_right;
   };
 
@@ -861,7 +862,7 @@ namespace KJS {
     RefPtr<VarDeclListNode> next;
   };
 
-  // A version of VarStatementNode optimized for local access --- it stores the 
+  // A version of VarStatementNode optimized for local access --- it stores the
   // index locations, and accesses them directly.
   class StaticVarStatementNode : public StatementNode {
     virtual Completion execute(ExecState*);
@@ -1087,10 +1088,10 @@ namespace KJS {
   // inherited by ProgramNode
 
   /**
-   This AST node corresponds to the function body in the AST, but is used to 
+   This AST node corresponds to the function body in the AST, but is used to
    keep track of much of the information relevant to the whole function,
-   such as parameter names and symbol tables. This is because there are both function 
-   declarations and expressions, so there is no natural single place to put this stuff 
+   such as parameter names and symbol tables. This is because there are both function
+   declarations and expressions, so there is no natural single place to put this stuff
    above the body
   */
   class FunctionBodyNode : public BlockNode {
@@ -1113,7 +1114,7 @@ namespace KJS {
     FunctionBodyNode(SourceElementsNode *);
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
-    
+
     //////////////////////////////////////////////////////////////////////
     // Symbol table functions
     //////////////////////////////////////////////////////////////////////
@@ -1123,10 +1124,10 @@ namespace KJS {
     int  getLocalAttr(int id) const { return m_symbolList[id-1].attr; }
     Identifier getLocalName(int id) const { return m_symbolList[id-1].name; }
     FuncDeclNode* getLocalFuncDecl(int id) const { return m_symbolList[id-1].funcDecl; }
-    
+
     //Returns -1 if not found..
     int  lookupSymbolID(const Identifier &ident) const;
-     
+
     //////////////////////////////////////////////////////////////////////
     // Parameter array functions
     //////////////////////////////////////////////////////////////////////
@@ -1140,7 +1141,7 @@ namespace KJS {
     int numParams() const { return m_paramList.size(); }
     int paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
     const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
-   
+
   private:
     UString m_sourceURL;
     int m_sourceId : 31;
@@ -1151,7 +1152,7 @@ namespace KJS {
     // Note: the convention here is that the position 0
     // is the index 1, position 1 is the index 2, etc.
     WTF::Vector<Symbol> m_symbolList;
-    
+
     // This is the map of the above, the jsValues are the IDs.
     // ### ugh. Lazy-lazy-lazy. But this works, too.
     PropertyMap m_symbolTable;
@@ -1312,7 +1313,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    
+
     Completion loadSymbol(ExecState* exec, bool wildcard);
     PackageObject* resolvePackage(ExecState* exec);
 

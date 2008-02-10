@@ -30,13 +30,11 @@
 #include "types.h"
 
 namespace KJS {
-
-  class Context;
   class Debugger;
   class SavedBuiltins;
   class TimeoutChecker;
   class Package;
-  
+
 #if USE(BINDINGS)
   namespace Bindings {
     class RootObject;
@@ -120,7 +118,7 @@ namespace KJS {
      * Parses the supplied ECMAScript code and checks for syntax errors.
      *
      * @param code The code to check
-     * @return A normal completion if there were no syntax errors in the code, 
+     * @return A normal completion if there were no syntax errors in the code,
      * otherwise a throw completion with the syntax error as its value.
      */
     Completion checkSyntax(const UString& sourceURL, int startingLineNumber, const UString& code);
@@ -265,7 +263,7 @@ namespace KJS {
      */
     void setCompatMode(CompatMode mode) { m_compatMode = mode; }
     CompatMode compatMode() const { return m_compatMode; }
-    
+
     /**
      * Run the garbage collection. Returns true when at least one object
      * was collected; false otherwise.
@@ -273,7 +271,7 @@ namespace KJS {
     static bool collect();
 
     /**
-     * Called during the mark phase of the garbage collector. Subclasses 
+     * Called during the mark phase of the garbage collector. Subclasses
      * implementing custom mark methods must make sure to chain to this one.
      */
     virtual void mark(bool currentThreadIsMainThread);
@@ -300,8 +298,8 @@ namespace KJS {
      * security checks.
      */
     virtual bool isGlobalObject(JSValue*) { return false; }
-    
-    /** 
+
+    /**
      * Find the interpreter for a particular global object.  This should really
      * be a static method, but we can't do that is C++.  Again, as with isGlobalObject()
      * implementation really need to know about all instances of Interpreter
@@ -309,7 +307,7 @@ namespace KJS {
      * override of this method is currently in WebCore.
      */
     virtual Interpreter* interpreterForGlobalObject(const JSValue*) { return 0; }
-    
+
     /**
      * Determine if the it is 'safe' to execute code in the target interpreter from an
      * object that originated in this interpreter.  This check is used to enforce WebCore
@@ -317,7 +315,7 @@ namespace KJS {
      * not allowed unless isSafeScript returns true.
      */
     virtual bool isSafeScript(const Interpreter*) { return true; }
-  
+
 #if USE(BINDINGS)
     virtual void *createLanguageInstanceForValue(ExecState*, int language, JSObject* value, const Bindings::RootObject* origin, const Bindings::RootObject* current);
 #endif
@@ -329,12 +327,14 @@ namespace KJS {
 
     Debugger* debugger() const { return m_debugger; }
     void setDebugger(Debugger* d) { m_debugger = d; }
-    
-    void setContext(Context* c) { m_context = c; }
-    Context* context() const { return m_context; }
-    
+
+    void setExecState(ExecState* e) { m_execState = e; }
+
+    // Note: may be 0, if in globalExec
+    ExecState* execState() { return m_execState ? m_execState : &m_globalExec; }
+
     static Interpreter* interpreterWithGlobalObject(JSObject*);
-    
+
     void setTimeoutTime(unsigned timeoutTime) { m_timeoutTime = timeoutTime; }
 
     void startTimeoutCheck();
@@ -345,13 +345,13 @@ namespace KJS {
 
     void pauseTimeoutCheck();
     void resumeTimeoutCheck();
-    
+
     bool checkTimeout();
-    
+
     void ref() { ++m_refCount; }
     void deref() { if (--m_refCount <= 0) delete this; }
     int refCount() const { return m_refCount; }
-    
+
 protected:
     virtual ~Interpreter(); // only deref should delete us
     virtual bool shouldInterruptScript() const { return true; }
@@ -369,28 +369,28 @@ private:
      * pointers to an interpreter instance instead.
      */
     Interpreter(const Interpreter&);
-    
+
     /**
      * This operator is not implemented, in order to prevent assignment of
      * Interpreter objects. You should always pass around pointers to an
      * interpreter instance instead.
      */
     Interpreter operator=(const Interpreter&);
-    
+
     int m_refCount;
-    
-    ExecState m_globalExec;
+
     JSObject* m_globalObject;
+    GlobalExecState m_globalExec;
     Package *globPkg;
 
     // Chained list of interpreters (ring) - for collector
     static Interpreter* s_hook;
     Interpreter *next, *prev;
-    
+
     int m_recursion;
-    
+
     Debugger* m_debugger;
-    Context* m_context;
+    ExecState* m_execState;
     CompatMode m_compatMode;
 
     TimeoutChecker* m_timeoutChecker;
@@ -408,7 +408,7 @@ private:
     ProtectedPtr<JSObject> m_Date;
     ProtectedPtr<JSObject> m_RegExp;
     ProtectedPtr<JSObject> m_Error;
-    
+
     ProtectedPtr<JSObject> m_ObjectPrototype;
     ProtectedPtr<JSObject> m_FunctionPrototype;
     ProtectedPtr<JSObject> m_ArrayPrototype;
@@ -418,14 +418,14 @@ private:
     ProtectedPtr<JSObject> m_DatePrototype;
     ProtectedPtr<JSObject> m_RegExpPrototype;
     ProtectedPtr<JSObject> m_ErrorPrototype;
-    
+
     ProtectedPtr<JSObject> m_EvalError;
     ProtectedPtr<JSObject> m_RangeError;
     ProtectedPtr<JSObject> m_ReferenceError;
     ProtectedPtr<JSObject> m_SyntaxError;
     ProtectedPtr<JSObject> m_TypeError;
     ProtectedPtr<JSObject> m_UriError;
-    
+
     ProtectedPtr<JSObject> m_EvalErrorPrototype;
     ProtectedPtr<JSObject> m_RangeErrorPrototype;
     ProtectedPtr<JSObject> m_ReferenceErrorPrototype;
@@ -494,7 +494,7 @@ namespace KJS { \
     KJS::UnicodeSupport::setIdentPartChecker(KJS::qtIdentPart); \
     KJS::UnicodeSupport::setToLowerFunction(KJS::qtToLower); \
     KJS::UnicodeSupport::setToUpperFunction(KJS::qtToUpper); }
-  
+
 } // namespace
 
 #endif // _KJS_INTERPRETER_H_

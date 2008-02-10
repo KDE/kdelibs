@@ -32,10 +32,6 @@ namespace KJS {
   class ActivationImp;
   class FunctionPrototype;
 
-  enum CodeType { GlobalCode,
-                  EvalCode,
-                  FunctionCode };
-
   class KJS_EXPORT InternalFunctionImp : public JSObject {
   public:
     InternalFunctionImp();
@@ -114,7 +110,7 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
     virtual void getPropertyNames(ExecState*, PropertyNameArray&);
-    
+
     //This is only used by declaration code, so it never check r/o attr
     void putLocal(int propertyID, JSValue *value) {
       assert(validLocal(propertyID));

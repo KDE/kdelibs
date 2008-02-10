@@ -96,7 +96,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
   }
 #endif
 
-  JSValue *ret = callAsFunction(exec,thisObj,args); 
+  JSValue *ret = callAsFunction(exec,thisObj,args);
 
 #if KJS_MAX_STACK > 0
   --depth;
@@ -126,16 +126,16 @@ void JSObject::mark()
   markStackDepth++;
   for (int i = 0; i < markStackDepth; i++)
     putchar('-');
-  
+
   printf("%s (%p)\n", className().UTF8String().c_str(), this);
 #endif
-  
+
   JSValue *proto = _proto;
   if (!proto->marked())
     proto->mark();
 
   _prop.mark();
-  
+
 #if JAVASCRIPT_MARK_TRACING
   markStackDepth--;
 #endif
@@ -163,7 +163,7 @@ JSValue *JSObject::get(ExecState *exec, const Identifier &propertyName) const
 
   if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot))
     return slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
-    
+
   return jsUndefined();
 }
 
@@ -172,25 +172,25 @@ JSValue *JSObject::get(ExecState *exec, unsigned propertyName) const
   PropertySlot slot;
   if (const_cast<JSObject *>(this)->getPropertySlot(exec, propertyName, slot))
     return slot.getValue(exec, const_cast<JSObject *>(this), propertyName);
-    
+
   return jsUndefined();
 }
 
 bool JSObject::getPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
 {
   JSObject *imp = this;
-  
+
   while (true) {
     if (imp->getOwnPropertySlot(exec, propertyName, slot))
       return true;
-    
+
     JSValue *proto = imp->_proto;
     if (!proto->isObject())
       break;
-    
+
     imp = static_cast<JSObject *>(proto);
   }
-  
+
   return false;
 }
 
@@ -219,7 +219,7 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
       }
       proto = proto->prototype() ? proto->prototype()->getObject() : 0;
     }
-    
+
     setPrototype(value);
     return;
   }
@@ -244,13 +244,13 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
       hasGettersOrSetters = true;
       break;
     }
-      
+
     if (!obj->_proto->isObject())
       break;
-      
+
     obj = static_cast<JSObject *>(obj->_proto);
   }
-  
+
   if (hasGettersOrSetters) {
     obj = this;
     while (true) {
@@ -258,31 +258,31 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
       if (JSValue *gs = obj->_prop.get(propertyName, attributes)) {
         if (attributes & GetterSetter) {
           JSObject *setterFunc = static_cast<GetterSetterImp *>(gs)->getSetter();
-        
+
           if (!setterFunc) {
             throwSetterError(exec);
             return;
           }
-            
+
           List args;
           args.append(value);
-        
+
           setterFunc->call(exec, this, args);
           return;
         } else {
-          // If there's an existing property on the object or one of its 
+          // If there's an existing property on the object or one of its
           // prototype it should be replaced, so we just break here.
           break;
         }
       }
-     
+
       if (!obj->_proto->isObject())
         break;
-        
+
       obj = static_cast<JSObject *>(obj->_proto);
     }
   }
-  
+
   _prop.put(propertyName,value,attr);
 }
 
@@ -296,7 +296,7 @@ void JSObject::put(ExecState *exec, unsigned propertyName,
 bool JSObject::canPut(ExecState *, const Identifier &propertyName) const
 {
   unsigned attributes;
-    
+
   // Don't look in the prototype here. We can always put an override
   // in the object, even if the prototype has a ReadOnly property.
 
@@ -328,7 +328,7 @@ bool JSObject::deleteProperty(ExecState * /*exec*/, const Identifier &propertyNa
     if ((attributes & DontDelete))
       return false;
     _prop.remove(propertyName);
-    if (attributes & GetterSetter) 
+    if (attributes & GetterSetter)
         _prop.setHasGetterSetterProperties(_prop.containsGettersOrSetters());
     return true;
   }
@@ -409,14 +409,14 @@ void JSObject::defineGetter(ExecState*, const Identifier& propertyName, JSObject
 {
     JSValue *o = getDirect(propertyName);
     GetterSetterImp *gs;
-    
+
     if (o && o->type() == GetterSetterType) {
         gs = static_cast<GetterSetterImp *>(o);
     } else {
         gs = new GetterSetterImp;
         putDirect(propertyName, gs, GetterSetter);
     }
-    
+
     _prop.setHasGetterSetterProperties(true);
     gs->setGetter(getterFunc);
 }
@@ -425,14 +425,14 @@ void JSObject::defineSetter(ExecState*, const Identifier& propertyName, JSObject
 {
     JSValue *o = getDirect(propertyName);
     GetterSetterImp *gs;
-    
+
     if (o && o->type() == GetterSetterType) {
         gs = static_cast<GetterSetterImp *>(o);
     } else {
         gs = new GetterSetterImp;
         putDirect(propertyName, gs, GetterSetter);
     }
-    
+
     _prop.setHasGetterSetterProperties(true);
     gs->setSetter(setterFunc);
 }
@@ -476,10 +476,10 @@ bool JSObject::hasInstance(ExecState* exec, JSValue* value)
         throwError(exec, TypeError, "instanceof called on an object with an invalid prototype property.");
         return false;
     }
-    
+
     if (!value->isObject())
         return false;
-    
+
     JSObject* o = static_cast<JSObject*>(value);
     while ((o = o->prototype()->getObject())) {
         if (o == proto)
@@ -491,7 +491,7 @@ bool JSObject::hasInstance(ExecState* exec, JSValue* value)
 bool JSObject::propertyIsEnumerable(ExecState*, const Identifier& propertyName) const
 {
   unsigned attributes;
- 
+
   if (!getPropertyAttributes(propertyName, attributes))
     return false;
   else
@@ -502,14 +502,14 @@ bool JSObject::getPropertyAttributes(const Identifier& propertyName, unsigned& a
 {
   if (_prop.get(propertyName, attributes))
     return true;
-    
+
   // Look in the static hashtable of properties
   const HashEntry* e = findPropertyHashEntry(propertyName);
   if (e) {
     attributes = e->attr;
     return true;
   }
-    
+
   return false;
 }
 
@@ -572,7 +572,7 @@ void JSObject::removeDirect(const Identifier &propertyName)
 
 void JSObject::putDirectFunction(InternalFunctionImp* func, int attr)
 {
-    putDirect(func->functionName(), func, attr); 
+    putDirect(func->functionName(), func, attr);
 }
 
 void JSObject::fillGetterPropertySlot(PropertySlot& slot, JSValue **location)
@@ -648,7 +648,7 @@ JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &messa
 
   if(!sourceURL.isNull())
     err->put(exec, "sourceURL", jsString(sourceURL));
- 
+
   return err;
 
 /*

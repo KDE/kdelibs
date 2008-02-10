@@ -868,7 +868,7 @@ SourceElement:
     FunctionDeclaration                 { $$ = $1; }
   | Statement                           { $$ = $1; }
 ;
- 
+
 %%
 
 /* called by yyparse on error */

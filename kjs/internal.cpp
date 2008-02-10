@@ -27,7 +27,6 @@
 #include "array_object.h"
 #include "bool_object.h"
 #include "collector.h"
-#include "context.h"
 #include "date_object.h"
 #include "debugger.h"
 #include "error_object.h"

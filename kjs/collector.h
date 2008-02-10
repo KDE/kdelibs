@@ -99,6 +99,7 @@ namespace KJS {
     static void markStackObjectsConservatively(void *start, void *end);
 
     static bool memoryFull;
+    static void reportOutOfMemoryToAllInterpreters();
   };
 
   // tunable parameters

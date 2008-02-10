@@ -34,7 +34,6 @@
 #include "nodes.h"
 #include "operations.h"
 #include "debugger.h"
-#include "context.h"
 #include "PropertyNameArray.h"
 
 #include <stdio.h>
@@ -110,12 +109,9 @@ FunctionImp::~FunctionImp()
 
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
-  JSObject* globalObj = exec->dynamicInterpreter()->globalObject();
-
   // enter a new execution context
-  Context ctx(globalObj, exec->dynamicInterpreter(), thisObj, body.get(),
-                 FunctionCode, exec->context(), this, &args);
-  ExecState newExec(exec->dynamicInterpreter(), &ctx);
+  FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(),
+                 exec, this, &args);
   if (exec->hadException())
     newExec.setException(exec->exception());
 
@@ -131,7 +127,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     optimizer.optimize();
   }
 
-  ActivationImp* activation = static_cast<ActivationImp*>(ctx.activationObject());
+  ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
 
   // Here, we actually fill stuff in, going by increasing priorities:
   // first, initialize flags and set to undefined...
@@ -206,8 +202,8 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 // ECMA 10.1.3q
 void FunctionImp::passInParameters(ExecState* exec, const List& args)
 {
-  assert (exec->context()->variableObject()->isActivation());
-  ActivationImp* variable = static_cast<ActivationImp*>(exec->context()->variableObject());
+  assert (exec->variableObject()->isActivation());
+  ActivationImp* variable = static_cast<ActivationImp*>(exec->activationObject());
 
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
@@ -234,12 +230,12 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
 JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
-  Context *context = exec->m_context;
+  ExecState *context = exec;
   while (context) {
     if (context->function() == thisObj) {
       return static_cast<ActivationImp *>(context->activationObject())->get(exec, propertyName);
     }
-    context = context->callingContext();
+    context = context->callingExecState();
   }
   return jsNull();
 }
@@ -247,17 +243,17 @@ JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifi
 JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
     FunctionImp* thisObj = static_cast<FunctionImp*>(slot.slotBase());
-    Context* context = exec->m_context;
+    ExecState* context = exec;
     while (context) {
         if (context->function() == thisObj)
             break;
-        context = context->callingContext();
+        context = context->callingExecState();
     }
 
     if (!context)
         return jsNull();
 
-    Context* callingContext = context->callingContext();
+    ExecState* callingContext = context->callingExecState();
     if (!callingContext)
         return jsNull();
 
@@ -930,14 +926,11 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
           return throwError(exec, SyntaxError, errMsg, errLine, sourceId, NULL);
 
         // enter a new execution context
-        Context ctx(exec->dynamicInterpreter()->globalObject(),
-                       exec->dynamicInterpreter(),
-                       0, /* thisVal is inherited in EvalCode */
+        EvalExecState newExec(exec->dynamicInterpreter(),
+                       exec->dynamicInterpreter()->globalObject(),
                        progNode.get(),
-                       EvalCode,
-                       exec->context());
+                       exec);
 
-        ExecState newExec(exec->dynamicInterpreter(), &ctx);
         if (exec->hadException())
             newExec.setException(exec->exception());
 

@@ -34,7 +34,6 @@
 
 //#include <iostream>
 
-#include "context.h"
 #include "debugger.h"
 #include "function_object.h"
 #include "lexer.h"
@@ -53,49 +52,28 @@ namespace KJS {
   if (Debugger::debuggersPresent > 0 && !hitStatement(exec)) \
     return Completion(Normal);
 
-#define KJS_ABORTPOINT \
-  if (Debugger::debuggersPresent > 0 && \
-      exec->dynamicInterpreter()->imp()->debugger() && \
-      exec->dynamicInterpreter()->imp()->debugger()->imp()->aborted()) \
-    return Completion(Normal);
-
 #define KJS_CHECKEXCEPTION \
-  if (exec->hadException()) { \
-    JSValue *ex = exec->exception(); \
-    exec->clearException(); \
-    handleException(exec, ex); \
-    return Completion(Throw, ex); \
-  } \
-  if (Collector::isOutOfMemory()) \
-    return Completion(Throw, Error::create(exec, GeneralError, "Out of memory"));
+  if (exec->hadException()) \
+    return rethrowException(exec);
 
 #define KJS_CHECKEXCEPTIONVALUE \
   if (exec->hadException()) { \
     handleException(exec); \
     return jsUndefined(); \
-  } \
-  if (Collector::isOutOfMemory()) \
-    return jsUndefined(); // will be picked up by KJS_CHECKEXCEPTION
+  }
 
 #define KJS_CHECKEXCEPTIONREFERENCE \
   if (exec->hadException()) { \
     handleException(exec); \
     ref.found = true; \
     return ref; \
-  } \
-  if (Collector::isOutOfMemory()) { \
-    ref.found = true; \
-    return ref; \
   }
-
 
 #define KJS_CHECKEXCEPTIONLIST \
   if (exec->hadException()) { \
     handleException(exec); \
     return List(); \
-  } \
-  if (Collector::isOutOfMemory()) \
-    return List(); // will be picked up by KJS_CHECKEXCEPTION
+  }
 
 // ------------------------------ Node -----------------------------------------
 
@@ -203,17 +181,20 @@ static void substitute(UString &string, const UString &substring)
 {
     int position = string.find("%s");
     assert(position != -1);
-    string = string.substr(0, position) + substring + string.substr(position + 2);
+    UString newString = string.substr(0, position);
+    newString.append(substring);
+    newString.append(string.substr(position + 2));
+    string = newString;
 }
 
 static inline int currentSourceId(ExecState* exec)
 {
-    return exec->context()->currentBody()->sourceId();
+    return exec->currentBody()->sourceId();
 }
 
 static inline const UString& currentSourceURL(ExecState* exec)
 {
-    return exec->context()->currentBody()->sourceURL();
+    return exec->currentBody()->sourceURL();
 }
 
 Completion Node::createErrorCompletion(ExecState* exec, ErrorType e, const UString& msg)
@@ -300,6 +281,14 @@ void Node::handleException(ExecState* exec, JSValue* exceptionValue)
         if (!cont)
             dbg->imp()->abort();
     }
+}
+
+Completion Node::rethrowException(ExecState* exec)
+{
+    JSValue* exception = exec->exception();
+    exec->clearException();
+    handleException(exec, exception);
+    return Completion(Throw, exception);
 }
 
 Node *Node::nodeInsideAllParens()
@@ -461,20 +450,20 @@ JSValue *RegExpNode::evaluate(ExecState *exec)
 // ECMA 11.1.1
 JSValue *ThisNode::evaluate(ExecState *exec)
 {
-  return exec->context()->thisValue();
+  return exec->thisValue();
 }
 
 // ------------------------------ LocalVarAccessNode ----------------------------
 
 JSValue* LocalVarAccessNode::evaluate(ExecState *exec)
 {
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
   return *scope->getLocalDirect(index);
 }
 
 Reference LocalVarAccessNode::evaluateReference(ExecState *exec)
 {
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
   Reference ref(ident); //### FIXME: the ident is for delete, but it makes it take the super-slow path..
   ref.base  = scope;
   ref.found = true;
@@ -486,7 +475,7 @@ Reference LocalVarAccessNode::evaluateReference(ExecState *exec)
 // ------------------------------ VarAccessNode --------------------------------
 
 JSValue* VarAccessNode::evaluate(ExecState* exec) {
-  const ScopeChain& chain = exec->context()->scopeChain();
+  const ScopeChain& chain = exec->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
 
@@ -511,7 +500,7 @@ Reference VarAccessNode::evaluateReference(ExecState* exec) {
   Reference ref(ident);
   ref.found = true;
 
-  const ScopeChain& chain = exec->context()->scopeChain();
+  const ScopeChain& chain = exec->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
 
@@ -565,7 +554,7 @@ int VarAccessNode::localID(FunctionBodyNode* node)
 // ------------------------------ NonLocalVarAccessNode ------------------------
 
 JSValue* NonLocalVarAccessNode::evaluate(ExecState* exec) {
-  const ScopeChain& chain = exec->context()->scopeChain();
+  const ScopeChain& chain = exec->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
 
@@ -597,7 +586,7 @@ Reference NonLocalVarAccessNode::evaluateReference(ExecState* exec) {
   Reference ref(ident);
   ref.found = true;
 
-  const ScopeChain& chain = exec->context()->scopeChain();
+  const ScopeChain& chain = exec->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
 
@@ -1157,7 +1146,7 @@ public:
   LocalPostfixNode(LocationNode *l, Operator o, int idx) : PostfixNode(l, o), index(idx) {}
 
   JSValue* evaluate(ExecState* exec) {
-    ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+    ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
     JSValue* v = *scope->getLocalDirect(index);
     double n = v->toNumber(exec);
     double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
@@ -1341,7 +1330,7 @@ public:
   LocalPrefixNode(LocationNode *l, Operator o, int idx) : PrefixNode(l, o), index(idx) {}
 
   JSValue* evaluate(ExecState* exec) {
-    ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+    ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
     JSValue* v = *scope->getLocalDirect(index);
     double n = v->toNumber(exec);
     double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
@@ -1745,7 +1734,7 @@ public:
       AssignNode(loc, OpEqual, right), index(idx) {}
 
   JSValue* evaluate(ExecState* exec) {
-    ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+    ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
     JSValue *v = m_right->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
     scope->putLocalChecked(index, v);
@@ -1951,7 +1940,7 @@ VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in, Type t)
 // ECMA 12.2
 JSValue *VarDeclNode::evaluate(ExecState *exec)
 {
-  JSObject* variable = exec->context()->variableObject();
+  JSObject* variable = exec->variableObject();
 
   JSValue* val;
   if (init) {
@@ -1977,7 +1966,7 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
-  if (exec->context()->codeType() != EvalCode)
+  if (exec->codeType() != EvalCode)
     flags |= DontDelete;
   if (varType == VarDeclNode::Constant)
     flags |= ReadOnly;
@@ -1988,7 +1977,7 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
 
 void VarDeclNode::processVarDecl(ExecState *exec)
 {
-  JSObject* variable = exec->context()->variableObject();
+  JSObject* variable = exec->variableObject();
 
   // First, determine which flags we want to use..
   int flags = DontDelete;
@@ -1996,11 +1985,11 @@ void VarDeclNode::processVarDecl(ExecState *exec)
     flags |= ReadOnly;
 
   // Are we inside a function? If so, we fill in the symbol table
-  switch (exec->context()->codeType()) {
+  switch (exec->codeType()) {
     case FunctionCode:
       // Inside a function, we're just computing static information.
       // so, just fill in the symbol table.
-      exec->context()->currentBody()->addVarDecl(ident, flags, exec);
+      exec->currentBody()->addVarDecl(ident, flags, exec);
       return;
     case EvalCode:
       // eval-injected variables can be deleted..
@@ -2102,7 +2091,7 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
 Completion StaticVarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
 
   for (unsigned int i = 0; i < initializers.size(); ++i) {
     JSValue* val = initializers[i].initExpr->evaluate(exec);
@@ -2452,7 +2441,7 @@ Completion ReturnNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  CodeType codeType = exec->context()->codeType();
+  CodeType codeType = exec->codeType();
   if (codeType != FunctionCode) {
     return createErrorCompletion(exec, SyntaxError, "Invalid return statement.");
   }
@@ -2483,9 +2472,9 @@ Completion WithNode::execute(ExecState *exec)
   KJS_CHECKEXCEPTION
   JSObject *o = v->toObject(exec);
   KJS_CHECKEXCEPTION
-  exec->context()->pushScope(o);
+  exec->pushScope(o);
   Completion res = statement->execute(exec);
-  exec->context()->popScope();
+  exec->popScope();
 
   return res;
 }
@@ -2713,12 +2702,18 @@ Completion TryNode::execute(ExecState *exec)
 
   Completion c = tryBlock->execute(exec);
 
+  if (Collector::isOutOfMemory())
+    return c; // don't try to catch an out of memory exception thrown by the collector
+
+  if (Collector::isOutOfMemory())
+    return c; // don't try to catch an out of memory exception thrown by the collector
+
   if (catchBlock && c.complType() == Throw) {
     JSObject *obj = new JSObject;
     obj->put(exec, exceptionIdent, c.value(), DontDelete);
-    exec->context()->pushScope(obj);
+    exec->pushScope(obj);
     c = catchBlock->execute(exec);
-    exec->context()->popScope();
+    exec->popScope();
   }
 
   if (finallyBlock) {
@@ -2841,15 +2836,13 @@ void FunctionBodyNode::addParam(const Identifier& ident)
 // ECMA 13
 void FuncDeclNode::processFuncDecl(ExecState *exec)
 {
-  Context *context = exec->context();
-
   // See whether we just need to fill in the symbol table,
   // or actually fiddle with objects.
   int flags = Internal | DontDelete;
-  switch (exec->context()->codeType()) {
+  switch (exec->codeType()) {
     case FunctionCode:
       // Inside a function, just need symbol info
-      exec->context()->currentBody()->addFunDecl(ident, flags, this);
+      exec->currentBody()->addFunDecl(ident, flags, this);
       return;
     case EvalCode:
       // eval-injected symbols can be deleted...
@@ -2857,7 +2850,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
       // fallthrough intentional
     case GlobalCode:
-      context->variableObject()->put(exec, ident, makeFunctionObject(exec), flags);
+      exec->variableObject()->put(exec, ident, makeFunctionObject(exec), flags);
   };
 }
 
@@ -2870,8 +2863,7 @@ void FuncDeclNode::addParams()
 FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
 {
   // TODO: let this be an object with [[Class]] property "Function"
-  Context *context = exec->context();
-  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
+  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), exec->scopeChain());
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
@@ -2899,7 +2891,6 @@ void FuncDeclNode::recurseVisit(NodeVisitor *visitor)
 // ECMA 13
 JSValue *FuncExprNode::evaluate(ExecState *exec)
 {
-  Context *context = exec->context();
   bool named = !ident.isNull();
   JSObject *functionScopeObject = 0;
 
@@ -2908,17 +2899,17 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
     // but they won't register with the current scope chain and should
     // be contained as single property in an anonymous object.
     functionScopeObject = new JSObject;
-    context->pushScope(functionScopeObject);
+    exec->pushScope(functionScopeObject);
   }
 
-  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
+  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), exec->scopeChain());
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
   func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
 
   if (named) {
-    functionScopeObject->put(exec, ident, func, Internal | ReadOnly | (context->codeType() == EvalCode ? 0 : DontDelete));
-    context->popScope();
+    functionScopeObject->put(exec, ident, func, Internal | ReadOnly | (exec->codeType() == EvalCode ? 0 : DontDelete));
+    exec->popScope();
   }
 
   return func;
@@ -3117,7 +3108,7 @@ void ImportStatement::processVarDecl(ExecState* exec)
     }
 
     // also error out if not used on top-level
-    if (exec->context()->codeType() != GlobalCode) {
+    if (exec->codeType() != GlobalCode) {
       throwError(exec, GeneralError,
                   "Package imports may only occur at top level.");
       return;

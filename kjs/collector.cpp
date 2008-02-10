@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Computer, Inc.
+ *  Copyright (C) 2007 Eric Seidel <eric@webkit.org>
  *  Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -25,6 +26,7 @@
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashCountedSet.h>
+#include "context.h"
 #include "internal.h"
 #include "list.h"
 #include "value.h"
@@ -814,7 +816,10 @@ bool Collector::collect()
   heap.numLiveObjectsAtLastCollect = numLiveObjects;
   heap.extraCost = 0;
 
-  memoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
+  bool newMemoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
+  if (newMemoryFull && newMemoryFull != memoryFull)
+    reportOutOfMemoryToAllInterpreters();
+  memoryFull = newMemoryFull;
 
   return deleted;
 }
@@ -891,6 +896,21 @@ HashCountedSet<const char*>* Collector::rootObjectTypeCounts()
         counts->add(typeName(it->first));
 
     return counts;
+}
+
+void Collector::reportOutOfMemoryToAllInterpreters()
+{
+    if (!Interpreter::s_hook)
+        return;
+
+    Interpreter* interpreter = Interpreter::s_hook;
+    do {
+        ExecState* exec = interpreter->execState();
+
+        exec->setException(Error::create(exec, GeneralError, "Out of memory"));
+
+        interpreter = interpreter->next;
+    } while(interpreter != Interpreter::s_hook);
 }
 
 } // namespace KJS
