@@ -28,7 +28,8 @@ struct KNS::EntryPrivate {
             , mRelease(0)
             , mRating(0)
             , mDownloads(0)
-            , mStatus(Entry::Invalid) {}
+            , mStatus(Entry::Invalid) 
+            , mSource(Entry::Online) {}
 
     QString mCategory;
     QString mLicense;
@@ -47,6 +48,7 @@ struct KNS::EntryPrivate {
     QString mChecksum;
     QString mSignature;
     Entry::Status mStatus;
+    Entry::Source mSource;
 };
 
 Entry::Entry()
@@ -218,6 +220,16 @@ Entry::Status Entry::status()
 void Entry::setStatus(Status status)
 {
     d->mStatus = status;
+}
+
+Entry::Source Entry::source()
+{
+    return d->mSource;
+}
+
+void Entry::setSource(Source source)
+{
+    d->mSource = source;
 }
 
 void KNS::Entry::setInstalledFiles(const QStringList & files)

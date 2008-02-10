@@ -45,7 +45,7 @@ public:
         m_uploaddialog = NULL;
         m_downloaddialog = NULL;
         setDxsPolicy(DxsEngine::DxsNever); // FIXME: until KIO/cDXS gets fixed!
-        m_entry = NULL;
+        m_uploadedEntry = NULL;
         m_modal = false;
         m_parent = parent;
         m_loop = 0;
@@ -60,13 +60,12 @@ public:
 
     void workflow();
     KNS::Entry* upload(const QString& file);
-    void stopLoop();
 
     Command m_command;
     UploadDialog *m_uploaddialog;
     DownloadDialog *m_downloaddialog;
     QString m_uploadfile;
-    KNS::Entry *m_entry;
+    KNS::Entry *m_uploadedEntry;
     KNS::Provider::List m_providers;
     bool m_modal;
     QWidget * m_parent;
@@ -74,17 +73,16 @@ public:
     QEventLoop* m_loop;
 
   private Q_SLOTS:
+    /** stop the event loop */
+    void stopLoop();
+
     void slotProviderLoaded(KNS::Provider *provider);
-    void slotProvidersFailed();
-    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+
+    // why do we care?
     void slotEntryChanged(KNS::Entry *entry);
-    void slotEntriesFailed();
-    void slotEntryUploaded();
-    void slotEntryFailed();
 
     void slotProvidersFinished();
     void slotEntriesFinished();
-    void slotEntriesFeedFinished(const KNS::Feed *feed);
 
     void slotDownloadDialogClosed();
 };
@@ -109,37 +107,26 @@ void EnginePrivate::workflow()
                 SLOT(slotProviderLoaded(KNS::Provider*)));
         connect(this,
                 SIGNAL(signalProvidersFailed()),
-                SLOT(slotProvidersFailed()));
+                SLOT(stopLoop()));
     }
 
-    if(m_command == command_upload)
-    {
+    if (m_command == command_upload) {
         connect(this,
                 SIGNAL(signalProvidersFinished()),
                 SLOT(slotProvidersFinished()));
 
-        m_entry = NULL;
+        m_uploadedEntry = NULL;
     }
 
-    if(m_command == command_download)
-    {
-        connect(this,
-                SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-                SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
-        connect(this,
-                SIGNAL(signalEntriesFailed()),
-                SLOT(slotEntriesFailed()));
-        connect(this,
-                SIGNAL(signalEntriesFinished()),
+    if (m_command == command_download) {
+        m_downloaddialog = new DownloadDialog(this, m_parent);
+
+        connect(this, SIGNAL(signalEntriesFinished()),
                 SLOT(slotEntriesFinished()));
-        connect(this,
-                SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
-                SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
         connect(this,
                 SIGNAL(signalEntryChanged(KNS::Entry *)),
                 SLOT(slotEntryChanged(KNS::Entry *)));
 
-        m_downloaddialog = new DownloadDialog(this,m_parent);
         m_downloaddialog->show();
 
         connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
@@ -147,8 +134,7 @@ void EnginePrivate::workflow()
 
     start();
 
-    if(m_modal)
-    {
+    if (m_modal) {
         QEventLoop loop;
         m_loop = &loop;
         loop.exec();
@@ -157,6 +143,8 @@ void EnginePrivate::workflow()
 
 void EnginePrivate::stopLoop()
 {
+    m_command = command_none;
+
     if (m_loop) {
         m_loop->exit();
         m_loop = 0;
@@ -265,7 +253,7 @@ KNS::Entry *Engine::uploadDialogModal(const QString& file)
 
     d->workflow();
 
-    return d->m_entry;
+    return d->m_uploadedEntry;
 }
 
 void Engine::uploadDialog(const QString& file)
@@ -288,12 +276,10 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 {
     kDebug() << "Engine: slotProviderLoaded" << m_command;
 
-    if(m_command == command_download)
-    {
+    if (m_command == command_download) {
         loadEntries(provider);
     }
-    else if(m_command == command_upload)
-    {
+    else if (m_command == command_upload) {
         // FIXME: inject into upload dialog
         // FIXME: dialog could do this by itself!
 
@@ -307,50 +293,9 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
     }
 }
 
-void EnginePrivate::slotProvidersFailed()
-{
-    kDebug() << "Engine: slotProvidersFailed";
-
-    m_command = command_none;
-    stopLoop();
-}
-
-void EnginePrivate::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
-{
-    //kDebug() << "Engine: slotEntryLoaded";
-
-    m_downloaddialog->addEntry(entry, feed, provider);
-}
-
-void EnginePrivate::slotEntriesFailed()
-{
-    kDebug() << "Engine: slotEntriesFailed";
-}
-
-void EnginePrivate::slotEntryUploaded()
-{
-    //kDebug() << "Engine: slotEntryUploaded";
-
-    m_command = command_none;
-
-    //m_entry = ...; // FIXME: where do we get it from now?
-    // FIXME: we cannot assign it earlier, probably need m_delayedentry
-    // FIXME: if not modal, this must be a signal to the outside (is already the case?)
-
-    stopLoop();
-}
-
-void EnginePrivate::slotEntryFailed()
-{
-    kDebug() << "Engine: slotEntryFailed";
-
-    m_command = command_none;
-
-    stopLoop();
-}
-
 void EnginePrivate::slotProvidersFinished()
 {
+    // NOTE: this is only connected when we are doing an upload
 	kDebug() << "Engine: slotProvidersFinished";
 
 	int ret;
@@ -361,7 +306,7 @@ void EnginePrivate::slotProvidersFinished()
 	//fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
 
 	ProviderDialog provdialog(0);
-	for(Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); it++)
+	for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); it++)
 	{
 		Provider *provider = (*it);
 		provdialog.addProvider(provider);
@@ -370,8 +315,7 @@ void EnginePrivate::slotProvidersFinished()
 	ret = provdialog.exec();
 	if(ret == QDialog::Rejected)
 	{
-		m_command = EnginePrivate::command_none;
-		stopLoop();
+        stopLoop();
 		return;
 	}
 
@@ -382,7 +326,6 @@ void EnginePrivate::slotProvidersFinished()
 	ret = uploaddialog.exec();
 	if(ret == QDialog::Rejected)
 	{
-		m_command = EnginePrivate::command_none;
 		stopLoop();
 		return;
 	}
@@ -391,7 +334,6 @@ void EnginePrivate::slotProvidersFinished()
 	entry->setPayload(m_uploadfile);
 	if(!entry)
 	{
-		m_command = EnginePrivate::command_none;
 		stopLoop();
 		return;
 	}
@@ -405,20 +347,12 @@ void EnginePrivate::slotProvidersFinished()
 
 	connect(this,
 		SIGNAL(signalEntryUploaded()),
-		SLOT(slotEntryUploaded()));
+		SLOT(stopLoop()));
 	connect(this,
 		SIGNAL(signalEntryFailed()),
-		SLOT(slotEntryFailed()));
+		SLOT(stopLoop()));
 
 	uploadEntry(provider, entry);
-}
-
-void EnginePrivate::slotEntriesFeedFinished(const KNS::Feed *feed)
-{
-    //kDebug() << "Engine: slotEntriesFeedFinished";
-
-    Q_UNUSED(feed);
-    //m_downloaddialog->refresh();
 }
 
 void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
@@ -427,6 +361,7 @@ void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
     m_changedEntries << entry;
 }
 
+// BIGFIXME: make this method go away when we are using goya
 void EnginePrivate::slotEntriesFinished()
 {
     //kDebug() << "Engine: slotEntriesFinished";
@@ -438,8 +373,6 @@ void EnginePrivate::slotDownloadDialogClosed()
 {
     m_downloaddialog->deleteLater();
     m_downloaddialog = NULL;
-
-    m_command = command_none;
 
     stopLoop();
 }

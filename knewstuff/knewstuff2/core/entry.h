@@ -295,6 +295,19 @@ public:
      */
     Status status();
 
+    /** 
+     * Source of the entry, A entry's data is coming from either cache, or an online provider
+     * this helps the engine know which data to use when merging cached entries with online
+     * entry data 
+     */
+    enum Source {
+        Cache,
+        Online
+    };
+
+    void setSource(Source source);
+    Source source();
+
 private:
     EntryPrivate * const d;
 };

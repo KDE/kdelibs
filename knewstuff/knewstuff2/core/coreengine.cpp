@@ -241,10 +241,9 @@ void CoreEngine::loadEntries(Provider *provider)
             connect(entry_loader,
                     SIGNAL(signalEntriesFailed()),
                     SLOT(slotEntriesFailed()));
-            bool worked = connect(entry_loader,
+            connect(entry_loader,
                     SIGNAL(signalProgress(KJob*, unsigned long)),
                     SLOT(slotProgress(KJob*, unsigned long)));
-            kDebug() << "signalprogress on entryloader " << worked;
 
             entry_loader->load(provider, feed);
         }
@@ -275,10 +274,9 @@ void CoreEngine::downloadPreview(Entry *entry)
     connect(job,
             SIGNAL(result(KJob*)),
             SLOT(slotPreviewResult(KJob*)));
-    bool worked = connect(job,
+    connect(job,
             SIGNAL(progress(KJob*, unsigned long)),
             SLOT(slotProgress(KJob*, unsigned long)));
-    kDebug() << "download payload slotProgress connection: " << worked;
 
     m_entry_jobs[job] = entry;
 }
@@ -352,6 +350,7 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 
 void CoreEngine::slotProvidersLoaded(KNS::Provider::List list)
 {
+	// note: this is only called from loading the online providers
     ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
     delete loader;
 
@@ -951,13 +950,19 @@ bool CoreEngine::entryCached(Entry *entry)
 
     // Direct cache lookup first
     // FIXME: probably better use URL (changes less frequently) and do iteration
-    if (m_entry_index.contains(id(entry))) return true;
+    if (m_entry_index.contains(id(entry)) && m_entry_index[id(entry)]->source() == Entry::Cache) {
+        return true;
+    }
 
     // If entry wasn't found, either
     // - a translation was added which matches our locale better, or
     // - our locale preferences changed, or both.
     // In that case we've got to find the old name in the new entry,
     // since we assume that translations are always added but never removed.
+
+    // BIGFIXME: the code below is incomplete, if we are looking for a translation
+    // id(entry) will not work, as it uses the current locale to get the id
+
     for (int i = 0; i < m_entry_cache.count(); i++) {
         Entry *oldentry = m_entry_cache.at(i);
         if (id(entry) == id(oldentry)) return true;
@@ -973,6 +978,7 @@ bool CoreEngine::entryCached(Entry *entry)
 
 bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 {
+    // possibly return true if the status changed? depends on when this is called
     if ((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
             || (entry->version() > oldentry->version())
             || (entry->release() > oldentry->release()))
@@ -1314,24 +1320,30 @@ bool CoreEngine::install(const QString &payloadfile)
         // installpath also contains the file name if it's a single file, otherwise equal to installdir
         int pathcounter = 0;
         if (!m_installation->standardResourceDir().isEmpty()) {
-            if (m_installation->scope() == Installation::ScopeUser)
+            if (m_installation->scope() == Installation::ScopeUser) {
                 installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
-            else
+            }
+            else { // system scope
                 installdir = KStandardDirs::locate(m_installation->standardResourceDir().toUtf8(), "/");
+            }
             pathcounter++;
         }
+
         if (!m_installation->targetDir().isEmpty()) {
-            if (m_installation->scope() == Installation::ScopeUser)
+            if (m_installation->scope() == Installation::ScopeUser) {
                 installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
-            else
+            }
+            else { // system scope
                 installdir = KStandardDirs::locate("data", m_installation->targetDir() + '/');
+            }
             pathcounter++;
         }
+
         if (!m_installation->installPath().isEmpty()) {
             installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
             pathcounter++;
         }
-    
+
         if (pathcounter != 1) {
             kError() << "Wrong number of installation directories given." << endl;
             return false;
@@ -1350,11 +1362,13 @@ bool CoreEngine::install(const QString &payloadfile)
     
             if (mimeType->name() == "application/zip") {
                 archive = new KZip(payloadfile);
-            } else if (mimeType->name() == "application/tar"
+            }
+            else if (mimeType->name() == "application/tar"
                     || mimeType->name() == "application/x-gzip"
                     || mimeType->name() == "application/x-bzip") {
                 archive = new KTar(payloadfile);
-            } else {
+            }
+            else {
                 delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
                 return false;
@@ -1375,7 +1389,8 @@ bool CoreEngine::install(const QString &payloadfile)
             QFile::remove(payloadfile);
             delete archive;
     
-        } else {
+        } 
+        else {
             // no decompress but move to target
     
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
@@ -1387,7 +1402,8 @@ bool CoreEngine::install(const QString &payloadfile)
                 installfile = entry->name().representation();
                 installfile += '-' + entry->version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
-            } else {
+            }
+            else {
                 installfile = source.fileName();
             }
             installpath = installdir + '/' + installfile;
@@ -1426,7 +1442,8 @@ bool CoreEngine::install(const QString &payloadfile)
 
         if (exitcode) {
             kError() << "Command failed" << endl;
-        } else {
+        }
+        else {
             //kDebug() << "Command executed successfully";
         }
     }

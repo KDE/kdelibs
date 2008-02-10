@@ -104,6 +104,11 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
     connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotDownloadItem( KNS::Entry* ) ));
+
+    connect( m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+            this, SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
+    connect( m_engine, SIGNAL(signalEntriesFailed()),
+            this, SLOT(slotEntriesFailed()));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -240,9 +245,13 @@ void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
     // FIXME: old API here
 }
 
+void DownloadDialog::slotEntriesFailed()
+{
+    displayMessage("Entries failed to load");
+}
 // FIXME: below here, those are for traditional GHNS
 
-void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *provider)
+void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provider *provider)
 {
     Entry::List e = entries[feed];
     e.append(entry);
@@ -309,6 +318,11 @@ XXX update item status
 XXX inform the user
     displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ), 3000 );
 */
+}
+
+void DownloadDialog::slotEntryChanged( KNS::Entry * entry )
+{
+    m_list->updateItem(entry);
 }
 
 void DownloadDialog::slotProgress(const QString & text, int percentage)

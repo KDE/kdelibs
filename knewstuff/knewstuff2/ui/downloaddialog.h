@@ -74,7 +74,6 @@ public:
     DownloadDialog( DxsEngine* engine, QWidget * parent );
     ~DownloadDialog();
 
-    void addEntry(Entry *entry, const Feed *feed, const Provider *provider);
     void refresh();
 
     // show a message in the bottom bar
@@ -89,6 +88,10 @@ public:
     void removeItem( Entry * entry );
 
 private Q_SLOTS:
+    /** slot to add an entry (connected to the engine's signalEntryAdded */
+    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntriesFailed();
+
     void slotResetMessage();
     void slotNetworkTimeout();
     void slotSortingSelected( int sortType );
@@ -103,6 +106,7 @@ private Q_SLOTS:
     void slotError();
     // file downloading
     void slotDownloadItem( KNS::Entry * );
+    void slotEntryChanged( KNS::Entry * );
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
