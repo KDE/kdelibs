@@ -27,6 +27,8 @@ check_symbol_exists(isnan   "math.h" HAVE_FUNC_ISNAN)
 check_symbol_exists(isinf   "math.h" HAVE_FUNC_ISINF)
 MACRO_POP_REQUIRED_VARS()
 
+#Do not make PCRE optional here. PCRE is a hard requirement for modern systems
+#but we give old systems some slack... that's why we don't specify "REQUIRED".
 find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
@@ -42,28 +44,28 @@ macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pc
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
-
+   
    # tell check_symbol_exists to -I pcre dirs.
    MACRO_PUSH_REQUIRED_VARS()
    SET(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
 
    CHECK_SYMBOL_EXISTS(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
    CHECK_SYMBOL_EXISTS(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
-
+   
    MACRO_POP_REQUIRED_VARS()
-
-   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version
-   # recent enough, and we don't want to fallback to a completely crippled
-   # POSIX code just like that.
+    
+   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
+   # recent enough, and we don't want to fallback to a completely crippled 
+   # POSIX code just like that. 
    if (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
    endif (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
 else (PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    # if we're here, either PCRE support is disabled, or it's not found...
    # it better be disabled.
-   if (NOT KJS_DISABLE_PCRE)
+   if (NOT KJS_FORCE_DISABLE_PCRE)
         message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
-   endif (NOT KJS_DISABLE_PCRE)
+   endif (NOT KJS_FORCE_DISABLE_PCRE)
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
@@ -114,6 +116,7 @@ set(kjs_LIB_SRCS
    bool_object.cpp
    number_object.cpp
    internal.cpp
+   Context.cpp
    ExecState.cpp
    Parser.cpp
    array_object.cpp
@@ -141,7 +144,6 @@ set(kjs_LIB_SRCS
    JSWrapperObject.cpp
    CommonIdentifiers.cpp
    semantic_checker.cpp
-   JSVariableObject.cpp
    )
 
 if (NOT DEFINED QT_ONLY)
@@ -155,7 +157,7 @@ kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
-endif(WIN32)
+endif(WIN32) 
 
 if(CMAKE_THREAD_LIBS_INIT)
    target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
@@ -210,9 +212,9 @@ install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 #     ustring.h
 #     value.h
 #     CommonIdentifiers.h
-#
+# 
 #     ${CMAKE_CURRENT_BINARY_DIR}/global.h
-#
+# 
 #     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
 
 
