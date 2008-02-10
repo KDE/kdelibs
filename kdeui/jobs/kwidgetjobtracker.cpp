@@ -388,6 +388,9 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
     if (tracker->stopOnClose(job)) {
         tracker->slotStop(job);
     } else if (tracker->autoDelete(job)) {
+        // Using deleteLater() on the widget wont help us to be sure that the
+        // widget will actually become deleted before the job. Solution: delete
+        // the widget right now. (ereslibre)
         delete this;
     } else {
         tracker->slotClean(job);
@@ -586,6 +589,9 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
     tracker->slotStop(job);
+    // Using deleteLater() on the widget wont help us to be sure that the
+    // widget will actually become deleted before the job. Solution: delete
+    // the widget right now. (ereslibre)
     delete tracker->widget(job);
 }
 
