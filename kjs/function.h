@@ -2,7 +2,8 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2003, 2006 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
+ *  Copyright (C) 2007, 2008 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,6 +25,9 @@
 #ifndef KJS_FUNCTION_H
 #define KJS_FUNCTION_H
 
+#include "SymbolTable.h"
+#include "LocalStorage.h"
+#include "JSVariableObject.h"
 #include "object.h"
 #include <wtf/OwnPtr.h>
 
@@ -101,7 +105,13 @@ namespace KJS {
     mutable IndexToNameMap indexToNameMap;
   };
 
-  class ActivationImp : public JSObject {
+  class ActivationImp : public JSVariableObject {
+    struct ActivationData : public JSVariableObjectData {
+      FunctionImp* function;
+      List arguments;
+      Arguments* argumentsObject;
+    };
+
   public:
     ActivationImp(FunctionImp *function, const List &arguments);
     ~ActivationImp();
@@ -109,35 +119,38 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-    virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
     //This is only used by declaration code, so it never check r/o attr
     void putLocal(int propertyID, JSValue *value) {
       assert(validLocal(propertyID));
-      _locals[propertyID].value = value;
+      localStorage()[propertyID].value = value;
         //We do not have to touch the flags here -- they're pre-computed..
     }
 
     void putLocalChecked(int propertyID, JSValue *value) {
-      if (isLocalReadOnly(propertyID)) return;
-      _locals[propertyID].value = value;
+      LocalStorageEntry& entry = localStorage()[propertyID];
+      if (entry.attributes & ReadOnly)
+        return;
+      entry.value = value;
     }
 
     JSValue** getLocalDirect(int propertyID) {
       assert(validLocal(propertyID));
-      return &_locals[propertyID].value;
+      return &localStorage()[propertyID].value;
     }
 
     bool isLocalReadOnly(int propertyID) {
-      return (_locals[propertyID].attr & ReadOnly) == ReadOnly;
+      return (localStorage()[propertyID].attributes & ReadOnly) == ReadOnly;
     }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
 
     virtual void mark();
+    void markChildren();
+
     virtual bool isActivation() const { return true; }
-    void releaseArguments() { _arguments.reset(); }
+    void releaseArguments() { d()->arguments.reset(); }
 
     void setupLocals();
     void setupFunctionLocals(ExecState *exec);
@@ -145,23 +158,10 @@ namespace KJS {
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
     void createArgumentsObject(ExecState *exec);
+    ActivationData* d() const { return static_cast<ActivationData*>(JSVariableObject::d); }
 
-    struct Local {
-      JSValue* value;
-      int      attr;
-    };
-
-    FunctionImp *_function;
-    List _arguments;
-
-
-    //List of locals, but the entry 0 is special:
-    //the value here is the arguments object,
-    //the attr is the length of the array (e.g. numLocals + 1)
-    Local *_locals;
-
-    int  numLocals() const        { return _locals[0].attr; }
-    bool validLocal(int id) const { return 0 < id && id < numLocals(); }
+    int  numLocals()         { return localStorage().size(); }
+    bool validLocal(int id)  { return 0 <= id && id < numLocals(); }
   };
 
   class GlobalFuncImp : public InternalFunctionImp {

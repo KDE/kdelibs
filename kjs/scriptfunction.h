@@ -38,7 +38,7 @@ namespace KJS {
   class KJS_EXPORT FunctionImp : public InternalFunctionImp {
     friend class ActivationImp;
   public:
-    FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b);
+    FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b, const ScopeChain &sc);
     virtual ~FunctionImp();
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
@@ -47,11 +47,15 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
-    //Note: unlike body->paramName, this returns Identifier::null for parameters
-    //that will never get set, due to later param having the same name
-    Identifier getParameterName(int index);
+    bool implementsConstruct() const;
+    JSObject *construct(ExecState *exec, const List &args);
 
-    virtual Completion execute(ExecState *exec) = 0;
+    // Note: implemented in nodes2string.cpp
+    UString toSource() const;
+
+    // Note: unlike body->paramName, this returns Identifier::null for parameters
+    // that will never get set, due to later param having the same name
+    Identifier getParameterName(int index);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -97,22 +101,6 @@ namespace KJS {
 
     void passInParameters(ExecState *exec, const List &);
   };
-
-  class KJS_EXPORT DeclaredFunctionImp : public FunctionImp {
-  public:
-    DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-                        FunctionBodyNode *b, const ScopeChain &sc);
-
-    bool implementsConstruct() const;
-    JSObject *construct(ExecState *exec, const List &args);
-
-    virtual Completion execute(ExecState *exec);
-    UString toSource() const;
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
-
 } // namespace
 
 #endif

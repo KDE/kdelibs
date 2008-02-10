@@ -26,7 +26,6 @@
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashCountedSet.h>
-#include "context.h"
 #include "internal.h"
 #include "list.h"
 #include "value.h"

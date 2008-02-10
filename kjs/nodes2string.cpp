@@ -231,7 +231,7 @@ SourceStream& SourceStream::append(const UString& inStr, bool quote)
   return *this;
 }
 
-UString DeclaredFunctionImp::toSource() const
+UString FunctionImp::toSource() const
 {
   SourceStream str;
   str << "function ";

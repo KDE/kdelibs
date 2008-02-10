@@ -525,14 +525,14 @@ Reference VarAccessNode::evaluateReference(ExecState* exec) {
 
 Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
 {
-  int index = node->lookupSymbolID(ident);
+  size_t index = node->lookupSymbolID(ident);
   Node* out = 0;
 
   // If the symbol isn't local, we can still optimize
   // a bit, and skip the local scope for lookup.
   // (unless 'eval' injects a new local, but NonLocalResolver
   // is careful about that)
-  if (index == -1) {
+  if (index == missingSymbolMarker()) {
     if (ident == exec->propertyNames().arguments)
       out = 0; //Dynamic property..
     else
@@ -546,7 +546,7 @@ Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node
   return out;
 }
 
-int VarAccessNode::localID(FunctionBodyNode* node)
+size_t VarAccessNode::localID(FunctionBodyNode* node)
 {
   return node->lookupSymbolID(ident);
 }
@@ -1185,8 +1185,8 @@ Node* PostfixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* no
 {
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
-    int id = ident->localID(node);
-    if (id != -1) {
+    size_t id = ident->localID(node);
+    if (id != missingSymbolMarker()) {
       Node* out = new LocalPostfixNode(m_loc.get(), m_oper, id);
       out->copyDebugInfo(this);
       return out;
@@ -1370,8 +1370,8 @@ Node* PrefixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* nod
 {
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
-    int id = ident->localID(node);
-    if (id != -1) {
+    size_t id = ident->localID(node);
+    if (id != missingSymbolMarker()) {
       Node* out = new LocalPrefixNode(m_loc.get(), m_oper, id);
       out->copyDebugInfo(this);
       return out;
@@ -1782,8 +1782,8 @@ Node* AssignNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* nod
 {
   if (m_loc->isVarAccessNode() && m_oper == OpEqual) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
-    int id = ident->localID(node);
-    if (id != -1) {
+    size_t id = ident->localID(node);
+    if (id != missingSymbolMarker()) {
       Node* out = new LocalAssignNode(m_loc.get(), m_right.get(), id);
       out->copyDebugInfo(this);
       return out;
@@ -2073,7 +2073,7 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
       StaticVarStatementNode::Initializer init;
       init.initExpr = n->var->init->getExpr(); //Skip the AssignExprNode as well...
       init.localID  = funcBody->lookupSymbolID(n->var->ident);
-      if (init.localID == -1) { //Ouch, a dynamic property! Bail out, bail out!
+      if (init.localID == missingSymbolMarker()) { //Ouch, a dynamic property! Bail out, bail out!
         newNodes->remove(staticVer);
         delete staticVer;
         return 0;
@@ -2789,9 +2789,8 @@ void FunctionBodyNode::addFunDecl(const Identifier& ident, int attr, FuncDeclNod
   (void)addSymbol(ident, attr, funcDecl);
 }
 
-int FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
+size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
 {
-
   // We get symbols in the order specified in 10.1.3, but sometimes
   // the later ones are supposed to lose. This -mostly- does not
   // matter for us --- we primarily concern ourselves with name/ID
@@ -2802,31 +2801,22 @@ int FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode
   // and are at the end.
   //
   // And for funcDecl, since functions win over everything, we always set it if non-zero
-  if (JSValue* oldIdVal = m_symbolTable.get(ident)) {
-    int oldId = (int)oldIdVal->getNumber();
+  size_t oldId = m_symbolTable.get(ident.ustring().rep());
+  if (oldId != missingSymbolMarker()) {
     if (funcDecl)
-      m_symbolList[oldId - 1].funcDecl = funcDecl;
+      m_symbolList[oldId].funcDecl = funcDecl;
     return oldId;
   }
 
-  int id = m_symbolList.size() + 1;         //First entry gets 1, etc.
-  m_symbolTable.put(ident, jsNumber(id), 0);
+  size_t id = m_symbolList.size();         //First entry gets 0, etc.
+  m_symbolTable.set(ident.ustring().rep(), id);
   m_symbolList.append (Symbol(ident, flags, funcDecl));
   return id;
 }
 
-int FunctionBodyNode::lookupSymbolID(const Identifier& ident) const
-{
-  JSValue* val = m_symbolTable.get(ident);
-  if (!val)
-    return -1;
-  return int(val->getNumber());
-}
-
-
 void FunctionBodyNode::addParam(const Identifier& ident)
 {
-  int id = addSymbol(ident, DontDelete);
+  size_t id = addSymbol(ident, DontDelete);
   m_paramList.append(Parameter(ident, id));
 }
 
@@ -2863,7 +2853,7 @@ void FuncDeclNode::addParams()
 FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
 {
   // TODO: let this be an object with [[Class]] property "Function"
-  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), exec->scopeChain());
+  FunctionImp *func = new FunctionImp(exec, ident, body.get(), exec->scopeChain());
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
@@ -2902,7 +2892,7 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
     exec->pushScope(functionScopeObject);
   }
 
-  FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), exec->scopeChain());
+  FunctionImp *func = new FunctionImp(exec, ident, body.get(), exec->scopeChain());
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
   func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);

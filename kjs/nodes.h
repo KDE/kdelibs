@@ -30,6 +30,7 @@
 #include "internal.h"
 #include "operations.h"
 #include "reference.h"
+#include "SymbolTable.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
 
@@ -294,9 +295,8 @@ namespace KJS {
     virtual JSValue*  evaluate(ExecState*);
     virtual Reference evaluateReference(ExecState* exec);
 
-    // Returns the ID of the local this is bound to,
-    // or -1 if non-local
-    int localID(FunctionBodyNode* funcBody);
+    // Returns the ID of the local this is bound to, or missingSymbolMarker if non-local
+    size_t localID(FunctionBodyNode* funcBody);
   protected:
     Identifier ident;
   };
@@ -870,7 +870,7 @@ namespace KJS {
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
     struct Initializer {
-      int localID;
+      size_t localID;
       RefPtr<Node> initExpr;
     };
     WTF::Vector<Initializer> initializers;
@@ -1106,9 +1106,9 @@ namespace KJS {
 
     struct Parameter {
       Parameter() {}
-      Parameter(const Identifier &n, int id) : name(n), symbolID(id) { }
+      Parameter(const Identifier &n, size_t id) : name(n), symbolID(id) { }
       Identifier name;
-      int        symbolID;
+      size_t     symbolID;
     };
   public:
     FunctionBodyNode(SourceElementsNode *);
@@ -1118,28 +1118,28 @@ namespace KJS {
     //////////////////////////////////////////////////////////////////////
     // Symbol table functions
     //////////////////////////////////////////////////////////////////////
+    SymbolTable& symbolTable() { return m_symbolTable; }
+    size_t lookupSymbolID(const Identifier& id) const { return m_symbolTable.get(id.ustring().rep()); }
+
     bool builtSymbolList()    const { return m_builtSymbolList; }
     void setBuiltSymbolList()       { m_builtSymbolList = true; }
     int  numLocals()          const { return m_symbolList.size(); }
-    int  getLocalAttr(int id) const { return m_symbolList[id-1].attr; }
-    Identifier getLocalName(int id) const { return m_symbolList[id-1].name; }
-    FuncDeclNode* getLocalFuncDecl(int id) const { return m_symbolList[id-1].funcDecl; }
-
-    //Returns -1 if not found..
-    int  lookupSymbolID(const Identifier &ident) const;
+    int  getLocalAttr(size_t id)       const { return m_symbolList[id].attr; }
+    Identifier getLocalName(size_t id) const { return m_symbolList[id].name; }
+    FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
 
     //////////////////////////////////////////////////////////////////////
     // Parameter array functions
     //////////////////////////////////////////////////////////////////////
     void addParam(const Identifier& ident); //Also creates the symbol for the
-                                            //parameter, caled on creating
+                                            //parameter, called on creating
                                             //the enclosing expr or decl
 
     void addVarDecl(const Identifier& ident, int attr, ExecState* exec);
     void addFunDecl(const Identifier& ident, int attr, FuncDeclNode* funcDecl);
 
     int numParams() const { return m_paramList.size(); }
-    int paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
+    size_t paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
     const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
 
   private:
@@ -1147,15 +1147,13 @@ namespace KJS {
     int m_sourceId : 31;
     bool m_builtSymbolList : 1;
 
-    int  addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
+    size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
 
-    // Note: the convention here is that the position 0
-    // is the index 1, position 1 is the index 2, etc.
+    // This maps id -> name / etc.
     WTF::Vector<Symbol> m_symbolList;
 
-    // This is the map of the above, the jsValues are the IDs.
-    // ### ugh. Lazy-lazy-lazy. But this works, too.
-    PropertyMap m_symbolTable;
+    // This maps name -> id
+    SymbolTable m_symbolTable;
 
     // The list of parameters, and their local IDs in the
     WTF::Vector<Parameter> m_paramList;

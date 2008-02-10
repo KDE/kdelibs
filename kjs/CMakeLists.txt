@@ -141,6 +141,7 @@ set(kjs_LIB_SRCS
    JSWrapperObject.cpp
    CommonIdentifiers.cpp
    semantic_checker.cpp
+   JSVariableObject.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

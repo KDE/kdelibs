@@ -90,10 +90,11 @@ private:
 
 const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
-FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b)
+FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b, const ScopeChain& sc)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
                         (exec->lexicalInterpreter()->builtinFunctionPrototype()), n)
   , body(b)
+  , _scope(sc)
 {
 }
 
@@ -140,22 +141,15 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   activation->setupFunctionLocals(&newExec);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
-  int sourceId = -1;
-  int lineNo = -1;
   if (dbg) {
-    if (inherits(&DeclaredFunctionImp::info)) {
-      sourceId = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
-      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
-    }
-
-    bool cont = dbg->enterContext(&newExec, sourceId, lineNo, this, args);
+    bool cont = dbg->enterContext(&newExec, body->sourceId(), body->firstLine(), this, args);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
     }
   }
 
-  Completion comp = execute(&newExec);
+  Completion comp = body->execute(&newExec);
 
   // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
@@ -176,13 +170,10 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   dbg = exec->dynamicInterpreter()->debugger();
 
   if (dbg) {
-    if (inherits(&DeclaredFunctionImp::info))
-      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
-
     if (comp.complType() == Throw)
         newExec.setException(comp.value());
 
-    int cont = dbg->exitContext(&newExec, sourceId, lineNo, this);
+    int cont = dbg->exitContext(&newExec, body->sourceId(), body->lastLine(), this);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -213,8 +204,8 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
 
   ListIterator it = args.begin();
   for (int paramPos = 0; paramPos < body->numParams(); ++paramPos) {
-    int writeTo = body->paramSymbolID(paramPos);
-    JSValue*  v = jsUndefined();
+    size_t writeTo = body->paramSymbolID(paramPos);
+    JSValue*     v = jsUndefined();
     if (it != args.end()) {
       v = *it;
       ++it;
@@ -328,25 +319,13 @@ Identifier FunctionImp::getParameterName(int index)
   return name;
 }
 
-// ------------------------------ DeclaredFunctionImp --------------------------
-
-// ### is "Function" correct here?
-const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
-
-DeclaredFunctionImp::DeclaredFunctionImp(ExecState* exec, const Identifier& n,
-					 FunctionBodyNode* b, const ScopeChain& sc)
-  : FunctionImp(exec, n, b)
-{
-  setScope(sc);
-}
-
-bool DeclaredFunctionImp::implementsConstruct() const
+bool FunctionImp::implementsConstruct() const
 {
   return true;
 }
 
 // ECMA 13.2.2 [[Construct]]
-JSObject *DeclaredFunctionImp::construct(ExecState *exec, const List &args)
+JSObject *FunctionImp::construct(ExecState *exec, const List &args)
 {
   JSObject *proto;
   JSValue *p = get(exec, exec->propertyNames().prototype);
@@ -363,15 +342,6 @@ JSObject *DeclaredFunctionImp::construct(ExecState *exec, const List &args)
     return static_cast<JSObject *>(res);
   else
     return obj;
-}
-
-Completion DeclaredFunctionImp::execute(ExecState *exec)
-{
-  Completion result = body->execute(exec);
-
-  if (result.complType() == Throw || result.complType() == ReturnValue)
-      return result;
-  return Completion(Normal, jsUndefined()); // TODO: or ReturnValue ?
 }
 
 // ------------------------------ IndexToNameMap ---------------------------------
@@ -511,40 +481,49 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
-    : _function(function), _arguments(arguments), _locals(0)
+ActivationImp::ActivationImp(FunctionImp *function, const List &arguments):
+    JSVariableObject(new ActivationData)
 {
-  // FIXME: Do we need to support enumerating the arguments property?
+    d()->symbolTable = &function->body->symbolTable();
+    d()->function    = function;
+    d()->arguments   = arguments;
+    d()->argumentsObject = 0;
 }
 
 void ActivationImp::setupLocals() {
-  int numLocals = _function->body->numLocals();
-  _locals  = new Local[numLocals + 1];
-  _locals[0].value = 0;
-  _locals[0].attr  = numLocals + 1;
-  for (int l = 1; l < numLocals + 1; ++l) {
-    _locals[l].value = jsUndefined();
-    _locals[l].attr  = _function->body->getLocalAttr(l);
-  }
+  FunctionBodyNode* body = d()->function->body.get();
+  LocalStorage&     ls   = localStorage();
+  size_t size = body->numLocals();
+  ls.reserveCapacity(size);
+
+  for (size_t l = 0; l < size; ++l)
+    ls.append(LocalStorageEntry(jsUndefined(), body->getLocalAttr(l)));
 }
 
 void ActivationImp::setupFunctionLocals(ExecState *exec) {
-  int numLocals = _function->body->numLocals();
-  for (int l = 1; l < numLocals + 1; ++l) {
-    if (FuncDeclNode* funcDecl = _function->body->getLocalFuncDecl(l))
-      _locals[l].value = funcDecl->makeFunctionObject(exec);
+  FunctionBodyNode* body = d()->function->body.get();
+  LocalStorage&     ls   = localStorage();
+  size_t size = body->numLocals();
+
+  for (size_t l = 0; l < size; ++l) {
+    if (FuncDeclNode* funcDecl = body->getLocalFuncDecl(l))
+      ls[l].value = funcDecl->makeFunctionObject(exec);
   }
 }
 
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
-  ActivationImp *thisObj = static_cast<ActivationImp *>(slot.slotBase());
+  ActivationImp* thisObj = static_cast<ActivationImp*>(slot.slotBase());
 
-  // default: return builtin arguments array
-  if (!thisObj->_locals[0].value)
+  if (!thisObj->d()->argumentsObject)
     thisObj->createArgumentsObject(exec);
 
-  return thisObj->_locals[0].value;
+  return thisObj->d()->argumentsObject;
+}
+
+ActivationImp::~ActivationImp()
+{
+  delete d();
 }
 
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
@@ -552,96 +531,81 @@ PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
   return ActivationImp::argumentsGetter;
 }
 
-void ActivationImp::getPropertyNames(ExecState* exec, PropertyNameArray& props)
-{
-    // This is used for debugging only -- no way to access from script code.
-    int numLocals = _function->body->numLocals();
-    for (int l = 1; l < numLocals + 1; ++l)
-        props.add(_function->body->getLocalName(l));
-
-    JSObject::getPropertyNames(exec, props);
-}
-
 bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    // do this first so property map arguments property wins over the below
-    // we don't call JSObject because we won't have getter/setter properties
-    // and we don't want to support __proto__
-
-    // See if we're doing fallback  lookup on a local..
-    int id = _function->body->lookupSymbolID(propertyName);
-
-    if (validLocal(id)) {
-      slot.setValueSlot(this, &_locals[id].value, (_locals[id].attr & ReadOnly) != 0);
-      return true;
-    }
+    if (symbolTableGet(propertyName, slot))
+        return true;
 
     if (JSValue** location = getDirectLocation(propertyName)) {
         slot.setValueSlot(this, location);
         return true;
     }
 
-    // Important: if you add more dynamic properties here,
-    // make sure to make the optimizeResolver call honor them.
+    // Only return the built-in arguments object if it wasn't overridden above.
     if (propertyName == exec->propertyNames().arguments) {
         slot.setCustom(this, getArgumentsGetter());
         return true;
     }
 
+    // We don't call through to JSObject because there's no way to give an
+    // activation object getter properties or a prototype.
+    ASSERT(!_prop.hasGetterSetterProperties());
+    ASSERT(prototype() == jsNull());
     return false;
 }
 
 bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
-    // If someone tries to delete a local, return false, that's not permitted
-    int id = _function->body->lookupSymbolID(propertyName);
-    if (validLocal(id))
-        return false;
-
     if (propertyName == exec->propertyNames().arguments)
         return false;
-    return JSObject::deleteProperty(exec, propertyName);
+
+    return JSVariableObject::deleteProperty(exec, propertyName);
 }
 
 void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* value, int attr)
 {
-  // There's no way that an activation object can have a prototype or getter/setter properties
-  assert(!_prop.hasGetterSetterProperties());
-  assert(prototype() == jsNull());
+    // If any bits other than DontDelete are set, then we bypass the read-only check.
+    bool checkReadOnly = !(attr & ~DontDelete);
+    if (symbolTablePut(propertyName, value, checkReadOnly))
+        return;
 
-  // See if we're setting a local..
-  int id = _function->body->lookupSymbolID(propertyName);
-  if (validLocal(id)) {
-    putLocalChecked(id, value);
-    return;
-  }
+    // We don't call through to JSObject because __proto__ and getter/setter
+    // properties are non-standard extensions that other implementations do not
+    // expose in the activation object.
+    ASSERT(!_prop.hasGetterSetterProperties());
+    _prop.put(propertyName, value, attr, checkReadOnly);
+}
 
-  //### Document this, ugh.
-  _prop.put(propertyName, value, attr, (attr == None || attr == DontDelete));
+void ActivationImp::markChildren()
+{
+    LocalStorage& localStorage = d()->localStorage;
+    size_t size = localStorage.size();
+
+    for (size_t i = 0; i < size; ++i) {
+        JSValue* value = localStorage[i].value;
+
+        if (!value->marked())
+            value->mark();
+    }
+
+    if (!d()->function->marked())
+        d()->function->mark();
+
+    if (d()->argumentsObject && !d()->argumentsObject->marked())
+        d()->argumentsObject->mark();
 }
 
 void ActivationImp::mark()
 {
-    if (_function && !_function->marked())
-        _function->mark();
-    for (int pos = 0; pos < numLocals(); ++pos) {
-      JSValue *val = _locals[pos].value;
-      if (val && !val->marked())
-        val->mark();
-    }
     JSObject::mark();
-}
-
-ActivationImp::~ActivationImp()
-{
-    delete[] _locals;
+    markChildren();
 }
 
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
-    _locals[0].value = new Arguments(exec, _function, _arguments, const_cast<ActivationImp*>(this));
+    d()->argumentsObject = new Arguments(exec, d()->function, d()->arguments, const_cast<ActivationImp*>(this));
      // The arguments list is only needed to create the arguments object, so discard it now
-    _arguments.reset();
+    d()->arguments.reset();
 }
 
 // ------------------------------ GlobalFunc -----------------------------------
