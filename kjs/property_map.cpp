@@ -116,7 +116,7 @@ PropertyMap::~PropertyMap()
 #endif
         return;
     }
-    
+
     int minimumKeysToProcess = m_u.table->keyCount + m_u.table->sentinelCount;
     Entry *entries = m_u.table->entries;
     for (int i = 0; i < minimumKeysToProcess; i++) {
@@ -168,9 +168,9 @@ bool PropertyMap::isEmpty() const
 JSValue *PropertyMap::get(const Identifier &name, unsigned &attributes) const
 {
     assert(!name.isNull());
-    
+
     UString::Rep *rep = name._ustring.rep();
-    
+
     if (!m_usingTable) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = m_singleEntryKey;
@@ -181,7 +181,7 @@ JSValue *PropertyMap::get(const Identifier &name, unsigned &attributes) const
 #endif
         return 0;
     }
-    
+
     unsigned h = rep->hash();
     int sizeMask = m_u.table->sizeMask;
     Entry *entries = m_u.table->entries;
@@ -209,7 +209,7 @@ JSValue *PropertyMap::get(const Identifier &name, unsigned &attributes) const
 JSValue *PropertyMap::get(const Identifier &name) const
 {
     assert(!name.isNull());
-    
+
     UString::Rep *rep = name._ustring.rep();
 
     if (!m_usingTable) {
@@ -220,7 +220,7 @@ JSValue *PropertyMap::get(const Identifier &name) const
 #endif
         return 0;
     }
-    
+
     unsigned h = rep->hash();
     int sizeMask = m_u.table->sizeMask;
     Entry *entries = m_u.table->entries;
@@ -246,7 +246,7 @@ JSValue *PropertyMap::get(const Identifier &name) const
 JSValue **PropertyMap::getLocation(const Identifier &name)
 {
     assert(!name.isNull());
-    
+
     UString::Rep *rep = name._ustring.rep();
 
     if (!m_usingTable) {
@@ -257,7 +257,7 @@ JSValue **PropertyMap::getLocation(const Identifier &name)
 #endif
         return 0;
     }
-    
+
     unsigned h = rep->hash();
     int sizeMask = m_u.table->sizeMask;
     Entry *entries = m_u.table->entries;
@@ -304,17 +304,17 @@ void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bo
 {
     assert(!name.isNull());
     assert(value != 0);
-    
+
     checkConsistency();
 
     UString::Rep *rep = name._ustring.rep();
-    
+
 #if DEBUG_PROPERTIES
     printf("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
     printAttributes(attributes);
     printf(")\n");
 #endif
-    
+
 #if USE_SINGLE_ENTRY
     if (!m_usingTable) {
         UString::Rep *key = m_singleEntryKey;
@@ -336,7 +336,7 @@ void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bo
 
     if (!m_usingTable || m_u.table->keyCount * 2 >= m_u.table->size)
         expand();
-    
+
     unsigned h = rep->hash();
     int sizeMask = m_u.table->sizeMask;
     Entry *entries = m_u.table->entries;
@@ -409,7 +409,7 @@ void PropertyMap::insert(UString::Rep *key, JSValue *value, int attributes, int 
         ++numRehashes;
 #endif
     }
-    
+
     entries[i].key = key;
     entries[i].value = value;
     entries[i].attributes = attributes;
@@ -418,34 +418,35 @@ void PropertyMap::insert(UString::Rep *key, JSValue *value, int attributes, int 
 
 void PropertyMap::expand()
 {
-    Table *oldTable = m_u.table;
-    int oldTableSize = m_usingTable ? oldTable->size : 0;
-    rehash(oldTableSize ? oldTableSize * 2 : 16);
+    if (!m_usingTable)
+        createTable();
+    else
+        rehash(m_u.table->size * 2);
 }
 
 void PropertyMap::rehash()
 {
-    assert(m_u.table);
-    assert(m_u.table->size);
+    ASSERT(m_usingTable);
+    ASSERT(m_u.table);
+    ASSERT(m_u.table->size);
     rehash(m_u.table->size);
 }
 
-void PropertyMap::rehash(int newTableSize)
+void PropertyMap::createTable()
 {
+    const int newTableSize = 16;
+
+    ASSERT(!m_usingTable);
+
     checkConsistency();
 
 #if USE_SINGLE_ENTRY
     JSValue* oldSingleEntryValue = m_u.singleEntryValue;
 #endif
 
-    Table *oldTable = m_usingTable ? m_u.table : 0;
-    int oldTableSize = m_usingTable ? oldTable->size : 0;
-    int oldTableKeyCount = m_usingTable ? oldTable->keyCount : 0;
-
-    m_u.table = (Table *)fastCalloc(1, sizeof(Table) + (newTableSize - 1) * sizeof(Entry) );
+    m_u.table = (Table *)fastCalloc(1, sizeof(Table) + (newTableSize - 1) * sizeof(Entry));
     m_u.table->size = newTableSize;
     m_u.table->sizeMask = newTableSize - 1;
-    m_u.table->keyCount = oldTableKeyCount;
     m_usingTable = true;
 
 #if USE_SINGLE_ENTRY
@@ -453,13 +454,30 @@ void PropertyMap::rehash(int newTableSize)
     if (key) {
         insert(key, oldSingleEntryValue, m_singleEntryAttributes, 0);
         m_singleEntryKey = 0;
-        // update the count, because single entries don't count towards
-        // the table key count
-        ++m_u.table->keyCount;
-        assert(m_u.table->keyCount == 1);
+        m_u.table->keyCount = 1;
     }
 #endif
-    
+
+    checkConsistency();
+}
+
+void PropertyMap::rehash(int newTableSize)
+{
+    ASSERT(!m_singleEntryKey);
+    ASSERT(m_u.table);
+    ASSERT(m_usingTable);
+
+    checkConsistency();
+
+    Table* oldTable = m_u.table;
+    int oldTableSize = oldTable->size;
+    int oldTableKeyCount = oldTable->keyCount;
+
+    m_u.table = (Table *)fastCalloc(1, sizeof(Table) + (newTableSize - 1) * sizeof(Entry));
+    m_u.table->size = newTableSize;
+    m_u.table->sizeMask = newTableSize - 1;
+    m_u.table->keyCount = oldTableKeyCount;
+
     int lastIndexUsed = 0;
     for (int i = 0; i != oldTableSize; ++i) {
         Entry &entry = oldTable->entries[i];
@@ -480,7 +498,7 @@ void PropertyMap::rehash(int newTableSize)
 void PropertyMap::remove(const Identifier &name)
 {
     assert(!name.isNull());
-    
+
     checkConsistency();
 
     UString::Rep *rep = name._ustring.rep();
@@ -522,7 +540,7 @@ void PropertyMap::remove(const Identifier &name)
     }
     if (!key)
         return;
-    
+
     // Replace this one element with the deleted sentinel. Also set value to 0 and attributes to DontEnum
     // to help callers that iterate all keys not have to check for the sentinel.
     key->deref();
@@ -533,7 +551,7 @@ void PropertyMap::remove(const Identifier &name)
     assert(m_u.table->keyCount >= 1);
     --m_u.table->keyCount;
     ++m_u.table->sentinelCount;
-    
+
     if (m_u.table->sentinelCount * 4 >= m_u.table->size)
         rehash();
 
@@ -591,7 +609,7 @@ bool PropertyMap::containsGettersOrSetters() const
         if (m_u.table->entries[i].attributes & GetterSetter)
             return true;
     }
-    
+
     return false;
 }
 
@@ -679,11 +697,11 @@ void PropertyMap::save(SavedProperties &p) const
 
     if (count == 0)
         return;
-    
+
     p._properties.set(new SavedProperty [count]);
-    
+
     SavedProperty *prop = p._properties.get();
-    
+
     if (!m_usingTable) {
 #if USE_SINGLE_ENTRY
         if (m_singleEntryKey && !(m_singleEntryAttributes & (ReadOnly | Function))) {

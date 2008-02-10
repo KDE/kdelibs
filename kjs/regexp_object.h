@@ -53,7 +53,7 @@ namespace KJS {
   public:
     RegExpImp(RegExpPrototype *regexpProto);
     ~RegExpImp();
-    void setRegExp(RegExp *r);
+    void setRegExp(ExecState* exec, RegExp* r);
     RegExp* regExp() const { return reg; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
@@ -67,9 +67,9 @@ namespace KJS {
 
   class RegExpObjectImp : public InternalFunctionImp {
   public:
-    enum { Dollar1, Dollar2, Dollar3, Dollar4, Dollar5, Dollar6, Dollar7, Dollar8, Dollar9, 
+    enum { Dollar1, Dollar2, Dollar3, Dollar4, Dollar5, Dollar6, Dollar7, Dollar8, Dollar9,
            Input, Multiline, LastMatch, LastParen, LeftContext, RightContext };
-    
+
     RegExpObjectImp(ExecState *exec,
                     FunctionPrototype *funcProto,
                     RegExpPrototype *regProto);
@@ -81,22 +81,22 @@ namespace KJS {
     void putValueProperty(ExecState *, int token, JSValue *, int attr);
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     JSValue *getValueProperty(ExecState *, int token) const;
-    
+
     // If resources are exhaused during a match, exec parameter will have an exception
     // set, and endOffset will be -1
     UString performMatch(RegExp *, ExecState *, const UString&, int startOffset = 0, int *endOffset = 0, int **ovector = 0);
     JSObject *arrayOfMatches(ExecState *exec, const UString &result) const;
-    
+
     static void throwRegExpError(ExecState *);
-    
+
     virtual const ClassInfo *classInfo() const { return &info; }
-    
+
     /*
      Attempts to create a new regular expression engine for the string p
-     and the flags stored in flagsInput. If this succeeds, it returns the 
+     and the flags stored in flagsInput. If this succeeds, it returns the
      engine. If not, it returns 0, and raises an exception in exec
     */
-    static RegExp* makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput);    
+    static RegExp* makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput);
   private:
     JSValue *getBackref(int) const;
     JSValue *getLastMatch() const;
@@ -105,7 +105,7 @@ namespace KJS {
     JSValue *getRightContext() const;
 
     OwnPtr<RegExpObjectImpPrivate> d;
-    
+
     static const ClassInfo info;
   };
 
