@@ -1,3 +1,24 @@
+
+
+- Use goya and Model/View for faster showing/searching, etc.
+- Add support for categories
+- add unit tests for everything
+- make sure checksum works
+- make sure caching works
+- make sure signatures work
+- fix issues in download dialog (signal names, etc.)
+
+FEATURES:
+- support gui switching scope (user to system, and back)
+- support multiple provider urls with ui to add/remove/edit
+- REST voting
+
+
+
+
+
+// OLD TODO's below
+
 - porting signals to Q_SIGNALS, slots to Q_SLOTS etc.
 - mass indentation (which style, which tool?)
 - port 1-2 apps, at least khangman!
@@ -12,4 +33,3 @@
 
 apps:
 KVocTrain must share data with KHangMan
-
