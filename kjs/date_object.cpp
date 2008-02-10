@@ -40,7 +40,6 @@
 #include <sys/timeb.h>
 #endif
 
-#include <ctype.h>
 #include <float.h>
 #include <limits.h>
 #include <locale.h>
@@ -72,12 +71,17 @@
 #endif
 #endif
 
+#include "wtf/DisallowCType.h"
+#include "wtf/ASCIICType.h"
+
 // GCC cstring uses these automatically, but not all implementations do.
 using std::strlen;
 using std::strcpy;
 using std::strncpy;
 using std::memset;
 using std::memcpy;
+
+using namespace WTF;
 
 
 inline int gmtoffset(const tm& t)
@@ -952,7 +956,7 @@ static double makeTime(tm *t, double ms, bool utc)
 
 inline static bool isSpaceLike(char c)
 {
-    return isspace(c) || c == ',' || c == ':' || c == '-';
+    return isASCIISpace(c) || c == ',' || c == ':' || c == '-';
 }
 
 static const char* skipSpacesAndComments(const char* s)
@@ -981,7 +985,7 @@ static int findMonth(const char *monthStr)
     for (int i = 0; i < 3; ++i) {
         if (!*monthStr)
             return -1;
-        needle[i] = tolower(*monthStr++);
+        needle[i] = toASCIILower(*monthStr++);
     }
     needle[3] = '\0';
     const char *haystack = "janfebmaraprmayjunjulaugsepoctnovdec";
@@ -996,7 +1000,7 @@ static int findMonth(const char *monthStr)
 
 static bool isTwoDigits (const char* str)
 {
-    return isdigit(str[0]) && isdigit(str[1]);
+    return isASCIIDigit(str[0]) && isASCIIDigit(str[1]);
 }
 
 static int twoDigit (const char* str)
@@ -1063,14 +1067,14 @@ static double parseDate(const UString &date)
                     return NaN;
                 dateString += 3;
                 if (dateString[0] == '.' &&
-                    isdigit(dateString[1]))
+                    isASCIIDigit(dateString[1]))
                 {
                     dateString++;
                     double div = 10;
                     do {
                         second += (dateString[0] - '0') / div;
                         div *= 10;
-                    } while (isdigit(*++dateString));
+                    } while (isASCIIDigit(*++dateString));
                 }
             }
         }
@@ -1099,8 +1103,8 @@ static double parseDate(const UString &date)
     long month = -1;
     const char *wordStart = dateString;
     // Check contents of first words if not number
-    while (*dateString && !isdigit(*dateString)) {
-        if (isspace(*dateString) || *dateString == '(') {
+    while (*dateString && !isASCIIDigit(*dateString)) {
+        if (isASCIISpace(*dateString) || *dateString == '(') {
             if (dateString - wordStart >= 3)
                 month = findMonth(wordStart);
             dateString = skipSpacesAndComments(dateString);
@@ -1172,14 +1176,14 @@ static double parseDate(const UString &date)
             if (month == -1)
                 return NaN;
 
-            while (*dateString && (*dateString != '-') && !isspace(*dateString))
+            while (*dateString && (*dateString != '-') && !isASCIISpace(*dateString))
                 dateString++;
 
             if (!*dateString)
                 return NaN;
 
             // '-99 23:12:40 GMT'
-            if (*dateString != '-' && *dateString != '/' && !isspace(*dateString))
+            if (*dateString != '-' && *dateString != '/' && !isASCIISpace(*dateString))
                 return NaN;
             dateString++;
         }
@@ -1241,7 +1245,7 @@ static double parseDate(const UString &date)
                 return NaN;
 
             // ':40 GMT'
-            if (*dateString && *dateString != ':' && !isspace(*dateString))
+            if (*dateString && *dateString != ':' && !isASCIISpace(*dateString))
                 return NaN;
 
             // seconds are optional in rfc822 + rfc2822

@@ -28,7 +28,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
+#include "wtf/DisallowCType.h"
+#include "wtf/ASCIICType.h"
 #if HAVE(STRING_H)
 #include <string.h>
 #endif
@@ -54,6 +55,8 @@ using std::strcpy;
 using std::strncpy;
 using std::memset;
 using std::memcpy;
+
+using namespace WTF;
 
 namespace KJS {
 
@@ -1003,7 +1006,7 @@ double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) co
   const char *c = ascii();
 
   // skip leading white space
-  while (isspace(*c))
+  while (isASCIISpace(*c))
     c++;
 
   // empty string ?
@@ -1058,7 +1061,7 @@ double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) co
   }
 
   // allow trailing white space
-  while (isspace(*c))
+  while (isASCIISpace(*c))
     c++;
   // don't allow anything after - unless tolerant=true
   if (!tolerateTrailingJunk && *c != '\0')

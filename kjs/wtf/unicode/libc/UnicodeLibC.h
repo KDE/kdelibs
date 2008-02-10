@@ -25,7 +25,7 @@
 #ifndef KJS_UNICODE_LIBC_H
 #define KJS_UNICODE_LIBC_H
 
-#include <ctype.h>
+#include "wtf/ASCIICType.h"
 #include <assert.h>
 
 #include "../UnicodeCategory.h"
@@ -38,7 +38,7 @@ namespace WTF {
       destIfNeeded = 0;
 
       for (int i = 0; i < strLength; ++i)
-        str[i] = tolower(str[i]);
+        str[i] = toASCIILower(str[i]);
 
       return strLength;
     }
@@ -48,14 +48,14 @@ namespace WTF {
       destIfNeeded = 0;
 
       for (int i = 0; i < strLength; ++i)
-        str[i] = toupper(str[i]);
+        str[i] = toASCIIUpper(str[i]);
 
       return strLength;
     }
 
     inline bool isSeparatorSpace(int32_t c)
     {
-      return (c & 0xffff0000) == 0 && isspace(c);
+      return (c & 0xffff0000) == 0 && isASCIISpace(static_cast<unsigned short>(c));
     }
 
     inline CharCategory category(int32_t c)

@@ -42,7 +42,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <ctype.h>
+#include "wtf/DisallowCType.h"
+#include "wtf/ASCIICType.h"
 
 using namespace WTF;
 
@@ -56,14 +57,14 @@ public:
   void optimize() {
     visit(m_body);
   }
-  
+
   virtual Node* visit(Node* node)
   {
     //Do not recurse inside nodes that introduce new scopes:
     //that includes 'with' and various function literals.
     if (node->introducesNewScope()) return 0;
 
-    //Catch can introduce a new scope as well, but 
+    //Catch can introduce a new scope as well, but
     //the rest of try is fine..
     if (node->isTryNode()) {
        static_cast<TryNode*>(node)->recurseVisitNonCatch(this);
@@ -72,8 +73,8 @@ public:
 
     //Now try optimizing..
     if (Node* resultNode = node->optimizeLocalAccess(m_exec, m_body)) {
-      //We optimized this node, but it may make sense to optimize 
-      //inside it as well, so recurse, too. 
+      //We optimized this node, but it may make sense to optimize
+      //inside it as well, so recurse, too.
       NodeVisitor::visit(resultNode);
       return resultNode;
     }
@@ -117,7 +118,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   ExecState newExec(exec->dynamicInterpreter(), &ctx);
   if (exec->hadException())
     newExec.setException(exec->exception());
-    
+
   // Compute the set of all local variables, and functions.
   // and optimize access to them the first time we're called.
   // The AST building already took care of parameter declarations for us.
@@ -132,7 +133,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   ActivationImp* activation = static_cast<ActivationImp*>(ctx.activationObject());
 
-  // Here, we actually fill stuff in, going by increasing priorities: 
+  // Here, we actually fill stuff in, going by increasing priorities:
   // first, initialize flags and set to undefined...
   activation->setupLocals();
 
@@ -524,10 +525,10 @@ void ActivationImp::setupLocals() {
   int numLocals = _function->body->numLocals();
   _locals  = new Local[numLocals + 1];
   _locals[0].value = 0;
-  _locals[0].attr  = numLocals + 1; 
+  _locals[0].attr  = numLocals + 1;
   for (int l = 1; l < numLocals + 1; ++l) {
     _locals[l].value = jsUndefined();
-    _locals[l].attr  = _function->body->getLocalAttr(l); 
+    _locals[l].attr  = _function->body->getLocalAttr(l);
   }
 }
 
@@ -570,7 +571,7 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
     // do this first so property map arguments property wins over the below
     // we don't call JSObject because we won't have getter/setter properties
     // and we don't want to support __proto__
-    
+
     // See if we're doing fallback  lookup on a local..
     int id = _function->body->lookupSymbolID(propertyName);
 
@@ -584,7 +585,7 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
         return true;
     }
 
-    // Important: if you add more dynamic properties here, 
+    // Important: if you add more dynamic properties here,
     // make sure to make the optimizeResolver call honor them.
     if (propertyName == exec->propertyNames().arguments) {
         slot.setCustom(this, getArgumentsGetter());
@@ -600,7 +601,7 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
     int id = _function->body->lookupSymbolID(propertyName);
     if (validLocal(id))
         return false;
-    
+
     if (propertyName == exec->propertyNames().arguments)
         return false;
     return JSObject::deleteProperty(exec, propertyName);
@@ -611,7 +612,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
   // There's no way that an activation object can have a prototype or getter/setter properties
   assert(!_prop.hasGetterSetterProperties());
   assert(prototype() == jsNull());
-  
+
   // See if we're setting a local..
   int id = _function->body->lookupSymbolID(propertyName);
   if (validLocal(id)) {
@@ -686,7 +687,7 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
     UChar c = *p;
     if (c == '%') {
       int charLen = 0;
-      if (k <= len - 3 && isxdigit(p[1].uc) && isxdigit(p[2].uc)) {
+      if (k <= len - 3 && isASCIIHexDigit(p[1].uc) && isASCIIHexDigit(p[2].uc)) {
         const char b0 = Lexer::convertHex(p[1].uc, p[2].uc);
         const int sequenceLen = UTF8SequenceLength(b0);
         if (sequenceLen != 0 && k <= len - sequenceLen * 3) {
@@ -695,7 +696,7 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
           sequence[0] = b0;
           for (int i = 1; i < sequenceLen; ++i) {
             const UChar *q = p + i * 3;
-            if (q[0] == '%' && isxdigit(q[1].uc) && isxdigit(q[2].uc))
+            if (q[0] == '%' && isASCIIHexDigit(q[1].uc) && isASCIIHexDigit(q[2].uc))
               sequence[i] = Lexer::convertHex(q[1].uc, q[2].uc);
             else {
               charLen = 0;

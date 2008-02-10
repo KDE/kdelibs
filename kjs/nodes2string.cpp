@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <config.h>
+
 #include "nodes.h"
 #include "function.h"
 #include "scriptfunction.h"
@@ -209,7 +210,7 @@ SourceStream& SourceStream::append(const UString& inStr, bool quote)
       case '\t':    c = 't';    break;
       case '\\':                break;
       default:
-        if (c >= 128 || !isprint(c)) {
+        if (c >= 128 || !isprint(c)) { // ### FIXME: use Unicode tables
           char hexValue[8];
           int len = sprintf(hexValue, (c < 256) ? "\\x%02X" : "\\u%04X", c);
           UTF16* dst = &buffer[bufUsed];

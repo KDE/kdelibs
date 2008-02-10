@@ -24,8 +24,6 @@
 
 #include "lexer.h"
 #include <config.h>
-
-#include <ctype.h>
 #include <string.h>
 #include <limits.h>
 
@@ -33,6 +31,8 @@
 #include "function.h"
 #include "interpreter.h"
 #include "nodes.h"
+#include "wtf/ASCIICType.h"
+#include "wtf/DisallowCType.h"
 #include <wtf/unicode/libc/UnicodeLibC.h>
 
 using namespace WTF;
@@ -74,7 +74,7 @@ Lexer& lexer()
 {
     // ASSERT(JSLock::currentThreadIsHoldingLock());
 
-    // FIXME: We'd like to avoid calling new here, but we don't currently 
+    // FIXME: We'd like to avoid calling new here, but we don't currently
     // support tearing down the Lexer at app quit time, since that would involve
     // tearing down its UString data members without holding the JSLock.
     static Lexer* staticLexer = new Lexer;
