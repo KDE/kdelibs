@@ -74,7 +74,7 @@ class KDEUI_EXPORT Wallet : public QObject
 
 		/**
 		 *  Determine if the KDE wallet is enabled.  Normally you do
-		 *  not need to use this because open() will just fail.
+		 *  not need to use this because openWallet() will just fail.
 		 *  @return Returns true if the wallet enabled, else false.
 		 */
 		static bool isEnabled();
