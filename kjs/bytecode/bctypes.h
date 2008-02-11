@@ -19,15 +19,39 @@
  *
  */
 
+ #ifndef KJS_BYTECODE_TYPES_H
+ #define KJS_BYTECODE_TYPES_H
+
 namespace KJS {
+    class JSValue;
+    class Identifier;
+
     enum OpType {
-        OpType_Void,
         OpType_Bool,
         OpType_UInt32,
-        OpType_Ident,
-        OpType_Addr
+        OpType_Value, // This can be immediate in input, but not output;
+                      // immediate on input will be produced from other types, if possible
+        OpType_NonConvertibleBase = 64, // All arguments with this bit set should never be converted
+        OpType_Void  = OpType_NonConvertibleBase,
+        OpType_Ident = OpType_NonConvertibleBase + 1, // Immediate only
+        OpType_Addr  = OpType_NonConvertibleBase + 2, // Immediate only
+    };
+
+    // Represents a value, either as a result of evaluation of an expression, or
+    // just a plain argument
+    struct OpValue {
+        bool   immediate;
+        OpType type;
+        union {
+            bool        boolVal;
+            unsigned    uintVal;
+            JSValue*    jsVal;
+            Identifier* identVal;
+            unsigned    addrVal;
+        } value;
     };
 }
 
-// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+#endif
 
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
