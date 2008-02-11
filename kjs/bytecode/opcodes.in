@@ -1,0 +1,45 @@
+/**
+ We use 2 types of encoding here. First of all, we have the
+ OpName enum, which species the instruction names, Op_Add, etc.
+ There is a structure Op, which specifies a complete instance of this operation,
+ with specific parameters, and gives its bytecode, name, etc.
+ The bytecode itself is also listed in the OpByteCode_ enum.
+
+ Some instructions also have an aligned version, which skips
+ an extra word to get the arguments to be 8-aligned.
+*/
+
+namespace KJS {
+    @generate
+
+    struct Op {
+        OpName     baseInstr;
+        OpByteCode opCode;
+        OpType     retType;
+
+        int numParams;
+        OpType paramTypes[3];
+        bool   immediateParams[3];
+
+        // This array is used to rearrange arguments by alignment;
+        // so for example if one does an if: Addr * Addr * Value,
+        // the value will be passed in first, then the first and second
+        // arguments, so the array will have: 2, 0, 1.
+        int paramOrder[3];
+
+        // If this is true, this version of the instruction has an
+        // extra word inserted after the opcode, for alignment reasons.
+        bool padAlign;
+    };
+
+    // The main array of Op instances, mapped by OpByteCode
+    extern const Op opsForOpCodes[];
+
+    // Lists all the specialized versions of each Op class, mapped by OpName,
+    // 0 terminated.
+    typedef const Op* OpInstanceList[];
+    extern const OpInstanceList[] opSpecializations;
+};
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+

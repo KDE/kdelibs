@@ -1,0 +1,4 @@
+operation LogicalAnd {
+    impl computeLogicalAnd: bool * bool -> bool;
+    tile value * value -> bool as computeLogicalAnd;
+}
