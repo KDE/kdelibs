@@ -28,6 +28,7 @@
 #define WTF_Assertions_h
 
 #include <assert.h>
+#include <stdlib.h>
 
 #define ASSERT(x) assert(x)
 #define ASSERT_NOT_REACHED() assert(!"Should not be reached")
@@ -43,5 +44,6 @@
 #define ASSERT_DISABLED 0
 #endif
 
+#define CRASH() abort()
 
 #endif // WTF_Assertions_h

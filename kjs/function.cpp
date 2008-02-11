@@ -497,7 +497,7 @@ void ActivationImp::setupLocals() {
   ls.reserveCapacity(size);
 
   for (size_t l = 0; l < size; ++l)
-    ls.append(LocalStorageEntry(jsUndefined(), body->getLocalAttr(l)));
+    ls.uncheckedAppend(LocalStorageEntry(jsUndefined(), body->getLocalAttr(l)));
 }
 
 void ActivationImp::setupFunctionLocals(ExecState *exec) {

@@ -56,14 +56,14 @@ namespace KJS {
     StringImp(const char* v, int len) : val(v, len) { }
     const UString& value() const { return val; }
 
-    JSType type() const { return StringType; }
+    virtual JSType type() const { return StringType; }
 
-    JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
+    virtual JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    JSObject *toObject(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
+    virtual JSObject *toObject(ExecState *exec) const;
 
   private:
     UString val;
