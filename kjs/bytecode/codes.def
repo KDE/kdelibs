@@ -1,0 +1,77 @@
+// ### I should put in 8-align annotations. This will also permit 'double'
+type void;
+type bool;
+type uint32;
+type value;
+type ident; // for field access ops, etc. Always immediate, no non-trivial conversions
+type addr;
+
+/**
+Notes on the conversion rules from the spec:
+The conversion operations in general do not form a commutative diagram ---
+one can call toBoolean(toUInt32(foo)) and get something different
+from toBoolean(foo). We don't worry about this, however, because when we
+know the type enough to annotate it as uint32, etc., it's when the computation
+would naturally produces a 32-bit int, so we would never marshal an object to it!
+*/
+
+// Conversions for immediate bool
+conversion immediate imBool_imVal: bool => value  costs 0;
+conversion immediate imBool_imInt: bool => uint32 costs 0;
+
+// Register bool...
+conversion register rBool_rVal: bool => value  costs 10; // Need to put in a call to jsBoolean.
+conversion register rBool_rInt: bool => uint32 costs 0;  // Due to compatible representation
+
+// Immediate JSValues should never be produced -- hmm, should I put in a failure production?
+
+// Register JSValue..
+conversion register rVal_rBool: value => bool costs 10;   // Need to call toBoolean. Extra op, but cheap.
+conversion register rVal_rInt:  value => uint32 costs 30; // toUint32 can be more expensive, since it may get to
+                                                          // toPrimitive, even!
+
+// Immediate UInt32
+conversion immediate checked imInt_imValue : uint32 => value costs 0; // if it succeeds, if it doesn't,
+                                                                      // will fill in cost for a jsNumber call --- expensiveeee
+conversion immediate imInt_imBool : uint32 => bool costs 0;
+
+// Register UInt32
+conversion register rInt_rBool:  uint32 => bool  costs 0; // We permit bools to be any non-zero number when in register.
+conversion register rInt_rValue: uint32 => value costs 20; // Cheap if it fits, if it doesn't, though, it calls jsNumber.
+
+
+
+/**
+ Control flow stuff
+*/
+
+operation Jump {
+    impl executeJump : addr;
+}
+
+operation IfJump {
+    impl executeIfJump : bool * addr;
+    tile value * addr as executeIfJump;
+}
+
+operation IfElseJump {
+    impl executeIfElseJump : bool * addr * addr;
+    tile value * addr * addr as executeIfElseJump;
+}
+
+// for, while, do ... while, etc., can all be easily expressed as above,
+// ditto for continue / break
+
+// ### switch is nasty. Probably needs some opaque pointer type.
+
+operation PopCatch {
+    impl popCatch: void;
+}
+
+operation PushCatch {
+    impl pushCache: addr;
+}
+
+operation Throw {
+    impl executeThrow: value;
+}
