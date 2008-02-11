@@ -87,6 +87,7 @@ class KFileItemDelegate::Private
         QBrush composite(const QColor &over, const QBrush &brush) const;
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        inline qreal backgroundRadius(const QStyleOptionViewItem &option) const;
         inline bool alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         inline void setActiveMargins(Qt::Orientation layout);
         void setVerticalMargin(MarginType type, int left, int right, int top, int bottom);
@@ -101,6 +102,7 @@ class KFileItemDelegate::Private
         QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
         bool isListView(const QStyleOptionViewItem &option) const;
         QString display(const QModelIndex &index) const;
+        QSize iconSizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QPoint iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
         QRect labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon, const QString &string) const;
@@ -640,6 +642,12 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
 }
 
 
+qreal KFileItemDelegate::Private::backgroundRadius(const QStyleOptionViewItem &option) const
+{
+    return (option.showDecorationSelected && option.decorationSize.width() > 24) ? 10 : 5;
+}
+
+
 bool KFileItemDelegate::Private::alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const QStyleOptionViewItemV2 *option2;
@@ -875,22 +883,16 @@ void KFileItemDelegate::Private::drawBackground(QPainter *painter, const QStyleO
 
     if (brush.style() != Qt::NoBrush)
     {
-        QPainterPath path;
-        QRect        rect;
-        qreal        radius;
+        const qreal radius = backgroundRadius(option);
 
-        if (!option.showDecorationSelected)
-        {
-            rect = addMargin(textBoundingRect, Private::TextMargin);
-            radius = 5;
-        }
-        else
-        {
+        QRect rect;
+        if (option.showDecorationSelected)
             rect = option.rect;
-            radius = option.decorationSize.width() > 24 ? 10 : 5;
-        }
+        else
+            rect = addMargin(textBoundingRect, Private::TextMargin);
 
         // Always draw rounded selection rectangles in list views
+        QPainterPath path;
         if (isListView(option))
             path = roundedRectangle(rect, radius);
         else
@@ -955,7 +957,9 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
     if (d->verticalLayout(option))
     {
-        size.rwidth()  = qMax(decorationSize.width(), displaySize.width());
+        const QSize iconSize = d->iconSizeHint(option, index);
+        const int iconWidth = qMin(decorationSize.width(), iconSize.width());
+        size.rwidth()  = qMax(displaySize.width(), iconWidth);
         size.rheight() = decorationSize.height() + displaySize.height() + 1;
     }
     else
@@ -1013,6 +1017,34 @@ void KFileItemDelegate::setShowInformation(Information value)
 KFileItemDelegate::InformationList KFileItemDelegate::showInformation() const
 {
     return d->informationList;
+}
+
+
+QSize KFileItemDelegate::Private::iconSizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QSize size;
+
+    const QVariant value = index.model()->data(index, Qt::DecorationRole);
+    switch (value.type())
+    {
+        case QVariant::Icon:
+            size = toPixmap(option, qvariant_cast<QIcon>(value)).size();
+            break;
+
+        case QVariant::Pixmap:
+            size = qvariant_cast<QPixmap>(value).size();
+            break;
+
+        case QVariant::Color:
+        default:
+            size = option.decorationSize;
+            break;
+    }
+
+    const int radius = backgroundRadius(option);
+    size.rwidth() += radius;
+    size.rheight() += radius;
+    return size;
 }
 
 
