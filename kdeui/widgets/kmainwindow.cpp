@@ -1017,7 +1017,7 @@ KToolBar *KMainWindow::toolBar( const QString& name )
         return tb;
     bool honor_mode = name != "mainToolBar";
 
-    KToolBar* toolbar = new KToolBar(this, false, honor_mode ); // non-XMLGUI
+    KToolBar* toolbar = new KToolBar(this, honor_mode ); // non-XMLGUI
 
     toolbar->setObjectName(childName);
     addToolBar(toolbar);
