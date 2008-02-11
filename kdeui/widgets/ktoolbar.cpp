@@ -956,7 +956,7 @@ void KToolBar::applySettings( const KConfigGroup &cg, bool force )
 
 void KToolBar::applyAppearanceSettings( const KConfigGroup &cg, bool forceGlobal )
 {
-    Q_ASSERT(! cg.name().isEmpty() );
+  Q_ASSERT(! cg.name().isEmpty() );
 
   // If we have application-specific settings in the XML file,
   // and nothing in the application's config file, then
@@ -979,18 +979,21 @@ void KToolBar::applyAppearanceSettings( const KConfigGroup &cg, bool forceGlobal
   // this is the first iteration
 
   { // start block for KConfigGroup
-      KConfigGroup globals(gconfig, "Toolbar style");
+    KConfigGroup globals(gconfig, "Toolbar style");
 
-    // we read in the ToolButtonStyle property *only* if we intend on actually
-    // honoring it
-    if ( d->honorStyle )
-        d->ToolButtonStyleDefault = d->toolButtonStyleFromString( globals.readEntry( "ToolButtonStyle",
-                                        d->toolButtonStyleToString( d->ToolButtonStyleDefault ) ) );
-    else
+    if ( applyToolButtonStyle )
+    {
+      // we read in the ToolButtonStyle property *only* if we intend on actually
+      // honoring it
+      if ( d->honorStyle )
+      d->ToolButtonStyleDefault = d->toolButtonStyleFromString( globals.readEntry( "ToolButtonStyle",
+                                          d->toolButtonStyleToString( d->ToolButtonStyleDefault ) ) );
+      else
       d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
-    // Use the default icon size for toolbar icons.
-    d->IconSizeDefault = globals.readEntry( "IconSize", int(d->IconSizeDefault) );
+      // Use the default icon size for toolbar icons.
+      d->IconSizeDefault = globals.readEntry( "IconSize", int(d->IconSizeDefault) );
+    }
 
     iconSize = d->IconSizeDefault;
     ToolButtonStyle = d->ToolButtonStyleDefault;
@@ -1000,7 +1003,7 @@ void KToolBar::applyAppearanceSettings( const KConfigGroup &cg, bool forceGlobal
       // read in the ToolButtonStyle property
       if ( cg.hasKey( "ToolButtonStyle" ) ) {
           ToolButtonStyle = d->toolButtonStyleFromString( cg.readEntry( "ToolButtonStyle", QString() ) );
-        applyToolButtonStyle = true;
+          applyToolButtonStyle = true;
       }
 
       // now get the size
