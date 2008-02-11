@@ -250,8 +250,12 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     }
     else
     {
-        retRect.setHeight(qMin(listView->sizeHintForIndex(heightIndex).height(),
-                               listView->gridSize().height()));
+        const QSize sizeHint = listView->sizeHintForIndex(heightIndex);
+        if (sizeHint.width() < itemWidth) {
+            retRect.setWidth(sizeHint.width());
+            retRect.moveLeft(retRect.left() + (itemWidth - sizeHint.width()) / 2);
+        }
+        retRect.setHeight(qMin(sizeHint.height(), listView->gridSize().height()));
     }
 
     return retRect;
