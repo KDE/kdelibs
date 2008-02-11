@@ -84,8 +84,8 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 
 Nepomuk::Resource::~Resource()
 {
-    if( m_data && m_data->deref() == 0 ) {
-//        m_data->deleteData();
+    if( m_data && m_data->deref() == 0 && !m_data->isValid() ) {
+        m_data->deleteData();
     }
 }
 

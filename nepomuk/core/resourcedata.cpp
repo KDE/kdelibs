@@ -421,12 +421,15 @@ void Nepomuk::ResourceData::remove( bool recursive )
         return m_proxyData->remove();
 
     if ( determineUri() ) {
-        // FIXME: make sure no dangling graphs are left
         ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
         fm.removeAllStatements( Statement( m_uri, Node(), Node() ) );
         if ( recursive ) {
             fm.removeAllStatements( Statement( Node(), Node(), m_uri ) );
         }
+
+        // the url is invalid now
+        initializedData()->remove( m_uri.toString() );
+        m_uri = QUrl();
     }
 }
 
