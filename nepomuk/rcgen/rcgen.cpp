@@ -114,14 +114,14 @@ int main( int argc, char** argv )
     foreach( const QString &ontoFile, ontoFiles ) {
         if( !QFile::exists( ontoFile ) ) {
             qDebug() << "Ontology file " << ontoFile << " does not exist." << endl;
-            return usage();
+            return -1;
         }
     }
 
     if( writeAll ) {
         if( !QFile::exists( targetDir ) ) {
             qDebug() << "Folder " << targetDir << " does not exist." << endl;
-            return usage();
+            return -1;
         }
     }
 
@@ -129,18 +129,18 @@ int main( int argc, char** argv )
     foreach( const QString &ontoFile, ontoFiles ) {
         if( !prsr.parse( ontoFile ) ) {
             qDebug() << "Parsing ontology file " << ontoFile << " failed." << endl;
-            return usage();
+            return -1;
         }
     }
 
     if( writeAll ) {
         if( !prsr.assignTemplates( templates ) ) {
-            return usage();
+            return -1;
         }
 
         if( !prsr.writeSources( targetDir ) ) {
             qDebug() << "Writing sources to " << targetDir << " failed." << endl;
-            return usage();
+            return -1;
         }
     }
     else if( listSource ) {
