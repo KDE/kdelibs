@@ -155,6 +155,8 @@ public:
 	cursor_icon_widget = NULL;
         m_mouseScrollTimer = 0;
         m_mouseScrollIndicator = 0;
+        contentsX = 0;
+        contentsY = 0;
     }
     ~KHTMLViewPrivate()
     {
@@ -215,8 +217,6 @@ public:
         paged = false;
 	clickX = -1;
 	clickY = -1;
-        contentsX = 0;
-        contentsY = 0;
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
