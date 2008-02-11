@@ -1,4 +1,6 @@
 
+- Fix download() and upload() methods that according to apidox report changes with signals, but Engine
+   class has no signals...
 
 - Use goya and Model/View for faster showing/searching, etc.
 - Add support for categories

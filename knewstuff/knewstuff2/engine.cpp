@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -78,7 +79,8 @@ public:
 
     void slotProviderLoaded(KNS::Provider *provider);
 
-    // why do we care?
+    /** slot for when entries are changed, so we can return a list
+     * of them from the static methods */
     void slotEntryChanged(KNS::Entry *entry);
 
     void slotProvidersFinished();
@@ -100,8 +102,7 @@ Engine::~Engine()
 
 void EnginePrivate::workflow()
 {
-    if((m_command == command_upload) || (m_command == command_download))
-    {
+    if ((m_command == command_upload) || (m_command == command_download)) {
         connect(this,
                 SIGNAL(signalProviderLoaded(KNS::Provider*)),
                 SLOT(slotProviderLoaded(KNS::Provider*)));
@@ -153,56 +154,54 @@ void EnginePrivate::stopLoop()
 
 KNS::Entry::List Engine::download()
 {
-	KNS::Entry::List entries;
+    KNS::Entry::List entries;
 
-	Engine *engine = new Engine(0);
+    Engine *engine = new Engine(0);
 
-	KComponentData component = KGlobal::activeComponent();
-	QString name = component.componentName();
+    KComponentData component = KGlobal::activeComponent();
+    QString name = component.componentName();
 
-	bool ret = engine->init(name + ".knsrc");
-	if(!ret)
-	{
-		delete engine;
-		return entries;
-	}
+    bool ret = engine->init(name + ".knsrc");
+    if (!ret) {
+        delete engine;
+        return entries;
+    }
 
-	KNS::Entry::List tempList = engine->downloadDialogModal(0);
+    KNS::Entry::List tempList = engine->downloadDialogModal(0);
 
-	// copy the list since the entries will be deleted when we delete the engine
-	foreach (Entry * entry, tempList) {
-		entries << new Entry(*entry);
-	}
-	delete engine;
+    // copy the list since the entries will be deleted when we delete the engine
+    foreach (Entry * entry, tempList) {
+        entries << new Entry(*entry);
+    }
+    delete engine;
 
-	return entries;
+    return entries;
 }
 
 KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
-	kDebug() << "Engine: downloadDialogModal";
+    kDebug() << "Engine: downloadDialogModal";
 
-	d->m_command = EnginePrivate::command_download;
-	d->m_modal = true;
+    d->m_command = EnginePrivate::command_download;
+    d->m_modal = true;
 
-	d->workflow();
+    d->workflow();
 
-	return QList<KNS::Entry*>::fromSet(d->m_changedEntries);
+    return QList<KNS::Entry*>::fromSet(d->m_changedEntries);
 }
 
 void Engine::downloadDialog()
 {
-	kDebug() << "Engine: downloadDialog";
+    kDebug() << "Engine: downloadDialog";
 
-	if(d->m_command != EnginePrivate::command_none)
-	{
-		kError() << "Engine: asynchronous workflow already going on" << endl;
-	}
+    if (d->m_command != EnginePrivate::command_none) {
+        kError() << "Engine: asynchronous workflow already going on" << endl;
+    }
 
-	d->m_command = EnginePrivate::command_download;
-	d->m_modal = false;
+    d->m_command = EnginePrivate::command_download;
+    d->m_modal = false;
 
-	d->workflow();
+    d->workflow();
 }
 
 KNS::Entry *EnginePrivate::upload(const QString& file)
@@ -215,7 +214,7 @@ KNS::Entry *EnginePrivate::upload(const QString& file)
     QString name = component.componentName();
 
     bool ret = engine.init(name + ".knsrc");
-    if(!ret) return entry;
+    if (!ret) return entry;
 
     entry = engine.uploadDialogModal(file);
 
@@ -260,8 +259,7 @@ void Engine::uploadDialog(const QString& file)
 {
     //kDebug() << "Engine: uploadDialog";
 
-    if(d->m_command != EnginePrivate::command_none)
-    {
+    if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
     }
 
@@ -287,8 +285,7 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
         // ... and wait for slotProvidersFinished()
        m_providers.append(provider);
     }
-    else
-    {
+    else {
         kError() << "Engine: invalid command" << endl;
     }
 }
@@ -296,63 +293,59 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 void EnginePrivate::slotProvidersFinished()
 {
     // NOTE: this is only connected when we are doing an upload
-	kDebug() << "Engine: slotProvidersFinished";
+    kDebug() << "Engine: slotProvidersFinished";
 
-	int ret;
+    int ret;
 
-	//Provider *fakeprovider = new Provider();
-	//fakeprovider->setName(QString("Fake Provider"));
-	//fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
-	//fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
+    //Provider *fakeprovider = new Provider();
+    //fakeprovider->setName(QString("Fake Provider"));
+    //fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
+    //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
 
-	ProviderDialog provdialog(0);
-	for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); it++)
-	{
-		Provider *provider = (*it);
-		provdialog.addProvider(provider);
-	}
-	//provdialog.addProvider(fakeprovider);
-	ret = provdialog.exec();
-	if(ret == QDialog::Rejected)
-	{
+    ProviderDialog provdialog(0);
+    for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); it++) {
+        Provider *provider = (*it);
+        provdialog.addProvider(provider);
+    }
+    //provdialog.addProvider(fakeprovider);
+    ret = provdialog.exec();
+    if (ret == QDialog::Rejected) {
         stopLoop();
-		return;
-	}
+        return;
+    }
 
-	KNS::Provider *provider = provdialog.provider();
+    KNS::Provider *provider = provdialog.provider();
 
-	UploadDialog uploaddialog(0);
-	uploaddialog.setPayloadFile(KUrl(m_uploadfile));
-	ret = uploaddialog.exec();
-	if(ret == QDialog::Rejected)
-	{
-		stopLoop();
-		return;
-	}
+    UploadDialog uploaddialog(0);
+    uploaddialog.setPayloadFile(KUrl(m_uploadfile));
+    ret = uploaddialog.exec();
+    if (ret == QDialog::Rejected) {
+        stopLoop();
+        return;
+    }
 
-	Entry *entry = uploaddialog.entry();
-	entry->setPayload(m_uploadfile);
-	if(!entry)
-	{
-		stopLoop();
-		return;
-	}
+    Entry *entry = uploaddialog.entry();
+    entry->setPayload(m_uploadfile);
+    if (!entry) {
+        stopLoop();
+        return;
+    }
 
-	EntryHandler eh(*entry);
-	QDomElement xml = eh.entryXML();
-	QByteArray ar;
-	QTextStream txt(&ar);
-	txt << xml;
-	//kDebug() << "Upload: " << QString(ar);
+    EntryHandler eh(*entry);
+    QDomElement xml = eh.entryXML();
+    QByteArray ar;
+    QTextStream txt(&ar);
+    txt << xml;
+    //kDebug() << "Upload: " << QString(ar);
 
-	connect(this,
-		SIGNAL(signalEntryUploaded()),
-		SLOT(stopLoop()));
-	connect(this,
-		SIGNAL(signalEntryFailed()),
-		SLOT(stopLoop()));
+    connect(this,
+        SIGNAL(signalEntryUploaded()),
+        SLOT(stopLoop()));
+    connect(this,
+        SIGNAL(signalEntryFailed()),
+        SLOT(stopLoop()));
 
-	uploadEntry(provider, entry);
+    uploadEntry(provider, entry);
 }
 
 void EnginePrivate::slotEntryChanged(KNS::Entry * entry)

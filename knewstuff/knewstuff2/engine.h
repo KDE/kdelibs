@@ -1,6 +1,7 @@
 /*
     This file is part of KNewStuff2.
     Copyright (c) 2007 Josef Spillner <spillner@kde.org>
+    Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -59,9 +60,12 @@ public:
      * @brief Synchronous way of starting the download workflow.
      *
      * Starts the download workflow. This workflow will turn up a dialog
-     * where the user can select entries for installation and deinstallation.
+     * where the user can select entries for installation and uninstallation.
      * This method is a modal one. It will return all affected entries as
      * a list.
+     *
+     * NOTE: this list must be queried to see which ones were installed and which were uninstalled
+     * since both are in the one list. i.e. (entry->status() == KNS::Entry::Installed)
      *
      * @return List of installed or deinstalled entries
      */
