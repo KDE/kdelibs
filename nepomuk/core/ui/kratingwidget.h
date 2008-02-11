@@ -90,6 +90,9 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
      */
     void setSpacing( int );
 
+    Qt::Alignment aligment() const;
+    void setAlignment( Qt::Alignment align );
+
     /**
      * Set the pixap to be used to display a rating step.
      * By default the "rating" pixmap is loaded.

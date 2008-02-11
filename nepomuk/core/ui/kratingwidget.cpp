@@ -96,6 +96,18 @@ void KRatingWidget::setSpacing( int s )
 }
 
 
+Qt::Alignment KRatingWidget::aligment() const
+{
+    return d->ratingPainter.alignment();
+}
+
+
+void KRatingWidget::setAlignment( Qt::Alignment align )
+{
+    d->ratingPainter.setAlignment( align );
+}
+
+
 unsigned int KRatingWidget::rating() const
 {
     return d->rating;
