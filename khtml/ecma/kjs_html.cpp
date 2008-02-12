@@ -409,7 +409,7 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
     case Width: // NS-only, not available in IE
       return jsNumber(view ? view->contentsWidth() : 0);
     case Dir:
-      return jsString(body->getAttribute(ATTR_DIR));
+      return body ? jsString(body->getAttribute(ATTR_DIR)) : jsUndefined();
     case Frames:
       if ( win )
         return win->frames(exec);
