@@ -37,7 +37,7 @@ class QPixmap;
  * The pixmap cache can be used to store pixmaps which can later be loaded
  *  from the cache very quickly.
  *
- * It's most common use is storing SVG images which might be expensive to
+ * Its most common use is storing SVG images which might be expensive to
  *  render every time they are used. With the cache you can render each SVG
  *  only once and later use the stored version unless the SVG file or requested
  *  pixmap size changes.
