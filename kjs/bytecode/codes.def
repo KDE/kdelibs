@@ -6,6 +6,7 @@ type value: JSValue* register align8; // ### I thought up of a usecase for immed
                                       // night, but not sure what yet, so I am keeping them out..
 type ident: Identifier* immediate align8;
 type addr:  Addr        immediate;
+type reg:   Register    immediate; // an output register
 
 /**
 Notes on the conversion rules from the spec:
@@ -76,3 +77,50 @@ operation PushCatch {
 operation Throw {
     impl executeThrow: value;
 }
+
+// Variable stuff... Locals access can just use register addressing,
+// not specific get/put, but when we have to do symbolic lookup, we use these.
+
+operation ScopeLookup {
+    // Find which scope the variable is in, e.g. basically evaluates to a reference.
+    impl scopeLookup: ident;
+}
+
+operation SymPut {
+    impl symPut: value * ident * value; // scope.ident = val
+}
+
+operation SymGet {
+    impl symGet: reg * value * ident; // reg = val.ident
+}
+
+// Specialization for global object...
+operation GlobalSymPut {
+    impl globalPut: ident * value;
+}
+
+operation GlobalSymGet {
+    impl globalGet: reg * value;
+}
+
+/**
+ An alternative approach for this may be to provide a globalScope pseudo-type, which would something like this:
+
+ type globalScope: bool immediate; // any small type will do..
+ operation SymPut {
+    impl symPut: value * ident * value;
+    tile globalScope * ident * value as symPut;
+ }
+
+ conversion immediate getGlobalScope: globalScope => value costs 1000; // so we don't pick the overload over perfect match
+
+ And then have a:
+ JSValue* convertGetGlobalScope(bool) {
+    return exec->dynamicGlobalObject();
+ }
+
+ or whatever it'll be called.
+
+
+
+*/

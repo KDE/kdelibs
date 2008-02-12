@@ -111,7 +111,25 @@ void TableBuilder::generateCode()
     Enum opNamesEnum("OpName", "Op_", operationNames);
     opNamesEnum.printDeclaration(hStream);
     opNamesEnum.printDefinition (cppStream);
+
+    foreach(const QString& op = operationNames)
+        processOperation(op);
+
+    - dump enum for opcodes. etc.
+
+    where should machine.cpp stuff go?
 }
+
+processOperation:
+
+- enumerate all the signatures, generate immediate/non-immediate, etc. variants, for each argument.
+- compute which ones need a padded argument, bind the impl name.
+
+- hmm, handleImpl should probably just collect both signatures, and create uniform info...
+
+-> then processOperation should build some sort of a versions array, based on padding, etc.
+
+
 
 void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last)
 {
@@ -184,7 +202,10 @@ void TableBuilder::handleOperation(const QString& name)
 }
 
 void TableBuilder::handleImpl(const QString& fnName, QStringList sig)
-{}
+{
+    Operation& op = operations.last();
+
+}
 
 void TableBuilder::handleTile(const QString& fnName, QStringList sig)
 {}
