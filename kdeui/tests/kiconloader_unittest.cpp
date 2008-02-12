@@ -60,6 +60,16 @@ private Q_SLOTS:
         pix = iconLoader.loadIcon("this-icon-does-not-exist", KIconLoader::Desktop, 16);
         QVERIFY(!pix.isNull());
         QCOMPARE(pix.size(), QSize(16, 16));
+
+        // Another one, to clear "last" cache
+        pix = iconLoader.loadIcon("this-icon-does-not-exist-either", KIconLoader::Desktop, 16);
+        QVERIFY(!pix.isNull());
+        QCOMPARE(pix.size(), QSize(16, 16));
+
+        // Now load the initial one again - do we get the warning again?
+        pix = iconLoader.loadIcon("this-icon-does-not-exist", KIconLoader::Desktop, 16);
+        QVERIFY(!pix.isNull());
+        QCOMPARE(pix.size(), QSize(16, 16));
     }
 
     void testAppPicsDir()
