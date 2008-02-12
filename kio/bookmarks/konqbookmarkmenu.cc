@@ -81,8 +81,6 @@ void KonqBookmarkContextMenu::addActions()
 
     addBookmarkActions();
   }
-  addSeparator();
-  addProperties();
 }
 
 void KonqBookmarkContextMenu::toggleShowInToolbar()

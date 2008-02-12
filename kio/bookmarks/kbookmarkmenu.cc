@@ -231,11 +231,9 @@ void KBookmarkContextMenu::addActions()
   }
   else
   {
-    addBookmarkActions();
     addBookmark();
+    addBookmarkActions();
   }
-  addSeparator();
-  addProperties();
 }
 
 KBookmarkContextMenu::~KBookmarkContextMenu()
@@ -253,6 +251,7 @@ void KBookmarkContextMenu::addBookmark()
 void KBookmarkContextMenu::addFolderActions()
 {
   addAction( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
+  addProperties();
   addSeparator();
   addAction( SmallIcon("edit-delete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
 }
@@ -266,6 +265,7 @@ void KBookmarkContextMenu::addProperties()
 void KBookmarkContextMenu::addBookmarkActions()
 {
   addAction( i18n( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
+  addProperties();
   addSeparator();
   addAction( SmallIcon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
 }
