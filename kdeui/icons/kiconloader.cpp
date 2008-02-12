@@ -415,7 +415,7 @@ bool KIconLoaderPrivate::initIconThemes()
         // If mpThemeRoot isn't 0 then initing has succeeded
         return (mpThemeRoot != 0);
     }
-    kDebug(264);
+    //kDebug(264);
     mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree
@@ -897,16 +897,18 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         if (path.isEmpty())
         {
             if (!canReturnNull) {
+#ifndef NDEBUG
                 kWarning(264) << "No such icon" << _name;
+#endif
                 unknownIcon = true;
+            } else {
+                return pix; // null pixmap
             }
-            if (canReturnNull)
-                return pix;
             // We don't know the desired size: use small
             path = iconPath(str_unknown, KIconLoader::Small, true);
             if (path.isEmpty())
             {
-                kDebug(264) << "Warning: Cannot find \"unknown\" icon.";
+                kWarning(264) << "Warning: Cannot find \"unknown\" icon.";
                 return pix;
             }
         }
@@ -1025,7 +1027,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                     return pix; // null pixmap
                 }
 
+#ifndef NDEBUG
                 kWarning(264) << "No such icon" << _name;
+#endif
                 unknownIcon = true;
                 icon = d->findMatchingIcon(str_unknown, size);
                 if (!icon.isValid())

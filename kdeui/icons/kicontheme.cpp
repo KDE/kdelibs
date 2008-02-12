@@ -645,6 +645,8 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigGroup &config)
         mContext = KIconLoader::Place;
     else if (tmp == "Status")
         mContext = KIconLoader::StatusIcon;
+    else if (tmp == "Stock") // invalid, but often present context, skip warning
+        return;
     else {
         kDebug(264) << "Invalid Context=" << tmp << "line for icon theme: " << mDir << "\n";
         return;
