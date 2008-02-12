@@ -325,6 +325,7 @@
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
 <!ENTITY ksysguard	"<application>KSysguard</application>">
 <!ENTITY ksysv	"<application>KSysV</application>">
+<!ENTITY ksystemlog  "<application>KSystemLog</application>">
 <!ENTITY ktalk	"<application>KTalk</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
 <!ENTITY kteatime	"<application>KTeaTime</application>">
