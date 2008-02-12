@@ -28,6 +28,7 @@
 
 #include <QString>
 #include <QList>
+#include <QHash>
 
 struct Operation
 {
@@ -41,6 +42,13 @@ struct Type
     bool im, reg, align8;
 };
 
+struct ConversionInfo
+{
+    QString name;
+    int  cost;
+    bool checked;
+};
+
 class TableBuilder: public Parser
 {
 public:
@@ -49,10 +57,13 @@ public:
     void generateCode();
 private:
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
-    virtual void handleConversion(bool immediate, bool checked, QString from, QString to, int cost);
+    virtual void handleConversion(const QString& name, bool immediate, bool checked,
+                                  const QString& from, const QString& to, int cost);
     virtual void handleOperation(const QString& name);
     virtual void handleImpl(const QString& fnName, QStringList sig);
     virtual void handleTile(const QString& fnName, QStringList sig);
+
+    void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
 
     QTextStream* hStream;
     QTextStream* cppStream;
@@ -62,6 +73,11 @@ private:
 
     QStringList        operationNames;
     QList<Operation>   operations;
+
+    QStringList conversionNames;
+
+    QHash<QString, QHash<QString, ConversionInfo> > imConversions;
+    QHash<QString, QHash<QString, ConversionInfo> > rgConversions;
 };
 
 #endif

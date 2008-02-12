@@ -22,6 +22,7 @@
  */
 #include "tablebuilder.h"
 #include <QTextStream>
+#include <QDebug>
 
 class Enum {
 public:
@@ -31,9 +32,9 @@ public:
 
     void printDeclaration(QTextStream* hStream)
     {
-        *hStream << "enum " << name << "{\n";
+        *hStream << "enum " << name << " {\n";
         for (int p = 0; p < values.size(); ++p) {
-            *hStream << "\t" << prefix << values[p];
+            *hStream << "    " << prefix << values[p];
             if (p != (values.size() - 1))
                 *hStream << ",";
             *hStream << "\n";
@@ -46,7 +47,7 @@ public:
     {
         *hStream << "const char* const " << name << "Vals[] = {\n";
         for (int p = 0; p < values.size(); ++p) {
-            *hStream << "\t\"" << prefix << values[p] << "\"";
+            *hStream << "    \"" << prefix << values[p] << "\"";
             if (p != (values.size() - 1))
                 *hStream << ",";
             *hStream << "\n";
@@ -61,7 +62,18 @@ private:
 
 TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream):
     Parser(inStream), hStream(hStream), cppStream(cppStream)
-{}
+{
+    conversionNames << "NoConversion" << "NoOp";
+}
+
+// # of bits store 'vals' values, e.g. 3 for 8, etc.
+static int neededBits(int vals)
+{
+    int bits = 1;
+    while ((1 << bits) < vals)
+        ++bits;
+    return bits;
+}
 
 void TableBuilder::generateCode()
 {
@@ -72,9 +84,68 @@ void TableBuilder::generateCode()
     typesEnum.printDeclaration(hStream);
     typesEnum.printDefinition (cppStream);
 
+    // Conversion ops. Those go entirely in the .cpp
+    Enum convOps("ConvOp", "Conv_", conversionNames);
+    convOps.printDeclaration(cppStream);
+    convOps.printDefinition (cppStream);
+
+    *cppStream << "struct ConvInfo {\n";
+    *cppStream << "    ConvOp routine;\n";
+    *cppStream << "    int    costCode;\n";
+    *cppStream << "};\n\n";
+
+    // For conversion info, we use upper bit for register/immediate (immediate is set),
+    // and then enough bits for the from/to types as the index.
+    *cppStream << "static const ConvInfo conversions[] = {\n";
+    printConversionInfo(imConversions, false);
+    printConversionInfo(rgConversions, true);
+    *cppStream << "};\n\n";
+
+    int numBits = neededBits(types.size());
+    *cppStream << "static inline const ConvInfo* getConversionInfo(bool immediate, OpType from, OpType to) {\n";
+    *cppStream << "    return &conversions[((int)immediate << " << (2 * numBits) << ")"
+               << " | ((int)from << " << numBits << ") | (int)to];\n";
+    *cppStream << "};\n\n";
+
+    // Operations
     Enum opNamesEnum("OpName", "Op_", operationNames);
     opNamesEnum.printDeclaration(hStream);
     opNamesEnum.printDefinition (cppStream);
+}
+
+void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last)
+{
+    int numBits = neededBits(types.size());
+    int fullRange = 1 << numBits;
+    for (int from = 0; from < fullRange; ++from) {
+        for (int to = 0; to < fullRange; ++to) {
+            if (from < types.size() && to < types.size()) {
+                QString fromName = typeNames[from];
+                QString toName   = typeNames[to];
+                if (table[fromName].contains(toName)) {
+                    const ConversionInfo& inf = table[typeNames[from]][typeNames[to]];
+                    *cppStream << "    {Conv_" << inf.name << ",";
+                    if (inf.checked)
+                        *cppStream << "Cost_Checked}";
+                    else
+                        *cppStream << inf.cost << "}";
+                } else if (from == to) {
+                    *cppStream << "    {Conv_NoOp, 0}";
+                } else {
+                    *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
+                }
+
+                *cppStream << " /*" << fromName << " => " << toName << "*/";
+            } else {
+                *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
+            }
+
+            if (!last || from != (fullRange - 1) || to != (fullRange - 1))
+                *cppStream << ",";
+
+            *cppStream << "\n";
+        } // for to..
+    } // for from..
 }
 
 void TableBuilder::handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8)
@@ -89,7 +160,20 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     types << t;
 }
 
-void TableBuilder::handleConversion(bool immediate, bool checked, QString from, QString to, int cost) {}
+void TableBuilder::handleConversion(const QString& name, bool immediate, bool checked,
+                                    const QString& from, const QString& to, int cost)
+{
+    conversionNames << name;
+    ConversionInfo inf;
+    inf.name    = name;
+    inf.cost    = cost;
+    inf.checked = checked;
+
+    if (immediate)
+        imConversions[from][to] = inf;
+    else
+        rgConversions[from][to] = inf;
+}
 
 void TableBuilder::handleOperation(const QString& name)
 {

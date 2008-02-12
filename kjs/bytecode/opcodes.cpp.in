@@ -1,0 +1,57 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+#include "opcodes.h"
+#include <wtf/Assertions.h>
+    // be nice to our fruity overlords and their silly assert-unfriendly environment
+
+const int Cost_NoConversion = -1;
+const int Cost_Checked      = -2;
+
+@generate
+
+// Note: costOut will be Cost_NoConversion if no conversion is possible
+static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut) {
+    bool   inImmediate = in->immediate;
+    OpType inType      = in->type;
+
+    // Can't make a register result into an an immediate value,
+    // and there is no reason ever to convert immediate to register, since
+    // we will always have a specialization
+    if (outImmediate != inImmediate) {
+        costOut = Cost_NoConversion;
+        return Conv_NoConversion;
+    }
+
+    // Look up in the table..
+    const ConvInfo* inf = getConversionInfo(inImmediate, inType, outType);
+    if (inf->costCode == Cost_Checked) {
+        ASSERT(inType == OpType_UInt32 && outType == OpType_Value);
+        if (JSImmediate::from(in->value.uintVal))
+            costOut = 0;
+        else
+            costOut = Cost_NoConversion;
+
+        return inf->routine;
+    }
+
+    costOut = inf->costCode;
+    return inf->routine;
+}

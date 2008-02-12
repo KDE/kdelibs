@@ -193,7 +193,7 @@ void Parser::parseConversion()
     int cost = matchNumber();
     match(Lexer::SemiColon);
 
-    handleConversion(immediate, checked, from, to, cost);
+    handleConversion(name, immediate, checked, from, to, cost);
 }
 
 void Parser::parseOperation()
