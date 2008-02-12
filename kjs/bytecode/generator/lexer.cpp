@@ -41,6 +41,7 @@ Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false)
     keywords["impl"]        = Impl;
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
+    keywords["align8"]      = Align8;
 }
 
 Lexer::Token Lexer::lexComment()

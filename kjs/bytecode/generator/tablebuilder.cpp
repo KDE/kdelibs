@@ -21,6 +21,43 @@
  *
  */
 #include "tablebuilder.h"
+#include <QTextStream>
+
+class Enum {
+public:
+    Enum(const QString& name, const QString& prefix, QStringList values):
+        name(name), prefix(prefix), values(values)
+    {}
+
+    void printDeclaration(QTextStream* hStream)
+    {
+        *hStream << "enum " << name << "{\n";
+        for (int p = 0; p < values.size(); ++p) {
+            *hStream << "\t" << prefix << values[p];
+            if (p != (values.size() - 1))
+                *hStream << ",";
+            *hStream << "\n";
+        }
+        *hStream << "};\n";
+        *hStream << "extern const char* const " << name << "Vals[];\n\n";
+    }
+
+    void printDefinition(QTextStream* hStream)
+    {
+        *hStream << "const char* const " << name << "Vals[] = {\n";
+        for (int p = 0; p < values.size(); ++p) {
+            *hStream << "\t\"" << prefix << values[p] << "\"";
+            if (p != (values.size() - 1))
+                *hStream << ",";
+            *hStream << "\n";
+        }
+        *hStream << "};\n\n";
+    }
+private:
+    QString name;
+    QString prefix;
+    QStringList values;
+};
 
 TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream):
     Parser(inStream), hStream(hStream), cppStream(cppStream)
@@ -29,17 +66,38 @@ TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStr
 void TableBuilder::generateCode()
 {
     parse();
+
+    // Types... First we just want to list them
+    Enum typesEnum("OpType", "OpType_", typeNames);
+    typesEnum.printDeclaration(hStream);
+    typesEnum.printDefinition (cppStream);
+
+    Enum opNamesEnum("OpName", "Op_", operationNames);
+    opNamesEnum.printDeclaration(hStream);
+    opNamesEnum.printDefinition (cppStream);
 }
 
-void TableBuilder::handleType(const QString& type)
+void TableBuilder::handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8)
 {
-    types << type;
+    typeNames << type;
+    Type t;
+    t.name = type;
+    t.nativeName = nativeName;
+    t.im     = im;
+    t.reg    = rg;
+    t.align8 = al8;
+    types << t;
 }
 
 void TableBuilder::handleConversion(bool immediate, bool checked, QString from, QString to, int cost) {}
 
 void TableBuilder::handleOperation(const QString& name)
-{}
+{
+    operationNames << name;
+    Operation op;
+    op.name = name;
+    operations << op;
+}
 
 void TableBuilder::handleImpl(const QString& fnName, QStringList sig)
 {}

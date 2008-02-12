@@ -26,6 +26,21 @@
 
 #include "parser.h"
 
+#include <QString>
+#include <QList>
+
+struct Operation
+{
+    QString name;
+};
+
+struct Type
+{
+    QString name;
+    QString nativeName;
+    bool im, reg, align8;
+};
+
 class TableBuilder: public Parser
 {
 public:
@@ -33,7 +48,7 @@ public:
 
     void generateCode();
 private:
-    virtual void handleType(const QString& type);
+    virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
     virtual void handleConversion(bool immediate, bool checked, QString from, QString to, int cost);
     virtual void handleOperation(const QString& name);
     virtual void handleImpl(const QString& fnName, QStringList sig);
@@ -42,7 +57,11 @@ private:
     QTextStream* hStream;
     QTextStream* cppStream;
 
-    QStringList types;
+    QList<Type> types;
+    QStringList typeNames;
+
+    QStringList        operationNames;
+    QList<Operation>   operations;
 };
 
 #endif

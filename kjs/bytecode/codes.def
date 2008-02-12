@@ -1,10 +1,11 @@
 // ### I should put in 8-align annotations. This will also permit 'double'
-type void;
-type bool;
-type uint32;
-type value;
-type ident; // for field access ops, etc. Always immediate, no non-trivial conversions
-type addr;
+type void: void;
+type bool: bool register immediate;
+type uint32: uint32_t register immediate;
+type value: JSValue* register align8; // ### I thought up of a usecase for immediate vals sometime last
+                                      // night, but not sure what yet, so I am keeping them out..
+type ident: Identifier* immediate align8;
+type addr:  Addr        immediate;
 
 /**
 Notes on the conversion rules from the spec:
@@ -32,7 +33,7 @@ conversion register rVal_rInt:  value => uint32 costs 30; // toUint32 can be mor
 
 // Immediate UInt32
 conversion immediate checked imInt_imValue : uint32 => value costs 0; // if it succeeds, if it doesn't,
-                                                                      // will fill in cost for a jsNumber call --- expensiveeee
+                                                                      // we can't emit the code anyway.
 conversion immediate imInt_imBool : uint32 => bool costs 0;
 
 // Register UInt32

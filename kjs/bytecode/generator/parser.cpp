@@ -111,10 +111,39 @@ void Parser::parse()
 
 void Parser::parseType()
 {
-    //type identifier;
+    //type identifier:  nativeName *? (immediate | register | align8)*;
     match(Lexer::Type);
-    handleType(matchIdentifier());
-    match(Lexer::SemiColon);
+
+    QString name = matchIdentifier();
+    match(Lexer::Colon);
+    QString nativeName = matchIdentifier();
+    if (peekNext().type == Lexer::Star) {
+        nativeName += "*";
+        getNext();
+    }
+
+    bool im = false, rg = false, al8 = false;
+
+    Lexer::Token tok = getNext();
+    while (tok.type != Lexer::SemiColon) {
+        switch (tok.type) {
+        case Lexer::Immediate:
+            im = true;
+            break;
+        case Lexer::Register:
+            rg = true;
+            break;
+        case Lexer::Align8:
+            al8 = true;
+            break;
+        default:
+            issueError("Unexpected type decoration, got:" + tok.toString(lexer));
+        }
+
+        tok = getNext();
+    }
+
+    handleType(name, nativeName, im, rg, al8);
 }
 
 QStringList Parser::parseSignature()

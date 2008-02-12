@@ -38,7 +38,7 @@ private:
     // Note: signatures here are just a list of strings;
     // the last one is the return type
 
-    virtual void handleType(const QString& type) = 0;
+    virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8) = 0;
     virtual void handleConversion(bool immediate, bool checked, QString from, QString to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
     virtual void handleImpl(const QString& fnName, QStringList sig) = 0;

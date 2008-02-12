@@ -53,7 +53,8 @@ public:
         Costs,
         Impl,
         Tile,
-        As
+        As,
+        Align8
     };
 
     struct Token {
