@@ -22,6 +22,8 @@ Boston, MA 02110-1301, USA.
 
 #define PHONON_CLASSNAME AbstractAudioOutput
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -35,6 +37,8 @@ namespace Phonon
     }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #undef PHONON_CLASSNAME
 

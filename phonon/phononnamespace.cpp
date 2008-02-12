@@ -27,6 +27,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QList>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
     QString categoryToString(Category c)
@@ -82,5 +84,7 @@ Phonon::GlobalData *Phonon::GlobalData::instance()
 {
     return globalInstance;
 }
+
+QT_END_NAMESPACE
 
 // vim: sw=4 ts=4

@@ -212,6 +212,8 @@ namespace Phonon
 } // namespace Phonon
 //Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::MediaStreamTypes)
 
+QT_END_NAMESPACE
+
 //X class kdbgstream;
 //X #include <kdebug.h>
 //X /**
@@ -249,7 +251,6 @@ Q_DECLARE_METATYPE(Phonon::State)
 Q_DECLARE_METATYPE(Phonon::ErrorType)
 Q_DECLARE_METATYPE(Phonon::Category)
 
-QT_END_NAMESPACE
 QT_END_HEADER
 
 // vim: sw=4 ts=4 tw=80

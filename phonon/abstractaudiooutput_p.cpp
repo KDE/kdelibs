@@ -19,6 +19,8 @@
 
 #include "abstractaudiooutput_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -35,3 +37,5 @@ void AbstractAudioOutputPrivate::setupBackendObject()
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE

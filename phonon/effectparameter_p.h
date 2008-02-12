@@ -23,6 +23,8 @@
 #include "effectparameter.h"
 #include <QtCore/QSharedData>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -40,6 +42,8 @@ class EffectParameterPrivate : public QSharedData
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // EFFECTPARAMETER_P_H
 // vim: sw=4 ts=4 tw=80

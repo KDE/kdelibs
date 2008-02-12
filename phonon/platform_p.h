@@ -20,8 +20,12 @@
 #ifndef PHONON_PLATFORM_P_H
 #define PHONON_PLATFORM_P_H
 
+
 #include <QtCore/QStringList>
 #include <QtCore/QtGlobal>
+#include "phonon/phonon_export.h"
+
+QT_BEGIN_NAMESPACE
 
 class QIcon;
 class QObject;
@@ -45,5 +49,7 @@ QString applicationName();
 
 } // namespace Platform
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // PHONON_PLATFORM_P_H

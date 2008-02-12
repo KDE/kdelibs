@@ -23,6 +23,8 @@
 #include "volumefadereffect.h"
 #include "effect_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class VolumeFaderEffectPrivate : public EffectPrivate
@@ -42,6 +44,8 @@ class VolumeFaderEffectPrivate : public EffectPrivate
         VolumeFaderEffect::FadeCurve fadeCurve;
 };
 }
+
+QT_END_NAMESPACE
 
 #endif // PHONON_VOLUMEFADEREFFECT_P_H
 // vim: sw=4 ts=4 tw=80

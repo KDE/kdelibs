@@ -440,7 +440,7 @@ namespace Phonon
              * \see availableAudioStreams()
              * \see selectedAudioStream()
              */
-            //void setCurrentAudioStream(const AudioStreamDescription &stream);
+            //void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream);
 
             /**
              * Selects a video stream from the media.
@@ -455,7 +455,7 @@ namespace Phonon
              * \see availableVideoStreams()
              * \see selectedVideoStream()
              */
-            //void setCurrentVideoStream(const VideoStreamDescription &stream);
+            //void setCurrentVideoStream(const Phonon::VideoStreamDescription &stream);
 
             /**
              * Selects a subtitle stream from the media.
@@ -468,7 +468,7 @@ namespace Phonon
              * \see availableSubtitleStreams()
              * \see selectedSubtitleStream()
              */
-            //void setCurrentSubtitleStream(const SubtitleStreamDescription &stream);
+            //void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream);
 
             void setTickInterval(qint32 newTickInterval);
 
@@ -624,7 +624,7 @@ namespace Phonon
              * \param newSource The source that starts to play at the time the
              * signal is emitted.
              */
-            void currentSourceChanged(const MediaSource &newSource);
+            void currentSourceChanged(const Phonon::MediaSource &newSource);
 
             /**
              * Emitted before the playback of the whole queue stops. When this

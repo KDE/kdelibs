@@ -127,7 +127,7 @@ class PHONON_EXPORT VolumeSlider : public QWidget
         /**
          * Sets the audio output object to be controlled by this slider.
          */
-        void setAudioOutput(AudioOutput *);
+        void setAudioOutput(Phonon::AudioOutput *);
 
     protected:
         VolumeSliderPrivate *const k_ptr;

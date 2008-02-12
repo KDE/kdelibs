@@ -23,6 +23,8 @@
 #include "mediaobject_p.h"
 #include "streaminterface_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -159,6 +161,8 @@ void AbstractMediaStreamPrivate::phononObjectDestroyed(MediaNodePrivate *bp)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_abstractmediastream.cpp"
 

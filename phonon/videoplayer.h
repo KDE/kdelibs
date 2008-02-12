@@ -110,7 +110,7 @@ class PHONON_EXPORT VideoPlayer : public QWidget
          * When there's already a media playing (or paused) it will be stopped
          * (the finished signal will not be emitted).
          */
-        void load(const MediaSource &source);
+        void load(const Phonon::MediaSource &source);
 
         /**
          * Play the media at the given URL. Starts playback as fast as possible.
@@ -128,7 +128,7 @@ class PHONON_EXPORT VideoPlayer : public QWidget
          * load and play calls so that the backend can start preloading the
          * media and fill audio buffers.
          */
-        void play(const MediaSource &source);
+        void play(const Phonon::MediaSource &source);
 
         /**
          * Continues playback of a paused media. Restarts playback of a stopped

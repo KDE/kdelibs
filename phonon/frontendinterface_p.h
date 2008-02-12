@@ -25,6 +25,8 @@
 #include "phononnamespace_p.h"
 #include <QtCore/QPointer>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class FrontendInterfacePrivate
@@ -54,5 +56,7 @@ class FrontendInterfacePrivate
         QPointer<MediaObject> media;
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // PHONON_FRONTENDINTERFACEPRIVATE_H

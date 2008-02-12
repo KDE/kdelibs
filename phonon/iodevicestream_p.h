@@ -25,6 +25,8 @@
 
 #include <QtCore/QIODevice>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
@@ -50,5 +52,8 @@ class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
 };
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
+
 #endif // IODEVICESTREAM_P_H
 // vim: sw=4 sts=4 et tw=100

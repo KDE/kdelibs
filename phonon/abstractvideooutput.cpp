@@ -19,6 +19,8 @@
 #include "abstractvideooutput.h"
 #include "abstractvideooutput_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -28,3 +30,5 @@ AbstractVideoOutput::AbstractVideoOutput(AbstractVideoOutputPrivate &d)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE

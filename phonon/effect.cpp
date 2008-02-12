@@ -24,6 +24,8 @@
 
 #define PHONON_INTERFACENAME EffectInterface
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 Effect::~Effect()
@@ -119,6 +121,8 @@ void EffectPrivate::setupBackendObject()
 }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_effect.cpp"
 

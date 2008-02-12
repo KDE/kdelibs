@@ -23,6 +23,8 @@
 #include "abstractmediastream_p.h"
 #include "mediasource.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -99,5 +101,7 @@ void StreamInterface::reset()
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 // vim: sw=4 sts=4 et tw=100

@@ -25,6 +25,8 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -188,5 +190,7 @@ AbstractMediaStream *MediaSource::stream() const
 //X }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 // vim: sw=4 sts=4 et tw=100

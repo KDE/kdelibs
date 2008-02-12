@@ -138,6 +138,7 @@ class PHONON_EXPORT SeekSlider : public QWidget
         Q_PRIVATE_SLOT(k_func(), void _k_tick(qint64))
         Q_PRIVATE_SLOT(k_func(), void _k_length(qint64))
         Q_PRIVATE_SLOT(k_func(), void _k_seekableChanged(bool))
+        Q_PRIVATE_SLOT(k_func(), void _k_currentSourceChanged())
 };
 
 } // namespace Phonon

@@ -28,6 +28,8 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -150,6 +152,8 @@ int GlobalConfig::audioCaptureDevice() const
 }*/
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_globalconfig.cpp"
 

@@ -31,6 +31,8 @@
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
@@ -319,6 +321,8 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
 }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_audiooutput.cpp"
 

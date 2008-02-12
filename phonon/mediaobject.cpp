@@ -39,6 +39,8 @@
 #define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME MediaObjectInterface
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 PHONON_OBJECT_IMPL
@@ -575,6 +577,8 @@ MediaObject *createPlayer(Phonon::Category category, const MediaSource &source)
 }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_mediaobject.cpp"
 

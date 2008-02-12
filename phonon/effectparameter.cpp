@@ -20,6 +20,8 @@
 #include "effectparameter.h"
 #include "effectparameter_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -127,5 +129,7 @@ int EffectParameter::id() const
 }
 
 }
+
+QT_END_NAMESPACE
 
 // vim: sw=4 ts=4

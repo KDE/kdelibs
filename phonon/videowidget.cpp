@@ -28,6 +28,8 @@
 
 #define PHONON_INTERFACENAME VideoWidgetInterface
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -172,6 +174,8 @@ QSize VideoWidget::minimumSizeHint()
 } */
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_videowidget.cpp"
 

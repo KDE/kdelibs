@@ -24,6 +24,8 @@
 #include "effectparameter.h"
 #include <QtCore/QHash>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
     class EffectWidgetPrivate
@@ -46,6 +48,9 @@ namespace Phonon
             void autogenerateUi();
     };
 } // namespace Phonon
+
+QT_END_NAMESPACE
+
 #endif // PHONON_UI_EFFECTWIDGET_P_H
 
 // vim: sw=4 ts=4 tw=80

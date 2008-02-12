@@ -24,6 +24,8 @@
 #include "medianode_p.h"
 #include "phonondefs_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class AbstractAudioOutputPrivate : public MediaNodePrivate
@@ -40,5 +42,6 @@ class AbstractAudioOutputPrivate : public MediaNodePrivate
 };
 } //namespace Phonon
 
+QT_END_NAMESPACE
+
 #endif // PHONON_ABSTRACTAUDIOOUTPUT_P_H
-// vim: sw=4 ts=4 tw=80

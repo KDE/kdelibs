@@ -131,7 +131,7 @@ namespace Phonon
             void setName(const QString &newName);
             void setVolume(qreal newVolume);
             void setVolumeDecibel(qreal newVolumeDecibel);
-            bool setOutputDevice(const AudioOutputDevice &newAudioOutputDevice);
+            bool setOutputDevice(const Phonon::AudioOutputDevice &newAudioOutputDevice);
             void setMuted(bool mute);
 
         Q_SIGNALS:
@@ -159,7 +159,7 @@ namespace Phonon
              *
              * \see outputDevice
              */
-            void outputDeviceChanged(const AudioOutputDevice &newAudioOutputDevice);
+            void outputDeviceChanged(const Phonon::AudioOutputDevice &newAudioOutputDevice);
 
         private:
             Q_PRIVATE_SLOT(k_func(), void _k_volumeChanged(qreal))

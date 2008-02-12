@@ -22,6 +22,11 @@
 #include "mediaobject.h"
 #include "phonondefs_p.h"
 
+#include <QtGui/QMouseEvent>
+#include <QtGui/QApplication>
+
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -67,6 +72,7 @@ void SeekSlider::setMediaObject(MediaObject *media)
         connect(media, SIGNAL(totalTimeChanged(qint64)), SLOT(_k_length(qint64)));
         connect(media, SIGNAL(tick(qint64)), SLOT(_k_tick(qint64)));
         connect(media, SIGNAL(seekableChanged(bool)), SLOT(_k_seekableChanged(bool)));
+        connect(media, SIGNAL(currentSourceChanged(const Phonon::MediaSource&)), SLOT(_k_currentSourceChanged()));
         d->_k_stateChanged(media->state());
         d->_k_seekableChanged(media->isSeekable());
         d->_k_length(media->totalTime());
@@ -129,6 +135,13 @@ void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
             break;
         }
     }
+}
+
+void SeekSliderPrivate::_k_currentSourceChanged()
+{
+    //this releases the mouse and makes the seek slider stop seeking if the current source has changed
+    QMouseEvent event(QEvent::MouseButtonRelease, QPoint(), Qt::LeftButton, 0, 0);
+    QApplication::sendEvent(&slider, &event);
 }
 
 void SeekSliderPrivate::setEnabled(bool x)
@@ -235,6 +248,8 @@ void SeekSlider::setIconSize(const QSize &iconSize)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_seekslider.cpp"
 

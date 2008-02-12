@@ -25,6 +25,8 @@
 
 #include <QtCore/QPointer>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class PlatformPlugin;
@@ -59,6 +61,8 @@ class FactoryPrivate : public Phonon::Factory::Sender
         void objectDescriptionChanged(ObjectDescriptionType);
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // PHONON_FACTORY_P_H
 // vim: sw=4 sts=4 et tw=100

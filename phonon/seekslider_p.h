@@ -31,6 +31,8 @@
 #include <QtCore/QPointer>
 #include "platform_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class MediaObject;
@@ -72,6 +74,7 @@ class SeekSliderPrivate
         void _k_tick(qint64);
         void _k_length(qint64);
         void _k_seekableChanged(bool);
+        void _k_currentSourceChanged();
 
         QBoxLayout layout;
         QSlider slider;
@@ -82,6 +85,8 @@ class SeekSliderPrivate
         QSize iconSize;
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // SEEKSLIDER_P_H
 // vim: sw=4 ts=4 tw=80

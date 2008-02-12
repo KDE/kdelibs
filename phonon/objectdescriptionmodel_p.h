@@ -24,6 +24,8 @@
 #include <QtCore/QList>
 #include "objectdescription.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -49,5 +51,8 @@ class ObjectDescriptionModelDataPrivate
 };
 
 }
+
+QT_END_NAMESPACE
+
 #endif // PHONON_OBJECTDESCRIPTIONMODEL_P_H
 // vim: sw=4 ts=4 tw=80

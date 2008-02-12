@@ -26,6 +26,8 @@
 #define PHONON_CLASSNAME VolumeFaderEffect
 #define PHONON_INTERFACENAME VolumeFaderInterface
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 PHONON_HEIR_IMPL(Effect)
@@ -88,6 +90,8 @@ void VolumeFaderEffectPrivate::setupBackendObject()
     pINTERFACE_CALL(setFadeCurve(fadeCurve));
 }
 }
+
+QT_END_NAMESPACE
 
 #include "moc_volumefadereffect.cpp"
 

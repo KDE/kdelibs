@@ -27,6 +27,8 @@
 #include <QtCore/QVariant>
 #include "phonondefs_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class EffectPrivate : public MediaNodePrivate
@@ -45,6 +47,8 @@ class EffectPrivate : public MediaNodePrivate
         QHash<EffectParameter, QVariant> parameterValues;
 };
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // EFFECT_P_H
 // vim: sw=4 ts=4 tw=80

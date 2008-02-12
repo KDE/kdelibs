@@ -37,6 +37,8 @@
 #endif
 #endif
 
+QT_BEGIN_NAMESPACE
+
 static const uint qt_meta_data_Phonon__ObjectDescriptionModel[] = {
 
  // content:
@@ -381,3 +383,5 @@ INSTANTIATE_META_FUNCTIONS(VideoStreamType);
 INSTANTIATE_META_FUNCTIONS(SubtitleStreamType);
 */
 } // namespace Phonon
+
+QT_END_NAMESPACE

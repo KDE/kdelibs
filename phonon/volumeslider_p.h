@@ -32,6 +32,8 @@
 #include <QtCore/QPointer>
 #include "platform_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class VolumeSliderPrivate
@@ -85,6 +87,8 @@ class VolumeSliderPrivate
         bool ignoreVolumeChange;
 };
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // VOLUMESLIDER_P_H
 // vim: sw=4 sts=4 et tw=100

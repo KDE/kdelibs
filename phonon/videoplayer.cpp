@@ -24,6 +24,8 @@
 #include "path.h"
 #include <QtGui/QBoxLayout>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -154,6 +156,8 @@ bool VideoPlayer::isPaused() const
 }
 
 } // namespaces
+
+QT_END_NAMESPACE
 
 #include "moc_videoplayer.cpp"
 

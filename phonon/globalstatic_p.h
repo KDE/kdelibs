@@ -33,6 +33,8 @@
 # define testAndSetOrdered              testAndSet
 #endif
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -288,4 +290,5 @@ static struct PHONON_GLOBAL_STATIC_STRUCT_NAME(NAME)                            
     }                                                                          \
 } NAME;
 
+QT_BEGIN_INCLUDE_NAMESPACE
 #endif // PHONON_GLOBALSTATIC_P_H

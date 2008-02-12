@@ -23,6 +23,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtGui/QIcon>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -84,3 +86,5 @@ QString Platform::applicationName()
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE

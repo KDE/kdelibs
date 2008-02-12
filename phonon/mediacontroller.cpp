@@ -24,6 +24,8 @@
 #include <QtCore/QVariant>
 #include "frontendinterface_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -177,6 +179,8 @@ void MediaController::setCurrentAngle(int titleNumber)
 #undef IFACE1
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_mediacontroller.cpp"
 

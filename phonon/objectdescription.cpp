@@ -26,6 +26,8 @@
 #include <QtCore/QStringList>
 #include "backendinterface.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -110,4 +112,6 @@ ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType ty
 }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 // vim: sw=4 ts=4

@@ -24,6 +24,8 @@
 #include "abstractaudiooutput_p.h"
 #include "platform_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class AudioOutputPrivate : public AbstractAudioOutputPrivate
@@ -75,6 +77,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
         bool muted;
 };
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #endif // AUDIOOUTPUT_P_H
 // vim: sw=4 ts=4 tw=80

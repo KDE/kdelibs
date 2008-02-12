@@ -27,6 +27,8 @@
 #include "mediasource.h"
 #include <QtCore/QQueue>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 class KioFallback;
@@ -91,6 +93,8 @@ class MediaObjectPrivate : public MediaNodePrivate, private MediaNodeDestruction
         QQueue<MediaSource> sourceQueue;
 };
 }
+
+QT_END_NAMESPACE
 
 #endif // MEDIAOBJECT_P_H
 // vim: sw=4 ts=4 tw=80

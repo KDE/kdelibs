@@ -24,6 +24,8 @@
 #include "phononnamespace_p.h"
 #include "factory.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -33,7 +35,9 @@ VolumeSlider::VolumeSlider(QWidget *parent)
     k_ptr(new VolumeSliderPrivate(this))
 {
     K_D(VolumeSlider);
+#ifndef QT_NO_TOOLTIP
     setToolTip(tr("Volume: %1%").arg(100));
+#endif
     setWhatsThis(tr("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%").arg(100));
 
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
@@ -47,7 +51,9 @@ VolumeSlider::VolumeSlider(AudioOutput *output, QWidget *parent)
     k_ptr(new VolumeSliderPrivate(this))
 {
     K_D(VolumeSlider);
+#ifndef QT_NO_TOOLTIP
     setToolTip(tr("Volume: %1%").arg(100));
+#endif
     setWhatsThis(tr("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%").arg(100));
 
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
@@ -161,24 +167,34 @@ void VolumeSliderPrivate::_k_buttonClicked()
 
 void VolumeSliderPrivate::_k_mutedChanged(bool muted)
 {
+#ifndef QT_NO_TOOLTIP
     Q_Q(VolumeSlider);
+#endif
     if (muted) {
+#ifndef QT_NO_TOOLTIP
         q->setToolTip(VolumeSlider::tr("Muted"));
+#endif
         muteButton.setIcon(mutedIcon);
     } else {
+#ifndef QT_NO_TOOLTIP
         q->setToolTip(VolumeSlider::tr("Volume: %1%").arg(static_cast<int>(output->volume() * 100.0)));
+#endif
         muteButton.setIcon(volumeIcon);
     }
 }
 
 void VolumeSliderPrivate::_k_sliderChanged(int value)
 {
+#ifndef QT_NO_TOOLTIP
     Q_Q(VolumeSlider);
+#endif
 
     if (output) {
+#ifndef QT_NO_TOOLTIP
         if (!output->isMuted()) {
            q->setToolTip(VolumeSlider::tr("Volume: %1%").arg(value));
         }
+#endif
 
         ignoreVolumeChange = true;
         output->setVolume((static_cast<qreal>(value)) * 0.01);
@@ -227,6 +243,8 @@ void VolumeSlider::setSingleStep(int milliseconds)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_volumeslider.cpp"
 

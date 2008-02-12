@@ -23,6 +23,8 @@
 #include <QtCore/QDebug>
 #include "phonon_export.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
     struct GlobalData
@@ -34,6 +36,8 @@ namespace Phonon
         static GlobalData *instance();
     };
 }
+
+QT_END_NAMESPACE
 
 #if defined(QT_NO_DEBUG)
 #define pDebug if (false) qDebug

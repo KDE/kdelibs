@@ -29,6 +29,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtCore/QTimer>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -70,5 +72,6 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 
 } // namespace Phonon
 
+QT_END_NAMESPACE
 #endif // VIDEOWIDGET_P_H
 // vim: sw=4 ts=4 tw=80

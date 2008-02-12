@@ -32,6 +32,8 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QComboBox>
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -82,7 +84,9 @@ void EffectWidgetPrivate::autogenerateUi()
         QLabel *label = new QLabel(q);
         pLayout->addWidget(label);
         label->setText(para.name());
+#ifndef QT_NO_TOOLTIP
         label->setToolTip(para.description());
+#endif
 
         QWidget *control;
         if (para.type() == QVariant::String) {
@@ -141,7 +145,9 @@ void EffectWidgetPrivate::autogenerateUi()
             QObject::connect(sb, SIGNAL(valueChanged(double)), q,
                     SLOT(_k_setDoubleParameter(double)));
         }
+#ifndef QT_NO_TOOLTIP
         control->setToolTip(para.description());
+#endif
         label->setBuddy(control);
         pLayout->addWidget(control);
         parameterForObject.insert(control, para);
@@ -181,6 +187,8 @@ void EffectWidgetPrivate::_k_setStringParameter(const QString &value)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_effectwidget.cpp"
 

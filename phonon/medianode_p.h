@@ -26,6 +26,8 @@ Boston, MA 02110-1301, USA.
 #include "path.h"
 #include "phonon_export.h"
 
+QT_BEGIN_NAMESPACE
+
 class QObject;
 
 namespace Phonon
@@ -135,5 +137,6 @@ namespace Phonon
 
 } // namespace Phonon
 
+QT_END_NAMESPACE
 
 #endif // PHONON_MEDIANODE_P_H

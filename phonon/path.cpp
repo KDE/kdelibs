@@ -25,6 +25,8 @@
 #include "medianode.h"
 #include "medianode_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -409,3 +411,5 @@ bool Path::operator!=(const Path &other) const
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE

@@ -20,6 +20,8 @@
 #include "iodevicestream.h"
 #include "iodevicestream_p.h"
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -58,6 +60,8 @@ void IODeviceStream::seekStream(qint64 offset)
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_iodevicestream.cpp"
 

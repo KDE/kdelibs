@@ -31,6 +31,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
 
+QT_BEGIN_NAMESPACE
+
 PHONON_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 
 template<class T>
@@ -152,6 +154,8 @@ QList<EffectDescription> BackendCapabilities::availableAudioEffects()
 }
 
 } // namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_backendcapabilities.cpp"
 #include "moc_backendcapabilities_p.cpp"

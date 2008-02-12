@@ -39,6 +39,8 @@
 #include <QtDBus/QtDBus>
 #endif
 
+QT_BEGIN_NAMESPACE
+
 namespace Phonon
 {
 
@@ -344,6 +346,8 @@ QObject *Factory::registerQObject(QObject *o)
 }
 
 } //namespace Phonon
+
+QT_END_NAMESPACE
 
 #include "moc_factory.cpp"
 #include "moc_factory_p.cpp"
