@@ -31,6 +31,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <sys/types.h>
+#include <dirent.h>
 
 class KDirModelNode;
 class KDirModelDirNode;
@@ -480,8 +481,26 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 if (count == ChildCountUnknown && item.isReadable()) {
                     const QString path = item.localPath();
                     if (!path.isEmpty()) {
+#if 0 // slow
                         QDir dir(path);
                         count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
+#else
+                        DIR* dir = ::opendir(QFile::encodeName(path));
+                        if (dir) {
+                            count = 0;
+                            struct dirent *dirEntry = 0;
+                            while ((dirEntry = ::readdir(dir))) {
+                                if (dirEntry->d_name[0] == '.') {
+                                    if (dirEntry->d_name[1] == '\0') // skip "."
+                                        continue;
+                                    if (dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0') // skip ".."
+                                        continue;
+                                }
+                                ++count;
+                            }
+                            ::closedir(dir);
+                        }
+#endif
                         //kDebug(7008) << "child count for " << path << ":" << count;
                         dirNode->setChildCount(count);
                     }
