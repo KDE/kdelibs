@@ -203,6 +203,7 @@ public:
     // lazy loading: initIconThemes() is only needed when the "links" list is needed
     // mIconThemeInited is used inside initIconThemes() to init only once
     bool mIconThemeInited :1;
+    bool lastWasUnknown :1; // last loaded image was the unknown image
     QString appname;
 
     KIconLoader *q;
@@ -920,12 +921,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
         pix = QPixmap::fromImage(img);
         d->drawOverlays(this, KIconLoader::Desktop, state, pix, overlays);
-#ifndef NDEBUG
-        // do not insert 'unknown' icons into cache in debug mode;
-        // thus warnings are displayed every time a broken icon has been requested
         if (!unknownIcon)
-#endif
-        d->mIconCache->insert(key, pix, path);
+            d->mIconCache->insert(key, pix, path);
         return pix;
     }
 
@@ -988,7 +985,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (d->mIconCache->find(key, pix, path_store)) {
         //kDebug() << "KIL: " << "found icon from KIC";
         return pix;
-    } else if (!d->initIconThemes()) {
+    }
+    if (!d->initIconThemes()) {
         return pix; // null pixmap
     }
 
@@ -996,10 +994,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     int iconType;
     int iconThreshold;
 
-    if ( ( path_store != 0L ) ||
-         noEffectKey != d->lastImageKey )
+    if ( ( path_store != 0 ) ||
+         ( noEffectKey != d->lastImageKey ) ||
+         ( d->lastWasUnknown && canReturnNull ) )
     {
-        // No? load it.
+        // Not in cache and not the same as the last requested icon -> load it.
         K3Icon icon;
         if (absolutePath && !favIconOverlay)
         {
@@ -1018,9 +1017,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                 if (!name.isEmpty()) {
                     pix = loadIcon(name, KIconLoader::User, size, state, overlays, path_store, true);
                 }
-                if (!pix.isNull() || canReturnNull) {
+                if (!pix.isNull()) {
                     d->mIconCache->insert(key, pix, path);
                     return pix;
+                }
+                if (canReturnNull) {
+                    return pix; // null pixmap
                 }
 
                 kWarning(264) << "No such icon" << _name;
@@ -1036,10 +1038,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
             }
         }
 
-        if (path_store != 0L)
+        if (path_store != 0)
             *path_store = icon.path;
-        //if (inCache)
-        //    return pix;
 
         // Use the extension as the format. Works for XPM and PNG, but not for SVG
         QString ext = icon.path.right(3).toUpper();
@@ -1088,12 +1088,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         d->lastImageKey = noEffectKey;
         d->lastIconType = iconType;
         d->lastIconThreshold = iconThreshold;
+        d->lastWasUnknown = unknownIcon;
     }
     else
     {
         img = new QImage( d->lastImage.copy() );
         iconType = d->lastIconType;
         iconThreshold = d->lastIconThreshold;
+        unknownIcon = d->lastWasUnknown;
     }
 
     // Scale the icon and apply effects if necessary
@@ -1162,12 +1164,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     delete img;
 
-#ifndef NDEBUG
     if (unknownIcon)
     {
         addToCache = false;
     }
-#endif
     if (addToCache)
     {
         d->mIconCache->insert(key, pix, path);
