@@ -18,6 +18,7 @@
 */
 
 #include "kmessagebox.h"
+#include "kmessagebox_p.h"
 
 #include <QtCore/QPointer>
 #include <QtGui/QCheckBox>
@@ -85,7 +86,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 
     switch (icon) {
     case QMessageBox::NoIcon:
-        return QPixmap();
+        return QIcon();
         break;
     case QMessageBox::Information:
         icon_name = "dialog-information";
@@ -100,7 +101,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KIconLoader::global()->loadIcon(icon_name, KIconLoader::NoGroup, KIconLoader::SizeLarge, KIconLoader::DefaultState, QStringList(), 0, true);
+   QIcon ret = KIcon(icon_name);
 
    if (ret.isNull()) {
        return QMessageBox::standardIcon(icon);
@@ -157,30 +158,44 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    QWidget *mainWidget = new QWidget(dialog);
-    QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget);
+//   QString styleSheet = QString("KDialog {"
+// //                        "padding: 10px;"
+//                        "background-image: url(%1);"
+//                        "background-repeat: no-repeat;"
+//                        "background-position: right;"
+//                        "}").arg("/home/kde4/warning-bg.png");
+//   dialog->setStyleSheet(styleSheet);
+
+// dialog->setStyleSheet("KDialog { background-image: url(/home/kde4/warning-bg.png); }");
+    QWidget *mainWidget = new QWidget(/*icon, !strlist.isEmpty(), */dialog);
+    QHBoxLayout *mainLayout = new QHBoxLayout(mainWidget);
     mainLayout->setSpacing(KDialog::spacingHint() * 2);
     mainLayout->setMargin(0);
 
-    QHBoxLayout *hLayout = new QHBoxLayout();
-    hLayout->setMargin(0);
-    hLayout->setSpacing(KDialog::spacingHint());
-    mainLayout->addLayout(hLayout);
-    mainLayout->addStretch();
-
+    QVBoxLayout *iconLayout = new QVBoxLayout();
+    iconLayout->setMargin(0);
+    iconLayout->setSpacing(KDialog::spacingHint());
+    mainLayout->addLayout(iconLayout);
+//     mainLayout->addStretch();
+    iconLayout->addStretch(1);
     QLabel *iconLabel = new QLabel(mainWidget);
 
     if (!icon.isNull()) {
-       int size = IconSize(KIconLoader::Dialog);
-       iconLabel->setPixmap(icon.pixmap(size, size));
+//         int size = IconSize(KIconLoader::Dialog);
+        iconLabel->setPixmap(icon.pixmap(64));
     }
 
-    hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
-    hLayout->addSpacing(KDialog::spacingHint());
+    iconLayout->addWidget(iconLabel);
+    iconLayout->addStretch(3);
+//     iconLayout->addSpacing(KDialog::spacingHint());
+
+    QVBoxLayout *contentLayout = new QVBoxLayout();
+    mainLayout->addLayout(contentLayout);
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
     messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
     messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+//    messageLabel->setAlignment(Qt::AlignJustify | Qt::AlignVCenter);
 
     QRect desktop = KGlobalSettings::desktopGeometry(dialog);
     if (desktop.width() / 3 < messageLabel->fontMetrics().width(text)) {
@@ -188,29 +203,33 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         messageLabel->setWordWrap(true);
     }
 
+//     dialog->setMinimumWidth(desktop.width() / 4);
+
     QScrollArea* messageScrollArea = new QScrollArea(mainWidget);
     messageScrollArea->setWidget(messageLabel);
     messageScrollArea->setFrameShape(QFrame::NoFrame);
     messageScrollArea->setWidgetResizable(true);
     messageScrollArea->setStyleSheet("QAbstractScrollArea { background-color: none; }");
 
-    hLayout->addWidget(messageScrollArea);
+    contentLayout->addWidget(messageScrollArea);
 
     QListWidget *listWidget = 0;
     if (!strlist.isEmpty()) {
         // enable automatic wrapping since the listwidget has already a good initial width
         messageLabel->setWordWrap(true);
         listWidget = new QListWidget(mainWidget);
-        mainLayout->addWidget(listWidget);
+        contentLayout->addWidget(listWidget);
         listWidget->addItems(strlist);
         listWidget->setSelectionMode(QListWidget::NoSelection);
-        mainLayout->setStretchFactor(listWidget, 1);
+        contentLayout->setStretchFactor(listWidget, 1);
     }
+
+//     mainWidget->setIconSize((messageLabel->sizeHint().height() >=  128) ? 128 : 64);
 
     QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty()) {
         checkbox = new QCheckBox(ask, mainWidget);
-        mainLayout->addWidget(checkbox);
+        contentLayout->addWidget(checkbox);
         if (checkboxReturn) {
             checkbox->setChecked(*checkboxReturn);
         }
@@ -236,7 +255,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
 
     dialog->setMainWidget(mainWidget);
-    dialog->showButtonSeparator(false);
+    dialog->showButtonSeparator(true);
     if (!listWidget) {
         dialog->layout()->setSizeConstraint(QLayout::SetFixedSize);
     }

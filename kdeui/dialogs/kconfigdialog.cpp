@@ -63,7 +63,7 @@ QHash<QString,KConfigDialog *> KConfigDialog::KConfigDialogPrivate::openDialogs;
 
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config ) :
-    KPageDialog( parent, Qt::MSWindowsFixedSizeDialogHint ),
+    KPageDialog( parent ),
     d(new KConfigDialogPrivate(this))
 {
   setCaption( i18n("Configure") );
