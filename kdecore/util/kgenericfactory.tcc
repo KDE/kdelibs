@@ -130,13 +130,13 @@ namespace KDEPrivate
             const QMetaObject* metaObject = &Product::staticMetaObject;
             while ( metaObject )
             {
-                kDebug(150) << "className=" << className << " metaObject->className()=" << metaObject->className() << endl;
+                //kDebug(150) << "className=" << className << " metaObject->className()=" << metaObject->className() << endl;
                 if ( !qstrcmp( className, metaObject->className() ) )
                     return create( parentWidget,
                                    parent, args, Type2Type<BaseType>() );
                 metaObject = metaObject->superClass();
             }
-            kDebug(150) << "error, returning 0" << endl;
+            //kDebug(150) << "error, returning 0" << endl;
             return 0;
         }
     private:
@@ -147,7 +147,7 @@ namespace KDEPrivate
                                        QObject *parent,
                                        const QStringList &args, Type2Type<KParts::Part> )
         {
-            kDebug(150) << "create - 1" << endl;
+            //kDebug(150) << "create - 1" << endl;
             return new Product( parentWidget, parent, args );
         }
 
@@ -155,7 +155,7 @@ namespace KDEPrivate
                                        QObject *parent,
                                        const QStringList &args, Type2Type<QWidget> )
         {
-            kDebug(150) << "create - 2" << endl;
+            //kDebug(150) << "create - 2" << endl;
             WidgetParentType *p = dynamic_cast<WidgetParentType *>( parent );
             if ( parent && !p )
                 return 0;
@@ -166,7 +166,7 @@ namespace KDEPrivate
                                        QObject *parent,
                                        const QStringList &args, Type2Type<QObject> )
         {
-            kDebug(150) << "create - 3" << endl;
+            //kDebug(150) << "create - 3" << endl;
             ParentType *p = dynamic_cast<ParentType *>( parent );
             if ( parent && !p )
                 return 0;
