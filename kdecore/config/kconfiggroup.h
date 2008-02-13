@@ -380,7 +380,6 @@ public:
      *
      * @param key The key to write
      * @param value The list to write
-     * @param sep  The list separator (default is ",").
      * @param pFlags       The flags to use when writing this entry.
      *
      * @see  writeEntry()
@@ -396,7 +395,6 @@ public:
      *
      * @param key The key to write
      * @param value The list to write
-     * @param sep  The list separator (default is ",").
      * @param pFlags       The flags to use when writing this entry.
      *
      * @see  writeEntry()
