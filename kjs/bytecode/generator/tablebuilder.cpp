@@ -23,6 +23,8 @@
 #include "tablebuilder.h"
 #include <QTextStream>
 #include <QDebug>
+#include <stdlib.h>
+#include <iostream>
 
 class Enum {
 public:
@@ -112,24 +114,36 @@ void TableBuilder::generateCode()
     opNamesEnum.printDeclaration(hStream);
     opNamesEnum.printDefinition (cppStream);
 
+    // Enumerate all the variants..
+    foreach (const Operation& op, operations) {
+        bool needsPadVariant = false;
+        foreach (const Type& type, op.parameters)
+            needsPadVariant = needsPadVariant | type.align8;
+        QList<bool> parIm;
+        expandOperationVariants(op, needsPadVariant, parIm);
+    }
+
+    // Now we have all our bytecode names... Whee.
+    Enum opByteCodesEnum("OpByteCode", "OpByteCode_", variantNames);
+    opByteCodesEnum.printDeclaration(hStream);
+    opByteCodesEnum.printDefinition (cppStream);
+
+    // We can now emit the actual tables..
+/*
     foreach(const QString& op = operationNames)
         processOperation(op);
 
     - dump enum for opcodes. etc.
 
     where should machine.cpp stuff go?
+*/
 }
 
-processOperation:
-
-- enumerate all the signatures, generate immediate/non-immediate, etc. variants, for each argument.
-- compute which ones need a padded argument, bind the impl name.
-
-- hmm, handleImpl should probably just collect both signatures, and create uniform info...
-
--> then processOperation should build some sort of a versions array, based on padding, etc.
-
-
+void TableBuilder::issueError(const QString& err)
+{
+    std::cerr << err.toLocal8Bit().data() << "\n";
+    exit(-1);
+}
 
 void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last)
 {
@@ -175,7 +189,7 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     t.im     = im;
     t.reg    = rg;
     t.align8 = al8;
-    types << t;
+    types[type] = t;
 }
 
 void TableBuilder::handleConversion(const QString& name, bool immediate, bool checked,
@@ -196,20 +210,80 @@ void TableBuilder::handleConversion(const QString& name, bool immediate, bool ch
 void TableBuilder::handleOperation(const QString& name)
 {
     operationNames << name;
-    Operation op;
-    op.name = name;
-    operations << op;
+}
+
+QList<Type> TableBuilder::resolveSignature(const QStringList& in)
+{
+    QList<Type> sig;
+    foreach (const QString& type, in) {
+        if (types.contains(type))
+            sig.append(types[type]);
+        else
+            issueError("Unknown type:" + type);
+    }
+    return sig;
 }
 
 void TableBuilder::handleImpl(const QString& fnName, QStringList sig)
 {
-    Operation& op = operations.last();
-
+    Operation op;
+    op.name        = operationNames.last();
+    op.implementAs = fnName;
+    op.parameters  = resolveSignature(sig);
+    op.implArgs    = op.parameters;
+    operations << op;
+    implementations[fnName] = op;
 }
 
 void TableBuilder::handleTile(const QString& fnName, QStringList sig)
-{}
+{
+    if (!implementations.contains(fnName))
+        issueError("Unknown implementation name " + fnName + " in a tile definition");
+    const Operation& impl = implementations[fnName];
 
+    Operation op;
+    op.name        = operationNames.last();
+    op.implementAs = fnName;
+    op.parameters  = resolveSignature(sig);
+    op.implArgs    = impl.parameters;
+}
+
+void TableBuilder::expandOperationVariants(const Operation& op, bool needsPad, QList<bool>& paramIsIm)
+{
+    int pos = paramIsIm.size();
+    if (pos < op.parameters.size()) {
+        if (op.parameters[pos].im) {
+            paramIsIm.append(true);
+            expandOperationVariants(op, needsPad, paramIsIm);
+            paramIsIm.removeLast();
+        }
+
+        if (op.parameters[pos].reg) {
+            paramIsIm.append(false);
+            expandOperationVariants(op, needsPad, paramIsIm);
+            paramIsIm.removeLast();
+        }
+        return;
+    }
+
+    // Have a full variant... Build a signature.
+    QString sig = op.name;
+    for (int p = 0; p < paramIsIm.size(); ++p) {
+        sig += "_";
+        sig += paramIsIm[p] ? "I" : "R";
+        sig += op.parameters[p].name;
+    }
+
+    OperationVariant var;
+    var.sig = sig;
+    var.op  = op;
+    var.paramIsIm = paramIsIm;
+    var.needsPadVariant = needsPad;
+    variants << var;
+    variantNames << sig;
+    if (needsPad)
+        variantNames << (sig + "_Pad");
+}
 
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

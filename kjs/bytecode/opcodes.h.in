@@ -10,35 +10,37 @@
 */
 
 namespace KJS {
-    @generate
 
-    struct Op {
-        OpName     baseInstr;
-        OpByteCode opCode;
-        OpType     retType;
+@generate
 
-        int numParams;
-        OpType paramTypes[3];
-        bool   immediateParams[3];
+struct Op {
+    OpName     baseInstr;
+    OpByteCode opCode;
+    OpType     retType;
 
-        // This array is used to rearrange arguments by alignment;
-        // so for example if one does an if: Addr * Addr * Value,
-        // the value will be passed in first, then the first and second
-        // arguments, so the array will have: 2, 0, 1.
-        int paramOrder[3];
+    int numParams;
+    OpType paramTypes[3];
+    bool   immediateParams[3];
 
-        // If this is true, this version of the instruction has an
-        // extra word inserted after the opcode, for alignment reasons.
-        bool padAlign;
-    };
+    // This array is used to rearrange arguments by alignment;
+    // so for example if one does an if: Addr * Addr * Value,
+    // the value will be passed in first, then the first and second
+    // arguments, so the array will have: 2, 0, 1.
+    int paramOrder[3];
 
-    // The main array of Op instances, mapped by OpByteCode
-    extern const Op opsForOpCodes[];
+    // If this is true, this version of the instruction has an
+    // extra word inserted after the opcode, for alignment reasons.
+    bool padAlign;
+};
 
-    // Lists all the specialized versions of each Op class, mapped by OpName,
-    // 0 terminated.
-    typedef const Op* OpInstanceList[];
-    extern const OpInstanceList[] opSpecializations;
+// The main array of Op instances, mapped by OpByteCode
+extern const Op opsForOpCodes[];
+
+// Lists all the specialized versions of each Op class, mapped by OpName,
+// 0 terminated.
+typedef const Op* OpInstanceList[];
+extern const OpInstanceList[] opSpecializations;
+
 };
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

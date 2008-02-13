@@ -30,11 +30,6 @@
 #include <QList>
 #include <QHash>
 
-struct Operation
-{
-    QString name;
-};
-
 struct Type
 {
     QString name;
@@ -49,6 +44,24 @@ struct ConversionInfo
     bool checked;
 };
 
+// Actually, a specialization, but who cares?
+struct Operation
+{
+    QString name;
+    QList<Type> parameters;
+
+    QString implementAs;
+    QList<Type> implArgs;
+};
+
+struct OperationVariant
+{
+    QString   sig;
+    Operation op;
+    QList<bool> paramIsIm;
+    bool        needsPadVariant;
+};
+
 class TableBuilder: public Parser
 {
 public:
@@ -56,6 +69,8 @@ public:
 
     void generateCode();
 private:
+    void issueError(const QString& err);
+
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
     virtual void handleConversion(const QString& name, bool immediate, bool checked,
                                   const QString& from, const QString& to, int cost);
@@ -65,14 +80,23 @@ private:
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
 
+    void expandOperationVariants(const Operation& op, bool needsPad, QList<bool>& paramIsIm);
+
+    // issues error if there is a problem..
+    QList<Type> resolveSignature(const QStringList& in);
+
     QTextStream* hStream;
     QTextStream* cppStream;
 
-    QList<Type> types;
-    QStringList typeNames;
+    QHash<QString, Type> types;
+    QStringList          typeNames;
 
     QStringList        operationNames;
     QList<Operation>   operations;
+    QHash<QString, Operation> implementations;
+
+    QStringList  variantNames;
+    QList<OperationVariant> variants;
 
     QStringList conversionNames;
 
