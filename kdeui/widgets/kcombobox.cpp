@@ -65,12 +65,6 @@ KComboBox::KComboBox( bool rw, QWidget *parent )
 {
     init();
     setEditable( rw );
-
-    if ( rw ) {
-        KLineEdit *edit = new KLineEdit( this );
-        edit->setClearButtonShown( true );
-        setLineEdit( edit );
-    }
 }
 
 KComboBox::~KComboBox()
@@ -363,6 +357,20 @@ void KComboBox::lineEditDeleted()
     // is it our delegate, that is destroyed?
     if ( base == delegate() )
         setDelegate( 0L );
+}
+
+void KComboBox::setEditable(bool editable)
+{
+    if (editable) {
+        // Create a KLineEdit instead of a QLineEdit
+        // Compared to QComboBox::setEditable, we might be missing the SH_ComboBox_Popup code though...
+        // If a style needs this, then we'll need to call QComboBox::setEditable and then setLineEdit again
+        KLineEdit *edit = new KLineEdit( this );
+        edit->setClearButtonShown( true );
+        setLineEdit( edit );
+    } else {
+        QComboBox::setEditable(editable);
+    }
 }
 
 #include "kcombobox.moc"

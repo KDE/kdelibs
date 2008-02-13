@@ -348,11 +348,23 @@ public:
 
     /**
      * Re-implemented for internal reasons.  API remains unaffected.
+     * Note that QComboBox::setLineEdit is not virtual in Qt4, do not
+     * use a KComboBox in a QComboBox pointer.
+     *
      * NOTE: Only editable comboboxes can have a line editor. As such
      * any attempt to assign a line-edit to a non-editable combobox will
      * simply be ignored.
      */
     virtual void setLineEdit( QLineEdit * );
+
+    /**
+     * "Re-implemented" so that setEditable(true) creates a KLineEdit
+     * instead of QLineEdit.
+     *
+     * Note that QComboBox::setEditable is not virtual, so do not
+     * use a KComboBox in a QComboBox pointer.
+     */
+    void setEditable(bool editable);
 
 Q_SIGNALS:
     /**
