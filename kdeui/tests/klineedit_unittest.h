@@ -29,6 +29,9 @@ class KLineEdit_UnitTest : public QObject
 private Q_SLOTS:
     void testReturnPressed();
     void testComboReturnPressed();
+
+private:
+    void testComboReturnPressed(bool ctorArg);
 };
 
 #endif

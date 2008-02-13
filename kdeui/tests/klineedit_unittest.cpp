@@ -39,15 +39,31 @@ void KLineEdit_UnitTest::testReturnPressed()
     QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
 }
 
-void KLineEdit_UnitTest::testComboReturnPressed()
+void KLineEdit_UnitTest::testComboReturnPressed(bool ctorArg)
 {
-    KComboBox w(true);
+    KComboBox w(ctorArg /*initial value for editable*/);
+    w.setEditable(true);
+    w.setCompletionMode( KGlobalSettings::CompletionPopup );
+    w.addItem("Hello world");
     QVERIFY(w.lineEdit());
-    w.lineEdit()->setText("Hello world");
+    QVERIFY(qobject_cast<KLineEdit*>(w.lineEdit()));
+    // KLineEdit signals
     QSignalSpy qReturnPressedSpy(w.lineEdit(), SIGNAL(returnPressed()));
     QSignalSpy kReturnPressedSpy(w.lineEdit(), SIGNAL(returnPressed(QString)));
+    // KComboBox signals
+    QSignalSpy comboReturnPressedSpy(&w, SIGNAL(returnPressed()));
+    QSignalSpy comboReturnPressedStringSpy(&w, SIGNAL(returnPressed(QString)));
     QTest::keyClick(&w, Qt::Key_Return);
     QCOMPARE(qReturnPressedSpy.count(), 1);
     QCOMPARE(kReturnPressedSpy.count(), 1);
     QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
+    QCOMPARE(comboReturnPressedSpy.count(), 1);
+    QCOMPARE(comboReturnPressedStringSpy.count(), 1);
+    QCOMPARE(comboReturnPressedStringSpy[0][0].toString(), QString("Hello world"));
+}
+
+void KLineEdit_UnitTest::testComboReturnPressed()
+{
+    testComboReturnPressed(false);
+    testComboReturnPressed(true);
 }
