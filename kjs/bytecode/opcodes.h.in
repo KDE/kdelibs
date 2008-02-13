@@ -16,7 +16,6 @@ namespace KJS {
 struct Op {
     OpName     baseInstr;
     OpByteCode opCode;
-    OpType     retType;
 
     int numParams;
     OpType paramTypes[3];
@@ -39,7 +38,7 @@ extern const Op opsForOpCodes[];
 // Lists all the specialized versions of each Op class, mapped by OpName,
 // 0 terminated.
 typedef const Op* OpInstanceList[];
-extern const OpInstanceList[] opSpecializations;
+extern const OpInstanceList* opSpecializations[];
 
 };
 

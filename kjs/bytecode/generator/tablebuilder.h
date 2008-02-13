@@ -83,7 +83,9 @@ private:
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
 
-    void expandOperationVariants(const Operation& op, bool needsPad, QList<bool>& paramIsIm);
+    void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);
+
+    void dumpOpStructForVariant(const OperationVariant& variant, bool doPad, bool needsComma);
 
     // issues error if there is a problem..
     QList<Type> resolveSignature(const QStringList& in);
@@ -101,6 +103,7 @@ private:
 
     QStringList  variantNames;
     QList<OperationVariant> variants;
+    QHash<QString, QStringList> variantNamesForOp;
 
     QStringList conversionNames;
 

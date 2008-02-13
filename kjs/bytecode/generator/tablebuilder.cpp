@@ -68,8 +68,6 @@ TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream,
 {
     // Builtin stuff...
     conversionNames << "NoConversion" << "NoOp";
-
-    variantNames << "Exit";
 }
 
 // # of bits store 'vals' values, e.g. 3 for 8, etc.
@@ -120,11 +118,8 @@ void TableBuilder::generateCode()
 
     // Enumerate all the variants..
     foreach (const Operation& op, operations) {
-        bool needsPadVariant = false;
-        foreach (const Type& type, op.parameters)
-            needsPadVariant = needsPadVariant | type.align8;
         QList<bool> parIm;
-        expandOperationVariants(op, needsPadVariant, parIm);
+        expandOperationVariants(op, parIm);
     }
 
     // Now we have all our bytecode names... Whee.
@@ -133,14 +128,14 @@ void TableBuilder::generateCode()
     opByteCodesEnum.printDefinition (cppStream);
 
     // We can now emit the actual tables..
-/*
-    foreach(const QString& op = operationNames)
-        processOperation(op);
-
-    - dump enum for opcodes. etc.
-
-    where should machine.cpp stuff go?
-*/
+    *cppStream << "const Op opsForOpCodes[] = {\n";
+    for (int c = 0; c < variants.size(); ++c) {
+        const OperationVariant& variant = variants[c];
+        if (variant.needsPadVariant)
+            dumpOpStructForVariant(variant, true, true);
+        dumpOpStructForVariant(variant, false, c != variants.size() - 1);
+    }
+    *cppStream << "};\n\n";
 }
 
 void TableBuilder::issueError(const QString& err)
@@ -257,19 +252,19 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
     operations << op;
 }
 
-void TableBuilder::expandOperationVariants(const Operation& op, bool needsPad, QList<bool>& paramIsIm)
+void TableBuilder::expandOperationVariants(const Operation& op, QList<bool>& paramIsIm)
 {
     int pos = paramIsIm.size();
     if (pos < op.parameters.size()) {
         if (op.parameters[pos].im) {
             paramIsIm.append(true);
-            expandOperationVariants(op, needsPad, paramIsIm);
+            expandOperationVariants(op, paramIsIm);
             paramIsIm.removeLast();
         }
 
         if (op.parameters[pos].reg) {
             paramIsIm.append(false);
-            expandOperationVariants(op, needsPad, paramIsIm);
+            expandOperationVariants(op, paramIsIm);
             paramIsIm.removeLast();
         }
         return;
@@ -283,15 +278,61 @@ void TableBuilder::expandOperationVariants(const Operation& op, bool needsPad, Q
         sig += op.parameters[p].name;
     }
 
+    // We may need padding if we have an immediate align8 param..
+    bool needsPad = false;
+    for (int c = 0; c < paramIsIm.size(); ++c)
+        needsPad |= (paramIsIm[c] & op.parameters[c].align8);
+
     OperationVariant var;
     var.sig = sig;
     var.op  = op;
     var.paramIsIm = paramIsIm;
     var.needsPadVariant = needsPad;
     variants << var;
-    if (needsPad) // we put the pad before, due to the fallthrough idiom..
-        variantNames << (sig + "_Pad");
+    if (needsPad) { // we put the pad before, due to the fallthrough idiom..
+        QString pSig = sig + "_Pad";
+        variantNames << pSig;
+        variantNamesForOp[op.name] << pSig;
+    }
     variantNames << sig;
+    variantNamesForOp[op.name] << sig;
+}
+
+void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool doPad, bool needsComma)
+{
+    *cppStream << "    {";
+    *cppStream << "Op_" << variant.op.name << ", ";     // baseInstr..
+    *cppStream << "OpByteCode_" << (doPad ? variant.sig + "_Pad" : variant.sig) << ", "; // byteCode op
+    int numParams = variant.op.parameters.size();
+    *cppStream << numParams << ", "; // # of params
+
+    // Param types.
+    *cppStream << "{";
+    for (int p = 0; p < numParams; ++p) {
+        *cppStream << "OpType_" << variant.op.parameters[p].name;
+        if (p != numParams - 1)
+            *cppStream << ", ";
+    }
+    *cppStream << "}, ";
+
+    // Immediate flag..
+    *cppStream << "{";
+    for (int p = 0; p < numParams; ++p) {
+        *cppStream << (variant.paramIsIm[p] ? "true" : "false");
+        if (p != numParams - 1)
+            *cppStream << ", ";
+    }
+    *cppStream << "}, ";
+
+    // Shuffle table..
+
+    // Whether this is a padded version..
+    *cppStream << (doPad ? "true" : "false");
+
+    if (needsComma)
+        *cppStream << "},\n";
+    else
+        *cppStream << "}\n";
 }
 
 
