@@ -35,12 +35,16 @@ public:
     enum TokenType {
         Ident,
         Number,
+        Code,
         LBrace, // {
         RBrace, // }
+        LParen, // (
+        RParen, // )
         Colon,  // :
         SemiColon, // ;
         Star,      // *
         Arrow,     // =>
+        Comma,     // ,
         Error,
         EndOfFile,
         // Keywords:
@@ -72,6 +76,10 @@ public:
                 return "'{'";
             case RBrace:
                 return "'}'";
+            case LParen:
+                return "'('";
+            case RParen:
+                return "')'";
             case Colon:
                 return "':'";
             case SemiColon:
@@ -80,10 +88,14 @@ public:
                 return "'*'";
             case Arrow:
                 return "'=>'";
+            case Comma:
+                return "','";
             case EndOfFile:
                 return "<End of File>";
             case Error:
                 return "<Lex Error:" + value + ">";
+            case Code:
+                return "[[" + value + "]]";
             case Ident:
             case Number:
                 return value;
@@ -104,6 +116,8 @@ public:
     Lexer(QTextStream* _stream);
 
     Token nextToken();
+
+    int lineNumber() const { return lineNum; }
 private:
     friend class Token;
     Token lexComment();
@@ -115,9 +129,10 @@ private:
 
     bool  charLoaded;
     QChar nextChar;
+    int   lineNum;
 
     QHash<QString, TokenType> keywords;
-    };
+};
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -42,17 +42,18 @@ private:
     virtual void handleConversion(const QString& name, bool immediate, bool checked,
                                   const QString& from, const QString& to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
-    virtual void handleImpl(const QString& fnName, QStringList sig) = 0;
+    virtual void handleImpl(const QString& fnName, const QString& code,
+                            QStringList sig, QStringList paramNames) = 0;
     virtual void handleTile(const QString& fnName, QStringList sig) = 0;
 
     QString matchIdentifier();
+    QString matchCode();
     int     matchNumber();
     void    match(Lexer::TokenType t);
 
     void parseType();
     void parseConversion();
     void parseOperation();
-    QStringList parseSignature();
     void parseImpl();
     void parseTile();
 

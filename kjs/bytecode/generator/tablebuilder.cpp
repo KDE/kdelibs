@@ -62,10 +62,14 @@ private:
     QStringList values;
 };
 
-TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream):
-    Parser(inStream), hStream(hStream), cppStream(cppStream)
+TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream,
+                           QTextStream* cppStream, QTextStream* mStream):
+    Parser(inStream), hStream(hStream), cppStream(cppStream), mStream(mStream)
 {
+    // Builtin stuff...
     conversionNames << "NoConversion" << "NoOp";
+
+    variantNames << "Exit";
 }
 
 // # of bits store 'vals' values, e.g. 3 for 8, etc.
@@ -224,15 +228,18 @@ QList<Type> TableBuilder::resolveSignature(const QStringList& in)
     return sig;
 }
 
-void TableBuilder::handleImpl(const QString& fnName, QStringList sig)
+void TableBuilder::handleImpl(const QString& fnName, const QString& code,
+                              QStringList sig, QStringList paramNames)
 {
     Operation op;
-    op.name        = operationNames.last();
-    op.implementAs = fnName;
-    op.parameters  = resolveSignature(sig);
-    op.implArgs    = op.parameters;
+    op.name           = operationNames.last();
+    op.implementAs    = code;
+    op.parameters     = resolveSignature(sig);
+    op.implParams     = op.parameters;
+    op.implParamNames = paramNames;
     operations << op;
-    implementations[fnName] = op;
+    if (!fnName.isEmpty())
+        implementations[fnName] = op;
 }
 
 void TableBuilder::handleTile(const QString& fnName, QStringList sig)
@@ -243,9 +250,11 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
 
     Operation op;
     op.name        = operationNames.last();
-    op.implementAs = fnName;
+    op.implementAs = impl.implementAs;
     op.parameters  = resolveSignature(sig);
-    op.implArgs    = impl.parameters;
+    op.implParams     = impl.implParams;
+    op.implParamNames = impl.implParamNames;
+    operations << op;
 }
 
 void TableBuilder::expandOperationVariants(const Operation& op, bool needsPad, QList<bool>& paramIsIm)
@@ -280,9 +289,9 @@ void TableBuilder::expandOperationVariants(const Operation& op, bool needsPad, Q
     var.paramIsIm = paramIsIm;
     var.needsPadVariant = needsPad;
     variants << var;
-    variantNames << sig;
-    if (needsPad)
+    if (needsPad) // we put the pad before, due to the fallthrough idiom..
         variantNames << (sig + "_Pad");
+    variantNames << sig;
 }
 
 

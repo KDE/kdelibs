@@ -64,21 +64,25 @@ int main(int argc, char* argv[])
     QTextStream* def   = makeStream("codes.def",      QIODevice::ReadOnly);
     QTextStream* hIn   = makeStream("opcodes.h.in",   QIODevice::ReadOnly);
     QTextStream* cppIn = makeStream("opcodes.cpp.in", QIODevice::ReadOnly);
+    QTextStream* mchIn = makeStream("machine.cpp.in", QIODevice::ReadOnly);
 
     QTextStream* hOut   = makeStream("opcodes.h",  QIODevice::WriteOnly);
     QTextStream* cppOut = makeStream("opcodes.cpp", QIODevice::WriteOnly);
+    QTextStream* mchOut = makeStream("machine.cpp", QIODevice::WriteOnly);
 
-    if (!def || !hIn || !cppIn || !hOut || !cppOut)
+    if (!def || !hIn || !cppIn || !mchIn || !hOut || !cppOut || !mchOut)
         return -1;
 
     copyUntilGen(hIn, hOut);
     copyUntilGen(cppIn, cppOut);
+    copyUntilGen(mchIn, mchOut);
 
-    TableBuilder build(def, hOut, cppOut);
+    TableBuilder build(def, hOut, cppOut, mchOut);
     build.generateCode();
 
     copyUntilEnd(hIn, hOut);
     copyUntilEnd(cppIn, cppOut);
+    copyUntilEnd(mchIn, cppOut);
 
     delete hOut;
     delete cppOut;

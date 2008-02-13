@@ -48,10 +48,11 @@ struct ConversionInfo
 struct Operation
 {
     QString name;
-    QList<Type> parameters;
+    QList<Type>  parameters;
 
     QString implementAs;
-    QList<Type> implArgs;
+    QList<Type> implParams;
+    QStringList implParamNames;
 };
 
 struct OperationVariant
@@ -65,7 +66,8 @@ struct OperationVariant
 class TableBuilder: public Parser
 {
 public:
-    TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream);
+    TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream,
+                 QTextStream* mStream);
 
     void generateCode();
 private:
@@ -75,7 +77,8 @@ private:
     virtual void handleConversion(const QString& name, bool immediate, bool checked,
                                   const QString& from, const QString& to, int cost);
     virtual void handleOperation(const QString& name);
-    virtual void handleImpl(const QString& fnName, QStringList sig);
+    virtual void handleImpl(const QString& fnName, const QString& code,
+                            QStringList sig, QStringList paramNames);
     virtual void handleTile(const QString& fnName, QStringList sig);
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
@@ -87,6 +90,7 @@ private:
 
     QTextStream* hStream;
     QTextStream* cppStream;
+    QTextStream* mStream;
 
     QHash<QString, Type> types;
     QStringList          typeNames;

@@ -1,5 +1,3 @@
-// ### I should put in 8-align annotations. This will also permit 'double'
-type void: void;
 type bool: bool register immediate;
 type uint32: uint32_t register immediate;
 type value: JSValue* register align8; // ### I thought up of a usecase for immediate vals sometime last
@@ -41,24 +39,36 @@ conversion immediate imInt_imBool : uint32 => bool costs 0;
 conversion register rInt_rBool:  uint32 => bool  costs 0; // We permit bools to be any non-zero number when in register.
 conversion register rInt_rValue: uint32 => value costs 20; // Cheap if it fits, if it doesn't, though, it calls jsNumber.
 
-
-
 /**
  Control flow stuff
 */
+operation Exit {
+    impl() [[
+        return Completion(Normal);
+    ]]
+}
 
 operation Jump {
-    impl executeJump : addr;
+    impl(addr dest) [[
+        pc = dest;
+    ]]
 }
 
 operation IfJump {
-    impl executeIfJump : bool * addr;
-    tile value * addr as executeIfJump;
+    impl executeIfJump(bool condResult, addr dest) [[
+        if (condResult)
+            pc = dest;
+    ]]
+
+    tile (value, addr) as executeIfJump;
 }
 
 operation IfElseJump {
-    impl executeIfElseJump : bool * addr * addr;
-    tile value * addr * addr as executeIfElseJump;
+    impl executeIfElseJump(bool condResult, addr goTrue, addr goFalse) [[
+        pc = condResult ? goTrue : goFalse;
+    ]]
+
+    tile (value, addr, addr) as executeIfElseJump;
 }
 
 // for, while, do ... while, etc., can all be easily expressed as above,
@@ -67,15 +77,31 @@ operation IfElseJump {
 // ### switch is nasty. Probably needs some opaque pointer type.
 
 operation PopCatch {
-    impl popCatch: void;
+    impl() [[
+        exec->popCatchHandler();
+    ]]
 }
 
 operation PushCatch {
-    impl pushCache: addr;
+    impl(addr handler) [[
+        exec->pushCatchHandler(handler);
+    ]]
 }
 
 operation Throw {
-    impl executeThrow: value;
+    impl(value exception) [[
+        exec->setException(exception);
+        if (exec->hasCatchHandler())
+            pc = exec->takeCatchHandler();
+        else
+            return Completion(Exception, exception);
+    ]]
+}
+
+operation Return {
+    impl(value retVal) [[
+        return Completion(Normal, retVal);
+    ]]
 }
 
 // Variable stuff... Locals access can just use register addressing,
@@ -83,44 +109,37 @@ operation Throw {
 
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl scopeLookup: ident;
+    impl scopeLookup(ident varName) [[
+        //### TODO
+    ]]
 }
 
 operation SymPut {
-    impl symPut: value * ident * value; // scope.ident = val
+    impl symPut(value scope, ident varName, value val) [[
+        ASSERT(scope->isObject());
+        static_cast<JSObject*>(scope)->put(varName, val);
+    ]]
 }
 
 operation SymGet {
-    impl symGet: reg * value * ident; // reg = val.ident
+    impl symGet(reg destReg, value scope, ident varName) [[
+        ASSERT(scope->isObject());
+        //### TODO
+        // regs[destReg] = static_cast<JSObject*>(scope)->get(varName); or such
+    ]]
 }
 
 // Specialization for global object...
 operation GlobalSymPut {
-    impl globalPut: ident * value;
+    impl globalSymPut(ident varName, value val) [[
+        //### TODO
+    ]]
 }
 
 operation GlobalSymGet {
-    impl globalGet: reg * value;
+    impl globalGet(reg dstReg, ident varName) [[
+        //### TODO
+    ]]
 }
 
-/**
- An alternative approach for this may be to provide a globalScope pseudo-type, which would something like this:
-
- type globalScope: bool immediate; // any small type will do..
- operation SymPut {
-    impl symPut: value * ident * value;
-    tile globalScope * ident * value as symPut;
- }
-
- conversion immediate getGlobalScope: globalScope => value costs 1000; // so we don't pick the overload over perfect match
-
- And then have a:
- JSValue* convertGetGlobalScope(bool) {
-    return exec->dynamicGlobalObject();
- }
-
- or whatever it'll be called.
-
-
-
-*/
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

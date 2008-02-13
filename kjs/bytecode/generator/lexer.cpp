@@ -29,7 +29,7 @@
 //### FIXME:appropriate constant from private use or such
 const unsigned short EndOfFileChar = 0x21AA; //injection or surjection arrow? I keep forgetting
 
-Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false)
+Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false), lineNum(0)
 {
     keywords["type"]        = Type;
     keywords["conversion" ] = Conversion;
@@ -42,6 +42,7 @@ Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false)
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
     keywords["align8"]      = Align8;
+    lineNum = 0;
 }
 
 Lexer::Token Lexer::lexComment()
@@ -87,12 +88,19 @@ Lexer::Token Lexer::nextToken()
         return Token(LBrace);
     else if (begin == '}')
         return Token(RBrace);
+    if (begin == '(')
+        return Token(LParen);
+    else if (begin == ')')
+        return Token(RParen);
     else if (begin == ':')
         return Token(Colon);
     else if (begin == ';')
         return Token(SemiColon);
     else if (begin == '*')
         return Token(Star);
+    else if (begin == ',')
+        return Token(Comma);
+
 
     // =>
     if (begin == '=') {
@@ -107,6 +115,7 @@ Lexer::Token Lexer::nextToken()
     if (begin == '/')
         return lexComment();
 
+    // Numbers
     if (begin >= '0' && begin <= '9') {
         QString text = begin;
         while (peekNext().isNumber())
@@ -114,6 +123,25 @@ Lexer::Token Lexer::nextToken()
         return Token(Number, text);
     }
 
+    // Code..
+    if (begin == '[') {
+        QChar next = getNext();
+        if (next != '[')
+            return Token(Error, QLatin1String("[ continued with:") + next);
+        QString text;
+        while(true) {
+            QChar letter = getNext();
+            if (letter == EndOfFileChar)
+                return Token(Error, QLatin1String("Unterminated code fragment"));
+            if (letter == ']' && peekNext() == ']') {
+                getNext(); //Eat 2nd ']'
+                return Token(Code, text);
+            }
+            text += letter;
+        }
+    }
+
+    // Identifiers
     if (begin.isLetter()) {
         QString text = begin;
         while (peekNext().isLetterOrNumber() || peekNext() == '_')
@@ -137,6 +165,8 @@ QChar Lexer::peekNext()
         return EndOfFileChar;
 
     *stream >> nextChar;
+    if (nextChar == '\n')
+        ++lineNum;
     charLoaded = true;
     return nextChar;
 }
@@ -157,6 +187,9 @@ QChar Lexer::getNext()
 
     QChar in;
     *stream >> in;
+    if (in == '\n')
+        ++lineNum;
+
     return in;
 }
 

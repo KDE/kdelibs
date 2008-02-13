@@ -1,0 +1,18 @@
+
+
+
+
+
+runBlock(...) {
+    something pc = 0; //Use local...
+    exec->setPc(&pc);
+
+    while (true) {
+        switch(((Cell*)&block[pad])->u.instr) {
+        case Exit:
+            return;
+        @generate;
+        }
+    }
+
+}

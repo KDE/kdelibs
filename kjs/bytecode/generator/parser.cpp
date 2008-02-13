@@ -45,6 +45,15 @@ QString Parser::matchIdentifier()
     return "";
 }
 
+QString Parser::matchCode()
+{
+    Lexer::Token tok = getNext();
+    if (tok.type == Lexer::Code)
+        return tok.value;
+    issueError("Expected code, got:" + tok.toString(lexer));
+    return "";
+}
+
 int Parser::matchNumber()
 {
     Lexer::Token tok = getNext();
@@ -63,7 +72,7 @@ void Parser::match(Lexer::TokenType t)
 
 void Parser::issueError(const QString& msg)
 {
-    qWarning() << "Parse error:" << msg;
+    qWarning() << "Parse error:" << msg << "at about line:" << lexer->lineNumber();
     exit(-1);
 }
 
@@ -146,20 +155,6 @@ void Parser::parseType()
     handleType(name, nativeName, im, rg, al8);
 }
 
-QStringList Parser::parseSignature()
-{
-    QStringList sig;
-
-    // identifier ( * identifier)
-    sig << matchIdentifier();
-    while (peekNext().type == Lexer::Star) {
-        getNext();
-        sig << matchIdentifier();
-    }
-
-    return sig;
-}
-
 void Parser::parseConversion()
 {
     // conversion [register | immediate] checked? identifier:name identifier:from => identifier: to costs number ;
@@ -216,14 +211,34 @@ void Parser::parseOperation()
 
 void Parser::parseImpl()
 {
-    // impl identifier : signature;
-    match(Lexer::Impl);
+    // impl identifier? ( paramList? ) code
+    // paramList := ident ident
+    // paramList := ident ident , paramList
 
-    QString     fn  = matchIdentifier();
-    match(Lexer::Colon);
-    QStringList sig = parseSignature();
-    handleImpl(fn, sig);
-    match(Lexer::SemiColon);
+    match(Lexer::Impl);
+    QString fn;
+    if (peekNext().type == Lexer::Ident)
+        fn  = matchIdentifier();
+    match(Lexer::LParen);
+
+    // Parse parameter types and names, if any..
+    QStringList paramSigs;
+    QStringList paramNames;
+    while (peekNext().type != Lexer::RParen) {
+        paramSigs  << matchIdentifier();
+        paramNames << matchIdentifier();
+        if (peekNext().type != Lexer::Comma)
+            break;
+        getNext(); // Eat the comma..
+        // Make sure we have an ident next, and not an rparen..
+        if (peekNext().type != Lexer::Ident)
+            issueError("Parameter signature in impl doesn't start with an identifier!");
+    }
+    match(Lexer::RParen);
+
+    QString code = matchCode();
+
+    handleImpl(fn, code, paramSigs, paramNames);
 }
 
 void Parser::parseTile()
@@ -231,11 +246,23 @@ void Parser::parseTile()
     // tile signature as identifier;
     match(Lexer::Tile);
 
-    QStringList sig = parseSignature();
-    match(Lexer::As);
-    QString     fn  = matchIdentifier();
-    handleTile(fn, sig);
+    QStringList paramSigs;
+    match(Lexer::LParen);
+    while (peekNext().type != Lexer::RParen) {
+        paramSigs  << matchIdentifier();
+        if (peekNext().type != Lexer::Comma)
+            break;
+        getNext(); // Eat the comma..
+        // Make sure we have an ident next, and not an rparen..
+        if (peekNext().type != Lexer::Ident)
+            issueError("Parameter signature in tile doesn't start with an identifier!");
+    }
 
+    match(Lexer::RParen);
+
+    match(Lexer::As);
+    QString     fn = matchIdentifier();
+    handleTile(fn, paramSigs);
     match(Lexer::SemiColon);
 }
 
