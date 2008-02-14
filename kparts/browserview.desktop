@@ -115,16 +115,6 @@ Type=bool
 [PropertyDef::X-KDE-BrowserView-ToggableView-Orientation]
 Type=QString
 
-# The name of the property in the view, which the application should set
-# in order to quickly switch the view mode (only meaningful in views that
-# support multiple modes in the same widget, like the iconview)
-[PropertyDef::X-KDE-BrowserView-ModeProperty]
-Type=QString
-
-# The value to set for the above property
-[PropertyDef::X-KDE-BrowserView-ModePropertyValue]
-Type=QString
-
 # If true, this view will always "follow the active view" (and vice versa:
 # when the active view goes to another url, this view will follow).
 # Mostly used by the sidebar.
@@ -133,11 +123,8 @@ Type=bool
 
 # If this property is set, this view is "builtin" to the application using it
 # The value of the property is the application in question (e.g. "konqueror").
-# This is used 1) to set the active instance to the app's (so the bugs
-# go to "konqueror" and not to "konqiconview") and 2) to let konq remember
-# that this view was used last. We don't want special-purpose views
-# (like Cervisia) to be reactivated (possibly on another directory) next time
-# (famous bug).
+# This is used to set the active instance to the app's (so the bugs
+# go to "konqueror" and not to "konqiconview").
 [PropertyDef::X-KDE-BrowserView-Built-Into]
 Type=QString
 
