@@ -388,6 +388,11 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     m_pathBox->setUrl(q->url());
 
     emit q->returnPressed();
+
+    if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        // pressing Ctrl+Return automatically switches back to the breadcrumb mode
+        q->setUrlEditable(false);
+    }
 }
 
 void KUrlNavigator::Private::slotReturnPressed()
