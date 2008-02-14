@@ -20,18 +20,18 @@
  */
 
 #include "opcodes.h"
-#include <wtf/Assertions.h>
-    // be nice to our fruity overlords and their silly assert-unfriendly environment
 
 namespace KJS {
 
-const int Cost_NoConversion = -1;
+const int Cost_NoConversion = -100000; // small enough so that adding actual costs doesn't
+                                       // make it positive
 const int Cost_Checked      = -2;
 
 @generate
 
 // Note: costOut will be Cost_NoConversion if no conversion is possible
-static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut) {
+static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut)
+{
     bool   inImmediate = in->immediate;
     OpType inType      = in->type;
 
@@ -59,5 +59,99 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     return inf->routine;
 }
 
+static void emitConversion(CodeBlock& block, ConvOp convType, OpValue* original, OpValue& out)
+{
+    // ### TODO
 }
+
+static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, OpValue* a1, OpValue* a2)
+{
+    const OpInstanceList* cands = opSpecializations[baseInstr];
+
+    const Op* cheapest = 0;
+    int    cheapestCost = 0;
+    ConvOp cheapestConvOps[3] = {Conv_NoConversion, Conv_NoConversion, Conv_NoConversion};
+
+    int numArgs = 0;
+    if (a0)
+        numArgs = 1;
+    if (a1)
+        numArgs = 2;
+    if (a2)
+        numArgs = 3;
+
+    // First, scan through, and determine the cheapest non-align variant.
+    // We can't select whether to align or not, since we may have to emit
+    // cast ops, which could change where we are.
+    for (int c = 0; cands[c]; ++c) {
+        const Op* cand = cands[c];
+        ASSERT(cand->numParams == numArgs);
+
+        if (cand->padAlign)
+            continue;
+
+        int    cost0 = 0, cost1 = 0, cost2 = 0;
+        ConvOp convOps[3];
+
+        switch (numArgs) {
+        case 3:
+            convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2);
+        case 2:
+            convOps[1] = computeCast(a1, cand->paramTypes[1], cand->immediateParams[1], cost1);
+        case 1:
+            convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0);
+        }
+
+        int totalCost = cost0 + cost1 + cost2;
+
+        if (totalCost < 0) // Cost_NoConversion in the sum...
+            continue;
+
+        if (totalCost < cheapestCost || !cheapest) {
+            cheapest        = cand;
+            cheapestCost    = totalCost;
+            cheapestConvOps = convOps;
+        }
+    }
+
+    if (!cheapest)
+        CRASH(); // Should never happen!
+
+    OpValue c0, c1, c2; // Converted versions, if needed.
+
+    switch (numArgs) {
+    case 3:
+        if (cheapestConvOps[2] != Conv_NoConversion)
+            emitConversion(block, cheapestConvOps[2], a2, c2);
+        else
+            c2 = *a2;
+    case 2:
+        if (cheapestConvOps[1] != Conv_NoConversion)
+            emitConversion(block, cheapestConvOps[1], a1, c1);
+        else
+            c1 = *a1;
+    case 1:
+        if (cheapestConvOps[0] != Conv_NoConversion)
+            emitConversion(block, cheapestConvOps[0], c0, c0);
+        else
+            c0 = *a0;
+    case 0:
+        break;
+    }
+
+    // Now figure out if we need to do align.. We need it if the PC is 8-aligned, since
+    // the instr will mess that up, and the instruction need it..
+    if (cheapest->hasPadVariant && ((block.size() % 8) == 0) {
+        // The padded variant of the instruction always preceeds the unpadded one..
+        cheapest = &opsForOpCodes[cheapest->opCode - 1];
+    }
+
+    // Phewww. Now we can actually write out stuff.
+    size_t pos = block.size();
+    block.resize(pos + cheapest->length);
+    char* basePtr = block.data() + pos;
+
+}
+
+} //namespace KJS
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

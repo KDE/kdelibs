@@ -19,22 +19,35 @@
  *
  */
 
+#include <wtf/Assertions.h>
+    // be nice to our fruity overlords and their silly assert-unfriendly environment
 #include <wtf/Vector.h>
 
-/**
- We use 2 types of encoding here. First of all, we have the
- OpName enum, which species the instruction names, Op_Add, etc.
- There is a structure Op, which specifies a complete instance of this operation,
- with specific parameters, and gives its bytecode, name, etc.
- The bytecode itself is also listed in the OpByteCode_ enum.
-
- Some instructions also have an aligned version, which skips
- an extra word to get the arguments to be 8-aligned.
-*/
 
 namespace KJS {
 
+typedef unsigned Addr;
+typedef unsigned Register;
+
 @generate
+
+/**
+ There are 2 levels at which instructions exist. First of all, there is
+ an actual operation name, represent by the OpName enum. This is something like
+ Op_IfJump. For each one of these, we have multiple bytecode instructions, such as
+ OpByteCode_IfJump_Ibool_Iaddr and OpByteCode_IfJump_Rbool_Iaddr, with their
+ names given in the OpByteCode_ enum.
+
+ For each of these bytecode codes, there is an entry in the opsForOpCodes
+ array, which provides an Op structure, which describes which parameters
+ go where, and so on. The opSpecializations array lets one look up
+ all these structures relevant for each OpName, so one can select
+ the specific operation for each conceptual instruction.
+
+ Besides parameter variants, there is also variation based on padding, with
+ some bytecodes skipping 4 extra bytes after the opcode to make things 8-aligned.
+ Those bytecodes are always 1 below their unaligned version
+*/
 
 struct Op {
     OpName     baseInstr;
@@ -65,7 +78,63 @@ extern const Op opsForOpCodes[];
 typedef const Op* OpInstanceList[];
 extern const OpInstanceList* const opSpecializations[];
 
+// Describes whether the type is align8 or not.
+extern const bool opTypeIsAlign8[];
+
+// The NarrowArg and WideArg unions correspond to the encoding of
+// 4- and 8-byte arguments in the bytecode.
+union NarrowArg
+{
+    bool     boolVal;
+    unsigned uintVal;
+    Addr     addrVal;
+    uchar  asBytes[4];
 };
 
-// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+union WideArg
+{
+    JSValue*    jsVal;
+    Identifier* identVal;
+    uchar asBytes[8];
+};
+
+// This describes a value in the opcode, either
+// indirectly via a register, or via
+struct OpValue
+{
+    bool   immediate;
+    OpType type;
+    union {
+        Register   reg;
+        NarrowArg  narrow;
+        WideArg    wide;
+    } value;
+};
+
+typedef Vector<unsigned char> CodeBlock;
+
+class CodeGen {
+public:
+    // All of these emit the instruction of given type, and return its base
+    static OpByteCode* emitOp(CodeBlock& block, OpName baseInstr, OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
+
+    static inline void patchOpArgument(OpByteCode* base, int pos, OpValue& newVal) {
+        const Op& variant = opsForOpCodes[*base];
+
+        // We only permit patching immediate arguments for now..
+        ASSERT(variant.immediateParams[pos] && newVal.immediate);
+
+        char* argBase = reinterpet_cast<char*>(base) + variant.paramOffsets[pos];
+        if (opTypeIsAlign8[variant.paramTypes[pos]])
+            *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
+        else
+            *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
+    }
+private:
+    static OpByteCode* emitOp(CodeBlock& block, OpName baseInstr, int numArgs, OpValue* args);
+};
+
+} //namespace KJS
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;
 
