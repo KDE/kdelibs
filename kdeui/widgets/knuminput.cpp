@@ -412,7 +412,6 @@ void KIntNumInput::setRange(int lower, int upper, int step)
     d->m_spin->setSingleStep(step);
 
     step = d->m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
-    setSliderEnabled(true);
 
     // check that reference point is still inside valid range:
     setReferencePoint( referencePoint() );
