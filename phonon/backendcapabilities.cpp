@@ -161,3 +161,4 @@ QT_END_NAMESPACE
 #include "moc_backendcapabilities_p.cpp"
 
 // vim: sw=4 ts=4
+
