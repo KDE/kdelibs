@@ -19,6 +19,7 @@
  *
  */
 
+#include <wtf/Vector.h>
 
 /**
  We use 2 types of encoding here. First of all, we have the
@@ -43,15 +44,17 @@ struct Op {
     OpType paramTypes[3];
     bool   immediateParams[3];
 
-    // This array is used to rearrange arguments by alignment;
-    // so for example if one does an if: Addr * Addr * Value,
-    // the value will be passed in first, then the first and second
-    // arguments, so the array will have: 2, 0, 1.
-    int paramOrder[3];
+    int length; // Length of instruction, including opcode + args
+
+    // This contains offsets of arguments, starting from before the instruction
+    int paramOffsets[3];
 
     // If this is true, this version of the instruction has an
     // extra word inserted after the opcode, for alignment reasons.
     bool padAlign;
+
+    // If this is true, this version has both padded and unpadded flavors
+    bool hasPadVariant;
 };
 
 // The main array of Op instances, mapped by OpByteCode

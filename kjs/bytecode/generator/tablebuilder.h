@@ -60,7 +60,8 @@ struct OperationVariant
     QString   sig;
     Operation op;
     QList<bool> paramIsIm;
-    QList<int>  shuffleTable;
+    QList<int>  paramOffsets;
+    int         size;
     bool        needsPadVariant;
 };
 
@@ -87,7 +88,8 @@ private:
     // Enumerates all r/i/pad variants; plus computes the shuffle table.
     void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);
 
-    void dumpOpStructForVariant(const OperationVariant& variant, bool doPad, bool needsComma);
+    void dumpOpStructForVariant(const OperationVariant& variant, bool doPad,
+                                bool hasPadVariant, bool needsComma);
 
     // issues error if there is a problem..
     QList<Type> resolveSignature(const QStringList& in);
