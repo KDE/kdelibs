@@ -72,3 +72,4 @@ QT_END_NAMESPACE
 
 #endif // MEDIASOURCE_P_H
 // vim: sw=4 sts=4 et tw=100
+
