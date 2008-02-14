@@ -1,4 +1,5 @@
 /*
+ *  Opcode data structure and selection routines for KJS/Frostbyte
  *  This file is part of the KDE libraries
  *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
  *
@@ -21,6 +22,8 @@
 #include "opcodes.h"
 #include <wtf/Assertions.h>
     // be nice to our fruity overlords and their silly assert-unfriendly environment
+
+namespace KJS {
 
 const int Cost_NoConversion = -1;
 const int Cost_Checked      = -2;
@@ -55,3 +58,6 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     costOut = inf->costCode;
     return inf->routine;
 }
+
+}
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

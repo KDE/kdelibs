@@ -60,6 +60,7 @@ struct OperationVariant
     QString   sig;
     Operation op;
     QList<bool> paramIsIm;
+    QList<int>  shuffleTable;
     bool        needsPadVariant;
 };
 
@@ -83,6 +84,7 @@ private:
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
 
+    // Enumerates all r/i/pad variants; plus computes the shuffle table.
     void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);
 
     void dumpOpStructForVariant(const OperationVariant& variant, bool doPad, bool needsComma);

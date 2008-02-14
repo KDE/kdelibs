@@ -127,13 +127,35 @@ void TableBuilder::generateCode()
     opByteCodesEnum.printDeclaration(hStream);
     opByteCodesEnum.printDefinition (cppStream);
 
-    // We can now emit the actual tables..
+    // We can now emit the actual tables...
+
+    // ... first descriptors for each bytecode op..
     *cppStream << "const Op opsForOpCodes[] = {\n";
     for (int c = 0; c < variants.size(); ++c) {
         const OperationVariant& variant = variants[c];
         if (variant.needsPadVariant)
             dumpOpStructForVariant(variant, true, true);
         dumpOpStructForVariant(variant, false, c != variants.size() - 1);
+    }
+    *cppStream << "};\n\n";
+
+    // then variant tables for each main op..
+    foreach (const QString& opName, operationNames) {
+        *cppStream << "static const Op* const op" << opName << "Variants[] = {";
+        QStringList variants = variantNamesForOp[opName];
+        for (int v = 0; v < variants.size(); ++v) {
+            *cppStream << "&opsForOpCodes[OpByteCode_" << variants[v] << "], ";
+        }
+        *cppStream << "0};\n";
+    }
+    *cppStream << "\n";
+
+    *cppStream << "const OpInstanceList* const opSpecializations[] = {\n";
+    for (int o = 0; o < operationNames.size(); ++o) {
+        *cppStream << "    op" << operationNames[o] << "Variants";
+        if (o != (operationNames.size() - 1))
+            *cppStream << ",";
+        *cppStream << "\n";
     }
     *cppStream << "};\n\n";
 }
@@ -288,6 +310,19 @@ void TableBuilder::expandOperationVariants(const Operation& op, QList<bool>& par
     var.op  = op;
     var.paramIsIm = paramIsIm;
     var.needsPadVariant = needsPad;
+
+    // Build shuffle table --- tells which parameter gets
+    // passed in which position of the instruction...
+    // pad8/align ones go first.
+    for (int c = 0; c < paramIsIm.size(); ++c)
+        if (paramIsIm[c] & op.parameters[c].align8)
+            var.shuffleTable << c;
+
+    // Then the rest..
+    for (int c = 0; c < paramIsIm.size(); ++c)
+        if (!paramIsIm[c] || !op.parameters[c].align8)
+            var.shuffleTable << c;
+
     variants << var;
     if (needsPad) { // we put the pad before, due to the fallthrough idiom..
         QString pSig = sig + "_Pad";
@@ -325,6 +360,14 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     *cppStream << "}, ";
 
     // Shuffle table..
+    *cppStream << "{";
+    for (int p = 0; p < numParams; ++p) {
+        *cppStream << variant.shuffleTable[p];
+        if (p != numParams - 1)
+            *cppStream << ", ";
+    }
+
+    *cppStream << "}, ";
 
     // Whether this is a padded version..
     *cppStream << (doPad ? "true" : "false");
