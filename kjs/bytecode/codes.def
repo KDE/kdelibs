@@ -39,28 +39,54 @@ would naturally produces a 32-bit int, so we would never marshal an object to it
 */
 
 // Conversions for immediate bool
-conversion immediate imBool_imVal: bool => value  costs 0;
-conversion immediate imBool_imInt: bool => uint32 costs 0;
+conversion immediate imBool_imVal: bool => value
+    costs 0
+    runtime Convert_boolToValue;
+
+conversion immediate imBool_imInt: bool => uint32
+    costs 0
+    runtime Convert_boolToUInt32;
 
 // Register bool...
-conversion register rBool_rVal: bool => value  costs 10; // Need to put in a call to jsBoolean.
-conversion register rBool_rInt: bool => uint32 costs 0;  // Due to compatible representation
+conversion register rBool_rVal: bool => value
+    costs 10 // Need to put in a call to jsBoolean, hence non-trivial cost
+    runtime Convert_boolToValue;    // jsBoolean can't throw..
+
+conversion register rBool_rInt: bool => uint32
+    costs 0                        // No cost since bool is always stored as 0/1
+    runtime Convert_boolToUInt32;
 
 // Immediate JSValues should never be produced -- hmm, should I put in a failure production?
 
 // Register JSValue..
-conversion register rVal_rBool: value => bool costs 10;   // Need to call toBoolean. Extra op, but cheap.
-conversion register rVal_rInt:  value => uint32 costs 30; // toUint32 can be more expensive, since it may get to
-                                                          // toPrimitive, even!
+conversion register rVal_rBool: value => bool
+    costs 10                        // Need to call toBoolean. Extra op, but cheap.
+    runtime Convert_valueToBool;    // toBoolean can't throw.
+
+
+conversion register rVal_rInt:  value => uint32
+    costs 50                                // toUint32 can be more expensive, maybe even toPrimitive!
+    runtime Convert_valueToUInt32 mayThrow; // it can also throw exceptions..
 
 // Immediate UInt32
-conversion immediate checked imInt_imValue : uint32 => value costs 0; // if it succeeds, if it doesn't,
-                                                                      // we can't emit the code anyway.
-conversion immediate imInt_imBool : uint32 => bool costs 0;
+conversion immediate checked imInt_imValue : uint32 => value
+    costs 0 // if it succeeds, if it doesn't, we can't emit the code anyway.
+    runtime Convert_UInt32ToValue mayThrow; // See the note in rInt_rValue wrt to mayThrow
+
+conversion immediate imInt_imBool : uint32 => bool
+    costs 0
+    runtime Convert_UInt32ToBool;
 
 // Register UInt32
-conversion register rInt_rBool:  uint32 => bool  costs 0; // We permit bools to be any non-zero number when in register.
-conversion register rInt_rValue: uint32 => value costs 20; // Cheap if it fits, if it doesn't, though, it calls jsNumber.
+conversion register rInt_rBool:  uint32 => bool
+    costs 10 // This is non-trivial, since the int need not be 0 or 1.
+    runtime Convert_UInt32ToBool;
+
+conversion register rInt_rValue: uint32 => value
+    costs 20 // Cheap if it fits, if it doesn't, though, it calls jsNumber.
+    runtime Convert_UInt32ToValue mayThrow; // ### jsNumber can OOM, but a weaker
+                                            // notion that mayThrow may be sufficient,
+                                            // since it can't throw other exceptions
 
 /**
  Control flow stuff
@@ -163,6 +189,20 @@ operation GlobalSymGet {
     impl globalGet(reg dstReg, ident varName) [[
         //### TODO
     ]]
+}
+
+/**
+ Bitops stuff
+*/
+operation And {
+    //### FIXME: this actually distinguishes uin32/int32 --- double-check!
+    impl andOp(reg dstReg, uint32 a0, uint32 a1) [[
+        localStore[dstReg].uint32Val = a0 & a1;
+    ]]
+
+    tile (reg, value, value) as andOp;
+    tile (reg, value, uint32) as andOp;
+    tile (reg, uint32, value) as andOp;
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

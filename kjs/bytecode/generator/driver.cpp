@@ -92,10 +92,11 @@ int main(int argc, char* argv[])
 
     copyUntilEnd(hIn, hOut);
     copyUntilEnd(cppIn, cppOut);
-    copyUntilEnd(mchIn, cppOut);
+    copyUntilEnd(mchIn, mchOut);
 
     delete hOut;
     delete cppOut;
+    delete mchOut;
 
     return 0;
 }

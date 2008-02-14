@@ -158,6 +158,24 @@ void TableBuilder::generateCode()
         *cppStream << "\n";
     }
     *cppStream << "};\n\n";
+
+    // Now, generate the VM loop.
+    mInd(8) << "OpByteCode op = *reinterpret_cast<OpByteCode*>(block + pc);\n";
+    mInd(8) << "switch (op) {\n";
+    foreach (const OperationVariant& var, variants) {
+        if (var.needsPadVariant) {
+            mInd(12) << "case " + var.sig + "_Pad:\n";
+            mInd(16) << "pc += 4;\n";
+            mInd(16) << "// Fallthrough\n";
+        }
+
+        mInd(12) << "case " + var.sig + ": {\n";
+        generateVariantImpl(var);
+        mInd(12) << "}\n";
+        mInd(12) << "break;\n\n";
+    }
+
+    mInd(8) << "}\n\n";
 }
 
 void TableBuilder::issueError(const QString& err)
@@ -213,7 +231,8 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     types[type] = t;
 }
 
-void TableBuilder::handleConversion(const QString& name, bool immediate, bool checked,
+void TableBuilder::handleConversion(const QString& name, const QString& runtimeRoutine,
+                                    bool immediate, bool checked, bool mayThrow,
                                     const QString& from, const QString& to, int cost)
 {
     conversionNames << name;
@@ -221,6 +240,8 @@ void TableBuilder::handleConversion(const QString& name, bool immediate, bool ch
     inf.name    = name;
     inf.cost    = cost;
     inf.checked = checked;
+    inf.mayThrow = mayThrow;
+    inf.runtimeRoutine = runtimeRoutine;
 
     if (immediate)
         imConversions[from][to] = inf;
@@ -398,5 +419,81 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
         *cppStream << "}\n";
 }
 
+QTextStream& TableBuilder::mInd(int ind)
+{
+    for (int i = 0; i < ind; ++i)
+        *mStream << ' ';
+    return *mStream;
+}
+
+void TableBuilder::generateVariantImpl(const OperationVariant& variant)
+{
+    mInd(16) << "pc += " << variant.size << ";\n";
+    mInd(16) << "Addr localPC = pc;\n";
+    int numParams = variant.paramIsIm.size();
+    for (int p = 0; p < numParams; ++p) {
+        const Type& type  = variant.op.parameters[p];
+        bool        inReg = !variant.paramIsIm[p];
+        int negPos = variant.paramOffsets[p] - variant.size;
+
+        bool wideArg = !inReg && type.align8;
+
+        QString accessString = QString::fromLatin1("reinterpret_cast<%1*>(&block[localPC + %2])->%3").
+            arg(wideArg ? "WideArg" : "NarrowArow", QString::number(negPos),
+                inReg ? QString::fromLatin1("regVal") : (type.name + "Val"));
+
+        if (inReg) // Need to indirect..
+            accessString = "localStore[" + accessString + "]." + type.name + "Val";
+
+        mInd(16) << variant.op.implParams[p].nativeName << " " << variant.op.implParamNames[p]
+                     << " = ";
+        if (type == variant.op.implParams[p]) {
+            // We don't need a conversion, just fetch it directly into name..
+            *mStream << accessString << ";\n";
+        } else {
+            ConversionInfo conv;
+            if (inReg)
+                conv = rgConversions[type.name][variant.op.implParams[p].name];
+            else
+                conv = imConversions[type.name][variant.op.implParams[p].name];
+            *mStream << conv.runtimeRoutine << "(" << accessString << ");\n";
+
+            if (conv.mayThrow) {
+                // Check for an exception being raised..
+                mInd(16) << "if (pc != localPC) // Exception\n";
+                mInd(20) << "continue;\n";
+            }
+        }
+    }
+
+    // Print out the impl code.. Attempting to indent it nicely..
+    QStringList lines = variant.op.implementAs.split("\n");
+
+    if (!lines.isEmpty() && lines.first().trimmed().isEmpty())
+        lines.removeFirst();
+    if (!lines.isEmpty() && lines.last().trimmed().isEmpty())
+        lines.removeLast();
+
+    // Compute "leading" whitespace.
+    int minWhiteSpace = 100000;
+    foreach(const QString& line, lines) {
+        if (line.trimmed().isEmpty())
+            continue;
+
+        int ws = 0;
+        while (ws < line.length() && line[ws].isSpace())
+            ++ws;
+        if (ws < minWhiteSpace)
+            minWhiteSpace = ws;
+    }
+
+    // Print out w/it stripped..
+    foreach(const QString& line, lines) {
+        if (line.length() < minWhiteSpace)
+            mInd(0) << "\n";
+        else
+            mInd(16) << line.mid(minWhiteSpace) << "\n";
+    }
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

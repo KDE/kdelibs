@@ -83,17 +83,21 @@ extern const bool opTypeIsAlign8[];
 
 // The NarrowArg and WideArg unions correspond to the encoding of
 // 4- and 8-byte arguments in the bytecode.
+// Note that the union field names should correspond to codes.def types ---
+// type foo will be accessed as fooVal
+
 union NarrowArg
 {
     bool     boolVal;
-    unsigned uintVal;
+    unsigned uint32Val;
     Addr     addrVal;
+    Register regVal;
     uchar  asBytes[4];
 };
 
 union WideArg
 {
-    JSValue*    jsVal;
+    JSValue*    valueVal;
     Identifier* identVal;
     uchar asBytes[8];
 };
@@ -105,7 +109,6 @@ struct OpValue
     bool   immediate;
     OpType type;
     union {
-        Register   reg;
         NarrowArg  narrow;
         WideArg    wide;
     } value;

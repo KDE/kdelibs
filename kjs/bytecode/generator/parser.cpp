@@ -186,9 +186,19 @@ void Parser::parseConversion()
     match(Lexer::Costs);
 
     int cost = matchNumber();
+
+    match(Lexer::Runtime);
+    QString runtime = matchIdentifier();
+
+    bool mayThrow = false;
+    if (peekNext().type == Lexer::MayThrow) {
+        match(Lexer::MayThrow);
+        mayThrow = true;
+    }
+
     match(Lexer::SemiColon);
 
-    handleConversion(name, immediate, checked, from, to, cost);
+    handleConversion(name, runtime, immediate, checked, mayThrow, from, to, cost);
 }
 
 void Parser::parseOperation()

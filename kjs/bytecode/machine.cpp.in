@@ -1,18 +1,57 @@
+/*
+ *  Main VM dispatch loop and related routines for KJS/Frostbyte
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 
+#include "value.h"
 
+static inline JSValue* Convert_boolToValue(ExecState* exec, bool in) {
+    return jsBoolean(in);
+}
 
+static inline uint32_t Convert_boolToUInt32(ExecState* exec, bool in) {
+    return in ? 1 : 0;
+}
 
+static inline bool Convert_valueToBool(ExecState* exec, JSValue* in) {
+    return in->toBoolean(exec);
+}
+
+static inline bool Convert_valueToUInt32(ExecState* exec, JSValue* in) {
+    return in->toUInt32(exec);
+}
+
+static inline JSValue* Convert_UInt32ToValue(ExecState* exec, uint32_t in) {
+    return jsNumber(in);
+}
+
+static inline bool Convert_UInt32ToBool(ExecState* exec, uint32_t in) {
+    return bool(in);
+}
 
 runBlock(...) {
-    something pc = 0; //Use local...
+    Addr pc = 0; //Use local...
     exec->setPc(&pc);
 
     while (true) {
-        switch(((Cell*)&block[pad])->u.instr) {
-        case Exit:
-            return;
-        @generate;
-        }
+        @generate
     }
-
 }
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

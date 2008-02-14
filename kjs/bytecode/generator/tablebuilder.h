@@ -35,13 +35,19 @@ struct Type
     QString name;
     QString nativeName;
     bool im, reg, align8;
+
+    bool operator==(const Type& other) const {
+        return name == other.name;
+    }
 };
 
 struct ConversionInfo
 {
     QString name;
+    QString runtimeRoutine;
     int  cost;
     bool checked;
+    bool mayThrow;
 };
 
 // Actually, a specialization, but who cares?
@@ -76,8 +82,10 @@ private:
     void issueError(const QString& err);
 
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
-    virtual void handleConversion(const QString& name, bool immediate, bool checked,
+    virtual void handleConversion(const QString& name, const QString& runtimeRoutine,
+                                  bool immediate, bool checked, bool mayThrow,
                                   const QString& from, const QString& to, int cost);
+
     virtual void handleOperation(const QString& name);
     virtual void handleImpl(const QString& fnName, const QString& code,
                             QStringList sig, QStringList paramNames);
@@ -91,12 +99,16 @@ private:
     void dumpOpStructForVariant(const OperationVariant& variant, bool doPad,
                                 bool hasPadVariant, bool needsComma);
 
+    void generateVariantImpl(const OperationVariant& variant);
+
     // issues error if there is a problem..
     QList<Type> resolveSignature(const QStringList& in);
 
     QTextStream* hStream;
     QTextStream* cppStream;
     QTextStream* mStream;
+
+    QTextStream& mInd(int ind);
 
     QHash<QString, Type> types;
     QStringList          typeNames;

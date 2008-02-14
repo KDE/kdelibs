@@ -39,7 +39,8 @@ private:
     // the last one is the return type
 
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8) = 0;
-    virtual void handleConversion(const QString& name, bool immediate, bool checked,
+    virtual void handleConversion(const QString& name, const QString& runtimeRoutine,
+                                  bool immediate, bool checked, bool mayThrow,
                                   const QString& from, const QString& to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
     virtual void handleImpl(const QString& fnName, const QString& code,

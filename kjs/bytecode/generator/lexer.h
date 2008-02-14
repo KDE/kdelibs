@@ -58,7 +58,9 @@ public:
         Impl,
         Tile,
         As,
-        Align8
+        Align8,
+        Runtime,
+        MayThrow
     };
 
     struct Token {
