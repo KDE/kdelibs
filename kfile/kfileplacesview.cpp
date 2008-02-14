@@ -478,6 +478,7 @@ void KFilePlacesView::dragEnterEvent(QDragEnterEvent *event)
 {
     QListView::dragEnterEvent(event);
     d->dragging = true;
+    d->dropRect = QRect();
 }
 
 void KFilePlacesView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -544,14 +545,25 @@ void KFilePlacesView::paintEvent(QPaintEvent* event)
         const int itemHeight = visualRect(index).height();
         const bool drawInsertIndicator = !d->dropOnPlace ||
                                          d->dropRect.height() <= d->insertIndicatorHeight(itemHeight);
+        QBrush blendedBrush = viewOptions().palette.brush(QPalette::Normal, QPalette::Highlight);
+        QColor color = blendedBrush.color();
+
         if (drawInsertIndicator) {
             // draw indicator for inserting items
             const int y = (d->dropRect.top() + d->dropRect.bottom()) / 2;
-            painter.drawLine(d->dropRect.left(), y, d->dropRect.right(), y);
+            const int thickness = d->dropRect.height() / 2;
+            Q_ASSERT(thickness >= 1);
+            int alpha = 255;
+            const int alphaDec = alpha / (thickness + 1);
+            for (int i = 0; i < thickness; i++) {
+                color.setAlpha(alpha);
+                alpha -= alphaDec;
+                painter.setPen(color);
+                painter.drawLine(d->dropRect.left(), y - i, d->dropRect.right(), y - i);
+                painter.drawLine(d->dropRect.left(), y + i, d->dropRect.right(), y + i);
+            }
         } else {
             // draw indicator for copying/moving/linking to items
-            QBrush blendedBrush = viewOptions().palette.brush(QPalette::Normal, QPalette::Highlight);
-            QColor color = blendedBrush.color();
             color.setAlpha(64);
             blendedBrush.setColor(color);
             painter.fillRect(d->dropRect, blendedBrush);
