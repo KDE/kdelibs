@@ -20,6 +20,7 @@
  */
 
 #include "opcodes.h"
+#include <cstdio>
 
 namespace KJS {
 
@@ -152,7 +153,54 @@ OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, Op
     size_t pos = block.size();
     block.resize(pos + cheapest->length);
     unsigned char* basePtr = block.data() + pos;
+}
 
+static void dumpParam(CodeBlock& block, size_t offset, OpType type)
+{
+    switch (type) {
+    case OpType_bool:
+        if (reinterpret_cast<NarrowArg*>(block.data() + offset)->boolVal)
+            std::printf("true");
+        else
+            std::printf("false");
+        break;
+    case OpType_uint32:
+        std::printf("%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->uint32Val);
+        break;
+    case OpType_value:
+        std::printf("huh???");
+        break;
+    case OpType_ident:
+        std::printf("%s", reinterpret_cast<WideArg*>(block.data() + offset)->identVal->ustring().ascii());
+        break;
+    case OpType_addr:
+        std::printf("A%8x", reinterpret_cast<NarrowArg*>(block.data() + offset)->addrVal);
+        break;
+    case OpType_reg:
+        std::printf("r%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal);
+        break;
+    default:
+        std::printf("???");
+    };
+    std::printf(" ");
+}
+
+void CodeGen::disassembleBlock(CodeBlock& block)
+{
+    size_t pc = 0;
+    while (pc < block.size()) {
+        OpByteCode opCode = *reinterpret_cast<OpByteCode*>(block.data() + pc);
+        const Op& opDescr = opsForOpCodes[opCode];
+
+        std::printf("%8x %s ", pc, OpNameVals[opDescr.baseInstr]);
+        for (int p = 0; p < opDescr.numParams; ++p) {
+            dumpParam(block, pc + opDescr.paramOffsets[p],
+                      opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg);
+        }
+
+        std::printf("// %s\n", OpByteCodeVals[opCode]);
+        pc += opDescr.length;
+    }
 }
 
 } //namespace KJS

@@ -133,6 +133,8 @@ public:
         else
             *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
     }
+
+    static void disassembleBlock(CodeBlock& block);
 private:
     static OpByteCode* emitOp(CodeBlock& block, OpName baseInstr, int numArgs, OpValue* args);
 };
