@@ -21,6 +21,9 @@
 #include "ksycocafactory.h"
 #include "ktoolinvocation.h"
 #include "kglobal.h"
+#undef NDEBUG
+#undef QT_NO_DEBUG
+
 #include "kdebug.h"
 #include "kstandarddirs.h"
 
@@ -35,6 +38,19 @@
 
 #include <stdlib.h>
 #include <fcntl.h>
+
+#ifdef Q_OS_WIN
+/*
+ @TODO on windows we load the whole ksyscoca database in memory and 
+ close the file to avoid kbuildsycoca4 write errors. 
+ Because this increases the consumed memory for each application
+ this should be fixed by a working memory mapping strategy or
+ QSharedMemory when qt 4.4 is out
+ see http://lists.kde.org/?l=kde-core-devel&m=120245131818646&w=2
+ for more informations about this issue.
+*/ 
+#undef HAVE_MMAP
+#endif
 
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
@@ -181,7 +197,12 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
      {
         kDebug(7011) << "mmap failed. (length = " << sycoca_size << ")";
 #endif
+#ifdef Q_OS_WIN
+        m_str = new QDataStream( m_database->readAll());
+        m_database->close();
+#else
         m_str = new QDataStream(m_database);
+#endif
         m_str->setVersion(QDataStream::Qt_3_1);
         sycoca_mmap = 0;
 #ifdef HAVE_MMAP
@@ -264,8 +285,10 @@ void KSycocaPrivate::closeDatabase()
 {
     QDataStream* &m_str = KSycocaPrivate::_self->m_str;
    QIODevice *device = 0;
+#ifndef Q_OS_WIN
    if (m_str)
       device = m_str->device();
+#endif
 #ifdef HAVE_MMAP
    if (device && sycoca_mmap)
    {
