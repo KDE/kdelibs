@@ -214,8 +214,9 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
             const QString& function  = dbuscall.at( 3 );
 
             QDBusInterface remote( app, object, interface );
-            QDBusReply<QStringList> reply = remote.call( QDBus::BlockWithGui,
-                                                         function, file_list.toStringList() );
+            // Do NOT use QDBus::BlockWithGui here. It runs a nested event loop,
+            // in which timers can fire, leading to crashes like #149736.
+            QDBusReply<QStringList> reply = remote.call(function, file_list.toStringList());
             keys = reply;               // ensures that the reply was a QStringList
             if (keys.isEmpty())
                 return result;
