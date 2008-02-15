@@ -636,35 +636,38 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
-install( FILES
-  KJS/CString
-  KJS/Collector
-  KJS/Completion
-  KJS/DeclaredFunctionImp
-  KJS/Error
-  KJS/ExecState
-  KJS/FunctionImp
-  KJS/HashEntry
-  KJS/Identifier
-  KJS/Interpreter
-  KJS/JSCell
-  KJS/JSImmediate
-  KJS/JSLock
-  KJS/JSObject
-  KJS/JSValue
-  KJS/List
-  KJS/Lookup
-  KJS/PropertyMap
-  KJS/PropertyNameArray
-  KJS/PropertySlot
-  KJS/ProtectedPtr
-  KJS/ScopeChain
-  KJS/ScopeChainIterator
-  KJS/ScopeChainNode
-  KJS/UChar
-  KJS/UCharReference
-  KJS/UString
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
+# 2008-02-15: kjs headers are apparently not installed, so also
+# don't install the forwarding headers. (dirk)
+
+#install( FILES
+#  KJS/CString
+#  KJS/Collector
+#  KJS/Completion
+#  KJS/DeclaredFunctionImp
+#  KJS/Error
+#  KJS/ExecState
+#  KJS/FunctionImp
+#  KJS/HashEntry
+#  KJS/Identifier
+#  KJS/Interpreter
+#  KJS/JSCell
+#  KJS/JSImmediate
+#  KJS/JSLock
+#  KJS/JSObject
+#  KJS/JSValue
+#  KJS/List
+#  KJS/Lookup
+#  KJS/PropertyMap
+#  KJS/PropertyNameArray
+#  KJS/PropertySlot
+#  KJS/ProtectedPtr
+#  KJS/ScopeChain
+#  KJS/ScopeChainIterator
+#  KJS/ScopeChainNode
+#  KJS/UChar
+#  KJS/UCharReference
+#  KJS/UString
+#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
 
 install( FILES
