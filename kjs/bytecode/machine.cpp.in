@@ -19,7 +19,13 @@
  *
  */
 
+#include "completion.h"
+#include "ExecState.h"
 #include "value.h"
+
+#include "opcodes.h"
+
+namespace KJS {
 
 static inline JSValue* Convert_boolToValue(ExecState* exec, bool in) {
     return jsBoolean(in);
@@ -45,13 +51,15 @@ static inline bool Convert_UInt32ToBool(ExecState* exec, uint32_t in) {
     return bool(in);
 }
 
-runBlock(...) {
+Completion runBlock(ExecState* exec, const CodeBlock& block) {
     Addr pc = 0; //Use local...
     exec->setPc(&pc);
 
     while (true) {
         @generate
     }
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

@@ -46,8 +46,8 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     // Look up in the table..
     const ConvInfo* inf = getConversionInfo(inImmediate, inType, outType);
     if (inf->costCode == Cost_Checked) {
-        ASSERT(inType == OpType_UInt32 && outType == OpType_Value);
-        if (JSImmediate::from(in->value.uintVal))
+        ASSERT(inType == OpType_uint32 && outType == OpType_value);
+        if (JSImmediate::from(in->value.narrow.uint32Val))
             costOut = 0;
         else
             costOut = Cost_NoConversion;
@@ -64,9 +64,9 @@ static void emitConversion(CodeBlock& block, ConvOp convType, OpValue* original,
     // ### TODO
 }
 
-static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, OpValue* a1, OpValue* a2)
+OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, OpValue* a1, OpValue* a2)
 {
-    const OpInstanceList* cands = opSpecializations[baseInstr];
+    static const Op* const* cands = opSpecializations[baseInstr];
 
     const Op* cheapest = 0;
     int    cheapestCost = 0;
@@ -110,7 +110,9 @@ static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue*
         if (totalCost < cheapestCost || !cheapest) {
             cheapest        = cand;
             cheapestCost    = totalCost;
-            cheapestConvOps = convOps;
+            cheapestConvOps[0] = convOps[0];
+            cheapestConvOps[1] = convOps[1];
+            cheapestConvOps[2] = convOps[2];
         }
     }
 
@@ -132,7 +134,7 @@ static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue*
             c1 = *a1;
     case 1:
         if (cheapestConvOps[0] != Conv_NoConversion)
-            emitConversion(block, cheapestConvOps[0], c0, c0);
+            emitConversion(block, cheapestConvOps[0], a0, c0);
         else
             c0 = *a0;
     case 0:
@@ -141,7 +143,7 @@ static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue*
 
     // Now figure out if we need to do align.. We need it if the PC is 8-aligned, since
     // the instr will mess that up, and the instruction need it..
-    if (cheapest->hasPadVariant && ((block.size() % 8) == 0) {
+    if (cheapest->hasPadVariant && ((block.size() % 8) == 0)) {
         // The padded variant of the instruction always preceeds the unpadded one..
         cheapest = &opsForOpCodes[cheapest->opCode - 1];
     }
@@ -149,7 +151,7 @@ static OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue*
     // Phewww. Now we can actually write out stuff.
     size_t pos = block.size();
     block.resize(pos + cheapest->length);
-    char* basePtr = block.data() + pos;
+    unsigned char* basePtr = block.data() + pos;
 
 }
 

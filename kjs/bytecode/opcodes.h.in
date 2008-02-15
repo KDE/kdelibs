@@ -22,7 +22,8 @@
 #include <wtf/Assertions.h>
     // be nice to our fruity overlords and their silly assert-unfriendly environment
 #include <wtf/Vector.h>
-
+#include "value.h"
+#include "identifier.h"
 
 namespace KJS {
 
@@ -75,8 +76,7 @@ extern const Op opsForOpCodes[];
 
 // Lists all the specialized versions of each Op class, mapped by OpName,
 // 0 terminated.
-typedef const Op* OpInstanceList[];
-extern const OpInstanceList* const opSpecializations[];
+extern const Op* const* const opSpecializations[];
 
 // Describes whether the type is align8 or not.
 extern const bool opTypeIsAlign8[];
@@ -92,14 +92,14 @@ union NarrowArg
     unsigned uint32Val;
     Addr     addrVal;
     Register regVal;
-    uchar  asBytes[4];
+    unsigned char asBytes[4];
 };
 
 union WideArg
 {
     JSValue*    valueVal;
     Identifier* identVal;
-    uchar asBytes[8];
+    unsigned char asBytes[8];
 };
 
 // This describes a value in the opcode, either
@@ -127,7 +127,7 @@ public:
         // We only permit patching immediate arguments for now..
         ASSERT(variant.immediateParams[pos] && newVal.immediate);
 
-        char* argBase = reinterpet_cast<char*>(base) + variant.paramOffsets[pos];
+        char* argBase = reinterpret_cast<char*>(base) + variant.paramOffsets[pos];
         if (opTypeIsAlign8[variant.paramTypes[pos]])
             *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
         else

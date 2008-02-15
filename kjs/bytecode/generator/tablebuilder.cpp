@@ -150,7 +150,7 @@ void TableBuilder::generateCode()
     }
     *cppStream << "\n";
 
-    *cppStream << "const OpInstanceList* const opSpecializations[] = {\n";
+    *cppStream << "const Op* const* const opSpecializations[] = {\n";
     for (int o = 0; o < operationNames.size(); ++o) {
         *cppStream << "    op" << operationNames[o] << "Variants";
         if (o != (operationNames.size() - 1))
@@ -164,12 +164,12 @@ void TableBuilder::generateCode()
     mInd(8) << "switch (op) {\n";
     foreach (const OperationVariant& var, variants) {
         if (var.needsPadVariant) {
-            mInd(12) << "case " + var.sig + "_Pad:\n";
+            mInd(12) << "case OpByteCode_" + var.sig + "_Pad:\n";
             mInd(16) << "pc += 4;\n";
             mInd(16) << "// Fallthrough\n";
         }
 
-        mInd(12) << "case " + var.sig + ": {\n";
+        mInd(12) << "case OpByteCode_" + var.sig + ": {\n";
         generateVariantImpl(var);
         mInd(12) << "}\n";
         mInd(12) << "break;\n\n";
@@ -438,8 +438,8 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
 
         bool wideArg = !inReg && type.align8;
 
-        QString accessString = QString::fromLatin1("reinterpret_cast<%1*>(&block[localPC + %2])->%3").
-            arg(wideArg ? "WideArg" : "NarrowArow", QString::number(negPos),
+        QString accessString = QString::fromLatin1("reinterpret_cast<const %1*>(&block[localPC + %2])->%3").
+            arg(wideArg ? "WideArg" : "NarrowArg", QString::number(negPos),
                 inReg ? QString::fromLatin1("regVal") : (type.name + "Val"));
 
         if (inReg) // Need to indirect..
