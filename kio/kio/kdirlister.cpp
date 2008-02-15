@@ -2044,14 +2044,16 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
   if ( filters.isEmpty() )
     return true;
 
-  KMimeType::Ptr mimeptr = KMimeType::mimeType(mime);
+  const KMimeType::Ptr mimeptr = KMimeType::mimeType(mime);
+  if ( !mimeptr )
+    return false;
+
   //kDebug(7004) << "doMimeFilter: investigating: "<<mimeptr->name();
   QStringList::const_iterator it = filters.begin();
   for ( ; it != filters.end(); ++it )
     if ( mimeptr->is(*it) )
       return true;
     //else   kDebug(7004) << "doMimeFilter: compared without result to  "<<*it;
-
 
   return false;
 }
