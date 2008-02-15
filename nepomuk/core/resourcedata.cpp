@@ -159,39 +159,24 @@ void Nepomuk::ResourceData::deleteData()
 }
 
 
-QHash<QString, Nepomuk::Variant> Nepomuk::ResourceData::allProperties()
+QHash<QUrl, Nepomuk::Variant> Nepomuk::ResourceData::allProperties()
 {
     if( m_proxyData )
         return m_proxyData->allProperties();
 
-    Soprano::Model* model = ResourceManager::instance()->mainModel();
-    QHash<QString, Variant> props;
+    load();
 
-    if ( determineUri() ) {
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( m_uri, Soprano::Node(), Soprano::Node() ) );
-        while ( it.next() ) {
-            Statement statement = *it;
-            if ( props.contains( statement.predicate().toString() ) ) {
-                props[statement.predicate().toString()].append( nodeToVariant( statement.object() ) );
-            }
-            else {
-                props.insert( statement.predicate().toString(), nodeToVariant( statement.object() ) );
-            }
-        }
-        it.close();
-    }
-
-    return props;
+    return m_cache;
 }
 
 
-bool Nepomuk::ResourceData::hasProperty( const QString& uri )
+bool Nepomuk::ResourceData::hasProperty( const QUrl& uri )
 {
     if( m_proxyData )
         return m_proxyData->hasProperty( uri );
 
     if ( determineUri() ) {
-        return ResourceManager::instance()->mainModel()->containsAnyStatement( Soprano::Statement( m_uri, QUrl( uri ), Soprano::Node() ) );
+        return ResourceManager::instance()->mainModel()->containsAnyStatement( Soprano::Statement( m_uri, uri, Soprano::Node() ) );
     }
     else {
         return false;
@@ -220,7 +205,7 @@ bool Nepomuk::ResourceData::hasType( const QUrl& uri )
 }
 
 
-Nepomuk::Variant Nepomuk::ResourceData::property( const QString& uri )
+Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
 {
     if( m_proxyData )
         return m_proxyData->property( uri );
@@ -350,7 +335,7 @@ bool Nepomuk::ResourceData::load()
 }
 
 
-void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Variant& value )
+void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant& value )
 {
     if( m_proxyData )
         return m_proxyData->setProperty( uri, value );
@@ -398,19 +383,19 @@ void Nepomuk::ResourceData::setProperty( const QString& uri, const Nepomuk::Vari
 
         // update the store
         ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.updateProperty( m_uri, QUrl(uri), valueNodes );
+        fm.updateProperty( m_uri, uri, valueNodes );
     }
 }
 
 
-void Nepomuk::ResourceData::removeProperty( const QString& uri )
+void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 {
     if( m_proxyData )
         return m_proxyData->removeProperty( uri );
 
     if ( determineUri() ) {
         ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.removeProperty( m_uri, QUrl(uri) );
+        fm.removeProperty( m_uri, uri );
     }
 }
 
@@ -730,7 +715,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
 }
 
 
-QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataOfType( const QString& type )
+QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataOfType( const QUrl& type )
 {
     QList<ResourceData*> l;
 
@@ -747,15 +732,15 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataOfType( cons
 }
 
 
-QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataWithProperty( const QString& _uri, const Variant& v )
+QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataWithProperty( const QUrl& uri, const Variant& v )
 {
     QList<ResourceData*> l;
 
     for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
          rdIt != kickoffData()->end(); ++rdIt ) {
 
-        if( rdIt.value()->hasProperty( _uri ) &&
-            rdIt.value()->property( _uri ) == v ) {
+        if( rdIt.value()->hasProperty( uri ) &&
+            rdIt.value()->property( uri ) == v ) {
             l.append( rdIt.value() );
         }
     }

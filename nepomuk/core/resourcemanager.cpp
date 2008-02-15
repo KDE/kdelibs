@@ -119,6 +119,12 @@ void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QString& type )
 {
+    return allResourcesOfType( QUrl(type) );
+}
+
+
+QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUrl& type )
+{
     QList<Resource> l;
 
     if( !type.isEmpty() ) {
@@ -132,7 +138,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
         kDebug(300004) << " added local resources: " << l.count();
 
         Soprano::Model* model = mainModel();
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), QUrl(type) ) );
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), type ) );
 
         while( it.next() ) {
             Statement s = *it;
@@ -149,6 +155,12 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 
 
 QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v )
+{
+    return allResourcesWithProperty( QUrl(uri), v );
+}
+
+
+QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QUrl& uri, const Variant& v )
 {
     QList<Resource> l;
 
@@ -173,7 +185,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         }
 
         Soprano::Model* model = mainModel();
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), QUrl(uri), n ) );
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), uri, n ) );
 
         while( it.next() ) {
             Statement s = *it;

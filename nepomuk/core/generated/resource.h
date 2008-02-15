@@ -234,9 +234,14 @@ namespace Nepomuk {
         QString className() const;
 
         /**
+         * \deprecated Use properties()
+         */
+        KDE_DEPRECATED QHash<QString, Variant> allProperties() const;
+
+        /**
          * \return A list of all defined properties
          */
-        QHash<QString, Variant> allProperties() const;
+        QHash<QUrl, Variant> properties() const;
 
         /**
          * Check if property identified by \a uri is defined
@@ -246,7 +251,12 @@ namespace Nepomuk {
          *
          * \return true if property \a uri has a value set.
          */
-        bool hasProperty( const QString& uri ) const;
+        bool hasProperty( const QUrl& uri ) const;
+
+        /**
+         * \deprecated use hasProperty( const QUrl& ) const
+         */
+        KDE_DEPRECATED bool hasProperty( const QString& uri ) const;
 
         /**
          * Retrieve the value of property \a uri. If the property is not defined for
@@ -254,7 +264,12 @@ namespace Nepomuk {
          *
          * \param uri The URI identifying the property.
          */
-        Variant property( const QString& uri ) const;
+        Variant property( const QUrl& uri ) const;
+
+        /**
+         * \deprecated use property( const QUrl& ) const
+         */
+        KDE_DEPRECATED Variant property( const QString& uri ) const;
 
         /**
          * Set a property of the resource.
@@ -262,14 +277,24 @@ namespace Nepomuk {
          * \param uri The URI identifying the property.
          * \param value The value of the property (i.e. the object of the RDF triple(s))
          */
-        void setProperty( const QString& uri, const Variant& value );
+        void setProperty( const QUrl& uri, const Variant& value );
+
+        /**
+         * \deprecated use setProperty( const QUrl& )
+         */
+        KDE_DEPRECATED void setProperty( const QString& uri, const Variant& value );
 
         /**
          * Remove property \a uri from this resource object.
          *
          * \param uri The URI identifying the property.
          */
-        void removeProperty( const QString& uri );
+        void removeProperty( const QUrl& uri );
+
+        /**
+         * \deprecated use removeProperty( const QUrl& )
+         */
+        KDE_DEPRECATED void removeProperty( const QString& uri );
 
         /**
          * Remove this resource completely.

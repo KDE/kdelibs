@@ -84,25 +84,25 @@ namespace Nepomuk {
 
         QList<QUrl> allTypes();
 
-        QHash<QString, Variant> allProperties();
+        QHash<QUrl, Variant> allProperties();
 
-        bool hasProperty( const QString& uri );
+        bool hasProperty( const QUrl& uri );
 
         /**
          * Does also check for subClass relations.
          */
         bool hasType( const QUrl& uri );
 
-        Variant property( const QString& uri );
+        Variant property( const QUrl& uri );
 
         /**
          * Set a property. The property will directly be saved to the RDF store.
          * Calls store to make sure this resource and property resources are properly
          * stored.
          */
-        void setProperty( const QString& uri, const Variant& value );
+        void setProperty( const QUrl& uri, const Variant& value );
 
-        void removeProperty( const QString& uri );
+        void removeProperty( const QUrl& uri );
 
         /**
          * Makes sure the resource is present in the RDF store. This means that if it does
@@ -178,8 +178,8 @@ namespace Nepomuk {
 
         static QList<ResourceData*> allResourceData();
 
-        static QList<ResourceData*> allResourceDataOfType( const QString& type );
-        static QList<ResourceData*> allResourceDataWithProperty( const QString& _uri, const Variant& v );
+        static QList<ResourceData*> allResourceDataOfType( const QUrl& type );
+        static QList<ResourceData*> allResourceDataWithProperty( const QUrl& _uri, const Variant& v );
 
     private:
         /**

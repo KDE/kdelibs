@@ -211,7 +211,7 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() || typeString( true ) == "Resource" || !list ) {
         s += QString("{\n"
-                     "    setProperty( \"%1\", Variant( value ) );\n"
+                     "    setProperty( QUrl(\"%1\"), Variant( value ) );\n"
                      "}\n" )
              .arg( uri );
     }
@@ -223,7 +223,7 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
                      "         it != value.constEnd(); ++it ) {\n"
                      "        l.append( Resource( (*it) ) );\n"
                      "    }\n"
-                     "    setProperty( \"%3\", Variant( l ) );\n"
+                     "    setProperty( QUrl(\"%3\"), Variant( l ) );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( typeString() )
@@ -232,7 +232,7 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
     else {
         s += QString("{\n"
                      "%1"
-                     "    setProperty( \"%2\", Variant( Resource( value ) ) );\n"
+                     "    setProperty( QUrl(\"%2\"), Variant( Resource( value ) ) );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( uri );
@@ -293,7 +293,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() ) {
         s += QString( "{\n"
-                      "    return ( property( \"%1\" ).%2;\n"
+                      "    return ( property( QUrl(\"%1\") ).%2;\n"
                       "}\n" )
              .arg( uri )
              .arg( typeConversionMethod() );
@@ -301,7 +301,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
     else if( list ) {
         s += QString("{\n"
                      "%1"
-                     "    return convertResourceList<%3>( property( \"%2\" ).toResourceList() );\n"
+                     "    return convertResourceList<%3>( property( QUrl(\"%2\") ).toResourceList() );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( uri )
@@ -310,7 +310,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
     else {
         s += QString("{\n"
                      "%1"
-                     "    return %2( property( \"%3\" ).toResource().uri() );\n"
+                     "    return %2( property( QUrl(\"%3\") ).toResource().uri() );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( typeString( true ) )
@@ -327,18 +327,18 @@ QString Property::adderDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() ) {
         s += QString( "{\n"
-                      "    Variant v = property( \"%1\" );\n"
+                      "    Variant v = property( QUrl(\"%1\") );\n"
                       "    v.append( value );\n"
-                      "    setProperty( \"%1\", v );\n"
+                      "    setProperty( QUrl(\"%1\"), v );\n"
                       "}\n" )
              .arg( uri );
     }
     else {
         s += QString( "{\n"
                       "%1"
-                      "    Variant v = property( \"%2\" );\n"
+                      "    Variant v = property( QUrl(\"%2\") );\n"
                       "    v.append( Resource( value ) );\n"
-                      "    setProperty( \"%2\", v );\n"
+                      "    setProperty( QUrl(\"%2\"), v );\n"
                       "}\n" )
              .arg( s_typeComment )
              .arg( uri );
@@ -353,7 +353,7 @@ QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) con
     QString s = reversePropertyGetterDeclaration( rc, true ) + '\n';
 
     s += QString( "{\n"
-                  "    return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this ) );\n"
+                  "    return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( QUrl(\"%1\"), *this ) );\n"
                   "}\n" )
          .arg( uri )
          .arg( domain->name() );

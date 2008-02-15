@@ -24,6 +24,7 @@
 #include "nepomuk_export.h"
 
 #include <QtCore/QObject>
+#include <QtCore/QUrl>
 
 
 namespace Soprano {
@@ -80,6 +81,8 @@ namespace Nepomuk {
         Soprano::Model* mainModel();
 
         /**
+         * \deprecated Use the Resource constructor directly.
+         *
          * Creates a Resource object representing the data referenced by \a uri.
          * The result is the same as from using the Resource::Resource( const QString&, const QString& )
          * constructor with an empty type.
@@ -87,7 +90,7 @@ namespace Nepomuk {
          * \return The Resource representing the data at \a uri or an invalid Resource object if the local
          * NEPOMUK RDF store does not contain an object with URI \a uri.
          */
-        Resource createResourceFromUri( const QString& uri );
+        KDE_DEPRECATED Resource createResourceFromUri( const QString& uri );
 
         /**
          * Remove the resource denoted by \a uri completely.
@@ -103,7 +106,12 @@ namespace Nepomuk {
          * This includes Resources that are not synced yet so it might
          * not represent exactly the state as in the RDF store.
          */
-        QList<Resource> allResourcesOfType( const QString& type );
+        QList<Resource> allResourcesOfType( const QUrl& type );
+
+        /**
+         * \deprecated Use allResourcesOfType( const QString& type )
+         */
+        KDE_DEPRECATED QList<Resource> allResourcesOfType( const QString& type );
 
         /**
          * Retrieve a list of all resources that have property \a uri defined with a value of \a v.
@@ -116,7 +124,12 @@ namespace Nepomuk {
          *            prepended.
          * \param v The value all returned resources should have set as properts \a uri.
          */
-        QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
+        QList<Resource> allResourcesWithProperty( const QUrl& uri, const Variant& v );
+
+        /**
+         * \deprecated Use allResourcesWithProperty( const QString& type )
+         */
+        KDE_DEPRECATED QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
 
         /**
          * Generates a unique URI that is not used in the store yet. This method ca be used to 
