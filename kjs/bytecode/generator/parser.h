@@ -39,11 +39,11 @@ private:
     // the last one is the return type
 
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8) = 0;
-    virtual void handleConversion(const QString& name, const QString& runtimeRoutine,
+    virtual void handleConversion(const QString& name, const QString& code,
                                   bool immediate, bool checked, bool mayThrow,
                                   const QString& from, const QString& to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
-    virtual void handleImpl(const QString& fnName, const QString& code,
+    virtual void handleImpl(const QString& fnName, const QString& code, int cost,
                             QStringList sig, QStringList paramNames) = 0;
     virtual void handleTile(const QString& fnName, QStringList sig) = 0;
 
@@ -51,6 +51,9 @@ private:
     QString matchCode();
     int     matchNumber();
     void    match(Lexer::TokenType t);
+
+    // Checks whether an optional flag is next..
+    bool checkFlag(Lexer::TokenType t);
 
     void parseType();
     void parseConversion();

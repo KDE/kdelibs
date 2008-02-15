@@ -53,6 +53,7 @@ typedef unsigned Register;
 struct Op {
     OpName     baseInstr;
     OpByteCode opCode;
+    int        cost;
 
     int numParams;
     OpType paramTypes[3];
@@ -99,6 +100,8 @@ union WideArg
 {
     JSValue*    valueVal;
     Identifier* identVal;
+    UString*    stringVal;
+    double      numberVal;
     unsigned char asBytes[8];
 };
 

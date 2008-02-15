@@ -47,11 +47,21 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     // Look up in the table..
     const ConvInfo* inf = getConversionInfo(inImmediate, inType, outType);
     if (inf->costCode == Cost_Checked) {
-        ASSERT(inType == OpType_uint32 && outType == OpType_value);
-        if (JSImmediate::from(in->value.narrow.uint32Val))
-            costOut = 0;
-        else
-            costOut = Cost_NoConversion;
+
+        ASSERT(outType == OpType_value);
+
+        if (inType == OpType_uint32) {
+            if (JSImmediate::from(in->value.narrow.uint32Val))
+                costOut = 0;
+            else
+                costOut = Cost_NoConversion;
+        } else {
+            ASSERT(inType == OpType_number);
+            if (JSImmediate::from(in->value.wide.numberVal))
+                costOut = 0;
+            else
+                costOut = Cost_NoConversion;
+        }
 
         return inf->routine;
     }
@@ -62,6 +72,10 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
 
 static void emitConversion(CodeBlock& block, ConvOp convType, OpValue* original, OpValue& out)
 {
+    if (original->immediate) {
+        emitImmediateConversion(convType, original, out);
+        return;
+    }
     // ### TODO
 }
 
@@ -103,7 +117,7 @@ OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, Op
             convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0);
         }
 
-        int totalCost = cost0 + cost1 + cost2;
+        int totalCost = cand->cost + cost0 + cost1 + cost2;
 
         if (totalCost < 0) // Cost_NoConversion in the sum...
             continue;

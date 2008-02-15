@@ -70,6 +70,15 @@ void Parser::match(Lexer::TokenType t)
         issueError("Expected " + Lexer::Token(t).toString(lexer) + " got:" + tok.toString(lexer));
 }
 
+bool Parser::checkFlag(Lexer::TokenType t)
+{
+    if (peekNext().type == t) {
+        getNext();
+        return true;
+    }
+    return false;
+}
+
 void Parser::issueError(const QString& msg)
 {
     qWarning() << "Parse error:" << msg << "at about line:" << lexer->lineNumber();
@@ -155,50 +164,69 @@ void Parser::parseType()
     handleType(name, nativeName, im, rg, al8);
 }
 
+static QString capitalized(const QString& in)
+{
+    return in[0].toUpper() + in.mid(1);
+}
+
 void Parser::parseConversion()
 {
-    // conversion [register | immediate] checked? identifier:name identifier:from => identifier: to costs number ;
+    // conversion from =>  to { clauses .. }
+    // clause := tile costs number; || impl checked? mayThrow? code; || register ident costs number;
     match(Lexer::Conversion);
-
-    bool immediate;
-    Lexer::Token convType = getNext();
-    if (convType.type == Lexer::Immediate)
-        immediate = true;
-    else if (convType.type == Lexer::Register)
-        immediate = false;
-    else
-        issueError("conversion must be followed by immediate or register");
-
-    bool checked = false;
-    if (peekNext().type == Lexer::Checked) {
-        checked = true;
-        getNext(); // eat it.
-    }
-
-    QString name = matchIdentifier();
-
-    match(Lexer::Colon);
-
     QString from = matchIdentifier();
     match(Lexer::Arrow);
     QString to = matchIdentifier();
 
-    match(Lexer::Costs);
+    match(Lexer::LBrace);
 
-    int cost = matchNumber();
+    // impl clause info..
+    bool implMayThrow = false, immChecked = false;
+    QString code;
 
-    match(Lexer::Runtime);
-    QString runtime = matchIdentifier();
+    // tile clause info
+    int tileCost = 0;
 
-    bool mayThrow = false;
-    if (peekNext().type == Lexer::MayThrow) {
-        match(Lexer::MayThrow);
-        mayThrow = true;
+    // register clause info
+    bool hasRegister = false;
+    QString registerIdent;
+    int registerCost = 0;
+
+    while (peekNext().type != Lexer::RBrace) {
+        switch (peekNext().type) {
+        case Lexer::Impl:
+            match(Lexer::Impl);
+            immChecked   = checkFlag(Lexer::Checked);
+            implMayThrow = checkFlag(Lexer::MayThrow);
+            code = matchCode();
+            break;
+        case Lexer::Tile:
+            match(Lexer::Tile);
+            match(Lexer::Costs);
+            tileCost = matchNumber();
+            match(Lexer::SemiColon);
+            break;
+        case Lexer::Register:
+            hasRegister = true;
+            match(Lexer::Register);
+            registerIdent = matchIdentifier();
+            match(Lexer::Costs);
+            registerCost  = matchNumber();
+            match(Lexer::SemiColon);
+            break;
+        default:
+            issueError("Invalid start of a clause within conversion block:" + peekNext().toString(lexer));
+        }
     }
 
-    match(Lexer::SemiColon);
+    match(Lexer::RBrace);
 
-    handleConversion(name, runtime, immediate, checked, mayThrow, from, to, cost);
+    if (hasRegister)
+        handleConversion(registerIdent, "", false, false, false, from, to, registerCost);
+
+    // Computer name, from type sig
+    QString name = "I" + capitalized(from) + "_" + capitalized(to);
+    handleConversion(name, code, true, immChecked, implMayThrow, from, to, tileCost);
 }
 
 void Parser::parseOperation()
@@ -246,9 +274,16 @@ void Parser::parseImpl()
     }
     match(Lexer::RParen);
 
+    int cost = 0;
+    if (peekNext().type == Lexer::Costs) {
+        getNext();
+        cost = matchNumber();
+    }
+
     QString code = matchCode();
 
-    handleImpl(fn, code, paramSigs, paramNames);
+
+    handleImpl(fn, code, cost, paramSigs, paramNames);
 }
 
 void Parser::parseTile()

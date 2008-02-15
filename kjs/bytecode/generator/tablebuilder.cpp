@@ -106,10 +106,37 @@ void TableBuilder::generateCode()
     *cppStream << "};\n\n";
 
     int numBits = neededBits(types.size());
-    *cppStream << "static inline const ConvInfo* getConversionInfo(bool immediate, OpType from, OpType to) {\n";
+    *cppStream << "static inline const ConvInfo* getConversionInfo(bool immediate, OpType from, OpType to)\n{\n";
     *cppStream << "    return &conversions[((int)immediate << " << (2 * numBits) << ")"
                << " | ((int)from << " << numBits << ") | (int)to];\n";
-    *cppStream << "};\n\n";
+    *cppStream << "}\n\n";
+
+    // Conversion helpers..
+    foreach (const ConversionInfo& inf, imConversionList)
+        printConversionRoutine(inf);
+
+    *cppStream << "static void emitImmediateConversion(ConvOp convType, OpValue* original, OpValue& out)\n{\n";
+    *cppStream << "    out.immediate = true;\n";
+    *cppStream << "    switch(convType) {\n";
+    *cppStream << "    case Conv_NoOp:\n";
+    *cppStream << "        out = *original;\n";
+    *cppStream << "        break;\n";
+    foreach (const ConversionInfo& inf, imConversionList) {
+        *cppStream << "    case Conv_" << inf.name << ":\n";
+        *cppStream << "        out.type = OpType_" << inf.to.name << ";\n";
+        *cppStream << "        out.value." << (inf.to.align8 ? "wide" : "narrow")
+                   << "." << inf.to.name << "Val = "
+                   << "convert" << inf.name << "(0, "
+                   << "original->value." << (inf.from.align8 ? "wide" : "narrow")
+                   << "." << inf.from.name << "Val);\n";
+
+        *cppStream << "        break;\n";
+    }
+
+    *cppStream << "    default:\n";
+    *cppStream << "        CRASH();\n";
+    *cppStream << "    }\n";
+    *cppStream << "}\n\n";
 
     // Operations
     Enum opNamesEnum("OpName", "Op_", operationNames);
@@ -184,7 +211,7 @@ void TableBuilder::issueError(const QString& err)
     exit(-1);
 }
 
-void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last)
+void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool reg)
 {
     int numBits = neededBits(types.size());
     int fullRange = 1 << numBits;
@@ -193,15 +220,18 @@ void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, Conve
             if (from < types.size() && to < types.size()) {
                 QString fromName = typeNames[from];
                 QString toName   = typeNames[to];
-                if (table[fromName].contains(toName)) {
-                    const ConversionInfo& inf = table[typeNames[from]][typeNames[to]];
+
+                if (from == to) {
+                    *cppStream << "    {Conv_NoOp, 0}";
+                } else if (table[fromName].contains(toName) && types[fromName].im) {
+                    // We skip immediate conversions for things that can't be immediate, as
+                    // we don't have exec there..
+                    const ConversionInfo& inf = table[fromName][toName];
                     *cppStream << "    {Conv_" << inf.name << ",";
                     if (inf.checked)
                         *cppStream << "Cost_Checked}";
                     else
-                        *cppStream << inf.cost << "}";
-                } else if (from == to) {
-                    *cppStream << "    {Conv_NoOp, 0}";
+                        *cppStream << (reg ? inf.cost : 0) << "}";
                 } else {
                     *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
                 }
@@ -211,12 +241,22 @@ void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, Conve
                 *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
             }
 
-            if (!last || from != (fullRange - 1) || to != (fullRange - 1))
+            if (!reg || from != (fullRange - 1) || to != (fullRange - 1))
                 *cppStream << ",";
 
             *cppStream << "\n";
         } // for to..
     } // for from..
+}
+
+void TableBuilder::printConversionRoutine(const ConversionInfo& conversion)
+{
+    *hStream << "inline " << conversion.to.nativeName << " convert" << conversion.name
+         << "(ExecState* exec, " << conversion.from.nativeName << " in)\n";
+    *hStream << "{\n";
+    *hStream << "    (void)exec;\n";
+    printCode(hStream, 4, conversion.impl);
+    *hStream << "}\n\n";
 }
 
 void TableBuilder::handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8)
@@ -231,7 +271,7 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     types[type] = t;
 }
 
-void TableBuilder::handleConversion(const QString& name, const QString& runtimeRoutine,
+void TableBuilder::handleConversion(const QString& name, const QString& code,
                                     bool immediate, bool checked, bool mayThrow,
                                     const QString& from, const QString& to, int cost)
 {
@@ -241,12 +281,16 @@ void TableBuilder::handleConversion(const QString& name, const QString& runtimeR
     inf.cost    = cost;
     inf.checked = checked;
     inf.mayThrow = mayThrow;
-    inf.runtimeRoutine = runtimeRoutine;
+    inf.impl     = code;
+    inf.from     = types[from];
+    inf.to       = types[to];
 
-    if (immediate)
+    if (immediate) {
         imConversions[from][to] = inf;
-    else
+        imConversionList << inf;
+    } else {
         rgConversions[from][to] = inf;
+    }
 }
 
 void TableBuilder::handleOperation(const QString& name)
@@ -266,7 +310,7 @@ QList<Type> TableBuilder::resolveSignature(const QStringList& in)
     return sig;
 }
 
-void TableBuilder::handleImpl(const QString& fnName, const QString& code,
+void TableBuilder::handleImpl(const QString& fnName, const QString& code, int cost,
                               QStringList sig, QStringList paramNames)
 {
     Operation op;
@@ -275,6 +319,7 @@ void TableBuilder::handleImpl(const QString& fnName, const QString& code,
     op.parameters     = resolveSignature(sig);
     op.implParams     = op.parameters;
     op.implParamNames = paramNames;
+    op.cost           = cost;
     operations << op;
     if (!fnName.isEmpty())
         implementations[fnName] = op;
@@ -292,6 +337,11 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
     op.parameters  = resolveSignature(sig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
+    op.cost           = impl.cost;
+    // Now also include the cost of inline conversions.
+    for (int p = 0; p < op.parameters.size(); ++p)
+        op.cost += imConversions[op.parameters[p].name][op.implParams[p].name].cost;
+
     operations << op;
 }
 
@@ -371,6 +421,7 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     *cppStream << "    {";
     *cppStream << "Op_" << variant.op.name << ", ";     // baseInstr..
     *cppStream << "OpByteCode_" << (doPad ? variant.sig + "_Pad" : variant.sig) << ", "; // byteCode op
+    *cppStream << variant.op.cost << ", "; // uhm, cost. doh.
     int numParams = variant.op.parameters.size();
     *cppStream << numParams << ", "; // # of params
 
@@ -426,6 +477,40 @@ QTextStream& TableBuilder::mInd(int ind)
     return *mStream;
 }
 
+void TableBuilder::printCode(QTextStream* out, int baseIdent, const QString& code)
+{
+    QStringList lines = code.split("\n");
+
+    if (!lines.isEmpty() && lines.first().trimmed().isEmpty())
+        lines.removeFirst();
+    if (!lines.isEmpty() && lines.last().trimmed().isEmpty())
+        lines.removeLast();
+
+    // Compute "leading" whitespace.
+    int minWhiteSpace = 100000;
+    foreach(const QString& line, lines) {
+        if (line.trimmed().isEmpty())
+            continue;
+
+        int ws = 0;
+        while (ws < line.length() && line[ws].isSpace())
+            ++ws;
+        if (ws < minWhiteSpace)
+            minWhiteSpace = ws;
+    }
+
+    // Print out w/it stripped..
+    foreach(const QString& line, lines) {
+        if (line.length() < minWhiteSpace)
+            *out << "\n";
+        else {
+            for (int c = 0; c < baseIdent; ++c)
+                *out << ' ';
+            *out << line.mid(minWhiteSpace) << "\n";
+        }
+    }
+}
+
 void TableBuilder::generateVariantImpl(const OperationVariant& variant)
 {
     mInd(16) << "pc += " << variant.size << ";\n";
@@ -452,11 +537,8 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
             *mStream << accessString << ";\n";
         } else {
             ConversionInfo conv;
-            if (inReg)
-                conv = rgConversions[type.name][variant.op.implParams[p].name];
-            else
-                conv = imConversions[type.name][variant.op.implParams[p].name];
-            *mStream << conv.runtimeRoutine << "(" << accessString << ");\n";
+            conv = imConversions[type.name][variant.op.implParams[p].name];
+            *mStream << "convert" << conv.name << "(exec, " << accessString << ");\n";
 
             if (conv.mayThrow) {
                 // Check for an exception being raised..
@@ -466,34 +548,8 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
         }
     }
 
-    // Print out the impl code.. Attempting to indent it nicely..
-    QStringList lines = variant.op.implementAs.split("\n");
-
-    if (!lines.isEmpty() && lines.first().trimmed().isEmpty())
-        lines.removeFirst();
-    if (!lines.isEmpty() && lines.last().trimmed().isEmpty())
-        lines.removeLast();
-
-    // Compute "leading" whitespace.
-    int minWhiteSpace = 100000;
-    foreach(const QString& line, lines) {
-        if (line.trimmed().isEmpty())
-            continue;
-
-        int ws = 0;
-        while (ws < line.length() && line[ws].isSpace())
-            ++ws;
-        if (ws < minWhiteSpace)
-            minWhiteSpace = ws;
-    }
-
-    // Print out w/it stripped..
-    foreach(const QString& line, lines) {
-        if (line.length() < minWhiteSpace)
-            mInd(0) << "\n";
-        else
-            mInd(16) << line.mid(minWhiteSpace) << "\n";
-    }
+    // Print out the impl code..
+    printCode(mStream, 16, variant.op.implementAs);
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

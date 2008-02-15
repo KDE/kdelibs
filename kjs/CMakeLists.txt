@@ -170,6 +170,7 @@ set(kjs_LIB_SRCS
    JSVariableObject.cpp
    ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
+   nodes2bytecode.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

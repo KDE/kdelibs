@@ -44,10 +44,15 @@ struct Type
 struct ConversionInfo
 {
     QString name;
-    QString runtimeRoutine;
-    int  cost;
+    QString impl;
+    int  cost; // for w/in tile for immediate, for external for reg
     bool checked;
     bool mayThrow;
+    Type from;
+    Type to;
+
+    ConversionInfo(): cost(0), checked(false), mayThrow(false)
+    {} //Can be called for trivial conversion
 };
 
 // Actually, a specialization, but who cares?
@@ -55,6 +60,7 @@ struct Operation
 {
     QString name;
     QList<Type>  parameters;
+    int          cost;
 
     QString implementAs;
     QList<Type> implParams;
@@ -87,11 +93,15 @@ private:
                                   const QString& from, const QString& to, int cost);
 
     virtual void handleOperation(const QString& name);
-    virtual void handleImpl(const QString& fnName, const QString& code,
+    virtual void handleImpl(const QString& fnName, const QString& code, int cost,
                             QStringList sig, QStringList paramNames);
     virtual void handleTile(const QString& fnName, QStringList sig);
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
+
+    void printConversionRoutine(const ConversionInfo& conversion);
+
+    void printCode(QTextStream* out, int baseIdent, const QString& code);
 
     // Enumerates all r/i/pad variants; plus computes the shuffle table.
     void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);
@@ -122,6 +132,7 @@ private:
     QHash<QString, QStringList> variantNamesForOp;
 
     QStringList conversionNames;
+    QList<ConversionInfo> imConversionList;
 
     QHash<QString, QHash<QString, ConversionInfo> > imConversions;
     QHash<QString, QHash<QString, ConversionInfo> > rgConversions;

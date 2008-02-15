@@ -403,8 +403,6 @@ Node* StatementNode::createErrorNode(ErrorType e, const UString& msg, const Iden
     return new ErrorNode(this, e, message);
 }
 
-
-
 // ------------------------------ NullNode -------------------------------------
 
 JSValue *NullNode::evaluate(ExecState *)

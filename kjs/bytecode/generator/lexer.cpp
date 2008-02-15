@@ -44,7 +44,7 @@ Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false), lineNum(
     keywords["align8"]      = Align8;
     keywords["runtime"]     = Runtime;
     keywords["mayThrow"]    = MayThrow;
-    lineNum = 0;
+    lineNum = 1;
 }
 
 Lexer::Token Lexer::lexComment()

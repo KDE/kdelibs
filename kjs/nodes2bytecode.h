@@ -1,5 +1,5 @@
 /*
- *  Main VM dispatch loop and related routines for KJS/Frostbyte
+ *  Code generator state and helpers for KJS/Frostbyte
  *  This file is part of the KDE libraries
  *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
  *
@@ -19,24 +19,11 @@
  *
  */
 
-#include "completion.h"
-#include "ExecState.h"
-#include "value.h"
-
-#include "opcodes.h"
+#include "nodes.h"
 
 namespace KJS {
 
-Completion runBlock(ExecState* exec, const CodeBlock& block) {
-#if 0
-    Addr pc = 0; //Use local...
-    exec->setPc(&pc);
 
-    while (true) {
-        @generate
-    }
-#endif
-}
 
 }
 

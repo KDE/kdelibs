@@ -31,8 +31,10 @@
 #include "operations.h"
 #include "reference.h"
 #include "SymbolTable.h"
+#include "opcodes.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
+
 
 namespace KJS {
   class StaticVarStatementNode;
@@ -50,6 +52,8 @@ namespace KJS {
   class VarDeclVisitor;
   class FuncDeclVisitor;
   class SemanticChecker;
+
+  class CompileState;
 
   class NodeVisitor {
   public:
@@ -171,6 +175,8 @@ namespace KJS {
     Completion rethrowException(ExecState*);
 
     void copyDebugInfo(Node* otherNode);
+
+    virtual OpValue generateEvalCode(CodeBlock& block, CompileState*);
   protected:
     /* Nodes that can do semantic checking should override this,
        and return an appropriate error node if appropriate. The reimplementations
@@ -196,6 +202,13 @@ namespace KJS {
   public:
     virtual bool isLocation() const { return true; }
     virtual Reference evaluateReference(ExecState* exec) = 0;
+
+    // if we have a = foo, we call generateRefStoreBegin before
+    // evaluating 'foo', and then generateRefStoreFinish after;
+    // the reason is that the evaluation of the RHS could change the
+    // scope the store should be done into.
+    virtual void generateRefStoreBegin (CodeBlock& block, CompileState*);
+    virtual void generateRefStoreFinish(CodeBlock& block, CompileState*, const OpValue& result);
   };
 
   class StatementNode : public Node {
@@ -210,6 +223,8 @@ namespace KJS {
     void copyDebugInfo(StatementNode* otherNode);
     Node* createErrorNode(ErrorType e, const UString& msg);
     Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
+
+    virtual void generateExecCode(CodeBlock& block, CompileState*);
   protected:
     /* This implementation of checkSemantics applies the accumulated labels to
        this statement, manages the targets for labelless break and continue,
