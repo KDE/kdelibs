@@ -21,8 +21,6 @@
 #include "ksycocafactory.h"
 #include "ktoolinvocation.h"
 #include "kglobal.h"
-#undef NDEBUG
-#undef QT_NO_DEBUG
 
 #include "kdebug.h"
 #include "kstandarddirs.h"
