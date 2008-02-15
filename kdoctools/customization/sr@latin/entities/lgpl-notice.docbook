@@ -23,7 +23,7 @@
 
     Include a copy of the license in the documentation distribution.
  -->
-<para>Умножавање, расподела и/или измена овог документа допуштена је под одредбама Гнуове Лиценце слободне документације, верзије 1.2 или било које наредне коју изда Задужбина за слободни софтвер; &FDLInvariantSections;, &FDLFrontCoverText;, и &FDLBackCoverText;. Примерак лиценце дат је у <xref linkend="gnu-fdl"/>.</para>
+<para>Umnožavanje, raspodela i/ili izmena ovog dokumenta dopuštena je pod odredbama GNU‑ove Licence slobodne dokumentacije, verzije 1.2 ili bilo koje naredne koju izda Zadužbina za slobodni softver; &FDLInvariantSections;, &FDLFrontCoverText;, i &FDLBackCoverText;. Primerak licence dat je u <xref linkend="gnu-fdl"/>.</para>
 
 <!-- If you have no Invariant Sections, don't add any FDLIS entities.
      If you have no Front-Cover Texts, don't add any FDLFCT; likewise

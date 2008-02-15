@@ -1,4 +1,5 @@
-<!-- requires that packagename is defined in the documentation prologue -->
-<para>&kappname-n; је део пројекта &kde-n; &kde-http;.</para>
+<!-- requires that packagename is defined in the documentation prologue
+ -->
+<para>&kappname-n; је део пројекта КДЕ‑а, &kde-http;.</para>
 
-<para>&kappname-n; можете пронаћи у пакету &package-n; (<literal>&package;</literal>) на &kde-ftp;, главном &FTP-lju; сајту пројекта &kde-n;.</para>
+<para>&kappname-n; се може наћи у пакету &package; на &kde-ftp;, главном ФТП сајту пројекта КДЕ‑а.</para>
