@@ -1,6 +1,6 @@
 <!-- Do NOT change this file: it provides important defaults -->
 
-<!ENTITY language "sr">
+<!ENTITY language "sr_latin">
 
 <!-- These entities should be translated, should therefore be stored
      separately. -->
@@ -12,33 +12,33 @@
      text                                                          -->
 
 <!-- Licence links -->
-<!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//SR"
+<!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//SRLATIN"
   "entities/underGPL.docbook"                       ><!-- level: para -->
-<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//SR"
+<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//SRLATIN"
   "entities/underLGPL.docbook"                      ><!-- level: para -->
-<!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//SR"
+<!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//SRLATIN"
   "entities/underFDL.docbook"                       ><!-- level: para -->
-<!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//SR"
+<!ENTITY underBSDLicense    PUBLIC "-//KDE//DOCUMENT BSD Licence Declaration//SRLATIN"
   "entities/underBSDLicense.docbook"                ><!-- level: para -->
-<!ENTITY underArtisticLicense PUBLIC "-//KDE//DOCUMENT Artistic Licence Declaration//SR"
+<!ENTITY underArtisticLicense PUBLIC "-//KDE//DOCUMENT Artistic Licence Declaration//SRLATIN"
   "entities/underArtisticLicense.docbook"           ><!-- level: para -->
-<!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//SR"
+<!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//SRLATIN"
   "entities/underX11License.docbook"                ><!-- level: para -->
 
-<!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//SR"
+<!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//SRLATIN"
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
-<!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//SR"
+<!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//SRLATIN"
   "entities/update-doc.docbook"                     ><!-- level: para -->
-<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//SR"
+<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//SRLATIN"
   "entities/help-menu.docbook"                      ><!-- level: variablelist -->
-<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//SR"
+<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//SRLATIN"
   "entities/install-intro.docbook"                     ><!-- level: para -->
-<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//SR"
+<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//SRLATIN"
   "entities/install-compile.docbook"                     ><!-- level: para -->
 
 
 <!-- FDL notice -->
-<!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//SR"
+<!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//SRLATIN"
          "entities/fdl-notice.docbook">
 <!-- meant to be included, so no NDATA or CDATA (why?) -->
 

@@ -1,4 +1,4 @@
-<!-- This file can be used to include the notice in documentation
+<!-- This file can be used to include the notice in documentation 
      <!DOCTYPE book ... >
     ...
      <bookinfo>
@@ -12,25 +12,27 @@
     Alternatively, you can include the text literally.
  -->
 
+<!-- Translator's NOTE: Taken from unofficial translation of GPL
+     by Strahinya Radich, http://alas.matf.bg.ac.yu/~mr99164/ojl.html -->
+
 <para>Овај програм је слободни софтвер; можете га расподелити и/или
-мењати под одредбама &GNU-gjz; &GPLexp-g; коју је објавила
+мењати под одредбама ГНУ-ове опште јавне лиценце коју је објавила
 Задужбина за слободни софтвер; и то, било верзије 2 Лиценце, или
 (по вашем избору) било које следеће верзије.</para>
 
 <para>Овај програм се расподељује у намери да буде користан, али БЕЗ
 ИКАКВЕ ГАРАНЦИЈЕ; чак и без имплицитне гаранције КОМЕРЦИЈАЛНЕ
-ВРЕДНОСТИ или ИСПУЊАВАЊА ОДРЕЂЕНЕ ПОТРЕБЕ. Погледајте &GNU-ajz; &GPLexp-a; за више детаља.</para>
+ВРЕДНОСТИ или ИСПУЊАВАЊА ОДРЕЂЕНЕ ПОТРЕБЕ. Погледајте ГНУ-ову општу
+јавну лиценцу за више детаља.</para>
 
-<para>Требало би да примите примерак &GNU-gjz; &GPLexp-g; заједно са
+<para>Требало би да примите примерак ГНУ-ове опште јавне лиценце заједно са
 овим програмом; ако то није случај, пишите Задужбини за слободни
 софтвер на адресу: Free Software Foundation, Inc., 51 Franklin Street,
 Fifth Floor, Boston, MA  02110-1301, USA.</para>
+
 <!--
 Local variables:
 mode: sgml
 sgml-general-insert-case: lower
 End:
--->
-<!--
-Из превода Страхиње Радића и осталих, комплетан текст лиценце може се наћи на адреси http://alas.matf.bg.ac.yu/~mr99164/ojl.html
 -->

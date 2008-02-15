@@ -3,40 +3,33 @@
 <term>
 <menuchoice>
 <shortcut>
-<keycombo action="simul">&F1-n;</keycombo>
+<keycombo action="simul"><keycap>Ф1</keycap></keycombo>
 </shortcut>
 <guimenu>Помоћ</guimenu>
-<guimenuitem>Приручник &kappname-g;</guimenuitem>
+<guimenuitem>Приручник за &kappname-a;</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Позива &kde-aju; систем помоћи</action> почевши од страна помоћи &kappname-g; (овај документ).</para></listitem>
+<listitem><para><action>Позива Систем помоћи КДЕ‑а</action>, почев на страни намењеној &kappname-d; (овај документ).</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">&Shift-n;&F1-n;</keycombo>
+<keycombo action="simul">шифт<keycap>Ф1</keycap></keycombo>
 </shortcut>
 <guimenu>Помоћ</guimenu>
 <guimenuitem>Шта је ово?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
-<listitem><para><action>Мења показивач миша у комбинацију стрелице и знака питања.</action> Кликом на ставку унутар &kappname-g; отвориће се прозор помоћи (ако постоји за дату ставку) објашњавајући њену функцију.</para></listitem>
+<listitem><para><action>Претвара показивач миша у стрелицу са знаком питања.</action> Када потом кликнете на неку контролу &kappname-g;, приказаће се помоћни текст (ако је дефинисан) који објашњава намену контроле.</para></listitem>
 </varlistentry>
-
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Помоћ</guimenu>
 <guimenuitem>Пријави грешку...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
-<listitem><para><action>Отвара дијалог за пријаву грешка</action>, у коме можете да пријавите грешку или захтевате нову могућност (ставља се на <quote>листу жеља</quote>).</para></listitem>
+<listitem><para><action>Отвара дијалог за пријаву грешака</action>, у коме можете описати проблем или затражити нову могућност (<quote>списак жеља</quote>).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -44,14 +37,14 @@ report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
 <guimenu>Помоћ</guimenu>
 <guimenuitem>О &kappname-d;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Ово ће приказати информације о верзији и аутору.</action></para></listitem>
+<listitem><para><action>Приказује податке о издању и ауторима.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Помоћ</guimenu>
-<guimenuitem>О &kde-d;</guimenuitem>
+<guimenuitem>О КДЕ‑а</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Ово приказује верзију &kde-g; и остале основне информације.</action></para></listitem>
+<listitem><para><action>Приказује издање КДЕ‑а и друге основне податке.</action></para></listitem>
 </varlistentry>
 </variablelist>

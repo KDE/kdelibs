@@ -551,6 +551,14 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Serbian-Latin "IGNORE">
+<![%Serbian-Latin;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Serbian-Latin Documentation V1.0//SRLATIN"
+           "../sr@latin/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Swati "IGNORE">
 <![%Swati;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Swati Documentation V1.0//SS"

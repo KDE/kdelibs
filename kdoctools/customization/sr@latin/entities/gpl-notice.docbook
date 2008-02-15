@@ -1,0 +1,38 @@
+<!-- This file can be used to include the notice in documentation 
+     <!DOCTYPE book ... >
+    ...
+     <bookinfo>
+       <legalnotice>
+         <para>Copyright (C) 20yy  [name of author]</para>
+         &GPLnotice;
+       </legalnotice>
+     </bookinfo>
+    ...
+
+    Alternatively, you can include the text literally.
+ -->
+
+<!-- Translator's NOTE: Taken from unofficial translation of GPL
+     by Strahinya Radich, http://alas.matf.bg.ac.yu/~mr99164/ojl.html -->
+
+<para>Ovaj program je slobodni softver; možete ga raspodeliti i/ili
+menjati pod odredbama GNU-ove opšte javne licence koju je objavila
+Zadužbina za slobodni softver; i to, bilo verzije 2 Licence, ili
+(po vašem izboru) bilo koje sledeće verzije.</para>
+
+<para>Ovaj program se raspodeljuje u nameri da bude koristan, ali BEZ
+IKAKVE GARANCIJE; čak i bez implicitne garancije KOMERCIJALNE
+VREDNOSTI ili ISPUNJAVANJA ODREĐENE POTREBE. Pogledajte GNU-ovu opštu
+javnu licencu za više detalja.</para>
+
+<para>Trebalo bi da primite primerak GNU-ove opšte javne licence zajedno sa
+ovim programom; ako to nije slučaj, pišite Zadužbini za slobodni
+softver na adresu: Free Software Foundation, Inc., 51 Franklin Street,
+Fifth Floor, Boston, MA  02110-1301, USA.</para>
+
+<!--
+Local variables:
+mode: sgml
+sgml-general-insert-case: lower
+End:
+-->
