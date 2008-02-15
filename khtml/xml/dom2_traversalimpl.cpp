@@ -87,6 +87,8 @@ SharedPtr<NodeImpl> NodeIteratorImpl::nextNode( int &exceptioncode, void* &propa
 	return 0;
     }
 
+    SharedPtr<NodeImpl> oldReferenceNode = m_referenceNode;
+    Position oldPosition = m_position;
     while (true) {
         SharedPtr<NodeImpl> cand = m_referenceNode;
         // If we're before a node, it's the next node to return, and we'll
@@ -95,7 +97,7 @@ SharedPtr<NodeImpl> NodeIteratorImpl::nextNode( int &exceptioncode, void* &propa
             m_position = ITER_AFTER_REF;
             if (isAccepted(m_referenceNode.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
                 return cand;
-            if (propagatedExceptionObject) return 0;
+            if (propagatedExceptionObject) { m_position = oldPosition; m_referenceNode = oldReferenceNode; return 0; }
         } else {
             // Robustness note here: the filter could potentially yank any nodes out,
             // so we can't keep any state in the temporaries. We hence always rely on
@@ -106,7 +108,7 @@ SharedPtr<NodeImpl> NodeIteratorImpl::nextNode( int &exceptioncode, void* &propa
             m_referenceNode = cand;
             if (isAccepted(cand.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
                 return cand;
-            if (propagatedExceptionObject) return 0;
+            if (propagatedExceptionObject) { m_position = oldPosition; m_referenceNode = oldReferenceNode; return 0; }
         }
     }
     return 0;
@@ -120,6 +122,8 @@ SharedPtr<NodeImpl> NodeIteratorImpl::previousNode( int &exceptioncode, void* &p
 	return 0;
     }
 
+    SharedPtr<NodeImpl> oldReferenceNode = m_referenceNode;
+    Position oldPosition = m_position;
     while (true) {
         SharedPtr<NodeImpl> cand = m_referenceNode;
         if (m_position == ITER_AFTER_REF) {
@@ -127,7 +131,7 @@ SharedPtr<NodeImpl> NodeIteratorImpl::previousNode( int &exceptioncode, void* &p
             if (isAccepted(m_referenceNode.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
                 return cand;
 
-            if (propagatedExceptionObject) return 0;
+            if (propagatedExceptionObject) { m_position = oldPosition; m_referenceNode = oldReferenceNode; return 0; }
         } else {
             cand = getPrevNode(m_referenceNode.get());
             if (!cand)
@@ -136,7 +140,7 @@ SharedPtr<NodeImpl> NodeIteratorImpl::previousNode( int &exceptioncode, void* &p
             m_referenceNode = cand;
             if (isAccepted(cand.get(), propagatedExceptionObject) == NodeFilter::FILTER_ACCEPT)
                 return cand;
-            if (propagatedExceptionObject) return 0;
+            if (propagatedExceptionObject) { m_position = oldPosition; m_referenceNode = oldReferenceNode; return 0; }
         }
     }
     return 0;

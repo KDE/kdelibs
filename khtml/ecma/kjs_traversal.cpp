@@ -103,11 +103,15 @@ JSValue* DOMNodeIteratorProtoFunc::callAsFunction(ExecState *exec, JSObject* thi
   switch (id) {
   case DOMNodeIterator::PreviousNode: {
     SharedPtr<DOM::NodeImpl> node = nodeIterator.previousNode(exception, filterException);
-    return getDOMNode(exec, node.get());
+    if (!filterException)
+      return getDOMNode(exec, node.get());
+    break;
   }
   case DOMNodeIterator::NextNode: {
     SharedPtr<DOM::NodeImpl> node = nodeIterator.nextNode(exception, filterException);
-    return getDOMNode(exec, node.get());
+    if (!filterException)
+      return getDOMNode(exec, node.get());
+    break;
   }
   case DOMNodeIterator::Detach:
     nodeIterator.detach(exception);
