@@ -45,6 +45,7 @@
 #include <wtf/HashCountedSet.h>
 #include <wtf/MathExtras.h>
 
+#include "CompileState.h"
 
 namespace KJS {
 
@@ -2761,6 +2762,7 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     , m_sourceURL(lexer().sourceURL())
     , m_sourceId(parser().sourceId())
     , m_builtSymbolList(false)
+    , m_compiled(false)
 {
 
   setLoc(-1, -1);
@@ -2816,6 +2818,22 @@ void FunctionBodyNode::addParam(const Identifier& ident)
 {
   size_t id = addSymbol(ident, DontDelete);
   m_paramList.append(Parameter(ident, id));
+}
+
+Completion FunctionBodyNode::execute(ExecState *exec)
+{
+  // ### debug stuff, temporary..
+  if (!m_compiled) {
+    m_compiled = true;
+    CompileState comp(this, m_symbolTable.size());
+    CodeBlock out;
+    if (source)
+      source->generateExecCode(&comp, out);
+    printf("\n\n");
+    CodeGen::disassembleBlock(out);
+  }
+
+  return BlockNode::execute(exec);
 }
 
 

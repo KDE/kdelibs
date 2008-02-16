@@ -29,6 +29,14 @@
 
 namespace KJS {
 
+CompileState::~CompileState()
+{
+    for (size_t c = 0; c < freeMarkTemps.size(); ++c)
+        delete freeMarkTemps[c];
+    for (size_t c = 0; c < freeNonMarkTemps.size(); ++c)
+        delete freeNonMarkTemps[c];
+}
+
 void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& reference)
 {
     ASSERT(type == OpType_value || type == OpType_bool || type == OpType_uint32);
@@ -64,6 +72,7 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
     reference.ownedTemp = temp;
     reference.value.narrow.regVal = temp->reg();
 }
+
 
 } //namespace KJS
 

@@ -29,7 +29,7 @@
 
 namespace KJS {
 
-static inline OpValue mkImmediateResult(OpType type)
+static inline OpValue mkImmediateVal(OpType type)
 {
     OpValue ret;
     ret.immediate = true;
@@ -41,7 +41,7 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
 
-    OpValue dummy = mkImmediateResult(OpType_uint32);
+    OpValue dummy = mkImmediateVal(OpType_uint32);
     dummy.value.narrow.uint32Val = 42;
     return dummy;
 }
@@ -56,7 +56,7 @@ void LocationNode::generateRefStoreFinish(CodeBlock& block, CompileState*, const
     std::cerr << "WARNING: no generateRefStoreFinish for:" << typeid(*this).name() << "\n";
 }
 
-void StatementNode::generateExecCode(CodeBlock& block, CompileState*)
+void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
 }
@@ -65,14 +65,14 @@ void StatementNode::generateExecCode(CodeBlock& block, CompileState*)
 
 OpValue NullNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    OpValue res = mkImmediateResult(OpType_value);
+    OpValue res = mkImmediateVal(OpType_value);
     res.value.wide.valueVal = jsNull();
     return res;
 }
 
 OpValue BooleanNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    OpValue res = mkImmediateResult(OpType_bool);
+    OpValue res = mkImmediateVal(OpType_bool);
     res.value.narrow.boolVal = value();
     return res;
 }
@@ -84,14 +84,14 @@ OpValue NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         // Try to fit into a JSValue if at all possible..
         JSValue* im = JSImmediate::from(value());
         if (im) {
-            OpValue res = mkImmediateResult(OpType_value);
+            OpValue res = mkImmediateVal(OpType_value);
             return res;
         }
     }
 #endif
 
     // Numeric-like..
-    OpValue res = mkImmediateResult(OpType_number);
+    OpValue res = mkImmediateVal(OpType_number);
     res.value.wide.numberVal = value();
     return res;
 }
@@ -103,7 +103,7 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     // We may want to permit string pointers as well, to help overload resolution,
     // but it's not clear whether that's useful, since we can't MM them. Perhaps
     // a special StringInstance type may be of use eventually.
-    OpValue inStr = mkImmediateResult(OpType_string);
+    OpValue inStr = mkImmediateVal(OpType_string);
     inStr.value.wide.stringVal = &val;
 
     OpValue out, regNum;
@@ -112,6 +112,51 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
+// ------------------------------ Code structure -------------------------------
+
+
+void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    node->generateExecCode(comp, block);
+
+    // ### FIXME: how do we do proper completion?
+    for (SourceElementsNode *n = next.get(); n; n = n->next.get()) {
+        n->node->generateExecCode(comp, block);
+    }
+}
+
+void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    for (VarDeclListNode *n = next.get(); n; n = n->next.get()) {
+        // We only care about things which have an initializer ---
+        // everything else is a no-op at execution time,
+        // and only makes a difference at processVarDecl time
+        if (n->var->init) {
+            OpValue val = n->var->init->generateEvalCode(comp, block);
+
+            size_t localID = comp->functionBody()->lookupSymbolID(n->var->ident);
+            if (localID == missingSymbolMarker()) {
+                // Generate a symbolic assignment, always to local scope
+                // ### may want to tile this?
+
+                // First, we lookup the scope..
+                OpValue scopeVal, scopeReg;
+                comp->requestTemporary(OpType_value, scopeVal, scopeReg);
+                CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeReg);
+
+                // Now do a store..
+                OpValue ident = mkImmediateVal(OpType_ident);
+                ident.value.wide.identVal = &n->var->ident;
+                CodeGen::emitOp(comp, block, Op_SymPut, &scopeVal, &ident, &val);
+            } else {
+                // Store to the local..
+                OpValue dest = mkImmediateVal(OpType_reg);
+                dest.value.narrow.regVal = localID;
+                CodeGen::emitOp(comp, block, Op_RegPut, &dest, &val);
+            }
+        } // if initializer..
+    } // for each decl..
+}
 
 }
 

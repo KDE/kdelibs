@@ -225,7 +225,7 @@ namespace KJS {
     Node* createErrorNode(ErrorType e, const UString& msg);
     Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
 
-    virtual void generateExecCode(CodeBlock& block, CompileState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   protected:
     /* This implementation of checkSemantics applies the accumulated labels to
        this statement, manages the targets for labelless break and continue,
@@ -878,6 +878,7 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool isVarStatement() const { return true; }
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   private:
     RefPtr<VarDeclListNode> next;
   };
@@ -1162,6 +1163,7 @@ namespace KJS {
     size_t paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
     const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
 
+    Completion execute(ExecState *exec);
   private:
     UString m_sourceURL;
     int m_sourceId : 31;
@@ -1177,6 +1179,9 @@ namespace KJS {
 
     // The list of parameters, and their local IDs in the
     WTF::Vector<Parameter> m_paramList;
+
+
+    bool m_compiled; // ### debug for now
   };
 
   class FuncExprNode : public Node {
@@ -1228,6 +1233,7 @@ namespace KJS {
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
 
     Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<SourceElementsNode> releaseNext() { return next.release(); }
     virtual void breakCycle();

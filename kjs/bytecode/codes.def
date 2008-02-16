@@ -293,10 +293,22 @@ operation Return {
 // Variable stuff... Locals access can just use register addressing,
 // not specific get/put, but when we have to do symbolic lookup, we use these.
 
+operation GetVariableObject {
+    impl(reg outReg) [[
+        return exec->variableObject();
+    ]]
+}
+
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl scopeLookup(ident varName) [[
+    impl scopeLookup(reg outReg, ident varName) [[
         //### TODO
+    ]]
+}
+
+operation RegPut {
+    impl regPut(reg destReg, value val) [[
+        localStore[destReg].regValue = val;
     ]]
 }
 

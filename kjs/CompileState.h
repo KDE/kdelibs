@@ -34,12 +34,18 @@
 namespace KJS {
 
 class TempDescriptor;
+class FunctionBodyNode;
 
 class CompileState
 {
 public:
-    CompileState(Register initialMaxTemp): initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp)
+    CompileState(FunctionBodyNode* fbody, Register initialMaxTemp):
+        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody)
     {}
+
+    FunctionBodyNode* functionBody() {
+        return fbody;
+    }
 
     ~CompileState();
 
@@ -54,6 +60,8 @@ private:
     WTF::Vector<bool>            shouldMark; // position 0 - initialMaxTemp
     Register initialMaxTemp;
     Register maxTemp;
+
+    FunctionBodyNode* fbody;
 
     void reuse(TempDescriptor* desc, bool markable) {
         if (markable)
