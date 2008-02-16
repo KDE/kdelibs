@@ -113,8 +113,8 @@ void TableBuilder::generateCode()
     // For conversion info, we use upper bit for register/immediate (immediate is set),
     // and then enough bits for the from/to types as the index.
     *cppStream << "static const ConvInfo conversions[] = {\n";
-    printConversionInfo(imConversions, false);
     printConversionInfo(rgConversions, true);
+    printConversionInfo(imConversions, false);
     *cppStream << "};\n\n";
 
     int numBits = neededBits(types.size());
@@ -146,6 +146,7 @@ void TableBuilder::generateCode()
     }
 
     *cppStream << "    default:\n";
+    *cppStream << "        printf(\"Unable to handle in-place conversion:%s\\n\", ConvOpVals[convType]);\n";
     *cppStream << "        CRASH();\n";
     *cppStream << "    }\n";
     *cppStream << "}\n\n";
@@ -262,7 +263,7 @@ void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, Conve
                 *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
             }
 
-            if (!reg || from != (fullRange - 1) || to != (fullRange - 1))
+            if (reg || from != (fullRange - 1) || to != (fullRange - 1))
                 *cppStream << ",";
 
             *cppStream << "\n";

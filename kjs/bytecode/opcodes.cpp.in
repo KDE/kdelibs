@@ -142,7 +142,7 @@ static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const Op
 OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                             OpValue* a0, OpValue* a1, OpValue* a2)
 {
-    static const Op* const* cands = opSpecializations[baseInstr];
+    const Op* const* cands = opSpecializations[baseInstr];
 
     const Op* cheapest = 0;
     int    cheapestCost = 0;
@@ -161,6 +161,7 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
     // cast ops, which could change where we are.
     for (int c = 0; cands[c]; ++c) {
         const Op* cand = cands[c];
+        ASSERT(cand->baseInstr == baseInstr);
         ASSERT(cand->numParams == numArgs);
 
         if (cand->padAlign)
@@ -265,7 +266,8 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type)
         std::printf("%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->uint32Val);
         break;
     case OpType_value:
-        std::printf("huh???");
+        // Immediate value -- should go through JSImmediate stuff..
+        std::printf("<ival:%s>", reinterpret_cast<WideArg*>(block.data() + offset)->valueVal->toString(0).ascii());
         break;
     case OpType_ident:
         std::printf("%s", reinterpret_cast<WideArg*>(block.data() + offset)->identVal->ustring().ascii());
