@@ -158,7 +158,7 @@ class KDECORE_EXPORT KAboutData
 {
   public:
   /**
-   * Descibes the license of the software.
+   * Describes the license of the software.
    */
     enum LicenseKey
     {
@@ -172,7 +172,9 @@ class KDECORE_EXPORT KAboutData
       License_BSD  = 3,
       License_Artistic = 4,
       License_QPL = 5,
-      License_QPL_V1_0 = 5
+      License_QPL_V1_0 = 5,
+      License_GPL_V3 = 6,
+      License_LGPL_V3 = 7
     };
 
   /**
