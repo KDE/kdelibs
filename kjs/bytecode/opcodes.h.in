@@ -29,6 +29,7 @@ namespace KJS {
 
 typedef unsigned Addr;
 typedef unsigned Register;
+class CompileState;
 
 @generate
 
@@ -105,8 +106,13 @@ union WideArg
     unsigned char asBytes[8];
 };
 
-// This describes a value in the opcode, either
-// indirectly via a register, or via
+// This describes where result of evaluating an expression, or an argument
+// to a function, is stored. If immediate is true, it is included directly inside
+// the structure. Otherwise, it's passed by the register number specified in
+// regVal.
+// Note: there is a difference between values stored in registers, and register names.
+// The former have immediate = false, and some type such as OpType_Bool. The latter have
+// immediate = true, and type = OpType_reg.
 struct OpValue
 {
     bool   immediate;
@@ -122,7 +128,8 @@ typedef Vector<unsigned char> CodeBlock;
 class CodeGen {
 public:
     // All of these emit the instruction of given type, and return its base
-    static OpByteCode* emitOp(CodeBlock& block, OpName baseInstr, OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
+    static OpByteCode* emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+                              OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
 
     static inline void patchOpArgument(OpByteCode* base, int pos, OpValue& newVal) {
         const Op& variant = opsForOpCodes[*base];
@@ -138,8 +145,6 @@ public:
     }
 
     static void disassembleBlock(CodeBlock& block);
-private:
-    static OpByteCode* emitOp(CodeBlock& block, OpName baseInstr, int numArgs, OpValue* args);
 };
 
 } //namespace KJS

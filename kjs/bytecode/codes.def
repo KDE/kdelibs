@@ -69,7 +69,7 @@ conversion bool => uint32 {
     ]]
 
     tile costs 0; //cost in tile..
-    register  rBool_Int costs 0; // we always store bool as 0/1, so this is free.
+    register  RBool_Uint32 costs 0; // we always store bool as 0/1, so this is free.
 }
 
 conversion bool => value {
@@ -78,7 +78,7 @@ conversion bool => value {
     ]]
 
     tile costs 0;
-    register rBool_Value costs 10; // Separate jsBoolean instruction
+    register RBool_Value costs 10; // Separate jsBoolean instruction
 }
 
 conversion bool => number {
@@ -98,7 +98,7 @@ conversion value => bool {
     ]]
 
     tile costs 5; // it is a virtual call
-    register rValue_Bool costs 15; // ToBoolean instr, includes a virtual call..
+    register RValue_Bool costs 15; // ToBoolean instr, includes a virtual call..
 }
 
 conversion value => uint32 {
@@ -107,7 +107,7 @@ conversion value => uint32 {
     ]]
 
     tile costs 40; // toUInt32 used to number --- expensive
-    register rValue_UInt32 costs 50; // above, plus a separate instr
+    register RValue_Uint32 costs 50; // above, plus a separate instr
 }
 
 conversion value => number {
@@ -127,7 +127,7 @@ conversion uint32 => bool {
     ]]
 
     tile costs 0;
-    register rUInt32_Bool costs 10;
+    register RUint32_Bool costs 10;
 }
 
 conversion uint32 => value {
@@ -136,7 +136,7 @@ conversion uint32 => value {
     ]]
 
     tile costs 15;
-    register rUInt32_Value costs 25;
+    register RUint32_Value costs 25;
 }
 
 conversion uint32 => number {
@@ -145,7 +145,6 @@ conversion uint32 => number {
     ]]
 
     tile costs 3;
-    register rUInt32_Number costs 13;
 }
 
 /*
@@ -222,7 +221,7 @@ operation UInt32ToBool {
     ]]
 }
 
-operation JSNumber {
+operation JSNumberFromUInt32 {
     impl(reg outReg, uint32 in) [[
         localStore[outReg].valueVal = jsNumber(in);
     ]]

@@ -70,16 +70,67 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     return inf->routine;
 }
 
-static void emitConversion(CodeBlock& block, ConvOp convType, OpValue* original, OpValue& out)
+static void emitConversion(CompileState* comp, CodeBlock& block,
+                           ConvOp convType, OpValue* original, OpValue& out)
 {
     if (original->immediate) {
         emitImmediateConversion(convType, original, out);
         return;
     }
+
+    OpValue registerAddr;
+
+    switch (convType) {
+    case Conv_NoOp:
+        out = *original;
+        break;
+    case Conv_RBool_Uint32:
+        // This one's a no-op..
+        out = *original;
+        break;
+    case Conv_RBool_Value: {
+        out    = comp->requestTemporary(OpType_value);
+        regNum = comp->regNum(out);
+        emitOp(comp, block, Op_JsBoolean, &regNum, original);
+    }
+    break;
+
+    case Conv_RValue_Bool: {
+        out    = comp->requestTemporary(OpType_bool);
+        regNum = comp->regNum(out);
+        emitOp(comp, block, Op_ToBoolean, &regNum, original);
+    }
+    break;
+
+    case Conv_RValue_Uint32: {
+        out    = comp->requestTemporary(OpType_uint32);
+        regNum = comp->regNum(out);
+        emitOp(comp, block, Op_ToUInt32, &regNum, original);
+    }
+    break;
+
+    case Conv_RUint32_Bool: {
+        out    = comp->requestTemporary(OpType_bool);
+        regNum = comp->regNum(out);
+        emitOp(comp, block, Op_UInt32ToBool,  &regNum, original);
+    }
+    break;
+
+    case Conv_RUint32_Value: {
+        out    = comp->requestTemporary(OpType_value);
+        regNum = comp->regNum(out);
+        emitOp(comp, block, JSNumberFromUInt32, &regNum, original);
+    }
+    break;
+
+    default:
+        CRASH();
+    };
     // ### TODO
 }
 
-OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, OpValue* a1, OpValue* a2)
+OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+                            OpValue* a0, OpValue* a1, OpValue* a2)
 {
     static const Op* const* cands = opSpecializations[baseInstr];
 
@@ -138,20 +189,11 @@ OpByteCode* CodeGen::emitOp(CodeBlock& block, OpName baseInstr,  OpValue* a0, Op
 
     switch (numArgs) {
     case 3:
-        if (cheapestConvOps[2] != Conv_NoConversion)
-            emitConversion(block, cheapestConvOps[2], a2, c2);
-        else
-            c2 = *a2;
+        emitConversion(block, cheapestConvOps[2], a2, c2);
     case 2:
-        if (cheapestConvOps[1] != Conv_NoConversion)
-            emitConversion(block, cheapestConvOps[1], a1, c1);
-        else
-            c1 = *a1;
+        emitConversion(block, cheapestConvOps[1], a1, c1);
     case 1:
-        if (cheapestConvOps[0] != Conv_NoConversion)
-            emitConversion(block, cheapestConvOps[0], a0, c0);
-        else
-            c0 = *a0;
+        emitConversion(block, cheapestConvOps[0], a0, c0);
     case 0:
         break;
     }

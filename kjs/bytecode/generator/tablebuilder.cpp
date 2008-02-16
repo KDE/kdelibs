@@ -221,9 +221,18 @@ void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, Conve
                 QString fromName = typeNames[from];
                 QString toName   = typeNames[to];
 
+                // For register conversion, we need it to be possible for source + dest to be in
+                // registers. For immediate, we only require source, since dest will just go
+                // into local value.
+                bool representable;
+                if (reg)
+                    representable = types[fromName].reg && types[toName].reg;
+                else
+                    representable = types[fromName].im;
+
                 if (from == to) {
                     *cppStream << "    {Conv_NoOp, 0}";
-                } else if (table[fromName].contains(toName) && types[fromName].im) {
+                } else if (table[fromName].contains(toName) && representable) {
                     // We skip immediate conversions for things that can't be immediate, as
                     // we don't have exec there..
                     const ConversionInfo& inf = table[fromName][toName];

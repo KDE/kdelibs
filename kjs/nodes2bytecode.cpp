@@ -35,7 +35,7 @@ static inline OpValue mkImmediateResult(OpType type)
     ret.type      = type;
 }
 
-OpValue Node::generateEvalCode(CodeBlock& block, CompileState*)
+OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
 
@@ -61,35 +61,44 @@ void StatementNode::generateExecCode(CodeBlock& block, CompileState*)
 
 // ------------------------------ Basic literals -----------------------------------------
 
-void NullNode::generateEvalCode(CodeBlock& block, ExecState *)
+OpValue NullNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    OpValue res = mkImmediateResult(OpType_uint32);
-    res.value.wide.valueVal = jsNull();
+    OpValue res    = comp->requestTemporary(OpType_value);
+    OpValue regNum = comp->regNum(res);
+    emitOp(comp, block, Op_Null, &regNum);
     return res;
 }
 
-void BooleanNode::generateEvalCode(CodeBlock& block, ExecState *)
+void BooleanNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     OpValue res = mkImmediateResult(OpType_bool);
     res.value.narrow.boolVal = value();
     return res;
 }
 
-void NumberNode::generateEvalCode(CodeBlock& block, ExecState *)
+void NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    // ### do we want a number type in wider use? Check if we can do an immediate value...
+    // ### TODO: this can probably benefit from a type hint!
+    OpValue res = mkImmediateResult(OpType_bool);
+    res.value.wide.doubleVal = value();
+
+    return res;
+#if 0
+    // Check if we can do an immediate value...
     JSValue* im = JSImmediate::from(value());
     if (im) {
     } else {
         // Allocate a register..
 
     }
+#endif
 }
 
-// Uff. How does register release work !?
-
-JSValue *StringNode::generateEvalCode(CodeBlock& ExecState *)
+JSValue *StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
+    // ### here, we want to permit tile conversion, for tile overloads,
+    // but not immediate conversion. Does that make sense?
+    OpValue inStr =
     return jsOwnedString(value());
 }
 
