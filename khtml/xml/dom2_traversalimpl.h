@@ -71,7 +71,8 @@ protected:
     SharedPtr<NodeFilterImpl> m_filter;
     bool m_expandEntityReferences;
 
-    enum { ITER_BEFORE_REF, ITER_AFTER_REF } m_position;
+    typedef enum { ITER_BEFORE_REF, ITER_AFTER_REF } Position;
+    Position m_position;
     SharedPtr<NodeImpl> m_referenceNode;
     bool m_detached;
     DocumentImpl *m_doc;
