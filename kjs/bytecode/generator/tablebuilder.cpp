@@ -88,6 +88,18 @@ void TableBuilder::generateCode()
     typesEnum.printDeclaration(hStream);
     typesEnum.printDefinition (cppStream);
 
+    // Also, print out the width array...
+    *cppStream << "const bool opTypeIsAlign8[] = {\n";
+    for (int t = 0; t < typeNames.size(); ++t) {
+        const Type& type = types[typeNames[t]];
+        *cppStream << (type.align8 ? "true": "false");
+        if (t != typeNames.size() - 1)
+            *cppStream << ",";
+        *cppStream << " //" << type.name << "\n";
+    }
+
+    *cppStream << "};\n\n";
+
     // Conversion ops. Those go entirely in the .cpp
     Enum convOps("ConvOp", "Conv_", conversionNames);
     convOps.printDeclaration(cppStream);

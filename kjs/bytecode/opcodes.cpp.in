@@ -125,6 +125,20 @@ static void emitConversion(CompileState* comp, CodeBlock& block,
     // ### TODO
 }
 
+// ### probably worth merging with patchOpArgument --- basically the same thing..
+static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const OpValue& val)
+{
+    ASSERT(opDescr->immediateParams[pos] == val.immediate);
+    ASSERT(opDescr->paramTypes[pos] == val.type);
+
+    unsigned char* argBase = basePtr + opDescr->paramOffsets[pos];
+    if (val.immediate && opTypeIsAlign8[val.type]) {
+        *reinterpret_cast<WideArg*>(argBase) = val.value.wide;
+    } else {
+        *reinterpret_cast<NarrowArg*>(argBase) = val.value.narrow;
+    }
+}
+
 OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                             OpValue* a0, OpValue* a1, OpValue* a2)
 {
@@ -205,6 +219,23 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
     size_t pos = block.size();
     block.resize(pos + cheapest->length);
     unsigned char* basePtr = block.data() + pos;
+
+    // Write out the opcode..
+    *reinterpret_cast<OpByteCode*>(basePtr) = cheapest->opCode;
+
+    // ... and the args, as needed.
+    switch (numArgs) {
+    case 3:
+        emitArg(basePtr, cheapest, 2, c2);
+    case 2:
+        emitArg(basePtr, cheapest, 1, c1);
+    case 1:
+        emitArg(basePtr, cheapest, 0, c0);
+    case 0:
+        break;
+    }
+
+    return reinterpret_cast<OpByteCode*>(basePtr);
 }
 
 void CodeGen::patchOpArgument(OpByteCode* base, int pos, OpValue& newVal)

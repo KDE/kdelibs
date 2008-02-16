@@ -34,6 +34,7 @@ static inline OpValue mkImmediateResult(OpType type)
     OpValue ret;
     ret.immediate = true;
     ret.type      = type;
+    return ret;
 }
 
 OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
@@ -95,15 +96,21 @@ OpValue NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return res;
 }
 
-#if 0
+
 OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    // ### here, we want to permit tile conversion, for tile overloads,
-    // but not immediate conversion. Does that make sense?
-    OpValue inStr = mkImmediateResult
-    return jsOwnedString(value());
+    // For now, just generate a register value pointer.
+    // We may want to permit string pointers as well, to help overload resolution,
+    // but it's not clear whether that's useful, since we can't MM them. Perhaps
+    // a special StringInstance type may be of use eventually.
+    OpValue inStr = mkImmediateResult(OpType_string);
+    inStr.value.wide.stringVal = &val;
+
+    OpValue out, regNum;
+    comp->requestTemporary(OpType_value, out, regNum);
+    CodeGen::emitOp(comp, block, Op_OwnedString, &regNum, &inStr);
+    return out;
 }
-#endif
 
 
 }
