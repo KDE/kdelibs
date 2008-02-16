@@ -20,6 +20,7 @@
  */
 
 #include "opcodes.h"
+#include "CompileState.h"
 #include <cstdio>
 
 namespace KJS {
@@ -78,7 +79,7 @@ static void emitConversion(CompileState* comp, CodeBlock& block,
         return;
     }
 
-    OpValue registerAddr;
+    OpValue regNum;
 
     switch (convType) {
     case Conv_NoOp:
@@ -89,37 +90,32 @@ static void emitConversion(CompileState* comp, CodeBlock& block,
         out = *original;
         break;
     case Conv_RBool_Value: {
-        out    = comp->requestTemporary(OpType_value);
-        regNum = comp->regNum(out);
-        emitOp(comp, block, Op_JsBoolean, &regNum, original);
+        comp->requestTemporary(OpType_value, out, regNum);
+        CodeGen::emitOp(comp, block, Op_JsBoolean, &regNum, original);
     }
     break;
 
     case Conv_RValue_Bool: {
-        out    = comp->requestTemporary(OpType_bool);
-        regNum = comp->regNum(out);
-        emitOp(comp, block, Op_ToBoolean, &regNum, original);
+        comp->requestTemporary(OpType_bool, out, regNum);
+        CodeGen::emitOp(comp, block, Op_ToBoolean, &regNum, original);
     }
     break;
 
     case Conv_RValue_Uint32: {
-        out    = comp->requestTemporary(OpType_uint32);
-        regNum = comp->regNum(out);
-        emitOp(comp, block, Op_ToUInt32, &regNum, original);
+        comp->requestTemporary(OpType_uint32, out, regNum);
+        CodeGen::emitOp(comp, block, Op_ToUInt32, &regNum, original);
     }
     break;
 
     case Conv_RUint32_Bool: {
-        out    = comp->requestTemporary(OpType_bool);
-        regNum = comp->regNum(out);
-        emitOp(comp, block, Op_UInt32ToBool,  &regNum, original);
+        comp->requestTemporary(OpType_bool, out, regNum);
+        CodeGen::emitOp(comp, block, Op_UInt32ToBool,  &regNum, original);
     }
     break;
 
     case Conv_RUint32_Value: {
-        out    = comp->requestTemporary(OpType_value);
-        regNum = comp->regNum(out);
-        emitOp(comp, block, JSNumberFromUInt32, &regNum, original);
+        comp->requestTemporary(OpType_value, out, regNum);
+        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &regNum, original);
     }
     break;
 
@@ -189,11 +185,11 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
 
     switch (numArgs) {
     case 3:
-        emitConversion(block, cheapestConvOps[2], a2, c2);
+        emitConversion(comp, block, cheapestConvOps[2], a2, c2);
     case 2:
-        emitConversion(block, cheapestConvOps[1], a1, c1);
+        emitConversion(comp, block, cheapestConvOps[1], a1, c1);
     case 1:
-        emitConversion(block, cheapestConvOps[0], a0, c0);
+        emitConversion(comp, block, cheapestConvOps[0], a0, c0);
     case 0:
         break;
     }
@@ -209,6 +205,20 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
     size_t pos = block.size();
     block.resize(pos + cheapest->length);
     unsigned char* basePtr = block.data() + pos;
+}
+
+void CodeGen::patchOpArgument(OpByteCode* base, int pos, OpValue& newVal)
+{
+    const Op& variant = opsForOpCodes[*base];
+
+    // We only permit patching immediate arguments for now..
+    ASSERT(variant.immediateParams[pos] && newVal.immediate);
+
+    char* argBase = reinterpret_cast<char*>(base) + variant.paramOffsets[pos];
+    if (opTypeIsAlign8[variant.paramTypes[pos]])
+        *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
+    else
+        *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
 }
 
 static void dumpParam(CodeBlock& block, size_t offset, OpType type)

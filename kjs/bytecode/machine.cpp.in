@@ -24,6 +24,7 @@
 #include "value.h"
 
 #include "opcodes.h"
+#include "bytecode/opargs.h"
 
 namespace KJS {
 

@@ -21,9 +21,14 @@
 
 #include <wtf/Assertions.h>
     // be nice to our fruity overlords and their silly assert-unfriendly environment
+
+#include <wtf/RefPtr.h>
 #include <wtf/Vector.h>
 #include "value.h"
 #include "identifier.h"
+
+#ifndef OPCODES_H
+#define OPCODES_H
 
 namespace KJS {
 
@@ -83,45 +88,7 @@ extern const Op* const* const opSpecializations[];
 // Describes whether the type is align8 or not.
 extern const bool opTypeIsAlign8[];
 
-// The NarrowArg and WideArg unions correspond to the encoding of
-// 4- and 8-byte arguments in the bytecode.
-// Note that the union field names should correspond to codes.def types ---
-// type foo will be accessed as fooVal
-
-union NarrowArg
-{
-    bool     boolVal;
-    unsigned uint32Val;
-    Addr     addrVal;
-    Register regVal;
-    unsigned char asBytes[4];
-};
-
-union WideArg
-{
-    JSValue*    valueVal;
-    Identifier* identVal;
-    UString*    stringVal;
-    double      numberVal;
-    unsigned char asBytes[8];
-};
-
-// This describes where result of evaluating an expression, or an argument
-// to a function, is stored. If immediate is true, it is included directly inside
-// the structure. Otherwise, it's passed by the register number specified in
-// regVal.
-// Note: there is a difference between values stored in registers, and register names.
-// The former have immediate = false, and some type such as OpType_Bool. The latter have
-// immediate = true, and type = OpType_reg.
-struct OpValue
-{
-    bool   immediate;
-    OpType type;
-    union {
-        NarrowArg  narrow;
-        WideArg    wide;
-    } value;
-};
+class OpValue;
 
 typedef Vector<unsigned char> CodeBlock;
 
@@ -131,23 +98,13 @@ public:
     static OpByteCode* emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                               OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
 
-    static inline void patchOpArgument(OpByteCode* base, int pos, OpValue& newVal) {
-        const Op& variant = opsForOpCodes[*base];
-
-        // We only permit patching immediate arguments for now..
-        ASSERT(variant.immediateParams[pos] && newVal.immediate);
-
-        char* argBase = reinterpret_cast<char*>(base) + variant.paramOffsets[pos];
-        if (opTypeIsAlign8[variant.paramTypes[pos]])
-            *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
-        else
-            *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
-    }
-
+    static void patchOpArgument(OpByteCode* base, int pos, OpValue& newVal);
     static void disassembleBlock(CodeBlock& block);
 };
 
 } //namespace KJS
+
+#endif
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;
 

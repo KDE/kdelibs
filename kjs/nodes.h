@@ -32,6 +32,7 @@
 #include "reference.h"
 #include "SymbolTable.h"
 #include "opcodes.h"
+#include "bytecode/opargs.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
 
@@ -176,7 +177,7 @@ namespace KJS {
 
     void copyDebugInfo(Node* otherNode);
 
-    virtual OpValue generateEvalCode(CodeBlock& block, CompileState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
   protected:
     /* Nodes that can do semantic checking should override this,
        and return an appropriate error node if appropriate. The reimplementations
@@ -241,6 +242,7 @@ namespace KJS {
     NullNode() {}
     virtual NodeType type() const { return NullNodeType; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   };
 
@@ -251,6 +253,7 @@ namespace KJS {
 
     virtual NodeType type() const { return BooleanNodeType; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     bool val;
@@ -264,6 +267,7 @@ namespace KJS {
 
     virtual NodeType type() const { return NumberNodeType; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     double val;
@@ -277,6 +281,7 @@ namespace KJS {
 
     virtual NodeType type() const { return StringNodeType; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     UString val;

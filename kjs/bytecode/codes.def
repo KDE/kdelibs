@@ -27,10 +27,11 @@ type bool: bool register immediate;
 // conversions behave sanely, and hence the impls can just fiddle as appropriate
 type uint32: uint32_t register immediate;
 
-// We could provide immediate JSValue's, but they'd only matter for null/undefined. Easier to
-// just use registers and ops, since they're likely sufficiently cold, and won't blow up
-// the operand tables so much
-type value:  JSValue* register align8;
+// We provide immediate JSValue's, for the following:
+// 1) Small numeric constants
+// 2) undefined and null.
+// This relies on immediate value JSValue conversion rountines not touching exec!
+type value:  JSValue* register immediate align8;
 
 // Note: number can't possibly be register, it won't fit on 32-bit!
 // ### we might want separate areas, but then we can't store a non-immediate value into a real
@@ -179,17 +180,6 @@ conversion number => uint32 {
 /**
  These are needed for basic types, conversions, etc.
 */
-operation Null {
-    impl(reg outReg) [[
-        localStore[outReg].valueVal = jsNull();
-    ]]
-}
-
-operation Undefined {
-    impl(reg outReg) [[
-        localStore[outReg].valueVal = jsUndefined();
-    ]]
-}
 
 operation OwnedString {
     impl(reg outReg, string in) [[
@@ -226,6 +216,14 @@ operation JSNumberFromUInt32 {
         localStore[outReg].valueVal = jsNumber(in);
     ]]
 }
+
+operation This {
+    impl(reg outReg) [[
+        localStore[outReg].valueVal = exec->thisValue();
+    ]]
+}
+
+
 
 /**
  Control flow stuff

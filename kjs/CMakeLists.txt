@@ -171,6 +171,7 @@ set(kjs_LIB_SRCS
    ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
    nodes2bytecode.cpp
+   CompileState.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

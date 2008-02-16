@@ -22,6 +22,7 @@
  *
  */
  #include "nodes2bytecode.h"
+ #include "CompileState.h"
 
  #include <typeinfo>
  #include <iostream>
@@ -63,45 +64,46 @@ void StatementNode::generateExecCode(CodeBlock& block, CompileState*)
 
 OpValue NullNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    OpValue res    = comp->requestTemporary(OpType_value);
-    OpValue regNum = comp->regNum(res);
-    emitOp(comp, block, Op_Null, &regNum);
+    OpValue res = mkImmediateResult(OpType_value);
+    res.value.wide.valueVal = jsNull();
     return res;
 }
 
-void BooleanNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BooleanNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     OpValue res = mkImmediateResult(OpType_bool);
     res.value.narrow.boolVal = value();
     return res;
 }
 
-void NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    // ### TODO: this can probably benefit from a type hint!
-    OpValue res = mkImmediateResult(OpType_bool);
-    res.value.wide.doubleVal = value();
-
-    return res;
 #if 0
-    // Check if we can do an immediate value...
-    JSValue* im = JSImmediate::from(value());
-    if (im) {
-    } else {
-        // Allocate a register..
-
+    if (typeHint == OpType_Value) {
+        // Try to fit into a JSValue if at all possible..
+        JSValue* im = JSImmediate::from(value());
+        if (im) {
+            OpValue res = mkImmediateResult(OpType_value);
+            return res;
+        }
     }
 #endif
+
+    // Numeric-like..
+    OpValue res = mkImmediateResult(OpType_number);
+    res.value.wide.numberVal = value();
+    return res;
 }
 
-JSValue *StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+#if 0
+OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // ### here, we want to permit tile conversion, for tile overloads,
     // but not immediate conversion. Does that make sense?
-    OpValue inStr =
+    OpValue inStr = mkImmediateResult
     return jsOwnedString(value());
 }
-
+#endif
 
 
 }
