@@ -68,6 +68,9 @@ TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream,
 {
     // Builtin stuff...
     conversionNames << "NoConversion" << "NoOp";
+
+    // Special ones for stuff that might not fit into immediate..
+    conversionNames << "I_R_Uint32_Value" << "I_R_Number_Value";
 }
 
 // # of bits store 'vals' values, e.g. 3 for 8, etc.

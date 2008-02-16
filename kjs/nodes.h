@@ -830,6 +830,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
 
     Node* getExpr() { return expr.get(); }
   private:

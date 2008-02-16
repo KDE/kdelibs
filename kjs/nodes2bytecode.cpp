@@ -125,6 +125,11 @@ void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
     }
 }
 
+OpValue AssignExprNode::generateEvalCode(CompileState* state, CodeBlock& block)
+{
+    return expr->generateEvalCode(state, block);
+}
+
 void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     for (VarDeclListNode *n = next.get(); n; n = n->next.get()) {

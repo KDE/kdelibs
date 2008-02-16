@@ -217,6 +217,12 @@ operation JSNumberFromUInt32 {
     ]]
 }
 
+operation JSNumber {
+    impl(reg outReg, number in) [[
+        localStore[outReg].valueVal = jsNumber(in);
+    ]]
+}
+
 operation This {
     impl(reg outReg) [[
         localStore[outReg].valueVal = exec->thisValue();
