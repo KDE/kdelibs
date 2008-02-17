@@ -95,6 +95,16 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
+OpValue ThisNode::generateEvalCode(CompileState* comp, CodeBlock&)
+{
+    return *comp->thisValue();
+}
+
+OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    return group->generateEvalCode(comp, block);
+}
+
 // ------------------------------ Code structure -------------------------------
 
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
@@ -117,9 +127,9 @@ OpValue AssignExprNode::generateEvalCode(CompileState* state, CodeBlock& block)
     return expr->generateEvalCode(state, block);
 }
 
-void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    for (VarDeclListNode *n = next.get(); n; n = n->next.get()) {
+    for (VarDeclListNode *n = this; n; n = n->next.get()) {
         // We only care about things which have an initializer ---
         // everything else is a no-op at execution time,
         // and only makes a difference at processVarDecl time
@@ -140,6 +150,13 @@ void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
             }
         } // if initializer..
     } // for each decl..
+
+    return OpValue::immUInt32(0); // unused..
+}
+
+void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    next->generateEvalCode(comp, block);
 }
 
 void BlockNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -153,6 +170,49 @@ void EmptyStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     expr->generateEvalCode(comp, block);
+}
+
+void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    // ### TODO: update the semantic state in CompileState..
+    // in particular, it may need to know how to resolve break/continue.
+
+    // Initializer, if any..
+    if (expr1)
+        expr1->generateEvalCode(comp, block);
+
+    // Insert a jump to the loop test (address not yet known)
+    OpValue testAddr   = OpValue::immAddr(0);
+    Addr    jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, &testAddr);
+
+    // Generate loop body..
+    OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(block));
+    statement->generateExecCode(comp, block);
+
+    Addr incrAddr = CodeGen::nextPC(block);
+    // #### resolve continues here, to the incrAddr
+
+    // ### there is a CheckTimeout hook here in nodes.cpp...
+
+    // Generate increment...
+    if (expr3)
+      expr3->generateEvalCode(comp, block);
+
+    // The test goes here, so patch up the previous jump..
+    testAddr = OpValue::immAddr(CodeGen::nextPC(block));
+    CodeGen::patchOpArgument(block, jumpToTest, 0, testAddr);
+
+    // Make the test itself --- if it exists..
+    if (expr2) {
+        OpValue cond = expr2->generateEvalCode(comp, block);
+        CodeGen::emitOp(comp, block, Op_IfJump, &cond, &bodyAddr);
+    } else {
+        // Just jump back to the body.
+        CodeGen::emitOp(comp, block, Op_Jump, &bodyAddr);
+    }
+
+    Addr postLoopAddr = CodeGen::nextPC(block);
+    // ### resolve breaks here..
 }
 
 void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -174,6 +234,28 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
         arg = value->generateEvalCode(comp, block);
 
     CodeGen::emitOp(comp, block, Op_Return, &arg);
+}
+
+void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+#if 0
+/*  if (!comp->seenLabels.add(label).second) {
+    return createErrorNode(SyntaxError, "Duplicated label %s found.", label);*/
+  }
+
+  // Add it to the set of pending labels, memorize this node as
+  // candidate for binding the name
+  ctx->pendingLabels.add(label);
+  ctx->lastLabel = this;
+
+  // We do not call up to StatementNode::generateExecCode since that would
+  // apply accumulated labels, and we want to defer them until we get the
+  // first non-label statement.
+  (void)Node::checkSemantics(checkerState);
+
+  ctx->labelTargets.remove(label);
+  ctx->seenLabels.remove(label);
+#endif
 }
 
 void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)

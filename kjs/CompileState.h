@@ -74,6 +74,7 @@ public:
     OpValue* thisValue() {
         return thisVal;
     }
+
 private:
     OpValue* localScopeVal;
     OpValue* thisVal;
@@ -186,6 +187,13 @@ inline OpValue OpValue::immCStr(const char* in) {
     OpValue res;
     initImm(res, OpType_cstr);
     res.value.wide.cstrVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immAddr(Addr in) {
+    OpValue res;
+    initImm(res, OpType_addr);
+    res.value.narrow.addrVal = in;
     return res;
 }
 

@@ -95,10 +95,15 @@ typedef Vector<unsigned char> CodeBlock;
 class CodeGen {
 public:
     // All of these emit the instruction of given type, and return its base
-    static OpByteCode* emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+    static Addr emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                               OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
 
-    static void patchOpArgument(OpByteCode* base, int pos, OpValue& newVal);
+    static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
+
+    static Addr nextPC(const CodeBlock& block) {
+        return block.size();
+    }
+
     static void disassembleBlock(CodeBlock& block);
 };
 

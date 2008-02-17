@@ -166,7 +166,7 @@ static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const Op
     }
 }
 
-OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                             OpValue* a0, OpValue* a1, OpValue* a2)
 {
     const Op* const* cands = opSpecializations[baseInstr];
@@ -282,11 +282,12 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
         break;
     }
 
-    return reinterpret_cast<OpByteCode*>(basePtr);
+    return basePtr - block.data();
 }
 
-void CodeGen::patchOpArgument(OpByteCode* base, int pos, OpValue& newVal)
+void CodeGen::patchOpArgument(CodeBlock& block, Addr baseAddr, int pos, OpValue& newVal)
 {
+    OpByteCode* base = reinterpret_cast<OpByteCode*>(block.data() + baseAddr);
     const Op& variant = opsForOpCodes[*base];
 
     // We only permit patching immediate arguments for now..

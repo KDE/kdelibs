@@ -302,6 +302,7 @@ namespace KJS {
   public:
     ThisNode() {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   };
 
@@ -344,6 +345,7 @@ namespace KJS {
     GroupNode(Node *g) : group(g) { }
     virtual NodeType type() const { return GroupNodeType; }
     virtual JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual Node *nodeInsideAllParens();
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -848,6 +850,7 @@ namespace KJS {
     virtual void processVarDecl(ExecState*);
   private:
     friend class VarStatementNode;
+    friend class VarDeclListNode;
     Type varType;
     Identifier ident;
     RefPtr<AssignExprNode> init;
@@ -860,6 +863,7 @@ namespace KJS {
     VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
       : next(l->next), var(v) { l->next = this; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<VarDeclListNode> releaseNext() { return next.release(); }
     virtual void breakCycle();
@@ -974,6 +978,7 @@ namespace KJS {
     ForNode(VarDeclListNode *e1, Node *e2, Node *e3, StatementNode *s) :
       expr1(e1->next.release()), expr2(e2), expr3(e3), statement(s) { Parser::removeNodeCycle(expr1.get()); }
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool isIterationStatement() const { return true; }
@@ -1056,6 +1061,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   protected:
     virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:

@@ -87,6 +87,7 @@ struct OpValue
     static OpValue immRegNum(Register in);
     static OpValue immNode(Node* in);
     static OpValue immCStr(const char* in);
+    static OpValue immAddr(Addr in);
 };
 
 }
