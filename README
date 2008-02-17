@@ -150,7 +150,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If cmake claims Qt cannot be found, look at http://www.trolltech.com/
-to get a copy of Qt, version 4.2 or newer. If you have peeked there
+to get a copy of Qt, version 4.4 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.
@@ -167,7 +167,7 @@ debug code in your KDE libs. If you have the space and can stand code that's
 somewhat slower, this is worth it. The extra information really
 helps debugging and thus bugfixing.
 
-Available options as of CMake 2.4.2:
+Available options as of CMake 2.4.5:
  Release:        Compile with no debugging information, optimization enabled.
  Debug:          Minimal optimization, with debugging information.
  RelWithDebInfo: Normal optimization, with debugging information.
