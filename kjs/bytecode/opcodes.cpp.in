@@ -200,8 +200,10 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
         switch (numArgs) {
         case 3:
             convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2);
+            // Fallthrough
         case 2:
             convOps[1] = computeCast(a1, cand->paramTypes[1], cand->immediateParams[1], cost1);
+            // Fallthrough
         case 1:
             convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0);
         }
@@ -332,13 +334,13 @@ void CodeGen::disassembleBlock(CodeBlock& block)
         OpByteCode opCode = *reinterpret_cast<OpByteCode*>(block.data() + pc);
         const Op& opDescr = opsForOpCodes[opCode];
 
-        std::printf("%8x %s ", pc, OpNameVals[opDescr.baseInstr]);
+        std::printf("%08x %s ", pc, OpNameVals[opDescr.baseInstr]);
         for (int p = 0; p < opDescr.numParams; ++p) {
             dumpParam(block, pc + opDescr.paramOffsets[p],
                       opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg);
         }
 
-        std::printf("          // %s\n", OpByteCodeVals[opCode]);
+        std::printf("\t\t// %s\n", OpByteCodeVals[opCode]);
         pc += opDescr.length;
     }
 }
