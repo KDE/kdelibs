@@ -29,8 +29,8 @@ KFadeWidgetEffectPrivate::KFadeWidgetEffectPrivate(QWidget *_destWidget)
 }
 
 KFadeWidgetEffect::KFadeWidgetEffect(QWidget *destWidget)
-    : QWidget(destWidget ? destWidget->parentWidget() : 0),
-    d_ptr(new KFadeWidgetEffectPrivate(destWidget))
+    : QWidget(destWidget && destWidget->parentWidget() ? destWidget->parentWidget() : destWidget)
+    , d_ptr(new KFadeWidgetEffectPrivate(destWidget))
 {
     Q_D(KFadeWidgetEffect);
     d->q_ptr = this;
