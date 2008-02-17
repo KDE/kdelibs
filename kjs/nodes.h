@@ -80,7 +80,8 @@ namespace KJS {
           StringNodeType,
           RegExpNodeType,
           TryNodeType,
-          GroupNodeType
+          GroupNodeType,
+          LabelNodeType
       };
 
     Node();
@@ -108,6 +109,7 @@ namespace KJS {
     bool isString() const { return type() == StringNodeType; }
     bool isGroupNode() const { return type() == GroupNodeType; }
     bool isTryNode() const { return type() == TryNodeType; }
+    bool isLabelNode() const { return type() == LabelNodeType; }
     virtual bool introducesNewStaticScope () const { return false; }
     virtual bool introducesNewDynamicScope() const { return false; }
     virtual bool isIterationStatement()      const { return false; }
@@ -1011,6 +1013,7 @@ namespace KJS {
     ContinueNode() : target(0) { }
     ContinueNode(const Identifier &i) : ident(i), target(0) { }
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   protected:
     virtual Node* checkSemantics(SemanticChecker* semanticChecker);
@@ -1024,6 +1027,7 @@ namespace KJS {
     BreakNode() : target(0) { }
     BreakNode(const Identifier &i) : ident(i), target(0) { }
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   protected:
     virtual Node* checkSemantics(SemanticChecker* semanticChecker);
@@ -1062,6 +1066,7 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual NodeType type() const { return LabelNodeType; }
   protected:
     virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:

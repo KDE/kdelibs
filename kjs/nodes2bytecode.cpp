@@ -29,6 +29,15 @@
 
 namespace KJS {
 
+// A few helpers..
+static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+{
+    OpValue me = OpValue::immNode(node);
+    OpValue se = OpValue::immUInt32(SyntaxError);
+    OpValue msg = OpValue::immCStr(msgStr);
+    CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, &me, &se, &msg);
+}
+
 OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
@@ -174,8 +183,7 @@ void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    // ### TODO: update the semantic state in CompileState..
-    // in particular, it may need to know how to resolve break/continue.
+    comp->enterLoop(this);
 
     // Initializer, if any..
     if (expr1)
@@ -189,8 +197,8 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
     OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(block));
     statement->generateExecCode(comp, block);
 
-    Addr incrAddr = CodeGen::nextPC(block);
-    // #### resolve continues here, to the incrAddr
+    // We're about to generate the increment... The continues should go here..
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
 
     // ### there is a CheckTimeout hook here in nodes.cpp...
 
@@ -211,8 +219,51 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
         CodeGen::emitOp(comp, block, Op_Jump, &bodyAddr);
     }
 
-    Addr postLoopAddr = CodeGen::nextPC(block);
-    // ### resolve breaks here..
+    comp->exitLoop(this, block);
+}
+
+void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    Node* dest = comp->resolveContinueLabel(ident);
+    if (!dest) {
+        if (ident.isEmpty())
+            emitSyntaxError(comp, block, this, "Illegal continue without target outside a loop.");
+        else
+            emitSyntaxError(comp, block, this, "Invalid label in continue.");
+    } else {
+        // Continue can only be used for a loop
+        if (dest->isIterationStatement()) {
+            // Emit a jump...
+            Addr    pc    = CodeGen::nextPC(block);
+            OpValue dummy = OpValue::immAddr(0);
+            CodeGen::emitOp(comp, block, Op_Jump, &dummy);
+
+            // Queue destination for resolution
+            comp->addPendingContinue(dest, pc);
+        } else {
+            emitSyntaxError(comp, block, this, "Invalid continue target; must be a loop.");
+        }
+    }
+}
+
+void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    Node* dest = comp->resolveBreakLabel(ident);
+    if (!dest) {
+        if (ident.isEmpty())
+            emitSyntaxError(comp, block, this, "Illegal break without target outside a loop or switch.");
+        else
+            emitSyntaxError(comp, block, this, "Invalid label in break.");
+    } else {
+        // Break can be used everywhere..
+        // Hence, emit a jump...
+        Addr    pc    = CodeGen::nextPC(block);
+        OpValue dummy = OpValue::immAddr(0);
+        CodeGen::emitOp(comp, block, Op_Jump, &dummy);
+
+        // Queue destination for resolution
+        comp->addPendingBreak(dest, pc);
+    }
 }
 
 void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -221,10 +272,7 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Return is invalid in non-function..
     if (comp->codeType() != FunctionCode) {
-        OpValue me = OpValue::immNode(this);
-        OpValue se = OpValue::immUInt32(SyntaxError);
-        OpValue msg = OpValue::immCStr("Invalid return statement.");
-        CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, &me, &se, &msg);
+        emitSyntaxError(comp, block, this, "Invalid return.");
         return;
     }
 
@@ -238,24 +286,23 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-#if 0
-/*  if (!comp->seenLabels.add(label).second) {
-    return createErrorNode(SyntaxError, "Duplicated label %s found.", label);*/
-  }
+    if (!comp->pushLabel(label)) {
+        // ### FIXME
+        //return createErrorNode(SyntaxError, "Duplicated label %s found.", label);
+        return;
+    }
 
-  // Add it to the set of pending labels, memorize this node as
-  // candidate for binding the name
-  ctx->pendingLabels.add(label);
-  ctx->lastLabel = this;
+    if (!statement->isLabelNode()) // we're the last label..
+        comp->bindLabels(statement.get());
 
-  // We do not call up to StatementNode::generateExecCode since that would
-  // apply accumulated labels, and we want to defer them until we get the
-  // first non-label statement.
-  (void)Node::checkSemantics(checkerState);
+    // Generate code for stuff inside the label...
+    statement->generateExecCode(comp, block);
 
-  ctx->labelTargets.remove(label);
-  ctx->seenLabels.remove(label);
-#endif
+    // Fix up any breaks..
+    if (!statement->isLabelNode())
+        comp->resolvePendingBreaks(statement.get(), block, CodeGen::nextPC(block));
+
+    comp->popLabel();
 }
 
 void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)

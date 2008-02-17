@@ -73,6 +73,120 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
     reference.value.narrow.regVal = temp->reg();
 }
 
+bool CompileState::pushLabel(const Identifier& label)
+{
+    if (!seenLabels.add(label).second)
+        return false; // Dupe!
+
+    seenLabelsStack.append(label);
+    pendingLabels.append(label);
+
+    return true;
+}
+
+void CompileState::popLabel()
+{
+    Identifier name = seenLabelsStack.last();
+
+    seenLabelsStack.removeLast();
+    seenLabels.remove  (name);
+    labelTargets.remove(name);
+    ASSERT(pendingLabels.isEmpty());
+}
+
+void CompileState::bindLabels(Node* node)
+{
+    for (size_t l = 0; l < pendingLabels.size(); ++l)
+        labelTargets.set(pendingLabels[l], node);
+    pendingLabels.clear();
+}
+
+Node* CompileState::resolveBreakLabel(Identifier label)
+{
+    if (label.isEmpty()) {
+        if (defaultBreakTargets.isEmpty())
+            return 0;
+        else
+            return defaultBreakTargets.last();
+    } else {
+        return labelTargets.get(label);
+    }
+}
+
+Node* CompileState::resolveContinueLabel(Identifier label)
+{
+    if (label.isEmpty()) {
+        if (defaultContinueTargets.isEmpty())
+            return 0;
+        else
+            return defaultContinueTargets.last();
+    } else {
+        return labelTargets.get(label);
+    }
+}
+
+void CompileState::pushDefaultBreak(Node* node)
+{
+    defaultBreakTargets.append(node);
+}
+
+void CompileState::pushDefaultContinue(Node* node)
+{
+    defaultContinueTargets.append(node);
+}
+
+void CompileState::popDefaultBreak()
+{
+    defaultBreakTargets.removeLast();
+}
+
+void CompileState::popDefaultContinue()
+{
+    defaultContinueTargets.removeLast();
+}
+
+void CompileState::addPendingBreak(Node* node, Addr addr)
+{
+    if (!pendingBreaks.contains(node))
+        pendingBreaks.set(node, new WTF::Vector<Addr>());
+    pendingBreaks.get(node)->append(addr);
+}
+
+void CompileState::addPendingContinue(Node* node, Addr addr)
+{
+    if (!pendingContinues.contains(node))
+        pendingContinues.set(node, new WTF::Vector<Addr>());
+    pendingContinues.get(node)->append(addr);
+}
+
+void CompileState::resolvePendingBreaks(Node* node, CodeBlock& block, Addr dest)
+{
+    const WTF::Vector<Addr>* stats = pendingBreaks.get(node);
+    if (!stats)
+        return;
+
+    OpValue newDest = OpValue::immAddr(dest);
+    for (size_t c = 0; c < stats->size(); ++c)
+        CodeGen::patchOpArgument(block, (*stats)[c], 0, newDest);
+
+    pendingBreaks.remove(node);
+    delete stats;
+}
+
+void CompileState::resolvePendingContinues(Node* node, CodeBlock& block, Addr dest)
+{
+    const WTF::Vector<Addr>* stats = pendingContinues.get(node);
+    if (!stats)
+        return;
+
+    OpValue newDest = OpValue::immAddr(dest);
+    for (size_t c = 0; c < stats->size(); ++c)
+        CodeGen::patchOpArgument(block, (*stats)[c], 0, newDest);
+
+    pendingContinues.remove(node);
+    delete stats;
+}
+
 
 } //namespace KJS
 

@@ -31,7 +31,13 @@
 #include "bytecode/opargs.h"
 
 #include <wtf/Assertions.h>
-#include <wtf/Vector.h>
+#include <wtf/HashSet.h>
+#include <wtf/HashMap.h>
+
+using WTF::HashSet;
+using WTF::HashMap;
+using WTF::Vector;
+
 
 namespace KJS {
 
@@ -75,6 +81,47 @@ public:
         return thisVal;
     }
 
+    // Label stuff....
+
+    // Registers a pending label. Returns true if the label is OK, false if it's a duplicate.
+    // If it fails, the label stack isn't touched!
+    bool pushLabel(const Identifier& label);
+    void popLabel();
+
+    // Binds all the labels to the given node
+    void bindLabels(Node* node);
+
+    // Returns destination for the label (0 if not found)
+    Node* resolveContinueLabel(Identifier label);
+    Node* resolveBreakLabel   (Identifier label);
+
+    // Sets the targets for break/continues w/o label name..
+    void pushDefaultBreak   (Node* node);
+    void pushDefaultContinue(Node* node);
+    void popDefaultBreak   ();
+    void popDefaultContinue();
+
+    // Helpers for these and resolvePendingBreak
+    void enterLoop(Node* node) {
+        pushDefaultBreak(node);
+        pushDefaultContinue(node);
+    }
+
+    void exitLoop(Node* node, CodeBlock& block) {
+        popDefaultBreak();
+        popDefaultContinue();
+        resolvePendingBreaks(node, block, CodeGen::nextPC(block));
+    }
+
+    // Adds break/continue as needing relevant target for given node
+    void addPendingBreak   (Node* node, Addr addr);
+    void addPendingContinue(Node* node, Addr addr);
+
+    // Patches up all pending break/continue statements to given destination.
+    // LabelNode takes care of the breaks itself, the loops need to deal
+    // with continue, though.
+    void resolvePendingBreaks   (Node* node, CodeBlock& block, Addr dest);
+    void resolvePendingContinues(Node* node, CodeBlock& block, Addr dest);
 private:
     OpValue* localScopeVal;
     OpValue* thisVal;
@@ -96,6 +143,22 @@ private:
         else
             freeNonMarkTemps.append(desc);
     }
+
+    // Label resolution..
+    WTF::HashSet<Identifier> seenLabels;    // all labels we're inside
+    WTF::Vector <Identifier> seenLabelsStack;
+    WTF::Vector <Identifier> pendingLabels; // labels tha that haven't been bound to
+                                            // a statement yet.
+
+    // Targets for continue/break w/o destination.
+    WTF::Vector<Node*> defaultBreakTargets;
+    WTF::Vector<Node*> defaultContinueTargets;
+
+    // Named label targets
+    WTF::HashMap<Identifier, Node*> labelTargets;
+
+    WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingBreaks;
+    WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingContinues;
 };
 
 // Temporary descriptors are reference-counted by OpValue in order to automatically
