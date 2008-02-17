@@ -25,6 +25,8 @@
 #ifndef COMPILE_STATE_H
 #define COMPILE_STATE_H
 
+#include "ExecState.h" // For codetype... Kinda odd.
+
 #include "opcodes.h"
 #include "bytecode/opargs.h"
 
@@ -39,12 +41,17 @@ class FunctionBodyNode;
 class CompileState
 {
 public:
-    CompileState(FunctionBodyNode* fbody, Register initialMaxTemp):
+    CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
+        localScopeVal(0), thisVal(0), ctype(ctype),
         initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody)
     {}
 
     FunctionBodyNode* functionBody() {
         return fbody;
+    }
+
+    CodeType codeType() {
+        return ctype;
     }
 
     ~CompileState();
@@ -53,7 +60,26 @@ public:
     // corresponding bits set in localStore when that's initialized.
     void requestTemporary(OpType type, OpValue& value, OpValue& reference);
 
+    // This sets the registers containing the local scope and
+    // 'this' values... It should be the rvalue, not the regnums
+    void setPreloadRegs(OpValue* localReg, OpValue* thisReg) {
+        localScopeVal = localReg;
+        thisVal       = thisReg;
+    }
+
+    OpValue* localScope() {
+        return localScopeVal;
+    }
+
+    OpValue* thisValue() {
+        return thisVal;
+    }
 private:
+    OpValue* localScopeVal;
+    OpValue* thisVal;
+
+    CodeType ctype;
+
     friend class TempDescriptor;
     WTF::Vector<TempDescriptor*> freeMarkTemps;
     WTF::Vector<TempDescriptor*> freeNonMarkTemps;
@@ -99,6 +125,69 @@ private:
     bool markable;
     int  refCount;
 };
+
+inline OpValue OpValue::immUInt32(uint32_t in) {
+    OpValue res;
+    initImm(res, OpType_uint32);
+    res.value.narrow.uint32Val = in;
+    return res;
+}
+
+inline OpValue OpValue::immNumber(double in) {
+    OpValue res;
+    initImm(res, OpType_number);
+    res.value.wide.numberVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immValue(JSValue* in) {
+    OpValue res;
+    initImm(res, OpType_value);
+    res.value.wide.valueVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immBool(bool in) {
+    OpValue res;
+    initImm(res, OpType_bool);
+    res.value.narrow.boolVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immString(UString* in) {
+    OpValue res;
+    initImm(res, OpType_string);
+    res.value.wide.stringVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immIdent(Identifier* in) {
+    OpValue res;
+    initImm(res, OpType_ident);
+    res.value.wide.identVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immRegNum(Register in) {
+    OpValue res;
+    initImm(res, OpType_reg);
+    res.value.narrow.regVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immNode(KJS::Node* in) {
+    OpValue res;
+    initImm(res, OpType_node);
+    res.value.wide.nodeVal = in;
+    return res;
+}
+
+inline OpValue OpValue::immCStr(const char* in) {
+    OpValue res;
+    initImm(res, OpType_cstr);
+    res.value.wide.cstrVal = in;
+    return res;
+}
 
 }
 

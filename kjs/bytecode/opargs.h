@@ -25,6 +25,7 @@
 
 namespace KJS {
 
+class Node;
 class TempDescriptor;
 
 // The NarrowArg and WideArg unions correspond to the encoding of
@@ -47,6 +48,8 @@ union WideArg
     Identifier* identVal;
     UString*    stringVal;
     double      numberVal;
+    Node*       nodeVal;
+    const char* cstrVal;
     unsigned char asBytes[8];
 };
 
@@ -66,6 +69,24 @@ struct OpValue
         NarrowArg  narrow;
         WideArg    wide;
     } value;
+
+    // A few helpers for making immediate values... These are actually inside CompileState.h
+    // due to them touching the ownedTemp;
+
+    static void initImm(OpValue& val, OpType type) {
+        val.immediate = true;
+        val.type      = type;
+    }
+
+    static OpValue immUInt32(uint32_t in);
+    static OpValue immNumber(double in);
+    static OpValue immValue(JSValue* in);
+    static OpValue immBool(bool in);
+    static OpValue immString(UString* in);
+    static OpValue immIdent(Identifier* in);
+    static OpValue immRegNum(Register in);
+    static OpValue immNode(Node* in);
+    static OpValue immCStr(const char* in);
 };
 
 }

@@ -135,6 +135,10 @@ void Parser::parseType()
     QString name = matchIdentifier();
     match(Lexer::Colon);
     QString nativeName = matchIdentifier();
+
+    if (nativeName == "const")
+        nativeName += " " + matchIdentifier();
+
     if (peekNext().type == Lexer::Star) {
         nativeName += "*";
         getNext();

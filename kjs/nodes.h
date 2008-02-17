@@ -906,6 +906,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   protected:
     RefPtr<SourceElementsNode> source;
   };
@@ -915,6 +916,7 @@ namespace KJS {
     EmptyStatementNode() { } // debug
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   };
 
   class ExprStatementNode : public StatementNode {
@@ -923,6 +925,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   private:
     RefPtr<Node> expr;
   };
@@ -1028,6 +1031,7 @@ namespace KJS {
   public:
     ReturnNode(Node *v) : value(v) {}
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -1137,6 +1141,7 @@ namespace KJS {
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
 
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     //////////////////////////////////////////////////////////////////////
     // Symbol table functions
     //////////////////////////////////////////////////////////////////////
@@ -1211,6 +1216,7 @@ namespace KJS {
     FuncDeclNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
       : ident(i), param(p->next.release()), body(b) { Parser::removeNodeCycle(param.get()); addParams(); }
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }

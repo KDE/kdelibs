@@ -2061,6 +2061,7 @@ void VarStatementNode::recurseVisit(NodeVisitor *visitor)
 
 Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBody)
 {
+#if 0
   StaticVarStatementNode* staticVer = new StaticVarStatementNode();
   staticVer->originalStatement = this;
 
@@ -2082,6 +2083,8 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
   }
   staticVer->copyDebugInfo(this);
   return staticVer;
+#endif
+  return 0;
 }
 
 
@@ -2825,12 +2828,13 @@ Completion FunctionBodyNode::execute(ExecState *exec)
   // ### debug stuff, temporary..
   if (!m_compiled) {
     m_compiled = true;
-    CompileState comp(this, m_symbolTable.size());
+    CompileState comp(exec->codeType(), this, m_symbolTable.size());
+
     CodeBlock out;
-    if (source)
-      source->generateExecCode(&comp, out);
+    generateExecCode(&comp, out);
     printf("\n\n");
     CodeGen::disassembleBlock(out);
+    printf("\n---------------------------------\n\n");
   }
 
   return BlockNode::execute(exec);

@@ -330,6 +330,12 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type)
     case OpType_reg:
         std::printf("r%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal);
         break;
+    case OpType_node:
+        std::printf("N%p", reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal);
+        break;
+    case OpType_cstr:
+        std::printf("c\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->cstrVal);
+        break;
     default:
         std::printf("???:%s", OpTypeVals[type]);
     };

@@ -50,6 +50,10 @@ type reg:   Register    immediate; // an output register
 // infer the proper overload of +, when appropriate
 type string: UString* immediate align8;
 
+// AST nodes passed to helpers... They may cast it further..
+type node: Node* immediate align8;
+type cstr: const char* immediate align8;
+
 /**
 Notes on the conversion rules from the spec:
 The conversion operations in general do not form a commutative diagram ---
@@ -296,9 +300,14 @@ operation Return {
     ]]
 }
 
+operation ReturnErrorCompletion {
+    impl(node node, uint32 errorType, cstr msg) [[
+        return node->createErrorCompletion(exec, ErrorType(errorType), msg);
+    ]]
+}
+
 // Variable stuff... Locals access can just use register addressing,
 // not specific get/put, but when we have to do symbolic lookup, we use these.
-
 operation GetVariableObject {
     impl(reg outReg) [[
         return exec->variableObject();
