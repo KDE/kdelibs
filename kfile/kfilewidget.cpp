@@ -578,36 +578,27 @@ void KFileWidget::slotOk()
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
-            if (items.isEmpty() )
-            {
-                QString msg;
-                if ( d->operationMode == Saving )
-                    msg = i18n("Please specify the filename to save to.");
-                else
-                    msg = i18n("Please select the file to open.");
-                KMessageBox::information(this, msg);
+            // allow directory navigation by entering a path and pressing
+            // enter, by simply returning we will browse the new path
+            if (items.isEmpty())
                 return;
-            }
 
             // weird case: the location edit is empty, but there are
             // highlighted files
-            else {
-
-                bool multi = (mode() & KFile::Files) != 0;
-                QString endQuote = QLatin1String("\" ");
-                QString name, files;
-                foreach (const KFileItem &fileItem, items) {
-                    name = fileItem.name();
-                    if ( multi ) {
-                        name.prepend( QLatin1Char( '"' ) );
-                        name.append( endQuote );
-                    }
-
-                    files.append( name );
+            bool multi = (mode() & KFile::Files) != 0;
+            QString endQuote = QLatin1String("\" ");
+            QString name, files;
+            foreach (const KFileItem &fileItem, items) {
+                name = fileItem.name();
+                if ( multi ) {
+                    name.prepend( QLatin1Char( '"' ) );
+                    name.append( endQuote );
                 }
-                d->setLocationText( files );
-                return;
+
+                files.append( name );
             }
+            d->setLocationText( files );
+            return;
         }
     }
 
