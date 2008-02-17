@@ -206,6 +206,9 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
             // Fallthrough
         case 1:
             convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0);
+            // Fallthrough
+        case 0:
+            break;
         }
 
         int totalCost = cand->cost + cost0 + cost1 + cost2;
@@ -238,10 +241,13 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
     switch (numArgs) {
     case 3:
         emitConversion(comp, block, cheapest->immediateParams[2], cheapestConvOps[2], a2, c2);
+        // Fallthrough
     case 2:
         emitConversion(comp, block, cheapest->immediateParams[1], cheapestConvOps[1], a1, c1);
+        // Fallthrough
     case 1:
         emitConversion(comp, block, cheapest->immediateParams[0], cheapestConvOps[0], a0, c0);
+        // Fallthrough
     case 0:
         break;
     }
@@ -265,10 +271,13 @@ OpByteCode* CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseIns
     switch (numArgs) {
     case 3:
         emitArg(basePtr, cheapest, 2, c2);
+        // Fallthrough
     case 2:
         emitArg(basePtr, cheapest, 1, c1);
+        // Fallthrough
     case 1:
         emitArg(basePtr, cheapest, 0, c0);
+        // Fallthrough
     case 0:
         break;
     }
