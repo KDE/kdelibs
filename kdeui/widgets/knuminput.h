@@ -259,9 +259,6 @@ public:
      * Sets the allowed input range and the step size for the slider and the
      * spin box.
      *
-     * Calling this function unconditionally enables the slider. If you don't
-     * want a slider, you need to call setSliderEnabled(false) afterwards.
-     *
      * @param min  minimum value
      * @param max  maximum value
      * @param step step size
