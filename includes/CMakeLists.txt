@@ -703,7 +703,6 @@ install( FILES
   KNS/Entry
   KNS/EntryHandler
   KNS/EntryLoader
-  KNS/Feed
   KNS/Installation
   KNS/KTranslatable
   KNS/Provider
