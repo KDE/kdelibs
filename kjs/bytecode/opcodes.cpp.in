@@ -94,8 +94,6 @@ static void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
         return;
     }
 
-    OpValue regNum;
-
     switch (convType) {
     case Conv_NoOp:
         out = *original;
@@ -105,44 +103,37 @@ static void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
         out = *original;
         break;
     case Conv_RBool_Value: {
-        comp->requestTemporary(OpType_value, out, regNum);
-        CodeGen::emitOp(comp, block, Op_JsBoolean, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_JsBoolean, &out, original);
     }
     break;
 
     case Conv_RValue_Bool: {
-        comp->requestTemporary(OpType_bool, out, regNum);
-        CodeGen::emitOp(comp, block, Op_ToBoolean, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_ToBoolean, &out, original);
     }
     break;
 
     case Conv_RValue_Uint32: {
-        comp->requestTemporary(OpType_uint32, out, regNum);
-        CodeGen::emitOp(comp, block, Op_ToUInt32, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_ToUInt32, &out, original);
     }
     break;
 
     case Conv_RUint32_Bool: {
-        comp->requestTemporary(OpType_bool, out, regNum);
-        CodeGen::emitOp(comp, block, Op_UInt32ToBool,  &regNum, original);
+        CodeGen::emitOp(comp, block, Op_UInt32ToBool,  &out, original);
     }
     break;
 
     case Conv_RUint32_Value: {
-        comp->requestTemporary(OpType_value, out, regNum);
-        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &out, original);
     }
     break;
 
     case Conv_I_R_Uint32_Value: {
-        comp->requestTemporary(OpType_value, out, regNum);
-        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &out, original);
     }
     break;
 
     case Conv_I_R_Number_Value: {
-        comp->requestTemporary(OpType_value, out, regNum);
-        CodeGen::emitOp(comp, block, Op_JSNumber, &regNum, original);
+        CodeGen::emitOp(comp, block, Op_JSNumber, &out, original);
     }
     break;
 
@@ -167,13 +158,31 @@ static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const Op
 }
 
 Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
-                            OpValue* a0, OpValue* a1, OpValue* a2)
+                     OpValue* retOut, OpValue* a0, OpValue* a1, OpValue* a2)
 {
     const Op* const* cands = opSpecializations[baseInstr];
 
     const Op* cheapest = 0;
     int    cheapestCost = 0;
     ConvOp cheapestConvOps[3] = {Conv_NoConversion, Conv_NoConversion, Conv_NoConversion};
+
+    OpType retType = opRetTypes[baseInstr];
+    OpValue retVal, retReg;
+    if (retType != OpType_void) {
+        // Add in a register argument..
+        ASSERT(!a2);
+        comp->requestTemporary(retType, retVal, retReg);
+
+        a2 = a1;
+        a1 = a0;
+        a0 = &retReg;
+
+        // Set return value, if needed
+        if (retOut)
+            *retOut = retVal;
+    } else {
+        ASSERT(!retOut);
+    }
 
     int numArgs = 0;
     if (a0)

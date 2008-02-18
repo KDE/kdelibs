@@ -35,7 +35,7 @@ static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, co
     OpValue me = OpValue::immNode(node);
     OpValue se = OpValue::immUInt32(SyntaxError);
     OpValue msg = OpValue::immCStr(msgStr);
-    CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, &me, &se, &msg);
+    CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, 0, &me, &se, &msg);
 }
 
 OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
@@ -98,9 +98,8 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     // a special StringInstance type may be of use eventually.
     OpValue inStr = OpValue::immString(&val);
 
-    OpValue out, regNum;
-    comp->requestTemporary(OpType_value, out, regNum);
-    CodeGen::emitOp(comp, block, Op_OwnedString, &regNum, &inStr);
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_OwnedString, &out, &inStr);
     return out;
 }
 
@@ -151,11 +150,11 @@ OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
                 // ### may want to tile this?
 
                 OpValue ident = OpValue::immIdent(&n->var->ident);
-                CodeGen::emitOp(comp, block, Op_SymPut, comp->localScope(), &ident, &val);
+                CodeGen::emitOp(comp, block, Op_SymPut, 0, comp->localScope(), &ident, &val);
             } else {
                 // Store to the local..
                 OpValue dest = OpValue::immRegNum(localID);
-                CodeGen::emitOp(comp, block, Op_RegPut, &dest, &val);
+                CodeGen::emitOp(comp, block, Op_RegPut, 0, &dest, &val);
             }
         } // if initializer..
     } // for each decl..
@@ -192,7 +191,7 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Insert a jump to the loop test (address not yet known)
     OpValue testAddr   = OpValue::immAddr(0);
-    Addr    jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, &testAddr);
+    Addr    jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, &testAddr);
 
     // Generate loop body..
     OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(block));
@@ -214,10 +213,10 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Make the test itself --- if it exists..
     if (expr2) {
         OpValue cond = expr2->generateEvalCode(comp, block);
-        CodeGen::emitOp(comp, block, Op_IfJump, &cond, &bodyAddr);
+        CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &bodyAddr);
     } else {
         // Just jump back to the body.
-        CodeGen::emitOp(comp, block, Op_Jump, &bodyAddr);
+        CodeGen::emitOp(comp, block, Op_Jump, 0, &bodyAddr);
     }
 
     comp->exitLoop(this, block);
@@ -237,7 +236,7 @@ void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
             // Emit a jump...
             Addr    pc    = CodeGen::nextPC(block);
             OpValue dummy = OpValue::immAddr(0);
-            CodeGen::emitOp(comp, block, Op_Jump, &dummy);
+            CodeGen::emitOp(comp, block, Op_Jump, 0, &dummy);
 
             // Queue destination for resolution
             comp->addPendingContinue(dest, pc);
@@ -260,7 +259,7 @@ void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // Hence, emit a jump...
         Addr    pc    = CodeGen::nextPC(block);
         OpValue dummy = OpValue::immAddr(0);
-        CodeGen::emitOp(comp, block, Op_Jump, &dummy);
+        CodeGen::emitOp(comp, block, Op_Jump, 0, &dummy);
 
         // Queue destination for resolution
         comp->addPendingBreak(dest, pc);
@@ -282,7 +281,7 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
     else
         arg = value->generateEvalCode(comp, block);
 
-    CodeGen::emitOp(comp, block, Op_Return, &arg);
+    CodeGen::emitOp(comp, block, Op_Return, 0, &arg);
 }
 
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -309,13 +308,11 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
 void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     // Load 'scope' and 'this' pointer
-    OpValue scopeVal, scopeReg;
-    comp->requestTemporary(OpType_value, scopeVal, scopeReg);
-    CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeReg);
+    OpValue scopeVal;
+    CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeVal);
 
-    OpValue thisVal, thisReg;
-    comp->requestTemporary(OpType_value, thisVal, thisReg);
-    CodeGen::emitOp(comp, block, Op_This, &thisReg);
+    OpValue thisVal;
+    CodeGen::emitOp(comp, block, Op_This, &thisVal);
 
     comp->setPreloadRegs(&scopeVal, &thisVal);
 

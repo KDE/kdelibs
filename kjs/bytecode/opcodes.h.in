@@ -94,9 +94,10 @@ typedef Vector<unsigned char> CodeBlock;
 
 class CodeGen {
 public:
-    // All of these emit the instruction of given type, and return its base
+    // All of these emit the instruction of given type, and return its base.
+    // If retVal isn't 0, the return value will be placed there
     static Addr emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
-                              OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
+                       OpValue* retOut = 0, OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
 
     static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
 
