@@ -203,7 +203,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // place an asynchronous call
         QVariantList args;
         args << name << qlonglong(w) << appid();
-        wallet->d->wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)));
+        wallet->d->wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)));
 
         return wallet;
     }
@@ -682,6 +682,13 @@ void Wallet::walletOpenResult(int id) {
     } else if (id < 0) {
         emit walletOpened(false);
     } // id == 0 => wait
+}
+
+void Wallet::walletOpenError(const QDBusError& error)
+{
+    if (error.isValid()) {
+        emit walletOpened(false);
+    }
 }
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)

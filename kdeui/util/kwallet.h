@@ -29,6 +29,8 @@
 #include <kdeui_export.h>
 
 
+class QDBusError;
+
 namespace KWallet {
 
 /**
@@ -480,6 +482,12 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  Callback for kwalletd
 		 */
 		void walletOpenResult(int rc);
+
+		/**
+		 *  @internal
+		 *  DBUS error slot.
+		 */
+		void walletOpenError(const QDBusError& error);
 
 		/**
 		 *  @internal
