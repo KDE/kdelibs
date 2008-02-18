@@ -232,8 +232,16 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
 	int column = index.column();
 	if (column == Name) {
-		index = model->index(index.row(), LocalPrimary, index.parent());
-		column = LocalPrimary;
+		// If user click in the name column activate the (Global|Local)Primary
+		// column if possible.
+		if (!view->header()->isSectionHidden(LocalPrimary)) {
+			column = LocalPrimary;
+		} else if (!view->header()->isSectionHidden(GlobalPrimary)) {
+			column = GlobalPrimary;
+		} else {
+			// do nothing.
+		}
+		index = model->index(index.row(), column, index.parent());
 		view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 	}
 
