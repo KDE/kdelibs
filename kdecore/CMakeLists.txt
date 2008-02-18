@@ -105,7 +105,7 @@ if (UNIX)
    if (NOT HAVE_TRUNC)
        target_link_libraries(kdefakes  m )
    endif (NOT HAVE_TRUNC)
-   install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
+   install(TARGETS kdefakes DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 endif (UNIX)
 
@@ -243,7 +243,7 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-install(TARGETS kdecore  DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS kdecore  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

@@ -259,7 +259,7 @@ endif(X11_Xrender_FOUND)
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 
 ########### install files ###############
-install(TARGETS kio DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS kio DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 

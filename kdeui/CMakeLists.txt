@@ -294,7 +294,7 @@ if (X11_Xfixes_FOUND)
 endif(X11_Xfixes_FOUND)
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS kdeui  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
 if (Q_WS_MAC)

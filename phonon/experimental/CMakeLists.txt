@@ -17,7 +17,7 @@ kde4_add_library(phononexperimental SHARED ${phononexperimental_LIB_SRCS})
 target_link_libraries(phononexperimental ${KDE4_PHONON_LIBS})
 #do not use GENERIC versioning in phonon
 set_target_properties(phononexperimental PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS phononexperimental  DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS phononexperimental  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install headers ###############
 install(FILES
