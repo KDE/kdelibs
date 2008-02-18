@@ -181,6 +181,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *messageLabel = new QLabel(text, mainWidget);
     messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
     messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    messageLabel->setStyleSheet("QLabel { background-color: transparent; }");
 
     QRect desktop = KGlobalSettings::desktopGeometry(dialog);
     if (desktop.width() / 3 < messageLabel->fontMetrics().width(text)) {
@@ -192,7 +193,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     messageScrollArea->setWidget(messageLabel);
     messageScrollArea->setFrameShape(QFrame::NoFrame);
     messageScrollArea->setWidgetResizable(true);
-    messageScrollArea->setStyleSheet("QAbstractScrollArea { background-color: none; }");
+    messageScrollArea->setStyleSheet("QAbstractScrollArea { background-color: transparent; }");
 
     hLayout->addWidget(messageScrollArea);
 
