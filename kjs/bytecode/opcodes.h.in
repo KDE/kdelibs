@@ -99,6 +99,9 @@ public:
     static Addr emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
                        OpValue* retOut = 0, OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
 
+    static void emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
+                              OpType outType, OpValue* out);
+
     static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
 
     static Addr nextPC(const CodeBlock& block) {
@@ -106,6 +109,7 @@ public:
     }
 
     static void disassembleBlock(CodeBlock& block);
+
 };
 
 } //namespace KJS

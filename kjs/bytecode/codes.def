@@ -33,10 +33,7 @@ type uint32: uint32_t register immediate;
 // This relies on immediate value JSValue conversion rountines not touching exec!
 type value:  JSValue* register immediate align8;
 
-// Note: number can't possibly be register, it won't fit on 32-bit!
-// ### we might want separate areas, but then we can't store a non-immediate value into a real
-// local anyway.
-type number: double immediate align8;
+type number: double register immediate align8;
 
 // Program types; these all represent stuff in source code and not actual program values
 // Hence, no conversions for them.
@@ -95,6 +92,7 @@ conversion bool => number {
     ]]
 
     tile costs 0;
+    register RBool_Number costs 10;
 }
 
 /*
@@ -124,6 +122,7 @@ conversion value => number {
     ]]
 
     tile costs 37;
+    register RValue_Number costs 49;
 }
 
 /*
@@ -153,6 +152,7 @@ conversion uint32 => number {
     ]]
 
     tile costs 3;
+    register RUint32_Number costs 10;
 }
 
 /*
@@ -165,6 +165,7 @@ conversion number => bool {
     ]]
 
     tile costs 15;
+    register RNumber_Bool costs 25;
 }
 
 conversion number => value {
@@ -173,6 +174,7 @@ conversion number => value {
     ]]
 
     tile costs 15;
+    register RNumber_Value costs 35;
 }
 
 conversion number => uint32 {
@@ -181,6 +183,7 @@ conversion number => uint32 {
     ]]
 
     tile costs 10;
+    register RNumber_Uint32 costs 20;
 }
 
 
@@ -209,6 +212,12 @@ operation ToBoolean {
 operation ToUInt32 {
     impl uint32 toUInt32(value in) [[
         $$ = in->toUInt32(exec);
+    ]]
+}
+
+operation ToNumber {
+    impl number(value in) [[
+        $$ = in->toNumber(exec);
     ]]
 }
 
@@ -319,7 +328,7 @@ operation GetVariableObject {
 
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl value scopeLookup(reg found, ident varName) [[
+    impl value scopeLookup(ident varName, bool errorOnFailure) [[
         const ScopeChain& chain = exec->scopeChain();
         ScopeChainIterator iter = chain.begin();
         ScopeChainIterator end = chain.end();
@@ -335,14 +344,17 @@ operation ScopeLookup {
                 break;
         } while (iter != end);
 
-        localStore[found].boolVal = (iter != end);
+        if (errorOnFailure && iter == end) {
+            // ### TODO: issue error
+        }
+
         $$ = scopeObj;
     ]]
 }
 
 operation NonLocalScopeLookup {
     // As above, but may skip one step
-    impl value scopeLookup(reg found, ident varName) [[
+    impl value scopeLookup(ident varName, bool errorOnFailure) [[
         const ScopeChain& chain = exec->scopeChain();
         ScopeChainIterator iter = chain.begin();
         ScopeChainIterator end = chain.end();
@@ -364,7 +376,9 @@ operation NonLocalScopeLookup {
                 break;
         } while (iter != end);
 
-        localStore[found].boolVal = (iter != end);
+        if (errorOnFailure && iter == end) {
+            // ### TODO: issue error
+        }
         $$ = scopeObj;
     ]]
 }
@@ -443,7 +457,7 @@ operation RegPut {
 
 // Generic put..
 operation SymPut {
-    impl void symPut(valu scope, ident varName, value val) [[
+    impl void symPut(value scope, ident varName, value val) [[
         base->toObject(exec)->put(varName, val);
     ]]
 }
@@ -481,6 +495,21 @@ operation GlobalSymPut {
 operation GlobalSymGet {
     impl value globalGet(ident varName) [[
         //### TODO
+    ]]
+}
+
+/**
+ Binary ops
+ */
+operation Add1 {
+    impl number add1(number old) [[
+        $$ = old + 1.0;
+    ]]
+}
+
+operation Sub1 {
+    impl number sub1(number old) [[
+        $$ = old - 1.0;
     ]]
 }
 

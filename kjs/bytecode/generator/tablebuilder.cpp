@@ -105,7 +105,7 @@ void TableBuilder::generateCode()
 
     // Conversion ops. Those go entirely in the .cpp
     Enum convOps("ConvOp", "Conv_", conversionNames);
-    convOps.printDeclaration(cppStream);
+    convOps.printDeclaration(hStream);
     convOps.printDefinition (cppStream);
 
     *cppStream << "struct ConvInfo {\n";

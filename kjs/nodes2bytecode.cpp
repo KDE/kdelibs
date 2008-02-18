@@ -45,16 +45,22 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
     return OpValue::immUInt32(42);
 }
 
-CompileReference* LocationNode::generateRefStoreBegin (CompileState*, CodeBlock& block)
+CompileReference* LocationNode::generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail)
 {
-    std::cerr << "WARNING: no generateRefStoreBegin for:" << typeid(*this).name() << "\n";
+    std::cerr << "WARNING: no generateRefBegin for:" << typeid(*this).name() << "\n";
     return 0;
 }
 
-void LocationNode::generateRefStoreFinish(CompileState*, CodeBlock& block,
+OpValue LocationNode::generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref)
+{
+    std::cerr << "WARNING: no generateRefRead for:" << typeid(*this).name() << "\n";
+    return OpValue::immUInt32(4242);
+}
+
+void LocationNode::generateRefWrite(CompileState*, CodeBlock& block,
                                           CompileReference* ref, OpValue& valToStore)
 {
-    std::cerr << "WARNING: no generateRefStoreFinish for:" << typeid(*this).name() << "\n";
+    std::cerr << "WARNING: no generateRefWrite for:" << typeid(*this).name() << "\n";
 }
 
 void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
@@ -155,7 +161,7 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
-CompileReference* VarAccessNode::generateRefStoreBegin (CompileState* comp, CodeBlock& block)
+CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool errorOnFail)
 {
     bool dynamicLocal;
     size_t index = localID(comp, dynamicLocal);
@@ -163,20 +169,37 @@ CompileReference* VarAccessNode::generateRefStoreBegin (CompileState* comp, Code
     // If this is not a register local, we need to look up the scope first..
     if (index == missingSymbolMarker()) {
         CompileReference* ref = new CompileReference;
-        ref->mayFail = true;
-        OpValue foundReg;
-        comp->requestTemporary(OpType_bool, ref->foundResult, foundReg);
 
         OpValue varName = OpValue::immIdent(&ident);
+        OpValue errFail = OpValue::immBool(errorOnFail);
         CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
-                        &ref->val1, &foundReg, &varName);
+                        &ref->val1, &varName, &errFail);
         return ref;
     }
 
     return 0;
 }
 
-void VarAccessNode::generateRefStoreFinish(CompileState* comp, CodeBlock& block,
+OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+{
+    bool dynamicLocal;
+    size_t index = localID(comp, dynamicLocal);
+
+    OpValue out;
+    if (index == missingSymbolMarker()) {
+        // Symbolic read from the appropriate scope, which is in base..
+        OpValue varName = OpValue::immIdent(&ident);
+        CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->val1, &varName);
+    } else {
+        // Straight register get..
+        out.immediate = false;
+        out.type      = OpType_value;
+        out.value.narrow.regVal = index;
+    }
+    return out;
+}
+
+void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                            CompileReference* ref, OpValue& valToStore)
 {
     bool dynamicLocal;
@@ -187,7 +210,6 @@ void VarAccessNode::generateRefStoreFinish(CompileState* comp, CodeBlock& block,
         OpValue varName = OpValue::immIdent(&ident);
         CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
                         &ref->val1, &varName, &valToStore);
-        delete ref;
     } else {
         // Straight register put..
         OpValue destReg = OpValue::immRegNum(index);
@@ -217,44 +239,58 @@ OpValue DotAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     OpValue base    = expr->generateEvalCode(comp, block);
     OpValue varName = OpValue::immIdent(&ident);
     CodeGen::emitOp(comp, block, Op_SymGet, &ret, &base, &varName);
+    return ret;
 }
 
-CompileReference* DotAccessorNode::generateRefStoreBegin (CompileState* comp, CodeBlock& block)
+CompileReference* DotAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool)
 {
     CompileReference* ref = new CompileReference;
-    ref->mayFail = false;
-
     // base
-    ref->var1 = expr->generateEvalCode(comp, block);
+    ref->val1 = expr->generateEvalCode(comp, block);
     return ref;
 }
 
-void DotAccessorNode::generateRefStoreFinish(CompileState* comp, CodeBlock& block,
+OpValue DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+{
+    OpValue out;
+    OpValue varName = OpValue::immIdent(&ident);
+    CodeGen::emitOp(comp, block, Op_SymGet, &out, &ref->val1, &varName);
+    return out;
+}
+
+void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymPut, 0, &base, &varName, &valToStore);
-    delete ref;
+    CodeGen::emitOp(comp, block, Op_SymPut, 0, &ref->val1, &varName, &valToStore);
 }
 
-OpValue PostfixNode::generateEvalCode(CompileState* state, CodeBlock& block)
+// ------------------ ........
+
+OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-#if 0
-  Reference ref = m_loc->evaluateReference(exec);
+    // ### we want to fold this in if the kid is a local -- any elegant way?
 
-  //handle error..
-  if (!ref.found)
-    return throwUndefinedVariableError(exec, ref.ident);
+    CompileReference* ref = m_loc->generateRefBegin(comp, block, true /* issue error if not there*/);
 
-  KJS_CHECKEXCEPTIONVALUE
+    //read current value
+    OpValue curV = m_loc->generateRefRead(comp, block, ref);
 
-  //do the op
-  JSValue *v = ref.read(exec);
-  double n = v->toNumber(exec);
-  double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-  ref.write(exec, jsNumber(newValue));
-  return jsNumber(n);
-#endif
+    // We need it to be a number..
+    if (curV.type != OpType_number) {
+        OpValue numVal;
+        CodeGen::emitConvertTo(comp, block, &curV, OpType_number, &numVal);
+        curV = numVal;
+    }
+
+    // Compute new one
+    OpValue newV;
+    CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
+                    &newV, &curV);
+
+    m_loc->generateRefWrite(comp, block, ref, newV);
+    delete ref;
+    return curV;
 }
 
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)

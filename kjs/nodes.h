@@ -207,17 +207,19 @@ namespace KJS {
     virtual bool isLocation() const { return true; }
     virtual Reference evaluateReference(ExecState* exec) = 0;
 
-    // if we have a = foo, we call generateRefStoreBegin before
-    // evaluating 'foo', and then generateRefStoreFinish after;
+    // if we have a = foo, we call generateRefBegin before
+    // evaluating 'foo', and then generateRefWrite after;
     // there are 2 reasons for this:
     // 1) the conceptual reference evaluation step could raise an exception,
     //    which should happen in the proper order, before evaluating the RHS
     // 2) when doing something like foo = bar(), the evaluation of
     //    bar() may introduce a new copy of foo earlier on in the scope
     //    chain, but that should not affect the scope.
-    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
-    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
-                                        CompileReference* ref, OpValue& valToStore);
+    // Note that the client has to delete the return CompileReference itself
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+                                    CompileReference* ref, OpValue& valToStore);
   };
 
   class StatementNode : public Node {
@@ -326,8 +328,9 @@ namespace KJS {
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
     virtual Reference evaluateReference(ExecState* exec);
-    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
-    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
 
     // Returns the ID this variable should be accessed as, or
@@ -466,8 +469,9 @@ namespace KJS {
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
-    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
-    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
 
 

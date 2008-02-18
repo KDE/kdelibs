@@ -31,8 +31,8 @@ const int Cost_Checked      = -2;
 
 @generate
 
-// Note: costOut will be Cost_NoConversion if no conversion is possible
-static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut)
+// Note: costOut will be negative if no conversion is possible
+ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut)
 {
     bool   inImmediate = in->immediate;
     OpType inType      = in->type;
@@ -86,8 +86,8 @@ static ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, 
     return inf->routine;
 }
 
-static void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
-                           ConvOp convType, OpValue* original, OpValue& out)
+void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
+                    ConvOp convType, OpValue* original, OpValue& out)
 {
     if (outImm) {
         emitImmediateConversion(convType, original, out);
@@ -117,6 +117,11 @@ static void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
+    case Conv_RValue_Number: {
+        CodeGen::emitOp(comp, block, Op_ToNumber, &out, original);
+    }
+    break;
+
     case Conv_RUint32_Bool: {
         CodeGen::emitOp(comp, block, Op_UInt32ToBool,  &out, original);
     }
@@ -132,9 +137,11 @@ static void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
-    case Conv_I_R_Number_Value: {
+    case Conv_I_R_Number_Value:
+    case Conv_RNumber_Value: {
         CodeGen::emitOp(comp, block, Op_JSNumber, &out, original);
     }
+
     break;
 
     default:
@@ -155,6 +162,15 @@ static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const Op
     } else {
         *reinterpret_cast<NarrowArg*>(argBase) = val.value.narrow;
     }
+}
+
+void CodeGen::emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
+                            OpType outType, OpValue* out)
+{
+    int cost;
+    ConvOp op = computeCast(in, outType, in->immediate, cost);
+    ASSERT(cost >= 0);
+    emitConversion(comp, block, in->immediate, op, in, *out);
 }
 
 Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
