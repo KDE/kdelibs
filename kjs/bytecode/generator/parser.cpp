@@ -253,14 +253,14 @@ void Parser::parseOperation()
 
 void Parser::parseImpl()
 {
-    // impl identifier? ( paramList? ) code
+    // impl identifier identifier ( paramList? ) code
     // paramList := ident ident
     // paramList := ident ident , paramList
 
     match(Lexer::Impl);
-    QString fn;
-    if (peekNext().type == Lexer::Ident)
-        fn  = matchIdentifier();
+
+    QString ret = matchIdentifier();
+    QString fn  = matchIdentifier();
     match(Lexer::LParen);
 
     // Parse parameter types and names, if any..
@@ -287,7 +287,7 @@ void Parser::parseImpl()
     QString code = matchCode();
 
 
-    handleImpl(fn, code, cost, paramSigs, paramNames);
+    handleImpl(fn, code, cost, ret, paramSigs, paramNames);
 }
 
 void Parser::parseTile()

@@ -54,6 +54,9 @@ type string: UString* immediate align8;
 type node: Node* immediate align8;
 type cstr: const char* immediate align8;
 
+// Just for the return type...
+type void: void immediate;
+
 /**
 Notes on the conversion rules from the spec:
 The conversion operations in general do not form a commutative diagram ---
@@ -186,50 +189,50 @@ conversion number => uint32 {
 */
 
 operation OwnedString {
-    impl(reg outReg, string in) [[
-        localStore[outReg].valueVal = jsOwnedString(in);
+    impl value ownedString(string in) [[
+        $$ = jsOwnedString(in);
     ]]
 }
 
 operation JsBoolean {
-    impl(reg outReg, bool in) [[
-        localStore[outReg].valueVal = jsBoolean(in);
+    impl value jsBoolean(bool in) [[
+        $$ = jsBoolean(in);
     ]]
 }
 
 operation ToBoolean {
-    impl(reg outReg, value in) [[
-        localStore[outReg].boolVal = in->toBoolean(exec);
+    impl bool toBoolean(value in) [[
+        $$ = in->toBoolean(exec);
     ]]
 }
 
 operation ToUInt32 {
-    impl(reg outReg, value in) [[
-        localStore[outReg].uint32Val = in->toUInt32(exec);
+    impl uint32 toUInt32(value in) [[
+        $$ = in->toUInt32(exec);
     ]]
 }
 
 operation UInt32ToBool {
-    impl(reg outReg, uint32 in) [[
-        localStore[outReg].boolVal = in ? true : false;
+    impl bool uint32ToBool(uint32 in) [[
+        $$ = in ? true : false;
     ]]
 }
 
 operation JSNumberFromUInt32 {
-    impl(reg outReg, uint32 in) [[
-        localStore[outReg].valueVal = jsNumber(in);
+    impl value jsNum(uint32 in) [[
+        $$ = jsNumber(in);
     ]]
 }
 
 operation JSNumber {
-    impl(reg outReg, number in) [[
-        localStore[outReg].valueVal = jsNumber(in);
+    impl value jsNum(number in) [[
+        $$ = jsNumber(in);
     ]]
 }
 
 operation This {
-    impl(reg outReg) [[
-        localStore[outReg].valueVal = exec->thisValue();
+    impl value getThis() [[
+        $$ = exec->thisValue();
     ]]
 }
 
@@ -239,19 +242,19 @@ operation This {
  Control flow stuff
 */
 operation Exit {
-    impl() [[
+    impl void exit() [[
         return Completion(Normal);
     ]]
 }
 
 operation Jump {
-    impl(addr dest) [[
+    impl void jump(addr dest) [[
         pc = dest;
     ]]
 }
 
 operation IfJump {
-    impl executeIfJump(bool condResult, addr dest) [[
+    impl void executeIfJump(bool condResult, addr dest) [[
         if (condResult)
             pc = dest;
     ]]
@@ -260,7 +263,7 @@ operation IfJump {
 }
 
 operation IfElseJump {
-    impl executeIfElseJump(bool condResult, addr goTrue, addr goFalse) [[
+    impl void executeIfElseJump(bool condResult, addr goTrue, addr goFalse) [[
         pc = condResult ? goTrue : goFalse;
     ]]
 
@@ -273,19 +276,19 @@ operation IfElseJump {
 // ### switch is nasty. Probably needs some opaque pointer type.
 
 operation PopCatch {
-    impl() [[
+    impl void popCatch() [[
         exec->popCatchHandler();
     ]]
 }
 
 operation PushCatch {
-    impl(addr handler) [[
+    impl void pushCatch(addr handler) [[
         exec->pushCatchHandler(handler);
     ]]
 }
 
 operation Throw {
-    impl(value exception) [[
+    impl void throw(value exception) [[
         exec->setException(exception);
         if (exec->hasCatchHandler())
             pc = exec->takeCatchHandler();
@@ -295,13 +298,13 @@ operation Throw {
 }
 
 operation Return {
-    impl(value retVal) [[
+    impl void return (value retVal) [[
         return Completion(Normal, retVal);
     ]]
 }
 
 operation ReturnErrorCompletion {
-    impl(node node, uint32 errorType, cstr msg) [[
+    impl void retErrorCompletion(node node, uint32 errorType, cstr msg) [[
         return node->createErrorCompletion(exec, ErrorType(errorType), msg);
     ]]
 }
@@ -309,33 +312,33 @@ operation ReturnErrorCompletion {
 // Variable stuff... Locals access can just use register addressing,
 // not specific get/put, but when we have to do symbolic lookup, we use these.
 operation GetVariableObject {
-    impl(reg outReg) [[
+    impl value getVariableObject() [[
         return exec->variableObject();
     ]]
 }
 
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl scopeLookup(reg outReg, ident varName) [[
+    impl value scopeLookup(ident varName) [[
         //### TODO
     ]]
 }
 
 operation RegPut {
-    impl regPut(reg destReg, value val) [[
+    impl void regPut(reg destReg, value val) [[
         localStore[destReg].regValue = val;
     ]]
 }
 
 operation SymPut {
-    impl symPut(value scope, ident varName, value val) [[
+    impl void symPut(value scope, ident varName, value val) [[
         ASSERT(scope->isObject());
         static_cast<JSObject*>(scope)->put(varName, val);
     ]]
 }
 
 operation SymGet {
-    impl symGet(reg destReg, value scope, ident varName) [[
+    impl value symGet(value scope, ident varName) [[
         ASSERT(scope->isObject());
         //### TODO
         // regs[destReg] = static_cast<JSObject*>(scope)->get(varName); or such
@@ -344,13 +347,13 @@ operation SymGet {
 
 // Specialization for global object...
 operation GlobalSymPut {
-    impl globalSymPut(ident varName, value val) [[
+    impl void globalSymPut(ident varName, value val) [[
         //### TODO
     ]]
 }
 
 operation GlobalSymGet {
-    impl globalGet(reg dstReg, ident varName) [[
+    impl value globalGet(ident varName) [[
         //### TODO
     ]]
 }
@@ -360,8 +363,8 @@ operation GlobalSymGet {
 */
 operation And {
     //### FIXME: this actually distinguishes uin32/int32 --- double-check!
-    impl andOp(reg dstReg, uint32 a0, uint32 a1) [[
-        localStore[dstReg].uint32Val = a0 & a1;
+    impl uint32 andOp(uint32 a0, uint32 a1) [[
+        $$ = a0 & a1;
     ]]
 
     tile (reg, value, value) as andOp;

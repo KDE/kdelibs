@@ -44,7 +44,7 @@ private:
                                   const QString& from, const QString& to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
     virtual void handleImpl(const QString& fnName, const QString& code, int cost,
-                            QStringList sig, QStringList paramNames) = 0;
+                            const QString& retType, QStringList sig, QStringList paramNames) = 0;
     virtual void handleTile(const QString& fnName, QStringList sig) = 0;
 
     QString matchIdentifier();

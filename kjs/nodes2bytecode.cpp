@@ -170,7 +170,8 @@ void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void BlockNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    source->generateExecCode(comp, block);
+    if (source)
+        source->generateExecCode(comp, block);
 }
 
 void EmptyStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)

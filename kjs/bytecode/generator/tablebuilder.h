@@ -59,6 +59,7 @@ struct ConversionInfo
 struct Operation
 {
     QString name;
+    QString retType;
     QList<Type>  parameters;
     int          cost;
 
@@ -94,7 +95,7 @@ private:
 
     virtual void handleOperation(const QString& name);
     virtual void handleImpl(const QString& fnName, const QString& code, int cost,
-                            QStringList sig, QStringList paramNames);
+                            const QString& retType, QStringList sig, QStringList paramNames);
     virtual void handleTile(const QString& fnName, QStringList sig);
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
@@ -124,6 +125,7 @@ private:
     QStringList          typeNames;
 
     QStringList        operationNames;
+    QHash<QString, QString> operationRetTypes; // uglily enough specified on the impl. I suck.
     QList<Operation>   operations;
     QHash<QString, Operation> implementations;
 

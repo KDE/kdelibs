@@ -165,6 +165,16 @@ void TableBuilder::generateCode()
         expandOperationVariants(op, parIm);
     }
 
+    // Return types for each..
+    *cppStream << "static const OpType opRetTypes[] = {\n";
+    for (int c = 0; c < operationNames.size(); ++c) {
+        *cppStream << "     OpType_" << operationRetTypes[operationNames[c]];
+        if (c  != operationNames.size() - 1)
+            *cppStream << ",";
+        *cppStream << " //" << operationNames[c] << "\n";
+    }
+    *cppStream << "};\n\n";
+
     // Now we have all our bytecode names... Whee.
     Enum opByteCodesEnum("OpByteCode", "OpByteCode_", variantNames);
     opByteCodesEnum.printDeclaration(hStream);
@@ -336,14 +346,28 @@ QList<Type> TableBuilder::resolveSignature(const QStringList& in)
 }
 
 void TableBuilder::handleImpl(const QString& fnName, const QString& code, int cost,
-                              QStringList sig, QStringList paramNames)
+                              const QString& retType, QStringList sig, QStringList paramNames)
 {
+    // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
+    // emitOp will convert things as needed
+    QStringList extSig;
+    QStringList extParamNames;
+    if (retType != "void") {
+        extSig        << "reg";
+        extParamNames << "fbDestReg;";
+    }
+
+    extSig        << sig;
+    extParamNames << paramNames;
+
     Operation op;
     op.name           = operationNames.last();
+    op.retType        = retType;
+    operationRetTypes[op.name] = retType;
     op.implementAs    = code;
-    op.parameters     = resolveSignature(sig);
+    op.parameters     = resolveSignature(extSig);
     op.implParams     = op.parameters;
-    op.implParamNames = paramNames;
+    op.implParamNames = extParamNames;
     op.cost           = cost;
     operations << op;
     if (!fnName.isEmpty())
@@ -573,8 +597,13 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
         }
     }
 
+    // Replace $$ with destination register
+    QString storeCode = "localStore[fbDestReg]." + variant.op.retType + "Val";
+    QString code = variant.op.implementAs;
+    code.replace("$$", storeCode);
+
     // Print out the impl code..
-    printCode(mStream, 16, variant.op.implementAs);
+    printCode(mStream, 16, code);
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
