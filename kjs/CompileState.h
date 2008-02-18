@@ -49,7 +49,7 @@ class CompileState
 public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), ctype(ctype),
-        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody)
+        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody), nestedScopeDepth(0)
     {}
 
     FunctionBodyNode* functionBody() {
@@ -79,6 +79,20 @@ public:
 
     OpValue* thisValue() {
         return thisVal;
+    }
+
+    // This keeps track of entering/exiting of inner scopes introduced
+    // by with and catch
+    void pushScope() {
+        ++nestedScopeDepth;
+    }
+
+    void popScope() {
+        --nestedScopeDepth;
+    }
+
+    bool inNestedScope() {
+        return nestedScopeDepth > 0;
     }
 
     // Label stuff....
@@ -143,6 +157,9 @@ private:
         else
             freeNonMarkTemps.append(desc);
     }
+
+    // Recursion depth of width or catch scopes...
+    int nestedScopeDepth;
 
     // Label resolution..
     WTF::HashSet<Identifier> seenLabels;    // all labels we're inside

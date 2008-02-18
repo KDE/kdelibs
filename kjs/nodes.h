@@ -55,6 +55,7 @@ namespace KJS {
   class SemanticChecker;
 
   class CompileState;
+  class CompileReference;
 
   class NodeVisitor {
   public:
@@ -208,10 +209,15 @@ namespace KJS {
 
     // if we have a = foo, we call generateRefStoreBegin before
     // evaluating 'foo', and then generateRefStoreFinish after;
-    // the reason is that the evaluation of the RHS could change the
-    // scope the store should be done into.
-    virtual void generateRefStoreBegin (CodeBlock& block, CompileState*);
-    virtual void generateRefStoreFinish(CodeBlock& block, CompileState*, const OpValue& result);
+    // there are 2 reasons for this:
+    // 1) the conceptual reference evaluation step could raise an exception,
+    //    which should happen in the proper order, before evaluating the RHS
+    // 2) when doing something like foo = bar(), the evaluation of
+    //    bar() may introduce a new copy of foo earlier on in the scope
+    //    chain, but that should not affect the scope.
+    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
+    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
+                                        CompileReference* ref, OpValue& valToStore);
   };
 
   class StatementNode : public Node {
@@ -311,35 +317,25 @@ namespace KJS {
   class VarAccessNode : public LocationNode {
   public:
     VarAccessNode(const Identifier& s) : ident(s) {}
+    ~VarAccessNode(); // to avoid inst of ~OpValue here
     virtual Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
 
     virtual bool isVarAccessNode() const { return true; }
     virtual void streamTo(SourceStream&) const;
     virtual JSValue*  evaluate(ExecState*);
-    virtual Reference evaluateReference(ExecState* exec);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
-    // Returns the ID of the local this is bound to, or missingSymbolMarker if non-local
-    size_t localID(FunctionBodyNode* funcBody);
+    virtual Reference evaluateReference(ExecState* exec);
+    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
+    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
+                                        CompileReference* ref, OpValue& valToStore);
+
+    // Returns the ID this variable should be accessed as, or
+    // missingSymbolMarker(). maybeLocal will be set if the symbol
+    // could potentially be found in the current scope.
+    size_t localID(CompileState*, bool& dynamicLocal);
   protected:
     Identifier ident;
-  };
-
-  class LocalVarAccessNode : public VarAccessNode {
-  public:
-    LocalVarAccessNode(const Identifier& s, uint32_t i) : VarAccessNode(s), index(i) {}
-
-    virtual JSValue*  evaluate(ExecState*);
-    virtual Reference evaluateReference(ExecState* exec);
-  private:
-    uint32_t index;
-  };
-
-  class NonLocalVarAccessNode : public VarAccessNode {
-  public:
-    NonLocalVarAccessNode(const Identifier& s) : VarAccessNode(s) {}
-
-    virtual JSValue*  evaluate(ExecState*);
-    virtual Reference evaluateReference(ExecState* exec);
   };
 
   class GroupNode : public Node {
@@ -468,6 +464,13 @@ namespace KJS {
     Reference evaluateReference(ExecState*);
     virtual void streamTo(SourceStream&) const;
 
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+
+    virtual CompileReference* generateRefStoreBegin (CompileState*, CodeBlock& block);
+    virtual void generateRefStoreFinish(CompileState*, CodeBlock& block,
+                                        CompileReference* ref, OpValue& valToStore);
+
+
     Node *base() const { return expr.get(); }
     const Identifier& identifier() const { return ident; }
 
@@ -587,6 +590,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
   protected:
     RefPtr<LocationNode> m_loc;

@@ -319,10 +319,120 @@ operation GetVariableObject {
 
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl value scopeLookup(ident varName) [[
-        //### TODO
+    impl value scopeLookup(reg found, ident varName) [[
+        const ScopeChain& chain = exec->scopeChain();
+        ScopeChainIterator iter = chain.begin();
+        ScopeChainIterator end = chain.end();
+
+        // we must always have something in the scope chain
+        assert(iter != end);
+
+        JSObject *scopeObj;
+        do {
+            scopeObj = *iter;
+
+            if (scopeObj->getPropertySlot(exec, ident, ref.propertySlot))
+                break;
+        } while (iter != end);
+
+        localStore[found].boolVal = (iter != end);
+        $$ = scopeObj;
     ]]
 }
+
+operation NonLocalScopeLookup {
+    // As above, but may skip one step
+    impl value scopeLookup(reg found, ident varName) [[
+        const ScopeChain& chain = exec->scopeChain();
+        ScopeChainIterator iter = chain.begin();
+        ScopeChainIterator end = chain.end();
+
+        // we must always have something in the scope chain
+        assert(iter != end);
+
+        JSObject *scopeObj = *iter;
+        if (!scopeObj->isLocalInjected()) {
+            // Unless eval introduced new variables dynamically,
+            // we know this isn't in the top scope
+            ++iter;
+        }
+
+        do {
+            scopeObj = *iter;
+
+            if (scopeObj->getPropertySlot(exec, ident, ref.propertySlot))
+                break;
+        } while (iter != end);
+
+        localStore[found].boolVal = (iter != end);
+        $$ = scopeObj;
+    ]]
+}
+
+
+// Looks up a given variable in the scope chain, returns its value
+operation LocalVarGet {
+    impl value localVarGet(ident varName) [[
+        const ScopeChain& chain = exec->scopeChain();
+        ScopeChainIterator iter = chain.begin();
+        ScopeChainIterator end = chain.end();
+
+        // we must always have something in the scope chain
+        assert(iter != end);
+
+        PropertySlot slot;
+        JSObject *scopeObj;
+        do {
+            scopeObj = *iter;
+
+            if (scopeObj->getPropertySlot(exec, ident, slot)) {
+                $$ = slot.getValue(exec, scopeObj, ident);
+                break;
+            }
+
+            ++iter;
+        } while (iter != end);
+
+        if (iter == end)
+            throwUndefinedVariableError(exec, ident); //### FIXME
+    ]]
+}
+
+// Like above, but skips the first step, if possible.
+operation NonLocalVarGet {
+    impl value nonLocalVarGet(ident varName) [[
+        const ScopeChain& chain = exec->scopeChain();
+        ScopeChainIterator iter = chain.begin();
+        ScopeChainIterator end = chain.end();
+
+        // we must always have something in the scope chain
+        assert(iter != end);
+
+        PropertySlot slot;
+        JSObject *scopeObj = *iter;
+
+        if (!scopeObj->isLocalInjected()) {
+            // Unless eval introduced new variables dynamically,
+            // we know this isn't in the top scope
+            ++iter;
+        }
+
+        do {
+            scopeObj = *iter;
+
+            if (scopeObj->getPropertySlot(exec, ident, slot)) {
+                $$ = slot.getValue(exec, scopeObj, ident);
+                break;
+            }
+
+            ++iter;
+        } while (iter != end);
+
+        if (iter == end)
+            throwUndefinedVariableError(exec, ident);
+    ]]
+}
+
 
 operation RegPut {
     impl void regPut(reg destReg, value val) [[
@@ -330,18 +440,34 @@ operation RegPut {
     ]]
 }
 
+
+// Generic put..
 operation SymPut {
-    impl void symPut(value scope, ident varName, value val) [[
+    impl void symPut(valu scope, ident varName, value val) [[
+        base->toObject(exec)->put(varName, val);
+    ]]
+}
+
+// Put for a scope -- known to be an object!
+operation SymPutKnownObject {
+    impl void symPutKnownObject(value scope, ident varName, value val) [[
         ASSERT(scope->isObject());
         static_cast<JSObject*>(scope)->put(varName, val);
     ]]
 }
 
+// Generic get..
 operation SymGet {
-    impl value symGet(value scope, ident varName) [[
+    impl value symGet(value base, ident prop) [[
+        $$ = base->toObject(exec)->get(exec, prop);
+    ]]
+}
+
+// Get for a scope -- known to be an object!
+operation SymGetKnownObject {
+    impl value symScopeGet(value base, ident varName) [[
         ASSERT(scope->isObject());
-        //### TODO
-        // regs[destReg] = static_cast<JSObject*>(scope)->get(varName); or such
+        $$ = static_cast<JSObject*>(base)->get(exec, varName);
     ]]
 }
 

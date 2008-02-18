@@ -20,10 +20,20 @@
  */
 
 #include "nodes.h"
+#include "CompileState.h"
 
 namespace KJS {
 
+struct CompileReference
+{
+    // A couple of temp values for the reference node itself..
+    OpValue val1;
+    OpValue val2;
 
+    // Where success/failure are stored
+    bool mayFail;
+    OpValue foundResult;
+};
 
 }
 

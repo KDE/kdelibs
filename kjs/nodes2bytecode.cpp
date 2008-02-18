@@ -45,12 +45,14 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
     return OpValue::immUInt32(42);
 }
 
-void LocationNode::generateRefStoreBegin (CodeBlock& block, CompileState*)
+CompileReference* LocationNode::generateRefStoreBegin (CompileState*, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateRefStoreBegin for:" << typeid(*this).name() << "\n";
+    return 0;
 }
 
-void LocationNode::generateRefStoreFinish(CodeBlock& block, CompileState*, const OpValue& result)
+void LocationNode::generateRefStoreFinish(CompileState*, CodeBlock& block,
+                                          CompileReference* ref, OpValue& valToStore)
 {
     std::cerr << "WARNING: no generateRefStoreFinish for:" << typeid(*this).name() << "\n";
 }
@@ -103,17 +105,157 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
+// TODO: RegExpNode::generateEvalCode(CompileState* state, CodeBlock& block)
+
 OpValue ThisNode::generateEvalCode(CompileState* comp, CodeBlock&)
 {
     return *comp->thisValue();
 }
+
+// ------------------------------ VarAccessNode ----------------------------------------
+
+size_t VarAccessNode::localID(CompileState* comp, bool& dynamicLocal)
+{
+    // Are we inside a with or catch? In that case, it's all dynamic. Boo.
+    if (comp->inNestedScope()) {
+        dynamicLocal = true;
+        return missingSymbolMarker();
+    }
+
+    size_t index = comp->functionBody()->lookupSymbolID(ident);
+    if (index == missingSymbolMarker()) {
+        if (comp->codeType() == GlobalCode || ident == CommonIdentifiers::shared()->arguments)
+            dynamicLocal = true;
+        else
+            dynamicLocal = false; // Can skip the local scope..
+    }
+    return index;
+}
+
+OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    bool dynamicLocal;
+    size_t index = localID(comp, dynamicLocal);
+
+    // ### TODO: we want to emit Op_GetVariableObject for global code here/in refs.
+    // or just use the globalGet/globalPut; but I am concerned about LiveConnect eval..
+
+    OpValue out;
+    if (index == missingSymbolMarker()) {
+        // Emit a full variable read, perhaps skipping one scope
+        OpValue varName = OpValue::immIdent(&ident);
+        CodeGen::emitOp(comp, block, dynamicLocal ? Op_LocalVarGet : Op_NonLocalVarGet, &out, &varName);
+    } else {
+        // Register read. Easy.
+        out.immediate = false;
+        out.type      = OpType_value;
+        out.value.narrow.regVal = index;
+    }
+
+    return out;
+}
+
+CompileReference* VarAccessNode::generateRefStoreBegin (CompileState* comp, CodeBlock& block)
+{
+    bool dynamicLocal;
+    size_t index = localID(comp, dynamicLocal);
+
+    // If this is not a register local, we need to look up the scope first..
+    if (index == missingSymbolMarker()) {
+        CompileReference* ref = new CompileReference;
+        ref->mayFail = true;
+        OpValue foundReg;
+        comp->requestTemporary(OpType_bool, ref->foundResult, foundReg);
+
+        OpValue varName = OpValue::immIdent(&ident);
+        CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+                        &ref->val1, &foundReg, &varName);
+        return ref;
+    }
+
+    return 0;
+}
+
+void VarAccessNode::generateRefStoreFinish(CompileState* comp, CodeBlock& block,
+                                           CompileReference* ref, OpValue& valToStore)
+{
+    bool dynamicLocal;
+    size_t index = localID(comp, dynamicLocal);
+
+    if (index == missingSymbolMarker()) {
+        // Symbolic write to the appropriate scope..
+        OpValue varName = OpValue::immIdent(&ident);
+        CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
+                        &ref->val1, &varName, &valToStore);
+        delete ref;
+    } else {
+        // Straight register put..
+        OpValue destReg = OpValue::immRegNum(index);
+        CodeGen::emitOp(comp, block, Op_RegPut, 0, &destReg, &valToStore);
+    }
+}
+
+// ------------------------------ GroupNode----------------------------------------
 
 OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     return group->generateEvalCode(comp, block);
 }
 
-// ------------------------------ Code structure -------------------------------
+// ------------------------------ Object + Array literals --------------------------
+// TODO: ElementNode, ArrayNode, PropertyNameNode, PropertyNode, PropertyListNode, ObjectLiteralNode
+
+// ------------------------------ BracketAccessorNode --------------------------------
+
+
+// ------------------------------ DotAccessorNode --------------------------------
+
+// ECMA 11.2.1b
+OpValue DotAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue ret;
+    OpValue base    = expr->generateEvalCode(comp, block);
+    OpValue varName = OpValue::immIdent(&ident);
+    CodeGen::emitOp(comp, block, Op_SymGet, &ret, &base, &varName);
+}
+
+CompileReference* DotAccessorNode::generateRefStoreBegin (CompileState* comp, CodeBlock& block)
+{
+    CompileReference* ref = new CompileReference;
+    ref->mayFail = false;
+
+    // base
+    ref->var1 = expr->generateEvalCode(comp, block);
+    return ref;
+}
+
+void DotAccessorNode::generateRefStoreFinish(CompileState* comp, CodeBlock& block,
+                                             CompileReference* ref, OpValue& valToStore)
+{
+    OpValue varName = OpValue::immIdent(&ident);
+    CodeGen::emitOp(comp, block, Op_SymPut, 0, &base, &varName, &valToStore);
+    delete ref;
+}
+
+OpValue PostfixNode::generateEvalCode(CompileState* state, CodeBlock& block)
+{
+#if 0
+  Reference ref = m_loc->evaluateReference(exec);
+
+  //handle error..
+  if (!ref.found)
+    return throwUndefinedVariableError(exec, ref.ident);
+
+  KJS_CHECKEXCEPTIONVALUE
+
+  //do the op
+  JSValue *v = ref.read(exec);
+  double n = v->toNumber(exec);
+  double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
+  ref.write(exec, jsNumber(newValue));
+  return jsNumber(n);
+#endif
+}
 
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
 {
@@ -150,7 +292,7 @@ OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
                 // ### may want to tile this?
 
                 OpValue ident = OpValue::immIdent(&n->var->ident);
-                CodeGen::emitOp(comp, block, Op_SymPut, 0, comp->localScope(), &ident, &val);
+                CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &ident, &val);
             } else {
                 // Store to the local..
                 OpValue dest = OpValue::immRegNum(localID);

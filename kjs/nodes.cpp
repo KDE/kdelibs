@@ -25,6 +25,7 @@
 #include "nodes.h"
 #include <config.h>
 #include "scriptfunction.h"
+#include "CompileState.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -452,26 +453,9 @@ JSValue *ThisNode::evaluate(ExecState *exec)
   return exec->thisValue();
 }
 
-// ------------------------------ LocalVarAccessNode ----------------------------
-
-JSValue* LocalVarAccessNode::evaluate(ExecState *exec)
-{
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
-  return *scope->getLocalDirect(index);
-}
-
-Reference LocalVarAccessNode::evaluateReference(ExecState *exec)
-{
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
-  Reference ref(ident); //### FIXME: the ident is for delete, but it makes it take the super-slow path..
-  ref.base  = scope;
-  ref.found = true;
-  ref.propertySlot.setPotentiallyWriteable();
-  ref.propertySlot.setValueSlot(scope, scope->getLocalDirect(index), scope->isLocalReadOnly(index));
-  return ref;
-}
-
 // ------------------------------ VarAccessNode --------------------------------
+
+VarAccessNode::~VarAccessNode() {}
 
 JSValue* VarAccessNode::evaluate(ExecState* exec) {
   const ScopeChain& chain = exec->scopeChain();
@@ -524,6 +508,7 @@ Reference VarAccessNode::evaluateReference(ExecState* exec) {
 
 Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
 {
+
 #if 0
   size_t index = node->lookupSymbolID(ident);
   Node* out = 0;
@@ -546,76 +531,6 @@ Node* VarAccessNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node
   return out;
 #endif
   return 0;
-}
-
-size_t VarAccessNode::localID(FunctionBodyNode* node)
-{
-  return node->lookupSymbolID(ident);
-}
-
-// ------------------------------ NonLocalVarAccessNode ------------------------
-
-JSValue* NonLocalVarAccessNode::evaluate(ExecState* exec) {
-  const ScopeChain& chain = exec->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
-
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  PropertySlot slot;
-  JSObject *scopeObj = *iter;
-
-  if (!scopeObj->isLocalInjected()) {
-   // Unless eval introduced new variables dynamically,
-   // we know this isn't in the top scope
-   ++iter;
-  }
-
-  do {
-    scopeObj = *iter;
-
-    if (scopeObj->getPropertySlot(exec, ident, slot))
-      return slot.getValue(exec, scopeObj, ident);
-
-    ++iter;
-  } while (iter != end);
-
-  return throwUndefinedVariableError(exec, ident);
-}
-
-Reference NonLocalVarAccessNode::evaluateReference(ExecState* exec) {
-  Reference ref(ident);
-  ref.found = true;
-
-  const ScopeChain& chain = exec->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
-
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  JSObject *scopeObj = *iter;
-  if (!scopeObj->isLocalInjected()) {
-   // Unless eval introduced new variables dynamically,
-   // we know this isn't in the top scope
-   ++iter;
-  }
-
-  do {
-    scopeObj = *iter;
-    ref.base = scopeObj;
-
-    if (scopeObj->getPropertySlot(exec, ident, ref.propertySlot))
-      return ref;
-
-    ++iter;
-  } while (iter != end);
-
-  ref.base = scopeObj;
-  ref.found = false;
-  ref.propertySlot.setUndefined(scopeObj); //outermost scope.
-  return ref;
 }
 
 // ------------------------------ GroupNode ------------------------------------
@@ -1141,23 +1056,6 @@ void FunctionCallDotNode::recurseVisit(NodeVisitor *visitor)
 // ECMA 11.3
 
 // ------------------------------ PostfixNode ----------------------------------
-
-class LocalPostfixNode : public PostfixNode
-{
-public:
-  LocalPostfixNode(LocationNode *l, Operator o, int idx) : PostfixNode(l, o), index(idx) {}
-
-  JSValue* evaluate(ExecState* exec) {
-    ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
-    JSValue* v = *scope->getLocalDirect(index);
-    double n = v->toNumber(exec);
-    double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-    scope->putLocalChecked(index, jsNumber(newValue));
-    return jsNumber(n);
-  }
-private:
-  int index;
-};
 
 JSValue* PostfixNode::evaluate(ExecState* exec)
 {
