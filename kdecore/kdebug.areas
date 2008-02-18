@@ -176,7 +176,11 @@
 5100        libkdenetwork
 
 # kdepim
-5150        kdepimlibs (libkleo)
+5150        libkleo
+5151        kleopatra
+5152          kleopatra (kcm)
+5153          kwatchgnupg
+5154          kgpgconf
 5200        kitchensync
 5250        libakonadi
 5251        akonadiresource (ical)
