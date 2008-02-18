@@ -208,7 +208,6 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
 		uint sym = XKeycodeToKeysym( QX11Info::display(), keyCodeX, 0 );
-		// TODO: what's the xor operator in c++?
 		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
 			switch( sym ) {
@@ -220,10 +219,7 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 				case XK_KP_Divide:
 					break;
 				default:
-					if( keyModX & KKeyServer::modXShift() )
-						keyModX &= ~KKeyServer::modXShift();
-					else
-						keyModX |= KKeyServer::modXShift();
+					keyModX ^= KKeyServer::modXShift();
 			}
 		}
 	}
