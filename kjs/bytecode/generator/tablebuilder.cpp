@@ -70,7 +70,9 @@ TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream,
     conversionNames << "NoConversion" << "NoOp";
 
     // Special ones for stuff that might not fit into immediate..
-    conversionNames << "I_R_Uint32_Value" << "I_R_Number_Value";
+    // ### TODO: eventually, auto-spills will be better, and will
+    // permit to throttle VM size
+    conversionNames << "I_R_Int32_Value" << "I_R_Number_Value";
 }
 
 // # of bits store 'vals' values, e.g. 3 for 8, etc.

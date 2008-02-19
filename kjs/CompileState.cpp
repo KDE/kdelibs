@@ -39,7 +39,7 @@ CompileState::~CompileState()
 
 void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& reference)
 {
-    ASSERT(type == OpType_value || type == OpType_bool || type == OpType_uint32 || type == OpType_number);
+    ASSERT(type == OpType_value || type == OpType_bool || type == OpType_int32 || type == OpType_number);
 
     value.type      = type;
     value.immediate = false;

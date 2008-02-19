@@ -207,10 +207,10 @@ private:
     int  refCount;
 };
 
-inline OpValue OpValue::immUInt32(uint32_t in) {
+inline OpValue OpValue::immInt32(int32_t in) {
     OpValue res;
-    initImm(res, OpType_uint32);
-    res.value.narrow.uint32Val = in;
+    initImm(res, OpType_int32);
+    res.value.narrow.int32Val = in;
     return res;
 }
 

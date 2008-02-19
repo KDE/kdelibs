@@ -43,14 +43,14 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
     if (inf->costCode == Cost_Checked) {
         ASSERT(inImmediate);
         ASSERT(outType == OpType_value);
-        ASSERT(inType  == OpType_uint32 || inType == OpType_number);
+        ASSERT(inType  == OpType_int32 || inType == OpType_number);
 
         // Where a conversion is checked, we may not be able to get an
         // immediate<->immediate match, so we may have to generate
         // a special immediate<->register conversion.
 
-        bool inlineOK = inType == OpType_uint32 ? JSImmediate::from(in->value.narrow.uint32Val) :
-                                                  JSImmediate::from(in->value.wide.numberVal);
+        bool inlineOK = inType == OpType_int32 ? JSImmediate::from(in->value.narrow.int32Val) :
+                                                 JSImmediate::from(in->value.wide.numberVal);
 
         if (outImmediate) {
             // immediate -> immediate..
@@ -65,10 +65,10 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
                 costOut = Cost_NoConversion;
                 // No point of doing this, can just do in place..
             } else {
-                // cost about the same as register uint32-> number conversion
-                costOut = getConversionInfo(false, OpType_uint32, OpType_value)->costCode;
-                return inType == OpType_uint32 ? Conv_I_R_Uint32_Value :
-                                                 Conv_I_R_Number_Value;
+                // cost about the same as register int32-> number conversion
+                costOut = getConversionInfo(false, OpType_int32, OpType_value)->costCode;
+                return inType == OpType_int32 ? Conv_I_R_Int32_Value :
+                                                Conv_I_R_Number_Value;
             }
         }
     }
@@ -98,7 +98,7 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     case Conv_NoOp:
         out = *original;
         break;
-    case Conv_RBool_Uint32:
+    case Conv_RBool_Int32:
         // This one's a no-op..
         out = *original;
         break;
@@ -112,8 +112,8 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
-    case Conv_RValue_Uint32: {
-        CodeGen::emitOp(comp, block, Op_ToUInt32, &out, original);
+    case Conv_RValue_Int32: {
+        CodeGen::emitOp(comp, block, Op_ToInt32, &out, original);
     }
     break;
 
@@ -122,18 +122,18 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
-    case Conv_RUint32_Bool: {
-        CodeGen::emitOp(comp, block, Op_UInt32ToBool,  &out, original);
+    case Conv_RInt32_Bool: {
+        CodeGen::emitOp(comp, block, Op_Int32ToBool,  &out, original);
     }
     break;
 
-    case Conv_RUint32_Value: {
-        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &out, original);
+    case Conv_RInt32_Value: {
+        CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
     }
     break;
 
-    case Conv_I_R_Uint32_Value: {
-        CodeGen::emitOp(comp, block, Op_JSNumberFromUInt32, &out, original);
+    case Conv_I_R_Int32_Value: {
+        CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
     }
     break;
 
@@ -334,8 +334,8 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type)
         else
             std::printf("false");
         break;
-    case OpType_uint32:
-        std::printf("%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->uint32Val);
+    case OpType_int32:
+        std::printf("%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->int32Val);
         break;
     case OpType_value:
         // Immediate value -- should go through JSImmediate stuff..

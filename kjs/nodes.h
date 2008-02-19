@@ -676,6 +676,7 @@ namespace KJS {
   public:
     PrefixNode(LocationNode *l, Operator o) : m_loc(l), m_oper(o) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
     Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
@@ -688,6 +689,7 @@ namespace KJS {
   public:
     UnaryPlusNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -698,6 +700,7 @@ namespace KJS {
   public:
     NegateNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -708,6 +711,7 @@ namespace KJS {
   public:
     BitwiseNotNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -718,6 +722,7 @@ namespace KJS {
   public:
     LogicalNotNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -729,6 +734,7 @@ namespace KJS {
     BinaryOperatorNode(Node* e1, Node* e2, Operator op)
       : expr1(e1), expr2(e2), oper(op) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor* visitor);
   private:

@@ -33,7 +33,7 @@ namespace KJS {
 static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
 {
     OpValue me = OpValue::immNode(node);
-    OpValue se = OpValue::immUInt32(SyntaxError);
+    OpValue se = OpValue::immInt32(SyntaxError);
     OpValue msg = OpValue::immCStr(msgStr);
     CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, 0, &me, &se, &msg);
 }
@@ -42,7 +42,7 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
 
-    return OpValue::immUInt32(42);
+    return OpValue::immInt32(42);
 }
 
 CompileReference* LocationNode::generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail)
@@ -54,7 +54,7 @@ CompileReference* LocationNode::generateRefBegin (CompileState*, CodeBlock& bloc
 OpValue LocationNode::generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref)
 {
     std::cerr << "WARNING: no generateRefRead for:" << typeid(*this).name() << "\n";
-    return OpValue::immUInt32(4242);
+    return OpValue::immInt32(4242);
 }
 
 void LocationNode::generateRefWrite(CompileState*, CodeBlock& block,
@@ -293,6 +293,160 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return curV;
 }
 
+OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // ### we want to fold this in if the kid is a local -- any elegant way?
+    CompileReference* ref = m_loc->generateRefBegin(comp, block, true /* issue error if not there*/);
+
+    //read current value
+    OpValue curV = m_loc->generateRefRead(comp, block, ref);
+
+    OpValue newV;
+    CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
+                    &newV, &curV);
+
+    // Write out + return new value.
+    m_loc->generateRefWrite(comp, block, ref, newV);
+    delete ref;
+    return newV;
+}
+
+OpValue UnaryPlusNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // This is basically just a number cast
+    OpValue curV = expr->generateEvalCode(comp, block);
+
+    if (curV.type != OpType_number) {
+        OpValue numVal;
+        CodeGen::emitConvertTo(comp, block, &curV, OpType_number, &numVal);
+        curV = numVal;
+    }
+
+    return curV;
+}
+
+OpValue NegateNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue negV;
+    CodeGen::emitOp(comp, block, Op_Neg, &negV, &v);
+    return negV;
+}
+
+OpValue BitwiseNotNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_BitNot, &out, &v);
+    return out;
+}
+
+OpValue LogicalNotNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_LogicalNot, &out, &v);
+    return out;
+}
+
+OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v1 = expr1->generateEvalCode(comp, block);
+    OpValue v2 = expr2->generateEvalCode(comp, block);
+
+    OpName codeOp; // ### could perhaps skip conversion entirely,
+                   // and set these in the parser?
+    switch (oper) {
+    case OpMult:
+        // operator *
+        codeOp = Op_Mult;
+        break;
+    case OpDiv:
+        // operator /
+        codeOp = Op_Div;
+        break;
+    case OpMod:
+        // operator %
+        codeOp = Op_Mod;
+        break;
+    case OpPlus:
+        // operator +
+        codeOp = Op_Add;
+        break;
+    case OpMinus:
+        // operator -
+        codeOp = Op_Sub;
+        break;
+    case OpLShift:
+        // operator <<
+        codeOp = Op_LShift;
+        break;
+    case OpRShift:
+        // operator >>
+        codeOp = Op_RShift;
+        break;
+    case OpLess:
+        // operator <
+        codeOp = Op_Less;
+        break;
+    case OpGreaterEq:
+        // operator >=
+        codeOp = Op_GreaterEq;
+        break;
+    case OpGreater:
+        // operator >
+        codeOp = Op_Greater;
+        break;
+    case OpLessEq:
+        // operator <=
+        codeOp = Op_LessEq;
+        break;
+    case OpEqEq:
+        // operator ==
+        codeOp = Op_EqEq;
+        break;
+    case OpNotEq:
+        // operator !=
+        codeOp = Op_NotEq;
+        break;
+    case OpStrEq:
+        // operator ===
+        codeOp = Op_StrEq;
+        break;
+    case OpStrNEq:
+        // operator !==
+        codeOp = Op_StrNEq;
+        break;
+    case OpBitAnd:
+        // operator &
+        codeOp = Op_BitAnd;
+        break;
+    case OpBitXOr:
+        // operator ^
+        codeOp = Op_BitXOr;
+        break;
+    case OpBitOr:
+        // operator |
+        codeOp = Op_BitOr;
+        break;
+
+    case OpIn:
+    case OpInstanceOf:
+    case OpURShift:
+        //TODO!
+#if 0
+        // operator >>>
+        return jsNumber(v1->toUInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
+#endif
+    default:
+        assert(!"BinaryOperatorNode: unhandled switch case");
+    }
+
+    OpValue out;
+    CodeGen::emitOp(comp, block, codeOp, &out, &v1, &v2);
+    return out;
+}
+
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
 {
     // No executable content...
@@ -337,7 +491,7 @@ OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         } // if initializer..
     } // for each decl..
 
-    return OpValue::immUInt32(0); // unused..
+    return OpValue::immInt32(0); // unused..
 }
 
 void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)

@@ -2,7 +2,10 @@
  *  This describe the various bytecode operations for KJS/Frostbyte, and gives their implementations
  *
  *  This file is part of the KDE libraries
- *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
+ *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
+ *  Copyright (C) 2007, 2008 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,9 +26,10 @@
 // JS types.
 type bool: bool register immediate;
 
-// We do not have to have a separate int32 type, since the uint32 and int32
-// conversions behave sanely, and hence the impls can just fiddle as appropriate
-type uint32: uint32_t register immediate;
+// We have to be careful about uint32/int32, as while number -> them behaves
+// transparently, the results may be converted back to a number, which may show
+// a sign
+type int32: int32_t register immediate;
 
 // We provide immediate JSValue's, for the following:
 // 1) Small numeric constants
@@ -68,13 +72,13 @@ We also never chain multiple conversions ourselves.
 /*
  Conversions from bool
 */
-conversion bool => uint32 {
+conversion bool => int32 {
     impl [[
         return in ? 1 : 0;
     ]]
 
     tile costs 0; //cost in tile..
-    register  RBool_Uint32 costs 0; // we always store bool as 0/1, so this is free.
+    register  RBool_Int32 costs 0; // we always store bool as 0/1, so this is free.
 }
 
 conversion bool => value {
@@ -107,13 +111,13 @@ conversion value => bool {
     register RValue_Bool costs 15; // ToBoolean instr, includes a virtual call..
 }
 
-conversion value => uint32 {
+conversion value => int32 {
     impl mayThrow [[
-        return in->toUInt32(exec);
+        return in->toInt32(exec);
     ]]
 
-    tile costs 40; // toUInt32 used to number --- expensive
-    register RValue_Uint32 costs 50; // above, plus a separate instr
+    tile costs 40; // toInt32 uses toNumber --- expensive
+    register RValue_Int32 costs 50; // above, plus a separate instr
 }
 
 conversion value => number {
@@ -126,33 +130,33 @@ conversion value => number {
 }
 
 /*
- Conversions from uint32
+ Conversions from int32
 */
-conversion uint32 => bool {
+conversion int32 => bool {
     impl [[
         return in ? true : false; // Expect stupid MSVC 0/1 warning
     ]]
 
     tile costs 0;
-    register RUint32_Bool costs 10;
+    register RInt32_Bool costs 10;
 }
 
-conversion uint32 => value {
+conversion int32 => value {
     impl checked mayThrow /* due to OOM */ [[
         return jsNumber(in);
     ]]
 
     tile costs 15;
-    register RUint32_Value costs 25;
+    register RInt32_Value costs 25;
 }
 
-conversion uint32 => number {
+conversion int32 => number {
     impl [[
         return in;
     ]]
 
     tile costs 3;
-    register RUint32_Number costs 10;
+    register RInt32_Number costs 10;
 }
 
 /*
@@ -177,13 +181,13 @@ conversion number => value {
     register RNumber_Value costs 35;
 }
 
-conversion number => uint32 {
+conversion number => int32 {
     impl [[
-        return JSValue::toUInt32(in);
+        return JSValue::toInt32(in);
     ]]
 
     tile costs 10;
-    register RNumber_Uint32 costs 20;
+    register RNumber_Int32 costs 20;
 }
 
 
@@ -209,9 +213,9 @@ operation ToBoolean {
     ]]
 }
 
-operation ToUInt32 {
-    impl uint32 toUInt32(value in) [[
-        $$ = in->toUInt32(exec);
+operation ToInt32 {
+    impl int32 toInt32(value in) [[
+        $$ = in->toInt32(exec);
     ]]
 }
 
@@ -221,14 +225,14 @@ operation ToNumber {
     ]]
 }
 
-operation UInt32ToBool {
-    impl bool uint32ToBool(uint32 in) [[
+operation Int32ToBool {
+    impl bool int32ToBool(int32 in) [[
         $$ = in ? true : false;
     ]]
 }
 
-operation JSNumberFromUInt32 {
-    impl value jsNum(uint32 in) [[
+operation JSNumberFromInt32 {
+    impl value jsNum(int32 in) [[
         $$ = jsNumber(in);
     ]]
 }
@@ -313,7 +317,7 @@ operation Return {
 }
 
 operation ReturnErrorCompletion {
-    impl void retErrorCompletion(node node, uint32 errorType, cstr msg) [[
+    impl void retErrorCompletion(node node, int32 errorType, cstr msg) [[
         return node->createErrorCompletion(exec, ErrorType(errorType), msg);
     ]]
 }
@@ -322,7 +326,7 @@ operation ReturnErrorCompletion {
 // not specific get/put, but when we have to do symbolic lookup, we use these.
 operation GetVariableObject {
     impl value getVariableObject() [[
-        return exec->variableObject();
+        $$ = exec->variableObject();
     ]]
 }
 
@@ -468,6 +472,8 @@ operation SymPutKnownObject {
         ASSERT(scope->isObject());
         static_cast<JSObject*>(scope)->put(varName, val);
     ]]
+
+    tile (value, ident, number) as symPutKnownObject;
 }
 
 // Generic get..
@@ -499,7 +505,7 @@ operation GlobalSymGet {
 }
 
 /**
- Binary ops
+ Numeric ops
  */
 operation Add1 {
     impl number add1(number old) [[
@@ -513,18 +519,180 @@ operation Sub1 {
     ]]
 }
 
+operation Neg {
+    impl number neg(number old) [[
+        $$ = -old;
+    ]]
+}
+
+operation Mult {
+    impl number(number v1, number v2) [[
+        $$ = v1 * v2;
+    ]]
+}
+
+operation Div {
+    impl number(number v1, number v2) [[
+        $$ = v1 / v2;
+    ]]
+}
+
+operation Mod {
+    impl number(number v1, number v2) [[
+        $$ = fmod(v1, v2);
+    ]]
+}
+
+operation Sub {
+    impl number(number v1, number v2) [[
+        $$ = v1 - v2;
+    ]]
+}
+
+operation Add {
+    impl value(value v1, value v2) [[
+        // exception for the Date exception in defaultValue()
+        JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
+        JSValue *p2 = v2->toPrimitive(exec, UnspecifiedType);
+
+        if (p1->isString() || p2->isString()) {
+            UString value = p1->toString(exec) + p2->toString(exec);
+            if (value.isNull()) {
+                JSObject *error = Error::create(exec, GeneralError, "Out of memory");
+                exec->setException(error);
+            } else {
+                $$ = jsString(value);
+            }
+        } else {
+            $$ = jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
+        }
+    ]]
+}
+
+
+operation LShift {
+    impl int32(int32 v1, int32 v2) [[
+        $$ = (v1 << ((uint32_t)v2 & 0x1f));
+    ]]
+}
+
+operation RShift {
+    impl int32(int32 v1, int32 v2) [[
+        $$ = (v1 >> ((uint32_t)v2 & 0x1f));
+    ]]
+}
+
+operation Less {
+    // ### ??? TODO: conversion-less overloads here, when core supports them ???
+
+    impl bool(value v1, value v2) [[
+        // operator <
+        // -1: NaN, undefined => false
+        //  0: v1 >= v2       => false
+        //  1: v1 <  v2       => true;
+        $$ = (relation(exec, v1, v2) == 1);
+    ]]
+}
+
+operation GreaterEq {
+    impl bool(value v1, value v2) [[
+        // operator >=
+        // -1: NaN, undefined => false
+        //  0: v1 >= v2       => true
+        //  1: v1 <  v2       => false;
+        $$ = (relation(exec, v1, v2) == 0);
+    ]]
+}
+
+operation Greater {
+    impl bool(value v1, value v2) [[
+        // operator >
+        // -1: NaN, undefined => false
+        //  0: v2 >= v1       => false
+        //  1: v2 <  v1       => true
+        $$ = (relation(exec, v2, v1) == 1);
+    ]]
+}
+
+operation LessEq {
+    impl bool(value v1, value v2) [[
+        // operator <=
+        // -1: NaN, undefined => false
+        //  0: v2 >= v1       => true
+        //  1: v2 <  v1       => false
+        $$ = (relation(exec, v2, v1) == 0);
+    ]]
+}
+
+operation EqEq {
+    impl bool(value v1, value v2) [[
+        // operator ==
+        $$ = equal(exec,v1, v2);
+    ]]
+}
+
+operation NotEq {
+    impl bool(value v1, value v2) [[
+        // operator !=
+        $$ = !equal(exec,v1, v2);
+    ]]
+}
+
+
+operation StrEq {
+    impl bool(value v1, value v2) [[
+        // operator ===
+        $$ = strictEqual(exec,v1, v2);
+    ]]
+}
+
+operation StrNEq {
+    impl bool(value v1, value v2) [[
+        // operator !==
+        $$ = strictEqual(exec,v1, v2);
+    ]]
+}
+
+
 /**
  Bitops stuff
 */
-operation And {
-    //### FIXME: this actually distinguishes uin32/int32 --- double-check!
-    impl uint32 andOp(uint32 a0, uint32 a1) [[
+operation BitNot {
+    impl int32 bitNot(int32 old) [[
+        return ~old;
+    ]]
+}
+
+operation BitAnd {
+    impl int32 andOp(int32 a0, int32 a1) [[
         $$ = a0 & a1;
     ]]
 
     tile (reg, value, value) as andOp;
-    tile (reg, value, uint32) as andOp;
-    tile (reg, uint32, value) as andOp;
+    tile (reg, value, int32) as andOp;
+    tile (reg, int32, value) as andOp;
+}
+
+operation BitXOr {
+    impl int32 (int32 a0, int32 a1) [[
+        $$ = a0 ^ a1;
+    ]]
+}
+
+operation BitOr {
+    impl int32 (int32 a0, int32 a1) [[
+        $$ = a0 ^ a1;
+    ]]
+}
+
+
+/**
+ Logical ops... All one of them!
+*/
+operation LogicalNot {
+    impl bool logicalNot(bool old) [[
+        return !old;
+    ]]
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

@@ -36,7 +36,7 @@ class TempDescriptor;
 union NarrowArg
 {
     bool     boolVal;
-    unsigned uint32Val;
+    int32_t  int32Val;
     Addr     addrVal;
     Register regVal;
     unsigned char asBytes[4];
@@ -78,7 +78,7 @@ struct OpValue
         val.type      = type;
     }
 
-    static OpValue immUInt32(uint32_t in);
+    static OpValue immInt32(int32_t in);
     static OpValue immNumber(double in);
     static OpValue immValue(JSValue* in);
     static OpValue immBool(bool in);
