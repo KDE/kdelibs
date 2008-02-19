@@ -462,6 +462,64 @@ void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
     }
 }
 
+OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    CompileReference* ref = m_loc->generateRefBegin(comp, block,
+        m_oper != OpEqual /* Lookup failure is OK for assignments, but not for += and such */);
+    OpValue v;
+
+    if (m_oper == OpEqual) {
+        v = m_right->generateEvalCode(comp, block);
+    } else {
+        OpValue v1 = m_loc->generateRefRead(comp, block, ref);
+        OpValue v2 = m_right->generateEvalCode(comp, block);
+
+        OpName codeOp;
+        switch (m_oper) {
+        case OpMultEq:
+            codeOp = Op_Mult;
+            break;
+        case OpDivEq:
+            codeOp = Op_Div;
+            break;
+        case OpModEq:
+            codeOp = Op_Mod;
+            break;
+        case OpPlusEq:
+            codeOp = Op_Add;
+            break;
+        case OpMinusEq:
+            codeOp = Op_Sub;
+            break;
+        case OpLShift:
+            codeOp = Op_LShift;
+            break;
+        case OpRShift:
+            codeOp = Op_RShift;
+            break;
+        case OpAndEq:
+            codeOp = Op_BitAnd;
+            break;
+        case OpXOrEq:
+            codeOp = Op_BitXOr;
+            break;
+        case OpOrEq:
+            codeOp = Op_BitOr;
+            break;
+        case OpURShift:
+        default:
+            ASSERT(0);
+        }
+
+        CodeGen::emitOp(comp, block, codeOp, &v, &v1, &v2);
+    }
+
+    m_loc->generateRefWrite(comp, block, ref, v);
+
+    delete ref;
+    return v;
+}
+
 OpValue AssignExprNode::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     return expr->generateEvalCode(state, block);

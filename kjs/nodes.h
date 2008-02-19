@@ -180,7 +180,7 @@ namespace KJS {
 
     void copyDebugInfo(Node* otherNode);
 
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   protected:
     /* Nodes that can do semantic checking should override this,
        and return an appropriate error node if appropriate. The reimplementations
@@ -252,7 +252,7 @@ namespace KJS {
     NullNode() {}
     virtual NodeType type() const { return NullNodeType; }
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   };
 
@@ -263,7 +263,7 @@ namespace KJS {
 
     virtual NodeType type() const { return BooleanNodeType; }
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     bool val;
@@ -277,7 +277,7 @@ namespace KJS {
 
     virtual NodeType type() const { return NumberNodeType; }
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     double val;
@@ -291,7 +291,7 @@ namespace KJS {
 
     virtual NodeType type() const { return StringNodeType; }
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     UString val;
@@ -346,7 +346,7 @@ namespace KJS {
     GroupNode(Node *g) : group(g) { }
     virtual NodeType type() const { return GroupNodeType; }
     virtual JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual Node *nodeInsideAllParens();
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -594,7 +594,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
   protected:
     RefPtr<LocationNode> m_loc;
@@ -676,7 +676,7 @@ namespace KJS {
   public:
     PrefixNode(LocationNode *l, Operator o) : m_loc(l), m_oper(o) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
     Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
@@ -689,7 +689,7 @@ namespace KJS {
   public:
     UnaryPlusNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -700,7 +700,7 @@ namespace KJS {
   public:
     NegateNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -711,7 +711,7 @@ namespace KJS {
   public:
     BitwiseNotNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -722,7 +722,7 @@ namespace KJS {
   public:
     LogicalNotNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -734,7 +734,7 @@ namespace KJS {
     BinaryOperatorNode(Node* e1, Node* e2, Operator op)
       : expr1(e1), expr2(e2), oper(op) {}
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor* visitor);
   private:
@@ -795,6 +795,7 @@ namespace KJS {
       : m_loc(loc), m_oper(oper), m_right(right) {}
     void streamTo(SourceStream&) const;
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     void recurseVisit(NodeVisitor * visitor);
     Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
   protected:
@@ -848,7 +849,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
     Node* getExpr() { return expr.get(); }
   private:
@@ -879,7 +880,7 @@ namespace KJS {
     VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
       : next(l->next), var(v) { l->next = this; }
     JSValue* evaluate(ExecState*);
-    virtual OpValue generateEvalCode(CompileState* state, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<VarDeclListNode> releaseNext() { return next.release(); }
     virtual void breakCycle();
