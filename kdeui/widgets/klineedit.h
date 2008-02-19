@@ -97,20 +97,20 @@ class KUrl;
  *
  * \b Usage \n
  *
- * To enable the basic completion feature :
+ * To enable the basic completion feature:
  *
  * \code
- * KLineEdit *edit = new KLineEdit( this, "mywidget" );
+ * KLineEdit *edit = new KLineEdit( this );
  * KCompletion *comp = edit->completionObject();
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  * \endcode
  *
  * To use a customized completion objects or your
- * own completion object :
+ * own completion object:
  *
  * \code
- * KLineEdit *edit = new KLineEdit( this,"mywidget" );
+ * KLineEdit *edit = new KLineEdit( this );
  * KUrlCompletion *comp = new KUrlCompletion();
  * edit->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
@@ -134,10 +134,7 @@ class KUrl;
  * edit->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  *
  * // Hide the context (popup) menu
- * edit->setContextMenuEnabled( false );
- *
- * // Temporarily disable signal (both completion & iteration) emitions
- * edit->disableSignals();
+ * edit->setContextMenuPolicy( Qt::NoContextMenu );
  *
  * // Default the key-bindings back to the default system settings.
  * edit->useGlobalKeyBindings();
