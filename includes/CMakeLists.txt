@@ -695,9 +695,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
 install( FILES
-  KNS/Action
   KNS/Author
-  KNS/Button
   KNS/Category
   KNS/Engine
   KNS/Entry
@@ -705,11 +703,6 @@ install( FILES
   KNS/EntryLoader
   KNS/Installation
   KNS/KTranslatable
-  KNS/Provider
-  KNS/ProviderDialog
-  KNS/ProviderHandler
-  KNS/ProviderLoader
-  KNS/UploadDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
 
 
