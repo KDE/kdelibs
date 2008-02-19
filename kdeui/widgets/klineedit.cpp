@@ -1558,12 +1558,9 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         // qlineedit uses an internal qstyleoption set to figure this out
         // and then adds a hardcoded 2 pixel interior to that.
         // probably requires fixes to Qt itself to do this cleanly
+        // see define horizontalMargin 2 in qlineedit.cpp
         QStyleOptionFrame opt;
-        opt.init( this );
-        opt.rect = contentsRect();
-        opt.lineWidth = hasFrame() ? style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) : 0;
-        opt.midLineWidth = 0;
-        opt.state |= QStyle::State_Sunken;
+        initStyleOption( &opt );
         QRect cr = style()->subElementRect( QStyle::SE_LineEditContents, &opt, this );
         cr.setLeft( cr.left() + 2 );
         cr.setRight( cr.right() - 2 );
