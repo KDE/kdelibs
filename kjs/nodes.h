@@ -1167,6 +1167,9 @@ namespace KJS {
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
 
+    void compileIfNeeded(CodeType ctype) { if (!m_compiled) compile(ctype); }
+    bool isCompiled() const { return m_compiled; }
+
     virtual void generateExecCode(CompileState*, CodeBlock& block);
     //////////////////////////////////////////////////////////////////////
     // Symbol table functions
@@ -1174,8 +1177,6 @@ namespace KJS {
     SymbolTable& symbolTable() { return m_symbolTable; }
     size_t lookupSymbolID(const Identifier& id) const { return m_symbolTable.get(id.ustring().rep()); }
 
-    bool builtSymbolList()    const { return m_builtSymbolList; }
-    void setBuiltSymbolList()       { m_builtSymbolList = true; }
     int  numLocals()          const { return m_symbolList.size(); }
     int  getLocalAttr(size_t id)       const { return m_symbolList[id].attr; }
     Identifier getLocalName(size_t id) const { return m_symbolList[id].name; }
@@ -1197,9 +1198,11 @@ namespace KJS {
 
     Completion execute(ExecState *exec);
   private:
+    void compile(CodeType ctype);
+
     UString m_sourceURL;
     int m_sourceId : 31;
-    bool m_builtSymbolList : 1;
+    bool m_compiled : 1;
 
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
 
@@ -1212,8 +1215,9 @@ namespace KJS {
     // The list of parameters, and their local IDs in the
     WTF::Vector<Parameter> m_paramList;
 
+    WTF::Vector<bool> m_shouldMark; // bits saying whether given index should be marked or not
 
-    bool m_compiled; // ### debug for now
+    CodeBlock m_compiledCode;
   };
 
   class FuncExprNode : public Node {

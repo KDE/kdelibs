@@ -190,6 +190,14 @@ conversion number => int32 {
     register RNumber_Int32 costs 20;
 }
 
+/**
+ Debug only..
+ */
+operation PrintInfo {
+    impl void(value in) [[
+        printInfo(exec, "", in);
+    ]]
+}
 
 /**
  These are needed for basic types, conversions, etc.
@@ -353,6 +361,7 @@ operation ScopeLookup {
 
             if (scopeObj->getPropertySlot(exec, *varName, slot))
                 break;
+            ++iter;
         } while (iter != end);
 
         if (errorOnFailure && iter == end) {
@@ -386,6 +395,7 @@ operation NonLocalScopeLookup {
 
             if (scopeObj->getPropertySlot(exec, *varName, slot))
                 break;
+            ++iter;
         } while (iter != end);
 
         if (errorOnFailure && iter == end) {

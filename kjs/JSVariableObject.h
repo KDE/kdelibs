@@ -33,12 +33,18 @@
 #include "SymbolTable.h"
 #include "object.h"
 
+#include <wtf/Vector.h>
+
 namespace KJS {
 
     class JSVariableObject : public JSObject {
     public:
         SymbolTable& symbolTable() { return *d->symbolTable; }
         LocalStorage& localStorage() { return d->localStorage; }
+
+        void setShouldMark(WTF::Vector<bool>* shouldMark) {
+          d->shouldMark = shouldMark;
+        }
 
         virtual bool deleteProperty(ExecState*, const Identifier&);
         virtual void getPropertyNames(ExecState*, PropertyNameArray&);
@@ -52,12 +58,15 @@ namespace KJS {
         struct JSVariableObjectData {
             JSVariableObjectData() { }
             JSVariableObjectData(SymbolTable* s)
-                : symbolTable(s) // Subclass owns this pointer.
+                : symbolTable(s), // Subclass owns this pointer.
+                  shouldMark(0)
             {
             }
 
             LocalStorage localStorage; // Storage for variables in the symbol table.
             SymbolTable* symbolTable; // Maps name -> index in localStorage.
+            WTF::Vector<bool>* shouldMark; // whether each entry contains values;
+                                           // the vector itself is owned by the AST
         };
 
         JSVariableObject() { }

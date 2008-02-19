@@ -43,6 +43,17 @@ Interpreter* ExecState::lexicalInterpreter() const
 
 void ExecState::mark()
 {
+    if (m_codeType != FunctionCode) {
+        //### some code dupe here with JSVariableObject::mark. Not sure how to best
+        // restructure. Perhaps this should always mark and not JSVariableObject?
+        size_t size = m_localStore->size();
+        for (size_t i = 0; i < size; ++i) {
+            JSValue* value = (*m_localStore)[i].val.valueVal;
+            if ((*m_markDescriptor)[i] && !value->marked())
+                value->mark();
+        }
+    }
+
     for (ExecState* exec = this; exec; exec = exec->m_callingExec)
         exec->scope.mark();
 }
@@ -54,7 +65,9 @@ ExecState::ExecState(Interpreter* intp) :
   m_callingExec(0),
   m_currentBody(0),
   m_function(0),
-  m_arguments(0)
+  m_arguments(0),
+  m_localStore(0),
+  m_markDescriptor(0)
 {
     m_interpreter->setExecState(this);
 }

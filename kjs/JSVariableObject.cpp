@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ *            (C) 2008 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -60,7 +61,7 @@ void JSVariableObject::mark()
     size_t size = d->localStorage.size();
     for (size_t i = 0; i < size; ++i) {
         JSValue* value = d->localStorage[i].val.valueVal;
-        if (!value->marked())
+        if ((*d->shouldMark)[i] && !value->marked())
             value->mark();
     }
 }

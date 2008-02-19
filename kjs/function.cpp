@@ -119,13 +119,11 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // Compute the set of all local variables, and functions.
   // and optimize access to them the first time we're called.
   // The AST building already took care of parameter declarations for us.
-  if (!body->builtSymbolList()) {
-   // now handle other locals (functions, variables)
+  if (!body->isCompiled()) {
+    // now handle other locals (functions, variables)
     body->processDecls(&newExec);
-    body->setBuiltSymbolList();
 
-    LookupOptimizer optimizer(&newExec, body.get());
-    optimizer.optimize();
+    // compiled will be set below as we run
   }
 
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());

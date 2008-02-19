@@ -47,6 +47,7 @@
 #include <wtf/MathExtras.h>
 
 #include "CompileState.h"
+#include "bytecode/machine.h"
 
 namespace KJS {
 
@@ -2671,7 +2672,6 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     : BlockNode(s)
     , m_sourceURL(lexer().sourceURL())
     , m_sourceId(parser().sourceId())
-    , m_builtSymbolList(false)
     , m_compiled(false)
 {
 
@@ -2732,19 +2732,53 @@ void FunctionBodyNode::addParam(const Identifier& ident)
 
 Completion FunctionBodyNode::execute(ExecState *exec)
 {
-  // ### debug stuff, temporary..
-  if (!m_compiled) {
-    m_compiled = true;
-    CompileState comp(exec->codeType(), this, m_symbolTable.size());
+  CodeType ctype = exec->codeType();
+  compileIfNeeded(ctype);
 
-    CodeBlock out;
-    generateExecCode(&comp, out);
-    printf("\n\n");
-    CodeGen::disassembleBlock(out);
-    printf("\n---------------------------------\n\n");
+  LocalStorage* regs;
+  if (ctype == FunctionCode) {
+    ActivationImp* act = static_cast<ActivationImp*>(exec->activationObject());
+    act->setShouldMark(&m_shouldMark);
+    regs = &act->localStorage();
+
+    // Allocate enough space, and make sure to initialize things so we don't mark garbage;
+    // however, don't touch the locals --- they're taken care of elsewhere (### refactor)
+    regs->resize(m_shouldMark.size());
+    for (size_t c = m_symbolTable.size(); c < m_shouldMark.size(); ++c)
+      (*regs)[c].val.valueVal = jsUndefined();
+  } else {
+    regs = new LocalStorage();
+
+    // Allocate enough space, and make sure to initialize things so we don't mark garbage
+    regs->resize(m_shouldMark.size());
+    for (size_t c = 0; c < m_shouldMark.size(); ++c)
+      (*regs)[c].val.valueVal = jsUndefined();
   }
 
-  return BlockNode::execute(exec);
+  exec->setLocalStorage(regs, &m_shouldMark);
+
+  Completion result = Machine::runBlock(exec, m_compiledCode);
+
+  if (ctype != FunctionCode)
+    delete regs;
+
+  return result;
+}
+
+void FunctionBodyNode::compile(CodeType ctype)
+{
+  m_compiled = true;
+
+  // First, fill in the mark descriptor with how many locals we have..
+  for (int c = 0; c < m_symbolTable.size(); ++c)
+    m_shouldMark[c] = true;
+
+  CompileState comp(ctype, this, m_shouldMark, m_symbolTable.size());
+  generateExecCode(&comp, m_compiledCode);
+
+  printf("\n\n");
+  CodeGen::disassembleBlock(m_compiledCode);
+  printf("\n---------------------------------\n\n");
 }
 
 

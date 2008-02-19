@@ -25,16 +25,19 @@
 
 #include "nodes.h"
 #include "opcodes.h"
-#include "bytecode/opargs.h"
 #include "LocalStorage.h"
+#include "bytecode/opargs.h"
+#include "bytecode/machine.h"
+
+#include "internal.h" // for printInfo
 
 namespace KJS {
 
-Completion runBlock(ExecState* exec, const CodeBlock& block) {
+Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...
     //exec->setPc(&pc);
-    LocalStorage localStore; // &localStore = exec->...
+    LocalStorage& localStore = *exec->localStorage();
 
     while (true) {
         @generate

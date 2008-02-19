@@ -29,6 +29,8 @@
 #include "types.h"
 #include "CommonIdentifiers.h"
 #include "scope_chain.h"
+#include "LocalStorage.h"
+#include "wtf/Vector.h"
 
 namespace KJS {
     class ActivationImp;
@@ -158,6 +160,12 @@ namespace KJS {
 
     void mark();
 
+    void setLocalStorage(LocalStorage* store, WTF::Vector<bool>* markDescriptor) {
+        m_localStore = store; m_markDescriptor = markDescriptor;
+    }
+
+    LocalStorage* localStorage() { return m_localStore; }
+
     // This is a workaround to avoid accessing the global variables for these identifiers in
     // important property lookup functions, to avoid taking PIC branches in Mach-O binaries
     const CommonIdentifiers& propertyNames() const { return *m_propertyNames; }
@@ -177,6 +185,9 @@ namespace KJS {
     ScopeChain scope;
     JSObject* m_variable;
     JSObject* m_thisVal;
+
+    LocalStorage*      m_localStore;
+    WTF::Vector<bool>* m_markDescriptor;
 
     CodeType m_codeType;
   };
