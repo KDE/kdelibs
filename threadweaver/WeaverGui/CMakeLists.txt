@@ -12,7 +12,7 @@ include_directories( ../Weaver/ )
 kde4_add_library(ThreadWeaverGui SHARED ${ThreadWeaverGui_LIB_SRCS})
 target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
-install(TARGETS ThreadWeaverGui DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ThreadWeaverGui ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     WeaverThreadGrid.h

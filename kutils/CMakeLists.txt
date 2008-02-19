@@ -36,7 +36,7 @@ kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 target_link_libraries(kutils  ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} )
 
 set_target_properties(kutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kutils DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kutils ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

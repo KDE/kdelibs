@@ -30,7 +30,7 @@ target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-install(TARGETS kaudiodevicelist  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kaudiodevicelist ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
 	kaudiodevicelist_export.h
 	audiodevice.h

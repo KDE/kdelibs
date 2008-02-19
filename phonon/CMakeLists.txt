@@ -62,7 +62,7 @@ kde4_add_library(phonon SHARED ${phonon_LIB_SRCS})
 target_link_libraries(phonon ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 #do not use GENERIC versioning in phonon
 set_target_properties(phonon PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS phonon  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS phonon ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

@@ -8,7 +8,7 @@
 #kde4_add_library(wtf SHARED ${wtf_LIB_SRCS})
 
 #set_target_properties(wtf PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-#install(TARGETS wtf  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS} )
+#install(TARGETS wtf ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### install files ###############
 # FIXME: Actually, most of these should NOT be installed. The only

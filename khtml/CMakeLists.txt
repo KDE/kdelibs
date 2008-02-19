@@ -329,7 +329,7 @@ create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
 
 
-install(TARGETS khtml DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### khtmlpart ###############
 

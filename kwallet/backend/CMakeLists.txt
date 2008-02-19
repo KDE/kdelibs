@@ -17,6 +17,6 @@ kde4_add_library(kwalletbackend SHARED ${kwalletbackend_LIB_SRCS})
 target_link_libraries(kwalletbackend ${KDE4_KDEUI_LIBS} )
 
 set_target_properties(kwalletbackend PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kwalletbackend DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kwalletbackend ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############

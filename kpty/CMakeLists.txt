@@ -14,7 +14,7 @@ kde4_add_library(kpty SHARED ${kpty_LIB_SRCS})
 target_link_libraries(kpty ${KDE4_KDECORE_LIBS} ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY})
 
 set_target_properties(kpty PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kpty  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kpty ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    kpty_export.h

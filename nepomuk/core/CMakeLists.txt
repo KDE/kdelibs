@@ -61,7 +61,7 @@ target_link_libraries(nepomuk
 
 set_target_properties(nepomuk PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
-install(TARGETS nepomuk  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS nepomuk ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
   variant.h
   resourcemanager.h
