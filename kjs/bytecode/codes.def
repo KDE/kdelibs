@@ -197,7 +197,7 @@ conversion number => int32 {
 
 operation OwnedString {
     impl value ownedString(string in) [[
-        $$ = jsOwnedString(in);
+        $$ = jsOwnedString(*in);
     ]]
 }
 
@@ -290,23 +290,29 @@ operation IfElseJump {
 
 operation PopCatch {
     impl void popCatch() [[
+#if 0
         exec->popCatchHandler();
+#endif
     ]]
 }
 
 operation PushCatch {
     impl void pushCatch(addr handler) [[
+#if 0
         exec->pushCatchHandler(handler);
+#endif
     ]]
 }
 
 operation Throw {
     impl void throw(value exception) [[
+#if 0
         exec->setException(exception);
         if (exec->hasCatchHandler())
             pc = exec->takeCatchHandler();
         else
-            return Completion(Exception, exception);
+            return Completion(Throw, exception);
+#endif
     ]]
 }
 
@@ -341,10 +347,11 @@ operation ScopeLookup {
         assert(iter != end);
 
         JSObject *scopeObj;
+        PropertySlot slot;
         do {
             scopeObj = *iter;
 
-            if (scopeObj->getPropertySlot(exec, ident, ref.propertySlot))
+            if (scopeObj->getPropertySlot(exec, *varName, slot))
                 break;
         } while (iter != end);
 
@@ -373,10 +380,11 @@ operation NonLocalScopeLookup {
             ++iter;
         }
 
+        PropertySlot slot;
         do {
             scopeObj = *iter;
 
-            if (scopeObj->getPropertySlot(exec, ident, ref.propertySlot))
+            if (scopeObj->getPropertySlot(exec, *varName, slot))
                 break;
         } while (iter != end);
 
@@ -403,16 +411,17 @@ operation LocalVarGet {
         do {
             scopeObj = *iter;
 
-            if (scopeObj->getPropertySlot(exec, ident, slot)) {
-                $$ = slot.getValue(exec, scopeObj, ident);
+            if (scopeObj->getPropertySlot(exec, *varName, slot)) {
+                $$ = slot.getValue(exec, scopeObj, *varName);
                 break;
             }
 
             ++iter;
         } while (iter != end);
 
-        if (iter == end)
-            throwUndefinedVariableError(exec, ident); //### FIXME
+        if (iter == end) {
+            // #### TODO throwUndefinedVariableError(exec, ident); //### FIXME
+        }
     ]]
 }
 
@@ -438,31 +447,32 @@ operation NonLocalVarGet {
         do {
             scopeObj = *iter;
 
-            if (scopeObj->getPropertySlot(exec, ident, slot)) {
-                $$ = slot.getValue(exec, scopeObj, ident);
+            if (scopeObj->getPropertySlot(exec, *varName, slot)) {
+                $$ = slot.getValue(exec, scopeObj, *varName);
                 break;
             }
 
             ++iter;
         } while (iter != end);
 
-        if (iter == end)
-            throwUndefinedVariableError(exec, ident);
+        if (iter == end) {
+            // ### FIXME throwUndefinedVariableError(exec, ident);
+        }
     ]]
 }
 
 
 operation RegPut {
     impl void regPut(reg destReg, value val) [[
-        localStore[destReg].regValue = val;
+        localStore[destReg].val.valueVal = val;
     ]]
 }
 
 
 // Generic put..
 operation SymPut {
-    impl void symPut(value scope, ident varName, value val) [[
-        base->toObject(exec)->put(varName, val);
+    impl void symPut(value base, ident varName, value val) [[
+        base->toObject(exec)->put(exec, *varName, val);
     ]]
 }
 
@@ -470,7 +480,7 @@ operation SymPut {
 operation SymPutKnownObject {
     impl void symPutKnownObject(value scope, ident varName, value val) [[
         ASSERT(scope->isObject());
-        static_cast<JSObject*>(scope)->put(varName, val);
+        static_cast<JSObject*>(scope)->put(exec, *varName, val);
     ]]
 
     tile (value, ident, number) as symPutKnownObject;
@@ -479,15 +489,15 @@ operation SymPutKnownObject {
 // Generic get..
 operation SymGet {
     impl value symGet(value base, ident prop) [[
-        $$ = base->toObject(exec)->get(exec, prop);
+        $$ = base->toObject(exec)->get(exec, *prop);
     ]]
 }
 
 // Get for a scope -- known to be an object!
 operation SymGetKnownObject {
     impl value symScopeGet(value base, ident varName) [[
-        ASSERT(scope->isObject());
-        $$ = static_cast<JSObject*>(base)->get(exec, varName);
+        ASSERT(base->isObject());
+        $$ = static_cast<JSObject*>(base)->get(exec, *varName);
     ]]
 }
 
@@ -659,7 +669,7 @@ operation StrNEq {
 */
 operation BitNot {
     impl int32 bitNot(int32 old) [[
-        return ~old;
+        $$ = ~old;
     ]]
 }
 
@@ -691,7 +701,7 @@ operation BitOr {
 */
 operation LogicalNot {
     impl bool logicalNot(bool old) [[
-        return !old;
+        $$ = !old;
     ]]
 }
 

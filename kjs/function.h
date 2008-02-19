@@ -123,7 +123,7 @@ namespace KJS {
     //This is only used by declaration code, so it never check r/o attr
     void putLocal(int propertyID, JSValue *value) {
       assert(validLocal(propertyID));
-      localStorage()[propertyID].value = value;
+      localStorage()[propertyID].val.valueVal = value;
         //We do not have to touch the flags here -- they're pre-computed..
     }
 
@@ -131,12 +131,12 @@ namespace KJS {
       LocalStorageEntry& entry = localStorage()[propertyID];
       if (entry.attributes & ReadOnly)
         return;
-      entry.value = value;
+      entry.val.valueVal = value;
     }
 
     JSValue** getLocalDirect(int propertyID) {
       assert(validLocal(propertyID));
-      return &localStorage()[propertyID].value;
+      return &localStorage()[propertyID].val.valueVal;
     }
 
     bool isLocalReadOnly(int propertyID) {

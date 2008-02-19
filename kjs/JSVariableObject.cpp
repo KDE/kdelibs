@@ -59,7 +59,7 @@ void JSVariableObject::mark()
 
     size_t size = d->localStorage.size();
     for (size_t i = 0; i < size; ++i) {
-        JSValue* value = d->localStorage[i].value;
+        JSValue* value = d->localStorage[i].val.valueVal;
         if (!value->marked())
             value->mark();
     }

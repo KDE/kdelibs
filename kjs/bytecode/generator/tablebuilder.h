@@ -50,6 +50,7 @@ struct ConversionInfo
     bool mayThrow;
     Type from;
     Type to;
+    int codeLine;
 
     ConversionInfo(): cost(0), checked(false), mayThrow(false)
     {} //Can be called for trivial conversion
@@ -62,6 +63,7 @@ struct Operation
     QString retType;
     QList<Type>  parameters;
     int          cost;
+    int          codeLine;
 
     QString implementAs;
     QList<Type> implParams;
@@ -89,12 +91,12 @@ private:
     void issueError(const QString& err);
 
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
-    virtual void handleConversion(const QString& name, const QString& runtimeRoutine,
+    virtual void handleConversion(const QString& name, const QString& runtimeRoutine, int codeLine,
                                   bool immediate, bool checked, bool mayThrow,
                                   const QString& from, const QString& to, int cost);
 
     virtual void handleOperation(const QString& name);
-    virtual void handleImpl(const QString& fnName, const QString& code, int cost,
+    virtual void handleImpl(const QString& fnName, const QString& code, int codeLine, int cost,
                             const QString& retType, QStringList sig, QStringList paramNames);
     virtual void handleTile(const QString& fnName, QStringList sig);
 
@@ -102,7 +104,7 @@ private:
 
     void printConversionRoutine(const ConversionInfo& conversion);
 
-    void printCode(QTextStream* out, int baseIdent, const QString& code);
+    void printCode(QTextStream* out, int baseIdent, const QString& code, int baseLine);
 
     // Enumerates all r/i/pad variants; plus computes the shuffle table.
     void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);

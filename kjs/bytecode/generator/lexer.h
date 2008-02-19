@@ -67,9 +67,11 @@ public:
         TokenType type;
         QString   value;
 
+        int lineNum; //only set for code tokens.
+
         Token() : type(Error), value("Uninitialized token") {}
         Token(TokenType t): type(t) {}
-        Token(TokenType t, const QString& v): type(t), value(v) {}
+        Token(TokenType t, const QString& v, int line = -1): type(t), value(v), lineNum(line) {}
 
         QString toString(Lexer* lex)
         {

@@ -507,7 +507,7 @@ void ActivationImp::setupFunctionLocals(ExecState *exec) {
 
   for (size_t l = 0; l < size; ++l) {
     if (FuncDeclNode* funcDecl = body->getLocalFuncDecl(l))
-      ls[l].value = funcDecl->makeFunctionObject(exec);
+      ls[l].val.valueVal = funcDecl->makeFunctionObject(exec);
   }
 }
 
@@ -582,7 +582,7 @@ void ActivationImp::markChildren()
     size_t size = localStorage.size();
 
     for (size_t i = 0; i < size; ++i) {
-        JSValue* value = localStorage[i].value;
+        JSValue* value = localStorage[i].val.valueVal;
 
         if (!value->marked())
             value->mark();

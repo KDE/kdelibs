@@ -215,7 +215,7 @@ void TableBuilder::generateCode()
     *cppStream << "};\n\n";
 
     // Now, generate the VM loop.
-    mInd(8) << "OpByteCode op = *reinterpret_cast<OpByteCode*>(block + pc);\n";
+    mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(block.data() + pc);\n";
     mInd(8) << "switch (op) {\n";
     foreach (const OperationVariant& var, variants) {
         if (var.needsPadVariant) {
@@ -292,7 +292,7 @@ void TableBuilder::printConversionRoutine(const ConversionInfo& conversion)
          << "(ExecState* exec, " << conversion.from.nativeName << " in)\n";
     *hStream << "{\n";
     *hStream << "    (void)exec;\n";
-    printCode(hStream, 4, conversion.impl);
+    printCode(hStream, 4, conversion.impl, conversion.codeLine);
     *hStream << "}\n\n";
 }
 
@@ -308,7 +308,7 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     types[type] = t;
 }
 
-void TableBuilder::handleConversion(const QString& name, const QString& code,
+void TableBuilder::handleConversion(const QString& name, const QString& code, int codeLine,
                                     bool immediate, bool checked, bool mayThrow,
                                     const QString& from, const QString& to, int cost)
 {
@@ -319,6 +319,7 @@ void TableBuilder::handleConversion(const QString& name, const QString& code,
     inf.checked = checked;
     inf.mayThrow = mayThrow;
     inf.impl     = code;
+    inf.codeLine = codeLine;
     inf.from     = types[from];
     inf.to       = types[to];
 
@@ -347,7 +348,7 @@ QList<Type> TableBuilder::resolveSignature(const QStringList& in)
     return sig;
 }
 
-void TableBuilder::handleImpl(const QString& fnName, const QString& code, int cost,
+void TableBuilder::handleImpl(const QString& fnName, const QString& code, int codeLine, int cost,
                               const QString& retType, QStringList sig, QStringList paramNames)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
@@ -356,7 +357,7 @@ void TableBuilder::handleImpl(const QString& fnName, const QString& code, int co
     QStringList extParamNames;
     if (retType != "void") {
         extSig        << "reg";
-        extParamNames << "fbDestReg;";
+        extParamNames << "fbDestReg";
     }
 
     extSig        << sig;
@@ -367,6 +368,7 @@ void TableBuilder::handleImpl(const QString& fnName, const QString& code, int co
     op.retType        = retType;
     operationRetTypes[op.name] = retType;
     op.implementAs    = code;
+    op.codeLine       = codeLine;
     op.parameters     = resolveSignature(extSig);
     op.implParams     = op.parameters;
     op.implParamNames = extParamNames;
@@ -385,6 +387,8 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
     Operation op;
     op.name        = operationNames.last();
     op.implementAs = impl.implementAs;
+    op.codeLine    = impl.codeLine;
+    op.retType     = impl.retType;
     op.parameters  = resolveSignature(sig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
@@ -528,14 +532,18 @@ QTextStream& TableBuilder::mInd(int ind)
     return *mStream;
 }
 
-void TableBuilder::printCode(QTextStream* out, int baseIdent, const QString& code)
+void TableBuilder::printCode(QTextStream* out, int baseIdent, const QString& code, int baseLine)
 {
     QStringList lines = code.split("\n");
 
-    if (!lines.isEmpty() && lines.first().trimmed().isEmpty())
+    if (!lines.isEmpty() && lines.first().trimmed().isEmpty()) {
+        ++baseLine;
         lines.removeFirst();
+    }
     if (!lines.isEmpty() && lines.last().trimmed().isEmpty())
         lines.removeLast();
+
+    *out << "#line " << baseLine << " \"codes.def\"\n";
 
     // Compute "leading" whitespace.
     int minWhiteSpace = 100000;
@@ -579,7 +587,7 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
                 inReg ? QString::fromLatin1("regVal") : (type.name + "Val"));
 
         if (inReg) // Need to indirect..
-            accessString = "localStore[" + accessString + "]." + type.name + "Val";
+            accessString = "localStore[" + accessString + "].val." + type.name + "Val";
 
         mInd(16) << variant.op.implParams[p].nativeName << " " << variant.op.implParamNames[p]
                      << " = ";
@@ -600,12 +608,12 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
     }
 
     // Replace $$ with destination register
-    QString storeCode = "localStore[fbDestReg]." + variant.op.retType + "Val";
+    QString storeCode = "localStore[fbDestReg].val." + variant.op.retType + "Val";
     QString code = variant.op.implementAs;
     code.replace("$$", storeCode);
 
     // Print out the impl code..
-    printCode(mStream, 16, code);
+    printCode(mStream, 16, code, variant.op.codeLine);
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

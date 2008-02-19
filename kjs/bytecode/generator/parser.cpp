@@ -45,11 +45,13 @@ QString Parser::matchIdentifier()
     return "";
 }
 
-QString Parser::matchCode()
+QString Parser::matchCode(int& lineOut)
 {
     Lexer::Token tok = getNext();
-    if (tok.type == Lexer::Code)
+    if (tok.type == Lexer::Code) {
+        lineOut = tok.lineNum;
         return tok.value;
+    }
     issueError("Expected code, got:" + tok.toString(lexer));
     return "";
 }
@@ -187,6 +189,7 @@ void Parser::parseConversion()
     // impl clause info..
     bool implMayThrow = false, immChecked = false;
     QString code;
+    int     codeLine;
 
     // tile clause info
     int tileCost = 0;
@@ -202,7 +205,7 @@ void Parser::parseConversion()
             match(Lexer::Impl);
             immChecked   = checkFlag(Lexer::Checked);
             implMayThrow = checkFlag(Lexer::MayThrow);
-            code = matchCode();
+            code = matchCode(codeLine);
             break;
         case Lexer::Tile:
             match(Lexer::Tile);
@@ -226,11 +229,11 @@ void Parser::parseConversion()
     match(Lexer::RBrace);
 
     if (hasRegister)
-        handleConversion(registerIdent, "", false, false, false, from, to, registerCost);
+        handleConversion(registerIdent, "", -1, false, false, false, from, to, registerCost);
 
     // Computer name, from type sig
     QString name = "I" + capitalized(from) + "_" + capitalized(to);
-    handleConversion(name, code, true, immChecked, implMayThrow, from, to, tileCost);
+    handleConversion(name, code, codeLine, true, immChecked, implMayThrow, from, to, tileCost);
 }
 
 void Parser::parseOperation()
@@ -287,10 +290,11 @@ void Parser::parseImpl()
         cost = matchNumber();
     }
 
-    QString code = matchCode();
+    int codeLine;
+    QString code = matchCode(codeLine);
 
 
-    handleImpl(fn, code, cost, ret, paramSigs, paramNames);
+    handleImpl(fn, code, codeLine, cost, ret, paramSigs, paramNames);
 }
 
 void Parser::parseTile()

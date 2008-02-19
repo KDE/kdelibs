@@ -36,13 +36,18 @@ namespace KJS {
         {
         }
 
-        LocalStorageEntry(JSValue* v, unsigned a)
-            : value(v)
-            , attributes(a)
+        LocalStorageEntry(JSValue* v, unsigned a) :
+            attributes(a)
         {
+          val.valueVal = v;
         }
 
-        JSValue* value;
+        union {
+          double   numberVal; //### TODO: use 2 entries for this on 32-bit..
+          JSValue* valueVal;
+          bool     boolVal;
+          int32_t  int32Val;
+        } val;
         unsigned attributes;
     };
 

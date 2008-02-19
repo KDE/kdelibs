@@ -23,20 +23,22 @@
 #include "ExecState.h"
 #include "value.h"
 
+#include "nodes.h"
 #include "opcodes.h"
 #include "bytecode/opargs.h"
+#include "LocalStorage.h"
 
 namespace KJS {
 
 Completion runBlock(ExecState* exec, const CodeBlock& block) {
-#if 0
+
     Addr pc = 0; //Use local...
-    exec->setPc(&pc);
+    //exec->setPc(&pc);
+    LocalStorage localStore; // &localStore = exec->...
 
     while (true) {
         @generate
     }
-#endif
 }
 
 }

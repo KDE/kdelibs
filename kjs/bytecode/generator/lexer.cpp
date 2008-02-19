@@ -130,6 +130,7 @@ Lexer::Token Lexer::nextToken()
         QChar next = getNext();
         if (next != '[')
             return Token(Error, QLatin1String("[ continued with:") + next);
+        int line = lineNumber();
         QString text;
         while(true) {
             QChar letter = getNext();
@@ -137,7 +138,7 @@ Lexer::Token Lexer::nextToken()
                 return Token(Error, QLatin1String("Unterminated code fragment"));
             if (letter == ']' && peekNext() == ']') {
                 getNext(); //Eat 2nd ']'
-                return Token(Code, text);
+                return Token(Code, text, line);
             }
             text += letter;
         }

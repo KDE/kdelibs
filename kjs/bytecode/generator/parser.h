@@ -39,16 +39,16 @@ private:
     // the last one is the return type
 
     virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8) = 0;
-    virtual void handleConversion(const QString& name, const QString& code,
+    virtual void handleConversion(const QString& name, const QString& code, int codeLine,
                                   bool immediate, bool checked, bool mayThrow,
                                   const QString& from, const QString& to, int cost) = 0;
     virtual void handleOperation(const QString& name) = 0;
-    virtual void handleImpl(const QString& fnName, const QString& code, int cost,
+    virtual void handleImpl(const QString& fnName, const QString& code, int codeLine, int cost,
                             const QString& retType, QStringList sig, QStringList paramNames) = 0;
     virtual void handleTile(const QString& fnName, QStringList sig) = 0;
 
     QString matchIdentifier();
-    QString matchCode();
+    QString matchCode(int& lineOut);
     int     matchNumber();
     void    match(Lexer::TokenType t);
 

@@ -83,7 +83,7 @@ namespace KJS {
     {
         size_t index = symbolTable().get(propertyName.ustring().rep());
         if (index != missingSymbolMarker()) {
-            slot.setValueSlot(this, &d->localStorage[index].value);
+            slot.setValueSlot(this, &d->localStorage[index].val.valueVal);
             return true;
         }
         return false;
@@ -97,7 +97,7 @@ namespace KJS {
         LocalStorageEntry& entry = d->localStorage[index];
         if (checkReadOnly && (entry.attributes & ReadOnly))
             return true;
-        entry.value = value;
+        entry.val.valueVal = value;
         return true;
     }
 
