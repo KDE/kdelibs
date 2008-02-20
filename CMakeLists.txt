@@ -320,10 +320,9 @@ endif (NOT QT_INSTALL_DIR)
 #        file(READ ${CMAKE_BINARY_DIR}/tmpdeps.cmake _deps)
 #        string(REPLACE "${QT_INSTALL_DIR}" "\${QT_INSTALL_DIR}" __deps "${_deps}")
 #        file (APPEND ${CMAKE_BINARY_DIR}/KDELibsDependencies.cmake "${__deps}")
-   export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
-else (WIN32)
-   export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 endif(WIN32)
+
+export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
 ########### install files ###############
 
