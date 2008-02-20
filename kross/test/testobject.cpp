@@ -49,6 +49,14 @@ TestObject::~TestObject()
 {
 }
 
+QObject* TestObject::createThread(int steps, int msecs, bool start)
+{
+    TestThread* t = new TestThread(this, steps, msecs);
+    if( start )
+        t->run();
+    return t;
+}
+
 QString TestObject::name()
 {
     return objectName();
@@ -211,6 +219,31 @@ TestObject* TestObject::func_testobject_testobject(TestObject* obj)
 {
     //kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
+}
+
+TestThread::TestThread(TestObject* parent, int steps, int msecs)
+    : QThread(parent)
+    , m_testobject(parent)
+    , m_steps(steps)
+    , m_msecs(msecs)
+{
+    //kDebug() << "TestThread::TestThread()";
+}
+
+TestThread::~TestThread()
+{
+    //kDebug() << "TestThread::~TestThread()";
+}
+
+void TestThread::run()
+{
+    //kDebug() << "TestThread::run()";
+    for(int i = 0; i < m_steps; ++i) {
+        //kDebug() << "TestThread::run() sleep i=" << i;
+        emit stepDone(i);
+        //m_testobject->emitSignalVoid();
+        msleep(m_msecs);
+    }
 }
 
 #include "testobject.moc"

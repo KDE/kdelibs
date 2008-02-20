@@ -26,6 +26,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QMetaType>
 #include <QtCore/QUrl>
+#include <QtCore/QThread>
 
 class QSize;
 class QSizeF;
@@ -97,6 +98,11 @@ class TestObject : public QObject
         void signalObject(QObject* obj);
 
     public Q_SLOTS:
+
+        // return a TestThread instance.
+        QObject* createThread(int steps, int msecs, bool start = false);
+
+        // emit some signals
         void emitSignalVoid() { emit signalVoid(); }
         void emitSignalBool(bool b) { emit signalBool(b); }
         void emitSignalInt(int i) { emit signalInt(i); }
@@ -160,6 +166,35 @@ class TestObject : public QObject
         TestObject* func_testobject_testobject(TestObject*);
 
         //QObject* self() { return this; }
+};
+
+/**
+* \internal class to test threading functionality.
+*
+* Following python code does provide a sample how this class
+* may used to test the threading functionality.
+* \code
+* import time, TestObject1
+* def myFunction(args): print args
+* mythread = TestObject1.createThread(200,5)
+* mythread.start()
+* time.sleep(1)
+* self.callFunction("myFunction", ["Some String"])
+* mythread.terminate()
+* \endcode
+*/
+class TestThread : public QThread
+{
+        Q_OBJECT
+    public:
+        explicit TestThread(TestObject* parent, int steps, int msecs);
+        virtual ~TestThread();
+        virtual void run();
+    Q_SIGNALS:
+        void stepDone(int step);
+    private:
+        TestObject* m_testobject;
+        int m_steps, m_msecs;
 };
 
 Q_DECLARE_METATYPE( TestObject* )
