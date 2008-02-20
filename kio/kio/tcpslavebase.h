@@ -68,7 +68,7 @@ protected:
     };
     friend class QFlags<KIO::TCPSlaveBase::SslResultDetail>;
 public:
-    Q_DECLARE_FLAGS(SslResult, SslResultDetail);
+    Q_DECLARE_FLAGS(SslResult, SslResultDetail)
 protected:
 
     /**
