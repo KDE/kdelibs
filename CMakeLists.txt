@@ -297,11 +297,6 @@ set(KDE4_DBUS_SERVICES_DIR   \"${KDE4_DBUS_SERVICES_DIR}\")
 set(KDE4_SERVICES_INSTALL_DIR \"${KDE4_SERVICES_INSTALL_DIR}\")
 set(KDE4_SERVICETYPES_INSTALL_DIR \"${KDE4_SERVICETYPES_INSTALL_DIR}\")
 
-# in CMake 2.6 the handling of the link directories has changed, so we need this here
-if(\"\${CMAKE_MAJOR_VERSION}.\${CMAKE_MINOR_VERSION}\" GREATER 2.4)
-   link_directories( \"\${KDE4_LIB_INSTALL_DIR}\" )
-endif(\"\${CMAKE_MAJOR_VERSION}.\${CMAKE_MINOR_VERSION}\" GREATER 2.4)
-
 \n")
 
 
