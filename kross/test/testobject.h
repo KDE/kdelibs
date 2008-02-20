@@ -193,6 +193,9 @@ class TestObject : public QObject
 * # ask our thread to emit the stepDone signal which in
 * # turn should call our myFunction function.
 * mythread.emitStepDone(456)
+* # same as above but we emit the signal by our own
+* # rather then going through a helper-function.
+* mythread.stepDone(456)
 * # sleep again one second
 * time.sleep(1)
 * \endcode
