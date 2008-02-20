@@ -11,7 +11,7 @@ set(kimproxy_LIB_SRCS
 
 qt4_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimproxy.h  KIMProxy)
 
-QT4_ADD_DBUS_INTERFACE(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
+qt4_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
 
 
 kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
@@ -23,4 +23,4 @@ set_target_properties(kimproxy PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSI
 ########### install files ###############
 
 install(TARGETS kimproxy  ${INSTALL_TARGETS_DEFAULT_ARGS})
-install( FILES kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

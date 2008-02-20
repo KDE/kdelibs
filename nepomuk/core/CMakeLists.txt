@@ -68,7 +68,7 @@ install(FILES
   tools.h
   generated/resource.h
   generated/tag.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk
+  DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 
 add_subdirectory(ui)

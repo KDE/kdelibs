@@ -27,6 +27,6 @@ install(TARGETS kunittestmodrunner DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES kunittest_export.h runner.h tester.h module.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kunittest )
+install( FILES kunittest_export.h runner.h tester.h module.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kunittest COMPONENT Devel)
 
 

@@ -21,7 +21,7 @@ install( FILES
    kpty.h
    kptydevice.h
    kptyprocess.h
-   DESTINATION ${INCLUDE_INSTALL_DIR}
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
 ########### next target ###############

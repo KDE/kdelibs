@@ -52,7 +52,7 @@ install( FILES
   kfilewidget.h
   kurlnavigator.h
   kfile_export.h
-  DESTINATION ${INCLUDE_INSTALL_DIR})
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 ############ module used by KFileDialog ##########
 set(kfilemodule_SRCS

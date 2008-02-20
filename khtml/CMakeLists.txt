@@ -424,12 +424,19 @@ if (KHTML_BUILD_TESTREGRESSION)
 endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############
+install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h  
+         DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+install( FILES dom/dom_exception.h dom/html_base.h dom/html_inline.h dom/css_rule.h dom/dom_html.h
+               dom/html_block.h dom/html_list.h dom/css_stylesheet.h dom/dom_misc.h dom/html_document.h
+               dom/html_misc.h dom/css_value.h dom/dom_node.h dom/html_element.h dom/html_object.h
+               dom/dom_core.h dom/dom_string.h dom/html_form.h dom/html_table.h dom/dom_doc.h
+               dom/dom_text.h dom/html_head.h dom/dom_element.h dom/dom_xml.h dom/html_image.h
+               dom/dom2_range.h dom/dom2_traversal.h dom/dom2_events.h dom/dom2_views.h
+         DESTINATION  ${INCLUDE_INSTALL_DIR}/dom  COMPONENT Devel)
 
 install( FILES khtml.desktop khtmlimage.desktop
-	 khtmladaptorpart.desktop DESTINATION  ${SERVICES_INSTALL_DIR} )
+         khtmladaptorpart.desktop DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES khtml.rc khtml_browser.rc  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
-install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
-install( FILES dom/dom_exception.h   dom/html_base.h       dom/html_inline.h    dom/css_rule.h        dom/dom_html.h        dom/html_block.h      dom/html_list.h    dom/css_stylesheet.h  dom/dom_misc.h        dom/html_document.h   dom/html_misc.h    dom/css_value.h       dom/dom_node.h        dom/html_element.h    dom/html_object.h     dom/dom_core.h        dom/dom_string.h      dom/html_form.h       dom/html_table.h   dom/dom_doc.h         dom/dom_text.h        dom/html_head.h    dom/dom_element.h     dom/dom_xml.h         dom/html_image.h   dom/dom2_range.h      dom/dom2_traversal.h  dom/dom2_events.h     dom/dom2_views.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dom )
 
 install( FILES org.kde.KHTMLPart.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 

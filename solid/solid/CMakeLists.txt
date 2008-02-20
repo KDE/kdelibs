@@ -11,17 +11,18 @@ configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
 
 include (CheckCXXSourceCompiles)
 
-CHECK_CXX_SOURCE_COMPILES(" int main() { __asm__(\"pxor %mm0, %mm0\") ; }" HAVE_X86_MMX)
-CHECK_CXX_SOURCE_COMPILES(" int main() { __asm__(\"xorps %xmm0, %xmm0\"); }" HAVE_X86_SSE)
-CHECK_CXX_SOURCE_COMPILES(" int main() { __asm__(\"xorpd %xmm0, %xmm0\"); }" HAVE_X86_SSE2)
-CHECK_CXX_SOURCE_COMPILES(" int main() { __asm__(\"femms\"); }" HAVE_X86_3DNOW)
-CHECK_CXX_SOURCE_COMPILES(" int main() { __asm__(\"mtspr 256, %0; vand %%v0, %%v0, %%v0\" : : \"r\"(-1) ); }" HAVE_PPC_ALTIVEC)
+check_cxx_source_compiles(" int main() { __asm__(\"pxor %mm0, %mm0\") ; }" HAVE_X86_MMX)
+check_cxx_source_compiles(" int main() { __asm__(\"xorps %xmm0, %xmm0\"); }" HAVE_X86_SSE)
+check_cxx_source_compiles(" int main() { __asm__(\"xorpd %xmm0, %xmm0\"); }" HAVE_X86_SSE2)
+check_cxx_source_compiles(" int main() { __asm__(\"femms\"); }" HAVE_X86_3DNOW)
+check_cxx_source_compiles(" int main() { __asm__(\"mtspr 256, %0; vand %%v0, %%v0, %%v0\" : : \"r\"(-1) ); }" HAVE_PPC_ALTIVEC)
 
 configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-processor.h )
 
 ########### next target ###############
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
+
 set(solid_LIB_SRCS 
    solidnamespace.cpp 
    managerbase.cpp 
@@ -117,14 +118,15 @@ set(solid_LIB_SRCS
    backends/fakehw/fakevolume.cpp
 )
 
-SET_SOURCE_FILES_PROPERTIES( org.kde.Solid.PowerManagement.xml
-org.kde.Solid.PowerManagement.Inhibit.xml PROPERTIES NO_NAMESPACE TRUE)
+set_source_files_properties( org.kde.Solid.PowerManagement.xml
+                             org.kde.Solid.PowerManagement.Inhibit.xml 
+                             PROPERTIES NO_NAMESPACE TRUE)
 
-QT4_ADD_DBUS_INTERFACES(solid_LIB_SRCS org.kde.Solid.PowerManagement.xml
-org.kde.Solid.PowerManagement.Inhibit.xml )
+qt4_add_dbus_interfaces(solid_LIB_SRCS org.kde.Solid.PowerManagement.xml
+                        org.kde.Solid.PowerManagement.Inhibit.xml )
 
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
-    org_kde_solid_networking_client)
+                       org_kde_solid_networking_client)
 
 set(solid_OPTIONAL_LIBS)
 
@@ -148,35 +150,42 @@ kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
 target_link_libraries(solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 if(WIN32)
-  set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+   set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h video.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h 
+               devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h 
+               storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h 
+               camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h 
+               button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h 
+               networking.h video.h 
+               DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############
 
 option(SOLID_PREDICATE_PARSER_UPDATE  "Update Solid predicate parser")
 
 if(SOLID_PREDICATE_PARSER_UPDATE)
+   # the following code has two problems:
+   # it expects mv, which usually doesn't exist on windows
+   # it calls flex and bison without searching for them,
+   # i.e. it expects that they are in the path. Alex
 
-set(lexer_FILE predicate_lexer)
-set(parser_FILE predicate_parser)
+   set(lexer_FILE predicate_lexer)
+   set(parser_FILE predicate_parser)
 
-add_custom_command(OUTPUT ${lexer_FILE}.c
-                   COMMAND flex ARGS -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
-                   DEPENDS ${lexer_FILE}.l
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+   add_custom_command(OUTPUT ${lexer_FILE}.c
+                      COMMAND flex -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
+                      DEPENDS ${lexer_FILE}.l
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
-                   COMMAND bison ARGS -p Solid -d -b ${parser_FILE} ${parser_FILE}.y
-                   COMMAND mv ARGS ${parser_FILE}.tab.c ${parser_FILE}.c
-                   COMMAND mv ARGS ${parser_FILE}.tab.h ${parser_FILE}.h
-                   DEPENDS ${lexer_FILE}.c
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+   add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
+                      COMMAND bison -p Solid -d -b ${parser_FILE} ${parser_FILE}.y
+                      COMMAND mv ${parser_FILE}.tab.c ${parser_FILE}.c
+                      COMMAND mv ${parser_FILE}.tab.h ${parser_FILE}.h
+                      DEPENDS ${lexer_FILE}.c
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 endif(SOLID_PREDICATE_PARSER_UPDATE)
-
-
-
 

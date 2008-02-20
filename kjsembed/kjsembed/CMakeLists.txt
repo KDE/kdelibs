@@ -1,20 +1,20 @@
 project(kjsembed-kjsembed)
 
 if (NOT QTONLY_WEBKIT)
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/kjsembed 
-    ${KDE4_KJS_INCLUDES}
-    ${KDE4_KDECORE_INCLUDES}
-)
+   include_directories(
+       ${CMAKE_SOURCE_DIR}
+       ${CMAKE_SOURCE_DIR}/kjsembed 
+       ${KDE4_KJS_INCLUDES}
+       ${KDE4_KDECORE_INCLUDES}
+   )
 else (NOT QTONLY_WEBKIT)
-include_directories(
-    $(QTONLY_WEBKIT_DIR)/JavaScriptCore/kjs
-    $(QTONLY_WEBKIT_DIR)/JavaScriptCore
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/kjsembed 
-    ${KDE4_KDECORE_INCLUDES}
-)
+   include_directories(
+       $(QTONLY_WEBKIT_DIR)/JavaScriptCore/kjs
+       $(QTONLY_WEBKIT_DIR)/JavaScriptCore
+       ${CMAKE_SOURCE_DIR}
+       ${CMAKE_SOURCE_DIR}/kjsembed 
+       ${KDE4_KDECORE_INCLUDES}
+   )
 endif (NOT QTONLY_WEBKIT)
 
 
@@ -61,7 +61,7 @@ else (NOT DEFINED QT_ONLY)
       set(KJSLIBNAME qkjs)
       set(KJSEMBEDLIBNAME qkjsembed)
    else (NOT QTONLY_WEBKIT)
-	    set(KJSLIBNAME "${WEBKIT_KJS_LIBRARY}")
+      set(KJSLIBNAME "${WEBKIT_KJS_LIBRARY}")
       set(KJSEMBEDLIBNAME qwkjsembed)
    endif (NOT QTONLY_WEBKIT)
 endif (NOT DEFINED QT_ONLY)

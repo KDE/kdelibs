@@ -5,7 +5,6 @@ include_directories(
     ${KDE4_KIO_INCLUDES}
 )
 
-########### next target ###############
 
 set(krossui_LIB_SRCS
    model.cpp
@@ -21,4 +20,4 @@ install(TARGETS krossui ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
 #install(FILES guiclient.h model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)
-install(FILES model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)
+install(FILES model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui COMPONENT Devel)

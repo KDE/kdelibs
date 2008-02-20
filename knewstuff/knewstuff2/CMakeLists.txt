@@ -63,20 +63,20 @@ install(FILES
   core/category.h
   core/ktranslatable.h
   core/installation.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/core
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/core COMPONENT Devel
 )
 
 #install(FILES dxs/dxsengine.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/dxs)
 
 install(FILES
   ui/knewstuffaction.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui COMPONENT Devel
 )
 
 install(FILES
   engine.h
   knewstuff_export.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2 COMPONENT Devel
 )
 
 

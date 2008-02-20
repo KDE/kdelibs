@@ -229,15 +229,14 @@ if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
 
+
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
                                          windowmanagement/kwindowinfo_x11.cpp
-                                         windowmanagement/netwm.cpp
-       )
+                                         windowmanagement/netwm.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_mac.cpp
-       )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_mac.cpp)
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp)
@@ -298,10 +297,10 @@ install(TARGETS kdeui ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
 if (Q_WS_MAC)
-install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+   install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 else (Q_WS_MAC)
-# maybe these shouldn't be installed on windows? they have been so far, so leaving it this way for now
-install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+   # maybe these shouldn't be installed on windows? they have been so far, so leaving it this way for now
+   install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
@@ -477,14 +476,14 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
- DESTINATION ${INCLUDE_INSTALL_DIR})
+ DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install( FILES
   sonnet/dialog.h
   sonnet/highlighter.h
   sonnet/configdialog.h
   sonnet/configwidget.h
-  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet )
+  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -492,9 +491,11 @@ if (Q_WS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
-install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors 
+         DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 set( kded_globalaccel_SRCS shortcuts/kdedglobalaccel.cpp )
+
 if ( Q_WS_X11 )
   set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_x11.cpp )
 endif ( Q_WS_X11 )
@@ -507,6 +508,7 @@ endif ( Q_WS_WIN )
 if ( Q_WS_QWS )
   set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_qws.cpp )
 endif ( Q_WS_QWS )
+
 kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
 target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} )
 

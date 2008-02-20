@@ -397,19 +397,11 @@ install( FILES
    util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
-   DESTINATION ${INCLUDE_INSTALL_DIR}
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-if (UNIX)
-   install( FILES
-      DESTINATION ${INCLUDE_INSTALL_DIR}
-   )
-endif (UNIX)
-
-install( FILES
-        sonnet/backgroundchecker.h
-        sonnet/speller.h
-	DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet)
+install( FILES sonnet/backgroundchecker.h sonnet/speller.h
+         DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
 install( FILES
    services/kplugininfo.desktop sonnet/sonnetspeller.desktop

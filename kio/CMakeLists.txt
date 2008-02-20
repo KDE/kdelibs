@@ -243,6 +243,7 @@ if(SYS_INOTIFY_H_FOUND)
 else(SYS_INOTIFY_H_FOUND)
    macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
 endif(SYS_INOTIFY_H_FOUND)
+
 if(FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIR})
    target_link_libraries(kio ${FAM_LIBRARIES})
@@ -313,12 +314,12 @@ install(  FILES
   kio/renamedialogplugin.h
   kio/skipdialog.h
   kio/udsentry.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )
   install( FILES
     kfile/kfilesharedialog.h
-    DESTINATION ${INCLUDE_INSTALL_DIR})
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif( NOT WIN32 )
 
 install( FILES
@@ -388,7 +389,7 @@ install( FILES
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
-  DESTINATION ${INCLUDE_INSTALL_DIR})
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 

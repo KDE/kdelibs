@@ -26,4 +26,4 @@ install(FILES
     action.h
     actioncollection.h
     manager.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
+    DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core COMPONENT Devel)

@@ -1,4 +1,3 @@
-
 project(kutils)
 include_directories( ${KDE4_KDEUI_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 
@@ -49,7 +48,7 @@ install( FILES
  kpluginselector.h
  kcmodulecontainer.h
  kprintpreview.h
- DESTINATION ${INCLUDE_INSTALL_DIR})
+ DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 
 

@@ -1,6 +1,6 @@
 
 project(kde3support)
-KDE4_NO_ENABLE_FINAL(kde3support)
+kde4_no_enable_final(kde3support)
 
 # inter-subdir dependencies
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui
@@ -134,17 +134,16 @@ install( FILES
   kdeui/kstdaccel.h
   kdeui/kstdaction.h
   kdeui/kstdguiitem.h
-DESTINATION  ${INCLUDE_INSTALL_DIR} )
+  DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 if (UNIX)
    install( FILES
       kdecore/k3process.h
       kdecore/k3processcontroller.h
       kdecore/k3procio.h
-      DESTINATION ${INCLUDE_INSTALL_DIR}
-   )
+      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 endif (UNIX)
 
 install( FILES
     kio/kio/renamedlg.h
-DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
+    DESTINATION  ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel )
