@@ -90,12 +90,12 @@ macro_optional_find_package(OpenSSL)
 macro_optional_find_package(Libintl)
 
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS})
 
 link_directories(${QJS_LIB_DIR})
 
 # for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
+include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 # Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
@@ -104,13 +104,6 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
                       ${CMAKE_BINARY_DIR}/kjs)
 
-# kdecore depends on Qt
-set(QJS_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore 
-                         ${CMAKE_BINARY_DIR}/kdecore 
-                         ${CMAKE_SOURCE_DIR}/kdecore/network 
-                         ${QT_INCLUDES} 
-                         ${CMAKE_SOURCE_DIR}/kdecore/kservice 
-                         ${_QJS_PLATFORM_INCLUDE_DIRS})
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
@@ -148,11 +141,6 @@ endif (NOT QTONLY_WEBKIT)
 
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../kjsembed kjsembed )
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../kjscmd qjscmd )
-
-########### install files ###############
-
-# ...and append all library dependencies
-export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
 macro_display_feature_log()
 
