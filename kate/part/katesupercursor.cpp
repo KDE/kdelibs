@@ -186,7 +186,7 @@ void KateSuperCursor::editLineWrapped(uint line, uint col, bool newLine)
 {
   if (newLine)
   {
-    if (m_line > int(line) || (m_line == int(line) && m_col > int(col)))
+    if (m_line > int(line) || (m_line == int(line) && m_col >= int(col)))
     {
       if(m_line == int(line))
          m_col -= col;
