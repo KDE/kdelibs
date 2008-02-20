@@ -693,5 +693,9 @@ void KTextEdit::slotReplace()
     d->repDlg->show();
 }
 
+void KTextEdit::enableFindReplace( bool enabled )
+{
+    d->findReplaceEnabled = enabled;
+}
 
 #include "ktextedit.moc"
