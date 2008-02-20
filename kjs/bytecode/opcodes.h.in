@@ -26,13 +26,13 @@
 #include <wtf/Vector.h>
 #include "value.h"
 #include "identifier.h"
+#include "ExecState.h"
 
 #ifndef OPCODES_H
 #define OPCODES_H
 
 namespace KJS {
 
-typedef unsigned Addr;
 typedef unsigned Register;
 class CompileState;
 

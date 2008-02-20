@@ -41,6 +41,7 @@ namespace KJS {
     class ProgramNode;
 
     enum CodeType { GlobalCode, EvalCode, FunctionCode };
+    typedef unsigned Addr; // ### should there be some separare types h?
 
   /**
    * Represents the current state of script execution. This object allows you
@@ -67,6 +68,22 @@ namespace KJS {
      */
     Interpreter* lexicalInterpreter() const;
 
+    /**
+     * This describes how an exception should be handled
+     */
+    enum HandlerType {
+        JumpToCatch, ///< jump to the specified address
+        PopScope,    ///< remove a scope chain entry, and run the next handler
+        Silent       ///< just update the exception object. For debugger-type use only
+    };
+
+    void pushExceptionHandler(HandlerType type, Addr addr = 0) {
+        m_exceptionHandlers.append(ExceptionHandler(type, addr));
+    }
+
+    void popExceptionHandler() {
+        m_exceptionHandlers.removeLast();
+    }
 
     /**
      * Set the exception associated with this execution state
@@ -188,6 +205,17 @@ namespace KJS {
 
     LocalStorage*      m_localStore;
     WTF::Vector<bool>* m_markDescriptor;
+
+    struct ExceptionHandler {
+        ExceptionHandler() {}
+        ExceptionHandler(HandlerType type, Addr dest):
+          type(type), dest(dest) {}
+
+        HandlerType type;
+        Addr        dest;
+    };
+
+    WTF::Vector<ExceptionHandler, 4> m_exceptionHandlers;
 
     CodeType m_codeType;
   };

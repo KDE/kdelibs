@@ -283,12 +283,13 @@ operation IfJump {
     tile (value, addr) as executeIfJump;
 }
 
-operation IfElseJump {
-    impl void executeIfElseJump(bool condResult, addr goTrue, addr goFalse) [[
-        pc = condResult ? goTrue : goFalse;
+operation IfNotJump {
+    impl void executeIfNotJump(bool condResult, addr dest) [[
+        if (!condResult)
+            pc = dest;
     ]]
 
-    tile (value, addr, addr) as executeIfElseJump;
+    tile (value, addr) as executeIfNotJump;
 }
 
 // for, while, do ... while, etc., can all be easily expressed as above,
@@ -296,19 +297,35 @@ operation IfElseJump {
 
 // ### switch is nasty. Probably needs some opaque pointer type.
 
+// These update the scope chain, and sets the special unwind exception handler, which is used to
+// restore the chain if an exception happens
+operation PushScope {
+    impl void pushScope(value in) [[
+        JSObject* obj = in->toObject(exec);
+        if (exec->hadException())
+            continue; // will jump to handler.
+
+        exec->pushScope(obj);
+        exec->pushExceptionHandler(ExecState::PopScope);
+    ]]
+}
+
+operation PopScope {
+    impl void () [[
+        exec->popScope();
+        exec->popExceptionHandler();
+    ]]
+}
+
 operation PopCatch {
     impl void popCatch() [[
-#if 0
-        exec->popCatchHandler();
-#endif
+        exec->popExceptionHandler();
     ]]
 }
 
 operation PushCatch {
     impl void pushCatch(addr handler) [[
-#if 0
-        exec->pushCatchHandler(handler);
-#endif
+        exec->pushExceptionHandler(ExecState::JumpToCatch, handler);
     ]]
 }
 
@@ -324,15 +341,23 @@ operation Throw {
     ]]
 }
 
+operation PropagateException {
+    impl void() [[
+        return Completion(Throw, exec->exception());
+    ]]
+}
+
 operation Return {
     impl void return (value retVal) [[
         return Completion(Normal, retVal);
     ]]
 }
 
-operation ReturnErrorCompletion {
-    impl void retErrorCompletion(node node, int32 errorType, cstr msg) [[
-        return node->createErrorCompletion(exec, ErrorType(errorType), msg);
+operation RaiseError {
+    impl void (node node, int32 errorType, cstr msg) [[
+        // ### TODO!
+        ASSERT(0);
+        //return node->createErrorCompletion(exec, ErrorType(errorType), msg);
     ]]
 }
 
@@ -481,7 +506,9 @@ operation RegPut {
 // Generic put..
 operation SymPut {
     impl void symPut(value base, ident varName, value val) [[
-        base->toObject(exec)->put(exec, *varName, val);
+        JSObject* baseObj = base->toObject(exec);
+        if (!exec->hadException())
+            baseObj->put(exec, *varName, val);
     ]]
 }
 
@@ -498,7 +525,9 @@ operation SymPutKnownObject {
 // Generic get..
 operation SymGet {
     impl value symGet(value base, ident prop) [[
-        $$ = base->toObject(exec)->get(exec, *prop);
+        JSObject* baseObj = base->toObject(exec);
+        if (!exec->hadException())
+            $$ = baseObj->get(exec, *prop);
     ]]
 }
 

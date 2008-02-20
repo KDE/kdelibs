@@ -675,11 +675,6 @@ void VarStatementNode::streamTo(SourceStream &s) const
   s << SourceStream::Endl << next << ';';
 }
 
-void StaticVarStatementNode::streamTo(SourceStream &s) const
-{
-  s << originalStatement;
-}
-
 void BlockNode::streamTo(SourceStream &s) const
 {
   s << SourceStream::Endl << '{' << SourceStream::Indent

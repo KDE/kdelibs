@@ -35,7 +35,7 @@ static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, co
     OpValue me = OpValue::immNode(node);
     OpValue se = OpValue::immInt32(SyntaxError);
     OpValue msg = OpValue::immCStr(msgStr);
-    CodeGen::emitOp(comp, block, Op_ReturnErrorCompletion, 0, &me, &se, &msg);
+    CodeGen::emitOp(comp, block, Op_RaiseError, 0, &me, &se, &msg);
 }
 
 OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
@@ -149,7 +149,8 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         OpValue varName = OpValue::immIdent(&ident);
 
         OpName op = Op_VarGet; // in general, have to search the whole chain..
-        if (comp->codeType() == GlobalCode) // unless we're in GlobalCode, so there is nothing to search
+        if (comp->codeType() == GlobalCode && !comp->inNestedScope())
+                // unless we're in GlobalCode, w/o extra stuff on top, so there is nothing to search
             op = Op_SymGetVarObject;
         else if (!dynamicLocal) // can skip one scope..
             op = Op_NonLocalVarGet;
@@ -534,9 +535,15 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return v;
 }
 
-OpValue AssignExprNode::generateEvalCode(CompileState* state, CodeBlock& block)
+OpValue CommaNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    return expr->generateEvalCode(state, block);
+    expr1->generateEvalCode(comp, block);
+    return expr2->generateEvalCode(comp, block);
+}
+
+OpValue AssignExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    return expr->generateEvalCode(comp, block);
 }
 
 OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
@@ -583,6 +590,82 @@ void EmptyStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     expr->generateEvalCode(comp, block);
+}
+
+void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue cond = expr->generateEvalCode(comp, block);
+
+    // If condition is not true, jump to after or else..
+    OpValue afterTrue    = OpValue::immAddr(0);
+    Addr    afterTrueJmp = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &cond, &afterTrue);
+
+    // Emit the body of true...
+    statement1->generateExecCode(comp, block);
+
+    OpValue afterAll    = OpValue::immAddr(0);
+    Addr    afterAllJmp = 0;
+
+    // If we have an else, add in a jump to skip over it.
+    if (statement2)
+        afterAllJmp = CodeGen::emitOp(comp, block, Op_Jump, 0, &afterAll);
+
+    // This is where we go if true fails --- else, or afterwards.
+    afterTrue = OpValue::immAddr(CodeGen::nextPC(block));
+    CodeGen::patchOpArgument(block, afterTrueJmp, 1, afterTrue);
+
+    if (statement2) {
+        // Body of else
+        statement2->generateExecCode(comp, block);
+
+        // Fix up the jump-over code
+        afterAll = OpValue::immAddr(CodeGen::nextPC(block));
+        CodeGen::patchOpArgument(block, afterAllJmp, 0, afterAll);
+    }
+}
+
+void DoWhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    comp->enterLoop(this);
+
+    // Body
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(block));
+    statement->generateExecCode(comp, block);
+
+    // continues go to just before the test..
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
+
+    // test
+    OpValue cond = expr->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &beforeBody);
+
+    comp->exitLoop(this, block);
+}
+
+void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    comp->enterLoop(this);
+
+    // Jump to test.
+    OpValue testAddr = OpValue::immAddr(0);
+    Addr  jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, &testAddr);
+
+    // Body
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(block));
+    statement->generateExecCode(comp, block);
+
+    // continues go to just before the test..
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
+
+    // patch up the destination of the initial jump to test
+    testAddr = OpValue::immAddr(CodeGen::nextPC(block));
+    CodeGen::patchOpArgument(block, jumpToTest, 0, testAddr);
+
+    // test
+    OpValue cond = expr->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &beforeBody);
+
+    comp->exitLoop(this, block);
 }
 
 void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -686,6 +769,17 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
         arg = value->generateEvalCode(comp, block);
 
     CodeGen::emitOp(comp, block, Op_Return, 0, &arg);
+}
+
+void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue scopeObj = expr->generateEvalCode(comp, block);
+
+    CodeGen::emitOp(comp, block, Op_PushScope, 0, &scopeObj);
+    comp->pushScope();
+    statement->generateExecCode(comp, block);
+    comp->popScope();
+    CodeGen::emitOp(comp, block, Op_PopScope, 0);
 }
 
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)

@@ -38,7 +38,6 @@
 
 
 namespace KJS {
-  class StaticVarStatementNode;
   class ProgramNode;
   class PropertyNameNode;
   class PropertyListNode;
@@ -838,6 +837,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   private:
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
@@ -905,22 +905,6 @@ namespace KJS {
     RefPtr<VarDeclListNode> next;
   };
 
-  // A version of VarStatementNode optimized for local access --- it stores the
-  // index locations, and accesses them directly.
-  class StaticVarStatementNode : public StatementNode {
-    virtual Completion execute(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    struct Initializer {
-      size_t localID;
-      RefPtr<Node> initExpr;
-    };
-    WTF::Vector<Initializer> initializers;
-    RefPtr<VarStatementNode> originalStatement;
-    friend class VarStatementNode;
-  };
-
   class BlockNode : public StatementNode {
   public:
     BlockNode(SourceElementsNode *s);
@@ -958,6 +942,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
   private:
     RefPtr<Node> expr;
     RefPtr<StatementNode> statement1;
@@ -970,6 +955,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<StatementNode> statement;
@@ -982,6 +968,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<Node> expr;
@@ -1066,6 +1053,7 @@ namespace KJS {
   public:
     WithNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewDynamicScope() const { return true; }

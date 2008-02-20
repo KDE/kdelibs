@@ -1995,33 +1995,6 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
   return 0;
 }
 
-
-// ------------------------------ StaticVarStatementNode -----------------------
-
-Completion StaticVarStatementNode::execute(ExecState *exec)
-{
-  KJS_BREAKPOINT;
-  ActivationImp* scope = static_cast<ActivationImp*>(exec->activationObject());
-
-  for (unsigned int i = 0; i < initializers.size(); ++i) {
-    JSValue* val = initializers[i].initExpr->evaluate(exec);
-    KJS_CHECKEXCEPTION
-    scope->putLocal(initializers[i].localID, val);
-    // Note: flags are already taken care of at declaration time
-  }
-  return Completion(Normal);
-}
-
-void StaticVarStatementNode::recurseVisit(NodeVisitor *visitor)
-{
-  for (unsigned int i = 0; i < initializers.size(); ++i) {
-   Node* oldInitializer = initializers[i].initExpr.get();
-   Node* newInitializer = visitor->visit(oldInitializer);
-   if (newInitializer)
-    initializers[i].initExpr = newInitializer;
-  }
-}
-
 // ------------------------------ BlockNode ------------------------------------
 
 BlockNode::BlockNode(SourceElementsNode *s)
@@ -2770,6 +2743,7 @@ void FunctionBodyNode::compile(CodeType ctype)
   m_compiled = true;
 
   // First, fill in the mark descriptor with how many locals we have..
+  m_shouldMark.resize(m_symbolTable.size());
   for (int c = 0; c < m_symbolTable.size(); ++c)
     m_shouldMark[c] = true;
 
