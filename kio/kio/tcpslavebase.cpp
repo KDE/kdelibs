@@ -61,6 +61,10 @@ using namespace KIO;
 typedef QMap<QString, QString> StringStringMap;
 Q_DECLARE_METATYPE(StringStringMap)
 
+namespace KIO {
+Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
+}
+
 //TODO Proxy support whichever way works; KPAC reportedly does *not* work.
 //NOTE kded_proxyscout may or may not be interesting
 
@@ -179,7 +183,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
         success = d->socket.waitForBytesWritten(0);
     }
 
-    d->socket.flush();  //this *ahem* might help to get the data on the wire faster
+    d->socket.flush();  //this is supposed to get the data on the wire faster
 
     if (d->socket.state() != KTcpSocket::ConnectedState && !success) {
         kDebug(7029) << "Write failed, will return -1! Socket error is"
@@ -248,8 +252,6 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
                                  const QString &host,
                                  quint16 port)
 {
-    disconnectFromHost();  //Reset some state, even if we are already disconnected
-
     setMetaData("ssl_in_use", "FALSE"); //We have separate connection and SSL setup phases
 
     //  - leaving SSL - warn before we even connect
@@ -279,47 +281,56 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
 
     d->host = host;
 
-    //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
-
-    kDebug(7029) << "before connectToHost: Socket error is "
-                 << d->socket.error() << ", Socket state is " << d->socket.state();
-    d->socket.connectToHost(host, port);
-    kDebug(7029) << "after connectToHost: Socket error is "
-                 << d->socket.error() << ", Socket state is " << d->socket.state();
-
-    bool connectOk = d->socket.waitForConnected(d->timeout > -1 ? d->timeout * 1000 : -1);
-    kDebug(7029) << "after waitForConnected: Socket error is "
-                 << d->socket.error() << ", Socket state is " << d->socket.state()
-                 << ", waitForConnected returned " << connectOk;
-
-    if (d->socket.state() != KTcpSocket::ConnectedState) {
-        if (d->socket.error() == KTcpSocket::HostNotFoundError) {
-            error(ERR_UNKNOWN_HOST,
-                  host + QLatin1String(": ") + d->socket.errorString());
-        } else {
-            error(ERR_COULD_NOT_CONNECT,
-                  host + QLatin1String(": ") + d->socket.errorString());
-        }
-        return false;
-    }
-
-    //### check for proxyAuthenticationRequiredError
-
-    d->ip = d->socket.peerAddress().toString();
-    d->port = d->socket.peerPort();
-
-    if (d->autoSSL) {
-        SslResult res = startTLSInternal();
-        if (res == ResultFailed) {
-            //### more?
-            //TODO proper i18n, maybe a special error code.
-            error(ERR_COULD_NOT_CONNECT, 
-                  host + i18n(": SSL negotiation failed"));
+    KTcpSocket::SslVersion trySslVersion = KTcpSocket::TlsV1;
+    while (true) {
+        disconnectFromHost();  //Reset some state, even if we are already disconnected
+    
+        //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
+    
+        kDebug(7029) << "before connectToHost: Socket error is "
+                    << d->socket.error() << ", Socket state is " << d->socket.state();
+        d->socket.connectToHost(host, port);
+        kDebug(7029) << "after connectToHost: Socket error is "
+                    << d->socket.error() << ", Socket state is " << d->socket.state();
+    
+        bool connectOk = d->socket.waitForConnected(d->timeout > -1 ? d->timeout * 1000 : -1);
+        kDebug(7029) << "after waitForConnected: Socket error is "
+                    << d->socket.error() << ", Socket state is " << d->socket.state()
+                    << ", waitForConnected returned " << connectOk;
+    
+        if (d->socket.state() != KTcpSocket::ConnectedState) {
+            if (d->socket.error() == KTcpSocket::HostNotFoundError) {
+                error(ERR_UNKNOWN_HOST,
+                    host + QLatin1String(": ") + d->socket.errorString());
+            } else {
+                error(ERR_COULD_NOT_CONNECT,
+                    host + QLatin1String(": ") + d->socket.errorString());
+            }
             return false;
         }
+    
+        //### check for proxyAuthenticationRequiredError
+    
+        d->ip = d->socket.peerAddress().toString();
+        d->port = d->socket.peerPort();
+    
+        if (d->autoSSL) {
+            SslResult res = startTLSInternal(trySslVersion);
+            if ((res & ResultFailed) && (res & ResultFailedEarly)
+                && (trySslVersion == KTcpSocket::TlsV1)) {
+                trySslVersion = KTcpSocket::SslV3;
+                continue;
+                //### servers that can't negotiate 3.0 down to 2.0 should not exist anymore
+            }
+            if (res & ResultFailed) {
+                error(ERR_COULD_NOT_CONNECT, 
+                      host + i18n(": SSL negotiation failed"));
+                return false;
+            }
+        }
+        return true;
     }
-
-    return true;
+    Q_ASSERT(false);
 }
 
 void TCPSlaveBase::disconnectFromHost()
@@ -332,7 +343,9 @@ void TCPSlaveBase::disconnectFromHost()
     if (d->socket.state() == KTcpSocket::UnconnectedState)
         return;
 
-    //stopTLS(); ### this is a reminder to save a session for reuse or do whatever on SSL shutdown
+    //### maybe save a session for reuse on SSL shutdown if and when QSslSocket
+    //    does that. QCA::TLS can do it apparently but that is not enough if
+    //    we want to present that as KDE API. Not a big loss in any case.
     d->socket.disconnectFromHost();
     if (d->socket.state() != KTcpSocket::UnconnectedState)
         d->socket.waitForDisconnected(-1); // wait for unsent data to be sent
@@ -363,12 +376,13 @@ bool TCPSlaveBase::startSsl()
 {
     if (d->usingSSL)
         return false;
-    return startTLSInternal() != ResultFailed;
+    return startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
 
-TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
+TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
 {
+    KTcpSocket::SslVersion sslVersion = static_cast<KTcpSocket::SslVersion>(v_);
     selectClientCertificate();
 
     //setMetaData("ssl_session_id", d->kssl->session()->toString());
@@ -377,10 +391,12 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
     d->usingSSL = true;
     setMetaData("ssl_in_use", "TRUE");
 
+    d->socket.setAdvertisedSslVersion(sslVersion);
+
     /* Usually ignoreSslErrors() would be called in the slot invoked by the sslErrors()
        signal but that would mess up the flow of control. We will check for errors
        anyway to decide if we want to continue connecting. Otherwise ignoreSslErrors()
-       before connecting would be rather insecure. */
+       before connecting would be very insecure. */
     d->socket.ignoreSslErrors();
     d->socket.startClientEncryption();
     const bool encryptionStarted = d->socket.waitForEncrypted(-1);
@@ -399,20 +415,20 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
                      << ", the socket says:" << d->socket.errorString()
                      << "and the list of SSL errors contains"
                      << d->socket.sslErrors().count() << "items.";
-        return ResultFailed;
+        return ResultFailed | ResultFailedEarly;
     }
 
     kDebug(7029) << "Cipher info - "
+                 << " advertised SSL protocol version" << d->socket.advertisedSslVersion()
+                 << " negotiated SSL protocol version" << d->socket.negotiatedSslVersion()
                  << " authenticationMethod:" << cipher.authenticationMethod()
                  << " encryptionMethod:" << cipher.encryptionMethod()
                  << " keyExchangeMethod:" << cipher.keyExchangeMethod()
                  << " name:" << cipher.name()
-                 << " protocol:" << cipher.protocol()
-                 << " protocolName:" << cipher.protocolName()
                  << " supportedBits:" << cipher.supportedBits()
                  << " usedBits:" << cipher.usedBits();
 
-    setMetaData("ssl_protocol_version", cipher.protocolName());
+    setMetaData("ssl_protocol_version", d->socket.negotiatedSslVersionName());
     QString sslCipher = cipher.encryptionMethod() + '\n';
     sslCipher += cipher.authenticationMethod() + '\n';
     sslCipher += cipher.keyExchangeMethod() + '\n';
@@ -450,13 +466,13 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal()
     sendMetaData();
 
     SslResult rc = verifyServerCertificate();
-    if (rc == ResultFailed) {
+    if (rc & ResultFailed) {
         d->usingSSL = false;
         setMetaData("ssl_in_use", "FALSE");
         kDebug(7029) << "server certificate verification failed.";
         d->socket.disconnectFromHost();     //Make the connection fail (cf. ignoreSslErrors())
         return ResultFailed;
-    } else if (rc == ResultOverridden) {
+    } else if (rc & ResultOverridden) {
         kDebug(7029) << "server certificate verification failed but continuing at user's request.";
     }
 
@@ -707,7 +723,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     se = rule.filterErrors(se);
     if (se.isEmpty()) {
         kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
-        return ResultOverridden;
+        return ResultOk | ResultOverridden;
     }
 
     //### We don't present the option to permanently reject the certificate even though
@@ -752,7 +768,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     rule.setIgnoredErrors(se);
     cm->setRule(rule);
 
-    return ResultOverridden;
+    return ResultOk | ResultOverridden;
 #if 0 //### need to to do something like the old code about the main and subframe stuff
     kDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request");
     if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
@@ -856,7 +872,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 
     return rc;
 #endif //#if 0
-    return ResultOk;
+    return ResultOk | ResultOverridden;
 }
 
 

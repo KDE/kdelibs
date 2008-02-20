@@ -60,11 +60,16 @@ public:
     virtual ~TCPSlaveBase();
 
 protected:
-    enum SslResult {
+    enum SslResultDetail {
         ResultOk = 1,
-        ResultFailed = 0,
-        ResultOverridden = 2
+        ResultOverridden = 2,
+        ResultFailed = 4,
+        ResultFailedEarly = 8
     };
+    friend class QFlags<KIO::TCPSlaveBase::SslResultDetail>;
+public:
+    Q_DECLARE_FLAGS(SslResult, SslResultDetail);
+protected:
 
     /**
      * Send data to the remote host.
@@ -203,7 +208,8 @@ private:
     // For prompting for the client certificate to use
     void selectClientCertificate();
 
-    SslResult startTLSInternal();
+    //we can't include ktcpsocket.h here as it is not exported
+    SslResult startTLSInternal(uint KTcpSocket_SslVersion);
 
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate* const d;

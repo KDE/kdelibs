@@ -69,15 +69,6 @@ class KSslCipherPrivate;
 
 class KDECORE_EXPORT KSslCipher {
 public:
-    enum EncryptionProtocol {
-        UnknownProtocol = 0x01,
-        SslV2 = 0x02,
-        SslV3 = 0x04,
-        TlsV1 = 0x08,
-        AnySsl = SslV2 | SslV3 | TlsV1
-    };
-    Q_DECLARE_FLAGS(EncryptionProtocols, EncryptionProtocol)
-
     KSslCipher();
     KSslCipher(const KSslCipher &other);
     KSslCipher(const QSslCipher &);
@@ -91,30 +82,13 @@ public:
     QString digestMethod() const;
     /* mainly for internal use */
     QString name() const;
-    EncryptionProtocol protocol() const;
-    QString protocolName() const;
     int supportedBits() const;
     int usedBits() const;
 
+    static QList<KSslCipher> supportedCiphers();
+
 private:
     KSslCipherPrivate *const d;
-};
-
-
-class KSslCipherListPrivate;
-
-class KSslCipherList : public QList<KSslCipher>
-{
-public:
-    bool contains(KSslCipher::EncryptionProtocol protocol) const;
-    bool contains(const QString &cipher,
-                  KSslCipher::EncryptionProtocols protocols = KSslCipher::AnySsl) const;
-    void remove(KSslCipher::EncryptionProtocols protocols);
-    void remove(const QString &cipher,
-                KSslCipher::EncryptionProtocols protocols = KSslCipher::AnySsl);
-    KSslCipherListPrivate *d;   //only a placeholder
-                                //### Adding the necessary copy constructor and operator=
-                                //    later will break BC
 };
 
 
@@ -181,6 +155,15 @@ public:
         ClosingState
         //hmmm, do we need an SslNegotiatingState?
     };
+    enum SslVersion {
+        UnknownSslVersion = 0x01,
+        SslV2 = 0x02,
+        SslV3 = 0x04,
+        TlsV1 = 0x08,
+        SslV3_1 = 0x08,
+        AnySslVersion = SslV2 | SslV3 | TlsV1
+    };
+    Q_DECLARE_FLAGS(SslVersions, SslVersion)
     enum Error {
         UnknownError = 0,
         ConnectionRefusedError,
@@ -300,9 +283,7 @@ public:
 //                           QRegExp::PatternSyntax syntax = QRegExp::FixedString);
     void addCaCertificates(const QList<QSslCertificate> &certificates);
     QList<QSslCertificate> certificates() const;
-    KSslCipherList ciphers() const;
-    //TODO make this a static method of KSslCipher
-    KSslCipherList supportedCiphers(KSslCipher::EncryptionProtocol protocol) const;
+    QList<KSslCipher> ciphers() const;
     void connectToHostEncrypted(const QString &hostName, quint16 port, OpenMode openMode = ReadWrite);
     // bool isEncrypted() const { return encryptionMode() != UnencryptedMode }
     QSslCertificate localCertificate() const;
@@ -310,7 +291,7 @@ public:
     KSslKey privateKey() const;
     KSslCipher sessionCipher() const;
     void setCaCertificates(const QList<QSslCertificate> &certificates);
-    void setCiphers(const KSslCipherList &ciphers);
+    void setCiphers(const QList<KSslCipher> &ciphers);
     //### void setCiphers(const QString &ciphers); //what about i18n?
     void setLocalCertificate(const QSslCertificate &certificate);
     void setLocalCertificate(const QString &fileName, QSsl::EncodingFormat format = QSsl::Pem);
@@ -318,6 +299,10 @@ public:
     void setPrivateKey(const QString &fileName, KSslKey::Algorithm algorithm = KSslKey::Rsa,
                        QSsl::EncodingFormat format = QSsl::Pem,
                        const QByteArray &passPhrase = QByteArray()); //TODO
+    void setAdvertisedSslVersion(SslVersion version);
+    SslVersion advertisedSslVersion() const;    //always equal to last setSslAdvertisedVersion
+    SslVersion negotiatedSslVersion() const;     //negotiated version; downgrades are possible.
+    QString negotiatedSslVersionName() const;
     bool waitForEncrypted(int msecs = 30000);
 
     EncryptionMode encryptionMode() const;

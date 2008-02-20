@@ -26,6 +26,47 @@
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
 
+static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
+{
+    switch (protocol) {
+    case QSsl::SslV2:
+        return KTcpSocket::SslV2;
+    case QSsl::SslV3:
+        return KTcpSocket::SslV3;
+    case QSsl::TlsV1:
+        return KTcpSocket::TlsV1;
+    case QSsl::AnyProtocol:
+        return KTcpSocket::AnySslVersion;
+    default:
+        return KTcpSocket::UnknownSslVersion;
+    }
+}
+
+
+static QSsl::SslProtocol qSslProtocolFromK(KTcpSocket::SslVersion sslVersion)
+{
+    //### this lowlevel bit-banging is a little dangerous and a likely source of bugs
+    if (sslVersion == KTcpSocket::AnySslVersion) {
+        return QSsl::AnyProtocol;
+    }
+    //does it contain any valid protocol?
+    if (!(sslVersion & (KTcpSocket::SslV2 | KTcpSocket::SslV2 | KTcpSocket::TlsV1))) {
+        return QSsl::UnknownProtocol;
+    }
+
+    switch (sslVersion) {
+    case KTcpSocket::SslV2:
+        return QSsl::SslV2;
+    case KTcpSocket::SslV3:
+        return QSsl::SslV3;
+    case KTcpSocket::TlsV1:
+        return QSsl::TlsV1;
+    default:
+        //QSslSocket doesn't really take arbitrary combinations. It's one or all.
+        return QSsl::AnyProtocol;
+    }
+}
+
 
 //cipher class converter KSslCipher -> QSslCipher
 class CipherCc
@@ -34,36 +75,17 @@ public:
     CipherCc()
     {
         foreach (const QSslCipher &c, QSslSocket::supportedCiphers()) {
-            //this is kinda risky but not really because the enum values are fixed during a
-            //major release :)
-            int p = static_cast<int>(c.protocol());
-            if (p >= 0 && p <= 2) {
-                protocols[p].insert(c.name(), c);
-            }
+            allCiphers.insert(c.name(), c);
         }
     }
 
     QSslCipher converted(const KSslCipher &ksc)
     {
-        int p;
-        switch (ksc.protocol()) {
-        case KSslCipher::SslV2:
-            p = 0;
-            break;
-        case KSslCipher::SslV3:
-            p = 1;
-            break;
-        case KSslCipher::TlsV1:
-            p = 2;
-            break;
-        default:
-            return QSslCipher();
-        }
-        return protocols[p].value(ksc.name());
+        return allCiphers.value(ksc.name());
     }
 
 private:
-    QHash<QString, QSslCipher> protocols[3];
+    QHash<QString, QSslCipher> allCiphers;
 };
 
 
@@ -288,7 +310,8 @@ public:
     KTcpSocket *const q;
     bool emittedReadyRead;
     QSslSocket sock;
-    KSslCipherList ciphers;
+    QList<KSslCipher> ciphers;
+    KTcpSocket::SslVersion advertisedSslVersion;
     CipherCc ccc;
 };
 
@@ -297,6 +320,8 @@ KTcpSocket::KTcpSocket(QObject *parent)
  : QIODevice(parent),
    d(new KTcpSocketPrivate(this))
 {
+    d->advertisedSslVersion = SslV3;
+
     connect(&d->sock, SIGNAL(aboutToClose()), this, SIGNAL(aboutToClose()));
     connect(&d->sock, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
     connect(&d->sock, SIGNAL(readyRead()), this, SLOT(reemitReadyRead()));
@@ -323,7 +348,7 @@ KTcpSocket::~KTcpSocket()
 
 bool KTcpSocket::atEnd() const
 {
-    return d->sock.atEnd();
+    return d->sock.atEnd() && QIODevice::atEnd();
 }
 
 
@@ -570,7 +595,7 @@ QList<QSslCertificate> KTcpSocket::certificates() const
 }
 
 
-KSslCipherList KTcpSocket::ciphers() const
+QList<KSslCipher> KTcpSocket::ciphers() const
 {
     return d->ciphers;
 }
@@ -578,6 +603,7 @@ KSslCipherList KTcpSocket::ciphers() const
 
 void KTcpSocket::connectToHostEncrypted(const QString &hostName, quint16 port, OpenMode openMode)
 {
+    d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.connectToHostEncrypted(hostName, port, openMode);
     setOpenMode(d->sock.openMode());
 }
@@ -613,14 +639,23 @@ void KTcpSocket::setCaCertificates(const QList<QSslCertificate> &certificates)
 }
 
 
-void KTcpSocket::setCiphers(const KSslCipherList &ciphers)
+void KTcpSocket::setCiphers(const QList<KSslCipher> &ciphers)
 {
     QList<QSslCipher> cl;
+    int maxProtocolVersion = -1;
+    d->ciphers = ciphers;
     foreach (const KSslCipher &c, d->ciphers) {
         cl.append(d->ccc.converted(c));
+        kDebug() << "protocol of this cipher is" << cl.last().protocol();
+        maxProtocolVersion = qMax(int(cl.last().protocol()), maxProtocolVersion);
     }
-    d->ciphers = ciphers;
+    if (cl.isEmpty()) {
+        kDebug() << "cipher list is empty!";
+        maxProtocolVersion = QSsl::SslV3;
+    }
     d->sock.setCiphers(cl);
+    kDebug() << "setting protocol version to" << maxProtocolVersion;
+    d->sock.setProtocol(QSsl::SslProtocol(maxProtocolVersion));
 }
 
 
@@ -678,6 +713,7 @@ void KTcpSocket::ignoreSslErrors()
 //slot
 void KTcpSocket::startClientEncryption()
 {
+    d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.startClientEncryption();
 }
 
@@ -688,6 +724,37 @@ void KTcpSocket::showSslErrors()
 	foreach (const QSslError &e, d->sock.sslErrors())
 		kDebug(7029) << e.errorString();
 }
+
+
+void KTcpSocket::setAdvertisedSslVersion(KTcpSocket::SslVersion version)
+{
+    d->advertisedSslVersion = version;
+}
+
+
+KTcpSocket::SslVersion KTcpSocket::advertisedSslVersion() const
+{
+    return d->advertisedSslVersion;
+}
+
+
+KTcpSocket::SslVersion KTcpSocket::negotiatedSslVersion() const
+{
+    if (!d->sock.isEncrypted()) {
+        return UnknownSslVersion;
+    }
+    return kSslVersionFromQ(d->sock.protocol());
+}
+
+
+QString KTcpSocket::negotiatedSslVersionName() const
+{
+    if (!d->sock.isEncrypted()) {
+        return QString();
+    }
+    return d->sock.sessionCipher().protocolString();
+}
+
 
 ////////////////////////////// KSslKey
 
@@ -779,55 +846,12 @@ QByteArray KSslKey::toDer() const
 class KSslCipherPrivate
 {
 public:
-    KSslCipher::EncryptionProtocol encryptionProtocol(QSsl::SslProtocol protocol)
-    {
-        switch (protocol) {
-        case QSsl::SslV2:
-            return KSslCipher::SslV2;
-        case QSsl::SslV3:
-            return KSslCipher::SslV3;
-        case QSsl::TlsV1:
-            return KSslCipher::TlsV1;
-        case QSsl::AnyProtocol:
-            return KSslCipher::AnySsl;
-        default:
-            return KSslCipher::UnknownProtocol;
-        }
-    }
-
-
-    QSsl::SslProtocol sslProtocol(KSslCipher::EncryptionProtocols protocols)
-    {
-        //### this lowlevel bit-banging is a little dangerous and a likely source of bugs
-        if (protocols == KSslCipher::AnySsl) {
-            return QSsl::AnyProtocol;
-        }
-        //does it contain any valid protocol?
-        if (!(protocols & (KSslCipher::SslV2 | KSslCipher::SslV2 | KSslCipher::TlsV1))) {
-            return QSsl::UnknownProtocol;
-        }
-
-        switch (protocols) {
-        case KSslCipher::SslV2:
-            return QSsl::SslV2;
-        case KSslCipher::SslV3:
-            return QSsl::SslV3;
-        case KSslCipher::TlsV1:
-            return QSsl::TlsV1;
-        default:
-            //QSslSocket doesn't really take arbitrary combinations. It's one or all.
-            return QSsl::AnyProtocol;
-        }
-    }
-
 
     QString authenticationMethod;
     QString encryptionMethod;
     QString keyExchangeMethod;
     QString name;
     bool isNull;
-    KSslCipher::EncryptionProtocol protocol;
-    QString protocolName;
     int supportedBits;
     int usedBits;
 };
@@ -837,7 +861,6 @@ KSslCipher::KSslCipher()
  : d(new KSslCipherPrivate)
 {
     d->isNull = true;
-    d->protocol = UnknownProtocol;
     d->supportedBits = 0;
     d->usedBits = 0;
 }
@@ -863,8 +886,6 @@ KSslCipher::KSslCipher(const QSslCipher &qsc)
     d->keyExchangeMethod = qsc.keyExchangeMethod();
     d->name = qsc.name();
     d->isNull = qsc.isNull();
-    d->protocol = d->encryptionProtocol(qsc.protocol());
-    d->protocolName = qsc.protocolString();
     d->supportedBits = qsc.supportedBits();
     d->usedBits = qsc.usedBits();
 }
@@ -926,18 +947,6 @@ QString KSslCipher::name() const
 }
 
 
-KSslCipher::EncryptionProtocol KSslCipher::protocol() const
-{
-    return d->protocol;
-}
-
-
-QString KSslCipher::protocolName() const
-{
-    return d->protocolName;
-}
-
-
 int KSslCipher::supportedBits() const
 {
     return d->supportedBits;
@@ -949,47 +958,16 @@ int KSslCipher::usedBits() const
     return d->usedBits;
 }
 
-////////////////////////////// KSslCipherList
 
-bool KSslCipherList::contains(KSslCipher::EncryptionProtocol protocol) const
+//static 
+QList<KSslCipher> KSslCipher::supportedCiphers()
 {
-    for (int i = 0; i < size(); i++) {
-        if (at(i).protocol() | protocol) {
-            return true;
-        }
+    QList<KSslCipher> ret;
+    QList<QSslCipher> candidates = QSslSocket::supportedCiphers();
+    foreach(const QSslCipher &c, candidates) {
+        ret.append(KSslCipher(c));
     }
-    return false;
-}
-
-
-bool KSslCipherList::contains(const QString &cipher, KSslCipher::EncryptionProtocols protocols) const
-{
-    for (int i = 0; i < size(); i++) {
-        if ((at(i).protocol() | protocols) && (at(i).name() == cipher)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-void KSslCipherList::remove(KSslCipher::EncryptionProtocols protocols)
-{
-    for (int i = 0; i < size(); i++) {
-        if (at(i).protocol() | protocols) {
-            removeAt(i);
-        }
-    }
-}
-
-
-void KSslCipherList::remove(const QString &cipher, KSslCipher::EncryptionProtocols protocols)
-{
-    for (int i = 0; i < size(); i++) {
-        if ((at(i).protocol() | protocols) && (at(i).name() == cipher)) {
-            removeAt(i);
-        }
-    }
+    return ret;
 }
 
 
