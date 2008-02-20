@@ -2732,8 +2732,10 @@ Completion FunctionBodyNode::execute(ExecState *exec)
 
   Completion result = Machine::runBlock(exec, m_compiledCode);
 
-  if (ctype != FunctionCode)
+  if (ctype != FunctionCode) {
+    exec->setLocalStorage(0, 0);
     delete regs;
+  }
 
   return result;
 }

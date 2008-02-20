@@ -188,6 +188,18 @@ void CompileState::resolvePendingContinues(Node* node, CodeBlock& block, Addr de
 }
 
 
+static OpValue* addrDummy;
+
+OpValue* OpValue::dummyAddr()
+{
+    if (!addrDummy) {
+        addrDummy = new OpValue;
+        *addrDummy = OpValue::immAddr(0);
+    }
+    return addrDummy;
+}
+
+
 } //namespace KJS
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -78,6 +78,9 @@ struct OpValue
         val.type      = type;
     }
 
+    // A placeholder address value, will be patched up later
+    static OpValue* dummyAddr();
+
     static OpValue immInt32(int32_t in);
     static OpValue immNumber(double in);
     static OpValue immValue(JSValue* in);
@@ -88,6 +91,8 @@ struct OpValue
     static OpValue immNode(Node* in);
     static OpValue immCStr(const char* in);
     static OpValue immAddr(Addr in);
+
+    static OpValue reg(OpType type, Register regNum);
 };
 
 }

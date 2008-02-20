@@ -43,7 +43,7 @@ Interpreter* ExecState::lexicalInterpreter() const
 
 void ExecState::mark()
 {
-    if (m_codeType != FunctionCode) {
+    if (m_codeType != FunctionCode && m_localStore) {
         //### some code dupe here with JSVariableObject::mark. Not sure how to best
         // restructure. Perhaps this should always mark and not JSVariableObject?
         size_t size = m_localStore->size();

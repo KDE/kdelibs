@@ -752,6 +752,7 @@ namespace KJS {
     BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

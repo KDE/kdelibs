@@ -132,6 +132,11 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
+    case Conv_RNumber_Bool: {
+        CodeGen::emitOp(comp, block, Op_NumberToBool, &out, original);
+    }
+    break;
+
     case Conv_I_R_Int32_Value: {
         CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
     }
@@ -171,6 +176,30 @@ void CodeGen::emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
     ConvOp op = computeCast(in, outType, in->immediate, cost);
     ASSERT(cost >= 0);
     emitConversion(comp, block, in->immediate, op, in, *out);
+}
+
+void CodeGen::emitRegStore(CompileState* comp, CodeBlock& block,
+                           OpValue* regNum, OpValue* val)
+{
+    ASSERT(regNum->immediate && regNum->type == OpType_reg);
+
+    switch (val->type) {
+    case OpType_bool:
+        emitOp(comp, block, Op_RegPutBool, 0, regNum, val);
+        break;
+    case OpType_int32:
+        emitOp(comp, block, Op_RegPutInt32, 0, regNum, val);
+        break;
+    case OpType_value:
+        emitOp(comp, block, Op_RegPutValue, 0, regNum, val);
+        break;
+    case OpType_number:
+        emitOp(comp, block, Op_RegPutNumber, 0, regNum, val);
+        break;
+    default:
+        printf("Don't know how to store type to register:%s\n", OpTypeVals[val->type]);
+        CRASH();
+    }
 }
 
 Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
@@ -317,12 +346,20 @@ void CodeGen::patchOpArgument(CodeBlock& block, Addr baseAddr, int pos, OpValue&
 
     // We only permit patching immediate arguments for now..
     ASSERT(variant.immediateParams[pos] && newVal.immediate);
+    ASSERT(variant.paramTypes[pos] == newVal.type);
+    ASSERT(pos < variant.numParams);
 
     char* argBase = reinterpret_cast<char*>(base) + variant.paramOffsets[pos];
     if (opTypeIsAlign8[variant.paramTypes[pos]])
         *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
     else
         *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
+}
+
+void CodeGen::patchJumpToNext(CodeBlock& block, Addr op, int argNum)
+{
+    OpValue destAddr = OpValue::immAddr(nextPC(block));
+    patchOpArgument(block, op, argNum, destAddr);
 }
 
 static void dumpParam(CodeBlock& block, size_t offset, OpType type)

@@ -63,6 +63,11 @@ public:
 
     ~CompileState();
 
+    // Returns true if the register is a formal temporary.
+    bool isTemporaryReg(Register regNum) {
+        return regNum >= initialMaxTemp;
+    }
+
     // We distinguish two kinds of temporaries --- markable and not. They'll get
     // corresponding bits set in localStore when that's initialized.
     void requestTemporary(OpType type, OpValue& value, OpValue& reference);
@@ -275,6 +280,15 @@ inline OpValue OpValue::immAddr(Addr in) {
     OpValue res;
     initImm(res, OpType_addr);
     res.value.narrow.addrVal = in;
+    return res;
+}
+
+inline OpValue OpValue::reg(OpType type, Register regNum)
+{
+    OpValue res;
+    res.immediate = false;
+    res.type      = type;
+    res.value.narrow.regVal = regNum;
     return res;
 }
 

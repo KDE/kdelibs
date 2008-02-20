@@ -102,7 +102,14 @@ public:
     static void emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
                               OpType outType, OpValue* out);
 
+    // Emits a register store of appropriate type
+    static void emitRegStore(CompileState* comp, CodeBlock& block,
+                              OpValue* regNum, OpValue* val);
+
     static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
+
+    // Patches op at address 'op' to jump to next instr.
+    static void patchJumpToNext(CodeBlock& block, Addr op, int argNum);
 
     static Addr nextPC(const CodeBlock& block) {
         return block.size();

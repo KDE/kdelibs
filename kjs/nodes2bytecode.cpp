@@ -158,9 +158,7 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         CodeGen::emitOp(comp, block, op, &out, &varName);
     } else {
         // Register read. Easy.
-        out.immediate = false;
-        out.type      = OpType_value;
-        out.value.narrow.regVal = index;
+        out = OpValue::reg(OpType_value, index);
     }
 
     return out;
@@ -204,9 +202,7 @@ OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, Com
         CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->val1, &varName);
     } else {
         // Straight register get..
-        out.immediate = false;
-        out.type      = OpType_value;
-        out.value.narrow.regVal = index;
+        out = OpValue::reg(OpType_value, index);
     }
     return out;
 }
@@ -225,7 +221,7 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
     } else {
         // Straight register put..
         OpValue destReg = OpValue::immRegNum(index);
-        CodeGen::emitOp(comp, block, Op_RegPut, 0, &destReg, &valToStore);
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &destReg, &valToStore);
     }
 }
 
@@ -462,6 +458,60 @@ OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& bloc
     return out;
 }
 
+OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // This is somewhat ugly since we can't patchup labels in already generated
+    // code, and don't know the types in advance. It could also benefit from
+    // a type hint, since it's easier if we only want a bool, which is quite common
+
+    OpValue a = expr1->generateEvalCode(comp, block);
+
+    // Make a register for storing the result, and put 'a' there, as out first guess.
+    OpValue aVal, aReg;
+    comp->requestTemporary(a.type, aVal, aReg);
+    CodeGen::emitRegStore(comp, block, &aReg, &a);
+
+    // Is this enough to shortcircuit?
+    // if op is && and a is false, we jump out, ditto
+    // for || and true.
+    Addr jumpToShortCircuit = CodeGen::emitOp(comp, block, oper == OpAnd ? Op_IfNotJump : Op_IfJump,
+                                              0, &a, OpValue::dummyAddr());
+
+    // Now, generate the code for b...
+    OpValue b = expr2->generateEvalCode(comp, block);
+
+    // Hopefully, either the types match, or the result slot is already a value,
+    // so we can just promote b (which will happen automatically to produce param for Op_RegPutVal)
+    if (a.type == b.type || a.type == OpType_value) {
+        if (a.type == OpType_value)
+            CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &aReg, &b);
+        else
+            CodeGen::emitRegStore(comp, block, &aReg, &b);
+        CodeGen::patchJumpToNext(block, jumpToShortCircuit, 1);
+        return aVal;
+    } else {
+        // We need to promote 'a' as well, which means we need to skip over the code jumpToShortCircuit
+        // went to after handling store of 'b'.
+
+        // Get a new register for the result, put b there..
+        OpValue resVal, resReg;
+        comp->requestTemporary(OpType_value, resVal, resReg);
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &b);
+
+        // skip to after a promotion..
+        Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+
+        // a's promotion goes here..
+        CodeGen::patchJumpToNext(block, jumpToShortCircuit, 1);
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &a);
+
+        // now we're after it..
+        CodeGen::patchJumpToNext(block, jumpToAfter, 0);
+
+        return resVal;
+    }
+}
+
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
 {
     // No executable content...
@@ -565,7 +615,7 @@ OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
             } else {
                 // Store to the local..
                 OpValue dest = OpValue::immRegNum(localID);
-                CodeGen::emitOp(comp, block, Op_RegPut, 0, &dest, &val);
+                CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &dest, &val);
             }
         } // if initializer..
     } // for each decl..
@@ -594,33 +644,29 @@ void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    // eval the condition
     OpValue cond = expr->generateEvalCode(comp, block);
 
     // If condition is not true, jump to after or else..
-    OpValue afterTrue    = OpValue::immAddr(0);
-    Addr    afterTrueJmp = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &cond, &afterTrue);
+    Addr afterTrueJmp = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &cond, OpValue::dummyAddr());
 
     // Emit the body of true...
     statement1->generateExecCode(comp, block);
 
-    OpValue afterAll    = OpValue::immAddr(0);
-    Addr    afterAllJmp = 0;
-
     // If we have an else, add in a jump to skip over it.
+    Addr afterAllJmp = 0;
     if (statement2)
-        afterAllJmp = CodeGen::emitOp(comp, block, Op_Jump, 0, &afterAll);
+        afterAllJmp = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // This is where we go if true fails --- else, or afterwards.
-    afterTrue = OpValue::immAddr(CodeGen::nextPC(block));
-    CodeGen::patchOpArgument(block, afterTrueJmp, 1, afterTrue);
+    CodeGen::patchJumpToNext(block, afterTrueJmp, 1);
 
     if (statement2) {
         // Body of else
         statement2->generateExecCode(comp, block);
 
         // Fix up the jump-over code
-        afterAll = OpValue::immAddr(CodeGen::nextPC(block));
-        CodeGen::patchOpArgument(block, afterAllJmp, 0, afterAll);
+        CodeGen::patchJumpToNext(block, afterAllJmp, 0);
     }
 }
 
@@ -647,8 +693,7 @@ void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->enterLoop(this);
 
     // Jump to test.
-    OpValue testAddr = OpValue::immAddr(0);
-    Addr  jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, &testAddr);
+    Addr  jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Body
     OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(block));
@@ -658,8 +703,7 @@ void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
 
     // patch up the destination of the initial jump to test
-    testAddr = OpValue::immAddr(CodeGen::nextPC(block));
-    CodeGen::patchOpArgument(block, jumpToTest, 0, testAddr);
+    CodeGen::patchJumpToNext(block, jumpToTest, 0);
 
     // test
     OpValue cond = expr->generateEvalCode(comp, block);
@@ -677,8 +721,7 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
         expr1->generateEvalCode(comp, block);
 
     // Insert a jump to the loop test (address not yet known)
-    OpValue testAddr   = OpValue::immAddr(0);
-    Addr    jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, &testAddr);
+    Addr jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Generate loop body..
     OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(block));
@@ -694,8 +737,7 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
       expr3->generateEvalCode(comp, block);
 
     // The test goes here, so patch up the previous jump..
-    testAddr = OpValue::immAddr(CodeGen::nextPC(block));
-    CodeGen::patchOpArgument(block, jumpToTest, 0, testAddr);
+    CodeGen::patchJumpToNext(block, jumpToTest, 0);
 
     // Make the test itself --- if it exists..
     if (expr2) {
@@ -722,8 +764,7 @@ void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
         if (dest->isIterationStatement()) {
             // Emit a jump...
             Addr    pc    = CodeGen::nextPC(block);
-            OpValue dummy = OpValue::immAddr(0);
-            CodeGen::emitOp(comp, block, Op_Jump, 0, &dummy);
+            CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
             // Queue destination for resolution
             comp->addPendingContinue(dest, pc);
@@ -745,8 +786,7 @@ void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // Break can be used everywhere..
         // Hence, emit a jump...
         Addr    pc    = CodeGen::nextPC(block);
-        OpValue dummy = OpValue::immAddr(0);
-        CodeGen::emitOp(comp, block, Op_Jump, 0, &dummy);
+        CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
         // Queue destination for resolution
         comp->addPendingBreak(dest, pc);

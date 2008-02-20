@@ -239,6 +239,13 @@ operation Int32ToBool {
     ]]
 }
 
+operation NumberToBool {
+    impl bool(number in) [[
+        //### TODO:
+        abort();
+    ]]
+}
+
 operation JSNumberFromInt32 {
     impl value jsNum(int32 in) [[
         $$ = jsNumber(in);
@@ -496,12 +503,29 @@ operation NonLocalVarGet {
     ]]
 }
 
-operation RegPut {
+operation RegPutValue {
     impl void regPut(reg destReg, value val) [[
         localStore[destReg].val.valueVal = val;
     ]]
 }
 
+operation RegPutNumber {
+    impl void (reg destReg, number val) [[
+        localStore[destReg].val.numberVal = val;
+    ]]
+}
+
+operation RegPutBool {
+    impl void (reg destReg, bool val) [[
+        localStore[destReg].val.boolVal = val;
+    ]]
+}
+
+operation RegPutInt32 {
+    impl void (reg destReg, int32 val) [[
+        localStore[destReg].val.int32Val = val;
+    ]]
+}
 
 // Generic put..
 operation SymPut {
