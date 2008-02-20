@@ -176,7 +176,7 @@ class TestObject : public QObject
 * \code
 * import time, TestObject1
 * def myFunction(args): print args
-* mythread = TestObject1.createThread(200,5)
+* mythread = TestObject1.createThread(500,3)
 * mythread.start()
 * time.sleep(1)
 * self.callFunction("myFunction", ["Some String"])
