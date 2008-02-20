@@ -175,12 +175,26 @@ class TestObject : public QObject
 * may used to test the threading functionality.
 * \code
 * import time, TestObject1
-* def myFunction(args): print args
-* mythread = TestObject1.createThread(500,3)
+* # this function will be called by our thread
+* def myFunction(step):
+*     print "myFunction step=%i" % step
+* # create a thread that iterates 15 times and waits 200
+* # milliseconds on each iteration, 20*200=2 seconds
+* mythread = TestObject1.createThread(15,200)
+* # connect the stepDone signal our thread provides to
+* # our own python function above
+* mythread.connect("stepDone(int)",myFunction)
+* # start the thread
 * mythread.start()
+* # let this python thread sleep for a second
 * time.sleep(1)
-* self.callFunction("myFunction", ["Some String"])
-* mythread.terminate()
+* # ask our action to call our myFunction function
+* self.callFunction("myFunction", [123])
+* # ask our thread to emit the stepDone signal which in
+* # turn should call our myFunction function.
+* mythread.emitStepDone(456)
+* # sleep again one second
+* time.sleep(1)
 * \endcode
 */
 class TestThread : public QThread
@@ -190,6 +204,8 @@ class TestThread : public QThread
         explicit TestThread(TestObject* parent, int steps, int msecs);
         virtual ~TestThread();
         virtual void run();
+    public Q_SLOTS:
+        void emitStepDone(int step);
     Q_SIGNALS:
         void stepDone(int step);
     private:

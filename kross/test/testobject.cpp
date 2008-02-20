@@ -235,11 +235,17 @@ TestThread::~TestThread()
     //kDebug() << "TestThread::~TestThread()";
 }
 
+void TestThread::emitStepDone(int step)
+{
+    //kDebug() << "TestThread::emitStepDone() step=" << step;
+    emit stepDone(step);
+}
+
 void TestThread::run()
 {
     //kDebug() << "TestThread::run()";
     for(int i = 0; i < m_steps; ++i) {
-        //kDebug() << "TestThread::run() sleep i=" << i;
+        kDebug() << "TestThread::run() 1 step=" << i << "m_steps=" << m_steps << "m_msecs=" << m_msecs;
         emit stepDone(i);
         //m_testobject->emitSignalVoid();
         msleep(m_msecs);
