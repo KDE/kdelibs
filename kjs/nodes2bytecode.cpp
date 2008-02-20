@@ -143,14 +143,18 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     bool dynamicLocal;
     size_t index = localID(comp, dynamicLocal);
 
-    // ### TODO: we want to emit Op_GetVariableObject for global code here/in refs.
-    // or just use the globalGet/globalPut; but I am concerned about LiveConnect eval..
-
     OpValue out;
     if (index == missingSymbolMarker()) {
-        // Emit a full variable read, perhaps skipping one scope
+        // Emit a symbolic variable
         OpValue varName = OpValue::immIdent(&ident);
-        CodeGen::emitOp(comp, block, dynamicLocal ? Op_LocalVarGet : Op_NonLocalVarGet, &out, &varName);
+
+        OpName op = Op_VarGet; // in general, have to search the whole chain..
+        if (comp->codeType() == GlobalCode) // unless we're in GlobalCode, so there is nothing to search
+            op = Op_SymGetVarObject;
+        else if (!dynamicLocal) // can skip one scope..
+            op = Op_NonLocalVarGet;
+
+        CodeGen::emitOp(comp, block, op, &out, &varName);
     } else {
         // Register read. Easy.
         out.immediate = false;
@@ -169,6 +173,13 @@ CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock
     // If this is not a register local, we need to look up the scope first..
     if (index == missingSymbolMarker()) {
         CompileReference* ref = new CompileReference;
+
+        // We can take a shortcut if we're in global and don't need to detect lookup failure,
+        // since the scope will always be the variable object
+        if (comp->codeType() == GlobalCode && !errorOnFail) {
+            ref->val1 = *comp->localScope();
+            return ref;
+        }
 
         OpValue varName = OpValue::immIdent(&ident);
         OpValue errFail = OpValue::immBool(errorOnFail);

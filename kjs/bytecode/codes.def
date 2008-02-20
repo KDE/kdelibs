@@ -407,7 +407,7 @@ operation NonLocalScopeLookup {
 
 
 // Looks up a given variable in the scope chain, returns its value
-operation LocalVarGet {
+operation VarGet {
     impl value localVarGet(ident varName) [[
         const ScopeChain& chain = exec->scopeChain();
         ScopeChainIterator iter = chain.begin();
@@ -471,7 +471,6 @@ operation NonLocalVarGet {
     ]]
 }
 
-
 operation RegPut {
     impl void regPut(reg destReg, value val) [[
         localStore[destReg].val.valueVal = val;
@@ -511,16 +510,9 @@ operation SymGetKnownObject {
     ]]
 }
 
-// Specialization for global object...
-operation GlobalSymPut {
-    impl void globalSymPut(ident varName, value val) [[
-        //### TODO
-    ]]
-}
-
-operation GlobalSymGet {
-    impl value globalGet(ident varName) [[
-        //### TODO
+operation SymGetVarObject {
+    impl value(ident varName) [[
+        $$ = exec->variableObject()->get(exec, *varName);
     ]]
 }
 
@@ -531,6 +523,8 @@ operation Add1 {
     impl number add1(number old) [[
         $$ = old + 1.0;
     ]]
+
+    tile (value) as add1;
 }
 
 operation Sub1 {
@@ -688,9 +682,9 @@ operation BitAnd {
         $$ = a0 & a1;
     ]]
 
-    tile (reg, value, value) as andOp;
-    tile (reg, value, int32) as andOp;
-    tile (reg, int32, value) as andOp;
+    tile (value, value) as andOp;
+    tile (value, int32) as andOp;
+    tile (int32, value) as andOp;
 }
 
 operation BitXOr {

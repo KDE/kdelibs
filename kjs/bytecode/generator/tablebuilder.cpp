@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <stdlib.h>
 #include <iostream>
+#include "assert.h"
 
 class Enum {
 public:
@@ -315,6 +316,7 @@ void TableBuilder::handleConversion(const QString& name, const QString& code, in
     conversionNames << name;
     ConversionInfo inf;
     inf.name    = name;
+    assert(!name.isEmpty());
     inf.cost    = cost;
     inf.checked = checked;
     inf.mayThrow = mayThrow;
@@ -384,12 +386,19 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
         issueError("Unknown implementation name " + fnName + " in a tile definition");
     const Operation& impl = implementations[fnName];
 
+    // Add in a return reg if need be
+    QStringList extSig;
+    if (impl.retType != "void") {
+        extSig        << "reg";
+    }
+    extSig << sig;
+
     Operation op;
     op.name        = operationNames.last();
     op.implementAs = impl.implementAs;
     op.codeLine    = impl.codeLine;
     op.retType     = impl.retType;
-    op.parameters  = resolveSignature(sig);
+    op.parameters  = resolveSignature(extSig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
     op.cost           = impl.cost;
