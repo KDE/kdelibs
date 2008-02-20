@@ -153,7 +153,7 @@ configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compil
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
-
+# these two calls here should go somewhere else, Alex
 check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
