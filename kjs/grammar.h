@@ -48,7 +48,7 @@
      FOR = 264,
      NEW = 265,
      VAR = 266,
-     CONST = 267,
+     CONSTTOKEN = 267,
      CONTINUE = 268,
      FUNCTION = 269,
      RETURN = 270,
@@ -117,13 +117,13 @@
 #define CONTINUE 268
 #define FUNCTION 269
 #define RETURN 270
-#define VOID 271
-#define DELETE 272
+#define VOIDTOKEN 271
+#define DELETETOKEN 272
 #define IF 273
-#define THIS 274
+#define THISTOKEN 274
 #define DO 275
 #define WHILE 276
-#define IN 277
+#define INTOKEN 277
 #define INSTANCEOF 278
 #define TYPEOF 279
 #define SWITCH 280
@@ -172,7 +172,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 58 "grammar.y"
+#line 59 "grammar.y"
 {
   int                 ival;
   double              dval;

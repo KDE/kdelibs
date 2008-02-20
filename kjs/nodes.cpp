@@ -693,15 +693,7 @@ void PropertyNode::recurseVisit(NodeVisitor *visitor)
 // ECMA 11.1.5
 JSValue *PropertyNameNode::evaluate(ExecState*)
 {
-  JSValue *s;
-
-  if (str.isNull()) {
-    s = jsString(UString::from(numeric));
-  } else {
-    s = jsOwnedString(str.ustring());
-  }
-
-  return s;
+  return jsString(str.ustring());
 }
 
 // ------------------------------ BracketAccessorNode --------------------------------

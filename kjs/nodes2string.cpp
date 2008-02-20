@@ -349,10 +349,7 @@ void PropertyNode::streamTo(SourceStream &s) const
 
 void PropertyNameNode::streamTo(SourceStream &s) const
 {
-  if (str.isNull())
-    s << UString::from(numeric);
-  else
-    s.append(str.ustring(), kQuote);
+  s.append(str.ustring(), kQuote);
 }
 
 void BracketAccessorNode::streamTo(SourceStream &s) const

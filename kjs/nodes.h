@@ -389,12 +389,11 @@ namespace KJS {
 
   class PropertyNameNode : public Node {
   public:
-    PropertyNameNode(double d) : numeric(d) { }
     PropertyNameNode(const Identifier &s) : str(s) { }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
-    double numeric;
+    friend class ObjectLiteralNode;
     Identifier str;
   };
 
@@ -408,6 +407,7 @@ namespace KJS {
     friend class PropertyListNode;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
+    friend class ObjectLiteralNode;
     RefPtr<PropertyNameNode> name;
     RefPtr<Node> assign;
     Type type;
@@ -436,6 +436,7 @@ namespace KJS {
     ObjectLiteralNode() { }
     ObjectLiteralNode(PropertyListNode *l) : list(l->next.release()) { Parser::removeNodeCycle(list.get()); }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

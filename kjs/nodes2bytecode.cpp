@@ -235,6 +235,32 @@ OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 // ------------------------------ Object + Array literals --------------------------
 // TODO: ElementNode, ArrayNode, PropertyNameNode, PropertyNode, PropertyListNode, ObjectLiteralNode
 
+OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue obj;
+    CodeGen::emitOp(comp, block, Op_NewObject, &obj);
+
+    for (PropertyListNode* entry = list.get(); entry; entry = entry->next.get()) {
+        PropertyNode* prop = entry->node.get();
+        OpValue name = OpValue::immIdent(&prop->name->str);
+        OpValue val  = prop->assign->generateEvalCode(comp, block);
+
+        switch (prop->type) {
+        case PropertyNode::Getter:
+            CodeGen::emitOp(comp, block, Op_DefineGetter, 0, &obj, &name, &val);
+            break;
+        case PropertyNode::Setter:
+            CodeGen::emitOp(comp, block, Op_DefineSetter, 0, &obj, &name, &val);
+            break;
+        case PropertyNode::Constant:
+            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &obj, &name, &val);
+            break;
+        }
+    }
+
+    return obj;
+}
+
 // ------------------------------ BracketAccessorNode --------------------------------
 
 

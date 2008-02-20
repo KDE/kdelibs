@@ -204,7 +204,7 @@ Literal:
 PropertyName:
     IDENT                               { $$ = new PropertyNameNode(*$1); }
   | STRING                              { $$ = new PropertyNameNode(Identifier(*$1)); }
-  | NUMBER                              { $$ = new PropertyNameNode($1); }
+  | NUMBER                              { $$ = new PropertyNameNode(Identifier(UString::from($1))); }
 ;
 
 Property:

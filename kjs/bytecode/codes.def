@@ -569,6 +569,29 @@ operation SymGetVarObject {
     ]]
 }
 
+operation NewObject {
+    impl value() [[
+        $$ = new JSObject(exec->lexicalInterpreter()->builtinObjectPrototype());
+    ]]
+}
+
+operation DefineGetter {
+    impl void(value base, ident name, value getter) [[
+        ASSERT(base->isObject());
+        ASSERT(getter->isObject());
+        static_cast<JSObject*>(base)->defineGetter(exec, *name, static_cast<JSObject*>(getter));
+    ]]
+}
+
+operation DefineSetter {
+    impl void(value base, ident name, value setter) [[
+        ASSERT(base->isObject());
+        ASSERT(setter->isObject());
+        static_cast<JSObject*>(base)->defineSetter(exec, *name, static_cast<JSObject*>(setter));
+    ]]
+}
+
+
 /**
  Numeric ops
  */
