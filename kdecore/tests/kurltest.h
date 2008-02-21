@@ -54,6 +54,7 @@ private Q_SLOTS:
     void testComparisons();
     void testStreaming();
     void testBrokenStuff();
+    void testMoreBrokenStuff();
     void testMailto();
     void testSmb();
     void testOtherProtocols();
