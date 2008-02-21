@@ -123,12 +123,17 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     break;
 
     case Conv_RInt32_Bool: {
-        CodeGen::emitOp(comp, block, Op_Int32ToBool,  &out, original);
+        CodeGen::emitOp(comp, block, Op_Int32ToBool, &out, original);
     }
     break;
 
     case Conv_RInt32_Value: {
         CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
+    }
+    break;
+
+    case Conv_RInt32_Number: {
+        CodeGen::emitOp(comp, block, Op_Int32ToNumber, &out, original);
     }
     break;
 

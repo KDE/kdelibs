@@ -329,8 +329,33 @@ void ArgumentsNode::generateEvalArguments(CompileState* comp, CodeBlock& block)
 
     CodeGen::emitOp(comp, block, Op_ClearArgs, 0);
 
-    for (size_t c = 0; c < args.size(); ++c)
-        CodeGen::emitOp(comp, block, Op_AddArg, 0, &args[c]);
+    size_t c = 0;
+    while (c < args.size()) {
+        if (c + 3 <= args.size()) {
+            CodeGen::emitOp(comp, block, Op_Add3Arg, 0, &args[c], &args[c+1], &args[c+2]);
+            c += 3;
+        } else if (c + 2 <= args.size()) {
+            CodeGen::emitOp(comp, block, Op_Add2Arg, 0, &args[c], &args[c+1]);
+            c += 2;
+        } else {
+            CodeGen::emitOp(comp, block, Op_AddArg, 0, &args[c]);
+            c += 1;
+        }
+    }
+}
+
+OpValue NewExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = expr->generateEvalCode(comp, block);
+
+    if (args)
+        args->generateEvalArguments(comp, block);
+    else
+        CodeGen::emitOp(comp, block, Op_ClearArgs, 0);
+
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_CtorCall, &out, &v);
+    return out;
 }
 
 OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
@@ -338,10 +363,9 @@ OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBloc
     CompileReference* ref =  expr->generateRefBegin(comp, block, true /* issue error if not there*/);
     OpValue funVal = expr->generateRefRead(comp, block, ref);
 
-    CodeGen::emitOp(comp, block, Op_EnsureFunction, 0, &funVal);
-
     args->generateEvalArguments(comp, block);
 
+    // Can do this safely before checking function, since it's been computed before
     OpValue newThis = expr->generateRefBase(comp, block, ref);
 
     OpValue out;

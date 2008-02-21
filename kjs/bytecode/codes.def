@@ -239,6 +239,12 @@ operation Int32ToBool {
     ]]
 }
 
+operation Int32ToNumber {
+    impl number (int32 in) [[
+        $$ = in;
+    ]]
+}
+
 operation NumberToBool {
     impl bool(number in) [[
         //### TODO:
@@ -806,8 +812,24 @@ operation AddArg {
     ]]
 }
 
-operation EnsureFunction {
-    impl void(value v) [[
+operation Add2Arg {
+    impl void(value a1, value a2) [[
+        workList.append(a1);
+        workList.append(a2);
+    ]]
+}
+
+operation Add3Arg {
+    impl void(value a1, value a2, value a3) [[
+        workList.append(a1);
+        workList.append(a2);
+        workList.append(a3);
+    ]]
+}
+
+
+operation FunctionCall {
+    impl value(value v, value thisVal) [[
         if (!v->isObject()) {
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
             // ### TODO
@@ -819,15 +841,28 @@ operation EnsureFunction {
             //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
             // ### TODO
         }
-    ]]
-}
 
-operation FunctionCall {
-    impl value(value func, value thisVal) [[
-        ASSERT(func->isObject());
         ASSERT(thisVal->isObject());
         $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
     ]]
 }
+
+operation CtorCall {
+    impl value(value v) [[
+        if (!v->isObject()) {
+            //return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be used with new.", v, expr.get());
+            // ### TODO
+        }
+
+        JSObject *constr = static_cast<JSObject*>(v);
+        if (!constr->implementsConstruct()) {
+            // ### TODO
+            // return throwError(exec, TypeError, "Value %s (result of expression %s) is not a constructor. Cannot be used with new.", v, expr.get());
+        }
+
+        $$ = constr->construct(exec, workList);
+    ]]
+}
+
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

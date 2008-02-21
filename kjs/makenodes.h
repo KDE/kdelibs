@@ -31,7 +31,7 @@
 namespace KJS {
 
 static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
-{ 
+{
     Node *n = loc->nodeInsideAllParens();
 
     if (!n->isLocation())
@@ -55,7 +55,7 @@ static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
 }
 
 static Node* makePrefixNode(Node *expr, Operator op)
-{ 
+{
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
@@ -66,7 +66,7 @@ static Node* makePrefixNode(Node *expr, Operator op)
 }
 
 static Node* makePostfixNode(Node* expr, Operator op)
-{ 
+{
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
@@ -82,22 +82,8 @@ static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
 
     if (!n->isLocation())
         return new FunctionCallValueNode(func, args);
-    else if (n->isVarAccessNode())
+    else
         return new FunctionCallReferenceNode(static_cast<VarAccessNode*>(func), args);
-    else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        if (n != func)
-            return new FunctionCallParenBracketNode(bracket->base(), bracket->subscript(), args);
-        else
-            return new FunctionCallBracketNode(bracket->base(), bracket->subscript(), args);
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        if (n != func)
-            return new FunctionCallParenDotNode(dot->base(), dot->identifier(), args);
-        else
-            return new FunctionCallDotNode(dot->base(), dot->identifier(), args);
-    }
 }
 
 static Node *makeTypeOfNode(Node *expr)
@@ -105,7 +91,7 @@ static Node *makeTypeOfNode(Node *expr)
     Node *n = expr->nodeInsideAllParens();
 
     // We only need to use the special path for variable references,
-    // since they may throw a ResolveError on evaluate where we don't 
+    // since they may throw a ResolveError on evaluate where we don't
     // want that...
     if (n->isVarAccessNode())
         return new TypeOfReferenceNode(static_cast<LocationNode*>(n));
@@ -116,25 +102,25 @@ static Node *makeTypeOfNode(Node *expr)
 static Node *makeDeleteNode(Node *expr)
 {
     Node *n = expr->nodeInsideAllParens();
-    
+
     if (!n->isLocation())
         return new DeleteValueNode(expr);
-    else 
+    else
         return new DeleteReferenceNode(static_cast<LocationNode*>(n));//### not 100% faithful listing?
 }
 
 static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& getOrSet, Identifier& name, ParameterNode *params, FunctionBodyNode *body)
 {
     PropertyNode::Type type;
-    
+
     if (getOrSet == "get")
         type = PropertyNode::Getter;
     else if (getOrSet == "set")
         type = PropertyNode::Setter;
     else
         return false;
-    
-    result = new PropertyNode(new PropertyNameNode(name), 
+
+    result = new PropertyNode(new PropertyNameNode(name),
                               new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, body, params), type);
 
     return true;

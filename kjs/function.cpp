@@ -576,16 +576,6 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
 
 void ActivationImp::markChildren()
 {
-    LocalStorage& localStorage = d()->localStorage;
-    size_t size = localStorage.size();
-
-    for (size_t i = 0; i < size; ++i) {
-        JSValue* value = localStorage[i].val.valueVal;
-
-        if (!value->marked())
-            value->mark();
-    }
-
     if (!d()->function->marked())
         d()->function->mark();
 
@@ -595,7 +585,7 @@ void ActivationImp::markChildren()
 
 void ActivationImp::mark()
 {
-    JSObject::mark();
+    JSVariableObject::mark();
     markChildren();
 }
 
