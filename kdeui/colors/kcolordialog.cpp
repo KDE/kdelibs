@@ -440,6 +440,7 @@ void KColorPatch::setColor(const QColor &col)
 {
     d->color.setRgb(col.rgb());
 
+    emit colorChanged(col);
     update();
 }
 
