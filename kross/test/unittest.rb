@@ -5,6 +5,11 @@ require 'test/unit'
 require "TestObject1"
 require "TestObject2"
 
+KrossAction = self.action()
+
+def testFunction
+end
+
 class TestKross < Test::Unit::TestCase
 
 	def setup
@@ -254,6 +259,10 @@ class TestKross < Test::Unit::TestCase
 	end
 
 	def testObject
+		assert( KrossAction.name() == "MyAction" )
+		assert( KrossAction.interpreter() == "ruby" )
+		assert( KrossAction.functionNames().include?("testFunction") )
+
 		assert( TestObject1.name() == "TestObject1" )
 		assert( TestObject2.name() == "TestObject2" )
 
