@@ -88,14 +88,15 @@ int runScriptFile(const QString& scriptfile)
         return ERROR_NOINTERPRETER;
     }
 
-    // Create the testobject instances.
-    TestObject* testobj3 = new TestObject(0, "TestObject3");
-    TestObject* testobj4 = new TestObject(0, "TestObject4");
-
     // First we need a Action and fill it.
     Kross::Action* action = new Kross::Action(0 /*no parent*/, KUrl(scriptfile));
+    action->setObjectName("MyAction");
     action->setInterpreter( interpretername );
     action->setCode( scriptcode );
+
+    // Create the testobject instances.
+    TestObject* testobj3 = new TestObject(action, "TestObject3");
+    TestObject* testobj4 = new TestObject(action, "TestObject4");
 
     // Publish other both testobject instance to the script.
     action->addObject( testobj3, "TestObject3", Kross::ChildrenInterface::AutoConnectSignals );
@@ -117,9 +118,6 @@ int runScriptFile(const QString& scriptfile)
     */
 
     delete action;
-    delete testobj3;
-    delete testobj4;
-
     return ERROR_OK;
 }
 

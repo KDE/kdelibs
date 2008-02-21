@@ -195,7 +195,10 @@ class TestObject : public QObject
 * mythread.emitStepDone(456)
 * # same as above but we emit the signal by our own
 * # rather then going through a helper-function.
-* mythread.stepDone(456)
+* mythread.stepDone(789)
+* # now let's ask our thread to ask our action to execute
+* # our function to have one complete roundtrip :)
+* mythread.callFunction(self, "myFunction", [987])
 * # sleep again one second
 * time.sleep(1)
 * \endcode
@@ -209,6 +212,7 @@ class TestThread : public QThread
         virtual void run();
     public Q_SLOTS:
         void emitStepDone(int step);
+        QVariant callFunction(QObject* action, const QString& functionname, QVariantList arguments);
     Q_SIGNALS:
         void stepDone(int step);
     private:

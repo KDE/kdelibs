@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "testobject.h"
+#include "../core/action.h"
 
 #include <QtCore/QSize>
 #include <QtCore/QPoint>
@@ -239,6 +240,13 @@ void TestThread::emitStepDone(int step)
 {
     //kDebug() << "TestThread::emitStepDone() step=" << step;
     emit stepDone(step);
+}
+
+QVariant TestThread::callFunction(QObject* action, const QString& functionname, QVariantList arguments)
+{
+    Kross::Action* a = dynamic_cast<Kross::Action*>(action);
+    Q_ASSERT(a);
+    return a->callFunction(functionname, arguments);
 }
 
 void TestThread::run()
