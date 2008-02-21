@@ -74,9 +74,10 @@ public:
 
     // This sets the registers containing the local scope and
     // 'this' values... It should be the rvalue, not the regnums
-    void setPreloadRegs(OpValue* localReg, OpValue* thisReg) {
-        localScopeVal = localReg;
-        thisVal       = thisReg;
+    void setPreloadRegs(OpValue* localReg, OpValue* globalReg, OpValue* thisReg) {
+        localScopeVal  = localReg;
+        globalScopeVal = globalReg;
+        thisVal        = thisReg;
     }
 
     OpValue* localScope() {
@@ -85,6 +86,10 @@ public:
 
     OpValue* thisValue() {
         return thisVal;
+    }
+
+    OpValue* globalScope() {
+        return globalScopeVal;
     }
 
     // This keeps track of entering/exiting of inner scopes introduced
@@ -145,6 +150,7 @@ public:
 private:
     OpValue* localScopeVal;
     OpValue* thisVal;
+    OpValue* globalScopeVal;
 
     CodeType ctype;
 

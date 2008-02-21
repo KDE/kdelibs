@@ -63,6 +63,12 @@ void LocationNode::generateRefWrite(CompileState*, CodeBlock& block,
     std::cerr << "WARNING: no generateRefWrite for:" << typeid(*this).name() << "\n";
 }
 
+OpValue LocationNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
+{
+    std::cerr << "WARNING: no generateRefBase for:" << typeid(*this).name() << "\n";
+    return OpValue::immNumber(42.42);
+}
+
 void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
@@ -207,6 +213,11 @@ OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, Com
     return out;
 }
 
+OpValue VarAccessNode::generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref)
+{
+    return *comp->globalScope();
+}
+
 void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                            CompileReference* ref, OpValue& valToStore)
 {
@@ -292,6 +303,11 @@ OpValue DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, C
     return out;
 }
 
+OpValue DotAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
+{
+    return ref->val1;
+}
+
 void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
@@ -300,6 +316,39 @@ void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
 }
 
 // ------------------ ........
+
+void ArgumentsNode::generateEvalArguments(CompileState* comp, CodeBlock& block)
+{
+    WTF::Vector<OpValue> args;
+
+    // We need evaluate arguments and push them in separate steps as there may be
+    // function/ctor calls inside.
+    for (ArgumentListNode* arg = list.get(); arg; arg = arg->next.get()) {
+        args.append(arg->expr->generateEvalCode(comp, block));
+    }
+
+    CodeGen::emitOp(comp, block, Op_ClearArgs, 0);
+
+    for (size_t c = 0; c < args.size(); ++c)
+        CodeGen::emitOp(comp, block, Op_AddArg, 0, &args[c]);
+}
+
+OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    CompileReference* ref =  expr->generateRefBegin(comp, block, true /* issue error if not there*/);
+    OpValue funVal = expr->generateRefRead(comp, block, ref);
+
+    CodeGen::emitOp(comp, block, Op_EnsureFunction, 0, &funVal);
+
+    args->generateEvalArguments(comp, block);
+
+    OpValue newThis = expr->generateRefBase(comp, block, ref);
+
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &funVal, &newThis);
+    delete ref;
+    return out;
+}
 
 OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
@@ -871,14 +920,18 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    // Load 'scope' and 'this' pointer
+    // Load 'scope', global and 'this' pointers.
+    // ### probably want to do direct, and skip 3 ops.
     OpValue scopeVal;
     CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeVal);
+
+    OpValue globalVal;
+    CodeGen::emitOp(comp, block, Op_GetGlobalObject, &globalVal);
 
     OpValue thisVal;
     CodeGen::emitOp(comp, block, Op_This, &thisVal);
 
-    comp->setPreloadRegs(&scopeVal, &thisVal);
+    comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
     // Generate body...
     BlockNode::generateExecCode(comp, block);

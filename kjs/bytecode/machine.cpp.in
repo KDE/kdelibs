@@ -36,6 +36,7 @@ namespace KJS {
 Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...
+    List workList;
     //exec->setPc(&pc);
     LocalStorage& localStore = *exec->localStorage();
 

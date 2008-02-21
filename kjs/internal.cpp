@@ -289,7 +289,7 @@ uint16_t toUInt16(double dd)
   return static_cast<uint16_t>(d16);
 }
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
 void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
 {
   UString vString;
@@ -360,6 +360,6 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
       fprintf(stderr, "\n");
   }
 }
-#endif
+//#endif
 
 }

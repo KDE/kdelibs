@@ -216,6 +216,7 @@ namespace KJS {
     //    chain, but that should not affect the scope.
     // Note that the client has to delete the return CompileReference itself
     virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
                                     CompileReference* ref, OpValue& valToStore);
@@ -329,6 +330,7 @@ namespace KJS {
     virtual Reference evaluateReference(ExecState* exec);
     virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
 
@@ -471,6 +473,7 @@ namespace KJS {
 
     virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
 
@@ -511,6 +514,7 @@ namespace KJS {
       : list(l->next.release()) { Parser::removeNodeCycle(list.get()); }
     JSValue* evaluate(ExecState*);
     List evaluateList(ExecState *exec) { return list ? list->evaluateList(exec) : List::empty(); }
+    void generateEvalArguments(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
 
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -545,6 +549,7 @@ namespace KJS {
   public:
     FunctionCallReferenceNode(LocationNode *e, ArgumentsNode *a) : expr(e), args(a) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

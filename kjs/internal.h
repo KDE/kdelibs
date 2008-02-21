@@ -122,9 +122,9 @@ namespace KJS {
   uint32_t toUInt32(double dd);
   uint16_t toUInt16(double dd);
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
   void printInfo(ExecState *exec, const char *s, JSValue *, int lineno = -1);
-#endif
+//#endif
 
 } // namespace
 

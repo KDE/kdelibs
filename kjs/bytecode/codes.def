@@ -376,6 +376,12 @@ operation GetVariableObject {
     ]]
 }
 
+operation GetGlobalObject {
+    impl value() [[
+        $$ = exec->dynamicInterpreter()->globalObject();
+    ]]
+}
+
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
     impl value scopeLookup(ident varName, bool errorOnFailure) [[
@@ -782,6 +788,45 @@ operation BitOr {
 operation LogicalNot {
     impl bool logicalNot(bool old) [[
         $$ = !old;
+    ]]
+}
+
+/**
+ Function call stuff, for first prototype.
+*/
+operation ClearArgs {
+    impl void() [[
+        workList.clear();
+    ]]
+}
+
+operation AddArg {
+    impl void(value val) [[
+        workList.append(val);
+    ]]
+}
+
+operation EnsureFunction {
+    impl void(value v) [[
+        if (!v->isObject()) {
+            //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
+            // ### TODO
+        }
+
+        JSObject *func = static_cast<JSObject*>(v);
+
+        if (!func->implementsCall()) {
+            //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
+            // ### TODO
+        }
+    ]]
+}
+
+operation FunctionCall {
+    impl value(value func, value thisVal) [[
+        ASSERT(func->isObject());
+        ASSERT(thisVal->isObject());
+        $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
     ]]
 }
 
