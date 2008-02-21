@@ -1318,15 +1318,6 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
         return;
     }
 
-    QPainterPath arcPath;
-    bool wasEmpty = isPathEmpty();
-
-    if (wasEmpty) {
-        QPointF initialPoint(x + std::cos(startAngle) * radius,
-                             y + std::sin(startAngle) * radius);
-        arcPath.moveTo(initialPoint);
-    }
-
     const QRectF rect(x - radius, y - radius, radius * 2, radius * 2);
     float sweepLength = -degrees(endAngle - startAngle);
     startAngle = -degrees(startAngle);
@@ -1344,6 +1335,8 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
             sweepLength = 360;
     }
 
+    QPainterPath arcPath;
+    arcPath.arcMoveTo(rect, startAngle);
     arcPath.arcTo(rect, startAngle, sweepLength);
 
     // When drawing the arc, Safari will loop around the circle several times if
@@ -1367,29 +1360,23 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
         arcPath.arcTo(rect, startAngle, sweepLength);
     }
 
-    arcPath = arcPath * activeState().transform;
-
-    // Add the transformed arc to the path.
-    // Unfortunately we can't use QPainterPath::addPath(), since it adds the
-    // path as a closed sub path, and that's not what we want.
-    for (int i = 0; i < arcPath.elementCount();)
+    // Add the transformed arc to the path
+    if (isPathEmpty())
+        path.addPath(arcPath * activeState().transform);
+    else
     {
-        QPainterPath::Element e = arcPath.elementAt(i++);
-        switch (e.type)
-        {
-        case QPainterPath::MoveToElement:
-            if (i != 1 || wasEmpty)
-                path.moveTo(e);
-            break;
+        if (path.elementAt(path.elementCount() - 1).type != QPainterPath::MoveToElement)
+            path.connectPath(arcPath * activeState().transform);
+        else {
+            // ### This is needed to work around buggy behavior in QPainterPath::connectPath()
+            //     when the last element in the path being added to is a MoveToElement.
+            arcPath = arcPath * activeState().transform;
+            path.lineTo(arcPath.elementAt(0));
 
-        case QPainterPath::LineToElement:
-            path.lineTo(e); break;
-
-        default: { // QPainterPath::CurveToElement
-            QPointF c2 = arcPath.elementAt(i++);
-            QPointF p  = arcPath.elementAt(i++);
-            path.cubicTo(e, c2, p);
-        }
+            if (arcPath.elementCount() > 1)
+                for (int i = 1; i < arcPath.elementCount(); i += 3)
+                    path.cubicTo(arcPath.elementAt(i), arcPath.elementAt(i+1),
+                                 arcPath.elementAt(i+2));
         }
     }
 }
