@@ -77,6 +77,10 @@ set(kdeui_LIB_SRCS
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
+ dialogs/kshortcuteditwidget.cpp
+ dialogs/kshortcutseditordelegate.cpp
+ dialogs/kshortcutseditoritem.cpp
+ dialogs/kshortcutseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/ksplashscreen.cpp
  dialogs/kswitchlanguagedialog_p.cpp

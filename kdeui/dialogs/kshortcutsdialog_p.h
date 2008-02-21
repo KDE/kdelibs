@@ -23,14 +23,39 @@
 #include "kgesture.h"
 
 #include <kextendableitemdelegate.h>
+#include <kshortcutseditor.h>
+
 #include <QKeySequence>
-#include <QModelIndex>
 #include <QMetaType>
+#include <QModelIndex>
+#include <QTreeWidget>
 
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
 class KKeySequenceWidget;
+
+enum ColumnDesignation {
+	Name = 0,
+	LocalPrimary,
+	LocalAlternate,
+	GlobalPrimary,
+	GlobalAlternate,
+	RockerGesture,
+	ShapeGesture
+};
+
+
+enum MyRoles {
+	ShortcutRole = Qt::UserRole,
+	DefaultShortcutRole
+};
+
+
+enum ItemTypes {
+	NonActionItem = 0,
+	ActionItem = 1
+};
 
 
 class KShortcutsEditorDelegate : public KExtendableItemDelegate
@@ -91,6 +116,111 @@ private:
 Q_DECLARE_METATYPE(KShapeGesture)
 Q_DECLARE_METATYPE(KRockerGesture)
 
+
+
+
+class KAction;
+class KShortcut;
+class KShapeGesture;
+class KRockerGesture;
+
+/**
+ * A QTreeWidgetItem that can handle KActions.
+ *
+ * It provides undo, commit functionality for changes made.
+ *
+ * @internal
+ */
+class KShortcutsEditorItem : public QTreeWidgetItem
+{
+public:
+
+	KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
+	virtual ~KShortcutsEditorItem();
+
+    //! Undo all changes made
+	void undoChanges();
+
+	virtual QVariant data(int column, int role) const;
+
+	QKeySequence keySequence(uint column) const;
+	void setKeySequence(uint column, const QKeySequence &seq);
+	void setShapeGesture(const KShapeGesture &gst);
+	void setRockerGesture(const KRockerGesture &gst);
+
+	bool isModified(uint column) const;
+
+	KAction *m_action;
+	bool m_isNameBold;
+private:
+	//! Recheck modified status - could have changed back to initial value
+	void updateModified();
+
+    //@{
+    //! The original shortcuts before user changes. 0 means no change.
+	KShortcut *m_oldLocalShortcut;
+	KShortcut *m_oldGlobalShortcut;
+	KShapeGesture *m_oldShapeGesture;
+	KRockerGesture *m_oldRockerGesture;
+    //@}
+
+};
+
+
+// NEEDED FOR KShortcutsEditorPrivate
+#include "ui_kshortcutsdialog.h"
+#include "kstandardshortcut.h"
+
+
+/**
+ * This class should belong into kshortcutseditor.cpp. But kshortcutseditordelegate uses a static
+ * function of this class. So for now it's here. But i will remove it later.
+ *
+ * @internal
+ */
+class KShortcutsEditorPrivate
+{
+public:
+
+    KShortcutsEditorPrivate(KShortcutsEditor *q): q(q)
+    {
+    }
+
+    void initGUI( KShortcutsEditor::ActionTypes actionTypes, KShortcutsEditor::LetterShortcuts allowLetterShortcuts );
+    void appendToView( uint nList, const QString &title = QString() );
+    //used in appendToView
+    QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
+
+    static KShortcutsEditorItem *itemFromIndex(QTreeWidget *const w, const QModelIndex &index);
+
+    //helper functions for conflict resolution
+    bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);
+    void wontStealStandardShortcut(KStandardShortcut::StandardShortcut sa, const QKeySequence &seq);
+    bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);
+    bool stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gest);
+
+    //conflict resolution functions
+    void changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture);
+    void changeShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &capture);
+    void changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture);
+
+// private slots
+    //this invokes the appropriate conflict resolution function
+    void capturedShortcut(const QVariant &, const QModelIndex &);
+
+    void globalSettingsChangedSystemwide(int);
+
+// members
+    QList<KActionCollection *> actionCollections;
+    KShortcutsEditor *q;
+
+    Ui::KShortcutsDialog ui;
+
+    KShortcutsEditor::ActionTypes actionTypes;
+};
+
+
+Q_DECLARE_METATYPE(KShortcutsEditorItem *)
 
 #endif /* KSHORTCUTSDIALOG_P_H */
 
