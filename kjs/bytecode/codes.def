@@ -252,6 +252,12 @@ operation NumberToBool {
     ]]
 }
 
+operation NumberToInt32 {
+    impl int32(number in) [[
+        $$ = JSValue::toInt32(in);
+    ]]
+}
+
 operation JSNumberFromInt32 {
     impl value jsNum(int32 in) [[
         $$ = jsNumber(in);
@@ -562,8 +568,53 @@ operation SymPutKnownObject {
 operation SymGet {
     impl value symGet(value base, ident prop) [[
         JSObject* baseObj = base->toObject(exec);
+        // toObject may fail and return an exception object, but get from it is harmless
+
+        $$ = baseObj->get(exec, *prop);
+    ]]
+}
+
+operation IndexGet {
+    impl value indexGet(value base, int32 prop) [[
+        JSObject* baseObj = base->toObject(exec);
+        // toObject may fail and return an exception object, but get from it is harmless
+
+        $$ = baseObj->get(exec, (uint32_t)prop);
+    ]]
+}
+
+operation BracketGet {
+    impl value (value v1, value v2) [[
+        uint32_t i;
+        JSObject *o = v1->toObject(exec);
+        // toObject may fail and return an exception object, but get from it is harmless
+
+        if (v2->getUInt32(i))
+            $$ = o->get(exec, i);
+        else
+            $$ = o->get(exec, Identifier(v2->toString(exec)));
+    ]]
+}
+
+operation IndexPut {
+    impl void indexPut(value base, int32 prop, value val) [[
+        JSObject* baseObj = base->toObject(exec);
         if (!exec->hadException())
-            $$ = baseObj->get(exec, *prop);
+            baseObj->put(exec, (uint32_t)prop, val);
+    ]]
+}
+
+operation BracketPut {
+    impl void (value v1, value v2, value v3) [[
+        uint32_t i;
+        JSObject *o = v1->toObject(exec);
+        if (exec->hadException())
+            break;
+
+        if (v2->getUInt32(i))
+            o->put(exec, i, v3);
+        else
+            o->put(exec, Identifier(v2->toString(exec)), v3);
     ]]
 }
 
@@ -832,6 +883,7 @@ operation FunctionCall {
     impl value(value v, value thisVal) [[
         if (!v->isObject()) {
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
+            break;
             // ### TODO
         }
 
@@ -839,6 +891,7 @@ operation FunctionCall {
 
         if (!func->implementsCall()) {
             //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
+            break;
             // ### TODO
         }
 
@@ -852,12 +905,14 @@ operation CtorCall {
         if (!v->isObject()) {
             //return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be used with new.", v, expr.get());
             // ### TODO
+            break;
         }
 
         JSObject *constr = static_cast<JSObject*>(v);
         if (!constr->implementsConstruct()) {
             // ### TODO
             // return throwError(exec, TypeError, "Value %s (result of expression %s) is not a constructor. Cannot be used with new.", v, expr.get());
+            break;
         }
 
         $$ = constr->construct(exec, workList);

@@ -215,11 +215,11 @@ namespace KJS {
     //    bar() may introduce a new copy of foo earlier on in the scope
     //    chain, but that should not affect the scope.
     // Note that the client has to delete the return CompileReference itself
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
-    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref);
-    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail) = 0;
+    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
+    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
-                                    CompileReference* ref, OpValue& valToStore);
+                                    CompileReference* ref, OpValue& valToStore) = 0;
   };
 
   class StatementNode : public Node {
@@ -451,6 +451,13 @@ namespace KJS {
     JSValue*  evaluate(ExecState*);
     Reference evaluateReference(ExecState*);
     virtual void streamTo(SourceStream&) const;
+
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+                                    CompileReference* ref, OpValue& valToStore);
 
     Node *base() { return expr1.get(); }
     Node *subscript() { return expr2.get(); }

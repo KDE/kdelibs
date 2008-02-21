@@ -142,6 +142,11 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     }
     break;
 
+    case Conv_RNumber_Int32: {
+        CodeGen::emitOp(comp, block, Op_NumberToInt32, &out, original);
+    }
+    break;
+
     case Conv_I_R_Int32_Value: {
         CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
     }

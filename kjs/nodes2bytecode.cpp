@@ -45,30 +45,6 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
     return OpValue::immInt32(42);
 }
 
-CompileReference* LocationNode::generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail)
-{
-    std::cerr << "WARNING: no generateRefBegin for:" << typeid(*this).name() << "\n";
-    return 0;
-}
-
-OpValue LocationNode::generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref)
-{
-    std::cerr << "WARNING: no generateRefRead for:" << typeid(*this).name() << "\n";
-    return OpValue::immInt32(4242);
-}
-
-void LocationNode::generateRefWrite(CompileState*, CodeBlock& block,
-                                          CompileReference* ref, OpValue& valToStore)
-{
-    std::cerr << "WARNING: no generateRefWrite for:" << typeid(*this).name() << "\n";
-}
-
-OpValue LocationNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
-{
-    std::cerr << "WARNING: no generateRefBase for:" << typeid(*this).name() << "\n";
-    return OpValue::immNumber(42.42);
-}
-
 void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
@@ -273,7 +249,56 @@ OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block
 }
 
 // ------------------------------ BracketAccessorNode --------------------------------
+OpValue BracketAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue ret;
+    OpValue base  = expr1->generateEvalCode(comp, block);
+    OpValue index = expr2->generateEvalCode(comp, block);
 
+    // ### optimize foo["bar"] ?
+    if (index.type == OpType_int32)
+        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &base, &index);
+    else
+        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &base, &index);
+    return ret;
+}
+
+CompileReference* BracketAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool)
+{
+    CompileReference* ref = new CompileReference;
+    // base
+    ref->val1 = expr1->generateEvalCode(comp, block);
+    return ref;
+}
+
+OpValue BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+{
+    OpValue ret;
+    OpValue index = expr2->generateEvalCode(comp, block);
+
+    // ### in cases like ++/-- we may check redundantly.
+    if (index.type == OpType_int32)
+        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &ref->val1, &index);
+    else
+        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &ref->val1, &index);
+
+    return ret;
+}
+
+OpValue BracketAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
+{
+    return ref->val1;
+}
+
+void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
+                                             CompileReference* ref, OpValue& valToStore)
+{
+    OpValue index = expr2->generateEvalCode(comp, block);
+    if (index.type == OpType_int32)
+        CodeGen::emitOp(comp, block, Op_IndexPut, 0, &ref->val1, &index, &valToStore);
+    else
+        CodeGen::emitOp(comp, block, Op_BracketPut, 0, &ref->val1, &index, &valToStore);
+}
 
 // ------------------------------ DotAccessorNode --------------------------------
 
