@@ -44,7 +44,7 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *act
 KShortcutsEditorItem::~KShortcutsEditorItem()
 {
     // Undo not yet commited changes. That will fre the m_old* members
-    undoChanges();
+    undo();
 }
 
 
@@ -90,7 +90,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 			return false;
 		else
 			return true;
-//the following are custom roles, defined in this source file only
+    //the following are custom roles, defined in this source file only
 	case ShortcutRole:
 		switch(column) {
 		case LocalPrimary:
@@ -254,11 +254,11 @@ bool KShortcutsEditorItem::isModified(uint column) const
 }
 
 
-void KShortcutsEditorItem::undoChanges()
+void KShortcutsEditorItem::undo()
 {
 	if (m_oldLocalShortcut) {
 		m_action->setShortcut(*m_oldLocalShortcut);
-        kDebug() << "undo for " << data(Name,Qt::DisplayRole);
+        kDebug() << "Undo for Shortcut " << data(Name,Qt::DisplayRole);
     }
 
 	if (m_oldGlobalShortcut) {
@@ -278,4 +278,23 @@ void KShortcutsEditorItem::undoChanges()
     }
 
 	updateModified();
+}
+
+
+void KShortcutsEditorItem::commit()
+{
+#ifdef DEBUG
+    if (m_oldLocalShortcut or m_oldGlobalShortcut or m_oldShapeGesture or m_oldRockerGesture ) {
+        kDebug() << "Commiting changes for " << data(Name, QT::DisplayRole);
+    }
+#endif
+
+    delete m_oldLocalShortcut; 
+    m_oldLocalShortcut = 0;
+    delete m_oldGlobalShortcut;
+    m_oldGlobalShortcut = 0;
+    delete m_oldShapeGesture;
+    m_oldShapeGesture = 0;
+    delete m_oldRockerGesture;
+    m_oldRockerGesture = 0;
 }

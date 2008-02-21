@@ -105,7 +105,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 			KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
 			Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
 
-			oldItem->m_isNameBold = false;
+			oldItem->setNameBold(false);
 			contractItem(m_editingIndex);
 		}
 
@@ -131,12 +131,12 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 			return;
 
 		m_editor->installEventFilter(this);
-		item->m_isNameBold = true;
+		item->setNameBold(true);
 		extendItem(m_editor, index);
 
 	} else {
 		//the item is extended, and clicking on it again closes it
-		item->m_isNameBold = false;
+		item->setNameBold(false);
 		contractItem(index);
 		view->selectionModel()->select(index, QItemSelectionModel::Clear);
 		m_editingIndex = QModelIndex();

@@ -52,12 +52,31 @@ enum MyRoles {
 };
 
 
+/**
+ * Type used for QTreeWidgetItems
+ *
+ * @internal
+ */
 enum ItemTypes {
 	NonActionItem = 0,
 	ActionItem = 1
 };
 
 
+/**
+ * Mixes the KShortcutWidget into the treeview used by KShortcutsEditor. When selecting an shortcut
+ * it changes the display from "CTRL-W" to the Widget.
+ *
+ * @bug That delegate uses KExtendableItemDelegate. That means a cell can be expanded. When selected
+ * a cell is replaced by a KShortcutsEditor. When painting the widget KExtendableItemDelegate
+ * reparents the widget to the viewport of the itemview it belongs to. The widget is destroyed when
+ * the user selects another shortcut or explicitly issues a contractItem event. But when the user
+ * clears the model the delegate misses that event and doesn't delete the KShortcutseditor. And
+ * remains as a visible artefact in your treeview. Additionaly when closing your application you get
+ * an assertion failure from KExtendableItemDelegate.
+ *
+ * @internal
+ */
 class KShortcutsEditorDelegate : public KExtendableItemDelegate
 {
 	Q_OBJECT
@@ -83,6 +102,11 @@ private Q_SLOTS:
 };
 
 
+/**
+ * That widget draws the decoration for KShortCutWidget. That widget is currently the only user.
+ *
+ * @internal
+ */
 class TabConnectedWidget : public QWidget
 {
 	Q_OBJECT
@@ -94,6 +118,11 @@ protected:
 };
 
 
+/**
+ * Edit a shortcut. Let you select between using the default shortcut and configuring your own.
+ *
+ * @internal
+ */
 class ShortcutEditWidget : public TabConnectedWidget
 {
 	Q_OBJECT
@@ -127,7 +156,8 @@ class KRockerGesture;
 /**
  * A QTreeWidgetItem that can handle KActions.
  *
- * It provides undo, commit functionality for changes made.
+ * It provides undo, commit functionality for changes made. Changes are effective immediately. You
+ * have to commit them or they will be undone when deleting the item.
  *
  * @internal
  */
@@ -136,10 +166,19 @@ class KShortcutsEditorItem : public QTreeWidgetItem
 public:
 
 	KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
-	virtual ~KShortcutsEditorItem();
 
-    //! Undo all changes made
-	void undoChanges();
+    /**
+     * Destructor
+     *
+     * Will undo pending changes. If you don't want that. Call commitChanges before
+     */
+    virtual ~KShortcutsEditorItem();
+
+    //! Undo the changes since the last commit.
+	void undo();
+
+    //! Commit the changes.
+	void commit();
 
 	virtual QVariant data(int column, int role) const;
 
@@ -150,12 +189,20 @@ public:
 
 	bool isModified(uint column) const;
 
-	KAction *m_action;
-	bool m_isNameBold;
+    void setNameBold(bool flag) { m_isNameBold = flag; }
+
 private:
+    friend class KShortcutsEditorPrivate;
+
 	//! Recheck modified status - could have changed back to initial value
 	void updateModified();
 
+    //! The action this item is responsible for
+    KAction *m_action;
+    
+    //! Should the Name column be painted in bold?
+    bool m_isNameBold;
+    
     //@{
     //! The original shortcuts before user changes. 0 means no change.
 	KShortcut *m_oldLocalShortcut;
@@ -164,6 +211,7 @@ private:
 	KRockerGesture *m_oldRockerGesture;
     //@}
 
+	
 };
 
 
@@ -192,6 +240,9 @@ public:
     QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
 
     static KShortcutsEditorItem *itemFromIndex(QTreeWidget *const w, const QModelIndex &index);
+	
+	// Set all shortcuts to their default values (bindings).
+	void allDefault();
 
     //helper functions for conflict resolution
     bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);

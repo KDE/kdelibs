@@ -43,10 +43,12 @@
 class KShortcutsDialog::KShortcutsDialogPrivate
 {
 public:
-  KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0) {}
 
-  KShortcutsDialog *q;
-  KShortcutsEditor* m_keyChooser; // ### move
+    KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0) 
+        {}
+
+    KShortcutsDialog *q;
+    KShortcutsEditor* m_keyChooser; // ### move
 };
 
 

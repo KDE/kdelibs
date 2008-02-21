@@ -22,8 +22,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kshortcutsdialog_p.h"
+#include "kshortcutseditor.h"
 
+// The following is needed for KShortcutsEditorPrivate
+#include "kshortcutsdialog_p.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -134,7 +136,7 @@ void KShortcutsEditor::undoChanges()
         if ((*it)->childCount())
             continue;
 
-        static_cast<KShortcutsEditorItem *>(*it)->undoChanges();
+        static_cast<KShortcutsEditorItem *>(*it)->undo();
     }
 }
 
@@ -144,30 +146,9 @@ void KShortcutsEditor::undoChanges()
 //slot
 void KShortcutsEditor::allDefault()
 {
-    for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
-        if (!(*it)->parent())
-            continue;
-
-        KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
-        KAction *act = item->m_action;
-
-        if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
-            d->changeKeyShortcut(item, LocalPrimary, act->shortcut(KAction::DefaultShortcut).primary());
-            d->changeKeyShortcut(item, LocalAlternate, act->shortcut(KAction::DefaultShortcut).alternate());
-        }
-
-        if (act->globalShortcut() != act->globalShortcut(KAction::DefaultShortcut)) {
-            d->changeKeyShortcut(item, GlobalPrimary, act->globalShortcut(KAction::DefaultShortcut).primary());
-            d->changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
-        }
-
-        if (act->shapeGesture() != act->shapeGesture(KAction::DefaultShortcut))
-            d->changeShapeGesture(item, act->shapeGesture(KAction::DefaultShortcut));
-
-        if (act->rockerGesture() != act->rockerGesture(KAction::DefaultShortcut))
-            d->changeRockerGesture(item, act->rockerGesture(KAction::DefaultShortcut));
-    }
+    d->allDefault();
 }
+
 
 
 //---------------------------------------------------------------------
@@ -219,6 +200,33 @@ public:
         { return QTreeWidget::itemFromIndex(index); }
 };
 
+
+void KShortcutsEditorPrivate::allDefault()
+{
+    for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
+        if (!(*it)->parent())
+            continue;
+
+        KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
+        KAction *act = item->m_action;
+
+        if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
+            changeKeyShortcut(item, LocalPrimary, act->shortcut(KAction::DefaultShortcut).primary());
+            changeKeyShortcut(item, LocalAlternate, act->shortcut(KAction::DefaultShortcut).alternate());
+        }
+
+        if (act->globalShortcut() != act->globalShortcut(KAction::DefaultShortcut)) {
+            changeKeyShortcut(item, GlobalPrimary, act->globalShortcut(KAction::DefaultShortcut).primary());
+            changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
+        }
+
+        if (act->shapeGesture() != act->shapeGesture(KAction::DefaultShortcut))
+            changeShapeGesture(item, act->shapeGesture(KAction::DefaultShortcut));
+
+        if (act->rockerGesture() != act->rockerGesture(KAction::DefaultShortcut))
+            changeRockerGesture(item, act->rockerGesture(KAction::DefaultShortcut));
+    }
+}
 
 //static
 KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(QTreeWidget *const w,
