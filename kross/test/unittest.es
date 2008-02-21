@@ -98,9 +98,15 @@ tester = new UnitTest();
 var testobj1 = TestObject1
 var testobj2 = TestObject2
 
-// object
+// QObject
+tester.assert(self.name(), "MyAction");
 tester.assert(testobj1.name(), "TestObject1");
 tester.assert(testobj2.name(), "TestObject2");
+
+var objectCountBefore = self.qobjectNames().length;
+self.addQObject(self);
+tester.assert(objectCountBefore + 1, self.qobjectNames().length);
+tester.assert(self.qobject(self.name()).file(), self.file());
 
 // bool
 tester.assert(testobj1.func_bool_bool(true), true);
@@ -129,28 +135,46 @@ tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
 tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
 tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
 
-// bytearray
-//tester.assert(testobj1.func_qbytearray_qbytearray("  Some String as ByteArray  "), "  Some String as ByteArray  ");
+// QByteArray
+tester.assert(testobj1.func_qbytearray_qbytearray("  Some String as ByteArray  "), "  Some String as ByteArray  ");
 //tester.assert(testobj1.func_qbytearray_qbytearray(" \0\n\r\t\s\0 test "), " \0\n\r\t\s\0 test ");
 
-// string
+// QString
 tester.assert(testobj1.func_qstring_qstring(""), "");
 tester.assert(testobj1.func_qstring_qstring(" "), " ");
 tester.assert(testobj1.func_qstring_qstring(" Another \n\r Test!   $%&\" "), " Another \n\r Test!   $%&\" ");
 
-// stringlist
+// QStringList
 tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array()), new Array());
 tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array("s1","s2")), new Array("s1","s2"));
 tester.assertArray(testobj1.func_qstringlist_qstringlist([]), []);
 tester.assertArray(testobj1.func_qstringlist_qstringlist(["abc","def"]), ["abc","def"]);
 
-// variantlist
+// QVariantList
 tester.assertArray(testobj1.func_qvariantlist_qvariantlist(new Array()), new Array());
 tester.assertArray(testobj1.func_qvariantlist_qvariantlist(new Array("s1","s2",17,-95)), new Array("s1","s2",17,-95));
 tester.assertArray(testobj1.func_qvariantlist_qvariantlist([]), []);
 tester.assertArray(testobj1.func_qvariantlist_qvariantlist(["abc","def",426,-842,96.23,-275.637]), ["abc","def",426,-842,96.23,-275.637]);
 
-// variantmap
+// QColor
+tester.assert(testobj1.func_qcolor_qcolor("#ff0000"), "#ff0000");
+
+// QSize and QSizeF
+tester.assertArray(testobj1.func_qsize_qsize([12,34]), [12,34]);
+tester.assertArray(testobj1.func_qsizef_qsizef([12.34,34.56]), [12.34,34.56]);
+
+// QPoint and QPointF
+tester.assertArray(testobj1.func_qpoint_qpoint([12,34]), [12,34]);
+tester.assertArray(testobj1.func_qpointf_qpointf([12.34,34.56]), [12.34,34.56]);
+
+// QRect and QRectF
+tester.assertArray(testobj1.func_qrect_qrect([12,34,56,78]), [12,34,56,78]);
+tester.assertArray(testobj1.func_qrectf_qrectf([12.34,34.56,56.78,78.9]), [12.34,34.56,56.78,78.9]);
+
+// QUrl
+tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere"), "http://nowhere.anywhere");
+
+// QVariantMap
 var v = new Array;
 v["key2"] = "";
 v["key1"] = " MyValue ";
@@ -171,7 +195,7 @@ tester.assert(self.callFunction("code"), self.code());
 tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
 //TODO work around it somehow!
-var stringlist = self.callFunction("functionNames");
+//var stringlist = self.callFunction("functionNames");
 //println( stringlist.length ); // numbers of chars in stringlist.toString() rather then number of items
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails
 //println(stringlist.prototype); //undefined
@@ -183,17 +207,13 @@ var stringlist = self.callFunction("functionNames");
 //println(stringlist); //prints the correct output of the stringlist, just like .toString()
 //println(stringlist.toString()); //prints the correct output of the stringlist as string
 
-//println( testobj1.func_qvariant_qvariant( Variant(new Array("One","Two")) ) );
-//println( Variant(new Array("One","Two")) );
-//println( Variant("test"));
+//println( testobj1.func_qvariant_qvariant( Variant(new Array("One","Two")) ) ); //empty QVariant()
+//println( Variant(new Array("One","Two")) ); //empty QVariant()
+//println( Variant("test")); //empty QVariant()
 
+// Properties
 self.callFunction("setIconName",new Array("MyIconName"));
 tester.assert(self.callFunction("iconName"), "MyIconName");
-
-var objectCountBefore = self.qobjectNames().length;
-self.addQObject(self);
-tester.assert(objectCountBefore + 1, self.qobjectNames().length);
-tester.assert(self.qobject(self.name()).file(), self.file());
 
 // print the test-results
 tester.printResult();
