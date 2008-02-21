@@ -1083,7 +1083,9 @@ void KUrlTest::testSetUser()
 
   KUrl emptyUserTest1( "http://www.foobar.com/");
   QVERIFY( emptyUserTest1.user().isEmpty() );
-  QVERIFY( !emptyUserTest1.user().isNull() ); // small change compared to KUrl-3.5
+#if QT_VERSION >= 0x040400
+  QVERIFY( emptyUserTest1.user().isNull() ); // Expected result. This was fixed in Qt-4.4
+#endif
   KUrl emptyUserTest2( "http://www.foobar.com/");
   emptyUserTest2.setUser( "" );
   //QVERIFY( emptyUserTest2.user().isNull() );
@@ -1231,11 +1233,29 @@ void KUrlTest::testBrokenStuff()
   QCOMPARE( broken.protocol(), QString("") ); // KDE3: was "file"
 #endif
 
+  {
+      QUrl url;
+      url.setEncodedUrl("LABEL=USB_STICK", QUrl::TolerantMode);
+      QVERIFY( url.isValid() );
+      QCOMPARE( url.path(), QString("LABEL=USB_STICK") );
+      QVERIFY( !url.isEmpty() );
+  }
+  {
+      QUrl url;
+      url.setEncodedUrl("LABEL=USB_STICK", QUrl::TolerantMode);
+      QVERIFY( url.isValid() );
+      QVERIFY( !url.isEmpty() ); // Qt-4.4-snapshot20080213 bug, reported to TT
+      QCOMPARE( url.path(), QString("LABEL=USB_STICK") );
+  }
+
   broken = "LABEL=USB_STICK"; // 71430, can we use KUrl for this?
   QVERIFY( broken.isValid() ); // KDE3 difference: QUrl likes this one too
   QVERIFY( !broken.isEmpty() );
   QCOMPARE( broken.path(), QString("LABEL=USB_STICK") ); // was "" in KDE3
+}
 
+void KUrlTest::testMoreBrokenStuff()
+{
 #if 0 // BROKEN?
   // UNC like names
   KUrl unc1("FILE://localhost/home/root");
@@ -1315,6 +1335,7 @@ void KUrlTest::testBrokenStuff()
   QCOMPARE( weird.path(), QString( ":keyword" ) );
   QCOMPARE( weird.url(), QString( ":keyword" ) ); // # BUG: the : is missing
 
+  KUrl broken;
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
   QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
@@ -1579,12 +1600,12 @@ void KUrlTest::testQueryItem()
 void KUrlTest::testEncodeString()
 {
   // Needed for #49616
-  QCOMPARE( KUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
-  QCOMPARE( KUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
-  QCOMPARE( KUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // we stop at %00
+  QCOMPARE( QUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
+  QCOMPARE( QUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
+  QCOMPARE( QUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // we stop at %00
 
-  QCOMPARE( KUrl::toPercentEncoding( "%" ), QByteArray("%25") );
-  QCOMPARE( KUrl::toPercentEncoding( ":" ), QByteArray("%3A") );
+  QCOMPARE( QUrl::toPercentEncoding( "%" ), QByteArray("%25") );
+  QCOMPARE( QUrl::toPercentEncoding( ":" ), QByteArray("%3A") );
 }
 
 void KUrlTest::testIdn()
