@@ -642,20 +642,10 @@ void KTcpSocket::setCaCertificates(const QList<QSslCertificate> &certificates)
 void KTcpSocket::setCiphers(const QList<KSslCipher> &ciphers)
 {
     QList<QSslCipher> cl;
-    int maxProtocolVersion = -1;
-    d->ciphers = ciphers;
     foreach (const KSslCipher &c, d->ciphers) {
         cl.append(d->ccc.converted(c));
-        kDebug() << "protocol of this cipher is" << cl.last().protocol();
-        maxProtocolVersion = qMax(int(cl.last().protocol()), maxProtocolVersion);
-    }
-    if (cl.isEmpty()) {
-        kDebug() << "cipher list is empty!";
-        maxProtocolVersion = QSsl::SslV3;
     }
     d->sock.setCiphers(cl);
-    kDebug() << "setting protocol version to" << maxProtocolVersion;
-    d->sock.setProtocol(QSsl::SslProtocol(maxProtocolVersion));
 }
 
 
