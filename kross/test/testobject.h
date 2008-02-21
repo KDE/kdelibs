@@ -202,6 +202,24 @@ class TestObject : public QObject
 * # sleep again one second
 * time.sleep(1)
 * \endcode
+*
+* Following sample code does the same as the code above but
+* uses the Ruby scripting language.
+* \code
+* require 'TestObject1'
+* def myFunction(step)
+*     puts "myFunction step=" + step.to_s
+* end
+* mythread = TestObject1.createThread(10,200)
+* mythread.connect("stepDone(int)", method("myFunction"))
+* mythread.start()
+* sleep(1)
+* self.action().callFunction("myFunction", [123])
+* mythread.emitStepDone(456)
+* mythread.stepDone(789)
+* mythread.callFunction(self.action(), "myFunction", [987])
+* sleep(1)
+* \endcode
 */
 class TestThread : public QThread
 {
