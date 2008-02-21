@@ -37,16 +37,7 @@ static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
     if (!n->isLocation())
         return new AssignErrorNode(loc, op, expr);
 
-    if (n->isVarAccessNode()) {
-        return new AssignNode(static_cast<LocationNode*>(n), op, expr);
-    } else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        return new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        return new AssignDotNode(dot->base(), dot->identifier(), op, expr);
-    }
+    return new AssignNode(static_cast<LocationNode*>(n), op, expr);
 }
 
 static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
