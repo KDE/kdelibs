@@ -915,7 +915,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       else
 	iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Application );
     } else
-      iconButton->setIconType( KIconLoader::Desktop, KIconLoader::FileSystem );
+      iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Place );
     iconButton->setIcon(iconStr);
     d->iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(const QString&) ),
