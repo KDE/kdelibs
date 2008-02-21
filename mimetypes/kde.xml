@@ -160,7 +160,7 @@ Notes:
     </magic>
     <glob pattern="*.dds"/>
   </mime-type>
-  <mime-type type="image/x-exr"> <!-- fdo #6488 -->
+  <mime-type type="image/x-exr"> <!-- fdo #6488, FIXED 0.24 -->
     <comment>EXR image</comment>
     <magic priority="50">
       <match type="little32" value="20000630" offset="0"/>
@@ -198,7 +198,7 @@ Notes:
     <glob pattern="*.txt"/>
     <glob pattern="*.doc"/>
   </mime-type>
-  <mime-type type="application/msword"> <!-- As discussed on xdg list, subclass was missing -->
+  <mime-type type="application/msword"> <!-- As discussed on xdg list, subclass was missing, FIXED 0.23 -->
     <sub-class-of type="application/x-ole-storage"/>
       <comment>Word document</comment>
       <comment xml:lang="bg">Документ, формат Word</comment>
@@ -293,42 +293,6 @@ Notes:
   </mime-type>
   <mime-type type="uri/rtspu">
     <comment>rtspu: URIs</comment>
-  </mime-type>
-
-  <!-- inode/ fake mime types -->
-  <mime-type type="inode/directory-locked">
-    <sub-class-of type="inode/directory"/>
-    <comment>locked folder</comment>
-  </mime-type>
-  <mime-type type="inode/system_directory">
-    <sub-class-of type="inode/directory"/>
-    <comment>system folder</comment>
-  </mime-type>
-
-  <!-- print/ fake mime types -->
-  <mime-type type="print/class">
-    <comment>class of printers</comment>
-  </mime-type>
-  <mime-type type="print/driver">
-    <comment>printer driver</comment>
-  </mime-type>
-  <mime-type type="print/folder">
-    <sub-class-of type="inode/directory"/>
-    <comment>print folder</comment>
-  </mime-type>
-  <mime-type type="print/jobs">
-    <sub-class-of type="inode/directory"/>
-    <comment>print jobs</comment>
-  </mime-type>
-  <mime-type type="print/manager">
-    <sub-class-of type="inode/directory"/>
-    <comment>print management tool</comment>
-  </mime-type>
-  <mime-type type="print/printer">
-    <comment>printer</comment>
-  </mime-type>
-  <mime-type type="print/printermodel">
-    <comment>printer model</comment>
   </mime-type>
 
   <!-- fonts/ fake mime types -->
