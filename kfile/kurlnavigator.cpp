@@ -250,6 +250,8 @@ public:
      */
     void updateButtonVisibility();
 
+    void switchToBreadcrumbMode();
+
     /**
      * Deletes all URL navigator buttons. m_navButtons is
      * empty after this operation.
@@ -390,8 +392,10 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     emit q->returnPressed();
 
     if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-        // pressing Ctrl+Return automatically switches back to the breadcrumb mode
-        q->setUrlEditable(false);
+        // Pressing Ctrl+Return automatically switches back to the breadcrumb mode.
+        // The switch must be done asynchronously, as we are in the context of the
+        // editor.
+        QMetaObject::invokeMethod(q, "switchToBreadcrumbMode", Qt::QueuedConnection);
     }
 }
 
@@ -757,6 +761,11 @@ void KUrlNavigator::Private::updateButtonVisibility()
     }
 
     m_dropDownButton->setVisible(hiddenButtonsCount != 0);
+}
+
+void KUrlNavigator::Private::switchToBreadcrumbMode()
+{
+    q->setUrlEditable(false);
 }
 
 void KUrlNavigator::Private::deleteButtons()
