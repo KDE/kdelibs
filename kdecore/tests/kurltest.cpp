@@ -1602,7 +1602,15 @@ void KUrlTest::testEncodeString()
   // Needed for #49616
   QCOMPARE( QUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
   QCOMPARE( QUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
-  QCOMPARE( QUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // we stop at %00
+#if QT_VERSION < 0x040400
+  QCOMPARE( QUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // stop at %00, like in kde3
+#else
+  QString output = QUrl::fromPercentEncoding( "C%00%0A" );
+  QString expected = QString::fromLatin1("C\0\n", 3); // no reason to stop at %00, in fact
+  QCOMPARE( output.size(), expected.size() );
+  QCOMPARE( output, expected );
+#endif
+  QCOMPARE( QUrl::fromPercentEncoding( "C%A" ), QString("C%A") ); // % A is not percent-encoding  (pct-encoded = "%" HEXDIG HEXDIG)
 
   QCOMPARE( QUrl::toPercentEncoding( "%" ), QByteArray("%25") );
   QCOMPARE( QUrl::toPercentEncoding( ":" ), QByteArray("%3A") );
