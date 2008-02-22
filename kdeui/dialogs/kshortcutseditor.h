@@ -120,18 +120,16 @@ public:
 	void addCollection(KActionCollection *, const QString &title = QString());
 
 	/**
-	 * This function writes any shortcut changes back to the original
-	 * action set(s).
+     * Undo all change made since the last save().
 	 */
-	//void commitChanges(); //we do it the other way around
+	void undo();
 
 	/**
-	 * This function reverts any shortcut changes to the original
-	 * action set(s). Not implemented yet.
-	 */
-	void undoChanges();
-
-	/**
+     * Save the changes.
+     *
+     * Well this function doesn't save actually for global shortcuts. It makes sure the editor
+     * doesn't undo all changes when it is deleted.
+	 *
 	 * This saves the actions to disk.
 	 * Any KActionCollection objects with the xmlFile() value set
 	 * will be written to an XML file.  All other will be written

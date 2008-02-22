@@ -85,7 +85,7 @@ bool KShortcutsDialog::configure(bool saveSettings)
 {
 	int retcode = exec();
 	if (retcode != Accepted)
-		d->m_keyChooser->undoChanges();
+		d->m_keyChooser->undo();
 	else if (saveSettings)
 		d->m_keyChooser->save();
 

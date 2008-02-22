@@ -45,6 +45,7 @@ KShortcutsEditor::KShortcutsEditor(KActionCollection *collection, QWidget *paren
 : QWidget( parent )
 , d(new KShortcutsEditorPrivate(this))
 {
+    kDebug() << "Creating Editor";
     d->initGUI(actionType, allowLetterShortcuts);
     addCollection(collection);
 }
@@ -122,12 +123,23 @@ void KShortcutsEditor::resizeColumns()
 
 void KShortcutsEditor::save()
 {
+    // we have to call commit on all items. If we wouldn't do that they would undo their changes
+    // upon deletion! That would lead to weird problems. Changes to Global Shortcuts would vanish
+    // completely. Changes to local shortcuts would vanish for this session.
+    for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
+        if ((*it)->childCount())
+            continue;
+
+        static_cast<KShortcutsEditorItem *>(*it)->commit();
+    }
+
+    // Now write the ActionCollection to the file
     foreach (KActionCollection* collection, d->actionCollections)
         collection->writeSettings();
 }
 
 
-void KShortcutsEditor::undoChanges()
+void KShortcutsEditor::undo()
 {
     //This function used to crash sometimes when invoked by clicking on "cancel"
     //with Qt 4.2.something. Apparently items were deleted too early by Qt.
