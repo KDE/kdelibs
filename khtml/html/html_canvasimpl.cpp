@@ -1055,17 +1055,25 @@ inline bool CanvasContext2DImpl::needsShadow() const
     return activeState().shadowColor.alpha() > 0;
 }
 
-QRectF CanvasContext2DImpl::clipForRepeat(QPainter *p, PathPaintOp op) const
+QPainterPath CanvasContext2DImpl::clipForPatternRepeat(QPainter *p, PathPaintOp op) const
 {
     const CanvasStyleBaseImpl *style = op == DrawFill ?
                 activeState().fillStyle.get() : activeState().strokeStyle.get();
 
     if (style->type() != CanvasStyleBaseImpl::Pattern)
-        return QRectF();
+        return QPainterPath();
 
     const CanvasPatternImpl *pattern = static_cast<const CanvasPatternImpl*>(style);
-    QRectF fillBounds = activeState().transform.inverted().mapRect(QRectF(QPointF(), canvasImage->size()));
-    return pattern->clipForRepeat(p->brushOrigin(), fillBounds);
+    const QTransform &ctm = activeState().transform;
+    const QRectF fillBounds = ctm.inverted().mapRect(QRectF(QPointF(), canvasImage->size()));
+    const QRectF clipRect = pattern->clipForRepeat(p->brushOrigin(), fillBounds);
+
+    if (clipRect.isEmpty())
+        return QPainterPath();
+
+    QPainterPath path;
+    path.addRect(clipRect);
+    return path * ctm;
 }
 
 void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const PathPaintOp op) const
@@ -1108,12 +1116,10 @@ void CanvasContext2DImpl::drawPath(QPainter *p, const QPainterPath &path, const 
         drawPathWithShadow(p, fillPath, op);
     else
     {
-        QRectF repeatClip = clipForRepeat(p, op);
-        if (!repeatClip.isEmpty()) {
-            QPainterPath clipPath;
-            clipPath.addRect(repeatClip);
-            p->setClipPath(clipPath * state.transform, Qt::IntersectClip);
-        }
+        const QPainterPath repeatClip = clipForPatternRepeat(p, op);
+        if (!repeatClip.isEmpty())
+            p->setClipPath(repeatClip, Qt::IntersectClip);
+
         p->drawPath(fillPath);
     }
     p->restore();
@@ -1129,18 +1135,14 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     if (radius > 7)
         radius = qMin(7 + std::pow(float(radius - 7.0), float(.7)), float(127.0));
 
-    qreal offset = radius * 2;
+    const qreal offset = radius * 2;
+    const QPainterPath repeatClip = (flags & NotUsingCanvasPattern) ?
+              QPainterPath() : clipForPatternRepeat(p, op);
 
-    bool honorRepeat = !(flags & NotUsingCanvasPattern);
-    QRectF repeatClip = clipForRepeat(p, op);
-    QPainterPath clipPath;
     QRect shapeBounds;
-
-    if (honorRepeat && !repeatClip.isEmpty()) {
-        clipPath.addRect(repeatClip);
-        clipPath = clipPath * state.transform;
-        shapeBounds = path.intersected(clipPath).controlPointRect().toAlignedRect();
-    } else
+    if (!repeatClip.isEmpty())
+        shapeBounds = path.intersected(repeatClip).controlPointRect().toAlignedRect();
+    else
         shapeBounds = path.controlPointRect().toAlignedRect();
 
     QRect clipRect;
@@ -1150,11 +1152,11 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     } else
         clipRect = QRect(QPoint(), canvasImage->size());
 
-    QRect shadowRect = shapeBounds.translated(shadowOffsetX(), shadowOffsetY())
+    const QRect shadowRect = shapeBounds.translated(shadowOffsetX(), shadowOffsetY())
                         .adjusted(-offset, -offset, offset, offset) &
                         clipRect.adjusted(-offset, -offset, offset, offset);
 
-    QRect shapeRect = QRect(shapeBounds & clipRect) | shadowRect
+    const QRect shapeRect = QRect(shapeBounds & clipRect) | shadowRect
                         .translated(-shadowOffsetX(), -shadowOffsetY()) & shapeBounds;
 
     if (!shapeRect.isValid())
@@ -1173,8 +1175,8 @@ void CanvasContext2DImpl::drawPathWithShadow(QPainter *p, const QPainterPath &pa
     painter.setBrush(p->brush());
     painter.setPen(Qt::NoPen);
     painter.translate(-shapeRect.x(), -shapeRect.y());
-    if (honorRepeat && !repeatClip.isEmpty())
-        painter.setClipPath(clipPath);
+    if (!repeatClip.isEmpty())
+        painter.setClipPath(repeatClip);
     painter.drawPath(path);
     painter.end();
 

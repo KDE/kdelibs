@@ -145,8 +145,10 @@ public:
     virtual Type type() const { return Pattern; }
     virtual QBrush toBrush() const;
 
-    // Returns the rectangle that should be filled with the pattern, given the
-    // repeat settings and the indicated brush origin and shape bounding rect.
+    // Returns the rect that a pattern fill or stroke should be clipped to, given
+    // the repeat setting and the indicated brush origin and bounding rect.
+    // The bounding rect (usually the canvas rect) limits the clip rect extent
+    // in the repeating dimension(s).
     QRectF clipForRepeat(const QPointF &origin, const QRectF &bounds) const;
 
     virtual bool isUnsafe() const { return unsafe; }
@@ -293,9 +295,9 @@ private:
 
     bool needsShadow() const;
 
-    // Returns the clip rect that should be used to ensure that only the parts of the
-    // path that should be filled by the pattern are filled, given the repeat setting.
-    QRectF clipForRepeat(QPainter *painter, const PathPaintOp op) const;
+    // Returns the clip path in device coordinates that the fill or stroke should be
+    // limited to, given the repeat setting of the pattern that will be used.
+    QPainterPath clipForPatternRepeat(QPainter *painter, const PathPaintOp op) const;
 
     // Helper function that fills or strokes a path, honoring shadow and pattern
     // repeat settings.
