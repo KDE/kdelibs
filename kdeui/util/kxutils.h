@@ -42,6 +42,19 @@ namespace KXUtils
  */
 KDEUI_EXPORT QPixmap createPixmapFromHandle( WId pixmap, WId mask = 0 );
 
+/**
+ * Compares two X timestamps, taking into account wrapping and 64bit architectures.
+ * Return value is like with strcmp(), 0 for equal, -1 for time1 < time2, 1 for time1 > time2.
+ * @since 4.1.0
+ */
+KDEUI_EXPORT int timestampCompare( unsigned long time1, unsigned long time2 );
+/**
+ * Returns a difference of two X timestamps, time2 - time1, where time2 must be later than time1,
+ * as returned by timestampCompare().
+ * @since 4.1.0
+ */
+KDEUI_EXPORT int timestampDiff( unsigned long time1, unsigned long time2 );
+
 } // namespace
 
 #endif // Q_WS_X11

@@ -684,13 +684,15 @@ public:
     /**
      Compares two X timestamps, taking into account wrapping and 64bit architectures.
      Return value is like with strcmp(), 0 for equal, -1 for time1 < time2, 1 for time1 > time2.
+     @deprecated Moved to KXUtils namespace.
     */
     static int timestampCompare( unsigned long time1, unsigned long time2 );
     /**
      Returns a difference of two X timestamps, time2 - time1, where time2 must be later than time1,
      as returned by timestampCompare().
+     @deprecated Moved to KXUtils namespace.
     */
-    static int timestampDiff( unsigned long time1_, unsigned long time2_ );
+    static int timestampDiff( unsigned long time1, unsigned long time2 );
 
 };
 
