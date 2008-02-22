@@ -390,6 +390,7 @@ OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp, CodeBlock& b
 
     OpValue out;
     CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &v, comp->globalScope());
+    return out;
 }
 
 OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
