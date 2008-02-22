@@ -26,6 +26,7 @@
 #include <kuniqueapplication.h>
 #include <kdebug.h>
 #include <kxerrorhandler.h>
+#include <kxutils.h>
 #include <netwm.h>
 #include <QtGui/QBitmap>
 #include <QDesktopWidget>
@@ -617,35 +618,12 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
 	    XFree((char*)hints);
 
         if (p != None){
-	    Window root;
-	    int x, y;
-	    unsigned int w = 0;
-	    unsigned int h = 0;
-            unsigned int border_w, depth;
-	    XGetGeometry(QX11Info::display(), p, &root,
-		         &x, &y, &w, &h, &border_w, &depth);
-	    if (w > 0 && h > 0){
-	        QPixmap pm(w, h);
-	        // Always detach before doing something behind QPixmap's back.
-	        pm.detach();
-                GC gc = XCreateGC( QX11Info::display(), p, 0, NULL );
-	        XCopyArea(QX11Info::display(), p, pm.handle(), gc,
-		          0, 0, w, h, 0, 0);
-                XFreeGC( QX11Info::display(), gc );
-	        if (p_mask != None){
-	    	    QBitmap bm(w, h);
-                    GC gc = XCreateGC( QX11Info::display(), p_mask, 0, NULL );
-		    XCopyArea(QX11Info::display(), p_mask, bm.handle(), gc,
-			      0, 0, w, h, 0, 0);
-		    pm.setMask(bm);
-                    XFreeGC( QX11Info::display(), gc );
-	        }
-	        if ( scale && width > 0 && height > 0 && !pm.isNull() &&
-		     ( (int) w != width || (int) h != height) ){
-		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-	        } else {
-		    result = pm;
-	        }
+            QPixmap pm = KXUtils::createPixmapFromHandle( p, p_mask );
+            if ( scale && width > 0 && height > 0 && !pm.isNull()
+                 && ( pm.width() != width || pm.height() != height) ){
+                result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+	    } else {
+                result = pm;
 	    }
         }
     }
