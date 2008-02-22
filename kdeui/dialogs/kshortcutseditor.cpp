@@ -138,12 +138,8 @@ void KShortcutsEditor::save()
         collection->writeSettings();
 }
 
+// KDE5 : rename to undo()
 void KShortcutsEditor::undoChanges()
-{
-    undo();
-}
-
-void KShortcutsEditor::undo()
 {
     //This function used to crash sometimes when invoked by clicking on "cancel"
     //with Qt 4.2.something. Apparently items were deleted too early by Qt.

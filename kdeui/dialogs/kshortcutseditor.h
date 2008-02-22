@@ -122,7 +122,6 @@ public:
 	/**
      * Undo all change made since the last save().
 	 */
-	void undo();
 	void undoChanges();
 
 	/**
