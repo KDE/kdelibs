@@ -39,6 +39,7 @@ class KFadeWidgetEffectPrivate
         QTimeLine timeLine;
         QPixmap oldPixmap;
         QWidget *destWidget;
+        bool disabled;
 };
 
 #endif // KFADEWIDGETEFFECT_P_H

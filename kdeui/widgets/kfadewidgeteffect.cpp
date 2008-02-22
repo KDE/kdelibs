@@ -23,18 +23,27 @@
 #include <QtCore/QEvent>
 #include <QtGui/QPainter>
 
+#include <kglobalsettings.h>
+
 KFadeWidgetEffectPrivate::KFadeWidgetEffectPrivate(QWidget *_destWidget)
-    : destWidget(_destWidget)
+    : destWidget(_destWidget), disabled(false)
 {
 }
 
 KFadeWidgetEffect::KFadeWidgetEffect(QWidget *destWidget)
-    : QWidget(destWidget && destWidget->parentWidget() ? destWidget->parentWidget() : destWidget)
-    , d_ptr(new KFadeWidgetEffectPrivate(destWidget))
+    : QWidget(destWidget ? destWidget->parentWidget() : 0),
+    d_ptr(new KFadeWidgetEffectPrivate(destWidget))
 {
     Q_D(KFadeWidgetEffect);
     d->q_ptr = this;
     Q_ASSERT(destWidget && destWidget->parentWidget());
+    if (!destWidget || !destWidget->parentWidget() || !destWidget->isVisible()
+            //|| !(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)
+       ) {
+        d->disabled = true;
+        hide();
+        return;
+    }
     setGeometry(QRect(destWidget->mapTo(parentWidget(), QPoint(0, 0)), destWidget->size()));
     d->oldPixmap = QPixmap::grabWidget(destWidget);
     d->timeLine.setFrameRange(0, 255);
@@ -60,6 +69,10 @@ void KFadeWidgetEffectPrivate::finished()
 void KFadeWidgetEffect::start(int duration)
 {
     Q_D(KFadeWidgetEffect);
+    if (d->disabled) {
+        deleteLater();
+        return;
+    }
     d->timeLine.setDuration(duration);
     d->timeLine.start();
 }
