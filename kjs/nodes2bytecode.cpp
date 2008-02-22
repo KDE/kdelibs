@@ -479,10 +479,7 @@ OpValue BitwiseNotNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     OpValue v = expr->generateEvalCode(comp, block);
     OpValue out;
-    //CodeGen::emitOp(comp, block, Op_BitNot, &out, &v);
-    CodeGen::emitOp(comp, block, Op_PrintInfo, 0, &v);
-    out = OpValue::immInt32(0);
-#warning "Debug only" // I need to remove this, so may as well use a gcc-ism's :-)
+    CodeGen::emitOp(comp, block, Op_BitNot, &out, &v);
     return out;
 }
 
