@@ -546,6 +546,7 @@ namespace KJS {
   public:
     FunctionCallValueNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

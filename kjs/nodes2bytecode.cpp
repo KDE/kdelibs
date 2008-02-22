@@ -383,6 +383,15 @@ OpValue NewExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
+OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = expr->generateEvalCode(comp, block);
+    args->generateEvalArguments(comp, block);
+
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &v, comp->globalScope());
+}
+
 OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     CompileReference* ref =  expr->generateRefBegin(comp, block, true /* issue error if not there*/);
