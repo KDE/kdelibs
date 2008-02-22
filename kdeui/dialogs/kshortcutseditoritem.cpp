@@ -283,9 +283,9 @@ void KShortcutsEditorItem::undo()
 
 void KShortcutsEditorItem::commit()
 {
-#ifdef DEBUG
-    if (m_oldLocalShortcut or m_oldGlobalShortcut or m_oldShapeGesture or m_oldRockerGesture ) {
-        kDebug() << "Commiting changes for " << data(Name, QT::DisplayRole);
+#ifndef NDEBUG
+    if (m_oldLocalShortcut || m_oldGlobalShortcut || m_oldShapeGesture || m_oldRockerGesture ) {
+        kDebug() << "Commiting changes for " << data(Name, Qt::DisplayRole).toString();
     }
 #endif
 
