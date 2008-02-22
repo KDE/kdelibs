@@ -90,7 +90,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
-    init( parent ? parent->winId() : 0L );
+    init( parent ? parent->effectiveWinId() : 0L );
 }
 
 KPassivePopup::KPassivePopup( WId win )
