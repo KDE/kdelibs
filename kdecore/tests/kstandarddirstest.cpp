@@ -26,20 +26,26 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kstandarddirs.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include "config-prefix.h"
 #include <QtCore/QDebug>
 #include <config.h>
+
+void KStandarddirsTest::initTestCase()
+{
+    m_kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+}
 
 void KStandarddirsTest::testLocateLocal()
 {
     const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
     // KStandardDirs resolves symlinks, so we must compare with canonicalPath()
-    QCOMPARE( configLocal, QDir::home().canonicalPath() + "/.kde-unit-test/share/config/ksomethingrc" );
+    QCOMPARE( configLocal, m_kdehome + "/share/config/ksomethingrc" );
 }
 
 void KStandarddirsTest::testSaveLocation()
 {
     const QString saveLoc = KGlobal::dirs()->saveLocation( "appdata" );
-    QCOMPARE( saveLoc, QDir::home().canonicalPath() + "/.kde-unit-test/share/apps/qttest/" );
+    QCOMPARE( saveLoc, m_kdehome + "/share/apps/qttest/" );
 }
 
 void KStandarddirsTest::testAppData()
@@ -47,7 +53,7 @@ void KStandarddirsTest::testAppData()
     // In addition to testSaveLocation(), we want to also check other KComponentDatas
     KComponentData cData("foo");
     const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
-    QCOMPARE( fooAppData, QDir::home().canonicalPath() + "/.kde-unit-test/share/apps/foo/" );
+    QCOMPARE( fooAppData, m_kdehome + "/share/apps/foo/" );
 }
 
 static bool isKdelibsInstalled()
@@ -237,3 +243,21 @@ void KStandarddirsTest::testAddResourceDir()
     ret = KStandardDirs::locate( "here", file );
     QCOMPARE(ret, KStandardDirs::realPath(dir) + "Cairo");
 }
+
+void KStandarddirsTest::testSetXdgDataDirs()
+{
+    // By default we should have KDEDIR/share/applications in `kde4-config --path xdgdata-apps`
+    const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
+    const QString kdeDataApps = QString(KDEDIR "/share/applications/");
+    QVERIFY(dirs.contains(kdeDataApps));
+
+    // When setting XDG_DATA_DIR this should still be true
+    const QString localApps = m_kdehome + "/share/applications/";
+    QVERIFY(KStandardDirs::makeDir(localApps));
+    ::setenv("XDG_DATA_DIRS", QFile::encodeName(m_kdehome + "/share"), 1 );
+    KStandardDirs newStdDirs;
+    const QStringList newDirs = newStdDirs.resourceDirs("xdgdata-apps");
+    QVERIFY(newDirs.contains(kdeDataApps));
+    QVERIFY(newDirs.contains(localApps));
+}
+

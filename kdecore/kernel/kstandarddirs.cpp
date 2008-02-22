@@ -1213,12 +1213,12 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 static inline QString equalizePath(QString &str)
 {
 #ifdef Q_WS_WIN
-    // filter pathes through QFileInfo to have always 
+    // filter pathes through QFileInfo to have always
     // the same case for drive letters
     QFileInfo f(str);
     if (f.isAbsolute())
         return f.absoluteFilePath();
-    else 
+    else
 #endif
         return str;
 }
@@ -1245,7 +1245,7 @@ static int tokenize( QStringList& tokens, const QString& str,
     {
         tokens.append( equalizePath(token) );
     }
-    
+
     return tokens.count();
 }
 
@@ -1538,23 +1538,27 @@ void KStandardDirs::addKDEDefaults()
     // end XDG_CONFIG_XXX
 
     // begin XDG_DATA_XXX
-    xdgdirs = readEnvPath("XDG_DATA_DIRS");
-    if (!xdgdirs.isEmpty())
-    {
-        tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
+    QStringList kdedirDataDirs;
+    for (QStringList::ConstIterator it = kdedirList.begin();
+         it != kdedirList.end(); ++it) {
+        QString dir = *it;
+        if (dir.length() < 1 || dir[dir.length()-1] != '/')
+            dir += '/';
+        kdedirDataDirs.append(dir+"share/");
     }
-    else
-    {
-        xdgdirList.clear();
-        for (QStringList::ConstIterator it = kdedirList.begin();
-             it != kdedirList.end(); ++it)
-        {
-            QString dir = *it;
-            if (dir.length() < 1 || dir[dir.length()-1] != '/')
-                dir += '/';
-            xdgdirList.append(dir+"share/");
-        }
 
+    xdgdirs = readEnvPath("XDG_DATA_DIRS");
+    if (!xdgdirs.isEmpty()) {
+        tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
+        // Ensure the kdedirDataDirs are in there too,
+        // otherwise resourceDirs() will add kdedir/share/applications/kde4
+        // as returned by installPath(), and that's incorrect.
+        Q_FOREACH(const QString& dir, kdedirDataDirs) {
+            if (!xdgdirList.contains(dir))
+                xdgdirList.append(dir);
+        }
+    } else {
+        xdgdirList = kdedirDataDirs;
         xdgdirList.append("/usr/local/share/");
         xdgdirList.append("/usr/share/");
     }

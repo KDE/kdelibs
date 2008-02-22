@@ -25,6 +25,7 @@ class KStandarddirsTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testLocateLocal();
     void testSaveLocation();
     void testAppData();
@@ -37,6 +38,10 @@ private Q_SLOTS:
     void testRelativeLocation();
     void testAddResourceType();
     void testAddResourceDir();
+    void testSetXdgDataDirs();
+
+private:
+    QString m_kdehome;
 };
 
 #endif
