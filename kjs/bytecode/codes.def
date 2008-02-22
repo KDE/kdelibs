@@ -895,8 +895,8 @@ operation FunctionCall {
             // ### TODO
         }
 
-        ASSERT(thisVal->isObject());
-        $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
+        // ### TODO: optimize away toObject in local cases?
+        $$ = static_cast<JSObject*>(func)->call(exec, thisVal->toObject(exec), workList);
     ]]
 }
 
