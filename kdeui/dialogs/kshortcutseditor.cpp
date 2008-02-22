@@ -45,7 +45,6 @@ KShortcutsEditor::KShortcutsEditor(KActionCollection *collection, QWidget *paren
 : QWidget( parent )
 , d(new KShortcutsEditorPrivate(this))
 {
-    kDebug() << "Creating Editor";
     d->initGUI(actionType, allowLetterShortcuts);
     addCollection(collection);
 }
@@ -84,7 +83,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     foreach (QAction *action, collection->actions()) {
         QString name = action->text().remove('&');
-        kDebug(125) << "Key: " << name;
+        kDebug(125) << "Adding Key: " << name;
 
         if (name.startsWith(QLatin1String("Program:")))
             l = Program;

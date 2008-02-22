@@ -256,25 +256,26 @@ bool KShortcutsEditorItem::isModified(uint column) const
 
 void KShortcutsEditorItem::undo()
 {
+#ifndef NDEBUG
+    if (m_oldLocalShortcut || m_oldGlobalShortcut || m_oldShapeGesture || m_oldRockerGesture ) {
+        kDebug(125) << "Undoing changes for " << data(Name, Qt::DisplayRole).toString();
+    }
+#endif
     if (m_oldLocalShortcut) {
         m_action->setShortcut(*m_oldLocalShortcut);
-        kDebug() << "Undo for Shortcut " << data(Name,Qt::DisplayRole);
     }
 
     if (m_oldGlobalShortcut) {
         m_action->setGlobalShortcut(*m_oldGlobalShortcut, KAction::ActiveShortcut,
                                     KAction::NoAutoloading);
-        kDebug() << "undo for " << data(Name,Qt::DisplayRole);
     }
 
     if (m_oldShapeGesture) {
         m_action->setShapeGesture(*m_oldShapeGesture);
-        kDebug() << "undo for " << data(Name,Qt::DisplayRole);
     }
 
     if (m_oldRockerGesture) {
         m_action->setRockerGesture(*m_oldRockerGesture);
-        kDebug() << "undo for " << data(Name,Qt::DisplayRole);
     }
 
     updateModified();
@@ -285,7 +286,7 @@ void KShortcutsEditorItem::commit()
 {
 #ifndef NDEBUG
     if (m_oldLocalShortcut || m_oldGlobalShortcut || m_oldShapeGesture || m_oldRockerGesture ) {
-        kDebug() << "Commiting changes for " << data(Name, Qt::DisplayRole).toString();
+        kDebug(125) << "Commiting changes for " << data(Name, Qt::DisplayRole).toString();
     }
 #endif
 
