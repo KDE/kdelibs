@@ -1229,6 +1229,7 @@ namespace KJS {
     FuncExprNode(const Identifier &i, FunctionBodyNode *b, ParameterNode *p = 0)
       : ident(i), param(p ? p->next.release() : 0), body(b) { if (p) { Parser::removeNodeCycle(param.get()); } addParams(); }
     virtual JSValue *evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }

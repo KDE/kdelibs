@@ -919,5 +919,31 @@ operation CtorCall {
     ]]
 }
 
+operation EvalFuncExpr {
+    impl value(ident ident, node body) [[
+        bool named = !ident->isNull();
+        JSObject *functionScopeObject = 0;
+
+        if (named) {
+            // named FunctionExpressions can recursively call themselves,
+            // but they won't register with the current scope chain and should
+            // be contained as single property in an anonymous object.
+            functionScopeObject = new JSObject;
+            exec->pushScope(functionScopeObject);
+        }
+
+        FunctionImp *func = new FunctionImp(exec, *ident, static_cast<FunctionBodyNode*>(body), exec->scopeChain());
+        JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
+        proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
+        func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
+
+        if (named) {
+            functionScopeObject->put(exec, *ident, func, Internal | ReadOnly | (exec->codeType() == EvalCode ? 0 : DontDelete));
+                exec->popScope();
+        }
+
+        $$ = func;
+    ]]
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

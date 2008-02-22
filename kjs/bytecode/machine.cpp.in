@@ -28,7 +28,7 @@
 #include "LocalStorage.h"
 #include "bytecode/opargs.h"
 #include "bytecode/machine.h"
-
+#include "scriptfunction.h"
 #include "internal.h" // for printInfo
 
 namespace KJS {

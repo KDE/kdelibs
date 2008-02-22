@@ -645,6 +645,15 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block
     }
 }
 
+OpValue FuncExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue out;
+    OpValue nameV = OpValue::immIdent(&ident);
+    OpValue bodyV = OpValue::immNode(body.get());
+    CodeGen::emitOp(comp, block, Op_EvalFuncExpr, &out, &nameV, &bodyV);
+    return out;
+}
+
 void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
 {
     // No executable content...
