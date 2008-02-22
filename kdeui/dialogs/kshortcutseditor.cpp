@@ -138,6 +138,10 @@ void KShortcutsEditor::save()
         collection->writeSettings();
 }
 
+void KShortcutsEditor::undoChanges()
+{
+    undo();
+}
 
 void KShortcutsEditor::undo()
 {
