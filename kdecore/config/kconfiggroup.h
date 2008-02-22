@@ -66,6 +66,9 @@ public:
      * @p group is the group name encoded in UTF-8.
      */
     KConfigGroup(KConfigBase *master, const QString &group);
+    /**
+       \overload
+    */
     KConfigGroup(KConfigBase *master, const char *group);
 
     /**
@@ -75,9 +78,18 @@ public:
      * This allows to create subgroups, by passing an existing group as @p master.
      */
     KConfigGroup(const KConfigBase *master, const QString &group);
+    /**
+       \overload
+    */
     KConfigGroup(const KConfigBase *master, const char *group);
 
+    /**
+       \overload
+    */
     KConfigGroup(const KSharedConfigPtr &master, const QString& group);
+    /**
+       \overload
+    */
     KConfigGroup(const KSharedConfigPtr &master, const char* group);
 
     KConfigGroup(const KConfigGroup &);
@@ -118,6 +130,9 @@ public:
      * Return the config object that this group belongs to.
      */
     KConfig* config();
+    /**
+       \overload
+    */
     const KConfig* config() const;
 
     /**
@@ -126,6 +141,9 @@ public:
      * groups. A subgroup can only change to another subgroup of the parent.
      */
     KDE_DEPRECATED void changeGroup( const QString &group );
+    /**
+       \overload
+    */
     KDE_DEPRECATED void changeGroup( const char *group);
 
     /** 
@@ -167,6 +185,9 @@ public:
     template <typename T>
         inline T readEntry(const QString& key, const T& aDefault) const
             { return readCheck(key.toUtf8().constData(), aDefault); }
+    /**
+       \overload
+    */
     template <typename T>
         inline T readEntry(const char *key, const T& aDefault) const
             { return readCheck(key, aDefault); }
@@ -176,9 +197,16 @@ public:
      *
      * @param key The key to search for.
      * @param aDefault A default value returned if the key was not found.
-     * @return The value for this key. Can be QVariant() if aDefault is null.
+     * @return The value for this key.
+     *
+     * @note The return value will always have the same QVariant::Type
+     * as \a aDefault. This implies that the only possible return
+     * value for \c aDefault == \c QVariant() is \c QVariant().
      */
     QVariant readEntry(const QString& key, const QVariant &aDefault) const;
+    /**
+       \overload
+    */
     QVariant readEntry(const char* key, const QVariant &aDefault) const;
 
     /**
@@ -190,6 +218,9 @@ public:
      * @return The value for this key. Can be QString() if aDefault is null.
      */
     QString readEntry(const char* key, const QString& aDefault ) const;
+    /**
+       \overload
+    */
     QString readEntry(const QString& key, const QString& aDefault) const;
 
     /**
@@ -200,6 +231,9 @@ public:
      * @return The value for this key. Can be QString() if aDefault is null.
      */
     QString readEntry(const QString &key, const char * aDefault = 0) const;
+    /**
+       \overload
+    */
     QString readEntry(const char *key, const char *aDefault = 0 ) const;
 
     /**
@@ -213,6 +247,9 @@ public:
      *          readEntry(const char*, const QList<T>&) const
      */
     QVariantList readEntry( const QString &key, const QVariantList& aDefault ) const;
+    /**
+       \overload
+    */
     QVariantList readEntry( const char* key, const QVariantList& aDefault ) const;
 
     /**
@@ -222,6 +259,9 @@ public:
      * @return The list. Contains @p aDefault if @p key does not exist.
      */
     QStringList readEntry(const QString &key, const QStringList& aDefault) const;
+    /**
+       \overload
+    */
     QStringList readEntry(const char* key, const QStringList& aDefault) const;
 
     /**
@@ -233,6 +273,9 @@ public:
     template<typename T>
         inline QList<T> readEntry(const QString& key, const QList<T> &aDefault) const
             { return readListCheck(key.toUtf8().constData(), aDefault); }
+    /**
+       \overload
+    */
     template<typename T>
         inline QList<T> readEntry(const char* key, const QList<T> &aDefault) const
             { return readListCheck(key, aDefault); }
@@ -245,6 +288,9 @@ public:
      * @return The list. Contains @p aDefault if @p pKey does not exist.
      */
     QStringList readXdgListEntry(const QString& pKey, const QStringList& aDefault = QStringList()) const;
+    /**
+       \overload
+    */
     QStringList readXdgListEntry(const char* pKey, const QStringList& aDefault = QStringList()) const;
 
     /**
@@ -259,6 +305,9 @@ public:
      * @return The value for this key. Can be QString() if @p aDefault is null.
      */
     QString readPathEntry( const QString& pKey, const QString & aDefault ) const;
+    /**
+       \overload
+    */
     QString readPathEntry( const char *key, const QString & aDefault ) const;
 
     /**
@@ -273,6 +322,9 @@ public:
      * @return The list. Empty if the entry does not exist.
      */
     QStringList readPathEntry( const QString& pKey, const QStringList& aDefault ) const;
+    /**
+       \overload
+    */
     QStringList readPathEntry( const char *key, const QStringList& aDefault ) const;
 
     /**
@@ -285,6 +337,9 @@ public:
      */
     QString readEntryUntranslated( const QString& pKey,
                                    const QString& aDefault = QString() ) const;
+    /**
+       \overload
+    */
     QString readEntryUntranslated( const char *key,
                                    const QString& aDefault = QString() ) const;
 
@@ -297,6 +352,9 @@ public:
      */
     void writeEntry( const QString& key, const QVariant& value,
                      WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writeEntry( const char *key, const QVariant& value,
                      WriteConfigFlags pFlags = Normal );
 
@@ -309,6 +367,9 @@ public:
      */
     void writeEntry( const QString& key, const QString& value,
                      WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writeEntry( const char *key, const QString& value,
                      WriteConfigFlags pFlags = Normal );
 
@@ -321,6 +382,9 @@ public:
      */
     void writeEntry( const QString& key, const QByteArray& value,
                      WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writeEntry( const char *key, const QByteArray& value,
                      WriteConfigFlags pFlags = Normal );
 
@@ -332,6 +396,9 @@ public:
      * @param pFlags The flags to use when writing this entry.
      */
     void writeEntry(const QString &key, const char *value, WriteConfigFlags pFlags = Normal);
+    /**
+       \overload
+    */
     void writeEntry(const char *key, const char *value, WriteConfigFlags pFlags = Normal);
 
     /**
@@ -345,6 +412,9 @@ public:
         inline void writeEntry( const char *key, const T& value, WriteConfigFlags pFlags = Normal )
             { writeCheck( key, value, pFlags ); }
 
+    /**
+       \overload
+    */
     template <typename T>
         inline void writeEntry( const QString& key, const T& value, WriteConfigFlags pFlags = Normal )
             { writeCheck( key.toUtf8().constData(), value, pFlags ); }
@@ -361,6 +431,9 @@ public:
     void writeEntry( const QString& key, const QStringList &value,
                      WriteConfigFlags pFlags = Normal );
 
+    /**
+       \overload
+    */
     void writeEntry( const char* key, const QStringList &value,
                      WriteConfigFlags pFlags = Normal );
 
@@ -376,6 +449,9 @@ public:
     void writeEntry( const QString& key, const QVariantList &value,
                      WriteConfigFlags pFlags = Normal );
 
+    /**
+       \overload
+    */
     void writeEntry( const char* key, const QVariantList &value,
                      WriteConfigFlags pFlags = Normal );
 
@@ -390,6 +466,9 @@ public:
         inline void writeEntry(const QString& key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
             { writeListCheck( key.toUtf8().constData(), value, pFlags ); }
 
+    /**
+       \overload
+    */
     template <typename T>
         inline void writeEntry(const char* key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
             { writeListCheck( key, value, pFlags ); }
@@ -406,6 +485,9 @@ public:
      */
     void writeXdgListEntry( const QString& pKey, const QStringList &value,
                             WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writeXdgListEntry( const char *pKey, const QStringList &value,
                             WriteConfigFlags pFlags = Normal );
 
@@ -422,6 +504,9 @@ public:
      */
     void writePathEntry( const QString& pKey, const QString & path,
                          WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writePathEntry( const char *pKey, const QString & path,
                          WriteConfigFlags pFlags = Normal );
 
@@ -440,6 +525,9 @@ public:
      */
     void writePathEntry( const QString& pKey, const QStringList &value,
                          WriteConfigFlags pFlags = Normal );
+    /**
+       \overload
+    */
     void writePathEntry( const char *pKey, const QStringList &value,
                          WriteConfigFlags pFlags = Normal );
 
@@ -451,6 +539,9 @@ public:
      * @param pFlags       The flags to use when deleting this entry.
      */
     void deleteEntry(const QString& pKey, WriteConfigFlags pFlags = Normal);
+    /**
+       \overload
+    */
     void deleteEntry(const char *pKey, WriteConfigFlags pFlags = Normal);
 
     /**
@@ -462,6 +553,9 @@ public:
      * @return If true, the key is available.
      */
     bool hasKey(const QString &key) const;
+    /**
+       \overload
+    */
     bool hasKey(const char *key) const;
 
     /**
@@ -477,6 +571,9 @@ public:
      * in this configuration file.
      */
     bool isEntryImmutable(const QString &key) const;
+    /**
+       \overload
+    */
     bool isEntryImmutable(const char *key) const;
 
     /**
@@ -490,6 +587,9 @@ public:
      * @param key The key of the entry to revert.
      */
     void revertToDefault(const QString &key);
+    /**
+       \overload
+    */
     void revertToDefault(const char* key);
 
     /**
@@ -518,6 +618,9 @@ public:
      * @param key The key of the entry to check.
      */
     bool hasDefault(const QString &key) const;
+    /**
+       \overload
+    */
     bool hasDefault(const char* key) const;
 
     /**
