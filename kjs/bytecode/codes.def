@@ -164,8 +164,7 @@ conversion int32 => number {
 */
 conversion number => bool {
     impl [[
-        // ### FIXME
-        abort();
+        return in < 0.0 || in > 0.0; // false for NaN
     ]]
 
     tile costs 15;
@@ -198,85 +197,6 @@ operation PrintInfo {
         printInfo(exec, "", in);
     ]]
 }
-
-/**
- These are needed for basic types, conversions, etc.
-*/
-
-operation OwnedString {
-    impl value ownedString(string in) [[
-        $$ = jsOwnedString(*in);
-    ]]
-}
-
-operation JsBoolean {
-    impl value jsBoolean(bool in) [[
-        $$ = jsBoolean(in);
-    ]]
-}
-
-operation ToBoolean {
-    impl bool toBoolean(value in) [[
-        $$ = in->toBoolean(exec);
-    ]]
-}
-
-operation ToInt32 {
-    impl int32 toInt32(value in) [[
-        $$ = in->toInt32(exec);
-    ]]
-}
-
-operation ToNumber {
-    impl number(value in) [[
-        $$ = in->toNumber(exec);
-    ]]
-}
-
-operation Int32ToBool {
-    impl bool int32ToBool(int32 in) [[
-        $$ = in ? true : false;
-    ]]
-}
-
-operation Int32ToNumber {
-    impl number (int32 in) [[
-        $$ = in;
-    ]]
-}
-
-operation NumberToBool {
-    impl bool(number in) [[
-        //### TODO:
-        abort();
-    ]]
-}
-
-operation NumberToInt32 {
-    impl int32(number in) [[
-        $$ = JSValue::toInt32(in);
-    ]]
-}
-
-operation JSNumberFromInt32 {
-    impl value jsNum(int32 in) [[
-        $$ = jsNumber(in);
-    ]]
-}
-
-operation JSNumber {
-    impl value jsNum(number in) [[
-        $$ = jsNumber(in);
-    ]]
-}
-
-operation This {
-    impl value getThis() [[
-        $$ = exec->thisValue();
-    ]]
-}
-
-
 
 /**
  Control flow stuff
@@ -382,6 +302,12 @@ operation RaiseError {
 
 // Variable stuff... Locals access can just use register addressing,
 // not specific get/put, but when we have to do symbolic lookup, we use these.
+operation This {
+    impl value getThis() [[
+        $$ = exec->thisValue();
+    ]]
+}
+
 operation GetVariableObject {
     impl value getVariableObject() [[
         $$ = exec->variableObject();
@@ -525,6 +451,8 @@ operation RegPutValue {
     impl void regPut(reg destReg, value val) [[
         localStore[destReg].val.valueVal = val;
     ]]
+
+    tile (reg, number) as regPut;
 }
 
 operation RegPutNumber {
@@ -632,6 +560,15 @@ operation SymGetVarObject {
     ]]
 }
 
+/**
+ Making things..
+*/
+operation OwnedString {
+    impl value ownedString(string in) [[
+        $$ = jsOwnedString(*in);
+    ]]
+}
+
 operation NewObject {
     impl value() [[
         $$ = new JSObject(exec->lexicalInterpreter()->builtinObjectPrototype());
@@ -676,12 +613,18 @@ operation Neg {
     impl number neg(number old) [[
         $$ = -old;
     ]]
+
+    tile (value) as neg;
 }
 
 operation Mult {
-    impl number(number v1, number v2) [[
+    impl number mult (number v1, number v2) [[
         $$ = v1 * v2;
     ]]
+
+    tile (value, value) as mult;
+    tile (value, number) as mult;
+    tile (number, value) as mult;
 }
 
 operation Div {

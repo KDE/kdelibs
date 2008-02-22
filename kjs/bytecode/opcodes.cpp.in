@@ -94,70 +94,17 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
         return;
     }
 
+    if (emitSimpleRegisterConversion(comp, block, convType, original, out))
+        return;
+
     switch (convType) {
-    case Conv_NoOp:
-        out = *original;
+    case Conv_I_R_Int32_Value:
+        CodeGen::emitOp(comp, block, Op_RInt32_Value, &out, original);
         break;
-    case Conv_RBool_Int32:
-        // This one's a no-op..
-        out = *original;
+
+    case Conv_RNumber_Value:
+        CodeGen::emitOp(comp, block, Op_RNumber_Value, &out, original);
         break;
-    case Conv_RBool_Value: {
-        CodeGen::emitOp(comp, block, Op_JsBoolean, &out, original);
-    }
-    break;
-
-    case Conv_RValue_Bool: {
-        CodeGen::emitOp(comp, block, Op_ToBoolean, &out, original);
-    }
-    break;
-
-    case Conv_RValue_Int32: {
-        CodeGen::emitOp(comp, block, Op_ToInt32, &out, original);
-    }
-    break;
-
-    case Conv_RValue_Number: {
-        CodeGen::emitOp(comp, block, Op_ToNumber, &out, original);
-    }
-    break;
-
-    case Conv_RInt32_Bool: {
-        CodeGen::emitOp(comp, block, Op_Int32ToBool, &out, original);
-    }
-    break;
-
-    case Conv_RInt32_Value: {
-        CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
-    }
-    break;
-
-    case Conv_RInt32_Number: {
-        CodeGen::emitOp(comp, block, Op_Int32ToNumber, &out, original);
-    }
-    break;
-
-    case Conv_RNumber_Bool: {
-        CodeGen::emitOp(comp, block, Op_NumberToBool, &out, original);
-    }
-    break;
-
-    case Conv_RNumber_Int32: {
-        CodeGen::emitOp(comp, block, Op_NumberToInt32, &out, original);
-    }
-    break;
-
-    case Conv_I_R_Int32_Value: {
-        CodeGen::emitOp(comp, block, Op_JSNumberFromInt32, &out, original);
-    }
-    break;
-
-    case Conv_I_R_Number_Value:
-    case Conv_RNumber_Value: {
-        CodeGen::emitOp(comp, block, Op_JSNumber, &out, original);
-    }
-
-    break;
 
     default:
         printf("Unable to handle register conversion:%s\n", ConvOpVals[convType]);

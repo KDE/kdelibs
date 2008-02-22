@@ -229,7 +229,7 @@ void Parser::parseConversion()
     match(Lexer::RBrace);
 
     if (hasRegister)
-        handleConversion(registerIdent, "", -1, false, false, false, from, to, registerCost);
+        handleConversion(registerIdent, code, codeLine, false, false, false, from, to, registerCost);
 
     // Computer name, from type sig
     QString name = "I" + capitalized(from) + "_" + capitalized(to);

@@ -157,6 +157,23 @@ void TableBuilder::generateCode()
     *cppStream << "    }\n";
     *cppStream << "}\n\n";
 
+    // Similar helper for simple register conversions..
+    *cppStream << "static bool emitSimpleRegisterConversion(CompileState* comp, CodeBlock& block, ConvOp convType, OpValue* original, OpValue& out)\n{\n";
+    *cppStream << "    switch(convType) {\n";
+    *cppStream << "    case Conv_NoOp:\n";
+    *cppStream << "        out = *original;\n";
+    *cppStream << "        break;\n";
+    foreach (const ConversionInfo& inf, rgConversionList) {
+        *cppStream << "    case Conv_" << inf.name << ":\n";
+        *cppStream << "        CodeGen::emitOp(comp, block, Op_" << inf.name << ", &out, original);\n";
+        *cppStream << "        break;\n";
+    }
+    *cppStream << "    default:\n";
+    *cppStream << "        return false;\n";
+    *cppStream << "    }\n";
+    *cppStream << "    return true;\n";
+    *cppStream << "}\n\n";
+
     // Operations
     Enum opNamesEnum("OpName", "Op_", operationNames);
     opNamesEnum.printDeclaration(hStream);
@@ -330,6 +347,16 @@ void TableBuilder::handleConversion(const QString& name, const QString& code, in
         imConversionList << inf;
     } else {
         rgConversions[from][to] = inf;
+        rgConversionList << inf;
+        // Generate a corresponding bytecode routine.
+        handleOperation(inf.name);
+        QStringList sig;
+        sig << from;
+        QStringList names;
+        names << "in";
+        QString patchedCode = code;
+        patchedCode.replace("return", "$$ = "); // ### FIXME: Brittle!
+        handleImpl("", patchedCode, codeLine, 0, to, sig, names);
     }
 }
 

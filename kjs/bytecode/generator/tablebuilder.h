@@ -137,6 +137,7 @@ private:
 
     QStringList conversionNames;
     QList<ConversionInfo> imConversionList;
+    QList<ConversionInfo> rgConversionList;
 
     QHash<QString, QHash<QString, ConversionInfo> > imConversions;
     QHash<QString, QHash<QString, ConversionInfo> > rgConversions;
