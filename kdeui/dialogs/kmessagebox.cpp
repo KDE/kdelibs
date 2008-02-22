@@ -377,7 +377,7 @@ int KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QString &dontAskAgainName,
                            Options options)
 { // in order to avoid code duplication, convert to WId, it will be converted back
-    return questionYesNoListWId( parent ? parent->winId() : 0, text, strlist,
+    return questionYesNoListWId( parent ? parent->effectiveWinId() : 0, text, strlist,
         caption, buttonYes, buttonNo, dontAskAgainName, options );
 }
 
@@ -439,7 +439,7 @@ int KMessageBox::questionYesNoCancel(QWidget *parent,
                           const QString &dontAskAgainName,
                           Options options)
 {
-    return questionYesNoCancelWId( parent ? parent->winId() : 0, text, caption, buttonYes, buttonNo, buttonCancel,
+    return questionYesNoCancelWId( parent ? parent->effectiveWinId() : 0, text, caption, buttonYes, buttonNo, buttonCancel,
         dontAskAgainName, options );
 }
 
@@ -532,7 +532,7 @@ int KMessageBox::warningYesNoList(QWidget *parent, const QString &text,
                               const QString &dontAskAgainName,
                               Options options)
 {
-    return warningYesNoListWId( parent ? parent->winId() : 0, text, strlist, caption,
+    return warningYesNoListWId( parent ? parent->effectiveWinId() : 0, text, strlist, caption,
         buttonYes, buttonNo, dontAskAgainName, options );
 }
 
@@ -617,7 +617,7 @@ int KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                              const QString &dontAskAgainName,
                              Options options)
 {
-    return warningContinueCancelListWId( parent ? parent->winId() : 0, text, strlist,
+    return warningContinueCancelListWId( parent ? parent->effectiveWinId() : 0, text, strlist,
         caption, buttonContinue, buttonCancel, dontAskAgainName, options );
 }
 
@@ -703,7 +703,7 @@ int KMessageBox::warningYesNoCancelList(QWidget *parent, const QString &text,
                                     const QString &dontAskAgainName,
                                     Options options)
 {
-    return warningYesNoCancelListWId( parent ? parent->winId() : 0, text, strlist,
+    return warningYesNoCancelListWId( parent ? parent->effectiveWinId() : 0, text, strlist,
         caption, buttonYes, buttonNo, buttonCancel, dontAskAgainName, options );
 }
 
@@ -768,7 +768,7 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
 void KMessageBox::error(QWidget *parent,  const QString &text,
                    const QString &caption, Options options)
 {
-    return errorListWId( parent ? parent->winId() : 0, text, QStringList(), caption, options );
+    return errorListWId( parent ? parent->effectiveWinId() : 0, text, QStringList(), caption, options );
 }
 
 void KMessageBox::errorWId(WId parent_id, const QString &text,
@@ -780,7 +780,7 @@ void KMessageBox::errorWId(WId parent_id, const QString &text,
 void KMessageBox::errorList(QWidget *parent, const QString &text, const QStringList &strlist,
                        const QString &caption, Options options)
 {
-    return errorListWId( parent ? parent->winId() : 0, text, strlist, caption, options );
+    return errorListWId( parent ? parent->effectiveWinId() : 0, text, strlist, caption, options );
 }
 
 void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList &strlist,
@@ -814,7 +814,7 @@ KMessageBox::detailedError(QWidget *parent,  const QString &text,
                    const QString &details,
                    const QString &caption, Options options)
 {
-    return detailedErrorWId( parent ? parent->winId() : 0, text, details, caption, options );
+    return detailedErrorWId( parent ? parent->effectiveWinId() : 0, text, details, caption, options );
 }
 
 void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
@@ -847,7 +847,7 @@ void KMessageBox::queuedDetailedError(QWidget *parent,  const QString &text,
                    const QString &details,
                    const QString &caption)
 {
-    return queuedDetailedErrorWId( parent ? parent->winId() : 0, text, details, caption );
+    return queuedDetailedErrorWId( parent ? parent->effectiveWinId() : 0, text, details, caption );
 }
 
 void KMessageBox::queuedDetailedErrorWId(WId parent_id,  const QString &text,
@@ -863,7 +863,7 @@ void KMessageBox::queuedDetailedErrorWId(WId parent_id,  const QString &text,
 void KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption, Options options)
 {
-    return sorryWId( parent ? parent->winId() : 0, text, caption, options );
+    return sorryWId( parent ? parent->effectiveWinId() : 0, text, caption, options );
 }
 
 void KMessageBox::sorryWId(WId parent_id, const QString &text,
@@ -895,7 +895,7 @@ void KMessageBox::detailedSorry(QWidget *parent, const QString &text,
                    const QString &details,
                    const QString &caption, Options options)
 {
-    return detailedSorryWId( parent ? parent->winId() : 0, text, details, caption, options );
+    return detailedSorryWId( parent ? parent->effectiveWinId() : 0, text, details, caption, options );
 }
 
 void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
@@ -939,7 +939,7 @@ void KMessageBox::informationWId(WId parent_id,const QString &text,
 void KMessageBox::informationList(QWidget *parent,const QString &text, const QStringList & strlist,
                          const QString &caption, const QString &dontShowAgainName, Options options)
 {
-    return informationListWId( parent ? parent->winId() : 0, text, strlist, caption,
+    return informationListWId( parent ? parent->effectiveWinId() : 0, text, strlist, caption,
         dontShowAgainName, options );
 }
 
@@ -1043,7 +1043,7 @@ int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &te
                              const KGuiItem &buttonNo, const KGuiItem &buttonCancel,
                              const QString &dontShowAskAgainName, Options options )
 {
-    return messageBoxWId( parent ? parent->winId() : 0, type, text, caption,
+    return messageBoxWId( parent ? parent->effectiveWinId() : 0, type, text, caption,
         buttonYes, buttonNo, buttonCancel, dontShowAskAgainName, options );
 }
 
@@ -1086,7 +1086,7 @@ int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &t
 
 void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption, Options options )
 {
-    return queuedMessageBoxWId( parent ? parent->winId() : 0, type, text, caption, options );
+    return queuedMessageBoxWId( parent ? parent->effectiveWinId() : 0, type, text, caption, options );
 }
 
 void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QString &text, const QString &caption, Options options )
@@ -1099,7 +1099,7 @@ void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QSt
 
 void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption )
 {
-    return queuedMessageBoxWId( parent ? parent->winId() : 0, type, text, caption );
+    return queuedMessageBoxWId( parent ? parent->effectiveWinId() : 0, type, text, caption );
 }
 
 void KMessageBox::queuedMessageBoxWId( WId parent_id, DialogType type, const QString &text, const QString &caption )
