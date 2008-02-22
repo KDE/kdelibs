@@ -156,6 +156,7 @@ set(kdeui_LIB_SRCS
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
+ util/kxutils.cpp
  util/kundostack.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
@@ -290,6 +291,10 @@ if (X11_Xfixes_FOUND)
    target_link_libraries(kdeui ${X11_Xfixes_LIB})
 endif(X11_Xfixes_FOUND)
 
+if (X11_Xrender_FOUND)
+   target_link_libraries(kdeui ${X11_Xrender_LIB})
+endif(X11_Xrender_FOUND)
+
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR})
 ########### install files ###############
@@ -409,6 +414,7 @@ install( FILES
  util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h
+ util/kxutils.h
  util/kxmessages.h
  util/kundostack.h
  widgets/kactionselector.h
