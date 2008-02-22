@@ -38,124 +38,124 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
    m_allowLetterShortcuts(allowLetterShortcuts),
    m_editor(0)
 {
-	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
+    Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
 
-	QPixmap pixmap( 16, 16 );
-	pixmap.fill( QColor( Qt::transparent ) );
-	QPainter p( &pixmap );
-	QStyleOption option;
-	option.rect = pixmap.rect();
+    QPixmap pixmap( 16, 16 );
+    pixmap.fill( QColor( Qt::transparent ) );
+    QPainter p( &pixmap );
+    QStyleOption option;
+    option.rect = pixmap.rect();
 
-	bool isRtl = QApplication::isRightToLeft();
-	QApplication::style()->drawPrimitive( isRtl ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight, &option, &p );
-	setExtendPixmap( pixmap );
+    bool isRtl = QApplication::isRightToLeft();
+    QApplication::style()->drawPrimitive( isRtl ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight, &option, &p );
+    setExtendPixmap( pixmap );
 
-	pixmap.fill( QColor( Qt::transparent ) );
-	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
-	setContractPixmap( pixmap );
+    pixmap.fill( QColor( Qt::transparent ) );
+    QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
+    setContractPixmap( pixmap );
 
-	connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
-	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
+    connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
+    connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
 
 
 QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
                                          const QModelIndex &index) const
 {
-	QSize ret(KExtendableItemDelegate::sizeHint(option, index));
-	ret.rheight() += 4;
-	return ret;
+    QSize ret(KExtendableItemDelegate::sizeHint(option, index));
+    ret.rheight() += 4;
+    return ret;
 }
 
 
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
-	const QAbstractItemModel *model = index.model();
-	if (!model)
-		return;
-	//As per our constructor our parent *is* a QTreeWidget
-	QTreeWidget *view = static_cast<QTreeWidget *>(parent());
+    const QAbstractItemModel *model = index.model();
+    if (!model)
+        return;
+    //As per our constructor our parent *is* a QTreeWidget
+    QTreeWidget *view = static_cast<QTreeWidget *>(parent());
 
-	KShortcutsEditorItem *item = KShortcutsEditorPrivate::itemFromIndex(view, index);
-	if (!item) {
-		//that probably was a non-leaf (type() !=ActionItem) item
-		return;
-	}
+    KShortcutsEditorItem *item = KShortcutsEditorPrivate::itemFromIndex(view, index);
+    if (!item) {
+        //that probably was a non-leaf (type() !=ActionItem) item
+        return;
+    }
 
-	int column = index.column();
-	if (column == Name) {
-		// If user click in the name column activate the (Global|Local)Primary
-		// column if possible.
-		if (!view->header()->isSectionHidden(LocalPrimary)) {
-			column = LocalPrimary;
-		} else if (!view->header()->isSectionHidden(GlobalPrimary)) {
-			column = GlobalPrimary;
-		} else {
-			// do nothing.
-		}
-		index = model->index(index.row(), column, index.parent());
-		view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-	}
+    int column = index.column();
+    if (column == Name) {
+        // If user click in the name column activate the (Global|Local)Primary
+        // column if possible.
+        if (!view->header()->isSectionHidden(LocalPrimary)) {
+            column = LocalPrimary;
+        } else if (!view->header()->isSectionHidden(GlobalPrimary)) {
+            column = GlobalPrimary;
+        } else {
+            // do nothing.
+        }
+        index = model->index(index.row(), column, index.parent());
+        view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    }
 
-	if (!isExtended(index)) {
-		//we only want maximum ONE extender open at any time.
-		if (m_editingIndex.isValid()) {
-			QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
-			KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
-			Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
+    if (!isExtended(index)) {
+        //we only want maximum ONE extender open at any time.
+        if (m_editingIndex.isValid()) {
+            QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
+            KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
+            Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
 
-			oldItem->setNameBold(false);
-			contractItem(m_editingIndex);
-		}
+            oldItem->setNameBold(false);
+            contractItem(m_editingIndex);
+        }
 
-		m_editingIndex = index;
-		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
+        m_editingIndex = index;
+        QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
 
-		if (column >= LocalPrimary && column <= GlobalAlternate) {
-			m_editor = new ShortcutEditWidget(viewport,
-			          model->data(index, DefaultShortcutRole).value<QKeySequence>(),
-			          model->data(index, ShortcutRole).value<QKeySequence>(),
-			          m_allowLetterShortcuts);
+        if (column >= LocalPrimary && column <= GlobalAlternate) {
+            m_editor = new ShortcutEditWidget(viewport,
+                      model->data(index, DefaultShortcutRole).value<QKeySequence>(),
+                      model->data(index, ShortcutRole).value<QKeySequence>(),
+                      m_allowLetterShortcuts);
 
-			connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-			        this, SLOT(keySequenceChanged(const QKeySequence &)));
+            connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+                    this, SLOT(keySequenceChanged(const QKeySequence &)));
 
-		} else if (column == RockerGesture) {
-			m_editor = new QLabel("A lame placeholder", viewport);
+        } else if (column == RockerGesture) {
+            m_editor = new QLabel("A lame placeholder", viewport);
 
-		} else if (column == ShapeGesture) {
-			m_editor = new QLabel("<i>A towel</i>", viewport);
+        } else if (column == ShapeGesture) {
+            m_editor = new QLabel("<i>A towel</i>", viewport);
 
-		} else
-			return;
+        } else
+            return;
 
-		m_editor->installEventFilter(this);
-		item->setNameBold(true);
-		extendItem(m_editor, index);
+        m_editor->installEventFilter(this);
+        item->setNameBold(true);
+        extendItem(m_editor, index);
 
-	} else {
-		//the item is extended, and clicking on it again closes it
-		item->setNameBold(false);
-		contractItem(index);
-		view->selectionModel()->select(index, QItemSelectionModel::Clear);
-		m_editingIndex = QModelIndex();
-		m_editor = 0;
-	}
+    } else {
+        //the item is extended, and clicking on it again closes it
+        item->setNameBold(false);
+        contractItem(index);
+        view->selectionModel()->select(index, QItemSelectionModel::Clear);
+        m_editingIndex = QModelIndex();
+        m_editor = 0;
+    }
 }
 
 
 //slot
 void KShortcutsEditorDelegate::hiddenBySearchLine(QTreeWidgetItem *item, bool hidden)
 {
-	if (!hidden || !item) {
-		return;
-	}
-	QTreeWidget *view = static_cast<QTreeWidget *>(parent());
-	QTreeWidgetItem *editingItem = KShortcutsEditorPrivate::itemFromIndex(view, m_editingIndex);
-	if (editingItem == item) {
-		itemActivated(m_editingIndex); //this will *close* the item's editor because it's already open
-	}
+    if (!hidden || !item) {
+        return;
+    }
+    QTreeWidget *view = static_cast<QTreeWidget *>(parent());
+    QTreeWidgetItem *editingItem = KShortcutsEditorPrivate::itemFromIndex(view, m_editingIndex);
+    if (editingItem == item) {
+        itemActivated(m_editingIndex); //this will *close* the item's editor because it's already open
+    }
 }
 
 
@@ -165,41 +165,41 @@ void KShortcutsEditorDelegate::hiddenBySearchLine(QTreeWidgetItem *item, bool hi
 //the current editor.
 bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
 {
-	if (o != m_editor)
-		return false;
+    if (o != m_editor)
+        return false;
 
-	switch (e->type()) {
-	case QEvent::MouseButtonPress:
-	case QEvent::MouseButtonRelease:
-	case QEvent::MouseButtonDblClick:
-		return true;
-	default:
-		return false;
-	}
+    switch (e->type()) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+        return true;
+    default:
+        return false;
+    }
 }
 
 
 //slot
 void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
 {
-	QVariant ret = QVariant::fromValue(seq);
-	emit shortcutChanged(ret, m_editingIndex);
+    QVariant ret = QVariant::fromValue(seq);
+    emit shortcutChanged(ret, m_editingIndex);
 }
 
 
 //slot
 void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
 {
-	//this is somewhat verbose because the gesture types are not "built in" to QVariant
-	QVariant ret = QVariant::fromValue(gest);
-	emit shortcutChanged(ret, m_editingIndex);
+    //this is somewhat verbose because the gesture types are not "built in" to QVariant
+    QVariant ret = QVariant::fromValue(gest);
+    emit shortcutChanged(ret, m_editingIndex);
 }
 
 
 //slot
 void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
 {
-	QVariant ret = QVariant::fromValue(gest);
-	emit shortcutChanged(ret, m_editingIndex);
+    QVariant ret = QVariant::fromValue(gest);
+    emit shortcutChanged(ret, m_editingIndex);
 }
 

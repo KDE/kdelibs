@@ -55,41 +55,41 @@ public:
 KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts, QWidget *parent )
 : KDialog( parent ), d(new KShortcutsDialogPrivate(this))
 {
-	setCaption(i18n("Configure Shortcuts"));
-	setButtons(Default|Ok|Cancel);
-	setModal(true);
-	d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
-	setMainWidget( d->m_keyChooser );
-	connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
+    setCaption(i18n("Configure Shortcuts"));
+    setButtons(Default|Ok|Cancel);
+    setModal(true);
+    d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
+    setMainWidget( d->m_keyChooser );
+    connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
 
-	KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
-	resize( group.readEntry( "Dialog Size", sizeHint() ) );
+    KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
+    resize( group.readEntry( "Dialog Size", sizeHint() ) );
 }
 
 
 KShortcutsDialog::~KShortcutsDialog()
 {
-	KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
-	group.writeEntry( "Dialog Size", size(), KConfigGroup::Global );
-	delete d;
+    KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
+    group.writeEntry( "Dialog Size", size(), KConfigGroup::Global );
+    delete d;
 }
 
 
 void KShortcutsDialog::addCollection(KActionCollection *collection, const QString &title)
 {
-	d->m_keyChooser->addCollection(collection, title);
+    d->m_keyChooser->addCollection(collection, title);
 }
 
 
 bool KShortcutsDialog::configure(bool saveSettings)
 {
-	int retcode = exec();
-	if (retcode != Accepted)
-		d->m_keyChooser->undo();
-	else if (saveSettings)
-		d->m_keyChooser->save();
+    int retcode = exec();
+    if (retcode != Accepted)
+        d->m_keyChooser->undo();
+    else if (saveSettings)
+        d->m_keyChooser->save();
 
-	return retcode;
+    return retcode;
 }
 
 QSize KShortcutsDialog::sizeHint() const
@@ -100,10 +100,10 @@ QSize KShortcutsDialog::sizeHint() const
 int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,
                           QWidget *parent, bool saveSettings)
 {
-	kDebug(125) << "KShortcutsDialog::configureKeys( KActionCollection*, " << saveSettings << " )";
-	KShortcutsDialog dlg(KShortcutsEditor::AllActions, allowLetterShortcuts, parent);
-	dlg.d->m_keyChooser->addCollection(collection);
-	return dlg.configure(saveSettings);
+    kDebug(125) << "KShortcutsDialog::configureKeys( KActionCollection*, " << saveSettings << " )";
+    KShortcutsDialog dlg(KShortcutsEditor::AllActions, allowLetterShortcuts, parent);
+    dlg.d->m_keyChooser->addCollection(collection);
+    return dlg.configure(saveSettings);
 }
 
 #include "kshortcutsdialog.moc"

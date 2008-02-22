@@ -36,19 +36,19 @@ class QRadioButton;
 class KKeySequenceWidget;
 
 enum ColumnDesignation {
-	Name = 0,
-	LocalPrimary,
-	LocalAlternate,
-	GlobalPrimary,
-	GlobalAlternate,
-	RockerGesture,
-	ShapeGesture
+    Name = 0,
+    LocalPrimary,
+    LocalAlternate,
+    GlobalPrimary,
+    GlobalAlternate,
+    RockerGesture,
+    ShapeGesture
 };
 
 
 enum MyRoles {
-	ShortcutRole = Qt::UserRole,
-	DefaultShortcutRole
+    ShortcutRole = Qt::UserRole,
+    DefaultShortcutRole
 };
 
 
@@ -58,8 +58,8 @@ enum MyRoles {
  * @internal
  */
 enum ItemTypes {
-	NonActionItem = 0,
-	ActionItem = 1
+    NonActionItem = 0,
+    ActionItem = 1
 };
 
 
@@ -79,26 +79,26 @@ enum ItemTypes {
  */
 class KShortcutsEditorDelegate : public KExtendableItemDelegate
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts);
-	//reimplemented to have some extra height
-	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts);
+    //reimplemented to have some extra height
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 Q_SIGNALS:
-	void shortcutChanged(QVariant, const QModelIndex &);
+    void shortcutChanged(QVariant, const QModelIndex &);
 public Q_SLOTS:
-	void hiddenBySearchLine(QTreeWidgetItem *, bool);
+    void hiddenBySearchLine(QTreeWidgetItem *, bool);
 protected:
-	virtual bool eventFilter(QObject *, QEvent *);
+    virtual bool eventFilter(QObject *, QEvent *);
 private:
-	mutable QModelIndex m_editingIndex;
-	bool m_allowLetterShortcuts;
-	QWidget *m_editor;
+    mutable QModelIndex m_editingIndex;
+    bool m_allowLetterShortcuts;
+    QWidget *m_editor;
 private Q_SLOTS:
-	void itemActivated(QModelIndex index);
-	void keySequenceChanged(const QKeySequence &);
-	void shapeGestureChanged(const KShapeGesture &);
-	void rockerGestureChanged(const KRockerGesture &);
+    void itemActivated(QModelIndex index);
+    void keySequenceChanged(const QKeySequence &);
+    void shapeGestureChanged(const KShapeGesture &);
+    void rockerGestureChanged(const KRockerGesture &);
 };
 
 
@@ -109,12 +109,12 @@ private Q_SLOTS:
  */
 class TabConnectedWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	TabConnectedWidget(QWidget *parent)
-	 : QWidget(parent) {}
+    TabConnectedWidget(QWidget *parent)
+     : QWidget(parent) {}
 protected:
-	void paintEvent(QPaintEvent *pe);
+    void paintEvent(QPaintEvent *pe);
 };
 
 
@@ -125,21 +125,21 @@ protected:
  */
 class ShortcutEditWidget : public TabConnectedWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq,
-	                   bool allowLetterShortcuts);
+    ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq,
+                       bool allowLetterShortcuts);
 Q_SIGNALS:
-	void keySequenceChanged(const QKeySequence &);
+    void keySequenceChanged(const QKeySequence &);
 private Q_SLOTS:
-	void defaultToggled(bool);
-	void setCustom(const QKeySequence &);
+    void defaultToggled(bool);
+    void setCustom(const QKeySequence &);
 private:
-	QKeySequence m_defaultKeySequence;
-	QRadioButton *m_defaultRadio;
-	QRadioButton *m_customRadio;
-	KKeySequenceWidget *m_customEditor;
-	bool m_isUpdating;
+    QKeySequence m_defaultKeySequence;
+    QRadioButton *m_defaultRadio;
+    QRadioButton *m_customRadio;
+    KKeySequenceWidget *m_customEditor;
+    bool m_isUpdating;
 };
 
 Q_DECLARE_METATYPE(KShapeGesture)
@@ -165,7 +165,7 @@ class KShortcutsEditorItem : public QTreeWidgetItem
 {
 public:
 
-	KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
+    KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
 
     /**
      * Destructor
@@ -175,43 +175,43 @@ public:
     virtual ~KShortcutsEditorItem();
 
     //! Undo the changes since the last commit.
-	void undo();
+    void undo();
 
     //! Commit the changes.
-	void commit();
+    void commit();
 
-	virtual QVariant data(int column, int role) const;
+    virtual QVariant data(int column, int role) const;
 
-	QKeySequence keySequence(uint column) const;
-	void setKeySequence(uint column, const QKeySequence &seq);
-	void setShapeGesture(const KShapeGesture &gst);
-	void setRockerGesture(const KRockerGesture &gst);
+    QKeySequence keySequence(uint column) const;
+    void setKeySequence(uint column, const QKeySequence &seq);
+    void setShapeGesture(const KShapeGesture &gst);
+    void setRockerGesture(const KRockerGesture &gst);
 
-	bool isModified(uint column) const;
+    bool isModified(uint column) const;
 
     void setNameBold(bool flag) { m_isNameBold = flag; }
 
 private:
     friend class KShortcutsEditorPrivate;
 
-	//! Recheck modified status - could have changed back to initial value
-	void updateModified();
+    //! Recheck modified status - could have changed back to initial value
+    void updateModified();
 
     //! The action this item is responsible for
     KAction *m_action;
-    
+
     //! Should the Name column be painted in bold?
     bool m_isNameBold;
-    
+
     //@{
     //! The original shortcuts before user changes. 0 means no change.
-	KShortcut *m_oldLocalShortcut;
-	KShortcut *m_oldGlobalShortcut;
-	KShapeGesture *m_oldShapeGesture;
-	KRockerGesture *m_oldRockerGesture;
+    KShortcut *m_oldLocalShortcut;
+    KShortcut *m_oldGlobalShortcut;
+    KShapeGesture *m_oldShapeGesture;
+    KRockerGesture *m_oldRockerGesture;
     //@}
 
-	
+
 };
 
 
@@ -240,9 +240,9 @@ public:
     QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
 
     static KShortcutsEditorItem *itemFromIndex(QTreeWidget *const w, const QModelIndex &index);
-	
-	// Set all shortcuts to their default values (bindings).
-	void allDefault();
+
+    // Set all shortcuts to their default values (bindings).
+    void allDefault();
 
     //helper functions for conflict resolution
     bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);

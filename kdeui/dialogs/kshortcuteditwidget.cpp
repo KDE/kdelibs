@@ -35,13 +35,13 @@
 
 void TabConnectedWidget::paintEvent(QPaintEvent *e)
 {
-	QWidget::paintEvent(e);
-	QPainter p(this);
-	QPen pen(QPalette().highlight().color());
-	pen.setWidth(6);
-	p.setPen(pen);
-	p.drawLine(0, 0, width(), 0);
-	p.drawLine(0, 0, 0, height());
+    QWidget::paintEvent(e);
+    QPainter p(this);
+    QPen pen(QPalette().highlight().color());
+    pen.setWidth(6);
+    p.setPen(pen);
+    p.drawLine(0, 0, width(), 0);
+    p.drawLine(0, 0, 0, height());
 }
 
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
@@ -50,68 +50,68 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
    m_defaultKeySequence(defaultSeq),
    m_isUpdating(false)
 {
-	QGridLayout *layout = new QGridLayout(this);
+    QGridLayout *layout = new QGridLayout(this);
 
-	m_defaultRadio = new QRadioButton(i18n("Default:"), this);
-	QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
-	if (defaultText.isEmpty())
-		defaultText = i18n("None");
-	QLabel *defaultLabel = new QLabel(defaultText, this);
+    m_defaultRadio = new QRadioButton(i18n("Default:"), this);
+    QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
+    if (defaultText.isEmpty())
+        defaultText = i18n("None");
+    QLabel *defaultLabel = new QLabel(defaultText, this);
 
-	m_customRadio = new QRadioButton(i18n("Custom:"), this);
-	m_customEditor = new KKeySequenceWidget(this);
-	m_customEditor->setModifierlessAllowed(allowLetterShortcuts);
+    m_customRadio = new QRadioButton(i18n("Custom:"), this);
+    m_customEditor = new KKeySequenceWidget(this);
+    m_customEditor->setModifierlessAllowed(allowLetterShortcuts);
 
-	if (activeSeq == defaultSeq) {
-		m_defaultRadio->setChecked(true);
-	} else {
-		m_customRadio->setChecked(true);
-		m_customEditor->setKeySequence(activeSeq);
-	}
+    if (activeSeq == defaultSeq) {
+        m_defaultRadio->setChecked(true);
+    } else {
+        m_customRadio->setChecked(true);
+        m_customEditor->setKeySequence(activeSeq);
+    }
 
-	layout->addWidget(m_defaultRadio, 0, 0);
-	layout->addWidget(defaultLabel, 0, 1);
-	layout->addWidget(m_customRadio, 1, 0);
-	layout->addWidget(m_customEditor, 1, 1);
-	layout->setColumnStretch(2, 1);
+    layout->addWidget(m_defaultRadio, 0, 0);
+    layout->addWidget(defaultLabel, 0, 1);
+    layout->addWidget(m_customRadio, 1, 0);
+    layout->addWidget(m_customEditor, 1, 1);
+    layout->setColumnStretch(2, 1);
 
-	connect(m_defaultRadio, SIGNAL(toggled(bool)),
-	        this, SLOT(defaultToggled(bool)));
-	connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-	        this, SLOT(setCustom(const QKeySequence &)));
+    connect(m_defaultRadio, SIGNAL(toggled(bool)),
+            this, SLOT(defaultToggled(bool)));
+    connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+            this, SLOT(setCustom(const QKeySequence &)));
 }
 
 
 //slot
 void ShortcutEditWidget::defaultToggled(bool checked)
 {
-	if (m_isUpdating)
-		return;
+    if (m_isUpdating)
+        return;
 
-	m_isUpdating = true;
-	m_customEditor->clearKeySequence();
-	if  (checked) {
-		emit keySequenceChanged(m_defaultKeySequence);
-	} else {
-		//custom was checked
-		emit keySequenceChanged(QKeySequence());
-	}
-	m_isUpdating = false;
+    m_isUpdating = true;
+    m_customEditor->clearKeySequence();
+    if  (checked) {
+        emit keySequenceChanged(m_defaultKeySequence);
+    } else {
+        //custom was checked
+        emit keySequenceChanged(QKeySequence());
+    }
+    m_isUpdating = false;
 }
 
 
 //slot
 void ShortcutEditWidget::setCustom(const QKeySequence &seq)
 {
-	if (m_isUpdating)
-		return;
+    if (m_isUpdating)
+        return;
 
-	m_isUpdating = true;
-	if (seq != m_defaultKeySequence)
-		m_customRadio->setChecked(true);
-	else
-		m_defaultRadio->setChecked(true);
-	emit keySequenceChanged(seq);
-	m_isUpdating = false;
+    m_isUpdating = true;
+    if (seq != m_defaultKeySequence)
+        m_customRadio->setChecked(true);
+    else
+        m_defaultRadio->setChecked(true);
+    emit keySequenceChanged(seq);
+    m_isUpdating = false;
 }
 
