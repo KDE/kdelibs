@@ -832,6 +832,15 @@ operation LogicalNot {
 }
 
 /**
+ Miscellaneous ops 
+*/
+operation TypeOf {
+    impl value typeOf(value v) [[
+        $$ = typeStringForValue(v);
+    ]]
+}
+
+/**
  Function call stuff, for first prototype.
 */
 operation ClearArgs {

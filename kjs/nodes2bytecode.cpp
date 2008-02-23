@@ -443,6 +443,27 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return curV;
 }
 
+OpValue TypeOfReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // false: no error if not there, gives undefined instead
+    CompileReference* ref = loc->generateRefBegin(comp, block, false);
+
+    OpValue v = loc->generateRefRead(comp, block, ref);
+
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_TypeOf, &out, &v);
+    delete ref;
+    return out;
+}
+
+OpValue TypeOfValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue v = m_expr->generateEvalCode(comp, block);
+    OpValue typeOfV;
+    CodeGen::emitOp(comp, block, Op_TypeOf, &typeOfV, &v);
+    return typeOfV;
+}
+
 OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // ### we want to fold this in if the kid is a local -- any elegant way?

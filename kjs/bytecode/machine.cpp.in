@@ -33,6 +33,33 @@
 
 namespace KJS {
 
+static JSValue* typeStringForValue(JSValue* v)
+{
+    switch (v->type()) {
+    case UndefinedType:
+        return jsString("undefined");
+    case NullType:
+        return jsString("object");
+    case BooleanType:
+        return jsString("boolean");
+    case NumberType:
+        return jsString("number");
+    case StringType:
+        return jsString("string");
+    default:
+        if (v->isObject()) {
+            // Return "undefined" for objects that should be treated
+            // as null when doing comparisons.
+            if (static_cast<JSObject*>(v)->masqueradeAsUndefined())
+                return jsString("undefined");
+            else if (static_cast<JSObject*>(v)->implementsCall())
+                return jsString("function");
+        }
+
+        return jsString("object");
+    }
+}
+
 Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...

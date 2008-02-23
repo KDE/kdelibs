@@ -54,7 +54,7 @@ namespace KJS {
   class SemanticChecker;
 
   class CompileState;
-  class CompileReference;
+  struct CompileReference;
 
   class NodeVisitor {
   public:
@@ -661,6 +661,7 @@ namespace KJS {
   public:
     TypeOfReferenceNode(LocationNode *l) : loc(l) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
   private:
@@ -671,6 +672,7 @@ namespace KJS {
   public:
     TypeOfValueNode(Node *e) : m_expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
