@@ -320,7 +320,7 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
                 && (trySslVersion == KTcpSocket::TlsV1)) {
                 trySslVersion = KTcpSocket::SslV3;
                 continue;
-                //### servers that can't negotiate 3.0 down to 2.0 should not exist anymore
+                //### SSL 2.0 is (close to) dead and it's a good thing, too.
             }
             if (res & ResultFailed) {
                 error(ERR_COULD_NOT_CONNECT, 
