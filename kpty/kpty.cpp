@@ -2,7 +2,7 @@
 
    This file is part of the KDE libraries
    Copyright (C) 2002 Waldo Bastian <bastian@kde.org>
-   Copyright (C) 2002-2003,2007 Oswald Buddenhagen <ossi@kde.org>
+   Copyright (C) 2002-2003,2007-2008 Oswald Buddenhagen <ossi@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -359,6 +359,24 @@ void KPty::closeSlave()
         return;
     ::close(d->slaveFd);
     d->slaveFd = -1;
+}
+
+bool KPty::openSlave()
+{
+    Q_D(KPty);
+
+    if (d->slaveFd >= 0)
+        return true;
+    if (d->masterFd < 0) {
+        kWarning(175) << "Attempting to open pty slave while master is closed";
+        return false;
+    }
+    d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
+    if (d->slaveFd < 0) {
+        kWarning(175) << "Can't open slave pseudo teletype";
+        return false;
+    }
+    return true;
 }
 
 void KPty::close()

@@ -75,6 +75,15 @@ public:
   void closeSlave();
 
   /**
+   * Open the pty slave descriptor.
+   *
+   * This undoes the effect of closeSlave().
+   *
+   * @return true if the pty slave was successfully opened
+   */
+  bool openSlave();
+
+  /**
    * Creates a new session and process group and makes this pty the
    * controlling tty.
    */
