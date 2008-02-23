@@ -34,7 +34,7 @@ void KUrlNavigatorTest::cleanupTestCase()
     m_navigator = 0;
 }
 
-void KUrlNavigatorTest::testHistory()
+void KUrlNavigatorTest::testHistorySizeAndIndex()
 {
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
@@ -48,7 +48,13 @@ void KUrlNavigatorTest::testHistory()
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
+}
 
+void KUrlNavigatorTest::testGoBack()
+{
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 3);
+    
     bool ok = m_navigator->goBack();
 
     QVERIFY(ok);
@@ -66,6 +72,66 @@ void KUrlNavigatorTest::testHistory()
     QVERIFY(!ok);
     QCOMPARE(m_navigator->historyIndex(), 2);
     QCOMPARE(m_navigator->historySize(), 3);
+}
+
+void KUrlNavigatorTest::testGoForward()
+{
+    QCOMPARE(m_navigator->historyIndex(), 2);
+    QCOMPARE(m_navigator->historySize(), 3);
+
+    bool ok = m_navigator->goForward();
+
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->historyIndex(), 1);
+    QCOMPARE(m_navigator->historySize(), 3);
+
+    ok = m_navigator->goForward();
+
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 3);
+
+    ok = m_navigator->goForward();
+
+    QVERIFY(!ok);
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 3);
+}
+
+void KUrlNavigatorTest::testHistoryInsert()
+{
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 3);
+    
+    m_navigator->setUrl(KUrl("D"));
+    
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);
+
+    bool ok = m_navigator->goBack();
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->historyIndex(), 1);
+    QCOMPARE(m_navigator->historySize(), 4);
+
+    m_navigator->setUrl(KUrl("E"));
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);    
+
+    m_navigator->setUrl(KUrl("F"));
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 5);
+
+    ok = m_navigator->goBack();
+    QVERIFY(ok);
+    ok = m_navigator->goBack();
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->historyIndex(), 2);
+    QCOMPARE(m_navigator->historySize(), 5);
+
+    m_navigator->setUrl(KUrl("G"));
+
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);
 }
 
 #include "kurlnavigatortest.moc"

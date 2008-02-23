@@ -31,7 +31,10 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void testHistory();
+    void testHistorySizeAndIndex();
+    void testGoBack();
+    void testGoForward();
+    void testHistoryInsert();
 
 private:
     KUrlNavigator* m_navigator;

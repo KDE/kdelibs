@@ -98,7 +98,8 @@ public:
      * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
      * are emitted if true is returned. False is returned if the beginning
      * of the history has already been reached and hence going back was not
-     * possible.
+     * possible. The history index (see KUrlNavigator::historyIndex()) is
+     * increased by one if the operation was successful.
      */
     bool goBack();
 
@@ -107,7 +108,8 @@ public:
      * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
      * are emitted if true is returned. False is returned if the end
      * of the history has already been reached and hence going forward
-     * was not possible.
+     * was not possible. The history index (see KUrlNavigator::historyIndex()) is
+     * decreased by one if the operation was successful.
      */
     bool goForward();
 
@@ -183,7 +185,9 @@ public:
 
     /**
      * Returns the history index of the current URL, where
-     * 0 <= history index < KUrlNavigator::historySize().
+     * 0 <= history index < KUrlNavigator::historySize(). As long
+     * as KUrlNavigator::goBack() is not invoked, the history index
+     * stays on 0.
      */
     int historyIndex() const;
 

@@ -996,7 +996,6 @@ void KUrlNavigator::setUrl(const KUrl& url)
 {
     QString urlStr(url.pathOrUrl());
 
-    //kDebug() << "setUrl(" << url << ")";
     if (urlStr.length() > 0 && urlStr.at(0) == '~') {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
@@ -1030,29 +1029,31 @@ void KUrlNavigator::setUrl(const KUrl& url)
     const KUrl transformedUrl(urlStr);
 
     if (d->m_historyIndex > 0) {
-        // Check whether the previous element of the history has the same Url.
-        // If yes, just go forward instead of inserting a duplicate history
-        // element.
-        HistoryElem& prevHistoryElem = d->m_history[d->m_historyIndex - 1];
-        if (transformedUrl == prevHistoryElem.url()) {
-            goForward();
-            return;
-        }
+        // If an URL is set when the history index is not at the end (= 0),
+        // then clear all previous history elements so that a new history
+        // tree is started from the current position.
+        QList<HistoryElem>::iterator begin = d->m_history.begin();
+        QList<HistoryElem>::iterator end = begin + d->m_historyIndex;
+        d->m_history.erase(begin, end);
+        d->m_historyIndex = 0;
     }
 
     if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
-        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
-
-        emit historyChanged();
-        emit urlChanged(transformedUrl);
+        Q_ASSERT(d->m_historyIndex == 0);
+        d->m_history.insert(0, HistoryElem(transformedUrl));
 
         // Prevent an endless growing of the history: remembering
         // the last 100 Urls should be enough...
-        if (d->m_historyIndex > 100) {
-            d->m_history.removeFirst();
-            --d->m_historyIndex;
+        const int historyMax = 100;
+        if (d->m_history.size() > historyMax) {
+            QList<HistoryElem>::iterator begin = d->m_history.begin() + historyMax;
+            QList<HistoryElem>::iterator end = d->m_history.end();
+            d->m_history.erase(begin, end);
         }
+
+        emit historyChanged();
+        emit urlChanged(transformedUrl);
     }
 
     d->updateContent();
