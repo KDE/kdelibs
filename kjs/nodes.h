@@ -303,6 +303,7 @@ namespace KJS {
       : pattern(p), flags(f) { }
     virtual NodeType type() const { return RegExpNodeType; }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
   private:
     UString pattern, flags;
@@ -784,6 +785,7 @@ namespace KJS {
     ConditionalNode(Node *l, Node *e1, Node *e2) :
       logical(l), expr1(e1), expr2(e2) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

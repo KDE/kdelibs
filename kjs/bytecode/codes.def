@@ -575,6 +575,18 @@ operation NewObject {
     ]]
 }
 
+operation NewRegExp {
+    impl value(string pattern, string flags) [[
+        // ### TODO: this is -very- wasteful
+        List list;
+        list.append(jsOwnedString(*pattern));
+        list.append(jsOwnedString(*flags));
+
+        JSObject *reg = exec->lexicalInterpreter()->builtinRegExp();
+        $$ = reg->construct(exec,list);
+    ]]
+}
+
 operation DefineGetter {
     impl void(value base, ident name, value getter) [[
         ASSERT(base->isObject());

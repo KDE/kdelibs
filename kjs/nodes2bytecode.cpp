@@ -93,7 +93,15 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
-// TODO: RegExpNode::generateEvalCode(CompileState* state, CodeBlock& block)
+OpValue RegExpNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // ### TODO: cache the engine object?
+    OpValue out;
+    OpValue patternV = OpValue::immString(&pattern);
+    OpValue flagsV   = OpValue::immString(&flags);
+    CodeGen::emitOp(comp, block, Op_NewRegExp, &out, &patternV, &flagsV);
+    return out;
+}
 
 OpValue ThisNode::generateEvalCode(CompileState* comp, CodeBlock&)
 {
@@ -641,6 +649,44 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block
 
         return resVal;
     }
+}
+
+OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    // As above, we have some difficulty here, since we do not have a way of knowing
+    // the types in advance, but since we can't reasonably speculate on them both being bool,
+    // we just always produce a value.
+    OpValue resVal, resReg;
+
+    // Evaluate conditional, and jump..
+    OpValue v = logical->generateEvalCode(comp, block);
+    Addr jumpToElse = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &v, OpValue::dummyAddr());
+
+    // True branch
+    OpValue v1out = expr1->generateEvalCode(comp, block);
+
+    // Is the register here sufficient? If so, just use it
+    if (v1out.type == OpType_value && !v1out.immediate) {
+        resVal = v1out;
+        resReg = OpValue::immRegNum(v1out.value.narrow.regVal);
+    } else {
+        comp->requestTemporary(OpType_value, resVal, resReg);
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v1out);
+    }
+
+    Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+
+    // Jump to else goes here.
+    CodeGen::patchJumpToNext(block, jumpToElse, 1);
+
+    // : part..
+    OpValue v2out = expr1->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v2out);
+
+    // After everything
+    CodeGen::patchJumpToNext(block, jumpToAfter, 0);
+
+    return resVal;
 }
 
 OpValue FuncExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
