@@ -454,7 +454,7 @@ void SolidHwTest::testSetupTeardown()
     }
 
     QList<QVariant> args;
-    QSignalSpy spy(access, SIGNAL(accessibilityChanged(bool)));
+    QSignalSpy spy(access, SIGNAL(accessibilityChanged(bool,QString)));
 
     access->teardown();
 
