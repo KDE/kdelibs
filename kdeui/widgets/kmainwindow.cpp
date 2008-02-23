@@ -115,6 +115,11 @@ bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
     if (event->type() == QEvent::Resize) {
         m_win->setSettingsDirty();
     }
+#ifdef Q_WS_WIN
+    if (event->type() == QEvent::Move) {
+        m_win->setSettingsDirty();
+    }
+#endif
     return QObject::eventFilter(watched, event);
 }
 
@@ -733,6 +738,43 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     d->settingsDirty = false;
 }
 
+#ifdef Q_WS_WIN
+void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
+{
+    K_D(KMainWindow);
+    // restore the size and pos
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+
+    // if the desktop is virtual then use virtual screen size
+    if (QApplication::desktop()->isVirtualDesktop())
+      desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
+
+    // geometry is saved separately for each resolution
+    QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
+    QByteArray geometry = _cg.readEntry( geometryKey, QByteArray() );
+    if (!geometry.isEmpty())
+        restoreGeometry( QByteArray::fromBase64(geometry) );
+    return; 
+}
+
+void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
+{
+    K_D(const KMainWindow);
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+
+    // if the desktop is virtual then use virtual screen size
+    if (QApplication::desktop()->isVirtualDesktop())
+        desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
+
+    // geometry is saved separately for each resolution
+    QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
+    QByteArray geometry = saveGeometry();
+    KConfigGroup cg(_cg);
+    cg.writeEntry( geometryKey, geometry.toBase64() );
+}
+#else
 void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 {
   K_D(const KMainWindow);
@@ -829,6 +871,7 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & config )
         }
     }
 }
+#endif
 
 bool KMainWindow::initialGeometrySet() const
 {
@@ -917,6 +960,9 @@ bool KMainWindow::event( QEvent* ev )
 {
     K_D(KMainWindow);
     switch( ev->type() ) {
+#ifdef Q_WS_WIN    	
+    case QEvent::Move:
+#endif
     case QEvent::Resize:
         if ( d->autoSaveWindowSize )
             setSettingsDirty();
