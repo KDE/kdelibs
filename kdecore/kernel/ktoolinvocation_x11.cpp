@@ -21,8 +21,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktoolinvocation.h"
 #include <config.h>
+
+#include "ktoolinvocation.h"
+
+#include <kconfiggroup.h>
+#include <kcomponentdata.h>
+#include <klockfile.h>
 
 #include "klauncher_iface.h"
 #include "kcmdlineargs.h"
@@ -35,36 +40,14 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kmessage.h"
+
 #include <QtCore/QCoreApplication>
+#include <QtCore/QProcess>
 #include <QtCore/QHash>
-#include <QtDBus/QtDBus>
-#include <QDebug>
-
-#include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#include <sys/wait.h>
-
-#include <fcntl.h>
-#include <signal.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <string.h>
-#include <netdb.h>
-
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-
+#include <QtCore/QDebug>
 #include <QtCore/QBool>
-#include <QFile>
-#include <errno.h>
-#include <kconfiggroup.h>
-#include <kcomponentdata.h>
-#include <klockfile.h>
+#include <QtCore/QFile>
+#include <QtDBus/QtDBus>
 
 void KToolInvocation::invokeHelp( const QString& anchor,
                                   const QString& _appname,
@@ -378,28 +361,6 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     }
 }
 
-static int my_system (const char *command) {
-   int pid, status;
-
-   QCoreApplication::flush();
-   pid = fork();
-   if (pid == -1)
-      return -1;
-   if (pid == 0) {
-      const char* shell = "/bin/sh";
-      execl(shell, shell, "-c", command, (void *)0);
-      ::_exit(127);
-   }
-   do {
-      if (waitpid(pid, &status, 0) == -1) {
-         if (errno != EINTR)
-            return -1;
-       } else
-            return status;
-   } while(1);
-}
-
-
 void KToolInvocation::startKdeinit()
 {
   KComponentData inst( "startkdeinitlock" );
@@ -417,7 +378,7 @@ void KToolInvocation::startKdeinit()
 //  const bool gui = qApp && qApp->type() != QApplication::Tty;
 //  if ( gui )
 //    qApp->setOverrideCursor( Qt::WaitCursor );
-  my_system(QFile::encodeName(srv)+" --suicide");
+  QProcess::execute(srv, QStringList() << "--suicide");
 //  if ( gui )
 //    qApp->restoreOverrideCursor();
 }
