@@ -310,7 +310,9 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 #endif
     kde_options.add("style <style>",       ki18n("sets the application GUI style"));
     kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format"));
+#ifndef Q_WS_WIN
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
+#endif
 }
 
 KCmdLineArgsStatic::~KCmdLineArgsStatic ()
