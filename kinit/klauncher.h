@@ -166,7 +166,7 @@ public: // remote methods, called by KLauncherAdaptor
     void setLaunchEnv(const QString &name, const QString &value);
     bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
     bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
-    bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
+    bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg); // KDE5: remove
     pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
 
     pid_t requestSlave(const QString &protocol, const QString &host,

@@ -83,6 +83,7 @@
       <arg name="error" type="s" direction="out"/>
       <arg name="pid" type="i" direction="out"/>
     </method>
+    <!-- deprecated. to be removed in kde5 -->
     <method name="start_service_by_name">
       <arg type="i" direction="out"/>
       <arg name="serviceName" type="s" direction="in"/>

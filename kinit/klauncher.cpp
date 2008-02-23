@@ -246,7 +246,7 @@ KLauncher::destruct(int exit_code)
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 {
 #ifdef Q_WS_WIN
-    
+
 #else
    klauncher_header request_header;
    QByteArray requestData;
@@ -319,12 +319,12 @@ KLauncher::slotKDEInitData(int)
                         request_header.arg_length);
 
    processRequestReturn(request_header.cmd,requestData);
-       
+
 }
 #endif
-   
+
 void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
-{   
+{
    if (status == LAUNCHER_DIED)
    {
      long *request_data;
@@ -547,19 +547,19 @@ KLauncher::requestStart(KLaunchRequest *request)
 #ifdef Q_WS_WIN
    requestList.append( request );
    lastRequest = request;
-   
+
    QProcess *process  = new QProcess;
    process->setProcessChannelMode(QProcess::MergedChannels);
    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
    processList << process;
-   
+
 // process.setEnvironment(envlist);
    QStringList args;
    foreach (const QString &arg, request->arg_list)
       args << arg;
 
    process->start(request->name,args);
-		
+
    _PROCESS_INFORMATION* _pid = process->pid();
     int pid = _pid ? _pid->dwProcessId : 0;
 
@@ -569,7 +569,7 @@ KLauncher::requestStart(KLaunchRequest *request)
       QByteArray data((char *)&pid, sizeof(int));
       processRequestReturn(LAUNCHER_OK,data);
    }
-   else 
+   else
    {
       processRequestReturn(LAUNCHER_ERROR,"");
    }
@@ -642,6 +642,7 @@ void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, con
 }
 
 
+// KDE5: remove
 bool
 KLauncher::start_service_by_name(const QString &serviceName, const QStringList &urls,
     const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg)
