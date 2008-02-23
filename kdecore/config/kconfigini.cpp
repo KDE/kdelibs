@@ -517,7 +517,9 @@ bool KConfigIniBackend::lock(const KComponentData& componentData)
 {
     Q_ASSERT(!filePath().isEmpty());
 
-    lockFile = new KLockFile(filePath() + QLatin1String(".lock"), componentData);
+    if (!lockFile) {
+        lockFile = new KLockFile(filePath() + QLatin1String(".lock"), componentData);
+    }
 
     if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock
         lockFile->lock(KLockFile::ForceFlag);
