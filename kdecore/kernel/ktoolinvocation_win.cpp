@@ -164,7 +164,5 @@ void KToolInvocation::startKdeinit()
      if( QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ))
          return; // whoever held the lock has already started it
    }
-   QProcess kdeinit;
-   kdeinit.start("kdeinit4");
-   kdeinit.waitForFinished();
+   QProcess::execute("kdeinit4");
 }
