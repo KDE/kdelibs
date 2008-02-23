@@ -230,9 +230,7 @@ class KShortcutsEditorPrivate
 {
 public:
 
-    KShortcutsEditorPrivate(KShortcutsEditor *q): q(q)
-    {
-    }
+    KShortcutsEditorPrivate(KShortcutsEditor *q);
 
     void initGUI( KShortcutsEditor::ActionTypes actionTypes, KShortcutsEditor::LetterShortcuts allowLetterShortcuts );
     void appendToView( uint nList, const QString &title = QString() );
@@ -268,6 +266,7 @@ public:
     Ui::KShortcutsDialog ui;
 
     KShortcutsEditor::ActionTypes actionTypes;
+    KShortcutsEditorDelegate *delegate;
 };
 
 

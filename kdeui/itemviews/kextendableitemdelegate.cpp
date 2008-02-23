@@ -25,10 +25,6 @@
 #include <QPainter>
 #include <QApplication>
 
-#include <kdebug.h>
-
-//TODO:listen for removal of rows and columns to clean out dead persistent indexes/editors.
-//(not needed ATM, the only user is KShortcutsEditor)
 
 class KExtendableItemDelegate::Private {
 public:
@@ -45,6 +41,12 @@ public:
 	void scheduleUpdateViewLayout();
 
 	KExtendableItemDelegate *q;
+
+	/**
+	 * Delete all active extenders
+	 */
+	void deleteExtenders();
+
 
 	//this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
 	QHash<QPersistentModelIndex, QWidget *> extenders;
@@ -68,12 +70,14 @@ KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
 
 KExtendableItemDelegate::~KExtendableItemDelegate()
 {
-	delete d;
+    delete d;
 }
 
 
 void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
 {
+	// kDebug() << "Creating extender at " << ext << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
+
 	if (!ext || !index.isValid())
 		return;
 	//maintain the invariant "zero or one extender per row"
@@ -99,7 +103,7 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 	QWidget *extender = d->extenders.value(index);
 	if (!extender)
 		return;
-
+	// kDebug() << "Collapse extender at " << extender << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
 	extender->hide();
 	extender->deleteLater();
 
@@ -107,9 +111,17 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 }
 
 
+void KExtendableItemDelegate::clear()
+{
+	d->deleteExtenders();
+}
+
+
 //slot
 void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *destroyed)
 {
+	// kDebug() << "Removing extender at " << destroyed;
+
 	QWidget *extender = static_cast<QWidget *>(destroyed);
 	stateTick++;
 
@@ -316,6 +328,25 @@ void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QS
 {
 	Q_UNUSED(index);
 	extender->setGeometry(option.rect);
+}
+
+
+void KExtendableItemDelegate::Private::deleteExtenders()
+{
+	// kDebug() << "Delete all extenders for " << this << ":" << extenders.size();
+	Q_FOREACH ( QWidget *ext, extenders.values() ) {
+		// Disconnect from the extender. We wouldn't want
+		// _k_extenderDestructionHandler to be called
+		// kDebug() << "Working on item " << ext;
+		disconnect(
+			ext, SIGNAL(destroyed(QObject *)),
+			q, SLOT(_k_extenderDestructionHandler(QObject *)));
+		ext->hide();
+		ext->deleteLater();
+	}
+	extenders.clear();
+	extenderIndices.clear();
+	// kDebug() << "Finished Deleting all extenders";
 }
 
 

@@ -65,6 +65,7 @@ KShortcutsEditor::~KShortcutsEditor()
 
 void KShortcutsEditor::clearCollections()
 {
+    d->delegate->clear();
     d->ui.list->clear();
     d->actionCollections.clear();
     QTimer::singleShot(0, this, SLOT(resizeColumns()));
@@ -166,6 +167,11 @@ void KShortcutsEditor::allDefault()
 // KShortcutsEditorPrivate
 //---------------------------------------------------------------------
 
+KShortcutsEditorPrivate::KShortcutsEditorPrivate( KShortcutsEditor *q )
+    :   q(q),
+        delegate(0)
+    {}
+
 void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts )
 {
 
@@ -184,7 +190,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
         ui.list->header()->hideSection(LocalAlternate);
     }
 
-    KShortcutsEditorDelegate *delegate = new KShortcutsEditorDelegate(ui.list,
+    delegate = new KShortcutsEditorDelegate(ui.list,
                                            allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
     ui.list->setItemDelegate(delegate);
     ui.list->setSelectionBehavior(QAbstractItemView::SelectItems);

@@ -30,9 +30,16 @@
   * This delegate makes it possible to display an arbitrary QWidget ("extender") that spans all columns below a line of items.
   * The extender will logically belong to a column in the row above it.
   *
-  *
   * It is your responsibility to devise a way to trigger extension and contraction of items, by calling
   * extendItem() and contractItem(). You can e.g. reimplement itemActivated() and similar functions.
+  *
+  * @warning extendItem() reparents the provided widget @a extender to the
+  * viewport of the itemview it belongs to. The @a extender is destroyed when
+  * you call contractItem() for the associated index. If you fail to do that
+  * and the associated item gets deleted you're in trouble. It remains as a
+  * visible artefact in your treeview. Additionaly when closing your
+  * application you get an assertion failure from KExtendableItemDelegate. So
+  * ensure you allways call contractItem for Indices before your delete them.
   *
   * @author Andreas Hartmetz <ahartmetz@gmail.com>
   *
@@ -64,7 +71,7 @@ public:
 	 * Re-implemented for internal reasons. API not affected.
 	 */
 	virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	
+
 	/**
 	 * Insert the @p extender that logically belongs to @p index into the view.
 	 * If you need a parent for the extender at construction time, use the itemview's viewport().
@@ -72,8 +79,8 @@ public:
 	 */
 	void extendItem(QWidget *extender, const QModelIndex &index);
 
-    /**
-     * Remove the extender that logically belongs to @p index from the view.
+	/**
+	 * Remove the extender that logically belongs to @p index from the view.
 	 */
 	void contractItem(const QModelIndex &index);
 
@@ -81,7 +88,12 @@ public:
 	 * Return whether there is an extender that belongs to @p index.
 	 */
 	bool isExtended(const QModelIndex &index) const;
-	
+
+	/**
+	 * Remove all extenders
+	 */
+	void clear();
+
 	/**
 	 * Reimplement this function to adjust the internal geometry of the extender.
 	 * The external geometry of the extender will be set by the delegate.
@@ -127,6 +139,7 @@ protected:
 	 * Return the pixmap that is displayed to contract an item.
 	 */
 	QPixmap contractPixmap();
+
 
 private:
 	class Private;
