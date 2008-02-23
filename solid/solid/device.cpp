@@ -242,10 +242,6 @@ Solid::DevicePrivate::DevicePrivate(const QString &udi)
 
 Solid::DevicePrivate::~DevicePrivate()
 {
-    // In case we're still referencing ourself otherwise
-    // we get a double delete because of m_refToSelf deletion
-    ref.ref();
-
     qDeleteAll(m_ifaces.values());
 }
 
@@ -257,13 +253,6 @@ void Solid::DevicePrivate::_k_destroyed(QObject *object)
 
 void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
 {
-    foreach (DeviceInterface *iface, m_ifaces.values()) {
-        delete iface->d_ptr->backendObject();
-        delete iface;
-    }
-
-    m_ifaces.clear();
-
     m_backendObject = object;
 
     if (m_backendObject) {
@@ -271,7 +260,16 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
                 this, SLOT(_k_destroyed(QObject *)));
     }
 
-    m_refToSelf = 0;
+    if (!m_ifaces.isEmpty()) {
+        foreach (DeviceInterface *iface, m_ifaces.values()) {
+            delete iface->d_ptr->backendObject();
+            delete iface;
+        }
+
+        m_ifaces.clear();
+
+        if (!ref.deref()) delete this;
+    }
 }
 
 Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::Type &type) const
@@ -281,7 +279,7 @@ Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::T
 
 void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface)
 {
-    m_refToSelf = this;
+    ref.ref();
     m_ifaces[type] = interface;
 }
 
