@@ -37,7 +37,7 @@ Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...
     List workList;
-    //exec->setPc(&pc);
+    exec->setPC(&pc);
     LocalStorage& localStore = *exec->localStorage();
 
     while (true) {

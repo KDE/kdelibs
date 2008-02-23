@@ -256,33 +256,61 @@ operation PopScope {
     ]]
 }
 
-operation PopCatch {
+operation PopExceptionHandler {
     impl void popCatch() [[
         exec->popExceptionHandler();
     ]]
 }
 
-operation PushCatch {
-    impl void pushCatch(addr handler) [[
+operation PushExceptionHandler {
+    impl void (addr handler) [[
         exec->pushExceptionHandler(ExecState::JumpToCatch, handler);
+    ]]
+}
+
+operation EnterCatch {
+    impl void (ident exceptionIdent) [[
+        // Grab & clear exception from exec state, and put it in a scope w/a name to it
+        JSValue* exception = exec->exception();
+        exec->clearException();
+
+        JSObject *obj = new JSObject;
+        obj->put(exec, *exceptionIdent, exception, DontDelete);
+        exec->pushScope(obj);
+        exec->pushExceptionHandler(ExecState::PopScope);
+    ]]
+}
+
+operation ExitCatch {
+    impl void() [[
+        exec->popScope();
+        exec->popExceptionHandler();
+    ]]
+}
+
+operation DeferException {
+    impl void() [[
+        exec->deferException();
+    ]]
+}
+
+operation ReactivateException {
+    impl void() [[
+        exec->reactivateException();
     ]]
 }
 
 operation Throw {
     impl void throw(value exception) [[
-#if 0
         exec->setException(exception);
-        if (exec->hasCatchHandler())
-            pc = exec->takeCatchHandler();
-        else
-            return Completion(Throw, exception);
-#endif
     ]]
 }
 
 operation PropagateException {
     impl void() [[
-        return Completion(Throw, exec->exception());
+        JSValue* e = exec->exception();
+        exec->clearException(); // be extra-careful for GlobalExec
+        return Completion(Throw, e);
     ]]
 }
 

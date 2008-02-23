@@ -1029,10 +1029,70 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->popLabel();
 }
 
+void ThrowNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue projectile = expr->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_Throw, 0, &projectile);
+}
+
+void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    // Set the catch handler, run the try clause, pop the try handler..
+    Addr setCatchHandler = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+    tryBlock->generateExecCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+
+    // Jump over the catch if try is OK
+    Addr jumpOverCatch;
+    if (catchBlock)
+        jumpOverCatch = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+
+    // Exceptions would go here --- either in a catch or a finally.
+    CodeGen::patchJumpToNext(block, setCatchHandler, 0);
+
+    Addr catchToFinallyEH;
+    if (catchBlock) {
+        // If there is a finally block, that acts as an exception handler for the catch;
+        // we need to set it before entering the catch scope, so the cleanup entries for that
+        // are on top
+        if (finallyBlock)
+            catchToFinallyEH = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+
+        // Emit the catch.. Note: the unwinder has already popped the catch handler entry,
+        // but the exception object is still set, since we need to make a scope for it.
+        // EnterCatch would do that for us, given the name
+        OpValue catchVar = OpValue::immIdent(&exceptionIdent);
+        CodeGen::emitOp(comp, block, Op_EnterCatch, 0, &catchVar);
+
+
+        comp->pushScope();
+        catchBlock->generateExecCode(comp, block);
+        comp->popScope();
+
+        // If needed, cleanup the binding to finally, and always cleans the catch scope
+        CodeGen::emitOp(comp, block, Op_ExitCatch);
+        if (finallyBlock)
+            CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+
+        // after an OK 'try', we always go to finally, if any, which needs an op if there is a catch block
+        CodeGen::patchJumpToNext(block, jumpOverCatch, 0);
+    }
+
+
+    if (finallyBlock) {
+        if (catchBlock) // if a catch was using us an EH, patch that instruction to here
+            CodeGen::patchJumpToNext(block, catchToFinallyEH, 0);
+
+        CodeGen::emitOp(comp, block, Op_DeferException);
+        finallyBlock->generateExecCode(comp, block);
+        CodeGen::emitOp(comp, block, Op_ReactivateException);
+    }
+}
+
 void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     // Load 'scope', global and 'this' pointers.
-    // ### probably want to do direct, and skip 3 ops.
+    // ### probably want to do all of these direct, and skip a bunch of ops.
     OpValue scopeVal;
     CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeVal);
 
@@ -1044,11 +1104,18 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
+    // Set unwind..
+    Addr unwind = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+
     // Generate body...
     BlockNode::generateExecCode(comp, block);
 
     // Make sure we exit!
     CodeGen::emitOp(comp, block, Op_Exit);
+
+    // Unwind stuff..
+    CodeGen::patchJumpToNext(block, unwind, 0);
+    CodeGen::emitOp(comp, block, Op_PropagateException);
 }
 
 

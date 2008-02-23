@@ -2580,9 +2580,6 @@ Completion TryNode::execute(ExecState *exec)
   if (Collector::isOutOfMemory())
     return c; // don't try to catch an out of memory exception thrown by the collector
 
-  if (Collector::isOutOfMemory())
-    return c; // don't try to catch an out of memory exception thrown by the collector
-
   if (catchBlock && c.complType() == Throw) {
     JSObject *obj = new JSObject;
     obj->put(exec, exceptionIdent, c.value(), DontDelete);

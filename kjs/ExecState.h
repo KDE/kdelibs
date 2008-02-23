@@ -72,9 +72,10 @@ namespace KJS {
      * This describes how an exception should be handled
      */
     enum HandlerType {
-        JumpToCatch, ///< jump to the specified address
-        PopScope,    ///< remove a scope chain entry, and run the next handler
-        Silent       ///< just update the exception object. For debugger-type use only
+        JumpToCatch,     ///< jump to the specified address
+        PopScope,        ///< remove a scope chain entry, and run the next handler
+        RemoveDeferred,  ///< remove any deferred exception object, and run the next entry
+        Silent           ///< just update the exception object. For debugger-type use only
     };
 
     void pushExceptionHandler(HandlerType type, Addr addr = 0) {
@@ -85,11 +86,37 @@ namespace KJS {
         m_exceptionHandlers.removeLast();
     }
 
+    void setPC(Addr* pcLoc) {
+        m_pc = pcLoc;
+    }
+
     /**
-     * Set the exception associated with this execution state
+     The below methods deal with deferring of exceptions inside finally clauses.
+     Essentially, any set exceptions are temporarily cleared for duration, and
+     rethrown if the finally doesn't throw any itself. The m_deferredExceptions
+     stack is used to keep track of that; and a RemoveDeferred exception handler
+     is used to cleanup the topmost entry if the finally does throw
+    */
+    void deferException() {
+        pushExceptionHandler(RemoveDeferred);
+        m_deferredExceptions.append(exception());
+        clearException();
+    }
+
+    void reactivateException() {
+        ASSERT(m_exceptionHandlers.last().type == RemoveDeferred);
+        popExceptionHandler();
+        JSValue* exc = m_deferredExceptions.last();
+        m_deferredExceptions.removeLast();
+        setException(exc);
+    }
+
+    /**
+     * Set the exception associated with this execution state,
+     * updating the program counter appropriately, and executing any relevant EH cleanups.
      * @param e The JSValue of the exception being set
      */
-    void setException(JSValue* e) { m_exception = e; }
+    void setException(JSValue* e);
 
     /**
      * Clears the exception set on this execution state.
@@ -101,13 +128,6 @@ namespace KJS {
      * @return The current execution state exception
      */
     JSValue* exception() const { return m_exception; }
-
-    /**
-     *
-     * @param
-     * @return
-     */
-    JSValue** exceptionSlot() { return &m_exception; }
 
     /**
      * Use this to check if an exception was thrown in the current
@@ -215,7 +235,9 @@ namespace KJS {
         Addr        dest;
     };
 
+    Addr* m_pc; // The programm counter of the machine running this.
     WTF::Vector<ExceptionHandler, 4> m_exceptionHandlers;
+    WTF::Vector<JSValue*, 4> m_deferredExceptions;
 
     CodeType m_codeType;
   };

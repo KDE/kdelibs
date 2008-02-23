@@ -54,6 +54,12 @@ void ExecState::mark()
         }
     }
 
+    for (size_t i = 0; i < m_deferredExceptions.size(); ++i) {
+        JSValue* e = m_deferredExceptions[i];
+        if (e && !e->marked())
+            e->mark();
+    }
+
     for (ExecState* exec = this; exec; exec = exec->m_callingExec)
         exec->scope.mark();
 }
@@ -67,7 +73,8 @@ ExecState::ExecState(Interpreter* intp) :
   m_function(0),
   m_arguments(0),
   m_localStore(0),
-  m_markDescriptor(0)
+  m_markDescriptor(0),
+  m_pc(0)
 {
     m_interpreter->setExecState(this);
 }
@@ -75,6 +82,33 @@ ExecState::ExecState(Interpreter* intp) :
 ExecState::~ExecState()
 {
     m_interpreter->setExecState(m_callingExec);
+}
+
+void ExecState::setException(JSValue* e)
+{
+    m_exception = e;
+    if (!e)
+        return;
+
+    while (!m_exceptionHandlers.isEmpty()) {
+        switch (m_exceptionHandlers.last().type) {
+        case JumpToCatch:
+            *m_pc = m_exceptionHandlers.last().dest;
+            m_exceptionHandlers.removeLast();
+            return; // done handling it
+        case PopScope:
+            popScope();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
+        case RemoveDeferred:
+            m_deferredExceptions.removeLast();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
+        case Silent:
+            // Exception blocked by tracing code. nothing to do.
+            return;
+        }
+    }
 }
 
 GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp)

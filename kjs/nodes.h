@@ -1099,6 +1099,7 @@ namespace KJS {
   public:
     ThrowNode(Node *e) : expr(e) {}
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -1111,6 +1112,7 @@ namespace KJS {
       : tryBlock(b), exceptionIdent(e), catchBlock(c), finallyBlock(f) { }
     virtual NodeType type() const { return TryNodeType; }
     virtual Completion execute(ExecState*);
+    virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
 
