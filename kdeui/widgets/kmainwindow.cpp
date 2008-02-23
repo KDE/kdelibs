@@ -777,45 +777,45 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 #else
 void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 {
-  K_D(const KMainWindow);
-  int scnum = QApplication::desktop()->screenNumber(parentWidget());
-  QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-  // if the desktop is virtual then use virtual screen size
-  if (QApplication::desktop()->isVirtualDesktop())
-    desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
-
-  int w, h;
+    K_D(const KMainWindow);
+    int scnum = QApplication::desktop()->screenNumber(parentWidget());
+    QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    
+    // if the desktop is virtual then use virtual screen size
+    if (QApplication::desktop()->isVirtualDesktop())
+        desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
+    
+    int w, h;
 #if defined Q_WS_X11
-  // save maximalization as desktop size + 1 in that direction
-  KWindowInfo info = KWindowSystem::windowInfo( winId(), NET::WMState );
-  w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
-  h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
+    // save maximalization as desktop size + 1 in that direction
+    KWindowInfo info = KWindowSystem::windowInfo( winId(), NET::WMState );
+    w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
+    h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
 #else
-  if (isMaximized()) {
-    w = desk.width() + 1;
-    h = desk.height() + 1;
-  } else {
-    w = width();
-    h = height();
-  }
-  //TODO: add "Maximized" property instead "+1" hack
+    if (isMaximized()) {
+        w = desk.width() + 1;
+        h = desk.height() + 1;
+    } else {
+        w = width();
+        h = height();
+    }
+    //TODO: add "Maximized" property instead "+1" hack
 #endif
-  KConfigGroup cg(_cg);
-
-  QRect size( desk.width(), w, desk.height(), h );
-  bool defaultSize = (size == d->defaultWindowSize);
-  QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
-  QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
-  if (!cg.hasDefault(widthString) && defaultSize)
-     cg.revertToDefault(widthString);
-  else
-     cg.writeEntry(widthString, w );
-
-  if (!cg.hasDefault(heightString) && defaultSize)
-     cg.revertToDefault(heightString);
-  else
-     cg.writeEntry(heightString, h );
+    KConfigGroup cg(_cg);
+    
+    QRect size( desk.width(), w, desk.height(), h );
+    bool defaultSize = (size == d->defaultWindowSize);
+    QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
+    QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
+    if (!cg.hasDefault(widthString) && defaultSize)
+        cg.revertToDefault(widthString);
+    else
+        cg.writeEntry(widthString, w );
+    
+    if (!cg.hasDefault(heightString) && defaultSize)
+        cg.revertToDefault(heightString);
+    else
+        cg.writeEntry(heightString, h );
 }
 
 void KMainWindow::restoreWindowSize( const KConfigGroup & config )
