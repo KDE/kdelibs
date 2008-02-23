@@ -590,6 +590,9 @@ void KFontChooser::Private::_k_toggled_checkbox()
 
 void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
 {
+    if ( !signalsAllowed ) {
+        return;
+    }
     signalsAllowed = false;
 
     QString currentFamily;
@@ -1024,6 +1027,8 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
 
 void KFontChooser::Private::setFamilyBoxItems(const QStringList &fonts)
 {
+    signalsAllowed = false;
+
     QStringList trfonts;
     qtFamilies.clear();
     foreach (const QString &font, fonts) {
@@ -1046,6 +1051,8 @@ void KFontChooser::Private::setFamilyBoxItems(const QStringList &fonts)
     qSort(trfonts.begin(), trfonts.end(), localeLessThan);
     familyListBox->clear();
     familyListBox->addItems(trfonts);
+
+    signalsAllowed = true;
 }
 
 void KFontChooser::Private::fillFamilyListBox(bool onlyFixedFonts)
