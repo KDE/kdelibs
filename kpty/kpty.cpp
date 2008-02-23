@@ -240,7 +240,9 @@ bool KPty::open()
 #else
     int ptyno;
     if (!ioctl(d->masterFd, TIOCGPTN, &ptyno)) {
-        d->ttyName.sprintf("/dev/pts/%d", ptyno);
+        char buf[32];
+        sprintf(buf, "/dev/pts/%d", ptyno);
+        d->ttyName = buf;
 #endif
 #ifdef HAVE_GRANTPT
         if (!grantpt(d->masterFd))
