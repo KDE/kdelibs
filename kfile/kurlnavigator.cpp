@@ -1029,6 +1029,13 @@ void KUrlNavigator::setUrl(const KUrl& url)
     const KUrl transformedUrl(urlStr);
 
     if (d->m_historyIndex > 0) {
+        // Check whether current history element has the same URL.
+        // If this is the case, just ignore setting the URL.
+        const HistoryElem& historyElem = d->m_history[d->m_historyIndex];
+        if (transformedUrl == historyElem.url()) {
+            return;
+        }
+
         // If an URL is set when the history index is not at the end (= 0),
         // then clear all previous history elements so that a new history
         // tree is started from the current position.

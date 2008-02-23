@@ -54,7 +54,7 @@ void KUrlNavigatorTest::testGoBack()
 {
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
-    
+
     bool ok = m_navigator->goBack();
 
     QVERIFY(ok);
@@ -102,9 +102,9 @@ void KUrlNavigatorTest::testHistoryInsert()
 {
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
-    
+
     m_navigator->setUrl(KUrl("D"));
-    
+
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
@@ -115,7 +115,7 @@ void KUrlNavigatorTest::testHistoryInsert()
 
     m_navigator->setUrl(KUrl("E"));
     QCOMPARE(m_navigator->historyIndex(), 0);
-    QCOMPARE(m_navigator->historySize(), 4);    
+    QCOMPARE(m_navigator->historySize(), 4);
 
     m_navigator->setUrl(KUrl("F"));
     QCOMPARE(m_navigator->historyIndex(), 0);
@@ -131,6 +131,21 @@ void KUrlNavigatorTest::testHistoryInsert()
     m_navigator->setUrl(KUrl("G"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);
+
+    // insert same URL as the current history index
+    m_navigator->setUrl(KUrl("G"));
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);
+
+    // jump to "C" and insert same URL as the current history index
+    ok = m_navigator->goBack();
+    QVERIFY(ok);
+    QCOMPARE(m_navigator->historyIndex(), 1);
+    QCOMPARE(m_navigator->historySize(), 4);
+
+    m_navigator->setUrl(KUrl("C"));
+    QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 }
 
