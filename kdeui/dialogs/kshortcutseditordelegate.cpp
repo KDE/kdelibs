@@ -31,6 +31,9 @@
 #include <QLabel>
 #include <QPainter>
 
+#include "kdebug.h"
+
+
 
 
 KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts)
@@ -54,8 +57,12 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
     QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
     setContractPixmap( pixmap );
 
-    connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
+    // Listen to activiation signals
+    // connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
     connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
+
+    // Listen to collapse signals
+    connect(parent, SIGNAL(collapsed(QModelIndex)), this, SLOT(itemCollapsed(QModelIndex)));
 }
 
 
@@ -95,7 +102,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
             // do nothing.
         }
         index = model->index(index.row(), column, index.parent());
-        view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+        view->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
     }
 
     if (!isExtended(index)) {
@@ -142,6 +149,30 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
         m_editingIndex = QModelIndex();
         m_editor = 0;
     }
+}
+
+
+//slot
+void KShortcutsEditorDelegate::itemCollapsed(QModelIndex index)
+{
+    if (!m_editingIndex.isValid())
+        return;
+
+    const QAbstractItemModel *model = index.model();
+    for (int row=0; row<model->rowCount(index);++row) {
+        QModelIndex rowIndex = model->index(row,0,index);
+
+        for (int col=0; col<index.model()->columnCount(index);++col) {
+            QModelIndex colIndex = model->index(row,col,index);
+
+            if (colIndex == m_editingIndex) {
+                itemActivated(m_editingIndex); //this will *close* the item's editor because it's already open
+            }
+
+        }
+
+    }
+
 }
 
 

@@ -96,6 +96,12 @@ private:
     QWidget *m_editor;
 private Q_SLOTS:
     void itemActivated(QModelIndex index);
+
+    /**
+     * When the user collapses a hole subtree of shortcuts then remove eventually
+     * extended items. Else we get that artefact bug. See above.
+     */
+    void itemCollapsed(QModelIndex index );
     void keySequenceChanged(const QKeySequence &);
     void shapeGestureChanged(const KShapeGesture &);
     void rockerGestureChanged(const KRockerGesture &);
