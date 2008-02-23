@@ -376,6 +376,7 @@ bool KPty::openSlave()
         kWarning(175) << "Can't open slave pseudo teletype";
         return false;
     }
+    fcntl(d->slaveFd, F_SETFD, FD_CLOEXEC);
     return true;
 }
 
