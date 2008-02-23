@@ -153,6 +153,12 @@ Solid::Predicate Solid::Predicate::operator &(const Predicate &other)
     return result;
 }
 
+Solid::Predicate &Solid::Predicate::operator &=(const Predicate &other)
+{
+    *this = *this & other;
+    return *this;
+}
+
 Solid::Predicate Solid::Predicate::operator|(const Predicate &other)
 {
     Predicate result;
@@ -163,6 +169,12 @@ Solid::Predicate Solid::Predicate::operator|(const Predicate &other)
     result.d->operand2 = new Predicate(other);
 
     return result;
+}
+
+Solid::Predicate &Solid::Predicate::operator |=(const Predicate &other)
+{
+    *this = *this | other;
+    return *this;
 }
 
 bool Solid::Predicate::isValid() const

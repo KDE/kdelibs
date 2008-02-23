@@ -128,6 +128,14 @@ namespace Solid
         Predicate operator &(const Predicate &other);
 
         /**
+         * 'AndEquals' operator.
+         *
+         * @param other the second operand
+         * @return assigns to 'this' a new 'and' predicate having 'this' and 'other' as operands
+         */
+        Predicate &operator &=(const Predicate &other);
+
+        /**
          * 'Or' operator.
          *
          * @param other the second operand
@@ -135,6 +143,13 @@ namespace Solid
          */
         Predicate operator|(const Predicate &other);
 
+        /**
+         * 'OrEquals' operator.
+         *
+         * @param other the second operand
+         * @return assigns to 'this' a new 'or' predicate having 'this' and 'other' as operands
+         */
+        Predicate &operator|=(const Predicate &other);
 
         /**
          * Indicates if the predicate is valid.
