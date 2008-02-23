@@ -102,7 +102,7 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
         CodeGen::emitOp(comp, block, Op_RInt32_Value, &out, original);
         break;
 
-    case Conv_RNumber_Value:
+    case Conv_I_R_Number_Value:
         CodeGen::emitOp(comp, block, Op_RNumber_Value, &out, original);
         break;
 

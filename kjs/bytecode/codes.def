@@ -288,7 +288,7 @@ operation PropagateException {
 
 operation Return {
     impl void return (value retVal) [[
-        return Completion(Normal, retVal);
+        return Completion(ReturnValue, retVal);
     ]]
 }
 
