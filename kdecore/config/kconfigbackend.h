@@ -35,7 +35,7 @@ class QFile;
 class QByteArray;
 class QDateTime;
 
-class KConfigBackend : public QObject, public KShared
+class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
 {
     Q_OBJECT
     Q_FLAGS(ParseOption)
@@ -153,5 +153,13 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::ParseOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::WriteOptions)
+
+/**
+ * Register a KConfig backend when it is contained in a loadable module
+ */
+#define K_EXPORT_KCONFIGBACKEND(libname, classname) \
+K_PLUGIN_FACTORY(factory, registerPlugin<classname>();) \
+K_EXPORT_PLUGIN(factory("kconfigbackend_" #libname))
+
 
 #endif // KCONFIGBACKEND_H

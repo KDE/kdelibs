@@ -61,45 +61,27 @@ void KConfigBackend::registerMappings(const KEntryMap& /*entryMap*/)
 }
 
 BackendPtr KConfigBackend::create(const KComponentData& componentData, const QString& file,
-                                  const QString& system)
+                                  const QString& sys)
 {
-    const QString upperSystem = (system.isEmpty() ?
-            Private::whatSystem(file).toUpper() :
-            system.toUpper());
+    const QString system = (sys.isEmpty() ? Private::whatSystem(file) : sys);
     KConfigBackend* backend = 0;
 
-    if (upperSystem == "INI")
+    if (system.compare("INI", Qt::CaseInsensitive) == 0) {
         goto default_backend;
-    else {
-        KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend");
+    } else {
+        QString constraint = QString("%1 ~~ Name").arg(system);
+        KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend", constraint);
 
-        foreach (const KService::Ptr service, offers) {
-            if (service->name().toUpper() != upperSystem ||
-                service->library().isEmpty())
-                continue;
-
-            backend = KPluginLoader(*service, componentData).factory()->create<KConfigBackend>(QLatin1String("KConfigBackend"));
-//             const char* libraryName = service->library().toLocal8Bit().constData();
-//             int error = 0;
-
-/*            backend = KLibLoader::createInstance<KConfigBackend>(
-                                                   libraryName,
-                                                   0,
-                                                   QStringList(),
-                                                   &error);*/
+        foreach (const KService::Ptr offer, offers) {
+            backend = offer->createInstance<KConfigBackend>(0);
             if (backend) {
                 backend->setFilePath(file);
                 return BackendPtr(backend);
-            } else {
-                kDebug(181) << "Could not load config backend " << system
-                            /*<< ". Error code: " << error*/ << endl;
-                goto default_backend;
             }
         } // foreach offers
     }
 
 default_backend:
-
     backend = new KConfigIniBackend;
     backend->setFilePath(file);
     return BackendPtr(backend);
