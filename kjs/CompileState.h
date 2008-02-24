@@ -50,7 +50,7 @@ public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody,
                  WTF::Vector<bool>& shouldMark, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), ctype(ctype), shouldMark(shouldMark),
-        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody), nestedScopeDepth(0)
+        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody)
     {}
 
     FunctionBodyNode* functionBody() {
@@ -92,21 +92,40 @@ public:
         return globalScopeVal;
     }
 
-    // This keeps track of entering/exiting of inner scopes introduced
-    // by with and catch
-    void pushScope() {
-        ++nestedScopeDepth;
-    }
+    // We need to keep track of when we're inside with, catch, and finally clauses for 2 reasons:
+    // (1) if we're, that can affect variable lookup
+    // (2) if there is a continue or break statement inside, we may have to pop
+    //     the scopes, unwinder entries, and deferred exception entries before going to the destination
+    // For the 2nd part, we compare the nesting of the destination (which we save with the label info),
+    // and the continue/break itself
+    struct Nesting {
+        int scopeDepth;   // # of scope entries pushed, along with unwind records
+        int ehDepth;      // # of exception handlers set
+        int ehDeferDepth; // # of exception deferalls, along with unwind records.
 
-    void popScope() {
-        --nestedScopeDepth;
+        Nesting(): scopeDepth(0), ehDepth(0), ehDeferDepth(0)
+        {}
+    };
+
+    Nesting& activeNesting() {
+        return inside;
     }
 
     bool inNestedScope() {
-        return nestedScopeDepth > 0;
+        return inside.scopeDepth > 0;
     }
 
     // Label stuff....
+    struct LabelInfo {
+        Node*    handlerNode;
+        Nesting  handlerDepth;
+
+        LabelInfo(): handlerNode(0)
+        {}
+
+        LabelInfo(Node* node, const Nesting& nesting): handlerNode(node), handlerDepth(nesting)
+        {}
+    };
 
     // Registers a pending label. Returns true if the label is OK, false if it's a duplicate.
     // If it fails, the label stack isn't touched!
@@ -116,11 +135,11 @@ public:
     // Binds all the labels to the given node
     void bindLabels(Node* node);
 
-    // Returns destination for the label (0 if not found)
-    Node* resolveContinueLabel(Identifier label);
-    Node* resolveBreakLabel   (Identifier label);
+    // Returns destination for the label (node will be 0 if not found)
+    LabelInfo resolveContinueLabel(Identifier label);
+    LabelInfo resolveBreakLabel   (Identifier label);
 
-    // Sets the targets for break/continues w/o label name..
+    // Sets the targets for break/continues w/o label name
     void pushDefaultBreak   (Node* node);
     void pushDefaultContinue(Node* node);
     void popDefaultBreak   ();
@@ -170,8 +189,7 @@ private:
             freeNonMarkTemps.append(desc);
     }
 
-    // Recursion depth of width or catch scopes...
-    int nestedScopeDepth;
+    Nesting inside;
 
     // Label resolution..
     WTF::HashSet<Identifier> seenLabels;    // all labels we're inside
@@ -180,11 +198,11 @@ private:
                                             // a statement yet.
 
     // Targets for continue/break w/o destination.
-    WTF::Vector<Node*> defaultBreakTargets;
-    WTF::Vector<Node*> defaultContinueTargets;
+    WTF::Vector<LabelInfo> defaultBreakTargets;
+    WTF::Vector<LabelInfo> defaultContinueTargets;
 
     // Named label targets
-    WTF::HashMap<Identifier, Node*> labelTargets;
+    WTF::HashMap<Identifier, LabelInfo> labelTargets;
 
     WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingBreaks;
     WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingContinues;

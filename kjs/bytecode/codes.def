@@ -231,11 +231,6 @@ operation IfNotJump {
     tile (value, addr) as executeIfNotJump;
 }
 
-// for, while, do ... while, etc., can all be easily expressed as above,
-// ditto for continue / break
-
-// ### switch is nasty. Probably needs some opaque pointer type.
-
 // These update the scope chain, and sets the special unwind exception handler, which is used to
 // restore the chain if an exception happens
 operation PushScope {
@@ -246,6 +241,29 @@ operation PushScope {
 
         exec->pushScope(obj);
         exec->pushExceptionHandler(ExecState::PopScope);
+    ]]
+}
+
+operation UnwindStacks {
+    impl void(int32 scopes, int32 ehs, int32 defers) [[
+        // This op is used when a break or continue is used to jump out
+        // of a context that updated various stacks in ExecState,
+        // to clean them up. Each one contributes at least one
+        // entry to the main exception handler stack (since throwing
+        // and exception needs to do a similar cleanup), and perhaps
+        // also scope stack, deferal stack, etc. entries.
+
+        // Get rid of all the extra scopes..
+        for (int s = 0; s < scopes; ++s)
+            exec->popScope();
+
+        for (int d = 0; d < defers; ++d)
+            exec->popDeferredException();
+
+        // We get an exception handler entry for each scope,
+        // exception deferral, and an actual handler. Kill them all
+        for (int e = 0; e < (scopes + ehs + defers); ++e)
+            exec->popExceptionHandler();
     ]]
 }
 
@@ -832,7 +850,7 @@ operation LogicalNot {
 }
 
 /**
- Miscellaneous ops 
+ Miscellaneous ops
 */
 operation TypeOf {
     impl value typeOf(value v) [[

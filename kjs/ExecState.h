@@ -111,6 +111,11 @@ namespace KJS {
         setException(exc);
     }
 
+    // Removes an entry from the deferral stack, but doesn't do anything with it
+    void popDeferredException() {
+        m_deferredExceptions.removeLast();
+    }
+
     /**
      * Set the exception associated with this execution state,
      * updating the program counter appropriately, and executing any relevant EH cleanups.

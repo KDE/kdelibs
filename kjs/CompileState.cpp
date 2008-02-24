@@ -97,15 +97,15 @@ void CompileState::popLabel()
 void CompileState::bindLabels(Node* node)
 {
     for (size_t l = 0; l < pendingLabels.size(); ++l)
-        labelTargets.set(pendingLabels[l], node);
+        labelTargets.set(pendingLabels[l], LabelInfo(node, activeNesting()));
     pendingLabels.clear();
 }
 
-Node* CompileState::resolveBreakLabel(Identifier label)
+CompileState::LabelInfo CompileState::resolveBreakLabel(Identifier label)
 {
     if (label.isEmpty()) {
         if (defaultBreakTargets.isEmpty())
-            return 0;
+            return LabelInfo();
         else
             return defaultBreakTargets.last();
     } else {
@@ -113,11 +113,11 @@ Node* CompileState::resolveBreakLabel(Identifier label)
     }
 }
 
-Node* CompileState::resolveContinueLabel(Identifier label)
+CompileState::LabelInfo CompileState::resolveContinueLabel(Identifier label)
 {
     if (label.isEmpty()) {
         if (defaultContinueTargets.isEmpty())
-            return 0;
+            return LabelInfo();
         else
             return defaultContinueTargets.last();
     } else {
@@ -127,12 +127,12 @@ Node* CompileState::resolveContinueLabel(Identifier label)
 
 void CompileState::pushDefaultBreak(Node* node)
 {
-    defaultBreakTargets.append(node);
+    defaultBreakTargets.append(LabelInfo(node, activeNesting()));
 }
 
 void CompileState::pushDefaultContinue(Node* node)
 {
-    defaultContinueTargets.append(node);
+    defaultContinueTargets.append(LabelInfo(node, activeNesting()));
 }
 
 void CompileState::popDefaultBreak()
