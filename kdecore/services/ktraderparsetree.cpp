@@ -472,10 +472,21 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
       return true;
   }
 
-  if ( c1.type == ParseContext::T_STRING && c2.type == ParseContext::T_STR_SEQ )
+  if (c1.type == ParseContext::T_STRING && c2.type == ParseContext::T_STR_SEQ)
   {
-    _context->b = c2.strSeq.contains(c1.str, m_cs);
-    return true;
+      if (false && m_substring) {
+          _context->b = false;
+          foreach (const QString &string, c2.strSeq) {
+              if (string.contains(c1.str, m_cs)) {
+                  _context->b = true;
+                  break;
+              }
+          }
+      } else {
+          _context->b = c2.strSeq.contains(c1.str, m_cs);
+      }
+
+      return true;
   }
 
   return false;

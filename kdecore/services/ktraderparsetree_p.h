@@ -159,7 +159,13 @@ protected:
 class ParseTreeIN : public ParseTreeBase
 {
 public:
-  ParseTreeIN( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2, Qt::CaseSensitivity cs ) { m_pLeft = _ptr1; m_pRight = _ptr2; m_cs = cs; }
+  ParseTreeIN(ParseTreeBase *ptr1, ParseTreeBase *ptr2, Qt::CaseSensitivity cs, bool substring = false)
+      : m_pLeft(ptr1),
+        m_pRight(ptr2),
+        m_cs(cs),
+        m_substring(substring)
+  {
+  }
 
   bool eval( ParseContext *_context ) const;
 
@@ -167,6 +173,7 @@ protected:
   ParseTreeBase::Ptr m_pLeft;
   ParseTreeBase::Ptr m_pRight;
   Qt::CaseSensitivity m_cs;
+  bool m_substring;
 };
 
 /**

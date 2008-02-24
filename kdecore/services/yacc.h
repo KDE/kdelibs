@@ -51,16 +51,18 @@
      OR = 267,
      AND = 268,
      TOKEN_IN = 269,
-     MATCH_INSENSITIVE = 270,
-     TOKEN_IN_INSENSITIVE = 271,
-     EXIST = 272,
-     MAX = 273,
-     MIN = 274,
-     VAL_BOOL = 275,
-     VAL_STRING = 276,
-     VAL_ID = 277,
-     VAL_NUM = 278,
-     VAL_FLOAT = 279
+     TOKEN_IN_SUBSTRING = 270,
+     MATCH_INSENSITIVE = 271,
+     TOKEN_IN_INSENSITIVE = 272,
+     TOKEN_IN_SUBSTRING_INSENSITIVE = 273,
+     EXIST = 274,
+     MAX = 275,
+     MIN = 276,
+     VAL_BOOL = 277,
+     VAL_STRING = 278,
+     VAL_ID = 279,
+     VAL_NUM = 280,
+     VAL_FLOAT = 281
    };
 #endif
 /* Tokens.  */
@@ -76,16 +78,18 @@
 #define OR 267
 #define AND 268
 #define TOKEN_IN 269
-#define MATCH_INSENSITIVE 270
-#define TOKEN_IN_INSENSITIVE 271
-#define EXIST 272
-#define MAX 273
-#define MIN 274
-#define VAL_BOOL 275
-#define VAL_STRING 276
-#define VAL_ID 277
-#define VAL_NUM 278
-#define VAL_FLOAT 279
+#define TOKEN_IN_SUBSTRING 270
+#define MATCH_INSENSITIVE 271
+#define TOKEN_IN_INSENSITIVE 272
+#define TOKEN_IN_SUBSTRING_INSENSITIVE 273
+#define EXIST 274
+#define MAX 275
+#define MIN 276
+#define VAL_BOOL 277
+#define VAL_STRING 278
+#define VAL_ID 279
+#define VAL_NUM 280
+#define VAL_FLOAT 281
 
 
 
@@ -101,7 +105,7 @@ typedef union YYSTYPE
      void *ptr;
 }
 /* Line 1489 of yacc.c.  */
-#line 105 "yacc.h"
+#line 109 "yacc.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

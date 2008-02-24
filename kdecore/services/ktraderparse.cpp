@@ -50,7 +50,8 @@ ParseTreeBase::Ptr KTraderParse::parseConstraints( const QString& _constr )
 void KTraderParse_setParseTree( void *_ptr1 )
 {
   if ( !pTree )
-    pTree = new ParseTreeBase::Ptr; // ### leak; should use KStaticDeleter
+    pTree = new ParseTreeBase::Ptr; // ### leak; should use K_GLOBAL_STATIC
+
   *pTree = static_cast<ParseTreeBase*>( _ptr1 );
 }
 
@@ -78,6 +79,12 @@ void* KTraderParse_newCMP( void *_ptr1, void *_ptr2, int _i )
 void* KTraderParse_newIN( void *_ptr1, void *_ptr2, int _cs )
 {
   return new ParseTreeIN( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2, _cs == 1 ? Qt::CaseSensitive : Qt::CaseInsensitive );
+}
+
+void* KTraderParse_newSubstringIN( void *_ptr1, void *_ptr2, int _cs )
+{
+  return new ParseTreeIN((ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2,
+                          _cs == 1 ? Qt::CaseSensitive : Qt::CaseInsensitive, true);
 }
 
 void* KTraderParse_newMATCH( void *_ptr1, void *_ptr2, int _cs )

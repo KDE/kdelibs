@@ -30,6 +30,7 @@ void* KTraderParse_newOR( void *_ptr1, void *_ptr2 );
 void* KTraderParse_newAND( void *_ptr1, void *_ptr2 );
 void* KTraderParse_newCMP( void *_ptr1, void *_ptr2, int _i );
 void* KTraderParse_newIN( void *_ptr1, void *_ptr2, int _cs );
+void* KTraderParse_newSubstringIN( void *_ptr1, void *_ptr2, int _cs );
 void* KTraderParse_newMATCH( void *_ptr1, void *_ptr2, int _cs );
 void* KTraderParse_newCALC( void *_ptr1, void *_ptr2, int _i );
 void* KTraderParse_newBRACKETS( void *_ptr1 );

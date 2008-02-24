@@ -38,6 +38,8 @@ DIGIT    [0-9]
 "or" { return OR; }
 "in" { return TOKEN_IN; }
 "~in" { return TOKEN_IN_INSENSITIVE; }
+"subin" { return TOKEN_IN_SUBSTRING; }
+"~subin" { return TOKEN_IN_SUBSTRING_INSENSITIVE; }
 "exist" { return EXIST; }
 "max" { return MAX; }
 "min" { return MIN; }
