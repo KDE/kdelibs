@@ -1304,6 +1304,7 @@ namespace KJS {
       virtual void streamTo(SourceStream&) const;
       virtual void recurseVisit(NodeVisitor *visitor);
   private:
+      friend class SwitchNode;
       RefPtr<Node> expr;
       RefPtr<SourceElementsNode> source;
   };
@@ -1322,6 +1323,7 @@ namespace KJS {
       virtual void breakCycle();
       virtual void recurseVisit(NodeVisitor *visitor);
   private:
+      friend class SwitchNode;
       friend class CaseBlockNode;
       RefPtr<CaseClauseNode> clause;
       ListRefPtr<ClauseListNode> next;
@@ -1335,6 +1337,7 @@ namespace KJS {
       virtual void streamTo(SourceStream&) const;
       virtual void recurseVisit(NodeVisitor *visitor);
   private:
+      friend class SwitchNode;
       RefPtr<ClauseListNode> list1;
       RefPtr<CaseClauseNode> def;
       RefPtr<ClauseListNode> list2;
@@ -1346,6 +1349,7 @@ namespace KJS {
       virtual Completion execute(ExecState*);
       virtual void streamTo(SourceStream&) const;
       virtual void recurseVisit(NodeVisitor *visitor);
+      virtual void generateExecCode(CompileState* comp, CodeBlock& block);
       virtual bool isSwitchStatement() const { return true; }
   private:
       RefPtr<Node> expr;

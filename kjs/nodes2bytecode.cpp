@@ -1145,6 +1145,75 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
     CodeGen::emitOp(comp, block, Op_PropagateException);
 }
 
+void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    CaseBlockNode* caseBlock = this->block.get();
+
+    // The code we produce has 2 stages: first, we emit all the conditionals, and pick
+    // the label to jump to (with the jump to the default being last),
+    // then we just emit all the clauses in the row. The breaks will be
+    // resolved at the end --- for that, we bind ourselves for label'less break.
+    comp->pushDefaultBreak(this);
+
+    // What we compare with
+    OpValue switchOn = expr->generateEvalCode(comp, block);
+
+    WTF::Vector<Addr> list1jumps;
+    WTF::Vector<Addr> list2jumps;
+    Addr defJump;
+
+    // Jumps for list 1..
+    for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
+        OpValue ref = iter->clause->expr->generateEvalCode(comp, block);
+        OpValue match;
+        CodeGen::emitOp(comp, block, Op_StrEq, &match, &switchOn, &ref);
+
+        Addr jumpToClause = CodeGen::emitOp(comp, block, Op_IfJump, 0, &match, OpValue::dummyAddr());
+        list1jumps.append(jumpToClause);
+    }
+
+    // Jumps for list 2..
+    for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
+        OpValue ref = iter->clause->expr->generateEvalCode(comp, block);
+        OpValue match;
+        CodeGen::emitOp(comp, block, Op_StrEq, &match, &switchOn, &ref);
+
+        Addr jumpToClause = CodeGen::emitOp(comp, block, Op_IfJump, 0, &match, OpValue::dummyAddr());
+        list2jumps.append(jumpToClause);
+    }
+
+    // Jump to default (or after, if there is no default)
+    defJump = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+
+    // Now, we can actually emit the bodies, fixing the addresses as we go
+    int p = 0;
+    for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
+        CodeGen::patchJumpToNext(block, list1jumps[p], 1);
+        iter->clause->source->generateExecCode(comp, block);
+        ++p;
+    }
+
+    if (caseBlock->def) {
+        CodeGen::patchJumpToNext(block, defJump, 0);
+        caseBlock->def->source->generateExecCode(comp, block);
+    }
+
+    p = 0;
+    for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
+        CodeGen::patchJumpToNext(block, list2jumps[p], 1);
+        iter->clause->source->generateExecCode(comp, block);
+        ++p;
+    }
+
+    // If we didn't have a default, that jump is to here..
+    if (!caseBlock->def)
+        CodeGen::patchJumpToNext(block, defJump, 0);
+
+    // Breaks should go after us..
+    comp->popDefaultBreak();
+    comp->resolvePendingBreaks(this, block, CodeGen::nextPC(block));
+}
+
 
 }
 
