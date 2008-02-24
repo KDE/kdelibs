@@ -306,6 +306,7 @@ install( FILES
    compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h
+   config/kconfigbackend.h
    config/kconfigbase.h
    config/kconfiggroup.h
    config/kdesktopfile.h
