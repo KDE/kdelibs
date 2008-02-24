@@ -150,7 +150,9 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
     QByteArray ret;
     char tmp[ 256 ];
     char num[ 256 ];
+#if 0 // see below
     if( event.request_code < 128 ) // core request
+#endif
         {
         XGetErrorText( dpy, event.error_code, tmp, 255 );
         if( char* paren = strchr( tmp, '(' )) // the explanation in parentheses just makes
@@ -163,15 +165,18 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
         if( event.resourceid != 0 )
             ret += QByteArray( ", resource: 0x" ) + QByteArray::number( (qlonglong)event.resourceid, 16 );
         }
+#if 0
     else // extensions
         {
         // XGetErrorText() currently has a bug that makes it fail to find text
         // for some errors (when error==error_base), also XGetErrorDatabaseText()
         // requires the right extension name, so it is needed to get info about
-        // all extensions. Xlib itself has it, but in internal data, so fetch
-        // it again. Additionally, xcb doesn't like normal Xlib calls inside
-        // the error handler, so open another connection. Both of these mean
-        // a bunch of roundtrips, but this is error reporting anyway, right?
+        // all extensions. However that is almost impossible:
+        // - Xlib itself has it, but in internal data.
+        // - Opening another X connection now can cause deadlock with server grabs.
+        // - Fetching it at startup means a bunch of roundtrips.
+        // So if this becomes more useful in the future, do the roundtrips at startup,
+        // or fetch it in kded and export as an env.var or something.
         Display* dpy2 = XOpenDisplay( XDisplayString( dpy ));
         int nextensions;
         char** extensions = XListExtensions( dpy2, &nextensions );
@@ -246,6 +251,7 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
         delete[] error_bases;
         XCloseDisplay( dpy2 );
         }
+#endif
     return ret;
     }
 
