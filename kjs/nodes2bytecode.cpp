@@ -443,6 +443,12 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return curV;
 }
 
+OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    (void)expr->generateEvalCode(comp, block);
+    return OpValue::immValue(jsUndefined());
+}
+
 OpValue TypeOfReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // false: no error if not there, gives undefined instead

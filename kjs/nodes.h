@@ -651,6 +651,7 @@ namespace KJS {
   public:
     VoidNode(Node *e) : expr(e) {}
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
