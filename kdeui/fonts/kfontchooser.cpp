@@ -598,7 +598,9 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     QString currentFamily;
     if (family.isEmpty()) {
         Q_ASSERT( familyListBox->currentItem() );
-        currentFamily = qtFamilies[familyListBox->currentItem()->text()];
+        if (familyListBox->currentItem()) {
+          currentFamily = qtFamilies[familyListBox->currentItem()->text()];
+        }
     }
     else {
         currentFamily = qtFamilies[family];
