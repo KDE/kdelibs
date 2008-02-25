@@ -184,6 +184,11 @@ if test -z "$TOPNAME" ; then
     TOPNAME="API Reference"
 fi
 
+COPYRIGHT=`grep '^/.*DOXYGEN_COPYRIGHT' "$top_srcdir/Mainpage.dox" | sed -e 's+[^=]*=++' | sed s+\"++g`
+if test -z "$COPYRIGHT" ; then
+    COPYRIGHT="1996-2007 The KDE developers"
+fi
+
 #
 # Preprocess source dir and generate source files (KConfigXT, uic, etc.)
 # @param $1: create or cleanup (parameter for doxygen-preprocess-foo.sh)
@@ -452,7 +457,7 @@ doxyndex()
 				-e "s+<!-- pmenu.*-->+$PMENU+" \
 				-e "s+<!-- cmenu.begin -->+$CMENUBEGIN+" \
 				-e "s+<!-- cmenu.end -->+$CMENUEND+" \
-				< "$i"  | sed -e "s+@topdir@+$htmltop+g" | sed -e "s+@topname@+$TOPNAME+g" > "$i.new" && mv "$i.new" "$i"
+				< "$i"  | sed -e "s+@topdir@+$htmltop+g" | sed -e "s+@topname@+$TOPNAME+g" | sed -e "s+@copyright@+$COPYRIGHT+g" > "$i.new" && mv "$i.new" "$i"
 			sed -e "s+<!-- cmenu -->+$CMENU+" < "$i" > "$i.new"
 			test -s "$i.new" && mv "$i.new" "$i"
 			echo "* Added menus to $i"
@@ -484,7 +489,7 @@ apidox_toplevel()
 	echo ""
 	echo "*** Creating API documentation main page for $module_name"
 	echo "*"
-	rm -f "Doxyfile"
+	#rm -f "Doxyfile"
 	for i in "$top_srcdir/doc/api/Doxyfile.global" \
 		"$DOXDATA/Doxyfile.global"
 	do
@@ -575,7 +580,7 @@ apidox_subdir()
 		echo "*** Creating apidox in $subdir"
 	fi
 	echo "*"
-	rm -f "$subdir/Doxyfile"
+	#rm -f "$subdir/Doxyfile"
 	if test ! -d "$top_srcdir/$subdir" ; then
 		echo "* No source (sub)directory $subdir"
 		return
@@ -972,7 +977,7 @@ fi
 # At the end of a run, clean up stuff.
 if test "YES" = "$cleanup" ; then
 	rm -f subdirs.in  subdirs.later subdirs.sort subdirs.top Doxyfile.in
-	rm -f `find . -name Doxyfile`
+	#rm -f `find . -name Doxyfile`
 #	rm -f qt/qt.tag
 #	rmdir qt > /dev/null 2>&1
 	if test "$preprocess" = "1"; then
