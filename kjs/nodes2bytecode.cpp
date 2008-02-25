@@ -120,7 +120,7 @@ size_t VarAccessNode::localID(CompileState* comp, bool& dynamicLocal)
 
     size_t index = comp->functionBody()->lookupSymbolID(ident);
     if (index == missingSymbolMarker()) {
-        if (comp->codeType() == GlobalCode || ident == CommonIdentifiers::shared()->arguments)
+        if (comp->codeType() != FunctionCode || ident == CommonIdentifiers::shared()->arguments)
             dynamicLocal = true;
         else
             dynamicLocal = false; // Can skip the local scope..
@@ -141,7 +141,7 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         OpName op = Op_VarGet; // in general, have to search the whole chain..
         if (comp->codeType() == GlobalCode && !comp->inNestedScope())
                 // unless we're in GlobalCode, w/o extra stuff on top, so there is nothing to search
-            op = Op_SymGetVarObject;
+            op = Op_LocalVarGet;
         else if (!dynamicLocal) // can skip one scope..
             op = Op_NonLocalVarGet;
 
@@ -609,13 +609,13 @@ OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& bloc
         // operator |
         codeOp = Op_BitOr;
         break;
-
     case OpIn:
+        codeOp = Op_In;
+        break;
     case OpInstanceOf:
-        //TODO!
-#if 0
-        return jsNumber(v1->toUInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
-#endif
+        codeOp = Op_InstanceOf;
+        break;
+
     default:
         assert(!"BinaryOperatorNode: unhandled switch case");
     }
@@ -1219,19 +1219,22 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
     int p = 0;
     for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
         CodeGen::patchJumpToNext(block, list1jumps[p], 1);
-        iter->clause->source->generateExecCode(comp, block);
+        if (iter->clause->source)
+            iter->clause->source->generateExecCode(comp, block);
         ++p;
     }
 
     if (caseBlock->def) {
         CodeGen::patchJumpToNext(block, defJump, 0);
-        caseBlock->def->source->generateExecCode(comp, block);
+        if (caseBlock->def->source)
+            caseBlock->def->source->generateExecCode(comp, block);
     }
 
     p = 0;
     for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
         CodeGen::patchJumpToNext(block, list2jumps[p], 1);
-        iter->clause->source->generateExecCode(comp, block);
+        if (iter->clause->source)
+            iter->clause->source->generateExecCode(comp, block);
         ++p;
     }
 
