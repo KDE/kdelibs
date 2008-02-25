@@ -30,8 +30,27 @@
 #include "bytecode/machine.h"
 #include "scriptfunction.h"
 #include "internal.h" // for printInfo
+#include "ustring.h"
 
 namespace KJS {
+
+// ### Need to consolidate this w/things remaining in nodes.cpp somehow.
+static void substitute(UString &string, const UString &substring)
+{
+    int position = string.find("%s");
+    assert(position != -1);
+    UString newString = string.substr(0, position);
+    newString.append(substring);
+    newString.append(string.substr(position + 2));
+    string = newString;
+}
+
+void throwUndefinedVariableError(ExecState* exec, const Identifier& ident)
+{
+    UString msg = "Can't find variable: %s";
+    substitute(msg, ident.ustring());
+    throwError(exec, ReferenceError, msg);
+}
 
 static JSValue* typeStringForValue(JSValue* v)
 {

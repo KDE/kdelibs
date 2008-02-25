@@ -171,7 +171,7 @@ CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock
         }
 
         OpValue varName = OpValue::immIdent(&ident);
-        OpValue errFail = OpValue::immBool(errorOnFail);
+        OpValue errFail = OpValue::immNode(errorOnFail ? this : 0);
         CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
                         &ref->val1, &varName, &errFail);
         return ref;
@@ -228,7 +228,6 @@ OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 }
 
 // ------------------------------ Object + Array literals --------------------------
-// TODO: ElementNode, ArrayNode, PropertyNameNode, PropertyNode, PropertyListNode, ObjectLiteralNode
 
 OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
@@ -562,6 +561,10 @@ OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& bloc
         // operator >>
         codeOp = Op_RShift;
         break;
+    case OpURShift:
+        // operator >>>
+        codeOp = Op_URShift;
+        break;
     case OpLess:
         // operator <
         codeOp = Op_Less;
@@ -609,10 +612,8 @@ OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& bloc
 
     case OpIn:
     case OpInstanceOf:
-    case OpURShift:
         //TODO!
 #if 0
-        // operator >>>
         return jsNumber(v1->toUInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
 #endif
     default:
@@ -775,6 +776,9 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         case OpRShift:
             codeOp = Op_RShift;
             break;
+        case OpURShift:
+            codeOp = Op_URShift;
+            break;
         case OpAndEq:
             codeOp = Op_BitAnd;
             break;
@@ -784,7 +788,6 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         case OpOrEq:
             codeOp = Op_BitOr;
             break;
-        case OpURShift:
         default:
             ASSERT(0);
         }
@@ -1059,8 +1062,7 @@ void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     if (!comp->pushLabel(label)) {
-        // ### FIXME
-        //return createErrorNode(SyntaxError, "Duplicated label %s found.", label);
+        emitSyntaxError(comp, block, this, "Duplicated label found.");
         return;
     }
 

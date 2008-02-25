@@ -340,9 +340,7 @@ operation Return {
 
 operation RaiseError {
     impl void (node node, int32 errorType, cstr msg) [[
-        // ### TODO!
-        ASSERT(0);
-        //return node->createErrorCompletion(exec, ErrorType(errorType), msg);
+        node->throwError(exec, ErrorType(errorType), msg);
     ]]
 }
 
@@ -368,7 +366,8 @@ operation GetGlobalObject {
 
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
-    impl value scopeLookup(ident varName, bool errorOnFailure) [[
+    // If we want failures detected, the errorNode is set to non-zero, to help with line #s, etc
+    impl value scopeLookup(ident varName, node errorNode) [[
         const ScopeChain& chain = exec->scopeChain();
         ScopeChainIterator iter = chain.begin();
         ScopeChainIterator end = chain.end();
@@ -386,8 +385,9 @@ operation ScopeLookup {
             ++iter;
         } while (iter != end);
 
-        if (errorOnFailure && iter == end) {
-            // ### TODO: issue error
+        if (errorNode && iter == end) {
+            $$ = errorNode->throwUndefinedVariableError(exec, *varName);
+            break;
         }
 
         $$ = scopeObj;
@@ -396,7 +396,7 @@ operation ScopeLookup {
 
 operation NonLocalScopeLookup {
     // As above, but may skip one step
-    impl value scopeLookup(ident varName, bool errorOnFailure) [[
+    impl value scopeLookup(ident varName, node errorNode) [[
         const ScopeChain& chain = exec->scopeChain();
         ScopeChainIterator iter = chain.begin();
         ScopeChainIterator end = chain.end();
@@ -420,8 +420,9 @@ operation NonLocalScopeLookup {
             ++iter;
         } while (iter != end);
 
-        if (errorOnFailure && iter == end) {
-            // ### TODO: issue error
+        if (errorNode && iter == end) {
+            $$ = errorNode->throwUndefinedVariableError(exec, *varName);
+            break;
         }
         $$ = scopeObj;
     ]]
@@ -452,7 +453,8 @@ operation VarGet {
         } while (iter != end);
 
         if (iter == end) {
-            // #### TODO throwUndefinedVariableError(exec, ident); //### FIXME
+            $$ = jsNull();
+            throwUndefinedVariableError(exec, *varName);
         }
     ]]
 }
@@ -488,7 +490,8 @@ operation NonLocalVarGet {
         } while (iter != end);
 
         if (iter == end) {
-            // ### FIXME throwUndefinedVariableError(exec, ident);
+            $$ = jsNull();
+            throwUndefinedVariableError(exec, *varName);
         }
     ]]
 }
@@ -736,6 +739,13 @@ operation RShift {
     ]]
 }
 
+operation URShift {
+    // This returns number since we don't have a uint32 type (yet?)
+    impl number(int32 v1, int32 v2) [[
+        $$ = (uint32_t(v1) >> ((uint32_t)v2 & 0x1f));
+    ]]
+}
+
 operation Less {
     // ### ??? TODO: conversion-less overloads here, when core supports them ???
 
@@ -892,17 +902,17 @@ operation Add3Arg {
 operation FunctionCall {
     impl value(value v, value thisVal) [[
         if (!v->isObject()) {
+            throwError(exec, TypeError, "Attempt to use a non-object as a function.");
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
             break;
-            // ### TODO
         }
 
         JSObject *func = static_cast<JSObject*>(v);
 
         if (!func->implementsCall()) {
+            throwError(exec, TypeError, "Attempt to use a non-function object as a function.");
             //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
             break;
-            // ### TODO
         }
 
         // ### TODO: optimize away toObject in local cases?
@@ -913,13 +923,14 @@ operation FunctionCall {
 operation CtorCall {
     impl value(value v) [[
         if (!v->isObject()) {
+            throwError(exec, TypeError, "Value is not an object. Cannot be used with new.");
             //return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be used with new.", v, expr.get());
-            // ### TODO
             break;
         }
 
         JSObject *constr = static_cast<JSObject*>(v);
         if (!constr->implementsConstruct()) {
+            throwError(exec, TypeError, "Value is not a constructor. Cannot be used with new.");
             // ### TODO
             // return throwError(exec, TypeError, "Value %s (result of expression %s) is not a constructor. Cannot be used with new.", v, expr.get());
             break;
