@@ -968,18 +968,12 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 }
 
 // Helper for continue/break -- emits stack cleanup call if needed.
-static void handleJumpOut(CompileState* comp, CodeBlock& block, const CompileState::Nesting& targetNest)
+static void handleJumpOut(CompileState* comp, CodeBlock& block, int targetNest)
 {
-    // ### since all of this info is in the EH unwinder, we could probably just push
-    // the depth of its stack, if we're ever starved for arguments
-    int unwScope = comp->activeNesting().scopeDepth   - targetNest.scopeDepth;
-    int unwEH    = comp->activeNesting().ehDepth      - targetNest.ehDepth;
-    int unwDef   = comp->activeNesting().ehDeferDepth - targetNest.ehDeferDepth;
-    if (unwScope || unwEH || unwDef) {
-        OpValue scopes = OpValue::immInt32(unwScope);
-        OpValue ehs    = OpValue::immInt32(unwEH);
-        OpValue defers = OpValue::immInt32(unwDef);
-        CodeGen::emitOp(comp, block, Op_UnwindStacks, 0, &scopes, &ehs, &defers);
+    int toUnwind = comp->unwindHandlerDepth() - targetNest;
+    if (toUnwind) {
+        OpValue unwind = OpValue::immInt32(toUnwind);
+        CodeGen::emitOp(comp, block, Op_UnwindStacks, 0, &unwind);
     }
 }
 
@@ -1052,11 +1046,13 @@ void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     OpValue scopeObj = expr->generateEvalCode(comp, block);
 
+    comp->pushScope();
     CodeGen::emitOp(comp, block, Op_PushScope, 0, &scopeObj);
-    ++comp->activeNesting().scopeDepth;
+
     statement->generateExecCode(comp, block);
-    --comp->activeNesting().scopeDepth;
+
     CodeGen::emitOp(comp, block, Op_PopScope, 0);
+    comp->popScope();
 }
 
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -1089,10 +1085,12 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     // Set the catch handler, run the try clause, pop the try handler..
     Addr setCatchHandler = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
-    ++comp->activeNesting().ehDepth;
+    comp->pushUnwindHandler();
+
     tryBlock->generateExecCode(comp, block);
-    --comp->activeNesting().ehDepth;
+
     CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+    comp->popUnwindHandler();
 
     // Jump over the catch if try is OK
     Addr jumpOverCatch;
@@ -1108,8 +1106,8 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // we need to set it before entering the catch scope, so the cleanup entries for that
         // are on top
         if (finallyBlock) {
-            ++comp->activeNesting().ehDepth;
             catchToFinallyEH = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+            comp->pushUnwindHandler();
         }
 
         // Emit the catch.. Note: the unwinder has already popped the catch handler entry,
@@ -1117,16 +1115,17 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // EnterCatch would do that for us, given the name
         OpValue catchVar = OpValue::immIdent(&exceptionIdent);
         CodeGen::emitOp(comp, block, Op_EnterCatch, 0, &catchVar);
+        comp->pushScope();
 
-        ++comp->activeNesting().scopeDepth;
         catchBlock->generateExecCode(comp, block);
-        --comp->activeNesting().scopeDepth;
 
         // If needed, cleanup the binding to finally, and always cleans the catch scope
         CodeGen::emitOp(comp, block, Op_ExitCatch);
+        comp->popScope();
+
         if (finallyBlock) {
-            --comp->activeNesting().ehDepth;
             CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+            comp->popUnwindHandler();
         }
 
         // after an OK 'try', we always go to finally, if any, which needs an op if there is a catch block
@@ -1139,10 +1138,12 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
             CodeGen::patchJumpToNext(block, catchToFinallyEH, 0);
 
         CodeGen::emitOp(comp, block, Op_DeferException);
-        ++comp->activeNesting().ehDeferDepth;
+        comp->pushUnwindHandler();
+
         finallyBlock->generateExecCode(comp, block);
-        --comp->activeNesting().ehDeferDepth;
+
         CodeGen::emitOp(comp, block, Op_ReactivateException);
+        comp->popUnwindHandler();
     }
 }
 

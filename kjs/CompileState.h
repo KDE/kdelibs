@@ -50,7 +50,8 @@ public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody,
                  WTF::Vector<bool>& shouldMark, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), ctype(ctype), shouldMark(shouldMark),
-        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody)
+        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
+        scopeDepth(0), handlerDepth(0)
     {}
 
     FunctionBodyNode* functionBody() {
@@ -96,34 +97,44 @@ public:
     // (1) if we're, that can affect variable lookup
     // (2) if there is a continue or break statement inside, we may have to pop
     //     the scopes, unwinder entries, and deferred exception entries before going to the destination
-    // For the 2nd part, we compare the nesting of the destination (which we save with the label info),
-    // and the continue/break itself
-    struct Nesting {
-        int scopeDepth;   // # of scope entries pushed, along with unwind records
-        int ehDepth;      // # of exception handlers set
-        int ehDeferDepth; // # of exception deferalls, along with unwind records.
-
-        Nesting(): scopeDepth(0), ehDepth(0), ehDeferDepth(0)
-        {}
-    };
-
-    Nesting& activeNesting() {
-        return inside;
-    }
+    // Since all the items in (2) add stack handler entries, we merely count those, and execute them
+    // as appropriate.
 
     bool inNestedScope() {
-        return inside.scopeDepth > 0;
+        return scopeDepth > 0;
+    }
+
+    void pushScope() {
+        ++scopeDepth;
+        ++handlerDepth;
+    }
+
+    void popScope() {
+        --scopeDepth;
+        --handlerDepth;
+    }
+
+    void pushUnwindHandler() {
+        ++handlerDepth;
+    }
+
+    void popUnwindHandler() {
+        --handlerDepth;
+    }
+
+    int unwindHandlerDepth() {
+        return handlerDepth;
     }
 
     // Label stuff....
     struct LabelInfo {
-        Node*    handlerNode;
-        Nesting  handlerDepth;
+        Node* handlerNode;
+        int   handlerDepth;
 
         LabelInfo(): handlerNode(0)
         {}
 
-        LabelInfo(Node* node, const Nesting& nesting): handlerNode(node), handlerDepth(nesting)
+        LabelInfo(Node* node, int nesting): handlerNode(node), handlerDepth(nesting)
         {}
     };
 
@@ -189,7 +200,8 @@ private:
             freeNonMarkTemps.append(desc);
     }
 
-    Nesting inside;
+    int scopeDepth;
+    int handlerDepth;
 
     // Label resolution..
     WTF::HashSet<Identifier> seenLabels;    // all labels we're inside

@@ -245,25 +245,13 @@ operation PushScope {
 }
 
 operation UnwindStacks {
-    impl void(int32 scopes, int32 ehs, int32 defers) [[
+    impl void(int32 handlers) [[
         // This op is used when a break or continue is used to jump out
         // of a context that updated various stacks in ExecState,
-        // to clean them up. Each one contributes at least one
-        // entry to the main exception handler stack (since throwing
-        // and exception needs to do a similar cleanup), and perhaps
-        // also scope stack, deferal stack, etc. entries.
-
-        // Get rid of all the extra scopes..
-        for (int s = 0; s < scopes; ++s)
-            exec->popScope();
-
-        for (int d = 0; d < defers; ++d)
-            exec->popDeferredException();
-
-        // We get an exception handler entry for each scope,
-        // exception deferral, and an actual handler. Kill them all
-        for (int e = 0; e < (scopes + ehs + defers); ++e)
-            exec->popExceptionHandler();
+        // in order to clean them up. Each of those ops contributes an
+        // entry to the main exception handler stack, and perhaps some others.
+        // We unwind the main stack, using the cleanup entries on it as appropriate.
+        exec->quietUnwind(handlers);
     ]]
 }
 
@@ -715,7 +703,9 @@ operation Add {
     impl value(value v1, value v2) [[
         // exception for the Date exception in defaultValue()
         JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
+        if (pc != localPC) break;
         JSValue *p2 = v2->toPrimitive(exec, UnspecifiedType);
+        if (pc != localPC) break;
 
         if (p1->isString() || p2->isString()) {
             UString value = p1->toString(exec) + p2->toString(exec);

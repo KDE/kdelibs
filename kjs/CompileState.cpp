@@ -97,7 +97,7 @@ void CompileState::popLabel()
 void CompileState::bindLabels(Node* node)
 {
     for (size_t l = 0; l < pendingLabels.size(); ++l)
-        labelTargets.set(pendingLabels[l], LabelInfo(node, activeNesting()));
+        labelTargets.set(pendingLabels[l], LabelInfo(node, unwindHandlerDepth()));
     pendingLabels.clear();
 }
 
@@ -127,12 +127,12 @@ CompileState::LabelInfo CompileState::resolveContinueLabel(Identifier label)
 
 void CompileState::pushDefaultBreak(Node* node)
 {
-    defaultBreakTargets.append(LabelInfo(node, activeNesting()));
+    defaultBreakTargets.append(LabelInfo(node, unwindHandlerDepth()));
 }
 
 void CompileState::pushDefaultContinue(Node* node)
 {
-    defaultContinueTargets.append(LabelInfo(node, activeNesting()));
+    defaultContinueTargets.append(LabelInfo(node, unwindHandlerDepth()));
 }
 
 void CompileState::popDefaultBreak()

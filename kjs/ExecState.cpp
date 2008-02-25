@@ -116,6 +116,29 @@ void ExecState::setException(JSValue* e)
     }
 }
 
+void ExecState::quietUnwind(int depth)
+{
+    ASSERT(m_exceptionHandlers.size() >= depth);
+    for (int e = 0; e < depth; ++e) {
+        HandlerType type = m_exceptionHandlers.last().type;
+        m_exceptionHandlers.removeLast();
+
+        switch (type) {
+        case JumpToCatch:
+            break; //Nothing to do here!
+        case PopScope:
+            popScope();
+            break;
+        case RemoveDeferred:
+            m_deferredExceptions.removeLast();
+            break;
+        case Silent:
+            ASSERT(0); // Should not happen in the middle of the code.
+            break;
+        }
+    }
+}
+
 GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp)
 {
     scope.clear();

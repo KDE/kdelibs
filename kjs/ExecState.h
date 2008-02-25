@@ -86,6 +86,9 @@ namespace KJS {
         m_exceptionHandlers.removeLast();
     }
 
+    // Cleanup depth entries from the stack, w/o running jumps
+    void quietUnwind(int depth);
+
     void setPC(Addr* pcLoc) {
         m_pc = pcLoc;
     }
