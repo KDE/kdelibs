@@ -27,6 +27,8 @@
 #include <QtCore/QString>
 
 #include <kdecore_export.h>
+#include <kconfigbase.h>
+#include <kgenericfactory.h>
 #include <ksharedptr.h>
 
 class KEntryMap;

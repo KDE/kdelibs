@@ -60,6 +60,16 @@ public:
     explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
                      OpenFlags mode = FullConfig, const char* resourceType = "config");
 
+    /**
+     * Creates a KConfig oject using the specified backend. If the backend can not
+     * be found or loaded, then the standard configuration parser is used as a fallback.
+     *
+     * @arg file the file to be parsed
+     * @arg backend the backend to load
+     * @arg mode the read/write status of the config file
+     */
+    KConfig(const QString& file, const QString& backend, OpenFlags mode = FullConfig);
+
     virtual ~KConfig();
 
     const KComponentData &componentData() const; // krazy:exclude=constref

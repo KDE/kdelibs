@@ -63,25 +63,26 @@ void KConfigBackend::registerMappings(const KEntryMap& /*entryMap*/)
 BackendPtr KConfigBackend::create(const KComponentData& componentData, const QString& file,
                                   const QString& sys)
 {
+    //qDebug() << "creating a backend for file" << file << "with system" << sys;
     const QString system = (sys.isEmpty() ? Private::whatSystem(file) : sys);
     KConfigBackend* backend = 0;
 
-    if (system.compare("INI", Qt::CaseInsensitive) == 0) {
-        goto default_backend;
-    } else {
-        QString constraint = QString("%1 ~~ Name").arg(system);
+    if (system.compare("INI", Qt::CaseInsensitive) != 0) {
+        QString constraint = QString("'%1' ~~ Name").arg(system);
         KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend", constraint);
 
+        //qDebug() << "found" << offers.count() << "offers for KConfigBackend plugins with name" << system;
         foreach (const KService::Ptr offer, offers) {
             backend = offer->createInstance<KConfigBackend>(0);
             if (backend) {
+                //qDebug() << "successfully created a backend for" << system;
                 backend->setFilePath(file);
                 return BackendPtr(backend);
             }
         } // foreach offers
     }
 
-default_backend:
+    //qDebug() << "default creation of the Ini backend";
     backend = new KConfigIniBackend;
     backend->setFilePath(file);
     return BackendPtr(backend);

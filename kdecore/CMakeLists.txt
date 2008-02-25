@@ -405,6 +405,8 @@ install( FILES sonnet/backgroundchecker.h sonnet/speller.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
 install( FILES
-   services/kplugininfo.desktop sonnet/sonnetspeller.desktop
+   config/kconfigbackend.desktop
+   services/kplugininfo.desktop
+   sonnet/sonnetspeller.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )

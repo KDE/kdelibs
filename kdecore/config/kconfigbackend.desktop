@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KConfigBackend
+
+Comment=Backend storage for KConfig
+
