@@ -9,6 +9,11 @@ import unittest
 import TestObject1
 from TestObject2 import *
 
+KrossAction = self
+
+def testFunction(*args):
+    return args
+
 class TestKross(unittest.TestCase):
 	""" Testcases to test the Kross python functionality for regressions. """
 
@@ -163,6 +168,15 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qvariant_qvariant(8632.274) == 8632.274 )
 		self.assert_( self.object1.func_qvariant_qvariant(-8632.351) == -8632.351 )
 		self.assert_( self.object1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
+
+	def testFunctions(self):
+		self.assert_( "testFunction" in KrossAction.functionNames() )
+		self.assert_( KrossAction.callFunction("testFunction",[]) == [] )
+		self.assert_( KrossAction.callFunction("testFunction",[True,False]) == [True,False] )
+		self.assert_( KrossAction.callFunction("testFunction",[524,-958]) == [524,-958] )
+		self.assert_( KrossAction.callFunction("testFunction",[524.98,-958.1257]) == [524.98,-958.1257] )
+		self.assert_( KrossAction.callFunction("testFunction",["","  Some\nString  "]) == ["","  Some\nString  "] )
+		self.assert_( KrossAction.callFunction("testFunction",[["one",23,"two",None,False]]) == [["one",23,"two",None,False]] )
 
 	def testObject(self):
 		self.assert_( self.object1.name() == "TestObject1" and self.object2.name() == "TestObject2" )
