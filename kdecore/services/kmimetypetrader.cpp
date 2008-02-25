@@ -50,107 +50,87 @@ KMimeTypeTrader::~KMimeTypeTrader()
     delete d;
 }
 
-#if 0
-// slow - but only used for all/all and all/allfiles. TODO: write them into ksycoca, in kbuildservicefactory.cpp
-static void addUnique( KServiceOfferList &lst, const KServiceOfferList &newLst, bool lowPrio )
-{
-    KServiceOfferList::const_iterator it = newLst.begin();
-    const KServiceOfferList::const_iterator end = newLst.end();
-    for( ; it != end; ++it )
-    {
-        KServiceOffer offer = *it;
-        KService::Ptr service = offer.service();
-        KServiceOfferList::const_iterator exisit = lst.begin();
-        const KServiceOfferList::const_iterator exisend = lst.end();
-        bool alreadyThere = false;
-        for( ; exisit != exisend && !alreadyThere; ++exisit )
-        {
-            if ( (*exisit).service() == service )
-                alreadyThere = true;
-        }
-        if ( alreadyThere )
-            continue;
-        if ( lowPrio )
-            offer.setPreference( 0 ); // if you remove this code before kde4, remove KServiceOffer::setPreference too.
-        lst.append( offer );
-    }
-}
-#endif
-
-// helper method for weightedOffers
-static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
+static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
 {
     KServiceOfferList lst;
-
-    // Services associated directly with this mimetype (the normal case)
     KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
     if ( !mime ) {
-        kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found";
+        kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
         return lst; // empty
     }
     if ( mime->serviceOffersOffset() > -1 ) {
         lst = KServiceFactory::self()->offers( mime->offset(), mime->serviceOffersOffset() );
     }
-
-    //debug
-#if 0
-    kDebug() << "mimeTypeSycocaOffers for " << mimeType << ":";
-    foreach( const KServiceOffer& offer, lst )
-        kDebug() << " " << offer.service()->name()
-                 << " preference: " << offer.mimeTypeInheritanceLevel() << ";" << offer.preference()
-                 << endl;
-#endif
-
-    // With xdg-shared-mime this is automatically done via the implicit inheritance from application/octet-stream
-#if 0
-    // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
-    // (and makes no sense when querying for an "all" servicetype itself
-    // nor for non-mimetypes service types)
-    if ( !KServiceTypeProfile::configurationMode()
-         && !mimeType.startsWith( QLatin1String( "all/" ) ) )
-    {
-        // Support for services associated with "all"
-        const KMimeType::Ptr mimeAll = KMimeTypeFactory::self()->findMimeTypeByName( "all/all" );
-        if ( mimeAll ) {
-            if ( mimeAll->serviceOffersOffset() > -1 )
-                addUnique(lst, KServiceFactory::self()->offers( mimeAll->offset(), mimeAll->serviceOffersOffset() ), true);
-        }
-        else
-            kWarning(7014) << "KMimeTypeTrader : mimetype all/all not found";
-
-        // Support for services associated with "allfiles"
-        if ( mimeType != "inode/directory" && mimeType != "inode/directory-locked" )
-        {
-            const KMimeType::Ptr mimeAllFiles = KMimeTypeFactory::self()->findMimeTypeByName( "all/allfiles" );
-            if ( mimeAllFiles ) {
-                if ( mimeAllFiles->serviceOffersOffset() > -1 )
-                    addUnique(lst, KServiceFactory::self()->offers( mimeAllFiles->offset(), mimeAllFiles->serviceOffersOffset() ), true);
-            }
-            else
-                kWarning(7014) << "KMimeTypeTrader : mimetype all/allfiles not found";
-        }
-    }
-#endif
-
     return lst;
 }
 
-// see kservicetypeprofile.h
-namespace KServiceTypeProfile {
-    KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
+static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
+{
+    KService::List lst;
+    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
+    if ( !mime ) {
+        kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
+        return lst; // empty
+    }
+    if ( mime->serviceOffersOffset() > -1 ) {
+        lst = KServiceFactory::self()->serviceOffers( mime->offset(), mime->serviceOffersOffset() );
+    }
+    return lst;
+}
+
+/**
+ * Filter the offers for the requested mime type for the genericServiceType.
+ *
+ * @param list list of offers (key=service, value=initialPreference)
+ * @param genericServiceType the generic service type (e.g. "Application" or "KParts/ReadOnlyPart")
+ */
+static void filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType)
+{
+    KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
+    Q_ASSERT(genericServiceTypePtr);
+
+    QMutableListIterator<KServiceOffer> it(list);
+    while(it.hasNext()) {
+        const KService::Ptr servPtr = it.next().service();
+        // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
+        if ( !KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
+                                                genericServiceTypePtr->serviceOffersOffset(),
+                                                servPtr->offset()) ) {
+            it.remove();
+        }
+    }
+}
+
+static void filterMimeTypeOffers(KService::List& list, const QString& genericServiceType)
+{
+    KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
+    Q_ASSERT(genericServiceTypePtr);
+
+    QMutableListIterator<KService::Ptr> it(list);
+    while(it.hasNext()) {
+        const KService::Ptr servPtr = it.next();
+        // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
+        if ( !KServiceFactory::self()->hasOffer(genericServiceTypePtr->offset(),
+                                                genericServiceTypePtr->serviceOffersOffset(),
+                                                servPtr->offset()) ) {
+            it.remove();
+        }
+    }
 }
 
 KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
                                                    const QString& genericServiceType ) const
 {
     kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )";
-
     Q_ASSERT( !genericServiceType.isEmpty() );
+
     // First, get all offers known to ksycoca.
-    const KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
+    KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
 
     // Assign preferences from the profile to those offers - and filter for genericServiceType
-    return KServiceTypeProfile::sortMimeTypeOffers( offers, mimeType, genericServiceType );
+    Q_ASSERT(!genericServiceType.isEmpty());
+    filterMimeTypeOffers(offers, genericServiceType);
+    return offers;
 }
 
 KService::List KMimeTypeTrader::query( const QString& mimeType,
@@ -158,15 +138,10 @@ KService::List KMimeTypeTrader::query( const QString& mimeType,
                                        const QString& constraint ) const
 {
     // Get all services of this mime type.
-    const KServiceOfferList offers = weightedOffers( mimeType, genericServiceType );
+    KService::List lst = mimeTypeSycocaServiceOffers(mimeType);
+    filterMimeTypeOffers(lst, genericServiceType);
 
-    // Now extract only the services; the weighting was only used for sorting.
-    KService::List lst;
-    KServiceOfferList::const_iterator itOff = offers.begin();
-    for( ; itOff != offers.end(); ++itOff )
-        lst.append( (*itOff).service() );
-
-    KServiceTypeTrader::applyConstraints( lst, constraint );
+    KServiceTypeTrader::applyConstraints(lst, constraint);
 
     kDebug(7014) << "query for mimeType " << mimeType << ", " << genericServiceType
                  << " : returning " << lst.count() << " offers" << endl;

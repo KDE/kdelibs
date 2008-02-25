@@ -110,8 +110,7 @@ KService::Ptr KServiceFactory::findServiceByDesktopName(const QString &_name)
     if (!m_nameDict) return KService::Ptr(); // Error!
 
     // Warning : this assumes we're NOT building a database
-    // But since this method isn't called in that case, we should be fine.
-    // [ see KServiceTypeFactory for how to do it if needed ]
+    // KBuildServiceFactory reimplements it for the case where we are building one
 
     int offset = m_nameDict->find_string( _name );
     if (!offset) return KService::Ptr(); // Not found
@@ -131,8 +130,7 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
     if (!m_relNameDict) return KService::Ptr(); // Error!
 
     // Warning : this assumes we're NOT building a database
-    // But since this method isn't called in that case, we should be fine.
-    // [ see KServiceTypeFactory for how to do it if needed ]
+    // KBuildServiceFactory reimplements it for the case where we are building one
 
     int offset = m_relNameDict->find_string( _name );
     if (!offset) {
@@ -158,8 +156,7 @@ KService::Ptr KServiceFactory::findServiceByMenuId(const QString &_menuId)
     if (!m_menuIdDict) return KService::Ptr(); // Error!
 
     // Warning : this assumes we're NOT building a database
-    // But since this method isn't called in that case, we should be fine.
-    // [ see KServiceTypeFactory for how to do it if needed ]
+    // KBuildServiceFactory reimplements it for the case where we are building one
 
     int offset = m_menuIdDict->find_string( _menuId );
     if (!offset) return KService::Ptr(); // Not found

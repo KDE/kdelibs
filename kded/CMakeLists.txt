@@ -32,6 +32,7 @@ set(kbuildsycoca_KDEINIT_SRCS
    kbuildsycoca.cpp
    kbuildmimetypefactory.cpp
    kmimefileparser.cpp
+   kmimeassociations.cpp
    kbuildservicetypefactory.cpp
    kbuildservicefactory.cpp
    kbuildservicegroupfactory.cpp

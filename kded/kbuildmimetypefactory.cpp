@@ -113,17 +113,16 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
 
     QString comment;
     QMap<QString, QString> commentsByLanguage;
-    for ( QDomNode n = mimeTypeElement.firstChild();
-          !n.isNull();
-          n = n.nextSibling() ) {
-        QDomElement e = n.toElement();
-        if(!e.isNull() && e.tagName() == "comment") {
+    for ( QDomElement e = mimeTypeElement.firstChildElement();
+          !e.isNull();
+          e = e.nextSiblingElement() ) {
+        if(e.tagName() == "comment") {
             const QString lang = e.attribute("xml:lang");
             if (lang.isEmpty())
                 comment = e.text();
             else
                 commentsByLanguage.insert(lang, e.text());
-        }
+        } // TODO handle "icon" and "generic-icon"
     }
     if (comment.isEmpty()) {
         kWarning() << "Missing <comment> field in " << fullPath;

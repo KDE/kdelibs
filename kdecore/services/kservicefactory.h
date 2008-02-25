@@ -54,23 +54,24 @@ public:
 
     /**
      * Find a service (by translated name, e.g. "Terminal")
+     * (Not virtual because not used inside kbuildsycoca4, only an external service for some KDE apps)
      */
     KService::Ptr findServiceByName( const QString &_name );
 
     /**
      * Find a service (by desktop file name, e.g. "konsole")
      */
-    KService::Ptr findServiceByDesktopName( const QString &_name );
+    virtual KService::Ptr findServiceByDesktopName( const QString &_name );
 
     /**
      * Find a service ( by desktop path, e.g. "System/konsole.desktop")
      */
-    KService::Ptr findServiceByDesktopPath( const QString &_name );
+    virtual KService::Ptr findServiceByDesktopPath( const QString &_name );
 
     /**
      * Find a service ( by menu id, e.g. "kde-konsole.desktop")
      */
-    KService::Ptr findServiceByMenuId( const QString &_menuId );
+    virtual KService::Ptr findServiceByMenuId( const QString &_menuId );
 
     /**
      * @return the services supporting the given service type

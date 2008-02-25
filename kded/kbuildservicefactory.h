@@ -23,10 +23,9 @@
 
 #include <QtCore/QStringList>
 
+#include "kmimeassociations.h"
 #include <kservicefactory.h>
 // We export the services to the service group factory!
-#include <QtCore/QSet>
-#include <kserviceoffer.h>
 class KBuildServiceGroupFactory;
 class KBuildMimeTypeFactory;
 
@@ -47,7 +46,11 @@ public:
     virtual ~KBuildServiceFactory();
 
     /// Reimplemented from KServiceFactory
-    virtual KService::Ptr findServiceByName(const QString &_name);
+    virtual KService::Ptr findServiceByDesktopName(const QString &name);
+    /// Reimplemented from KServiceFactory
+    virtual KService::Ptr findServiceByDesktopPath(const QString &name);
+    /// Reimplemented from KServiceFactory
+    virtual KService::Ptr findServiceByMenuId(const QString &menuId);
 
     /**
      * Construct a KService from a config file.
@@ -83,16 +86,13 @@ public:
 
 private:
     void saveOfferList(QDataStream &str);
-    void addServiceOffer( const QString& serviceType, const KServiceOffer& offer );
 
-    QHash<QString, KService::Ptr> m_serviceDict;
+    QHash<QString, KService::Ptr> m_nameMemoryHash; // m_nameDict is not useable while building ksycoca
+    QHash<QString, KService::Ptr> m_relNameMemoryHash; // m_relNameDict is not useable while building ksycoca
+    QHash<QString, KService::Ptr> m_menuIdMemoryHash; // m_menuIdDict is not useable while building ksycoca
     QSet<KSycocaEntry::Ptr> m_dupeDict;
 
-    struct ServiceTypeOffersData {
-        QList<KServiceOffer> offers; // service + initial preference + allow as default
-        QSet<KService::Ptr> offerSet; // for quick contains() check
-    };
-    QHash<QString, ServiceTypeOffersData> m_serviceTypeData;
+    KOfferHash m_offerHash;
 
     KSycocaFactory *m_serviceTypeFactory;
     KBuildMimeTypeFactory *m_mimeTypeFactory;

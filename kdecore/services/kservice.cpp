@@ -42,6 +42,17 @@
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
 
+QDataStream &operator<<(QDataStream &s, const KService::ServiceTypeAndPreference &st)
+{
+    s << st.preference << st.serviceType;
+    return s;
+}
+QDataStream &operator>>(QDataStream &s, KService::ServiceTypeAndPreference &st)
+{
+    s >> st.preference >> st.serviceType;
+    return s;
+}
+
 void KServicePrivate::init( const KDesktopFile *config, KService* q )
 {
     const QString entryPath = q->entryPath();
@@ -175,16 +186,39 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
 
-    m_lstServiceTypes = desktopGroup.readEntry( "ServiceTypes", QStringList() );
+    QStringList lstServiceTypes = desktopGroup.readEntry( "ServiceTypes", QStringList() );
     entryMap.remove("ServiceTypes");
-    m_lstServiceTypes += desktopGroup.readEntry( "X-KDE-ServiceTypes", QStringList() );
+    lstServiceTypes += desktopGroup.readEntry( "X-KDE-ServiceTypes", QStringList() );
     entryMap.remove("X-KDE-ServiceTypes");
-    m_lstServiceTypes += desktopGroup.readXdgListEntry( "MimeType" );
+    lstServiceTypes += desktopGroup.readXdgListEntry( "MimeType" );
     entryMap.remove("MimeType");
 
-    if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
+    if ( m_strType == "Application" && !lstServiceTypes.contains("Application") )
         // Applications implement the service type "Application" ;-)
-        m_lstServiceTypes += "Application";
+        lstServiceTypes += "Application";
+
+    m_initialPreference = desktopGroup.readEntry( "InitialPreference", 1 );
+    entryMap.remove("InitialPreference");
+
+    // Assign the "initial preference" to each mimetype/servicetype
+    // (and to set such preferences in memory from kbuildsycoca)
+    m_serviceTypes.reserve(lstServiceTypes.size());
+    QListIterator<QString> st_it(lstServiceTypes);
+    while ( st_it.hasNext() ) {
+        const QString st = st_it.next();
+        int initialPreference = m_initialPreference;
+        if ( st_it.hasNext() ) {
+            // TODO better syntax - separate group with mimetype=number entries?
+            bool isNumber;
+            const int val = st_it.peekNext().toInt(&isNumber);
+            if (isNumber) {
+                initialPreference = val;
+                st_it.next();
+            }
+        }
+        Q_ASSERT(!st.isEmpty());
+        m_serviceTypes.push_back(KService::ServiceTypeAndPreference(initialPreference, st));
+    }
 
     if (entryMap.contains("Actions")) {
         parseActions(config, q);
@@ -211,9 +245,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
 
     m_bAllowAsDefault = desktopGroup.readEntry("AllowDefault", true);
     entryMap.remove("AllowDefault");
-
-    m_initialPreference = desktopGroup.readEntry( "InitialPreference", 1 );
-    entryMap.remove("InitialPreference");
 
     // allow plugin users to translate categories without needing a separate key
     QMap<QString,QString>::Iterator entry = entryMap.find("X-KDE-PluginInfo-Category");
@@ -277,6 +308,7 @@ void KServicePrivate::load(QDataStream& s)
 {
     qint8 def, term;
     qint8 dst, initpref;
+    QStringList dummyList; // KDE4: you can reuse this for another QStringList. KDE5: remove
 
     // WARNING: THIS NEEDS TO REMAIN COMPATIBLE WITH PREVIOUS KDE 4.x VERSIONS!
     // !! This data structure should remain binary compatible at all times !!
@@ -284,13 +316,13 @@ void KServicePrivate::load(QDataStream& s)
     // number in ksycoca.h
     s >> m_strType >> m_strName >> m_strExec >> m_strIcon
       >> term >> m_strTerminalOptions
-      >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
+      >> m_strPath >> m_strComment >> dummyList >> def >> m_mapProps
       >> m_strLibrary
       >> dst
       >> m_strDesktopEntryName
       >> initpref
       >> m_lstKeywords >> m_strGenName
-      >> categories >> menuId >> m_actions;
+      >> categories >> menuId >> m_actions >> m_serviceTypes;
 
     m_bAllowAsDefault = (bool)def;
     m_bTerminal = (bool)term;
@@ -313,13 +345,13 @@ void KServicePrivate::save(QDataStream& s)
     // number in ksycoca.h
     s << m_strType << m_strName << m_strExec << m_strIcon
       << term << m_strTerminalOptions
-      << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
+      << m_strPath << m_strComment << QStringList() << def << m_mapProps
       << m_strLibrary
       << dst
       << m_strDesktopEntryName
       << initpref
       << m_lstKeywords << m_strGenName
-      << categories << menuId << m_actions;
+      << categories << menuId << m_actions << m_serviceTypes;
 }
 
 ////
@@ -386,30 +418,23 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
     if ( serviceOffset )
         return KServiceFactory::self()->hasOffer( ptr->offset(), ptr->serviceOffersOffset(), serviceOffset );
 
-    // fall-back code for services that are from ksycoca
-    bool isNumber;
+    // fall-back code for services that are NOT from ksycoca
     // For each service type we are associated with, if it doesn't
     // match then we try its parent service types.
-    QStringList::ConstIterator it = d->m_lstServiceTypes.begin();
-    for( ; it != d->m_lstServiceTypes.end(); ++it )
-    {
-        it->toInt(&isNumber);
-        if (isNumber)
-            continue;
+    QVector<ServiceTypeAndPreference>::ConstIterator it = d->m_serviceTypes.begin();
+    for( ; it != d->m_serviceTypes.end(); ++it ) {
+        const QString& st = (*it).serviceType;
         //kDebug(7012) << "    has " << (*it);
-        if ( *it == ptr->name() )
+        if ( st == ptr->name() )
             return true;
         // also the case of parent servicetypes
-        KServiceType::Ptr p = KServiceType::serviceType( *it );
+        KServiceType::Ptr p = KServiceType::serviceType( st );
         if ( p && p->inherits( ptr->name() ) )
             return true;
-        // #### but we can't handle inherited mimetypes here,
-        // since KMimeType is in kio... One solution would be a kdecore
-        // factory for accessing the mimetypes as servicetypes, plus
-        // the notion of the parent mimetype; ouch.
-        // Or a reverse API, KMimeType::isHandledBy( KService::Ptr )
-        // and KServiceType::isHandledBy( KService::Ptr )...
-        // Anyway this should be a very rare case, most code gets KServices from ksycoca.
+        // TODO: should we handle inherited mimetypes here?
+        // KMimeType was in kio when this code was written, this is the only reason it's not done.
+        // But this should matter only in a very rare case, since most code gets KServices from ksycoca.
+        // Warning, change hasServiceType if you implement this here (and check kbuildservicefactory).
     }
     return false;
 }
@@ -456,7 +481,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     else if ( _name == "GenericName" )
         return makeStringVariant( m_strGenName );
     else if ( _name == "ServiceTypes" )
-        return QVariant( m_lstServiceTypes );
+        return QVariant( serviceTypes() );
     else if ( _name == "AllowAsDefault" )
         return QVariant( m_bAllowAsDefault );
     else if ( _name == "InitialPreference" )
@@ -552,7 +577,7 @@ KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
     // Prefer kde4-konsole over kde-konsole, if both are available
-    const QString name = _name.toLower();
+    QString name = _name.toLower();
     KService::Ptr s;
     if (!_name.startsWith("kde4-"))
         s = KServiceFactory::self()->findServiceByDesktopName( "kde4-" + name );
@@ -849,10 +874,21 @@ QStringList KService::keywords() const
     return d->m_lstKeywords;
 }
 
+QStringList KServicePrivate::serviceTypes() const
+{
+    QStringList ret;
+    QVector<KService::ServiceTypeAndPreference>::const_iterator it = m_serviceTypes.begin();
+    for ( ; it < m_serviceTypes.end(); ++it ) {
+        Q_ASSERT(!(*it).serviceType.isEmpty());
+        ret.append((*it).serviceType);
+    }
+    return ret;
+}
+
 QStringList KService::serviceTypes() const
 {
     Q_D(const KService);
-    return d->m_lstServiceTypes;
+    return d->serviceTypes();
 }
 
 bool KService::allowAsDefault() const
@@ -879,10 +915,10 @@ void KService::setTerminalOptions(const QString &options)
     d->m_strTerminalOptions = options;
 }
 
-QStringList & KService::accessServiceTypes()
+QVector<KService::ServiceTypeAndPreference> & KService::_k_accessServiceTypes()
 {
     Q_D(KService);
-    return d->m_lstServiceTypes;
+    return d->m_serviceTypes;
 }
 
 QList<KServiceAction> KService::actions() const
