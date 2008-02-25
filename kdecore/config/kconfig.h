@@ -66,9 +66,11 @@ public:
      *
      * @arg file the file to be parsed
      * @arg backend the backend to load
-     * @arg mode the read/write status of the config file
+     * @arg resourceType where to look for the file if an absolute path is not provided
+     *
+     * @since 4.1
      */
-    KConfig(const QString& file, const QString& backend, OpenFlags mode = FullConfig);
+    KConfig(const QString& file, const QString& backend, const char* resourceType = "config");
 
     virtual ~KConfig();
 

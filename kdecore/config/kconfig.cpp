@@ -161,10 +161,11 @@ KConfig::KConfig( const KComponentData& componentData, const QString& file, Open
     reparseConfiguration();
 }
 
-KConfig::KConfig(const QString& file, const QString& backend, OpenFlags mode)
-    : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), mode, ""))
+KConfig::KConfig(const QString& file, const QString& backend, const char* resourceType)
+    : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), SimpleConfig, resourceType))
 {
     d_ptr->mBackend = KConfigBackend::create(d_ptr->componentData, file, backend);
+    d_ptr->bDynamicBackend = false;
     d_ptr->changeFileName(file, ""); // set the local file name
 
     // read initial information off disk
