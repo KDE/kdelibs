@@ -9,6 +9,7 @@
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
+<!ENTITY eg        		"np.">
 <!ENTITY etc        		"itp.">
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
@@ -66,6 +67,13 @@
 <!ENTITY kdm-biernik    '<application>KDM</application>'>
 <!ENTITY kdm-miejscownik    '<application>KDM</application>'>
 <!ENTITY kdm    '&kdm-mianownik;'>
+
+<!ENTITY kfind-mianownik    '<application>Wyszukiwanie plików/katalogów</application>'>
+<!ENTITY kfind-dopelniacz    '<application>Wyszukiwania plików/katalogów</application>'>
+<!ENTITY kfind-celownik    '<application>Wyszukiwaniu plików/katalogów</application>'>
+<!ENTITY kfind-biernik    '<application>Wyszukiwania plików/katalogów</application>'>
+<!ENTITY kfind-miejscownik    '<application>Wyszukiwaniu plików/katalogów</application>'>
+<!ENTITY kfind    '&kfind-mianownik;'>
 
 <!ENTITY khelpcenter-mianownik    '<application>Centrum pomocy &kde;</application>'>
 <!ENTITY khelpcenter-dopelniacz    '<application>Centrum pomocy &kde;</application>'>
@@ -166,3 +174,11 @@
 <!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
 <!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
 <!ENTITY Sendmail    '&Sendmail-mianownik;'>
+
+<!ENTITY UNIX-mianownik    'Unix'>
+<!ENTITY UNIX-dopelniacz    'Uniksa'>
+<!ENTITY UNIX-celownik    'Uniksowi'>
+<!ENTITY UNIX-biernik    'Uniksa'>
+<!ENTITY UNIX-narzednik    'Uniksem'>
+<!ENTITY UNIX-miejscownik    'Uniksie'>
+
