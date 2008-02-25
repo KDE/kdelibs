@@ -7,7 +7,12 @@ require "TestObject2"
 
 KrossAction = self.action()
 
-def testFunction
+def testFunction1(arg1)
+    return arg1
+end
+
+def testFunction2(arg1,arg2)
+    return [arg1,arg2]
 end
 
 class TestKross < Test::Unit::TestCase
@@ -258,10 +263,26 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
 	end
 
+	def testFunctions
+		assert( KrossAction.functionNames().include?("testFunction1") )
+		assert( KrossAction.callFunction("testFunction1",[true]) == true )
+		assert( KrossAction.callFunction("testFunction1",[false]) == false )
+		assert( KrossAction.callFunction("testFunction1",[524]) == 524 )
+		assert( KrossAction.callFunction("testFunction1",[-958]) == -958 )
+		assert( KrossAction.callFunction("testFunction1",[524.98]) == 524.98 )
+		assert( KrossAction.callFunction("testFunction1",[-958.1257]) == -958.1257 )
+		assert( KrossAction.callFunction("testFunction1",[""]) == "" )
+		assert( KrossAction.callFunction("testFunction1",["  Some\nString  "]) == "  Some\nString  " )
+		assert( KrossAction.callFunction("testFunction1",[[]]) == [] )
+		assert( KrossAction.callFunction("testFunction1",[["one",23,"two",nil,false]]) == ["one",23,"two",nil,false] )
+		assert( KrossAction.functionNames().include?("testFunction2") )
+		assert( KrossAction.callFunction("testFunction2",[[],[]]) == [[],[]] )
+		assert( KrossAction.callFunction("testFunction2",[[1,"test"],nil]) == [[1,"test"],nil] )
+    end
+
 	def testObject
 		assert( KrossAction.name() == "MyAction" )
 		assert( KrossAction.interpreter() == "ruby" )
-		assert( KrossAction.functionNames().include?("testFunction") )
 
 		assert( TestObject1.name() == "TestObject1" )
 		assert( TestObject2.name() == "TestObject2" )
