@@ -881,11 +881,12 @@ void KApplicationPrivate::parseCommandLine( )
     // FIXME(E): Implement for Qt Embedded
 #endif
 
+#ifndef Q_WS_WIN
     if (args->isSet("smkey"))
     {
         sessionKey = args->getOption("smkey");
     }
-
+#endif
 }
 
 extern void kDebugCleanup();
