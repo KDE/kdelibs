@@ -224,7 +224,7 @@ void KStandarddirsTest::testAddResourceType()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
-    QString ret = KStandardDirs::locate( "dtd", "customization/catalog" );
+    QString ret = KStandardDirs::locate( "dtd", "customization/catalog.xml" );
     QCOMPARE(ret, QString()); // normal, there's no "dtd" resource in kstandarddirs by default
 
     KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
