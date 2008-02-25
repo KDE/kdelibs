@@ -344,29 +344,101 @@ initialPreference=25
 
 # Intel Corporation 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) AC Samsung Electronics Co Ltd Intel 82801DB-ICH4 with STAC9752,53 Intel 82801DB-ICH4
 [pci:8086:24c5:144d:c009:capture:alsa:3]
-name=Intel ICH4 with STAC9752,53 ADC2
+name=Intel AC97 ADC2 (SigmaTel STAC9752,53)
 initialPreference=25
 
 [pci:8086:24c5:144d:c009:playback:alsa:4]
-name=Intel ICH4 with STAC9752,53 S/PDIF
+name=Intel AC97 S/PDIF (SigmaTel STAC9752,53)
 initialPreference=15
 
 [pci:8086:24c5:144d:c009:capture:alsa:2]
-name=Intel ICH4 with STAC9752,53 MIC2 ADC
+name=Intel AC97 MIC2 ADC (SigmaTel STAC9752,53)
 initialPreference=25
 
 [pci:8086:24c5:144d:c009:capture:alsa:1]
-name=Intel ICH4 with STAC9752,53 MIC ADC
+name=Intel AC97 MIC ADC (SigmaTel STAC9752,53)
 initialPreference=25
 
 [pci:8086:24c5:144d:c009:both:oss]
-name=Intel ICH4 with STAC9752,53
+name=Intel AC97 (SigmaTel STAC9752,53)
 initialPreference=20
 
 [pci:8086:24c5:144d:c009:capture:alsa:0]
-name=Intel ICH4 with STAC9752,53
+name=Intel AC97 (SigmaTel STAC9752,53)
 initialPreference=36
 
 [pci:8086:24c5:144d:c009:playback:alsa:0]
-name=Intel ICH4 with STAC9752,53
+name=Intel AC97 (SigmaTel STAC9752,53)
 initialPreference=36
+
+# Intel Corporation 82801G (ICH7 Family) High Definition Audio Controller Intel Corporation HDA Intel STAC92xx
+[pci:8086:27d8:8086:a201:both:oss]
+name=HDA Intel (SigmaTel STAC9227)
+initialPreference=20
+
+[pci:8086:27d8:8086:a201:capture:alsa:0]
+name=HDA Intel (SigmaTel STAC9227)
+initialPreference=36
+
+[pci:8086:27d8:8086:a201:playback:alsa:0]
+name=HDA Intel (SigmaTel STAC9227)
+initialPreference=36
+
+[pci:8086:27d8:8086:a201:capture:alsa:1]
+name=HDA Intel S/PDIF (SigmaTel STAC9227)
+initialPreference=15
+
+[pci:8086:27d8:8086:a201:playback:alsa:1]
+name=HDA Intel S/PDIF (SigmaTel STAC9227)
+initialPreference=15
+
+# Intel Corporation 82801I (ICH9 Family) HD Audio Controller ASUSTeK Computer Inc. HDA Intel ALC883Analog
+[pci:8086:293e:1043:829f:both:oss]
+name=HDA Intel (Realtek ALC883)
+initialPreference=20
+
+[pci:8086:293e:1043:829f:capture:alsa:0]
+name=HDA Intel (Realtek ALC883)
+initialPreference=36
+
+[pci:8086:293e:1043:829f:playback:alsa:0]
+name=HDA Intel (Realtek ALC883)
+initialPreference=36
+
+[pci:8086:293e:1043:829f:playback:alsa:1]
+name=HDA Intel S/PDIF (Realtek ALC883)
+initialPreference=15
+
+[pci:8086:293e:1043:829f:capture:alsa:2]
+name=HDA Intel Unknown Device (Realtek ALC883)
+initialPreference=10
+
+# Creative Labs SB Live! EMU10k1 Creative Labs SBLive! Value [CT4832] (rev.8, serial:0x80271102)
+[pci:1102:0002:1102:8027:both:oss]
+name=SBLive! Value (rev.8)
+initialPreference=20
+
+[pci:1102:0002:1102:8027:capture:alsa:0]
+name=SBLive! Value (rev.8) ADC Capture
+initialPreference=36
+
+[pci:1102:0002:1102:8027:playback:alsa:0]
+name=SBLive! Value (rev.8) Standard PCM Playback
+initialPreference=36
+
+[pci:1102:0002:1102:8027:capture:alsa:1]
+name=SBLive! Value (rev.8) Mic
+initialPreference=25
+
+[pci:1102:0002:1102:8027:capture:alsa:2]
+name=SBLive! Value (rev.8) Multichannel Capture
+initialPreference=10
+
+[pci:1102:0002:1102:8027:playback:alsa:2]
+name=SBLive! Value (rev.8) PPlayback
+initialPreference=10
+
+[pci:1102:0002:1102:8027:playback:alsa:3]
+name=SBLive! Value (rev.8) Multichannel Playback
+initialPreference=10
+
