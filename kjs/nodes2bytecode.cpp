@@ -708,7 +708,7 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     CodeGen::patchJumpToNext(block, jumpToElse, 1);
 
     // : part..
-    OpValue v2out = expr1->generateEvalCode(comp, block);
+    OpValue v2out = expr2->generateEvalCode(comp, block);
     CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v2out);
 
     // After everything
