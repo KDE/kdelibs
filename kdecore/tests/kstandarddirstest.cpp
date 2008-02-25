@@ -228,7 +228,7 @@ void KStandarddirsTest::testAddResourceType()
     QCOMPARE(ret, QString()); // normal, there's no "dtd" resource in kstandarddirs by default
 
     KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
-    ret = KStandardDirs::locate( "dtd", "customization/catalog" );
+    ret = KStandardDirs::locate( "dtd", "customization/catalog.xml" );
     QVERIFY(!ret.isEmpty());
 }
 
