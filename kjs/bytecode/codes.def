@@ -611,6 +611,12 @@ operation OwnedString {
     ]]
 }
 
+operation NewEmptyArray {
+    impl value() [[
+        $$ = exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty());
+    ]]
+}
+
 operation NewObject {
     impl value() [[
         $$ = new JSObject(exec->lexicalInterpreter()->builtinObjectPrototype());

@@ -229,6 +229,18 @@ OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
 // ------------------------------ Object + Array literals --------------------------
 
+OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    OpValue arr;
+    if (!element && opt && elision == 0) {
+        CodeGen::emitOp(comp, block, Op_NewEmptyArray, &arr);
+        return arr;
+    }
+    ASSERT(0); // ###
+
+    return arr;
+}
+
 OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     OpValue obj;

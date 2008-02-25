@@ -367,6 +367,7 @@ namespace KJS {
     ArrayNode(int eli, ElementNode *ele)
       : element(ele->next.release()), elision(eli), opt(true) { Parser::removeNodeCycle(element.get()); }
     JSValue* evaluate(ExecState*);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
