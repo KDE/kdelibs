@@ -214,6 +214,7 @@ namespace KJS {
   protected:
     ExecState(Interpreter* intp);
     ~ExecState();
+    void markSelf();
 
     Interpreter* m_interpreter;
     JSValue* m_exception;

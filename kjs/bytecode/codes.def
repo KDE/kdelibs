@@ -850,7 +850,7 @@ operation BitXOr {
 
 operation BitOr {
     impl int32 (int32 a0, int32 a1) [[
-        $$ = a0 ^ a1;
+        $$ = a0 | a1;
     ]]
 }
 

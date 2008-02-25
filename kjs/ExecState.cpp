@@ -41,7 +41,7 @@ Interpreter* ExecState::lexicalInterpreter() const
     return result;
 }
 
-void ExecState::mark()
+void ExecState::markSelf()
 {
     if (m_codeType != FunctionCode && m_localStore) {
         //### some code dupe here with JSVariableObject::mark. Not sure how to best
@@ -60,8 +60,13 @@ void ExecState::mark()
             e->mark();
     }
 
+    scope.mark();
+}
+
+void ExecState::mark()
+{
     for (ExecState* exec = this; exec; exec = exec->m_callingExec)
-        exec->scope.mark();
+        exec->markSelf();
 }
 
 ExecState::ExecState(Interpreter* intp) :
