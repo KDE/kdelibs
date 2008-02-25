@@ -177,6 +177,7 @@ class TestKross(unittest.TestCase):
 		self.assert_( KrossAction.callFunction("testFunction",[524.98,-958.1257]) == [524.98,-958.1257] )
 		self.assert_( KrossAction.callFunction("testFunction",["","  Some\nString  "]) == ["","  Some\nString  "] )
 		self.assert_( KrossAction.callFunction("testFunction",[["one",23,"two",None,False]]) == [["one",23,"two",None,False]] )
+		self.assert_( KrossAction.callFunction("testFunction",[KrossAction]) == [KrossAction] )
 
 	def testObject(self):
 		self.assert_( self.object1.name() == "TestObject1" and self.object2.name() == "TestObject2" )

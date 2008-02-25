@@ -278,6 +278,10 @@ class TestKross < Test::Unit::TestCase
 		assert( KrossAction.functionNames().include?("testFunction2") )
 		assert( KrossAction.callFunction("testFunction2",[[],[]]) == [[],[]] )
 		assert( KrossAction.callFunction("testFunction2",[[1,"test"],nil]) == [[1,"test"],nil] )
+
+		#TODO this results in a crach in Ruby 1.8.6 in the callcache code. Probably related to the issue Cyrille jumped at?
+		#puts KrossAction.callFunction("testFunction1",[KrossAction])
+
     end
 
 	def testObject
