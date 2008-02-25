@@ -51,7 +51,6 @@ namespace KJS {
 
   class VarDeclVisitor;
   class FuncDeclVisitor;
-  class SemanticChecker;
 
   class CompileState;
   struct CompileReference;
@@ -181,14 +180,6 @@ namespace KJS {
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   protected:
-    /* Nodes that can do semantic checking should override this,
-       and return an appropriate error node if appropriate. The reimplementations
-       should call the parent class's checkSemantics method at point where
-       recursion should occur
-    */
-    friend class SemanticChecker;
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
-
     int m_line;
   private:
     virtual void processVarDecl (ExecState* state);
@@ -236,12 +227,6 @@ namespace KJS {
     Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
 
     virtual void generateExecCode(CompileState*, CodeBlock& block);
-  protected:
-    /* This implementation of checkSemantics applies the accumulated labels to
-       this statement, manages the targets for labelless break and continue,
-       and recurses.
-    */
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     JSValue *evaluate(ExecState*) { return jsUndefined(); }
     int m_lastLine;
@@ -1038,8 +1023,6 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
-  protected:
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     Identifier  ident;
     const Node* target;
@@ -1052,8 +1035,6 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
-  protected:
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     Identifier ident;
     const Node* target;
@@ -1091,8 +1072,6 @@ namespace KJS {
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual void generateExecCode(CompileState*, CodeBlock& block);
     virtual NodeType type() const { return LabelNodeType; }
-  protected:
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     Identifier label;
     RefPtr<StatementNode> statement;
@@ -1240,8 +1219,6 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }
-  protected:
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     void addParams();
     // Used for streamTo
@@ -1265,8 +1242,6 @@ namespace KJS {
 
     virtual void processFuncDecl(ExecState*);
     FunctionImp* makeFunctionObject(ExecState*);
-  protected:
-    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     void addParams();
     Identifier ident;
@@ -1363,7 +1338,7 @@ namespace KJS {
 
   /**
    This node represents statically detectable errors that must be reported
-   at runtime. The semantic checker splices it in above the original node
+   at runtime. It is spliced in above the original node
    in the program, and it does the error reporting; the child node is
    used for text serialization.
 

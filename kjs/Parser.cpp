@@ -27,7 +27,6 @@
 
 #include "lexer.h"
 #include "nodes.h"
-#include "semantic_checker.h"
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
 
@@ -120,14 +119,10 @@ void Parser::parse(const UString& sourceURL, int startingLineNumber,
         m_progNode = 0;
         return;
     }
-    
+
 #ifdef KJS_VERBOSE
   fprintf( stderr, "%s\n", prog->toString().ascii() );
 #endif
-
-    // Semantically check the parsed program, and do some of the binding..
-    SemanticChecker sc;
-    sc.checkSemantics(m_progNode.get());
 }
 
 void Parser::didFinishParsing(PassRefPtr<ProgramNode> progNode)
