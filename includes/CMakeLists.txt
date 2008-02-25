@@ -428,6 +428,8 @@ install( FILES
   ThumbCreator
   kdbgstream
   kndbgstream
+  KCategorizedView
+  KCategoryDrawer
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 if (UNIX)
