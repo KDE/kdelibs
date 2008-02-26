@@ -2741,7 +2741,7 @@ void FunctionBodyNode::compile(CodeType ctype)
   CompileState comp(ctype, this, m_shouldMark, m_symbolTable.size());
   generateExecCode(&comp, m_compiledCode);
 
-#if 1
+#if 0
   printf("\n\n");
   CodeGen::disassembleBlock(m_compiledCode);
   printf("\n---------------------------------\n\n");

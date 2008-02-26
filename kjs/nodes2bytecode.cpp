@@ -896,7 +896,11 @@ void EmptyStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    expr->generateEvalCode(comp, block);
+    OpValue val = expr->generateEvalCode(comp, block);
+
+    // Update the result for eval..
+    if (comp->codeType() == EvalCode)
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, comp->evalResultReg(), &val);
 }
 
 void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -1247,6 +1251,15 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
+    OpValue evalResReg, evalResVal;
+    if (comp->codeType() == EvalCode) {
+        comp->requestTemporary(OpType_value, evalResVal, evalResReg);
+        comp->setEvalResultRegister(&evalResReg);
+
+        OpValue und = OpValue::immValue(jsUndefined());
+        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &evalResReg, &und);
+    }
+
     // Set unwind..
     Addr unwind = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
 
@@ -1254,7 +1267,10 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
     BlockNode::generateExecCode(comp, block);
 
     // Make sure we exit!
-    CodeGen::emitOp(comp, block, Op_Exit);
+    if (comp->codeType() == EvalCode)
+        CodeGen::emitOp(comp, block, Op_ExitEval, 0, &evalResVal);
+    else
+        CodeGen::emitOp(comp, block, Op_Exit);
 
     // Unwind stuff..
     CodeGen::patchJumpToNext(block, unwind, 0);

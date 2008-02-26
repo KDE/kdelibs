@@ -49,7 +49,8 @@ class CompileState
 public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody,
                  WTF::Vector<bool>& shouldMark, Register initialMaxTemp):
-        localScopeVal(0), thisVal(0), ctype(ctype), shouldMark(shouldMark),
+        localScopeVal(0), globalScopeVal(0), thisVal(0), evalResRegister(0),
+        ctype(ctype), shouldMark(shouldMark),
         initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
         scopeDepth(0), handlerDepth(0)
     {}
@@ -91,6 +92,14 @@ public:
 
     OpValue* globalScope() {
         return globalScopeVal;
+    }
+
+    void setEvalResultRegister(OpValue* val) {
+        evalResRegister = val;
+    }
+
+    OpValue* evalResultReg() {
+        return evalResRegister;
     }
 
     // We need to keep track of when we're inside with, catch, and finally clauses for 2 reasons:
@@ -181,6 +190,7 @@ private:
     OpValue* localScopeVal;
     OpValue* thisVal;
     OpValue* globalScopeVal;
+    OpValue* evalResRegister;
 
     CodeType ctype;
 

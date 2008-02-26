@@ -207,6 +207,12 @@ operation Exit {
     ]]
 }
 
+operation ExitEval {
+    impl void(value val) [[
+        return Completion(Normal, val);
+    ]]
+}
+
 operation Jump {
     impl void jump(addr dest) [[
         pc = dest;
