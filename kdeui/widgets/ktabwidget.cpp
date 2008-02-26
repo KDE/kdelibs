@@ -312,7 +312,16 @@ void KTabWidget::setTabText( int index, const QString &text )
 
 void KTabWidget::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->setAccepted( true );
+  if ( d->isEmptyTabbarSpace( event->pos() ) ) {
+    bool accept = false;
+    // The receivers of the testCanDecode() signal has to adjust
+    // 'accept' accordingly.
+    emit testCanDecode( event, accept);
+
+    event->setAccepted( accept );
+    return;
+  }
+
   QTabWidget::dragEnterEvent( event );
 }
 
@@ -328,7 +337,6 @@ void KTabWidget::dragMoveEvent( QDragMoveEvent *event )
     return;
   }
 
-  event->setAccepted( false );
   QTabWidget::dragMoveEvent( event );
 }
 
