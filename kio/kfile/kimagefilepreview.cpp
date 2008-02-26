@@ -2,6 +2,7 @@
  * This file is part of the KDE project
  * Copyright (C) 2001 Martin R. Jones <mjones@kde.org>
  *               2001 Carsten Pfeiffer <pfeiffer@kde.org>
+ *               2008 Rafael Fernández López <ereslibre@kde.org>
  *
  * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.
@@ -19,6 +20,7 @@
 #include <QtCore/QTimeLine>
 
 #include <kapplication.h>
+#include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kiconloader.h>
@@ -176,15 +178,21 @@ KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
 void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )
 {
     if (item.url() == d->currentURL) {  // should always be the case
-        if (d->m_timeLine->state() == QTimeLine::Running) {
-            d->m_timeLine->setCurrentTime(0);
+        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+            if (d->m_timeLine->state() == QTimeLine::Running) {
+                d->m_timeLine->setCurrentTime(0);
+            }
+    
+            d->m_pmTransition = pm;
+            d->m_pmTransitionOpacity = 0;
+            d->m_pmCurrentOpacity = 1;
+            d->m_timeLine->setDirection(QTimeLine::Forward);
+            d->m_timeLine->start();
         }
-
-        d->m_pmTransition = pm;
-        d->m_pmTransitionOpacity = 0;
-        d->m_pmCurrentOpacity = 1;
-        d->m_timeLine->setDirection(QTimeLine::Forward);
-        d->m_timeLine->start();
+        else
+        {
+            d->imageLabel->setPixmap(pm);
+        }
     }
 }
 
@@ -250,12 +258,18 @@ void KImageFilePreview::clearPreview()
         return;
     }
 
-    d->m_pmTransition = QPixmap();
-    d->m_timeLine->setCurrentTime(0);
-    d->m_timeLine->setDirection(QTimeLine::Backward);
-    d->m_timeLine->start();
-    d->currentURL = KUrl();
-    d->clear = true;
+    if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+        d->m_pmTransition = QPixmap();
+        d->m_timeLine->setCurrentTime(0);
+        d->m_timeLine->setDirection(QTimeLine::Backward);
+        d->m_timeLine->start();
+        d->currentURL = KUrl();
+        d->clear = true;
+    }
+    else
+    {
+        d->imageLabel->clear();
+    }
 }
 
 #include "kimagefilepreview.moc"

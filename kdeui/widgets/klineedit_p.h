@@ -27,6 +27,8 @@
 #include <QPaintEvent>
 #include <QTimeLine>
 
+#include <kglobalsettings.h>
+
 class KLineEditButton : public QWidget
 {
     Q_OBJECT
@@ -67,8 +69,12 @@ public:
             m_timeline->setDuration(250);
         }
 
-        if (m_timeline->state() != QTimeLine::Running)
-            m_timeline->start();
+        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+            if (m_timeline->state() != QTimeLine::Running)
+                m_timeline->start();
+        } else {
+            setVisible(m_timeline->direction() == QTimeLine::Forward);
+        }
     }
 
     void setPixmap(const QPixmap& p)
@@ -81,20 +87,41 @@ public:
         return m_pixmap;
     }
 
+    void setAnimationsEnabled(bool animationsEnabled)
+    {
+        // We need to set the current time in the case that we had the clear
+        // button shown, for it being painted on the paintEvent(). Otherwise
+        // it wont be painted, resulting (m->timeLine->currentTime() == 0) true,
+        // and therefore a bad painting. This is needed for the case that we
+        // come from a non animated widget and want it animated. (ereslibre)
+        if ((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) &&
+            m_timeline->direction() == QTimeLine::Forward) {
+            m_timeline->setCurrentTime(150);
+        }
+    }
+
 protected:
     void paintEvent(QPaintEvent *event)
     {
         Q_UNUSED(event)
 
-        if (m_pixmap.isNull() || m_timeline->currentTime() == 0) {
-            return;
-        }
+        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+            if (m_pixmap.isNull() || m_timeline->currentTime() == 0) {
+                return;
+            }
 
-        QPainter p(this);
-        p.setOpacity(m_timeline->currentValue());
-        p.drawPixmap((width() - m_pixmap.width()) / 2,
-                     (height() - m_pixmap.height()) / 2,
-                     m_pixmap);
+            QPainter p(this);
+            p.setOpacity(m_timeline->currentValue());
+            p.drawPixmap((width() - m_pixmap.width()) / 2,
+                        (height() - m_pixmap.height()) / 2,
+                        m_pixmap);
+        } else {
+            QPainter p(this);
+            p.setOpacity(1); // make sure
+            p.drawPixmap((width() - m_pixmap.width()) / 2,
+                        (height() - m_pixmap.height()) / 2,
+                        m_pixmap);
+        }
     }
 
 protected slots:

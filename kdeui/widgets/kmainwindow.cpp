@@ -58,6 +58,7 @@
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
+#include <kglobalsettings.h>
 
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
@@ -224,6 +225,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 {
     q = _q;
 
+    q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+
     q->setAttribute( Qt::WA_DeleteOnClose );
 
     KWhatsThisManager::init ();
@@ -232,6 +235,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     //actionCollection()->setWidget( this );
     QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(_k_shuttingDown()));
+    QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
+                     q, SLOT(_k_slotSettingsChanged(int)));
 
     // force KMWSessionManager creation - someone a better idea?
     ksm->dummyInit();
@@ -1050,6 +1055,19 @@ void KMainWindowPrivate::_k_shuttingDown()
        q->queryExit();
        reentrancy_protection = false;
     }
+}
+
+void KMainWindowPrivate::_k_slotSettingsChanged(int category)
+{
+    Q_UNUSED(category);
+
+    // This slot will be called when the style KCM changes settings that need
+    // to be set on the already running applications.
+
+    // At this level (KMainWindow) the only thing we need to restore is the
+    // animations setting (whether the user wants builtin animations or not).
+
+    q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
 }
 
 KToolBar *KMainWindow::toolBar( const QString& name )

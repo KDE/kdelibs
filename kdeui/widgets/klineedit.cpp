@@ -89,6 +89,15 @@ public:
 //        delete completionBox;
     }
 
+    void _k_slotSettingsChanged(int category)
+    {
+        Q_UNUSED(category);
+
+        if (clearButton) {
+            clearButton->setAnimationsEnabled(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+        }
+    }
+
     static bool initialized;
     static bool backspacePerformsCompletion; // Configuration option
 
@@ -185,6 +194,8 @@ void KLineEdit::init()
                       mode == KGlobalSettings::CompletionPopupAuto ||
                       mode == KGlobalSettings::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
+
+    connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)), this, SLOT(_k_slotSettingsChanged(int)));
 
     QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )

@@ -407,6 +407,33 @@ public:
      */
     static bool showIconsOnPushButtons();
 
+    enum GraphicEffect {
+        NoEffects               = 0x0000, ///< GUI with no effects at all.
+        GradientEffects         = 0x0001, ///< GUI with only gradients enabled.
+        SimpleAnimationEffects  = 0x0002, ///< GUI with simple animations enabled.
+        ComplexAnimationEffects = 0x0006  ///< GUI with complex animations enabled.
+                                          ///< Note that ComplexAnimationsEffects implies SimpleAnimationEffects.
+    };
+
+    Q_DECLARE_FLAGS(GraphicEffects, GraphicEffect)
+
+    /**
+     * This function determines the desired level of effects on the GUI.
+     *
+     * @return Returns true if user wants builtin animations to be enabled.
+     *
+     * @since 4.1
+     */
+    static GraphicEffects graphicEffectsLevel();
+
+    /**
+     * This function determines the default level of effects on the GUI
+     * depending on the system capabilities.
+     *
+     * @since 4.1
+     */
+    static GraphicEffects graphicEffectsLevelDefault();
+
     /**
      * This function determines if the user wishes to see previews
      * for the selected url
@@ -549,5 +576,7 @@ private:
 
     Q_PRIVATE_SLOT(d, void _k_slotNotifyChange(int, int))
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalSettings::GraphicEffects)
 
 #endif

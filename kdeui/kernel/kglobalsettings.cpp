@@ -86,6 +86,7 @@ static QFont *_taskbarFont = 0;
 static QFont *_largeFont = 0;
 static QFont *_smallestReadableFont = 0;
 //static QColor *_buttonBackground = 0;
+static KGlobalSettings::GraphicEffects _graphicEffects = KGlobalSettings::NoEffects;
 
 static KGlobalSettings::KMouseSettings *s_mouseSettings = 0;
 
@@ -126,17 +127,21 @@ class KGlobalSettings::Private
          */
         static void initPaths();
         /**
-         * drop cached values for fonts (called by KApplication)
+         * drop cached values for fonts
          */
         static void rereadFontSettings();
         /**
-         * drop cached values for paths (called by KApplication)
+         * drop cached values for paths
          */
         static void rereadPathSettings();
         /**
-         * drop cached values for mouse settings (called by KApplication)
+         * drop cached values for mouse settings
          */
         static void rereadMouseSettings();
+        /**
+         * drop cached values for settings that aren't in any of the previous groups
+         */
+        static void rereadOtherSettings();
 
         KGlobalSettings *q;
 };
@@ -736,6 +741,29 @@ bool KGlobalSettings::showIconsOnPushButtons()
                        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
+KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevel()
+{
+    // This variable stores whether _graphicEffects has the default value because it has not been
+    // loaded yet, or if it has been loaded from the user settings or defaults and contains a valid
+    // value.
+    static bool _graphicEffectsInitialized = false;
+
+    if (!_graphicEffectsInitialized) {
+        _graphicEffectsInitialized = true;
+        Private::rereadOtherSettings();
+    }
+
+    return _graphicEffects;
+}
+
+KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevelDefault()
+{
+    // For now, let always enable animations by default. The plan is to make
+    // this code a bit smarter. (ereslibre)
+
+    return ComplexAnimationEffects;
+}
+
 bool KGlobalSettings::showFilePreview(const KUrl &url)
 {
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
@@ -792,6 +820,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 
     case SettingsChanged: {
         KGlobal::config()->reparseConfiguration();
+        rereadOtherSettings();
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_PATHS) {
             KGlobalSettings::Private::rereadPathSettings();
@@ -985,6 +1014,23 @@ void KGlobalSettings::Private::kdisplaySetStyle()
         // already done by applyGUIStyle -> kdisplaySetPalette
         //emit appearanceChanged();
     }
+}
+
+
+void KGlobalSettings::Private::rereadOtherSettings()
+{
+    KConfigGroup g( KGlobal::config(), "KDE-Global GUI Settings" );
+
+    // Asking for hasKey we do not ask for graphicEffectsLevelDefault() that can
+    // contain some very slow code. If we can save that time, do it. (ereslibre)
+
+    if (g.hasKey("GraphicEffectsLevel")) {
+        _graphicEffects = ((GraphicEffects) g.readEntry("GraphicEffectsLevel", QVariant((int) NoEffects)).toInt());
+
+        return;
+    }
+
+    _graphicEffects = KGlobalSettings::graphicEffectsLevelDefault();
 }
 
 

@@ -701,6 +701,7 @@ protected:
     KMainWindowPrivate * const k_ptr;
 private:
     Q_PRIVATE_SLOT(k_func(), void _k_shuttingDown())
+    Q_PRIVATE_SLOT(k_func(), void _k_slotSettingsChanged(int))
 };
 
 #define RESTORE(type) { int n = 1;\

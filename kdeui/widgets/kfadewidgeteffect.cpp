@@ -37,9 +37,8 @@ KFadeWidgetEffect::KFadeWidgetEffect(QWidget *destWidget)
     Q_D(KFadeWidgetEffect);
     d->q_ptr = this;
     Q_ASSERT(destWidget && destWidget->parentWidget());
-    if (!destWidget || !destWidget->parentWidget() || !destWidget->isVisible()
-            //|| !(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)
-       ) {
+    if (!destWidget || !destWidget->parentWidget() || !destWidget->isVisible() ||
+        !(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
         d->disabled = true;
         hide();
         return;

@@ -3,6 +3,7 @@
  * This file is part of the KDE project.
  * Copyright (C) 2001 Martin R. Jones <mjones@kde.org>
  *               2001 Carsten Pfeiffer <pfeiffer@kde.org>
+ *               2008 Rafael Fernández López <ereslibre@kde.org>
  *
  * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.

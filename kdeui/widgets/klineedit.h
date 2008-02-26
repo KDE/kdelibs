@@ -625,6 +625,8 @@ private:
 private:
     class KLineEditPrivate;
     KLineEditPrivate *const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) );
 };
 
 #endif

@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "kfileitemdelegate.h"
-#include "kfileitemdelegate.moc"
 
 #include <QApplication>
 #include <QStyle>
@@ -42,6 +41,7 @@
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kcolorscheme.h>
+#include <kglobalsettings.h>
 
 #include "delegateanimationhandler_p.h"
 
@@ -687,6 +687,10 @@ KIO::AnimationState *KFileItemDelegate::Private::animationState(const QStyleOpti
                                                                 const QModelIndex &index,
                                                                 const QAbstractItemView *view) const
 {
+    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+        return NULL;
+    }
+
     if (index.column() == KDirModel::Name)
         return animationHandler->animationState(option, index, view);
 
@@ -1333,6 +1337,9 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
 
     return false;
 }
+
+
+#include "kfileitemdelegate.moc"
 
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

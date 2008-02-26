@@ -52,6 +52,9 @@ public:
     QString dbusName;
 
     void _k_shuttingDown();
+    // This slot will be called when the style KCM changes settings that need
+    // to be set on the already running applications.
+    void _k_slotSettingsChanged(int category);
 
     void init(KMainWindow *_q);
     void polish(KMainWindow *q);
