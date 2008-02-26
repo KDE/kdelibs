@@ -868,6 +868,9 @@ namespace KJS {
     enum Type { Variable, Constant };
     VarDeclNode(const Identifier &id, AssignExprNode *in, Type t);
     JSValue* evaluate(ExecState*);
+
+    void generateCode(CompileState* comp, CodeBlock& block);
+
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
 

@@ -232,11 +232,36 @@ OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     OpValue arr;
-    if (!element && opt && elision == 0) {
-        CodeGen::emitOp(comp, block, Op_NewEmptyArray, &arr);
-        return arr;
+    CodeGen::emitOp(comp, block, Op_NewEmptyArray, &arr);
+
+    OpValue und = OpValue::immValue(jsUndefined());
+
+    int pos = 0;
+    for (ElementNode* el = element.get(); el; el = el->next.get()) {
+        if (!el->node) {
+            // Fill elision w/undefined, unless we can just skip over to a value
+            for (int i = 0; i < el->elision; i++) {
+                OpValue ind = OpValue::immInt32(pos);
+                CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &und);
+                ++pos;
+            }
+        } else {
+            pos += el->elision;
+        }
+
+        if (el->node) {
+            OpValue val = el->node->generateEvalCode(comp, block);
+            OpValue ind = OpValue::immInt32(pos);
+            CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &val);
+            ++pos;
+        }
     }
-    ASSERT(0); // ###
+
+    for (int i = 0; i < elision; i++) {
+        OpValue ind = OpValue::immInt32(pos);
+        CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &und);
+        ++pos;
+    }
 
     return arr;
 }
@@ -824,29 +849,33 @@ OpValue AssignExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return expr->generateEvalCode(comp, block);
 }
 
+void VarDeclNode::generateCode(CompileState* comp, CodeBlock& block)
+{
+    // We only care about things which have an initializer ---
+    // everything else is a no-op at execution time,
+    // and only makes a difference at processVarDecl time
+    if (init) {
+        OpValue val = init->generateEvalCode(comp, block);
+
+        size_t localID = comp->functionBody()->lookupSymbolID(ident);
+        if (localID == missingSymbolMarker()) {
+            // Generate a symbolic assignment, always to local scope
+            // ### may want to tile this?
+
+            OpValue identV = OpValue::immIdent(&ident);
+            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &identV, &val);
+        } else {
+            // Store to the local..
+            OpValue dest = OpValue::immRegNum(localID);
+            CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &dest, &val);
+        }
+    } // if initializer..
+}
+
 OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    for (VarDeclListNode *n = this; n; n = n->next.get()) {
-        // We only care about things which have an initializer ---
-        // everything else is a no-op at execution time,
-        // and only makes a difference at processVarDecl time
-        if (n->var->init) {
-            OpValue val = n->var->init->generateEvalCode(comp, block);
-
-            size_t localID = comp->functionBody()->lookupSymbolID(n->var->ident);
-            if (localID == missingSymbolMarker()) {
-                // Generate a symbolic assignment, always to local scope
-                // ### may want to tile this?
-
-                OpValue ident = OpValue::immIdent(&n->var->ident);
-                CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &ident, &val);
-            } else {
-                // Store to the local..
-                OpValue dest = OpValue::immRegNum(localID);
-                CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &dest, &val);
-            }
-        } // if initializer..
-    } // for each decl..
+    for (VarDeclListNode *n = this; n; n = n->next.get())
+        n->var->generateCode(comp, block);
 
     return OpValue::immInt32(0); // unused..
 }
@@ -983,7 +1012,7 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     comp->enterLoop(this);
     if (varDecl)
-        varDecl->generateEvalCode(comp, block);
+        varDecl->generateCode(comp, block);
 
     OpValue val = expr->generateEvalCode(comp, block);
     OpValue obj; // version of val after toObject, returned by BeginForIn.

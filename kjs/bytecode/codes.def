@@ -623,6 +623,13 @@ operation IndexPut {
     ]]
 }
 
+operation IndexPutKnownObject {
+    impl void(value base, int32 prop, value val) [[
+        ASSERT(base->isObject());
+        static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
+    ]]
+}
+
 operation BracketPut {
     impl void (value v1, value v2, value v3) [[
         uint32_t i;
