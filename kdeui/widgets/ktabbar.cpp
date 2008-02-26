@@ -279,7 +279,21 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
 
 void KTabBar::dragEnterEvent( QDragEnterEvent *event )
 {
-  event->setAccepted( true );
+  int tab = selectTab( event->pos() );
+  if ( tab != -1 ) {
+    bool accept = false;
+    // The receivers of the testCanDecode() signal has to adjust
+    // 'accept' accordingly.
+    emit testCanDecode( event, accept );
+    if ( accept && tab != currentIndex() ) {
+      d->mDragSwitchTab = tab;
+      d->mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval() * 2 );
+    }
+
+    event->setAccepted( accept );
+    return;
+  }
+
   QTabBar::dragEnterEvent( event );
 }
 
@@ -300,7 +314,6 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *event )
     return;
   }
 
-  event->setAccepted( false );
   QTabBar::dragMoveEvent( event );
 }
 
