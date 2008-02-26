@@ -319,7 +319,10 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 
             otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
-            for (i = LocalPrimary; i <= GlobalAlternate; i++) {
+            // We only check for conflicts with local shortcuts. If the app
+            // has global shortcuts we will check against them below with the
+            // global shortcuts of other applications
+            for (i = LocalPrimary; i <= LocalAlternate; i++) {
                 if (capture == otherItem->keySequence(i)) {
                     conflict = true;
                     break;
