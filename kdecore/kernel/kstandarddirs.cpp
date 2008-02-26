@@ -58,6 +58,10 @@
 #include <QtCore/QSettings>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
+#ifdef Q_WS_MACX
+// used to find the application bundle on Mac OS X
+#include <QtCore/QCoreApplication>
+#endif
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -1483,6 +1487,18 @@ void KStandardDirs::addKDEDefaults()
         localKdeDir = KShell::tildeExpand(localKdeDir);
         addPrefix(localKdeDir);
     }
+
+#ifdef Q_WS_MACX
+    // Adds the "Contents" directory of the current application bundle to
+    // the search path. This way bundled resources can be found.
+    QDir bundleDir(QCoreApplication::applicationDirPath());
+    if (bundleDir.dirName() == "MacOS") { // just to be sure we're in a bundle
+        bundleDir.cdUp();
+        // now dirName should be "Contents". In there we can find our normal
+        // dir-structure, beginning with "share"
+        addPrefix(bundleDir.absolutePath());
+    }
+#endif
 
     QStringList::ConstIterator end(kdedirList.end());
     for (QStringList::ConstIterator it = kdedirList.begin();
