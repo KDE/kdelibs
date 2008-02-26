@@ -192,13 +192,17 @@ static QList<qreal> asRealList(const QByteArray& string)
     return list;
 }
 
+static QString errString( const char * pKey, const QByteArray & value, const QVariant & aDefault ) {
+    return QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
+            .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
+}
+
+static QString formatError( int expected, int got ) {
+    return QString::fromLatin1(" (wrong format: expected %1 items, got %2)").arg( expected ).arg( got );
+}
+
 QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& value, const QVariant& aDefault)
 {
-    const QString errString = QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
-            .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
-    const QString formatError = QString::fromLatin1(" (wrong format: expected %1 items, got %2)");
-    QVariant tmp = aDefault;
-
     // if a type handler is added here you must add a QVConversions definition
     // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
     // readEntry<T> to convert to QVariant.
@@ -225,17 +229,18 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
         case QVariant::Int:
         case QVariant::UInt:
         case QVariant::LongLong:
-        case QVariant::ULongLong:
-            tmp = value;
+        case QVariant::ULongLong: {
+            QVariant tmp = value;
             if ( !tmp.convert(aDefault.type()) )
                 tmp = aDefault;
             return tmp;
+        }
         case QVariant::Point: {
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 2, list.count() );
                 return aDefault;
             }
             return QPoint(list.at( 0 ), list.at( 1 ));
@@ -244,8 +249,8 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 2, list.count() );
                 return aDefault;
             }
             return QPointF(list.at( 0 ), list.at( 1 ));
@@ -254,13 +259,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString
-                         << formatError.arg(4).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -269,13 +274,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString
-                         << formatError.arg(4).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -284,13 +289,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSize size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -299,13 +304,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSizeF size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -313,15 +318,15 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
         case QVariant::DateTime: {
             const QList<int> list = asIntList(value);
             if ( list.count() != 6 ) {
-                kError() << errString
-                         << formatError.arg(6).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 6, list.count() );
                 return aDefault;
             }
             const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
             const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
             const QDateTime dt( date, time );
             if ( !dt.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return dt;
@@ -331,13 +336,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             if ( list.count() == 6 )
                 list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
             if ( list.count() != 3 ) {
-                kError() << errString
-                         << formatError.arg(3).arg(list.count());
+                kError() << errString( pKey, value, aDefault )
+                         << formatError( 3, list.count() );
                 return aDefault;
             }
             const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
             if ( !date.isValid() ) {
-                kError() << errString;
+                kError() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return date;
@@ -771,7 +776,7 @@ QVariant KConfigGroup::readEntry( const char* key, const QVariant &aDefault ) co
 
     QVariant value;
     if (!readEntryGui( data, key, aDefault, value ))
-        value = convertToQVariant(key, data, aDefault);
+        return convertToQVariant(key, data, aDefault);
 
     return value;
 }
