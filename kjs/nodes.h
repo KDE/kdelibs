@@ -206,7 +206,14 @@ namespace KJS {
     //    bar() may introduce a new copy of foo earlier on in the scope
     //    chain, but that should not affect the scope.
     // Note that the client has to delete the return CompileReference itself
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail) = 0;
+
+    enum RefFlag {
+        ErrorOnFail   = 1, // raise exception if object not found
+        ImmediateRead = 2  // generateRefRead will be called immediately after
+                           // generateRefBegin, try to combine them if possible.
+    };
+
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags = 0) = 0;
     virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
@@ -314,7 +321,7 @@ namespace KJS {
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
     virtual Reference evaluateReference(ExecState* exec);
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,
@@ -440,7 +447,7 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
     virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
@@ -465,7 +472,7 @@ namespace KJS {
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, bool errorOnFail);
+    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,

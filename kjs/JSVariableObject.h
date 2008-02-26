@@ -56,7 +56,7 @@ namespace KJS {
         // without increasing their own size (since there's a hard limit on the
         // size of a JSCell).
         struct JSVariableObjectData {
-            JSVariableObjectData() { }
+            JSVariableObjectData() : shouldMark(0) { }
             JSVariableObjectData(SymbolTable* s)
                 : symbolTable(s), // Subclass owns this pointer.
                   shouldMark(0)

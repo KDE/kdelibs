@@ -79,6 +79,43 @@ static JSValue* typeStringForValue(JSValue* v)
     }
 }
 
+template<bool errorOut, bool trySkipOne>
+inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& scopeOut, JSValue*& valOut)
+{
+    const ScopeChain& chain = exec->scopeChain();
+    ScopeChainIterator iter = chain.begin();
+    ScopeChainIterator end = chain.end();
+
+    // we must always have something in the scope chain
+    assert(iter != end);
+
+    JSObject *scopeObj = *iter;
+    if (trySkipOne && !scopeObj->isLocalInjected()) {
+        // Unless eval introduced new variables dynamically,
+        // we know this isn't in the top scope
+        ++iter;
+    }
+
+    PropertySlot slot;
+    do {
+        scopeObj = *iter;
+
+        if (scopeObj->getPropertySlot(exec, *varName, slot)) {
+            scopeOut = scopeObj;
+            valOut   = slot.getValue(exec, scopeObj, *varName);
+            return;
+        }
+        ++iter;
+    } while (iter != end);
+
+    scopeOut = scopeObj;
+    valOut = jsUndefined();
+    if (errorOut) {
+        throwUndefinedVariableError(exec, *varName);
+    }
+}
+
+
 Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...

@@ -412,6 +412,51 @@ operation GetGlobalObject {
     ]]
 }
 
+operation ScopeLookupAndGetChecked {
+    impl value(reg valOutReg, ident varName) [[
+        JSValue* scopeOut;
+        JSValue* val;
+
+        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/ >(exec, varName, scopeOut, val);
+        $$ = scopeOut;
+        localStore[valOutReg].val.valueVal = val;
+    ]]
+}
+
+operation ScopeLookupAndGet {
+    impl value(reg valOutReg, ident varName) [[
+        JSValue* scopeOut;
+        JSValue* val;
+
+        lookupScopeAndFetch<false /*don't error out*/, false /* no skip*/ >(exec, varName, scopeOut, val);
+        $$ = scopeOut;
+        localStore[valOutReg].val.valueVal = val;
+    ]]
+}
+
+operation NonLocalScopeLookupAndGetChecked {
+    impl value(reg valOutReg, ident varName) [[
+        JSValue* scopeOut;
+        JSValue* val;
+
+        lookupScopeAndFetch<true /*error out*/, true /* skip one */ >(exec, varName, scopeOut, val);
+        $$ = scopeOut;
+        localStore[valOutReg].val.valueVal = val;
+    ]]
+}
+
+operation NonLocalScopeLookupAndGet {
+    impl value(reg valOutReg, ident varName) [[
+        JSValue* scopeOut;
+        JSValue* val;
+
+        lookupScopeAndFetch<false /*don't error out*/, true /* skip one */ >(exec, varName, scopeOut, val);
+        $$ = scopeOut;
+        localStore[valOutReg].val.valueVal = val;
+    ]]
+}
+
+
 operation ScopeLookup {
     // Find which scope the variable is in, e.g. basically evaluates to a reference.
     // If we want failures detected, the errorNode is set to non-zero, to help with line #s, etc
@@ -480,67 +525,22 @@ operation NonLocalScopeLookup {
 // Looks up a given variable in the scope chain, returns its value
 operation VarGet {
     impl value localVarGet(ident varName) [[
-        const ScopeChain& chain = exec->scopeChain();
-        ScopeChainIterator iter = chain.begin();
-        ScopeChainIterator end = chain.end();
+        JSValue* scopeOut;
+        JSValue* val;
 
-        // we must always have something in the scope chain
-        assert(iter != end);
-
-        PropertySlot slot;
-        JSObject *scopeObj;
-        do {
-            scopeObj = *iter;
-
-            if (scopeObj->getPropertySlot(exec, *varName, slot)) {
-                $$ = slot.getValue(exec, scopeObj, *varName);
-                break;
-            }
-
-            ++iter;
-        } while (iter != end);
-
-        if (iter == end) {
-            $$ = jsNull();
-            throwUndefinedVariableError(exec, *varName);
-        }
+        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/ >(exec, varName, scopeOut, val);
+        $$ = val;
     ]]
 }
 
 // Like above, but skips the first step, if possible.
 operation NonLocalVarGet {
     impl value nonLocalVarGet(ident varName) [[
-        const ScopeChain& chain = exec->scopeChain();
-        ScopeChainIterator iter = chain.begin();
-        ScopeChainIterator end = chain.end();
+        JSValue* scopeOut;
+        JSValue* val;
 
-        // we must always have something in the scope chain
-        assert(iter != end);
-
-        PropertySlot slot;
-        JSObject *scopeObj = *iter;
-
-        if (!scopeObj->isLocalInjected()) {
-            // Unless eval introduced new variables dynamically,
-            // we know this isn't in the top scope
-            ++iter;
-        }
-
-        do {
-            scopeObj = *iter;
-
-            if (scopeObj->getPropertySlot(exec, *varName, slot)) {
-                $$ = slot.getValue(exec, scopeObj, *varName);
-                break;
-            }
-
-            ++iter;
-        } while (iter != end);
-
-        if (iter == end) {
-            $$ = jsNull();
-            throwUndefinedVariableError(exec, *varName);
-        }
+        lookupScopeAndFetch<true /*error out*/, true /* don't skip one*/ >(exec, varName, scopeOut, val);
+        $$ = val;
     ]]
 }
 

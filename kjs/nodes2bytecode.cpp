@@ -154,10 +154,13 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
-CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool errorOnFail)
+CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock& block, int flags)
 {
     bool dynamicLocal;
     size_t index = localID(comp, dynamicLocal);
+
+    bool errorOnFail = (flags & ErrorOnFail);
+    bool fetchNow    = (flags & ImmediateRead);
 
     // If this is not a register local, we need to look up the scope first..
     if (index == missingSymbolMarker()) {
@@ -166,14 +169,35 @@ CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock
         // We can take a shortcut if we're in global and don't need to detect lookup failure,
         // since the scope will always be the variable object
         if (comp->codeType() == GlobalCode && !errorOnFail) {
-            ref->val1 = *comp->localScope();
+            ref->baseVal = *comp->localScope();
             return ref;
         }
 
         OpValue varName = OpValue::immIdent(&ident);
-        OpValue errFail = OpValue::immNode(errorOnFail ? this : 0);
-        CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
-                        &ref->val1, &varName, &errFail);
+        if (fetchNow) {
+            ref->preloaded = true;
+            OpName op;
+            if (errorOnFail) {
+                if (dynamicLocal)
+                    op = Op_ScopeLookupAndGetChecked;
+                else
+                    op = Op_NonLocalScopeLookupAndGetChecked;
+            } else {
+                if (dynamicLocal)
+                    op = Op_ScopeLookupAndGet;
+                else
+                    op = Op_NonLocalScopeLookupAndGet;
+            }
+
+            OpValue readReg;
+            comp->requestTemporary(OpType_value, ref->preloadVal, readReg);
+            // ### I should probably go to 4 args, for better error messages
+            CodeGen::emitOp(comp, block, op, &ref->baseVal, &readReg, &varName);
+        } else {
+            OpValue errFail = OpValue::immNode(errorOnFail ? this : 0);
+            CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+                        &ref->baseVal, &varName, &errFail);
+        }
         return ref;
     }
 
@@ -187,9 +211,13 @@ OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, Com
 
     OpValue out;
     if (index == missingSymbolMarker()) {
-        // Symbolic read from the appropriate scope, which is in base..
-        OpValue varName = OpValue::immIdent(&ident);
-        CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->val1, &varName);
+        if (ref->preloaded) {
+            return ref->preloadVal;
+        } else {
+            // Symbolic read from the appropriate scope, which is in base..
+            OpValue varName = OpValue::immIdent(&ident);
+            CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseVal, &varName);
+        }
     } else {
         // Straight register get..
         out = OpValue::reg(OpType_value, index);
@@ -212,7 +240,7 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
         // Symbolic write to the appropriate scope..
         OpValue varName = OpValue::immIdent(&ident);
         CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
-                        &ref->val1, &varName, &valToStore);
+                        &ref->baseVal, &varName, &valToStore);
     } else {
         // Straight register put..
         OpValue destReg = OpValue::immRegNum(index);
@@ -307,11 +335,11 @@ OpValue BracketAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& blo
     return ret;
 }
 
-CompileReference* BracketAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool)
+CompileReference* BracketAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, int)
 {
     CompileReference* ref = new CompileReference;
     // base
-    ref->val1 = expr1->generateEvalCode(comp, block);
+    ref->baseVal = expr1->generateEvalCode(comp, block);
     return ref;
 }
 
@@ -322,16 +350,16 @@ OpValue BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& bloc
 
     // ### in cases like ++/-- we may check redundantly.
     if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &ref->val1, &index);
+        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &ref->baseVal, &index);
     else
-        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &ref->val1, &index);
+        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &ref->baseVal, &index);
 
     return ret;
 }
 
 OpValue BracketAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
 {
-    return ref->val1;
+    return ref->baseVal;
 }
 
 void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
@@ -339,9 +367,9 @@ void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
 {
     OpValue index = expr2->generateEvalCode(comp, block);
     if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexPut, 0, &ref->val1, &index, &valToStore);
+        CodeGen::emitOp(comp, block, Op_IndexPut, 0, &ref->baseVal, &index, &valToStore);
     else
-        CodeGen::emitOp(comp, block, Op_BracketPut, 0, &ref->val1, &index, &valToStore);
+        CodeGen::emitOp(comp, block, Op_BracketPut, 0, &ref->baseVal, &index, &valToStore);
 }
 
 // ------------------------------ DotAccessorNode --------------------------------
@@ -356,11 +384,11 @@ OpValue DotAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return ret;
 }
 
-CompileReference* DotAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, bool)
+CompileReference* DotAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, int)
 {
     CompileReference* ref = new CompileReference;
     // base
-    ref->val1 = expr->generateEvalCode(comp, block);
+    ref->baseVal = expr->generateEvalCode(comp, block);
     return ref;
 }
 
@@ -368,20 +396,20 @@ OpValue DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, C
 {
     OpValue out;
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymGet, &out, &ref->val1, &varName);
+    CodeGen::emitOp(comp, block, Op_SymGet, &out, &ref->baseVal, &varName);
     return out;
 }
 
 OpValue DotAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
 {
-    return ref->val1;
+    return ref->baseVal;
 }
 
 void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymPut, 0, &ref->val1, &varName, &valToStore);
+    CodeGen::emitOp(comp, block, Op_SymPut, 0, &ref->baseVal, &varName, &valToStore);
 }
 
 // ------------------ ........
@@ -439,7 +467,8 @@ OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp, CodeBlock& b
 
 OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    CompileReference* ref =  expr->generateRefBegin(comp, block, true /* issue error if not there*/);
+    CompileReference* ref =  expr->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                                 | LocationNode::ImmediateRead);
     OpValue funVal = expr->generateRefRead(comp, block, ref);
 
     args->generateEvalArguments(comp, block);
@@ -457,7 +486,8 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // ### we want to fold this in if the kid is a local -- any elegant way?
 
-    CompileReference* ref = m_loc->generateRefBegin(comp, block, true /* issue error if not there*/);
+    CompileReference* ref = m_loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                                 | LocationNode::ImmediateRead);
 
     //read current value
     OpValue curV = m_loc->generateRefRead(comp, block, ref);
@@ -488,7 +518,7 @@ OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 OpValue TypeOfReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // false: no error if not there, gives undefined instead
-    CompileReference* ref = loc->generateRefBegin(comp, block, false);
+    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ImmediateRead);
 
     OpValue v = loc->generateRefRead(comp, block, ref);
 
@@ -509,7 +539,8 @@ OpValue TypeOfValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
     // ### we want to fold this in if the kid is a local -- any elegant way?
-    CompileReference* ref = m_loc->generateRefBegin(comp, block, true /* issue error if not there*/);
+    CompileReference* ref = m_loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                                 | LocationNode::ImmediateRead);
 
     //read current value
     OpValue curV = m_loc->generateRefRead(comp, block, ref);
@@ -780,10 +811,13 @@ void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    CompileReference* ref = m_loc->generateRefBegin(comp, block,
-        m_oper != OpEqual /* Lookup failure is OK for assignments, but not for += and such */);
-    OpValue v;
+    int flags = (m_oper == OpEqual ? 0 : LocationNode::ErrorOnFail | LocationNode::ImmediateRead);
+    // Lookup failure is OK for assignments, but not for += and such; those also
+    // fetch the old value
 
+    CompileReference* ref = m_loc->generateRefBegin(comp, block, flags);
+
+    OpValue v;
     if (m_oper == OpEqual) {
         v = m_right->generateEvalCode(comp, block);
     } else {
@@ -1032,7 +1066,7 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Write to the variable
     assert (lexpr->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(lexpr.get());
-    CompileReference* ref = loc->generateRefBegin(comp, block, false);
+    CompileReference* ref = loc->generateRefBegin(comp, block);
     loc->generateRefWrite (comp, block, ref, sym);
     delete ref;
 

@@ -26,9 +26,12 @@ namespace KJS {
 
 struct CompileReference
 {
-    // A couple of temp values for the reference node itself..
-    OpValue val1;
-    OpValue val2;
+    CompileReference(): preloaded(false) {}
+
+    bool preloaded;
+
+    OpValue baseVal;
+    OpValue preloadVal;
 };
 
 }
