@@ -962,7 +962,7 @@ operation InstanceOf {
             // case we return false (consistent with mozilla)
             $$ = false;
         else
-            $$ = jsBoolean(o2->hasInstance(exec, v1));
+            $$ = o2->hasInstance(exec, v1);
     ]]
 }
 
