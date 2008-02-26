@@ -256,7 +256,7 @@ public:
     /**
      * Returns the mimetype for the desired output format.
      *
-     * This is only valid if setFilterMimeType() has been called
+     * This is only valid if setMimeFilter() has been called
      * previously.
      *
      * @see setFilterMimeType()
