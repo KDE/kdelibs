@@ -979,6 +979,50 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->exitLoop(this, block);
 }
 
+void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
+{
+    comp->enterLoop(this);
+    if (varDecl)
+        varDecl->generateEvalCode(comp, block);
+
+    OpValue val = expr->generateEvalCode(comp, block);
+    OpValue obj; // version of val after toObject, returned by BeginForIn.
+
+    // Fetch the property name array..
+    CodeGen::emitOp(comp, block, Op_BeginForIn, &obj, &val);
+    comp->pushUnwindHandler();
+
+    // We put the test first here, since the test and the fetch are combined.
+    OpValue sym;
+    Addr fetchNext = CodeGen::emitOp(comp, block, Op_NextForInEntry, &sym, &obj, OpValue::dummyAddr());
+
+    // Write to the variable
+    assert (lexpr->isLocation());
+    LocationNode* loc = static_cast<LocationNode*>(lexpr.get());
+    CompileReference* ref = loc->generateRefBegin(comp, block, false);
+    loc->generateRefWrite (comp, block, ref, sym);
+    delete ref;
+
+    // Run the body.
+    statement->generateExecCode(comp, block);
+
+    // Can fix the continues to go back to the test...
+    comp->resolvePendingContinues(this, block, fetchNext);
+
+    // Jump back..
+    OpValue backVal = OpValue::immAddr(fetchNext);
+    CodeGen::emitOp(comp, block, Op_Jump, 0, &backVal);
+
+    // The end address is here (#2 since return val..)
+    CodeGen::patchJumpToNext(block, fetchNext, 2);
+
+    // Cleanup
+    CodeGen::emitOp(comp, block, Op_EndForIn);
+    comp->popUnwindHandler();
+
+    comp->exitLoop(this, block);
+}
+
 // Helper for continue/break -- emits stack cleanup call if needed.
 static void handleJumpOut(CompileState* comp, CodeBlock& block, int targetNest)
 {

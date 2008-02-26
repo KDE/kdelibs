@@ -231,6 +231,60 @@ operation IfNotJump {
     tile (value, addr) as executeIfNotJump;
 }
 
+// Fetches the propertly list, if any, and sets up the iterator stack in execState appropriately
+// Returns the object to operate on
+operation BeginForIn {
+    impl value (value e) [[
+        exec->pushPropertyNameArray();
+
+        if (!e->isUndefinedOrNull()) {
+            JSObject* v = e->toObject(exec);
+            // The above might raise an exception, which would cleanup the array!
+            if (pc != localPC) break;
+
+            v->getPropertyNames(exec, exec->activePropertyNameArray());
+            $$ = v;
+        } else {
+            // The array is empty here, so this will never be accessed
+            $$ = jsUndefined();
+        }
+    ]]
+}
+
+// Cleans up the property list
+operation EndForIn {
+    impl void() [[
+        exec->popPropertyNameArray();
+    ]]
+}
+
+operation NextForInEntry {
+    impl value(value e, addr jumpToIfDone) [[
+        PropertyNameArray& pa  = exec->activePropertyNameArray();
+
+        // Invariant: pos = next entry to consider.
+        int& pos = exec->activePropertyNameIter();
+
+        $$ = jsUndefined();
+        while (pos < pa.size()) {
+            ASSERT(e->isObject());
+            JSObject* v = static_cast<JSObject*>(e);
+
+            Identifier& name = pa[pos];
+            ++pos;
+
+            if (v->hasProperty(exec, name)) {
+                // Wasn't deleted during iteration..
+                $$ = jsOwnedString(name.ustring());
+                break;
+            }
+        }
+
+        if ($$ == jsUndefined()) // Nothing found. Jump to end of the loop
+            pc = jumpToIfDone;
+    ]]
+}
+
 // These update the scope chain, and sets the special unwind exception handler, which is used to
 // restore the chain if an exception happens
 operation PushScope {

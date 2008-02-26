@@ -109,6 +109,11 @@ void ExecState::setException(JSValue* e)
             m_deferredExceptions.removeLast();
             m_exceptionHandlers.removeLast();
             continue; // get the next handler
+        case RemovePNA:
+            delete m_activePropertyNameArrays.last().array;
+            m_activePropertyNameArrays.removeLast();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
         case Silent:
             // Exception blocked by tracing code. nothing to do.
             return;
@@ -131,6 +136,10 @@ void ExecState::quietUnwind(int depth)
             break;
         case RemoveDeferred:
             m_deferredExceptions.removeLast();
+            break;
+        case RemovePNA:
+            delete m_activePropertyNameArrays.last().array;
+            m_activePropertyNameArrays.removeLast();
             break;
         case Silent:
             ASSERT(0); // Should not happen in the middle of the code.
