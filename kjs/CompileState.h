@@ -49,7 +49,7 @@ class CompileState
 public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody,
                  WTF::Vector<bool>& shouldMark, Register initialMaxTemp):
-        localScopeVal(0), globalScopeVal(0), thisVal(0), evalResRegister(0),
+        localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
         ctype(ctype), shouldMark(shouldMark),
         initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
         scopeDepth(0), handlerDepth(0)

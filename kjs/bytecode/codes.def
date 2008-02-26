@@ -951,6 +951,7 @@ operation InstanceOf {
     impl bool (value v1, value v2) [[
         if (!v2->isObject()) {
             throwError(exec,  TypeError, "Value is not an object. Cannot be used with instanceof operator.");
+            break;
         }
 
         JSObject* o2 = static_cast<JSObject*>(v2);
