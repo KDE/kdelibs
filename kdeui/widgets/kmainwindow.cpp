@@ -744,10 +744,25 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 }
 
 #ifdef Q_WS_WIN
+
+/* 
+ The win32 implementation for restoring/savin windows size differs 
+ from the unix/max implementation in three topics:
+
+1. storing and restoring the position, which may not work on x11 
+    see http://doc.trolltech.com/4.3/geometry.html#x11-peculiarities
+2. using QWidget::saveGeometry() and QWidget::restoreGeometry() 
+    this would probably be usable on x11 and/or on mac, but I'm unable to 
+    check this on unix/mac, so I leave this fix to the x11/mac experts.
+3. store geometry separately for each resolution -> on unix/max the size 
+    and with of the window are already saved separately on non windows 
+    system although not using ...Geometry functions -> could also be 
+    fixed by x11/mac experts. 
+*/
 void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
 {
     K_D(KMainWindow);
-    // restore the size and pos
+
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
@@ -755,12 +770,11 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
     if (QApplication::desktop()->isVirtualDesktop())
       desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
 
-    // geometry is saved separately for each resolution
     QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
     QByteArray geometry = _cg.readEntry( geometryKey, QByteArray() );
-    if (!geometry.isEmpty())
-        restoreGeometry( QByteArray::fromBase64(geometry) );
-    return; 
+    // if first time run, center window 
+    if (!restoreGeometry( QByteArray::fromBase64(geometry) ))
+        move( (desk.width()-width())/2, (desk.height()-height())/2 );
 }
 
 void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
