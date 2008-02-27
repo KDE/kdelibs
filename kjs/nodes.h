@@ -213,11 +213,16 @@ namespace KJS {
                            // generateRefBegin, try to combine them if possible.
     };
 
+
     virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags = 0) = 0;
     virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
                                     CompileReference* ref, OpValue& valToStore) = 0;
+
+    // The location nodes also handle deletes themselves. Note that this is called
+    // w/o generateRefBegin
+    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block) = 0;
   };
 
   class StatementNode : public Node {
@@ -326,6 +331,7 @@ namespace KJS {
     virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
+    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
 
     // Returns the ID this variable should be accessed as, or
     // missingSymbolMarker(). maybeLocal will be set if the symbol
@@ -452,6 +458,7 @@ namespace KJS {
     virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
                                     CompileReference* ref, OpValue& valToStore);
+    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
 
     Node *base() { return expr1.get(); }
     Node *subscript() { return expr2.get(); }
@@ -477,7 +484,7 @@ namespace KJS {
     virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
     virtual void generateRefWrite(CompileState*, CodeBlock& block,
                                         CompileReference* ref, OpValue& valToStore);
-
+    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
 
     Node *base() const { return expr.get(); }
     const Identifier& identifier() const { return ident; }
@@ -625,6 +632,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   private:
     RefPtr<LocationNode> loc;
   };
@@ -635,6 +643,7 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   private:
     RefPtr<Node> m_expr;
   };

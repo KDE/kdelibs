@@ -669,6 +669,45 @@ operation LocalVarGet {
     ]]
 }
 
+operation SymDeleteKnownObject {
+    impl bool(value scope, ident name) [[
+        ASSERT(scope->isObject());
+        $$ = static_cast<JSObject*>(scope)->deleteProperty(exec, *name);
+    ]]
+}
+
+operation SymDelete {
+    impl bool(value scope, ident name) [[
+        JSObject* o = scope->toObject(exec);
+        if (pc == localPC) // No exception!
+            $$ = o->deleteProperty(exec, *name);
+    ]]
+}
+
+operation BracketDelete {
+    impl bool(value v1, value v2) [[
+        uint32_t i;
+        JSObject *o = v1->toObject(exec);
+        if (pc != localPC)
+            break;
+
+        if (v2->getUInt32(i))
+            $$ = o->deleteProperty(exec, i);
+        else
+            $$ = o->deleteProperty(exec, Identifier(v2->toString(exec)));
+    ]]
+}
+
+operation IndexDelete {
+    impl bool(value v1, int32 i) [[
+        JSObject *o = v1->toObject(exec);
+        if (pc != localPC)
+            break;
+
+        $$ = o->deleteProperty(exec, (uint32_t)i);
+    ]]
+}
+
 /**
  Making things..
 */
@@ -881,7 +920,7 @@ operation StrEq {
 operation StrNEq {
     impl bool(value v1, value v2) [[
         // operator !==
-        $$ = strictEqual(exec,v1, v2);
+        $$ = !strictEqual(exec,v1, v2);
     ]]
 }
 

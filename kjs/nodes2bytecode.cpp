@@ -248,6 +248,29 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
     }
 }
 
+OpValue VarAccessNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+{
+    bool dynamicLocal;
+    size_t index = localID(comp, dynamicLocal);
+
+    if (index == missingSymbolMarker()) {
+        // Fetch the scope...
+        OpValue base;
+        OpValue varName = OpValue::immIdent(&ident);
+        OpValue silent  = OpValue::immNode(0);
+        CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+                        &base, &varName, &silent);
+
+        // Remove the property..
+        OpValue out;
+        CodeGen::emitOp(comp, block, Op_SymDeleteKnownObject, &out, &base, &varName);
+        return out;
+    } else {
+        // Normal locals are DontDelete, so this always fails.
+        return OpValue::immBool(false);
+    }
+}
+
 // ------------------------------ GroupNode----------------------------------------
 
 OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
@@ -372,6 +395,19 @@ void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
         CodeGen::emitOp(comp, block, Op_BracketPut, 0, &ref->baseVal, &index, &valToStore);
 }
 
+OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+{
+    OpValue base  = expr1->generateEvalCode(comp, block);
+    OpValue index = expr2->generateEvalCode(comp, block);
+
+    OpValue out;
+    if (index.type == OpType_int32)
+        CodeGen::emitOp(comp, block, Op_IndexDelete, &out, &base, &index);
+    else
+        CodeGen::emitOp(comp, block, Op_BracketDelete, &out, &base, &index);
+    return out;
+}
+
 // ------------------------------ DotAccessorNode --------------------------------
 
 // ECMA 11.2.1b
@@ -410,6 +446,15 @@ void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
 {
     OpValue varName = OpValue::immIdent(&ident);
     CodeGen::emitOp(comp, block, Op_SymPut, 0, &ref->baseVal, &varName, &valToStore);
+}
+
+OpValue DotAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+{
+    OpValue base = expr->generateEvalCode(comp, block);
+    OpValue varName = OpValue::immIdent(&ident);
+    OpValue out;
+    CodeGen::emitOp(comp, block, Op_SymDelete, &out, &base, &varName);
+    return out;
 }
 
 // ------------------ ........
@@ -507,6 +552,16 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     m_loc->generateRefWrite(comp, block, ref, newV);
     delete ref;
     return curV;
+}
+
+OpValue DeleteReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    return loc->generateRefDelete(comp, block);
+}
+
+OpValue DeleteValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+{
+    return OpValue::immBool(true);
 }
 
 OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
