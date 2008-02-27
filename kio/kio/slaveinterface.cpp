@@ -479,7 +479,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
             kid->exec();
             kDebug(7024) << "SSL Info dialog closed";
         } else {
-            KMessageBox::information(0, i18n("The peer SSL certificate chain"
+            KMessageBox::information(0, i18n("The peer SSL certificate chain "
                                              "appears to be corrupt."),
                                      i18n("SSL"));
         }
