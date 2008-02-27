@@ -32,6 +32,7 @@
 #include <stdint.h>
 #endif
 #include <stdlib.h>
+#include <math.h>
 
 namespace KJS {
 
