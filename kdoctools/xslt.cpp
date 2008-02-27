@@ -184,7 +184,10 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
         catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         catalogs += ' ';
         catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
-        ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+#ifdef Q_WS_WIN
+        catalogs += ' ';
+        catalogs += ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+#endif
     } else {
         catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         catalogs += ' ';
@@ -270,14 +273,17 @@ QString lookForCache( const QString &filename )
     kDebug() << "lookForCache " << filename;
     assert( filename.endsWith( ".docbook" ) );
 #ifndef Q_WS_WIN
-    // this check fails always on win32 : if it is for testing absolute path, QFileInfo::isAbsolute() should be used 
-    // anyway - why should a relative path not be valid 
     assert( filename.at( 0 ) == '/' );
 #endif
     QString cache = filename.left( filename.length() - 7 );
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
         return output;
+#ifdef Q_WS_WIN
+    QFileInfo fi(filename);
+    // don't create subdirectories, remove ':' in path
+    cache = '/' + fi.absolutePath().replace(':','_').replace('/','_') + '_' + fi.baseName() + '.';
+#endif
     if ( readCache( filename,
                     KStandardDirs::locateLocal( "cache",
                                  "kio_help" + cache +

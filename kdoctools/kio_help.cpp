@@ -258,9 +258,28 @@ void HelpProtocol::get( const KUrl& url )
 
         if ( mParsed.isEmpty() ) {
             mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
+#ifdef Q_WS_WIN
+            /* 
+               there are several help:/.. entries in the transformed html page 
+               refering to the language related doc installation path 
+               (based for example on .../html/en)
+               Because the prefered way to transform this isn't known yet, 
+               a manual replace workaround is used. 
+            */
+            QFileInfo f1(file);
+            QFileInfo f2(f1.absolutePath());
+            QString f3 = f2.absolutePath();
+            mParsed = mParsed.replace("help:", f3);
+#endif
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
+#ifdef Q_WS_WIN
+                QFileInfo fi(file);
+                // don't create subdirectories, remove ':' in path
+                QString cache = '/' + fi.absolutePath().replace(':','_').replace('/','_') + '_' + fi.baseName() + '.';
+#else
                 QString cache = file.left( file.length() - 7 );
+#endif
                 saveToCache( mParsed, KStandardDirs::locateLocal( "cache",
                                                                   "kio_help" + cache +
                                                                   "cache.bz2" ) );
