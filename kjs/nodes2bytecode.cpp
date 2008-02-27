@@ -1099,7 +1099,6 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    comp->enterLoop(this);
     if (varDecl)
         varDecl->generateCode(comp, block);
 
@@ -1109,6 +1108,7 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Fetch the property name array..
     CodeGen::emitOp(comp, block, Op_BeginForIn, &obj, &val);
     comp->pushUnwindHandler();
+    comp->enterLoop(this); // must do this here, since continue shouldn't pop our iterator!
 
     // We put the test first here, since the test and the fetch are combined.
     OpValue sym;
