@@ -29,6 +29,10 @@
 
 #include <QtNetwork/QHostInfo>
 
+#ifdef Q_OS_UNIX
+#include <utime.h>
+#endif
+
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(KConfigTest,Flags)
 
@@ -901,6 +905,56 @@ void KConfigTest::testKAboutDataOrganizationDomain()
                       ki18n("copyright"), ki18n("hello world"),
                       "http://edu.kde.org/kig" );
     QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
+}
+
+static void ageTimeStamp(const QString& path, int nsec)
+{
+#ifdef Q_OS_UNIX
+    QDateTime mtime = QFileInfo(path).lastModified().addSecs(-nsec);
+    struct utimbuf utbuf;
+    utbuf.actime = mtime.toTime_t();
+    utbuf.modtime = utbuf.actime;
+    utime(QFile::encodeName(path), &utbuf);
+#else
+    QTest::qSleep(nsec * 1000);
+#endif
+}
+
+void KConfigTest::testWriteOnSync()
+{
+    QDateTime oldStamp, newStamp;
+    KConfig sc("kconfigtest", KConfig::IncludeGlobals);
+
+    // Age the timestamp of global config file a few sec, and collect it.
+    QString globFile = KStandardDirs::locateLocal("config", "kdeglobals");
+    ageTimeStamp(globFile, 2); // age 2 sec
+    oldStamp = QFileInfo(globFile).lastModified();
+
+    // Add a local entry and sync the config.
+    // Should not rewrite the global config file.
+    KConfigGroup cgLocal(&sc, "Locals");
+    cgLocal.writeEntry("someLocalString", "whatever");
+    sc.sync();
+
+    // Verify that the timestamp of global config file didn't change.
+    newStamp = QFileInfo(globFile).lastModified();
+    QCOMPARE(newStamp, oldStamp);
+
+    // Age the timestamp of local config file a few sec, and collect it.
+    QString locFile = KStandardDirs::locateLocal("config", "kconfigtest");
+    ageTimeStamp(locFile, 2); // age 2 sec
+    oldStamp = QFileInfo(locFile).lastModified();
+
+    // Add a global entry and sync the config.
+    // Should not rewrite the local config file.
+    KConfigGroup cgGlobal(&sc, "Globals");
+    cgGlobal.writeEntry("someGlobalString", "whatever",
+                        KConfig::Persistent|KConfig::Global);
+    sc.sync();
+
+    // Verify that the timestamp of local config file didn't change.
+    newStamp = QFileInfo(locFile).lastModified();
+    QCOMPARE(newStamp, oldStamp);
 }
 
 QList<QByteArray> KConfigTest::readLines()
