@@ -289,20 +289,47 @@ void KConfig::sync()
             return;
         }
 
-        if (d->wantGlobals()) {
+        // Rewrite global/local config only if there is a dirty entry in it.
+        bool writeGlobals = false;
+        bool writeLocals = false;
+        foreach (const KEntry& e, d->entryMap) {
+            if (e.bDirty) {
+                if (e.bGlobal) {
+                    writeGlobals = true;
+                } else {
+                    writeLocals = true;
+                }
+
+                if (writeGlobals && writeLocals) {
+                    break;
+                }
+            }
+        }
+
+        d->bDirty = false; // will revert to true if a config write fails
+
+        if (d->wantGlobals() && writeGlobals) {
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock(componentData())) {
                 qWarning() << "couldn't lock global file";
                 return;
             }
-            tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData);
-            if (tmp->isLocked())
+            if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData)) {
+                d->bDirty = true;
+            }
+            if (tmp->isLocked()) {
                 tmp->unlock();
+            }
         }
-        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData))
-            d->bDirty = false;
-        if (d->mBackend->isLocked())
+
+        if (writeLocals) {
+            if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData)) {
+                d->bDirty = true;
+            }
+        }
+        if (d->mBackend->isLocked()) {
             d->mBackend->unlock();
+        }
     }
 }
 
