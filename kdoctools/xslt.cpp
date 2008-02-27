@@ -184,10 +184,7 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
         catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         catalogs += ' ';
         catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
-#ifdef Q_WS_WIN
-        catalogs += ' ';
-        catalogs += ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
-#endif
+        ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
         catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         catalogs += ' ';
@@ -272,9 +269,7 @@ QString lookForCache( const QString &filename )
 {
     kDebug() << "lookForCache " << filename;
     assert( filename.endsWith( ".docbook" ) );
-#ifndef Q_WS_WIN
-    assert( filename.at( 0 ) == '/' );
-#endif
+    assert( QDir::isAbsolutePath(filename));
     QString cache = filename.left( filename.length() - 7 );
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
