@@ -356,7 +356,7 @@ void TableBuilder::handleConversion(const QString& name, const QString& code, in
         names << "in";
         QString patchedCode = code;
         patchedCode.replace("return", "$$ = "); // ### FIXME: Brittle!
-        handleImpl("", patchedCode, codeLine, 0, to, sig, names);
+        handleImpl("", patchedCode, false,codeLine, 0, to, sig, names);
     }
 }
 
@@ -377,7 +377,7 @@ QList<Type> TableBuilder::resolveSignature(const QStringList& in)
     return sig;
 }
 
-void TableBuilder::handleImpl(const QString& fnName, const QString& code, int codeLine, int cost,
+void TableBuilder::handleImpl(const QString& fnName, const QString& code, bool ol, int codeLine, int cost,
                               const QString& retType, QStringList sig, QStringList paramNames)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
@@ -395,6 +395,7 @@ void TableBuilder::handleImpl(const QString& fnName, const QString& code, int co
     Operation op;
     op.name           = operationNames.last();
     op.retType        = retType;
+    op.overload       = ol;
     operationRetTypes[op.name] = retType;
     op.implementAs    = code;
     op.codeLine       = codeLine;
@@ -425,6 +426,7 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
     op.implementAs = impl.implementAs;
     op.codeLine    = impl.codeLine;
     op.retType     = impl.retType;
+    op.overload    = impl.overload; // if original required precise matching, so did the tile.
     op.parameters  = resolveSignature(extSig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
@@ -534,6 +536,9 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     }
     *cppStream << "}, ";
 
+    // Return type.
+    *cppStream << "OpType_" << variant.op.retType << ", ";
+
     int adjust = doPad ? 4 : 0; // padded version has 4 extra bytes,
                                 // between the opcode and the first arg.
     // Size..
@@ -553,7 +558,10 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     *cppStream << (doPad ? "true" : "false") << ", ";
 
     // And whether a padded version exists.
-    *cppStream << (hasPadVariant ? "true" : "false");
+    *cppStream << (hasPadVariant ? "true" : "false") << ", ";
+
+    // Whether this is an overload, requiring precise matching
+    *cppStream << (variant.op.overload ? "true" : "false");
 
     if (needsComma)
         *cppStream << "},\n";

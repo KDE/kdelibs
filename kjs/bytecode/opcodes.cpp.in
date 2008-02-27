@@ -32,10 +32,20 @@ const int Cost_Checked      = -2;
 @generate
 
 // Note: costOut will be negative if no conversion is possible
-ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut)
+ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut, bool exact)
 {
     bool   inImmediate = in->immediate;
     OpType inType      = in->type;
+
+    if (exact) {
+        if (inImmediate == outImmediate && inType == outType) {
+            costOut = 0;
+            return Conv_NoOp;
+        }
+
+        costOut = Cost_NoConversion;
+        return Conv_NoConversion;
+    }
 
     // Look up in the table..
     const ConvInfo* inf = getConversionInfo(inImmediate, inType, outType);
@@ -130,7 +140,7 @@ void CodeGen::emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
                             OpType outType, OpValue* out)
 {
     int cost;
-    ConvOp op = computeCast(in, outType, in->immediate, cost);
+    ConvOp op = computeCast(in, outType, in->immediate, cost, false);
     ASSERT(cost >= 0);
     emitConversion(comp, block, in->immediate, op, in, *out);
 }
@@ -168,20 +178,17 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     int    cheapestCost = 0;
     ConvOp cheapestConvOps[3] = {Conv_NoConversion, Conv_NoConversion, Conv_NoConversion};
 
+    // Here, we assume that all methods either return or not.
     OpType retType = opRetTypes[baseInstr];
     OpValue retVal, retReg;
     if (retType != OpType_void) {
-        // Add in a register argument..
+        // Add in a register argument.. For now just a dummy #;
+        // will fill in w/appropriate type later
         ASSERT(!a2);
-        comp->requestTemporary(retType, retVal, retReg);
-
+        retReg = OpValue::immRegNum(-1);
         a2 = a1;
         a1 = a0;
         a0 = &retReg;
-
-        // Set return value, if needed
-        if (retOut)
-            *retOut = retVal;
     } else {
         ASSERT(!retOut);
     }
@@ -205,18 +212,20 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         if (cand->padAlign)
             continue;
 
+        bool exact = cand->matchExactly;
+
         int    cost0 = 0, cost1 = 0, cost2 = 0;
         ConvOp convOps[3];
 
         switch (numArgs) {
         case 3:
-            convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2);
+            convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2, exact);
             // Fallthrough
         case 2:
-            convOps[1] = computeCast(a1, cand->paramTypes[1], cand->immediateParams[1], cost1);
+            convOps[1] = computeCast(a1, cand->paramTypes[1], cand->immediateParams[1], cost1, exact);
             // Fallthrough
         case 1:
-            convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0);
+            convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0, exact);
             // Fallthrough
         case 0:
             break;
@@ -245,6 +254,17 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         if (a2)
             printf("\ta2:%s/imm:%d\n", OpTypeVals[a2->type], a2->immediate);
         CRASH(); // Should never happen!
+    }
+
+
+    // Now that we have a candidate, actually grab a register of the proper return type.
+    retType = cheapest->retType;
+    if (retType != OpType_void) {
+        comp->requestTemporary(retType, retVal, retReg);
+
+        // Set return value, if needed
+        if (retOut)
+            *retOut = retVal;
     }
 
     OpValue c0, c1, c2; // Converted versions, if needed.

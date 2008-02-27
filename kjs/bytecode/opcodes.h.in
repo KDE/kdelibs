@@ -65,6 +65,8 @@ struct Op {
     OpType paramTypes[3];
     bool   immediateParams[3];
 
+    OpType retType; // type of this specialization
+
     int length; // Length of instruction, including opcode + args
 
     // This contains offsets of arguments, starting from before the instruction
@@ -76,6 +78,10 @@ struct Op {
 
     // If this is true, this version has both padded and unpadded flavors
     bool hasPadVariant;
+
+    // If this is true, this is an overload specializations which
+    // should be matched exactly, w/o conversions
+    bool matchExactly;
 };
 
 // The main array of Op instances, mapped by OpByteCode
@@ -88,7 +94,7 @@ extern const Op* const* const opSpecializations[];
 // Describes whether the type is align8 or not.
 extern const bool opTypeIsAlign8[];
 
-struct OpValue;
+class OpValue;
 
 typedef Vector<unsigned char> CodeBlock;
 

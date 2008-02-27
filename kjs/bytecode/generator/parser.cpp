@@ -244,7 +244,7 @@ void Parser::parseOperation()
 
     match(Lexer::LBrace);
     Lexer::Token tok = peekNext();
-    while (tok.type == Lexer::Tile || tok.type == Lexer::Impl) {
+    while (tok.type == Lexer::Tile || tok.type == Lexer::Impl || tok.type == Lexer::Overload) {
         if (tok.type == Lexer::Tile)
             parseTile();
         else
@@ -260,7 +260,7 @@ void Parser::parseImpl()
     // paramList := ident ident
     // paramList := ident ident , paramList
 
-    match(Lexer::Impl);
+    bool overload = getNext().type == Lexer::Overload;
 
     QString ret = matchIdentifier();
 
@@ -294,7 +294,7 @@ void Parser::parseImpl()
     QString code = matchCode(codeLine);
 
 
-    handleImpl(fn, code, codeLine, cost, ret, paramSigs, paramNames);
+    handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames);
 }
 
 void Parser::parseTile()

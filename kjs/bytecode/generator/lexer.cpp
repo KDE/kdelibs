@@ -39,6 +39,7 @@ Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false), lineNum(
     keywords["operation"]   = Operation;
     keywords["costs"]       = Costs;
     keywords["impl"]        = Impl;
+    keywords["overload"]    = Overload;
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
     keywords["align8"]      = Align8;

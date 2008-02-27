@@ -64,6 +64,7 @@ struct Operation
     QList<Type>  parameters;
     int          cost;
     int          codeLine;
+    bool         overload;
 
     QString implementAs;
     QList<Type> implParams;
@@ -96,8 +97,9 @@ private:
                                   const QString& from, const QString& to, int cost);
 
     virtual void handleOperation(const QString& name);
-    virtual void handleImpl(const QString& fnName, const QString& code, int codeLine, int cost,
-                            const QString& retType, QStringList sig, QStringList paramNames);
+    virtual void handleImpl(const QString& fnName, const QString& code, bool overload,
+                            int codeLine, int cost, const QString& retType, QStringList sig,
+                            QStringList paramNames);
     virtual void handleTile(const QString& fnName, QStringList sig);
 
     void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
