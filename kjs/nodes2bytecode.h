@@ -30,7 +30,7 @@ struct CompileReference
 
     bool preloaded;
 
-    OpValue baseVal;
+    OpValue baseObj;
     OpValue preloadVal;
 };
 

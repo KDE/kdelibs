@@ -169,7 +169,7 @@ CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock
         // We can take a shortcut if we're in global and don't need to detect lookup failure,
         // since the scope will always be the variable object
         if (comp->codeType() == GlobalCode && !errorOnFail) {
-            ref->baseVal = *comp->localScope();
+            ref->baseObj = *comp->localScope();
             return ref;
         }
 
@@ -192,11 +192,11 @@ CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock
             OpValue readReg;
             comp->requestTemporary(OpType_value, ref->preloadVal, readReg);
             // ### I should probably go to 4 args, for better error messages
-            CodeGen::emitOp(comp, block, op, &ref->baseVal, &readReg, &varName);
+            CodeGen::emitOp(comp, block, op, &ref->baseObj, &readReg, &varName);
         } else {
             OpValue errFail = OpValue::immNode(errorOnFail ? this : 0);
             CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
-                        &ref->baseVal, &varName, &errFail);
+                        &ref->baseObj, &varName, &errFail);
         }
         return ref;
     }
@@ -216,7 +216,7 @@ OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, Com
         } else {
             // Symbolic read from the appropriate scope, which is in base..
             OpValue varName = OpValue::immIdent(&ident);
-            CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseVal, &varName);
+            CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseObj, &varName);
         }
     } else {
         // Straight register get..
@@ -227,7 +227,10 @@ OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, Com
 
 OpValue VarAccessNode::generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref)
 {
-    return *comp->globalScope();
+    if (ref)
+        return ref->baseObj;
+    else
+        return *comp->globalScope();
 }
 
 void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
@@ -240,7 +243,7 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
         // Symbolic write to the appropriate scope..
         OpValue varName = OpValue::immIdent(&ident);
         CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
-                        &ref->baseVal, &varName, &valToStore);
+                        &ref->baseObj, &varName, &valToStore);
     } else {
         // Straight register put..
         OpValue destReg = OpValue::immRegNum(index);
@@ -293,7 +296,7 @@ OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
             // Fill elision w/undefined, unless we can just skip over to a value
             for (int i = 0; i < el->elision; i++) {
                 OpValue ind = OpValue::immInt32(pos);
-                CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &und);
+                CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
                 ++pos;
             }
         } else {
@@ -303,14 +306,14 @@ OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         if (el->node) {
             OpValue val = el->node->generateEvalCode(comp, block);
             OpValue ind = OpValue::immInt32(pos);
-            CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &val);
+            CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &val);
             ++pos;
         }
     }
 
     for (int i = 0; i < elision; i++) {
         OpValue ind = OpValue::immInt32(pos);
-        CodeGen::emitOp(comp, block, Op_IndexPutKnownObject, 0, &arr, &ind, &und);
+        CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
         ++pos;
     }
 
@@ -351,10 +354,7 @@ OpValue BracketAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& blo
     OpValue index = expr2->generateEvalCode(comp, block);
 
     // ### optimize foo["bar"] ?
-    if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &base, &index);
-    else
-        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &base, &index);
+    CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &base, &index);
     return ret;
 }
 
@@ -362,7 +362,8 @@ CompileReference* BracketAccessorNode::generateRefBegin (CompileState* comp, Cod
 {
     CompileReference* ref = new CompileReference;
     // base
-    ref->baseVal = expr1->generateEvalCode(comp, block);
+    OpValue baseV = expr1->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
@@ -372,27 +373,21 @@ OpValue BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& bloc
     OpValue index = expr2->generateEvalCode(comp, block);
 
     // ### in cases like ++/-- we may check redundantly.
-    if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexGet, &ret, &ref->baseVal, &index);
-    else
-        CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &ref->baseVal, &index);
+    CodeGen::emitOp(comp, block, Op_BracketGetKnownObject, &ret, &ref->baseObj, &index);
 
     return ret;
 }
 
 OpValue BracketAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
 {
-    return ref->baseVal;
+    return ref->baseObj;
 }
 
 void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
     OpValue index = expr2->generateEvalCode(comp, block);
-    if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexPut, 0, &ref->baseVal, &index, &valToStore);
-    else
-        CodeGen::emitOp(comp, block, Op_BracketPut, 0, &ref->baseVal, &index, &valToStore);
+    CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &ref->baseObj, &index, &valToStore);
 }
 
 OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
@@ -401,10 +396,7 @@ OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& bl
     OpValue index = expr2->generateEvalCode(comp, block);
 
     OpValue out;
-    if (index.type == OpType_int32)
-        CodeGen::emitOp(comp, block, Op_IndexDelete, &out, &base, &index);
-    else
-        CodeGen::emitOp(comp, block, Op_BracketDelete, &out, &base, &index);
+    CodeGen::emitOp(comp, block, Op_BracketDelete, &out, &base, &index);
     return out;
 }
 
@@ -424,7 +416,11 @@ CompileReference* DotAccessorNode::generateRefBegin (CompileState* comp, CodeBlo
 {
     CompileReference* ref = new CompileReference;
     // base
-    ref->baseVal = expr->generateEvalCode(comp, block);
+    // ### since we don't need to do toString conversion on field here,
+    // we can move the object evaluation later in some cases, w/o violating
+    // exception precision wrt to 11.2.1
+    OpValue baseV = expr->generateEvalCode(comp, block);
+    CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
@@ -432,20 +428,20 @@ OpValue DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, C
 {
     OpValue out;
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymGet, &out, &ref->baseVal, &varName);
+    CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseObj, &varName);
     return out;
 }
 
 OpValue DotAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
 {
-    return ref->baseVal;
+    return ref->baseObj;
 }
 
 void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymPut, 0, &ref->baseVal, &varName, &valToStore);
+    CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &ref->baseObj, &varName, &valToStore);
 }
 
 OpValue DotAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)

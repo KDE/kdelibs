@@ -570,6 +570,12 @@ operation RegPutInt32 {
     ]]
 }
 
+operation ToObject {
+    impl value toObject(value val) [[
+        $$ = val->toObject(exec);
+    ]]
+}
+
 // Generic put..
 operation SymPut {
     impl void symPut(value base, ident varName, value val) [[
@@ -599,8 +605,29 @@ operation SymGet {
     ]]
 }
 
-operation IndexGet {
-    impl value indexGet(value base, int32 prop) [[
+// Get for a scope -- known to be an object!
+operation SymGetKnownObject {
+    impl value symScopeGet(value base, ident varName) [[
+        ASSERT(base->isObject());
+        $$ = static_cast<JSObject*>(base)->get(exec, *varName);
+    ]]
+}
+
+operation BracketGet {
+    impl value (value v1, value v2) costs 50 [[
+        uint32_t i;
+        JSObject *o = v1->toObject(exec);
+        // Make sure to  handle exception immediately, here, since toString might throw, too!
+        if (exec->hadException())
+            break;
+
+        if (v2->getUInt32(i))
+            $$ = o->get(exec, i);
+        else
+            $$ = o->get(exec, Identifier(v2->toString(exec)));
+    ]]
+
+    overload value (value base, int32 prop) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
 
@@ -608,38 +635,29 @@ operation IndexGet {
     ]]
 }
 
-operation BracketGet {
-    impl value (value v1, value v2) [[
-        uint32_t i;
-        JSObject *o = v1->toObject(exec);
-        // toObject may fail and return an exception object, but get from it is harmless
+operation BracketGetKnownObject {
+    impl value (value v1, value v2) costs 50 [[
+        ASSERT(v1->isObject());
+        JSObject *o = static_cast<JSObject*>(v1);
 
+        uint32_t i;
         if (v2->getUInt32(i))
             $$ = o->get(exec, i);
         else
             $$ = o->get(exec, Identifier(v2->toString(exec)));
     ]]
-}
 
-operation IndexPut {
-    impl void indexPut(value base, int32 prop, value val) [[
-        JSObject* baseObj = base->toObject(exec);
-        if (!exec->hadException())
-            baseObj->put(exec, (uint32_t)prop, val);
-    ]]
-}
-
-operation IndexPutKnownObject {
-    impl void(value base, int32 prop, value val) [[
+    overload value(value base, int32 prop) [[
         ASSERT(base->isObject());
-        static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
+        $$ = static_cast<JSObject*>(base)->get(exec, (uint32_t)prop);
     ]]
 }
 
 operation BracketPut {
-    impl void (value v1, value v2, value v3) [[
+    impl void (value v1, value v2, value v3) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
+        // toObject may fail...
         if (exec->hadException())
             break;
 
@@ -648,15 +666,33 @@ operation BracketPut {
         else
             o->put(exec, Identifier(v2->toString(exec)), v3);
     ]]
-}
 
-// Get for a scope -- known to be an object!
-operation SymGetKnownObject {
-    impl value symScopeGet(value base, ident varName) [[
-        ASSERT(base->isObject());
-        $$ = static_cast<JSObject*>(base)->get(exec, *varName);
+    overload void (value base, int32 prop, value val) [[
+        JSObject* baseObj = base->toObject(exec);
+        if (!exec->hadException())
+            baseObj->put(exec, (uint32_t)prop, val);
     ]]
 }
+
+operation BracketPutKnownObject {
+    impl void (value v1, value v2, value v3) costs 50 [[
+        ASSERT(v1->isObject());
+        uint32_t i;
+        JSObject *o = static_cast<JSObject*>(v1);
+
+        if (v2->getUInt32(i))
+            o->put(exec, i, v3);
+        else
+            o->put(exec, Identifier(v2->toString(exec)), v3);
+    ]]
+
+    overload void (value base, int32 prop, value val) [[
+        ASSERT(base->isObject());
+        static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
+    ]]
+}
+
+
 
 operation LocalVarGet {
     impl value(ident varName) [[
@@ -685,7 +721,7 @@ operation SymDelete {
 }
 
 operation BracketDelete {
-    impl bool(value v1, value v2) [[
+    impl bool(value v1, value v2) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
@@ -696,10 +732,8 @@ operation BracketDelete {
         else
             $$ = o->deleteProperty(exec, Identifier(v2->toString(exec)));
     ]]
-}
 
-operation IndexDelete {
-    impl bool(value v1, int32 i) [[
+    overload bool(value v1, int32 i) [[
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
             break;
@@ -812,7 +846,7 @@ operation Sub {
 }
 
 operation Add {
-    impl value(value v1, value v2) [[
+    impl value(value v1, value v2) costs 50 [[
         // exception for the Date exception in defaultValue()
         JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
         if (pc != localPC) break;
@@ -830,6 +864,10 @@ operation Add {
         } else {
             $$ = jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
         }
+    ]]
+
+    overload number(number n1, number n2) [[
+        $$ = n1 + n2;
     ]]
 }
 
@@ -1053,8 +1091,7 @@ operation FunctionCall {
             break;
         }
 
-        // ### TODO: optimize away toObject in local cases?
-        $$ = static_cast<JSObject*>(func)->call(exec, thisVal->toObject(exec), workList);
+        $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
     ]]
 }
 
