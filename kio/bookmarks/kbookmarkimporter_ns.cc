@@ -48,12 +48,12 @@ void KNSBookmarkImporterImpl::parse()
         static const int g_lineLimit = 16*1024;
         QByteArray s(g_lineLimit,0);
         // skip header
-        while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>")) {
+        while(f.readLine(s.data(), g_lineLimit) >= 1 && !s.contains("<DL>")) {
             ;
         }
 
-        while(f.readLine(s.data(), g_lineLimit)>=0) {
-            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
+        while( int size = f.readLine(s.data(), g_lineLimit)>=1) {
+            if ( size == g_lineLimit ) // Gosh, this line is longer than g_lineLimit. Skipping.
             {
                kWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping.";
                continue;
@@ -61,28 +61,29 @@ void KNSBookmarkImporterImpl::parse()
             QByteArray t = s.trimmed();
             if(t.left(12).toUpper() == "<DT><A HREF=" ||
                t.left(16).toUpper() == "<DT><H3><A HREF=") {
+
               int firstQuotes = t.indexOf('"')+1;
               int secondQuotes = t.indexOf('"', firstQuotes);
               if (firstQuotes != -1 && secondQuotes != -1)
               {
                 QByteArray link = t.mid(firstQuotes, secondQuotes-firstQuotes);
                 int endTag = t.indexOf('>', secondQuotes+1);
-                QByteArray name = t.mid(endTag+1);
-                name = name.left(name.lastIndexOf('<'));
-                if ( name.endsWith("</A>" ) )
-                    name = name.left( name.length() - 4 );
+
+                int closeTag = t.indexOf('<', endTag + 1);
+
+                QByteArray name = t.mid(endTag + 1, closeTag - endTag - 1);
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QByteArray additionalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
                 emit newBookmark( qname,
                                   codec->toUnicode(link),
-                                  codec->toUnicode(additionalInfo) );
+                                  QByteArray() );
               }
             }
             else if(t.left(7).toUpper() == "<DT><H3") {
                 int endTag = t.indexOf('>', 7);
                 QByteArray name = t.mid(endTag+1);
-                name = name.left(name.lastIndexOf('<'));
+                name = name.left(name.indexOf('<'));
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QByteArray additionalInfo = t.mid( 8, endTag-8 );
                 bool folded = (additionalInfo.left(6) == "FOLDED");
@@ -90,7 +91,7 @@ void KNSBookmarkImporterImpl::parse()
 
                 emit newFolder( qname,
                                 !folded,
-                                codec->toUnicode(additionalInfo) );
+                                QByteArray() );
             }
             else if(t.left(4).toUpper() == "<HR>")
                 emit newSeparator();
