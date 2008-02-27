@@ -243,5 +243,86 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>terminalCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>terminalCloseCheck</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>47</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>56</x>
+     <y>98</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>terminalCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>terminalEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>197</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>373</x>
+     <y>136</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>terminalCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>terminalEditLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>115</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>115</x>
+     <y>125</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>suidCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>suidEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>27</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>122</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>suidCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>suidEditLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>92</x>
+     <y>234</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>78</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
