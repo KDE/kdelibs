@@ -258,19 +258,6 @@ void HelpProtocol::get( const KUrl& url )
 
         if ( mParsed.isEmpty() ) {
             mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
-#ifdef Q_WS_WIN
-            /* 
-               there are several help:/.. entries in the transformed html page 
-               refering to the language related doc installation path 
-               (based for example on .../html/en)
-               Because the prefered way to transform this isn't known yet, 
-               a manual replace workaround is used. 
-            */
-            QFileInfo f1(file);
-            QFileInfo f2(f1.absolutePath());
-            QString f3 = f2.absolutePath();
-            mParsed = mParsed.replace("help:", f3);
-#endif
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
 #ifdef Q_WS_WIN
@@ -385,6 +372,45 @@ void HelpProtocol::get_file( const KUrl& url )
 {
     kDebug( 7119 ) << "get_file " << url.url();
 
+#ifdef Q_WS_WIN
+    QFile f( QFile::encodeName(url.path()) );
+    if ( !f.exists() ) {
+        error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+        return;
+    }
+    if ( !f.open(QIODevice::ReadOnly) ) {
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
+    }
+    int processed_size = 0;
+    totalSize( f.size() );
+
+    QByteArray array;
+    array.resize(MAX_IPC_SIZE);
+
+    while( 1 )
+    {
+        qint64 n = f.read(array.data(),array.size()); 
+        if (n == -1) {
+            error( KIO::ERR_COULD_NOT_READ, url.path());
+            f.close();
+            return;
+       }
+       if (n == 0)
+            break; // Finished
+
+       data( array );
+
+       processed_size += n;
+       processedSize( processed_size );
+    }
+
+    data( QByteArray() );
+    f.close();
+
+    processedSize( f.size() );
+    finished();
+#else
     QByteArray _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
@@ -445,4 +471,5 @@ void HelpProtocol::get_file( const KUrl& url )
     processedSize( buff.st_size );
 
     finished();
+#endif
 }
