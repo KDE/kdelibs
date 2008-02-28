@@ -277,8 +277,11 @@ QString lookForCache( const QString &filename )
         return output;
 #ifdef Q_WS_WIN
     QFileInfo fi(filename);
-    // don't create subdirectories, remove ':' in path
-    cache = '/' + fi.absolutePath().replace(':','_').replace('/','_') + '_' + fi.baseName() + '.';
+    // make sure filenames do not contain the base path, otherwise 
+    // accessing user data from another location invalids cached files. 
+    // Accessing user data under a different path is possible 
+    // when using usb sticks - this may affect unix/mac systems also 
+    cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #endif
     if ( readCache( filename,
                     KStandardDirs::locateLocal( "cache",
