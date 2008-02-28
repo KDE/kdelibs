@@ -373,7 +373,7 @@ void HelpProtocol::get_file( const KUrl& url )
     kDebug( 7119 ) << "get_file " << url.url();
 
 #ifdef Q_WS_WIN
-    QFile f( QFile::encodeName(url.path()) );
+    QFile f( url.path() );
     if ( !f.exists() ) {
         error( KIO::ERR_DOES_NOT_EXIST, url.url() );
         return;
