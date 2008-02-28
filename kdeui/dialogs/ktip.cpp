@@ -267,7 +267,9 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->tipText->setFrameStyle( QFrame::NoFrame );
   d->tipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-  d->tipText->setStyleSheet( "KTextBrowser { background: transparent; }" );
+  QPalette tipPal(d->tipText->palette());
+  tipPal.setColor(QPalette::Base, Qt::transparent);
+  d->tipText->setPalette(tipPal);
 
   browserLayout->addWidget( d->tipText );
 
