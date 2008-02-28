@@ -86,10 +86,24 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
         }
         break;
     case KExtendableItemDelegate::ShowExtensionIndicatorRole:
-        if (column == Name)
-            return false;
-        else
-            return true;
+        switch (column) {
+            case Name:
+                return false;
+            case LocalPrimary:
+            case LocalAlternate:
+                if (!m_action->isShortcutConfigurable()) {
+                    return false;
+                }
+                return true;
+            case GlobalPrimary:
+            case GlobalAlternate:
+                if (!m_action->globalShortcutAllowed()) {
+                    return false;
+                }
+                return true;
+            default:
+                return false;
+        }
     //the following are custom roles, defined in this source file only
     case ShortcutRole:
         switch(column) {

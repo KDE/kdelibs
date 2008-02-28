@@ -105,6 +105,11 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
         view->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
     }
 
+    // Check if the models wants us to edit the item at index
+    if (!model->data(index, ShowExtensionIndicatorRole).value<bool>()) {
+        return;
+    }
+
     if (!isExtended(index)) {
         //we only want maximum ONE extender open at any time.
         if (m_editingIndex.isValid()) {

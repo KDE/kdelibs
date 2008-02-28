@@ -84,7 +84,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     foreach (QAction *action, collection->actions()) {
         QString name = action->text().remove('&');
-        kDebug(125) << "Adding Key: " << name;
+        // kDebug(125) << "Adding Key: " << name;
 
         if (name.startsWith(QLatin1String("Program:")))
             l = Program;
@@ -92,9 +92,15 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
             l = Group;
         else if (qobject_cast<QAction *>(action)) {
             // TODO  non-KAction QActions are not listed
-            if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable())
+            if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+                // If the shortcut is not configurable skip it
+                if (!kact->isShortcutConfigurable()) {
+                    kDebug(125) << "Not configurable " << kact->text();
+                    continue;
+                }
+                // Create the editor
                 new KShortcutsEditorItem((hier[l]), kact);
-
+            }
             continue;
         }
         if (!hier[l]->childCount())
