@@ -110,6 +110,7 @@
 <!ENTITY kmenu-celownik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-biernik    '&kmenu-mianownik;'>
 <!ENTITY kmenu-miejscownik    '&kmenu-mianownik;'>
+<!ENTITY kmenu-narzednik    '&kmenu-mianownik;'>
 <!ENTITY kmenu    '&kmenu-mianownik;'>
 
 <!ENTITY knode-mianownik    '<application>Knode</application>'>
