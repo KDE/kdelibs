@@ -766,7 +766,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
         // Find out the name of the service from the command line, removing args and paths
         serviceName = KRun::binaryName( typedExec, true );
         if (serviceName.isEmpty()) {
-            // TODO add a KMessageBox::error here after the end of the message freeze
+            KMessageBox::error(q, i18n("Could not extract executable name from '%1', please type a valid program name", serviceName));
             return;
         }
         initialServiceName = serviceName;
