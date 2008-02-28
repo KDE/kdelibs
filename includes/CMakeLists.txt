@@ -671,23 +671,25 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 #  KJS/UString
 #DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
+# 2008-02-28: kjsembed headers are apparently not installed, so also
+# don't install the forwarding headers. (dirk)
 
-install( FILES
-  KJSEmbed/Constructor
-  KJSEmbed/Engine
-  KJSEmbed/Enumerator
-  KJSEmbed/Method
-  KJSEmbed/ObjectBinding
-  KJSEmbed/ObjectFactory
-  KJSEmbed/ProxyBinding
-  KJSEmbed/QObjectBinding
-  KJSEmbed/QWidgetBinding
-  KJSEmbed/SlotBinding
-  KJSEmbed/StaticBinding
-  KJSEmbed/StaticConstructor
-  KJSEmbed/VariantBinding
-  KJSEmbed/VariantFactory
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
+#install( FILES
+#  KJSEmbed/Constructor
+#  KJSEmbed/Engine
+#  KJSEmbed/Enumerator
+#  KJSEmbed/Method
+#  KJSEmbed/ObjectBinding
+#  KJSEmbed/ObjectFactory
+#  KJSEmbed/ProxyBinding
+#  KJSEmbed/QObjectBinding
+#  KJSEmbed/QWidgetBinding
+#  KJSEmbed/SlotBinding
+#  KJSEmbed/StaticBinding
+#  KJSEmbed/StaticConstructor
+#  KJSEmbed/VariantBinding
+#  KJSEmbed/VariantFactory
+#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 
 install( FILES
