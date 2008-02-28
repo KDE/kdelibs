@@ -21,7 +21,7 @@
 #ifndef __kservicetypeprofile_h__
 #define __kservicetypeprofile_h__
 
-#include <QtCore/QMap>
+#include <QtCore/QMap> // KDE5: remove
 #include <QtCore/QString>
 #include <QtCore/QList>
 
@@ -33,8 +33,8 @@
  * of a service type.
  * It consists of a list of services (service offers) for the service type
  * that is sorted by the user's preference.
- * KServiceTypeTrader uses KServiceTypeProfile to get results sorted according
- * to the user's profile.
+ * KServiceTypeTrader uses KServiceTypeProfile to
+ * get results sorted according to the user's preference.
  *
  * @see KService
  * @see KServiceType

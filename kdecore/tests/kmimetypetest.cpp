@@ -714,6 +714,3 @@ void KMimeTypeTest::testParseMagicFile()
     QCOMPARE(found, expected);
     testBuffer.close();
 }
-
-
-// TODO tests that involve writing a profilerc and checking that the trader is obeying it

@@ -129,53 +129,6 @@ KBuildSycoca::~KBuildSycoca()
 
 }
 
-void KBuildSycoca::processGnomeVfs()
-{
-   QString file = KStandardDirs::locate("app-reg", "gnome-vfs.applications");
-   if (file.isEmpty())
-   {
-//      kDebug(7021) << "gnome-vfs.applications not found.";
-      return;
-   }
-
-   QString app;
-
-   char line[1024*64];
-
-   FILE *f = fopen(QFile::encodeName(file), "r");
-   while (!feof(f))
-   {
-      if (!fgets(line, sizeof(line)-1, f))
-      {
-        break;
-      }
-
-      if (line[0] != '\t')
-      {
-          app = QLatin1String(line);
-          app.truncate(app.length()-1);
-      }
-      else if (strncmp(line+1, "mime_types=", 11) == 0)
-      {
-          QString mimetypes = QLatin1String(line+12);
-          mimetypes.truncate(mimetypes.length()-1);
-          mimetypes.replace(QRegExp("\\*"), "all");
-          KService::Ptr s = g_bsf->findServiceByName(app);
-          if (!s)
-             continue;
-
-          QStringList &serviceTypes = s->accessServiceTypes();
-          if (serviceTypes.count() <= 1)
-          {
-             serviceTypes += mimetypes.split( ',', QString::SkipEmptyParts );
-//             kDebug(7021) << "Adding gnome mimetypes for '" << app << "'.\n";
-//             kDebug(7021) << "ServiceTypes=" << s->serviceTypes().join(":");
-          }
-      }
-   }
-   fclose( f );
-}
-
 KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFactory)
 {
    quint32 timeStamp = g_ctimeInfo->ctime(file);
@@ -196,13 +149,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
          if (g_factory == g_bsgf) // Strip .directory from service-group entries
          {
             entry = g_entryDict->value(file.left(file.length()-10));
-         }
-         else if (g_factory == g_bsf)
-         {
-            entry = g_entryDict->value(file);
-         }
-         else
-         {
+         } else {
             entry = g_entryDict->value(file);
          }
          // remove from g_ctimeDict; if g_ctimeDict is not empty
@@ -348,8 +295,6 @@ bool KBuildSycoca::build()
                    createEntry(*it3, true);
            }
         }
-        if ((g_factory == g_bsf) && (strcmp(g_resource, "services") == 0))
-           processGnomeVfs();
      }
      if (g_changed || !g_allEntries)
      {

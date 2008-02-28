@@ -37,7 +37,9 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
                                             KBuildMimeTypeFactory *mimeTypeFactory,
                                             KBuildServiceGroupFactory *serviceGroupFactory ) :
     KServiceFactory(),
-    m_serviceDict(),
+    m_nameMemoryHash(),
+    m_relNameMemoryHash(),
+    m_menuIdMemoryHash(),
     m_dupeDict(),
     m_serviceTypeFactory( serviceTypeFactory ),
     m_mimeTypeFactory( mimeTypeFactory ),
@@ -61,11 +63,20 @@ KBuildServiceFactory::~KBuildServiceFactory()
     delete m_resourceList;
 }
 
-KService::Ptr KBuildServiceFactory::findServiceByName(const QString &_name)
+KService::Ptr KBuildServiceFactory::findServiceByDesktopName(const QString &name)
 {
-    return m_serviceDict.value( _name );
+    return m_nameMemoryHash.value(name);
 }
 
+KService::Ptr KBuildServiceFactory::findServiceByDesktopPath(const QString &name)
+{
+    return m_relNameMemoryHash.value(name);
+}
+
+KService::Ptr KBuildServiceFactory::findServiceByMenuId(const QString &menuId)
+{
+    return m_menuIdMemoryHash.value(menuId);
+}
 
 KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char *resource ) const
 {
@@ -128,34 +139,32 @@ void KBuildServiceFactory::save(QDataStream &str)
 
 void KBuildServiceFactory::populateServiceTypes()
 {
-    bool isNumber;
     // For every service...
     KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
     const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
     for( ; itserv != endserv ; ++itserv ) {
-        const KService::Ptr service = KService::Ptr::staticCast(*itserv);
-        const QStringList serviceTypeList = service->serviceTypes();
-        //kDebug(7021) << "service " << service->entryPath() << " has serviceTypes " << serviceTypeList;
-        QMap<KServiceType::Ptr,int> serviceTypes; // with preference number
-        QListIterator<QString> it( serviceTypeList );
+        KService::Ptr service = KService::Ptr::staticCast(*itserv);
+        QVector<KService::ServiceTypeAndPreference> serviceTypeList = service->_k_accessServiceTypes();
         //bool hasAllAll = false;
         //bool hasAllFiles = false;
-        while ( it.hasNext() ) {
-            const QString str = it.next();
+
+        // Add this service to all its servicetypes (and their parents) and to all its mimetypes
+        for (int i = 0; i < serviceTypeList.count() /*don't cache it, it can change during iteration!*/; ++i) {
+            const QString stName = serviceTypeList[i].serviceType;
             // It could be a servicetype or a mimetype.
-            KServiceType::Ptr serviceType = KServiceType::serviceType(str);
+            KServiceType::Ptr serviceType = KServiceType::serviceType(stName);
             if (!serviceType) {
-                serviceType = KServiceType::Ptr::staticCast( m_mimeTypeFactory->findMimeTypeByName( str, KMimeType::ResolveAliases ) );
+                serviceType = KServiceType::Ptr::staticCast(m_mimeTypeFactory->findMimeTypeByName(stName, KMimeType::ResolveAliases));
             }
             // TODO. But maybe we should rename all/all to */*, to also support image/*?
             // Not sure how to model all/allfiles then, though
             // Also this kind of thing isn't in the XDG standards...
 #if 0
             if (!serviceType) {
-                if ( str == QLatin1String( "all/all" ) ) {
+                if ( stName == QLatin1String( "all/all" ) ) {
                     hasAllAll = true;
                     continue;
-                } else if ( str == QLatin1String( "all/allfiles" ) ) {
+                } else if ( stName == QLatin1String( "all/allfiles" ) ) {
                     hasAllFiles = true;
                     continue;
                 }
@@ -163,38 +172,23 @@ void KBuildServiceFactory::populateServiceTypes()
 #endif
 
             if (!serviceType) {
-                kWarning(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << str;
+                kWarning(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
                 continue;
             }
 
-            int initialPreference = service->initialPreference();
-            if ( it.hasNext() ) {
-                const int val = it.peekNext().toInt(&isNumber);
-                if (isNumber) {
-                    initialPreference = val;
-                    it.next();
-                }
-            }
-            serviceTypes.insert(serviceType, initialPreference);
-        }
+            const int preference = serviceTypeList[i].preference;
+            const QString parent = serviceType->parentServiceType();
+            if (!parent.isEmpty())
+                serviceTypeList.append(KService::ServiceTypeAndPreference(preference, parent));
 
-        // Add this service to all its servicetypes (and their parents)
-        while (!serviceTypes.isEmpty()) // can't use foreach due to append inside the loop
-        {
-            QMap<KServiceType::Ptr,int>::iterator it = serviceTypes.begin();
-            KServiceType::Ptr serviceType = it.key();
-            const QString serviceTypeName = serviceType->name();
-            const int initialPreference = it.value();
-            serviceTypes.erase( it );
-
-            KServiceType::Ptr parentType = serviceType->parentType();
-            if (parentType)
-                serviceTypes.insert(parentType, initialPreference);
-
-            //kDebug(7021) << "Adding service " << service->entryPath() << " to " << serviceType->name();
-            addServiceOffer( serviceTypeName, KServiceOffer( service, initialPreference, 0, service->allowAsDefault() ) );
+            //kDebug(7021) << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
+            m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
         }
     }
+
+    // Read user preferences (added/removed associations) and add/remove serviceoffers to m_offerHash
+    KMimeAssociations mimeAssociations(m_offerHash);
+    mimeAssociations.parseAllMimeAppsList();
 
     // Now for each mimetype, collect services from parent mimetypes
     const KMimeType::List allMimeTypes = m_mimeTypeFactory->allMimeTypes();
@@ -210,13 +204,13 @@ void KBuildServiceFactory::populateServiceTypes()
             const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
             if ( parentMimeType ) {
                 ++mimeTypeInheritanceLevel;
-                const QList<KServiceOffer>& offers = m_serviceTypeData[parent].offers;
+                const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
                 QList<KServiceOffer>::const_iterator itserv = offers.begin();
                 const QList<KServiceOffer>::const_iterator endserv = offers.end();
                 for ( ; itserv != endserv; ++itserv ) {
                     KServiceOffer offer(*itserv);
                     offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
-                    addServiceOffer( mimeTypeName, offer );
+                    m_offerHash.addServiceOffer( mimeTypeName, offer );
                 }
                 parent = parentMimeType->parentMimeType();
             } else {
@@ -236,7 +230,7 @@ void KBuildServiceFactory::populateServiceTypes()
     const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
     for( ; itstf != endstf; ++itstf ) {
         KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
-        const int numOffers = m_serviceTypeData[entry->name()].offers.count();
+        const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
             entry->setServiceOffersOffset( offersOffset );
             offersOffset += offerEntrySize * numOffers;
@@ -247,7 +241,7 @@ void KBuildServiceFactory::populateServiceTypes()
     for( ; itmtf != endmtf; ++itmtf )
     {
         KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
-        const int numOffers = m_serviceTypeData[entry->name()].offers.count();
+        const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
             entry->setServiceOffersOffset( offersOffset );
             offersOffset += offerEntrySize * numOffers;
@@ -267,12 +261,12 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
         const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
         Q_ASSERT( entry );
 
-        QList<KServiceOffer>& offers = m_serviceTypeData[entry->name()].offers;
+        QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
             it2 != offers.end(); ++it2) {
-            //kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->entryPath();
+            //kDebug(7021) << "servicetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath();
 
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
@@ -289,13 +283,13 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
         // export associated services
         const KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
         Q_ASSERT( entry );
-        QList<KServiceOffer>& offers = m_serviceTypeData[entry->name()].offers;
+        QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
             it2 != offers.end(); ++it2) {
-            //kDebug(7021) << "mimetype offers list: " << entry->name() << " -> " << (*it2).service()->entryPath();
-
+            //kDebug(7021) << "mimetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath() << "pref" << (*it2).preference();
+            Q_ASSERT((*it2).service()->offset() != 0);
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
             str << (qint32) (*it2).preference();
@@ -326,29 +320,17 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
     const QString name = service->desktopEntryName();
     m_nameDict->add( name, newEntry );
-    m_serviceDict.insert(name, service);
+    m_nameMemoryHash.insert(name, service);
 
     const QString relName = service->entryPath();
-    //kDebug() << "adding service" << service->menuId() << "name=" << name << "relName=" << relName;
+    //kDebug(7021) << "adding service" << service->menuId() << "name=" << name << "relName=" << relName;
     m_relNameDict->add( relName, newEntry );
+    m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
+
     const QString menuId = service->menuId();
     if (!menuId.isEmpty()) {
         m_menuIdDict->add( menuId, newEntry );
+        m_menuIdMemoryHash.insert(menuId, service); // for KMimeAssociations
     }
 }
 
-void KBuildServiceFactory::addServiceOffer( const QString& serviceType, const KServiceOffer& offer )
-{
-    //kDebug(7021) << "Adding " << offer.service->entryPath() << " to " << serviceType;
-    ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create
-    QList<KServiceOffer>& offers = data.offers;
-    QSet<KService::Ptr>& offerSet = data.offerSet;
-    if ( !offerSet.contains( offer.service() ) ) {
-        offers.append( offer );
-        offerSet.insert( offer.service() );
-    } else {
-        // kDebug(7021) << service.offers() << " " << service->entryPath() << " already in " << serviceType;
-        // TODO we probably want to set the initialPreference to qMax(existing offer, new offer)?
-        // This case would happen if a service is associated with a mimetype (with low pref) and its parent mimetype (with higher pref).
-    }
-}

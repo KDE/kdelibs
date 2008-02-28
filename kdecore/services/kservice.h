@@ -56,8 +56,6 @@ class KServicePrivate;
  */
 class KDECORE_EXPORT KService : public KSycocaEntry
 {
-    friend class KBuildSycoca;
-
 public:
     typedef KSharedPtr<KService> Ptr;
     typedef QList<Ptr> List;
@@ -325,11 +323,6 @@ public:
      * @return the service preference level of the service
      */
     int initialPreference() const;
-
-    /**
-     * @internal. Allows KServiceType::offers to tweak the initial preference.
-     */
-    //void setInitialPreference( int i );
 
     /**
      * Whether the entry should be suppressed in menus.
@@ -607,9 +600,24 @@ public:
     }
 
 protected:
+    friend class KMimeAssociations;
+    friend class KBuildServiceFactory;
 
     /// @internal for KBuildSycoca only
-    QStringList &accessServiceTypes();
+    struct ServiceTypeAndPreference
+    {
+        ServiceTypeAndPreference()
+            : preference(-1), serviceType() {}
+        ServiceTypeAndPreference(int pref, const QString& servType)
+            : preference(pref), serviceType(servType) {}
+        int preference;
+        QString serviceType; // or mimetype
+    };
+    /// @internal for KBuildSycoca only
+    QVector<ServiceTypeAndPreference>& _k_accessServiceTypes();
+
+    friend QDataStream& operator>>( QDataStream&, ServiceTypeAndPreference& );
+    friend QDataStream& operator<<( QDataStream&, const ServiceTypeAndPreference& );
 private:
     Q_DECLARE_PRIVATE(KService)
 };

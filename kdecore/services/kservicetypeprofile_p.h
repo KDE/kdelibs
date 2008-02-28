@@ -20,6 +20,8 @@
 #ifndef KSERVICETYPEPROFILE_P_H
 #define KSERVICETYPEPROFILE_P_H
 
+#include <QMap>
+
 /**
  * @internal
  */
@@ -46,51 +48,6 @@ public:
      * Value: preference
      */
     QMap<QString,int> m_mapServices;
-};
-
-/**
- * @internal
- */
-class KMimeTypeProfileEntry
-{
-public:
-    explicit KMimeTypeProfileEntry( const QString& genericServiceType )
-        : m_strGenericServiceType(genericServiceType) {}
-
-    /**
-     * Add a service to this profile.
-     * @param _service the name of the service
-     * @param _preference the user's preference value, must be positive,
-     *              bigger is better
-     * @param _allow_as_default true if the service should be used as
-     *                 default
-     */
-    void addService( const QString& _service, int _preference = 1, bool _allow_as_default = true );
-
-    /**
-     * @internal
-     */
-    struct ServiceFlags
-    {
-        /**
-         * The bigger this number is, the better is this service.
-         */
-        int m_iPreference;
-        /**
-         * Is it allowed to use this service for default actions.
-         */
-        bool m_bAllowAsDefault;
-    };
-
-    /**
-     * Map of all services for which we have assessments.
-     */
-    QMap<QString,ServiceFlags> m_mapServices;
-
-    /**
-     * Generic ServiceType of this profile.
-     */
-    QString m_strGenericServiceType;
 };
 
 #endif /* KSERVICETYPEPROFILE_P_H */

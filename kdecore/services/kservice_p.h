@@ -21,6 +21,7 @@
 #ifndef KSERVICEPRIVATE_H
 #define KSERVICEPRIVATE_H
 
+#include <QVector>
 #include "kservice.h"
 
 #include <ksycocaentry_p.h>
@@ -61,6 +62,8 @@ public:
 
     QVariant property(const QString &_name, QVariant::Type t) const;
 
+    QStringList serviceTypes() const;
+
     QStringList categories;
     QString menuId;
     QString m_strType;
@@ -71,8 +74,11 @@ public:
     QString m_strPath;
     QString m_strComment;
     QString m_strLibrary;
-    QStringList m_lstServiceTypes;
-    int m_initialPreference;
+
+    int m_initialPreference; // deprecated
+    // the initial preference is per-servicetype now.
+    QVector<KService::ServiceTypeAndPreference> m_serviceTypes;
+
     QString m_strDesktopEntryName;
     KService::DBusStartupType m_DBUSStartusType;
     QMap<QString,QVariant> m_mapProps;
