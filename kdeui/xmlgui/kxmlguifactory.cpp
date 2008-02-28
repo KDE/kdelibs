@@ -528,14 +528,20 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
     } else if ( propertyType == QVariant::UserType && action->property( attrName.toLatin1() ).userType() == qMetaTypeId<KShortcut>() ) {
         // Setting the shortcut by property also sets the default shortcut (which is incorrect), so we have to do it directly
         if (KAction* ka = qobject_cast<KAction*>(action)) {
-            ka->setShortcut(KShortcut(attribute.value()), KAction::ActiveShortcut);
+            if (attrName=="globalShortcut") {
+                ka->setGlobalShortcut(KShortcut(attribute.value()), KAction::ActiveShortcut);
+            } else {
+                ka->setShortcut(KShortcut(attribute.value()), KAction::ActiveShortcut);
+            }
             return;
         }
         propertyValue = KShortcut( attribute.value() );
     } else {
         propertyValue = QVariant( attribute.value() );
     }
-    action->setProperty( attrName.toLatin1(), propertyValue );
+    if (!action->setProperty( attrName.toLatin1(), propertyValue )) {
+        kWarning() << "Error: Unknown action property " << attrName << " will be ignored!";
+    }
 }
 
 
