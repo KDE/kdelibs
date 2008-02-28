@@ -701,7 +701,6 @@ install( FILES
   KNS/Category
   KNS/Engine
   KNS/Entry
-  KNS/EntryHandler
   KNS/Installation
   KNS/KTranslatable
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
