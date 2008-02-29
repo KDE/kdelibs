@@ -875,21 +875,32 @@ void KConfigTest::testConfigCopyTo()
 {
     KConfig cf1("kconfigtest");
     {
-    KConfigGroup group(&cf1, "CopyToTest");
-    group.writeEntry("Type", "Test");
-    cf1.sync();
+        // Prepare source file
+        KConfigGroup group(&cf1, "CopyToTest");
+        group.writeEntry("Type", "Test");
+        cf1.sync();
     }
 
-    const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
-    QFile::remove(destination);
-    KConfig cf2;
-    cf1.copyTo(destination, &cf2);
-    KConfigGroup group2(&cf2, "CopyToTest");
-    QString testVal = group2.readEntry("Type");
+    {
+        // Copy to "destination"
+        const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
+        QFile::remove(destination);
+        KConfig cf2;
+        cf1.copyTo(destination, &cf2);
+        KConfigGroup group2(&cf2, "CopyToTest");
+        QString testVal = group2.readEntry("Type");
+        QCOMPARE(testVal, QString("Test"));
+        group2.writeEntry("AnotherKey", "Test Worked"); // for sync to have something to sync
+        cf2.sync();
+        QVERIFY(QFile::exists(destination));
+    }
+
+    // Check copied config file on disk
+    KConfig cf3("kconfigcopytotest");
+    KConfigGroup group3(&cf3, "CopyToTest");
+    QString testVal = group3.readEntry("Type");
     QCOMPARE(testVal, QString("Test"));
-    group2.writeEntry("Type", "Test Worked"); // for sync to have something to sync
-    cf2.sync();
-    QVERIFY(QFile::exists(destination));
+    QCOMPARE(group3.readEntry("AnotherKey"), QString("Test Worked"));
 }
 
 void KConfigTest::testReparent()
