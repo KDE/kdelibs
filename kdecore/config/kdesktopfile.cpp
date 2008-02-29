@@ -371,7 +371,7 @@ QString KDesktopFile::readDocPath() const
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const
 {
   KDesktopFile *config = new KDesktopFile(QString());
-  KConfig::copyTo(file, config);
+  this->KConfig::copyTo(file, config);
 //  config->setDesktopGroup();
   return config;
 }
