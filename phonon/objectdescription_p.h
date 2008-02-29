@@ -23,7 +23,6 @@
 #include <QtCore/QByteRef>
 #include <QtCore/QHash>
 #include <QtCore/QString>
-#include <QtCore/QSharedData>
 #include <QtCore/QVariant>
 #include "phononnamespace_p.h"
 
@@ -31,7 +30,7 @@ QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
-    class ObjectDescriptionPrivate : public QSharedData
+    class ObjectDescriptionPrivate
     {
         public:
             ObjectDescriptionPrivate(int _index, const QHash<QByteArray, QVariant> &_properties)
