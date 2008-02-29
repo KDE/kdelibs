@@ -186,17 +186,6 @@ private:
      */
     KMimeTypeTrader();
 
-    friend class KOpenWithDialogPrivate;
-    /**
-     * Returns the offers associated with a given servicetype, sorted by preference.
-     * This is what query() uses to get the list of offers, before applying the
-     * constraints and preferences. In general you want to simply use query().
-     *
-     * @param mimeType A mime type like 'text/plain' or 'text/html'.
-     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
-     */
-    QList<KServiceOffer> weightedOffers( const QString& mimeType, const QString& genericServiceType = QString::fromLatin1("Application") ) const;
-
 private:
     class Private;
     Private * const d;

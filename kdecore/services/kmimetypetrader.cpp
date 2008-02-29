@@ -118,21 +118,6 @@ static void filterMimeTypeOffers(KService::List& list, const QString& genericSer
     }
 }
 
-KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
-                                                   const QString& genericServiceType ) const
-{
-    kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )";
-    Q_ASSERT( !genericServiceType.isEmpty() );
-
-    // First, get all offers known to ksycoca.
-    KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
-
-    // Assign preferences from the profile to those offers - and filter for genericServiceType
-    Q_ASSERT(!genericServiceType.isEmpty());
-    filterMimeTypeOffers(offers, genericServiceType);
-    return offers;
-}
-
 KService::List KMimeTypeTrader::query( const QString& mimeType,
                                        const QString& genericServiceType,
                                        const QString& constraint ) const
@@ -150,7 +135,12 @@ KService::List KMimeTypeTrader::query( const QString& mimeType,
 
 KService::Ptr KMimeTypeTrader::preferredService( const QString & mimeType, const QString & genericServiceType )
 {
-    const KServiceOfferList offers = weightedOffers( mimeType, genericServiceType );
+    // First, get all offers known to ksycoca.
+    KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
+
+    // Assign preferences from the profile to those offers - and filter for genericServiceType
+    Q_ASSERT(!genericServiceType.isEmpty());
+    filterMimeTypeOffers(offers, genericServiceType);
 
     KServiceOfferList::const_iterator itOff = offers.begin();
     // Look for the first one that is allowed as default.
