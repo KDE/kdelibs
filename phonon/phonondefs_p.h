@@ -176,6 +176,91 @@ namespace Phonon
 
     } // anonymous namespace
 
+    /**
+     * \internal
+     *
+     * \brief Helper class to cast the backend object to the correct version of the interface.
+     *
+     * Additions to the backend interfaces cannot be done by adding virtual methods as that would
+     * break the binary interface. So the old class is renamed and a new class with the old name
+     * inheriting the old class is added, containing all the new virtual methods.
+     * Example:
+     * \code
+       class FooInterface
+       {
+       public:
+           virtual ~FooInterface() {}
+           virtual oldMethod() = 0;
+       };
+       Q_DECLARE_INTERFACE(FooInterface, "FooInterface0.phonon.kde.org")
+     * \endcode
+     * becomes
+     * \code
+       class FooInterface0
+       {
+       public:
+           virtual ~FooInterface0() {}
+           virtual oldMethod() = 0;
+       };
+       class FooInterface : public FooInterface0
+       {
+       public:
+           virtual newMethod() = 0;
+       };
+       Q_DECLARE_INTERFACE(FooInterface0, "FooInterface0.phonon.kde.org")
+       Q_DECLARE_INTERFACE(FooInterface,  "FooInterface1.phonon.kde.org")
+     * \endcode
+     *
+     * With this, backends compiled against the old header can be qobject_casted to FooInterface0,
+     * but not to FooInterface. On the other hand backends compiled against the new header (they first
+     * need to implement newMethod) can only be qobject_casted to FooInterface but not to
+     * FooInterface0. (The qobject_cast relies on the string in Q_DECLARE_INTERFACE and not the
+     * class name which is why it behaves that way.)
+     *
+     * Now, in order to call oldMethod, the code needs to try to cast to both FooInterface and
+     * FooInterface0 (new backends will work with the former, old backends with the latter) and then
+     * if one of them in non-zero call oldMethod on it.
+     *
+     * To call newMethod only a cast to FooInterface needs to be done.
+     *
+     * The Iface class does all this for you for up to three (for now) interface revisions. Just
+     * create an object like this:
+     * \code
+       Iface<FooInterface, FooInterface0> iface0(d);
+       if (iface0) {
+           iface0->oldMethod();
+       }
+       Iface<FooInterface> iface(d);
+       if (iface) {
+           iface->newMethod();
+       }
+     * \endcode
+     *
+     * This becomes a bit more convenient if you add macros like this:
+     * \code
+       #define IFACES1 FooInterface
+       #define IFACES0 IFACES1, FooInterface0
+     * \endcode
+     * which you can use like this:
+     * \code
+       Iface<IFACES0> iface0(d);
+       if (iface0) {
+           iface0->oldMethod();
+       }
+       Iface<IFACES1> iface(d);
+       if (iface) {
+           iface->newMethod();
+       }
+     * \endcode
+     * With the next revision you can then change the macros to
+     * \code
+       #define IFACES2 FooInterface
+       #define IFACES1 IFACES2, FooInterface1
+       #define IFACES0 IFACES1, FooInterface0
+     * \endcode
+     *
+     * \author Matthias Kretz <kretz@kde.org>
+     */
     template<class T0, class T1 = NoIface, class T2 = NoIface>
     class Iface
     {
