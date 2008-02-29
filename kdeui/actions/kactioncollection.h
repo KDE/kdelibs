@@ -145,6 +145,23 @@ public:
     * in the group set by setConfigGroup().
     */
   void readSettings( KConfigGroup* config = 0 );
+  
+  /**
+    * Read from @p config all configurable global key associations.
+    *
+    * \param config Config object to read from
+    */
+  void readGlobalSettings( KConfigGroup* config );
+
+  /**
+    * Write the current configurable global key associations to @p config.
+    *
+    * \param config Config object to save to
+    * \param writeDefaults set to true to write settings which are already at defaults.
+    * \param oneAction pass an action here if you just want to save the values for one action, eg.
+    *                  if you know that action is the only one which has changed.
+    */
+  void writeGlobalSettings( KConfigGroup* config = 0, bool writeDefaults = false, QAction* oneAction = 0 ) const;
 
   /**
     * Write the current configurable key associations to @p config,
