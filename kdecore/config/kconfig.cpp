@@ -298,6 +298,10 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
     config->d_func()->entryMap = d->entryMap;
     config->d_func()->bFileImmutable = false;
 
+    const KEntryMapIterator theEnd = config->d_func()->entryMap.end();
+    for (KEntryMapIterator it = config->d_func()->entryMap.begin(); it != theEnd; ++it)
+        it->bDirty = true;
+
     return config;
 }
 

@@ -53,6 +53,7 @@ private Q_SLOTS:
     void testGroupEscape();
     void testRevertAllEntries();
     void testChangeGroup();
+    void testConfigCopyTo();
     void testKdeglobals();
     void testSubGroup();
     void testAddConfigSources();
