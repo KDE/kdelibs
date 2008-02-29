@@ -866,7 +866,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon)
 
 install(FILES
   Phonon/Experimental/AudioDataOutput
-  Phonon/Experimental/OverlayApi
   Phonon/Experimental/VideoDataOutput
   Phonon/Experimental/VideoFrame
   Phonon/Experimental/Visualization
