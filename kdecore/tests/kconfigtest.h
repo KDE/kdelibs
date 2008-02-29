@@ -53,7 +53,8 @@ private Q_SLOTS:
     void testGroupEscape();
     void testRevertAllEntries();
     void testChangeGroup();
-    void testCopyTo();
+    void testGroupCopyTo();
+    void testConfigCopyTo();
     void testReparent();
     void testKdeglobals();
     void testSubGroup();

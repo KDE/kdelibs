@@ -851,7 +851,7 @@ void KConfigTest::testAddConfigSources()
     QCOMPARE(basegrp2.readEntry("New Entry Base Only", ""), QString("SomeValue"));
 }
 
-void KConfigTest::testCopyTo()
+void KConfigTest::testGroupCopyTo()
 {
     KConfig cf1("kconfigtest");
     KConfigGroup original = cf1.group("Enum Types");
@@ -869,6 +869,27 @@ void KConfigTest::testCopyTo()
     QVERIFY(cf2.hasGroup(original.name()));
     QVERIFY(!cf2.hasGroup(copy.name())); // make sure we didn't copy more than we wanted
     QCOMPARE(newGroup.entryMap(), original.entryMap());
+}
+
+void KConfigTest::testConfigCopyTo()
+{
+    KConfig cf1("kconfigtest");
+    {
+    KConfigGroup group(&cf1, "CopyToTest");
+    group.writeEntry("Type", "Test");
+    cf1.sync();
+    }
+
+    const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
+    QFile::remove(destination);
+    KConfig cf2;
+    cf1.copyTo(destination, &cf2);
+    KConfigGroup group2(&cf2, "CopyToTest");
+    QString testVal = group2.readEntry("Type");
+    QCOMPARE(testVal, QString("Test"));
+    group2.writeEntry("Type", "Test Worked"); // for sync to have something to sync
+    cf2.sync();
+    QVERIFY(QFile::exists(destination));
 }
 
 void KConfigTest::testReparent()
