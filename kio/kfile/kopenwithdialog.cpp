@@ -40,7 +40,6 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
-#include <kmimetypetrader.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <kmimetype.h>
@@ -433,6 +432,8 @@ public:
      */
     void setMimeType(const KUrl::List &_urls);
 
+    void addToMimeAppsList(const QString& serviceId);
+
     /**
      * Create a dialog that asks for a application to open a given
      * URL(s) with.
@@ -706,7 +707,7 @@ void KOpenWithDialog::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDialog::slotTextChanged()
 {
-    kDebug(250)<<"KOpenWithDialog::slotTextChanged";
+    kDebug(250)<<"KOpenWithDialog::slotTextChanged" << d->edit->url();
     // Forget about the service
     d->curService = 0L;
     enableButton(Ok, !d->edit->url().isEmpty());
@@ -747,6 +748,30 @@ static QString simplifiedExecLineFromService(const QString& fullExec)
     exec.remove("%i");
     exec.remove("%m");
     return exec.simplified();
+}
+
+void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId)
+{
+    KSharedConfig::Ptr profile = KSharedConfig::openConfig("mimeapps.list", KConfig::NoGlobals, "xdgdata-apps");
+    KConfigGroup addedApps(profile, "Added Associations");
+    QStringList apps = addedApps.readXdgListEntry(qMimeType);
+    apps.removeAll(serviceId);
+    apps.prepend(serviceId); // make it the preferred app
+    addedApps.writeXdgListEntry(qMimeType, apps);
+    addedApps.sync();
+
+    // Also make sure the "auto embed" setting for this mimetype is off
+    KSharedConfig::Ptr fileTypesConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
+    fileTypesConfig->group("EmbedSettings").writeEntry(QString("embed-")+qMimeType, false);
+    fileTypesConfig->sync();
+
+    kDebug(250) << "rebuilding ksycoca...";
+
+    // kbuildsycoca is the one reading mimeapps.list, so we need to run it now
+    KBuildSycocaProgressDialog::rebuildKSycoca(q);
+
+    m_pService = KService::serviceByMenuId(serviceId);
+    Q_ASSERT( m_pService );
 }
 
 void KOpenWithDialogPrivate::_k_slotOK()
@@ -814,97 +839,51 @@ void KOpenWithDialogPrivate::_k_slotOK()
     if ( m_pService && terminal->isChecked() != m_pService->terminal() )
         m_pService = 0; // It's not exactly this service we're running
 
+
     const bool bRemember = remember && remember->isChecked();
-    if (!bRemember && m_pService) {
-        q->accept();
-        return;
-    }
-
-    const bool createDesktopFile = bRemember || saveNewApps;
-
-    if (!createDesktopFile) {
-        // Create temp service
-        m_pService = new KService(initialServiceName, fullExec, QString());
-        if (terminal->isChecked()) {
-            m_pService->setTerminal(true);
-            // only add --noclose when we are sure it is konsole we're using
-            if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
-                m_pService->setTerminalOptions("--noclose");
-        }
-        q->accept();
-        return;
-    }
-
-    // if we got here, we can't seem to find a service for what they
-    // wanted.  The other possibility is that they have asked for the
-    // association to be remembered.  Create/update service.
-
-    QString newPath;
-    QString oldPath;
-    QString menuId;
+    kDebug(250) << "bRemember=" << bRemember << "service found=" << m_pService;
     if (m_pService) {
-        oldPath = m_pService->entryPath();
-        newPath = m_pService->locateLocal();
-        menuId = m_pService->menuId();
-        kDebug(250) << "Updating existing service" << m_pService->entryPath() << "(" << newPath << ")";
-    } else {
-        newPath = KService::newServicePath(false /* hidden */, serviceName, &menuId);
-        kDebug(250) << "Creating new service" << serviceName << "(" << newPath << ")";
-    }
-
-    int maxPreference = 1;
-    if (!qMimeType.isEmpty()) {
-        // Find max highest preference from either initial preference or from profile
-        const KServiceOfferList offerList = KMimeTypeTrader::self()->weightedOffers( qMimeType );
-        if (!offerList.isEmpty())
-            maxPreference = offerList.first().preference();
-    }
-
-    KDesktopFile *desktop = 0;
-    if (!oldPath.isEmpty() && (oldPath != newPath)) {
-        KDesktopFile orig( oldPath );
-        desktop = orig.copyTo( newPath );
-    } else {
-        desktop = new KDesktopFile(newPath);
-    }
-    KConfigGroup cg = desktop->desktopGroup();
-    cg.writeEntry("Type", "Application");
-    cg.writeEntry("Name", initialServiceName);
-    cg.writePathEntry("Exec", fullExec);
-    if (terminal->isChecked()) {
-        cg.writeEntry("Terminal", true);
-        // only add --noclose when we are sure it is konsole we're using
-        if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
-            cg.writeEntry("TerminalOptions", "--noclose");
-    } else {
-        cg.writeEntry("Terminal", false);
-    }
-    cg.writeEntry("InitialPreference", maxPreference + 1);
-
-
-    if (createDesktopFile && !qMimeType.isEmpty()) {
-        // Add mimetype to the service desktop file
-        QStringList mimeList = cg.readXdgListEntry("MimeType");
-        if (!mimeList.contains(qMimeType)) {
-            mimeList.append(qMimeType);
-            cg.writeXdgListEntry("MimeType", mimeList);
+        if (bRemember) {
+            // Associate this app with qMimeType in mimeapps.list
+            Q_ASSERT(!qMimeType.isEmpty()); // we don't show the remember checkbox otherwise
+            addToMimeAppsList(m_pService->storageId());
         }
+    } else {
+        const bool createDesktopFile = bRemember || saveNewApps;
+        if (!createDesktopFile) {
+            // Create temp service
+            m_pService = new KService(initialServiceName, fullExec, QString());
+            if (terminal->isChecked()) {
+                m_pService->setTerminal(true);
+                // only add --noclose when we are sure it is konsole we're using
+                if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+                    m_pService->setTerminalOptions("--noclose");
+            }
+        } else {
+            // If we got here, we can't seem to find a service for what they wanted. Create one.
 
-        // Also make sure the "auto embed" setting for this mimetype is off
-        KSharedConfig::Ptr fileTypesConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
-        fileTypesConfig->group("EmbedSettings").writeEntry(QString("embed-")+qMimeType, false);
-        fileTypesConfig->sync();
+            QString menuId;
+            QString newPath = KService::newServicePath(false /* ignored argument */, serviceName, &menuId);
+            kDebug(250) << "Creating new service" << serviceName << "(" << newPath << ")";
+
+            KDesktopFile desktopFile(newPath);
+            KConfigGroup cg = desktopFile.desktopGroup();
+            cg.writeEntry("Type", "Application");
+            cg.writeEntry("Name", initialServiceName);
+            cg.writePathEntry("Exec", fullExec);
+            cg.writeEntry("NoDisplay", true); // don't make it appear in the K menu
+            if (terminal->isChecked()) {
+                cg.writeEntry("Terminal", true);
+                // only add --noclose when we are sure it is konsole we're using
+                if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+                    cg.writeEntry("TerminalOptions", "--noclose");
+            }
+            cg.writeXdgListEntry("MimeType", QStringList() << qMimeType);
+            cg.sync();
+
+            addToMimeAppsList(menuId);
+        }
     }
-
-    // write it all out to the file
-    cg.sync();
-    delete desktop;
-
-    KBuildSycocaProgressDialog::rebuildKSycoca(q);
-
-    m_pService = KService::serviceByMenuId( menuId );
-    Q_ASSERT( m_pService );
-
     q->accept();
 }
 

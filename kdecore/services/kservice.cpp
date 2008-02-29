@@ -739,10 +739,9 @@ QString KService::locateLocal() const
 QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
                                  QString *menuId, const QStringList *reservedMenuIds)
 {
-    QString base = suggestedName;
-    if (!showInMenu)
-        base.prepend("kde4-");
+    Q_UNUSED(showInMenu); // TODO KDE5: remove argument
 
+    QString base = suggestedName;
     QString result;
     for(int i = 1; true; i++)
     {
@@ -759,30 +758,15 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
         if (s)
             continue;
 
-        if (showInMenu)
-        {
-            if (!KStandardDirs::locate("xdgdata-apps", result).isEmpty())
-                continue;
-        }
-        else
-        {
-            QString file = result.mid(5); // Strip "kde4-"
-            if (!KStandardDirs::locate("apps", ".hidden/"+file).isEmpty())
-                continue;
-        }
+        if (!KStandardDirs::locate("xdgdata-apps", result).isEmpty())
+            continue;
 
         break;
     }
     if (menuId)
         *menuId = result;
 
-    if (showInMenu)
-    {
-        return KStandardDirs::locateLocal("xdgdata-apps", result);
-    }
-
-    QString file = result.mid(5); // Strip "kde4-"
-    return KStandardDirs::locateLocal("apps", ".hidden/"+file);
+    return KStandardDirs::locateLocal("xdgdata-apps", result);
 }
 
 bool KService::isApplication() const
