@@ -200,6 +200,8 @@ QStringList MediaObject::metaData(Phonon::MetaData f) const
         return metaData(QLatin1String("TRACKNUMBER"));
     case DescriptionMetaData:
         return metaData(QLatin1String("DESCRIPTION"));
+    case MusicBrainzDiscIdMetaData:
+        return metaData(QLatin1String("MUSICBRAINZ_DISCID"));
     }
     return QStringList();
 }

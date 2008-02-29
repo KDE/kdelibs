@@ -77,7 +77,8 @@ namespace Phonon
         DateMetaData,
         GenreMetaData,
         TracknumberMetaData,
-        DescriptionMetaData
+        DescriptionMetaData,
+        MusicBrainzDiscIdMetaData
     };
 
     /**

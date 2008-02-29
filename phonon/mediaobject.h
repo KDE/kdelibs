@@ -289,6 +289,14 @@ namespace Phonon
              * setMetaTrack  (media->metaData("TRACKNUMBER"));
              * setMetaComment(media->metaData("DESCRIPTION"));
              * \endcode
+             *
+             * For Audio CDs you can query
+             * \code
+             * metaData("MUSICBRAINZ_DISCID");
+             * \endcode
+             * to get a DiscID hash that you can use with the MusicBrainz
+             * service:
+             * http://musicbrainz.org/doc/ClientHOWTO
              */
             QStringList metaData(const QString &key) const;
 
