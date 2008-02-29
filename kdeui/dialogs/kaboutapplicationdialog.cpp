@@ -122,6 +122,9 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     tabWidget->addTab(aboutWidget, i18n("&About"));
 
+    QPalette transparentBackgroundPalette;
+    transparentBackgroundPalette.setColor(QPalette::Base, Qt::transparent);
+
     int authorCount = aboutData->authors().count();
     if (authorCount) {
         QString authorPageText;
@@ -164,7 +167,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
         authorTextBrowser->setFrameStyle(QFrame::NoFrame);
-        authorTextBrowser->setStyleSheet( "KTextBrowser { background: transparent; }" );
+        authorTextBrowser->setPalette(transparentBackgroundPalette);
         authorTextBrowser->setHtml(authorPageText);
         tabWidget->addTab(authorTextBrowser, authorPageTitle);
     }
@@ -187,7 +190,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
         creditsTextBrowser->setFrameStyle(QFrame::NoFrame);
-        creditsTextBrowser->setStyleSheet( "KTextBrowser { background: transparent; }" );
+        creditsTextBrowser->setPalette(transparentBackgroundPalette);
         creditsTextBrowser->setHtml(creditsPageText);
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
@@ -209,7 +212,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         KTextBrowser *translatorTextBrowser = new KTextBrowser;
         translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
-        translatorTextBrowser->setStyleSheet( "KTextBrowser { background: transparent; }" );
+        translatorTextBrowser->setPalette(transparentBackgroundPalette);
         translatorTextBrowser->setHtml(translatorPageText);
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
     }
