@@ -3,6 +3,8 @@ Type=ServiceType
 X-KDE-ServiceType=KConfigBackend
 
 Comment=Backend storage for KConfig
+Comment[el]=Σύστημα υποστήριξης αποθήκευσης για το KConfig
+Comment[ga]=Stóras innill KConfig
 Comment[gu]=KConfig માટે પાશ્ર્વભાગ સંગ્રહ
 Comment[km]=កា​រផ្ទុក​ផ្នែក​ខាង​ក្រោយ​សម្រាប់ KConfig
 Comment[pt]=Armazenamento da infra-estrutura do KConfig
