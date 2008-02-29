@@ -5,6 +5,7 @@
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
     Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -63,6 +64,20 @@ KShortcutsEditor::~KShortcutsEditor()
     delete d;
 }
 
+
+bool KShortcutsEditor::isModified() const
+{
+    for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
+        if ((*it)->childCount())
+            continue;
+
+        if (static_cast<KShortcutsEditorItem *>(*it)->isModified()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void KShortcutsEditor::clearCollections()
 {
     d->delegate->clear();
@@ -84,7 +99,6 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     foreach (QAction *action, collection->actions()) {
         QString name = action->text().remove('&');
-        // kDebug(125) << "Adding Key: " << name;
 
         if (name.startsWith(QLatin1String("Program:")))
             l = Program;
@@ -95,7 +109,6 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
             if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
                 // If the shortcut is not configurable skip it
                 if (!kact->isShortcutConfigurable()) {
-                    kDebug(125) << "Not configurable " << kact->text();
                     continue;
                 }
                 // Create the editor
@@ -116,6 +129,50 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     d->ui.list->sortItems(0, Qt::AscendingOrder);
     QTimer::singleShot(0, this, SLOT(resizeColumns()));
+}
+
+void KShortcutsEditor::importConfiguration( KConfig *config)
+{
+    if (d->actionTypes & KShortcutsEditor::GlobalAction) {
+        QString groupName = "Global Shortcuts";
+        KConfigGroup group( config, groupName );
+        foreach (KActionCollection* collection, d->actionCollections) {
+            collection->readGlobalSettings( &group );
+        }
+    }
+    if (d->actionTypes & !KShortcutsEditor::GlobalAction) {
+        QString groupName = "Local Shortcuts";
+        KConfigGroup group( config, groupName );
+        foreach (KActionCollection* collection, d->actionCollections) {
+            collection->readSettings( &group );
+        }
+    }
+}
+
+void KShortcutsEditor::exportConfiguration( KConfig *config) const
+{
+    if (d->actionTypes & KShortcutsEditor::GlobalAction) {
+        QString groupName = "Global Shortcuts";
+        KConfigGroup group( config, groupName );
+        foreach (KActionCollection* collection, d->actionCollections) {
+            collection->writeGlobalSettings( &group, true );
+        }
+    }
+    if (d->actionTypes & !KShortcutsEditor::GlobalAction) {
+        QString groupName = "Local Shortcuts";
+        KConfigGroup group( config, groupName );
+        foreach (KActionCollection* collection, d->actionCollections) {
+            collection->writeSettings( &group, true );
+        }
+    }
+}
+
+
+void KShortcutsEditor::writeConfiguration( KConfigGroup *config) const
+{
+    foreach (KActionCollection* collection, d->actionCollections) {
+        collection->writeSettings(config);
+    }
 }
 
 
@@ -139,9 +196,7 @@ void KShortcutsEditor::save()
         static_cast<KShortcutsEditorItem *>(*it)->commit();
     }
 
-    // Now write the ActionCollection to the file
-    foreach (KActionCollection* collection, d->actionCollections)
-        collection->writeSettings();
+    writeConfiguration();
 }
 
 // KDE5 : rename to undo()

@@ -4,6 +4,7 @@
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
     Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +29,8 @@
 #include "kgesture.h"
 
 class KActionCollection;
+class KConfig;
+class KConfigGroup;
 class KGlobalAccel;
 class KShortcut;
 class KShortcutsEditorPrivate;
@@ -51,6 +54,7 @@ class KShortcutsEditorPrivate;
  * @see KShortcutsDialog
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
+ * @author Michael Jansen <kde@michael-jansen.biz>
  */
 class KDEUI_EXPORT KShortcutsEditor : public QWidget
 {
@@ -107,6 +111,11 @@ public:
 	/// Destructor
 	virtual ~KShortcutsEditor();
 
+    /**
+     * Are the unsaved changes?
+     */
+    bool isModified() const;
+
 	/**
 	 * Removes all action collections from the editor
 	 */
@@ -118,6 +127,14 @@ public:
 	 * @param title subtree title of this collection of shortcut.
 	 */
 	void addCollection(KActionCollection *, const QString &title = QString());
+
+
+    /**
+     * Load the shortcuts from  the \p config object.
+     *
+     * The current active shortcuts are deleted.
+     */
+    void readConfig( KConfig* );
 
 	/**
      * Undo all change made since the last save().
@@ -136,6 +153,42 @@ public:
 	 * to the application's rc file.
 	 */
 	void save();
+
+    /**
+     * Write the current settings to the \p config object.
+     *
+     * This does not initialize the \p config object. It adds the
+     * configuration. 
+     *
+     * @note this will not save the global configuration! globalaccel holds
+     * that part of the configuration.
+     * @see writeGlobalConfig()
+     *
+     * @param config Config object to save to or, or null to use the
+     *               applications config object
+     *
+     */
+    void writeConfiguration( KConfigGroup* config = 0 ) const;
+
+    /**
+     * Export the current setting to configuration @p config.
+     *
+     * This initializes the configuration object. This will export the global
+     * configuration too.
+     *
+     * @param config Config object
+     */
+    void exportConfiguration( KConfig *config) const;
+
+    /**
+     * Import the settings from configuration @p config.
+     *
+     * This will remove all current setting before importing. All shortcuts
+     * are set to KShortcut() prior to importing from @p config!
+     *
+     * @param config Config object
+     */
+    void importConfiguration( KConfig *config);
 
 	/**
 	 * Checks whether the given shortcut conflicts with global keyboard shortcuts.

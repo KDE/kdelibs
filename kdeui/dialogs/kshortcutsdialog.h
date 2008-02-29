@@ -4,6 +4,7 @@
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
     Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,6 +46,7 @@
  *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
+ * @author Michael Jansen <kde@michael-jansen.biz>
  */
 class KDEUI_EXPORT KShortcutsDialog : public KDialog
 {

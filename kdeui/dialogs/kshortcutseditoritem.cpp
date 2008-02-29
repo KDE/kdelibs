@@ -5,6 +5,7 @@
     Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
     Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,6 +46,12 @@ KShortcutsEditorItem::~KShortcutsEditorItem()
 {
     // Undo not yet commited changes. That will fre the m_old* members
     undo();
+}
+
+
+bool KShortcutsEditorItem::isModified() const
+{
+    return m_oldLocalShortcut || m_oldGlobalShortcut || m_oldShapeGesture || m_oldRockerGesture;
 }
 
 
@@ -266,6 +273,7 @@ bool KShortcutsEditorItem::isModified(uint column) const
         return false;
     }
 }
+
 
 
 void KShortcutsEditorItem::undo()
