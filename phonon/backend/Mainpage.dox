@@ -95,39 +95,6 @@ throughout this documentation simply called Backend:
 \li \ref phonon_Visualization "Visualization"
 \li \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
 
-\defgroup Frontend Classes for applications using Phonon
-Here you find all classes that are available to application developers using
-%Phonon.
-
-\defgroup Playback Playback
-The most important classes to control playback.
-\ingroup Frontend
-
-\defgroup Recording Recording
-The most important classes to control recording.
-\ingroup Frontend
-
-\defgroup BackendInformation Information about the backend
-Get information about available devices, effects and changes in backend
-capabilities.
-\ingroup Frontend
-
-\defgroup PhononWidgets Widgets
-Convenience widgets and the \ref Phonon::VideoWidget
-\ingroup Frontend
-
-\defgroup PhononEffects Effects
-The classes for audio and video effects.
-\ingroup Frontend
-
-\defgroup PhononVideo Video
-The most important classes for video.
-\ingroup Frontend
-
-\defgroup Backend Backend classes and interfaces
-In this group you can find all classes and interfaces relevant for backend
-development. As an application developer you can safely ignore these classes.
-
 */
 // DOXYGEN_REFERENCES = phonon
 // DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_OBJECT PHONON_HEIR PHONON_INTERFACE_GETTER
