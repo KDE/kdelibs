@@ -325,10 +325,6 @@ void KActionCollection::setConfigGlobal( bool global )
 void KActionCollection::readGlobalShortcuts( KConfigGroup* config )
 {
   Q_ASSERT(config);
-  if (!config) {
-    return;
-  }
-
   if( !config || !config->exists()) {
     return;
   }
