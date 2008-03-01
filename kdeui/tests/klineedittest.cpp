@@ -48,6 +48,11 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_btnReadOnly->setFixedSize(100,30);
     connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( slotReadOnly(bool) ) );
 
+    m_btnPassword = new QPushButton( "&Password", hbox );
+    m_btnPassword->setCheckable (true);
+    m_btnPassword->setFixedSize(100,30);
+    connect( m_btnPassword, SIGNAL( toggled(bool) ), SLOT( slotPassword(bool) ) );
+
     m_btnEnable = new QPushButton( "Dis&able", hbox );
     m_btnEnable->setCheckable (true);
     m_btnEnable->setFixedSize(100,30);
@@ -106,6 +111,13 @@ void KLineEditTest::slotReadOnly( bool ro )
     m_lineedit->setReadOnly (ro);
     QString text = (ro) ? "&Read Write" : "&Read Only";
     m_btnReadOnly->setText (text);
+}
+
+void KLineEditTest::slotPassword( bool pw )
+{
+    m_lineedit->setPasswordMode (pw);
+    QString text = (pw) ? "&Normal Text" : "&Password";
+    m_btnPassword->setText (text);
 }
 
 void KLineEditTest::slotEnable (bool enable)

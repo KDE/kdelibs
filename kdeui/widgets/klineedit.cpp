@@ -71,6 +71,7 @@ public:
 
         drawClickMsg = false;
         enableClickMsg = false;
+        threeStars = false;
         if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
@@ -119,6 +120,7 @@ public:
     QString clickMessage;
     bool enableClickMsg:1;
     bool drawClickMsg:1;
+    bool threeStars:1;
 
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
 
@@ -1558,6 +1560,14 @@ bool KLineEdit::autoSuggest() const
 
 void KLineEdit::paintEvent( QPaintEvent *ev )
 {
+    if (echoMode() == Password && d->threeStars) {
+        QString oldText = text();
+        setText(text() + text() + text());
+        QLineEdit::paintEvent(ev);
+        setText(oldText);
+        return;
+    }
+
     QLineEdit::paintEvent( ev );
 
     if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty() ) {
@@ -1627,9 +1637,10 @@ void KLineEdit::setPasswordMode(bool b)
         const QString val = cg.readEntry("EchoMode", "OneStar");
         if (val == "NoEcho")
             setEchoMode(NoEcho);
-        else
+        else {
+            d->threeStars = (val == "ThreeStars");
             setEchoMode(Password);
-       //KDE3 has also a "ThreeStars" mode, but QLineEdit doesn't support it.
+        }
     }
     else
     {
