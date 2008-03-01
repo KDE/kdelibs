@@ -33,7 +33,6 @@ class MediaSource;
 /** \class StreamInterface streaminterface.h Phonon/StreamInterface
  * \brief Backend interface to handle media streams (AbstractMediaStream).
  *
- * \ingroup Backend
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONON_EXPORT StreamInterface
