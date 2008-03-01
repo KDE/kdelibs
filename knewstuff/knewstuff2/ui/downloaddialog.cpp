@@ -103,7 +103,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
-    connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotDownloadItem( KNS::Entry* ) ));
+    connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotEntryChanged( KNS::Entry* ) ));
 
     connect( m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
             this, SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
@@ -149,7 +149,7 @@ void DownloadDialog::installItem( Entry *entry )
 //    }
 
     //TODO check for AvailableItem deletion! (avoid broken pointers) -> cancel old jobs
-    slotDownloadItem( entry );
+    slotEntryChanged( entry );
 }
 
 void DownloadDialog::removeItem( Entry *entry )
@@ -303,22 +303,6 @@ void DownloadDialog::populateSortCombo(const Provider * provider)
 }
 
 ///////////////// DXS ////////////////////
-
-//BEGIN File(s) Transferring
-void DownloadDialog::slotDownloadItem( KNS::Entry *entry )
-{
-//Q_UNUSED(entry);
-    m_list->updateItem(entry);
-/*
-XXX update item status
-    item->setState( AvailableItem::Installing );
-    item->setProgress( 0.0 );
-    d->itemsView->updateItem( item );
-
-XXX inform the user
-    displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ), 3000 );
-*/
-}
 
 void DownloadDialog::slotEntryChanged( KNS::Entry * entry )
 {

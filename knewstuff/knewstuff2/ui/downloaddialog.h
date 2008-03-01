@@ -105,7 +105,6 @@ private Q_SLOTS:
     void slotFault();
     void slotError();
     // file downloading
-    void slotDownloadItem( KNS::Entry * );
     void slotEntryChanged( KNS::Entry * );
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );

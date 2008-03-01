@@ -137,7 +137,9 @@ void ItemsView::setSearchText( const QString & text )
 void ItemsView::updateItem( Entry *entry )
 {
     // FIXME: change this to call updateEntry once it is complete
-    m_views[entry]->setEntry(entry);
+    if (m_views.contains(entry)) {
+        m_views[entry]->setEntry(entry);
+    }
 }
 
 void ItemsView::buildContents()
