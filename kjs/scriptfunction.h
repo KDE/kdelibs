@@ -101,6 +101,9 @@ namespace KJS {
 
     void passInParameters(ExecState *exec, const List &);
   };
+
+  // For compatibility...
+  typedef FunctionImp DeclaredFunctionImp;
 } // namespace
 
 #endif
