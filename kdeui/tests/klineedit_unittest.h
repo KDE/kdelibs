@@ -27,6 +27,7 @@ class KLineEdit_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void testPassword();
     void testReturnPressed();
     void testComboReturnPressed();
 

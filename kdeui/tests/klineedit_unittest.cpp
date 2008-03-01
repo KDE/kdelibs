@@ -27,6 +27,16 @@
 
 QTEST_KDEMAIN(KLineEdit_UnitTest, GUI)
 
+void KLineEdit_UnitTest::testPassword()
+{
+    KLineEdit w;
+    w.setPasswordMode(true);
+    QTest::keyClick(&w, Qt::Key_1);
+    QTest::keyClick(&w, Qt::Key_2);
+    QTest::keyClick(&w, Qt::Key_3);
+    QCOMPARE(w.text(), QString("123"));
+}
+
 void KLineEdit_UnitTest::testReturnPressed()
 {
     KLineEdit w;
