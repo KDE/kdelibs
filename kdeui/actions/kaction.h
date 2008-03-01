@@ -258,6 +258,8 @@ public:
     /**
      * Differs the shortcut from the default setting?
      *
+     * @since 4.1
+     *
      * @return yes/no
      */
     //@{

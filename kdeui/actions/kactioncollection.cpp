@@ -322,7 +322,7 @@ void KActionCollection::setConfigGlobal( bool global )
   d->configIsGlobal = global;
 }
 
-void KActionCollection::readGlobalSettings( KConfigGroup* config )
+void KActionCollection::readGlobalShortcuts( KConfigGroup* config )
 {
   Q_ASSERT(config);
   if (!config) {
@@ -384,7 +384,7 @@ void KActionCollection::readSettings( KConfigGroup* config )
   //kDebug(125) << " done";
 }
 
-void KActionCollection::writeGlobalSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
+void KActionCollection::writeGlobalShortcuts( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
 {
   Q_ASSERT(config);
   if (!config) {
