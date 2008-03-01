@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,18 +29,29 @@ QT_BEGIN_NAMESPACE
 namespace Phonon
 {
     class EffectParameter;
-    /**
+    /** \class EffectInterface effectinterface.h Phonon/EffectInterface
+     * \short Interface for Effect objects
+     *
      * \author Matthias Kretz <kretz@kde.org>
      */
     class EffectInterface
     {
         public:
             virtual ~EffectInterface() {}
+            /**
+             * Returns the EffectParameter objects to describe the parameters of this effect.
+             */
             virtual QList<EffectParameter> parameters() const = 0;
+            /**
+             * Returns the value for the selected parameter.
+             */
             virtual QVariant parameterValue(const EffectParameter &) const = 0;
+            /**
+             * Sets the value for the selected parameter.
+             */
             virtual void setParameterValue(const EffectParameter &, const QVariant &newValue) = 0;
     };
-} //namespace Phonon::Fake
+} //namespace Phonon
 
 Q_DECLARE_INTERFACE(Phonon::EffectInterface, "EffectInterface0.phonon.kde.org")
 
