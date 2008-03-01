@@ -1257,8 +1257,9 @@ UString UString::substr(int pos, int len) const
 
 void UString::copyForWriting()
 {
+  int l = size();
+  if (!l) return; // Not going to touch anything anyway.
   if (m_rep->rc > 1 || !m_rep->baseIsSelf()) {
-    int l = size();
     UChar* n = allocChars(l);
     memcpy(n, data(), l * sizeof(UChar));
     m_rep = Rep::create(n, l);
