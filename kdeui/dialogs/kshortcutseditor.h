@@ -129,13 +129,6 @@ public:
 	void addCollection(KActionCollection *, const QString &title = QString());
 
 
-    /**
-     * Load the shortcuts from  the \p config object.
-     *
-     * The current active shortcuts are deleted.
-     */
-    void readConfig( KConfig* );
-
 	/**
      * Undo all change made since the last save().
 	 */
