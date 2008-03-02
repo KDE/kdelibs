@@ -31,6 +31,7 @@
 #include <ktoggletoolbaraction.h>
 #include <ktoolbar.h>
 #include <kxmlguifactory.h>
+#include <kstandardaction_p.h>
 
 namespace
 {
@@ -87,8 +88,9 @@ namespace
           return actions;
 
         if ( m_toolBarActions.count() == 1 ) {
+          const KStandardAction::KStandardActionInfo* pInfo = KStandardAction::infoPtr(KStandardAction::ShowToolbar);
           KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.first() );
-          action->setText( i18n( "Show Toolbar" ) );
+          action->setText( i18n( pInfo->psLabel ) );
           return m_toolBarActions;
         }
 
