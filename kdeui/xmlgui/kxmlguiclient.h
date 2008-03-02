@@ -198,7 +198,7 @@ public:
    * is selected, then you can achieve this using ActionLists. It
    * works as follows:
    * In your xxxui.rc file ( the one that you set in setXMLFile() / pass to setupGUI()
-   * ), you put a tag <tt>\<ActionList name="xxx"\></tt> tag.
+   * ), you put a tag <tt>\<ActionList name="xxx"\></tt>.
    *
    * Example:
    * \code
