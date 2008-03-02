@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include "object.h"
+#include "internal.h"
 #include <math.h>
 #include <stdio.h>
 #include <wtf/MathExtras.h>
@@ -193,19 +194,23 @@ bool strictEqual(ExecState *exec, JSValue *v1, JSValue *v2)
 
 int relation(ExecState *exec, JSValue *v1, JSValue *v2)
 {
-    JSValue *p1 = v1->toPrimitive(exec,NumberType);
-    JSValue *p2 = v2->toPrimitive(exec,NumberType);
-    
-    if (p1->isString() && p2->isString())
-        return p1->toString(exec) < p2->toString(exec) ? 1 : 0;
-    
-    double n1 = p1->toNumber(exec);
-    double n2 = p2->toNumber(exec);
-    if (n1 < n2)
-        return 1;
-    if (n1 >= n2)
-        return 0;
-    return -1; // must be NaN, so undefined
+    double n1;
+    double n2;
+    JSValue* p1;
+    JSValue* p2;
+    bool wasNotString1 = v1->getPrimitiveNumber(exec, n1, p1);
+    bool wasNotString2 = v2->getPrimitiveNumber(exec, n2, p2);
+
+    if (wasNotString1 || wasNotString2) {
+        if (n1 < n2)
+            return 1;
+        if (n1 >= n2)
+            return 0;
+        return -1; // must be NaN, so undefined
+    }
+
+    assert(p1->isString() && p2->isString());
+    return static_cast<const StringImp*>(p1)->value() < static_cast<const StringImp*>(p2)->value() ? 1 : 0;
 }
 
 int maxInt(int d1, int d2)
