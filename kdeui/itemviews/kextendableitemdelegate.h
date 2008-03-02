@@ -22,7 +22,7 @@
 #ifndef KEXTENDABLEITEMDELEGATE_H
 #define KEXTENDABLEITEMDELEGATE_H
 
-#include <QItemDelegate>
+#include <QtGui/QItemDelegate>
 
 #include <kdeui_export.h>
 
