@@ -92,48 +92,48 @@ bool SlaveInterface::dispatch()
 
 void SlaveInterface::calcSpeed()
 {
-  Q_D(SlaveInterface);
-  if (d->slave_calcs_speed) {
-    d->speed_timer.stop();
-    return;
-  }
-
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-
-  long diff = ((tv.tv_sec - d->start_time.tv_sec) * 1000000 +
-           tv.tv_usec - d->start_time.tv_usec) / 1000;
-  if (diff - d->last_time >= 900) {
-    d->last_time = diff;
-    if (d->nums == max_nums) {
-      // let's hope gcc can optimize that well enough
-      // otherwise I'd try memcpy :)
-      for (unsigned int i = 1; i < max_nums; ++i) {
-    d->times[i-1] = d->times[i];
-    d->sizes[i-1] = d->sizes[i];
-      }
-      d->nums--;
+    Q_D(SlaveInterface);
+    if (d->slave_calcs_speed) {
+        d->speed_timer.stop();
+        return;
     }
-    d->times[d->nums] = diff;
-    d->sizes[d->nums++] = d->filesize - d->offset;
 
-    KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
+    struct timeval tv;
+    gettimeofday(&tv, 0);
 
-//     kDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
-// 	      << long(d->sizes[d->nums-1] - d->sizes[0]) << " "
-// 	      <<  d->times[d->nums-1] - d->times[0] << " "
-// 	      << long(lspeed) << " " << double(d->filesize) / diff
-// 	      << " " << convertSize(lspeed) << " "
-// 	      << convertSize(long(double(d->filesize) / diff) * 1000) << " "
-// 	      <<  endl ;
+    long diff = ((tv.tv_sec - d->start_time.tv_sec) * 1000000 +
+                  tv.tv_usec - d->start_time.tv_usec) / 1000;
+    if (diff - d->last_time >= 900) {
+        d->last_time = diff;
+        if (d->nums == max_nums) {
+            // let's hope gcc can optimize that well enough
+            // otherwise I'd try memcpy :)
+            for (unsigned int i = 1; i < max_nums; ++i) {
+                d->times[i-1] = d->times[i];
+                d->sizes[i-1] = d->sizes[i];
+            }
+            d->nums--;
+        }
+        d->times[d->nums] = diff;
+        d->sizes[d->nums++] = d->filesize - d->offset;
 
-    if (!lspeed) {
-      d->nums = 1;
-      d->times[0] = diff;
-      d->sizes[0] = d->filesize - d->offset;
+        KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
+
+//      kDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
+//          << long(d->sizes[d->nums-1] - d->sizes[0]) << " "
+//          <<    d->times[d->nums-1] - d->times[0] << " "
+//          << long(lspeed) << " " << double(d->filesize) / diff
+//          << " " << convertSize(lspeed) << " "
+//          << convertSize(long(double(d->filesize) / diff) * 1000) << " "
+//          <<    endl ;
+
+        if (!lspeed) {
+            d->nums = 1;
+            d->times[0] = diff;
+            d->sizes[0] = d->filesize - d->offset;
+        }
+        emit speed(lspeed);
     }
-    emit speed(lspeed);
-  }
 }
 
 #ifndef KDE_USE_FINAL // already defined in slavebase.cpp
