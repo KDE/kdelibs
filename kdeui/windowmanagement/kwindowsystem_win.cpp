@@ -205,11 +205,13 @@ void KWindowSystem::clearState( WId win, unsigned long state )
 
 void KWindowSystem::minimizeWindow( WId win, bool animation)
 {
+    Q_UNUSED( animation );
     ShowWindow( win, SW_MINIMIZE );
 }
 
 void KWindowSystem::unminimizeWindow( WId win, bool animation )
 {
+    Q_UNUSED( animation );
     ShowWindow( win, SW_RESTORE );
 }
 
