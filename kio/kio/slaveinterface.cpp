@@ -102,15 +102,15 @@ void SlaveInterface::calcSpeed()
   gettimeofday(&tv, 0);
 
   long diff = ((tv.tv_sec - d->start_time.tv_sec) * 1000000 +
-	       tv.tv_usec - d->start_time.tv_usec) / 1000;
+           tv.tv_usec - d->start_time.tv_usec) / 1000;
   if (diff - d->last_time >= 900) {
     d->last_time = diff;
     if (d->nums == max_nums) {
       // let's hope gcc can optimize that well enough
       // otherwise I'd try memcpy :)
       for (unsigned int i = 1; i < max_nums; ++i) {
-	d->times[i-1] = d->times[i];
-	d->sizes[i-1] = d->sizes[i];
+    d->times[i-1] = d->times[i];
+    d->sizes[i-1] = d->sizes[i];
       }
       d->nums--;
     }
@@ -160,58 +160,58 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
     switch( _cmd ) {
     case MSG_DATA:
-	emit data( rawdata );
-	break;
+    emit data( rawdata );
+    break;
     case MSG_DATA_REQ:
         emit dataReq();
-	break;
+    break;
     case MSG_OPENED: {
-	emit open();
-	break;
+    emit open();
+    break;
     }
     case MSG_FINISHED:
-	//kDebug(7007) << "Finished [this = " << this << "]";
+    //kDebug(7007) << "Finished [this = " << this << "]";
         d->offset = 0;
         d->speed_timer.stop();
-	emit finished();
-	break;
+    emit finished();
+    break;
     case MSG_STAT_ENTRY:
-	{
-	    UDSEntry entry;
-	    stream >> entry;
-	    emit statEntry(entry);
-	}
-	break;
+    {
+        UDSEntry entry;
+        stream >> entry;
+        emit statEntry(entry);
+    }
+    break;
     case MSG_LIST_ENTRIES:
-	{
-	    quint32 count;
-	    stream >> count;
+    {
+        quint32 count;
+        stream >> count;
 
-	    UDSEntryList list;
-	    UDSEntry entry;
-	    for (uint i = 0; i < count; i++) {
-		stream >> entry;
-		list.append(entry);
-	    }
-	    emit listEntries(list);
+        UDSEntryList list;
+        UDSEntry entry;
+        for (uint i = 0; i < count; i++) {
+        stream >> entry;
+        list.append(entry);
+        }
+        emit listEntries(list);
 
-	}
-	break;
+    }
+    break;
     case MSG_RESUME: // From the put job
-	{
-	    d->offset = readFilesize_t(stream);
-	    emit canResume( d->offset );
-	}
-	break;
+    {
+        d->offset = readFilesize_t(stream);
+        emit canResume( d->offset );
+    }
+    break;
     case MSG_CANRESUME: // From the get job
         d->filesize = d->offset;
         emit canResume(0); // the arg doesn't matter
         break;
     case MSG_ERROR:
-	stream >> i >> str1;
-	kDebug(7007) << "error " << i << " " << str1;
-	emit error( i, str1 );
-	break;
+    stream >> i >> str1;
+    kDebug(7007) << "error " << i << " " << str1;
+    emit error( i, str1 );
+    break;
     case MSG_SLAVE_STATUS:
         {
            PIDType<sizeof(pid_t)>::PID_t stream_pid;
@@ -233,76 +233,76 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     break;
     case INF_TOTAL_SIZE:
-	{
-	    KIO::filesize_t size = readFilesize_t(stream);
-	    gettimeofday(&d->start_time, 0);
-	    d->last_time = 0;
-	    d->filesize = d->offset;
-	    d->sizes[0] = d->filesize - d->offset;
-	    d->times[0] = 0;
-	    d->nums = 1;
-	    d->speed_timer.start(1000);
-	    d->slave_calcs_speed = false;
-	    emit totalSize( size );
-	}
-	break;
+    {
+        KIO::filesize_t size = readFilesize_t(stream);
+        gettimeofday(&d->start_time, 0);
+        d->last_time = 0;
+        d->filesize = d->offset;
+        d->sizes[0] = d->filesize - d->offset;
+        d->times[0] = 0;
+        d->nums = 1;
+        d->speed_timer.start(1000);
+        d->slave_calcs_speed = false;
+        emit totalSize( size );
+    }
+    break;
     case INF_PROCESSED_SIZE:
-	{
-	    KIO::filesize_t size = readFilesize_t(stream);
-	    emit processedSize( size );
-	    d->filesize = size;
-	}
-	break;
+    {
+        KIO::filesize_t size = readFilesize_t(stream);
+        emit processedSize( size );
+        d->filesize = size;
+    }
+    break;
     case INF_POSITION:
-	{
-	    KIO::filesize_t pos = readFilesize_t(stream);
-	    emit position( pos );
-	}
-	break;
+    {
+        KIO::filesize_t pos = readFilesize_t(stream);
+        emit position( pos );
+    }
+    break;
     case INF_SPEED:
-	stream >> ul;
-	d->slave_calcs_speed = true;
-	d->speed_timer.stop();
+    stream >> ul;
+    d->slave_calcs_speed = true;
+    d->speed_timer.stop();
 
-	emit speed( ul );
-	break;
+    emit speed( ul );
+    break;
     case INF_GETTING_FILE:
-	break;
+    break;
     case INF_ERROR_PAGE:
-	emit errorPage();
-	break;
+    emit errorPage();
+    break;
     case INF_REDIRECTION:
       {
-	KUrl url;
-	stream >> url;
+    KUrl url;
+    stream >> url;
 
-	emit redirection( url );
+    emit redirection( url );
       }
       break;
     case INF_MIME_TYPE:
-	stream >> str1;
+    stream >> str1;
 
-	emit mimeType( str1 );
+    emit mimeType( str1 );
         if (!d->connection->suspended())
             d->connection->sendnow( CMD_NONE, QByteArray() );
-	break;
+    break;
     case INF_WARNING:
-	stream >> str1;
+    stream >> str1;
 
-	emit warning( str1 );
-	break;
+    emit warning( str1 );
+    break;
     case INF_MESSAGEBOX: {
-	kDebug(7007) << "needs a msg box";
-	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
-	int type;
-	stream >> type >> text >> caption >> buttonYes >> buttonNo;
-	if (stream.atEnd())
-	messageBox(type, text, caption, buttonYes, buttonNo);
-	else {
-	    stream >> dontAskAgainName;
-	    messageBox(type, text, caption, buttonYes, buttonNo, dontAskAgainName);
-	}
-	break;
+    kDebug(7007) << "needs a msg box";
+    QString text, caption, buttonYes, buttonNo, dontAskAgainName;
+    int type;
+    stream >> type >> text >> caption >> buttonYes >> buttonNo;
+    if (stream.atEnd())
+    messageBox(type, text, caption, buttonYes, buttonNo);
+    else {
+        stream >> dontAskAgainName;
+        messageBox(type, text, caption, buttonYes, buttonNo, dontAskAgainName);
+    }
+    break;
     }
     case INF_INFOMESSAGE: {
         QString msg;
@@ -321,14 +321,14 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     case MSG_NET_REQUEST: {
         QString host;
-	    QString slaveid;
+        QString slaveid;
         stream >> host >> slaveid;
         requestNetwork(host, slaveid);
         break;
     }
     case MSG_NET_DROP: {
         QString host;
-	QString slaveid;
+    QString slaveid;
         stream >> host >> slaveid;
         dropNetwork(host, slaveid);
         break;
