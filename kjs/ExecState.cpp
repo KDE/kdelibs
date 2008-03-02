@@ -61,19 +61,30 @@ void ExecState::markSelf()
     }
 
     scope.mark();
+
+    // Propagate up to other eval chains..
+    if (m_savedExec) {
+        ASSERT(m_savedExec != this);
+        ASSERT(!m_callingExec);
+        m_savedExec->mark();
+    }
 }
 
 void ExecState::mark()
 {
+    if (m_savedExec && m_savedExec != m_callingExec)
+        m_savedExec->mark();
+
     for (ExecState* exec = this; exec; exec = exec->m_callingExec)
         exec->markSelf();
 }
 
-ExecState::ExecState(Interpreter* intp) :
+ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_interpreter(intp),
   m_exception(0),
   m_propertyNames(CommonIdentifiers::shared()),
   m_callingExec(0),
+  m_savedExec(save),
   m_currentBody(0),
   m_function(0),
   m_arguments(0),
@@ -86,7 +97,10 @@ ExecState::ExecState(Interpreter* intp) :
 
 ExecState::~ExecState()
 {
-    m_interpreter->setExecState(m_callingExec);
+    if (m_savedExec)
+        m_interpreter->setExecState(m_savedExec);
+    else
+        m_interpreter->setExecState(m_callingExec);
 }
 
 void ExecState::setException(JSValue* e)
@@ -159,7 +173,7 @@ GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(i
 
 InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
                                            JSObject* thisObject, ProgramNode* body):
-  ExecState(intp)
+  ExecState(intp, intp->execState())
 {
     m_currentBody = body;
     scope.clear();

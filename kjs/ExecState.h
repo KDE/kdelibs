@@ -250,7 +250,7 @@ namespace KJS {
     ExecState* context() { return this; }
     ExecState* callingContext() { return callingExecState(); }
   protected:
-    ExecState(Interpreter* intp);
+    ExecState(Interpreter* intp, ExecState* save = 0);
     ~ExecState();
     void markSelf();
 
@@ -258,6 +258,9 @@ namespace KJS {
     JSValue* m_exception;
     CommonIdentifiers* m_propertyNames;
     ExecState* m_callingExec;
+    ExecState* m_savedExec; // in case of recursion of evaluation. Needed to mark things properly;
+                            // note that this is disjoint from the above, since that's only used for
+                            // eval/function, while this is for global.
 
     FunctionBodyNode* m_currentBody;
     FunctionImp* m_function;
