@@ -198,8 +198,10 @@ public:
    * is selected, then you can achieve this using ActionLists. It
    * works as follows:
    * In your xxxui.rc file ( the one that you set in setXMLFile() / pass to setupGUI()
-   * ), you put an <p>\<ActionList name="xxx"\></p> tag.  E.g.
-   * \verbatim
+   * ), you put a tag <tt>\<ActionList name="xxx"\></tt> tag.
+   *
+   * Example:
+   * \code
    * <kpartgui name="xxx_part" version="1">
    * <MenuBar>
    *   <Menu name="file">
@@ -210,7 +212,7 @@ public:
    *   ...
    * </MenuBar>
    * </kpartgui>
-   * \endverbatim
+   * \endcode
    *
    * This tag will get expanded to a list of actions.  In the example
    * above ( a file manager with a dynamic file menu ), you would call
@@ -230,11 +232,16 @@ public:
    * \note Forgetting to call unplugActionList() before
    *       plugActionList() would leave the previous actions in the
    *       menu too..
+   * \see unplugActionList()
    */
   void plugActionList( const QString &name, const QList<QAction*> &actionList );
 
   /**
-   * The complement of plugActionList() ...
+   * Unplugs the action list \p name from the XMLGUI.
+   * Calling this removes the specified action list, i.e. this is the
+   * complement to plugActionList(). See plugActionList() for a more
+   * detailed example.
+   * \see plugActionList()
    */
   void unplugActionList( const QString &name );
 
