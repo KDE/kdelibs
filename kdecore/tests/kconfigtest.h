@@ -60,6 +60,7 @@ private Q_SLOTS:
     void testSubGroup();
     void testAddConfigSources();
     void testWriteOnSync();
+    void testCreateDir();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

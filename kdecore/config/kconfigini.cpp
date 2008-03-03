@@ -478,7 +478,7 @@ void KConfigIniBackend::createEnclosing()
 
     // Create the containing dir, maybe it wasn't there
     QDir dir;
-    dir.mkpath(QFileInfo(file).canonicalPath());
+    dir.mkpath(QFileInfo(file).absolutePath());
 }
 
 void KConfigIniBackend::setFilePath(const QString& file)
