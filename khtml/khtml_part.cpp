@@ -700,14 +700,13 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
-  setUrl(url);
-  if(this->url().protocol().startsWith( "http" ) && !this->url().host().isEmpty() &&
-     this->url().path().isEmpty()) {
-    this->url().setPath("/");
-    emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
+  d->m_workingURL = url;
+  if(url.protocol().startsWith( "http" ) && !url.host().isEmpty() &&
+     url.path().isEmpty()) {
+    d->m_workingURL.setPath("/");
+    emit d->m_extension->setLocationBarUrl( d->m_workingURL.prettyUrl() );
   }
-  // copy to m_workingURL after fixing m_url above
-  d->m_workingURL = this->url();
+  setUrl(d->m_workingURL);
 
   QMap<QString,QString>& metaData = args.metaData();
   metaData.insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
@@ -728,14 +727,14 @@ bool KHTMLPart::openUrl( const KUrl &url )
   else
      d->m_cachePolicy = KProtocolManager::cacheControl();
 
-  if ( browserArgs.doPost() && (this->url().protocol().startsWith("http")) )
+  if ( browserArgs.doPost() && (url.protocol().startsWith("http")) )
   {
-      d->m_job = KIO::http_post( this->url(), browserArgs.postData, KIO::HideProgressInfo );
+      d->m_job = KIO::http_post( url, browserArgs.postData, KIO::HideProgressInfo );
       d->m_job->addMetaData("content-type", browserArgs.contentType() );
   }
   else
   {
-      d->m_job = KIO::get( this->url(), KIO::NoReload, KIO::HideProgressInfo );
+      d->m_job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
       d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
   }
 
@@ -828,8 +827,8 @@ bool KHTMLPart::closeUrl()
   if ( !d->m_workingURL.isEmpty() )
   {
     // Aborted before starting to render
-    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << this->url().prettyUrl();
-    emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
+    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << url().prettyUrl();
+    emit d->m_extension->setLocationBarUrl( url().prettyUrl() );
   }
 
   d->m_workingURL = KUrl();
@@ -1914,7 +1913,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 #endif
 
   d->m_doc->ref();
-  d->m_doc->setURL( this->url().url() );
+  d->m_doc->setURL( url.url() );
   d->m_doc->open( );
   if (!d->m_doc->attached())
     d->m_doc->attach( );
