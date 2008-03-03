@@ -281,7 +281,7 @@ public:
     KComponentData componentData() const;
 
     /**
-     * Use this methode to created an object. It will try to created an object which inherits
+     * Use this method to create an object. It will try to created an object which inherits
      * \p T. If it has multiple choices, you will get a fatal error (kFatal()), so be creaful
      * to request a unique interface or use keywords.
      *
@@ -295,7 +295,7 @@ public:
     T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
 
     /**
-     * Use this methode to created an object. It will try to created an object which inherits
+     * Use this method to create an object. It will try to created an object which inherits
      * \p T and was registered with \p keyword.
      *
      * \param T The interface for which an object should be created. The object will inherit \p T.
@@ -309,7 +309,7 @@ public:
     T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
 
     /**
-     * Use this methode to created an object. It will try to created an object which inherits
+     * Use this method to create an object. It will try to created an object which inherits
      * \p T and was registered with \p keyword.
      * This overload has an additional \p parentWidget argument, which is used by some plugins (e.g. Parts).
 
