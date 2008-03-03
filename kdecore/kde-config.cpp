@@ -2,6 +2,7 @@
 /*
  * This file is part of the KDE libraries
  *
+ * Copyright (c) 2008 David Jarvie <djarvie@kde.org>
  * Copyright (c) 2006-2007 Christian Ehrlicher <Ch.Ehrlicher@gmx.de>
  * Copyright (c) 2000-2007 Stephan Kulow <coolo@kde.org>
  *
@@ -33,6 +34,7 @@
 #include <kaboutdata.h>
 #include <kdeversion.h>
 #include <QDir>
+#include <QtCore/QLibraryInfo>
 #include <config.h>
 #include <config-prefix.h>
 #include <kconfiggroup.h>
@@ -69,6 +71,10 @@ int main(int argc, char **argv)
     options.add("locate filename", ki18n("Find filename inside the resource type given to --path"));
     options.add("userpath type",   ki18n("User path: desktop|autostart|document"));
     options.add("install type",    ki18n("Prefix to install resource files to"));
+    options.add("qt-prefix",   ki18n("Installation prefix for Qt"));
+    options.add("qt-binaries", ki18n("Location of installed Qt binaries"));
+    options.add("qt-libraries", ki18n("Location of installed Qt libraries"));
+    options.add("qt-plugins", ki18n("Location of installed Qt plugins"));
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
     KComponentData a(&about);
@@ -225,6 +231,27 @@ int main(int argc, char **argv)
     if (!type.isEmpty())
     {
         printResult( KGlobal::dirs()->installPath(type.toLocal8Bit()) );
+    }
+
+    if (args->isSet("qt-prefix"))
+    {
+        printResult(QLibraryInfo::location(QLibraryInfo::PrefixPath));
+        return 0;
+    }
+    if (args->isSet("qt-binaries"))
+    {
+        printResult(QLibraryInfo::location(QLibraryInfo::BinariesPath));
+        return 0;
+    }
+    if (args->isSet("qt-libraries"))
+    {
+        printResult(QLibraryInfo::location(QLibraryInfo::LibrariesPath));
+        return 0;
+    }
+    if (args->isSet("qt-plugins"))
+    {
+        printResult(QLibraryInfo::location(QLibraryInfo::PluginsPath));
+        return 0;
     }
     return 0;
 }
