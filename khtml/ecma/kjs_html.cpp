@@ -35,8 +35,8 @@
 #include <html/html_canvasimpl.h>
 #include <dom/dom_exception.h>
 
+#include <css/csshelper.h> // for parseUrl
 
-// ### HACK
 #include <html/html_baseimpl.h>
 #include <html/html_documentimpl.h>
 #include <html/html_formimpl.h>
@@ -1577,7 +1577,7 @@ QHash<int, const HTMLElement::BoundPropInfo*>* HTMLElement::boundPropInfo()
 
 QString KJS::HTMLElement::getURLArg(unsigned id) const
 {
-  DOMString rel = impl()->getAttribute(id);
+  DOMString rel = khtml::parseURL(impl()->getAttribute(id));
   return !rel.isNull() ? impl()->getDocument()->completeURL(rel.string()) : QString();
 }
 
