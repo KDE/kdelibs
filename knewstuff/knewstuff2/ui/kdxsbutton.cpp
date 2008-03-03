@@ -157,9 +157,12 @@ void KDXSButton::setEntry(Entry *e)
 	Author author = e->author();
 	if(!author.email().isEmpty())
 	{
+            m_contact->setEnabled(true);
 		action_contactbymail = m_contact->addAction(SmallIcon("mail-message-new"),
 			i18n("Send Mail"));
 	}
+        else
+            m_contact->setEnabled(false);
 	if(!author.jabber().isEmpty())
 	{
 		action_contactbyjabber = m_contact->addAction(i18n("Contact on Jabber"));
