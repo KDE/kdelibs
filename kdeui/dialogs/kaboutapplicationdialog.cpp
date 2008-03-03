@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2007 Urs Wolfer <uwolfer at kde.org>
+   Copyright (C) 2008 Friedrich W. H. Kossebau <kossebau@kde.org>
 
    Parts of this class have been take from the KAboutApplication class, which was
    Copyright (C) 2000 Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
@@ -44,7 +45,7 @@ public:
           aboutData(0)
     {}
 
-    void _k_showLicense();
+    void _k_showLicense( const QString &number );
 
     KAboutApplicationDialog *q;
 
@@ -106,11 +107,15 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     aboutLayout->addStretch();
     aboutLayout->addWidget(aboutLabel);
 
-    if (!aboutData->license().isEmpty()) {
+    const int licenseCount = aboutData->licenses().count();
+    for (int i = 0; i < licenseCount; ++i) {
+        const KAboutLicense &license = aboutData->licenses().at(i);
+
         QLabel *showLicenseLabel = new QLabel;
-        showLicenseLabel->setText(QString("<a href=\"%1\">%1</a>").arg(i18n("License: %1",
-                                                                            aboutData->licenseName(KAboutData::FullName))));
-        connect(showLicenseLabel, SIGNAL(linkActivated(QString)), this, SLOT(_k_showLicense()));
+        showLicenseLabel->setText(QString("<a href=\"%1\">%2</a>").arg(QString::number(i),
+                                                                       i18n("License: %1",
+                                                                            license.name(KAboutData::FullName))));
+        connect(showLicenseLabel, SIGNAL(linkActivated(QString)), this, SLOT(_k_showLicense(QString)));
 
         aboutLayout->addWidget(showLicenseLabel);
     }
@@ -233,7 +238,7 @@ KAboutApplicationDialog::~KAboutApplicationDialog()
     delete d;
 }
 
-void KAboutApplicationDialog::Private::_k_showLicense()
+void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 {
     KDialog *dialog = new KDialog(q);
 
@@ -244,10 +249,11 @@ void KAboutApplicationDialog::Private::_k_showLicense()
     QFont font = KGlobalSettings::fixedFont();
     QFontMetrics metrics(font);
 
+    const QString licenseText = aboutData->licenses().at(number.toInt()).text();
     KTextBrowser *licenseBrowser = new KTextBrowser;
     licenseBrowser->setFont(font);
     licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
-    licenseBrowser->setText(aboutData->license());
+    licenseBrowser->setText(licenseText);
 
     dialog->setMainWidget(licenseBrowser);
 

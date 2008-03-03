@@ -62,7 +62,7 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
         class Private;
         Private* const d;
 
-        Q_PRIVATE_SLOT( d, void _k_showLicense() )
+        Q_PRIVATE_SLOT( d, void _k_showLicense(const QString&) )
 
         Q_DISABLE_COPY( KAboutApplicationDialog )
 };
