@@ -1562,9 +1562,11 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
 {
     if (echoMode() == Password && d->threeStars) {
         QString oldText = text();
+        bool isModifiedState = isModified(); // save modified state because setText resets it
         setText(text() + text() + text());
         QLineEdit::paintEvent(ev);
         setText(oldText);
+        setModified(isModifiedState);
         return;
     }
 
