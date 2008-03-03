@@ -1,6 +1,7 @@
 /*
  * This file is part of the KDE Libraries
  * Copyright (C) 2000 Espen Sand (espen@kde.org)
+ * Copyright (C) 2008 Friedrich W. H. Kossebau <kossebau@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +24,10 @@
 #define KABOUTDATA_H
 
 #include <kdecore_export.h>
-#include <QtCore/QString>
-
 #include <klocale.h>
+// Qt
+#include <QtCore/QString>
+#include <QtCore/QSharedDataPointer>
 
 template <class T> class QList;
 class QVariant;
@@ -135,6 +137,8 @@ private:
     Private *const d;
 };
 
+class KAboutLicense;
+
 /**
  * This class is used to store information about a program. It can store
  * such values as version number, program name, home page, email address
@@ -160,7 +164,7 @@ class KDECORE_EXPORT KAboutData
   /**
    * Describes the license of the software.
    */
-    enum LicenseKey
+    enum LicenseKey // KDE5: move to KAboutLicense, cut License_ prefix
     {
       License_Custom = -2,
       License_File = -1,
@@ -180,7 +184,7 @@ class KDECORE_EXPORT KAboutData
   /**
    * Format of the license name.
    */
-    enum NameFormat
+    enum NameFormat // KDE5: move to KAboutLicense
     {
         ShortName,
         FullName
@@ -206,8 +210,8 @@ class KDECORE_EXPORT KAboutData
      *        This string should be marked for translation.
      *        Example: ki18n("A simple text editor.")
      *
-     * @param licenseType The license identifier. Use setLicenseText if
-     *        you use a license not predefined here.
+     * @param licenseType The license identifier. Use setLicenseText or
+              setLicenseTextFile if you use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like this:
      *        ki18n("(c) 1999-2000, Name"). The string specified here is
@@ -346,11 +350,42 @@ class KDECORE_EXPORT KAboutData
     KAboutData &setLicenseText( const KLocalizedString &license );
 
     /**
-     * Defines a license text by pointing to a file where it resides.
+     * Adds a license text, which is marked for translation.
      *
-     * @param file File containing the license text.
+     * If there is only one unknown license set, e.g. by using the default
+     * parameter in the constructor, that one is replaced.
+     *
+     * Example:
+     * \code
+     * addLicenseText( ki18n("This is my license") );
+     * \endcode
+     *
+     * @param license The license text.
+     * @see setLicenseText, addLicense, addLicenseTextFile
+     * @since 4.1
+     */
+    KAboutData &addLicenseText( const KLocalizedString &license );
+
+    /**
+     * Defines a license text by pointing to a file where it resides.
+     * The file format has to be plain text in an encoding compatible to the locale.
+     *
+     * @param file Path to the file in the local filesystem containing the license text.
      */
     KAboutData &setLicenseTextFile( const QString &file );
+
+    /**
+     * Adds a license text by pointing to a file where it resides.
+     * The file format has to be plain text in an encoding compatible to the locale.
+     *
+     * If there is only one unknown license set, e.g. by using the default
+     * parameter in the constructor, that one is replaced.
+     *
+     * @param file Path to the file in the local filesystem containing the license text.
+     * @see addLicenseText, addLicense, setLicenseTextFile
+     * @since 4.1
+     */
+    KAboutData &addLicenseTextFile( const QString &file );
 
     /**
      * Defines the program name used internally.
@@ -409,8 +444,21 @@ class KDECORE_EXPORT KAboutData
      * Defines the license identifier.
      *
      * @param licenseKey The license identifier.
+     * @see addLicenseText, setLicenseText, setLicenseTextFile
      */
-    KAboutData &setLicense( LicenseKey licenseKey);
+    KAboutData &setLicense( LicenseKey licenseKey );
+
+    /**
+     * Adds a license identifier.
+     *
+     * If there is only one unknown license set, e.g. by using the default
+     * parameter in the constructor, that one is replaced.
+     *
+     * @param licenseKey The license identifier.
+     * @see setLicenseText, addLicenseText, addLicenseTextFile
+     * @since 4.1
+     */
+    KAboutData &addLicense( LicenseKey licenseKey );
 
     /**
      * Defines the copyright statement to show when displaying the license.
@@ -618,6 +666,14 @@ class KDECORE_EXPORT KAboutData
     QString licenseName(NameFormat formatName) const;
 
     /**
+     * Returns a list of licenses.
+     *
+     * @return licenses information (list of licenses)
+     * @since 4.1
+     */
+    QList<KAboutLicense> licenses() const;
+
+    /**
      * Returns the copyright statement.
      * @return the copyright statement. Can be QString() if not set.
      */
@@ -675,6 +731,74 @@ class KDECORE_EXPORT KAboutData
 
     class Private;
     Private *const d;
+};
+
+
+/**
+ * This class is used to store information about a license.
+ * The license can be one of some predefined, one given as text or one
+ * that can be loaded from a file. This class is used in the KAboutData class.
+ * Creating a KAboutLicense object by yourself is not possible,
+ * but the KAboutData method KAboutData::licenses()
+ * returns a list of KAboutLicense data objects which you can examine.
+ *
+ * @note Instead of the more usual i18n calls, for translatable text the ki18n
+ * calls are used to produce KLocalizedStrings, which can delay the translation
+ * lookup. This is necessary because the translation catalogs are usually not
+ * yet initialized at the point where KAboutData is constructed.
+ */
+class KDECORE_EXPORT KAboutLicense
+{
+    friend class KAboutData;
+public:
+    /**
+     * Copy constructor.  Performs a deep copy.
+     * @param other object to copy
+     */
+    KAboutLicense(const KAboutLicense& other);
+
+    ~KAboutLicense();
+
+    /**
+     * Assignment operator.  Performs a deep copy.
+     * @param other object to copy
+     */
+    KAboutLicense& operator=(const KAboutLicense& other);
+
+
+    /**
+     * Returns the license. If the licenseType argument of the constructor has been
+     * used, any text defined by setLicenseText is ignored,
+     * and the standard text for the chosen license will be returned.
+     *
+     * @return The license text.
+     */
+    QString text() const;
+
+    /**
+     * Returns the license name.
+     *
+     * @return The license name as a string.
+     */
+    QString name(KAboutData::NameFormat formatName) const;
+
+private:
+    /**
+     * @internal Used by KAboutData to construct a predefined license.
+     */
+    explicit KAboutLicense( enum KAboutData::LicenseKey licenseType, const KAboutData *aboutData );
+    /**
+     * @internal Used by KAboutData to construct license by given text
+     */
+    explicit KAboutLicense( const QString &pathToFile, const KAboutData *aboutData );
+    /**
+     * @internal Used by KAboutData to construct license by given text
+     */
+    explicit KAboutLicense( const KLocalizedString &licenseText, const KAboutData *aboutData );
+
+    class Private;
+//     Private *const d;
+    QSharedDataPointer<Private> d;
 };
 
 #endif
