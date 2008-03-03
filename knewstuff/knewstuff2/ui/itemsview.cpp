@@ -179,14 +179,14 @@ void ItemsView::buildContents()
             Entry* entry = (*it);
 
             if (entry->name().representation().toLower().contains(m_searchText.toLower())) {
-                QHBoxLayout * itemLayout = new QHBoxLayout(m_root);
+                QHBoxLayout * itemLayout = new QHBoxLayout;
                 _layout->addLayout(itemLayout);
 
                 EntryView *part = new EntryView(m_root);
                 part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
                 itemLayout->addWidget(part);
 
-                QVBoxLayout * previewLayout = new QVBoxLayout(m_root);
+                QVBoxLayout * previewLayout = new QVBoxLayout;
                 itemLayout->insertLayout(0, previewLayout);
 
                 KDXSButton *dxsbutton = new KDXSButton(m_root);
