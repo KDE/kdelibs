@@ -57,6 +57,7 @@ private Q_SLOTS:
     void testKdeglobals();
     void testSubGroup();
     void testAddConfigSources();
+    void testCreateDir();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

@@ -19,6 +19,7 @@
 
 #include <qtest_kde.h>
 #include "kconfigtest.h"
+#include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include "kconfigtest.moc"
 
@@ -911,3 +912,19 @@ QList<QByteArray> KConfigTest::readLines()
     } while(!line.isEmpty());
     return lines;
 }
+
+void KConfigTest::testCreateDir()
+{
+    // Test auto-creating the parent directory when needed (KConfigIniBackend::createEnclosing)
+    QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+    QString subdir = kdehome + "/newsubdir";
+    QString file = subdir + "/foo.desktop";
+    QFile::remove(file);
+    QDir().rmdir(subdir);
+    QVERIFY(!QDir().exists(subdir));
+    KDesktopFile desktopFile(file);
+    desktopFile.desktopGroup().writeEntry("key", "value");
+    desktopFile.sync();
+    QVERIFY(QFile::exists(file));
+}
+
