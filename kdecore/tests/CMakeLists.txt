@@ -21,6 +21,7 @@ KDECORE_UNIT_TESTS(
  klocaletest
  klocalizedstringtest
  kstandarddirstest
+ kaboutdatatest
  kurltest
  kstringhandlertest
  cplusplustest
