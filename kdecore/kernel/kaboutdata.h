@@ -655,6 +655,8 @@ class KDECORE_EXPORT KAboutData
      * and the standard text for the chosen license will be returned.
      *
      * @return The license text.
+     *
+     * @deprecated There could be multiple licenses, use licenses() instead.
      */
     QString license() const;
 
@@ -662,6 +664,8 @@ class KDECORE_EXPORT KAboutData
      * Returns the license name.
      *
      * @return The license name as a string.
+     *
+     * @deprecated There could be multiple licenses, use licenses() instead.
      */
     QString licenseName(NameFormat formatName) const;
 
@@ -797,7 +801,6 @@ private:
     explicit KAboutLicense( const KLocalizedString &licenseText, const KAboutData *aboutData );
 
     class Private;
-//     Private *const d;
     QSharedDataPointer<Private> d;
 };
 
