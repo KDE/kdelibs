@@ -72,9 +72,6 @@ void ExecState::markSelf()
 
 void ExecState::mark()
 {
-    if (m_savedExec && m_savedExec != m_callingExec)
-        m_savedExec->mark();
-
     for (ExecState* exec = this; exec; exec = exec->m_callingExec)
         exec->markSelf();
 }
