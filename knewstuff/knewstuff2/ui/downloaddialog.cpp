@@ -247,7 +247,7 @@ void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
 
 void DownloadDialog::slotEntriesFailed()
 {
-    displayMessage("Entries failed to load");
+    displayMessage(i18n("Entries failed to load"));
 }
 // FIXME: below here, those are for traditional GHNS
 
