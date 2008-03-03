@@ -1,10 +1,11 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2007 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2007-2008 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,121 +18,154 @@
    Boston, MA 02110-1301, USA.
  */
 
-#include "ratingpainter.h"
+#include "kratingpainter.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
+#include <QtGui/QIcon>
+#include <QtCore/QRect>
+#include <QtCore/QPoint>
 
 #include <kicon.h>
 #include <kiconeffect.h>
 #include <kdebug.h>
 
 
-class Nepomuk::RatingPainter::Private
+class KRatingPainter::Private
 {
 public:
     Private()
         : maxRating(10),
-          icon( "rating" ),
           bHalfSteps(true),
           alignment(Qt::AlignCenter),
-          direction(Qt::LeftToRight) {
+          direction(Qt::LeftToRight),
+          spacing(0) {
     }
 
+    QPixmap getPixmap( int size );
+
     int maxRating;
-    KIcon icon;
+    QIcon icon;
     bool bHalfSteps;
     Qt::Alignment alignment;
     Qt::LayoutDirection direction;
     QPixmap customPixmap;
+    int spacing;
 };
 
 
-Nepomuk::RatingPainter::RatingPainter()
+QPixmap KRatingPainter::Private::getPixmap( int size )
+{
+    if ( !customPixmap.isNull() ) {
+        return customPixmap.scaled( QSize( size, size ) );
+    }
+    else {
+        QIcon _icon( icon );
+        if ( _icon.isNull() ) {
+            _icon = KIcon( "rating" );
+        }
+        return _icon.pixmap( size );
+    }
+}
+
+
+KRatingPainter::KRatingPainter()
     : d(new Private())
 {
 }
 
 
-Nepomuk::RatingPainter::~RatingPainter()
+KRatingPainter::~KRatingPainter()
 {
     delete d;
 }
 
 
-int Nepomuk::RatingPainter::maxRating() const
+int KRatingPainter::maxRating() const
 {
     return d->maxRating;
 }
 
 
-bool Nepomuk::RatingPainter::halfStepsEnabled() const
+bool KRatingPainter::halfStepsEnabled() const
 {
     return d->bHalfSteps;
 }
 
 
-Qt::Alignment Nepomuk::RatingPainter::alignment() const
+Qt::Alignment KRatingPainter::alignment() const
 {
     return d->alignment;
 }
 
 
-Qt::LayoutDirection Nepomuk::RatingPainter::direction() const
+Qt::LayoutDirection KRatingPainter::layoutDirection() const
 {
     return d->direction;
 }
 
 
-KIcon Nepomuk::RatingPainter::icon() const
+QIcon KRatingPainter::icon() const
 {
     return d->icon;
 }
 
 
-QPixmap Nepomuk::RatingPainter::customPixmap() const
+QPixmap KRatingPainter::customPixmap() const
 {
     return d->customPixmap;
 }
 
 
-void Nepomuk::RatingPainter::setMaxRating( int max )
+int KRatingPainter::spacing() const
+{
+    return d->spacing;
+}
+
+
+void KRatingPainter::setMaxRating( int max )
 {
     d->maxRating = max;
 }
 
 
-void Nepomuk::RatingPainter::setHalfStepsEnabled( bool enabled )
+void KRatingPainter::setHalfStepsEnabled( bool enabled )
 {
     d->bHalfSteps = enabled;
 }
 
 
-void Nepomuk::RatingPainter::setAlignment( Qt::Alignment align )
+void KRatingPainter::setAlignment( Qt::Alignment align )
 {
     d->alignment = align;
 }
 
 
-void Nepomuk::RatingPainter::setLayoutDirection( Qt::LayoutDirection direction )
+void KRatingPainter::setLayoutDirection( Qt::LayoutDirection direction )
 {
     d->direction = direction;
 }
 
 
-void Nepomuk::RatingPainter::setIcon( const KIcon& icon )
+void KRatingPainter::setIcon( const QIcon& icon )
 {
     d->icon = icon;
 }
 
 
-void Nepomuk::RatingPainter::setCustomPixmap( const QPixmap& pixmap )
+void KRatingPainter::setCustomPixmap( const QPixmap& pixmap )
 {
     d->customPixmap = pixmap;
 }
 
 
-void Nepomuk::RatingPainter::draw( QPainter* painter, const QRect& rect, int rating, int hoverRating )
+void KRatingPainter::setSpacing( int s )
+{
+    d->spacing = qMax( 0, s );
+}
+
+
+void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, int hoverRating ) const
 {
     rating = qMin( rating, d->maxRating );
     hoverRating = qMin( hoverRating, d->maxRating );
@@ -144,16 +178,11 @@ void Nepomuk::RatingPainter::draw( QPainter* painter, const QRect& rect, int rat
         rating = tmp;
     }
 
+    int usedSpacing = d->spacing;
+
     // get the rating pixmaps
-    QPixmap ratingPix;
-    if ( !d->customPixmap.isNull() ) {
-        ratingPix = d->customPixmap;
-    }
-    else {
-        KIcon ratingIcon( "rating" );
-        int iconSize = qMin( rect.height(), rect.width() / numUsedStars );
-        ratingPix = ratingIcon.pixmap( iconSize );
-    }
+    int maxHSizeOnePix = ( rect.width() - (numUsedStars-1)*usedSpacing ) / numUsedStars;
+    QPixmap ratingPix = d->getPixmap( qMin( rect.height(), maxHSizeOnePix ) );
 
     QPixmap disabledRatingPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), false );
     QPixmap hoverPix;
@@ -169,20 +198,21 @@ void Nepomuk::RatingPainter::draw( QPainter* painter, const QRect& rect, int rat
         hoverPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), false );
     }
 
-    int usedSpacing = 0;
     if ( d->alignment & Qt::AlignJustify ) {
         int w = rect.width();
         w -= numUsedStars * ratingPix.width();
         usedSpacing = w / ( numUsedStars-1 );
     }
 
+    int ratingAreaWidth = ratingPix.width()*numUsedStars + usedSpacing*(numUsedStars-1);
+
     int i = 0;
     int x = rect.x();
     if ( d->alignment & Qt::AlignRight ) {
-        x += ( rect.width() - ratingPix.width()*numUsedStars );
+        x += ( rect.width() - ratingAreaWidth );
     }
-    else if ( d->alignment & Qt::AlignCenter ) {
-        x += ( rect.width() - ratingPix.width()*numUsedStars )/2;
+    else if ( d->alignment & Qt::AlignHCenter ) {
+        x += ( rect.width() - ratingAreaWidth )/2;
     }
 
     int xInc = ratingPix.width() + usedSpacing;
@@ -233,30 +263,26 @@ void Nepomuk::RatingPainter::draw( QPainter* painter, const QRect& rect, int rat
 }
 
 
-int Nepomuk::RatingPainter::fromPosition( const QRect& rect, const QPoint& pos )
+int KRatingPainter::ratingFromPosition( const QRect& rect, const QPoint& pos ) const
 {
+    int usedSpacing = d->spacing;
     int numUsedStars = d->bHalfSteps ? d->maxRating/2 : d->maxRating;
-    QPixmap ratingPix;
-    if ( !d->customPixmap.isNull() ) {
-        ratingPix = d->customPixmap;
-    }
-    else {
-        KIcon ratingIcon( "rating" );
-        int iconSize = qMin( rect.height(), rect.width() / numUsedStars );
-        ratingPix = ratingIcon.pixmap( iconSize );
-    }
+    int maxHSizeOnePix = ( rect.width() - (numUsedStars-1)*usedSpacing ) / numUsedStars;
+    QPixmap ratingPix = d->getPixmap( qMin( rect.height(), maxHSizeOnePix ) );
+
+    int ratingAreaWidth = ratingPix.width()*numUsedStars + usedSpacing*(numUsedStars-1);
 
     QRect usedRect( rect );
     if ( d->alignment & Qt::AlignRight ) {
-        usedRect.setLeft( rect.right() - numUsedStars * ratingPix.width() );
+        usedRect.setLeft( rect.right() - ratingAreaWidth );
     }
     else if ( d->alignment & Qt::AlignHCenter ) {
-        int x = ( rect.width() - numUsedStars * ratingPix.width() )/2;
+        int x = ( rect.width() - ratingAreaWidth )/2;
         usedRect.setLeft( rect.left() + x );
         usedRect.setRight( rect.right() - x );
     }
     else { // d->alignment & Qt::AlignLeft
-        usedRect.setRight( rect.left() + numUsedStars * ratingPix.width() - 1 );
+        usedRect.setRight( rect.left() + ratingAreaWidth - 1 );
     }
 
     if ( d->alignment & Qt::AlignBottom ) {
@@ -282,7 +308,7 @@ int Nepomuk::RatingPainter::fromPosition( const QRect& rect, const QPoint& pos )
 
         double one = ( double )usedRect.width() / ( double )d->maxRating;
 
-        kDebug() << "rating:" << ( int )( ( double )x/one + 0.5 );
+//        kDebug() << "rating:" << ( int )( ( double )x/one + 0.5 );
 
         return ( int )( ( double )x/one + 0.5 );
     }
@@ -292,19 +318,19 @@ int Nepomuk::RatingPainter::fromPosition( const QRect& rect, const QPoint& pos )
 }
 
 
-void Nepomuk::RatingPainter::drawRating( QPainter* painter, const QRect& rect, Qt::Alignment align, int rating, int hoverRating )
+void KRatingPainter::paintRating( QPainter* painter, const QRect& rect, Qt::Alignment align, int rating, int hoverRating )
 {
-    RatingPainter rp;
+    KRatingPainter rp;
     rp.setAlignment( align );
     rp.setLayoutDirection( painter->layoutDirection() );
-    rp.draw( painter, rect, rating, hoverRating );
+    rp.paint( painter, rect, rating, hoverRating );
 }
 
 
-int Nepomuk::RatingPainter::getRatingFromPosition( const QRect& rect, Qt::Alignment align, Qt::LayoutDirection direction, const QPoint& pos )
+int KRatingPainter::getRatingFromPosition( const QRect& rect, Qt::Alignment align, Qt::LayoutDirection direction, const QPoint& pos )
 {
-    RatingPainter rp;
+    KRatingPainter rp;
     rp.setAlignment( align );
     rp.setLayoutDirection( direction );
-    return rp.fromPosition( rect, pos );
+    return rp.ratingFromPosition( rect, pos );
 }

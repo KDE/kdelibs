@@ -14,6 +14,7 @@ install(FILES
   kmetadatatagcloud.h
   kmetadatatagwidget.h
   ktagdisplaywidget.h
+  kratingpainter.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk
 )
 
@@ -21,3 +22,5 @@ install(FILES
   pics/rating.png
   DESTINATION ${DATA_INSTALL_DIR}/nepomuk/pics
 )
+
+add_subdirectory(test)
