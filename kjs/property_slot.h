@@ -40,28 +40,21 @@ public:
     typedef JSValue *(*GetValueFunc)(ExecState *, JSObject *originalObject, const Identifier&, const PropertySlot&);
 
     JSValue *getValue(ExecState *exec, JSObject *originalObject, const Identifier& propertyName) const
-    { 
+    {
         if (m_getValue == VALUE_SLOT_MARKER)
             return *m_data.valueSlot;
-        return m_getValue(exec, originalObject, propertyName, *this); 
+        return m_getValue(exec, originalObject, propertyName, *this);
     }
 
     JSValue *getValue(ExecState *exec, JSObject *originalObject, unsigned propertyName) const
-    { 
+    {
         if (m_getValue == VALUE_SLOT_MARKER)
             return *m_data.valueSlot;
-        return m_getValue(exec, originalObject, Identifier::from(propertyName), *this); 
+        return m_getValue(exec, originalObject, Identifier::from(propertyName), *this);
     }
 
-    // Readability helper for below..
-    enum {
-        PermitDirectWrite = 0,
-        ForbidDirectWrite = 1
-    };
-    
-    void setValueSlot(JSObject *slotBase, JSValue **valueSlot, bool makeReadOnly = ForbidDirectWrite) 
+    void setValueSlot(JSObject *slotBase, JSValue **valueSlot)
     {
-        m_readOnly |= makeReadOnly;
         m_slotBase = slotBase;
         m_data.valueSlot = valueSlot;
         m_getValue = VALUE_SLOT_MARKER;
@@ -97,14 +90,14 @@ public:
         m_data.value = value;
         m_getValue = getValue;
     }
-    
+
     void setGetterSlot(JSObject *slotBase, JSObject *getterFunc)
     {
         m_getValue = functionGetter;
         m_slotBase = slotBase;
         m_data.getterFunc = getterFunc;
     }
-    
+
     void setUndefined(JSObject *slotBase)
     {
         m_slotBase = slotBase;
@@ -117,25 +110,10 @@ public:
     unsigned index() const { return m_data.index; }
     void*    customValue() const { return m_data.value; }
 
-    // For direct/value slots we also keep track of whether they're 
-    // writeable. This is cleared when the lookup succeeds in the 
-    // prototype since the write should go elsewhere.
-    // ### it may make sense to give it a real 'read only' value, v.s. 
-    // a 'not sure' one, since right not an attempt to write a const 
-    // will take the slow path.
-    void setPotentiallyWriteable() { m_readOnly = false; }
-    void setReadOnly()             { m_readOnly = true;  }
-
-    // This returns a pointer where the value may be stored,
-    // or 0 if this is not possible.
-    JSValue** getDirectWriteLocation()
-    {
-        return ((m_getValue == VALUE_SLOT_MARKER) & !m_readOnly) ? m_data.valueSlot : 0;
-    }
 private:
     static JSValue *undefinedGetter(ExecState *, JSObject *, const Identifier&, const PropertySlot&);
     static JSValue *functionGetter(ExecState *, JSObject *, const Identifier&, const PropertySlot&);
-    
+
     GetValueFunc m_getValue;
 
     JSObject *m_slotBase;
@@ -146,8 +124,6 @@ private:
         unsigned index;
         void*    value;
     } m_data;
-
-    bool m_readOnly;
 };
 
 }

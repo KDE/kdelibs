@@ -32,12 +32,7 @@ namespace KJS {
 
 static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
 {
-    Node *n = loc->nodeInsideAllParens();
-
-    if (!n->isLocation())
-        return new AssignErrorNode(loc, op, expr);
-
-    return new AssignNode(static_cast<LocationNode*>(n), op, expr);
+    return new AssignNode(loc, op, expr);
 }
 
 static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
@@ -47,24 +42,12 @@ static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
 
 static Node* makePrefixNode(Node *expr, Operator op)
 {
-    Node *n = expr->nodeInsideAllParens();
-
-    if (!n->isLocation())
-        return new PrefixErrorNode(expr, op);
-
-    LocationNode *l = static_cast<LocationNode*>(n);
-    return new PrefixNode(l, op);
+    return new PrefixNode(expr, op);
 }
 
 static Node* makePostfixNode(Node* expr, Operator op)
 {
-    Node *n = expr->nodeInsideAllParens();
-
-    if (!n->isLocation())
-        return new PostfixErrorNode(expr, op);
-
-    LocationNode *l = static_cast<LocationNode*>(n);
-    return new PostfixNode(l, op);
+    return new PostfixNode(expr, op);
 }
 
 static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
@@ -74,7 +57,7 @@ static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
     if (!n->isLocation())
         return new FunctionCallValueNode(func, args);
     else
-        return new FunctionCallReferenceNode(static_cast<VarAccessNode*>(func), args);
+        return new FunctionCallReferenceNode(func, args);
 }
 
 static Node *makeTypeOfNode(Node *expr)

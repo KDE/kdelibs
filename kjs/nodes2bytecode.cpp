@@ -23,6 +23,7 @@
  */
  #include "nodes2bytecode.h"
  #include "CompileState.h"
+ #include <wtf/Assertions.h>
 
  #include <typeinfo>
  #include <iostream>
@@ -30,17 +31,29 @@
 namespace KJS {
 
 // A few helpers..
-static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+static void emitError(CompileState* comp, CodeBlock& block, Node* node, ErrorType type, const char* msgStr)
 {
     OpValue me = OpValue::immNode(node);
-    OpValue se = OpValue::immInt32(SyntaxError);
+    OpValue se = OpValue::immInt32(type);
     OpValue msg = OpValue::immCStr(msgStr);
     CodeGen::emitOp(comp, block, Op_RaiseError, 0, &me, &se, &msg);
 }
 
+static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+{
+    emitError(comp, block, node, SyntaxError, msgStr);
+}
+
+static void emitReferenceError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+{
+    emitError(comp, block, node, ReferenceError, msgStr);
+}
+
+
 OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
+    ASSERT(0);
 
     return OpValue::immInt32(42);
 }
@@ -48,6 +61,7 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
 void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
+    ASSERT(0);
 }
 
 // ------------------------------ Basic literals -----------------------------------------
@@ -508,14 +522,18 @@ OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp, CodeBlock& b
 
 OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    CompileReference* ref =  expr->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                                 | LocationNode::ImmediateRead);
-    OpValue funVal = expr->generateRefRead(comp, block, ref);
+    Node* cand = expr->nodeInsideAllParens();
+    ASSERT(cand->isLocation());
+    LocationNode* loc = static_cast<LocationNode*>(cand);
+
+    CompileReference* ref =  loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                                | LocationNode::ImmediateRead);
+    OpValue funVal = loc->generateRefRead(comp, block, ref);
 
     args->generateEvalArguments(comp, block);
 
     // Can do this safely before checking function, since it's been computed before
-    OpValue newThis = expr->generateRefBase(comp, block, ref);
+    OpValue newThis = loc->generateRefBase(comp, block, ref);
 
     OpValue out;
     CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &funVal, &newThis);
@@ -525,13 +543,23 @@ OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBloc
 
 OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    // ### we want to fold this in if the kid is a local -- any elegant way?
+    Node* cand = m_loc->nodeInsideAllParens();
+    if (!cand->isLocation()) {
+        emitReferenceError(comp, block, this,
+                m_oper == OpPlusPlus ?
+                    "Postfix ++ operator applied to value that is not a reference." :
+                    "Postfix -- operator applied to value that is not a reference.");
+        return OpValue::immValue(jsUndefined());
+    }
 
-    CompileReference* ref = m_loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                                 | LocationNode::ImmediateRead);
+    LocationNode* loc = static_cast<LocationNode*>(cand);
+
+    // ### we want to fold this in if the kid is a local -- any elegant way?
+    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                               | LocationNode::ImmediateRead);
 
     //read current value
-    OpValue curV = m_loc->generateRefRead(comp, block, ref);
+    OpValue curV = loc->generateRefRead(comp, block, ref);
 
     // We need it to be a number..
     if (curV.type != OpType_number) {
@@ -545,7 +573,7 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
                     &newV, &curV);
 
-    m_loc->generateRefWrite(comp, block, ref, newV);
+    loc->generateRefWrite(comp, block, ref, newV);
     delete ref;
     return curV;
 }
@@ -589,19 +617,30 @@ OpValue TypeOfValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
 OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
+    Node* cand = m_loc->nodeInsideAllParens();
+    if (!cand->isLocation()) {
+        emitReferenceError(comp, block, this,
+                m_oper == OpPlusPlus ?
+                    "Prefix ++ operator applied to value that is not a reference." :
+                    "Prefix -- operator applied to value that is not a reference.");
+        return OpValue::immValue(jsUndefined());
+    }
+
+    LocationNode* loc = static_cast<LocationNode*>(cand);
+
     // ### we want to fold this in if the kid is a local -- any elegant way?
-    CompileReference* ref = m_loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                                 | LocationNode::ImmediateRead);
+    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
+                                                               | LocationNode::ImmediateRead);
 
     //read current value
-    OpValue curV = m_loc->generateRefRead(comp, block, ref);
+    OpValue curV = loc->generateRefRead(comp, block, ref);
 
     OpValue newV;
     CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
                     &newV, &curV);
 
     // Write out + return new value.
-    m_loc->generateRefWrite(comp, block, ref, newV);
+    loc->generateRefWrite(comp, block, ref, newV);
     delete ref;
     return newV;
 }
@@ -862,17 +901,25 @@ void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
+    Node* cand = m_loc->nodeInsideAllParens();
+    if (!cand->isLocation()) {
+        emitReferenceError(comp, block, this, "Left side of assignment is not a reference.");
+        return OpValue::immValue(jsUndefined());
+    }
+
+    LocationNode* loc = static_cast<LocationNode*>(cand);
+
     int flags = (m_oper == OpEqual ? 0 : LocationNode::ErrorOnFail | LocationNode::ImmediateRead);
     // Lookup failure is OK for assignments, but not for += and such; those also
     // fetch the old value
 
-    CompileReference* ref = m_loc->generateRefBegin(comp, block, flags);
+    CompileReference* ref = loc->generateRefBegin(comp, block, flags);
 
     OpValue v;
     if (m_oper == OpEqual) {
         v = m_right->generateEvalCode(comp, block);
     } else {
-        OpValue v1 = m_loc->generateRefRead(comp, block, ref);
+        OpValue v1 = loc->generateRefRead(comp, block, ref);
         OpValue v2 = m_right->generateEvalCode(comp, block);
 
         OpName codeOp;
@@ -917,7 +964,7 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         CodeGen::emitOp(comp, block, codeOp, &v, &v1, &v2);
     }
 
-    m_loc->generateRefWrite(comp, block, ref, v);
+    loc->generateRefWrite(comp, block, ref, v);
 
     delete ref;
     return v;
@@ -1433,6 +1480,9 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->popDefaultBreak();
     comp->resolvePendingBreaks(this, block, CodeGen::nextPC(block));
 }
+
+void ImportStatement::generateExecCode(CompileState*, CodeBlock&)
+{} // handled as a declaration..
 
 
 }

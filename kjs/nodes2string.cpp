@@ -389,38 +389,9 @@ void FunctionCallReferenceNode::streamTo(SourceStream &s) const
   s << expr << args;
 }
 
-void FunctionCallBracketNode::streamTo(SourceStream &s) const
-{
-  s << base << '[' << subscript << ']' << args;
-}
-
-void FunctionCallParenBracketNode::streamTo(SourceStream &s) const
-{
-  s << '(' << base << '[' << subscript << "])" << args;
-}
-
-void FunctionCallDotNode::streamTo(SourceStream &s) const
-{
-  s << base << '.' << ident << args;
-}
-
-void FunctionCallParenDotNode::streamTo(SourceStream &s) const
-{
-  s << '(' << base << '.' << ident << ")" << args;
-}
-
 void PostfixNode::streamTo(SourceStream &s) const
 {
   s << m_loc << m_oper;
-}
-
-void PostfixErrorNode::streamTo(SourceStream& s) const
-{
-  s << m_expr;
-  if (m_oper == OpPlusPlus)
-    s << "++";
-  else
-    s << "--";
 }
 
 void DeleteReferenceNode::streamTo(SourceStream &s) const
@@ -451,15 +422,6 @@ void TypeOfReferenceNode::streamTo(SourceStream &s) const
 void PrefixNode::streamTo(SourceStream &s) const
 {
   s << m_oper << m_loc;
-}
-
-void PrefixErrorNode::streamTo(SourceStream& s) const
-{
-  if (m_oper == OpPlusPlus)
-    s << "++";
-  else
-    s << "--";
-  s << m_expr;
 }
 
 void UnaryPlusNode::streamTo(SourceStream &s) const
@@ -620,29 +582,6 @@ void AssignNode::streamTo(SourceStream &s) const
   streamAssignmentOperatorTo(s, m_oper);
   s << m_right;
 //  s.append(m_ident, opStr, m_right);
-}
-
-void AssignBracketNode::streamTo(SourceStream &s) const
-{
-  s << m_base << '[' << m_subscript << ']';
-  streamAssignmentOperatorTo(s, m_oper);
-  s << m_right;
-}
-
-void AssignDotNode::streamTo(SourceStream &s) const
-{
-  s << m_base << '.' << m_ident;
-  streamAssignmentOperatorTo(s, m_oper);
-  s << m_right;
-}
-
-
-
-void AssignErrorNode::streamTo(SourceStream& s) const
-{
-    s << m_left;
-    streamAssignmentOperatorTo(s, m_oper);
-    s << m_right;
 }
 
 void CommaNode::streamTo(SourceStream &s) const
@@ -838,11 +777,6 @@ void SourceElementsNode::streamTo(SourceStream &s) const
 {
   for (const SourceElementsNode *n = this; n; n = n->next.get())
     s << n->node;
-}
-
-void ErrorNode::streamTo(SourceStream& s) const
-{
-  s << kid;
 }
 
 void PackageNameNode::streamTo(SourceStream &s) const

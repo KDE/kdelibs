@@ -48,44 +48,6 @@ using namespace WTF;
 
 namespace KJS {
 
-// ----------------------------- LookupOptimizer ------------------------------
-class LookupOptimizer : public NodeVisitor {
-public:
-  LookupOptimizer(ExecState* exec, FunctionBodyNode* body) : m_exec(exec), m_body(body) {}
-
-  void optimize() {
-    visit(m_body);
-  }
-
-  virtual Node* visit(Node* node)
-  {
-    //Do not recurse inside nodes that introduce new scopes:
-    //that includes 'with' and various function literals.
-    if (node->introducesNewScope()) return 0;
-
-    //Catch can introduce a new scope as well, but
-    //the rest of try is fine..
-    if (node->isTryNode()) {
-       static_cast<TryNode*>(node)->recurseVisitNonCatch(this);
-       return 0;
-    }
-
-    //Now try optimizing..
-    if (Node* resultNode = node->optimizeLocalAccess(m_exec, m_body)) {
-      //We optimized this node, but it may make sense to optimize
-      //inside it as well, so recurse, too.
-      NodeVisitor::visit(resultNode);
-      return resultNode;
-    }
-
-    //Just recurse..
-    return NodeVisitor::visit(node);
-  }
-private:
-  ExecState*        m_exec;
-  FunctionBodyNode* m_body;
-};
-
 // ----------------------------- FunctionImp ----------------------------------
 
 const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
