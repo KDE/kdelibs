@@ -27,7 +27,7 @@ set(nepomuk_LIB_SRCS
   ui/kmetadatatagwidget.cpp
   ui/kautoscrollarea.cpp
   ui/ktagdisplaywidget.cpp
-  ui/ratingpainter.cpp
+  ui/kratingpainter.cpp
   generated/resource.cpp
   generated/tag.cpp
   ontology/entity.cpp
