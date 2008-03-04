@@ -8,8 +8,7 @@ include_directories(
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
   ${KDE4_INCLUDES}
-  ${KDE4_KDECORE_INCLUDES}
-  ${KDE4_KDEUI_INCLUDES}
+  ${KDE4_KIO_INCLUDES}
   ${QT_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
 )
