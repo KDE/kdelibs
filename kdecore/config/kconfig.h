@@ -91,6 +91,12 @@ public:
     /// @reimp
     AccessMode accessMode() const;
 
+    /**
+     * Return false if the user cannot write to this KConfig instance,
+     * for instance because of permission problems.
+     * @param warnUser if true, show a message box telling the user to
+     * contact his system administrator for getting this problem fixed.
+     */
     bool isConfigWritable(bool warnUser);
     /// @}
 

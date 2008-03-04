@@ -109,6 +109,11 @@ public:
      */
     virtual bool isWritable() const = 0;
     /**
+     * When isWritable returns false, return an error message to
+     * explain to the user why saving configuration will not work.
+     */
+    virtual QString nonWritableErrorMessage() const = 0;
+    /**
      * get the read/write status of the configuration object.
      * @note This function @b MUST be implemented by sub-classes.
      */
@@ -125,7 +130,7 @@ public:
      * @note This function @b MUST be implemented by sub-classes.
      */
     virtual void setFilePath(const QString& path) = 0;
-    
+
     /**
      * lock the file
      */

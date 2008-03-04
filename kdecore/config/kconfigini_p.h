@@ -46,6 +46,7 @@ public:
                      WriteOptions options, const KComponentData &data);
 
     bool isWritable() const;
+    QString nonWritableErrorMessage() const;
     KConfigBase::AccessMode accessMode() const;
     void createEnclosing();
     void setFilePath(const QString& path);

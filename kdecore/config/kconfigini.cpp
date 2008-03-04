@@ -470,6 +470,11 @@ bool KConfigIniBackend::isWritable() const
     return false;
 }
 
+QString KConfigIniBackend::nonWritableErrorMessage() const
+{
+    return i18n("Configuration file \"%1\" not writable.\n", filePath());
+}
+
 void KConfigIniBackend::createEnclosing()
 {
     const QString file = filePath();

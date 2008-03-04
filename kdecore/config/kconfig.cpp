@@ -652,6 +652,9 @@ bool KConfig::isConfigWritable(bool warnUser)
 
     if (warnUser && !allWritable) {
         QString errorMsg;
+        if (!d->mBackend.isNull()) // TODO how can be it be null? Set errorMsg appropriately
+            errorMsg = d->mBackend->nonWritableErrorMessage();
+
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
         errorMsg += i18n("Please contact your system administrator.");
         QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
