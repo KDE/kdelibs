@@ -56,6 +56,7 @@ QDataStream &operator>>(QDataStream &s, KService::ServiceTypeAndPreference &st)
 void KServicePrivate::init( const KDesktopFile *config, KService* q )
 {
     const QString entryPath = q->entryPath();
+    kDebug() << entryPath;
     bool absPath = !QDir::isRelativePath(entryPath);
 
     // TODO: it makes sense to have a KConstConfigGroup I guess
@@ -148,7 +149,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     {
         kWarning(7012) << "The desktop entry file " << entryPath
                        << " has Type=" << m_strType << " but is located under \"" << resource
-                       << "\" instead of \"services\"" << endl;
+                       << "\" instead of \"services\"";
         m_bValid = false;
         return;
     }
@@ -206,6 +207,11 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     QListIterator<QString> st_it(lstServiceTypes);
     while ( st_it.hasNext() ) {
         const QString st = st_it.next();
+        if (st.isEmpty()) {
+            kWarning(7012) << "The desktop entry file" << entryPath
+                           << "has an empty mimetype!";
+            continue;
+        }
         int initialPreference = m_initialPreference;
         if ( st_it.hasNext() ) {
             // TODO better syntax - separate group with mimetype=number entries?
@@ -216,7 +222,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
                 st_it.next();
             }
         }
-        Q_ASSERT(!st.isEmpty());
         m_serviceTypes.push_back(KService::ServiceTypeAndPreference(initialPreference, st));
     }
 
