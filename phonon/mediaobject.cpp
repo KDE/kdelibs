@@ -288,8 +288,6 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
         disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
         connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
     } else if (d->mediaSource.type() != MediaSource::Url && oldSourceType == MediaSource::Url) {
-        d->errorOverride = false;
-        emit stateChanged(ErrorState, INTERFACE_CALL(state()));
         disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
         connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
     }

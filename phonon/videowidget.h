@@ -200,6 +200,7 @@ class AbstractVideoOutput;
             VideoWidget(VideoWidgetPrivate &d, QWidget *parent);
 
             void mouseMoveEvent(QMouseEvent *);
+            bool event(QEvent *);
     };
 
 } //namespace Phonon

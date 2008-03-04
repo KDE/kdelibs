@@ -59,7 +59,7 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
         QHBoxLayout layout;
         VideoWidget::AspectRatio aspectRatio;
         VideoWidget::ScaleMode scaleMode;
-        bool changeFlags;
+        Qt::WindowFlags changeFlags;
 
         qreal brightness;
         qreal contrast;

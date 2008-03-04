@@ -99,20 +99,21 @@ void VideoWidget::setFullScreen(bool newFullScreen)
     // application?
     Qt::WindowFlags flags = windowFlags();
     if (newFullScreen) {
-        d->changeFlags = !(flags & Qt::Window);
-        if (d->changeFlags) {
-            flags &= ~Qt::SubWindow;
+        if (!isFullScreen()) {
+            //we only update that value if it is not already fullscreen
+            d->changeFlags = flags & (Qt::Window | Qt::SubWindow);
             flags |= Qt::Window;
-        } // else it's a toplevel window already
-    } else if (d->changeFlags && parent()) {
-        flags &= ~Qt::Window;
-        flags |= Qt::SubWindow;
-    }
-    setWindowFlags(flags);
-    if (newFullScreen) {
-        showFullScreen();
-    } else {
-        showNormal();
+            flags ^= Qt::SubWindow;
+            setWindowFlags(flags);
+            showFullScreen();
+        }
+    } else if (parentWidget()) {
+        if (isFullScreen()) {
+            flags ^= (Qt::Window | Qt::SubWindow); //clear the flags...
+            flags |= d->changeFlags; //then we reset the flags (window and subwindow)
+            setWindowFlags(flags);
+            showNormal();
+        }
     }
 }
 
@@ -150,28 +151,10 @@ void VideoWidgetPrivate::setupBackendObject()
     }
 }
 
-/*
-QSize VideoWidget::sizeHint()
+bool VideoWidget::event(QEvent *e)
 {
-    if (k_ptr->backendObject())
-    {
-        QWidget *w = pINTERFACE_CALL(widget());
-        if (w)
-            return w->sizeHint();
-    }
-    return QSize(0, 0);
+    return QWidget::event(e);
 }
-
-QSize VideoWidget::minimumSizeHint()
-{
-    if (k_ptr->backendObject())
-    {
-        QWidget *w = pINTERFACE_CALL(widget());
-        if (w)
-            return w->minimumSizeHint();
-    }
-    return QSize(0, 0);
-} */
 
 } //namespace Phonon
 
