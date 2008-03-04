@@ -200,38 +200,10 @@ static inline const UString& currentSourceURL(ExecState* exec)
     return exec->currentBody()->sourceURL();
 }
 
-Completion Node::createErrorCompletion(ExecState* exec, ErrorType e, const UString& msg)
-{
-    return Completion(Throw, Error::create(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec)));
-}
-
-Completion Node::createErrorCompletion(ExecState *exec, ErrorType e, const UString& msg, const Identifier &ident)
-{
-    UString message = msg;
-    substitute(message, ident.ustring());
-    return Completion(Throw, Error::create(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec)));
-}
-
 JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg)
 {
     return KJS::throwError(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
-
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const char* string)
-{
-    UString message = msg;
-    substitute(message, string);
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
-}
-
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* expr)
-{
-    UString message = msg;
-    substitute(message, v->toString(exec));
-    substitute(message, expr->toString());
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
-}
-
 
 JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const Identifier& label)
 {
@@ -240,36 +212,11 @@ JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, cons
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* e1, Node* e2)
-{
-    UString message = msg;
-    substitute(message, v->toString(exec));
-    substitute(message, e1->toString());
-    substitute(message, e2->toString());
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
-}
-
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* expr, const Identifier& label)
-{
-    UString message = msg;
-    substitute(message, v->toString(exec));
-    substitute(message, expr->toString());
-    substitute(message, label.ustring());
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
-}
-
-JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, const Identifier& label)
-{
-    UString message = msg;
-    substitute(message, v->toString(exec));
-    substitute(message, label.ustring());
-    return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
-}
-
 JSValue* Node::throwUndefinedVariableError(ExecState* exec, const Identifier& ident)
 {
     return throwError(exec, ReferenceError, "Can't find variable: %s", ident);
 }
+
 
 void Node::handleException(ExecState *exec)
 {
@@ -297,11 +244,6 @@ Completion Node::rethrowException(ExecState* exec)
 Node *Node::nodeInsideAllParens()
 {
     return this;
-}
-
-void Node::copyDebugInfo(Node* otherNode)
-{
-    m_line = otherNode->m_line;
 }
 
 class VarDeclVisitor: public NodeVisitor {
@@ -371,12 +313,6 @@ void StatementNode::setLoc(int firstLine, int lastLine)
 {
     m_line = firstLine;
     m_lastLine = lastLine;
-}
-
-void StatementNode::copyDebugInfo(StatementNode* otherNode)
-{
-    m_line     = otherNode->m_line;
-    m_lastLine = otherNode->m_lastLine;
 }
 
 // return true if the debugger wants us to stop at this point
@@ -1158,15 +1094,6 @@ void SourceElementsNode::recurseVisit(NodeVisitor *visitor)
 ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
 {
 }
-
-// ------------------------------ ErrorNode ------------------------------------
-
-#if 0
-Completion ErrorNode::execute(ExecState *exec)
-{
-    return createErrorCompletion(exec, SyntaxError, message);
-}
-#endif
 
 // ------------------------------ PackageNameNode ------------------------------
 void PackageNameNode::recurseVisit(NodeVisitor *visitor)

@@ -144,24 +144,14 @@ namespace KJS {
           link = newLink;
     }
 
-    Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg);
-    Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg, const Identifier &);
 
     JSValue* throwError(ExecState*, ErrorType, const UString& msg);
-    JSValue* throwError(ExecState*, ErrorType, const UString& msg, const char* string);
-    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*);
     JSValue* throwError(ExecState*, ErrorType, const UString& msg, const Identifier&);
-    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, const Identifier&);
-    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*, Node*);
-    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*, const Identifier&);
-
     JSValue* throwUndefinedVariableError(ExecState*, const Identifier&);
 
     void handleException(ExecState*);
     void handleException(ExecState*, JSValue*);
     Completion rethrowException(ExecState*);
-
-    void copyDebugInfo(Node* otherNode);
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   protected:
@@ -216,8 +206,6 @@ namespace KJS {
     int firstLine() const { return lineNo(); }
     int lastLine() const { return m_lastLine; }
     bool hitStatement(ExecState*);
-
-    void copyDebugInfo(StatementNode* otherNode);
 
     virtual void generateExecCode(CompileState*, CodeBlock& block);
   private:
