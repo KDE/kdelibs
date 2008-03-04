@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kprocess.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kmimetypetrader.h>
@@ -65,7 +66,6 @@ static bool offerListHasService( const KService::List& offers,
 {
     bool found = false;
     Q_FOREACH(KService::Ptr serv, offers) {
-        qDebug() << serv->storageId();
         if ( serv->entryPath() == entryPath ) {
             if( found ) { // should be there only once
                 qWarning( "ERROR: %s was found twice in the list", qPrintable( entryPath ) );
@@ -211,12 +211,12 @@ private Q_SLOTS:
         for (ExpectedResultsMap::const_iterator it = preferredApps.begin(), end = preferredApps.end() ; it != end ; ++it) {
             const QString mime = it.key();
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
-            for (int i = 0; i < offers.count(); ++i) {
-                kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
-            }
+            //for (int i = 0; i < offers.count(); ++i) {
+            //    kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
+            //}
             const QStringList expectedPreferredServices = it.value();
             for (int i = 0; i < expectedPreferredServices.count(); ++i) {
-                kDebug() << mime << i << expectedPreferredServices[i];
+                //kDebug() << mime << i << expectedPreferredServices[i];
                 QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
             }
         }
@@ -249,7 +249,10 @@ private:
         // (The real KCM code simply does the refresh in a slot, asynchronously)
         QEventLoop loop;
         QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &loop, SLOT(quit()));
-        QProcess::execute( KStandardDirs::findExe(KBUILDSYCOCA_EXENAME) );
+        KProcess proc;
+        proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+        proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
+        proc.execute();
         loop.exec();
     }
 
