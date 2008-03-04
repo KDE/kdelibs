@@ -16,6 +16,9 @@
    Boston, MA 02110-1301, USA.
 */
 #include "kbuildsycocaprogressdialog.h"
+#include <ksycoca.h>
+#include <kprocess.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <QtDBus/QtDBus>
@@ -44,11 +47,16 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 
   QDBusInterface kbuildsycoca("org.kde.kded", "/kbuildsycoca",
                               "org.kde.kbuildsycoca");
-  if (kbuildsycoca.isValid())
-  {
+  if (kbuildsycoca.isValid()) {
      kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(_k_slotFinished()));
-     dlg.exec();
+  } else {
+      // kded not running, e.g. when using keditfiletype out of a KDE session
+      QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &dlg, SLOT(_k_slotFinished()));
+      KProcess* proc = new KProcess(&dlg);
+      (*proc) << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+      proc->start();
   }
+  dlg.exec();
 }
 
 KBuildSycocaProgressDialog::KBuildSycocaProgressDialog(QWidget *_parent,
