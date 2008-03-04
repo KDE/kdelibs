@@ -27,7 +27,7 @@
 #include <kdeui_export.h>
 #include <QtGui/QWidgetList> //For WId
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
 
 #include <netwm_def.h>
 
@@ -219,8 +219,13 @@ public:
 private:
     class Private;
     Private * d; //krazy:exclude=dpointer (implicitly shared)
+#ifdef Q_WS_MAC
+    // KWindowSystem needs access to the d-pointer
+    friend class KWindowSystem;
+    friend class KWindowSystemPrivate;
+#endif
 };
-#endif //Q_WS_X11
+#endif //Q_WS_X11 || Q_WS_MAC
 
 #endif // multiple inclusion guard
 

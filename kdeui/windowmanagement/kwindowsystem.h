@@ -30,7 +30,7 @@
 #include <netwm_def.h>
 #include <kwindowinfo.h>
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
 class KWindowSystemPrivate;
 #endif
 
@@ -45,6 +45,13 @@ class KWindowSystemPrivate;
  * using a more high-level interface than the NETWinInfo/NETRootInfo
  * lowlevel classes.
  *
+ * Because of limitiations of the way Qt is implemented on Mac OSX, the WId's
+ * returned by methods in this class are not compatible with those expected
+ * by other Qt methods. So while it should be fine to pass WId's retrieved by
+ * for example calling the winId method on a QWidget to methods in this class
+ * the reverse is not true. You should never pass a WId obtained from this class
+ * to a Qt method accepting a WId parameter.
+ *
  * @short Class for interaction with the window manager.
  * @author Matthias Ettrich (ettrich@kde.org)
  */
@@ -53,12 +60,12 @@ class KDEUI_EXPORT KWindowSystem : public QObject, public NET
     Q_OBJECT
 
 public:
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     /**
      * Access to the singleton instance. Useful mainly for connecting to signals.
      */
     static KWindowSystem* self();
-#endif    
+#endif
    /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the order of creation. Please do not rely on
@@ -78,7 +85,7 @@ public:
      * @return the list of all toplevel windows
      */
     static const QList<WId>& windows();
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     /**
      * Test to see if @p id still managed at present.
      * @param id the window id to test
@@ -105,10 +112,10 @@ public:
      * @return the list of all toplevel windows in stacking order
      */
     static QList<WId> stackingOrder();
-    
+
     /**
      * Returns the currently active window, or 0 if no window is active.
-     * @return the window id of the active window, or 0 if no window is 
+     * @return the window id of the active window, or 0 if no window is
      *  active
      **/
     static WId activeWindow();
@@ -401,7 +408,7 @@ public:
      * @param name the new name for the desktop
      **/
     static void setDesktopName( int desktop, const QString& name );
-    
+
     /**
      * Returns the state of showing the desktop.
      */
@@ -478,12 +485,12 @@ public:
     /**
      * @internal
      * Returns true if viewports are mapped to virtual desktops.
-     */    
+     */
     static bool mapViewport();
     /**
      * @internal
      * Returns mapped virtual desktop for the given position in the viewport.
-     */    
+     */
     static int viewportToDesktop( const QPoint& pos );
     /**
      * @internal
@@ -493,7 +500,7 @@ public:
     /**
      * @internal
      * Returns topleft corner of the viewport area for the given mapped virtual desktop.
-     */    
+     */
     static QPoint desktopToViewport( int desktop, bool absolute );
     /**
      * @internal
@@ -514,7 +521,7 @@ Q_SIGNALS:
 
     /**
      * A window has been added.
-     * @param id the id of the the window 
+     * @param id the id of the the window
      */
     void windowAdded(WId id);
 
@@ -546,13 +553,13 @@ Q_SIGNALS:
      */
     void workAreaChanged();
 
-    /** 
+    /**
      * Something changed with the struts, may or may not have changed
      * the work area. Usually just using the workAreaChanged() signal
      * is sufficient.
      */
     void strutChanged();
-    
+
     /**
      * Emitted when the stacking order of the window changed. The new order
      * can be obtained with stackingOrder().
@@ -587,7 +594,7 @@ Q_SIGNALS:
      * @param id the id of the window
      */
     void windowChanged(WId id);
-    
+
     /**
      * The state of showing the desktop has changed.
      */
@@ -597,14 +604,14 @@ protected:
     virtual void connectNotify( const char* signal );
 
 private:
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     friend class KWindowSystemStaticContainer;
 #endif
     KWindowSystem() {}
 
     enum { INFO_BASIC=1, // desktop info, not per-window
            INFO_WINDOWS=2 }; // also per-window info
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     static void init(int);
 
     friend class KWindowSystemPrivate;
