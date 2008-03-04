@@ -45,20 +45,20 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    
+
     unsigned getLength() const { return length; }
     JSValue* getItem(unsigned) const;
-    
+
     void sort(ExecState *exec);
     void sort(ExecState *exec, JSObject *compareFunction);
-    
+
   private:
     static JSValue *lengthGetter(ExecState *, JSObject *, const Identifier&, const PropertySlot&);
 
-    void setLength(unsigned newLength, ExecState *exec);
-    
+    void setLength(unsigned newLength);
+
     unsigned compactForSorting();
-    
+
     void resizeStorage(unsigned);
 
     // store capacity in extra space at the beginning of the storage array to save space
