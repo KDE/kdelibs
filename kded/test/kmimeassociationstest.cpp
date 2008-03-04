@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kconfiggroup.h>
+#include <kdesktopfile.h>
 #include <kmimetypetrader.h>
 #include <kdebug.h>
 #include <kservicefactory.h>
@@ -57,27 +59,65 @@ private:
     QMap<QString, KService::Ptr> m_cache;
 };
 
+// Helper method for all the trader tests, comes from kmimetypetest.cpp
+static bool offerListHasService( const KService::List& offers,
+                                 const QString& entryPath )
+{
+    bool found = false;
+    Q_FOREACH(KService::Ptr serv, offers) {
+        qDebug() << serv->storageId();
+        if ( serv->entryPath() == entryPath ) {
+            if( found ) { // should be there only once
+                qWarning( "ERROR: %s was found twice in the list", qPrintable( entryPath ) );
+                return false; // make test fail
+            }
+            found = true;
+        }
+    }
+    return found;
+}
+
 class KMimeAssociationsTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase()
     {
-        m_kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+        QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
         // We need a place where we can hack a mimeapps.list without harm, so not ~/.local
-        // This test relies on shared-mime-info being installed in /usr/share [or kdedir/share]
-        ::setenv("XDG_DATA_DIRS", QFile::encodeName(m_kdehome + "/share:/usr/share"), 1 );
+        ::setenv("XDG_DATA_HOME", QFile::encodeName(kdehome) + "/local", 1);
+        m_localApps = kdehome + "/local/applications/";
 
-        cleanupTestCase();
-
-        if ( !KSycoca::isAvailable() ) {
-            // Create ksycoca4 in ~/.kde-unit-test, to get kservice ptrs.
-            QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
-        }
         // Create factory on the heap and don't delete it.
         // It registers to KSycoca, which deletes it at end of program execution.
         KServiceFactory* factory = new FakeServiceFactory;
         QCOMPARE(KServiceFactory::self(), factory); // ctor sets s_self
+        bool mustUpdateKSycoca = false;
+        if ( !KSycoca::isAvailable() ) {
+            mustUpdateKSycoca = true;
+        }
+        if (QFile::exists(m_localApps + "/mimeapps.list")) {
+            QFile::remove(m_localApps + "/mimeapps.list");
+            mustUpdateKSycoca = true;
+        }
+
+        // Create fake application for some tests below.
+        fakeApplication = m_localApps + "faketextapplication.desktop";
+        const bool mustCreateFakeService = !QFile::exists(fakeApplication);
+        if (mustCreateFakeService) {
+            mustUpdateKSycoca = true;
+            KDesktopFile file(fakeApplication);
+            KConfigGroup group = file.desktopGroup();
+            group.writeEntry("Name", "FakeApplication");
+            group.writeEntry("Type", "Application");
+            group.writeEntry("Exec", "ls");
+            group.writeEntry("MimeType", "text/plain");
+        }
+
+        if ( mustUpdateKSycoca ) {
+            // Update ksycoca in ~/.kde-unit-test after creating the above
+            runKBuildSycoca();
+        }
 
         // For debugging: print all services and their storageId
 #if 0
@@ -87,6 +127,9 @@ private Q_SLOTS:
             qDebug() << serv->entryPath() << serv->storageId() /*<< serv->desktopEntryName()*/;
         }
 #endif
+
+        KService::Ptr fakeApplicationService = KService::serviceByStorageId("faketextapplication.desktop");
+        QVERIFY(fakeApplicationService);
 
         m_mimeAppsFileContents = "[Added Associations]\n"
                                "image/jpeg=mplayer.desktop;\n"
@@ -110,7 +153,8 @@ private Q_SLOTS:
 
     void cleanupTestCase()
     {
-        QFile::remove(m_kdehome + "/share/applications/mimeapps.list");
+        QFile::remove(m_localApps + "/mimeapps.list");
+        runKBuildSycoca();
     }
 
     void testParseSingleFile()
@@ -154,14 +198,7 @@ private Q_SLOTS:
 
     void testSetupRealFile()
     {
-        QString mimeAppsPath = m_kdehome + "/share/applications/mimeapps.list";
-        QFile mimeAppsFile(mimeAppsPath);
-        QVERIFY(mimeAppsFile.open(QIODevice::WriteOnly));
-        mimeAppsFile.write(m_mimeAppsFileContents);
-        mimeAppsFile.close();
-
-        // OK, now run kbuildsycoca4.
-        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+        writeToMimeApps(m_mimeAppsFileContents);
 
         // Test a trader query
         KService::List offers = KMimeTypeTrader::self()->query("image/jpeg");
@@ -185,9 +222,47 @@ private Q_SLOTS:
         }
     }
 
+    void testRemovedAssociation()
+    {
+        // I removed kate from text/plain, and it would still appear in text/x-java.
+
+        // First, let's check our fake app is associated with text/plain
+        KService::List offers = KMimeTypeTrader::self()->query("text/plain");
+        QVERIFY(offerListHasService(offers, fakeApplication));
+
+        writeToMimeApps(QByteArray("[Removed Associations]\n"
+                                   "text/plain=faketextapplication.desktop;\n"));
+
+        offers = KMimeTypeTrader::self()->query("text/plain");
+        QVERIFY(!offerListHasService(offers, fakeApplication));
+
+        offers = KMimeTypeTrader::self()->query("text/x-java");
+        QVERIFY(!offerListHasService(offers, fakeApplication));
+}
 
 private:
     typedef QMap<QString /*mimetype*/, QStringList> ExpectedResultsMap;
+
+    void runKBuildSycoca()
+    {
+        // Wait for notifyDatabaseChanged DBus signal
+        // (The real KCM code simply does the refresh in a slot, asynchronously)
+        QEventLoop loop;
+        QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &loop, SLOT(quit()));
+        QProcess::execute( KStandardDirs::findExe(KBUILDSYCOCA_EXENAME) );
+        loop.exec();
+    }
+
+    void writeToMimeApps(const QByteArray& contents)
+    {
+        QString mimeAppsPath = m_localApps + "/mimeapps.list";
+        QFile mimeAppsFile(mimeAppsPath);
+        QVERIFY(mimeAppsFile.open(QIODevice::WriteOnly));
+        mimeAppsFile.write(contents);
+        mimeAppsFile.close();
+
+        runKBuildSycoca();
+    }
 
     bool offersContains(const QList<KServiceOffer>& offers, KService::Ptr serv)
     {
@@ -209,8 +284,9 @@ private:
             }
         }
     }
-    QString m_kdehome;
+    QString m_localApps;
     QByteArray m_mimeAppsFileContents;
+    QString fakeApplication;
 
     ExpectedResultsMap preferredApps;
     ExpectedResultsMap removedApps;
