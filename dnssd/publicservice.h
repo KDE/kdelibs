@@ -30,6 +30,8 @@ namespace DNSSD
 class PublicServicePrivate;
 
 /**
+\class PublicService publicservice.h DNSSD/PublicService
+
 This class is most important for application that wants to announce its service on network. 
 Suppose that you want to make your web server public - this is simplest way:
  

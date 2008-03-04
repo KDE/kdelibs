@@ -29,6 +29,8 @@ namespace DNSSD
 class RemoteServicePrivate;
 
 /**
+\class RemoteService remoteservice.h DNSSD/RemoteService
+
 RemoteService class allows to resolve service announced on remote machine. In most cases objects
 of this class are created by ServiceBrowser, but it is not required. Only fields valid before 
 service is resolved are name, type.and domain. 

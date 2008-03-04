@@ -31,6 +31,8 @@ namespace DNSSD
 class ServiceBasePrivate;
 
 /**
+\class ServiceBase servicebase.h DNSSD/ServiceBase
+
 This class is used to carry information about service. It can be remote, local,
 metaservice or domain. Metaservice has only type and domain - it means that
 services of given type are present in given domain.

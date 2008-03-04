@@ -30,6 +30,8 @@ namespace DNSSD
 class DomainBrowserPrivate;
 
 /**
+\class DomainBrowser domainbrowser.h DNSSD/DomainBrowser
+
 @short Class used to provide  list of additional domains for browsing or publishing.
 @author Jakub Stachowski
 */

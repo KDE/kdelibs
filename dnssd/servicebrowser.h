@@ -32,6 +32,8 @@ class DomainBrowser;
 class ServiceBrowserPrivate;
 
 /**
+\class ServiceBrowser servicebrowser.h DNSSD/ServiceBrowser
+
 Most important class for applications that want to discover specific services on network.
 Suppose that you need list of web servers running. Example:
  
