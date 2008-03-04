@@ -215,6 +215,7 @@ set(kdecore_LIB_SRCS
    sycoca/ksycocafactory.cpp
    sycoca/kprotocolinfo.cpp
    sycoca/kprotocolinfofactory.cpp
+   sycoca/kmemfile.cpp
    text/kascii.cpp
    text/kcodecs.cpp
    text/kstringhandler.cpp

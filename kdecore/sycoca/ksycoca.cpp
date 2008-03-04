@@ -21,6 +21,7 @@
 #include "ksycocafactory.h"
 #include "ktoolinvocation.h"
 #include "kglobal.h"
+#include "kmemfile.h"
 
 #include "kdebug.h"
 #include "kstandarddirs.h"
@@ -39,13 +40,8 @@
 
 #ifdef Q_OS_WIN
 /*
- @TODO on windows we load the whole ksyscoca database in memory and 
- close the file to avoid kbuildsycoca4 write errors. 
- Because this increases the consumed memory for each application
- this should be fixed by a working memory mapping strategy or
- QSharedMemory when qt 4.4 is out
- see http://lists.kde.org/?l=kde-core-devel&m=120245131818646&w=2
- for more informations about this issue.
+ on windows we use KMemFile (QSharedMemory) to avoid problems
+ with mmap (can't delete a mmap'd file)
 */ 
 #undef HAVE_MMAP
 #endif
@@ -76,11 +72,7 @@ public:
     KSycocaPrivate()
         : databaseStatus( DatabaseNotOpen ),
           readError( false ),
-#ifdef Q_WS_WIN
-          autoRebuild( false ),
-#else
           autoRebuild( true ),
-#endif
           sycoca_size( 0 ),
           sycoca_mmap( 0 ),
           timeStamp( 0 ),
@@ -116,7 +108,11 @@ public:
     size_t sycoca_size;
     const char *sycoca_mmap;
     quint32 timeStamp;
+#ifdef Q_OS_WIN
+    KMemFile *m_database;
+#else
     QFile *m_database;
+#endif
     QStringList changeList;
     QString language;
     quint32 updateSig;
@@ -167,7 +163,11 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
       path = QFile::decodeName(ksycoca_env);
 
    kDebug(7011) << "Trying to open ksycoca from " << path;
+#ifdef Q_OS_WIN
+   m_database = new KMemFile(path);
+#else
    m_database = new QFile(path);
+#endif
    bool bOpen = m_database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
@@ -176,13 +176,22 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
      {
        kDebug(7011) << "Trying to open global ksycoca from " << path;
        delete m_database;
+#ifdef Q_OS_WIN
+       m_database = new KMemFile(path);
+#else
        m_database = new QFile(path);
+#endif
        bOpen = m_database->open( QIODevice::ReadOnly );
      }
    }
 
    if (bOpen)
    {
+#ifdef Q_OS_WIN
+     m_str = new QDataStream(m_database);
+     m_str->setVersion(QDataStream::Qt_3_1);
+     sycoca_mmap = 0;
+#else // Q_OS_WIN
      fcntl(m_database->handle(), F_SETFD, FD_CLOEXEC);
      sycoca_size = m_database->size();
 #ifdef HAVE_MMAP
@@ -194,13 +203,8 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
      if (sycoca_mmap == (const char*) MAP_FAILED || sycoca_mmap == 0)
      {
         kDebug(7011) << "mmap failed. (length = " << sycoca_size << ")";
-#endif
-#ifdef Q_OS_WIN
-        m_str = new QDataStream( m_database->readAll());
-        m_database->close();
-#else
+#endif // HAVE_MMAP
         m_str = new QDataStream(m_database);
-#endif
         m_str->setVersion(QDataStream::Qt_3_1);
         sycoca_mmap = 0;
 #ifdef HAVE_MMAP
@@ -209,14 +213,15 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
      {
 #ifdef HAVE_MADVISE
         (void) madvise((char*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
-#endif
+#endif // HAVE_MADVISE
         QBuffer *buffer = new QBuffer;
         buffer->setData(QByteArray::fromRawData(sycoca_mmap, sycoca_size));
         buffer->open(QIODevice::ReadOnly);
         m_str = new QDataStream( buffer);
         m_str->setVersion(QDataStream::Qt_3_1);
      }
-#endif
+#endif // HAVE_MMAP
+#endif // !Q_OS_WIN
      checkVersion();
    }
    else
@@ -281,12 +286,8 @@ bool KSycoca::isAvailable()
 
 void KSycocaPrivate::closeDatabase()
 {
-    QDataStream* &m_str = KSycocaPrivate::_self->m_str;
+   QDataStream* &m_str = KSycocaPrivate::_self->m_str;
    QIODevice *device = 0;
-#ifndef Q_OS_WIN
-   if (m_str)
-      device = m_str->device();
-#endif
 #ifdef HAVE_MMAP
    if (device && sycoca_mmap)
    {
