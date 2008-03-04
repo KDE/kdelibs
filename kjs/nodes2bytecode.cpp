@@ -90,7 +90,12 @@ OpValue NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 #endif
 
     // Numeric-like..
-    return OpValue::immNumber(value());
+    double d = value();
+    int32_t i32 = JSValue::toInt32(d);
+    if (double(i32) == d)
+        return OpValue::immInt32(i32);
+    else
+        return OpValue::immNumber(d);
 }
 
 
