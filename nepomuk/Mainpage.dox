@@ -157,10 +157,10 @@ the internals of Nepomuk. Resource provides four methods to handle the propertie
 resource (reminder: all Resource subclasses as generated from \ref page_ontology are based
 one these methods):
 
-- Nepomuk::Resource::getProperty
+- Nepomuk::Resource::property
 - Nepomuk::Resource::setProperty
 - Nepomuk::Resource::removeProperty
-- Nepomuk::Resource::allProperties
+- Nepomuk::Resource::properties
 
 Each property's value is represented by a Nepomuk::Variant object which can contain
 another Resource or a literal (string, int, ...) or even a list of the former two. Other than
@@ -219,13 +219,12 @@ Nepomuk::File f( "/home/foo/bar.txt" );
 f.setAnnotation( "This is just a test file that contains nothing of interest." );
 \endcode
 
-The following example is a little more complicated since it contains creating
-a new tag and thus, coming up with a unique URI for this tag (future versions
-of Nepomuk should provide a way to create a unique URI automatically.)
+The following example creates a new tag. The tag can be accessed through its name
+which works as an identifier. Nepomuk automatically creates a new unique URI if this
+tag does not already exist.
 
 \code
-Nepomuk::Tag tag( "someURI/that/is.unique" );
-tag.setName( "Important" );
+Nepomuk::Tag tag( "MyTag" );
 Nepomuk::File f( "/home/foo/bar.txt" );
 f.addTag( tag );
 \endcode
@@ -234,35 +233,35 @@ Reading the information using plain Resource methods:
 
 \code
 Nepomuk::Resource f( "/home/foo/bar.txt" );
-QString annotation = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasAnnotation" ).toString();
-QList<Resource> tags = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasTag" ).toResourceList();
+QString annotation = f.getProperty( Soprano::Vocabulary::NAO::decription() ).toString();
+QList<Resource> tags = f.getProperty( Soprano::Vocabulary::NAO::hasTag() ).toResourceList();
 QListIterator<Resource> it( tags );
 while( it.hasNext() )
   kdDebug() << "File tagged with tag: "
-            << it.next().getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasName" ).toString();
+            << it.next().genericLabel();
 \endcode
 
 Reading the information using the convenience classes:
 
 \code
 Nepomuk::File f( "/home/foo/bar.txt" );
-QString annotation = f.getAnnotation();
+QString description = f.getDescription();
 QList<Tag> tags = f.getTags();
 QListIterator<Tag> it( tags );
 while( it.hasNext() )
-  kdDebug() << "File tagged with tag: " << it.next().getName();
+  kdDebug() << "File tagged with tag: " << it.next().genericLabel();
 \endcode
 
-Present all defined properties of an arbitrary resource to the user:
+Present all defined properties of an arbitrary resource to the user including
+internationalized labels:
 
 \code
-Nepomuk::Ontology* ont = Nepomuk::ResourceManager::instance()->ontology();
 Nepomuk::Resource f( "/home/foo/bar.txt" );
-QHash<QString, Variant> properties = f.allProperties();
-QHashIterator<QString, Variant> it( properties );
+QHash<QUrl, Variant> properties = f.properties();
+QHashIterator<QUrl, Variant> it( properties );
 while( it.hasNext() ) {
   it.next();
-  kdDebug() << ont->propertyName( it.key() ) << ": " << it.value().toString() << endl;
+  kdDebug() << Nepomuk::Types::Property( it.key() ).label() << ": " << it.value().toString() << endl;
 }
 \endcode
 */
