@@ -29,6 +29,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
+#include <QtGui/QTextBrowser>
 
 int main(int argc, char **argv)
 {
@@ -53,6 +54,7 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     lay->addWidget(l1 = new QLineEdit( "Test 1", this));
     lay->addWidget(l2 = new QLineEdit( "Test 2", this));
     lay->addWidget(l3 = new QLineEdit( "Test 3", this));
+    lay->addWidget(m_eventBrowser = new QTextBrowser(this));
     lay->addWidget(d = new QLineEdit( "Status", this));
     lay->addWidget(e = new QPushButton("new file", this));
     lay->addWidget(f = new QPushButton("delete file", this));
@@ -66,9 +68,15 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     connect(w1, SIGNAL(dirty(const QString &)), this, SLOT(slotDir1(const QString &)));
     connect(w2, SIGNAL(dirty(const QString &)), this, SLOT(slotDir2(const QString &)));
     connect(w3, SIGNAL(dirty(const QString &)), this, SLOT(slotDir3(const QString &)));
-    w1->addDir(dir.toLatin1().constData());
-    w2->addDir(dir.toLatin1().constData());
-    w3->addDir(dir.toLatin1().constData());
+    w1->addDir(dir);
+    w2->addDir(dir);
+    w3->addDir(dir);
+
+    KDirWatch* w4 = new KDirWatch(this);
+    w4->addDir(dir, KDirWatch::WatchFiles|KDirWatch::WatchSubDirs);
+    connect(w1, SIGNAL(dirty(const QString &)), this, SLOT(slotDirty(const QString &)));
+    connect(w1, SIGNAL(created(const QString &)), this, SLOT(slotCreated(const QString &)));
+    connect(w1, SIGNAL(deleted(const QString &)), this, SLOT(slotDeleted(const QString &)));
 
     lay->addWidget(new QLabel("Directory = " + dir, this));
     lay->addWidget(new QLabel("File = " + file, this));
@@ -110,6 +118,21 @@ void KDirWatchTest_GUI::slotNewClicked()
 {
   fclose(fopen(file.toLatin1().constData(), "wb"));
   d->setText("New clicked at " + QTime::currentTime().toString());
+}
+
+void KDirWatchTest_GUI::slotDirty(const QString& path)
+{
+    m_eventBrowser->append( "Dirty: " + path + "\n" );
+}
+
+void KDirWatchTest_GUI::slotCreated(const QString& path)
+{
+    m_eventBrowser->append( "Created: " + path + "\n" );
+}
+
+void KDirWatchTest_GUI::slotDeleted(const QString& path)
+{
+    m_eventBrowser->append( "Deleted: " + path + "\n" );
 }
 
 #include "kdirwatchtest_gui.moc"

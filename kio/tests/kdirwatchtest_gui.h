@@ -22,6 +22,8 @@
 #include <kmainwindow.h>
 #include <QtGui/QDialog>
 
+class QTextBrowser;
+
 class KDirWatchTest_GUI : public QWidget
 {
     Q_OBJECT
@@ -33,6 +35,10 @@ protected Q_SLOTS:
     void slotDir1(const QString &path);
     void slotDir2(const QString &path);
     void slotDir3(const QString &path);
+    void slotDirty(const QString&);
+    void slotCreated(const QString&);
+    void slotDeleted(const QString&);
+
 private:
     class QLineEdit *d;
     QString file, dir;
@@ -40,6 +46,7 @@ private:
     class KDirWatch *w2;
     class KDirWatch *w3;
     class QLineEdit *l1, *l2, *l3;
+    QTextBrowser* m_eventBrowser;
 };
 
 #endif
