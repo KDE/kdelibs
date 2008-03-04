@@ -56,7 +56,6 @@ QDataStream &operator>>(QDataStream &s, KService::ServiceTypeAndPreference &st)
 void KServicePrivate::init( const KDesktopFile *config, KService* q )
 {
     const QString entryPath = q->entryPath();
-    kDebug() << entryPath;
     bool absPath = !QDir::isRelativePath(entryPath);
 
     // TODO: it makes sense to have a KConstConfigGroup I guess
