@@ -41,7 +41,7 @@ class QString;
 /**
  * \short A container for a set of QAction objects.
  *
- * KActionCollection acts as the owning QObject for a set of QAction objects.  It
+ * KActionCollection manages a set of QAction objects.  It
  * allows them to be grouped for organized presentation of configuration to the user,
  * saving + loading of configuration, and optionally for automatic plugging into
  * specified widget(s).
@@ -246,11 +246,12 @@ Q_SIGNALS:
 
   /**
    * Indicates that \a action was removed from this action collection.
+   * @deprecated
    */
-  void removed( QAction* action );
+  QT_MOC_COMPAT void removed( QAction* action );
 
   /**
-   * Indicates that \a action was highlighted
+   * Indicates that \a action was highlighted (hovered over).
    */
   void actionHighlighted(QAction* action);
 
@@ -349,6 +350,7 @@ private:
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 
+  friend class KActionCollectionPrivate;
   class KActionCollectionPrivate* const d;
 };
 

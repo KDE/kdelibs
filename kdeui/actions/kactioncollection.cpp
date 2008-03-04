@@ -243,7 +243,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
 
     if (d->connectHighlighted)
-        connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
+        connect(action, SIGNAL(hovered()), SLOT(slotActionHighlighted()));
 
     if (d->connectTriggered)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
@@ -269,15 +269,9 @@ QAction* KActionCollection::takeAction(QAction *action)
   foreach (QWidget* widget, d->associatedWidgets)
     widget->removeAction(action);
 
-  disconnect(action, SIGNAL(destroyed(QObject*)), this, SLOT(_k_actionDestroyed(QObject*)));
+  action->disconnect(this);
 
-  if (d->connectHighlighted)
-    disconnect(action, SIGNAL(highlighted()), this, SLOT(slotActionHighlighted()));
-
-  if (d->connectTriggered)
-    disconnect(action, SIGNAL(triggered(bool)), this, SLOT(slotActionTriggered()));
-
-  emit removed( action );
+  emit removed( action ); //deprecated
   return action;
 }
 
@@ -541,8 +535,16 @@ void KActionCollection::slotActionHighlighted( )
 
 void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
 {
-    QAction *action = static_cast<QAction*>(obj);
-    q->takeAction(action);
+  QAction *action = static_cast<QAction*>(obj);
+  QHash<QAction *, QString>::Iterator it = nameByAction.find(action);
+  if (it == nameByAction.end())
+    return;
+  const QString name = *it;
+  nameByAction.erase(it);
+  actionByName.remove(name);
+
+  //HACK the object we emit is partly destroyed
+  emit q->removed(action); //deprecated. remove in KDE5
 }
 
 void KActionCollection::connectNotify ( const char * signal )
@@ -554,7 +556,7 @@ void KActionCollection::connectNotify ( const char * signal )
     if (!d->connectHighlighted) {
       d->connectHighlighted = true;
       foreach (QAction* action, actions())
-        connect(action, SIGNAL(highlighted()), SLOT(slotActionHighlighted()));
+        connect(action, SIGNAL(hovered()), SLOT(slotActionHighlighted()));
     }
 
   } else if (QMetaObject::normalizedSignature(SIGNAL(actionTriggered(QAction*))) == signal) {
