@@ -100,7 +100,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)));
 
     connect(m_khtml->browserExtension(), SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
-	    m_ext, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
+            this, SLOT(slotPopupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
              m_ext, SIGNAL( enableAction( const char *, bool ) ) );
@@ -320,9 +320,15 @@ void KHTMLImageBrowserExtension::disableScrolling()
     static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->disableScrolling();
 }
 
-using namespace KParts;
-
-/* vim: et sw=4 ts=4
- */
+void KHTMLImage::slotPopupMenu( const QPoint &global, const KUrl &url, mode_t mode,
+                                const KParts::OpenUrlArguments &origArgs,
+                                const KParts::BrowserArguments &browserArgs,
+                                KParts::BrowserExtension::PopupFlags flags,
+                                const KParts::BrowserExtension::ActionGroupMap& actionGroups )
+{
+    KParts::OpenUrlArguments args = origArgs;
+    args.setMimeType(m_mimeType);
+    m_ext->popupMenu(global, url, mode, args, browserArgs, flags, actionGroups);
+}
 
 #include "khtmlimage.moc"
