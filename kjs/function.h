@@ -139,7 +139,7 @@ namespace KJS {
       return &localStorage()[propertyID].val.valueVal;
     }
 
-    bool isLocalReadOnly(int propertyID) {
+    bool isLocalReadOnly(int propertyID) const {
       return (localStorage()[propertyID].attributes & ReadOnly) == ReadOnly;
     }
 
@@ -158,10 +158,10 @@ namespace KJS {
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
     void createArgumentsObject(ExecState *exec);
-    ActivationData* d() const { return static_cast<ActivationData*>(JSVariableObject::d); }
+    ActivationData* d() { return static_cast<ActivationData*>(JSVariableObject::d); }
 
-    int  numLocals()         { return localStorage().size(); }
-    bool validLocal(int id)  { return 0 <= id && id < numLocals(); }
+    int  numLocals() const        { return localStorage().size(); }
+    bool validLocal(int id) const { return 0 <= id && id < numLocals(); }
   };
 
   class GlobalFuncImp : public InternalFunctionImp {

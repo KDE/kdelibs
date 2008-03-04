@@ -41,6 +41,7 @@ namespace KJS {
     public:
         SymbolTable& symbolTable() { return *d->symbolTable; }
         LocalStorage& localStorage() { return d->localStorage; }
+        const LocalStorage& localStorage() const { return d->localStorage; }
 
         void setShouldMark(WTF::Vector<bool>* shouldMark) {
           d->shouldMark = shouldMark;
