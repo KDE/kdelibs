@@ -23,7 +23,6 @@
 
 #include "kopenwithdialog.h"
 #include "kopenwithdialog_p.h"
-#include <kmessagebox.h>
 
 #include <QtCore/QtAlgorithms>
 #include <QtCore/QList>
@@ -37,6 +36,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kmessagebox.h>
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
@@ -806,6 +806,9 @@ void KOpenWithDialogPrivate::_k_slotOK()
             // also ok if we find the exact same service (well, "kwrite" == "kwrite %U")
             if (serv && serv->isApplication()) {
                 fullExec = serv->exec();
+                /*kDebug(250) << "typedExec=" << typedExec
+                         << "serv->exec=" << fullExec
+                         << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
                 if (typedExec == simplifiedExecLineFromService(fullExec)) {
                     ok = true;
                     m_pService = serv;
@@ -864,13 +867,13 @@ void KOpenWithDialogPrivate::_k_slotOK()
 
             QString menuId;
             QString newPath = KService::newServicePath(false /* ignored argument */, serviceName, &menuId);
-            kDebug(250) << "Creating new service" << serviceName << "(" << newPath << ")";
+            kDebug(250) << "Creating new service" << serviceName << "(" << newPath << ")" << "menuId=" << menuId;
 
             KDesktopFile desktopFile(newPath);
             KConfigGroup cg = desktopFile.desktopGroup();
             cg.writeEntry("Type", "Application");
             cg.writeEntry("Name", initialServiceName);
-            cg.writePathEntry("Exec", fullExec);
+            cg.writeEntry("Exec", fullExec);
             cg.writeEntry("NoDisplay", true); // don't make it appear in the K menu
             if (terminal->isChecked()) {
                 cg.writeEntry("Terminal", true);

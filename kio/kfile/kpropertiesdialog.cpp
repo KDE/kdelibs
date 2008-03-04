@@ -3015,7 +3015,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   QString nameStr = _config.readName();
   QString genNameStr = _config.readGenericName();
   QString commentStr = _config.readComment();
-  QString commandStr = config.readPathEntry( "Exec", QString() );
+  QString commandStr = config.readEntry( "Exec", QString() );
   if (commandStr.startsWith(QLatin1String("ksystraycmd ")))
   {
     commandStr.remove(0, 12);
@@ -3176,9 +3176,9 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry( "GenericName", d->w->genNameEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
 
   if (d->m_systrayBool)
-    config.writePathEntry( "Exec", d->w->commandEdit->text().prepend("ksystraycmd ") );
+    config.writeEntry( "Exec", d->w->commandEdit->text().prepend("ksystraycmd ") );
   else
-    config.writePathEntry( "Exec", d->w->commandEdit->text() );
+    config.writeEntry( "Exec", d->w->commandEdit->text() );
   config.writePathEntry( "Path", d->w->pathEdit->lineEdit()->text() );
 
   // Write mimeTypes
