@@ -37,7 +37,6 @@ namespace Nepomuk {
     }
 
     class Resource;
-    class Ontology;
     class Variant;
     class ResourceManagerHelper;
 
@@ -69,11 +68,6 @@ namespace Nepomuk {
          * to the local RDF repository service and ready to work.
          */
         bool initialized() const;
-
-        /**
-         * The Ontology instance representing the underlying Nepomuk desktop ontology.
-         */
-        Ontology* ontology() const;
 
         /**
          * Retrieve the main data storage model.
