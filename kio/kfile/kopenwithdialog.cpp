@@ -870,7 +870,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
             KConfigGroup cg = desktopFile.desktopGroup();
             cg.writeEntry("Type", "Application");
             cg.writeEntry("Name", initialServiceName);
-            cg.writePathEntry("Exec", fullExec);
+            cg.writeEntry("Exec", fullExec);
             cg.writeEntry("NoDisplay", true); // don't make it appear in the K menu
             if (terminal->isChecked()) {
                 cg.writeEntry("Terminal", true);
