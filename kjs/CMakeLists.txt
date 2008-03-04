@@ -143,6 +143,7 @@ set(kjs_LIB_SRCS
    ExecState.cpp
    Parser.cpp
    array_object.cpp
+   array_instance.cpp
    math_object.cpp
    object_object.cpp
    regexp_object.cpp

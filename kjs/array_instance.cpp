@@ -22,398 +22,484 @@
  *
  */
 
-#include "array_object.h"
 #include <config.h>
-#include "array_object.lut.h"
+#include "array_instance.h"
 
-#include "error_object.h"
-#include "lookup.h"
-#include "operations.h"
 #include "PropertyNameArray.h"
-#include <wtf/HashSet.h>
-#include <stdio.h>
+#include <wtf/Assertions.h>
+#include <wtf/HashMap.h>
 
-// GCC cstring uses these automatically, but not all implementations do.
-using std::strlen;
-using std::strcpy;
-using std::strncpy;
-using std::memset;
-using std::memcpy;
+#include <algorithm>
+
+using std::min;
+using std::max;
+
 
 namespace KJS {
 
-typedef HashMap<unsigned, JSValue*> OverflowMap;
+typedef HashMap<unsigned, JSValue*> SparseArrayValueMap;
 
-static inline OverflowMap* overflowMap(JSValue** storage)
-{
-    return storage ? reinterpret_cast<OverflowMap*>(storage[-2]) : 0;
-}
+struct ArrayStorage {
+    unsigned m_numValuesInVector;
+    SparseArrayValueMap* m_sparseValueMap;
+    JSValue* m_vector[1];
+};
 
-// ------------------------------ ArrayInstance -----------------------------
+// 0xFFFFFFFF is a bit weird -- is not an array index even though it's an integer
+static const unsigned maxArrayIndex = 0xFFFFFFFEU;
 
-const unsigned sparseArrayCutoff = 10000;
+// Our policy for when to use a vector and when to use a sparse map.
+// For all array indices under sparseArrayCutoff, we always use a vector.
+// When indices greater than sparseArrayCutoff are involved, we use a vector
+// as long as it is 1/8 full. If more sparse than that, we use a map.
+static const unsigned sparseArrayCutoff = 10000;
+static const unsigned minDensityMultiplier = 8;
+
+static const unsigned mergeSortCutoff = 10000;
 
 const ClassInfo ArrayInstance::info = {"Array", 0, 0, 0};
 
-static inline JSValue** allocateStorage(size_t capacity)
+static inline size_t storageSize(unsigned vectorLength)
 {
-  if (capacity == 0)
-      return 0;
-
-  // store capacity and overflow map in extra space before the beginning of the storage array to save space
-  JSValue** storage = static_cast<JSValue**>(fastCalloc(capacity + 2, sizeof(JSValue *))) + 2;
-  storage[-1] = reinterpret_cast<JSValue*>(capacity);
-  return storage;
+    return sizeof(ArrayStorage) - sizeof(JSValue*) + vectorLength * sizeof(JSValue*);
 }
 
-static inline void reallocateStorage(JSValue**& storage, size_t newCapacity)
+static inline unsigned increasedVectorLength(unsigned newLength)
 {
-  if (!storage) {
-    storage = allocateStorage(newCapacity);
-    return;
-  }
-
-  // store capacity and overflow map in extra space before the beginning of the storage array to save space
-  storage = static_cast<JSValue**>(fastRealloc(storage - 2, (newCapacity + 2) * sizeof (JSValue*))) + 2;
-  storage[-1] = reinterpret_cast<JSValue*>(newCapacity);
+    return (newLength * 3 + 1) / 2;
 }
 
-static inline void freeStorage(JSValue** storage)
+static inline bool isDenseEnoughForVector(unsigned length, unsigned numValues)
 {
-  if (storage)
-    fastFree(storage - 2);
+    return length / minDensityMultiplier <= numValues;
 }
 
-ArrayInstance::ArrayInstance(JSObject *proto, unsigned initialLength)
-  : JSObject(proto)
-  , length(initialLength)
-  , storageLength(initialLength < sparseArrayCutoff ? initialLength : 0)
-  , storage(allocateStorage(storageLength))
+ArrayInstance::ArrayInstance(JSObject* prototype, unsigned initialLength)
+    : JSObject(prototype)
 {
-  Collector::reportExtraMemoryCost(storageLength * sizeof(JSValue*));
+    unsigned initialCapacity = min(initialLength, sparseArrayCutoff);
+
+    m_length = initialLength;
+    m_vectorLength = initialCapacity;
+    m_storage = static_cast<ArrayStorage*>(fastCalloc(storageSize(initialCapacity), 1));
+
+    Collector::reportExtraMemoryCost(initialCapacity * sizeof(JSValue*));
 }
 
-ArrayInstance::ArrayInstance(JSObject *proto, const List &list)
-  : JSObject(proto)
-  , length(list.size())
-  , storageLength(length)
-  , storage(allocateStorage(storageLength))
+ArrayInstance::ArrayInstance(JSObject* prototype, const List& list)
+    : JSObject(prototype)
 {
-  ListIterator it = list.begin();
-  unsigned l = length;
-  for (unsigned i = 0; i < l; ++i)
-    storage[i] = it++;
+    unsigned length = list.size();
 
-  // When the array is created non-empty, its cells are filled so it's really no worse than
-  // a property map. Therefore don't report extra memory cost.
+    m_length = length;
+    m_vectorLength = length;
+
+    ArrayStorage* storage = static_cast<ArrayStorage*>(fastMalloc(storageSize(length)));
+
+    storage->m_numValuesInVector = length;
+    storage->m_sparseValueMap = 0;
+
+    ListIterator it = list.begin();
+    for (unsigned i = 0; i < length; ++i)
+        storage->m_vector[i] = it++;
+
+    m_storage = storage;
+
+    // When the array is created non-empty, its cells are filled, so it's really no worse than
+    // a property map. Therefore don't report extra memory cost.
 }
 
 ArrayInstance::~ArrayInstance()
 {
-  if (storage) {
-    delete reinterpret_cast<OverflowMap*>(storage[-2]);
-    freeStorage(storage);
-  }
+    delete m_storage->m_sparseValueMap;
+    fastFree(m_storage);
 }
 
 JSValue* ArrayInstance::getItem(unsigned i) const
 {
-    if (i < storageLength) {
-        JSValue* value = storage[i];
+    ASSERT(i <= maxArrayIndex);
+
+    ArrayStorage* storage = m_storage;
+
+    if (i < m_vectorLength) {
+        JSValue* value = storage->m_vector[i];
         return value ? value : jsUndefined();
     }
 
-    const OverflowMap* overflow = overflowMap(storage);
-    if (!overflow)
+    SparseArrayValueMap* map = storage->m_sparseValueMap;
+    if (!map)
         return jsUndefined();
 
-    JSValue* value = overflow->get(i);
+    JSValue* value = map->get(i);
     return value ? value : jsUndefined();
 }
 
-JSValue *ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
+JSValue* ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
-  return jsNumber(static_cast<ArrayInstance *>(slot.slotBase())->length);
+    return jsNumber(static_cast<ArrayInstance*>(slot.slotBase())->m_length);
+}
+
+ALWAYS_INLINE bool ArrayInstance::inlineGetOwnPropertySlot(ExecState* exec, unsigned i, PropertySlot& slot)
+{
+    ArrayStorage* storage = m_storage;
+
+    if (i >= m_length) {
+        if (i > maxArrayIndex)
+            return getOwnPropertySlot(exec, Identifier::from(i), slot);
+        return false;
+    }
+
+    if (i < m_vectorLength) {
+        JSValue*& valueSlot = storage->m_vector[i];
+        if (valueSlot) {
+            slot.setValueSlot(this, &valueSlot);
+            return true;
+        }
+    } else if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator it = map->find(i);
+        if (it != map->end()) {
+            slot.setValueSlot(this, &it->second);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  if (propertyName == exec->propertyNames().length) {
-    slot.setCustom(this, lengthGetter);
-    return true;
-  }
-
-  bool ok;
-  unsigned index = propertyName.toArrayIndex(&ok);
-  if (!ok)
-    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
-
-  if (index < storageLength) {
-    JSValue *v = storage[index];
-    if (!v)
-      return false;
-    slot.setValueSlot(this, &storage[index]);
-    return true;
-  }
-
-  if (index > MAX_ARRAY_INDEX)
-    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
-  OverflowMap* overflow = overflowMap(storage);
-  if (!overflow)
-    return false;
-  OverflowMap::iterator it = overflow->find(index);
-  if (it == overflow->end())
-    return false;
-  slot.setValueSlot(this, &it->second);
-  return true;
-}
-
-bool ArrayInstance::getOwnPropertySlot(ExecState *exec, unsigned index, PropertySlot& slot)
-{
-  if (index < storageLength) {
-    JSValue *v = storage[index];
-    if (!v)
-      return false;
-    slot.setValueSlot(this, &storage[index]);
-    return true;
-  }
-
-  if (index > MAX_ARRAY_INDEX)
-    return getOwnPropertySlot(exec, Identifier::from(index), slot);
-  OverflowMap* overflow = overflowMap(storage);
-  if (!overflow)
-    return false;
-  OverflowMap::iterator it = overflow->find(index);
-  if (it == overflow->end())
-    return false;
-  slot.setValueSlot(this, &it->second);
-  return true;
-}
-
-// Special implementation of [[Put]] - see ECMA 15.4.5.1
-void ArrayInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
-{
-  if (propertyName == exec->propertyNames().length) {
-    unsigned int newLen = value->toUInt32(exec);
-    if (value->toNumber(exec) != double(newLen)) {
-      throwError(exec, RangeError, "Invalid array length.");
-      return;
+    if (propertyName == exec->propertyNames().length) {
+        slot.setCustom(this, lengthGetter);
+        return true;
     }
-    setLength(newLen);
-    return;
-  }
 
-  bool ok;
-  unsigned index = propertyName.toArrayIndex(&ok);
-  if (ok) {
-    put(exec, index, value, attr);
-    return;
-  }
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+    if (isArrayIndex)
+        return inlineGetOwnPropertySlot(exec, i, slot);
 
-  JSObject::put(exec, propertyName, value, attr);
+    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-void ArrayInstance::put(ExecState *exec, unsigned index, JSValue *value, int attr)
+bool ArrayInstance::getOwnPropertySlot(ExecState* exec, unsigned i, PropertySlot& slot)
 {
-  // 0xFFFF FFFF is a bit weird --- it should be treated as a non-array index, even when it's a string
-  if (index > MAX_ARRAY_INDEX) {
-    put(exec, Identifier::from(index), value, attr);
-    return;
-  }
-
-  if (index < sparseArrayCutoff && index >= storageLength)
-    resizeStorage(index + 1);
-
-  if (index >= length)
-    length = index + 1;
-
-  if (index < storageLength) {
-    storage[index] = value;
-    return;
-  }
-
-  OverflowMap* overflow = overflowMap(storage);
-  if (!overflow) {
-    overflow = new OverflowMap;
-    if (!storage)
-      storage = allocateStorage(1);
-    storage[-2] = reinterpret_cast<JSValue*>(overflow);
-  }
-  overflow->add(index, value);
+    return inlineGetOwnPropertySlot(exec, i, slot);
 }
 
-bool ArrayInstance::deleteProperty(ExecState *exec, const Identifier &propertyName)
+// ECMA 15.4.5.1
+void ArrayInstance::put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attributes)
 {
-  if (propertyName == exec->propertyNames().length)
-    return false;
-
-  bool ok;
-  uint32_t index = propertyName.toArrayIndex(&ok);
-  if (ok) {
-    if (index >= length)
-      return true;
-    if (index < storageLength) {
-      storage[index] = 0;
-      return true;
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+    if (isArrayIndex) {
+        put(exec, i, value, attributes);
+        return;
     }
-    if (OverflowMap* overflow = overflowMap(storage)) {
-      OverflowMap::iterator it = overflow->find(index);
-      if (it == overflow->end())
+
+    if (propertyName == exec->propertyNames().length) {
+        unsigned newLength = value->toUInt32(exec);
+        if (value->toNumber(exec) != static_cast<double>(newLength)) {
+            throwError(exec, RangeError, "Invalid array length.");
+            return;
+        }
+        setLength(newLength);
+        return;
+    }
+
+    JSObject::put(exec, propertyName, value, attributes);
+}
+
+
+void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attributes)
+{
+    if (i > maxArrayIndex) {
+        put(exec, Identifier::from(i), value, attributes);
+        return;
+    }
+
+    ArrayStorage* storage = m_storage;
+
+    unsigned length = m_length;
+    if (i >= length) {
+        length = i + 1;
+        m_length = length;
+    }
+
+    if (i < m_vectorLength) {
+        JSValue*& valueSlot = storage->m_vector[i];
+        storage->m_numValuesInVector += !valueSlot;
+        valueSlot = value;
+        return;
+    }
+
+    if (i < sparseArrayCutoff) {
+        increaseVectorLength(i + 1);
+        storage = m_storage;
+        ++storage->m_numValuesInVector;
+        storage->m_vector[i] = value;
+        return;
+    }
+
+    SparseArrayValueMap* map = storage->m_sparseValueMap;
+    if (!map || map->isEmpty()) {
+        // i is after the vector here, see if it makes sense to expand the vector to include it.
+        if (isDenseEnoughForVector(i + 1, storage->m_numValuesInVector + 1)) {
+            increaseVectorLength(i + 1);
+            storage = m_storage;
+            ++storage->m_numValuesInVector;
+            storage->m_vector[i] = value;
+            return;
+        }
+        if (!map) {
+            map = new SparseArrayValueMap;
+            storage->m_sparseValueMap = map;
+        }
+        map->add(i, value);
+        return;
+    }
+
+    // See if we want to expand it to include i.
+    // ### actually, this does not honor the stated heuristic, since there may be values
+    // between vectorLength and i inside the map. I am not sure if checking that
+    // would be wise, however -- Maks
+    unsigned newNumValuesInVector = storage->m_numValuesInVector + 1;
+    if (!isDenseEnoughForVector(i + 1, newNumValuesInVector)) {
+        map->add(i, value);
+        return;
+    }
+
+    // Since we're expanding the vector, we want to copy over things from the map
+    unsigned newVectorLength = increasedVectorLength(i + 1);
+    for (unsigned j = m_vectorLength; j < newVectorLength; ++j)
+        newNumValuesInVector += map->contains(j);
+    newNumValuesInVector -= map->contains(i);
+
+    // Continue increasing the vector portion as long as the things in the map are dense enough
+    if (isDenseEnoughForVector(newVectorLength, newNumValuesInVector)) {
+        unsigned proposedNewNumValuesInVector = newNumValuesInVector;
+        while (true) {
+            unsigned proposedNewVectorLength = increasedVectorLength(newVectorLength + 1);
+            for (unsigned j = newVectorLength; j < proposedNewVectorLength; ++j)
+                proposedNewNumValuesInVector += map->contains(j);
+            if (!isDenseEnoughForVector(proposedNewVectorLength, proposedNewNumValuesInVector))
+                break;
+            newVectorLength = proposedNewVectorLength;
+            newNumValuesInVector = proposedNewNumValuesInVector;
+        }
+    }
+
+    storage = static_cast<ArrayStorage*>(fastRealloc(storage, storageSize(newVectorLength)));
+
+    unsigned vectorLength = m_vectorLength;
+
+    // Special case: if we just added a single value, we don't have to scan the map
+    // to see what to remove from it
+    if (newNumValuesInVector == storage->m_numValuesInVector + 1) {
+        for (unsigned j = vectorLength; j < newVectorLength; ++j)
+            storage->m_vector[j] = 0;
+        map->remove(i);
+    } else {
+        // Move over things from the map to the new array portion
+        for (unsigned j = vectorLength; j < newVectorLength; ++j) {
+            SparseArrayValueMap::iterator it = map->find(j);
+            if (it == map->end())
+                storage->m_vector[j] = 0;
+            else {
+                storage->m_vector[j] = it->second;
+                map->remove(it);
+            }
+        }
+    }
+
+    storage->m_vector[i] = value;
+
+    m_vectorLength = newVectorLength;
+    storage->m_numValuesInVector = newNumValuesInVector;
+
+    m_storage = storage;
+}
+
+bool ArrayInstance::deleteProperty(ExecState* exec, const Identifier& propertyName)
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+    if (isArrayIndex)
+        return deleteProperty(exec, i);
+
+    if (propertyName == exec->propertyNames().length)
         return false;
-      overflow->remove(it);
-      return true;
-    }
-    return false;
-  }
 
-  return JSObject::deleteProperty(exec, propertyName);
+    return JSObject::deleteProperty(exec, propertyName);
 }
 
-bool ArrayInstance::deleteProperty(ExecState *exec, unsigned index)
+bool ArrayInstance::deleteProperty(ExecState* exec, unsigned i)
 {
-  if (index > MAX_ARRAY_INDEX)
-    return deleteProperty(exec, Identifier::from(index));
+    ArrayStorage* storage = m_storage;
 
-  if (index >= length)
-    return true;
-  if (index < storageLength) {
-    storage[index] = 0;
-    return true;
-  }
+    if (i < m_vectorLength) {
+        JSValue*& valueSlot = storage->m_vector[i];
+        bool hadValue = valueSlot;
+        valueSlot = 0;
+        storage->m_numValuesInVector -= hadValue;
+        return hadValue;
+    }
 
-  OverflowMap* overflow = overflowMap(storage);
-  if (!overflow)
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator it = map->find(i);
+        if (it != map->end()) {
+            map->remove(it);
+            return true;
+        }
+    }
+
+    if (i > maxArrayIndex)
+        return deleteProperty(exec, Identifier::from(i));
+
     return false;
-  OverflowMap::iterator it = overflow->find(index);
-  if (it == overflow->end())
-    return false;
-  overflow->remove(it);
-  return true;
 }
 
 void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  // avoid fetching this every time through the loop
-  JSValue* undefined = jsUndefined();
+    // FIXME: Filling PropertyNameArray with an identifier for every integer
+    // is incredibly inefficient for large arrays. We need a different approach.
 
-  for (unsigned i = 0; i < storageLength; ++i) {
-    JSValue* value = storage[i];
-    if (value && value != undefined)
-      propertyNames.add(Identifier::from(i));
-  }
+    ArrayStorage* storage = m_storage;
 
-  OverflowMap* overflow = overflowMap(storage);
-  if (overflow) {
-    OverflowMap::iterator end = overflow->end();
-    for (OverflowMap::iterator it = overflow->begin(); it != end; ++it) {
-      JSValue* value = it->second;
-      if (value && value != undefined)
-        propertyNames.add(Identifier::from(it->first));
+    unsigned usedVectorLength = min(m_length, m_vectorLength);
+    for (unsigned i = 0; i < usedVectorLength; ++i) {
+        if (storage->m_vector[i])
+            propertyNames.add(Identifier::from(i));
     }
-  }
 
-  JSObject::getPropertyNames(exec, propertyNames);
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator end = map->end();
+        for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it)
+            propertyNames.add(Identifier::from(it->first));
+    }
+
+    JSObject::getPropertyNames(exec, propertyNames);
 }
 
-void ArrayInstance::resizeStorage(unsigned newLength)
+void ArrayInstance::increaseVectorLength(unsigned newLength)
 {
-    if (newLength < storageLength) {
-      memset(storage + newLength, 0, sizeof(JSValue *) * (storageLength - newLength));
-    }
-    size_t cap = capacity();
-    if (newLength > cap) {
-      unsigned newCapacity;
-      if (newLength > sparseArrayCutoff) {
-        newCapacity = newLength;
-      } else {
-        newCapacity = (newLength * 3 + 1) / 2;
-        if (newCapacity > sparseArrayCutoff) {
-          newCapacity = sparseArrayCutoff;
-        }
-      }
+    ArrayStorage* storage = m_storage;
 
-      reallocateStorage(storage, newCapacity);
-      memset(storage + cap, 0, sizeof(JSValue*) * (newCapacity - cap));
-    }
-    storageLength = newLength;
+    unsigned vectorLength = m_vectorLength;
+    ASSERT(newLength > vectorLength);
+    unsigned newVectorLength = increasedVectorLength(newLength);
+
+    storage = static_cast<ArrayStorage*>(fastRealloc(storage, storageSize(newVectorLength)));
+    m_vectorLength = newVectorLength;
+
+    for (unsigned i = vectorLength; i < newVectorLength; ++i)
+        storage->m_vector[i] = 0;
+
+    m_storage = storage;
 }
 
 void ArrayInstance::setLength(unsigned newLength)
 {
-  if (newLength <= storageLength)
-    resizeStorage(newLength);
+    ArrayStorage* storage = m_storage;
 
-  if (newLength < length) {
-    if (OverflowMap* overflow = overflowMap(storage)) {
-      OverflowMap copy = *overflow;
-      OverflowMap::iterator end = copy.end();
-      for (OverflowMap::iterator it = copy.begin(); it != end; ++it) {
-        if (it->first >= newLength)
-          overflow->remove(it->first);
-      }
+    unsigned length = m_length;
+
+    if (newLength < length) {
+        unsigned usedVectorLength = min(length, m_vectorLength);
+        for (unsigned i = newLength; i < usedVectorLength; ++i) {
+            JSValue*& valueSlot = storage->m_vector[i];
+            bool hadValue = valueSlot;
+            valueSlot = 0;
+            storage->m_numValuesInVector -= hadValue;
+        }
+
+        if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+            SparseArrayValueMap copy = *map;
+            SparseArrayValueMap::iterator end = copy.end();
+            for (SparseArrayValueMap::iterator it = copy.begin(); it != end; ++it) {
+                if (it->first >= newLength)
+                    map->remove(it->first);
+            }
+            if (map->isEmpty()) {
+                delete map;
+                storage->m_sparseValueMap = 0;
+            }
+        }
     }
-  }
 
-  length = newLength;
+    m_length = newLength;
 }
 
 void ArrayInstance::mark()
 {
-  JSObject::mark();
-  unsigned l = storageLength;
-  for (unsigned i = 0; i < l; ++i) {
-    JSValue *imp = storage[i];
-    if (imp && !imp->marked())
-      imp->mark();
-  }
+    JSObject::mark();
 
-  if (OverflowMap* overflow = overflowMap(storage)) {
-    OverflowMap::iterator end = overflow->end();
-    for (OverflowMap::iterator it = overflow->begin(); it != end; ++it) {
-      JSValue* value = it->second;
-      if (value && !value->marked())
-        value->mark();
+    ArrayStorage* storage = m_storage;
+
+    unsigned usedVectorLength = min(m_length, m_vectorLength);
+    for (unsigned i = 0; i < usedVectorLength; ++i) {
+        JSValue* value = storage->m_vector[i];
+        if (value && !value->marked())
+            value->mark();
     }
-  }
+
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap copy = *map;
+        SparseArrayValueMap::iterator end = copy.end();
+        for (SparseArrayValueMap::iterator it = copy.begin(); it != end; ++it) {
+            JSValue* value = it->second;
+            if (!value->marked())
+                value->mark();
+        }
+    }
 }
 
 static ExecState* execForCompareByStringForQSort;
 
-static int compareByStringForQSort(const void *a, const void *b)
+static int compareByStringForQSort(const void* a, const void* b)
 {
-    ExecState *exec = execForCompareByStringForQSort;
-    JSValue *va = *(JSValue **)a;
-    JSValue *vb = *(JSValue **)b;
+    ExecState* exec = execForCompareByStringForQSort;
+
+    JSValue* va = *static_cast<JSValue* const*>(a);
+    JSValue* vb = *static_cast<JSValue* const*>(b);
     ASSERT(!va->isUndefined());
     ASSERT(!vb->isUndefined());
+
     return compare(va->toString(exec), vb->toString(exec));
 }
 
 void ArrayInstance::sort(ExecState* exec)
 {
-    size_t lengthNotIncludingUndefined = compactForSorting();
+    unsigned lengthNotIncludingUndefined = compactForSorting();
 
     ExecState* oldExec = execForCompareByStringForQSort;
     execForCompareByStringForQSort = exec;
+
 #if HAVE(MERGESORT)
-    // mergesort usually does fewer compares, so it is actually faster than qsort for JS sorts.
-    // however, becuase it requires extra copies of the storage buffer, don't use it for very
-    // large arrays
-    // FIXME: for sorting by string value, the fastest thing would actually be to convert all the
-    // values to string once up front, and then use a radix sort. That would be O(N) rather than
-    // O(N log N).
-    if (lengthNotIncludingUndefined < sparseArrayCutoff) {
-        JSValue** storageCopy = allocateStorage(capacity());
-        memcpy(storageCopy, storage, capacity() * sizeof(JSValue*));
-        mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareByStringForQSort);
-        freeStorage(storage);
-        storage = storageCopy;
+    // Because mergesort usually does fewer compares, it is faster than qsort here.
+    // However, because it requires extra copies of the storage buffer, don't use it for very
+    // large arrays.
+
+    // FIXME: Since we sort by string value, a fast algorithm might be to convert all the
+    // values to string once up front, and then use a radix sort. That would be O(N) rather
+    // than O(N log N).
+
+    if (lengthNotIncludingUndefined < mergeSortCutoff) {
+        // During the sort, we could do a garbage collect, and it's important to still
+        // have references to every object in the array for ArrayInstance::mark.
+        // The mergesort algorithm does not guarantee this, so we sort a copy rather
+        // than the original.
+        size_t size = storageSize(m_vectorLength);
+        ArrayStorage* copy = static_cast<ArrayStorage*>(fastMalloc(size));
+        memcpy(copy, m_storage, size);
+        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+        fastFree(m_storage);
+        m_storage = copy;
         execForCompareByStringForQSort = oldExec;
         return;
     }
 #endif
 
-    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
     execForCompareByStringForQSort = oldExec;
 }
 
@@ -423,8 +509,6 @@ struct CompareWithCompareFunctionArguments {
         , compareFunction(cf)
         , globalObject(e->dynamicInterpreter()->globalObject())
     {
-        arguments.append(jsUndefined());
-        arguments.append(jsUndefined());
     }
 
     ExecState *exec;
@@ -435,12 +519,12 @@ struct CompareWithCompareFunctionArguments {
 
 static CompareWithCompareFunctionArguments* compareWithCompareFunctionArguments;
 
-static int compareWithCompareFunctionForQSort(const void *a, const void *b)
+static int compareWithCompareFunctionForQSort(const void* a, const void* b)
 {
     CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
 
-    JSValue *va = *(JSValue **)a;
-    JSValue *vb = *(JSValue **)b;
+    JSValue* va = *static_cast<JSValue* const*>(a);
+    JSValue* vb = *static_cast<JSValue* const*>(b);
     ASSERT(!va->isUndefined());
     ASSERT(!vb->isUndefined());
 
@@ -459,663 +543,89 @@ void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
     CompareWithCompareFunctionArguments* oldArgs = compareWithCompareFunctionArguments;
     CompareWithCompareFunctionArguments args(exec, compareFunction);
     compareWithCompareFunctionArguments = &args;
+
 #if HAVE(MERGESORT)
-    // mergesort usually does fewer compares, so it is actually faster than qsort for JS sorts.
-    // however, becuase it requires extra copies of the storage buffer, don't use it for very
-    // large arrays
-    // FIXME: a tree sort using a perfectly balanced tree (e.g. an AVL tree) could do an even
-    // better job of minimizing compares
-    if (lengthNotIncludingUndefined < sparseArrayCutoff) {
-        JSValue** storageCopy = allocateStorage(capacity());
-        memcpy(storageCopy, storage, capacity() * sizeof(JSValue*));
-        mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareWithCompareFunctionForQSort);
-        freeStorage(storage);
-        storage = storageCopy;
+    // Because mergesort usually does fewer compares, it is faster than qsort here.
+    // However, because it requires extra copies of the storage buffer, don't use it for very
+    // large arrays.
+
+    // FIXME: A tree sort using a perfectly balanced tree (e.g. an AVL tree) could do an even
+    // better job of minimizing compares.
+
+    if (lengthNotIncludingUndefined < mergeSortCutoff) {
+        // During the sort, we could do a garbage collect, and it's important to still
+        // have references to every object in the array for ArrayInstance::mark.
+        // The mergesort algorithm does not guarantee this, so we sort a copy rather
+        // than the original.
+        size_t size = storageSize(m_vectorLength);
+        ArrayStorage* copy = static_cast<ArrayStorage*>(fastMalloc(size));
+        memcpy(copy, m_storage, size);
+        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+        fastFree(m_storage);
+        m_storage = copy;
         compareWithCompareFunctionArguments = oldArgs;
         return;
     }
 #endif
-    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+
+    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
     compareWithCompareFunctionArguments = oldArgs;
 }
 
 unsigned ArrayInstance::compactForSorting()
 {
-    JSValue *undefined = jsUndefined();
+    ArrayStorage* storage = m_storage;
 
-    unsigned o = 0;
+    unsigned usedVectorLength = min(m_length, m_vectorLength);
 
-    for (unsigned i = 0; i != storageLength; ++i) {
-        JSValue *v = storage[i];
-        if (v && v != undefined) {
-            if (o != i)
-                storage[o] = v;
-            o++;
+    unsigned numDefined = 0;
+    unsigned numUndefined = 0;
+
+    // This compacts normal values (e.g. not undefined) in a contiguous run
+    // at the beginning of the array, and then puts any set undefined values
+    // at the end
+
+    // count the first contiguous run of defined values in the vector store
+    for (; numDefined < usedVectorLength; ++numDefined) {
+        JSValue* v = storage->m_vector[numDefined];
+        if (!v || v->isUndefined())
+            break;
+    }
+
+    // compact the rest, counting along the way
+    for (unsigned i = numDefined; i < usedVectorLength; ++i) {
+        if (JSValue* v = storage->m_vector[i]) {
+            if (v->isUndefined())
+                ++numUndefined;
+            else
+                storage->m_vector[numDefined++] = v;
         }
     }
 
-    unsigned newLength = o;
+    unsigned newUsedVectorLength = numDefined + numUndefined;
 
-    if (OverflowMap* overflow = overflowMap(storage)) {
-        OverflowMap::iterator end = overflow->end();
-        for (OverflowMap::iterator it = overflow->begin(); it != end; ++it)
-            newLength += it->second != undefined;
-
-        if (newLength > storageLength)
-            resizeStorage(newLength);
-
-        for (OverflowMap::iterator it = overflow->begin(); it != end; ++it) {
-            JSValue* v = it->second;
-            if (v != undefined) {
-                storage[o] = v;
-                o++;
-            }
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        newUsedVectorLength += map->size();
+        if (newUsedVectorLength > m_vectorLength) {
+            increaseVectorLength(newUsedVectorLength);
+            storage = m_storage;
         }
-        delete overflow;
-        storage[-2] = 0;
+
+        SparseArrayValueMap::iterator end = map->end();
+        for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it)
+            storage->m_vector[numDefined++] = it->second;
+
+        delete map;
+        storage->m_sparseValueMap = 0;
     }
 
-
-    if (newLength != storageLength)
-        memset(storage + o, 0, sizeof(JSValue *) * (storageLength - o));
-
-    return o;
-}
-
-// ------------------------------ ArrayPrototype ----------------------------
-
-const ClassInfo ArrayPrototype::info = {"Array", &ArrayInstance::info, &arrayTable, 0};
-
-/* Source for array_object.lut.h
-@begin arrayTable 16
-  toString       ArrayProtoFunc::ToString       DontEnum|Function 0
-  toLocaleString ArrayProtoFunc::ToLocaleString DontEnum|Function 0
-  concat         ArrayProtoFunc::Concat         DontEnum|Function 1
-  join           ArrayProtoFunc::Join           DontEnum|Function 1
-  pop            ArrayProtoFunc::Pop            DontEnum|Function 0
-  push           ArrayProtoFunc::Push           DontEnum|Function 1
-  reverse        ArrayProtoFunc::Reverse        DontEnum|Function 0
-  shift          ArrayProtoFunc::Shift          DontEnum|Function 0
-  slice          ArrayProtoFunc::Slice          DontEnum|Function 2
-  sort           ArrayProtoFunc::Sort           DontEnum|Function 1
-  splice         ArrayProtoFunc::Splice         DontEnum|Function 2
-  unshift        ArrayProtoFunc::UnShift        DontEnum|Function 1
-  every          ArrayProtoFunc::Every          DontEnum|Function 1
-  forEach        ArrayProtoFunc::ForEach        DontEnum|Function 1
-  some           ArrayProtoFunc::Some           DontEnum|Function 1
-  indexOf        ArrayProtoFunc::IndexOf        DontEnum|Function 1
-  lastIndexOf    ArrayProtoFunc::LastIndexOf    DontEnum|Function 1
-  filter         ArrayProtoFunc::Filter         DontEnum|Function 1
-  map            ArrayProtoFunc::Map            DontEnum|Function 1
-@end
-*/
-
-// ECMA 15.4.4
-ArrayPrototype::ArrayPrototype(ExecState*, ObjectPrototype* objProto)
-  : ArrayInstance(objProto, 0)
-{
-}
-
-bool ArrayPrototype::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
-{
-  return getStaticFunctionSlot<ArrayProtoFunc, ArrayInstance>(exec, &arrayTable, this, propertyName, slot);
-}
-
-// ------------------------------ ArrayProtoFunc ----------------------------
-
-ArrayProtoFunc::ArrayProtoFunc(ExecState *exec, int i, int len, const Identifier& name)
-  : InternalFunctionImp(static_cast<FunctionPrototype*>
-                        (exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
-  , id(i)
-{
-  put(exec, exec->propertyNames().length,jsNumber(len),DontDelete|ReadOnly|DontEnum);
-}
-
-static JSValue *getProperty(ExecState *exec, JSObject *obj, unsigned index)
-{
-    PropertySlot slot;
-    if (!obj->getPropertySlot(exec, index, slot))
-        return NULL;
-    return slot.getValue(exec, obj, index);
-}
-
-// ECMA 15.4.4
-JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
-{
-  unsigned length = thisObj->get(exec, exec->propertyNames().length)->toUInt32(exec);
-
-  JSValue *result = 0; // work around gcc 4.0 bug in uninitialized variable warning
-
-  switch (id) {
-  case ToLocaleString:
-  case ToString:
-
-    if (!thisObj->inherits(&ArrayInstance::info))
-      return throwError(exec, TypeError);
-
-    // fall through
-  case Join: {
-    static HashSet<JSObject*> visitedElems;
-    static const UString* empty = new UString("");
-    static const UString* comma = new UString(",");
-    bool alreadyVisited = !visitedElems.add(thisObj).second;
-    if (alreadyVisited)
-        return jsString(*empty);
-    UString separator = *comma;
-    UString str = *empty;
-
-    if (id == Join && !args[0]->isUndefined())
-      separator = args[0]->toString(exec);
-    for (unsigned int k = 0; k < length; k++) {
-      if (k >= 1)
-        str += separator;
-      if (str.isNull()) {
-        JSObject *error = Error::create(exec, GeneralError, "Out of memory");
-        exec->setException(error);
-        break;
-      }
-
-      JSValue *element = thisObj->get(exec, k);
-      if (element->isUndefinedOrNull())
-        continue;
-
-      bool fallback = false;
-      if (id == ToLocaleString) {
-        JSObject *o = element->toObject(exec);
-        JSValue *conversionFunction = o->get(exec, exec->propertyNames().toLocaleString);
-        if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall())
-          str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
-        else
-          // try toString() fallback
-          fallback = true;
-      }
-
-      if (id == ToString || id == Join || fallback) {
-        if (element->isObject()) {
-          JSObject *o = static_cast<JSObject *>(element);
-          JSValue *conversionFunction = o->get(exec, exec->propertyNames().toString);
-          if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
-            str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
-          } else {
-            visitedElems.remove(thisObj);
-            return throwError(exec, RangeError, "Can't convert " + o->className() + " object to string");
-          }
-        } else {
-          str += element->toString(exec);
-        }
-        if (str.isNull()) {
-          JSObject *error = Error::create(exec, GeneralError, "Out of memory");
-          exec->setException(error);
-        }
-      }
-
-      if ( exec->hadException() )
-        break;
-    }
-    visitedElems.remove(thisObj);
-    result = jsString(str);
-    break;
-  }
-  case Concat: {
-    JSObject *arr = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
-    int n = 0;
-    JSValue *curArg = thisObj;
-    JSObject *curObj = static_cast<JSObject *>(thisObj);
-    ListIterator it = args.begin();
-    for (;;) {
-      if (curArg->isObject() &&
-          curObj->inherits(&ArrayInstance::info)) {
-        unsigned int k = 0;
-        // Older versions tried to optimize out getting the length of thisObj
-        // by checking for n != 0, but that doesn't work if thisObj is an empty array.
-        length = curObj->get(exec, exec->propertyNames().length)->toUInt32(exec);
-        while (k < length) {
-          if (JSValue *v = getProperty(exec, curObj, k))
-            arr->put(exec, n, v);
-          n++;
-          k++;
-        }
-      } else {
-        arr->put(exec, n, curArg);
-        n++;
-      }
-      if (it == args.end())
-        break;
-      curArg = *it;
-      curObj = static_cast<JSObject *>(it++); // may be 0
-    }
-    arr->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
-
-    result = arr;
-    break;
-  }
-  case Pop:{
-    if (length == 0) {
-      thisObj->put(exec, exec->propertyNames().length, jsNumber(length), DontEnum | DontDelete);
-      result = jsUndefined();
-    } else {
-      result = thisObj->get(exec, length - 1);
-      thisObj->put(exec, exec->propertyNames().length, jsNumber(length - 1), DontEnum | DontDelete);
-    }
-    break;
-  }
-  case Push: {
-    for (int n = 0; n < args.size(); n++)
-      thisObj->put(exec, length + n, args[n]);
-    length += args.size();
-    thisObj->put(exec, exec->propertyNames().length, jsNumber(length), DontEnum | DontDelete);
-    result = jsNumber(length);
-    break;
-  }
-  case Reverse: {
-
-    unsigned int middle = length / 2;
-
-    for (unsigned int k = 0; k < middle; k++) {
-      unsigned lk1 = length - k - 1;
-      JSValue *obj2 = getProperty(exec, thisObj, lk1);
-      JSValue *obj = getProperty(exec, thisObj, k);
-
-      if (obj2)
-        thisObj->put(exec, k, obj2);
-      else
-        thisObj->deleteProperty(exec, k);
-
-      if (obj)
-        thisObj->put(exec, lk1, obj);
-      else
-        thisObj->deleteProperty(exec, lk1);
-    }
-    result = thisObj;
-    break;
-  }
-  case Shift: {
-    if (length == 0) {
-      thisObj->put(exec, exec->propertyNames().length, jsNumber(length), DontEnum | DontDelete);
-      result = jsUndefined();
-    } else {
-      result = thisObj->get(exec, 0);
-      for(unsigned int k = 1; k < length; k++) {
-        if (JSValue *obj = getProperty(exec, thisObj, k))
-          thisObj->put(exec, k-1, obj);
-        else
-          thisObj->deleteProperty(exec, k-1);
-      }
-      thisObj->deleteProperty(exec, length - 1);
-      thisObj->put(exec, exec->propertyNames().length, jsNumber(length - 1), DontEnum | DontDelete);
-    }
-    break;
-  }
-  case Slice: {
-    // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713 or 15.4.4.10
-
-    // We return a new array
-    JSObject *resObj = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
-    result = resObj;
-    double begin = 0;
-    if (!args[0]->isUndefined()) {
-        begin = args[0]->toInteger(exec);
-        if (begin >= 0) { // false for NaN
-            if (begin > length)
-                begin = length;
-        } else {
-            begin += length;
-            if (!(begin >= 0)) // true for NaN
-                begin = 0;
-        }
-    }
-    double end = length;
-    if (!args[1]->isUndefined()) {
-      end = args[1]->toInteger(exec);
-      if (end < 0) { // false for NaN
-        end += length;
-        if (end < 0)
-          end = 0;
-      } else {
-        if (!(end <= length)) // true for NaN
-          end = length;
-      }
-    }
-
-    //printf( "Slicing from %d to %d \n", begin, end );
-    int n = 0;
-    int b = static_cast<int>(begin);
-    int e = static_cast<int>(end);
-    for(int k = b; k < e; k++, n++) {
-      if (JSValue *v = getProperty(exec, thisObj, k))
-        resObj->put(exec, n, v);
-    }
-    resObj->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
-    break;
-  }
-  case Sort:{
-#if 0
-    printf("KJS Array::Sort length=%d\n", length);
-    for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).ascii() );
-#endif
-    JSObject *sortFunction = NULL;
-    if (!args[0]->isUndefined())
-      {
-        sortFunction = args[0]->toObject(exec);
-        if (!sortFunction->implementsCall())
-          sortFunction = NULL;
-      }
-
-    if (thisObj->classInfo() == &ArrayInstance::info) {
-      if (sortFunction)
-        ((ArrayInstance *)thisObj)->sort(exec, sortFunction);
-      else
-        ((ArrayInstance *)thisObj)->sort(exec);
-      result = thisObj;
-      break;
-    }
-
-    if (length == 0) {
-      thisObj->put(exec, exec->propertyNames().length, jsNumber(0), DontEnum | DontDelete);
-      result = thisObj;
-      break;
-    }
-
-    // "Min" sort. Not the fastest, but definitely less code than heapsort
-    // or quicksort, and much less swapping than bubblesort/insertionsort.
-    for ( unsigned int i = 0 ; i<length-1 ; ++i )
-      {
-        JSValue *iObj = thisObj->get(exec,i);
-        unsigned int themin = i;
-        JSValue *minObj = iObj;
-        for ( unsigned int j = i+1 ; j<length ; ++j )
-          {
-            JSValue *jObj = thisObj->get(exec,j);
-            double cmp;
-            if (jObj->isUndefined()) {
-              cmp = 1; // don't check minObj because there's no need to differentiate == (0) from > (1)
-            } else if (minObj->isUndefined()) {
-              cmp = -1;
-            } else if (sortFunction) {
-                List l;
-                l.append(jObj);
-                l.append(minObj);
-                cmp = sortFunction->call(exec, exec->dynamicInterpreter()->globalObject(), l)->toNumber(exec);
-            } else {
-              cmp = (jObj->toString(exec) < minObj->toString(exec)) ? -1 : 1;
-            }
-            if ( cmp < 0 )
-              {
-                themin = j;
-                minObj = jObj;
-              }
-          }
-        // Swap themin and i
-        if ( themin > i )
-          {
-            //printf("KJS Array::Sort: swapping %d and %d\n", i, themin );
-            thisObj->put( exec, i, minObj );
-            thisObj->put( exec, themin, iObj );
-          }
-      }
-#if 0
-    printf("KJS Array::Sort -- Resulting array:\n");
-    for ( unsigned int i = 0 ; i<length ; ++i )
-      printf("KJS Array::Sort: %d: %s\n", i, thisObj->get(exec, i)->toString(exec).ascii() );
-#endif
-    result = thisObj;
-    break;
-  }
-  case Splice: {
-    // 15.4.4.12 - oh boy this is huge
-    JSObject *resObj = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
-    result = resObj;
-    int begin = args[0]->toUInt32(exec);
-    if ( begin < 0 )
-      begin = maxInt( begin + length, 0 );
-    else
-      begin = minInt( begin, length );
-    unsigned int deleteCount = minInt( maxInt( args[1]->toUInt32(exec), 0 ), length - begin );
-
-    //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
-    for(unsigned int k = 0; k < deleteCount; k++) {
-      if (JSValue *v = getProperty(exec, thisObj, k+begin))
-        resObj->put(exec, k, v);
-    }
-    resObj->put(exec, exec->propertyNames().length, jsNumber(deleteCount), DontEnum | DontDelete);
-
-    unsigned int additionalArgs = maxInt( args.size() - 2, 0 );
-    if ( additionalArgs != deleteCount )
-    {
-      if ( additionalArgs < deleteCount )
-      {
-        for ( unsigned int k = begin; k < length - deleteCount; ++k )
-        {
-          if (JSValue *v = getProperty(exec, thisObj, k+deleteCount))
-            thisObj->put(exec, k+additionalArgs, v);
-          else
-            thisObj->deleteProperty(exec, k+additionalArgs);
-        }
-        for ( unsigned int k = length ; k > length - deleteCount + additionalArgs; --k )
-          thisObj->deleteProperty(exec, k-1);
-      }
-      else
-      {
-        for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
-        {
-          if (JSValue *obj = getProperty(exec, thisObj, k + deleteCount - 1))
-            thisObj->put(exec, k + additionalArgs - 1, obj);
-          else
-            thisObj->deleteProperty(exec, k+additionalArgs-1);
-        }
-      }
-    }
-    for ( unsigned int k = 0; k < additionalArgs; ++k )
-    {
-      thisObj->put(exec, k+begin, args[k+2]);
-    }
-    thisObj->put(exec, exec->propertyNames().length, jsNumber(length - deleteCount + additionalArgs), DontEnum | DontDelete);
-    break;
-  }
-  case UnShift: { // 15.4.4.13
-    unsigned int nrArgs = args.size();
-    for ( unsigned int k = length; k > 0; --k )
-    {
-      if (JSValue *v = getProperty(exec, thisObj, k - 1))
-        thisObj->put(exec, k+nrArgs-1, v);
-      else
-        thisObj->deleteProperty(exec, k+nrArgs-1);
-    }
-    for ( unsigned int k = 0; k < nrArgs; ++k )
-      thisObj->put(exec, k, args[k]);
-    result = jsNumber(length + nrArgs);
-    thisObj->put(exec, exec->propertyNames().length, result, DontEnum | DontDelete);
-    break;
-  }
-  case Filter:
-  case Map: {
-    JSObject *eachFunction = args[0]->toObject(exec);
-
-    if (!eachFunction->implementsCall())
-      return throwError(exec, TypeError);
-
-    JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
-    JSObject *resultArray;
-
-    if (id == Filter)
-      resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
-    else {
-      List args;
-      args.append(jsNumber(length));
-      resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
-    }
-
-    unsigned filterIndex = 0;
-    for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
-      PropertySlot slot;
-
-      if (!thisObj->getPropertySlot(exec, k, slot))
-         continue;
-
-      JSValue *v = slot.getValue(exec, thisObj, k);
-
-      List eachArguments;
-
-      eachArguments.append(v);
-      eachArguments.append(jsNumber(k));
-      eachArguments.append(thisObj);
-
-      JSValue *result = eachFunction->call(exec, applyThis, eachArguments);
-
-      if (id == Map)
-        resultArray->put(exec, k, result);
-      else if (result->toBoolean(exec))
-        resultArray->put(exec, filterIndex++, v);
-    }
-
-    return resultArray;
-  }
-  case Every:
-  case ForEach:
-  case Some: {
-    //Documentation for these three is available at:
-    //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:every
-    //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:forEach
-    //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:some
-
-    JSObject *eachFunction = args[0]->toObject(exec);
-
-    if (!eachFunction->implementsCall())
-      return throwError(exec, TypeError);
-
-    JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
-
-    if (id == Some || id == Every)
-      result = jsBoolean(id == Every);
-    else
-      result = jsUndefined();
-
-    for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
-      PropertySlot slot;
-
-      if (!thisObj->getPropertySlot(exec, k, slot))
-        continue;
-
-      List eachArguments;
-
-      eachArguments.append(slot.getValue(exec, thisObj, k));
-      eachArguments.append(jsNumber(k));
-      eachArguments.append(thisObj);
-
-      bool predicateResult = eachFunction->call(exec, applyThis, eachArguments)->toBoolean(exec);
-
-      if (id == Every && !predicateResult) {
-        result = jsBoolean(false);
-        break;
-      }
-      if (id == Some && predicateResult) {
-        result = jsBoolean(true);
-        break;
-      }
-    }
-    break;
-  }
-
-  case IndexOf: {
-    // JavaScript 1.5 Extension by Mozilla
-    // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:indexOf
-
-    unsigned index = 0;
-    double d = args[1]->toInteger(exec);
-    if (d < 0)
-        d += length;
-    if (d > 0) {
-        if (d > length)
-            index = length;
-        else
-            index = static_cast<unsigned>(d);
-    }
-
-    JSValue* searchElement = args[0];
-    for (; index < length; ++index) {
-        JSValue* e = getProperty(exec, thisObj, index);
-        if (!e)
-            continue;
-        if (strictEqual(exec, searchElement, e))
-            return jsNumber(index);
-    }
-
-    return jsNumber(-1);
-  }
-  case LastIndexOf: {
-       // JavaScript 1.6 Extension by Mozilla
-      // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf
-
-    int index = length - 1;
-    double d = args[1]->toIntegerPreserveNaN(exec);
-
-    if (d < 0) {
-        d += length;
-        if (d < 0)
-            return jsNumber(-1);
-    }
-    if (d < length)
-        index = static_cast<int>(d);
-
-    JSValue* searchElement = args[0];
-    for (; index >= 0; --index) {
-        JSValue* e = getProperty(exec, thisObj, index);
-        if (!e)
-            continue;
-        if (strictEqual(exec, searchElement, e))
-            return jsNumber(index);
-    }
-
-    return jsNumber(-1);
-}
-  default:
-    assert(0);
-    result = 0;
-    break;
-  }
-  return result;
-}
-
-// ------------------------------ ArrayObjectImp -------------------------------
-
-ArrayObjectImp::ArrayObjectImp(ExecState *exec,
-                               FunctionPrototype *funcProto,
-                               ArrayPrototype *arrayProto)
-  : InternalFunctionImp(funcProto)
-{
-  // ECMA 15.4.3.1 Array.prototype
-  put(exec, exec->propertyNames().prototype, arrayProto, DontEnum|DontDelete|ReadOnly);
-
-  // no. of arguments for constructor
-  put(exec, exec->propertyNames().length, jsNumber(1), ReadOnly|DontDelete|DontEnum);
-}
-
-bool ArrayObjectImp::implementsConstruct() const
-{
-  return true;
-}
-
-// ECMA 15.4.2
-JSObject *ArrayObjectImp::construct(ExecState *exec, const List &args)
-{
-  // a single numeric argument denotes the array size (!)
-  if (args.size() == 1 && args[0]->isNumber()) {
-    uint32_t n = args[0]->toUInt32(exec);
-    if (n != args[0]->toNumber(exec))
-      return throwError(exec, RangeError, "Array size is not a small enough positive integer.");
-    return new ArrayInstance(exec->lexicalInterpreter()->builtinArrayPrototype(), n);
-  }
-
-  // otherwise the array is constructed with the arguments in it
-  return new ArrayInstance(exec->lexicalInterpreter()->builtinArrayPrototype(), args);
-}
-
-// ECMA 15.6.1
-JSValue *ArrayObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
-{
-  // equivalent to 'new Array(....)'
-  return construct(exec,args);
+    for (unsigned i = numDefined; i < newUsedVectorLength; ++i)
+        storage->m_vector[i] = jsUndefined();
+    for (unsigned i = newUsedVectorLength; i < usedVectorLength; ++i)
+        storage->m_vector[i] = 0;
+
+    return numDefined;
 }
 
 }
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

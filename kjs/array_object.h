@@ -44,13 +44,11 @@ namespace KJS {
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
     enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
-          Reverse, Shift, Slice, Sort, Splice, UnShift, 
+          Reverse, Shift, Slice, Sort, Splice, UnShift,
           Every, ForEach, Some, IndexOf, Filter, Map, LastIndexOf };
   private:
     int id;
   };
-
-  const unsigned MAX_ARRAY_INDEX = 0xFFFFFFFEu;
 
   class ArrayObjectImp : public InternalFunctionImp {
   public:
