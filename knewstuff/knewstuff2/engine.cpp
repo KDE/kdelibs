@@ -180,7 +180,7 @@ KNS::Entry::List Engine::download()
 
 KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
-    kDebug() << "Engine: downloadDialogModal";
+    //kDebug() << "Engine: downloadDialogModal";
 
     d->m_command = EnginePrivate::command_download;
     d->m_modal = true;
@@ -192,7 +192,7 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
 void Engine::downloadDialog()
 {
-    kDebug() << "Engine: downloadDialog";
+    //kDebug() << "Engine: downloadDialog";
 
     if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
@@ -272,8 +272,6 @@ void Engine::uploadDialog(const QString& file)
 
 void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 {
-    kDebug() << "Engine: slotProviderLoaded" << m_command;
-
     if (m_command == command_download) {
         loadEntries(provider);
     }
@@ -293,7 +291,7 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 void EnginePrivate::slotProvidersFinished()
 {
     // NOTE: this is only connected when we are doing an upload
-    kDebug() << "Engine: slotProvidersFinished";
+    //kDebug() << "Engine: slotProvidersFinished";
 
     int ret;
 
