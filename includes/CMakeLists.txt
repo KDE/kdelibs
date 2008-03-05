@@ -430,6 +430,7 @@ install( FILES
   kndbgstream
   KCategorizedView
   KCategoryDrawer
+  KCategorizedSortFilterProxyModel
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 if (UNIX)
