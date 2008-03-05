@@ -30,9 +30,9 @@
 #include <klineedit.h>
 #include <kfiledialog.h>
 #include <QRadioButton>
-#include <Qt3Support/Q3ButtonGroup>
 #include <QLayout>
 #include <QLabel>
+#include <QGroupBox>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -42,20 +42,29 @@
 KCertExport::KCertExport(QWidget *parent)
  : KDialog(parent)
 {
-    QGridLayout *grid = new QGridLayout(this );
+    setButtons(None);
+    QWidget *widget = new QWidget(this);
+    setMainWidget(widget);
+    QGridLayout *grid = new QGridLayout;
     grid->setMargin( marginHint() );
     grid->setSpacing( spacingHint() );
+    widget->setLayout(grid);
 
    setCaption(i18n("X509 Certificate Export"));
 
-   Q3ButtonGroup *bg = new Q3ButtonGroup(i18n("Format"), this);
-   bg->setOrientation(Qt::Vertical);
+   QGroupBox *bg = new QGroupBox(i18n("Format"), this);
+   QVBoxLayout *lay = new QVBoxLayout;
    _pem = new QRadioButton(i18n("&PEM"), bg);
+   lay->addWidget(_pem);
    _netscape = new QRadioButton(i18n("&Netscape"), bg);
+   lay->addWidget(_netscape);
    _der = new QRadioButton(i18n("&DER/ASN1"), bg);
+   lay->addWidget(_der);
    _text = new QRadioButton(i18n("&Text"), bg);
+   lay->addWidget(_text);
    grid->addWidget(bg, 0, 0, 5, 4 );
    _pem->setChecked(true);
+   bg->setLayout(lay);
 
    grid->addWidget(new QLabel(i18n("Filename:"), this), 5, 0, 1, 4 );
 
