@@ -69,6 +69,7 @@ QString KTranslatable::representation() const
         if (m_strings.contains(*it)) return m_strings[*it];
 
     if (m_strings.contains(QString())) return m_strings[QString()];
+    // NOTE: this could be the source of crashes I've seen occasionally
     else return *(m_strings.begin());
 }
 

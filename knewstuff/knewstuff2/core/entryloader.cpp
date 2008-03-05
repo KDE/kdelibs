@@ -57,9 +57,8 @@ void EntryLoader::load(const Provider *provider, Feed *feed)
             SLOT(slotJobResult(KJob *)));
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
             SLOT(slotJobData(KIO::Job *, const QByteArray &)));
-    bool worked = connect(job, SIGNAL(percent(KJob*, unsigned long)),
+    connect(job, SIGNAL(percent(KJob*, unsigned long)),
             this, SIGNAL(signalProgress(KJob*, unsigned long)));
-    kDebug() << "io job progress connected to signalProgress" << worked;
 }
 
 Feed *EntryLoader::feed() const

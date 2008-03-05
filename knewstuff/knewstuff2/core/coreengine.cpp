@@ -96,7 +96,7 @@ bool CoreEngine::init(const QString &configfile)
     KConfigGroup group = conf.group("KNewStuff2");
     m_providersurl = group.readEntry("ProvidersUrl", QString());
     //m_componentname = group.readEntry("ComponentName", QString());
-    m_componentname = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ":";
+    m_componentname = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
 
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
@@ -177,7 +177,7 @@ bool CoreEngine::init(const QString &configfile)
 
 void CoreEngine::start()
 {
-    kDebug() << "starting engine";
+    //kDebug() << "starting engine";
 
     if (!m_initialized) {
         kError() << "Must call KNS::CoreEngine::init() first." << endl;
@@ -214,7 +214,7 @@ void CoreEngine::start()
 
 void CoreEngine::loadEntries(Provider *provider)
 {
-    kDebug() << "loading entries";
+    //kDebug() << "loading entries";
 
     if (m_cachepolicy == CacheOnly) {
         return;
@@ -295,6 +295,7 @@ void CoreEngine::downloadPayload(Entry *entry)
         //kDebug() << "Relaying remote payload '" << source << "'";
         entry->setStatus(Entry::Installed);
         m_payloadfiles[entry] = entry->payload().representation();
+        install(source.pathOrUrl());
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
         return;
@@ -350,7 +351,7 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 
 void CoreEngine::slotProvidersLoaded(KNS::Provider::List list)
 {
-	// note: this is only called from loading the online providers
+    // note: this is only called from loading the online providers
     ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
     delete loader;
 
@@ -359,6 +360,7 @@ void CoreEngine::slotProvidersLoaded(KNS::Provider::List list)
 
 void CoreEngine::slotProvidersFailed()
 {
+    kDebug() << "slotProvidersFailed";
     ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
     delete loader;
 
@@ -402,7 +404,7 @@ void CoreEngine::slotProgress(KJob *job, unsigned long percent)
     else if (transferJob != NULL) {
         url = transferJob->url().fileName();
     }
-    
+
     QString message = QString("loading %1").arg(url);
     emit signalProgress(message, percent);
 }
@@ -425,6 +427,8 @@ void CoreEngine::slotPayloadResult(KJob *job)
             m_payloadfiles[entry] = fcjob->destUrl().path();
         }
         // FIXME: ignore if not? shouldn't happen...
+
+        install(fcjob->destUrl().pathOrUrl());
 
         emit signalPayloadLoaded(fcjob->destUrl());
     }
@@ -722,7 +726,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
     }
     QString entrycachedir = entrycachedirs.first();
 
-    kDebug() << "Load from directory '" + cachedir + "'";
+    kDebug() << "Load from directory: " + cachedir;
 
     QStringList feeds = provider->feeds();
     for (int i = 0; i < feeds.count(); i++) {
@@ -732,7 +736,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
         QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
         QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
-        kDebug() << "  + Load from file '" + cachefile + "'.";
+        kDebug() << "  + Load from file: " + cachefile;
 
         bool ret;
         QFile f(cachefile);
@@ -830,6 +834,8 @@ KNS::Entry *CoreEngine::loadEntryCache(const QString& filepath)
         m_payloadfiles[e] = root.attribute("payloadfile");
         // FIXME: check here for a [ -f payloadfile ]
     }
+
+    e->setSource(Entry::Cache);
 
     return e;
 }
@@ -1388,7 +1394,6 @@ bool CoreEngine::install(const QString &payloadfile)
             archive->close();
             QFile::remove(payloadfile);
             delete archive;
-    
         } 
         else {
             // no decompress but move to target
@@ -1475,7 +1480,7 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
     entry->setStatus(Entry::Deleted);
 
     foreach(const QString &file, entry->installedFiles()) {
-        if (file.endsWith("/")) {
+        if (file.endsWith('/')) {
             QDir dir;
             bool worked = dir.rmdir(file);
             if (!worked) {
@@ -1531,7 +1536,7 @@ QStringList KNS::CoreEngine::archiveEntries(const QString& path, const KArchiveD
         if (dir->entry(entry)->isDirectory()) {
             const KArchiveDirectory* childDir = static_cast<const KArchiveDirectory*>(dir->entry(entry));
             files << archiveEntries(childPath, childDir);
-            files << childPath + "/";
+            files << childPath + '/';
         }
     }
     return files;
