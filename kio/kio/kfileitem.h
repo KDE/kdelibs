@@ -253,6 +253,13 @@ public:
     QString linkDest() const;
 
     /**
+     * Returns the target url of the file, which is the same as url()
+     * in cases where the slave doesn't specify UDS_TARGET_URL
+     * @return the target url. 
+     */
+    KUrl targetUrl() const;
+
+    /**
      * Returns the local path if isLocalFile() == true or the KIO item has
      * a UDS_LOCAL_PATH atom.
      * @return the item local path, or QString() if not known

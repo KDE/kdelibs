@@ -260,7 +260,13 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     m_fileMode = m_entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
     m_permissions = m_entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
     m_strName = m_entry.stringValue( KIO::UDSEntry::UDS_NAME );
-    m_strText = KIO::decodeFileName( m_strName );
+    
+    const QString displayName = m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_NAME );
+    if (!displayName.isEmpty())
+      m_strText = displayName;
+    else
+      m_strText = KIO::decodeFileName( m_strName );
+    
     const QString urlStr = m_entry.stringValue( KIO::UDSEntry::UDS_URL );
     const bool UDS_URL_seen = !urlStr.isEmpty();
     if ( UDS_URL_seen ) {
@@ -945,6 +951,10 @@ QString KFileItem::getStatusBarInfo() const
         else
             text += i18n("(%1, Link to %2)", comment, linkDest());
     }
+    else if ( targetUrl() != url() )
+    {
+        text += i18n ( " (Points to %1)", targetUrl().url());
+    }
     else if ( S_ISREG( d->m_fileMode ) )
     {
         text += QString(" (%1, %2)").arg( comment, KIO::convertSize( size() ) );
@@ -1227,6 +1237,15 @@ QString KFileItem::name( bool lowerCase ) const
         if ( d->m_strLowerCaseName.isNull() )
             d->m_strLowerCaseName = d->m_strName.toLower();
     return d->m_strLowerCaseName;
+}
+
+KUrl KFileItem::targetUrl() const
+{
+    const QString targetUrlStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_TARGET_URL );
+    if (!targetUrlStr.isEmpty())
+      return KUrl(targetUrlStr);
+    else
+      return url();
 }
 
 /*

@@ -1453,7 +1453,7 @@ void KDirOperator::setDirLister(KDirLister *lister)
 
 void KDirOperator::selectDir(const KFileItem &item)
 {
-    setUrl(item.url(), true);
+    setUrl(item.targetUrl(), true);
 }
 
 void KDirOperator::selectFile(const KFileItem &item)

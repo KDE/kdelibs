@@ -193,7 +193,14 @@ namespace KIO
             /// The default access control list serialized into a single string.
             /// Only available for directories.
             UDS_DEFAULT_ACL_STRING = 21 | UDS_STRING,
-
+            
+            /// If set, contains the label to display instead of
+            /// the 'real name' in UDS_NAME
+            UDS_DISPLAY_NAME = 22 | UDS_STRING,
+            /// This file is a shortcut or mount, pointing to an
+            /// URL in a different hierarchy
+            UDS_TARGET_URL = 23 | UDS_STRING,
+            
             /// Extra data (used only if you specified Columns/ColumnsTypes)
             /// KDE 4.0 change: you cannot repeat this entry anymore, use UDS_EXTRA + i
             /// until UDS_EXTRA_END.
