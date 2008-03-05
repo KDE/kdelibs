@@ -1,0 +1,202 @@
+/***************************************************************************
+ *   Copyright (C) 2008 by Paulo Moura Guedes                              *
+ *   moura@kdewebdev.org                                                   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
+#include "plugin.h"
+
+#include <kdebug.h>
+#include <kstandarddirs.h>
+#include <krun.h>
+#include <kxmlguifactory.h>
+#include <kactioncollection.h>
+#include <kross/core/manager.h>
+#include <kross/core/actioncollection.h>
+#include <kio/netaccess.h>
+
+namespace Kross
+{
+
+class ScriptingPlugin::ScriptingPluginPrivate
+{
+public:
+    QDomElement getMenuFromName(QString const& name, const QDomDocument& document);
+    
+    QString userActionsFile;
+};
+
+ScriptingPlugin::ScriptingPlugin(QObject* parent)
+    : KParts::Plugin(parent)
+    , d(new ScriptingPluginPrivate())
+{
+    d->userActionsFile = KGlobal::dirs()->locateLocal("appdata", "scripts/scriptactions.rc");
+}
+
+ScriptingPlugin::~ScriptingPlugin()
+{
+}
+
+void ScriptingPlugin::setDOMDocument(const QDomDocument &document, bool merge)
+{
+    QDomDocument doc = buildDomDocument(document);    
+    KXMLGUIClient::setDOMDocument(doc, merge);
+}
+
+QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
+{
+    QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
+    
+    Kross::Manager::self().setProperty("configfile", d->userActionsFile);
+    Kross::Manager::self().setProperty("configfiles", allActionFiles);
+    
+    if(KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
+        Kross::Manager::self().actionCollection()->readXmlFile(d->userActionsFile);
+    }
+    else {
+        foreach(QString f, allActionFiles) {
+            Kross::Manager::self().actionCollection()->readXmlFile(f);
+        }
+    }
+
+    QDomDocument doc(document);
+    buildDomDocument(doc, Kross::Manager::self().actionCollection());
+
+    return doc;
+}
+
+void ScriptingPlugin::buildDomDocument(QDomDocument& document,
+    Kross::ActionCollection* collection)
+{
+    QDomElement menuElement = d->getMenuFromName(collection->name(), document);
+
+    foreach(Kross::Action* action, collection->actions()) 
+{
+        // Create and append new Menu element if doesn't exist
+        if(menuElement.isNull()) {
+            menuElement = document.createElement("Menu");
+            menuElement.setAttribute("name", collection->name());            
+            menuElement.setAttribute("noMerge", "0");
+            
+            QDomElement textElement = document.createElement("text");
+            textElement.appendChild(document.createTextNode(collection->text()));
+            menuElement.appendChild(textElement);
+
+            Kross::ActionCollection* parentCollection = collection->parentCollection();
+            if(!parentCollection) {
+                document.documentElement().firstChildElement("MenuBar").appendChild(menuElement);
+            }
+            else {
+                QDomElement parentMenuElement = d->getMenuFromName(parentCollection->name(), document);
+
+                if(!parentMenuElement.isNull()) {
+                    parentMenuElement.appendChild(menuElement);
+                }
+                else {
+                    document.documentElement().firstChildElement("MenuBar").appendChild(menuElement);
+                }
+            }
+        }
+            
+        // Create and append new Action element
+        QDomElement newActionElement = document.createElement("Action");
+        newActionElement.setAttribute("name", action->name());
+
+        menuElement.appendChild(newActionElement);
+    
+        actionCollection()->addAction(action->name(), action);
+    }
+
+    foreach(QString collectionname, collection->collections()) {
+        Kross::ActionCollection* c = collection->collection(collectionname);
+        if(c->isEnabled()) {
+            buildDomDocument(document, c);
+        }
+    }
+}
+
+QDomElement ScriptingPlugin::ScriptingPluginPrivate::getMenuFromName(QString const& name, 
+        const QDomDocument& document)
+{
+    QDomElement menuBar = document.documentElement().firstChildElement("MenuBar");
+    QDomElement menu = menuBar.firstChildElement("Menu");
+    for(; !menu.isNull(); menu = menu.nextSiblingElement("Menu")) {
+        if(menu.attribute("name") == name) {
+            return menu;
+        }
+    }
+    
+    return QDomElement();
+}
+
+void ScriptingPlugin::slotEditScriptActions()
+{
+    if(!KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
+        KUrl dir = KUrl(d->userActionsFile).directory();
+        KIO::NetAccess::mkdir(dir, 0);
+    
+        QFile f(d->userActionsFile);
+        if(f.open(QIODevice::WriteOnly)) {
+            
+            bool collectionEmpty = true;
+            if(!Kross::Manager::self().actionCollection()->actions().empty()
+                || !Kross::Manager::self().actionCollection()->collections().empty()) {
+                collectionEmpty = false;
+            }
+            
+            if( !collectionEmpty ) {
+                if( Kross::Manager::self().actionCollection()->writeXml(&f) ) {
+                    kDebug() << "Successfully saved file: " << d->userActionsFile;
+                }
+            }
+            else {
+                QTextStream out(&f);
+                QString xml("<!-- ");
+                xml.append("\n");
+                xml.append("Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". One can add new menus also.");
+                xml.append("\n\n\n");
+                xml.append("If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/");
+                xml.append("\n\n");
+                xml.append("The following example add an action with the text \"Export...\" into the \"File\" menu");
+                xml.append("\n");
+                xml.append("-->");
+                xml.append("\n\n");
+                xml.append("<KrossScripting>");
+                xml.append("\n");
+                xml.append("<collection name=\"file\" text=\"File\" comment=\"File menu\">");
+                xml.append("\n");
+                xml.append("<script name=\"export\" text=\"Export...\" comment=\"Export content\" file=\"export.py\" />");
+                xml.append("\n");
+                xml.append("</collection>");
+                xml.append("\n");
+                xml.append("</KrossScripting>");;
+
+                out << xml;
+            }
+        }
+        f.close();
+    }
+
+    KRun::runUrl(KUrl(d->userActionsFile), QString("text/plain"), 0, false);
+}
+
+void ScriptingPlugin::slotResetScriptActions()
+{
+    KIO::NetAccess::del(KUrl(d->userActionsFile), 0);
+}
+
+}
