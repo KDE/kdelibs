@@ -529,7 +529,7 @@ void PreviewJobPrivate::emitPreview(const QImage &thumb)
     Q_Q(PreviewJob);
     QPixmap pix;
     if (thumb.width() > width || thumb.height() > height)
-        pix = QPixmap::fromImage( thumb.scaled(thumb.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) );
+        pix = QPixmap::fromImage( thumb.scaled(QSize(width, height), Qt::KeepAspectRatio, Qt::SmoothTransformation) );
     else
         pix = QPixmap::fromImage( thumb );
     emit q->gotPreview(currentItem.item, pix);
