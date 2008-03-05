@@ -139,41 +139,16 @@ namespace Phonon
     {
         class NoIface;
 
-        /// undefined result if the condition is neither true nor false
-        template<bool condition, typename Then, typename Else> struct If;
-        /// If false Else is the Result
-        template<typename Then, typename Else> struct If<false, Then, Else> { typedef Else Result; };
-        /// If true Then is the Result
-        template<typename Then, typename Else> struct If<true, Then, Else> { typedef Then Result; };
-
         /// All template arguments are valid
         template<typename T> struct IsValid { enum { Result = true }; };
         /// except NoIface
         template<> struct IsValid<NoIface> { enum { Result = false }; };
 
-        template<class R, class T>
-        struct iface_cast_helper
-        {
-            static inline R *help(MediaNodePrivate *d)
-            {
-                return qobject_cast<T *>(d->m_backendObject);
-            }
+        template<class T> inline T my_cast(QObject *o) { return qobject_cast<T>(o); }
+        template<class T> inline T my_cast(const QObject *o) { return qobject_cast<T>(o); }
 
-            static inline const R *help(const MediaNodePrivate *d)
-            {
-                return qobject_cast<T *>(d->m_backendObject);
-            }
-        };
-
-        template<class R>
-        struct iface_cast_helper<R, NoIface>
-        {
-            static inline R *help(const MediaNodePrivate *)
-            {
-                return 0;
-            }
-        };
-
+        template<> inline NoIface *my_cast<NoIface *>(QObject *) { return 0; }
+        template<> inline NoIface *my_cast<NoIface *>(const QObject *) { return 0; }
     } // anonymous namespace
 
     /**
@@ -226,7 +201,7 @@ namespace Phonon
      * The Iface class does all this for you for up to three (for now) interface revisions. Just
      * create an object like this:
      * \code
-       Iface<FooInterface, FooInterface0> iface0(d);
+       Iface<FooInterface0, FooInterface> iface0(d);
        if (iface0) {
            iface0->oldMethod();
        }
@@ -239,7 +214,7 @@ namespace Phonon
      * This becomes a bit more convenient if you add macros like this:
      * \code
        #define IFACES1 FooInterface
-       #define IFACES0 IFACES1, FooInterface0
+       #define IFACES0 FooInterface0, IFACES1
      * \endcode
      * which you can use like this:
      * \code
@@ -255,8 +230,8 @@ namespace Phonon
      * With the next revision you can then change the macros to
      * \code
        #define IFACES2 FooInterface
-       #define IFACES1 IFACES2, FooInterface1
-       #define IFACES0 IFACES1, FooInterface0
+       #define IFACES1 FooInterface1, IFACES2
+       #define IFACES0 FooInterface0, IFACES1
      * \endcode
      *
      * \author Matthias Kretz <kretz@kde.org>
@@ -265,48 +240,52 @@ namespace Phonon
     class Iface
     {
     public:
-        typedef typename If<IsValid<T2>::Result, T2, typename If<IsValid<T1>::Result, T1, T0>::Result>::Result Type;
-        static inline Type *cast(MediaNodePrivate *const d)
+        static inline T0 *cast(MediaNodePrivate *const d)
         {
-            Type *ret;
-            ret = qobject_cast<T0 *>(d->m_backendObject);
-            if (ret) return ret;
-            ret = iface_cast_helper<Type, T1>::help(d);
-            if (ret) return ret;
-            ret = iface_cast_helper<Type, T2>::help(d);
-            return ret;
+            if (IsValid<T1>::Result) {
+                T0 *ret;
+                if (IsValid<T2>::Result) {
+                    ret = reinterpret_cast<T0 *>(my_cast<T2 *>(d->m_backendObject));
+                    if (ret) return ret;
+                }
+                ret = reinterpret_cast<T0 *>(my_cast<T1 *>(d->m_backendObject));
+                if (ret) return ret;
+            }
+            return qobject_cast<T0 *>(d->m_backendObject);
         }
 
-        static inline const Type *cast(const MediaNodePrivate *const d)
+        static inline const T0 *cast(const MediaNodePrivate *const d)
         {
-            const Type *ret;
-            ret = qobject_cast<T0 *>(d->m_backendObject);
-            if (ret) return ret;
-            ret = iface_cast_helper<Type, T1>::help(d);
-            if (ret) return ret;
-            ret = iface_cast_helper<Type, T2>::help(d);
-            return ret;
+            if (IsValid<T1>::Result) {
+                const T0 *ret;
+                if (IsValid<T2>::Result) {
+                    ret = reinterpret_cast<const T0 *>(my_cast<T2 *>(d->m_backendObject));
+                    if (ret) return ret;
+                }
+                ret = reinterpret_cast<const T0 *>(my_cast<T1 *>(d->m_backendObject));
+                if (ret) return ret;
+            }
+            return qobject_cast<T0 *>(d->m_backendObject);
         }
 
         inline Iface(MediaNodePrivate *const d) : iface(cast(d)) {}
-        inline operator       Type *()       { return iface; }
-        inline operator const Type *() const { return iface; }
-        inline       Type *operator->()       { return iface; }
-        inline const Type *operator->() const { return iface; }
+        inline operator       T0 *()       { return iface; }
+        inline operator const T0 *() const { return iface; }
+        inline       T0 *operator->()       { return iface; }
+        inline const T0 *operator->() const { return iface; }
     private:
-        Type *const iface;
+        T0 *const iface;
     };
 
     template<class T0, class T1 = NoIface, class T2 = NoIface>
     class ConstIface
     {
     public:
-        typedef typename Iface<T0, T1, T2>::Type Type;
         inline ConstIface(const MediaNodePrivate *const d) : iface(Iface<T0, T1, T2>::cast(d)) {}
-        inline operator const Type *() const { return iface; }
-        inline const Type *operator->() const { return iface; }
+        inline operator const T0 *() const { return iface; }
+        inline const T0 *operator->() const { return iface; }
     private:
-        const Type *const iface;
+        const T0 *const iface;
     };
 } // namespace Phonon
 
