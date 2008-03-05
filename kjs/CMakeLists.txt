@@ -76,26 +76,24 @@ else (PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
 endif(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
 
 
-########### table maker ###############
-set(tablebuilder_SRCS
+########### icemaker, generates some tables for kjs/frostbyte ###############
+set(icemaker_SRCS
     bytecode/generator/tablebuilder.cpp
     bytecode/generator/driver.cpp
     bytecode/generator/lexer.cpp
     bytecode/generator/parser.cpp
    )
-KDE4_ADD_EXECUTABLE(tablebuilder RUN_UNINSTALLED ${tablebuilder_SRCS})
-include_directories(${QT_INCLUDE_DIR})
-include_directories(${QT_QTCORE_INCLUDE_DIR})
+KDE4_ADD_EXECUTABLE(icemaker RUN_UNINSTALLED ${icemaker_SRCS})
+
 
 # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-GET_TARGET_PROPERTY(TABLEBUILDER_EXECUTABLE tablebuilder WRAPPER_SCRIPT)
-target_link_libraries(tablebuilder ${QT_QTCORE_LIBRARY})
+GET_TARGET_PROPERTY(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
 
 # and the custom command
 ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
-  COMMAND ${TABLEBUILDER_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bytecode
-  DEPENDS tablebuilder ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/codes.def
+  COMMAND ${ICEMAKER_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bytecode
+  DEPENDS icemaker ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/codes.def
           ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.cpp.in
           ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.h.in
           ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/machine.cpp.in

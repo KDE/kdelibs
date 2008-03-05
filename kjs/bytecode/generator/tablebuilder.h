@@ -26,14 +26,16 @@
 
 #include "parser.h"
 
-#include <QString>
-#include <QList>
-#include <QHash>
+#include <iostream>
+#include <vector>
+
+using std::ostream;
+using std::vector;
 
 struct Type
 {
-    QString name;
-    QString nativeName;
+    string name;
+    string nativeName;
     bool im, reg, align8;
 
     bool operator==(const Type& other) const {
@@ -43,8 +45,8 @@ struct Type
 
 struct ConversionInfo
 {
-    QString name;
-    QString impl;
+    string name;
+    string impl;
     int  cost; // for w/in tile for immediate, for external for reg
     bool checked;
     bool mayThrow;
@@ -59,24 +61,24 @@ struct ConversionInfo
 // Actually, a specialization, but who cares?
 struct Operation
 {
-    QString name;
-    QString retType;
-    QList<Type>  parameters;
+    string name;
+    string retType;
+    vector<Type> parameters;
     int          cost;
     int          codeLine;
     bool         overload;
 
-    QString implementAs;
-    QList<Type> implParams;
-    QStringList implParamNames;
+    string implementAs;
+    vector<Type> implParams;
+    StringList   implParamNames;
 };
 
 struct OperationVariant
 {
-    QString   sig;
+    string   sig;
     Operation op;
-    QList<bool> paramIsIm;
-    QList<int>  paramOffsets;
+    vector<bool> paramIsIm;
+    vector<int>  paramOffsets;
     int         size;
     bool        needsPadVariant;
 };
@@ -84,32 +86,32 @@ struct OperationVariant
 class TableBuilder: public Parser
 {
 public:
-    TableBuilder(QTextStream* inStream, QTextStream* hStream, QTextStream* cppStream,
-                 QTextStream* mStream);
+    TableBuilder(istream* inStream, ostream* hStream, ostream* cppStream,
+                 ostream* mStream);
 
     void generateCode();
 private:
-    void issueError(const QString& err);
+    void issueError(const string& err);
 
-    virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8);
-    virtual void handleConversion(const QString& name, const QString& runtimeRoutine, int codeLine,
+    virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8);
+    virtual void handleConversion(const string& name, const string& runtimeRoutine, int codeLine,
                                   bool immediate, bool checked, bool mayThrow,
-                                  const QString& from, const QString& to, int cost);
+                                  const string& from, const string& to, int cost);
 
-    virtual void handleOperation(const QString& name);
-    virtual void handleImpl(const QString& fnName, const QString& code, bool overload,
-                            int codeLine, int cost, const QString& retType, QStringList sig,
-                            QStringList paramNames);
-    virtual void handleTile(const QString& fnName, QStringList sig);
+    virtual void handleOperation(const string& name);
+    virtual void handleImpl(const string& fnName, const string& code, bool overload,
+                            int codeLine, int cost, const string& retType, StringList sig,
+                            StringList paramNames);
+    virtual void handleTile(const string& fnName, StringList sig);
 
-    void printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool last);
+    void printConversionInfo(map<string, map<string, ConversionInfo> >& table, bool last);
 
     void printConversionRoutine(const ConversionInfo& conversion);
 
-    void printCode(QTextStream* out, int baseIdent, const QString& code, int baseLine);
+    void printCode(ostream* out, int baseIdent, const string& code, int baseLine);
 
     // Enumerates all r/i/pad variants; plus computes the shuffle table.
-    void expandOperationVariants(const Operation& op, QList<bool>& paramIsIm);
+    void expandOperationVariants(const Operation& op, vector<bool>& paramIsIm);
 
     void dumpOpStructForVariant(const OperationVariant& variant, bool doPad,
                                 bool hasPadVariant, bool needsComma);
@@ -117,32 +119,32 @@ private:
     void generateVariantImpl(const OperationVariant& variant);
 
     // issues error if there is a problem..
-    QList<Type> resolveSignature(const QStringList& in);
+    vector<Type> resolveSignature(const StringList& in);
 
-    QTextStream* hStream;
-    QTextStream* cppStream;
-    QTextStream* mStream;
+    ostream* hStream;
+    ostream* cppStream;
+    ostream* mStream;
 
-    QTextStream& mInd(int ind);
+    ostream& mInd(int ind);
 
-    QHash<QString, Type> types;
-    QStringList          typeNames;
+    map<string, Type> types;
+    StringList        typeNames;
 
-    QStringList        operationNames;
-    QHash<QString, QString> operationRetTypes; // uglily enough specified on the impl. I suck.
-    QList<Operation>   operations;
-    QHash<QString, Operation> implementations;
+    StringList          operationNames;
+    map<string, string> operationRetTypes; // uglily enough specified on the impl. I suck.
+    vector<Operation>   operations;
+    map<string, Operation> implementations;
 
-    QStringList  variantNames;
-    QList<OperationVariant> variants;
-    QHash<QString, QStringList> variantNamesForOp;
+    StringList  variantNames;
+    vector<OperationVariant> variants;
+    map<string, StringList>  variantNamesForOp;
 
-    QStringList conversionNames;
-    QList<ConversionInfo> imConversionList;
-    QList<ConversionInfo> rgConversionList;
+    StringList conversionNames;
+    vector<ConversionInfo> imConversionList;
+    vector<ConversionInfo> rgConversionList;
 
-    QHash<QString, QHash<QString, ConversionInfo> > imConversions;
-    QHash<QString, QHash<QString, ConversionInfo> > rgConversions;
+    map<string, map<string, ConversionInfo> > imConversions;
+    map<string, map<string, ConversionInfo> > rgConversions;
 };
 
 #endif

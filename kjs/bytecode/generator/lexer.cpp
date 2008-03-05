@@ -22,14 +22,16 @@
  */
 
 #include "lexer.h"
+#include <cctype>
 
-#include <QtCore/QDebug>
-#include <QtCore/QTextStream>
+using std::isspace;
 
-//### FIXME:appropriate constant from private use or such
-const unsigned short EndOfFileChar = 0x21AA; //injection or surjection arrow? I keep forgetting
+#include <wtf/ASCIICType.h>
+using namespace WTF;
 
-Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false), lineNum(0)
+const char EndOfFileChar = 0;
+
+Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
 {
     keywords["type"]        = Type;
     keywords["conversion" ] = Conversion;
@@ -50,7 +52,7 @@ Lexer::Lexer(QTextStream* _stream): stream(_stream), charLoaded(false), lineNum(
 
 Lexer::Token Lexer::lexComment()
 {
-    QChar in = getNext();
+    char in = getNext();
     if (in == '/') {
         // Single-line comment -- read until the end of line (or file)
         do {
@@ -66,7 +68,7 @@ Lexer::Token Lexer::lexComment()
         while (!(in == '*' && peekNext() == '/'));
         getNext(); // Eat the /
     } else {
-        return Token(Error, QLatin1String("/ can only start comments, but is followed by: ") + in);
+        return Token(Error, string("/ can only start comments, but is followed by: ") + in);
     }
 
     // Wee. Worked fine. Recurse to get next stuff
@@ -75,13 +77,13 @@ Lexer::Token Lexer::lexComment()
 
 Lexer::Token Lexer::nextToken()
 {
-    QChar begin;
+    char begin;
 
     // Skip any whitespace characters..
     do {
         begin = getNext();
     }
-    while (begin.isSpace());
+    while (isspace(begin));
 
     if (begin == EndOfFileChar)
         return Token(EndOfFile);
@@ -107,11 +109,11 @@ Lexer::Token Lexer::nextToken()
 
     // =>
     if (begin == '=') {
-        QChar c2 = getNext();
+        char c2 = getNext();
         if (c2 == '>')
             return Token(Arrow);
         else
-            return Token(Error, QLatin1String("- not part of ->"));
+            return Token(Error, "- not part of ->");
     }
 
     // Check for comments..
@@ -119,24 +121,25 @@ Lexer::Token Lexer::nextToken()
         return lexComment();
 
     // Numbers
-    if (begin >= '0' && begin <= '9') {
-        QString text = begin;
-        while (peekNext().isNumber())
+    if (isASCIIDigit(begin)) {
+        string text;
+        text += begin;
+        while (isASCIIDigit(peekNext()))
             text += getNext();
         return Token(Number, text);
     }
 
     // Code..
     if (begin == '[') {
-        QChar next = getNext();
+        char next = getNext();
         if (next != '[')
-            return Token(Error, QLatin1String("[ continued with:") + next);
+            return Token(Error, string("[ continued with:") + next);
         int line = lineNumber();
-        QString text;
+        string text;
         while(true) {
-            QChar letter = getNext();
+            char letter = getNext();
             if (letter == EndOfFileChar)
-                return Token(Error, QLatin1String("Unterminated code fragment"));
+                return Token(Error, "Unterminated code fragment");
             if (letter == ']' && peekNext() == ']') {
                 getNext(); //Eat 2nd ']'
                 return Token(Code, text, line);
@@ -146,51 +149,53 @@ Lexer::Token Lexer::nextToken()
     }
 
     // Identifiers
-    if (begin.isLetter()) {
-        QString text = begin;
-        while (peekNext().isLetterOrNumber() || peekNext() == '_')
+    if (isASCIIAlpha(begin)) {
+        string text;
+        text = begin;
+        while (isASCIIAlphanumeric(peekNext()) || peekNext() == '_')
             text += getNext();
 
         TokenType t = Ident;
-        if (keywords.contains(text))
+        if (keywords.find(text) != keywords.end())
             t = keywords[text];
         return Token(t, text);
     } else {
-        return Token(Error, QLatin1String("Invalid start of token:") + begin);
+        return Token(Error, string("Invalid start of token:") + begin);
     }
 }
 
-QChar Lexer::peekNext()
+char Lexer::peekNext()
 {
     if (charLoaded)
         return nextChar;
 
-    if (stream->atEnd())
+    nextChar = stream->get();
+
+    if (stream->eof())
         return EndOfFileChar;
 
-    *stream >> nextChar;
     if (nextChar == '\n')
         ++lineNum;
     charLoaded = true;
     return nextChar;
 }
 
-QChar Lexer::getNext()
+char Lexer::getNext()
 {
     if (charLoaded) {
         charLoaded = false;
         return nextChar;
     }
 
-    if (stream->atEnd()) {
+    char in = stream->get();
+
+    if (stream->eof()) {
         // Make sure to let peekNext know.
         nextChar   = EndOfFileChar;
         charLoaded = true;
         return EndOfFileChar;
     }
 
-    QChar in;
-    *stream >> in;
     if (in == '\n')
         ++lineNum;
 

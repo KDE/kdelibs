@@ -21,10 +21,9 @@
  *
  */
 #include "parser.h"
-#include <QDebug>
-#include <QFile>
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <wtf/ASCIICType.h>
 
 /**
  This is a fairly straightforward affair. It's written in a
@@ -33,10 +32,10 @@
  The error recovert is even simpler: we just exit. That's it.
 */
 
-Parser::Parser(QTextStream* stream): tokenLoaded(false), hadError(false), lexer(new Lexer(stream))
+Parser::Parser(istream* stream): tokenLoaded(false), hadError(false), lexer(new Lexer(stream))
 {}
 
-QString Parser::matchIdentifier()
+string Parser::matchIdentifier()
 {
     Lexer::Token tok = getNext();
     if (tok.type == Lexer::Ident)
@@ -45,7 +44,7 @@ QString Parser::matchIdentifier()
     return "";
 }
 
-QString Parser::matchCode(int& lineOut)
+string Parser::matchCode(int& lineOut)
 {
     Lexer::Token tok = getNext();
     if (tok.type == Lexer::Code) {
@@ -60,7 +59,7 @@ int Parser::matchNumber()
 {
     Lexer::Token tok = getNext();
     if (tok.type == Lexer::Number)
-        return tok.value.toInt();
+        return std::atol(tok.value.c_str());
     issueError("Expected number, got:" + tok.toString(lexer));
     return 0;
 }
@@ -81,10 +80,10 @@ bool Parser::checkFlag(Lexer::TokenType t)
     return false;
 }
 
-void Parser::issueError(const QString& msg)
+void Parser::issueError(const string& msg)
 {
-    qWarning() << "Parse error:" << msg << "at about line:" << lexer->lineNumber();
-    exit(-1);
+    std::cerr << "Parse error:" << msg << "at about line:" << lexer->lineNumber();
+    std::exit(-1);
 }
 
 Lexer::Token Parser::peekNext()
@@ -134,9 +133,9 @@ void Parser::parseType()
     //type identifier:  nativeName *? (immediate | register | align8)*;
     match(Lexer::Type);
 
-    QString name = matchIdentifier();
+    string name = matchIdentifier();
     match(Lexer::Colon);
-    QString nativeName = matchIdentifier();
+    string nativeName = matchIdentifier();
 
     if (nativeName == "const")
         nativeName += " " + matchIdentifier();
@@ -170,9 +169,9 @@ void Parser::parseType()
     handleType(name, nativeName, im, rg, al8);
 }
 
-static QString capitalized(const QString& in)
+static string capitalized(const string& in)
 {
-    return in[0].toUpper() + in.mid(1);
+    return WTF::toASCIIUpper(in[0]) + in.substr(1);
 }
 
 void Parser::parseConversion()
@@ -180,15 +179,15 @@ void Parser::parseConversion()
     // conversion from =>  to { clauses .. }
     // clause := tile costs number; || impl checked? mayThrow? code; || register ident costs number;
     match(Lexer::Conversion);
-    QString from = matchIdentifier();
+    string from = matchIdentifier();
     match(Lexer::Arrow);
-    QString to = matchIdentifier();
+    string to = matchIdentifier();
 
     match(Lexer::LBrace);
 
     // impl clause info..
     bool implMayThrow = false, immChecked = false;
-    QString code;
+    string code;
     int     codeLine;
 
     // tile clause info
@@ -196,7 +195,7 @@ void Parser::parseConversion()
 
     // register clause info
     bool hasRegister = false;
-    QString registerIdent;
+    string registerIdent;
     int registerCost = 0;
 
     while (peekNext().type != Lexer::RBrace) {
@@ -232,7 +231,7 @@ void Parser::parseConversion()
         handleConversion(registerIdent, code, codeLine, false, false, false, from, to, registerCost);
 
     // Computer name, from type sig
-    QString name = "I" + capitalized(from) + "_" + capitalized(to);
+    string name = "I" + capitalized(from) + "_" + capitalized(to);
     handleConversion(name, code, codeLine, true, immChecked, implMayThrow, from, to, tileCost);
 }
 
@@ -262,19 +261,19 @@ void Parser::parseImpl()
 
     bool overload = getNext().type == Lexer::Overload;
 
-    QString ret = matchIdentifier();
+    string ret = matchIdentifier();
 
-    QString fn;
+    string fn;
     if (peekNext().type == Lexer::Ident)
         fn = matchIdentifier();
     match(Lexer::LParen);
 
     // Parse parameter types and names, if any..
-    QStringList paramSigs;
-    QStringList paramNames;
+    StringList paramSigs;
+    StringList paramNames;
     while (peekNext().type != Lexer::RParen) {
-        paramSigs  << matchIdentifier();
-        paramNames << matchIdentifier();
+        paramSigs.push_back (matchIdentifier());
+        paramNames.push_back(matchIdentifier());
         if (peekNext().type != Lexer::Comma)
             break;
         getNext(); // Eat the comma..
@@ -291,8 +290,7 @@ void Parser::parseImpl()
     }
 
     int codeLine;
-    QString code = matchCode(codeLine);
-
+    string code = matchCode(codeLine);
 
     handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames);
 }
@@ -302,10 +300,10 @@ void Parser::parseTile()
     // tile signature as identifier;
     match(Lexer::Tile);
 
-    QStringList paramSigs;
+    StringList paramSigs;
     match(Lexer::LParen);
     while (peekNext().type != Lexer::RParen) {
-        paramSigs  << matchIdentifier();
+        paramSigs.push_back(matchIdentifier());
         if (peekNext().type != Lexer::Comma)
             break;
         getNext(); // Eat the comma..
@@ -317,7 +315,7 @@ void Parser::parseTile()
     match(Lexer::RParen);
 
     match(Lexer::As);
-    QString     fn = matchIdentifier();
+    string     fn = matchIdentifier();
     handleTile(fn, paramSigs);
     match(Lexer::SemiColon);
 }

@@ -24,10 +24,13 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <QtCore/QHash>
-#include <QtCore/QString>
+#include <iostream>
+#include <string>
+#include <map>
 
-class QTextStream;
+using std::string;
+using std::map;
+using std::istream;
 
 class Lexer
 {
@@ -66,15 +69,15 @@ public:
 
     struct Token {
         TokenType type;
-        QString   value;
+        string    value;
 
         int lineNum; //only set for code tokens.
 
         Token() : type(Error), value("Uninitialized token") {}
         Token(TokenType t): type(t) {}
-        Token(TokenType t, const QString& v, int line = -1): type(t), value(v), lineNum(line) {}
+        Token(TokenType t, const string& v, int line = -1): type(t), value(v), lineNum(line) {}
 
-        QString toString(Lexer* lex)
+        string toString(Lexer* lex)
         {
             switch (type) {
             case LBrace:
@@ -106,11 +109,11 @@ public:
                 return value;
             default: {
                     // keywords
-                    QHashIterator<QString, TokenType> iter(lex->keywords);
-                    while (iter.hasNext()) {
-                        if (iter.peekNext().value() == type)
-                            return iter.peekNext().key();
-                        iter.next();
+                    for (map<string, TokenType>::iterator it = lex->keywords.begin();
+                         it != lex->keywords.end(); ++it) {
+
+                         if (it->second == type)
+                            return it->first;
                     }
                     return "???";
                 } // default :
@@ -118,7 +121,7 @@ public:
         }
     };
 
-    Lexer(QTextStream* _stream);
+    Lexer(istream* _stream);
 
     Token nextToken();
 
@@ -127,16 +130,16 @@ private:
     friend class Token;
     Token lexComment();
 
-    QChar peekNext();
-    QChar getNext();
+    char peekNext();
+    char getNext();
 
-    QTextStream* stream;
+    istream* stream;
 
     bool  charLoaded;
-    QChar nextChar;
+    char  nextChar;
     int   lineNum;
 
-    QHash<QString, TokenType> keywords;
+    map<string, TokenType> keywords;
 };
 
 #endif

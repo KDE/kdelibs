@@ -21,22 +21,25 @@
  *
  */
 #include "tablebuilder.h"
-#include <QTextStream>
-#include <QDebug>
 #include <stdlib.h>
 #include <iostream>
 #include "assert.h"
+#include <cctype>
+#include <cstdio>
+#include <wtf/ASCIICType.h>
+
+using namespace std;
 
 class Enum {
 public:
-    Enum(const QString& name, const QString& prefix, QStringList values):
+    Enum(const string& name, const string& prefix, StringList values):
         name(name), prefix(prefix), values(values)
     {}
 
-    void printDeclaration(QTextStream* hStream)
+    void printDeclaration(ostream* hStream)
     {
         *hStream << "enum " << name << " {\n";
-        for (int p = 0; p < values.size(); ++p) {
+        for (unsigned p = 0; p < values.size(); ++p) {
             *hStream << "    " << prefix << values[p];
             if (p != (values.size() - 1))
                 *hStream << ",";
@@ -46,10 +49,10 @@ public:
         *hStream << "extern const char* const " << name << "Vals[];\n\n";
     }
 
-    void printDefinition(QTextStream* hStream)
+    void printDefinition(ostream* hStream)
     {
         *hStream << "const char* const " << name << "Vals[] = {\n";
-        for (int p = 0; p < values.size(); ++p) {
+        for (unsigned p = 0; p < values.size(); ++p) {
             *hStream << "    \"" << prefix << values[p] << "\"";
             if (p != (values.size() - 1))
                 *hStream << ",";
@@ -58,28 +61,39 @@ public:
         *hStream << "};\n\n";
     }
 private:
-    QString name;
-    QString prefix;
-    QStringList values;
+    string name;
+    string prefix;
+    StringList values;
 };
 
-TableBuilder::TableBuilder(QTextStream* inStream, QTextStream* hStream,
-                           QTextStream* cppStream, QTextStream* mStream):
+static string strReplace(string where, string from, string to) {
+    string res = where;
+    size_t pos;
+    while ((pos = res.find(from)) != string::npos) {
+        res = res.substr(0, pos) + to + res.substr(pos + from.length());
+    }
+    return res;
+}
+
+TableBuilder::TableBuilder(istream* inStream, ostream* hStream,
+                           ostream* cppStream, ostream* mStream):
     Parser(inStream), hStream(hStream), cppStream(cppStream), mStream(mStream)
 {
     // Builtin stuff...
-    conversionNames << "NoConversion" << "NoOp";
+    conversionNames.push_back("NoConversion");
+    conversionNames.push_back("NoOp");
 
     // Special ones for stuff that might not fit into immediate..
     // ### TODO: eventually, auto-spills will be better, and will
     // permit to throttle VM size
-    conversionNames << "I_R_Int32_Value" << "I_R_Number_Value";
+    conversionNames.push_back("I_R_Int32_Value");
+    conversionNames.push_back("I_R_Number_Value");
 }
 
 // # of bits store 'vals' values, e.g. 3 for 8, etc.
-static int neededBits(int vals)
+static unsigned neededBits(unsigned vals)
 {
-    int bits = 1;
+    unsigned bits = 1;
     while ((1 << bits) < vals)
         ++bits;
     return bits;
@@ -96,7 +110,7 @@ void TableBuilder::generateCode()
 
     // Also, print out the width array...
     *cppStream << "const bool opTypeIsAlign8[] = {\n";
-    for (int t = 0; t < typeNames.size(); ++t) {
+    for (unsigned t = 0; t < typeNames.size(); ++t) {
         const Type& type = types[typeNames[t]];
         *cppStream << (type.align8 ? "true": "false");
         if (t != typeNames.size() - 1)
@@ -130,8 +144,8 @@ void TableBuilder::generateCode()
     *cppStream << "}\n\n";
 
     // Conversion helpers..
-    foreach (const ConversionInfo& inf, imConversionList)
-        printConversionRoutine(inf);
+    for (unsigned c = 0; c < imConversionList.size(); ++c)
+        printConversionRoutine(imConversionList[c]);
 
     *cppStream << "static void emitImmediateConversion(ConvOp convType, OpValue* original, OpValue& out)\n{\n";
     *cppStream << "    out.immediate = true;\n";
@@ -139,7 +153,8 @@ void TableBuilder::generateCode()
     *cppStream << "    case Conv_NoOp:\n";
     *cppStream << "        out = *original;\n";
     *cppStream << "        break;\n";
-    foreach (const ConversionInfo& inf, imConversionList) {
+    for (unsigned c = 0; c < imConversionList.size(); ++c) {
+        const ConversionInfo& inf = imConversionList[c];
         *cppStream << "    case Conv_" << inf.name << ":\n";
         *cppStream << "        out.type = OpType_" << inf.to.name << ";\n";
         *cppStream << "        out.value." << (inf.to.align8 ? "wide" : "narrow")
@@ -163,7 +178,8 @@ void TableBuilder::generateCode()
     *cppStream << "    case Conv_NoOp:\n";
     *cppStream << "        out = *original;\n";
     *cppStream << "        break;\n";
-    foreach (const ConversionInfo& inf, rgConversionList) {
+    for (unsigned c = 0; c < rgConversionList.size(); ++c) {
+        const ConversionInfo& inf = rgConversionList[c];
         *cppStream << "    case Conv_" << inf.name << ":\n";
         *cppStream << "        CodeGen::emitOp(comp, block, Op_" << inf.name << ", &out, original);\n";
         *cppStream << "        break;\n";
@@ -180,14 +196,14 @@ void TableBuilder::generateCode()
     opNamesEnum.printDefinition (cppStream);
 
     // Enumerate all the variants..
-    foreach (const Operation& op, operations) {
-        QList<bool> parIm;
-        expandOperationVariants(op, parIm);
+    for (unsigned c = 0; c < operations.size(); ++c) {
+        vector<bool> parIm;
+        expandOperationVariants(operations[c], parIm);
     }
 
     // Return types for each..
     *cppStream << "static const OpType opRetTypes[] = {\n";
-    for (int c = 0; c < operationNames.size(); ++c) {
+    for (unsigned c = 0; c < operationNames.size(); ++c) {
         *cppStream << "     OpType_" << operationRetTypes[operationNames[c]];
         if (c  != operationNames.size() - 1)
             *cppStream << ",";
@@ -204,7 +220,7 @@ void TableBuilder::generateCode()
 
     // ... first descriptors for each bytecode op..
     *cppStream << "const Op opsForOpCodes[] = {\n";
-    for (int c = 0; c < variants.size(); ++c) {
+    for (unsigned c = 0; c < variants.size(); ++c) {
         const OperationVariant& variant = variants[c];
         if (variant.needsPadVariant)
             dumpOpStructForVariant(variant, true, variant.needsPadVariant, true);
@@ -213,10 +229,11 @@ void TableBuilder::generateCode()
     *cppStream << "};\n\n";
 
     // then variant tables for each main op..
-    foreach (const QString& opName, operationNames) {
+    for (unsigned c = 0; c < operationNames.size(); ++c) {
+        const string& opName = operationNames[c];
         *cppStream << "static const Op* const op" << opName << "Variants[] = {";
-        QStringList variants = variantNamesForOp[opName];
-        for (int v = 0; v < variants.size(); ++v) {
+        StringList variants = variantNamesForOp[opName];
+        for (unsigned v = 0; v < variants.size(); ++v) {
             *cppStream << "&opsForOpCodes[OpByteCode_" << variants[v] << "], ";
         }
         *cppStream << "0};\n";
@@ -224,7 +241,7 @@ void TableBuilder::generateCode()
     *cppStream << "\n";
 
     *cppStream << "const Op* const* const opSpecializations[] = {\n";
-    for (int o = 0; o < operationNames.size(); ++o) {
+    for (unsigned o = 0; o < operationNames.size(); ++o) {
         *cppStream << "    op" << operationNames[o] << "Variants";
         if (o != (operationNames.size() - 1))
             *cppStream << ",";
@@ -235,7 +252,8 @@ void TableBuilder::generateCode()
     // Now, generate the VM loop.
     mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(block.data() + pc);\n";
     mInd(8) << "switch (op) {\n";
-    foreach (const OperationVariant& var, variants) {
+    for (unsigned c = 0; c < variants.size(); ++c) {
+        const OperationVariant& var = variants[c];
         if (var.needsPadVariant) {
             mInd(12) << "case OpByteCode_" + var.sig + "_Pad:\n";
             mInd(16) << "pc += 4;\n";
@@ -251,21 +269,21 @@ void TableBuilder::generateCode()
     mInd(8) << "}\n\n";
 }
 
-void TableBuilder::issueError(const QString& err)
+void TableBuilder::issueError(const string& err)
 {
-    std::cerr << err.toLocal8Bit().data() << "\n";
+    std::cerr << err << "\n";
     exit(-1);
 }
 
-void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, ConversionInfo> >& table, bool reg)
+void TableBuilder::printConversionInfo(map<string, map<string, ConversionInfo> >& table, bool reg)
 {
-    int numBits = neededBits(types.size());
-    int fullRange = 1 << numBits;
-    for (int from = 0; from < fullRange; ++from) {
-        for (int to = 0; to < fullRange; ++to) {
+    unsigned numBits = neededBits(types.size());
+    unsigned fullRange = 1 << numBits;
+    for (unsigned from = 0; from < fullRange; ++from) {
+        for (unsigned to = 0; to < fullRange; ++to) {
             if (from < types.size() && to < types.size()) {
-                QString fromName = typeNames[from];
-                QString toName   = typeNames[to];
+                string fromName = typeNames[from];
+                string toName   = typeNames[to];
 
                 // For register conversion, we need it to be possible for source + dest to be in
                 // registers. For immediate, we only require source, since dest will just go
@@ -278,7 +296,7 @@ void TableBuilder::printConversionInfo(const QHash<QString, QHash<QString, Conve
 
                 if (from == to) {
                     *cppStream << "    {Conv_NoOp, 0}";
-                } else if (table[fromName].contains(toName) && representable) {
+                } else if (table[fromName].find(toName) != table[fromName].end() && representable) {
                     // We skip immediate conversions for things that can't be immediate, as
                     // we don't have exec there..
                     const ConversionInfo& inf = table[fromName][toName];
@@ -314,9 +332,9 @@ void TableBuilder::printConversionRoutine(const ConversionInfo& conversion)
     *hStream << "}\n\n";
 }
 
-void TableBuilder::handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8)
+void TableBuilder::handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8)
 {
-    typeNames << type;
+    typeNames.push_back(type);
     Type t;
     t.name = type;
     t.nativeName = nativeName;
@@ -326,14 +344,14 @@ void TableBuilder::handleType(const QString& type, const QString& nativeName, bo
     types[type] = t;
 }
 
-void TableBuilder::handleConversion(const QString& name, const QString& code, int codeLine,
+void TableBuilder::handleConversion(const string& name, const string& code, int codeLine,
                                     bool immediate, bool checked, bool mayThrow,
-                                    const QString& from, const QString& to, int cost)
+                                    const string& from, const string& to, int cost)
 {
-    conversionNames << name;
+    conversionNames.push_back(name);
     ConversionInfo inf;
     inf.name    = name;
-    assert(!name.isEmpty());
+    assert(!name.empty());
     inf.cost    = cost;
     inf.checked = checked;
     inf.mayThrow = mayThrow;
@@ -344,56 +362,60 @@ void TableBuilder::handleConversion(const QString& name, const QString& code, in
 
     if (immediate) {
         imConversions[from][to] = inf;
-        imConversionList << inf;
+        imConversionList.push_back(inf);
     } else {
         rgConversions[from][to] = inf;
-        rgConversionList << inf;
+        rgConversionList.push_back(inf);
         // Generate a corresponding bytecode routine.
         handleOperation(inf.name);
-        QStringList sig;
-        sig << from;
-        QStringList names;
-        names << "in";
-        QString patchedCode = code;
-        patchedCode.replace("return", "$$ = "); // ### FIXME: Brittle!
+        StringList sig;
+        sig.push_back(from);
+        StringList names;
+        names.push_back("in");
+        string patchedCode = code;
+        patchedCode = strReplace(patchedCode,  "return", "$$ = "); // ### FIXME: Brittle!
         handleImpl("", patchedCode, false,codeLine, 0, to, sig, names);
     }
 }
 
-void TableBuilder::handleOperation(const QString& name)
+void TableBuilder::handleOperation(const string& name)
 {
-    operationNames << name;
+    operationNames.push_back(name);
 }
 
-QList<Type> TableBuilder::resolveSignature(const QStringList& in)
+vector<Type> TableBuilder::resolveSignature(const StringList& in)
 {
-    QList<Type> sig;
-    foreach (const QString& type, in) {
-        if (types.contains(type))
-            sig.append(types[type]);
+    vector<Type> sig;
+    for (unsigned c = 0; c < in.size(); ++c) {
+        const string& type = in[c];
+        if (types.find(type) != types.end())
+            sig.push_back(types[type]);
         else
             issueError("Unknown type:" + type);
     }
     return sig;
 }
 
-void TableBuilder::handleImpl(const QString& fnName, const QString& code, bool ol, int codeLine, int cost,
-                              const QString& retType, QStringList sig, QStringList paramNames)
+void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol, int codeLine, int cost,
+                              const string& retType, StringList sig, StringList paramNames)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
     // emitOp will convert things as needed
-    QStringList extSig;
-    QStringList extParamNames;
+    StringList extSig;
+    StringList extParamNames;
     if (retType != "void") {
-        extSig        << "reg";
-        extParamNames << "fbDestReg";
+        extSig.push_back("reg");
+        extParamNames.push_back("fbDestReg");
     }
 
-    extSig        << sig;
-    extParamNames << paramNames;
+    for (unsigned c = 0; c < sig.size(); ++c)
+        extSig.push_back(sig[c]);
+
+    for (unsigned c = 0; c < paramNames.size(); ++c)
+        extParamNames.push_back(paramNames[c]);
 
     Operation op;
-    op.name           = operationNames.last();
+    op.name           = operationNames.back();
     op.retType        = retType;
     op.overload       = ol;
     operationRetTypes[op.name] = retType;
@@ -403,26 +425,27 @@ void TableBuilder::handleImpl(const QString& fnName, const QString& code, bool o
     op.implParams     = op.parameters;
     op.implParamNames = extParamNames;
     op.cost           = cost;
-    operations << op;
-    if (!fnName.isEmpty())
+    operations.push_back(op);
+    if (!fnName.empty())
         implementations[fnName] = op;
 }
 
-void TableBuilder::handleTile(const QString& fnName, QStringList sig)
+void TableBuilder::handleTile(const string& fnName, StringList sig)
 {
-    if (!implementations.contains(fnName))
+    if (implementations.find(fnName) == implementations.end())
         issueError("Unknown implementation name " + fnName + " in a tile definition");
     const Operation& impl = implementations[fnName];
 
     // Add in a return reg if need be
-    QStringList extSig;
-    if (impl.retType != "void") {
-        extSig        << "reg";
-    }
-    extSig << sig;
+    StringList extSig;
+    if (impl.retType != "void")
+        extSig.push_back("reg");
+
+    for (unsigned c = 0; c < sig.size(); ++c)
+        extSig.push_back(sig[c]);
 
     Operation op;
-    op.name        = operationNames.last();
+    op.name        = operationNames.back();
     op.implementAs = impl.implementAs;
     op.codeLine    = impl.codeLine;
     op.retType     = impl.retType;
@@ -432,33 +455,33 @@ void TableBuilder::handleTile(const QString& fnName, QStringList sig)
     op.implParamNames = impl.implParamNames;
     op.cost           = impl.cost;
     // Now also include the cost of inline conversions.
-    for (int p = 0; p < op.parameters.size(); ++p)
+    for (unsigned p = 0; p < op.parameters.size(); ++p)
         op.cost += imConversions[op.parameters[p].name][op.implParams[p].name].cost;
 
-    operations << op;
+    operations.push_back(op);
 }
 
-void TableBuilder::expandOperationVariants(const Operation& op, QList<bool>& paramIsIm)
+void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& paramIsIm)
 {
     int numParams = op.parameters.size();
     if (paramIsIm.size() < numParams) {
         if (op.parameters[paramIsIm.size()].im) {
-            paramIsIm.append(true);
+            paramIsIm.push_back(true);
             expandOperationVariants(op, paramIsIm);
-            paramIsIm.removeLast();
+            paramIsIm.pop_back();
         }
 
         if (op.parameters[paramIsIm.size()].reg) {
-            paramIsIm.append(false);
+            paramIsIm.push_back(false);
             expandOperationVariants(op, paramIsIm);
-            paramIsIm.removeLast();
+            paramIsIm.pop_back();
         }
         return;
     }
 
     // Have a full variant... Build a signature.
 
-    QString sig = op.name;
+    string sig = op.name;
     for (int p = 0; p < numParams; ++p) {
         sig += "_";
         sig += paramIsIm[p] ? "I" : "R";
@@ -478,7 +501,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, QList<bool>& par
 
     // Build offset table, giving param positions..
     while (var.paramOffsets.size() < numParams) // no setSize in QList..
-        var.paramOffsets.append(0);
+        var.paramOffsets.push_back(0);
 
     int pos = 4;
     // pad8/align ones go first.
@@ -498,14 +521,14 @@ void TableBuilder::expandOperationVariants(const Operation& op, QList<bool>& par
     }
     var.size = pos;
 
-    variants << var;
+    variants.push_back(var);
     if (needsPad) { // we put the pad before, due to the fallthrough idiom..
-        QString pSig = sig + "_Pad";
-        variantNames << pSig;
-        variantNamesForOp[op.name] << pSig;
+        string pSig = sig + "_Pad";
+        variantNames.push_back(pSig);
+        variantNamesForOp[op.name].push_back(pSig);
     }
-    variantNames << sig;
-    variantNamesForOp[op.name] << sig;
+    variantNames.push_back(sig);
+    variantNamesForOp[op.name].push_back(sig);
 }
 
 void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool doPad,
@@ -569,47 +592,75 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
         *cppStream << "}\n";
 }
 
-QTextStream& TableBuilder::mInd(int ind)
+ostream& TableBuilder::mInd(int ind)
 {
     for (int i = 0; i < ind; ++i)
         *mStream << ' ';
     return *mStream;
 }
 
-void TableBuilder::printCode(QTextStream* out, int baseIdent, const QString& code, int baseLine)
+static bool isWhitespaceString(const string& str)
 {
-    QStringList lines = code.split("\n");
-
-    if (!lines.isEmpty() && lines.first().trimmed().isEmpty()) {
-        ++baseLine;
-        lines.removeFirst();
+    for (unsigned c = 0; c < str.length(); ++c) {
+        if (!WTF::isASCIISpace(str[c]))
+            return false;
     }
-    if (!lines.isEmpty() && lines.last().trimmed().isEmpty())
-        lines.removeLast();
+
+    return true;
+}
+
+StringList splitLines(const string& in)
+{
+    StringList lines;
+    string     curLine;
+    for (unsigned c = 0; c < in.length(); ++c) {
+        if (in[c] == '\n') {
+            lines.push_back(curLine);
+            curLine = "";
+        } else {
+            curLine += in[c];
+        }
+    }
+    return lines;
+}
+
+void TableBuilder::printCode(ostream* out, int baseIdent, const string& code, int baseLine)
+{
+    StringList lines = splitLines(code);
+
+    if (!lines.empty() && isWhitespaceString(lines.front())) {
+        ++baseLine;
+        lines.erase(lines.begin());
+    }
+
+    if (!lines.empty() && isWhitespaceString(lines.back()))
+        lines.pop_back();
 
     *out << "#line " << baseLine << " \"codes.def\"\n";
 
     // Compute "leading" whitespace.
-    int minWhiteSpace = 100000;
-    foreach(const QString& line, lines) {
-        if (line.trimmed().isEmpty())
+    unsigned minWhiteSpace = 100000;
+    for (unsigned c = 0; c < lines.size(); ++c) {
+        const string& line = lines[c];
+        if (isWhitespaceString(line))
             continue;
 
-        int ws = 0;
-        while (ws < line.length() && line[ws].isSpace())
+        unsigned ws = 0;
+        while (ws < line.length() && WTF::isASCIISpace(line[ws]))
             ++ws;
         if (ws < minWhiteSpace)
             minWhiteSpace = ws;
     }
 
     // Print out w/it stripped..
-    foreach(const QString& line, lines) {
+    for (unsigned c = 0; c < lines.size(); ++c) {
+        const string& line = lines[c];
         if (line.length() < minWhiteSpace)
             *out << "\n";
         else {
             for (int c = 0; c < baseIdent; ++c)
                 *out << ' ';
-            *out << line.mid(minWhiteSpace) << "\n";
+            *out << line.substr(minWhiteSpace) << "\n";
         }
     }
 }
@@ -626,10 +677,15 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
 
         bool wideArg = !inReg && type.align8;
 
-        QString accessString = QString::fromLatin1("reinterpret_cast<const %1*>(&block[localPC + %2])->%3").
-            arg(wideArg ? "WideArg" : "NarrowArg", QString::number(negPos),
-                inReg ? QString::fromLatin1("regVal") : (type.name + "Val"));
+        char negPosStr[64];
+        std::sprintf(negPosStr, "%d", negPos);
 
+        string accessString = "reinterpret_cast<const ";
+        accessString += wideArg ? "WideArg" : "NarrowArg";
+        accessString += "*>(&block[localPC + ";
+        accessString += negPosStr;
+        accessString += "])->";
+        accessString += inReg ? string("regVal") : type.name + "Val";
         if (inReg) // Need to indirect..
             accessString = "localStore[" + accessString + "].val." + type.name + "Val";
 
@@ -652,9 +708,9 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
     }
 
     // Replace $$ with destination register
-    QString storeCode = "localStore[fbDestReg].val." + variant.op.retType + "Val";
-    QString code = variant.op.implementAs;
-    code.replace("$$", storeCode);
+    string storeCode = "localStore[fbDestReg].val." + variant.op.retType + "Val";
+    string code = variant.op.implementAs;
+    code = strReplace(code, "$$", storeCode);
 
     // Print out the impl code..
     printCode(mStream, 16, code, variant.op.codeLine);

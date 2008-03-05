@@ -25,33 +25,35 @@
 #define PARSER_H
 
 #include "lexer.h"
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+
+#include <vector>
+
+typedef std::vector<string> StringList;
 
 class Parser
 {
 public:
-    Parser(QTextStream* stream);
+    Parser(istream* stream);
 
     void parse();
 private:
     // Note: signatures here are just a list of strings;
     // the last one is the return type
 
-    virtual void handleType(const QString& type, const QString& nativeName, bool im, bool rg, bool al8) = 0;
-    virtual void handleConversion(const QString& name, const QString& code, int codeLine,
+    virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8) = 0;
+    virtual void handleConversion(const string& name, const string& code, int codeLine,
                                   bool immediate, bool checked, bool mayThrow,
-                                  const QString& from, const QString& to, int cost) = 0;
-    virtual void handleOperation(const QString& name) = 0;
-    virtual void handleImpl(const QString& fnName, const QString& code, bool overload,
-                            int codeLine, int cost, const QString& retType, QStringList sig,
-                            QStringList paramNames) = 0;
-    virtual void handleTile(const QString& fnName, QStringList sig) = 0;
+                                  const string& from, const string& to, int cost) = 0;
+    virtual void handleOperation(const string& name) = 0;
+    virtual void handleImpl(const string& fnName, const string& code, bool overload,
+                            int codeLine, int cost, const string& retType, StringList sig,
+                            StringList paramNames) = 0;
+    virtual void handleTile(const string& fnName, StringList sig) = 0;
 
-    QString matchIdentifier();
-    QString matchCode(int& lineOut);
-    int     matchNumber();
-    void    match(Lexer::TokenType t);
+    string matchIdentifier();
+    string matchCode(int& lineOut);
+    int    matchNumber();
+    void   match(Lexer::TokenType t);
 
     // Checks whether an optional flag is next..
     bool checkFlag(Lexer::TokenType t);
@@ -65,7 +67,7 @@ private:
     bool tokenLoaded;
     Lexer::Token nextToken;
 
-    void issueError(const QString& msg);
+    void issueError(const string& msg);
 
     bool   hadError;
 
