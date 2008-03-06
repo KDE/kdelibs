@@ -477,9 +477,9 @@ void VoidNode::recurseVisit(NodeVisitor *visitor)
   recurseVisitLink(visitor, expr);
 }
 
-// ------------------------------ TypeOfValueNode -----------------------------------
+// ------------------------------ TypeOfVarNode -----------------------------------
 
-void TypeOfReferenceNode::recurseVisit(NodeVisitor *visitor)
+void TypeOfVarNode::recurseVisit(NodeVisitor *visitor)
 {
    Node::recurseVisitLink(visitor, loc);
 }

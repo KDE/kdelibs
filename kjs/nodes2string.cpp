@@ -414,7 +414,7 @@ void TypeOfValueNode::streamTo(SourceStream &s) const
   s << "typeof " << m_expr;
 }
 
-void TypeOfReferenceNode::streamTo(SourceStream &s) const
+void TypeOfVarNode::streamTo(SourceStream &s) const
 {
   s << "typeof " << loc;
 }

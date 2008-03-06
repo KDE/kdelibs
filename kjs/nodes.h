@@ -286,6 +286,9 @@ namespace KJS {
     virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
     virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
 
+    // This one never fails..
+    OpValue valueForTypeOf(CompileState* comp, CodeBlock& block);
+
     // Returns the ID this variable should be accessed as, or
     // missingSymbolMarker(), along with the variable's classification
     enum Classification {
@@ -560,15 +563,15 @@ namespace KJS {
     RefPtr<Node> expr;
   };
 
-  class TypeOfReferenceNode : public Node {
+  class TypeOfVarNode : public Node {
   public:
-    TypeOfReferenceNode(LocationNode *l) : loc(l) {}
+    TypeOfVarNode(VarAccessNode *l) : loc(l) {}
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
   private:
-    RefPtr<LocationNode> loc;
+    RefPtr<VarAccessNode> loc;
   };
 
   class TypeOfValueNode : public Node {

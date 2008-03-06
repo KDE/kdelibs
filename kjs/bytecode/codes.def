@@ -616,6 +616,15 @@ operation SymGet {
     ]]
 }
 
+// Get when we know the base is an object
+operation SymGetKnownObject {
+    impl value symGet(value base, ident prop) [[
+        ASSERT(base->isObject());
+
+        $$ = static_cast<JSObject*>(base)->get(exec, *prop);
+    ]]
+}
+
 // As above, but also stores the object
 operation SymGetAndBind {
     impl value (reg objDest, value base, ident varName) [[

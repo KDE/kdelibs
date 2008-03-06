@@ -191,6 +191,36 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
+OpValue VarAccessNode::valueForTypeOf(CompileState* comp, CodeBlock& block)
+{
+    // ### some code dupe here.
+    Classification classify;
+    size_t index = classifyVariable(comp, classify);
+
+    OpValue scopeTemp;
+    OpValue out, outReg;
+    OpValue varName = OpValue::immIdent(&ident);
+    switch (classify) {
+    case Local:
+        // Register read. Easy.
+        out = OpValue::reg(OpType_value, index);
+        break;
+    case Global:
+        CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, comp->globalScope(), &varName);
+        break;
+    case NonLocal:
+        comp->requestTemporary(OpType_value, out, outReg);
+        CodeGen::emitOp(comp, block, Op_NonLocalScopeLookupAndGet, &scopeTemp, &outReg, &varName);
+        break;
+    case Dynamic:
+        comp->requestTemporary(OpType_value, out, outReg);
+        CodeGen::emitOp(comp, block, Op_ScopeLookupAndGet, &scopeTemp, &outReg, &varName);
+        break;
+    }
+
+    return out;
+}
+
 CompileReference* VarAccessNode::generateRefBind(CompileState* comp, CodeBlock& block)
 {
     Classification classify;
@@ -633,14 +663,12 @@ OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return OpValue::immValue(jsUndefined());
 }
 
-OpValue TypeOfReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue TypeOfVarNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    OpValue v;
-    CompileReference* ref = loc->generateRefRead(comp, block, &v);
+    OpValue v = loc->valueForTypeOf(comp, block);
 
     OpValue out;
     CodeGen::emitOp(comp, block, Op_TypeOf, &out, &v);
-    delete ref;
     return out;
 }
 

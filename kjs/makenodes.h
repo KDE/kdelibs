@@ -68,7 +68,7 @@ static Node *makeTypeOfNode(Node *expr)
     // since they may throw a ResolveError on evaluate where we don't
     // want that...
     if (n->isVarAccessNode())
-        return new TypeOfReferenceNode(static_cast<LocationNode*>(n));
+        return new TypeOfVarNode(static_cast<VarAccessNode*>(n));
     else
         return new TypeOfValueNode(expr);
 }
