@@ -50,7 +50,7 @@ static void emitReferenceError(CompileState* comp, CodeBlock& block, Node* node,
 }
 
 
-OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
+OpValue Node::generateEvalCode(CompileState*, CodeBlock&)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
     ASSERT(0);
@@ -58,7 +58,7 @@ OpValue Node::generateEvalCode(CompileState* state, CodeBlock& block)
     return OpValue::immInt32(42);
 }
 
-void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
+void StatementNode::generateExecCode(CompileState*, CodeBlock&)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
     ASSERT(0);
@@ -66,17 +66,17 @@ void StatementNode::generateExecCode(CompileState*, CodeBlock& block)
 
 // ------------------------------ Basic literals -----------------------------------------
 
-OpValue NullNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue NullNode::generateEvalCode(CompileState*, CodeBlock&)
 {
     return OpValue::immValue(jsNull());
 }
 
-OpValue BooleanNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BooleanNode::generateEvalCode(CompileState*, CodeBlock&)
 {
     return OpValue::immBool(value());
 }
 
-OpValue NumberNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue NumberNode::generateEvalCode(CompileState*, CodeBlock&)
 {
 #if 0
     if (typeHint == OpType_Value) {
@@ -129,167 +129,185 @@ OpValue ThisNode::generateEvalCode(CompileState* comp, CodeBlock&)
 
 // ------------------------------ VarAccessNode ----------------------------------------
 
-size_t VarAccessNode::localID(CompileState* comp, bool& dynamicLocal)
+size_t VarAccessNode::classifyVariable(CompileState* comp, Classification& classify)
 {
     // Are we inside a with or catch? In that case, it's all dynamic. Boo.
-    if (comp->inNestedScope()) {
-        dynamicLocal = true;
+    // Ditto for eval.
+    // ### actually that may be improvable if we can
+    // distinguish eval-from-global and eval-from-local, since
+    // we'd have an activation or global object available for access.
+    if (comp->inNestedScope() || comp->codeType() == EvalCode) {
+        classify = Dynamic;
         return missingSymbolMarker();
     }
 
-    size_t index = comp->functionBody()->lookupSymbolID(ident);
-    if (index == missingSymbolMarker()) {
-        if (comp->codeType() != FunctionCode || ident == CommonIdentifiers::shared()->arguments)
-            dynamicLocal = true;
-        else
-            dynamicLocal = false; // Can skip the local scope..
+    // If we're inside global scope (and as per above, not inside any nested scope!)
+    // we can always used the global object
+    if (comp->codeType() == GlobalCode) {
+        classify = Global;
+        return missingSymbolMarker();
     }
+
+    // We're inside a function...
+    if (ident == CommonIdentifiers::shared()->arguments) {
+        // arguments is too much of a pain to handle in general path..
+        classify = Dynamic;
+        return missingSymbolMarker();
+    }
+
+    // Do we know this?
+    size_t index = comp->functionBody()->lookupSymbolID(ident);
+    if (index == missingSymbolMarker())
+        classify = NonLocal;
+    else
+        classify = Local;
+
     return index;
 }
 
 OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    bool dynamicLocal;
-    size_t index = localID(comp, dynamicLocal);
+    Classification classify;
+    size_t index = classifyVariable(comp, classify);
 
     OpValue out;
-    if (index == missingSymbolMarker()) {
-        // Emit a symbolic variable
-        OpValue varName = OpValue::immIdent(&ident);
-
-        OpName op = Op_VarGet; // in general, have to search the whole chain..
-        if (comp->codeType() == GlobalCode && !comp->inNestedScope())
-                // unless we're in GlobalCode, w/o extra stuff on top, so there is nothing to search
-            op = Op_LocalVarGet;
-        else if (!dynamicLocal) // can skip one scope..
-            op = Op_NonLocalVarGet;
-
-        CodeGen::emitOp(comp, block, op, &out, &varName);
-    } else {
+    OpValue varName = OpValue::immIdent(&ident);
+    switch (classify) {
+    case Local:
         // Register read. Easy.
         out = OpValue::reg(OpType_value, index);
+        break;
+    case NonLocal:
+        CodeGen::emitOp(comp, block, Op_NonLocalVarGet, &out, &varName);
+        break;
+    case Global:
+        CodeGen::emitOp(comp, block, Op_VariableObjectGet, &out, &varName);
+        break;
+    case Dynamic:
+        CodeGen::emitOp(comp, block, Op_VarGet, &out, &varName);
+        break;
     }
 
     return out;
 }
 
-CompileReference* VarAccessNode::generateRefBegin (CompileState* comp, CodeBlock& block, int flags)
+CompileReference* VarAccessNode::generateRefBind(CompileState* comp, CodeBlock& block)
 {
-    bool dynamicLocal;
-    size_t index = localID(comp, dynamicLocal);
+    Classification classify;
+    classifyVariable(comp, classify);
 
-    bool errorOnFail = (flags & ErrorOnFail);
-    bool fetchNow    = (flags & ImmediateRead);
+    if (classify == Local || classify == Global)
+        return 0; // nothing to do, we know where it is
 
-    // If this is not a register local, we need to look up the scope first..
-    if (index == missingSymbolMarker()) {
-        CompileReference* ref = new CompileReference;
+    // Otherwise, we need to find the scope for writing
+    CompileReference* ref = new CompileReference;
 
-        // We can take a shortcut if we're in global and don't need to detect lookup failure,
-        // since the scope will always be the variable object
-        if (comp->codeType() == GlobalCode && !errorOnFail) {
-            ref->baseObj = *comp->localScope();
-            return ref;
-        }
-
-        OpValue varName = OpValue::immIdent(&ident);
-        if (fetchNow) {
-            ref->preloaded = true;
-            OpName op;
-            if (errorOnFail) {
-                if (dynamicLocal)
-                    op = Op_ScopeLookupAndGetChecked;
-                else
-                    op = Op_NonLocalScopeLookupAndGetChecked;
-            } else {
-                if (dynamicLocal)
-                    op = Op_ScopeLookupAndGet;
-                else
-                    op = Op_NonLocalScopeLookupAndGet;
-            }
-
-            OpValue readReg;
-            comp->requestTemporary(OpType_value, ref->preloadVal, readReg);
-            // ### I should probably go to 4 args, for better error messages
-            CodeGen::emitOp(comp, block, op, &ref->baseObj, &readReg, &varName);
-        } else {
-            OpValue errFail = OpValue::immNode(errorOnFail ? this : 0);
-            CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
-                        &ref->baseObj, &varName, &errFail);
-        }
-        return ref;
-    }
-
-    return 0;
+    OpValue quiet = OpValue::immNode(0);
+    OpValue varName = OpValue::immIdent(&ident);
+    CodeGen::emitOp(comp, block, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+                        &ref->baseObj, &varName, &quiet);
+    return ref;
 }
 
-OpValue VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+CompileReference* VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
 {
-    bool dynamicLocal;
-    size_t index = localID(comp, dynamicLocal);
+    Classification classify;
+    classifyVariable(comp, classify);
 
-    OpValue out;
-    if (index == missingSymbolMarker()) {
-        if (ref->preloaded) {
-            return ref->preloadVal;
-        } else {
-            // Symbolic read from the appropriate scope, which is in base..
-            OpValue varName = OpValue::immIdent(&ident);
-            CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseObj, &varName);
-        }
-    } else {
-        // Straight register get..
-        out = OpValue::reg(OpType_value, index);
+    // We want to bind and read, also issuing an error.
+
+    // If we don't need any binding, just use normal read code..
+    if (classify == Local || classify == Global) {
+        *out = generateEvalCode(comp, block);
+        return 0;
     }
-    return out;
-}
 
-OpValue VarAccessNode::generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref)
-{
-    if (ref)
-        return ref->baseObj;
+    // For others, use the lookup-and-fetch ops
+    CompileReference* ref = new CompileReference;
+
+    OpValue readReg;
+    OpValue varName = OpValue::immIdent(&ident);
+    comp->requestTemporary(OpType_value, *out, readReg);
+
+    OpName op;
+    if (classify == Dynamic)
+        op = Op_ScopeLookupAndGetChecked;
     else
-        return *comp->globalScope();
+        op = Op_NonLocalScopeLookupAndGetChecked;
+    CodeGen::emitOp(comp, block, op, &ref->baseObj, &readReg, &varName);
+
+    return ref;
 }
 
 void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                            CompileReference* ref, OpValue& valToStore)
 {
-    bool dynamicLocal;
-    size_t index = localID(comp, dynamicLocal);
+    Classification classify;
+    size_t index = classifyVariable(comp, classify);
 
-    if (index == missingSymbolMarker()) {
-        // Symbolic write to the appropriate scope..
-        OpValue varName = OpValue::immIdent(&ident);
-        CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
-                        &ref->baseObj, &varName, &valToStore);
-    } else {
+    if (classify == Local) {
         // Straight register put..
         OpValue destReg = OpValue::immRegNum(index);
         CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &destReg, &valToStore);
+    } else {
+        // Symbolic write to the appropriate scope..
+        OpValue varName = OpValue::immIdent(&ident);
+        CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
+                       (classify == Global ? comp->globalScope() : &ref->baseObj), &varName, &valToStore);
     }
 }
 
 OpValue VarAccessNode::generateRefDelete(CompileState* comp, CodeBlock& block)
 {
-    bool dynamicLocal;
-    size_t index = localID(comp, dynamicLocal);
+    Classification classify;
+    classifyVariable(comp, classify);
 
-    if (index == missingSymbolMarker()) {
-        // Fetch the scope...
-        OpValue base;
-        OpValue varName = OpValue::immIdent(&ident);
-        OpValue silent  = OpValue::immNode(0);
-        CodeGen::emitOp(comp, block, dynamicLocal ? Op_ScopeLookup : Op_NonLocalScopeLookup,
-                        &base, &varName, &silent);
-
-        // Remove the property..
-        OpValue out;
-        CodeGen::emitOp(comp, block, Op_SymDeleteKnownObject, &out, &base, &varName);
-        return out;
-    } else {
+    if (classify == Local) {
         // Normal locals are DontDelete, so this always fails.
         return OpValue::immBool(false);
+    }
+
+    // Otherwise, fetch the appropriate scope
+    OpValue base;
+    if (classify == Global) {
+        base = *comp->globalScope();
+    } else {
+        OpValue varName = OpValue::immIdent(&ident);
+        OpValue silent  = OpValue::immNode(0);
+        CodeGen::emitOp(comp, block, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+                        &base, &varName, &silent);
+    }
+
+    // Remove the property..
+    OpValue out;
+    OpValue varName = OpValue::immIdent(&ident);
+    CodeGen::emitOp(comp, block, Op_SymDeleteKnownObject, &out, &base, &varName);
+    return out;
+}
+
+void VarAccessNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+{
+    Classification classify;
+    classifyVariable(comp, classify);
+
+    OpValue varName = OpValue::immIdent(&ident);
+
+    OpValue thisReg;
+    switch (classify) {
+    case Local:
+    case Global:
+        // Both of these use global object for this, and use straightforward lookup for value
+        *funOut  = generateEvalCode(comp, block);
+        *thisOut = *comp->globalScope();
+        break;
+    case NonLocal:
+        comp->requestTemporary(OpType_value, *thisOut, thisReg);
+        CodeGen::emitOp(comp, block, Op_NonLocalFunctionLookupAndGet, funOut, &thisReg, &varName);
+        break;
+    case Dynamic:
+        comp->requestTemporary(OpType_value, *thisOut, thisReg);
+        CodeGen::emitOp(comp, block, Op_FunctionLookupAndGet, funOut, &thisReg, &varName);
+        break;
     }
 }
 
@@ -377,36 +395,43 @@ OpValue BracketAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& blo
     return ret;
 }
 
-CompileReference* BracketAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, int)
+CompileReference* BracketAccessorNode::generateRefBind(CompileState* comp, CodeBlock& block)
 {
+    // Per 11.2.1, the following steps must happen when evaluating foo[bar]
+    // 1) eval foo
+    // 2) eval bar
+    // 3) call toObject on [[foo]]
+    // 4) call toString on [[bar]]
+    // ... all of which are part of reference evaluation. Fun.
+    // ### FIXME FIXME FIXME: we don't do step 4 in right spot yet!
     CompileReference* ref = new CompileReference;
-    // base
     OpValue baseV = expr1->generateEvalCode(comp, block);
+    ref->indexVal = expr2->generateEvalCode(comp, block);
     CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
-OpValue BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+CompileReference* BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
 {
-    OpValue ret;
-    OpValue index = expr2->generateEvalCode(comp, block);
+    CompileReference* ref = new CompileReference;
 
-    // ### in cases like ++/-- we may check redundantly.
-    CodeGen::emitOp(comp, block, Op_BracketGetKnownObject, &ret, &ref->baseObj, &index);
+    // ### As above, this sequence should store the toString on reference, if there will be a follow up
+    // write --- need a hint for that..
+    OpValue baseV = expr1->generateEvalCode(comp, block);
+    ref->indexVal = expr2->generateEvalCode(comp, block);
 
-    return ret;
-}
+    // Store the object for future use.
+    OpValue baseReg;
+    comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
 
-OpValue BracketAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
-{
-    return ref->baseObj;
+    CodeGen::emitOp(comp, block, Op_BracketGetAndBind, out, &baseReg, &baseV, &ref->indexVal);
+    return ref;
 }
 
 void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
                                              CompileReference* ref, OpValue& valToStore)
 {
-    OpValue index = expr2->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &ref->baseObj, &index, &valToStore);
+    CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &ref->baseObj, &ref->indexVal, &valToStore);
 }
 
 OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
@@ -417,6 +442,18 @@ OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& bl
     OpValue out;
     CodeGen::emitOp(comp, block, Op_BracketDelete, &out, &base, &index);
     return out;
+}
+
+void BracketAccessorNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+{
+    OpValue baseV  = expr1->generateEvalCode(comp, block);
+    OpValue indexV = expr2->generateEvalCode(comp, block);
+
+    // We need to memorize the toObject for 'this'
+    OpValue baseReg;
+    comp->requestTemporary(OpType_value, *thisOut, baseReg);
+
+    CodeGen::emitOp(comp, block, Op_BracketGetAndBind, funOut, &baseReg, &baseV, &indexV);
 }
 
 // ------------------------------ DotAccessorNode --------------------------------
@@ -431,33 +468,27 @@ OpValue DotAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return ret;
 }
 
-CompileReference* DotAccessorNode::generateRefBegin (CompileState* comp, CodeBlock& block, int)
+CompileReference* DotAccessorNode::generateRefBind(CompileState* comp, CodeBlock& block)
 {
     CompileReference* ref = new CompileReference;
-    // base
-    // ### since we don't need to do toString conversion on field here,
-    // we can move the object evaluation later in some cases, w/o violating
-    // exception precision wrt to 11.2.1
     OpValue baseV = expr->generateEvalCode(comp, block);
     CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
-OpValue DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, CompileReference* ref)
+CompileReference* DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
 {
-    OpValue out;
+    CompileReference* ref = new CompileReference;
+    OpValue baseV = expr->generateEvalCode(comp, block);
+    OpValue baseReg;
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, &ref->baseObj, &varName);
-    return out;
-}
-
-OpValue DotAccessorNode::generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref)
-{
-    return ref->baseObj;
+    comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
+    CodeGen::emitOp(comp, block, Op_SymGetAndBind, out, &baseReg, &baseV, &varName);
+    return ref;
 }
 
 void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
-                                             CompileReference* ref, OpValue& valToStore)
+                                       CompileReference* ref, OpValue& valToStore)
 {
     OpValue varName = OpValue::immIdent(&ident);
     CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &ref->baseObj, &varName, &valToStore);
@@ -470,6 +501,16 @@ OpValue DotAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
     OpValue out;
     CodeGen::emitOp(comp, block, Op_SymDelete, &out, &base, &varName);
     return out;
+}
+
+void DotAccessorNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+{
+    OpValue baseV = expr->generateEvalCode(comp, block);
+    OpValue varName = OpValue::immIdent(&ident);
+
+    OpValue baseReg;
+    comp->requestTemporary(OpType_value, *thisOut, baseReg);
+    CodeGen::emitOp(comp, block, Op_SymGetAndBind, funOut, &baseReg, &baseV, &varName);
 }
 
 // ------------------ ........
@@ -531,18 +572,12 @@ OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBloc
     ASSERT(cand->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(cand);
 
-    CompileReference* ref =  loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                                | LocationNode::ImmediateRead);
-    OpValue funVal = loc->generateRefRead(comp, block, ref);
-
+    OpValue funVal, thisVal;
+    loc->generateRefFunc(comp, block, &funVal, &thisVal);
     args->generateEvalArguments(comp, block);
 
-    // Can do this safely before checking function, since it's been computed before
-    OpValue newThis = loc->generateRefBase(comp, block, ref);
-
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &funVal, &newThis);
-    delete ref;
+    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &funVal, &thisVal);
     return out;
 }
 
@@ -560,11 +595,10 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     LocationNode* loc = static_cast<LocationNode*>(cand);
 
     // ### we want to fold this in if the kid is a local -- any elegant way?
-    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                               | LocationNode::ImmediateRead);
 
     //read current value
-    OpValue curV = loc->generateRefRead(comp, block, ref);
+    OpValue curV;
+    CompileReference* ref = loc->generateRefRead(comp, block, &curV);
 
     // We need it to be a number..
     if (curV.type != OpType_number) {
@@ -588,7 +622,7 @@ OpValue DeleteReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& blo
     return loc->generateRefDelete(comp, block);
 }
 
-OpValue DeleteValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue DeleteValueNode::generateEvalCode(CompileState*, CodeBlock&)
 {
     return OpValue::immBool(true);
 }
@@ -601,10 +635,8 @@ OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
 OpValue TypeOfReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
-    // false: no error if not there, gives undefined instead
-    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ImmediateRead);
-
-    OpValue v = loc->generateRefRead(comp, block, ref);
+    OpValue v;
+    CompileReference* ref = loc->generateRefRead(comp, block, &v);
 
     OpValue out;
     CodeGen::emitOp(comp, block, Op_TypeOf, &out, &v);
@@ -634,11 +666,10 @@ OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     LocationNode* loc = static_cast<LocationNode*>(cand);
 
     // ### we want to fold this in if the kid is a local -- any elegant way?
-    CompileReference* ref = loc->generateRefBegin(comp, block, LocationNode::ErrorOnFail
-                                                               | LocationNode::ImmediateRead);
 
     //read current value
-    OpValue curV = loc->generateRefRead(comp, block, ref);
+    OpValue curV;
+    CompileReference* ref = loc->generateRefRead(comp, block, &curV);
 
     OpValue newV;
     CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
@@ -856,14 +887,10 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     // True branch
     OpValue v1out = expr1->generateEvalCode(comp, block);
 
-    // Is the register here sufficient? If so, just use it
-    if (v1out.type == OpType_value && !v1out.immediate) {
-        resVal = v1out;
-        resReg = OpValue::immRegNum(v1out.value.narrow.regVal);
-    } else {
-        comp->requestTemporary(OpType_value, resVal, resReg);
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v1out);
-    }
+    // Request a temporary for the result. (We can't reuse any, since it may be a variable!)
+    // ### perhaps do an isTemporary check here?
+    comp->requestTemporary(OpType_value, resVal, resReg);
+    CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v1out);
 
     Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
@@ -914,17 +941,15 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
     LocationNode* loc = static_cast<LocationNode*>(cand);
 
-    int flags = (m_oper == OpEqual ? 0 : LocationNode::ErrorOnFail | LocationNode::ImmediateRead);
-    // Lookup failure is OK for assignments, but not for += and such; those also
-    // fetch the old value
-
-    CompileReference* ref = loc->generateRefBegin(comp, block, flags);
+    CompileReference* ref;
 
     OpValue v;
     if (m_oper == OpEqual) {
+        ref = loc->generateRefBind(comp, block);
         v = m_right->generateEvalCode(comp, block);
     } else {
-        OpValue v1 = loc->generateRefRead(comp, block, ref);
+        OpValue v1;
+        ref = loc->generateRefRead(comp, block, &v1);
         OpValue v2 = m_right->generateEvalCode(comp, block);
 
         OpName codeOp;
@@ -1028,7 +1053,7 @@ void BlockNode::generateExecCode(CompileState* comp, CodeBlock& block)
         source->generateExecCode(comp, block);
 }
 
-void EmptyStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void EmptyStatementNode::generateExecCode(CompileState*, CodeBlock&)
 {}
 
 void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -1169,7 +1194,8 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Write to the variable
     assert (lexpr->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(lexpr.get());
-    CompileReference* ref = loc->generateRefBegin(comp, block);
+
+    CompileReference* ref = loc->generateRefBind(comp, block);
     loc->generateRefWrite (comp, block, ref, sym);
     delete ref;
 

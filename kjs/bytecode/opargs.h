@@ -70,6 +70,8 @@ struct OpValue
         WideArg    wide;
     } value;
 
+    OpValue();
+
     // A few helpers for making immediate values... These are actually inside CompileState.h
     // due to them touching the ownedTemp;
 

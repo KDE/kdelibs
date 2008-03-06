@@ -44,6 +44,7 @@ public:
         LParen, // (
         RParen, // )
         Colon,  // :
+        Scope,  // ::
         SemiColon, // ;
         Star,      // *
         Arrow,     // =>
@@ -88,6 +89,8 @@ public:
                 return "'('";
             case RParen:
                 return "')'";
+            case Scope:
+                return "'::'";
             case Colon:
                 return "':'";
             case SemiColon:

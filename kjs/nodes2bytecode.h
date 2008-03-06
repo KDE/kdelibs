@@ -26,12 +26,10 @@ namespace KJS {
 
 struct CompileReference
 {
-    CompileReference(): preloaded(false) {}
-
-    bool preloaded;
+    CompileReference() {}
 
     OpValue baseObj;
-    OpValue preloadVal;
+    OpValue indexVal;
 };
 
 }

@@ -171,32 +171,27 @@ namespace KJS {
   public:
     virtual bool isLocation() const { return true; }
 
-    // if we have a = foo, we call generateRefBegin before
-    // evaluating 'foo', and then generateRefWrite after;
-    // there are 2 reasons for this:
-    // 1) the conceptual reference evaluation step could raise an exception,
-    //    which should happen in the proper order, before evaluating the RHS
-    // 2) when doing something like foo = bar(), the evaluation of
-    //    bar() may introduce a new copy of foo earlier on in the scope
-    //    chain, but that should not affect the scope.
-    // Note that the client has to delete the return CompileReference itself
+    // For assignments, we need to conceptually evaluate the LHS to a reference before looking at the RHS
+    // generateRefBind corresponds to that action. It never issues an error. The returned
+    // reference should be passed to generateRefWrite when needed
+    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block) = 0;
 
-    enum RefFlag {
-        ErrorOnFail   = 1, // raise exception if object not found
-        ImmediateRead = 2  // generateRefRead will be called immediately after
-                           // generateRefBegin, try to combine them if possible.
-    };
+    // When we are doing a read-modify-write style op, or just plain read, we want to do a read
+    // right after the binding. This does that, and returns a reference for use of follow up
+    // writes.
+    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out) = 0;
 
-
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags = 0) = 0;
-    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
-    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref) = 0;
+    // Writes to a bound reference.
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
                                     CompileReference* ref, OpValue& valToStore) = 0;
 
     // The location nodes also handle deletes themselves. Note that this is called
     // w/o generateRefBegin
     virtual OpValue generateRefDelete(CompileState*, CodeBlock& block) = 0;
+
+    // For function calls, we also do a specialized lookup, getting both the valie and the
+    // scope/this, also making sure it's not an activation.
+    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut) = 0;
   };
 
   class StatementNode : public Node {
@@ -284,17 +279,23 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
-    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
-    virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
-    virtual void generateRefWrite(CompileState*, CodeBlock& block,
-                                        CompileReference* ref, OpValue& valToStore);
+    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
+    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
+    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+                                    CompileReference* ref, OpValue& valToStore);
     virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
+    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
 
     // Returns the ID this variable should be accessed as, or
-    // missingSymbolMarker(). maybeLocal will be set if the symbol
-    // could potentially be found in the current scope.
-    size_t localID(CompileState*, bool& dynamicLocal);
+    // missingSymbolMarker(), along with the variable's classification
+    enum Classification {
+        Local,      // local variable accessed by register #
+        NonLocal,   // one scope above, unless local injected
+        Dynamic,    // need to do a full lookup
+        Global      // in the global object, if anywhere.
+    };
+
+    size_t classifyVariable(CompileState*, Classification& classify);
   protected:
     Identifier ident;
   };
@@ -404,12 +405,13 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
-    virtual OpValue generateRefBase(CompileState*, CodeBlock& block, CompileReference* ref);
-    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
+
+    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
+    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
     virtual void generateRefWrite  (CompileState*, CodeBlock& block,
                                     CompileReference* ref, OpValue& valToStore);
     virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
+    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
 
     Node *base() { return expr1.get(); }
     Node *subscript() { return expr2.get(); }
@@ -427,12 +429,12 @@ namespace KJS {
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
 
-    virtual CompileReference* generateRefBegin (CompileState*, CodeBlock& block, int flags);
-    virtual OpValue generateRefRead(CompileState*, CodeBlock& block, CompileReference* ref);
-    virtual OpValue generateRefBase(CompileState* comp, CodeBlock& block, CompileReference* ref);
-    virtual void generateRefWrite(CompileState*, CodeBlock& block,
-                                        CompileReference* ref, OpValue& valToStore);
+    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
+    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
+    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+                                    CompileReference* ref, OpValue& valToStore);
     virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
+    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
 
     Node *base() const { return expr.get(); }
     const Identifier& identifier() const { return ident; }

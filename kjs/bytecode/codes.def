@@ -55,6 +55,8 @@ type string: UString* immediate align8;
 type node: Node* immediate align8;
 type cstr: const char* immediate align8;
 
+// Used to store string representations bound by
+
 // Just for the return type...
 type void: void immediate;
 
@@ -412,12 +414,27 @@ operation GetGlobalObject {
     ]]
 }
 
+operation FunctionLookupAndGet {
+    impl value(reg thisOutReg, ident varName) [[
+        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/, true /* want this value*/>
+                (exec, varName, localStore[thisOutReg].val.valueVal, $$);
+    ]]
+}
+
+operation NonLocalFunctionLookupAndGet {
+    impl value(reg thisOutReg, ident varName) [[
+        lookupScopeAndFetch<true /*error out*/, true /* skip one*/, true /* want this value*/>
+                (exec, varName, localStore[thisOutReg].val.valueVal, $$);
+    ]]
+}
+
 operation ScopeLookupAndGetChecked {
     impl value(reg valOutReg, ident varName) [[
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/, false /* scope, not this*/>
+                    (exec, varName, scopeOut, val);
         $$ = scopeOut;
         localStore[valOutReg].val.valueVal = val;
     ]]
@@ -428,7 +445,8 @@ operation ScopeLookupAndGet {
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<false /*don't error out*/, false /* no skip*/ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<false /*don't error out*/, false /* no skip*/, false /* scope, not this*/ >
+                    (exec, varName, scopeOut, val);
         $$ = scopeOut;
         localStore[valOutReg].val.valueVal = val;
     ]]
@@ -439,7 +457,8 @@ operation NonLocalScopeLookupAndGetChecked {
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<true /*error out*/, true /* skip one */ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<true /*error out*/, true /* skip one */, false /* scope, not this*/ >
+                    (exec, varName, scopeOut, val);
         $$ = scopeOut;
         localStore[valOutReg].val.valueVal = val;
     ]]
@@ -450,7 +469,8 @@ operation NonLocalScopeLookupAndGet {
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<false /*don't error out*/, true /* skip one */ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<false /*don't error out*/, true /* skip one */, false /* scope, not this*/ >
+                    (exec, varName, scopeOut, val);
         $$ = scopeOut;
         localStore[valOutReg].val.valueVal = val;
     ]]
@@ -524,11 +544,11 @@ operation NonLocalScopeLookup {
 
 // Looks up a given variable in the scope chain, returns its value
 operation VarGet {
-    impl value localVarGet(ident varName) [[
+    impl value varGet(ident varName) [[
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/, false /*no this*/ >(exec, varName, scopeOut, val);
         $$ = val;
     ]]
 }
@@ -539,7 +559,7 @@ operation NonLocalVarGet {
         JSValue* scopeOut;
         JSValue* val;
 
-        lookupScopeAndFetch<true /*error out*/, true /* don't skip one*/ >(exec, varName, scopeOut, val);
+        lookupScopeAndFetch<true /*error out*/, true /* don't skip one*/, false /*no this*/ >(exec, varName, scopeOut, val);
         $$ = val;
     ]]
 }
@@ -576,16 +596,7 @@ operation ToObject {
     ]]
 }
 
-// Generic put..
-operation SymPut {
-    impl void symPut(value base, ident varName, value val) [[
-        JSObject* baseObj = base->toObject(exec);
-        if (!exec->hadException())
-            baseObj->put(exec, *varName, val);
-    ]]
-}
-
-// Put for a scope -- known to be an object!
+// Put for an object..
 operation SymPutKnownObject {
     impl void symPutKnownObject(value scope, ident varName, value val) [[
         ASSERT(scope->isObject());
@@ -605,11 +616,14 @@ operation SymGet {
     ]]
 }
 
-// Get for a scope -- known to be an object!
-operation SymGetKnownObject {
-    impl value symScopeGet(value base, ident varName) [[
-        ASSERT(base->isObject());
-        $$ = static_cast<JSObject*>(base)->get(exec, *varName);
+// As above, but also stores the object
+operation SymGetAndBind {
+    impl value (reg objDest, value base, ident varName) [[
+        JSObject* baseObj = base->toObject(exec);
+        // toObject may fail and return an exception object, but get from it is harmless
+        localStore[objDest].val.valueVal = baseObj;
+
+        $$ = baseObj->get(exec, *varName);
     ]]
 }
 
@@ -635,44 +649,32 @@ operation BracketGet {
     ]]
 }
 
-operation BracketGetKnownObject {
-    impl value (value v1, value v2) costs 50 [[
-        ASSERT(v1->isObject());
-        JSObject *o = static_cast<JSObject*>(v1);
-
+// Also computes the base object
+operation BracketGetAndBind {
+    impl value (reg objDest, value v1, value v2) costs 50 [[
         uint32_t i;
+        JSObject *o = v1->toObject(exec);
+        // Make sure to  handle exception immediately, here, since toString might throw, too!
+        if (exec->hadException())
+            break;
+
+        localStore[objDest].val.valueVal = o;
+
         if (v2->getUInt32(i))
             $$ = o->get(exec, i);
         else
             $$ = o->get(exec, Identifier(v2->toString(exec)));
     ]]
 
-    overload value(value base, int32 prop) [[
-        ASSERT(base->isObject());
-        $$ = static_cast<JSObject*>(base)->get(exec, (uint32_t)prop);
-    ]]
-}
-
-operation BracketPut {
-    impl void (value v1, value v2, value v3) costs 50 [[
-        uint32_t i;
-        JSObject *o = v1->toObject(exec);
-        // toObject may fail...
-        if (exec->hadException())
-            break;
-
-        if (v2->getUInt32(i))
-            o->put(exec, i, v3);
-        else
-            o->put(exec, Identifier(v2->toString(exec)), v3);
-    ]]
-
-    overload void (value base, int32 prop, value val) [[
+    overload value (reg objDest, value base, int32 prop) [[
         JSObject* baseObj = base->toObject(exec);
-        if (!exec->hadException())
-            baseObj->put(exec, (uint32_t)prop, val);
+        // toObject may fail and return an exception object, but get from it is harmless
+        localStore[objDest].val.valueVal = baseObj;
+
+        $$ = baseObj->get(exec, (uint32_t)prop);
     ]]
 }
+
 
 operation BracketPutKnownObject {
     impl void (value v1, value v2, value v3) costs 50 [[
@@ -692,9 +694,7 @@ operation BracketPutKnownObject {
     ]]
 }
 
-
-
-operation LocalVarGet {
+operation VariableObjectGet {
     impl value(ident varName) [[
         JSObject* scopeObj = exec->variableObject();
         PropertySlot slot;
@@ -1074,9 +1074,11 @@ operation Add3Arg {
     ]]
 }
 
-
 operation FunctionCall {
     impl value(value v, value thisVal) [[
+        ASSERT(thisVal->isObject());
+        ASSERT(!static_cast<JSObject*>(thisVal)->isActivation());
+
         if (!v->isObject()) {
             throwError(exec, TypeError, "Attempt to use a non-object as a function.");
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
@@ -1090,6 +1092,7 @@ operation FunctionCall {
             //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
             break;
         }
+
 
         $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
     ]]

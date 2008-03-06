@@ -79,7 +79,7 @@ static JSValue* typeStringForValue(JSValue* v)
     }
 }
 
-template<bool errorOut, bool trySkipOne>
+template<bool errorOut, bool trySkipOne, bool replaceActivations>
 inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& scopeOut, JSValue*& valOut)
 {
     const ScopeChain& chain = exec->scopeChain();
@@ -99,13 +99,21 @@ inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& 
     PropertySlot slot;
     do {
         scopeObj = *iter;
-
+        ++iter;
         if (scopeObj->getPropertySlot(exec, *varName, slot)) {
-            scopeOut = scopeObj;
+            if (!replaceActivations) {
+                scopeOut = scopeObj;
+            } else {
+                // Common case: we found it in global object -- no need to check
+                // if it's an activation
+                if (iter == end || !scopeObj->isActivation())
+                    scopeOut = scopeObj;
+                else
+                    scopeOut = exec->dynamicInterpreter()->globalObject();
+            }
             valOut   = slot.getValue(exec, scopeObj, *varName);
             return;
         }
-        ++iter;
     } while (iter != end);
 
     scopeOut = scopeObj;
@@ -114,6 +122,7 @@ inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& 
         throwUndefinedVariableError(exec, *varName);
     }
 }
+
 
 
 Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {

@@ -338,6 +338,8 @@ inline OpValue OpValue::reg(OpType type, Register regNum)
     return res;
 }
 
+inline OpValue::OpValue(): type(OpType_void) {} // since should never occur as an argument..
+
 }
 
 #endif

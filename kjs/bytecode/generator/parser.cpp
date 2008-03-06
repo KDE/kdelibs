@@ -140,6 +140,11 @@ void Parser::parseType()
     if (nativeName == "const")
         nativeName += " " + matchIdentifier();
 
+    while (peekNext().type == Lexer::Scope) {
+        getNext();
+        nativeName += "::" + matchIdentifier();
+    }
+
     if (peekNext().type == Lexer::Star) {
         nativeName += "*";
         getNext();

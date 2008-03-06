@@ -97,9 +97,14 @@ Lexer::Token Lexer::nextToken()
         return Token(LParen);
     else if (begin == ')')
         return Token(RParen);
-    else if (begin == ':')
-        return Token(Colon);
-    else if (begin == ';')
+    else if (begin == ':') {
+        if (peekNext() != ':') {
+            return Token(Colon);
+        } else {
+            getNext();
+            return Token(Scope);
+        }
+    } else if (begin == ';')
         return Token(SemiColon);
     else if (begin == '*')
         return Token(Star);
