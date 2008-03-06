@@ -440,9 +440,14 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     QFile device(fileName);
     // Look at mode first
     KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
-    if (mimeFromMode)
+    if (mimeFromMode) {
+        if (accuracy)
+            *accuracy = 100;
         return mimeFromMode;
+    }
     if (!device.open(QIODevice::ReadOnly)) {
+        if (accuracy)
+            *accuracy = 0;
         return KMimeType::defaultMimeTypePtr();
     }
 
