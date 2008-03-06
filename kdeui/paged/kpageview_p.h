@@ -160,6 +160,8 @@ class KPageTabbedView : public QAbstractItemView
     virtual void scrollTo( const QModelIndex &index, ScrollHint hint = EnsureVisible );
     virtual QRect visualRect( const QModelIndex & index ) const;
 
+    virtual QSize minimumSizeHint() const;
+
   protected:
     virtual QModelIndex moveCursor( QAbstractItemView::CursorAction, Qt::KeyboardModifiers );
     virtual int horizontalOffset() const;
