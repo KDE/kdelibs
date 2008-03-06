@@ -34,7 +34,6 @@
 #include <unistd.h>
 
 #include <Qt3Support/Q3ButtonGroup>
-#include <Qt3Support/Q3CString>
 #include <QCheckBox>
 #include <QFile>
 #include <QFileInfo>
@@ -303,7 +302,7 @@ QString whatstr;
   cwcb->addItem(i18n("Strong Ciphers Only"));
   cwcb->addItem(i18n("Export Ciphers Only"));
   cwcb->addItem(i18n("Enable All"));
-  
+
   whatstr = i18n("<qt>Use these preconfigurations to more easily configure "
                  "the SSL encryption settings. You can choose among the "
                  "following modes:<ul>"
@@ -1933,9 +1932,12 @@ void KCryptoConfig::slotCAImport() {
 
 void KCryptoConfig::offerImportToKMail( const QString& certFile )
 {
+    QString kleopatraPath = KStandardDirs::findExe("kleopatra");
+    if (kleopatraPath.isEmpty())
+        return;
     if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ), QString(), KGuiItem(i18n("Make Available")), KGuiItem(i18n("Do Not Make Available")) ) == KMessageBox::Yes ) {
        QStringList args = QStringList() << "--import-certificate" << certFile;
-       if ( !QProcess::startDetached( "kleopatra", args ) )
+       if ( !QProcess::startDetached( kleopatraPath, args ) )
            KMessageBox::error( this, i18n( "Could not execute Kleopatra. You might have to install or update the kdepim package." ) );
    }
 }
