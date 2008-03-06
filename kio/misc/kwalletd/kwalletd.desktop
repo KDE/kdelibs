@@ -2,6 +2,7 @@
 Type=Service
 X-KDE-ServiceTypes=KDEDModule
 X-KDE-Library=kwalletd
+X-KDE-DBus-ModuleName=kwalletd
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 Name=KWallet Daemon Module

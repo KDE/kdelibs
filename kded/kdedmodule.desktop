@@ -76,6 +76,8 @@ Comment[zh_HK]=KDED 模組
 Comment[zh_TW]=KDED 模組
 [PropertyDef::X-KDE-FactoryName]
 Type=QString
+[PropertyDef::X-KDE-DBus-ModuleName]
+Type=QString
 [PropertyDef::X-KDE-Kded-autoload]
 Type=bool
 [PropertyDef::X-KDE-Kded-load-on-demand]

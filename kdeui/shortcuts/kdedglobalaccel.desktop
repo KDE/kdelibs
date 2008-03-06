@@ -3,6 +3,7 @@ Type=Service
 
 X-KDE-ServiceTypes=KDEDModule
 X-KDE-Library=globalaccel
+X-KDE-DBus-ModuleName=kdedglobalaccel
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 
