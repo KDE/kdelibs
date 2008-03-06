@@ -144,6 +144,7 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
     QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
     QTest::newRow("single-extension file") << "foo.bz2" << "application/x-bzip";
+//    QTest::newRow(".doc should assume msword") << "somefile.doc" << "application/msword";
     QTest::newRow("glob that uses [] syntax, 1") << "Makefile" << "text/x-makefile";
     QTest::newRow("glob that uses [] syntax, 2") << "makefile" << "text/x-makefile";
     QTest::newRow("glob that ends with *, no extension") << "README" << "text/x-readme";
@@ -328,6 +329,7 @@ void KMimeTypeTest::testFindByContent_data()
     QTest::newRow("simple text") << QByteArray("Hello world") << "text/plain";
     QTest::newRow("html: <html>") << QByteArray("<html>foo</html>") << "text/html";
 #if 0 // currently buggy, xml and html have conflicting magic rules, discussed on xdg list.
+      // Solution: making the magic rules for xml priority 40
     QTest::newRow("html: comment+<html>") << QByteArray("<!--foo--><html>foo</html>") << "text/html";
 #endif
 #if 0 // https://bugs.freedesktop.org/show_bug.cgi?id=11259
@@ -356,10 +358,20 @@ void KMimeTypeTest::testFindByContent()
 void KMimeTypeTest::testFindByFileContent()
 {
     KMimeType::Ptr mime;
+    int accuracy = 0;
+
     // Calling findByContent on a directory
-    mime = KMimeType::findByFileContent("/");
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1("inode/directory") );
+    mime = KMimeType::findByFileContent("/", &accuracy);
+    QVERIFY(mime);
+    QCOMPARE(mime->name(), QString::fromLatin1("inode/directory"));
+    QCOMPARE(accuracy, 100);
+
+    // Albert calls findByFileContent with a URL instead of a path and gets 11021 as accuracy :)
+    // It was not set inside findByFileContent -> fixed.
+    mime = KMimeType::findByFileContent("file:///etc/passwd" /*bad example code, use a path instead*/, &accuracy);
+    QVERIFY(mime);
+    QCOMPARE(mime->name(), QString::fromLatin1("application/octet-stream"));
+    QCOMPARE(accuracy, 0);
 }
 
 void KMimeTypeTest::testAllMimeTypes()
