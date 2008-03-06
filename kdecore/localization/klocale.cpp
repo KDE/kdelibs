@@ -315,7 +315,6 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 
     // Other environment variables contain locale string, which should
     // be checked for all combinations yielding language codes.
-    QStringList rawList;
     rawList += QFile::decodeName(getenv("LC_ALL"));
     rawList += QFile::decodeName(getenv("LC_MESSAGES"));
     rawList += QFile::decodeName(getenv("LANG"));
@@ -323,7 +322,11 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 #ifdef Q_WS_WIN // how about Mac?
   rawList += QLocale::system().name(); // fall back to the system language
 #endif
-  if (useEnv) { // Collect languages  - continued...
+
+#ifndef Q_WS_WIN
+  if (useEnv) // Collect languages  - continued...
+#endif
+  {
     // Process the raw list to create possible combinations.
     foreach (const QString &ln, rawList) {
       QString lang, ctry, modf, cset;
