@@ -257,6 +257,11 @@ QRect KPageTabbedView::visualRect( const QModelIndex& ) const
   return QRect();
 }
 
+QSize KPageTabbedView::minimumSizeHint() const
+{
+  return mTabWidget->minimumSizeHint();
+}
+
 QModelIndex KPageTabbedView::moveCursor(QAbstractItemView::CursorAction, Qt::KeyboardModifiers)
 {
   return QModelIndex();
@@ -327,7 +332,6 @@ void KPageTabbedView::layoutChanged()
     }
   }
 
-  setMinimumSize(mTabWidget->minimumSizeHint());
   mTabWidget->setCurrentIndex( pos );
 }
 
