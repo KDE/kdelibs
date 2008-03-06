@@ -170,13 +170,13 @@ void CodeGen::emitRegStore(CompileState* comp, CodeBlock& block,
 }
 
 Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
-                     OpValue* retOut, OpValue* a0, OpValue* a1, OpValue* a2)
+                     OpValue* retOut, OpValue* a0, OpValue* a1, OpValue* a2, OpValue* a3)
 {
     const Op* const* cands = opSpecializations[baseInstr];
 
     const Op* cheapest = 0;
     int    cheapestCost = 0;
-    ConvOp cheapestConvOps[3] = {Conv_NoConversion, Conv_NoConversion, Conv_NoConversion};
+    ConvOp cheapestConvOps[4] = {Conv_NoConversion, Conv_NoConversion, Conv_NoConversion};
 
     // Here, we assume that all methods either return or not.
     OpType retType = opRetTypes[baseInstr];
@@ -184,8 +184,9 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     if (retType != OpType_void) {
         // Add in a register argument.. For now just a dummy #;
         // will fill in w/appropriate type later
-        ASSERT(!a2);
+        ASSERT(!a3);
         retReg = OpValue::immRegNum(-1);
+        a3 = a2;
         a2 = a1;
         a1 = a0;
         a0 = &retReg;
@@ -200,6 +201,8 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         numArgs = 2;
     if (a2)
         numArgs = 3;
+    if (a3)
+        numArgs = 4;
 
     // First, scan through, and determine the cheapest non-align variant.
     // We can't select whether to align or not, since we may have to emit
@@ -214,10 +217,13 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
 
         bool exact = cand->matchExactly;
 
-        int    cost0 = 0, cost1 = 0, cost2 = 0;
-        ConvOp convOps[3];
+        int    cost0 = 0, cost1 = 0, cost2 = 0, cost3 = 0;
+        ConvOp convOps[4];
 
         switch (numArgs) {
+        case 4:
+            convOps[3] = computeCast(a3, cand->paramTypes[3], cand->immediateParams[3], cost3, exact);
+            // Fallthrough
         case 3:
             convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2, exact);
             // Fallthrough
@@ -231,7 +237,7 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
             break;
         }
 
-        int totalCost = cand->cost + cost0 + cost1 + cost2;
+        int totalCost = cand->cost + cost0 + cost1 + cost2 + cost3;
 
         if (totalCost < 0) // Cost_NoConversion in the sum...
             continue;
@@ -242,6 +248,7 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
             cheapestConvOps[0] = convOps[0];
             cheapestConvOps[1] = convOps[1];
             cheapestConvOps[2] = convOps[2];
+            cheapestConvOps[3] = convOps[3];
         }
     }
 
@@ -253,6 +260,8 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
             printf("\ta1:%s/imm:%d\n", OpTypeVals[a1->type], a1->immediate);
         if (a2)
             printf("\ta2:%s/imm:%d\n", OpTypeVals[a2->type], a2->immediate);
+        if (a3)
+            printf("\ta3:%s/imm:%d\n", OpTypeVals[a3->type], a3->immediate);
         CRASH(); // Should never happen!
     }
 
@@ -267,9 +276,12 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
             *retOut = retVal;
     }
 
-    OpValue c0, c1, c2; // Converted versions, if needed.
+    OpValue c0, c1, c2, c3; // Converted versions, if needed.
 
     switch (numArgs) {
+    case 4:
+        emitConversion(comp, block, cheapest->immediateParams[3], cheapestConvOps[3], a3, c3);
+        // Fallthrough
     case 3:
         emitConversion(comp, block, cheapest->immediateParams[2], cheapestConvOps[2], a2, c2);
         // Fallthrough
@@ -300,6 +312,9 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
 
     // ... and the args, as needed.
     switch (numArgs) {
+    case 4:
+        emitArg(basePtr, cheapest, 3, c3);
+        // Fallthrough
     case 3:
         emitArg(basePtr, cheapest, 2, c2);
         // Fallthrough

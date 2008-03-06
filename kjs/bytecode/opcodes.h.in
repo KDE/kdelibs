@@ -62,15 +62,15 @@ struct Op {
     int        cost;
 
     int numParams;
-    OpType paramTypes[3];
-    bool   immediateParams[3];
+    OpType paramTypes[4];
+    bool   immediateParams[4];
 
     OpType retType; // type of this specialization
 
     int length; // Length of instruction, including opcode + args
 
     // This contains offsets of arguments, starting from before the instruction
-    int paramOffsets[3];
+    int paramOffsets[4];
 
     // If this is true, this version of the instruction has an
     // extra word inserted after the opcode, for alignment reasons.
@@ -103,7 +103,8 @@ public:
     // All of these emit the instruction of given type, and return its base.
     // If retVal isn't 0, the return value will be placed there
     static Addr emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
-                       OpValue* retOut = 0, OpValue* a0 = 0, OpValue* a1 = 0, OpValue* a2 = 0);
+                       OpValue* retOut = 0, OpValue* a0 = 0, OpValue* a1 = 0,
+                                            OpValue* a2 = 0, OpValue* a3 = 0);
 
     static void emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
                               OpType outType, OpValue* out);
