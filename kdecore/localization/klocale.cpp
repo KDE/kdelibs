@@ -43,6 +43,7 @@
 #include <QtGui/QPrinter>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
+#include <QtCore/QLocale>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
@@ -304,6 +305,7 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
   list += cg.readEntry("Language", QString()).split(':');
 
   // Collect languages read from environment variables by gettext(3).
+  QStringList rawList;
   if (useEnv) {
     // Collect by same order of priority as for gettext(3).
 
@@ -317,7 +319,11 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
     rawList += QFile::decodeName(getenv("LC_ALL"));
     rawList += QFile::decodeName(getenv("LC_MESSAGES"));
     rawList += QFile::decodeName(getenv("LANG"));
-
+  }
+#ifdef Q_WS_WIN // how about Mac?
+  rawList += QLocale::system().name(); // fall back to the system language
+#endif
+  if (useEnv) { // Collect languages  - continued...
     // Process the raw list to create possible combinations.
     foreach (const QString &ln, rawList) {
       QString lang, ctry, modf, cset;
