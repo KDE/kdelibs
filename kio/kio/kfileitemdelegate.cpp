@@ -931,7 +931,7 @@ KFileItemDelegate::KFileItemDelegate(QObject *parent)
     d->setHorizontalMargin(Private::ItemMargin, 0, 0);
 
     // Margins for vertical mode (icon views)
-    d->setVerticalMargin(Private::TextMargin, 2, 2);
+    d->setVerticalMargin(Private::TextMargin, 6, 2);
     d->setVerticalMargin(Private::IconMargin, focusHMargin, focusVMargin);
     d->setVerticalMargin(Private::ItemMargin, 0, 0);
 
