@@ -22,6 +22,8 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
+#include <QDir>
+
 class KTemporaryFilePrivate
 {
     public:
@@ -59,7 +61,7 @@ void KTemporaryFile::setPrefix(const QString &prefix)
     if ( newPrefix.isEmpty() ) {
         newPrefix = d->defaultPrefix();
     } else {
-        if ( !newPrefix.startsWith('/') ) {
+        if ( !QDir::isAbsolutePath(newPrefix) ) {
             newPrefix.prepend ( KStandardDirs::locateLocal("tmp", "") );
         }
     }
