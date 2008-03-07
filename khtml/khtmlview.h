@@ -448,6 +448,8 @@ private:
 
     void complete( bool pendingAction );
 
+    void updateScrollBars();
+
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findAhead(bool increase);
     void updateFindAheadTimeout();
