@@ -487,10 +487,12 @@ bool KHTMLView::event( QEvent* e )
       return QWidget::event(e);
     case QEvent::StyleChange:
     case QEvent::LayoutRequest: {
-        bool ret = QScrollArea::event(e);
-        if (d->staticWidget && widget()->pos() != QPoint(0,0))
-            widget()->move(0,0);
-        return ret;
+        if (d->staticWidget) {
+            updateScrollBars();
+            return QAbstractScrollArea::event(e);
+        } else {
+            return QScrollArea::event(e);
+        }
     }
     default:
       return QScrollArea::event(e);
@@ -640,6 +642,8 @@ void KHTMLView::resizeContents(int w, int h)
     if (!widget())
         return;
     widget()->resize(w, h);
+    if (!widget()->isVisible())
+        updateScrollBars();
 }
 
 int KHTMLView::contentsX() const
@@ -798,8 +802,10 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
-
-    QScrollArea::resizeEvent( e );
+    if (!d->staticWidget)
+        QScrollArea::resizeEvent(e);
+    else
+        updateScrollBars();
 
     if (d->layoutSchedulingEnabled)
         layout();
@@ -810,9 +816,6 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
         showCaret();
     }/*end if*/
 #endif
-
-    if (d->staticWidget && widget()->pos() != QPoint(0,0))
-        widget()->move(0,0);
 
     QApplication::sendPostedEvents(viewport(), QEvent::Paint);
 
@@ -2138,11 +2141,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     if (o == view) {
         if (widgetEvent(e))
             return true;
-        else if ( e->type() == QEvent::Resize ) {
-            bool ret = QScrollArea::eventFilter(o, e);
-            if (d->staticWidget && view->pos() != QPoint(0,0))
-                view->move(0,0);
-            return ret;
+        else if (d->staticWidget && e->type() == QEvent::Resize) {
+            updateScrollBars();
+            return false;
         }
     } else if (o->isWidgetType()) {
 	QWidget *v = static_cast<QWidget *>(o);
@@ -4056,6 +4057,25 @@ void KHTMLView::complete( bool pendingAction )
             emit m_part->completed(true);
     }
 
+}
+
+void KHTMLView::updateScrollBars()
+{
+    const QWidget *view = widget();
+    if (!view)
+        return;
+
+    QSize p = viewport()->size();
+    QSize m = maximumViewportSize();
+
+    if (m.expandedTo(view->size()) == m)
+        p = m; // no scroll bars needed
+
+    QSize v = view->size();
+    horizontalScrollBar()->setRange(0, v.width() - p.width());
+    horizontalScrollBar()->setPageStep(p.width());
+    verticalScrollBar()->setRange(0, v.height() - p.height());
+    verticalScrollBar()->setPageStep(p.height());
 }
 
 void KHTMLView::slotMouseScrollTimer()
