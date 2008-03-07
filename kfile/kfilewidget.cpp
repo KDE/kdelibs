@@ -865,7 +865,8 @@ void KFileWidget::accept()
 
     KUrl::List list = selectedUrls();
     QList<KUrl>::const_iterator it = list.begin();
-    for ( ; it != list.end(); ++it ) {
+    int atmost = d->locationEdit->maxItems(); //don't add more items than necessary
+    for ( ; it != list.end() && atmost > 0; ++it ) {
         const KUrl& url = *it;
         // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
@@ -879,7 +880,11 @@ void KFileWidget::accept()
                 break;
             }
         }
+        //FIXME I don't think this works correctly when the KUrlComboBox has some default urls.
+        //KUrlComboBox should provide a function to add an url and rotate the existing ones, keeping
+        //track of maxItems, and we shouldn't be able to insert items as we please.
         d->locationEdit->insertItem( 1,file);
+        atmost--;
     }
 
     KSharedConfig::Ptr config = KGlobal::config();
@@ -1915,20 +1920,26 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
 void KFileWidgetPrivate::addToRecentDocuments()
 {
     int m = ops->mode();
+    int atmost = KRecentDocument::maximumItems();
+    //don't add more than we need. KRecentDocument::add() is pretty slow
 
     if ( m & KFile::LocalOnly ) {
         QStringList files = q->selectedFiles();
         QStringList::ConstIterator it = files.begin();
-        for ( ; it != files.end(); ++it )
+        for ( ; it != files.end() && atmost > 0; ++it ) {
             KRecentDocument::add( *it );
+            atmost--;
+        }
     }
 
     else { // urls
         KUrl::List urls = q->selectedUrls();
         KUrl::List::ConstIterator it = urls.begin();
-        for ( ; it != urls.end(); ++it ) {
-            if ( (*it).isValid() )
+        for ( ; it != urls.end() && atmost > 0; ++it ) {
+            if ( (*it).isValid() ) {
                 KRecentDocument::add( *it );
+                atmost--;
+            }
         }
     }
 }
