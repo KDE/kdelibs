@@ -367,17 +367,14 @@ QMenu *KTextEdit::mousePopupMenu()
   if( !isReadOnly() )
   {
       popup->addSeparator();
-      if(!acceptRichText())
-      {
-          d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ) );
-
-          if ( emptyDocument )
-              d->spellCheckAction->setEnabled( false );
-           d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
-          d->autoSpellCheckAction->setCheckable( true );
-          d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
-          popup->addSeparator();
-      }
+      d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ),
+                                              i18n( "Check Spelling..." ) );
+      if ( emptyDocument )
+        d->spellCheckAction->setEnabled( false );
+      d->autoSpellCheckAction = popup->addAction( i18n( "Auto Spell Check" ) );
+      d->autoSpellCheckAction->setCheckable( true );
+      d->autoSpellCheckAction->setChecked( d->checkSpellingEnabled );
+      popup->addSeparator();
       d->allowTab = popup->addAction( i18n("Allow Tabulations") );
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
@@ -437,7 +434,7 @@ void KTextEdit::setHighlighter(Sonnet::Highlighter *_highLighter)
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
   emit checkSpellingChanged( check );
-  if ( check == d->checkSpellingEnabled || acceptRichText() )
+  if ( check == d->checkSpellingEnabled )
     return;
 
   // From the above statment we know know that if we're turning checking
@@ -460,8 +457,8 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
 
 void KTextEdit::focusInEvent( QFocusEvent *event )
 {
-    if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter && !acceptRichText() )
-        createHighlighter();
+  if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
+    createHighlighter();
 
   QTextEdit::focusInEvent( event );
 }
@@ -473,7 +470,7 @@ bool KTextEdit::checkSpellingEnabled() const
 
 void KTextEdit::setReadOnly( bool readOnly )
 {
-  if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter  && !acceptRichText())
+  if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter )
     createHighlighter();
 
   if ( readOnly == isReadOnly() )
