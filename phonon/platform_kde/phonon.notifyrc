@@ -182,6 +182,7 @@ Comment=Notification on automatic fallback if the preferred device is unavailabl
 Comment[bg]=Уведомяване ако устройството по подразбиране не е налично
 Comment[bn_IN]=নির্বাচিত ডিভাইস উপলব্ধ না থাকলে স্বয়ংক্রিয়রূপে বিকল্প ব্যবস্থায় প্রয়োগের সূচনাবার্তা
 Comment[ca]=Notificació del funcionament automàtic del de reserva si el dispositiu preferit no és disponible
+Comment[cs]=Upozornění na automatickou náhradu, pokud je preferované zařízení nedostupné
 Comment[csb]=Dôwanié wiedzë ò aùtomatniy zmianie zwãkòwégò ùrządzenia, czédë preferowóné nie je przistãpné.
 Comment[da]=Bekendtgørelse om automatisk fald tilbage hvis den foretrukne enhed er utilgængelig
 Comment[de]=Benachrichtigung bei automatischem Ausweichen, wenn das bevorzugte Gerätnicht verfügbar ist.
