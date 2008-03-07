@@ -94,7 +94,7 @@ KDECORE_EXPORT QString kRealBacktrace(int);
  * @return a backtrace
  */
 #if !defined(KDE_NO_DEBUG_OUTPUT)
-static inline QString kBacktrace(int levels=-1) { return kRealBacktrace(levels); }
+inline QString kBacktrace(int levels=-1) { return kRealBacktrace(levels); }
 #else
 static inline QString kBacktrace(int=-1) { return QString(); }
 #endif
@@ -216,7 +216,7 @@ static inline KDE_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) {
 static inline KDE_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
 static inline KDE_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
 static inline KDE_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
-static inline KDE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
+inline KDE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
 static inline KDE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
 #endif
