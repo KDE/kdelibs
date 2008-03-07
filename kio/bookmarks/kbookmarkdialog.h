@@ -97,9 +97,13 @@ protected:
   virtual void save(BookmarkDialogMode mode, const KBookmark &);
 
   /**
-   * the selected bookmark in the folder tree
+   * selects the specified bookmark in the folder tree
    */
   void setParentBookmark(const KBookmark & bm);
+  /**
+   * returns the selected bookmark in the folder tree, or the root (top-level)
+   * bookmark if none was selected
+   */
   KBookmarkGroup parentBookmark();
 
 

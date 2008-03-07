@@ -167,7 +167,10 @@ void KBookmarkDialog::setParentBookmark(const KBookmark & bm)
 
 KBookmarkGroup KBookmarkDialog::parentBookmark()
 {
-    const QString & address = dynamic_cast<KBookmarkTreeItem *>(m_folderTree->selectedItems().first())->address();
+    KBookmarkTreeItem *item = dynamic_cast<KBookmarkTreeItem *>(m_folderTree->currentItem());
+    if(!item)
+        return m_mgr->root();
+    const QString &address = item->address();
     return m_mgr->findByAddress(address).toGroup();
 }
 
