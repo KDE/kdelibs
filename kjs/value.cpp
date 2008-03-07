@@ -211,4 +211,26 @@ JSValue *jsNumberCell(double d)
     return new NumberImp(d);
 }
 
+JSValue* JSValue::getByIndex(ExecState* exec, unsigned propertyName) const
+{
+    switch (type()) {
+    case StringType: {
+        UString s = static_cast<const StringImp*>(asCell())->value();
+        if (propertyName < s.size()) {
+            UChar c = s[propertyName];
+            return jsString(UString(&c, 1));
+        }
+        // fall through
+    }
+    default: {
+        JSObject* obj = toObject(exec);
+        PropertySlot slot;
+        if (obj->getPropertySlot(exec, propertyName, slot))
+            return slot.getValue(exec, obj, propertyName);
+
+        return jsUndefined();
+    }
+    }
+}
+
 } // namespace KJS

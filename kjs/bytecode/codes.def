@@ -651,10 +651,7 @@ operation BracketGet {
     ]]
 
     overload value (value base, int32 prop) [[
-        JSObject* baseObj = base->toObject(exec);
-        // toObject may fail and return an exception object, but get from it is harmless
-
-        $$ = baseObj->get(exec, (uint32_t)prop);
+        $$ = base->getByIndex(exec, prop);
     ]]
 }
 

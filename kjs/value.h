@@ -89,6 +89,8 @@ public:
     bool getTruncatedInt32(int32_t&) const;
     bool getTruncatedUInt32(uint32_t&) const;
 
+    JSValue* getByIndex(ExecState* exec, unsigned propertyName) const;
+
     // Basic conversions.
     JSValue* toPrimitive(ExecState* exec, JSType preferredType = UnspecifiedType) const;
     bool getPrimitiveNumber(ExecState* exec, double& number, JSValue*& value);
