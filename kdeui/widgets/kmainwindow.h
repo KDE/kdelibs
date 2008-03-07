@@ -434,7 +434,7 @@ public:
 
 public Q_SLOTS:
     /**
-     * Makes a KDE compliant caption.
+     * Makes a KDE compliant caption (window title).
      *
      * @param caption Your caption. @em Do @em not include the application name
      * in this string. It will be added automatically according to the KDE
