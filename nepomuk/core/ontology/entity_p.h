@@ -25,6 +25,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QUrl>
+#include <QtGui/QIcon>
 #include <QtCore/QSharedData>
 
 namespace Nepomuk {
@@ -40,6 +41,8 @@ namespace Nepomuk {
             QString comment;
             QHash<QString, QString> l10nLabels;
             QHash<QString, QString> l10nComments;
+
+            QIcon icon;
         
             // -1 - unknown
             // 0  - no
@@ -51,7 +54,7 @@ namespace Nepomuk {
             void initAncestors();
 
             virtual bool addProperty( const QUrl& property, const Soprano::Node& value ) = 0;
-            virtual bool addAncestorProperty( const QUrl& property, const Soprano::Node& value ) = 0;
+            virtual bool addAncestorProperty( const QUrl& ancestorResource, const QUrl& property ) = 0;
 
         private:
             bool load();

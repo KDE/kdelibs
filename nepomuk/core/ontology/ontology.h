@@ -37,6 +37,8 @@ namespace Nepomuk {
 
         /**
          * \brief Represents one ontology.
+         *
+         * \author Sebastian Trueg <trueg@kde.org>
          */
         class NEPOMUK_EXPORT Ontology : public Entity
         {

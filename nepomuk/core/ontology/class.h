@@ -41,6 +41,8 @@ namespace Nepomuk {
          *
          * While Resource objects can be changed Class instances are considered
          * to be static and never changed during their lifetime.
+         *
+         * \author Sebastian Trueg <trueg@kde.org>
          */ 
         class NEPOMUK_EXPORT Class : public Entity
         {

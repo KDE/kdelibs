@@ -26,8 +26,10 @@
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/RDFS>
 
+#include <kicon.h>
 
 
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
@@ -49,7 +51,7 @@ void Nepomuk::Types::EntityPrivate::init()
 void Nepomuk::Types::EntityPrivate::initAncestors()
 {
     if ( ancestorsAvailable < 0 ) {
-        ancestorsAvailable = load() ? 1 : 0;
+        ancestorsAvailable = loadAncestors() ? 1 : 0;
     }
 }
 
@@ -87,6 +89,10 @@ bool Nepomuk::Types::EntityPrivate::load()
             }
         }
 
+        else if ( property == Soprano::Vocabulary::NAO::hasSymbol() ) {
+            icon = KIcon( value.toString() );
+        }
+
         else {
             addProperty( property, value );
         }
@@ -108,7 +114,7 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
     bool success = false;
     while ( it.next() ) {
         success = true;
-        addAncestorProperty( it.binding( "s" ).uri(), it.binding( "p" ) );
+        addAncestorProperty( it.binding( "s" ).uri(), it.binding( "p" ).uri() );
     }
 
     return success;
@@ -184,6 +190,19 @@ QString Nepomuk::Types::Entity::comment( const QString& language )
     }
     else {
         return QString();
+    }
+}
+
+
+QIcon Nepomuk::Types::Entity::icon()
+{
+    if ( d ) {
+        d->init();
+
+        return d->icon;
+    }
+    else {
+        return QIcon();
     }
 }
 

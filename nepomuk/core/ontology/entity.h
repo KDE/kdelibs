@@ -31,6 +31,8 @@
 
 #include "nepomuk_export.h"
 
+class QIcon;
+
 namespace Nepomuk {
     namespace Types {
         class EntityPrivate;
@@ -39,6 +41,8 @@ namespace Nepomuk {
          * Base class for static ontology entities Class and Property.
          * It encapsulates the generic labels and comments that both
          * types have.
+         *
+         * \author Sebastian Trueg <trueg@kde.org>
          */
         class NEPOMUK_EXPORT Entity
         {
@@ -92,6 +96,15 @@ namespace Nepomuk {
              * at all.
              */
             QString comment( const QString& language = KGlobal::locale()->language() );
+
+            /**
+             * Retrieve the icon stored for the entity (nao:hasSymbol)
+             *
+             * If no symbol is defined for the entity a null icon will be returned.
+             *
+             * \since 4.1
+             */
+            QIcon icon();
 
             /**
              * Is this a valid Entity, i.e. has it a valid URI.

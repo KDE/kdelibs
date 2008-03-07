@@ -92,7 +92,7 @@ bool Nepomuk::Types::OntologyPrivate::addProperty( const QUrl&, const Soprano::N
 }
 
 
-bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const Soprano::Node& )
+bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const QUrl& )
 {
     return false;
 }
@@ -131,12 +131,14 @@ Nepomuk::Types::Ontology& Nepomuk::Types::Ontology::operator=( const Ontology& o
 
 QList<Nepomuk::Types::Class> Nepomuk::Types::Ontology::allClasses()
 {
+    D->initEntities();
     return D->classes;
 }
 
 
 Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByName( const QString& name )
 {
+    D->initEntities();
     for ( QList<Class>::const_iterator it = D->classes.constBegin();
           it != D->classes.constEnd(); ++it ) {
         const Class& c = *it;
@@ -151,6 +153,7 @@ Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByName( const QString& 
 
 Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByLabel( const QString& label, const QString& language )
 {
+    D->initEntities();
     for ( QList<Class>::iterator it = D->classes.begin();
           it != D->classes.constEnd(); ++it ) {
         Class& c = *it;
@@ -165,12 +168,14 @@ Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByLabel( const QString&
 
 QList<Nepomuk::Types::Property> Nepomuk::Types::Ontology::allProperties()
 {
+    D->initEntities();
     return D->properties;
 }
 
 
 Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByName( const QString& name )
 {
+    D->initEntities();
     for ( QList<Property>::const_iterator it = D->properties.constBegin();
           it != D->properties.constEnd(); ++it ) {
         const Property& p = *it;
@@ -185,6 +190,7 @@ Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByName( const QSt
 
 Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByLabel( const QString& label, const QString& language )
 {
+    D->initEntities();
     for ( QList<Property>::iterator it = D->properties.begin();
           it != D->properties.constEnd(); ++it ) {
         Property& p = *it;

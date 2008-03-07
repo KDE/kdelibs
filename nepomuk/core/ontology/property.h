@@ -44,6 +44,8 @@ namespace Nepomuk {
          *
          * While Resource objects can be changed Property instances are considered
          * to be static and never changed during their lifetime.
+         *
+         * \author Sebastian Trueg <trueg@kde.org>
          */ 
         class NEPOMUK_EXPORT Property : public Entity
         {

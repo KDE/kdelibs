@@ -50,7 +50,7 @@ namespace Nepomuk {
             int cardinality;
 
             bool addProperty( const QUrl& property, const Soprano::Node& value );
-            bool addAncestorProperty( const QUrl& property, const Soprano::Node& value );
+            bool addAncestorProperty( const QUrl& ancestorResource, const QUrl& property );
         };
     }
 }

@@ -86,10 +86,10 @@ bool Nepomuk::Types::PropertyPrivate::addProperty( const QUrl& property, const S
 }
 
 
-bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& property, const Soprano::Node& value )
+bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& ancestorResource, const QUrl& property )
 {
     if( property == Soprano::Vocabulary::RDFS::subPropertyOf() ) {
-        parents.append( value.uri() );
+        parents.append( ancestorResource );
         return true;
     }
 
@@ -145,7 +145,7 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties()
 QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
 {
     if ( d ) {
-        D->initAncestors();
+        D->init();
         return D->children;
     }
     else {
@@ -157,7 +157,7 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
 Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty()
 {
     if ( d ) {
-        D->init();
+        D->initAncestors();
         return D->inverse;
     }
     else {
