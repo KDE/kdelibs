@@ -46,6 +46,7 @@ public:
      * and writeLine.
      * @param command The command to execute.
      * @param args The arguments to the command.
+     * @return 0 on success, -1 on error. errno might give more information then.
      */
     int exec(const QByteArray &command, const QList<QByteArray> &args);
 
