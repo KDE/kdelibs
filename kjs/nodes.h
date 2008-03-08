@@ -1021,13 +1021,20 @@ namespace KJS {
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
 
+    void compile(CodeType ctype);
     void compileIfNeeded(CodeType ctype) { if (!m_compiled) compile(ctype); }
     bool isCompiled() const { return m_compiled; }
 
+    size_t numLocalsAndRegisters()  { return m_shouldMark.size(); }
+    WTF::Vector<bool>* shouldMark() { return &m_shouldMark; }
+
     virtual void generateExecCode(CompileState*, CodeBlock& block);
-    //////////////////////////////////////////////////////////////////////
+
+    // Reserves a register for private use, making sure that id is in the right spot.
+    // This should get called before compile, etc.
+    void reserveSlot(size_t id, bool shouldMark);
+
     // Symbol table functions
-    //////////////////////////////////////////////////////////////////////
     SymbolTable& symbolTable() { return m_symbolTable; }
     size_t lookupSymbolID(const Identifier& id) const { return m_symbolTable.get(id.ustring().rep()); }
 
@@ -1036,9 +1043,7 @@ namespace KJS {
     Identifier getLocalName(size_t id) const { return m_symbolList[id].name; }
     FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
 
-    //////////////////////////////////////////////////////////////////////
     // Parameter array functions
-    //////////////////////////////////////////////////////////////////////
     void addParam(const Identifier& ident); //Also creates the symbol for the
                                             //parameter, called on creating
                                             //the enclosing expr or decl
@@ -1050,9 +1055,10 @@ namespace KJS {
     size_t paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
     const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
 
+    // Runs the code, compiling if needed. If any locals, etc.,
+    // need to be created, that must be done before this is run.
     Completion execute(ExecState *exec);
   private:
-    void compile(CodeType ctype);
 
     UString m_sourceURL;
     int m_sourceId : 31;

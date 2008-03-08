@@ -78,20 +78,20 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   if (exec->hadException())
     newExec.setException(exec->exception());
 
-  // Compute the set of all local variables, and functions.
-  // and optimize access to them the first time we're called.
-  // The AST building already took care of parameter declarations for us.
+  // The first time we're called, compute the set of local variables,
+  // and compile the body. (note that parameters have been collected
+  // during the AST build)
   if (!body->isCompiled()) {
-    // now handle other locals (functions, variables)
     body->processDecls(&newExec);
 
-    // compiled will be set below as we run
+    body->compile(FunctionCode);
   }
 
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
 
   // Here, we actually fill stuff in, going by increasing priorities:
-  // first, initialize flags and set to undefined...
+  // first, initialize flags and set to undefined; this also fills in
+  // the mark info.
   activation->setupLocals();
 
   // Next, assign user supplied arguments to parameters
@@ -452,12 +452,18 @@ ActivationImp::ActivationImp(FunctionImp *function, const List &arguments):
 
 void ActivationImp::setupLocals() {
   FunctionBodyNode* body = d()->function->body.get();
-  LocalStorage&     ls   = localStorage();
-  size_t size = body->numLocals();
-  ls.reserveCapacity(size);
+  setShouldMark(body->shouldMark());
+  size_t locals = body->numLocals();
+  size_t total  = body->numLocalsAndRegisters();
+  LocalStorage& ls   = localStorage();
+  if (total > 32)
+    ls.reserveCapacity(total);
 
-  for (size_t l = 0; l < size; ++l)
+  size_t l;
+  for (l = 0; l < locals; ++l)
     ls.uncheckedAppend(LocalStorageEntry(jsUndefined(), body->getLocalAttr(l)));
+  for (; l < total; ++l)
+    ls.uncheckedAppend(LocalStorageEntry(jsUndefined(), 0));
 }
 
 void ActivationImp::setupFunctionLocals(ExecState *exec) {

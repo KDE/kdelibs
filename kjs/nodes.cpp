@@ -42,6 +42,7 @@
 #include "package.h"
 #include "PropertyNameArray.h"
 #include <wtf/AlwaysInline.h>
+#include <wtf/Assertions.h>
 #include <wtf/HashSet.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/MathExtras.h>
@@ -908,6 +909,13 @@ void FunctionBodyNode::addFunDecl(const Identifier& ident, int attr, FuncDeclNod
   (void)addSymbol(ident, attr, funcDecl);
 }
 
+void FunctionBodyNode::reserveSlot(size_t id, bool shouldMark)
+{
+  ASSERT(id == m_symbolList.size());
+  m_shouldMark.append(shouldMark);
+  m_symbolList.append(Symbol(Identifier(), 0, 0));
+}
+
 size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
 {
   // We get symbols in the order specified in 10.1.3, but sometimes
@@ -928,8 +936,9 @@ size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclN
   }
 
   size_t id = m_symbolList.size();         //First entry gets 0, etc.
+  m_shouldMark.append(true);
   m_symbolTable.set(ident.ustring().rep(), id);
-  m_symbolList.append (Symbol(ident, flags, funcDecl));
+  m_symbolList.append(Symbol(ident, flags, funcDecl));
   return id;
 }
 
@@ -946,15 +955,9 @@ Completion FunctionBodyNode::execute(ExecState *exec)
 
   LocalStorage* regs;
   if (ctype == FunctionCode) {
+    // FunctionImp::callAsFunction already did  most of the setup when making the activation.
     ActivationImp* act = static_cast<ActivationImp*>(exec->activationObject());
-    act->setShouldMark(&m_shouldMark);
     regs = &act->localStorage();
-
-    // Allocate enough space, and make sure to initialize things so we don't mark garbage;
-    // however, don't touch the locals --- they're taken care of elsewhere (### refactor)
-    regs->resize(m_shouldMark.size());
-    for (size_t c = m_symbolTable.size(); c < m_shouldMark.size(); ++c)
-      (*regs)[c].val.valueVal = jsUndefined();
   } else {
     regs = new LocalStorage();
 
@@ -979,11 +982,6 @@ Completion FunctionBodyNode::execute(ExecState *exec)
 void FunctionBodyNode::compile(CodeType ctype)
 {
   m_compiled = true;
-
-  // First, fill in the mark descriptor with how many locals we have..
-  m_shouldMark.resize(m_symbolTable.size());
-  for (int c = 0; c < m_symbolTable.size(); ++c)
-    m_shouldMark[c] = true;
 
   CompileState comp(ctype, this, m_shouldMark, m_symbolTable.size());
   generateExecCode(&comp, m_compiledCode);
