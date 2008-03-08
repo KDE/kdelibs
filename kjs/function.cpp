@@ -78,15 +78,21 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   if (exec->hadException())
     newExec.setException(exec->exception());
 
+  FunctionBodyNode* body = this->body.get();
+
   // The first time we're called, compute the set of local variables,
   // and compile the body. (note that parameters have been collected
   // during the AST build)
   if (!body->isCompiled()) {
+    // Reserve various slots needed for the activation object
+    body->reserveSlot(ActivationImp::FunctionSlot, true);
+    body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
+
     // Create declarations for parameters, and allocate the symbols.
     // We always just give them sequential positions, to make passInParameters
     // simple (though perhaps wasting memory in the trivial case)
     for (size_t i = 0; i < body->numParams(); ++i)
-      body->addSymbolOverwriteID(i, body->paramName(i), DontDelete);
+      body->addSymbolOverwriteID(i + ActivationImp::NumReservedSlots, body->paramName(i), DontDelete);
 
     body->processDecls(&newExec);
     body->compile(FunctionCode);
@@ -97,13 +103,16 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // Here, we actually fill stuff in, going by increasing priorities:
   // first, initialize flags and set to undefined; this also fills in
   // the mark info.
-  activation->setupLocals();
+  activation->setupLocals(body);
+
+  // Since the above allocated the storage, we can store the extra info
+  activation->init(this, args);
 
   // Next, assign user supplied arguments to parameters
   passInParameters(&newExec, args);
 
   // Now, fill in function objects. These should override everything else
-  activation->setupFunctionLocals(&newExec);
+  activation->setupFunctionLocals(body, &newExec);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
@@ -178,7 +187,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
     fprintf(stderr, "setting parameter %s", body->paramName(paramPos).ascii());
     printInfo(exec,"to", v);
 #endif
-    variable->putLocal(paramPos, v);
+    variable->putLocal(paramPos + ActivationImp::NumReservedSlots, v);
   }
 }
 
@@ -445,17 +454,19 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-ActivationImp::ActivationImp(FunctionImp *function, const List &arguments):
-    JSVariableObject(new ActivationData)
+ActivationImp::ActivationImp():
+    JSVariableObject(new JSVariableObjectData)
+{}
+
+void ActivationImp::init(FunctionImp *function, const List &arguments)
 {
+    this->arguments = arguments;
+    functionSlot()  = function;
+    argumentsObjectSlot() = jsUndefined();
     d()->symbolTable = &function->body->symbolTable();
-    d()->function    = function;
-    d()->arguments   = arguments;
-    d()->argumentsObject = 0;
 }
 
-void ActivationImp::setupLocals() {
-  FunctionBodyNode* body = d()->function->body.get();
+void ActivationImp::setupLocals(FunctionBodyNode* body) {
   setShouldMark(body->shouldMark());
   size_t locals = body->numLocals();
   size_t total  = body->numLocalsAndRegisters();
@@ -470,8 +481,7 @@ void ActivationImp::setupLocals() {
     entries[l].val.valueVal = jsUndefined();
 }
 
-void ActivationImp::setupFunctionLocals(ExecState *exec) {
-  FunctionBodyNode* body = d()->function->body.get();
+void ActivationImp::setupFunctionLocals(FunctionBodyNode* body, ExecState *exec) {
   LocalStorage&     ls   = localStorage();
   size_t size = body->numLocals();
 
@@ -485,10 +495,10 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
 {
   ActivationImp* thisObj = static_cast<ActivationImp*>(slot.slotBase());
 
-  if (!thisObj->d()->argumentsObject)
+  if (thisObj->argumentsObjectSlot() == jsUndefined())
     thisObj->createArgumentsObject(exec);
 
-  return thisObj->d()->argumentsObject;
+  return thisObj->argumentsObjectSlot();
 }
 
 ActivationImp::~ActivationImp()
@@ -546,26 +556,12 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
     _prop.put(propertyName, value, attr, checkReadOnly);
 }
 
-void ActivationImp::markChildren()
-{
-    if (!d()->function->marked())
-        d()->function->mark();
-
-    if (d()->argumentsObject && !d()->argumentsObject->marked())
-        d()->argumentsObject->mark();
-}
-
-void ActivationImp::mark()
-{
-    JSVariableObject::mark();
-    markChildren();
-}
-
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
-    d()->argumentsObject = new Arguments(exec, d()->function, d()->arguments, const_cast<ActivationImp*>(this));
+    argumentsObjectSlot() = new Arguments(exec, static_cast<FunctionImp*>(functionSlot()),
+                                          arguments, const_cast<ActivationImp*>(this));
      // The arguments list is only needed to create the arguments object, so discard it now
-    d()->arguments.reset();
+    arguments.reset();
 }
 
 // ------------------------------ GlobalFunc -----------------------------------

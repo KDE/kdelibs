@@ -106,15 +106,17 @@ namespace KJS {
   };
 
   class ActivationImp : public JSVariableObject {
-    struct ActivationData : public JSVariableObjectData {
-      FunctionImp* function;
-      List arguments;
-      Arguments* argumentsObject;
+  public:
+    enum {
+      FunctionSlot        = 0,
+      ArgumentsObjectSlot = 1,
+      NumReservedSlots = ArgumentsObjectSlot + 1
     };
 
-  public:
-    ActivationImp(FunctionImp *function, const List &arguments);
+    ActivationImp();
     ~ActivationImp();
+
+    void init(FunctionImp *function, const List &arguments);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
@@ -146,22 +148,28 @@ namespace KJS {
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
 
-    virtual void mark();
-    void markChildren();
-
     virtual bool isActivation() const { return true; }
-    void releaseArguments() { d()->arguments.reset(); }
+    void releaseArguments() { arguments.reset(); }
 
-    void setupLocals();
-    void setupFunctionLocals(ExecState *exec);
+    void setupLocals(FunctionBodyNode* fbody);
+    void setupFunctionLocals(FunctionBodyNode* fbody, ExecState *exec);
   private:
+    JSValue*& functionSlot() {
+          return localStorage()[FunctionSlot].val.valueVal;
+    }
+
+    JSValue*& argumentsObjectSlot() {
+          return localStorage()[ArgumentsObjectSlot].val.valueVal;
+    }
+
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
     void createArgumentsObject(ExecState *exec);
-    ActivationData* d() { return static_cast<ActivationData*>(JSVariableObject::d); }
+    JSVariableObjectData* d() { return JSVariableObject::d; }
 
     int  numLocals() const        { return localStorage().size(); }
     bool validLocal(int id) const { return 0 <= id && id < numLocals(); }
+    List arguments;
   };
 
   class GlobalFuncImp : public InternalFunctionImp {
