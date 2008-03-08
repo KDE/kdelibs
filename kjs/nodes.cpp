@@ -913,7 +913,7 @@ void FunctionBodyNode::reserveSlot(size_t id, bool shouldMark)
 {
   ASSERT(id == m_symbolList.size());
   m_shouldMark.append(shouldMark);
-  m_symbolList.append(Symbol(Identifier(), 0, 0));
+  m_symbolList.append(SymbolInfo(0, 0));
 }
 
 size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
@@ -938,14 +938,28 @@ size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclN
   size_t id = m_symbolList.size();         //First entry gets 0, etc.
   m_shouldMark.append(true);
   m_symbolTable.set(ident.ustring().rep(), id);
-  m_symbolList.append(Symbol(ident, flags, funcDecl));
+  m_symbolList.append(SymbolInfo(flags, funcDecl));
   return id;
+}
+
+void FunctionBodyNode::addSymbolOverwriteID(size_t id, const Identifier& ident, int flags)
+{
+  ASSERT(id == m_symbolList.size());
+
+  // Remove previous one, if any
+  size_t oldId = m_symbolTable.get(ident.ustring().rep());
+  if (oldId != missingSymbolMarker())
+      m_shouldMark[oldId] = false;
+
+  // Add a new one
+  m_shouldMark.append(true);
+  m_symbolTable.set(ident.ustring().rep(), id);
+  m_symbolList.append(SymbolInfo(flags, 0));
 }
 
 void FunctionBodyNode::addParam(const Identifier& ident)
 {
-  size_t id = addSymbol(ident, DontDelete);
-  m_paramList.append(Parameter(ident, id));
+  m_paramList.append(ident);
 }
 
 Completion FunctionBodyNode::execute(ExecState *exec)
@@ -983,7 +997,7 @@ void FunctionBodyNode::compile(CodeType ctype)
 {
   m_compiled = true;
 
-  CompileState comp(ctype, this, m_shouldMark, m_symbolTable.size());
+  CompileState comp(ctype, this, m_shouldMark, m_shouldMark.size());
   generateExecCode(&comp, m_compiledCode);
 
 #if 0

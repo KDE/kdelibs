@@ -1002,19 +1002,11 @@ namespace KJS {
   */
   class FunctionBodyNode : public BlockNode {
   private:
-    struct Symbol {
-      Symbol(const Identifier& _name, int _attr, FuncDeclNode* _funcDecl) : name(_name), funcDecl(_funcDecl), attr(_attr) {}
-      Symbol() {}
-      Identifier    name;
+    struct SymbolInfo {
+      SymbolInfo(int _attr, FuncDeclNode* _funcDecl) : funcDecl(_funcDecl), attr(_attr) {}
+      SymbolInfo() {}
       FuncDeclNode* funcDecl;
       int           attr;
-    };
-
-    struct Parameter {
-      Parameter() {}
-      Parameter(const Identifier &n, size_t id) : name(n), symbolID(id) { }
-      Identifier name;
-      size_t     symbolID;
     };
   public:
     FunctionBodyNode(SourceElementsNode *);
@@ -1040,40 +1032,37 @@ namespace KJS {
 
     int  numLocals()          const { return m_symbolList.size(); }
     int  getLocalAttr(size_t id)       const { return m_symbolList[id].attr; }
-    Identifier getLocalName(size_t id) const { return m_symbolList[id].name; }
     FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
 
-    // Parameter array functions
-    void addParam(const Identifier& ident); //Also creates the symbol for the
-                                            //parameter, called on creating
-                                            //the enclosing expr or decl
+    // Parameter stuff. We only collect the names during the parsing/
+    // while FunctionImp is responsible for managing the IDs.
+    void addParam(const Identifier& ident);
+    size_t numParams() const { return m_paramList.size(); }
+    const Identifier& paramName(size_t pos) const { return m_paramList[pos]; }
 
     void addVarDecl(const Identifier& ident, int attr, ExecState* exec);
     void addFunDecl(const Identifier& ident, int attr, FuncDeclNode* funcDecl);
 
-    int numParams() const { return m_paramList.size(); }
-    size_t paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
-    const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
+    // Adds a new symbol, killing any previous ID.
+    void addSymbolOverwriteID(size_t id, const Identifier& ident, int attr);
 
     // Runs the code, compiling if needed. If any locals, etc.,
     // need to be created, that must be done before this is run.
     Completion execute(ExecState *exec);
   private:
-
+    size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
     int m_sourceId : 31;
     bool m_compiled : 1;
 
-    size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
-
-    // This maps id -> name / etc.
-    WTF::Vector<Symbol> m_symbolList;
+    // This maps id -> attributes and function decl info
+    WTF::Vector<SymbolInfo> m_symbolList;
 
     // This maps name -> id
     SymbolTable m_symbolTable;
 
-    // The list of parameters, and their local IDs in the
-    WTF::Vector<Parameter> m_paramList;
+    // The list of parameter names
+    WTF::Vector<Identifier> m_paramList;
 
     WTF::Vector<bool> m_shouldMark; // bits saying whether given index should be marked or not
 

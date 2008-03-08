@@ -82,8 +82,13 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // and compile the body. (note that parameters have been collected
   // during the AST build)
   if (!body->isCompiled()) {
-    body->processDecls(&newExec);
+    // Create declarations for parameters, and allocate the symbols.
+    // We always just give them sequential positions, to make passInParameters
+    // simple (though perhaps wasting memory in the trivial case)
+    for (size_t i = 0; i < body->numParams(); ++i)
+      body->addSymbolOverwriteID(i, body->paramName(i), DontDelete);
 
+    body->processDecls(&newExec);
     body->compile(FunctionCode);
   }
 
@@ -163,8 +168,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
 #endif
 
   ListIterator it = args.begin();
-  for (int paramPos = 0; paramPos < body->numParams(); ++paramPos) {
-    size_t writeTo = body->paramSymbolID(paramPos);
+  for (size_t paramPos = 0; paramPos < body->numParams(); ++paramPos) {
     JSValue*     v = jsUndefined();
     if (it != args.end()) {
       v = *it;
@@ -174,7 +178,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
     fprintf(stderr, "setting parameter %s", body->paramName(paramPos).ascii());
     printInfo(exec,"to", v);
 #endif
-    variable->putLocal(writeTo, v);
+    variable->putLocal(paramPos, v);
   }
 }
 
