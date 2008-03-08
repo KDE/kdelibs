@@ -84,7 +84,6 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_savedExec(save),
   m_currentBody(0),
   m_function(0),
-  m_arguments(0),
   m_localStore(0),
   m_markDescriptor(0),
   m_pc(0)
@@ -208,11 +207,10 @@ EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
 
 FunctionExecState::FunctionExecState(Interpreter* intp, JSObject* thisObject,
                                      FunctionBodyNode* body, ExecState* callingExecState,
-                                     FunctionImp* function, const List* args): ExecState(intp)
+                                     FunctionImp* function): ExecState(intp)
 {
     m_function    = function;
     m_currentBody = body;
-    m_arguments   = args;
 
     m_codeType    = FunctionCode;
     m_callingExec = callingExecState;
@@ -220,15 +218,6 @@ FunctionExecState::FunctionExecState(Interpreter* intp, JSObject* thisObject,
     m_variable = new ActivationImp();// TODO: DontDelete ? (ECMA 10.2.3)
     scope.push(m_variable);
     m_thisVal  = thisObject;
-}
-
-FunctionExecState::~FunctionExecState()
-{
-    // The arguments list is only needed to potentially create the  arguments object,
-    // which isn't accessible from nested scopes so we can discard the list as soon
-    // as the function is done running.
-    // This prevents lists of Lists from building up, waiting to be garbage collected
-    static_cast<ActivationImp*>(activationObject())->releaseArguments();
 }
 
 } // namespace KJS

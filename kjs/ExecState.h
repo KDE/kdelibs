@@ -229,7 +229,6 @@ namespace KJS {
     CodeType codeType() { return m_codeType; }
     FunctionBodyNode* currentBody() { return m_currentBody; }
     FunctionImp* function() const { return m_function; }
-    const List* arguments() const { return m_arguments; }
 
     void pushScope(JSObject* s) { scope.push(s); }
     void popScope() { scope.pop(); }
@@ -264,7 +263,6 @@ namespace KJS {
 
     FunctionBodyNode* m_currentBody;
     FunctionImp* m_function;
-    const List* m_arguments;
 
     ScopeChain scope;
     JSObject* m_variable;
@@ -315,8 +313,7 @@ namespace KJS {
     class FunctionExecState : public ExecState {
     public:
         FunctionExecState(Interpreter* intp, JSObject* thisObject,
-                          FunctionBodyNode*, ExecState* callingExecState, FunctionImp*, const List* args);
-        ~FunctionExecState();
+                          FunctionBodyNode*, ExecState* callingExecState, FunctionImp*);
     };
 
 } // namespace KJS

@@ -73,8 +73,7 @@ FunctionImp::~FunctionImp()
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
   // enter a new execution context
-  FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(),
-                 exec, this, &args);
+  FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(), exec, this);
   if (exec->hadException())
     newExec.setException(exec->exception());
 
@@ -106,7 +105,11 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   activation->setupLocals(body);
 
   // Since the above allocated the storage, we can store the extra info
-  activation->init(this, args);
+  // Note that the arguments list is only needed to potentially create the  arguments object,
+  // which isn't accessible from nested scopes so we can discard the list as soon
+  // as the function is done running. Hence, the copy we have here is enough,
+  // and ActivationImp merely needs a pointer
+  activation->init(this, &args);
 
   // Next, assign user supplied arguments to parameters
   passInParameters(&newExec, args);
@@ -458,7 +461,7 @@ ActivationImp::ActivationImp():
     JSVariableObject(new JSVariableObjectData)
 {}
 
-void ActivationImp::init(FunctionImp *function, const List &arguments)
+void ActivationImp::init(FunctionImp *function, const List* arguments)
 {
     this->arguments = arguments;
     functionSlot()  = function;
@@ -559,9 +562,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
     argumentsObjectSlot() = new Arguments(exec, static_cast<FunctionImp*>(functionSlot()),
-                                          arguments, const_cast<ActivationImp*>(this));
-     // The arguments list is only needed to create the arguments object, so discard it now
-    arguments.reset();
+                                          *arguments, const_cast<ActivationImp*>(this));
 }
 
 // ------------------------------ GlobalFunc -----------------------------------

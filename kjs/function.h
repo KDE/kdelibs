@@ -116,7 +116,7 @@ namespace KJS {
     ActivationImp();
     ~ActivationImp();
 
-    void init(FunctionImp *function, const List &arguments);
+    void init(FunctionImp *function, const List* arguments);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
@@ -149,8 +149,6 @@ namespace KJS {
     static const ClassInfo info;
 
     virtual bool isActivation() const { return true; }
-    void releaseArguments() { arguments.reset(); }
-
     void setupLocals(FunctionBodyNode* fbody);
     void setupFunctionLocals(FunctionBodyNode* fbody, ExecState *exec);
   private:
@@ -169,7 +167,7 @@ namespace KJS {
 
     int  numLocals() const        { return localStorage().size(); }
     bool validLocal(int id) const { return 0 <= id && id < numLocals(); }
-    List arguments;
+    const List* arguments;
   };
 
   class GlobalFuncImp : public InternalFunctionImp {
