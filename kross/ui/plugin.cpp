@@ -29,15 +29,25 @@
 #include <kross/core/actioncollection.h>
 #include <kio/netaccess.h>
 
-namespace Kross
-{
+using namespace Kross;
 
+/// \internal d-pointer class
 class ScriptingPlugin::ScriptingPluginPrivate
 {
 public:
-    QDomElement getMenuFromName(QString const& name, const QDomDocument& document);
-    
     QString userActionsFile;
+
+    QDomElement menuFromName(QString const& name, const QDomDocument& document)
+    {
+        QDomElement menuBar = document.documentElement().firstChildElement("MenuBar");
+        QDomElement menu = menuBar.firstChildElement("Menu");
+        for(; !menu.isNull(); menu = menu.nextSiblingElement("Menu")) {
+            if(menu.attribute("name") == name) {
+                return menu;
+            }
+        }
+        return QDomElement();
+    }
 };
 
 ScriptingPlugin::ScriptingPlugin(QObject* parent)
@@ -49,21 +59,22 @@ ScriptingPlugin::ScriptingPlugin(QObject* parent)
 
 ScriptingPlugin::~ScriptingPlugin()
 {
+    delete d;
 }
 
 void ScriptingPlugin::setDOMDocument(const QDomDocument &document, bool merge)
 {
-    QDomDocument doc = buildDomDocument(document);    
+    QDomDocument doc = buildDomDocument(document);
     KXMLGUIClient::setDOMDocument(doc, merge);
 }
 
 QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
 {
     QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
-    
+
     Kross::Manager::self().setProperty("configfile", d->userActionsFile);
     Kross::Manager::self().setProperty("configfiles", allActionFiles);
-    
+
     if(KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
         Kross::Manager::self().actionCollection()->readXmlFile(d->userActionsFile);
     }
@@ -82,16 +93,15 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
 void ScriptingPlugin::buildDomDocument(QDomDocument& document,
     Kross::ActionCollection* collection)
 {
-    QDomElement menuElement = d->getMenuFromName(collection->name(), document);
+    QDomElement menuElement = d->menuFromName(collection->name(), document);
 
-    foreach(Kross::Action* action, collection->actions()) 
-{
+    foreach(Kross::Action* action, collection->actions()) {
         // Create and append new Menu element if doesn't exist
         if(menuElement.isNull()) {
             menuElement = document.createElement("Menu");
-            menuElement.setAttribute("name", collection->name());            
+            menuElement.setAttribute("name", collection->name());
             menuElement.setAttribute("noMerge", "0");
-            
+
             QDomElement textElement = document.createElement("text");
             textElement.appendChild(document.createTextNode(collection->text()));
             menuElement.appendChild(textElement);
@@ -101,7 +111,7 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
                 document.documentElement().firstChildElement("MenuBar").appendChild(menuElement);
             }
             else {
-                QDomElement parentMenuElement = d->getMenuFromName(parentCollection->name(), document);
+                QDomElement parentMenuElement = d->menuFromName(parentCollection->name(), document);
 
                 if(!parentMenuElement.isNull()) {
                     parentMenuElement.appendChild(menuElement);
@@ -111,13 +121,13 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
                 }
             }
         }
-            
+
         // Create and append new Action element
         QDomElement newActionElement = document.createElement("Action");
         newActionElement.setAttribute("name", action->name());
 
         menuElement.appendChild(newActionElement);
-    
+
         actionCollection()->addAction(action->name(), action);
     }
 
@@ -129,35 +139,21 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
     }
 }
 
-QDomElement ScriptingPlugin::ScriptingPluginPrivate::getMenuFromName(QString const& name, 
-        const QDomDocument& document)
-{
-    QDomElement menuBar = document.documentElement().firstChildElement("MenuBar");
-    QDomElement menu = menuBar.firstChildElement("Menu");
-    for(; !menu.isNull(); menu = menu.nextSiblingElement("Menu")) {
-        if(menu.attribute("name") == name) {
-            return menu;
-        }
-    }
-    
-    return QDomElement();
-}
-
 void ScriptingPlugin::slotEditScriptActions()
 {
     if(!KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
         KUrl dir = KUrl(d->userActionsFile).directory();
         KIO::NetAccess::mkdir(dir, 0);
-    
+
         QFile f(d->userActionsFile);
         if(f.open(QIODevice::WriteOnly)) {
-            
+
             bool collectionEmpty = true;
             if(!Kross::Manager::self().actionCollection()->actions().empty()
                 || !Kross::Manager::self().actionCollection()->collections().empty()) {
                 collectionEmpty = false;
             }
-            
+
             if( !collectionEmpty ) {
                 if( Kross::Manager::self().actionCollection()->writeXml(&f) ) {
                     kDebug() << "Successfully saved file: " << d->userActionsFile;
@@ -199,4 +195,4 @@ void ScriptingPlugin::slotResetScriptActions()
     KIO::NetAccess::del(KUrl(d->userActionsFile), 0);
 }
 
-}
+#include "plugin.moc"

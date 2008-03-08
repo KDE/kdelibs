@@ -31,7 +31,6 @@ namespace Kross {
 
 class QWidget;
 
-
 namespace Kross
 {
 
@@ -64,22 +63,34 @@ class KROSSUI_EXPORT ScriptingPlugin : public KParts::Plugin
 {
     Q_OBJECT
 public:
-    ScriptingPlugin(QObject* parent = 0);
-    ~ScriptingPlugin();
 
-    /** 
-     * Re-implement in order to load additional kross scripting rc files
+    /**
+     * Constructor.
+     *
+     * \param parent The parent QObject this QObject is child of.
+     */
+    explicit ScriptingPlugin(QObject* parent = 0);
+
+    /**
+     * Destructor.
+     */
+    virtual ~ScriptingPlugin();
+
+    /**
+     * Re-implement in order to load additional kross scripting rc files.
      */
     virtual void setDOMDocument (const QDomDocument &document, bool merge = false);
 
 protected Q_SLOTS:
+
     /**
      * This slot will open/create a scriptactions.rc file at $KDEHOME/share/apps/application/scripts/
-     * which will overide other kross rc files. This allows a user to extend existing menus with new actions
+     * which will overide other kross rc files. This allows a user to extend existing menus with new actions.
      */
     virtual void slotEditScriptActions();
+
     /**
-     * Deletes the user rc file, which has the effect of falling back to the default script actions (if any)
+     * Deletes the user rc file, which has the effect of falling back to the default script actions (if any).
      */
     virtual void slotResetScriptActions();
 
