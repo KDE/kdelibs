@@ -25,6 +25,8 @@
 #include <kbookmark.h>
 #include <solid/device.h>
 
+class KDirLister;
+
 class KFilePlacesItem : public QObject
 {
     Q_OBJECT
@@ -49,19 +51,25 @@ public:
                                           const QString &udi);
 
 Q_SIGNALS:
-    void deviceChanged(const QString &udi);
+    void itemChanged(const QString &id);
 
 private Q_SLOTS:
     void onAccessibilityChanged();
+    void onListerCompleted();
 
 private:
     QVariant bookmarkData(int role) const;
     QVariant deviceData(int role) const;
 
+    bool hasFullIcon(const KBookmark &bookmark) const;
+    QString iconNameForBookmark(const KBookmark &bookmark) const;
+
     static QString generateNewId();
 
     KBookmarkManager *m_manager;
     KBookmark m_bookmark;
+    KDirLister *m_lister;
+    bool m_folderIsEmpty;
 };
 
 #endif

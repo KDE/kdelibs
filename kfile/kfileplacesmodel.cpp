@@ -66,7 +66,7 @@ public:
     void _k_initDeviceList();
     void _k_deviceAdded(const QString &udi);
     void _k_deviceRemoved(const QString &udi);
-    void _k_deviceChanged(const QString &udi);
+    void _k_itemChanged(const QString &udi);
     void _k_reloadBookmarks();
     void _k_storageSetupDone(Solid::ErrorType error, QVariant errorData);
     void _k_storageTeardownDone(Solid::ErrorType error, QVariant errorData);
@@ -285,15 +285,12 @@ void KFilePlacesModel::Private::_k_deviceRemoved(const QString &udi)
     }
 }
 
-void KFilePlacesModel::Private::_k_deviceChanged(const QString &udi)
+void KFilePlacesModel::Private::_k_itemChanged(const QString &id)
 {
-    if (availableDevices.contains(udi)) {
-        for (int row = 0; row<items.size(); ++row) {
-            Solid::Device dev = items.at(row)->device();
-            if (dev.isValid() && dev.udi()==udi) {
-                QModelIndex index = q->index(row, 0);
-                emit q->dataChanged(index, index);
-            }
+    for (int row = 0; row<items.size(); ++row) {
+        if (items.at(row)->id()==id) {
+            QModelIndex index = q->index(row, 0);
+            emit q->dataChanged(index, index);
         }
     }
 }
@@ -382,12 +379,12 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
             KFilePlacesItem *item;
             if (deviceAvailable) {
                 item = new KFilePlacesItem(bookmarkManager, bookmark.address(), udi);
-                connect(item, SIGNAL(deviceChanged(const QString&)),
-                        q, SLOT(_k_deviceChanged(const QString&)));
                 // TODO: Update bookmark internal element
             } else {
                 item = new KFilePlacesItem(bookmarkManager, bookmark.address());
             }
+            connect(item, SIGNAL(itemChanged(const QString&)),
+                    q, SLOT(_k_itemChanged(const QString&)));
             items << item;
         }
 

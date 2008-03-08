@@ -23,20 +23,28 @@
 #include <QtCore/QDateTime>
 
 #include <kbookmarkmanager.h>
+#include <kiconloader.h>
+#include <kdirlister.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
-
 
 
 KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
                                  const QString &address,
                                  const QString &udi)
-    : m_manager(manager)
+    : m_manager(manager), m_lister(0), m_folderIsEmpty(true)
 {
     m_bookmark = m_manager->findByAddress(address);
 
     if (udi.isEmpty() && m_bookmark.metaDataItem("ID").isEmpty()) {
         m_bookmark.setMetaDataItem("ID", generateNewId());
+    } else if (udi.isEmpty()) {
+        if (hasFullIcon(m_bookmark)) {
+            m_lister = new KDirLister(this);
+            connect(m_lister, SIGNAL(completed()),
+                    this, SLOT(onListerCompleted()));
+            m_lister->openUrl(m_bookmark.url());
+        }
     } else if (!udi.isEmpty()) {
         Solid::Device dev(udi);
         connect(dev.as<Solid::StorageAccess>(), SIGNAL(accessibilityChanged(bool, const QString &)),
@@ -96,7 +104,7 @@ QVariant KFilePlacesItem::bookmarkData(int role) const
     case Qt::DisplayRole:
         return b.text();
     case Qt::DecorationRole:
-        return KIcon(b.icon());
+        return KIcon(iconNameForBookmark(b));
     case Qt::BackgroundRole:
         if (b.metaDataItem("IsHidden")=="true") {
             return Qt::lightGray;
@@ -191,7 +199,35 @@ QString KFilePlacesItem::generateNewId()
 
 void KFilePlacesItem::onAccessibilityChanged()
 {
-    emit deviceChanged(id());
+    emit itemChanged(id());
+}
+
+bool KFilePlacesItem::hasFullIcon(const KBookmark &bookmark) const
+{
+    QString emptyName = bookmark.icon();
+    QString fullName = bookmark.icon()+"-full";
+    QString fullIconPath = KIconLoader::global()->iconPath(fullName, KIconLoader::NoGroup, true);
+
+    if (!fullIconPath.isEmpty()) {
+        return true;
+    }
+
+    return false;
+}
+
+QString KFilePlacesItem::iconNameForBookmark(const KBookmark &bookmark) const
+{
+    if (!m_folderIsEmpty && hasFullIcon(bookmark)) {
+        return bookmark.icon()+"-full";
+    } else {
+        return bookmark.icon();
+    }
+}
+
+void KFilePlacesItem::onListerCompleted()
+{
+    m_folderIsEmpty = m_lister->items().isEmpty();
+    emit itemChanged(id());
 }
 
 #include "kfileplacesitem_p.moc"
