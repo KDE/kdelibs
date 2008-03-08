@@ -82,6 +82,7 @@ public:
 
         clearButton = 0;
         clickInClear = false;
+        wideEnoughForClear = true;
     }
 
     ~KLineEditPrivate()
@@ -125,6 +126,7 @@ public:
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
 
     bool clickInClear:1;
+    bool wideEnoughForClear:1;
     KLineEditButton *clearButton;
 
     KCompletionBox *completionBox;
@@ -252,14 +254,9 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
 
     int clearButtonState = KIconLoader::DefaultState;
 
-    if (text.length() > 0) {
+    if (d->wideEnoughForClear && text.length() > 0) {
         d->clearButton->animateVisible(true);
     } else {
-/*        if (d->clickButtonState == KIconLoader::DisabledState) {
-            return;
-        }
-
-        d->clickButtonState = KIconLoader::DisabledState;*/
         d->clearButton->animateVisible(false);
     }
 
@@ -280,22 +277,38 @@ void KLineEdit::updateClearButton()
         return;
     }
 
-    QSize geom = size();
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth,0,this);
-    int buttonWidth = d->clearButton->sizeHint().width();
-    QSize newButtonSize(buttonWidth, geom.height());
+    const QSize geom = size();
+    const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth,0,this);
+    const int buttonWidth = d->clearButton->sizeHint().width();
+    const QSize newButtonSize(buttonWidth, geom.height());
+    const QFontMetrics fm(font());
+    const int em = fm.width("m");
+
+    // make sure we have enough room for the clear button
+    // no point in showing it if we can't also see a few characters as well
+    const bool wideEnough = geom.width() > 4 * em + buttonWidth + frameWidth;
 
     if (newButtonSize != d->clearButton->size()) {
         d->clearButton->resize(newButtonSize);
-        
+
         KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
-        if (lestyle) lestyle->overlap = buttonWidth + frameWidth;
+        if (lestyle) {
+            lestyle->overlap = wideEnough ? buttonWidth + frameWidth : 0;
+        }
     }
 
     if (qApp->isLeftToRight()) {
         d->clearButton->move(geom.width() - frameWidth - buttonWidth - 1, 0);
     } else {
         d->clearButton->move(frameWidth + 1, 0);
+    }
+
+    if (wideEnough != d->wideEnoughForClear) {
+        // we may (or may not) have been showing the button, but now our
+        // positiong on that matter has shifted, so let's ensure that it
+        // is properly visible (or not)
+        d->wideEnoughForClear = wideEnough;
+        updateClearButtonIcon(text());
     }
 }
 
