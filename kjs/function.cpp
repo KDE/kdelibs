@@ -456,14 +456,14 @@ void ActivationImp::setupLocals() {
   size_t locals = body->numLocals();
   size_t total  = body->numLocalsAndRegisters();
   LocalStorage& ls   = localStorage();
-  if (total > 32)
-    ls.reserveCapacity(total);
+  ls.resize(total);
 
+  LocalStorageEntry* entries = ls.data();
   size_t l;
   for (l = 0; l < locals; ++l)
-    ls.uncheckedAppend(LocalStorageEntry(jsUndefined(), body->getLocalAttr(l)));
+    entries[l] = LocalStorageEntry(jsUndefined(), body->getLocalAttr(l));
   for (; l < total; ++l)
-    ls.uncheckedAppend(LocalStorageEntry(jsUndefined(), 0));
+    entries[l].val.valueVal = jsUndefined();
 }
 
 void ActivationImp::setupFunctionLocals(ExecState *exec) {
