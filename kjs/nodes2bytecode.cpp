@@ -937,6 +937,8 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
 OpValue FuncExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 {
+    comp->setNeedsClosures();
+
     OpValue out;
     OpValue nameV = OpValue::immIdent(&ident);
     OpValue bodyV = OpValue::immNode(body.get());
@@ -944,8 +946,10 @@ OpValue FuncExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     return out;
 }
 
-void FuncDeclNode::generateExecCode(CompileState*, CodeBlock&)
+void FuncDeclNode::generateExecCode(CompileState* comp, CodeBlock&)
 {
+    comp->setNeedsClosures();
+
     // No executable content...
 }
 
@@ -1324,6 +1328,10 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    // ### this may be too conservative --- it only applies if there is
+    // a function call within
+    comp->setNeedsClosures();
+
     OpValue scopeObj = expr->generateEvalCode(comp, block);
 
     comp->pushScope();
@@ -1363,6 +1371,10 @@ void ThrowNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    // ### this may be too conservative --- it only applies if there is
+    // a function call within the catch
+    comp->setNeedsClosures();
+
     // Set the catch handler, run the try clause, pop the try handler..
     Addr setCatchHandler = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
     comp->pushUnwindHandler();

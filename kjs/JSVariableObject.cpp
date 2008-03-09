@@ -58,6 +58,9 @@ void JSVariableObject::mark()
 {
     JSObject::mark();
 
+    if (!localStorage)
+        return;
+
     size_t             size    = lengthSlot();
     LocalStorageEntry* entries = localStorage;
 

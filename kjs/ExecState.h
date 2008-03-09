@@ -120,8 +120,9 @@ namespace KJS {
     // Cleanup depth entries from the stack, w/o running jumps
     void quietUnwind(int depth);
 
-    void setPC(Addr* pcLoc) {
-        m_pc = pcLoc;
+    void setMachineRegisters(Addr* pcLoc, LocalStorageEntry** machineLocalStoreLoc) {
+        m_pc                = pcLoc;
+        m_machineLocalStore = machineLocalStoreLoc;
     }
 
     /**
@@ -235,9 +236,14 @@ namespace KJS {
 
     void mark();
 
-    void setLocalStorage(LocalStorageEntry* store, size_t size) {
+    void initLocalStorage(LocalStorageEntry* store, size_t size) {
         m_localStore = store;
         m_localStoreSize = size;
+    }
+
+    void updateLocalStorage(LocalStorageEntry* newStore) {
+        m_localStore         = newStore;
+        *m_machineLocalStore = newStore;
     }
 
     LocalStorageEntry* localStorage() { return m_localStore; }
@@ -281,7 +287,8 @@ namespace KJS {
         Addr        dest;
     };
 
-    Addr* m_pc; // The programm counter of the machine running this.
+    Addr*               m_pc; // The programm counter of the machine running this.
+    LocalStorageEntry** m_machineLocalStore; // Machine's copy of m_localStore
     WTF::Vector<ExceptionHandler, 4> m_exceptionHandlers;
     WTF::Vector<JSValue*, 4> m_deferredExceptions;
 

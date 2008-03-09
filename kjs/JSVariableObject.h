@@ -46,14 +46,17 @@ namespace KJS {
 
         enum {
           LengthSlot,
-          NumVarObjectSlots = 1
+          OnStackSlot,
+          NumVarObjectSlots = 2
         };
 
         int& lengthSlot() { return localStorage[LengthSlot].val.int32Val; }
         const int& lengthSlot() const { return localStorage[LengthSlot].val.int32Val; }
+
+        bool& onStackSlot() { return localStorage[OnStackSlot].val.boolVal; }
     protected:
         JSVariableObject(): localStorage(0), symbolTable(0) { }
-        ~JSVariableObject() { delete[] localStorage; }
+        ~JSVariableObject() { if (localStorage && !onStackSlot()) delete[] localStorage; }
 
         bool symbolTableGet(const Identifier&, PropertySlot&);
         bool symbolTablePut(const Identifier&, JSValue*, bool checkReadOnly);

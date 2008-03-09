@@ -91,7 +91,8 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_currentBody(0),
   m_function(0),
   m_localStore(0),
-  m_pc(0)
+  m_pc(0),
+  m_machineLocalStore(0)
 {
     m_interpreter->setExecState(this);
 }

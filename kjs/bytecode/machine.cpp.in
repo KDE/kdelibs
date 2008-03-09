@@ -129,8 +129,8 @@ Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
 
     Addr pc = 0; //Use local...
     List workList;
-    exec->setPC(&pc);
     LocalStorageEntry* localStore = exec->localStorage();
+    exec->setMachineRegisters(&pc, &localStore);
 
     while (true) {
         @generate

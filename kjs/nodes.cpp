@@ -983,12 +983,12 @@ Completion FunctionBodyNode::execute(ExecState *exec)
     }
   }
 
-  exec->setLocalStorage(regs, m_symbolList.size());
+  exec->initLocalStorage(regs, m_symbolList.size());
 
   Completion result = Machine::runBlock(exec, m_compiledCode);
 
   if (ctype != FunctionCode) {
-    exec->setLocalStorage(0, 0);
+    exec->initLocalStorage(0, 0);
     delete store;
   }
 
@@ -1001,6 +1001,8 @@ void FunctionBodyNode::compile(CodeType ctype)
 
   CompileState comp(ctype, this, m_symbolList.size());
   generateExecCode(&comp, m_compiledCode);
+  m_stackAllocateActivation = !comp.needsClosures();
+
 #if 0
   printf("\n\n");
   printf("\n---------------------------------\n\n");

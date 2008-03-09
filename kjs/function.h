@@ -113,10 +113,9 @@ namespace KJS {
       NumReservedSlots = ArgumentsObjectSlot + 1
     };
 
-    ActivationImp();
-    ~ActivationImp();
-
-    void setup(ExecState* exec, FunctionImp *function, const List* arguments);
+    void setup(ExecState* exec, FunctionImp *function, const List* arguments,
+               LocalStorageEntry* stackSpace);
+    void tearOff(ExecState* myExec);
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);

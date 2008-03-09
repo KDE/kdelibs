@@ -1046,11 +1046,14 @@ namespace KJS {
     // Runs the code, compiling if needed. If any locals, etc.,
     // need to be created, that must be done before this is run.
     Completion execute(ExecState *exec);
+
+    bool stackAllocateActivation() const { return m_stackAllocateActivation; }
   private:
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
-    int m_sourceId : 31;
+    int m_sourceId : 30;
     bool m_compiled : 1;
+    bool m_stackAllocateActivation : 1;
 
     // This maps id -> attributes and function decl info
     WTF::Vector<SymbolInfo> m_symbolList;

@@ -50,7 +50,7 @@ public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
         ctype(ctype), initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
-        scopeDepth(0), handlerDepth(0)
+        scopeDepth(0), handlerDepth(0), neededClosures(false)
     {}
 
     FunctionBodyNode* functionBody() {
@@ -133,6 +133,14 @@ public:
         return handlerDepth;
     }
 
+    bool needsClosures() {
+        return neededClosures;
+    }
+
+    void setNeedsClosures() {
+        neededClosures = true;
+    }
+
     // Label stuff....
     struct LabelInfo {
         Node* handlerNode;
@@ -209,6 +217,10 @@ private:
 
     int scopeDepth;
     int handlerDepth;
+
+    // This is true if we see code constructs that require taking a closure
+    // inside here, which means we should not stack-allocate activations.
+    bool neededClosures;
 
     // Label resolution..
     WTF::HashSet<Identifier> seenLabels;    // all labels we're inside

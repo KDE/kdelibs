@@ -84,7 +84,8 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // during the AST build)
   if (!body->isCompiled()) {
     // Reserve various slots needed for the activation object
-    body->reserveSlot(ActivationImp::LengthSlot,   false);
+    body->reserveSlot(ActivationImp::LengthSlot, false);
+    body->reserveSlot(ActivationImp::OnStackSlot, false);
     body->reserveSlot(ActivationImp::FunctionSlot, true);
     body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
 
@@ -98,8 +99,10 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     body->compile(FunctionCode);
   }
 
+  LocalStorageEntry stackSpace[32];
+
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
-  activation->setup(&newExec, this, &args);
+  activation->setup(&newExec, this, &args, stackSpace);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
@@ -111,6 +114,11 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   }
 
   Completion comp = body->execute(&newExec);
+
+  // Make sure to clear a stack activation, since we may have stack pointers keeping it alive,
+  // and we don't want to gcc it wrong
+  if (activation->onStackSlot())
+    activation->localStorage = 0;
 
   // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
@@ -414,16 +422,21 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-ActivationImp::ActivationImp()
-{}
-
-void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* arguments)
+void ActivationImp::setup(ExecState* exec, FunctionImp *function,
+                          const List* arguments, LocalStorageEntry* stackSpace)
 {
     FunctionBodyNode* body = function->body.get();
 
     // Allocate space..
     size_t total = body->numLocalsAndRegisters();
-    localStorage = new LocalStorageEntry[total];
+
+    if (body->stackAllocateActivation() && total <= 32) {
+        localStorage  = stackSpace;
+        onStackSlot() = true;
+    } else {
+        localStorage  = new LocalStorageEntry[total];
+        onStackSlot() = false;
+    }
     lengthSlot() = total;
 
     // Cache in locals..
@@ -474,6 +487,24 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
     }
 }
 
+void ActivationImp::tearOff(ExecState* myExec)
+{
+    ASSERT(myExec->variableObject() == this);
+    if (!onStackSlot())
+      return;
+    // Create a new local array, copy stuff over
+    size_t total = lengthSlot();
+    LocalStorageEntry* entries = new LocalStorageEntry[total];
+    std::memcpy(entries, localStorage, total*sizeof(LocalStorageEntry));
+    localStorage  = entries;
+
+    // Our data is no longer on the stack
+    onStackSlot() = false;
+
+    // Update the ExecState and the interpreter
+    myExec->updateLocalStorage(localStorage);
+}
+
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   ActivationImp* thisObj = static_cast<ActivationImp*>(slot.slotBase());
@@ -484,8 +515,6 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
   return thisObj->argumentsObjectSlot();
 }
 
-ActivationImp::~ActivationImp()
-{}
 
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
 {
@@ -539,6 +568,16 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
 
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
+    if (onStackSlot()) {
+        // Find our execState, and make a non-stack copy
+        for (ExecState* e = exec; e; e = e->callingExecState()) {
+            if (e->activationObject() == this) {
+                tearOff(e);
+                break;
+            }
+        }
+    }
+
     argumentsObjectSlot() = new Arguments(exec, static_cast<FunctionImp*>(functionSlot()),
                                           *arguments, const_cast<ActivationImp*>(this));
 }

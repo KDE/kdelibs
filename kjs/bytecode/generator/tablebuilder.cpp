@@ -700,8 +700,9 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
             *mStream << "convert" << conv.name << "(exec, " << accessString << ");\n";
 
             if (conv.mayThrow) {
-                // Check for an exception being raised..
-                mInd(16) << "if (pc != localPC) // Exception\n";
+                // Check for an exception being raised, or perhaps a reload request
+                mInd(16) << "if (pc != localPC) // {// Exception or reload\n";
+                //mInd(20) << "if (exec->h
                 mInd(20) << "continue;\n";
             }
         }
