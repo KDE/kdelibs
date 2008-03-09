@@ -98,24 +98,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   }
 
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
-
-  // Here, we actually fill stuff in, going by increasing priorities:
-  // first, initialize flags and set to undefined; this also fills in
-  // the mark info.
-  activation->setupLocals(body);
-
-  // Since the above allocated the storage, we can store the extra info
-  // Note that the arguments list is only needed to potentially create the  arguments object,
-  // which isn't accessible from nested scopes so we can discard the list as soon
-  // as the function is done running. Hence, the copy we have here is enough,
-  // and ActivationImp merely needs a pointer
-  activation->init(this, &args);
-
-  // Next, assign user supplied arguments to parameters
-  passInParameters(&newExec, args);
-
-  // Now, fill in function objects. These should override everything else
-  activation->setupFunctionLocals(body, &newExec);
+  activation->setup(&newExec, this, &args);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
@@ -165,33 +148,6 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     return comp.value();
   else
     return jsUndefined();
-}
-
-// ECMA 10.1.3q
-void FunctionImp::passInParameters(ExecState* exec, const List& args)
-{
-  assert (exec->variableObject()->isActivation());
-  ActivationImp* variable = static_cast<ActivationImp*>(exec->activationObject());
-
-#ifdef KJS_VERBOSE
-  fprintf(stderr, "---------------------------------------------------\n"
-	  "processing parameters for %s call\n",
-	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
-#endif
-
-  ListIterator it = args.begin();
-  for (size_t paramPos = 0; paramPos < body->numParams(); ++paramPos) {
-    JSValue*     v = jsUndefined();
-    if (it != args.end()) {
-      v = *it;
-      ++it;
-    }
-#ifdef KJS_VERBOSE
-    fprintf(stderr, "setting parameter %s", body->paramName(paramPos).ascii());
-    printInfo(exec,"to", v);
-#endif
-    variable->putLocal(paramPos + ActivationImp::NumReservedSlots, v);
-  }
 }
 
 JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
@@ -461,38 +417,56 @@ ActivationImp::ActivationImp():
     JSVariableObject(new JSVariableObjectData)
 {}
 
-void ActivationImp::init(FunctionImp *function, const List* arguments)
+void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* arguments)
 {
+    FunctionBodyNode* body = function->body.get();
+
+    // Allocate space..
+    size_t total = body->numLocalsAndRegisters();
+    LocalStorage& ls = localStorage();
+    ls.resize(total);
+    LocalStorageEntry* entries = ls.data();
+
+    const FunctionBodyNode::SymbolInfo* symInfo = body->getLocalInfo();
+
+    // Setup our fields
     this->arguments = arguments;
     functionSlot()  = function;
     argumentsObjectSlot() = jsUndefined();
-    d()->symbolTable = &function->body->symbolTable();
-}
+    d()->symbolTable = &body->symbolTable();
 
-void ActivationImp::setupLocals(FunctionBodyNode* body) {
-  size_t total     = body->numLocalsAndRegisters();
-  LocalStorage& ls = localStorage();
-  ls.resize(total);
+    // Pass in the parameters (ECMA 10.1.3q)
+#ifdef KJS_VERBOSE
+    fprintf(stderr, "---------------------------------------------------\n"
+            "processing parameters for %s call\n",
+            function->functionName().isEmpty() ? "(internal)" : function->functionName().ascii());
+#endif
+    size_t numParams = body->numParams();
+    for (size_t pos = 0; pos < numParams; ++pos) {
+        JSValue* v = (*arguments)[pos];
 
-  LocalStorageEntry* entries = ls.data();
-  const FunctionBodyNode::SymbolInfo* info = body->getLocalInfo();
-  size_t l;
-  for (l = 0; l < total; ++l) {
-    entries[l] = LocalStorageEntry(jsUndefined(), info[l].attr);
-    assert(info[l].attr <= 255);
-  }
-}
+        entries[pos + ActivationImp::NumReservedSlots].val.valueVal = v;
+        entries[pos + ActivationImp::NumReservedSlots].attributes   = symInfo[pos].attr;
 
-void ActivationImp::setupFunctionLocals(FunctionBodyNode* body, ExecState *exec) {
-  LocalStorageEntry* entries = localStorage().data();
+#ifdef KJS_VERBOSE
+        fprintf(stderr, "setting parameter %s", body->paramName(pos).ascii());
+        printInfo(exec, "to", v);
+#endif
+    }
 
-  size_t  numFuns  = body->numFunctionLocals();
-  size_t* funsData = body->getFunctionLocalInfo();
+    // Initialize the rest of the locals to 'undefined'
+    for (size_t pos = numParams + ActivationImp::NumReservedSlots; pos < total; ++pos)
+        entries[pos] = LocalStorageEntry(jsUndefined(), symInfo[pos].attr);
 
-  for (size_t l = 0; l < numFuns; ++l) {
-    size_t id = funsData[l];
-    entries[id].val.valueVal = body->getLocalFuncDecl(id)->makeFunctionObject(exec);
-  }
+    // Finally, put in the functions. Note that this relies on above
+    // steps to have completed, since it can trigger a GC. The above also
+    // set the other attributes already
+    size_t  numFuns  = body->numFunctionLocals();
+    size_t* funsData = body->getFunctionLocalInfo();
+    for (size_t fun = 0; fun < numFuns; ++fun) {
+        size_t id = funsData[fun];
+        entries[id].val.valueVal = symInfo[id].funcDecl->makeFunctionObject(exec);
+    }
 }
 
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)

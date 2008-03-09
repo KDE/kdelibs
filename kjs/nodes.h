@@ -1028,7 +1028,6 @@ namespace KJS {
     int  numLocalsAndRegisters() const { return m_symbolList.size(); }
     SymbolInfo* getLocalInfo()         { return m_symbolList.data(); }
 
-    FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
     size_t  numFunctionLocals() const { return m_functionLocals.size(); }
     size_t* getFunctionLocalInfo()    { return m_functionLocals.data(); }
 
