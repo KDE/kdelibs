@@ -484,12 +484,14 @@ void ActivationImp::setupLocals(FunctionBodyNode* body) {
 }
 
 void ActivationImp::setupFunctionLocals(FunctionBodyNode* body, ExecState *exec) {
-  LocalStorage&     ls   = localStorage();
-  size_t size = body->numLocalsAndRegisters();
+  LocalStorageEntry* entries = localStorage().data();
 
-  for (size_t l = 0; l < size; ++l) {
-    if (FuncDeclNode* funcDecl = body->getLocalFuncDecl(l))
-      ls[l].val.valueVal = funcDecl->makeFunctionObject(exec);
+  size_t  numFuns  = body->numFunctionLocals();
+  size_t* funsData = body->getFunctionLocalInfo();
+
+  for (size_t l = 0; l < numFuns; ++l) {
+    size_t id = funsData[l];
+    entries[id].val.valueVal = body->getLocalFuncDecl(id)->makeFunctionObject(exec);
   }
 }
 

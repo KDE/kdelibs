@@ -1029,6 +1029,8 @@ namespace KJS {
     SymbolInfo* getLocalInfo()         { return m_symbolList.data(); }
 
     FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
+    size_t  numFunctionLocals() const { return m_functionLocals.size(); }
+    size_t* getFunctionLocalInfo()    { return m_functionLocals.data(); }
 
     // Parameter stuff. We only collect the names during the parsing/
     // while FunctionImp is responsible for managing the IDs.
@@ -1053,6 +1055,9 @@ namespace KJS {
 
     // This maps id -> attributes and function decl info
     WTF::Vector<SymbolInfo> m_symbolList;
+
+    // This contains the list of locals which contains function declarations
+    WTF::Vector<size_t> m_functionLocals;
 
     // This maps name -> id
     SymbolTable m_symbolTable;

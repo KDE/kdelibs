@@ -906,7 +906,7 @@ void FunctionBodyNode::addVarDecl(const Identifier& ident, int attr, ExecState* 
 
 void FunctionBodyNode::addFunDecl(const Identifier& ident, int attr, FuncDeclNode* funcDecl)
 {
-  (void)addSymbol(ident, attr, funcDecl);
+  m_functionLocals.append(addSymbol(ident, attr, funcDecl));
 }
 
 void FunctionBodyNode::reserveSlot(size_t id, bool shouldMark)
