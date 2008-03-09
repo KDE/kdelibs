@@ -135,6 +135,15 @@ static struct {
   bool suicide;
 } d;
 
+struct child
+{
+  pid_t pid;
+  int sock; /* fd to write message when child is dead*/
+  struct child *next;
+};
+
+static struct child *children;
+
 #ifdef Q_WS_X11
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
@@ -210,6 +219,45 @@ static void close_fds()
    signal(SIGCHLD, SIG_DFL);
    signal(SIGPIPE, SIG_DFL);
 }
+
+/* Notify wrapper program that the child it started has finished. */
+static void child_died(pid_t exit_pid, int exit_status)
+{
+   struct child *child = children;
+   struct child *prev = NULL;
+
+   while (child)
+   {
+      if (child->pid == exit_pid)
+      {
+         /* Send a message with the return value of the child on the control socket */
+         klauncher_header request_header;
+         long request_data[2];
+         request_header.cmd = LAUNCHER_DIED;
+         request_header.arg_length = sizeof(long) * 2;
+         request_data[0] = exit_pid;
+         request_data[1] = exit_status;
+         write(child->sock, &request_header, sizeof(request_header));
+         write(child->sock, request_data, request_header.arg_length);
+         close(child->sock);
+         
+         if (prev)
+         {
+            prev->next = child->next;
+         }
+         else
+         {
+            child = NULL;
+         }
+         free(child);
+         return;
+      }
+
+      prev = child;
+      child = child->next;
+   }
+}
+
 
 static void exitWithErrorMsg(const QString &errorMsg)
 {
@@ -1191,6 +1239,20 @@ static void handle_launcher_request(int sock = -1)
          response_data = pid;
          write(sock, &response_header, sizeof(response_header));
          write(sock, &response_data, response_header.arg_length);
+
+         /* add new child to list */
+         struct child *child = (struct child *) malloc(sizeof(struct child));
+         child->pid = pid;
+         child->sock = dup(sock);
+         child->next = children;
+         children = child;
+
+         /* check child hasn't terminated already */
+         if (kill(pid, 0)) 
+         {
+            children = child->next;
+            free(child);
+         }
       }
       else
       {
@@ -1279,6 +1341,7 @@ static void handle_requests(pid_t waitForPid)
       fd_set e_set;
       int result;
       pid_t exit_pid;
+      int exit_status;
       char c;
 
       /* Flush the pipe of death */
@@ -1286,7 +1349,7 @@ static void handle_requests(pid_t waitForPid)
 
       /* Handle dying children */
       do {
-        exit_pid = waitpid(-1, 0, WNOHANG);
+        exit_pid = waitpid(-1, &exit_status, WNOHANG);
         if (exit_pid > 0)
         {
 #ifndef NDEBUG
@@ -1295,18 +1358,11 @@ static void handle_requests(pid_t waitForPid)
            if (waitForPid && (exit_pid == waitForPid))
               return;
 
-           if (d.launcher_pid)
-           {
-           // TODO send process died message
-              klauncher_header request_header;
-              long request_data[2];
-              request_header.cmd = LAUNCHER_DIED;
-              request_header.arg_length = sizeof(long) * 2;
-              request_data[0] = exit_pid;
-              request_data[1] = 0; /* not implemented yet */
-              write(d.launcher[0], &request_header, sizeof(request_header));
-              write(d.launcher[0], request_data, request_header.arg_length);
-           }
+           if( WIFEXITED( exit_status )) // fix process return value
+               exit_status = WEXITSTATUS(exit_status);
+           else if( WIFSIGNALED( exit_status ))
+               exit_status = 128 + WTERMSIG( exit_status );
+           child_died(exit_pid, exit_status);
         }
       }
       while( exit_pid > 0);
@@ -1339,12 +1395,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-            if (fork() == 0)
-            {
-                close_fds();
-                handle_launcher_request(sock);
-                exit(255); /* Terminate process. */
-            }
+            handle_launcher_request(sock);
             close(sock);
          }
       }
@@ -1355,12 +1406,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-            if (fork() == 0)
-            {
-                close_fds();
-                handle_launcher_request(sock);
-                exit(255); /* Terminate process. */
-            }
+            handle_launcher_request(sock);
             close(sock);
          }
       }
@@ -1719,6 +1765,7 @@ int main(int argc, char **argv, char **envp)
    d.wrapper_old = 0;
    d.debug_wait = false;
    d.launcher_ok = false;
+   children = NULL;
    init_signals();
 #ifdef Q_WS_X11
    setupX();

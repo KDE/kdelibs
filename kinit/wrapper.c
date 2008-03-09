@@ -226,8 +226,6 @@ static int openSocket()
 }
 
 static pid_t kwrapper_pid;
-static volatile pid_t got_sig; /* = 0 */
-static pid_t last_sig; /* = 0 */
 
 static void sig_pass_handler( int signo );
 static void setup_signals( void );
@@ -252,9 +250,17 @@ static void sig_pass_handler( int signo )
         kill( kwrapper_pid, SIGSTOP ); /* pass the signal to the real process */
     else                               /* SIGTSTP wouldn't work ... I don't think is much */
         kill( kwrapper_pid, signo );   /* of a problem */
-    got_sig = signo;
-    if( got_sig == SIGCONT )
+
+    if( signo == SIGCONT )
         setup_signals(); /* restore signals */
+    else if( signo == SIGCHLD )
+        ; /* nothing, ignore */
+    else /* do the default action ( most of them quit the app ) */
+    {
+        setup_signal_handler( signo, 1 );
+        raise( signo ); /* handle the signal again */
+    }
+        
     errno = save_errno;
 }
 
@@ -282,30 +288,40 @@ static void setup_signals()
     /* some more ? */
 }
 
-static void kwrapper_run( pid_t pid )
+static int kwrapper_run( pid_t wrapped, int sock )
 {
-    kwrapper_pid = pid;
+    klauncher_header header;
+    char *buffer;
+    long pid, status;
+
+    kwrapper_pid = wrapped;
     setup_signals();
-    for(;;)
+
+    read_socket(sock, (char *)&header, sizeof(header));
+
+    if (header.cmd != LAUNCHER_DIED)
     {
-        sleep( 1 ); /* poll and see if the real process is still alive */
-        if( got_sig != last_sig ) /* did we get a signal ? */
-            {
-            last_sig = got_sig;
-            if( got_sig == SIGCHLD )
-                ; /* nothing, ignore */
-            else if( got_sig == SIGCONT )
-                ; /* done in signal handler */
-            else /* do the default action ( most of them quit the app ) */
-                {
-                setup_signal_handler( got_sig, 1 );
-                raise( got_sig ); /* handle the signal again */
-                }
-            }
-        if( kill( pid, 0 ) < 0 )
-            break;
+       fprintf(stderr, "Unexpected response from KInit (response = %ld).\n", header.cmd);
+       exit(255);
     }
- /* I'm afraid it won't be that easy to get the return value ... */
+
+    buffer = (char *) malloc(header.arg_length);
+    if (buffer == NULL)
+    {
+        fprintf(stderr, "Error: malloc() failed\n");
+        exit(255);
+    }
+
+    read_socket(sock, buffer, header.arg_length);
+    pid = ((long *) buffer)[0];
+    if( pid !=  kwrapper_pid)
+    {
+       fprintf(stderr, "Unexpected LAUNCHER_DIED from KInit - pid = %ld\n", pid);
+       exit(255);
+    }
+
+    status = ((long *) buffer)[1];
+    return (int) status;
 }
 
 int main(int argc, char **argv)
@@ -539,7 +555,7 @@ int main(int argc, char **argv)
       if( !kwrapper ) /* kwrapper shouldn't print any output */
           printf("Launched ok, pid = %ld\n", pid);
       else
-          kwrapper_run( pid );
+          exit( kwrapper_run( pid, sock ) );
    }
    else if (header.cmd == LAUNCHER_ERROR)
    {
