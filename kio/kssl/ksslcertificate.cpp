@@ -1051,7 +1051,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::GetIssuerCertFailed:
         return i18n("Retrieval of the issuer certificate failed. This means the CA's (Certificate Authority) certificate can not be found.");
     case KSSLCertificate::GetCRLFailed:
-        return i18n("Retrieval of the CRL (Certificate Revokation List) certificate failed. This means the CA's (Certificate Authority) CRL certificate can not be found.");
+        return i18n("Retrieval of the CRL (Certificate Revokation List) failed. This means the CA's (Certificate Authority) CRL can not be found.");
     case KSSLCertificate::DecryptCertificateSignatureFailed:
         return i18n("The decryption of the certificate's signature failed. This means it could not even be calculated as opposed to just not matching the expected result.");
     case KSSLCertificate::DecryptCRLSignatureFailed:
@@ -1099,7 +1099,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::PathLengthExceeded:
         return i18n("The length of the trust chain exceeded one of the CA's (Certificate Authority) 'pathlength' parameter, making all subsequent signatures invalid.");
     case KSSLCertificate::InvalidPurpose:
-        return i18n("The certificate has not been signed for the purpose iyou tried to use it for. This means the CA (Certificate Authority) does not allow this usage.");
+        return i18n("The certificate has not been signed for the purpose you tried to use it for. This means the CA (Certificate Authority) does not allow this usage.");
     case KSSLCertificate::Untrusted:     // this is obsolete and kept around for backwards compability, only
     case KSSLCertificate::CertificateUntrusted:
         return i18n("The root CA (Certificate Authority) is not trusted for the purpose you tried to use this certificate for.");
@@ -1107,7 +1107,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::CertificateRejected:
         return i18n("The root CA (Certificate Authority) has been marked to be rejected for the purpose you tried to use it for.");
     case KSSLCertificate::IssuerSubjectMismatched:
-        return i18n("The certificate's CA's (Certificate Authority) does not match the name CA name of the certificate.");
+        return i18n("The certificate's CA's (Certificate Authority) does not match the CA name of the certificate.");
     case KSSLCertificate::AuthAndSubjectKeyIDMismatched:
         return i18n("The CA's (Certificate Authority) certificate's key ID does not match the key ID in the 'Issuer' section of the certificate you are trying to use.");
     case KSSLCertificate::AuthAndSubjectKeyIDAndNameMismatched:
