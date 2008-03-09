@@ -237,7 +237,7 @@ public:
      * This method returns true if all top-level stylesheets have loaded (including
      * any \@imports that they may be loading).
      */
-    bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0 || m_ignorePendingStylesheets; }
+    bool haveStylesheetsLoaded() const { return m_pendingStylesheets <= 0 || m_ignorePendingStylesheets; }
 
     /**
      * Increments the number of pending sheets.  The \<link\> elements
@@ -265,6 +265,7 @@ public:
      */
     void updateStyleSelector(bool shallow=false);
 
+    bool readyForLayout() const;
     void recalcStyleSelector();
     void rebuildStyleSelector();
 
@@ -514,7 +515,7 @@ public:
 
     bool isURLAllowed(const QString& url) const;
 
-    HTMLElementImpl* body();
+    HTMLElementImpl* body() const;
 
     DOMString toString() const;
 
