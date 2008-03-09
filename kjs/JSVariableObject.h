@@ -39,54 +39,35 @@ namespace KJS {
 
     class JSVariableObject : public JSObject {
     public:
-        SymbolTable& symbolTable() { return *d->symbolTable; }
-        LocalStorage& localStorage() { return d->localStorage; }
-        const LocalStorage& localStorage() const { return d->localStorage; }
-
         virtual bool deleteProperty(ExecState*, const Identifier&);
         virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
         virtual void mark();
 
-    protected:
-        // Subclasses of JSVariableObject can subclass this struct to add data
-        // without increasing their own size (since there's a hard limit on the
-        // size of a JSCell).
-        struct JSVariableObjectData {
-            JSVariableObjectData() { }
-            JSVariableObjectData(SymbolTable* s)
-                : symbolTable(s) // Subclass owns this pointer.
-            {
-            }
-
-            LocalStorage localStorage; // Storage for variables in the symbol table.
-            SymbolTable* symbolTable; // Maps name -> index in localStorage.
+        enum {
+          LengthSlot,
+          NumVarObjectSlots = 1
         };
 
-        JSVariableObject() { }
-
-        JSVariableObject(JSVariableObjectData* data)
-            : d(data) // Subclass owns this pointer.
-        {
-        }
-
-        JSVariableObject(JSValue* proto, JSVariableObjectData* data)
-            : JSObject(proto)
-            , d(data) // Subclass owns this pointer.
-        {
-        }
+        int& lengthSlot() { return localStorage[LengthSlot].val.int32Val; }
+        const int& lengthSlot() const { return localStorage[LengthSlot].val.int32Val; }
+    protected:
+        JSVariableObject(): localStorage(0), symbolTable(0) { }
+        ~JSVariableObject() { delete[] localStorage; }
 
         bool symbolTableGet(const Identifier&, PropertySlot&);
         bool symbolTablePut(const Identifier&, JSValue*, bool checkReadOnly);
 
-        JSVariableObjectData* d;
+    public:
+        LocalStorageEntry* localStorage; // Storage for variables in the symbol table.
+        SymbolTable*       symbolTable; // Maps name -> index in localStorage.
     };
 
     inline bool JSVariableObject::symbolTableGet(const Identifier& propertyName, PropertySlot& slot)
     {
-        size_t index = symbolTable().get(propertyName.ustring().rep());
+        size_t index = symbolTable->get(propertyName.ustring().rep());
         if (index != missingSymbolMarker()) {
-            slot.setValueSlot(this, &d->localStorage[index].val.valueVal);
+            slot.setValueSlot(this, &localStorage[index].val.valueVal);
             return true;
         }
         return false;
@@ -94,10 +75,10 @@ namespace KJS {
 
     inline bool JSVariableObject::symbolTablePut(const Identifier& propertyName, JSValue* value, bool checkReadOnly)
     {
-        size_t index = symbolTable().get(propertyName.ustring().rep());
+        size_t index = symbolTable->get(propertyName.ustring().rep());
         if (index == missingSymbolMarker())
             return false;
-        LocalStorageEntry& entry = d->localStorage[index];
+        LocalStorageEntry& entry = localStorage[index];
         if (checkReadOnly && (entry.attributes & ReadOnly))
             return true;
         entry.val.valueVal = value;

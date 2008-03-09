@@ -24,6 +24,7 @@
 #include "interpreter.h"
 #include "object.h"
 #include "package.h"
+#include "function.h"
 
 #include <cstring>
 #include <stdlib.h>

@@ -108,8 +108,8 @@ namespace KJS {
   class ActivationImp : public JSVariableObject {
   public:
     enum {
-      FunctionSlot        = 0,
-      ArgumentsObjectSlot = 1,
+      FunctionSlot        = NumVarObjectSlots,
+      ArgumentsObjectSlot,
       NumReservedSlots = ArgumentsObjectSlot + 1
     };
 
@@ -122,27 +122,8 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
-    //This is only used by declaration code, so it never check r/o attr
-    void putLocal(int propertyID, JSValue *value) {
-      assert(validLocal(propertyID));
-      localStorage()[propertyID].val.valueVal = value;
-        //We do not have to touch the flags here -- they're pre-computed..
-    }
-
-    void putLocalChecked(int propertyID, JSValue *value) {
-      LocalStorageEntry& entry = localStorage()[propertyID];
-      if (entry.attributes & ReadOnly)
-        return;
-      entry.val.valueVal = value;
-    }
-
-    JSValue** getLocalDirect(int propertyID) {
-      assert(validLocal(propertyID));
-      return &localStorage()[propertyID].val.valueVal;
-    }
-
     bool isLocalReadOnly(int propertyID) const {
-      return (localStorage()[propertyID].attributes & ReadOnly) == ReadOnly;
+      return (localStorage[propertyID].attributes & ReadOnly) == ReadOnly;
     }
 
     virtual const ClassInfo *classInfo() const { return &info; }
@@ -153,19 +134,18 @@ namespace KJS {
     void setupFunctionLocals(FunctionBodyNode* fbody, ExecState *exec);
   private:
     JSValue*& functionSlot() {
-          return localStorage()[FunctionSlot].val.valueVal;
+          return localStorage[FunctionSlot].val.valueVal;
     }
 
     JSValue*& argumentsObjectSlot() {
-          return localStorage()[ArgumentsObjectSlot].val.valueVal;
+          return localStorage[ArgumentsObjectSlot].val.valueVal;
     }
 
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
     void createArgumentsObject(ExecState *exec);
-    JSVariableObjectData* d() { return JSVariableObject::d; }
 
-    int  numLocals() const        { return localStorage().size(); }
+    int  numLocals() const        { return lengthSlot(); }
     bool validLocal(int id) const { return 0 <= id && id < numLocals(); }
     const List* arguments;
   };

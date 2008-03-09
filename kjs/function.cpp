@@ -84,6 +84,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // during the AST build)
   if (!body->isCompiled()) {
     // Reserve various slots needed for the activation object
+    body->reserveSlot(ActivationImp::LengthSlot,   false);
     body->reserveSlot(ActivationImp::FunctionSlot, true);
     body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
 
@@ -413,8 +414,7 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-ActivationImp::ActivationImp():
-    JSVariableObject(new JSVariableObjectData)
+ActivationImp::ActivationImp()
 {}
 
 void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* arguments)
@@ -423,9 +423,11 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
 
     // Allocate space..
     size_t total = body->numLocalsAndRegisters();
-    LocalStorage& ls = localStorage();
-    ls.resize(total);
-    LocalStorageEntry* entries = ls.data();
+    localStorage = new LocalStorageEntry[total];
+    lengthSlot() = total;
+
+    // Cache in locals..
+    LocalStorageEntry* entries = localStorage;
 
     const FunctionBodyNode::SymbolInfo* symInfo = body->getLocalInfo();
 
@@ -433,7 +435,13 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
     this->arguments = arguments;
     functionSlot()  = function;
     argumentsObjectSlot() = jsUndefined();
-    d()->symbolTable = &body->symbolTable();
+    symbolTable     = &body->symbolTable();
+
+    // Set the mark/don't mark flags for them
+    // ### any cleaner way of doing it?
+    localStorage[LengthSlot].attributes = DontMark;
+    localStorage[FunctionSlot].attributes = 0;
+    localStorage[ArgumentsObjectSlot].attributes = 0;
 
     // Pass in the parameters (ECMA 10.1.3q)
 #ifdef KJS_VERBOSE
@@ -443,10 +451,11 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
 #endif
     size_t numParams = body->numParams();
     for (size_t pos = 0; pos < numParams; ++pos) {
+        size_t symNum = pos + ActivationImp::NumReservedSlots;
         JSValue* v = (*arguments)[pos];
 
-        entries[pos + ActivationImp::NumReservedSlots].val.valueVal = v;
-        entries[pos + ActivationImp::NumReservedSlots].attributes   = symInfo[pos].attr;
+        entries[symNum].val.valueVal = v;
+        entries[symNum].attributes   = symInfo[symNum].attr;
 
 #ifdef KJS_VERBOSE
         fprintf(stderr, "setting parameter %s", body->paramName(pos).ascii());
@@ -480,9 +489,7 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
 }
 
 ActivationImp::~ActivationImp()
-{
-  delete d();
-}
+{}
 
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
 {

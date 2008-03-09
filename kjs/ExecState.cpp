@@ -50,8 +50,8 @@ void ExecState::markSelf()
         // Note: the m_localStore check is needed here, since for non-function code,
         // we may create function object in declaration elaboration stage, before
         // compilation and set up of this
-        size_t size                = m_localStore->size();
-        LocalStorageEntry* entries = m_localStore->data();
+        size_t size                = m_localStoreSize;
+        LocalStorageEntry* entries = m_localStore;
 
         for (size_t i = 0; i < size; ++i) {
             JSValue* value = entries[i].val.valueVal;

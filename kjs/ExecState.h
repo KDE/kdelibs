@@ -235,11 +235,12 @@ namespace KJS {
 
     void mark();
 
-    void setLocalStorage(LocalStorage* store) {
+    void setLocalStorage(LocalStorageEntry* store, size_t size) {
         m_localStore = store;
+        m_localStoreSize = size;
     }
 
-    LocalStorage* localStorage() { return m_localStore; }
+    LocalStorageEntry* localStorage() { return m_localStore; }
 
     // This is a workaround to avoid accessing the global variables for these identifiers in
     // important property lookup functions, to avoid taking PIC branches in Mach-O binaries
@@ -268,7 +269,8 @@ namespace KJS {
     JSObject* m_variable;
     JSObject* m_thisVal;
 
-    LocalStorage*      m_localStore;
+    LocalStorageEntry*      m_localStore;
+    size_t                  m_localStoreSize;
 
     struct ExceptionHandler {
         ExceptionHandler() {}

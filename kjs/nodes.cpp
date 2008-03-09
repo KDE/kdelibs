@@ -964,29 +964,32 @@ Completion FunctionBodyNode::execute(ExecState *exec)
   CodeType ctype = exec->codeType();
   compileIfNeeded(ctype);
 
-  LocalStorage* regs;
+  LocalStorage*      store = 0;
+  LocalStorageEntry* regs;
+
   if (ctype == FunctionCode) {
     // FunctionImp::callAsFunction already did  most of the setup when making the activation.
     ActivationImp* act = static_cast<ActivationImp*>(exec->activationObject());
-    regs = &act->localStorage();
+    regs = act->localStorage;
   } else {
-    regs = new LocalStorage();
+    store = new LocalStorage();
 
     // Allocate enough space, and make sure to initialize things so we don't mark garbage
-    regs->resize(m_symbolList.size());
+    store->resize(m_symbolList.size());
+    regs = store->data();
     for (size_t c = 0; c < m_symbolList.size(); ++c) {
-      (*regs)[c].val.valueVal = jsUndefined();
-      (*regs)[c].attributes   = m_symbolList[c].attr;
+      regs[c].val.valueVal = jsUndefined();
+      regs[c].attributes   = m_symbolList[c].attr;
     }
   }
 
-  exec->setLocalStorage(regs);
+  exec->setLocalStorage(regs, m_symbolList.size());
 
   Completion result = Machine::runBlock(exec, m_compiledCode);
 
   if (ctype != FunctionCode) {
-    exec->setLocalStorage(0);
-    delete regs;
+    exec->setLocalStorage(0, 0);
+    delete store;
   }
 
   return result;

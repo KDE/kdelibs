@@ -39,7 +39,7 @@ UString::Rep* IdentifierRepHashTraits::nullRepPtr = &UString::Rep::null; // Didn
 
 bool JSVariableObject::deleteProperty(ExecState* exec, const Identifier& propertyName)
 {
-    if (symbolTable().contains(propertyName.ustring().rep()))
+    if (symbolTable->contains(propertyName.ustring().rep()))
         return false;
 
     return JSObject::deleteProperty(exec, propertyName);
@@ -47,8 +47,8 @@ bool JSVariableObject::deleteProperty(ExecState* exec, const Identifier& propert
 
 void JSVariableObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-    SymbolTable::const_iterator::Keys end = symbolTable().end().keys();
-    for (SymbolTable::const_iterator::Keys it = symbolTable().begin().keys(); it != end; ++it)
+    SymbolTable::const_iterator::Keys end = symbolTable->end().keys();
+    for (SymbolTable::const_iterator::Keys it = symbolTable->begin().keys(); it != end; ++it)
         propertyNames.add(Identifier(it->get()));
 
     JSObject::getPropertyNames(exec, propertyNames);
@@ -58,8 +58,8 @@ void JSVariableObject::mark()
 {
     JSObject::mark();
 
-    size_t size                = d->localStorage.size();
-    LocalStorageEntry* entries = d->localStorage.data();
+    size_t             size    = lengthSlot();
+    LocalStorageEntry* entries = localStorage;
 
     for (size_t i = 0; i < size; ++i) {
         JSValue* value = entries[i].val.valueVal;
