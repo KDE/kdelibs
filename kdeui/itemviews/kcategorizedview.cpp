@@ -569,10 +569,6 @@ void KCategorizedView::setModel(QAbstractItemModel *model)
                             this, SLOT(slotLayoutChanged()));
 
         QObject::disconnect(d->proxyModel,
-                            SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                            this, SLOT(slotLayoutChanged()));
-
-        QObject::disconnect(d->proxyModel,
                             SIGNAL(rowsRemoved(QModelIndex,int,int)),
                             this, SLOT(rowsRemoved(QModelIndex,int,int)));
     }
@@ -591,10 +587,6 @@ void KCategorizedView::setModel(QAbstractItemModel *model)
 
         QObject::connect(d->proxyModel,
                          SIGNAL(layoutChanged()),
-                         this, SLOT(slotLayoutChanged()));
-
-        QObject::connect(d->proxyModel,
-                         SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                          this, SLOT(slotLayoutChanged()));
 
         QObject::connect(d->proxyModel,
@@ -654,10 +646,6 @@ void KCategorizedView::setCategoryDrawer(KCategoryDrawer *categoryDrawer)
                             this, SLOT(slotLayoutChanged()));
 
         QObject::disconnect(d->proxyModel,
-                            SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                            this, SLOT(slotLayoutChanged()));
-
-        QObject::disconnect(d->proxyModel,
                             SIGNAL(rowsRemoved(QModelIndex,int,int)),
                             this, SLOT(rowsRemoved(QModelIndex,int,int)));
     }
@@ -665,10 +653,6 @@ void KCategorizedView::setCategoryDrawer(KCategoryDrawer *categoryDrawer)
     {
         QObject::connect(d->proxyModel,
                          SIGNAL(layoutChanged()),
-                         this, SLOT(slotLayoutChanged()));
-
-        QObject::connect(d->proxyModel,
-                         SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                          this, SLOT(slotLayoutChanged()));
 
         QObject::connect(d->proxyModel,
@@ -1633,6 +1617,33 @@ void KCategorizedView::currentChanged(const QModelIndex &current,
         d->forcedSelectionPosition = d->elementsInfo[current.row()].relativeOffsetToCategory % elementsPerRow;
 
     QListView::currentChanged(current, previous);
+}
+
+void KCategorizedView::dataChanged(const QModelIndex &topLeft,
+                                   const QModelIndex &bottomRight)
+{
+    if (topLeft == bottomRight)
+    {
+        d->cacheIndex(topLeft);
+    }
+    else
+    {
+        const int columnStart = topLeft.column();
+        const int columnEnd = bottomRight.column();
+        const int rowStart = topLeft.row();
+        const int rowEnd = bottomRight.row();
+
+        for (int row = rowStart; row <= rowEnd; ++row)
+        {
+            for (int column = columnStart; column <= columnEnd; ++column)
+            {
+                d->cacheIndex(d->proxyModel->index(row, column));
+            }
+        }
+    }
+
+    QListView::dataChanged(topLeft, bottomRight);
+    slotLayoutChanged();
 }
 
 #include "kcategorizedview.moc"

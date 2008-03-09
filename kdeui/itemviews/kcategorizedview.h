@@ -110,6 +110,8 @@ protected Q_SLOTS:
     virtual void currentChanged(const QModelIndex &current,
                                 const QModelIndex &previous);
 
+    virtual void dataChanged(const QModelIndex &topLeft,
+                             const QModelIndex &bottomRight);
 
 private:
     class Private;
