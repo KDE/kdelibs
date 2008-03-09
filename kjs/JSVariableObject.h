@@ -43,10 +43,6 @@ namespace KJS {
         LocalStorage& localStorage() { return d->localStorage; }
         const LocalStorage& localStorage() const { return d->localStorage; }
 
-        void setShouldMark(WTF::Vector<bool>* shouldMark) {
-          d->shouldMark = shouldMark;
-        }
-
         virtual bool deleteProperty(ExecState*, const Identifier&);
         virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
@@ -57,17 +53,14 @@ namespace KJS {
         // without increasing their own size (since there's a hard limit on the
         // size of a JSCell).
         struct JSVariableObjectData {
-            JSVariableObjectData() : shouldMark(0) { }
+            JSVariableObjectData() { }
             JSVariableObjectData(SymbolTable* s)
-                : symbolTable(s), // Subclass owns this pointer.
-                  shouldMark(0)
+                : symbolTable(s) // Subclass owns this pointer.
             {
             }
 
             LocalStorage localStorage; // Storage for variables in the symbol table.
             SymbolTable* symbolTable; // Maps name -> index in localStorage.
-            WTF::Vector<bool>* shouldMark; // whether each entry contains values;
-                                           // the vector itself is owned by the AST
         };
 
         JSVariableObject() { }

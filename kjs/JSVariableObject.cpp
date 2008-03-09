@@ -58,22 +58,13 @@ void JSVariableObject::mark()
 {
     JSObject::mark();
 
-    // Note: shouldMark might not be set yet, if we're processing locals,
-    // and it didn't yet get to running the body.
-    size_t size = d->localStorage.size();
+    size_t size                = d->localStorage.size();
+    LocalStorageEntry* entries = d->localStorage.data();
 
-    if (d->shouldMark) {
-        for (size_t i = 0; i < size; ++i) {
-            JSValue* value = d->localStorage[i].val.valueVal;
-            if ((*d->shouldMark)[i] && !value->marked())
-                value->mark();
-        }
-    } else {
-        for (size_t i = 0; i < size; ++i) {
-            JSValue* value = d->localStorage[i].val.valueVal;
-            if (!value->marked())
-                value->mark();
-        }
+    for (size_t i = 0; i < size; ++i) {
+        JSValue* value = entries[i].val.valueVal;
+        if (!(entries[i].attributes & DontMark) && !value->marked())
+            value->mark();
     }
 }
 

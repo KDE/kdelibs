@@ -23,6 +23,7 @@
  *
  */
 #include "CompileState.h"
+#include "nodes.h"
 
 #include <wtf/Assertions.h>
 #include <wtf/Vector.h>
@@ -61,7 +62,7 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
 
     if (!temp) {
         Register id = maxTemp;
-        shouldMark.append(markable);
+        fbody->reserveSlot(id, markable);
         temp = new TempDescriptor(this, id, markable);
         ++maxTemp;
     }

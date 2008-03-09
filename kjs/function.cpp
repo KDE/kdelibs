@@ -470,23 +470,22 @@ void ActivationImp::init(FunctionImp *function, const List* arguments)
 }
 
 void ActivationImp::setupLocals(FunctionBodyNode* body) {
-  setShouldMark(body->shouldMark());
-  size_t locals = body->numLocals();
-  size_t total  = body->numLocalsAndRegisters();
-  LocalStorage& ls   = localStorage();
+  size_t total     = body->numLocalsAndRegisters();
+  LocalStorage& ls = localStorage();
   ls.resize(total);
 
   LocalStorageEntry* entries = ls.data();
+  const FunctionBodyNode::SymbolInfo* info = body->getLocalInfo();
   size_t l;
-  for (l = 0; l < locals; ++l)
-    entries[l] = LocalStorageEntry(jsUndefined(), body->getLocalAttr(l));
-  for (; l < total; ++l)
-    entries[l].val.valueVal = jsUndefined();
+  for (l = 0; l < total; ++l) {
+    entries[l] = LocalStorageEntry(jsUndefined(), info[l].attr);
+    assert(info[l].attr <= 255);
+  }
 }
 
 void ActivationImp::setupFunctionLocals(FunctionBodyNode* body, ExecState *exec) {
   LocalStorage&     ls   = localStorage();
-  size_t size = body->numLocals();
+  size_t size = body->numLocalsAndRegisters();
 
   for (size_t l = 0; l < size; ++l) {
     if (FuncDeclNode* funcDecl = body->getLocalFuncDecl(l))

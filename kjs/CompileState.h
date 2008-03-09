@@ -47,11 +47,9 @@ class FunctionBodyNode;
 class CompileState
 {
 public:
-    CompileState(CodeType ctype, FunctionBodyNode* fbody,
-                 WTF::Vector<bool>& shouldMark, Register initialMaxTemp):
+    CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
-        ctype(ctype), shouldMark(shouldMark),
-        initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
+        ctype(ctype), initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
         scopeDepth(0), handlerDepth(0)
     {}
 
@@ -197,7 +195,6 @@ private:
     friend class TempDescriptor;
     WTF::Vector<TempDescriptor*> freeMarkTemps;
     WTF::Vector<TempDescriptor*> freeNonMarkTemps;
-    WTF::Vector<bool>& shouldMark; // stored in FunctionBodyNode, we append to it
     Register initialMaxTemp;
     Register maxTemp;
 

@@ -1001,14 +1001,13 @@ namespace KJS {
    above the body
   */
   class FunctionBodyNode : public BlockNode {
-  private:
+  public:
     struct SymbolInfo {
       SymbolInfo(int _attr, FuncDeclNode* _funcDecl) : funcDecl(_funcDecl), attr(_attr) {}
       SymbolInfo() {}
       FuncDeclNode* funcDecl;
       int           attr;
     };
-  public:
     FunctionBodyNode(SourceElementsNode *);
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
@@ -1017,21 +1016,18 @@ namespace KJS {
     void compileIfNeeded(CodeType ctype) { if (!m_compiled) compile(ctype); }
     bool isCompiled() const { return m_compiled; }
 
-    size_t numLocalsAndRegisters()  { return m_shouldMark.size(); }
-    WTF::Vector<bool>* shouldMark() { return &m_shouldMark; }
-
     virtual void generateExecCode(CompileState*, CodeBlock& block);
 
-    // Reserves a register for private use, making sure that id is in the right spot.
-    // This should get called before compile, etc.
+    // Reserves a register for private use, making sure that id is in the right spot..
     void reserveSlot(size_t id, bool shouldMark);
 
     // Symbol table functions
     SymbolTable& symbolTable() { return m_symbolTable; }
     size_t lookupSymbolID(const Identifier& id) const { return m_symbolTable.get(id.ustring().rep()); }
 
-    int  numLocals()          const { return m_symbolList.size(); }
-    int  getLocalAttr(size_t id)       const { return m_symbolList[id].attr; }
+    int  numLocalsAndRegisters() const { return m_symbolList.size(); }
+    SymbolInfo* getLocalInfo()         { return m_symbolList.data(); }
+
     FuncDeclNode* getLocalFuncDecl(size_t id) const { return m_symbolList[id].funcDecl; }
 
     // Parameter stuff. We only collect the names during the parsing/
@@ -1063,8 +1059,6 @@ namespace KJS {
 
     // The list of parameter names
     WTF::Vector<Identifier> m_paramList;
-
-    WTF::Vector<bool> m_shouldMark; // bits saying whether given index should be marked or not
 
     CodeBlock m_compiledCode;
   };

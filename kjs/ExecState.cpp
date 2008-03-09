@@ -45,11 +45,17 @@ void ExecState::markSelf()
 {
     if (m_codeType != FunctionCode && m_localStore) {
         //### some code dupe here with JSVariableObject::mark. Not sure how to best
-        // restructure. Perhaps this should always mark and not JSVariableObject?
-        size_t size = m_localStore->size();
+        // restructure.
+
+        // Note: the m_localStore check is needed here, since for non-function code,
+        // we may create function object in declaration elaboration stage, before
+        // compilation and set up of this
+        size_t size                = m_localStore->size();
+        LocalStorageEntry* entries = m_localStore->data();
+
         for (size_t i = 0; i < size; ++i) {
-            JSValue* value = (*m_localStore)[i].val.valueVal;
-            if ((*m_markDescriptor)[i] && !value->marked())
+            JSValue* value = entries[i].val.valueVal;
+            if (!(entries[i].attributes & DontMark) && !value->marked())
                 value->mark();
         }
     }
@@ -85,7 +91,6 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_currentBody(0),
   m_function(0),
   m_localStore(0),
-  m_markDescriptor(0),
   m_pc(0)
 {
     m_interpreter->setExecState(this);

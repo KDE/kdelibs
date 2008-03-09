@@ -49,7 +49,9 @@ namespace KJS {
                    DontDelete   = 1 << 3, // property can't be deleted
                    Internal     = 1 << 4, // an internal property, set to bypass checks
                    Function     = 1 << 5, // property is a function - only used by static hashtables
-                   GetterSetter = 1 << 6 }; // property is a getter or setter
+                   GetterSetter = 1 << 6, // property is a getter or setter
+                   DontMark     = 1 << 7}; // used in locals arrays only --- indicates that the slot
+                                           // does not contain a value, and hence should not be marked.
 
   /**
    * Class Information

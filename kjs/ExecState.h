@@ -235,8 +235,8 @@ namespace KJS {
 
     void mark();
 
-    void setLocalStorage(LocalStorage* store, WTF::Vector<bool>* markDescriptor) {
-        m_localStore = store; m_markDescriptor = markDescriptor;
+    void setLocalStorage(LocalStorage* store) {
+        m_localStore = store;
     }
 
     LocalStorage* localStorage() { return m_localStore; }
@@ -269,7 +269,6 @@ namespace KJS {
     JSObject* m_thisVal;
 
     LocalStorage*      m_localStore;
-    WTF::Vector<bool>* m_markDescriptor;
 
     struct ExceptionHandler {
         ExceptionHandler() {}

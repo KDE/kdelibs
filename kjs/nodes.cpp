@@ -912,8 +912,7 @@ void FunctionBodyNode::addFunDecl(const Identifier& ident, int attr, FuncDeclNod
 void FunctionBodyNode::reserveSlot(size_t id, bool shouldMark)
 {
   ASSERT(id == m_symbolList.size());
-  m_shouldMark.append(shouldMark);
-  m_symbolList.append(SymbolInfo(0, 0));
+  m_symbolList.append(SymbolInfo(shouldMark ? 0 : DontMark, 0));
 }
 
 size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
@@ -936,7 +935,6 @@ size_t FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclN
   }
 
   size_t id = m_symbolList.size();         //First entry gets 0, etc.
-  m_shouldMark.append(true);
   m_symbolTable.set(ident.ustring().rep(), id);
   m_symbolList.append(SymbolInfo(flags, funcDecl));
   return id;
@@ -949,10 +947,9 @@ void FunctionBodyNode::addSymbolOverwriteID(size_t id, const Identifier& ident, 
   // Remove previous one, if any
   size_t oldId = m_symbolTable.get(ident.ustring().rep());
   if (oldId != missingSymbolMarker())
-      m_shouldMark[oldId] = false;
+      m_symbolList[oldId].attr = DontMark;
 
   // Add a new one
-  m_shouldMark.append(true);
   m_symbolTable.set(ident.ustring().rep(), id);
   m_symbolList.append(SymbolInfo(flags, 0));
 }
@@ -976,17 +973,19 @@ Completion FunctionBodyNode::execute(ExecState *exec)
     regs = new LocalStorage();
 
     // Allocate enough space, and make sure to initialize things so we don't mark garbage
-    regs->resize(m_shouldMark.size());
-    for (size_t c = 0; c < m_shouldMark.size(); ++c)
+    regs->resize(m_symbolList.size());
+    for (size_t c = 0; c < m_symbolList.size(); ++c) {
       (*regs)[c].val.valueVal = jsUndefined();
+      (*regs)[c].attributes   = m_symbolList[c].attr;
+    }
   }
 
-  exec->setLocalStorage(regs, &m_shouldMark);
+  exec->setLocalStorage(regs);
 
   Completion result = Machine::runBlock(exec, m_compiledCode);
 
   if (ctype != FunctionCode) {
-    exec->setLocalStorage(0, 0);
+    exec->setLocalStorage(0);
     delete regs;
   }
 
@@ -997,9 +996,8 @@ void FunctionBodyNode::compile(CodeType ctype)
 {
   m_compiled = true;
 
-  CompileState comp(ctype, this, m_shouldMark, m_shouldMark.size());
+  CompileState comp(ctype, this, m_symbolList.size());
   generateExecCode(&comp, m_compiledCode);
-
 #if 0
   printf("\n\n");
   printf("\n---------------------------------\n\n");
