@@ -639,15 +639,18 @@ operation SymGetAndBind {
 operation BracketGet {
     impl value (value v1, value v2) costs 50 [[
         uint32_t i;
+        
+        if (v2->getUInt32(i)) {
+    	   $$ = v1->getByIndex(exec, i);
+    	   break;
+        }
+        
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
         if (exec->hadException())
             break;
 
-        if (v2->getUInt32(i))
-            $$ = o->get(exec, i);
-        else
-            $$ = o->get(exec, Identifier(v2->toString(exec)));
+        $$ = o->get(exec, Identifier(v2->toString(exec)));
     ]]
 
     overload value (value base, int32 prop) [[
