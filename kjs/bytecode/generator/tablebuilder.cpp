@@ -366,15 +366,16 @@ void TableBuilder::handleConversion(const string& name, const string& code, int 
     } else {
         rgConversions[from][to] = inf;
         rgConversionList.push_back(inf);
-        // Generate a corresponding bytecode routine.
+        // Generate a corresponding bytecode routine; the helper used is the immediate one, though
         handleOperation(inf.name);
         StringList sig;
         sig.push_back(from);
         StringList names;
         names.push_back("in");
-        string patchedCode = code;
-        patchedCode = strReplace(patchedCode,  "return", "$$ = "); // ### FIXME: Brittle!
-        handleImpl("", patchedCode, false,codeLine, 0, to, sig, names);
+
+        string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
+        code += "$$ = out;\n";
+        handleImpl("", code, false, codeLine, 0, to, sig, names);
     }
 }
 

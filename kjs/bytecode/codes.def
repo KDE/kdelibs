@@ -191,6 +191,12 @@ conversion number => int32 {
     register RNumber_Int32 costs 20;
 }
 
+/***************************************************************************
+ WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+ $$/localStore should never be set on the same call that can tearoff
+ the frame or reallocate the stack, since the evaluation order if undefined
+****************************************************************************/
+
 /**
  Debug only..
  */
@@ -416,15 +422,23 @@ operation GetGlobalObject {
 
 operation FunctionLookupAndGet {
     impl value(reg thisOutReg, ident varName) [[
+        JSValue* res;
+        JSValue* thisOut;
         lookupScopeAndFetch<true /*error out*/, false /* don't skip one*/, true /* want this value*/>
-                (exec, varName, localStore[thisOutReg].val.valueVal, $$);
+                (exec, varName, thisOut, res);
+        localStore[thisOutReg].val.valueVal = thisOut;
+        $$ = res;
     ]]
 }
 
 operation NonLocalFunctionLookupAndGet {
     impl value(reg thisOutReg, ident varName) [[
+        JSValue* res;
+        JSValue* thisOut;
         lookupScopeAndFetch<true /*error out*/, true /* skip one*/, true /* want this value*/>
-                (exec, varName, localStore[thisOutReg].val.valueVal, $$);
+                (exec, varName, thisOut, res);
+        $$ = res;
+        localStore[thisOutReg].val.valueVal = thisOut;
     ]]
 }
 
@@ -612,7 +626,9 @@ operation SymGet {
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
 
-        $$ = baseObj->get(exec, *prop);
+        // IMPORTANT: The call and store to $$ should be two steps, since ::get can tear off frames!
+        JSValue* val = baseObj->get(exec, *prop);
+        $$ = val;
     ]]
 }
 
@@ -632,25 +648,29 @@ operation SymGetAndBind {
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
 
-        $$ = baseObj->get(exec, *varName);
+        // IMPORTANT: The call and store to $$ should be two steps, since ::get can tear off frames!
+        JSValue* val = baseObj->get(exec, *varName);
+        $$ = val;
     ]]
 }
 
 operation BracketGet {
     impl value (value v1, value v2) costs 50 [[
         uint32_t i;
-        
+
         if (v2->getUInt32(i)) {
     	   $$ = v1->getByIndex(exec, i);
     	   break;
         }
-        
+
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
         if (exec->hadException())
             break;
 
-        $$ = o->get(exec, Identifier(v2->toString(exec)));
+        // IMPORTANT: The call and store to $$ should be two steps, since ::get can tear off frames!
+        JSValue* val = o->get(exec, Identifier(v2->toString(exec)));
+        $$ = val;
     ]]
 
     overload value (value base, int32 prop) [[
@@ -669,10 +689,12 @@ operation BracketGetAndBind {
 
         localStore[objDest].val.valueVal = o;
 
+        JSValue* val;
         if (v2->getUInt32(i))
-            $$ = o->get(exec, i);
+            val = o->get(exec, i);
         else
-            $$ = o->get(exec, Identifier(v2->toString(exec)));
+            val = o->get(exec, Identifier(v2->toString(exec)));
+        $$ = val;
     ]]
 
     overload value (reg objDest, value base, int32 prop) [[
@@ -707,10 +729,12 @@ operation VariableObjectGet {
     impl value(ident varName) [[
         JSObject* scopeObj = exec->variableObject();
         PropertySlot slot;
-        if (scopeObj->getPropertySlot(exec, *varName, slot))
-            $$ = slot.getValue(exec, scopeObj, *varName);
-        else
+        if (scopeObj->getPropertySlot(exec, *varName, slot)) {
+            JSValue* val = slot.getValue(exec, scopeObj, *varName);;
+            $$ = val;
+        } else {
             throwUndefinedVariableError(exec, *varName);
+        }
     ]]
 }
 
@@ -1102,8 +1126,9 @@ operation FunctionCall {
             break;
         }
 
-
-        $$ = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
+        JSValue* val;
+        val = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
+        $$  = val;
     ]]
 }
 
@@ -1123,7 +1148,8 @@ operation CtorCall {
             break;
         }
 
-        $$ = constr->construct(exec, workList);
+        JSValue* val = constr->construct(exec, workList);
+        $$ = val;
     ]]
 }
 
