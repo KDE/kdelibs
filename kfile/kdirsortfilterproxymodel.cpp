@@ -88,19 +88,23 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     const KFileItem leftFileItem  = dirModel->itemForIndex(left);
     const KFileItem rightFileItem = dirModel->itemForIndex(right);
 
+    // Directories and hidden files should always be on the top, independent
+    // from the sort order.
+    const bool isLessThan = (sortOrder() == Qt::AscendingOrder);
+
     // On our priority, folders go above regular files.
     if (leftFileItem.isDir() && !rightFileItem.isDir()) {
-        return true;
+        return isLessThan;
     } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
-        return false;
+        return !isLessThan;
     }
 
     // Hidden elements go before visible ones, if they both are
     // folders or files.
     if (leftFileItem.isHidden() && !rightFileItem.isHidden()) {
-        return true;
+        return isLessThan;
     } else if (!leftFileItem.isHidden() && rightFileItem.isHidden()) {
-        return false;
+        return !isLessThan;
     }
 
     switch (left.column()) {
