@@ -587,6 +587,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPaintDevice *x = d;
     qreal op = p->opacity();
     QPixmap* pm = 0;
+    QPen pen = p->pen();
+    QBrush brush = p->brush();
     if (buffered) {
         if (!widget->size().isValid())
             return;
@@ -594,6 +596,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         QPainter pp(pm);
         pp.setCompositionMode(QPainter::CompositionMode_Clear);
         pp.eraseRect(r);
+        pp.end();
         d = pm;
     } else {
         p->end();
@@ -601,7 +604,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     setInPaintEventFlag( widget, false );
 
-    widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
+    widget->render( d, (buffered ? QPoint(0,0) : thePoint) + r.topLeft(), r);
 
     setInPaintEventFlag( widget );
 
@@ -616,6 +619,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setClipRegion(rg);
         if (op < 1.0f)
             p->setOpacity(op);
+        p->setPen(pen);
+        p->setBrush(brush);
     } else {
         // transfer results
         QPoint off(r.x(), r.y());
@@ -629,7 +634,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool buffered = p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
+    bool buffered = true; // p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
