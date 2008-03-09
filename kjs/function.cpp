@@ -437,11 +437,9 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
     argumentsObjectSlot() = jsUndefined();
     symbolTable     = &body->symbolTable();
 
-    // Set the mark/don't mark flags for them
-    // ### any cleaner way of doing it?
-    localStorage[LengthSlot].attributes = DontMark;
-    localStorage[FunctionSlot].attributes = 0;
-    localStorage[ArgumentsObjectSlot].attributes = 0;
+    // Set the mark/don't mark flags and attributes for everything
+    for (size_t p = 0; p < total; ++p)
+      entries[p].attributes = symInfo[p].attr;
 
     // Pass in the parameters (ECMA 10.1.3q)
 #ifdef KJS_VERBOSE
@@ -455,7 +453,6 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
         JSValue* v = (*arguments)[pos];
 
         entries[symNum].val.valueVal = v;
-        entries[symNum].attributes   = symInfo[symNum].attr;
 
 #ifdef KJS_VERBOSE
         fprintf(stderr, "setting parameter %s", body->paramName(pos).ascii());
@@ -465,11 +462,10 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function, const List* ar
 
     // Initialize the rest of the locals to 'undefined'
     for (size_t pos = numParams + ActivationImp::NumReservedSlots; pos < total; ++pos)
-        entries[pos] = LocalStorageEntry(jsUndefined(), symInfo[pos].attr);
+        entries[pos].val.valueVal = jsUndefined();
 
     // Finally, put in the functions. Note that this relies on above
-    // steps to have completed, since it can trigger a GC. The above also
-    // set the other attributes already
+    // steps to have completed, since it can trigger a GC.
     size_t  numFuns  = body->numFunctionLocals();
     size_t* funsData = body->getFunctionLocalInfo();
     for (size_t fun = 0; fun < numFuns; ++fun) {
