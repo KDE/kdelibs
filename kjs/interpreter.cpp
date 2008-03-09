@@ -243,6 +243,11 @@ void Interpreter::init()
     m_pauseTimeoutCheckCount = 0;
     m_compatMode = NativeMode;
 
+    const int initialStackSize = 8192;
+    stackBase = (unsigned char*)std::malloc(initialStackSize);
+    stackPtr  = stackBase;
+    stackEnd  = stackBase + initialStackSize;
+
     interpreterMap().set(m_globalObject, this);
 
     if (s_hook) {
@@ -279,6 +284,49 @@ Interpreter::~Interpreter()
     }
 
     interpreterMap().remove(m_globalObject);
+}
+
+unsigned char* Interpreter::extendStack(size_t needed)
+{
+    unsigned char* oldBase = stackBase; // needed for fixing up localStores
+
+    size_t curSize = stackEnd - stackBase;
+    size_t avail = stackEnd - stackPtr;
+    size_t extra = needed - avail;
+
+    if (extra < 8192)
+        extra = 8192;
+    size_t newSize = curSize + extra;
+
+    //printf("Grow stack:%d -> %d\n", curSize, newSize);
+
+    stackBase = (unsigned char*)std::malloc(newSize); // Not realloc since we need the old stuff
+                                                      // ### seems optimizeable
+    std::memcpy(stackBase, oldBase, curSize);
+    stackPtr  = stackBase + (stackPtr - oldBase);
+    stackEnd  = stackBase + newSize;
+
+    // Now go through and fix up activations..
+    ExecState* e = m_execState;
+    while (e) {
+        if (e->codeType() == FunctionCode) {
+            ActivationImp* act = static_cast<ActivationImp*>(e->activationObject());
+            if (act->localStorage && act->onStackSlot()) {
+                act->localStorage = (LocalStorageEntry*)
+                                      (stackBase + ((unsigned char*)act->localStorage - oldBase));
+                e->updateLocalStorage(act->localStorage);
+            }
+        }
+
+        if (e->callingExecState())
+            e = e->callingExecState();
+        else
+            e = e->savedExecState();
+    }
+
+    std::free(oldBase);
+
+    return stackAlloc(needed);
 }
 
 JSObject* Interpreter::globalObject() const

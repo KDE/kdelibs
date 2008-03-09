@@ -352,6 +352,17 @@ namespace KJS {
     void deref() { if (--m_refCount <= 0) delete this; }
     int refCount() const { return m_refCount; }
 
+    unsigned char* stackAlloc(size_t size) {
+        unsigned char* nextPtr = stackPtr + size;
+        if (nextPtr <= stackEnd) {
+            unsigned char* toRet = stackPtr;
+            stackPtr = nextPtr;
+            return toRet;
+        }
+        return extendStack(size);
+    }
+
+    void stackFree(size_t size) { stackPtr-= size; } // ### shrink it?
 protected:
     virtual ~Interpreter(); // only deref should delete us
     virtual bool shouldInterruptScript() const { return true; }
@@ -382,6 +393,12 @@ private:
     JSObject* m_globalObject;
     GlobalExecState m_globalExec;
     Package *globPkg;
+
+    // Execution stack stuff for this interpreter.
+    unsigned char* stackBase; // lowest address in the array
+    unsigned char* stackPtr;  // current top/next to allocate
+    unsigned char* stackEnd;  // last address in the stack
+    unsigned char* extendStack(size_t needed);
 
     // Chained list of interpreters (ring) - for collector
     static Interpreter* s_hook;

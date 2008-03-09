@@ -222,6 +222,11 @@ namespace KJS {
      */
     ExecState* callingExecState() { return m_callingExec; }
 
+    /**
+     * Returns the execState of a previous nested evaluation session, if any.
+     */
+    ExecState* savedExecState() { return m_savedExec; }
+
     JSObject* activationObject() {
         assert(m_codeType == FunctionCode);
         return m_variable;

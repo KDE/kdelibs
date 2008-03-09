@@ -99,7 +99,12 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     body->compile(FunctionCode);
   }
 
-  LocalStorageEntry stackSpace[32];
+  size_t stackSize              = 0;
+  LocalStorageEntry* stackSpace = 0;
+  if (body->stackAllocateActivation()) {
+    stackSize  = sizeof(LocalStorageEntry) * body->numLocalsAndRegisters();
+    stackSpace = (LocalStorageEntry*)exec->dynamicInterpreter()->stackAlloc(stackSize);
+  }
 
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
   activation->setup(&newExec, this, &args, stackSpace);
@@ -115,10 +120,15 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   Completion comp = body->execute(&newExec);
 
-  // Make sure to clear a stack activation, since we may have stack pointers keeping it alive,
-  // and we don't want to gcc it wrong
-  if (activation->onStackSlot())
+  // Make sure to clear a stack activation, since it points to outside stuff,
+  // and a conservative GC may try marking it, making it access out-of-date
+  // data
+  if (activation->onStackSlot()) {
     activation->localStorage = 0;
+
+    // Also free the stack space.
+    exec->dynamicInterpreter()->stackFree(stackSize);
+  }
 
   // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
@@ -430,7 +440,7 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
     // Allocate space..
     size_t total = body->numLocalsAndRegisters();
 
-    if (body->stackAllocateActivation() && total <= 32) {
+    if (body->stackAllocateActivation()) {
         localStorage  = stackSpace;
         onStackSlot() = true;
     } else {
