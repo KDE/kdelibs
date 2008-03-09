@@ -293,7 +293,7 @@ void KTabWidget::setTabText( int index, const QString &text )
 
   if ( d->m_automaticResizeTabs ) {
 
-    setUpdatesEnabled(false); //no flicker
+    tabBar()->setUpdatesEnabled(false); //no flicker
 
     QTabWidget::setTabText( index, text );
 
@@ -302,7 +302,7 @@ void KTabWidget::setTabText( int index, const QString &text )
       d->resizeTabs( index );
     }
 
-    setUpdatesEnabled(true);
+    tabBar()->setUpdatesEnabled(true);
 
   } else {
     QTabWidget::setTabText( index, text );
