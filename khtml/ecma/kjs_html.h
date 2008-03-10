@@ -216,6 +216,7 @@ namespace KJS {
 
     virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List& args);
     virtual bool implementsCall() const { return true; }
+    virtual bool masqueradeAsUndefined() const;
     virtual bool toBoolean(ExecState *) const;
     virtual void getPropertyNames(ExecState*, PropertyNameArray&);
     enum { Item, NamedItem, Tags };
