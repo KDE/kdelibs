@@ -451,7 +451,12 @@ void DebugWindow::detach(KJS::Interpreter* interp)
 
 void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 {
-    InterpreterContext* ctx = m_contexts[interp];
+    // We may get a clear when we weren't even attached, if the
+    // interpreter gets created but nothing gets run in it.
+    // Be careful not to insert a bogus null into contexts map then
+    InterpreterContext* ctx = m_contexts.value(interp);
+    if (!ctx)
+        return;
 
     fatalAssert(!m_activeSessionCtxs.contains(ctx), "Interpreter clear on active session");
 
@@ -513,7 +518,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 
         }
 
-        document = new DebugDocument(uiURL, key);
+        document = new DebugDocument(exec->dynamicInterpreter(), uiURL, key);
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
         m_docsForIntrp[exec->dynamicInterpreter()].append(document);
@@ -528,7 +533,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         m_docForIUKey[key] = document;
 
     // Tell it about this portion..
-    document->addCodeFragment(sourceId, startingLineNumber, source.qstring());
+    QString qsource =  source.qstring();
+    if (qsource.contains("function")) // Approximate knowledge of whether code has functions. Ewwww...
+        document->setHasFunctions();
+    document->addCodeFragment(sourceId, startingLineNumber, qsource);
 
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
@@ -562,23 +570,36 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
         exception = true;
     }
 
-    // Extract messages for exceptions --- add syntax error properly
-    if (exception)
-    {
-        JSValue* oldExceptionObj = exec->exception(); // This is not always the same
-                                                      // as exceptionObj since we may be
-                                                      // asked to translate a non-active exception
-                                                      
-        // ### it's still not 100% safe to call toString here, 
-        // since someone might have changed the toString property of the 
-        // exception prototype, but I'll punt on this case for now.
-        // We also need to clear exception temporarily so that JSObject::toString
-        // does not do a "oy, and exception" routine for us
-        exec->clearException();
-        exceptionMsg = exceptionObj->toString(exec).qstring();
-        exec->setException(oldExceptionObj);
-    }
+    if (!exception)
+        return exceptionMsg;
 
+    // Clear exceptions temporarily so we can get/call a few things.
+    // We memorize the old exception first, of course. Note that
+    // This is not always the same as exceptionObj since we may be
+    //  asked to translate a non-active exception
+    JSValue* oldExceptionObj = exec->exception();
+    exec->clearException();
+
+    // We want to serialize the syntax errors ourselves, to provide the line number.
+    // The URL is in "sourceURL" and the line is in "line"
+    // ### TODO: Perhaps we want to use 'sourceId' in case of eval contexts.
+    if (syntaxError)
+    {
+        JSValue* lineValue = valueObj->get(exec, "line");
+        JSValue* urlValue  = valueObj->get(exec, "sourceURL");
+
+        int      line = lineValue->toNumber(exec);
+        QString  url  = urlValue->toString(exec).qstring();
+        exceptionMsg = i18n("Parse error at %1 line %2", url, line - 1);
+    }
+    else
+    {
+        // ### it's still not 100% safe to call toString here, even on
+        // native exception objects, since someone might have changed the toString property
+        // of the exception prototype, but I'll punt on this case for now.
+        exceptionMsg = exceptionObj->toString(exec).qstring();
+    }
+    exec->setException(oldExceptionObj);
     return exceptionMsg;
 }
 
@@ -746,11 +767,13 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
     }
 
     // Also, if we exit from an eval context, we probably want to
-    // clear the corresponding document, unless it's open
+    // clear the corresponding document, unless it's open.
+    // We can not do it safely if there are any functions declared,
+    // however, since they can escape.
     if (exec->context()->codeType() == EvalCode)
     {
         DebugDocument::Ptr doc = m_docForSid[sourceId];
-        if (!m_openDocuments.contains(doc.get()))
+        if (!m_openDocuments.contains(doc.get()) && !doc->hasFunctions())
         {
             cleanupDocument(doc);
             m_docsForIntrp[exec->dynamicInterpreter()].removeAll(doc);
@@ -764,15 +787,31 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::doEval(const QString& qcode)
 {
-    // Work out which execution state to use. Currently, limit ourselves to
-    // working inside an active session. It's not clear what behavior
-    // would be appropriate otherwise.
-    if (!inSession())
-        m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+    // Work out which execution state to use. If we're currently in a debugging session,
+    // use the current context - otherwise, use the global execution state from the interpreter
+    // corresponding to the currently displayed source file.
+    ExecState* exec;
+    JSObject*  thisObj;
 
-    InterpreterContext* ctx = m_activeSessionCtxs.top();
-    ExecState* exec    = ctx->execContexts.top();
-    JSObject*  thisObj = exec->context()->thisValue();
+    if (inSession())
+    {
+        InterpreterContext* ctx = m_activeSessionCtxs.top();
+        exec    = ctx->execContexts.top();
+        thisObj = exec->context()->thisValue();
+    }
+    else
+    {
+        int idx = m_tabWidget->currentIndex();
+        if (idx < 0)
+        {
+            m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+            return;
+        }
+        DebugDocument* document = m_openDocuments[idx];
+        exec    = document->interpreter()->globalExec();
+        thisObj = document->interpreter()->globalObject();
+    }
+
     JSValue*   oldException = 0;
 
     UString code(qcode);
@@ -817,7 +856,8 @@ void DebugWindow::doEval(const QString& qcode)
 
     // Make sure to re-activate the line we were stopped in,
     // in case a nested session was active
-    setUIMode(Stopped);
+    if (inSession())
+        setUIMode(Stopped);
 }
 
 void DebugWindow::displayScript(DebugDocument* document)

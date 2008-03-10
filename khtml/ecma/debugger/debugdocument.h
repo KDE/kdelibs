@@ -47,7 +47,7 @@ class DebugDocument : public QObject, public khtml::Shared<DebugDocument>
 public:
     typedef SharedPtr<DebugDocument> Ptr;
 
-    DebugDocument(const QString& url, const QString& iuKey);
+    DebugDocument(KJS::Interpreter* interp, const QString& url, const QString& iuKey);
     ~DebugDocument();
 
     QString name() const;
@@ -68,6 +68,13 @@ public:
     void setBreakpoint(int lineNumber);
     void removeBreakpoint(int lineNumber);
     bool hasBreakpoint(int lineNumber);
+    
+    // We keep track of whether documents have functions, since we can't discard
+    // eval contexts that do
+    bool hasFunctions();
+    void setHasFunctions();
+    
+    KJS::Interpreter* interpreter(); 
 
 signals:
     void documentDestroyed(KJSDebugger::DebugDocument*);
@@ -75,6 +82,9 @@ private:
     QString m_url;
     QString m_iuKey;
     QString m_name;
+    KJS::Interpreter* m_interpreter;
+    
+    bool m_hasFunctions;
 
     // This is set to true when we are rebuilding the document.
     // in that case, the UI might get undesired mark add/remove events,

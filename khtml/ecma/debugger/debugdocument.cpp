@@ -20,8 +20,9 @@
 using namespace KJS;
 using namespace KJSDebugger;
 
-DebugDocument::DebugDocument(const QString& url, const QString& iuKey)
+DebugDocument::DebugDocument(KJS::Interpreter* intp, const QString& url, const QString& iuKey)
 {
+    m_interpreter = intp;
     m_url   = url;
     m_iuKey = iuKey;
 
@@ -45,6 +46,7 @@ DebugDocument::DebugDocument(const QString& url, const QString& iuKey)
     m_kteView = 0;
     m_rebuilding    = false;
     m_deferredClear = false;
+    m_hasFunctions  = false;
 }
 
 DebugDocument::~DebugDocument()
@@ -53,6 +55,21 @@ DebugDocument::~DebugDocument()
 
     // View has an another parent for UI purposes, so we have to clean it up
     delete m_kteView;
+}
+
+KJS::Interpreter* DebugDocument::interpreter()
+{
+    return m_interpreter;
+}
+
+bool DebugDocument::hasFunctions()
+{
+    return m_hasFunctions;
+}
+
+void DebugDocument::setHasFunctions()
+{
+    m_hasFunctions = true;
 }
 
 QString DebugDocument::name() const
