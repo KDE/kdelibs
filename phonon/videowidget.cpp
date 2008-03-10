@@ -105,14 +105,14 @@ void VideoWidget::setFullScreen(bool newFullScreen)
             flags |= Qt::Window;
             flags ^= Qt::SubWindow;
             setWindowFlags(flags);
-            showFullScreen();
+            setWindowState( windowState() | Qt::WindowFullScreen ); // set
         }
     } else if (parentWidget()) {
         if (isFullScreen()) {
             flags ^= (Qt::Window | Qt::SubWindow); //clear the flags...
             flags |= d->changeFlags; //then we reset the flags (window and subwindow)
             setWindowFlags(flags);
-            showNormal();
+            setWindowState( windowState() & ~Qt::WindowFullScreen ); // reset
         }
     }
 }

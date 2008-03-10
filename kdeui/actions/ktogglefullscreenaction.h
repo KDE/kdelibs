@@ -37,10 +37,14 @@
  * yourself. Rely on this action's state (isChecked()) instead.
  *
  * Important: If you need to set/change the fullscreen state manually,
- * use the relevant QWidget function (showFullScreen etc.), do not
- * call directly the slot connected to the toggled() signal. The slot
+ * use KToggleFullScreenAction::setFullScreen() or a similar function,
+ * do not call directly the slot connected to the toggled() signal. The slot
  * still needs to explicitly set the window state though.
-
+ *
+ * Note: Do NOT use QWidget::showFullScreen() or QWidget::showNormal().
+ * They have several side-effects besides just switching the fullscreen
+ * state (for example, showNormal() resets all window states, not just
+ * fullscreen). Use the KToggleFullScreenAction::setFullScreen() helper function.
  */
 class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
 {
@@ -71,6 +75,13 @@ class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
      * Sets the window that will be related to this action.
      */
     void setWindow( QWidget* window );
+
+    /**
+     * Helper function to set or reset the fullscreen state of a window.
+     * Use this function rather than showFullScreen()/showNormal() QWidget functions.
+     * @since 4.0.3
+     */
+    static void setFullScreen( QWidget* window, bool set );
 
   protected:
     bool eventFilter( QObject* object, QEvent* event );
