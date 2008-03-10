@@ -390,8 +390,9 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
     //update ad
     //note that ad->keys may still get changed later if conflicts are found
-    if (setPresent)
+    if (setPresent) {
         ad->isPresent = true;
+    }
     ad->keys = keys;
     //maybe isFresh should really only be set if setPresent, but only two things should use !setPresent:
     //- the global shortcuts KCM: very unlikely to catch KWin/etc.'s actions in isFresh state
@@ -426,6 +427,8 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
             d->impl->grabKey(key, true);
         }
     }
+
+    scheduleWriteSettings();
 
     return ad->keys;
 }
