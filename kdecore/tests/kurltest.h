@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testUtf8();
     void testIsLocalFile();
     void testSimpleMethods();
+    void testHostName();
     void testParsingTolerance();
     void testNewLine();
     void testQueryParsing();

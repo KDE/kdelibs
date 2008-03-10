@@ -336,6 +336,23 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 #endif
 }
 
+void KUrlTest::testHostName()
+{
+    KUrl u1("http://www.Abc.de");
+    QCOMPARE(u1.host(), QString("www.abc.de")); // lowercase
+    QCOMPARE(u1.url(), QString("http://www.abc.de")); // lowercase
+
+    KUrl u2;
+    u2.setProtocol("http");
+    u2.setHost("www.Abc.de");
+    QCOMPARE(u2.host(), QString("www.abc.de")); // lowercase
+    QCOMPARE(u2.url(), QString("http://www.abc.de")); // lowercase
+
+    KUrl u3("donkey://Abc/DE");
+    QCOMPARE(u3.host(), QString("abc")); // lowercase
+    QCOMPARE(u3.url(), QString("donkey://abc/DE")); // lowercase
+}
+
 void KUrlTest::testEmptyQueryOrRef()
 {
   QUrl url = QUrl::fromEncoded( "http://www.kde.org" );
