@@ -397,8 +397,8 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
 
         KFilePlacesItem *item = new KFilePlacesItem(bookmarkManager,
                                                     bookmark.address(), udi);
-        connect(item, SIGNAL(deviceChanged(const QString&)),
-                q, SLOT(_k_deviceChanged(const QString&)));
+        connect(item, SIGNAL(itemChanged(const QString&)),
+                q, SLOT(_k_itemChanged(const QString&)));
         // TODO: Update bookmark internal element
         items << item;
     }
