@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE project
 
-   Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
+   Copyright © 2006-2007, 2008 Fredrik Höglund <fredrik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -74,12 +74,9 @@ class KFileItemDelegate::Private
         QSize layoutText(QTextLayout &layout, const QStyleOptionViewItemV4 &option,
                          const QString &text, const QSize &constraints) const;
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
-        inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItemV4 &options,
-                                     const QModelIndex &index, const KFileItem &item) const;
+        inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItemV4 &options) const;
         inline bool verticalLayout(const QStyleOptionViewItemV4 &option) const;
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
-        QPixmap toPixmap(const QStyleOptionViewItemV4 &option, const QColor &color) const;
-        QPixmap toPixmap(const QStyleOptionViewItemV4 &option, const QIcon &icon) const;
         inline QBrush brush(const QVariant &value, const QStyleOptionViewItemV4 &option) const;
         QBrush composite(const QColor &over, const QBrush &brush) const;
         QBrush foregroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
@@ -98,11 +95,11 @@ class KFileItemDelegate::Private
         QString information(const QStyleOptionViewItemV4 &option, const QModelIndex &index, const KFileItem &item) const;
         bool isListView(const QStyleOptionViewItemV4 &option) const;
         QString display(const QModelIndex &index) const;
-        QSize iconSizeHint(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
-        QPixmap decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
-        QPoint iconPosition(const QStyleOptionViewItemV4 &option, const QPixmap &pixmap) const;
-        QRect labelRectangle(const QStyleOptionViewItemV4 &option, const QPixmap &icon, const QString &string) const;
-        void layoutTextItems(const QStyleOptionViewItemV4 &option, const QModelIndex &index, const QPixmap &icon,
+        QSize iconSizeHint(const QStyleOptionViewItemV4 &option) const;
+        QIcon decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
+        QPoint iconPosition(const QStyleOptionViewItemV4 &option) const;
+        QRect labelRectangle(const QStyleOptionViewItemV4 &option) const;
+        void layoutTextItems(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                              QTextLayout *labelLayout, QTextLayout *infoLayout, QRect *textBoundingRect) const;
         void drawBackground(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                             const QRect &textBoundingRect) const;
@@ -401,8 +398,7 @@ QString KFileItemDelegate::Private::elidedText(QTextLayout &layout, const QStyle
 }
 
 
-void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItemV4 &option,
-                                                  const QModelIndex &index, const KFileItem &item) const
+void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItemV4 &option) const
 {
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
@@ -418,7 +414,7 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
 QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItemV4 &option,
                                                   const QModelIndex &index) const
 {
-    QString label = display(index);
+    QString label = option.text;
     const int maxWidth = verticalLayout(option) && (option.features & QStyleOptionViewItemV2::WrapText)
             ? option.decorationSize.width() + 10 : 32757;
 
@@ -431,7 +427,7 @@ QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItemV4 &
         label += QString(QChar::LineSeparator) + info;
 
     QTextLayout layout;
-    setLayoutOptions(layout, option, index, item);
+    setLayoutOptions(layout, option);
 
     QSize size = layoutText(layout, label, maxWidth);
     return addMargin(size, TextMargin);
@@ -470,25 +466,6 @@ QPainterPath KFileItemDelegate::Private::roundedRectangle(const QRectF &rect, qr
     return path;
 }
 
-
-// Extracts the correct pixmap from a QIcon with respect to option
-QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItemV4 &option, const QIcon &icon) const
-{
-    QIcon::Mode mode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
-    QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-    const QSize size = icon.actualSize(option.decorationSize, mode, state);
-    return icon.pixmap(size, mode, state);
-}
-
-
-// Converts a QColor to a pixmap
-QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItemV4 &option, const QColor &color) const
-{
-    QPixmap pixmap(option.decorationSize);
-    pixmap.fill(color);
-
-    return pixmap;
-}
 
 // Converts a QVariant of type Brush or Color to a QBrush
 QBrush KFileItemDelegate::Private::brush(const QVariant &value, const QStyleOptionViewItemV4 &option) const
@@ -748,17 +725,16 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
 
 
 void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
-                                                 const QPixmap &icon, QTextLayout *labelLayout,
-                                                 QTextLayout *infoLayout, QRect *textBoundingRect) const
+                                                 QTextLayout *labelLayout, QTextLayout *infoLayout,
+                                                 QRect *textBoundingRect) const
 {
     KFileItem item       = fileItem(index);
-    const QString label  = display(index);
     const QString info   = information(option, index, item);
     bool showInformation = false;
 
-    setLayoutOptions(*labelLayout, option, index, item);
+    setLayoutOptions(*labelLayout, option);
 
-    const QRect textArea = labelRectangle(option, icon, label);
+    const QRect textArea = labelRectangle(option);
     QRect textRect       = subtractMargin(textArea, Private::TextMargin);
 
     // Sizes and constraints for the different text parts
@@ -779,7 +755,7 @@ void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItemV4 &o
     }
 
     // Lay out the label text, and adjust the max info size based on the label size
-    labelSize = layoutText(*labelLayout, option, label, maxLabelSize);
+    labelSize = layoutText(*labelLayout, option, option.text, maxLabelSize);
     maxInfoSize.rheight() -= labelSize.height();
 
     // Lay out the info text
@@ -878,6 +854,14 @@ void KFileItemDelegate::Private::initStyleOption(QStyleOptionViewItemV4 *option,
     if (value.isValid())
         option->backgroundBrush = brush(value, *option);
 
+    option->text = display(index);
+    if (!option->text.isEmpty())
+        option->features |= QStyleOptionViewItemV2::HasDisplay;
+
+    option->icon = decoration(*option, index);
+    if (!option->icon.isNull())
+        option->features |= QStyleOptionViewItemV2::HasDecoration;
+
     // ### Make sure this value is always true for now
     option->showDecorationSelected = true;
 }
@@ -930,7 +914,7 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
-    d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
+    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
     const QSize displaySize    = d->displaySizeHint(opt, index);
     const QSize decorationSize = d->decorationSizeHint(opt, index);
@@ -939,7 +923,7 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
     if (d->verticalLayout(opt))
     {
-        const QSize iconSize = d->iconSizeHint(opt, index);
+        const QSize iconSize = d->iconSizeHint(opt);
         const int iconWidth = qMin(decorationSize.width(), iconSize.width());
         size.rwidth()  = qMax(displaySize.width(), iconWidth);
         size.rheight() = decorationSize.height() + displaySize.height() + 1;
@@ -1002,85 +986,48 @@ KFileItemDelegate::InformationList KFileItemDelegate::showInformation() const
 }
 
 
-QSize KFileItemDelegate::Private::iconSizeHint(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
+QSize KFileItemDelegate::Private::iconSizeHint(const QStyleOptionViewItemV4 &option) const
 {
-    QSize size;
-
-    const QVariant value = index.data(Qt::DecorationRole);
-    switch (value.type())
-    {
-        case QVariant::Icon:
-            size = toPixmap(option, qvariant_cast<QIcon>(value)).size();
-            break;
-
-        case QVariant::Pixmap:
-            size = qvariant_cast<QPixmap>(value).size();
-            break;
-
-        case QVariant::Color:
-        default:
-            size = option.decorationSize;
-            break;
-    }
-
+    QSize size = option.icon.actualSize(option.decorationSize);
     const int radius = backgroundRadius(option);
     size.rwidth() += radius;
     size.rheight() += radius;
     return size;
 }
 
-
-QPixmap KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
+QIcon KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
     const QVariant value = index.data(Qt::DecorationRole);
-    QPixmap pixmap;
+    QIcon icon;
 
     switch (value.type())
     {
-        case QVariant::Icon:
-            pixmap = toPixmap(option, qvariant_cast<QIcon>(value));
-            break;
+    case QVariant::Icon:
+        icon = qvariant_cast<QIcon>(value);
+        break;
 
-        case QVariant::Pixmap:
-            pixmap = qvariant_cast<QPixmap>(value);
-            break;
+    case QVariant::Pixmap:
+        icon.addPixmap(qvariant_cast<QPixmap>(value));
+        break;
 
-        case QVariant::Color:
-            pixmap = toPixmap(option, qvariant_cast<QColor>(value));
-            break;
-
-        default:
-            pixmap = QPixmap();
+    case QVariant::Color: {
+        QPixmap pixmap(option.decorationSize);
+        pixmap.fill(qvariant_cast<QColor>(value));
+        icon.addPixmap(pixmap);
+        break;
     }
 
-    if (!pixmap.isNull())
-    {
-        // If the item is selected, and the selection rectangle only covers the
-        // text label, blend the pixmap with the highlight color.
-        if (!option.showDecorationSelected && option.state & QStyle::State_Selected)
-        {
-            QPainter p(&pixmap);
-            QColor color = option.palette.color(QPalette::Highlight);
-            color.setAlphaF(0.5);
-            p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-            p.fillRect(pixmap.rect(), color);
-        }
-
-        // Apply the configured hover effect
-        if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
-            pixmap = applyHoverEffect(pixmap);
+    default:
+        break;
     }
 
-    return pixmap;
+    return icon;
 }
 
 
-QRect KFileItemDelegate::Private::labelRectangle(const QStyleOptionViewItemV4 &option, const QPixmap &icon,
-                                                 const QString &string) const
+QRect KFileItemDelegate::Private::labelRectangle(const QStyleOptionViewItemV4 &option) const
 {
-    Q_UNUSED(string)
-
-    if (icon.isNull())
+    if (option.icon.isNull())
         return option.rect;
 
     const QSize decoSize = addMargin(option.decorationSize, Private::IconMargin);
@@ -1111,7 +1058,7 @@ QRect KFileItemDelegate::Private::labelRectangle(const QStyleOptionViewItemV4 &o
 }
 
 
-QPoint KFileItemDelegate::Private::iconPosition(const QStyleOptionViewItemV4 &option, const QPixmap &pixmap) const
+QPoint KFileItemDelegate::Private::iconPosition(const QStyleOptionViewItemV4 &option) const
 {
     const QRect itemRect = subtractMargin(option.rect, Private::ItemMargin);
     Qt::Alignment alignment;
@@ -1140,11 +1087,11 @@ QPoint KFileItemDelegate::Private::iconPosition(const QStyleOptionViewItemV4 &op
     const QSize size = addMargin(option.decorationSize, Private::IconMargin);
     const QRect rect = QStyle::alignedRect(option.direction, alignment, size, itemRect);
 
-    // Position the pixmap in the center of the rectangle
-    QRect pixRect = pixmap.rect();
-    pixRect.moveCenter(rect.center());
+    // Position the icon in the center of the rectangle
+    QRect iconRect = QRect(QPoint(), option.icon.actualSize(option.decorationSize));
+    iconRect.moveCenter(rect.center());
 
-    return pixRect.topLeft();
+    return iconRect.topLeft();
 }
 
 
@@ -1197,13 +1144,18 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Compute the metrics, and lay out the text items
     // ========================================================================
-    QPixmap icon         = d->decoration(opt, index);
-    const QPoint iconPos = d->iconPosition(opt, icon);
+    const QPoint iconPos   = d->iconPosition(opt);
+    QIcon::Mode iconMode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
+    QIcon::State iconState = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+    QPixmap icon           = opt.icon.pixmap(opt.decorationSize, iconMode, iconState);
+
+    ///### Apply the selection effect to the icon when the item is selected and
+    //     showDecorationSelected is false.
 
     QTextLayout labelLayout, infoLayout;
     QRect textBoundingRect;
 
-    d->layoutTextItems(option, index, icon, &labelLayout, &infoLayout, &textBoundingRect);
+    d->layoutTextItems(opt, index, &labelLayout, &infoLayout, &textBoundingRect);
 
 
     // Create a new cached rendering of a hovered and an unhovered item.

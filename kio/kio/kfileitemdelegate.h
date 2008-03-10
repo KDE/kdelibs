@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE project
 
-   Copyright © 2006-2007 Fredrik Höglund <fredrik@kde.org>
+   Copyright © 2006-2007, 2008 Fredrik Höglund <fredrik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
