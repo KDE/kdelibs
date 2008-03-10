@@ -363,18 +363,55 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
     if (hasOverlaidWidgets() && !renderer()->canvas()->pagedMode()) {
         updateZOrderLists();
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
-        bool needUpdate = (count || !m_region.isEmpty());
+        bool needUpdate = false;
+        KHTMLView* sa = 0;
         if (count) {
-            KHTMLView* sa = m_object->element()->getDocument()->view();
+            sa = m_object->element()->getDocument()->view();
             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
-
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
                 if (child->zIndex() == 0 && child->renderer()->style()->position() == STATIC)
                     continue; // we don't know the widget's exact stacking position within flow
                 m_region -= child->paintedRegion(rootLayer);
             }
-        } else {
+        }
+        needUpdate |= count;
+        RenderLayer* sc = this;
+        int zx = zIndex();
+        while (sc = sc->stackingContext()) {
+            sc->updateZOrderLists();
+            bool found = false;
+            if (zx < 0) {
+                count = sc->m_negZOrderList ? sc->m_negZOrderList->count() : 0;
+                needUpdate |= count;
+                for (uint i = 0; i < count; i++) {
+                    found |= sc->m_negZOrderList->at(i)->zIndex() > zx;
+                    if (found) {
+                        if (!sa) { 
+                            sa = m_object->element()->getDocument()->view();
+                            m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
+                        }
+                        m_region -= sc->m_negZOrderList->at(i)->paintedRegion(rootLayer);
+                    }
+                }
+            }
+            if ( count = sc->m_posZOrderList ? sc->m_posZOrderList->count() : 0 ) {
+                needUpdate = true;
+                for (uint i = 0; i < count; i++) {
+                    found |= sc->m_posZOrderList->at(i)->zIndex() > zx;
+                    if (found) {
+                        if (!sa) { 
+                            sa = m_object->element()->getDocument()->view();
+                            m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
+                        }
+                        m_region -= sc->m_posZOrderList->at(i)->paintedRegion(rootLayer);
+                    }
+                }
+            }
+            zx = sc->zIndex();
+        }
+        if (!needUpdate) {
+            needUpdate |= !m_region.isEmpty();
             m_region = QRegion();
         }
         if (needUpdate)
