@@ -764,7 +764,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts )
 
 
 install( FILES
-  KSettings/ComponentsDialog
   KSettings/Dialog
   KSettings/Dispatcher
   KSettings/PluginPage
@@ -870,13 +869,6 @@ install(FILES
   Phonon/Experimental/VideoFrame
   Phonon/Experimental/Visualization
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon/Experimental)
-
-
-install( FILES
-  SafeSite/Agent
-  SafeSite/Report
-  SafeSite/ServiceInfo
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/SafeSite )
 
 
 install( FILES
