@@ -28,12 +28,11 @@
 #include <QtDBus/QDBusArgument>
 
 Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<QStringList>)
 
 class KdedGlobalAccelAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-
-    //TODO: some input validation (here or in the actual KdedGlobalAccel?), especially actionId.count() == 2
     Q_CLASSINFO("D-Bus Interface", "org.kde.KdedGlobalAccel")
 
 public:
@@ -42,6 +41,7 @@ public:
     {
         Q_ASSERT(parent);
         qDBusRegisterMetaType<QList<int> >();
+        qDBusRegisterMetaType<QList<QStringList> >();
         connect(parent, SIGNAL(invokeAction(const QStringList &)),
                 SIGNAL(invokeAction(const QStringList &)));
         connect(parent, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
@@ -52,10 +52,10 @@ private:
     inline KdedGlobalAccel *p()
         { return static_cast<KdedGlobalAccel *>(parent()); }
 public Q_SLOTS:
-    inline QStringList allComponents()
+    inline QList<QStringList> allMainComponents()
         { return p()->allComponents(); }
-    inline QStringList allActionsForComponent(const QString &component)
-        { return p()->allActionsForComponent(component); }
+    inline QList<QStringList> allActionsForComponent(const QStringList &actionId)
+        { return p()->allActionsForComponent(actionId); }
     //get all registered keys (mainly for debugging)
     inline QList<int> allKeys()
         { return p()->allKeys(); }
@@ -82,6 +82,8 @@ public Q_SLOTS:
     //until woken up again by calling setShortcut().
     inline Q_NOREPLY void setInactive(const QStringList &actionId)
         { return p()->setInactive(actionId); }
+    inline Q_NOREPLY void doRegister(const QStringList &actionId)
+        { return p()->doRegister(actionId); }
 
 Q_SIGNALS:
     void invokeAction(const QStringList &actionId);

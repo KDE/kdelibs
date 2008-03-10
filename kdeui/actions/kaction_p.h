@@ -28,7 +28,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : globalShortcutAllowed(false), q(0)
+            : globalShortcutEnabled(false), q(0)
         {
         }
 
@@ -41,7 +41,8 @@ class KActionPrivate
         KShapeGesture shapeGesture, defaultShapeGesture;
         KRockerGesture rockerGesture, defaultRockerGesture;
 
-        bool globalShortcutAllowed;
+        bool globalShortcutEnabled : 1;
+        bool firstTimeSetGlobalShortcut : 1;
         KAction *q;
 };
 

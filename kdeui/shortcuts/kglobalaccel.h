@@ -81,6 +81,20 @@ public:
      */
     void overrideMainComponentData(const KComponentData &componentData);
 
+//TODO export the enum defining an actionId !
+    /**
+     * Return the unique and common names of all main components that have global shortcuts.
+     * The action strings of the returned actionId stringlists will be empty.
+     */
+    QList<QStringList> allMainComponents();
+
+    /**
+     * Return the full actionIds of all actions with global shortcuts for the main component
+     * specified by actionId. Only the the ComponentUnique part of actionId will be used;
+     * the other members of the actionId QStringList will be ignored.
+     */
+    QList<QStringList> allActionsForComponent(const QStringList &actionId);
+
     /**
      * Return the name of the action that uses the given key sequence. This applies to
      * all actions with global shortcuts in any KDE application.

@@ -37,19 +37,19 @@ public:
 
     ///Propagate any shortcut changes to the KDED module that does the bookkeeping
     ///and the key grabbing.
-    ///If this is called with an action that has an empty active global shortcut and
-    ///an empty default shortcut, the record of that action will be deleted.
     void updateGlobalShortcut(KAction *action, /*KAction::ShortcutTypes*/uint flags);
 
-    ///Register or unregister the action in this class, and notify the KDED module
-    void updateGlobalShortcutAllowed(KAction *action, /*KAction::ShortcutTypes*/uint flags);
+    ///Register the action in this class and in the KDED module
+    void doRegister(KAction *action);   //"register" is a C keyword :p
+    ///"Forget" the action in this class and mark it as not present in the KDED module
+    void setInactive(KAction *action);
 
-    /// Helper method for the above two, takes care of the actual call to kded
-    QList<int> updateGlobalShortcutInKded(KAction* action, const QStringList& actionId, uint flags, uint initialSetterFlags);
-
+    //"private" helpers
+    QStringList makeActionId(const KAction *action);
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
 
+    //private slot implementations
     void _k_invokeAction(const QStringList&);
     void _k_shortcutGotChanged(const QStringList&, const QList<int>&);
     void _k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner);

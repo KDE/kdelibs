@@ -53,21 +53,38 @@ K_PLUGIN_FACTORY(KdedGlobalAccelFactory,
     )
 K_EXPORT_PLUGIN(KdedGlobalAccelFactory("globalaccel"))
 
+struct componentData
+{
+    QString uniqueName;
+    //the name as it would be found in a magazine article about the application,
+    //possibly localized if a localized name exists.
+    QString friendlyName;
+    QHash<QString, actionData *> actions;
+};
+
 struct actionData
 {
 //TODO: clear isPresent when an action's application/mainComponent disappears
-    bool isPresent : 1;
-    bool isDefaultEmpty : 1;
-    QStringList actionId;
+    bool isPresent:1;
+    bool isFresh:1;
+    componentData *parent;
+    QString uniqueName;
+    QString friendlyName; //usually localized
     QList<int> keys;
     QList<int> defaultKeys;
 };
 
-enum IdField
+enum actionIdFields
 {
-    ComponentField = 0,
-    ActionField = 1
+    ComponentUnique = 0,
+    ActionUnique = 1,
+    ComponentFriendly = 2,
+    ActionFriendly = 3
 };
+
+
+//Consider to emit warnings if an actionId does not contain enough elements of that turns out
+//to be a source of bugs.
 
 
 class KdedGlobalAccelPrivate
@@ -79,7 +96,6 @@ public:
     actionData *findAction(const QStringList &actionId) const;
     actionData *addAction(const QStringList &actionId);
     actionData *takeAction(const QStringList &actionId);
-    QList<actionData *> componentActions(const QString &mainComponentName);
 
     //helpers
     static bool isEmpty(const QList<int>&);
@@ -88,16 +104,15 @@ public:
     KGlobalAccelImpl *impl;
 
     QHash<int, actionData *> keyToAction;
-    QHash<QString, QHash<QString, actionData *> *> mainComponentHashes;
+    QHash<QString, componentData *> mainComponents;
 
     KConfig config;
-    KConfigGroup configGroup;
     QTimer writeoutTimer;
 };
 
 
 KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
- : config("kglobalshortcutsrc"), configGroup(&config, "KDE Global Shortcuts")
+ : config("kglobalshortcutsrc", KConfig::SimpleConfig)
 {
 }
 
@@ -117,37 +132,41 @@ actionData *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) cons
 {
     if (actionId.count() < 2)
         return 0;
-    QHash<QString, actionData *> *componentHash = mainComponentHashes.value(actionId.at(ComponentField));
-    if (!componentHash)
+    componentData *cd = mainComponents.value(actionId.at(ComponentUnique));
+    if (!cd)
         return 0;
-    return componentHash->value(actionId.at(ActionField));
+    return cd->actions.value(actionId.at(ActionUnique));
 }
 
 
 actionData *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
 {
-    QHash<QString, actionData *> *componentHash =
-          mainComponentHashes.value(actionId.at(ComponentField));
-    if (!componentHash) {
-        componentHash = new QHash<QString, actionData *>;
-        mainComponentHashes.insert(actionId.at(ComponentField), componentHash);
+    Q_ASSERT(actionId.size() >= 4);
+    componentData *cd = mainComponents.value(actionId.at(ComponentUnique));
+    if (!cd) {
+        cd = new componentData;
+        cd->uniqueName = actionId.at(ComponentUnique);
+        cd->friendlyName = actionId.at(ComponentFriendly);
+        mainComponents.insert(actionId.at(ComponentUnique), cd);
     }
-    Q_ASSERT(!componentHash->value(actionId.at(ActionField)));
+    Q_ASSERT(!cd->actions.value(actionId.at(ActionUnique)));
     actionData *ad = new actionData;
-    ad->actionId = actionId;
-    componentHash->insert(actionId.at(ActionField), ad);
+    ad->parent = cd;
+    ad->uniqueName = actionId.at(ActionUnique);
+    ad->friendlyName = actionId.at(ActionFriendly);
+    cd->actions.insert(actionId.at(ActionUnique), ad);
     return ad;
 }
 
 
 actionData *KdedGlobalAccelPrivate::takeAction(const QStringList &actionId)
 {
-    QHash<QString, actionData *> *componentHash = mainComponentHashes.value(actionId.at(ComponentField));
-    if (!componentHash)
+    componentData *cd = mainComponents.value(actionId.at(ComponentUnique));
+    if (!cd)
         return 0;
-    actionData *ret = componentHash->take(actionId.at(ActionField));
-    if (componentHash->isEmpty())
-        delete mainComponentHashes.take(actionId.at(ComponentField));
+    actionData *ret = cd->actions.take(actionId.at(ActionUnique));
+    if (cd->actions.isEmpty())
+        delete mainComponents.take(actionId.at(ComponentUnique));
     return ret;
 }
 
@@ -179,7 +198,8 @@ QList<int> KdedGlobalAccelPrivate::nonemptyOnly(const QList<int> &keys)
 
 
 KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
-    : KDEDModule(parent), d(new KdedGlobalAccelPrivate)
+ : KDEDModule(parent),
+   d(new KdedGlobalAccelPrivate)
 {
     qDBusRegisterMetaType<QList<int> >();
 
@@ -204,14 +224,47 @@ KdedGlobalAccel::~KdedGlobalAccel()
     delete d;
 }
 
-QStringList KdedGlobalAccel::allComponents()
+QList<QStringList> KdedGlobalAccel::allComponents()
 {
-    return d->mainComponentHashes.keys();
+    //### Would it be advantageous to sort the components by unique name?
+    QList<QStringList> ret;
+    QStringList emptyList;
+    for (int i = 0; i < 4; i++) {
+        emptyList.append(QString());
+    }
+
+    foreach (const componentData *const cd, d->mainComponents.values()) {
+        QStringList actionId(emptyList);
+        actionId[ComponentUnique] = cd->uniqueName;
+        actionId[ComponentFriendly] = cd->friendlyName;
+        ret.append(actionId);
+    }
+    return ret;
 }
 
-QStringList KdedGlobalAccel::allActionsForComponent(const QString& component)
+QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &actionId)
 {
-    return d->mainComponentHashes[component]->keys();
+    //### Would it be advantageous to sort the actions by unique name?
+    QList<QStringList> ret;
+
+    componentData *const cd = d->mainComponents.value(actionId[ComponentUnique]);
+    if (!cd) {
+        return ret;
+    }
+
+    QStringList partialId(actionId[ComponentUnique]);   //ComponentUnique
+    partialId.append(QString());                        //ActionUnique
+    //Use our internal friendlyName, not the one passed in. We should have the latest data.
+    partialId.append(cd->friendlyName);                 //ComponentFriendly
+    partialId.append(QString());                        //ActionFriendly
+
+    foreach (const actionData *const ad, cd->actions.values()) {
+        QStringList actionId(partialId);
+        actionId[ActionUnique] = ad->uniqueName;
+        actionId[ActionFriendly] = ad->friendlyName;
+        ret.append(actionId);
+    }
+    return ret;
 }
 
 QList<int> KdedGlobalAccel::allKeys()
@@ -231,10 +284,12 @@ QStringList KdedGlobalAccel::allKeysAsString()
 
 QStringList KdedGlobalAccel::actionId(int key)
 {
-    actionData *ad = d->findAction(key);
-    if (ad)
-        return ad->actionId;
-    return QStringList();
+    QStringList ret;
+    if (actionData *ad = d->findAction(key)) {
+        ret.append(ad->parent->uniqueName);
+        ret.append(ad->uniqueName);
+    }
+    return ret;
 }
 
 
@@ -256,47 +311,61 @@ QList<int> KdedGlobalAccel::defaultShortcut(const QStringList &action)
 }
 
 
+void KdedGlobalAccel::doRegister(const QStringList &actionId)
+{
+    if (actionId.size() < 4) {
+        return;
+    }
+    actionData *ad = d->findAction(actionId);
+    if (!ad) {
+        ad = d->addAction(actionId);
+        //addAction only fills in the names
+        ad->isPresent = false;
+        ad->isFresh = true;
+    }
+}
+
+
 //TODO: make sure and document that we don't want trailing zero shortcuts in the list
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)
 {
     //spare the DBus framework some work
-    const bool isDefaultEmpty = (flags & IsDefaultEmpty);
     const bool setPresent = (flags & SetPresent);
     const bool isAutoloading = !(flags & NoAutoloading);
     const bool isDefault = (flags & IsDefault);
 
-    //kDebug() << actionId << keys << "isDefaultEmpty=" << isDefaultEmpty << "setPresent=" << setPresent
-    //         << "isAutoloading=" << isAutoloading << "isDefault=" << isDefault;
-
     actionData *ad = d->findAction(actionId);
+    if (!ad) {
+        return QList<int>();
+    }
+
+    //default shortcuts cannot clash because they don't do anything
+    if (isDefault) {
+        if (ad->defaultKeys != keys) {
+            ad->defaultKeys = keys;
+            scheduleWriteSettings();
+        }
+        return keys;    //doesn't matter
+    }
 
     //the trivial and common case - synchronize the action from our data and exit
-    bool loadKeys = (isAutoloading && ad);
-    if (loadKeys) {
+    if (isAutoloading && !ad->isFresh) {
         if (!ad->isPresent && setPresent) {
             ad->isPresent = true;
-            foreach (int key, ad->keys)
+            foreach (int key, ad->keys) {
                 if (key != 0) {
                     Q_ASSERT(d->keyToAction.value(key) == ad);
                     d->impl->grabKey(key, true);
                 }
+            }
         }
-        ad->isDefaultEmpty = isDefaultEmpty;
         return ad->keys;
     }
 
     //now we are actually changing the shortcut of the action
 
     QList<int> added = d->nonemptyOnly(keys);
-
-    bool didCreate = false;
-    if (!ad) {
-        didCreate = true;
-        ad = d->addAction(actionId);
-        ad->isPresent = false;
-        //the rest will be initialized below
-    }
 
     //take care of stale keys and remove from added these that remain.
     foreach(int oldKey, ad->keys) {
@@ -312,20 +381,23 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
             }
             if (!remains) {
                 d->keyToAction.remove(oldKey);
-                if (ad->isPresent)
+                if (ad->isPresent) {
                     d->impl->grabKey(oldKey, false);
+                }
             }
         }
     }
 
     //update ad
     //note that ad->keys may still get changed later if conflicts are found
-    ad->isDefaultEmpty = isDefaultEmpty;
     if (setPresent)
         ad->isPresent = true;
-    if (isDefault)
-        ad->defaultKeys = keys;
     ad->keys = keys;
+    //maybe isFresh should really only be set if setPresent, but only two things should use !setPresent:
+    //- the global shortcuts KCM: very unlikely to catch KWin/etc.'s actions in isFresh state
+    //- KGlobalAccel::stealGlobalShortcutSystemwide(): only applies to actions with shortcuts
+    //  which can never be fresh if created the usual way
+    ad->isFresh = false;
 
     //update keyToAction and find conflicts with other actions
     //this code inherently does the right thing for duplicates in added
@@ -333,7 +405,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         if (!d->keyToAction.contains(added[i])) {
             d->keyToAction.insert(added[i], ad);
         } else {
-            //conflict
+            //clash
             for (int j = 0; j < ad->keys.count(); j++) {
                 if (ad->keys[j] == added[i]) {
                     if (ad->keys.last() == added[i]) {
@@ -348,13 +420,12 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         }
     }
 
-    if (ad->isPresent)
+    if (ad->isPresent) {
         foreach (int key, added) {
             Q_ASSERT(d->keyToAction.value(key) == ad);
             d->impl->grabKey(key, true);
         }
-
-    scheduleWriteSettings();
+    }
 
     return ad->keys;
 }
@@ -367,8 +438,6 @@ void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QLis
         return;
 
     uint setterFlags = NoAutoloading;
-    if (ad->isDefaultEmpty)
-        setterFlags |= IsDefaultEmpty;
 
     QList<int> oldKeys = ad->keys;
     QList<int> newKeys = setShortcut(actionId, keys, setterFlags);
@@ -402,84 +471,93 @@ void KdedGlobalAccel::scheduleWriteSettings()
 //slot
 void KdedGlobalAccel::writeSettings()
 {
-    typedef QHash<QString, actionData*> adHash; //avoid comma in macro arguments
-    foreach (const adHash *const mc, d->mainComponentHashes) {
-        foreach (const actionData *const ad, *mc) {
-            QString confKey = ad->actionId.join("\01");
-            if (ad->keys == ad->defaultKeys)
-            {
-                // If this is a default key, make sure we don't keep an old
-                // custom key in the config file
-                d->configGroup.deleteEntry(confKey);
+    foreach (const componentData *const cd, d->mainComponents) {
+        KConfigGroup configGroup(&d->config, cd->uniqueName);
+
+        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");  // :)
+        friendlyGroup.writeEntry("Friendly Name", cd->friendlyName);
+
+        foreach (const actionData *const ad, cd->actions) {
+            if (ad->isFresh) {
+                //no shortcut assignement took place, the action was only registered
+                //(we could still write it out to document its existence, but the "fresh"
+                //state should be regarded as transitional *only*.)
+                continue;
             }
-            else if (!d->isEmpty(ad->keys))
-                d->configGroup.writeEntry(confKey, stringFromKeys(ad->keys));
-            else
-                d->configGroup.writeEntry(confKey, "none");
+            QStringList entry(stringFromKeys(ad->keys));
+            entry.append(stringFromKeys(ad->defaultKeys));
+            entry.append(ad->friendlyName);
+
+            configGroup.writeEntry(ad->uniqueName, entry);
         }
     }
 
-    d->configGroup.sync();
+    d->config.sync();
 }
 
 
 void KdedGlobalAccel::loadSettings()
 {
-    //TODO: more sanity checks
-    QMap<QString, QString> entries = d->configGroup.entryMap();
-    QString empty;
-    QStringList lActionId(empty);
-    lActionId.append(empty);
+    QStringList lActionId;
+    for (int i = 0; i < 4; i++) {
+        lActionId.append(QString());
+    }
 
-    QMap<QString, QString>::const_iterator it;
-    for (it = entries.constBegin(); it != entries.constEnd(); ++it) {
-        //cut at the first occurrence *only*, so no split('\01')
-        int snip = it.key().indexOf('\01');
-        //TODO: definitely more sanity checks, like bounds check of (snip + 1) :)
-        lActionId[ComponentField] = it.key().left(snip);
-        lActionId[ActionField] = it.key().mid(snip + 1);
-        QList<int> lKeys = keysFromString(it.value());
+    foreach (const QString &groupName, d->config.groupList()) {
+        KConfigGroup configGroup(&d->config, groupName);
+        lActionId[ComponentUnique] = groupName;
 
-        actionData *ad = d->addAction(lActionId);
-        ad->keys = lKeys;
-        ad->isPresent = false;
-        //If we loaded an empty action, that action must have been saved
-        //because it was *not* empty by default. This boolean does not propagate
-        //out of this class, so it's ok to mess with it as we like.
-        ad->isDefaultEmpty = false;
+        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
+        lActionId[ComponentFriendly] = friendlyGroup.readEntry("Friendly Name");
 
-        foreach (int key, lKeys)
-            if (key != 0)
-                d->keyToAction.insert(key, ad);
+        foreach (const QString &confKey, configGroup.keyList()) {
+            QStringList entry = configGroup.readEntry(confKey, QStringList());
+            if (entry.size() != 3) {
+                continue;
+            }
+            lActionId[ActionUnique] = confKey;
+            lActionId[ActionFriendly] = entry[2];
+
+            actionData *ad = d->addAction(lActionId);
+            ad->keys = keysFromString(entry[0]);
+            ad->defaultKeys = keysFromString(entry[1]);
+            ad->isPresent = false;
+            ad->isFresh = false;
+    
+            foreach (int key, ad->keys) {
+                if (key != 0) {
+                    d->keyToAction.insert(key, ad);
+                }
+            }
+        }
     }
 }
-
 
 QList<int> KdedGlobalAccel::keysFromString(const QString &str)
 {
     QList<int> ret;
-    if (str == "none")
+    if (str == "none") {
         return ret;
-
-    QStringList strList = str.split('\01');
-    foreach (const QString &s, strList)
+    }
+    QStringList strList = str.split(' ');
+    foreach (const QString &s, strList) {
         ret.append(QKeySequence(s)[0]);
-
+    }
     return ret;
 }
 
 
 QString KdedGlobalAccel::stringFromKeys(const QList<int> &keys)
 {
-    //the special output "none" is generated at the caller
+    if (keys.isEmpty()) {
+        return "none";
+    }
     QString ret;
     foreach (int key, keys) {
         ret.append(QKeySequence(key).toString());
-        ret.append('\01');
+        ret.append(' ');
     }
-    //this is safe if the index is out of bounds
-    ret.truncate(ret.length() - 1);
-
+    ret.chop(1);
     return ret;
 }
 
@@ -490,7 +568,10 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
     if (!ad || !ad->isPresent)
         return false;
 
-    QStringList data = ad->actionId;
+    QStringList data(ad->parent->uniqueName);
+    data.append(ad->uniqueName);
+    data.append(ad->parent->friendlyName);
+    data.append(ad->friendlyName);
 #ifdef Q_WS_X11
     // pass X11 timestamp
     data.append(QString::number(QX11Info::appTime()));

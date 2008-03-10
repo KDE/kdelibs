@@ -196,6 +196,7 @@ class KDEUI_EXPORT KAction : public QWidgetAction
   Q_PROPERTY( bool shortcutConfigurable READ isShortcutConfigurable WRITE setShortcutConfigurable )
   Q_PROPERTY( KShortcut globalShortcut READ globalShortcut WRITE setGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
+  Q_PROPERTY( bool globalShortcutEnabled READ isGlobalShortcutEnabled )
   Q_FLAGS( ShortcutType )
 
 public:
@@ -352,25 +353,29 @@ public:
 
     /**
      * Assign a global shortcut for this action. Global shortcuts
-     * allow your actions to respond to keys independently of the focused window.
-     * Unlike regular shortcuts, the application's window does not need focus
-     * for them to be activated.
+     * allow an action to respond to key shortcuts independently of the focused window,
+     * i.e. the action will trigger if the keys were pressed no matter where in the X session.
      *
-     * When an action, identified by main component name and text(), is assigned
+     * This method will do nothing if isGlobalShortcutEnabled() returns false.
+     *
+     * When an action, identified by main component name and objectName(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
-     * be saved. The shortcut will then be restored every time the action's 
-     * globalShortcutAllowed flag becomes true.
-     * \e This \e includes \e calling \e setGlobalShortcut()!
-     * If you actually want to change the global shortcut you have to set
-     * @p loading to NoAutoloading. The new shortcut will be saved again.
+     * be saved. The shortcut will then be restored every time setGlobalShortcut() is
+     * called with @p loading == Autoloading.
      *
-     * \param shortcut global shortcut(s) to assign. Will be ignored unless \p loading is set to NoAutoloading.
+     * If you actually want to change the global shortcut you have to set
+     * @p loading to NoAutoloading. The new shortcut will be automatically saved again.
+     *
+     * \param shortcut global shortcut(s) to assign. Will be ignored unless \p loading is set to NoAutoloading or this is the first time ever you call this method (see above).
      * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
      *             or both (the default).
-     * \param loading load the previous shortcut, which might have been changed by the user (Autoloading, the default)
-     *                 or really set \param shortcut as the new shortcut (NoAutoloading).
-     *
-     * \sa KGlobalAccel
+     * \param loading if Autoloading, assign the global shortcut this action has previously had if any.
+     *                   That way user preferences and changes made to avoid clashes will be conserved.
+     *                if NoAutoloading the given shortcut will be assigned without looking up old values.
+     *                   You should only do this if the user wants to change the shortcut or if you have
+     *                   another very good reason.
+     * \note the default shortcut will never be influenced by autoloading - it will be set as given.
+     * \sa isGlobalShortcutEnabled()
      * \sa globalShortcut()
      */
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type =
@@ -380,20 +385,43 @@ public:
     /**
      * Returns true if this action is permitted to have a global shortcut.
      * Defaults to false.
+     * Use isGlobalShortcutEnabled() instead.
      */
-    bool globalShortcutAllowed() const;
+    KDE_DEPRECATED bool globalShortcutAllowed() const;
 
     /**
      * Indicate whether the programmer and/or user may define a global shortcut for this action.
      * Defaults to false. Note that calling setGlobalShortcut() turns this on automatically.
      *
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
-     * \param loading (see setGlobalShortcut). Ignore this parameter.
+     * \param loading if Autoloading, assign to this action the global shortcut it has previously had
+     *                if any.
      */
-    void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
-    //^ TODO: NoAutoloading would make little sense in this method, right? We don't have the shortcut to set...
-    // KDE5: remove loading parameter.
+    KDE_DEPRECATED void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
 
+    /**
+     * Returns true if this action is enabled to have a global shortcut.
+     * Defaults to false.
+     * @see setGlobalShortcutEnabled()
+     */
+    bool isGlobalShortcutEnabled() const;
+
+    /**
+     * Enables this action to have a global shortcut. The action must have a per main component unique
+     * objectName() to enable cross-application bookeeping. If the objectName() is empty this method will
+     * return false.
+     * It is mandatory that the objectName() doesn't change once isGlobalshortcutEnabled()
+     * has become true.
+     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
+     * don't have to set an objectName explicitly.
+     */
+    bool enableGlobalShortcut();
+
+    /**
+     * Sets the globalShortcutEnabled property to false and sets the global shortcut to an
+     * empty shortcut.
+     */
+    void disableGlobalShortcut();
 
     KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
     KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;

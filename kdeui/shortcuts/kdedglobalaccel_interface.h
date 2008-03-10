@@ -32,6 +32,7 @@
 #include <QtDBus/QtDBus>
 
 Q_DECLARE_METATYPE(QList<int>)
+Q_DECLARE_METATYPE(QList<QStringList>)
 
 /*
  * Proxy class for interface org.kde.KdedGlobalAccel
@@ -50,6 +51,7 @@ public:
      : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
     {
         qDBusRegisterMetaType<QList<int> >();
+        qDBusRegisterMetaType<QList<QStringList> >();
     }
 
     ~OrgKdeKdedGlobalAccelInterface() {}
@@ -98,6 +100,31 @@ public Q_SLOTS: // METHODS
                              argumentList);
     }
 
+    Q_NOREPLY void doRegister(const QStringList &actionId)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(actionId);
+        callWithArgumentList(QDBus::NoBlock, QLatin1String("doRegister"),
+                             argumentList);
+    }
+
+    QDBusReply<QList<QStringList> > allMainComponents()
+    {
+        QList<QVariant> argumentList;
+        // argumentList << qVariantFromValue(void); :)
+        return callWithArgumentList(QDBus::Block, QLatin1String("allMainComponents"),
+                                    argumentList);
+    }
+
+
+    QDBusReply<QList<QStringList> > allActionsForComponent(const QStringList &actionId)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(actionId);
+        return callWithArgumentList(QDBus::Block, QLatin1String("allActionsForComponent"),
+                                    argumentList);
+    }
+    
 //The signals part seems to work by pure black magic, i.e. clever hacks
 //with the Qt meta-object / signals & slots system. Maybe.
 Q_SIGNALS: // SIGNALS

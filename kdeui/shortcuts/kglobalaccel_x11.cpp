@@ -179,9 +179,11 @@ void KGlobalAccelImpl::x11MappingNotify()
 	KKeyServer::initializeMods();
 	calculateGrabMasks();
 	
+#if 0   //### investigate!
 	if (oldKeyModMaskXAccel != g_keyModMaskXAccel || oldKeyModMaskXOnOrOff != g_keyModMaskXOnOrOff)
 		// Do new XGrabKey()s.
 		m_owner->regrabKeys();
+#endif
 }
 
 bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )

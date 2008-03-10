@@ -49,17 +49,25 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <ktoolinvocation.h>
+#include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include "kaction.h"
 #include "kaction_p.h"
-#include "kactioncollection.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
 
 
-//TODO what was the problem that got fixed recently in the old version? - forward port if necessary
+//### copied over from kdedglobalaccel.cpp to avoid more includes
+enum actionIdFields
+{
+    ComponentUnique = 0,
+    ActionUnique = 1,
+    ComponentFriendly = 2,
+    ActionFriendly = 3
+};
+
 
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
      : isUsingForeignComponentName(false),
@@ -74,6 +82,7 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
 }
+
 
 KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate(this))
@@ -101,6 +110,7 @@ bool KGlobalAccel::isEnabled() const
 {
     return d->enabled;
 }
+
 
 void KGlobalAccel::setEnabled( bool enabled )
 {
@@ -135,77 +145,88 @@ KGlobalAccel *KGlobalAccel::self( )
     return s_instance;
 }
 
-QList<int> KGlobalAccelPrivate::updateGlobalShortcutInKded(KAction* action, const QStringList& actionId, uint flags, uint initialSetterFlags)
-{
-    uint setterFlags = initialSetterFlags;
-    const KShortcut defaultShortcut = action->globalShortcut(KAction::DefaultShortcut);
-    const KShortcut activeShortcut = action->globalShortcut();
-    if (flags & KAction::NoAutoloading)
-        setterFlags |= KdedGlobalAccel::NoAutoloading;
-    if (defaultShortcut.isEmpty())
-        setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
-    if (defaultShortcut == activeShortcut)
-        setterFlags |= KdedGlobalAccel::IsDefault;
 
-    const QList<int> result = iface.setShortcut(actionId,
-                                                intListFromShortcut(activeShortcut),
-                                                setterFlags);
-    const KShortcut scResult(shortcutFromIntList(result));
-
-    if (scResult != activeShortcut)
-        action->d->setActiveGlobalShortcutNoEnable(scResult);
-    return result;
-}
-
-void KGlobalAccelPrivate::updateGlobalShortcutAllowed(KAction *action, uint flags)
+void KGlobalAccelPrivate::doRegister(KAction *action)
 {
     if (!action)
         return;
 
-    bool oldEnabled = actionToName.contains(action);
-    bool newEnabled = action->globalShortcutAllowed();
-
-    if (oldEnabled == newEnabled)
+    const bool isRegistered = actionToName.contains(action);
+    if (isRegistered || action->objectName().isEmpty())
         return;
 
-    if (action->text().isEmpty())
-        return;
-    QStringList actionId(mainComponentName);
-    actionId.append(action->text());
-    //TODO: what about i18ned names?
+    QStringList actionId = makeActionId(action);
 
-    if (!oldEnabled && newEnabled) {
-        // action is now enabled
-        nameToAction.insert(actionId.at(1), action);
-        actionToName.insert(action, actionId.at(1));
-        updateGlobalShortcutInKded(action, actionId, flags, KdedGlobalAccel::SetPresent);
-    }
-    else if (oldEnabled && !newEnabled) {
-        // action is now disabled
-        nameToAction.remove(actionToName.take(action));
-        iface.setInactive(actionId);
-    }
+    nameToAction.insert(actionId.at(ActionUnique), action);
+    actionToName.insert(action, actionId.at(ActionUnique));
+    iface.doRegister(actionId);
+}
+
+
+void KGlobalAccelPrivate::setInactive(KAction *action)
+{
+    if (!action)
+        return;
+
+    const bool isRegistered = actionToName.contains(action);
+    if (!isRegistered || action->objectName().isEmpty())
+        return;
+
+    QStringList actionId = makeActionId(action);
+
+    nameToAction.remove(actionToName.take(action));
+    iface.setInactive(actionId);
 }
 
 
 void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 {
-    if (!action)
+    if (!action || action->objectName().isEmpty()) {
         return;
-
-    if (action->text().isEmpty())
-        return;
-    QStringList actionId(mainComponentName);
-    actionId.append(action->text());
-    //TODO: what about i18ned names?
-
-    const QList<int> result = updateGlobalShortcutInKded(action, actionId, flags, 0);
-
-    //We might be able to avoid that call sometimes, but it's neither worth the effort nor
-    //the bytes to determine the cases where it's safe to avoid it.
-    if (isUsingForeignComponentName) {
-        iface.setForeignShortcut(actionId, result);
     }
+
+    QStringList actionId = makeActionId(action);
+    const KShortcut activeShortcut = action->globalShortcut();
+    const KShortcut defaultShortcut = action->globalShortcut(KAction::DefaultShortcut);
+
+    uint setterFlags = 0;
+    if (flags & KAction::NoAutoloading) {
+        setterFlags |= KdedGlobalAccel::NoAutoloading;
+    }
+
+    if (flags & KAction::ActiveShortcut) {
+        uint activeSetterFlags = setterFlags;
+        if (!isUsingForeignComponentName) {
+            activeSetterFlags |= KdedGlobalAccel::SetPresent;
+        }
+
+        const QList<int> result = iface.setShortcut(actionId,
+                                                    intListFromShortcut(activeShortcut),
+                                                    activeSetterFlags);
+        const KShortcut scResult(shortcutFromIntList(result));
+        if (isUsingForeignComponentName) {
+            iface.setForeignShortcut(actionId, result);
+        } else if (scResult != activeShortcut) {
+            action->d->setActiveGlobalShortcutNoEnable(scResult);
+        }
+    }
+
+    if (flags & KAction::DefaultShortcut) {
+        iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
+                          setterFlags | KdedGlobalAccel::IsDefault);
+    }
+}
+
+
+QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
+{
+    Q_ASSERT(!mainComponentName.isEmpty());
+    Q_ASSERT(!action->objectName().isEmpty());
+    QStringList ret(mainComponentName);
+    ret.append(action->objectName());
+    ret.append(mainComponentName); //### find (or introduce) a way to get a "friendly" component name
+    ret.append(action->text());
+    return ret;
 }
 
 
@@ -235,13 +256,11 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
 {
     //TODO: can we make it so that we don't have to check the mainComponentName? (i.e. targeted signals)
     // Well, how about making the full QStringList the key in nameToAction?
-    if (actionId.at(0) != mainComponentName || isUsingForeignComponentName)
+    if (actionId.at(ComponentUnique) != mainComponentName || isUsingForeignComponentName)
         return;
 
-    KAction *action = nameToAction.value(actionId.at(1));
-    if (!action)
-        return;
-    if (!action->isEnabled())
+    KAction *action = nameToAction.value(actionId.at(ActionUnique));
+    if (!action || !action->isEnabled())
         return;
 
 #ifdef Q_WS_X11
@@ -249,11 +268,11 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
     // TODO The 100%-correct solution should probably be handling this action
     // in the proper place in relation to the X events queue in order to avoid
     // the possibility of wrong ordering of user events.
-    Time timestamp = actionId.at( 2 ).toULong();
-    if( NET::timestampCompare( timestamp, QX11Info::appTime()) > 0 )
-        QX11Info::setAppTime( timestamp );
-    if( NET::timestampCompare( timestamp, QX11Info::appUserTime()) > 0 )
-        QX11Info::setAppUserTime( timestamp );
+    Time timestamp = actionId.at(4).toULong();
+    if( NET::timestampCompare(timestamp, QX11Info::appTime()) > 0)
+        QX11Info::setAppTime(timestamp);
+    if( NET::timestampCompare(timestamp, QX11Info::appUserTime()) > 0)
+        QX11Info::setAppUserTime(timestamp);
 #endif
 
     action->trigger();
@@ -262,7 +281,7 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
 void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
                                                 const QList<int> &keys)
 {
-    KAction *action = nameToAction.value(actionId.at(1));
+    KAction *action = nameToAction.value(actionId.at(ActionUnique));
     if (!action)
         return;
 
@@ -293,8 +312,21 @@ void KGlobalAccelPrivate::reRegisterAll()
     nameToAction.clear();
     actionToName.clear();
     foreach(KAction *const action, allActions) {
-        updateGlobalShortcutAllowed(action, 0/*flags*/);
+        doRegister(action);
+        updateGlobalShortcut(action, KAction::Autoloading | KAction::ActiveShortcut);
     }
+}
+
+
+QList<QStringList> KGlobalAccel::allMainComponents()
+{
+    return d->iface.allMainComponents();
+}
+
+
+QList<QStringList> KGlobalAccel::allActionsForComponent(const QStringList &actionId)
+{
+    return d->iface.allActionsForComponent(actionId);
 }
 
 
@@ -308,11 +340,15 @@ QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 //static
 bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq)
 {
+    if (actionIdentifier.size() < 4) {
+        return false;
+    }
     QString title = i18n("Conflict with Global Shortcut");
     QString message = i18n("The '%1' key combination has already been allocated "
                            "to the global action \"%2\" in %3.\n"
                            "Do you want to reassign it from that action to the current one?",
-                           seq.toString(), actionIdentifier.at(1), actionIdentifier.at(0));
+                           seq.toString(), actionIdentifier.at(ActionFriendly),
+                           actionIdentifier.at(ComponentFriendly));
 
     return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
            == KMessageBox::Continue;
@@ -324,7 +360,7 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 {
     //get the shortcut, remove seq, and set the new shorctut
     const QStringList actionId = self()->d->iface.action(seq[0]);
-    if (actionId.size() < 2) // not a global shortcut
+    if (actionId.size() < 4) // not a global shortcut
         return;
     QList<int> sc = self()->d->iface.shortcut(actionId);
 

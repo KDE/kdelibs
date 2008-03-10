@@ -47,6 +47,8 @@ void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
 void KActionPrivate::init(KAction *q_ptr)
 {
   q = q_ptr;
+  globalShortcutEnabled = false;
+  firstTimeSetGlobalShortcut = true;
 
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
 
@@ -81,15 +83,18 @@ KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
 KAction::~KAction()
 {
     // When deleting actions in the configuration module, we don't want to
-    // unregister the global shortcut
+    // deactivate the global shortcut
     if (property("isConfigurationAction").toBool() == false) {
-        if(d->globalShortcutAllowed) {
-            //the combination of the following lines essentially
-            //- removes the action from KGlobalAccel
-            //- marks the action as inactive in the KDED module
-            d->globalShortcutAllowed = false;
-            KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
+        if (d->globalShortcutEnabled) {
+            // - remove the action from KGlobalAccel
+            // - mark the action as inactive in the KDED module
+            d->globalShortcutEnabled = false;
+            KGlobalAccel::self()->d->setInactive(this);
         }
+    } else {
+        // we leak memory in KGlobalAccel for this action's data set.
+        // HOWEVER this is a limited leak because if/when this action is
+        // created again there will be no additional memory consumption.
     }
 
     KGestureMap::self()->removeGesture(d->shapeGesture, this);
@@ -186,8 +191,13 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
                                  GlobalShortcutLoading load )
 {
   Q_ASSERT(type);
-
   bool changed = false;
+  if (!d->globalShortcutEnabled) {
+    //return;
+    changed = true;
+    enableGlobalShortcut();   //backwards compatibility
+  }
+
   if ((type & DefaultShortcut) && d->defaultGlobalShortcut != shortcut) {
     d->defaultGlobalShortcut = shortcut;
     changed = true;
@@ -198,32 +208,61 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
     changed = true;
   }
 
-  if (changed)
+  //We want to have updateGlobalShortcuts called on a new action in any case so that
+  //it will be registered properly. In the case of the first setShortcut() call getting an
+  //empty shortcut parameter this would not happen...
+  if (changed || d->firstTimeSetGlobalShortcut) {
     KGlobalAccel::self()->d->updateGlobalShortcut(this, type | load);
-
-  //This *must* be called after setting the shortcut. The shortcut will be fixed as
-  //soon as it has been enabled once. If we called updateGlobalShortcutAllowed too
-  //early, the shortcut would be fixed to empty.
-  if (!d->globalShortcutAllowed) {
-    d->globalShortcutAllowed = true;
-    KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, type | load);
+    d->firstTimeSetGlobalShortcut = false;
   }
-
 }
 
-//private
-bool KAction::globalShortcutAllowed( ) const
+bool KAction::globalShortcutAllowed() const
 {
-  return d->globalShortcutAllowed;
+  return d->globalShortcutEnabled;
+}
+
+bool KAction::isGlobalShortcutEnabled() const
+{
+  return d->globalShortcutEnabled;
 }
 
 void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading load )
 {
-  if (d->globalShortcutAllowed != allowed) {
-    d->globalShortcutAllowed = allowed;
-
-    KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, load);
+  if (d->globalShortcutEnabled == allowed)
+    return;
+  
+  d->globalShortcutEnabled = allowed;
+  if (allowed) {
+    KGlobalAccel::self()->d->doRegister(this);
+  } else {
+    KGlobalAccel::self()->d->setInactive(this);
   }
+}
+
+bool KAction::enableGlobalShortcut()
+{
+    //If the object name was nonempty before and globalShortcutEnabled() == true -
+    //well, you shouldn't have changed the objectName() anyway so we don't check that.
+    if (objectName().isEmpty()) {
+        return false;
+    }
+    if (d->globalShortcutEnabled) {
+        return true;
+    }
+    d->globalShortcutEnabled = true;
+    KGlobalAccel::self()->d->doRegister(this);
+    return true;
+}
+
+void KAction::disableGlobalShortcut()
+{
+    d->globalShortcut = KShortcut();
+    d->defaultGlobalShortcut = KShortcut();
+    if (d->globalShortcutEnabled) {
+        d->globalShortcutEnabled = false;
+        KGlobalAccel::self()->d->setInactive(this);
+    }
 }
 
 KShapeGesture KAction::shapeGesture( ShortcutTypes type ) const

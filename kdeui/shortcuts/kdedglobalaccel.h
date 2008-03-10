@@ -19,6 +19,20 @@
     Boston, MA 02110-1301, USA.
 */
 
+/*
+data per main component:
+-unique name
+-i18n name
+-(KActions)
+
+data per KAction:
+-unique name
+-i18n name
+-shortcut
+-default shortcut (special purpose API for KCMs)
+
+ */
+
 #ifndef KDEDGLOBALACCEL_H
 #define KDEDGLOBALACCEL_H
 
@@ -35,7 +49,6 @@ class KdedGlobalAccel : public KDEDModule
 public:
     enum SetShortcutFlags
     {
-        IsDefaultEmpty = 1,
         SetPresent = 2,
         NoAutoloading = 4,
         IsDefault = 8
@@ -44,8 +57,9 @@ public:
     KdedGlobalAccel(QObject*, const QList<QVariant>&);
     ~KdedGlobalAccel();
 
-    QStringList allComponents();
-    QStringList allActionsForComponent(const QString& component);
+//All of the following public methods and signals are part of the DBus interface
+    QList<QStringList> allComponents();
+    QList<QStringList> allActionsForComponent(const QStringList &actionId);
 
     QList<int> allKeys();
     QStringList allKeysAsString();
@@ -64,13 +78,22 @@ public:
     //conflict resolution but won't trigger.
     void setInactive(const QStringList &actionId);
 
+    void doRegister(const QStringList &actionId);
+
     //called by the implementation to inform us about key presses
-    //returns true when the key was handled
+    //returns true if the key was handled
     bool keyPressed(int keyQt);
 
-    //not implementetd ATM, TODO: why does it even exist?
-    void regrabKeys() {}
-//the DBus interface
+////////////////////////////////////////
+    //should be called from KAction::setGlobalShortcut() once after application startup.
+    //as a little hack, to lose the data of a component permanently you can first "unset"
+    //all shortcuts and then set the component name to the empty string.
+    void setComponentCommonName(const QString &uniqueName, const QString &commonName);
+
+    QString componentCommonName(const QString &uniqueName);
+    QString actionCommonName(const QString &uniqueName);
+
+
 Q_SIGNALS:
     void invokeAction(const QStringList &actionId);
     void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
