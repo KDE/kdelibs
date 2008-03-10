@@ -275,6 +275,13 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
   }
 }
 
+static inline void getLanguagesFromVariable(QStringList& list, const char* variable)
+{
+  QByteArray var( qgetenv(variable) );
+  if (!var.isEmpty())
+    list += QFile::decodeName(var).split(':');
+}
+
 void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 {
   KConfigGroup cg(config, "Locale");
@@ -299,10 +306,12 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 
   // Collect languages set by KDE_LANG.
   if (useEnv)
-    list += QFile::decodeName(getenv("KDE_LANG")).split(':');
+    getLanguagesFromVariable(list, "KDE_LANG");
 
   // Collect languages set by KDE config.
-  list += cg.readEntry("Language", QString()).split(':');
+  QString languages(cg.readEntry("Language", QString()));
+  if (!languages.isEmpty())
+    list += languages.split(':');
 
   // Collect languages read from environment variables by gettext(3).
   QStringList rawList;
@@ -311,13 +320,13 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 
     // LANGUAGE should contain colon-separated list of exact language codes,
     // so add them directly.
-    list += QFile::decodeName(getenv("LANGUAGE")).split(':');
+    getLanguagesFromVariable(list, "LANGUAGE");
 
     // Other environment variables contain locale string, which should
     // be checked for all combinations yielding language codes.
-    rawList += QFile::decodeName(getenv("LC_ALL"));
-    rawList += QFile::decodeName(getenv("LC_MESSAGES"));
-    rawList += QFile::decodeName(getenv("LANG"));
+    getLanguagesFromVariable(rawList, "LC_ALL");
+    getLanguagesFromVariable(rawList, "LC_MESSAGES");
+    getLanguagesFromVariable(rawList, "LANG");
   }
 #ifdef Q_WS_WIN // how about Mac?
   rawList += QLocale::system().name(); // fall back to the system language
@@ -2018,7 +2027,7 @@ void KLocalePrivate::initFileNameEncoding()
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
-  utf8FileEncoding = getenv("KDE_UTF8_FILENAMES") != 0;
+  utf8FileEncoding = !qgetenv("KDE_UTF8_FILENAMES").isEmpty();
   if (utf8FileEncoding)
   {
     QFile::setEncodingFunction(KLocalePrivate::encodeFileNameUTF8);
