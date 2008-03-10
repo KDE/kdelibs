@@ -738,11 +738,10 @@ void Interpreter::mark(bool)
     if (m_globalExec.exception() && !m_globalExec.exception()->marked())
         m_globalExec.exception()->mark();
 
-    for (int c = 0; c < m_numCachedActivations; ++c) {
-        ActivationImp* act = m_cachedActivations[c];
-        if (!act->marked())
-            act->mark();
-    }
+    // Do not let cached activations survive the GC; as they have an unfortunate
+    // tendenacy to pin blocks, increasing their number and hence spreading out
+    // the objects somewhat
+    m_numCachedActivations = 0;
 }
 
 Interpreter* Interpreter::interpreterWithGlobalObject(JSObject* globalObject)
