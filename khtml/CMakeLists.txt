@@ -401,6 +401,7 @@ if (KHTML_BUILD_TESTREGRESSION)
         test_regression_fontoverload.cpp
     )
 
+    include_directories( ${QT_INCLUDE_DIR}/../src/3rdparty/harfbuzz/src )
 
     kde4_add_executable(testregression ${testregression_SRCS})
 
