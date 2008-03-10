@@ -212,8 +212,11 @@ void RenderCanvas::setNeedsWidgetMasks( bool b )
     m_needsWidgetMasks = b;
     KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_view);
     // ### should be reversible
-    if (k && b && k->m_kwp->isRedirected())
+    if (k && b && k->m_kwp->isRedirected()) {
         k->m_kwp->setIsRedirected(!b);
+        if (k->m_kwp->renderWidget())
+            k->m_kwp->renderWidget()->setNeedsLayout(true);
+    }
 }
 
 void RenderCanvas::updateDocumentSize()
