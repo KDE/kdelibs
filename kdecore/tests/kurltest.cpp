@@ -338,9 +338,11 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
 void KUrlTest::testHostName()
 {
-    KUrl u1("http://www.Abc.de");
+    KUrl u1("http://www.Abc.de/FR");
     QCOMPARE(u1.host(), QString("www.abc.de")); // lowercase
-    QCOMPARE(u1.url(), QString("http://www.abc.de")); // lowercase
+    QCOMPARE(u1.path(), QString("/FR")); // lowercase
+    QCOMPARE(u1.url(), QString("http://www.abc.de/FR")); // hostname is lowercase
+    QCOMPARE(u1.prettyUrl(), QString("http://www.abc.de/FR")); // hostname is lowercase
 
     KUrl u2;
     u2.setProtocol("http");
