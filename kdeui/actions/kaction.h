@@ -133,15 +133,30 @@ class KRockerGesture;
  *
  * Here is an example of enabling a "New [document]" action
  * \code
- * KAction *newAct = new KAction("filenew", i18n("&New"), actionCollection(), "new");
- * newAct->setShortcut(KStandardShortcut::shortcut(KStandardShortcut::New));
- * connect(newAct, SIGNAL(triggered(bool)), SLOT(fileNew()));
+ * KAction *newAct = actionCollection()->addAction(
+ *              KStandardAction::New,   //< see KStandardAction
+ *              this,                   //< Receiver
+ *              SLOT(fileNew())  );     //< SLOT
  * \endcode
  *
- * This section creates our action.  It says that wherever this action is
- * displayed, it will use "&New" as the text, the standard icon, and
- * the standard shortcut.  It further says that whenever this action
- * is invoked, it will use the fileNew() slot to execute it.
+ * This section creates our action. Text, Icon and Shortcut will be set from
+ * KStandardAction. KStandardAction ensures your application complies to the
+ * platform standards. When triggered the \c fileNew() slot will be called.
+ *
+ * @see KStandardAction for more information. 
+ *
+ * If you want to create your own non standard action use
+ * \code
+ * KAction *newAct = actionCollection()->addAction("quick-connect");
+ * newAct->setText(i18n("Quick Connect"))
+ * newAct->setIcon(KIcon("quick-connect"));
+ * newAct->setShortcut(Qt::Key_F6);
+ * connect(newAct, SIGNAL(triggered()), this, SLOT(quickConnect()));
+ *
+ * This section creates our action. It will display the text "Quick Connect"
+ * and use the Icon "quick-connect". \c F6 will trigger the action. It further
+ * says that whenever this action is invoked, it will use the quickConnect()
+ * slot to execute it.
  *
  * \code
  * QMenu *file = new QMenu;
