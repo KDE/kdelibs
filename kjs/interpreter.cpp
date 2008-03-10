@@ -248,6 +248,8 @@ void Interpreter::init()
     stackPtr  = stackBase;
     stackEnd  = stackBase + initialStackSize;
 
+    m_numCachedActivations = 0;
+
     interpreterMap().set(m_globalObject, this);
 
     if (s_hook) {
@@ -327,6 +329,17 @@ unsigned char* Interpreter::extendStack(size_t needed)
     std::free(oldBase);
 
     return stackAlloc(needed);
+}
+
+void Interpreter::recycleActivation(ActivationImp* act)
+{
+    ASSERT(act->localStore == 0); // Should not refer to anything by now
+    if (m_numCachedActivations >= MaxCachedActivations)
+        return;
+
+    act->clearProperties();
+    m_cachedActivations[m_numCachedActivations] = act;
+    ++m_numCachedActivations;
 }
 
 JSObject* Interpreter::globalObject() const
@@ -724,6 +737,12 @@ void Interpreter::mark(bool)
         m_globalObject->mark();
     if (m_globalExec.exception() && !m_globalExec.exception()->marked())
         m_globalExec.exception()->mark();
+
+    for (int c = 0; c < m_numCachedActivations; ++c) {
+        ActivationImp* act = m_cachedActivations[c];
+        if (!act->marked())
+            act->mark();
+    }
 }
 
 Interpreter* Interpreter::interpreterWithGlobalObject(JSObject* globalObject)

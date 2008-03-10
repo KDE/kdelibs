@@ -34,6 +34,7 @@ namespace KJS {
   class SavedBuiltins;
   class TimeoutChecker;
   class Package;
+  class ActivationImp;
 
 #if USE(BINDINGS)
   namespace Bindings {
@@ -363,6 +364,17 @@ namespace KJS {
     }
 
     void stackFree(size_t size) { stackPtr-= size; } // ### shrink it?
+
+    ActivationImp* getRecycledActivation() {
+        ActivationImp* out = 0;
+        if (m_numCachedActivations) {
+            m_numCachedActivations--;
+            out = m_cachedActivations[m_numCachedActivations];
+        }
+        return out;
+    }
+
+    void recycleActivation(ActivationImp* act);
 protected:
     virtual ~Interpreter(); // only deref should delete us
     virtual bool shouldInterruptScript() const { return true; }
@@ -399,6 +411,12 @@ private:
     unsigned char* stackPtr;  // current top/next to allocate
     unsigned char* stackEnd;  // last address in the stack
     unsigned char* extendStack(size_t needed);
+
+    // A list of cached activations
+    enum {MaxCachedActivations = 32};
+
+    ActivationImp* m_cachedActivations[MaxCachedActivations];
+    int            m_numCachedActivations;
 
     // Chained list of interpreters (ring) - for collector
     static Interpreter* s_hook;

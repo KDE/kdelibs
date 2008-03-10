@@ -221,7 +221,9 @@ FunctionExecState::FunctionExecState(Interpreter* intp, JSObject* thisObject,
     m_codeType    = FunctionCode;
     m_callingExec = callingExecState;
     scope = function->scope();
-    m_variable = new ActivationImp();// TODO: DontDelete ? (ECMA 10.2.3)
+    m_variable = m_interpreter->getRecycledActivation();// TODO: DontDelete ? (ECMA 10.2.3)
+    if (!m_variable)
+        m_variable = new ActivationImp();
     scope.push(m_variable);
     m_thisVal  = thisObject;
 }

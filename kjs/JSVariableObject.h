@@ -46,7 +46,7 @@ namespace KJS {
 
         enum {
           LengthSlot,
-          OnStackSlot,
+          OnStackSlot, // whether the storage is on stack
           NumVarObjectSlots = 2
         };
 

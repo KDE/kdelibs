@@ -126,9 +126,14 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   if (activation->onStackSlot()) {
     activation->localStorage = 0;
 
-    // Also free the stack space.
-    exec->dynamicInterpreter()->stackFree(stackSize);
+    // Recycle it for reuse
+    exec->dynamicInterpreter()->recycleActivation(activation);
   }
+
+   // Also free the stack space. This should be done if we originally
+   // allocated on the stack, even if it got torn off
+  if (body->stackAllocateActivation())
+    exec->dynamicInterpreter()->stackFree(stackSize);
 
   // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
