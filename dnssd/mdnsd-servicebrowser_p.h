@@ -46,6 +46,8 @@ public:
 	ServiceBrowser* m_parent;
 	QTimer timeout;
 
+	// get already found service identical to s or just return s if not found
+	RemoteService::Ptr find(RemoteService::Ptr s) const;
 	virtual void customEvent(QEvent* event);
 public Q_SLOTS:
 	void queryFinished();

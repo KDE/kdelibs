@@ -110,6 +110,14 @@ QList<RemoteService::Ptr> ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
+RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
+{
+    Q_FOREACH (RemoteService::Ptr i, m_services) if (*s==*i) return i;
+    Q_FOREACH (RemoteService::Ptr i, m_duringResolve) if (*s==*i) return i;
+    return s;
+}
+
+
 void ServiceBrowserPrivate::customEvent(QEvent* event)
 {
 	if (event->type()==QEvent::User+SD_ERROR) {
@@ -132,6 +140,7 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 		    }
 		}
 		else {
+		    svr=find(svr);
 		    emit m_parent->serviceRemoved(svr);
 		    m_services.removeAll(svr);
 		}

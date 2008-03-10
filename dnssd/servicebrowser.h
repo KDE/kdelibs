@@ -45,8 +45,8 @@ browser->startBrowse();
 \endcode
  
 In above example addService will be called for every web server already running or just appearing 
-on network and delService will be called when server is stopped. Because no DomainBrowser was passed 
-to constructor, domains configured by user will be searched.
+on network and delService will be called when server is stopped. Because no domain was passed 
+to constructor, default domain will be searched.
  
  
 @author Jakub Stachowski

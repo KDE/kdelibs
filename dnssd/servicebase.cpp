@@ -70,8 +70,14 @@ QMap<QString,QByteArray> ServiceBase::textData() const
     return d->m_textData;
 }
 
+bool ServiceBase::operator==(const ServiceBase& o) const
+{
+    return d->m_domain==o.d->m_domain && d->m_serviceName==o.d->m_serviceName && d->m_type==o.d->m_type;
+}
+
 void ServiceBase::virtual_hook(int, void*)
 {}
+
 
 bool domainIsLocal(const QString& domain)
 {

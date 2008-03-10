@@ -96,6 +96,12 @@ void ServiceBrowserPrivate::serviceResolved(bool success)
 	}
 }
 
+RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
+{
+    Q_FOREACH (RemoteService::Ptr i, m_services) if (*s==*i) return i;
+    Q_FOREACH (RemoteService::Ptr i, m_duringResolve) if (*s==*i) return i;
+    return s;
+}
 
 void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
@@ -114,7 +120,7 @@ void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QSt
 void ServiceBrowserPrivate::gotRemoveService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
 	m_timer.start(TIMEOUT_LAN);
-	RemoteService::Ptr svr(new RemoteService(name, type,domain));
+	RemoteService::Ptr svr=find(RemoteService::Ptr(new RemoteService(name, type,domain)));
 	emit m_parent->serviceRemoved(svr);
 	m_services.removeAll(svr);
 }

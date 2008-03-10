@@ -89,6 +89,11 @@ public:
 	Returns read only map of text properties.  It is only valid for local and resolved remote services.
 	 */
 	QMap<QString,QByteArray> textData() const;
+	
+	/**
+	Compares service name, type and domain. This is enough to for unique identification and omitting
+	port, host and text data allows to compare resolved and unresolved services */
+	bool operator==(const ServiceBase& o) const;
 
 protected:
 	ServiceBase(ServiceBasePrivate* const d);
