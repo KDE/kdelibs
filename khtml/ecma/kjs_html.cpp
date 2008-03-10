@@ -2945,6 +2945,10 @@ KJS::HTMLCollection::~HTMLCollection()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
+bool KJS::HTMLCollection::masqueradeAsUndefined() const {
+    return hidden;
+}
+
 bool KJS::HTMLCollection::toBoolean(ExecState *) const {
     return !hidden;
 }
