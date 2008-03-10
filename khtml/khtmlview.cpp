@@ -535,6 +535,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
     init();
     widget()->setMouseTracking(true);
     QTimer::singleShot(0, this, SLOT(delayedInit()));
+
+    // remove when alien widgets work better (#157883)
+    setAttribute(Qt::WA_DontCreateNativeAncestors);
 }
 
 KHTMLView::~KHTMLView()
@@ -574,6 +577,9 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
+
+    // remove when alien widgets work better (#157883)
+    widget()->setAttribute(Qt::WA_NativeWindow);
 }
 
 void KHTMLView::delayedInit()
