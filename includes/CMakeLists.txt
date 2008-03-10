@@ -634,53 +634,58 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
-install( FILES
-  KJS/CString
-  KJS/Collector
-  KJS/Completion
-  KJS/DeclaredFunctionImp
-  KJS/Error
-  KJS/ExecState
-  KJS/FunctionImp
-  KJS/HashEntry
-  KJS/Identifier
-  KJS/Interpreter
-  KJS/JSCell
-  KJS/JSImmediate
-  KJS/JSLock
-  KJS/JSObject
-  KJS/JSValue
-  KJS/List
-  KJS/Lookup
-  KJS/PropertyMap
-  KJS/PropertyNameArray
-  KJS/PropertySlot
-  KJS/ProtectedPtr
-  KJS/ScopeChain
-  KJS/ScopeChainIterator
-  KJS/ScopeChainNode
-  KJS/UChar
-  KJS/UCharReference
-  KJS/UString
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
+# 2008-02-15: kjs headers are apparently not installed, so also
+# don't install the forwarding headers. (dirk)
 
+#install( FILES
+#  KJS/CString
+#  KJS/Collector
+#  KJS/Completion
+#  KJS/DeclaredFunctionImp
+#  KJS/Error
+#  KJS/ExecState
+#  KJS/FunctionImp
+#  KJS/HashEntry
+#  KJS/Identifier
+#  KJS/Interpreter
+#  KJS/JSCell
+#  KJS/JSImmediate
+#  KJS/JSLock
+#  KJS/JSObject
+#  KJS/JSValue
+#  KJS/List
+#  KJS/Lookup
+#  KJS/PropertyMap
+#  KJS/PropertyNameArray
+#  KJS/PropertySlot
+#  KJS/ProtectedPtr
+#  KJS/ScopeChain
+#  KJS/ScopeChainIterator
+#  KJS/ScopeChainNode
+#  KJS/UChar
+#  KJS/UCharReference
+#  KJS/UString
+#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
-install( FILES
-  KJSEmbed/Constructor
-  KJSEmbed/Engine
-  KJSEmbed/Enumerator
-  KJSEmbed/Method
-  KJSEmbed/ObjectBinding
-  KJSEmbed/ObjectFactory
-  KJSEmbed/ProxyBinding
-  KJSEmbed/QObjectBinding
-  KJSEmbed/QWidgetBinding
-  KJSEmbed/SlotBinding
-  KJSEmbed/StaticBinding
-  KJSEmbed/StaticConstructor
-  KJSEmbed/VariantBinding
-  KJSEmbed/VariantFactory
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
+# 2008-02-28: kjsembed headers are apparently not installed, so also
+# don't install the forwarding headers. (dirk)
+
+#install( FILES
+#  KJSEmbed/Constructor
+#  KJSEmbed/Engine
+#  KJSEmbed/Enumerator
+#  KJSEmbed/Method
+#  KJSEmbed/ObjectBinding
+#  KJSEmbed/ObjectFactory
+#  KJSEmbed/ProxyBinding
+#  KJSEmbed/QObjectBinding
+#  KJSEmbed/QWidgetBinding
+#  KJSEmbed/SlotBinding
+#  KJSEmbed/StaticBinding
+#  KJSEmbed/StaticConstructor
+#  KJSEmbed/VariantBinding
+#  KJSEmbed/VariantFactory
+#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 
 install( FILES
@@ -690,22 +695,13 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
 install( FILES
-  KNS/Action
   KNS/Author
-  KNS/Button
   KNS/Category
   KNS/Engine
   KNS/Entry
   KNS/EntryHandler
-  KNS/EntryLoader
-  KNS/Feed
   KNS/Installation
   KNS/KTranslatable
-  KNS/Provider
-  KNS/ProviderDialog
-  KNS/ProviderHandler
-  KNS/ProviderLoader
-  KNS/UploadDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
 
 
@@ -764,7 +760,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts )
 
 
 install( FILES
-  KSettings/ComponentsDialog
   KSettings/Dialog
   KSettings/Dispatcher
   KSettings/PluginPage
@@ -793,7 +788,6 @@ install( FILES
   KTextEditor/Editor
   KTextEditor/EditorChooser
   KTextEditor/Factory
-  KTextEditor/HighlightingInterface
   KTextEditor/MarkInterface
   KTextEditor/ModificationInterface
   KTextEditor/Plugin
@@ -866,18 +860,10 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon)
 
 install(FILES
   Phonon/Experimental/AudioDataOutput
-  Phonon/Experimental/OverlayApi
   Phonon/Experimental/VideoDataOutput
   Phonon/Experimental/VideoFrame
   Phonon/Experimental/Visualization
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon/Experimental)
-
-
-install( FILES
-  SafeSite/Agent
-  SafeSite/Report
-  SafeSite/ServiceInfo
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/SafeSite )
 
 
 install( FILES
