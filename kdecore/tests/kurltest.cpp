@@ -112,6 +112,11 @@ int main(int argc, char *argv[])
   check( "KURL::host()", url1.host(), "www1.foo.bar");
   check( "KURL::url()", url1.url(), "http://www1.foo.bar");
 
+  baseURL = "http://www.Abc.de";
+  check( "KURL::host() is lowercase", baseURL.host(), "www.abc.de");
+  baseURL = "donkey://Abc/DE";
+  check( "KURL::host() is lowercase", baseURL.host(), "abc");
+
   baseURL = "http://www.foo.bar";
   KURL rel_url( baseURL, "/top//test/../test1/file.html" );
   check( "KURL::url()", rel_url.url(), "http://www.foo.bar/top//test1/file.html" );
