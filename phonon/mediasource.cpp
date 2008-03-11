@@ -48,6 +48,9 @@ MediaSource::MediaSource(const QString &filename)
         d->type = Stream;
         d->ioDevice = new QFile(filename);
         d->stream = new IODeviceStream(d->ioDevice, d->ioDevice);
+    } else if (filename.contains(QLatin1String("://"))) {
+        d->url = filename;
+        d->type = Url;
     } else {
         const QFileInfo fileInfo(filename);
         if (fileInfo.exists()) {
