@@ -104,11 +104,11 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             return true;
         case GlobalPrimary:
         case GlobalAlternate:
-            if (!m_action->globalShortcutEnabled()) {
+            if (!m_action->isGlobalShortcutEnabled()) {
                 return false;
             }
             return true;
-        default
+        default:
             return false;
         }
     //the following are custom roles, defined in this source file only
