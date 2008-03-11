@@ -333,7 +333,7 @@ unsigned char* Interpreter::extendStack(size_t needed)
 
 void Interpreter::recycleActivation(ActivationImp* act)
 {
-    ASSERT(act->localStore == 0); // Should not refer to anything by now
+    ASSERT(act->localStorage == 0); // Should not refer to anything by now
     if (m_numCachedActivations >= MaxCachedActivations)
         return;
 
