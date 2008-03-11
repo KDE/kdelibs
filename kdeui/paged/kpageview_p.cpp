@@ -381,8 +381,10 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   if ( cg == QPalette::Normal && !(option.state & QStyle::State_Active) )
     cg = QPalette::Inactive;
 
+  QStyleOptionViewItemV4 opt(option);
+  QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+  style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
   if ( option.state & QStyle::State_Selected ) {
-    painter->fillRect( option.rect, option.palette.brush( cg, QPalette::Highlight ) );
     painter->setPen( option.palette.color( cg, QPalette::HighlightedText ) );
   } else {
     painter->setPen( option.palette.color( cg, QPalette::Text ) );
