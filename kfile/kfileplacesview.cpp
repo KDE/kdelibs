@@ -23,7 +23,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>
-#include <QtGui/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 #include <QtGui/QKeyEvent>
 
 #include <kdebug.h>
@@ -41,7 +41,7 @@
 #include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
 
-class KFilePlacesViewDelegate : public QItemDelegate
+class KFilePlacesViewDelegate : public QStyledItemDelegate
 {
 public:
     KFilePlacesViewDelegate(KFilePlacesView *parent);
@@ -74,7 +74,7 @@ private:
 };
 
 KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
-    QItemDelegate(parent), m_view(parent), m_iconSize(48)
+    QStyledItemDelegate(parent), m_view(parent), m_iconSize(48)
 {
 }
 
@@ -85,7 +85,7 @@ KFilePlacesViewDelegate::~KFilePlacesViewDelegate()
 QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
                                         const QModelIndex &index) const
 {
-    QSize size = QItemDelegate::sizeHint(option, index);
+    QSize size = QStyledItemDelegate::sizeHint(option, index);
     int iconSize = m_iconSize;
     if (m_appearingItems.contains(index)) {
         iconSize = m_appearingIconSize;
@@ -107,9 +107,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         painter->setOpacity(m_disappearingOpacity);
     }
 
-    QStyleOptionViewItem opt = option;
+    QStyleOptionViewItemV4 opt = option;
     opt.decorationSize = QSize(m_iconSize, m_iconSize);
-    QItemDelegate::paint(painter, opt, index);
+    QStyledItemDelegate::paint(painter, opt, index);
 
     painter->restore();
 }
