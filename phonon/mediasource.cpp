@@ -55,11 +55,13 @@ MediaSource::MediaSource(const QString &filename)
             d->ioDevice = new QFile(filename);
             d->stream = new IODeviceStream(d->ioDevice, d->ioDevice);
         }
-    } else if (QUrl(filename).isValid()) {
-        d->url = filename;
-        d->type = Url;
     } else {
-        d->type = Invalid;
+        d->url = filename;
+        if (d->url.isValid()) {
+            d->type = Url;
+        } else {
+            d->type = Invalid;
+        }
     }
 }
 
