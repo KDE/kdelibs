@@ -24,6 +24,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
+#include <QtCore/QFSFileEngine>
 
 QT_BEGIN_NAMESPACE
 
@@ -43,21 +44,22 @@ MediaSource::MediaSource()
 MediaSource::MediaSource(const QString &filename)
     : d(new MediaSourcePrivate(LocalFile))
 {
-    if (filename.size() > 0 && filename.startsWith(QLatin1Char(':'))) {
-        // it's a Qt resource -> use QFile
-        d->type = Stream;
-        d->ioDevice = new QFile(filename);
-        d->stream = new IODeviceStream(d->ioDevice, d->ioDevice);
-    } else if (filename.contains(QLatin1String("://"))) {
+    const QFileInfo fileInfo(filename);
+    if (fileInfo.exists()) {
+        bool localFs = QFSFileEngine(filename).fileFlags(QAbstractFileEngine::LocalDiskFlag);
+        if (localFs) {
+            d->url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+        } else {
+            // it's a Qt resource -> use QFile
+            d->type = Stream;
+            d->ioDevice = new QFile(filename);
+            d->stream = new IODeviceStream(d->ioDevice, d->ioDevice);
+        }
+    } else if (QUrl(filename).isValid()) {
         d->url = filename;
         d->type = Url;
     } else {
-        const QFileInfo fileInfo(filename);
-        if (fileInfo.exists()) {
-            d->url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
-        } else {
-            d->type = Invalid;
-        }
+        d->type = Invalid;
     }
 }
 
