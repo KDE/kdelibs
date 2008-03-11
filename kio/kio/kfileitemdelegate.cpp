@@ -76,12 +76,8 @@ class KFileItemDelegate::Private
         QSize layoutText(QTextLayout &layout, const QString &text, int maxWidth) const;
         inline void setLayoutOptions(QTextLayout &layout, const QStyleOptionViewItemV4 &options) const;
         inline bool verticalLayout(const QStyleOptionViewItemV4 &option) const;
-        QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
         inline QBrush brush(const QVariant &value, const QStyleOptionViewItemV4 &option) const;
-        QBrush composite(const QColor &over, const QBrush &brush) const;
         QBrush foregroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
-        QBrush backgroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
-        inline qreal backgroundRadius(const QStyleOptionViewItemV4 &option) const;
         inline void setActiveMargins(Qt::Orientation layout);
         void setVerticalMargin(MarginType type, int left, int right, int top, int bottom);
         void setHorizontalMargin(MarginType type, int left, int right, int top, int bottom);
@@ -95,14 +91,11 @@ class KFileItemDelegate::Private
         QString information(const QStyleOptionViewItemV4 &option, const QModelIndex &index, const KFileItem &item) const;
         bool isListView(const QStyleOptionViewItemV4 &option) const;
         QString display(const QModelIndex &index) const;
-        QSize iconSizeHint(const QStyleOptionViewItemV4 &option) const;
         QIcon decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const;
         QPoint iconPosition(const QStyleOptionViewItemV4 &option) const;
         QRect labelRectangle(const QStyleOptionViewItemV4 &option) const;
         void layoutTextItems(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                              QTextLayout *labelLayout, QTextLayout *infoLayout, QRect *textBoundingRect) const;
-        void drawBackground(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index,
-                            const QRect &textBoundingRect) const;
         void drawTextItems(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                            const QTextLayout &labelLayout, const QTextLayout &infoLayout) const;
         KIO::AnimationState *animationState(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
@@ -439,7 +432,11 @@ QSize KFileItemDelegate::Private::decorationSizeHint(const QStyleOptionViewItemV
 {
     Q_UNUSED(index)
 
-    return addMargin(option.decorationSize, IconMargin);
+    QSize iconSize = option.icon.actualSize(option.decorationSize);
+    if (iconSize.width() < option.decorationSize.width())
+        iconSize.rwidth() = qMin(iconSize.width() + 10, option.decorationSize.width());
+
+    return addMargin(iconSize, IconMargin);
 }
 
 
@@ -447,23 +444,6 @@ bool KFileItemDelegate::Private::verticalLayout(const QStyleOptionViewItemV4 &op
 {
     return (option.decorationPosition == QStyleOptionViewItem::Top ||
             option.decorationPosition == QStyleOptionViewItem::Bottom);
-}
-
-
-// Move to kdefx/kdrawutil.cpp?
-QPainterPath KFileItemDelegate::Private::roundedRectangle(const QRectF &rect, qreal radius) const
-{
-    QPainterPath path(QPointF(rect.left(), rect.top() + radius));
-    path.quadTo(rect.left(), rect.top(), rect.left() + radius, rect.top());         // Top left corner
-    path.lineTo(rect.right() - radius, rect.top());                                 // Top side
-    path.quadTo(rect.right(), rect.top(), rect.right(), rect.top() + radius);       // Top right corner
-    path.lineTo(rect.right(), rect.bottom() - radius);                              // Right side
-    path.quadTo(rect.right(), rect.bottom(), rect.right() - radius, rect.bottom()); // Bottom right corner
-    path.lineTo(rect.left() + radius, rect.bottom());                               // Bottom side
-    path.quadTo(rect.left(), rect.bottom(), rect.left(), rect.bottom() - radius);   // Bottom left corner
-    path.closeSubpath();
-
-    return path;
 }
 
 
@@ -486,43 +466,6 @@ QBrush KFileItemDelegate::Private::brush(const QVariant &value, const QStyleOpti
 }
 
 
-// Composites over over brush, using the Porter/Duff over operator
-// TODO move to KColorUtils?
-QBrush KFileItemDelegate::Private::composite(const QColor &over, const QBrush &brush) const
-{
-    switch (brush.style())
-    {
-        case Qt::SolidPattern:
-        {
-            QColor under = brush.color();
-
-            int red   = under.red()   + (over.red()   - under.red())   * over.alpha() / 255;
-            int green = under.green() + (over.green() - under.green()) * over.alpha() / 255;
-            int blue  = under.blue()  + (over.blue()  - under.blue())  * over.alpha() / 255;
-            int alpha = over.alpha()  + under.alpha() * (255 - over.alpha()) / 255;
-
-            return QColor(red, green, blue, alpha);
-        }
-
-        case Qt::TexturePattern:
-        {
-            QPixmap texture = brush.texture();
-
-            // CompositionMode_SourceOver is the default composition mode
-            QPainter painter(&texture);
-            painter.fillRect(texture.rect(), over);
-
-            return texture;
-        }
-
-        // TODO Handle gradients
-
-        default:
-            return over;
-    }
-}
-
-
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
     // Always use the highlight color for selected items
@@ -535,47 +478,6 @@ QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItemV4 
         return brush(value, option);
 
     return option.palette.brush(QPalette::Text);
-}
-
-
-QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
-{
-    QBrush background(Qt::NoBrush);
-
-    // Always use the highlight color for selected items
-    if (option.state & QStyle::State_Selected)
-        background = option.palette.brush(QPalette::Highlight);
-    else
-    {
-        // If the item isn't selected, check if model provides its own background
-        // color/brush for this item
-        const QVariant value = index.data(Qt::BackgroundRole);
-        if (value.isValid())
-            background = brush(value, option);
-    }
-
-    // If we don't already have a background brush, check if the background color
-    // should be alternated for this item.
-    if (background.style() == Qt::NoBrush && (option.features & QStyleOptionViewItemV2::Alternate))
-        background = option.palette.brush(QPalette::AlternateBase);
-
-    // Composite the hover color over the background brush
-    if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
-    {
-        // Use a lighter version of the highlight color with 1/3 opacity
-        QColor hover = option.palette.color(QPalette::Highlight);
-        hover.setAlpha(88);
-
-        background = composite(hover, background);
-    }
-
-    return background;
-}
-
-
-qreal KFileItemDelegate::Private::backgroundRadius(const QStyleOptionViewItemV4 &option) const
-{
-    return (option.showDecorationSelected && option.decorationSize.width() > 24) ? 10 : 5;
 }
 
 
@@ -796,33 +698,6 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QStyleOp
 }
 
 
-void KFileItemDelegate::Private::drawBackground(QPainter *painter, const QStyleOptionViewItemV4 &option,
-                                                const QModelIndex &index, const QRect &textBoundingRect) const
-{
-    const QBrush brush = backgroundBrush(option, index);
-
-    if (brush.style() != Qt::NoBrush)
-    {
-        const qreal radius = backgroundRadius(option);
-
-        QRect rect;
-        if (option.showDecorationSelected)
-            rect = option.rect;
-        else
-            rect = addMargin(textBoundingRect, Private::TextMargin);
-
-        // Always draw rounded selection rectangles in list views
-        QPainterPath path;
-        if (isListView(option))
-            path = roundedRectangle(rect, radius);
-        else
-            path.addRect(rect);
-
-        painter->fillPath(path, brush);
-    }
-}
-
-
 void KFileItemDelegate::Private::initStyleOption(QStyleOptionViewItemV4 *option,
                                                  const QModelIndex &index) const
 {
@@ -923,9 +798,7 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
     if (d->verticalLayout(opt))
     {
-        const QSize iconSize = d->iconSizeHint(opt);
-        const int iconWidth = qMin(decorationSize.width(), iconSize.width());
-        size.rwidth()  = qMax(displaySize.width(), iconWidth);
+        size.rwidth()  = qMax(displaySize.width(), decorationSize.width());
         size.rheight() = decorationSize.height() + displaySize.height() + 1;
     }
     else
@@ -986,15 +859,6 @@ KFileItemDelegate::InformationList KFileItemDelegate::showInformation() const
 }
 
 
-QSize KFileItemDelegate::Private::iconSizeHint(const QStyleOptionViewItemV4 &option) const
-{
-    QSize size = option.icon.actualSize(option.decorationSize);
-    const int radius = backgroundRadius(option);
-    size.rwidth() += radius;
-    size.rheight() += radius;
-    return size;
-}
-
 QIcon KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
     const QVariant value = index.data(Qt::DecorationRole);
@@ -1028,7 +892,7 @@ QIcon KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &optio
 QRect KFileItemDelegate::Private::labelRectangle(const QStyleOptionViewItemV4 &option) const
 {
     if (option.icon.isNull())
-        return option.rect;
+        return subtractMargin(option.rect, Private::ItemMargin);
 
     const QSize decoSize = addMargin(option.decorationSize, Private::IconMargin);
     const QRect itemRect = subtractMargin(option.rect, Private::ItemMargin);
@@ -1104,6 +968,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
 
+    // Unset the mouse over bit if we're not drawing the first column
+    if (index.column() > 0)
+        opt.state &= ~QStyle::State_MouseOver;
+
     const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(opt.widget);
 
 
@@ -1157,6 +1025,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     d->layoutTextItems(opt, index, &labelLayout, &infoLayout, &textBoundingRect);
 
+    QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+
 
     // Create a new cached rendering of a hovered and an unhovered item.
     // We don't create a new cache for a fully hovered item, since we don't
@@ -1170,7 +1040,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         p.begin(&cache->regular);
         p.translate(-option.rect.topLeft());
         p.setRenderHint(QPainter::Antialiasing);
-        d->drawBackground(&p, opt, index, textBoundingRect);
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
         d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
         p.end();
@@ -1181,7 +1051,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         p.begin(&cache->hover);
         p.translate(-option.rect.topLeft());
         p.setRenderHint(QPainter::Antialiasing);
-        d->drawBackground(&p, opt, index, textBoundingRect);
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
         d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
         p.end();
@@ -1205,7 +1075,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         icon = d->applyHoverEffect(icon);
     }
 
-    d->drawBackground(painter, opt, index, textBoundingRect);
+    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
     painter->drawPixmap(iconPos, icon);
     d->drawTextItems(painter, opt, index, labelLayout, infoLayout);
 
