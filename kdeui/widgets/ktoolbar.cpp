@@ -116,6 +116,7 @@ class KToolBar::Private
 
     KXMLGUIClient *xmlguiClient;
 
+#if 0 // currently unused
     struct ToolBarInfo
     {
       ToolBarInfo()
@@ -134,6 +135,7 @@ class KToolBar::Private
     };
 
     ToolBarInfo toolBarInfo;
+#endif
     QList<int> iconSizes;
 
     QMenu* contextOrient;
@@ -949,8 +951,10 @@ void KToolBar::applySettings( const KConfigGroup &cg, bool force )
     else
       show();
 
+#if 0 // currently unused
     if ( mainWindow() )
       d->toolBarInfo = KToolBar::Private::ToolBarInfo( pos, index, newLine, offset );
+#endif
   }
 }
 
