@@ -152,8 +152,8 @@ protected:
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     void paintRootBoxDecorations( PaintInfo& paintInfo, int _tx, int _ty);
 
-    void paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
-    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
+    void paintAllBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
+    virtual void paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int h);
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer* /*bgLayer*/,
                                          QRect clipr, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/,

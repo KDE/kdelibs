@@ -430,7 +430,7 @@ void RenderWidget::updateFromElement()
     RenderReplaced::updateFromElement();
 }
 
-void RenderWidget::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
+void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
     bool fudge = !shouldPaintBorder();
     paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
@@ -447,7 +447,7 @@ void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     if (qobject_cast<QAbstractScrollArea*>(m_widget) || (isRedirectedWidget() && 
             style()->backgroundLayers() && style()->backgroundLayers()->hasImage()))
     {
-        paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
+        paintAllBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
             cr, r.x(), r.y(), r.width(), r.height());
     }
 

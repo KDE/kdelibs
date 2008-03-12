@@ -73,7 +73,7 @@ void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     _ty -= borderTopExtra();
     QRect cr = QRect(_tx, _ty, w, h).intersected(paintInfo.r);
 
-    paintBackgrounds(paintInfo.p, bgColor, bgLayer, cr, _tx, _ty, w, h);
+    paintAllBackgrounds(paintInfo.p, bgColor, bgLayer, cr, _tx, _ty, w, h);
 
     if(style()->hasBorder())
 	paintBorder( paintInfo.p, _tx, _ty, w, h, style() );

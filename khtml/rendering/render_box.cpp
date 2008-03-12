@@ -417,7 +417,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     // hence, paint the background even in the margin areas (unlike for every other element!)
     // I just love these little inconsistencies .. :-( (Dirk)
     QRect cr = paintInfo.r.intersected(QRect(bx, by, bw, bh));
-    paintBackgrounds(paintInfo.p, bgColor, bgLayer, cr, bx, by, bw, bh);
+    paintAllBackgrounds(paintInfo.p, bgColor, bgLayer, cr, bx, by, bw, bh);
 
     if(style()->hasBorder())
         paintBorder( paintInfo.p, _tx, _ty, w, h, style() );
@@ -440,21 +440,21 @@ void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
    // since the root could be inline and wrapped in an anonymous block.
 
    if (!isBody() || !document()->isHTMLDocument() || document()->documentElement()->renderer()->style()->hasBackground())
-        paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
+        paintAllBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
 
     if(style()->hasBorder()) {
         paintBorder(paintInfo.p, _tx, _ty, w, h, style());
     }
 }
 
-void RenderBox::paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
+void RenderBox::paintAllBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
     if (!bgLayer) return;
-    paintBackgrounds(p, c, bgLayer->next(), clipr, _tx, _ty, w, height);
-    paintBackground(p, c, bgLayer, clipr, _tx, _ty, w, height);
+    paintAllBackgrounds(p, c, bgLayer->next(), clipr, _tx, _ty, w, height);
+    paintOneBackground(p, c, bgLayer, clipr, _tx, _ty, w, height);
 }
 
-void RenderBox::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
+void RenderBox::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
 {
     paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
                             borderLeft(), borderRight(), paddingLeft(), paddingRight(), 
