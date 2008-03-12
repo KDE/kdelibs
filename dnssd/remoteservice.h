@@ -22,6 +22,7 @@
 #define DNSSDREMOTESERVICE_H
 
 #include <QtCore/QObject>
+#include <QtCore/QMetaType>
 #include <dnssd/servicebase.h>
 
 namespace DNSSD
@@ -87,5 +88,7 @@ private:
 };
 
 }
+
+Q_DECLARE_METATYPE(DNSSD::RemoteService::Ptr)
 
 #endif

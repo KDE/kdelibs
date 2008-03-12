@@ -134,7 +134,7 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
 			m_duringResolve+=svr;
 			svr->resolveAsync();
-		    } else	{
+		    } else {
 			m_services+=svr;
 			emit m_parent->serviceAdded(svr);
 		    }
