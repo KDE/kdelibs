@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -290,6 +291,21 @@ void RenderCanvas::updateDocSizeAfterLayerTranslation( RenderObject* o, bool pos
     }
 //    kDebug() << " posXOffset: " << posXOffset << " posYOffset " << posYOffset << " m_cachedDocWidth  " <<  m_cachedDocWidth << " m_cachedDocHeight  " << m_cachedDocHeight;
     updateDocumentSize();
+}
+
+QRegion RenderCanvas::staticRegion() const
+{
+   QRegion ret = QRegion();
+   if (m_positionedObjects) {
+       RenderObject* obj;
+       QListIterator<RenderObject*> it(*m_positionedObjects);
+        while (it.hasNext()) {
+            obj = it.next();
+            if (obj->style()->position() == FIXED && obj->layer())
+                ret += obj->layer()->paintedRegion(layer());
+        }
+   }                                                                                                                        
+   return ret;
 }
 
 bool RenderCanvas::needsFullRepaint() const

@@ -193,6 +193,8 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
         QRect cr(x,y,width(),height());
         if (s->visibility() == VISIBLE && (s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
              renderer()->scrollsOverflow() || renderer()->isReplaced()) ) {
+            if (!s->hidesOverflow())
+                r += renderer()->visibleFlowRegion(x, y);
             r += cr;
         } else {
             r += renderer()->visibleFlowRegion(x, y);

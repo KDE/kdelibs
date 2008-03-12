@@ -123,6 +123,7 @@ public:
     RenderPage* page();
 
     QRect selectionRect() const;
+    QRegion staticRegion() const;
 
     void setMaximalOutlineSize(int o) { m_maximalOutlineSize = o; }
     int maximalOutlineSize() const { return m_maximalOutlineSize; }
