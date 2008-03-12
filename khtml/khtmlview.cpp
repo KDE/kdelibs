@@ -104,7 +104,7 @@
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #elif defined(Q_WS_WIN)
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 #if 0
@@ -136,6 +136,12 @@ public:
 	PFNone,
 	PFTop,
 	PFBottom
+    };
+
+    enum StaticBackgroundState {
+         SBNone = 0,
+         SBPartial,
+         SBFull
     };
 
     enum CompletedState {
@@ -198,7 +204,9 @@ public:
 	    oldUnderMouse->deref();
         oldUnderMouse = 0;
         linkPressed = false;
-        staticWidget = false;
+        staticWidget = SBNone;
+        fixedObjectsCount = 0;
+        staticObjectsCount = 0;
 	tabMovePending = false;
 	lastTabbingDirection = true;
 	pseudoFocusNode = PFNone;
@@ -335,9 +343,11 @@ public:
     NodeImpl *underMouseNonShared;
     NodeImpl *oldUnderMouse;
 
+    // Do not adjust bitfield enums sizes. 
+    // They are oversized because they are signed on some platforms.
     bool tabMovePending:1;
     bool lastTabbingDirection:1;
-    PseudoFocusNodes pseudoFocusNode:2;
+    PseudoFocusNodes pseudoFocusNode:3;
     bool scrollBarMoved:1;
     bool contentsMoving:1;
 
@@ -345,8 +355,10 @@ public:
     Qt::ScrollBarPolicy hpolicy;
     bool prevScrollbarVisible:1;
     bool linkPressed:1;
-    bool staticWidget:1;
     bool ignoreWheelEvents:1;
+    StaticBackgroundState staticWidget: 3;
+    int staticObjectsCount;
+    int fixedObjectsCount;
 
     int zoomLevel;
     int borderX, borderY;
@@ -366,7 +378,7 @@ public:
     int scrollTimerId;
     int scrollTiming;
     int scrollBy;
-    ScrollDirection scrollDirection		:2;
+    ScrollDirection scrollDirection		:3;
     bool scrollSuspended			:1;
     bool scrollSuspendPreActivate		:1;
     bool complete				:1;
@@ -504,12 +516,8 @@ bool KHTMLView::event( QEvent* e )
       return QWidget::event(e);
     case QEvent::StyleChange:
     case QEvent::LayoutRequest: {
-        if (d->staticWidget) {
-            updateScrollBars();
-            return QAbstractScrollArea::event(e);
-        } else {
-            return QScrollArea::event(e);
-        }
+         updateScrollBars();
+         return QAbstractScrollArea::event(e);
     }
     default:
       return QScrollArea::event(e);
@@ -535,9 +543,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
     init();
     widget()->setMouseTracking(true);
     QTimer::singleShot(0, this, SLOT(delayedInit()));
-
-    // remove when alien widgets work better (#157883)
-    setAttribute(Qt::WA_DontCreateNativeAncestors);
 }
 
 KHTMLView::~KHTMLView()
@@ -577,9 +582,6 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
-
-    // remove when alien widgets work better (#157883)
-    widget()->setAttribute(Qt::WA_NativeWindow);
 }
 
 void KHTMLView::delayedInit()
@@ -789,10 +791,8 @@ void KHTMLView::repaintContents( const QRect& r )
 
 void KHTMLView::applyTransforms( int& x, int& y, int& w, int& h) const
 {
-     if (d->staticWidget) {
-        x -= contentsX();
-        y -= contentsY();
-    }
+    x -= contentsX();
+    y -= contentsY();
     if (d->haveZoom()) {
         const int z = d->zoomLevel;
         x = x*z/100;
@@ -804,10 +804,8 @@ void KHTMLView::applyTransforms( int& x, int& y, int& w, int& h) const
 
 void KHTMLView::revertTransforms( int& x, int& y, int& w, int& h) const
 {
-     if (d->staticWidget) {
-        x += contentsX();
-        y += contentsY();
-    }
+    x += contentsX();
+    y += contentsY();
     if (d->haveZoom()) {
         const int z = d->zoomLevel;
         x = x*100/z;
@@ -825,10 +823,7 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
-    if (!d->staticWidget)
-        QScrollArea::resizeEvent(e);
-    else
-        updateScrollBars();
+    updateScrollBars();
 
     if (d->layoutSchedulingEnabled)
         layout();
@@ -852,11 +847,9 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     QRect r = e->rect();
     QRect v(contentsX(), contentsY(), visibleWidth(), visibleHeight());
-    if (d->staticWidget) {
-        QPoint off(contentsX(),contentsY());
-        p.translate(-off);
-        r.translate(off);
-    }
+    QPoint off(contentsX(),contentsY());
+    p.translate(-off);
+    r.translate(off);
 
     r = r.intersect(v);
     if (!r.isValid() || r.isEmpty()) return;
@@ -2167,7 +2160,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     if (o == view) {
         if (widgetEvent(e))
             return true;
-        else if (d->staticWidget && e->type() == QEvent::Resize) {
+        else if (e->type() == QEvent::Resize) {
             updateScrollBars();
             return false;
         }
@@ -3377,13 +3370,44 @@ void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
     m_part->xmlDocImpl()->setPaintDevice( opd );
 }
 
-void KHTMLView::setHasStaticBackground()
+void KHTMLView::setHasStaticBackground(bool partial)
 {
-    if (!d->staticWidget)
-        widget()->move(0,0);
-    d->staticWidget = true;
+    d->staticWidget = partial && !m_kwp->isRedirected() ?  
+                          KHTMLViewPrivate::SBPartial : KHTMLViewPrivate::SBFull;
 }
 
+void KHTMLView::setHasNormalBackground()
+{
+    if (m_kwp->isRedirected() || !d->staticWidget)
+        return;
+
+    d->staticWidget = KHTMLViewPrivate::SBNone;
+}
+
+void KHTMLView::addStaticObject(bool fixed)
+{
+    if (fixed)
+        d->fixedObjectsCount++;
+    else
+        d->staticObjectsCount++;
+
+    setHasStaticBackground( !d->staticObjectsCount /*partial*/ );
+}
+
+void KHTMLView::removeStaticObject(bool fixed)
+{
+    if (fixed)
+        d->fixedObjectsCount--;
+    else
+        d->staticObjectsCount--;
+
+    assert( d->fixedObjectsCount >= 0 && d->staticObjectsCount >= 0 );
+
+    if (!d->staticObjectsCount && !d->fixedObjectsCount)
+        setHasNormalBackground();
+    else
+        setHasStaticBackground( !d->staticObjectsCount /*partial*/ );
+}
 
 void KHTMLView::setVerticalScrollBarPolicy( Qt::ScrollBarPolicy policy )
 {
@@ -3825,25 +3849,49 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
                      horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
     d->contentsY = verticalScrollBar()->value();
 
+    if (widget()->pos() != QPoint(0,0)) {
+         kDebug(6000) << "Static widget wasn't positioned at (0,0). This should NOT happen. Please report this event to developers.";
+         kDebug(6000) <<  kBacktrace();
+         widget()->move(0,0);
+    }
+
     if ( d->staticWidget ) {
-        if (widget()->pos() != QPoint(0,0)) {
-            kDebug(6000) << "Static widget wasn't positioned at (0,0). This should not happen.";
-            widget()->move(0,0);
-        }
 
         // now remove from view the external widgets that must have completely
         // disappeared after dx/dy scroll delta is effective
         if (!d->visibleWidgets.isEmpty())
             checkExternalWidgetsPosition();
 
-        widget()->update();
+        if ( d->staticWidget == KHTMLViewPrivate::SBPartial 
+                                && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() ) {
+            // static objects might be selectively repainted, like stones in flowing water
+            QRegion r = static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->staticRegion();
+            r.translate( -contentsX(), -contentsY());
+            QVector<QRect> ar = r.rects();
+            for (int i = 0; i < ar.size() ; ++i) {
+                widget()->update( ar[i] );
+            }
+            r = QRegion(QRect(0, 0, visibleWidth(), visibleHeight())) - r;
+            ar = r.rects();
+            for (int i = 0; i < ar.size() ; ++i) {
+                widget()->scroll( dx, dy, ar[i] );
+            }
+            // scroll external widgets
+            if (!d->visibleWidgets.isEmpty()) {
+                QHashIterator<void*, QWidget*> it(d->visibleWidgets);
+                while (it.hasNext()) {
+                    it.next();
+                    it.value()->move( it.value()->pos() + QPoint(dx, dy) );
+                }
+            }
+        } else
+            // we can't avoid a full update
+            widget()->update();
         return;
     }
     if (d->firstRepaintPending)
-        widget()->setUpdatesEnabled( false );
-    QScrollArea::scrollContentsBy(dx, dy);
-    if (d->firstRepaintPending)
-        widget()->setUpdatesEnabled( true );
+        return;
+    widget()->scroll(dx, dy);
 }
 
 void KHTMLView::addChild(QWidget * child, int x, int y)
@@ -3856,10 +3904,7 @@ void KHTMLView::addChild(QWidget * child, int x, int y)
 
     // ### handle pseudo-zooming of non-redirected widgets (e.g. just resize'em)
 
-    if (!d->staticWidget)
-        child->move(x, y);
-    else
-        child->move(x-contentsX(), y-contentsY());
+    child->move(x-contentsX(), y-contentsY());
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )

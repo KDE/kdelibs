@@ -418,7 +418,10 @@ private:
     QMap< DOM::ElementImpl*, QChar > buildFallbackAccessKeys() const;
     void displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVector< QChar >& taken, bool use_fallbacks );
     bool isScrollingFromMouseWheel() const;
-    void setHasStaticBackground();
+    void setHasStaticBackground(bool partial=false);
+    void setHasNormalBackground();
+    void addStaticObject(bool fixed);
+    void removeStaticObject(bool fixed);
     void applyTransforms( int& x, int& y, int& w, int& h) const;
     void revertTransforms( int& x, int& y, int& w, int& h) const;
     void revertTransforms( int& x, int& y ) const;

@@ -1358,6 +1358,30 @@ void RenderObject::setStyle(RenderStyle *style)
     if (style->hasAutoZIndex() && (isRoot() || style->opacity() < 1.0f))
         style->setZIndex( 0 );
 
+    if ( d > RenderStyle::Position && 
+         (style->hasFixedBackgroundImage() != (m_style && m_style->hasFixedBackgroundImage())
+            || (style->position() == FIXED) != (m_style && (m_style->position() == FIXED)))
+            && canvas() && canvas()->view() ) {
+       // some sort of fixed object is added or removed. Let's find out more and report to the view,
+       // so that it may optimize its background display mode accordingly.
+       bool fixedBG = style->hasFixedBackgroundImage();
+       bool oldFixedBG = m_style && m_style->hasFixedBackgroundImage();
+       bool fixedPos = (style->position() == FIXED);
+       bool oldFixedPos = m_style && (m_style->position() == FIXED);
+       if (fixedBG != oldFixedBG) {
+           if (fixedBG)
+               canvas()->view()->addStaticObject( false /*canOptimize*/);
+           else
+               canvas()->view()->removeStaticObject( false );
+       }
+       if (fixedPos != oldFixedPos) {
+           if (fixedPos)
+               canvas()->view()->addStaticObject( true /*canOptimize*/);
+           else
+               canvas()->view()->removeStaticObject( true );
+       }
+    }
+
     RenderStyle *oldStyle = m_style;
     m_style = style;
 
@@ -2328,7 +2352,8 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
 {
     QRegion r;
     for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
-        if( !ro->layer() && !ro->isInlineFlow() && ro->style()->visibility() == VISIBLE) {
+        if( !ro->layer() && !ro->isInlineFlow() && !ro->isFloating() && ro->style()->visibility() == VISIBLE) {
+            // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
             if (ro->isRelPositioned())
                 static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
