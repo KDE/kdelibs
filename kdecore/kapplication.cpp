@@ -1349,7 +1349,7 @@ void KApplication::startKdeinit()
      return;
   if (kapp && (Tty != kapp->type()))
     setOverrideCursor( Qt::waitCursor );
-  my_system(QFile::encodeName(srv)+" --suicide");
+  my_system(QFile::encodeName(srv)+" --suicide"+" --new-startup");
   if (kapp && (Tty != kapp->type()))
     restoreOverrideCursor();
 #endif
