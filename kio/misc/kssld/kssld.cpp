@@ -230,7 +230,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
     }
 
     //Everything is checked and we can make ret valid
-    ret.setExpiryDateTime(dt);
+    ret.setExpiryDateTime(expiryDt);
     ret.setRejected(isRejected);
     ret.setIgnoredErrors(ignoredErrors);
     return ret;
