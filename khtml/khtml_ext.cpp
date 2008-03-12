@@ -466,7 +466,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             if ( iconPath.isEmpty() )
                 icon = KIcon("edit-find");
             else
-                icon = KIcon( iconPath );
+                icon = KIcon( QPixmap( iconPath ) );
             name = service->name();
         }
         else
@@ -507,7 +507,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
                     if ( iconPath.isEmpty() )
                         icon = KIcon("edit-find");
                     else
-                        icon = KIcon( iconPath );
+                        icon = KIcon( QPixmap( iconPath ) );
                     name = service->name();
 
                     KAction *action = new KAction( name, this  );
