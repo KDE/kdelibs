@@ -76,15 +76,12 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 
 //TODO check if d->isBlocking is honored everywhere it makes sense
 
-//TODO fold KSSLSetting and KSSLCertificateHome into KSslSettings, and figure out how to manipulate it.
+//TODO fold KSSLSetting and KSSLCertificateHome into KSslSettings and use that everywhere.
 
 //TODO recognize partially encrypted websites as "somewhat safe"
 
-//### isAutoSsl() - the name is pretty stupid. isSslFromStart()? isSslAfterConnect()?
-
 /* List of dialogs/messageboxes we need to use (current code location in parentheses)
-   Can the design of the "dontAskAgainName" thing be improved?
-   Ugh, there *is* some code for application side messageboxes. Use it.
+ - Can the the "dontAskAgainName" thing be improved?
 
  - "SSLCertDialog" [select client cert] (SlaveInterface)
  - Enter password for client certificate (inline)
@@ -104,13 +101,6 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
-
-    TcpSlaveBasePrivate()
-     : autoSSL(false),
-       sslNoUi(false)
-    {}
-    ~TcpSlaveBasePrivate() {}
-
     QList<KSslError> nonIgnorableErrors(const QList<KSslError> &e) const
     {
         QList<KSslError> ret;
@@ -118,13 +108,13 @@ public:
         return ret;
     }
 
-    QString host;
-    QString ip;
-    KTcpSocket socket;
-
     int timeout;
     bool isBlocking;
 
+    KTcpSocket socket;
+
+    QString host;
+    QString ip;
     quint16 port;
     QByteArray serviceName;
 
@@ -150,11 +140,13 @@ TCPSlaveBase::TCPSlaveBase(const QByteArray &protocol,
  : SlaveBase(protocol, poolSocket, appSocket),
    d(new TcpSlaveBasePrivate)
 {
-    d->serviceName = protocol;
-    d->usingSSL = false;
     d->timeout = KProtocolManager::connectTimeout();
     d->isBlocking = false;
+    d->port = 0;
+    d->serviceName = protocol;
+    d->usingSSL = false;
     d->autoSSL = autoSSL;
+    d->sslNoUi = false;
 }
 
 
@@ -279,11 +271,11 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
         }
     }
 
-    d->host = host;
 
     KTcpSocket::SslVersion trySslVersion = KTcpSocket::TlsV1;
     while (true) {
         disconnectFromHost();  //Reset some state, even if we are already disconnected
+        d->host = host;
     
         //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
     
@@ -301,10 +293,10 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
         if (d->socket.state() != KTcpSocket::ConnectedState) {
             if (d->socket.error() == KTcpSocket::HostNotFoundError) {
                 error(ERR_UNKNOWN_HOST,
-                    host + QLatin1String(": ") + d->socket.errorString());
+                      host + QLatin1String(": ") + d->socket.errorString());
             } else {
                 error(ERR_COULD_NOT_CONNECT,
-                    host + QLatin1String(": ") + d->socket.errorString());
+                      host + QLatin1String(": ") + d->socket.errorString());
             }
             return false;
         }
@@ -336,8 +328,8 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
 void TCPSlaveBase::disconnectFromHost()
 {
     kDebug(7029);
-    d->ip.clear();
     d->host.clear();
+    d->ip.clear();
     d->usingSSL = false;
 
     if (d->socket.state() == KTcpSocket::UnconnectedState)
