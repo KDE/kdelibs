@@ -25,7 +25,7 @@
 
 #include <windows.h>
 #include <lm.h>
-#include <Userenv.h>
+#include <userenv.h>
 
 class KUser::Private : public KShared
 {

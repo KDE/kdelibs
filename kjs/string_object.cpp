@@ -32,7 +32,7 @@
 #include <wtf/unicode/libc/UnicodeLibC.h>
 
 #if PLATFORM(WIN_OS)
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 using namespace WTF;
@@ -49,56 +49,42 @@ StringInstance::StringInstance(JSObject *proto)
   setInternalValue(jsString(""));
 }
 
-StringInstance::StringInstance(JSObject *proto, StringImp* string)
-  : JSWrapperObject(proto)
-{
-  setInternalValue(string);
-}
-
 StringInstance::StringInstance(JSObject *proto, const UString &string)
   : JSWrapperObject(proto)
 {
   setInternalValue(jsString(string));
 }
 
-JSValue *StringInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot &slot)
+JSValue *StringInstance::lengthGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot &slot)
 {
-    return jsNumber(static_cast<StringInstance*>(slot.slotBase())->internalValue()->value().size());
+    return jsNumber(static_cast<StringInstance*>(slot.slotBase())->internalValue()->toString(exec).size());
 }
 
-JSValue *StringInstance::indexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot &slot)
+JSValue *StringInstance::indexGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot &slot)
 {
-    const UChar c = static_cast<StringInstance*>(slot.slotBase())->internalValue()->value()[slot.index()];
+    const UChar c = static_cast<StringInstance *>(slot.slotBase())->internalValue()->toString(exec)[slot.index()];
     return jsString(UString(&c, 1));
 }
 
-bool StringInstance::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+bool StringInstance::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
 {
-    if (propertyName == exec->propertyNames().length) {
-        slot.setCustom(this, lengthGetter);
-        return true;
-    }
+  if (propertyName == exec->propertyNames().length) {
+    slot.setCustom(this, lengthGetter);
+    return true;
+  }
 
-    bool isStrictUInt32;
-    unsigned i = propertyName.toStrictUInt32(&isStrictUInt32);
-    unsigned length = internalValue()->value().size();
-    if (isStrictUInt32 && i < length) {
-        slot.setCustomIndex(this, i, indexGetter);
-        return true;
+  bool ok;
+  const unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    const UString s = internalValue()->toString(exec);
+    const unsigned length = s.size();
+    if (index < length) {
+    slot.setCustomIndex(this, index, indexGetter);
+    return true;
     }
-    
-    return JSObject::getOwnPropertySlot(exec, propertyName, slot);
-}
-    
-bool StringInstance::getOwnPropertySlot(ExecState* exec, unsigned propertyName, PropertySlot& slot)
-{
-    unsigned length = internalValue()->value().size();
-    if (propertyName < length) {
-        slot.setCustomIndex(this, propertyName, indexGetter);
-        return true;
-    }
-    
-    return JSObject::getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
+  }
+
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
 void StringInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
@@ -359,7 +345,7 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
       int matchLen = matchString.size();
 
       pushSourceRange(sourceRanges, sourceRangeCount, sourceRangeCapacity, UString::Range(lastIndex, matchIndex - lastIndex));
-      UString substitutedReplacement;
+
       if (replacementFunction) {
           int completeMatchStart = ovector[0];
           List args;
@@ -376,11 +362,11 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
           args.append(jsNumber(completeMatchStart));
           args.append(jsString(source));
 
-          substitutedReplacement = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
+          replacementString = replacementFunction->call(exec, exec->dynamicInterpreter()->globalObject(),
                                                         args)->toString(exec);
-      } else {
-          substitutedReplacement = substituteBackreferences(replacementString, source, ovector, reg);
       }
+
+      UString substitutedReplacement = substituteBackreferences(replacementString, source, ovector, reg);
       pushReplacement(replacements, replacementCount, replacementCapacity, substitutedReplacement);
 
       lastIndex = matchIndex + matchLen;
@@ -552,7 +538,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
     reg->prepareMatch(u);
     UString mstr = regExpObj->performMatch(reg, exec, u, 0, &pos);
-
+    
     if (id == Search) {
       result = jsNumber(pos);
     } else {
@@ -628,7 +614,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
       bool error = false;
       if (u.isEmpty() && !reg->match(u, &error, 0).isNull()) {
         reg->doneMatch();
-
+        
         // empty string matched by regexp -> empty array
         res->put(exec, exec->propertyNames().length, jsNumber(0));
         break;
@@ -652,7 +638,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
       reg->doneMatch();
       if (error)
         RegExpObjectImp::throwRegExpError(exec);
-
+      
     } else {
       u2 = a0->toString(exec);
       if (u2.isEmpty()) {
