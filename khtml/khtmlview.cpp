@@ -104,7 +104,7 @@
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #elif defined(Q_WS_WIN)
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #if 0
