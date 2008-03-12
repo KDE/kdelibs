@@ -3797,8 +3797,16 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     d->contentsY = verticalScrollBar()->value();
 
     if ( d->staticWidget ) {
-        if (widget()->pos() != QPoint(0,0))
+        if (widget()->pos() != QPoint(0,0)) {
+            kDebug(6000) << "Static widget wasn't positioned at (0,0). This should not happen.";
             widget()->move(0,0);
+        }
+
+        // now remove from view the external widgets that must have completely
+        // disappeared after dx/dy scroll delta is effective
+        if (!d->visibleWidgets.isEmpty())
+            checkExternalWidgetsPosition();
+
         widget()->update();
         return;
     }
@@ -3939,27 +3947,9 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     // pushed it out of the viewport, it will not be repainted, and consequently it's associated widget won't be repositioned.
     // Thus we need to check each supposedly 'visible' widget at the end of layout, and remove it in case it's no more in sight.
 
-    if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
-        QWidget* w;
+    if (d->dirtyLayout && !d->visibleWidgets.isEmpty())
+        checkExternalWidgetsPosition();
 
-        QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
-        QList<RenderWidget*> toRemove;
-        QHashIterator<void*, QWidget*> it(d->visibleWidgets);
-        while (it.hasNext()) {
-            int xp = 0, yp = 0;
-
-            it.next();
-
-            RenderWidget* rw = static_cast<RenderWidget*>( it.key() );
-            if (!rw->absolutePosition(xp, yp) ||
-                !visibleRect.intersects(QRect(xp, yp, it.value()->width(), it.value()->height())))
-                toRemove.append(rw);
-        }
-
-        foreach (RenderWidget* r, toRemove)
-            if ( (w = d->visibleWidgets.take(r) ) )
-                w->move( 0, -500000);
-    }
     d->dirtyLayout = false;
 
     emit repaintAccessKeys();
@@ -3971,6 +3961,25 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         else
             emit m_part->completed(true);
     }
+}
+
+void KHTMLView::checkExternalWidgetsPosition()
+{
+    QWidget* w;
+    QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
+    QList<RenderWidget*> toRemove;
+    QHashIterator<void*, QWidget*> it(d->visibleWidgets);
+    while (it.hasNext()) {
+        int xp = 0, yp = 0;
+        it.next();
+        RenderWidget* rw = static_cast<RenderWidget*>( it.key() );
+        if (!rw->absolutePosition(xp, yp) ||
+            !visibleRect.intersects(QRect(xp, yp, it.value()->width(), it.value()->height())))
+            toRemove.append(rw);
+    }
+    foreach (RenderWidget* r, toRemove)
+        if ( (w = d->visibleWidgets.take(r) ) )
+            w->move( 0, -500000);
 }
 
 void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)

@@ -422,6 +422,7 @@ private:
     void applyTransforms( int& x, int& y, int& w, int& h) const;
     void revertTransforms( int& x, int& y, int& w, int& h) const;
     void revertTransforms( int& x, int& y ) const;
+    void checkExternalWidgetsPosition();
 
     void setIgnoreWheelEvents(bool e);
 
