@@ -453,7 +453,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
 
         // search provider icon
-        QPixmap icon;
+        KIcon icon;
         KUriFilterData data;
         QStringList list;
         data.setData( QString("some keyword") );
@@ -464,21 +464,21 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         {
             QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
             if ( iconPath.isEmpty() )
-                icon = SmallIcon("edit-find");
+                icon = KIcon("edit-find");
             else
-                icon = QPixmap( iconPath );
+                icon = KIcon( iconPath );
             name = service->name();
         }
         else
         {
-            icon = SmallIcon("google");
+            icon = KIcon("google");
             name = "Google";
         }
 
         KAction *action = new KAction( i18n( "Search for '%1' with %2", selectedText, name ), this );
         d->m_actionCollection->addAction( "searchProvider", action );
         editActions.append(action);
-        static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
+        action->setIcon( icon );
         connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
         // favorite search providers
@@ -505,14 +505,14 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
                 {
                     QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
                     if ( iconPath.isEmpty() )
-                        icon = SmallIcon("edit-find");
+                        icon = KIcon("edit-find");
                     else
-                        icon = QPixmap( iconPath );
+                        icon = KIcon( iconPath );
                     name = service->name();
 
                     KAction *action = new KAction( name, this  );
                     d->m_actionCollection->addAction( QString( "searchProvider" + searchProviderPrefix ).toLatin1().constData(), action );
-                    static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
+                    action->setIcon( icon );
                     connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
                     providerList->addAction(action);
