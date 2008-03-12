@@ -769,16 +769,16 @@ void InlineFlowBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
 }
 
 
-void InlineFlowBox::paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
+void InlineFlowBox::paintAllBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
                                      QRect clipr, int _tx, int _ty, int w, int h)
 {
     if (!bgLayer)
         return;
-    paintBackgrounds(p, c, bgLayer->next(), clipr, _tx, _ty, w, h);
-    paintBackground(p, c, bgLayer, clipr, _tx, _ty, w, h);
+    paintAllBackgrounds(p, c, bgLayer->next(), clipr, _tx, _ty, w, h);
+    paintOneBackground(p, c, bgLayer, clipr, _tx, _ty, w, h);
 }
 
-void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
+void InlineFlowBox::paintOneBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
                                     QRect clipr, int _tx, int _ty, int w, int h)
 {
     CachedImage* bg = bgLayer->backgroundImage();
@@ -836,7 +836,7 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     if ((!parent() && m_firstLine && styleToUse != object()->style()) ||
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
         QColor c = styleToUse->backgroundColor();
-        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), cr, _tx, _ty, w, h);
+        paintAllBackgrounds(pI.p, c, styleToUse->backgroundLayers(), cr, _tx, _ty, w, h);
 
         // ::first-line cannot be used to put borders on a line. Always paint borders with our
         // non-first-line style.

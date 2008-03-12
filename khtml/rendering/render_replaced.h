@@ -122,7 +122,7 @@ protected:
     void setDoesNotOwnWidget() { m_ownsWidget = false; }
 
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
-    virtual void paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
+    virtual void paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
     virtual bool canHaveBorder() const { return false; }
     virtual bool includesPadding() const { return false; }

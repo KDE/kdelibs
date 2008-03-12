@@ -548,7 +548,7 @@ void RenderTable::paintBoxDecorations(PaintInfo &pI, int _tx, int _ty)
     cr.setWidth(mw);
     cr.setHeight(mh);
 
-    paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
+    paintOneBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
 
     if (style()->hasBorder() && !collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());
@@ -3052,7 +3052,7 @@ void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty
             pI.p->setClipRegion(creg);
         }
         KHTMLAssert(bgObj->isBox());
-        static_cast<RenderBox*>(bgObj)->paintBackgrounds(pI.p, c, bgLayer, cr, _tx, _ty, w, h);
+        static_cast<RenderBox*>(bgObj)->paintAllBackgrounds(pI.p, c, bgLayer, cr, _tx, _ty, w, h);
         if (hasLayer && tableElt->collapseBorders())
             pI.p->restore();
     }
