@@ -30,6 +30,7 @@ private Q_SLOTS:
     void testVersionHandlerSameVersion();
     void testVersionHandlerNewVersionNothingKept();
     void testVersionHandlerNewVersionUserChanges();
+    void testMergingSeparators();
 };
 
 #endif

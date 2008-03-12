@@ -20,12 +20,17 @@
 
 #include "qtest_kde.h"
 #include "kxmlgui_unittest.h"
+#include <kactioncollection.h>
+#include <QMenu>
+#include <QMainWindow>
+#include <kxmlguibuilder.h>
+#include <kxmlguiclient.h>
 #include <ktemporaryfile.h>
 #include "kxmlgui_unittest.moc"
 #include <kxmlguiversionhandler_p.h>
 #include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
 
-QTEST_KDEMAIN(KXmlGui_UnitTest, NoGUI)
+QTEST_KDEMAIN(KXmlGui_UnitTest, GUI)
 
 enum Flags {
     NoFlags = 0,
@@ -214,4 +219,133 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     QVERIFY(finalDoc.contains("<Action name=\"file_open\""));
     // Check that the toolbars modified by the user were kept
     QVERIFY(finalDoc.contains("<Action name=\"home\""));
+}
+
+// because setDOMDocument and setXML are protected
+class TestGuiClient : public KXMLGUIClient
+{
+public:
+    TestGuiClient(const QByteArray& xml, bool withUiStandards = false)
+        : KXMLGUIClient()
+    {
+        if (withUiStandards) {
+            QString uis = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
+            QVERIFY(!uis.isEmpty());
+            setXMLFile(uis);
+        }
+
+        setXML(QString::fromLatin1(xml), true);
+    }
+};
+
+static void createActions(KActionCollection* collection, const QStringList& actionNames)
+{
+    Q_FOREACH(const QString& actionName, actionNames) {
+        collection->addAction(actionName);
+    }
+}
+
+#if 0
+static void debugActions(const QList<QAction*>& actions)
+{
+    Q_FOREACH(QAction* action, actions)
+        kDebug() << (action->isSeparator() ? QString("separator") : action->objectName());
+}
+#endif
+
+static void checkActions(const QList<QAction*>& actions, const QStringList& expectedActions)
+{
+    for (int i = 0; i < expectedActions.count(); ++i) {
+        QAction* action = actions[i];
+        if (action->isSeparator())
+            QCOMPARE(QString("separator"), expectedActions[i]);
+        else
+            QCOMPARE(action->objectName(), expectedActions[i]);
+    }
+}
+
+void KXmlGui_UnitTest::testMergingSeparators()
+{
+    const QByteArray hostXml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"go\"><text>&amp;Go</text>\n"
+//        "  <!-- TODO: go_up, go_back, go_forward, go_home: coming from ui_standards.rc -->\n"
+        "  <Action name=\"go_up\"/>\n"
+        "  <Action name=\"go_back\"/>\n"
+        "  <Action name=\"go_forward\"/>\n"
+        "  <Action name=\"go_home\"/>\n"
+        "  <Merge/>\n"
+        "  <Action name=\"go_history\"/>\n"
+        "  <Action name=\"go_most_often\"/>\n"
+        "  <Separator/>\n"
+        "  <Action name=\"history\"/>\n"
+        "  <Action name=\"closedtabs\"/>\n"
+        " </Menu>\n"
+        "</MenuBar>\n"
+        "</gui>\n";
+
+
+    TestGuiClient hostClient(hostXml, true /*ui_standards.rc*/);
+    createActions(hostClient.actionCollection(),
+                  QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
+                  << "go_history" << "go_most_often");
+    QMainWindow mainWindow;
+    KXMLGUIBuilder builder(&mainWindow);
+    KXMLGUIFactory factory(&builder);
+    factory.addClient(&hostClient);
+
+    QWidget* goMenuW = factory.container("go", &hostClient);
+    QVERIFY(goMenuW);
+    QMenu* goMenu = qobject_cast<QMenu *>(goMenuW);
+    QVERIFY(goMenu);
+
+    //debugActions(goMenu->actions());
+    checkActions(goMenu->actions(), QStringList()
+                 << "go_up"
+                 << "go_back"
+                 << "go_forward"
+                 << "go_home"
+                 << "go_history"
+                 << "go_most_often"
+                 << "separator");
+
+    kDebug() << "Now merging the part";
+
+    const QByteArray partXml =
+        "<!DOCTYPE kpartgui SYSTEM \"kpartgui.dtd\">\n"
+        "<kpartgui version=\"1\" name=\"part\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"go\"><text>&amp;Go</text>\n"
+        "  <Action name=\"go_previous\"/>\n"
+        "  <Action name=\"go_next\"/>\n"
+        "  <Separator/>\n"
+        "  <Action name=\"first_page\"/>\n"
+        "  <Action name=\"last_page\"/>\n"
+        "  <Separator/>\n"
+        "  <Action name=\"go_document_back\"/>\n"
+        "  <Action name=\"go_document_forward\" />\n"
+        "  <Separator/>\n"
+        "  <Action name=\"go_goto_page\"/>\n"
+        " </Menu>\n"
+        "</MenuBar>\n"
+        "</kpartgui>\n";
+
+    TestGuiClient partClient(partXml);
+    createActions(partClient.actionCollection(),
+                  QStringList() << "go_previous" << "go_next" << "first_page" << "last_page");
+    factory.addClient(&partClient);
+
+    //debugActions(goMenu->actions());
+    checkActions(goMenu->actions(), QStringList()
+                 << "go_up"
+                 << "go_back"
+                 << "go_forward"
+                 << "go_home"
+                 << "go_previous"
+                 << "go_next"
+                 << "separator"
+                 << "first_page");
 }
