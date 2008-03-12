@@ -284,7 +284,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
 {
   QAction* before = 0L;
   if (index > 0 && index < parent->actions().count())
-    before = parent->actions()[index - 1];
+      before = parent->actions().at(index);
 
   if ( element.tagName().toLower() == d->tagSeparator )
   {
