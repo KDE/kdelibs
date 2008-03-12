@@ -420,8 +420,6 @@ public:
     /**
      * This function determines the desired level of effects on the GUI.
      *
-     * @return Returns true if user wants builtin animations to be enabled.
-     *
      * @since 4.1
      */
     static GraphicEffects graphicEffectsLevel();
