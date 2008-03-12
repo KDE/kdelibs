@@ -1365,7 +1365,7 @@ void DocumentImpl::open( bool clearEventListeners )
     m_tokenizer->begin();
 }
 
-HTMLElementImpl* DocumentImpl::body()
+HTMLElementImpl* DocumentImpl::body() const
 {
     NodeImpl *de = documentElement();
     if (!de)
@@ -2102,6 +2102,11 @@ void DocumentImpl::updateStyleSelector(bool shallow)
 #endif
     if ( renderer() )
         renderer()->setNeedsLayoutAndMinMaxRecalc();
+}
+
+bool DocumentImpl::readyForLayout() const
+{
+    return renderer() && haveStylesheetsLoaded() && (!isHTMLDocument() || (body() && body()->renderer()));
 }
 
 void DocumentImpl::recalcStyleSelector()

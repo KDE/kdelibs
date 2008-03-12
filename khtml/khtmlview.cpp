@@ -116,8 +116,17 @@ namespace khtml {
 using namespace DOM;
 using namespace khtml;
 
-
-
+#ifndef NDEBUG
+static const int sFirstLayoutDelay = 760;
+static const int sParsingLayoutsInterval = 420;
+static const int sLayoutAttemptDelay = 400;
+#else
+static const int sFirstLayoutDelay = 540;
+static const int sParsingLayoutsInterval = 360;
+static const int sLayoutAttemptDelay = 340;
+#endif
+static const int sLayoutAttemptIncrement = 20;
+static const int sParsingLayoutsIncrement = 60;
 
 class KHTMLViewPrivate {
     friend class KHTMLView;
@@ -228,11 +237,14 @@ public:
         scrollSuspended = false;
         scrollSuspendPreActivate = false;
         complete = false;
-        firstRelayout = true;
+        firstLayout = true;
         needsFullRepaint = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
         painting = false;
+        layoutCounter = 0;
+        layoutAttemptCounter = 0;
+        scheduledLayoutCounter = 0;
         updateRegion = QRegion();
         m_dialogsAllowed = true;
 #ifndef KHTML_NO_CARET
@@ -357,13 +369,16 @@ public:
     bool scrollSuspended			:1;
     bool scrollSuspendPreActivate		:1;
     bool complete				:1;
-    bool firstRelayout				:1;
+    bool firstLayout				:1;
     bool layoutSchedulingEnabled		:1;
     bool needsFullRepaint			:1;
     bool painting				:1;
     bool possibleTripleClick			:1;
     bool dirtyLayout                           :1;
     bool m_dialogsAllowed			:1;
+    int layoutCounter;
+    int layoutAttemptCounter;
+    int scheduledLayoutCounter;
     QRegion updateRegion;
     QHash<void*, QWidget*> visibleWidgets;
 #ifndef KHTML_NO_CARET
@@ -921,6 +936,7 @@ void KHTMLView::layout()
         if ( !canvas ) return;
 
         d->layoutSchedulingEnabled=false;
+        d->dirtyLayout = true;
 
         // the reference object for the overflow property on canvas
         RenderObject * ref = 0;
@@ -954,7 +970,7 @@ void KHTMLView::layout()
                 QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
             }
         }
-        d->needsFullRepaint = d->firstRelayout;
+        d->needsFullRepaint = d->firstLayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
             d->needsFullRepaint = true;
             _height = visibleHeight();
@@ -964,13 +980,14 @@ void KHTMLView::layout()
         canvas->layout();
 
         emit finishedLayout();
-        if (d->firstRelayout) {
-            // make sure firstRelayout is set to false now in case this layout
+        if (d->firstLayout) {
+            // make sure firstLayout is set to false now in case this layout
             // wasn't scheduled
-            d->firstRelayout = false;
+            d->firstLayout = false;
             verticalScrollBar()->setEnabled( true );
             horizontalScrollBar()->setEnabled( true );
         }
+        d->layoutCounter++;
 #ifndef KHTML_NO_CARET
         hideCaret();
         if ((m_part->isCaretMode() || m_part->isEditable())
@@ -3599,7 +3616,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
         emit zoomView( - e->delta() );
         e->accept();
     }
-    else if (d->firstRelayout)
+    else if (d->firstLayout)
     {
         e->accept();
     }
@@ -3753,7 +3770,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
 void KHTMLView::scrollContentsBy( int dx, int dy )
 {
-    if ( !d->firstRelayout && !d->complete && m_part->xmlDocImpl() &&
+    if ( !d->firstLayout && !d->complete && m_part->xmlDocImpl() &&
           d->layoutSchedulingEnabled) {
         // contents scroll while we are not complete: we need to check our layout *now*
         khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>( m_part->xmlDocImpl()->renderer() );
@@ -3839,10 +3856,18 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         killTimer( d->scrollingFromWheelTimerId );
         d->scrollingFromWheelTimerId = 0;
     } else if ( e->timerId() == d->layoutTimerId ) {
-        d->dirtyLayout = true;
+        if (d->firstLayout && d->layoutAttemptCounter < 4 
+                           && (!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->readyForLayout())) {
+            d->layoutAttemptCounter++;
+            killTimer(d->layoutTimerId);
+            d->layoutTimerId = 0;
+            scheduleRelayout();
+            return;
+        }
         layout();
-        if (d->firstRelayout) {
-            d->firstRelayout = false;
+        d->scheduledLayoutCounter++;
+        if (d->firstLayout) {
+            d->firstLayout = false;
             verticalScrollBar()->setEnabled( true );
             horizontalScrollBar()->setEnabled( true );
         }
@@ -3909,7 +3934,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
         QWidget* w;
-        d->dirtyLayout = false;
 
         QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
         QList<RenderWidget*> toRemove;
@@ -3929,6 +3953,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 w->move( 0, -500000);
     }
+    d->dirtyLayout = false;
 
     emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
@@ -3946,8 +3971,19 @@ void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)
     if (!d->layoutSchedulingEnabled || d->layoutTimerId)
         return;
 
-    d->layoutTimerId = startTimer( m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()
-                             ? 1000 : 0 );
+    int time = 0;
+    if (d->firstLayout) {
+        // Any repaint happening while we have no content blanks the viewport ("white flash").
+        // Hence the need to delay the first layout as much as we can.
+        // Only if the document gets stuck for too long in incomplete state will we allow the blanking. 
+        time = d->layoutAttemptCounter ? 
+               sLayoutAttemptDelay + sLayoutAttemptIncrement*d->layoutAttemptCounter : sFirstLayoutDelay;
+    } else if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()) {
+        // Delay between successive layouts in parsing mode.
+        // Increment reflects the decaying importance of visual feedback over time.
+        time = qMin(2000, sParsingLayoutsInterval + d->scheduledLayoutCounter*sParsingLayoutsIncrement);
+    }
+    d->layoutTimerId = startTimer( time );
 }
 
 void KHTMLView::unscheduleRelayout()
@@ -3975,7 +4011,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
 //     kDebug() << "parsing " << parsing;
 //     kDebug() << "complete " << d->complete;
 
-    int time = parsing ? 300 : (!asap ? ( !d->complete ? 100 : 20 ) : 0);
+    int time = parsing && !d->firstLayout ? 150 : (!asap ? ( !d->complete ? 80 : 20 ) : 0);
 
 #ifdef DEBUG_FLICKER
     QPainter p;
@@ -4021,7 +4057,7 @@ void KHTMLView::complete( bool pendingAction )
 //         kDebug() << "requesting repaint now";
         // do it now
         killTimer(d->repaintTimerId);
-        d->repaintTimerId = startTimer( 20 );
+        d->repaintTimerId = startTimer( 0 );
         d->emitCompletedAfterRepaint = pendingAction ?
             KHTMLViewPrivate::CSActionPending : KHTMLViewPrivate::CSFull;
     }
