@@ -113,6 +113,9 @@ KSSLD::~KSSLD()
 
 void KSSLD::setRule(const KSslCertificateRule &rule)
 {
+    if (rule.hostName().isEmpty()) {
+        return;
+    }
     KConfigGroup group = d->config.group(rule.certificate().digest());
 
     QStringList sl;
@@ -142,8 +145,7 @@ void KSSLD::setRule(const KSslCertificateRule &rule)
 
 void KSSLD::clearRule(const KSslCertificateRule &rule)
 {
-    KConfigGroup group = d->config.group(rule.certificate().digest());
-    group.deleteEntry(rule.hostName());
+    clearRule(rule.certificate(), rule.hostName());
 }
 
 
@@ -151,6 +153,10 @@ void KSSLD::clearRule(const QSslCertificate &cert, const QString &hostName)
 {
     KConfigGroup group = d->config.group(cert.digest());
     group.deleteEntry(hostName);
+    if (group.keyList().size() < 2) {
+        group.deleteGroup();
+    }
+    group.sync();
 }
 
 
@@ -198,8 +204,9 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
     if (!dtString.startsWith("ExpireUTC "))
         return ret;
     dtString.remove(0, 10/* length of "ExpireUTC " */);
-    QDateTime dt = QDateTime::fromString(dtString, Qt::ISODate);
-    if (!dt.isValid() || dt < QDateTime::currentDateTime()) {
+
+    QDateTime expiryDt = QDateTime::fromString(dtString, Qt::ISODate);
+    if (!expiryDt.isValid() || expiryDt < QDateTime::currentDateTime()) {
         //the entry is malformed or expired so we remove it
         group.deleteEntry(key);
         //the group is useless once only the CertificatePEM entry left
