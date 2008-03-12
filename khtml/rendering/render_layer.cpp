@@ -380,7 +380,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         needUpdate |= count;
         RenderLayer* sc = this;
         int zx = zIndex();
-        while (sc = sc->stackingContext()) {
+        while ((sc = sc->stackingContext())) {
             sc->updateZOrderLists();
             bool found = false;
             if (zx < 0) {
@@ -397,7 +397,8 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                     }
                 }
             }
-            if ( count = sc->m_posZOrderList ? sc->m_posZOrderList->count() : 0 ) {
+            count = sc->m_negZOrderList ? sc->m_negZOrderList->count() : 0;
+            if ( count ) {
                 needUpdate = true;
                 for (uint i = 0; i < count; i++) {
                     found |= sc->m_posZOrderList->at(i)->zIndex() > zx;
@@ -418,7 +419,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         }
         if (needUpdate)
             renderer()->updateWidgetMasks();
-    }    
+    }
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateWidgetMasks(rootLayer);
 }
