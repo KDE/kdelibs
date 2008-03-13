@@ -41,6 +41,7 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
     } else if (udi.isEmpty()) {
         if (hasFullIcon(m_bookmark)) {
             m_lister = new KDirLister(this);
+            m_lister->setDelayedMimeTypes(true); // we don't need the mimetypes, so don't penalize other KDirLister users
             connect(m_lister, SIGNAL(completed()),
                     this, SLOT(onListerCompleted()));
             m_lister->openUrl(m_bookmark.url());
