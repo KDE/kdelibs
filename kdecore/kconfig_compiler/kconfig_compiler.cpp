@@ -2011,6 +2011,9 @@ int main( int argc, char **argv )
   if ( singleton ) {
     if ( dpointer )
       cpp << "  delete d;" << endl;
+    cpp << "  if (!s_global" << className << ".isDestroyed()) {" << endl;
+    cpp << "    s_global" << className << "->q = 0;" << endl;
+    cpp << "  }" << endl;
   }
   cpp << "}" << endl << endl;
 
