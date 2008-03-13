@@ -237,6 +237,12 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
         InformationList showInformation() const;
 
 
+        /**
+         * Reimplemented from @ref QAbstractItemDelegate.
+         */
+        virtual bool eventFilter(QObject *object, QEvent *event);
+
+
     public Q_SLOTS:
         /**
          * Reimplemented from @ref QAbstractItemDelegate.

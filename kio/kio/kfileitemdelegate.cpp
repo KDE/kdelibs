@@ -33,6 +33,7 @@
 #include <QTextLayout>
 #include <QListView>
 #include <QPaintEngine>
+#include <QTextEdit>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -49,6 +50,8 @@
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>
+#  undef KeyPress
+#  undef FocusOut
 #endif
 
 
@@ -1116,17 +1119,23 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 }
 
 
-QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                                         const QModelIndex &index) const
 {
-    Q_UNUSED(parent)
-    Q_UNUSED(option)
-    Q_UNUSED(index)
+    QStyleOptionViewItemV4 opt(option);
+    d->initStyleOption(&opt, index);
 
-    return NULL;
+    QTextEdit *edit = new QTextEdit(parent);
+    edit->setAcceptRichText(false);
+    edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    edit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    edit->setAlignment(opt.displayAlignment);
+    return edit;
 }
 
 
-bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem & option, const QModelIndex &index)
+bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option,
+                                    const QModelIndex &index)
 {
     Q_UNUSED(event)
     Q_UNUSED(model)
@@ -1139,28 +1148,37 @@ bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    Q_UNUSED(editor)
-    Q_UNUSED(index)
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    Q_ASSERT(textedit != 0);
+
+    const QVariant value = index.data(Qt::EditRole);
+    textedit->insertPlainText(value.toString());
+    textedit->selectAll();
 }
 
 
 void KFileItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    Q_UNUSED(editor)
-    Q_UNUSED(model)
-    Q_UNUSED(index)
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    Q_ASSERT(textedit != 0);
+
+    model->setData(index, textedit->toPlainText(), Qt::EditRole);
 }
 
 
-void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,const QModelIndex &index) const
+void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+                                             const QModelIndex &index) const
 {
-    Q_UNUSED(editor)
-    Q_UNUSED(option)
-    Q_UNUSED(index)
+    QStyleOptionViewItemV4 opt(option);
+    d->initStyleOption(&opt, index);
+
+    const QRect r = d->labelRectangle(opt);
+    editor->setGeometry(r);
 }
 
 
-bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option,
+                                  const QModelIndex &index)
 {
     Q_UNUSED(event)
     Q_UNUSED(view)
@@ -1168,6 +1186,56 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
     Q_UNUSED(index)
 
     return false;
+}
+
+
+bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
+{
+    QTextEdit *editor = qobject_cast<QTextEdit*>(object);
+    if (!editor)
+        return false;
+
+    switch (event->type())
+    {
+    case QEvent::KeyPress:
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        switch (keyEvent->key())
+        {
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+            emit commitData(editor);
+            emit closeEditor(editor, NoHint);
+            return true;
+
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+            if (editor->toPlainText().isEmpty())
+                return true; // So a newline doesn't get inserted
+
+            emit commitData(editor);
+            emit closeEditor(editor, SubmitModelCache);
+            return true;
+
+        case Qt::Key_Escape:
+            emit closeEditor(editor, RevertModelCache);
+            return true;
+
+        default:
+            return false;
+        } // switch (keyEvent->key())
+    } // case QEvent::KeyPress
+
+    case QEvent::FocusOut:
+    {
+        emit commitData(editor);
+        emit closeEditor(editor, NoHint);
+        return true;
+    }
+
+    default:
+        return false;
+    } // switch (event->type())
 }
 
 
