@@ -1,4 +1,5 @@
 /*  This file is part of the KDE project
+    Copyright (C) 2008 Rafael Fernández López <ereslibre@kde.org>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -20,14 +21,14 @@
 #include "kuiserverjobtracker.h"
 #include "kuiserverjobtracker_p.h"
 
+#include "jobviewiface.h"
+
 #include <klocale.h>
 #include <kdebug.h>
 #include <ktoolinvocation.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kjob.h>
-
-#include "uiservercallbacks.h"
 
 K_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
 
@@ -36,7 +37,7 @@ class KUiServerJobTracker::Private
 public:
     Private() { }
 
-    QMap<KJob*, int> progressIds;
+    QHash<KJob*, org::kde::JobView*> progressJobView;
 };
 
 KUiServerJobTracker::KUiServerJobTracker(QObject *parent)
@@ -47,9 +48,9 @@ KUiServerJobTracker::KUiServerJobTracker(QObject *parent)
 
 KUiServerJobTracker::~KUiServerJobTracker()
 {
-    if (!d->progressIds.isEmpty()) {
+    if (!d->progressJobView.isEmpty()) {
         qWarning() << "A KUiServerJobTracker instance contains"
-                   << d->progressIds.size() << "stalled jobs";
+                   << d->progressJobView.size() << "stalled jobs";
     }
 
     delete d;
@@ -57,182 +58,226 @@ KUiServerJobTracker::~KUiServerJobTracker()
 
 void KUiServerJobTracker::registerJob(KJob *job)
 {
-    // Already registered?
-    if (d->progressIds.contains(job)) return;
+    // Already registered job?
+    if (d->progressJobView.contains(job)) {
+        return;
+    }
 
-    int id = serverProxy->newJob(job, KSharedUiServerProxy::JobShown);
-    d->progressIds.insert(job, id);
+    KComponentData componentData = KGlobal::mainComponent();
+
+    QDBusReply<QDBusObjectPath> reply = serverProxy->uiserver().requestView(componentData.aboutData()->programName(),
+                                                                            componentData.aboutData()->appName(),
+                                                                            job->capabilities());
+
+    // If we got a valid reply, register the interface for later usage.
+    if (reply.isValid()) {
+        org::kde::JobView *jobView = new org::kde::JobView("org.kde.JobViewServer",
+                                                           reply.value().path(),
+                                                           QDBusConnection::sessionBus());
+
+        QObject::connect(jobView, SIGNAL(cancelRequested()), job,
+                         SLOT(kill()));
+        QObject::connect(jobView, SIGNAL(suspendRequested()), job,
+                         SLOT(suspend()));
+        QObject::connect(jobView, SIGNAL(resumeRequested()), job,
+                         SLOT(resume()));
+
+        d->progressJobView.insert(job, jobView);
+    }
 
     KJobTrackerInterface::registerJob(job);
 }
 
 void KUiServerJobTracker::unregisterJob(KJob *job)
 {
-    int id = d->progressIds.take(job);
-    serverProxy->jobFinished(id, job->error());
     KJobTrackerInterface::unregisterJob(job);
+
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView.take(job);
+
+    if (job->error()) {
+        jobView->terminate(job->errorText());
+    } else {
+        jobView->terminate(QString());
+    }
+
+    delete jobView;
 }
 
 void KUiServerJobTracker::finished(KJob *job)
 {
-    int id = d->progressIds.take(job);
-    serverProxy->jobFinished(id, job->error());
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView.take(job);
+
+    if (job->error()) {
+        jobView->terminate(job->errorText());
+    } else {
+        jobView->terminate(QString());
+    }
 }
 
 void KUiServerJobTracker::suspended(KJob *job)
 {
-    if (!d->progressIds.contains(job)) return;
-    int id = d->progressIds[job];
-    serverProxy->uiserver().jobSuspended(id);
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setSuspended(true);
 }
 
 void KUiServerJobTracker::resumed(KJob *job)
 {
-    if (!d->progressIds.contains(job)) return;
-    int id = d->progressIds[job];
-    serverProxy->uiserver().jobResumed(id);
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setSuspended(false);
 }
 
 void KUiServerJobTracker::description(KJob *job, const QString &title,
                                       const QPair<QString, QString> &field1,
                                       const QPair<QString, QString> &field2)
 {
-    int id = d->progressIds[job];
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
 
-    serverProxy->uiserver().setDescription(id, title);
-    serverProxy->uiserver().setDescriptionFirstField(id, field1.first, field1.second);
-    serverProxy->uiserver().setDescriptionSecondField(id, field2.first, field2.second);
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setInfoMessage(title);
+
+    if (field1.first.isNull() || field1.second.isNull()) {
+        jobView->clearDescriptionField(0);
+    } else {
+        jobView->setDescriptionField(0, field1.first, field1.second);
+    }
+
+    if (field2.first.isNull() || field2.second.isNull()) {
+        jobView->clearDescriptionField(1);
+    } else {
+        jobView->setDescriptionField(1, field2.first, field2.second);
+    }
 }
 
-void KUiServerJobTracker::infoMessage(KJob *job, const QString &plain, const QString &/*rich*/)
+void KUiServerJobTracker::infoMessage(KJob *job, const QString &plain, const QString &rich)
 {
-    serverProxy->uiserver().infoMessage(d->progressIds[job], plain);
+    Q_UNUSED(rich)
+
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setInfoMessage(plain);
 }
 
 void KUiServerJobTracker::totalAmount(KJob *job, KJob::Unit unit, qulonglong amount)
 {
-    switch (unit)
-    {
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    switch (unit) {
     case KJob::Bytes:
-        serverProxy->uiserver().totalSize(d->progressIds[job], amount);
+        jobView->setTotalAmount(amount, "bytes");
         break;
     case KJob::Files:
-        serverProxy->uiserver().totalFiles(d->progressIds[job], amount);
+        jobView->setTotalAmount(amount, "files");
         break;
     case KJob::Directories:
-        serverProxy->uiserver().totalDirs(d->progressIds[job], amount);
+        jobView->setTotalAmount(amount, "dirs");
+        break;
+    default:
         break;
     }
 }
 
 void KUiServerJobTracker::processedAmount(KJob *job, KJob::Unit unit, qulonglong amount)
 {
-    switch (unit)
-    {
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    switch (unit) {
     case KJob::Bytes:
-        serverProxy->uiserver().processedSize(d->progressIds[job], amount);
+        jobView->setProcessedAmount(amount, "bytes");
         break;
     case KJob::Files:
-        serverProxy->uiserver().processedFiles(d->progressIds[job], amount);
+        jobView->setProcessedAmount(amount, "files");
         break;
     case KJob::Directories:
-        serverProxy->uiserver().processedDirs(d->progressIds[job], amount);
+        jobView->setProcessedAmount(amount, "dirs");
+        break;
+    default:
         break;
     }
 }
 
 void KUiServerJobTracker::percent(KJob *job, unsigned long percent)
 {
-    serverProxy->uiserver().percent(d->progressIds[job], percent);
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setPercent(percent);
 }
 
 void KUiServerJobTracker::speed(KJob *job, unsigned long value)
 {
-    if (value)
-        serverProxy->uiserver().speed(d->progressIds[job], KGlobal::locale()->formatByteSize(value) + QString("/s"));
-    else
-        serverProxy->uiserver().speed(d->progressIds[job], QString());
+    if (!d->progressJobView.contains(job)) {
+        return;
+    }
+
+    org::kde::JobView *jobView = d->progressJobView[job];
+
+    jobView->setSpeed(value);
 }
 
 KSharedUiServerProxy::KSharedUiServerProxy()
-    : m_uiserver("org.kde.kuiserver", "/UiServer", QDBusConnection::sessionBus())
+    : m_uiserver("org.kde.JobViewServer", "/JobViewServer", QDBusConnection::sessionBus())
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.JobViewServer"))
     {
-        //kDebug(KDEBUG_OBSERVER) << "Starting kuiserver";
         QString error;
         int ret = KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                              QStringList(), &error);
         if (ret > 0)
         {
             kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error << endl;
-        } //else
-          //  kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret;
+        }
     }
 
-    //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
-    //    kDebug(KDEBUG_OBSERVER) << "The application kuiserver is STILL NOT REGISTERED";
-    //else
-    //    kDebug(KDEBUG_OBSERVER) << "kuiserver registered";
-
-    new UiServerCallbacksAdaptor(this);
-    QDBusConnection::sessionBus().registerObject(QLatin1String("/UiServerCallbacks"), this);
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.JobViewServer"))
+        kDebug() << "The application kuiserver is STILL NOT REGISTERED";
+    else
+        kDebug() << "kuiserver registered";
 }
 
 KSharedUiServerProxy::~KSharedUiServerProxy()
 {
 }
 
-org::kde::UiServer &KSharedUiServerProxy::uiserver()
+org::kde::JobViewServer &KSharedUiServerProxy::uiserver()
 {
     return m_uiserver;
 }
-
-int KSharedUiServerProxy::newJob(KJob *job, JobVisibility visibility, const QString &icon)
-{
-    if (!job) return 0;
-
-    KComponentData componentData = KGlobal::mainComponent();
-
-    // Notify the kuiserver about the new job
-    int progressId = m_uiserver.newJob(QDBusConnection::sessionBus().baseService(), job->capabilities(),
-                                       visibility, componentData.aboutData()->appName(),
-                                       icon, componentData.aboutData()->programName());
-
-    m_jobs.insert(progressId, job);
-
-    return progressId;
-}
-
-void KSharedUiServerProxy::jobFinished(int progressId, int errorCode)
-{
-    m_uiserver.jobFinished(progressId, errorCode);
-    m_jobs.remove(progressId);
-}
-
-void KSharedUiServerProxy::slotActionPerformed(int actionId, int jobId)
-{
-    KJob *job = m_jobs[jobId];
-
-    if (job) {
-        switch (actionId)
-        {
-        case KJob::Suspendable:
-            if (job->isSuspended())
-                job->resume();
-            else
-                job->suspend();
-            break;
-        case KJob::Killable:
-            job->kill( KJob::EmitResult ); // notify that the job has been killed
-            break;
-        default:
-            kWarning() << "Unknown actionId (" << actionId << ") for jobId " << jobId;
-            break;
-        }
-    }
-}
-
 
 #include "kuiserverjobtracker.moc"
 #include "kuiserverjobtracker_p.moc"

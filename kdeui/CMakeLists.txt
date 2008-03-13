@@ -275,8 +275,8 @@ install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
-qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml )
-qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy uiservercallbacks )
+qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
@@ -528,7 +528,7 @@ install( TARGETS kded_globalaccel DESTINATION ${PLUGIN_INSTALL_DIR} )
 install( FILES shortcuts/kdedglobalaccel.desktop DESTINATION ${SERVICES_INSTALL_DIR}/kded )
 
 install( FILES
-  jobs/org.kde.UiServer.xml
-  jobs/org.kde.UiServerCallbacks.xml
+  jobs/org.kde.JobViewServer.xml
+  jobs/org.kde.JobView.xml
   shortcuts/org.kde.KdedGlobalAccel.xml
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
