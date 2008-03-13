@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2008 Ian Monroe <ian@monroe.nu>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -169,6 +170,54 @@ void MediaController::setCurrentAngle(int titleNumber)
     IFACE;
     iface->interfaceCall(AddonInterface::AngleInterface,
             AddonInterface::setAngle, QList<QVariant>() << QVariant(titleNumber));
+}
+
+AudioStreamDescription MediaController::currentAudioStream(const QObject *audioPath) const
+{
+    IFACE AudioStreamDescription();
+    return iface->interfaceCall(AddonInterface::AudioChannelInterface,
+        AddonInterface::currentAudioStream, QList<QVariant>() << QVariant(audioPath)).value<AudioStreamDescription>();
+}
+
+SubtitleStreamDescription MediaController::currentSubtitleStream(const QObject *videoPath) const
+{
+    IFACE SubtitleStreamDescription();
+    return iface->interfaceCall(AddonInterface::SubtitleInterface,
+        AddonInterface::currentSubtitleStream, QList<QVariant>() << QVariant(videoPath)).value<SubtitleStreamDescription>();
+}
+
+QList<AudioStreamDescription> MediaController::availableAudioStreams(const QObject *videoPath) const
+{
+    QList<AudioStreamDescription> retList;
+    IFACE retList;
+    retList = iface->interfaceCall(AddonInterface::AudioChannelInterface,
+        AddonInterface::availableAudioStreams, QList<QVariant>() << QVariant(videoPath))
+        .value< QList<AudioStreamDescription> >();
+    return retList;
+}
+
+QList<SubtitleStreamDescription> MediaController::availableSubtitleStreams(const QObject *videoPath) const
+{
+    QList<SubtitleStreamDescription> retList;
+    IFACE retList;
+    retList = iface->interfaceCall(AddonInterface::SubtitleInterface,
+        AddonInterface::availableSubtitleStreams, QList<QVariant>() << QVariant(videoPath))
+        .value< QList<SubtitleStreamDescription> >();
+    return retList;
+}
+
+void MediaController::setCurrentAudioStream(const Phonon::AudioStreamDescription &stream, const QObject* audioPath)
+{
+    IFACE;
+    iface->interfaceCall(AddonInterface::AudioChannelInterface,
+        AddonInterface::setCurrentAudioStream, QList<QVariant>() << QVariant::fromValue(stream) << QVariant(audioPath));
+}
+
+void MediaController::setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream, const QObject* videoPath)
+{
+    IFACE;
+    iface->interfaceCall(AddonInterface::SubtitleInterface,
+        AddonInterface::setCurrentSubtitleStream, QList<QVariant>() << QVariant::fromValue(stream) << QVariant(videoPath));
 }
 
 #undef IFACE

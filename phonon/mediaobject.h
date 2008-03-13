@@ -19,11 +19,11 @@
 #ifndef Phonon_MEDIAOBJECT_H
 #define Phonon_MEDIAOBJECT_H
 
+#include "phonon/medianode.h"
+#include "phonon/mediasource.h"
 #include "phonon/phonon_export.h"
 #include "phonon/phonondefs.h"
 #include "phonon/phononnamespace.h"
-#include "phonon/mediasource.h"
-#include "phonon/medianode.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
@@ -221,57 +221,6 @@ namespace Phonon
             qint32 tickInterval() const;
 
             /**
-             * Returns the selected audio stream.
-             *
-             * \see availableAudioStreams
-             * \see setCurrentAudioStream
-             */
-            //AudioStreamDescription currentAudioStream() const;
-
-            /**
-             * Returns the selected video stream.
-             *
-             * \see availableVideoStreams
-             * \see setCurrentVideoStream
-             */
-            //VideoStreamDescription currentVideoStream() const;
-
-            /**
-             * Returns the selected subtitle stream.
-             *
-             * \see availableSubtitleStreams
-             * \see setCurrentSubtitleStream
-             */
-            //SubtitleStreamDescription currentSubtitleStream() const;
-
-            /**
-             * Returns the audio streams that can be selected by the user. The
-             * strings can directly be used in the user interface.
-             *
-             * \see selectedAudioStream
-             * \see setCurrentAudioStream
-             */
-            //QList<AudioStreamDescription> availableAudioStreams() const;
-
-            /**
-             * Returns the video streams that can be selected by the user. The
-             * strings can directly be used in the user interface.
-             *
-             * \see selectedVideoStream
-             * \see setCurrentVideoStream
-             */
-            //QList<VideoStreamDescription> availableVideoStreams() const;
-
-            /**
-             * Returns the subtitle streams that can be selected by the user. The
-             * strings can directly be used in the user interface.
-             *
-             * \see selectedSubtitleStream
-             * \see setCurrentSubtitleStream
-             */
-            //QList<SubtitleStreamDescription> availableSubtitleStreams() const;
-
-            /**
              * Returns the strings associated with the given \p key.
              *
              * Backends should use the keys specified in the Ogg Vorbis
@@ -437,46 +386,6 @@ namespace Phonon
             void setTransitionTime(qint32 msec);
 
         public Q_SLOTS:
-            /**
-             * Selects an audio stream from the media.
-             *
-             * Some media formats allow multiple audio streams to be stored in
-             * the same file. Normally only one should be played back.
-             *
-             * \param stream Description of an audio stream
-             *
-             * \see availableAudioStreams()
-             * \see selectedAudioStream()
-             */
-            //void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream);
-
-            /**
-             * Selects a video stream from the media.
-             *
-             * Some media formats allow multiple video streams to be stored in
-             * the same file. Normally only one should be played back.
-             * The latter allows to play, two or more
-             * different video streams simultaneously.
-             *
-             * \param stream description of a video stream.
-             *
-             * \see availableVideoStreams()
-             * \see selectedVideoStream()
-             */
-            //void setCurrentVideoStream(const Phonon::VideoStreamDescription &stream);
-
-            /**
-             * Selects a subtitle stream from the media.
-             *
-             * Some media formats allow multiple subtitle streams to be stored in
-             * the same file. Normally only one should be displayed.
-             *
-             * \param stream description of a subtitle stream
-             *
-             * \see availableSubtitleStreams()
-             * \see selectedSubtitleStream()
-             */
-            //void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream);
 
             void setTickInterval(qint32 newTickInterval);
 

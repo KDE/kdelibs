@@ -31,6 +31,11 @@ QT_BEGIN_NAMESPACE
 namespace Phonon
 {
 
+ObjectDescriptionData::ObjectDescriptionData(int index, const QHash<QByteArray, QVariant> &properties)
+    : d(new ObjectDescriptionPrivate(index, properties))
+{
+}
+
 ObjectDescriptionData::ObjectDescriptionData(ObjectDescriptionPrivate *dd)
     : d(dd)
 {
@@ -105,7 +110,7 @@ ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType ty
         QList<int> indexes = iface->objectDescriptionIndexes(type);
         if (indexes.contains(index)) {
             QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(type, index);
-            return new ObjectDescriptionData(new ObjectDescriptionPrivate(index, properties));
+            return new ObjectDescriptionData(index, properties);
         }
     }
     return new ObjectDescriptionData(0); // invalid

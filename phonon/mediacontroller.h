@@ -21,6 +21,8 @@
 #define PHONON_MEDIACONTROLLER_H
 
 #include "phonon/phonon_export.h"
+#include "phonon/objectdescription.h"
+
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER
@@ -64,6 +66,66 @@ class PHONON_EXPORT MediaController : public QObject
         int currentTitle() const;
 
         bool autoplayTitles() const;
+
+        /**
+         * Returns the selected audio stream.
+         *
+         * \see availableAudioStreams
+         * \see setCurrentAudioStream
+         */
+        AudioStreamDescription currentAudioStream(const QObject *audioPath = 0) const;
+
+        /**
+         * Returns the selected subtitle stream.
+         *
+         * \see availableSubtitleStreams
+         * \see setCurrentSubtitleStream
+         */
+        SubtitleStreamDescription currentSubtitleStream(const QObject *videoPath = 0) const;
+
+        /**
+         * Returns the audio streams that can be selected by the user. The
+         * strings can directly be used in the user interface.
+         *
+         * \see selectedAudioStream
+         * \see setCurrentAudioStream
+         */
+        QList<AudioStreamDescription> availableAudioStreams(const QObject *audioPath = 0) const;
+
+        /**
+         * Returns the subtitle streams that can be selected by the user. The
+         * strings can directly be used in the user interface.
+         *
+         * \see selectedSubtitleStream
+         * \see setCurrentSubtitleStream
+         */
+        QList<SubtitleStreamDescription> availableSubtitleStreams(const QObject *videoPath = 0) const;
+
+        /**
+         * Selects an audio stream from the media.
+         *
+         * Some media formats allow multiple audio streams to be stored in
+         * the same file. Normally only one should be played back.
+         *
+         * \param stream Description of an audio stream
+         *
+         * \see availableAudioStreams()
+         * \see currentAudioStream()
+         */
+        void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream, const QObject* audioPath = 0);
+
+        /**
+         * Selects a subtitle stream from the media.
+         *
+         * Some media formats allow multiple subtitle streams to be stored in
+         * the same file. Normally only one should be displayed.
+         *
+         * \param stream description of a subtitle stream
+         *
+         * \see availableSubtitleStreams()
+         * \see currentSubtitleStream()
+         */
+        void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream, const QObject* videoPath = 0);
 
     public Q_SLOTS:
         void setCurrentAngle(int angleNumber);

@@ -76,9 +76,6 @@ class MediaObjectPrivate : public MediaNodePrivate, private MediaNodeDestruction
 
         qint64 currentTime;
         qint32 tickInterval;
-        //AudioStreamDescription currentAudioStream;
-        //VideoStreamDescription currentVideoStream;
-        //SubtitleStreamDescription currentSubtitleStream;
         QMultiMap<QString, QString> metaData;
         QString errorString;
         qint32 prefinishMark;

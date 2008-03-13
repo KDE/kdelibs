@@ -59,14 +59,6 @@ namespace Fake
             QStringList availableVideoStreams() const;
             QStringList availableSubtitleStreams() const;
 
-            QString currentAudioStream(const QObject *audioPath) const;
-            QString currentVideoStream(const QObject *videoPath) const;
-            QString currentSubtitleStream(const QObject *videoPath) const;
-
-            void setCurrentAudioStream(const QString &streamName, const QObject *audioPath);
-            void setCurrentVideoStream(const QString &streamName, const QObject *videoPath);
-            void setCurrentSubtitleStream(const QString &streamName, const QObject *videoPath);
-
             void setTickInterval(qint32 newTickInterval);
             void play();
             void pause();
@@ -146,9 +138,6 @@ namespace Fake
             // for sound synthesis
             float m_position, m_frequency;
 
-            QHash<const QObject *, QString> m_selectedAudioStream;
-            QHash<const QObject *, QString> m_selectedVideoStream;
-            QHash<const QObject *, QString> m_selectedSubtitleStream;
             MediaSource m_source;
             MediaSource m_nextSource;
             qint32 m_prefinishMark;

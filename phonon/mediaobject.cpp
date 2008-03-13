@@ -87,45 +87,6 @@ PHONON_INTERFACE_GETTER(bool, hasVideo, false)
 PHONON_INTERFACE_GETTER(bool, isSeekable, false)
 PHONON_INTERFACE_GETTER(qint64, currentTime, d->currentTime)
 
-/*
- * Substream manipulation will be done later
-
-PHONON_INTERFACE_GETTER(AudioStreamDescription, currentAudioStream,    d->currentAudioStream)
-PHONON_INTERFACE_GETTER(VideoStreamDescription, currentVideoStream,    d->currentVideoStream)
-PHONON_INTERFACE_GETTER(SubtitleStreamDescription, currentSubtitleStream, d->currentSubtitleStream)
-PHONON_INTERFACE_GETTER(QList<AudioStreamDescription>, availableAudioStreams, QList<AudioStreamDescription>())
-PHONON_INTERFACE_GETTER(QList<VideoStreamDescription>, availableVideoStreams, QList<VideoStreamDescription>())
-PHONON_INTERFACE_GETTER(QList<SubtitleStreamDescription>, availableSubtitleStreams, QList<SubtitleStreamDescription>())
-
-void MediaObject::setCurrentAudioStream(const AudioStreamDescription &stream)
-{
-    K_D(MediaObject);
-    if (k_ptr->backendObject()) {
-        INTERFACE_CALL(setCurrentAudioStream(stream));
-    } else {
-        d->currentAudioStream = stream;
-    }
-}
-
-void MediaObject::setCurrentVideoStream(const VideoStreamDescription &stream)
-{
-    K_D(MediaObject);
-    if (k_ptr->backendObject()) {
-        INTERFACE_CALL(setCurrentVideoStream(stream));
-    } else {
-        d->currentVideoStream = stream;
-    }
-}
-
-void MediaObject::setCurrentSubtitleStream(const SubtitleStreamDescription &stream)
-{
-    K_D(MediaObject);
-    if (k_ptr->backendObject()) {
-        INTERFACE_CALL(setCurrentSubtitleStream(stream));
-    } else {
-        d->currentSubtitleStream = stream;
-    }
-}*/
 
 void MediaObject::play()
 {

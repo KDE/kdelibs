@@ -110,60 +110,6 @@ void MediaObject::setTickInterval(qint32 newTickInterval)
         m_tickTimer->setInterval(newTickInterval);
 }
 
-QStringList MediaObject::availableAudioStreams() const
-{
-    QStringList ret;
-    ret << QLatin1String("en") << QLatin1String("de");
-    return ret;
-}
-
-QStringList MediaObject::availableVideoStreams() const
-{
-    QStringList ret;
-    ret << QLatin1String("en") << QLatin1String("de");
-    return ret;
-}
-
-QStringList MediaObject::availableSubtitleStreams() const
-{
-    QStringList ret;
-    ret << QLatin1String("en") << QLatin1String("de");
-    return ret;
-}
-
-QString MediaObject::currentAudioStream(const QObject *audioPath) const
-{
-    return m_selectedAudioStream[audioPath];
-}
-
-QString MediaObject::currentVideoStream(const QObject *videoPath) const
-{
-    return m_selectedVideoStream[videoPath];
-}
-
-QString MediaObject::currentSubtitleStream(const QObject *videoPath) const
-{
-    return m_selectedSubtitleStream[videoPath];
-}
-
-void MediaObject::setCurrentAudioStream(const QString &streamName, const QObject *audioPath)
-{
-    if (availableAudioStreams().contains(streamName))
-        m_selectedAudioStream[audioPath] = streamName;
-}
-
-void MediaObject::setCurrentVideoStream(const QString &streamName, const QObject *videoPath)
-{
-    if (availableVideoStreams().contains(streamName))
-        m_selectedVideoStream[videoPath] = streamName;
-}
-
-void MediaObject::setCurrentSubtitleStream(const QString &streamName, const QObject *videoPath)
-{
-    if (availableSubtitleStreams().contains(streamName))
-        m_selectedSubtitleStream[videoPath] = streamName;
-}
-
 void MediaObject::play()
 {
     //kDebug(604) ;

@@ -78,7 +78,7 @@ namespace Phonon
         /**
          * Lists all processing effects the backend supports.
          */
-        EffectType//,
+        EffectType,
         /**
          * Not used yet.
          */
@@ -94,10 +94,10 @@ namespace Phonon
         /**
          * Not used yet.
          */
-        /*VisualizationType,
+        //VisualizationType,
+        //VideoStreamType,
         AudioStreamType,
-        VideoStreamType,
-        SubtitleStreamType*/
+        SubtitleStreamType
     };
 
 /** \internal
@@ -168,6 +168,7 @@ class PHONON_EXPORT ObjectDescriptionData : public QSharedData //krazy:exclude=d
         ~ObjectDescriptionData();
 
         ObjectDescriptionData(ObjectDescriptionPrivate * = 0);
+        ObjectDescriptionData(int index, const QHash<QByteArray, QVariant> &properties);
 
     protected:
         ObjectDescriptionPrivate *const d;
@@ -265,6 +266,7 @@ class ObjectDescription
         inline int index() const { return d->index(); } //krazy:exclude=inline
 
         ObjectDescription() : d(new ObjectDescriptionData(0)) {}
+        ObjectDescription(int index, const QHash<QByteArray, QVariant> &properties) : d(new ObjectDescriptionData(index, properties)) {}
 
     protected:
         friend class ObjectDescriptionModel<T>;
@@ -313,12 +315,15 @@ typedef ObjectDescription<EffectType> EffectDescription;
 /**
  * \ingroup BackendInformation
  */
-/*typedef ObjectDescription<VisualizationType> VisualizationDescription;
+//typedef ObjectDescription<VisualizationType> VisualizationDescription;
 typedef ObjectDescription<AudioStreamType> AudioStreamDescription;
-typedef ObjectDescription<VideoStreamType> VideoStreamDescription;
 typedef ObjectDescription<SubtitleStreamType> SubtitleStreamDescription;
-*/
+
 } //namespace Phonon
+Q_DECLARE_METATYPE(Phonon::AudioStreamDescription)
+Q_DECLARE_METATYPE(QList<Phonon::AudioStreamDescription>)
+Q_DECLARE_METATYPE(Phonon::SubtitleStreamDescription)
+Q_DECLARE_METATYPE(QList<Phonon::SubtitleStreamDescription>)
 
 QT_END_NAMESPACE
 QT_END_HEADER

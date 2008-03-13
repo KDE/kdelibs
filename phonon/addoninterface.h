@@ -42,10 +42,12 @@ class AddonInterface
         virtual ~AddonInterface() {}
 
         enum Interface {
-            NavigationInterface = 1,
-            ChapterInterface    = 2,
-            AngleInterface      = 3,
-            TitleInterface      = 4
+            NavigationInterface   = 1,
+            ChapterInterface      = 2,
+            AngleInterface        = 3,
+            TitleInterface        = 4,
+            SubtitleInterface     = 5,
+            AudioChannelInterface = 6
         };
 
         enum NavigationCommand {
@@ -67,6 +69,16 @@ class AddonInterface
             setTitle,
             autoplayTitles,
             setAutoplayTitles
+        };
+        enum SubtitleCommand {
+            availableSubtitleStreams,
+            currentSubtitleStream,
+            setCurrentSubtitleStream
+        };
+        enum AudioChannelCommand {
+            availableAudioStreams,
+            currentAudioStream,
+            setCurrentAudioStream
         };
 
         virtual bool hasInterface(Interface iface) const = 0;
