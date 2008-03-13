@@ -22,7 +22,10 @@
 #define DNSSDSERVICESACTION_P_H
 
 #include <QtCore/QObject>
-
+#include <remoteservice.h>
+class ServicesAction;
+class ServiceBrowser;
+class QMenu;
 namespace DNSSD
 {
 
