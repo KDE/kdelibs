@@ -152,6 +152,7 @@ class KRockerGesture;
  * newAct->setIcon(KIcon("quick-connect"));
  * newAct->setShortcut(Qt::Key_F6);
  * connect(newAct, SIGNAL(triggered()), this, SLOT(quickConnect()));
+ * \endcode
  *
  * This section creates our action. It will display the text "Quick Connect"
  * and use the Icon "quick-connect". \c F6 will trigger the action. It further
