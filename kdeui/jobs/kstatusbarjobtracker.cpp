@@ -59,6 +59,8 @@ void KStatusBarJobTracker::registerJob(KJob *job)
 
 void KStatusBarJobTracker::unregisterJob(KJob *job)
 {
+    KAbstractWidgetJobTracker::unregisterJob(job);
+
     if (!d->progressWidget.contains(job))
         return;
 
@@ -170,11 +172,13 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *par
     stack->insertWidget(2, label);
     setMinimumSize(sizeHint());
 
-    parent->layout()->addWidget(widget);
-
     setMode(KStatusBarJobTracker::LabelOnly);
 
     q->setAutoDelete(job, true);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(widget);
+    setLayout(layout);
 }
 
 void KStatusBarJobTracker::Private::ProgressWidget::setMode(StatusBarModes newMode)

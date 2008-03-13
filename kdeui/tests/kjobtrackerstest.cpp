@@ -19,7 +19,8 @@
 
 #include "kjobtrackerstest.h"
 
-#include <QtGui/QWidget>
+#include <QtGui/QMainWindow>
+#include <QtGui/QStatusBar>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -140,7 +141,6 @@ bool KTestJob::doKill()
 {
     m_timer.stop();
     m_state = Stopped;
-    deleteLater();
     return true;
 }
 
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 
     KApplication app;
 
-    QWidget *main = new QWidget;
+    QMainWindow *main = new QMainWindow;
     main->show();
 
     KTestJob *testJob = new KTestJob(10 /* 100000 bytes to process */);
@@ -159,8 +159,12 @@ int main(int argc, char **argv)
     KWidgetJobTracker *tracker1 = new KWidgetJobTracker();
     tracker1->registerJob(testJob);
 
+    QStatusBar *statusBar = new QStatusBar(main);
     KStatusBarJobTracker *tracker2 = new KStatusBarJobTracker(main, true);
     tracker2->registerJob(testJob);
+    statusBar->addWidget(tracker2->widget(testJob));
+
+    main->setStatusBar(statusBar);
 
     KUiServerJobTracker *tracker3 = new KUiServerJobTracker(main);
     tracker3->registerJob(testJob);
