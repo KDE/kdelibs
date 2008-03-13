@@ -928,7 +928,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
             QPalette::ColorGroup cg;
             if (option->state & State_Enabled)
-                cg = (option->state & State_Active) ? QPalette::Normal : QPalette::Disabled;
+                cg = (option->state & State_Active) ? QPalette::Normal : QPalette::Inactive;
             else
                 cg = QPalette::Disabled;
 
