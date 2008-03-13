@@ -103,6 +103,7 @@ class KFileItemDelegate::Private
         QPixmap applyHoverEffect(const QPixmap &icon) const;
         QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
         void initStyleOption(QStyleOptionViewItemV4 *option, const QModelIndex &index) const;
+        void drawFocusRect(QPainter *painter, const QStyleOptionViewItemV4 &option, const QRect &rect) const;
 
     public:
         KFileItemDelegate::InformationList informationList;
@@ -959,6 +960,31 @@ QPoint KFileItemDelegate::Private::iconPosition(const QStyleOptionViewItemV4 &op
 }
 
 
+void KFileItemDelegate::Private::drawFocusRect(QPainter *painter, const QStyleOptionViewItemV4 &option,
+                                               const QRect &rect) const
+{
+    if (!(option.state & QStyle::State_HasFocus))
+        return;
+
+    QStyleOptionFocusRect opt;
+    opt.direction       = option.direction;
+    opt.fontMetrics     = option.fontMetrics;
+    opt.palette         = option.palette;
+    opt.rect            = rect;
+    opt.state           = option.state | QStyle::State_KeyboardFocusChange | QStyle::State_Item;
+    opt.backgroundColor = option.palette.color(option.state & QStyle::State_Selected ?
+                                               QPalette::Highlight : QPalette::Base);
+
+    // Apparently some widget styles expect this hint to not be set
+    painter->setRenderHint(QPainter::Antialiasing, false);
+
+    QStyle *style = option.widget ? option.widget->style() : QApplication::style();
+    style->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, painter, option.widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+}
+
+
 void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                               const QModelIndex &index) const
 {
@@ -1027,6 +1053,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
 
+    int focusHMargin = style->pixelMetric(QStyle::PM_FocusFrameHMargin);
+    int focusVMargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin);
+    QRect focusRect = textBoundingRect.adjusted(-focusHMargin, -focusVMargin,
+                                                +focusHMargin, +focusVMargin);
 
     // Create a new cached rendering of a hovered and an unhovered item.
     // We don't create a new cache for a fully hovered item, since we don't
@@ -1043,6 +1073,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
         d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
+        d->drawFocusRect(&p, opt, focusRect);
         p.end();
 
         opt.state |= QStyle::State_MouseOver;
@@ -1054,6 +1085,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
         d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
+        d->drawFocusRect(&p, opt, focusRect);
         p.end();
 
         state->setCachedRendering(cache);
@@ -1078,6 +1110,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
     painter->drawPixmap(iconPos, icon);
     d->drawTextItems(painter, opt, index, labelLayout, infoLayout);
+    d->drawFocusRect(painter, opt, focusRect);
 
     painter->restore();
 }
