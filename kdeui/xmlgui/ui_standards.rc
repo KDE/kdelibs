@@ -180,6 +180,8 @@
     <Separator/>
     <Action name="help_report_bug"/>
     <Separator/>
+    <Action name="switch_application_language"/>
+    <Separator/>
     <MergeLocal name="about_merge"/>
     <Action name="help_about_app"/>
     <Action name="help_about_kde"/>
