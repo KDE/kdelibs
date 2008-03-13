@@ -275,7 +275,9 @@ QString KIntSpinBox::textFromValue(int v) const
 int KIntSpinBox::valueFromText(const QString &text) const
 {
     bool ok;
-    return text.toInt(&ok, d->val_base);
+    QString theText = text;
+    if (theText.endsWith(suffix())) theText.chop(suffix().length());
+    return theText.toInt(&ok, d->val_base);
 }
 
 void KIntSpinBox::setEditFocus(bool mark)
