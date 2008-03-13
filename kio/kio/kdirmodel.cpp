@@ -24,6 +24,8 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kio/copyjob.h>
+#include <kio/jobuidelegate.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <QMimeData>
@@ -453,6 +455,12 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return item.mimeComment();
             }
             break;
+        case Qt::EditRole:
+            switch (index.column()) {
+            case Name:
+                return item.text();
+            }
+            break;
         case Qt::DecorationRole:
             if (index.column() == Name) {
                 if (!node->preview().isNull()) {
@@ -522,8 +530,21 @@ void KDirModel::sort( int column, Qt::SortOrder order )
 bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int role )
 {
     switch (role) {
-    case Qt::DisplayRole:
-        // TODO handle renaming here?
+    case Qt::EditRole:
+        if (index.column() == Name && value.type() == QVariant::String) {
+            Q_ASSERT(index.isValid());
+            KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
+            const KFileItem& item = node->item();
+            const QString newName = value.toString();
+            if (newName.isEmpty() || newName == item.text())
+                return true;
+            KUrl newurl(item.url());
+            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + newName);
+            KIO::Job * job = KIO::moveAs(item.url(), newurl, newurl.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
+            job->ui()->setAutoErrorHandlingEnabled(true);
+            // TODO undo handling
+            return true;
+        }
         break;
     case Qt::DecorationRole:
         if (index.column() == Name) {
