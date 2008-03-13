@@ -46,6 +46,7 @@ namespace Sonnet {
 class Highlighter::Private
 {
 public:
+    ~Private();
     Filter     *filter;
     Loader     *loader;
     Speller    *dict;
@@ -63,6 +64,11 @@ public:
     QColor spellColor;
     int suggestionListeners; // #of connections for the newSuggestions signal
 };
+
+Highlighter::Private::~Private()
+{
+  qDeleteAll(dictCache);
+}
 
 Highlighter::Highlighter(QTextEdit *textEdit,
                          const QString& configFile,
@@ -286,6 +292,7 @@ QString Highlighter::currentLanguage() const
 void Highlighter::setCurrentLanguage(const QString &lang)
 {
     if (!d->dictCache.contains(lang)) {
+        d->dict = new Speller(*d->dict);
         d->dict->setLanguage(lang);
         if (d->dict->isValid()) {
             d->dictCache.insert(lang, d->dict);
