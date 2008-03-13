@@ -164,15 +164,15 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
     if (url == nodeUrl)
         return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
 
-    const QString urlStr = url.url();
+    const QString pathStr = url.path();
     KDirModelDirNode* dirNode = m_rootNode;
 
-    if ( !urlStr.startsWith(nodeUrl.url()) ) {
+    if ( !pathStr.startsWith(nodeUrl.path()) ) {
         return qMakePair(0, static_cast<KDirModelNode*>(0));
     }
 
     for (;;) {
-        Q_ASSERT( urlStr.startsWith(nodeUrl.url()) );
+        Q_ASSERT( pathStr.startsWith(nodeUrl.path()) );
         bool foundChild = false;
         QList<KDirModelNode *>::const_iterator it = dirNode->m_childNodes.begin();
         const QList<KDirModelNode *>::const_iterator end = dirNode->m_childNodes.end();
@@ -183,7 +183,8 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
                 //kDebug(7008) << "Found! " << u;
                 return qMakePair(row, *it);
             }
-            if ( urlStr.startsWith(u.url()+'/') ) {
+            // This used to be urlStr.startsWith(u.url()+'/'), but KUrl::url() is a slow operation.
+            if ( pathStr.startsWith(u.path()+'/') ) {
                 //kDebug(7008) << "going into " << node->item().url();
                 Q_ASSERT( isDir(*it) );
                 dirNode = static_cast<KDirModelDirNode *>( *it );
