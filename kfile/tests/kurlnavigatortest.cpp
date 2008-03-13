@@ -39,6 +39,11 @@ void KUrlNavigatorTest::testHistorySizeAndIndex()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
 
+    m_navigator->setUrl(KUrl("A"));
+
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 1);
+
     m_navigator->setUrl(KUrl("B"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
