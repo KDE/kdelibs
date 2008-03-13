@@ -25,12 +25,12 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <QtGui/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 #include <QtGui/QPainter>
 
 //BEGIN KNotifyEventListDelegate
 
-class KNotifyEventList::KNotifyEventListDelegate : public QItemDelegate
+class KNotifyEventList::KNotifyEventListDelegate : public QStyledItemDelegate
 {
 	public:
 		KNotifyEventListDelegate(QObject *parent = 0);
@@ -40,20 +40,19 @@ class KNotifyEventList::KNotifyEventListDelegate : public QItemDelegate
 };
 
 KNotifyEventList::KNotifyEventListDelegate::KNotifyEventListDelegate(QObject *parent)
-	: QItemDelegate(parent)
-{
+	: QStyledItemDelegate(parent) {
 }
 
 void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		 const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
 	if (index.column() != 2)
-		return QItemDelegate::paint(painter, option, index);
+		return QStyledItemDelegate::paint(painter, option, index);
 
 	QVariant displayData = index.data(Qt::UserRole);
 	QString prstring=displayData.toString();
 
-	QItemDelegate::paint(painter, option, index);
+	QStyledItemDelegate::paint(painter, option, index);
 
 // 	kDebug(300) << prstring;
 
