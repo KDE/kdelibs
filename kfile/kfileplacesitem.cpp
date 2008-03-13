@@ -204,15 +204,7 @@ void KFilePlacesItem::onAccessibilityChanged()
 
 bool KFilePlacesItem::hasFullIcon(const KBookmark &bookmark) const
 {
-    QString emptyName = bookmark.icon();
-    QString fullName = bookmark.icon()+"-full";
-    QString fullIconPath = KIconLoader::global()->iconPath(fullName, KIconLoader::NoGroup, true);
-
-    if (!fullIconPath.isEmpty()) {
-        return true;
-    }
-
-    return false;
+    return bookmark.url()==KUrl("trash:/");
 }
 
 QString KFilePlacesItem::iconNameForBookmark(const KBookmark &bookmark) const
