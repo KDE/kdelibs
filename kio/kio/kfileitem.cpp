@@ -260,13 +260,13 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     m_fileMode = m_entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
     m_permissions = m_entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
     m_strName = m_entry.stringValue( KIO::UDSEntry::UDS_NAME );
-    
+
     const QString displayName = m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_NAME );
     if (!displayName.isEmpty())
       m_strText = displayName;
     else
       m_strText = KIO::decodeFileName( m_strName );
-    
+
     const QString urlStr = m_entry.stringValue( KIO::UDSEntry::UDS_URL );
     const bool UDS_URL_seen = !urlStr.isEmpty();
     if ( UDS_URL_seen ) {
@@ -474,9 +474,9 @@ void KFileItem::refresh()
 {
     d->m_fileMode = KFileItem::Unknown;
     d->m_permissions = KFileItem::Unknown;
-    d->m_pMimeType = 0;
     d->m_metaInfo = KFileMetaInfo();
     d->m_hidden = KFileItemPrivate::Auto;
+    refreshMimeType();
 
     // Basically, we can't trust any information we got while listing.
     // Everything could have changed...
