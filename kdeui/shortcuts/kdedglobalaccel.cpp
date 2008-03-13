@@ -322,6 +322,17 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
         //addAction only fills in the names
         ad->isPresent = false;
         ad->isFresh = true;
+        //scheduleWriteSettings();  //we don't write out isFresh actions, cf. writeSettings()
+    } else {
+        //a switch of locales is one common reason for a changing friendlyName
+        if (ad->friendlyName != actionId[ActionFriendly]) {
+            ad->friendlyName = actionId[ActionFriendly];
+            scheduleWriteSettings();
+        }
+        if (ad->parent->friendlyName != actionId[ComponentFriendly]) {
+            ad->parent->friendlyName = actionId[ComponentFriendly];
+            scheduleWriteSettings();
+        }
     }
 }
 
