@@ -268,7 +268,7 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
 
         m_ifaces.clear();
 
-        if (!ref.deref()) delete this;
+        if (!ref.deref()) deleteLater();
     }
 }
 
