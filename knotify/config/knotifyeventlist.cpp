@@ -40,7 +40,8 @@ class KNotifyEventList::KNotifyEventListDelegate : public QStyledItemDelegate
 };
 
 KNotifyEventList::KNotifyEventListDelegate::KNotifyEventListDelegate(QObject *parent)
-	: QStyledItemDelegate(parent) {
+	: QStyledItemDelegate(parent)
+{
 }
 
 void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
