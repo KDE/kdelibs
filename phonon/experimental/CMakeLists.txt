@@ -30,4 +30,5 @@ install(FILES
     backendcapabilities.h
     backendinterface.h
     factory.h
+    objectdescription.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/phonon/experimental COMPONENT Devel)
