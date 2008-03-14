@@ -193,7 +193,7 @@ class PHONON_EXPORT EffectParameter
          * (explaining what it controls) to be used as a tooltip or
          * WhatsThis help.
          */
-        EffectParameter(int parameterId, const QString &name, EffectParameter::Hints hints,
+        EffectParameter(int parameterId, const QString &name, Hints hints,
                 const QVariant &defaultValue, const QVariant &min = QVariant(),
                 const QVariant &max = QVariant(), const QVariantList &values = QVariantList(),
                 const QString &description = QString());

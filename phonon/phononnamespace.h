@@ -22,6 +22,16 @@
 
 #include "phonon/phonon_export.h"
 
+#define PHONON_VERSION 0x040200
+/*
+   PHONON_VERSION is (major << 16) + (minor << 8) + patch.
+*/
+#define PHONON_VERSION_STR "4.2.0"
+/*
+   can be used like #if (PHONON_VERSION >= PHONON_VERSION_CHECK(4, 4, 0))
+*/
+#define PHONON_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
+
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
 
@@ -41,6 +51,8 @@ class QString;
  */
 namespace Phonon
 {
+    PHONON_EXPORT const char *phononVersion();
+
     /**
      * Enum to identify the media discs supported by MediaObject.
      *

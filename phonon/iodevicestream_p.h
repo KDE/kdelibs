@@ -34,8 +34,7 @@ class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
     Q_DECLARE_PUBLIC(IODeviceStream)
     protected:
         IODeviceStreamPrivate(QIODevice *_ioDevice)
-            : ioDevice(_ioDevice),
-            offset(0)
+            : ioDevice(_ioDevice)
         {
             if (!ioDevice->isOpen()) {
                 ioDevice->open(QIODevice::ReadOnly);
@@ -48,7 +47,6 @@ class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
 
     private:
         QIODevice *ioDevice;
-        qint64 offset;
 };
 
 } // namespace Phonon

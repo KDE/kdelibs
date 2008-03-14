@@ -26,7 +26,7 @@
 #include "phononnamespace_p.h"
 #include "platform_p.h"
 
-#include <cmath>
+#include <qmath.h>
 
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface
@@ -105,7 +105,7 @@ void AudioOutput::setVolume(qreal volume)
         // sound pressure is proportional to voltage:
         // p² \prop P \prop V²
         // => if a factor for loudness of x is requested
-        INTERFACE_CALL(setVolume(std::pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
+        INTERFACE_CALL(setVolume(pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
     } else {
         emit volumeChanged(volume);
     }
@@ -118,7 +118,7 @@ qreal AudioOutput::volume() const
     if (d->muted || !d->m_backendObject) {
         return d->volume;
     }
-    return std::pow(INTERFACE_CALL(volume()), LOUDNESS_TO_VOLTAGE_EXPONENT);
+    return pow(INTERFACE_CALL(volume()), LOUDNESS_TO_VOLTAGE_EXPONENT);
 }
 
 #ifndef PHONON_LOG10OVER20
@@ -130,14 +130,14 @@ qreal AudioOutput::volumeDecibel() const
 {
     K_D(const AudioOutput);
     if (d->muted || !d->m_backendObject) {
-        return -std::log(d->volume) / log10over20;
+        return -log(d->volume) / log10over20;
     }
-    return -0.67 * std::log(INTERFACE_CALL(volume())) / log10over20;
+    return -0.67 * log(INTERFACE_CALL(volume())) / log10over20;
 }
 
 void AudioOutput::setVolumeDecibel(qreal newVolumeDecibel)
 {
-    setVolume(std::exp(-newVolumeDecibel * log10over20));
+    setVolume(exp(-newVolumeDecibel * log10over20));
 }
 
 bool AudioOutput::isMuted() const
@@ -157,7 +157,7 @@ void AudioOutput::setMuted(bool mute)
             }
         } else {
             if (k_ptr->backendObject()) {
-                INTERFACE_CALL(setVolume(std::pow(d->volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
+                INTERFACE_CALL(setVolume(pow(d->volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
             }
             d->muted = mute;
         }
@@ -216,7 +216,7 @@ void AudioOutputPrivate::setupBackendObject()
     QObject::connect(m_backendObject, SIGNAL(audioDeviceFailed()), q, SLOT(_k_audioDeviceFailed()));
 
     // set up attributes
-    pINTERFACE_CALL(setVolume(std::pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
+    pINTERFACE_CALL(setVolume(pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
 
     // if the output device is not available and the device was not explicitly set
     if (!pINTERFACE_CALL(setOutputDevice(outputDeviceIndex)) && !outputDeviceOverridden) {
@@ -241,7 +241,7 @@ void AudioOutputPrivate::_k_volumeChanged(qreal newVolume)
 {
     if (!muted) {
         Q_Q(AudioOutput);
-        emit q->volumeChanged(std::pow(newVolume, qreal(0.67)));
+        emit q->volumeChanged(pow(newVolume, qreal(0.67)));
     }
 }
 

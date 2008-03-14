@@ -51,7 +51,7 @@ class QSettingsGroup
         template<typename T>
         inline T value(const QString &key, const T &def) const
         {
-            return qvariant_cast<T>(value(key, QVariant::fromValue(def)));
+            return qvariant_cast<T>(value(key, qVariantFromValue(def)));
         }
 
         inline QVariant value(const QString &key, const QVariant &def) const
@@ -63,7 +63,7 @@ class QSettingsGroup
         inline void setValue(const QString &key, const T &value)
         {
             Q_ASSERT(m_mutableSettings);
-            m_mutableSettings->setValue(m_group + key, QVariant::fromValue(value));
+            m_mutableSettings->setValue(m_group + key, qVariantFromValue(value));
         }
 
         inline void removeEntry(const QString &key)

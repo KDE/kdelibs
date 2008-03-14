@@ -31,6 +31,18 @@ QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
+    /*!
+        Returns the version number of Phonon at run-time as a string (for
+        example, "4.0.0"). This may be a different version than the
+        version the application was compiled against.
+
+        \sa PHONON_VERSION_STR
+    */
+    const char *phononVersion()
+    {
+        return PHONON_VERSION_STR;
+    }
+
     QString categoryToString(Category c)
     {
         switch(c)

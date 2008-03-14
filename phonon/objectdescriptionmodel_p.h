@@ -32,14 +32,14 @@ namespace Phonon
 class ListModelHelper : public QAbstractListModel
 {
     public:
-        using QAbstractItemModel::layoutAboutToBeChanged;
-        using QAbstractItemModel::changePersistentIndexList;
-        using QAbstractItemModel::layoutChanged;
-        using QAbstractItemModel::reset;
-        using QAbstractItemModel::beginInsertRows;
-        using QAbstractItemModel::endInsertRows;
-        using QAbstractItemModel::beginRemoveRows;
-        using QAbstractItemModel::endRemoveRows;
+        using QAbstractListModel::layoutAboutToBeChanged;
+        using QAbstractListModel::changePersistentIndexList;
+        using QAbstractListModel::layoutChanged;
+        using QAbstractListModel::reset;
+        using QAbstractListModel::beginInsertRows;
+        using QAbstractListModel::endInsertRows;
+        using QAbstractListModel::beginRemoveRows;
+        using QAbstractListModel::endRemoveRows;
 };
 
 class ObjectDescriptionModelDataPrivate

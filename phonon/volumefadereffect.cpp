@@ -21,7 +21,8 @@
 #include "volumefadereffect_p.h"
 #include "volumefaderinterface.h"
 #include "factory.h"
-#include <cmath>
+
+#include <qmath.h>
 
 #define PHONON_CLASSNAME VolumeFaderEffect
 #define PHONON_INTERFACENAME VolumeFaderInterface
@@ -44,12 +45,12 @@ static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
 double VolumeFaderEffect::volumeDecibel() const
 {
-    return -std::log(volume()) / log10over20;
+    return -log(volume()) / log10over20;
 }
 
 void VolumeFaderEffect::setVolumeDecibel(double newVolumeDecibel)
 {
-    setVolume(std::exp(-newVolumeDecibel * log10over20));
+    setVolume(exp(-newVolumeDecibel * log10over20));
 }
 
 

@@ -73,7 +73,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see availableAudioStreams
          * \see setCurrentAudioStream
          */
-        AudioStreamDescription currentAudioStream(const QObject *audioPath = 0) const;
+        AudioStreamDescription currentAudioStream() const;
 
         /**
          * Returns the selected subtitle stream.
@@ -81,7 +81,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see availableSubtitleStreams
          * \see setCurrentSubtitleStream
          */
-        SubtitleStreamDescription currentSubtitleStream(const QObject *videoPath = 0) const;
+        SubtitleStreamDescription currentSubtitleStream() const;
 
         /**
          * Returns the audio streams that can be selected by the user. The
@@ -90,7 +90,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see selectedAudioStream
          * \see setCurrentAudioStream
          */
-        QList<AudioStreamDescription> availableAudioStreams(const QObject *audioPath = 0) const;
+        QList<AudioStreamDescription> availableAudioStreams() const;
 
         /**
          * Returns the subtitle streams that can be selected by the user. The
@@ -99,7 +99,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see selectedSubtitleStream
          * \see setCurrentSubtitleStream
          */
-        QList<SubtitleStreamDescription> availableSubtitleStreams(const QObject *videoPath = 0) const;
+        QList<SubtitleStreamDescription> availableSubtitleStreams() const;
 
         /**
          * Selects an audio stream from the media.
@@ -112,7 +112,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see availableAudioStreams()
          * \see currentAudioStream()
          */
-        void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream, const QObject* audioPath = 0);
+        void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream);
 
         /**
          * Selects a subtitle stream from the media.
@@ -125,7 +125,7 @@ class PHONON_EXPORT MediaController : public QObject
          * \see availableSubtitleStreams()
          * \see currentSubtitleStream()
          */
-        void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream, const QObject* videoPath = 0);
+        void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream);
 
     public Q_SLOTS:
         void setCurrentAngle(int angleNumber);
