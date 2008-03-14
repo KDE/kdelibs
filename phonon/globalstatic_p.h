@@ -262,20 +262,21 @@ static struct PHONON_GLOBAL_STATIC_STRUCT_NAME(NAME)                            
     }                                                                          \
     inline TYPE *operator->()                                                  \
     {                                                                          \
-        if (!_k_static_##NAME) {                                               \
+        TYPE *p = _k_static_##NAME;                                            \
+        if (!p) {                                                              \
             if (isDestroyed()) {                                               \
                 qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
                        "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
             }                                                                  \
-            TYPE *x = new TYPE ARGS;                                           \
-            if (!_k_static_##NAME.testAndSetOrdered(0, x)                      \
-                && _k_static_##NAME != x ) {                                   \
-                delete x;                                                      \
+            p = new TYPE ARGS;                                                 \
+            if (!_k_static_##NAME.testAndSetOrdered(0, p)) {                   \
+                delete p;                                                      \
+                p = _k_static_##NAME;                                          \
             } else {                                                           \
-                static Phonon::CleanUpGlobalStatic cleanUpObject = { destroy };       \
+                static Phonon::CleanUpGlobalStatic cleanUpObject = { destroy }; \
             }                                                                  \
         }                                                                      \
-        return _k_static_##NAME;                                               \
+        return p;                                                              \
     }                                                                          \
     inline TYPE &operator*()                                                   \
     {                                                                          \
