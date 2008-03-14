@@ -129,7 +129,8 @@ namespace KJS {
            CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
            CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
-           PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
+           PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async,
+           GetElementsByClassName };
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
   
@@ -165,7 +166,8 @@ namespace KJS {
            GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
-           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
+           SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
+           GetElementsByClassName };
   private:
     static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
   };

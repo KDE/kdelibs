@@ -119,6 +119,8 @@ public:
     NodeListImpl* getElementsByTagName  ( const DOMString &tagName );
     NodeListImpl* getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName );
 
+    // HTML 5
+    NodeListImpl* getElementsByClassName(const DOMString &name);
 
     // insertBefore, replaceChild and appendChild also close newChild
     // unlike the speed optimized addChild (which is used by the parser)

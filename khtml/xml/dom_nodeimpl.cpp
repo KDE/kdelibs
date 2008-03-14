@@ -33,6 +33,7 @@
 #include "dom2_eventsimpl.h"
 #include "dom_docimpl.h"
 #include "dom_restyler.h"
+#include "ClassNodeList.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -1098,6 +1099,10 @@ NodeListImpl* NodeImpl::getElementsByTagNameNS( const DOMString &namespaceURI, c
     return new TagNodeListImpl( this, namespaceURI, localName );
 }
 
+NodeListImpl* NodeImpl::getElementsByClassName(const DOMString &name)
+{
+    return new ClassNodeList(this, name);
+}
 
 bool NodeImpl::hasAttributes() const
 {
