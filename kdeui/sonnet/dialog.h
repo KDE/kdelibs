@@ -76,11 +76,21 @@ namespace Sonnet
         void stop();
         void cancel();
         void autoCorrect( const QString & currentWord, const QString & replaceWord );
-        /*
+
+        /**
          * Signal sends when spell checking is finished/stopped/completed
          * @since 4.1
          */
         void spellCheckStatus(const QString &);
+
+        /**
+         * Emitted when the user changes the language used for spellchecking,
+         * which is shown in a combobox of this dialog.
+         *
+         * @param dictionary the new language the user selected
+         * @since 4.1
+         */
+        void languageChanged( const QString &language );
 
     private Q_SLOTS:
         void slotMisspelling(const QString& word, int start );

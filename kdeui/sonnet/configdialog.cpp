@@ -30,12 +30,21 @@ using namespace Sonnet;
 class ConfigDialog::Private
 {
 public:
+    Private( ConfigDialog *parent )
+       : q( parent ) {}
     ConfigWidget *ui;
+    ConfigDialog *q;
+    void slotConfigChanged();
 };
+
+void ConfigDialog::Private::slotConfigChanged()
+{
+  emit q->languageChanged( ui->language() );
+}
 
 ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
     : KDialog(parent),
-      d(new Private)
+      d(new Private(this))
 {
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
@@ -60,6 +69,8 @@ void ConfigDialog::init(KConfig *config)
             this, SLOT(slotOk()));
     connect(this, SIGNAL(applyClicked()),
             this, SLOT(slotApply()));
+    connect(d->ui, SIGNAL(configChanged()),
+            this, SLOT(slotConfigChanged()));
 }
 
 void ConfigDialog::slotOk()
@@ -73,5 +84,9 @@ void ConfigDialog::slotApply()
     d->ui->save();
 }
 
+void ConfigDialog::setLanguage( const QString &language )
+{
+    d->ui->setLanguage( language );
+}
 
 #include "configdialog.moc"

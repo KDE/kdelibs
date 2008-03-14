@@ -41,7 +41,19 @@ public:
     Ui_SonnetConfigUI ui;
     QWidget *wdg;
     KConfig *config;
+    void selectLanguage( const QStringList& langs, const QString &language );
 };
+
+void ConfigWidget::Private::selectLanguage( const QStringList& langs,
+                                            const QString &language )
+{
+    int idx = 0;
+    for ( QStringList::const_iterator itr = langs.begin();
+          itr != langs.end(); ++itr, ++idx ) {
+        if ( *itr == language )
+            ui.m_langCombo->setCurrentIndex( idx );
+    }
+}
 
 ConfigWidget::ConfigWidget(KConfig *config, QWidget *parent)
     : QWidget(parent),
@@ -117,12 +129,7 @@ void ConfigWidget::slotChanged()
 
 void ConfigWidget::setCorrectLanguage( const QStringList& langs)
 {
-    int idx = 0;
-    for ( QStringList::const_iterator itr = langs.begin();
-          itr != langs.end(); ++itr, ++idx ) {
-        if ( *itr == d->loader->settings()->defaultLanguage() )
-            d->ui.m_langCombo->setCurrentIndex( idx );
-    }
+    d->selectLanguage( langs, d->loader->settings()->defaultLanguage() );
 }
 
 void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
@@ -141,6 +148,17 @@ void ConfigWidget::slotDefault()
     d->ui.m_skipRunTogetherCB->setChecked( false );
     d->ui.m_bgSpellCB->setChecked( true );
     d->ui.m_ignoreListBox->clear();
+}
+
+void ConfigWidget::setLanguage( const QString &language )
+{
+    d->selectLanguage( d->loader->languages(), language );
+}
+
+QString ConfigWidget::language() const
+{
+    return d->loader->languages()[ d->loader->languageNames().indexOf(
+                                         d->ui.m_langCombo->currentText() ) ];
 }
 
 #include "configwidget.moc"

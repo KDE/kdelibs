@@ -35,16 +35,39 @@ namespace Sonnet
                      QWidget *parent);
         ~ConfigDialog();
 
+        /**
+         * Sets the language/dictionary that will be selected by default
+         * in this config dialog.
+         * This overrides the setting in the config file.
+         *
+         * @param language the language which will be selected by default.
+         * @since 4.1
+         */
+        void setLanguage( const QString &language );
+
     protected Q_SLOTS:
         virtual void slotOk();
         virtual void slotApply();
+
+    Q_SIGNALS:
+
+        /**
+         * This is emitted when the user closed the dialog (and did not
+         * cancel it).
+         *
+         * @param language the language which the user has selected
+         * @since 4.1
+         */
+        void languageChanged( const QString &language );
 
     private:
         void init(KConfig *config);
     private:
         class Private;
+        friend class Private;
         Private *const d;
         Q_DISABLE_COPY(ConfigDialog)
+        Q_PRIVATE_SLOT(d, void slotConfigChanged())
     };
 }
 

@@ -524,7 +524,10 @@ void KTextEdit::checkSpelling()
           this, SLOT(spellCheckerCanceled()));
   connect(spellDialog, SIGNAL(stop()),
           this, SLOT(spellCheckerFinished()));
-  connect(spellDialog, SIGNAL(spellCheckStatus(const QString &)),this,SIGNAL(spellCheckStatus(const QString &)));
+  connect(spellDialog, SIGNAL(spellCheckStatus(const QString &)),
+          this,SIGNAL(spellCheckStatus(const QString &)));
+  connect(spellDialog, SIGNAL(languageChanged(const QString &)),
+          this, SIGNAL(languageChanged(const QString &)));
   d->originalBuffer = toPlainText();
   spellDialog->setBuffer(d->originalBuffer);
   spellDialog->show();

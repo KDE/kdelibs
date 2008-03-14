@@ -116,7 +116,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     void setSpellCheckingConfigFileName(const QString &fileName);
 
-     /*
+     /**
       * change default language for spell checking dialogbox
       * @since 4.1
       */
@@ -189,6 +189,16 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
       * @since 4.1
       */
      void spellCheckStatus(const QString &);
+
+     /**
+      * Emitted when the user changes the language in the spellcheck dialog
+      * shown by checkSpelling().
+      *
+      * @param language the new language the user selected
+      * @since 4.1
+      */
+     void languageChanged(const QString &language);
+
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return

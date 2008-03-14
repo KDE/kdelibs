@@ -37,6 +37,22 @@ namespace Sonnet
 
         bool backgroundCheckingButtonShown() const;
 
+        /**
+         * Sets the language/dictionary that will be selected by default
+         * in this config widget.
+         * This overrides the setting in the config file.
+         *
+         * @param language the language which will be selected by default.
+         * @since 4.1
+         */
+        void setLanguage( const QString &language );
+
+        /**
+         * @return the language currently selected int he language combobox
+         * @since 4.1
+         */
+        QString language() const;
+
     public Q_SLOTS:
         void save();
         void setBackgroundCheckingButtonShown( bool );
@@ -45,7 +61,7 @@ namespace Sonnet
         void slotChanged();
 
     Q_SIGNALS:
-        /*
+        /**
          * Signal sends when config was changed
          * @since 4.1
          */
@@ -58,6 +74,7 @@ namespace Sonnet
 
     private:
         class Private;
+        friend class Private;
         Private* const d;
     };
 }

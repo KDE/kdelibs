@@ -252,10 +252,11 @@ void Dialog::slotSuggest()
 void Dialog::slotChangeLanguage( const QString& lang )
 {
     Speller speller = d->checker->speller();
-    d->checker->changeLanguage(
-        speller.availableLanguages().at(
-            speller.availableLanguageNames().indexOf(lang)));
+    QString languageCode = speller.availableLanguages().at(
+        speller.availableLanguageNames().indexOf(lang));
+    d->checker->changeLanguage( languageCode );
     slotSuggest();
+    emit languageChanged( languageCode );
 }
 
 void Dialog::slotSelectionChanged( QListWidgetItem *item )
