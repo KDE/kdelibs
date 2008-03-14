@@ -354,14 +354,12 @@ void Interpreter::initGlobalObject()
     m_globalObject->put(&m_globalExec, "Date", m_Date, DontEnum);
     m_globalObject->put(&m_globalExec, "RegExp", m_RegExp, DontEnum);
     m_globalObject->put(&m_globalExec, "Error", m_Error, DontEnum);
-    // Using Internal for those to have something != 0
-    // (see kjs_window). Maybe DontEnum would be ok too ?
-    m_globalObject->put(&m_globalExec, "EvalError",m_EvalError, Internal);
-    m_globalObject->put(&m_globalExec, "RangeError",m_RangeError, Internal);
-    m_globalObject->put(&m_globalExec, "ReferenceError",m_ReferenceError, Internal);
-    m_globalObject->put(&m_globalExec, "SyntaxError",m_SyntaxError, Internal);
-    m_globalObject->put(&m_globalExec, "TypeError",m_TypeError, Internal);
-    m_globalObject->put(&m_globalExec, "URIError",m_UriError, Internal);
+    m_globalObject->put(&m_globalExec, "EvalError",m_EvalError, DontEnum);
+    m_globalObject->put(&m_globalExec, "RangeError",m_RangeError, DontEnum);
+    m_globalObject->put(&m_globalExec, "ReferenceError",m_ReferenceError, DontEnum);
+    m_globalObject->put(&m_globalExec, "SyntaxError",m_SyntaxError, DontEnum);
+    m_globalObject->put(&m_globalExec, "TypeError",m_TypeError, DontEnum);
+    m_globalObject->put(&m_globalExec, "URIError",m_UriError, DontEnum);
     
     // Set the constructorPropertyName property of all builtin constructors
     objProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Object, DontEnum | DontDelete | ReadOnly);
