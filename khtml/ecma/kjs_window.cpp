@@ -1393,6 +1393,7 @@ JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
 
   // It's ObjectType, so it must be valid.
   JSObject *listenerObject = val->getObject();
+  JSObject *thisObject = listenerObject;
 
   // 'listener' is not a simple ecma function. (Always use sanity checks: Better safe than sorry!)
   if (!listenerObject->implementsCall() && part && part->jScript() && part->jScript()->interpreter())
@@ -1405,20 +1406,19 @@ JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
 
     if(handleEventObject && handleEventObject->implementsCall())
     {
+      thisObject = listenerObject;
       listenerObject = handleEventObject;
     }
   }
 
-  JSEventListener *existingListener = jsEventListeners[listenerObject];
+  JSEventListener *existingListener = jsEventListeners[QPair<void*, bool>(thisObject, html)];
   if (existingListener) {
-     if ( existingListener->isHTMLEventListener() != html )
-        // The existingListener will have the wrong type, so onclick= will behave like addEventListener or vice versa.
-        kWarning() << "getJSEventListener: event listener already found but with html=" << !html << " - please report this, we thought it would never happen";
+    assert( existingListener->isHTMLEventListener() == html );
     return existingListener;
   }
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
-  return new JSEventListener(listenerObject, listenerObject, this, html);
+  return new JSEventListener(listenerObject, thisObject, this, html);
 }
 
 JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& srcUrl, int line,
@@ -1435,7 +1435,7 @@ void Window::clear( ExecState *exec )
   clearProperties();
 
   // Break the dependency between the listeners and their object
-  QHashIterator<void*, JSEventListener*> it(jsEventListeners);
+  QHashIterator<const QPair<void*, bool>, JSEventListener*> it(jsEventListeners);
   while ( it.hasNext() ) {
     it.next();
     it.value()->clear();
