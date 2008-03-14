@@ -593,10 +593,13 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         if (!widget->size().isValid())
             return;
         pm = PaintBuffer::grab(widget->size());
-        QPainter pp(pm);
-        pp.setCompositionMode(QPainter::CompositionMode_Clear);
-        pp.eraseRect(r);
-        pp.end();
+        if (!pm->hasAlphaChannel()) {
+            pm->fill(Qt::transparent);
+        } else {
+            QPainter pp(pm);
+            pp.setCompositionMode( QPainter::CompositionMode_Source );
+            pp.fillRect(r, Qt::transparent);
+        }
         d = pm;
     } else {
         p->end();

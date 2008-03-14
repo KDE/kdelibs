@@ -589,17 +589,6 @@ void LineEditWidget::clearHistoryActivated()
 
 void LineEditWidget::paintEvent( QPaintEvent *pe )
 {
-    //Always paint our background color
-    QRect r = rect();
-    if (hasFrame()) {
-        int margin = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-        r = QRect(QPoint(margin, margin), QSize(width() - 2*margin, height() - 2*margin));
-    }
-
-    QPainter p(this);
-    p.fillRect(r, palette().brush(QPalette::Base));
-    p.end();
-
     KLineEdit::paintEvent( pe );
 }
 
