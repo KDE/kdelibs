@@ -699,7 +699,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   title		KJS::HTMLElement::ElementTitle	DontDelete
   lang		KJS::HTMLElement::ElementLang	DontDelete
   dir		KJS::HTMLElement::ElementDir	DontDelete
-### isn't this "class" in the HTML spec?
   className	KJS::HTMLElement::ElementClassName DontDelete
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
@@ -2935,6 +2934,7 @@ static JSObject* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
 KJS_DEFINE_PROTOTYPE(HTMLCollectionProto)
 KJS_IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("HTMLCollection", HTMLCollectionProto,HTMLCollectionProtoFunc)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLCollectionPseudoCtor, "HTMLCollection", HTMLCollectionProto)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
