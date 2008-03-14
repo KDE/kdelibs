@@ -333,6 +333,7 @@ namespace KJS {
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLLayerElementPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLCollectionPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLCanvasElementPseudoCtor)
 } // namespace
