@@ -48,14 +48,14 @@ JSEventListener::JSEventListener(JSObject *_listener, JSObject *_compareListener
 {
     //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
   if (compareListenerImp) {
-    static_cast<Window*>(win.get())->jsEventListeners.insert(compareListenerImp, this);
+    static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp, html), this);
   }
 }
 
 JSEventListener::~JSEventListener()
 {
   if (compareListenerImp) {
-    static_cast<Window*>(win.get())->jsEventListeners.remove(compareListenerImp);
+    static_cast<Window*>(win.get())->jsEventListeners.remove(QPair<void*, bool>(compareListenerImp, html));
   }
   //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
@@ -82,8 +82,14 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List args;
     args.append(getDOMEvent(exec,evt.handle()));
 
-    // Set "this" to the event's current target
-    JSObject *thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
+    JSObject *thisObj = 0;
+    // Check whether handler is a function or an object with handleEvent method
+    if (listener == compareListenerImp) {
+      // Set "this" to the event's current target
+      thisObj = getDOMNode(exec,evt.currentTarget().handle())->getObject();
+    } else {
+      thisObj = compareListenerImp;
+    }
     if ( !thisObj ) {
       // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
       // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
@@ -144,9 +150,6 @@ JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_u
 
 JSLazyEventListener::~JSLazyEventListener()
 {
-  if (listener) {
-    static_cast<Window*>(win.get())->jsEventListeners.remove(listener);
-  }
 }
 
 void JSLazyEventListener::handleEvent(DOM::Event &evt)
@@ -186,6 +189,7 @@ void JSLazyEventListener::parseCode() const
       args.append(jsString(code));
       listener = constr->construct(exec, args, 
             Identifier(UString(name)), url, lineNum); // ### is globalExec ok ?
+      compareListenerImp = listener;
 
       if (exec->hadException()) {
         exec->clearException();
@@ -217,7 +221,7 @@ void JSLazyEventListener::parseCode() const
     code.clear();
 
     if (listener) {
-      static_cast<Window*>(win.get())->jsEventListeners.insert(listener,
+      static_cast<Window*>(win.get())->jsEventListeners.insert(QPair<void*, bool>(compareListenerImp, true),
                                               (KJS::JSEventListener *)(this));
     }
 

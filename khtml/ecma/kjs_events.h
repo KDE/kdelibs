@@ -49,7 +49,7 @@ namespace KJS {
     // for Window::clear(). This is a bad hack though. The JSEventListener might not get deleted
     // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
     // all nodes we're listening to is quite difficult.
-    void clear() { listener = 0; }
+    void clear() { listener = 0; compareListenerImp = 0; }
     bool isHTMLEventListener() const { return html; }
 
   protected:
@@ -64,7 +64,7 @@ namespace KJS {
     // the imp() ptr of the 'passedListener' function _object_, as the implementation will
     // call removeEventListener(.. [Object ..] on removal, and now we can successfully lookup
     // the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
-    mutable JSObject *compareListenerImp;
+    mutable ProtectedPtr<JSObject> compareListenerImp;
     bool html;
     mutable ProtectedPtr<JSObject> win;
   };
