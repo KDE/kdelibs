@@ -25,3 +25,5 @@
 - different timecode support like SMPTE
 
 - Codec interface - at least for audio
+
+- Speed factor for playback (useful mostly for audio - but video still needs to stay in sync)
