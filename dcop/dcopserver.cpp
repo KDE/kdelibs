@@ -1318,6 +1318,8 @@ void DCOPServer::slotShutdown()
     if (!shutdown)
     {
        shutdown = true;
+       QByteArray data;
+       dcopSignals->emitSignal(0L /* dcopserver */, "terminateKDE()", data, false);
        m_timer->start( 10000 ); // if within 10 seconds nothing happens, we'll terminate
        disconnect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
        connect( m_timer, SIGNAL(timeout()), this, SLOT(slotExit()) );
