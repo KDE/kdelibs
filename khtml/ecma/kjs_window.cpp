@@ -325,6 +325,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   Event		Window::EventCtor	DontDelete
   Range		Window::Range		DontDelete
   NodeFilter	Window::NodeFilter	DontDelete
+  NodeList	Window::NodeList	DontDelete
   DOMException	Window::DOMException	DontDelete
   RangeException Window::RangeException	DontDelete
   CSSRule	Window::CSSRule		DontDelete
@@ -399,6 +400,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   HTMLLayerElement Window::HTMLLayerElementCtor DontDelete
   HTMLFrameElement Window::HTMLFrameElementCtor DontDelete
   HTMLIFrameElement Window::HTMLIFrameElementCtor DontDelete
+  HTMLCollection Window::HTMLCollectionCtor DontDelete
   HTMLCanvasElement Window::HTMLCanvasElementCtor DontDelete
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontDelete
   CanvasRenderingContext2D Window::Context2DCtor DontDelete
@@ -772,6 +774,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
       return getRangeConstructor(exec);
     case NodeFilter:
       return getNodeFilterConstructor(exec);
+    case NodeList:
+      return NodeListPseudoCtor::self(exec);
     case DOMException:
       return getDOMExceptionConstructor(exec);
     case RangeException:
@@ -890,6 +894,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
       return HTMLFrameElementPseudoCtor::self(exec);
     case HTMLIFrameElementCtor:
       return HTMLIFrameElementPseudoCtor::self(exec);
+    case HTMLCollectionCtor:
+      return HTMLCollectionPseudoCtor::self(exec);
     case HTMLCanvasElementCtor:
       return HTMLCanvasElementPseudoCtor::self(exec);
     case Context2DCtor:

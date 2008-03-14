@@ -681,6 +681,8 @@ KJS_DEFINE_PROTOTYPE(DOMNodeListProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeListProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMNodeList",DOMNodeListProto,DOMNodeListProtoFunc)
 
+IMPLEMENT_PSEUDO_CONSTRUCTOR(NodeListPseudoCtor, "NodeList", DOMNodeListProto)
+
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
 DOMNodeList::DOMNodeList(ExecState *exec, DOM::NodeListImpl* l)
