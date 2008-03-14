@@ -139,7 +139,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
-           NodeFilter, DOMException, RangeException, CSSRule, Frames, _History, _External, Event, InnerHeight,
+           NodeFilter, NodeList, DOMException, RangeException, CSSRule, Frames, _History, _External, Event, InnerHeight,
            InnerWidth, Length, _Location, Navigate, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
@@ -171,6 +171,7 @@ namespace KJS {
            HTMLTableElementCtor, HTMLTableCaptionElementCtor, HTMLTableColElementCtor,
            HTMLTableSectionElementCtor, HTMLTableRowElementCtor, HTMLTableCellElementCtor,
            HTMLFrameSetElementCtor, HTMLLayerElementCtor, HTMLFrameElementCtor, HTMLIFrameElementCtor,
+           HTMLCollectionCtor,
            CSSStyleDeclarationCtor, HTMLCanvasElementCtor, Context2DCtor};
     WindowQObject *winq;
 

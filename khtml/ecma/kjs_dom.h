@@ -106,6 +106,8 @@ namespace KJS {
     static JSValue *lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
   };
 
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeListPseudoCtor)
+
   class DOMDocument : public DOMNode {
   public:
     // Build a DOMDocument
