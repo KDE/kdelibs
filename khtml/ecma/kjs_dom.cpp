@@ -894,6 +894,7 @@ AttrImpl *toAttr(JSValue *val)
   abort              DOMDocument::Abort                        DontDelete|Function 0
   load               DOMDocument::Load                         DontDelete|Function 1
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
+  getElementsByClassName DOMDocument::GetElementsByClassName   DontDelete|Function 1
 @end
 */
 
@@ -1103,6 +1104,8 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::LoadXML:
     doc.loadXML(s);
     break;
+  case DOMDocument::GetElementsByClassName:
+    return getDOMNodeList(exec, doc.getElementsByClassName(s));
   default:
     break;
   }
@@ -1129,6 +1132,7 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   setAttributeNodeNS	DOMElement::SetAttributeNodeNS	DontDelete|Function 1
   getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
+  getElementsByClassName DOMElement::GetElementsByClassName   DontDelete|Function 1
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
@@ -1257,6 +1261,8 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMElement::HasAttributeNS: // DOM2
       return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
+  case DOMElement::GetElementsByClassName: // HTML 5
+      return getDOMNodeList(exec, element.getElementsByClassName(args[0]->toString(exec).domString()));
   default:
     return jsUndefined();
   }

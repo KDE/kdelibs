@@ -185,6 +185,8 @@ set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom2_eventsimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom2_viewsimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_restyler.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNames.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNodeList.cpp
 )
 
 # khtml/imload/Makefile.am: khtmlimload
