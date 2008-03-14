@@ -53,6 +53,8 @@ VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
 
 void VideoWidgetPrivate::init()
 {
+    Q_Q(VideoWidget);
+    changeFlags = q->windowFlags() & (Qt::SubWindow | Qt::Window);
 }
 
 void VideoWidget::mouseMoveEvent(QMouseEvent *e)
@@ -108,14 +110,12 @@ void VideoWidget::setFullScreen(bool newFullScreen)
             setWindowState( windowState() | Qt::WindowFullScreen ); // set
             show();
         }
-    } else if (parentWidget()) {
-        if (isFullScreen()) {
-            flags ^= (Qt::Window | Qt::SubWindow); //clear the flags...
-            flags |= d->changeFlags; //then we reset the flags (window and subwindow)
-            setWindowFlags(flags);
-            setWindowState( windowState() & ~Qt::WindowFullScreen ); // reset
-            show();
-        }
+    } else if (isFullScreen()) {
+        flags ^= (Qt::Window | Qt::SubWindow); //clear the flags...
+        flags |= d->changeFlags; //then we reset the flags (window and subwindow)
+        setWindowFlags(flags);
+        setWindowState( windowState()  ^ Qt::WindowFullScreen ); // reset
+        show();
     }
 }
 
