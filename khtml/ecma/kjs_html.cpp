@@ -874,9 +874,10 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::ButtonType		DontDelete|ReadOnly
   value		KJS::HTMLElement::ButtonValue		DontDelete
 @end
-@begin HTMLButtonElementProtoTable 2
+@begin HTMLButtonElementProtoTable 3
   blur		KJS::HTMLElement::ButtonBlur            DontDelete|Function 0
   focus		KJS::HTMLElement::ButtonFocus           DontDelete|Function 0
+  click		KJS::HTMLElement::ButtonClick           DontDelete|Function 0
 @end
 @begin HTMLLabelElementTable 3
   form		KJS::HTMLElement::LabelForm		DontDelete|ReadOnly
@@ -2189,6 +2190,9 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       else if (id == KJS::HTMLElement::ButtonFocus) {
         button.focus();
         return jsUndefined();
+      } else if (id == KJS::HTMLElement::ButtonClick) {
+        button.click();
+        return jsUndefined();      
       }
     }
     break;
