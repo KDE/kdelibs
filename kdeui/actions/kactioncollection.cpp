@@ -395,7 +395,7 @@ void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeA
 
       if( kaction->isShortcutConfigurable() && kaction->isGlobalShortcutEnabled() ) {
           bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
-          bool bSameAsDefault = kaction->isGlobalShortcutModified();
+          bool bSameAsDefault = (kaction->globalShortcut() == kaction->globalShortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
           KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
@@ -453,7 +453,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
 
       QString actionName = it.key();
 
-      bool bSameAsDefault = !kaction->isModified();
+      bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
       kDebug(129) << "name = " << actionName 
                   << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
                   << " globalshortcut = " << kaction->globalShortcut(KAction::ActiveShortcut).toString()

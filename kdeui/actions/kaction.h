@@ -273,21 +273,6 @@ public:
     virtual ~KAction();
 
     /**
-     * Differs the shortcut from the default setting?
-     *
-     * @since 4.1
-     *
-     * @return yes/no
-     */
-    //@{
-    inline bool isModified() const {
-        return isLocalShortcutModified() || isGlobalShortcutModified();
-    }
-    bool isLocalShortcutModified() const;
-    bool isGlobalShortcutModified() const;
-    //@}
-
-    /**
      * Get the shortcut for this action.
      *
      * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts

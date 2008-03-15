@@ -176,17 +176,6 @@ const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
   return d->globalShortcut;
 }
 
-bool KAction::isLocalShortcutModified() const
-{
-  return property("defaultPrimaryShortcut").value<QKeySequence>() != shortcuts().value(0)
-      || property("defaultAlternateShortcut").value<QKeySequence>() != shortcuts().value(1);
-}
-
-bool KAction::isGlobalShortcutModified() const
-{
-  return d->defaultGlobalShortcut != d->globalShortcut;
-}
-
 void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
                                  GlobalShortcutLoading load )
 {
