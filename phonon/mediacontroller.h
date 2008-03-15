@@ -157,6 +157,8 @@ class PHONON_EXPORT MediaController : public QObject
         void previousTitle();
 
     Q_SIGNALS:
+        void availableSubtitlesChanged();
+        void availableAudioChannelsChanged();
         void availableAnglesChanged(int availableAngles);
         void angleChanged(int angleNumber);
         void availableChaptersChanged(int availableChapters);
