@@ -147,25 +147,23 @@ public:
   void readSettings( KConfigGroup* config = 0 );
 
   /**
-    * Read from @p config all configurable global key associations.
+    * Import from @p config all configurable global key associations.
     *
     * \since 4.1
     *
     * \param config Config object to read from
     */
-  void readGlobalShortcuts( KConfigGroup* config );
+  void importGlobalShortcuts( KConfigGroup* config );
 
   /**
-    * Write the current configurable global key associations to @p config.
+    * Export the current configurable global key associations to @p config.
     *
     * \since 4.1
     *
     * \param config Config object to save to
     * \param writeDefaults set to true to write settings which are already at defaults.
-    * \param oneAction pass an action here if you just want to save the values for one action, eg.
-    *                  if you know that action is the only one which has changed.
     */
-  void writeGlobalShortcuts( KConfigGroup* config, bool writeDefaults = false, QAction* oneAction = 0 ) const;
+  void exportGlobalShortcuts( KConfigGroup* config, bool writeDefaults = false ) const;
 
   /**
     * Write the current configurable key associations to @a config. What the
