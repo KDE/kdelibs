@@ -251,8 +251,8 @@ void RenderCheckBox::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
-    QSize s( cb->style()->pixelMetric( QStyle::PM_IndicatorWidth ),
-             cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ) );
+    QSize s( qMin(22, qMax(14, cb->style()->pixelMetric( QStyle::PM_IndicatorWidth ))),
+             qMin(20, qMax(12, cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ))) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -327,8 +327,8 @@ void RenderRadioButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
-    QSize s( rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
-             rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
+    QSize s( qMin(22, qMax(14, rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ))),
+             qMin(20, qMax(12, rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ))) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -589,6 +589,11 @@ void LineEditWidget::clearHistoryActivated()
 
 void LineEditWidget::paintEvent( QPaintEvent *pe )
 {
+    if (!hasFrame()) {
+        QPainter p(this);
+        p.fillRect(pe->rect(), palette().brush(QPalette::Base));
+        p.end();
+    }   
     KLineEdit::paintEvent( pe );
 }
 
