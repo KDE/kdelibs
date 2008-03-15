@@ -666,7 +666,7 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
 {
    KService::Ptr service;
    // Find service
-   if (serviceName.startsWith(QLatin1Char('/')))
+   if (QFileInfo(serviceName).isAbsolute() )
    {
       // Full path
       service = new KService(serviceName);
