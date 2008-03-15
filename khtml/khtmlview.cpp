@@ -614,8 +614,6 @@ void KHTMLView::clear()
     verticalScrollBar()->setEnabled( false );
     horizontalScrollBar()->setEnabled( false );
 
-    if (m_kwp->isRedirected())
-        setHasStaticBackground();
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -3286,6 +3284,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     if(!m_part->xmlDocImpl()) return;
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
+    d->firstRepaintPending = false;
 
     QPaintDevice* opd = m_part->xmlDocImpl()->paintDevice();
     m_part->xmlDocImpl()->setPaintDevice(p->device());
@@ -3333,7 +3332,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 
 void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
 {
-
+    d->firstRepaintPending = false;
     QRect clip(off.x()+r.x(), off.y()+r.y(),r.width(),r.height());
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(clip, palette().brush(QPalette::Active, QPalette::Base));
@@ -3372,13 +3371,18 @@ void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
 
 void KHTMLView::setHasStaticBackground(bool partial)
 {
-    d->staticWidget = partial && !m_kwp->isRedirected() ?  
+    // full static iframe is irreversible for now
+    if (d->staticWidget == KHTMLViewPrivate::SBFull && m_kwp->isRedirected())
+        return;
+
+    d->staticWidget = partial ?  
                           KHTMLViewPrivate::SBPartial : KHTMLViewPrivate::SBFull;
 }
 
 void KHTMLView::setHasNormalBackground()
 {
-    if (m_kwp->isRedirected() || !d->staticWidget)
+    // full static iframe is irreversible for now
+    if (d->staticWidget == KHTMLViewPrivate::SBFull && m_kwp->isRedirected())
         return;
 
     d->staticWidget = KHTMLViewPrivate::SBNone;
@@ -3855,13 +3859,22 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
          widget()->move(0,0);
     }
 
+    QWidget *w = widget();
+    QPoint off;
+    if (m_kwp->isRedirected()) {
+        // This is a redirected sub frame. Translate to root view context
+        KHTMLView* v = m_kwp->rootViewPos( off );
+        if (v)
+            w = v->widget();
+    }
+
     if ( d->staticWidget ) {
 
         // now remove from view the external widgets that must have completely
         // disappeared after dx/dy scroll delta is effective
         if (!d->visibleWidgets.isEmpty())
             checkExternalWidgetsPosition();
-
+            
         if ( d->staticWidget == KHTMLViewPrivate::SBPartial 
                                 && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() ) {
             // static objects might be selectively repainted, like stones in flowing water
@@ -3874,7 +3887,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             r = QRegion(QRect(0, 0, visibleWidth(), visibleHeight())) - r;
             ar = r.rects();
             for (int i = 0; i < ar.size() ; ++i) {
-                widget()->scroll( dx, dy, ar[i] );
+                w->scroll( dx, dy, ar[i].translated(off) );
             }
             // scroll external widgets
             if (!d->visibleWidgets.isEmpty()) {
@@ -3891,7 +3904,11 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
     if (d->firstRepaintPending)
         return;
-    widget()->scroll(dx, dy);
+    if (m_kwp->isRedirected()) {
+        w->scroll(dx, dy, QRect(off.x(), off.y(), visibleWidth(), visibleHeight()));
+    }  else {
+        widget()->scroll(dx, dy);
+    }
 }
 
 void KHTMLView::addChild(QWidget * child, int x, int y)
