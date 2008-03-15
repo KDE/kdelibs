@@ -71,7 +71,7 @@ public:
 void ConnectionPrivate::dequeue()
 {
     if (!backend || suspended)
-	return;
+        return;
 
     while (!outgoingTasks.isEmpty()) {
        const Task task = outgoingTasks.dequeue();
@@ -477,13 +477,13 @@ QString Connection::errorString() const
 bool Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || !d->outgoingTasks.isEmpty()) {
-	Task task;
-	task.cmd = cmd;
-	task.data = data;
-	d->outgoingTasks.enqueue(task);
+        Task task;
+        task.cmd = cmd;
+        task.data = data;
+        d->outgoingTasks.enqueue(task);
         return true;
     } else {
-	return sendnow(cmd, data);
+        return sendnow(cmd, data);
     }
 }
 
@@ -493,7 +493,7 @@ bool Connection::sendnow(int _cmd, const QByteArray &data)
         return false;
 
     if (!isConnected())
-	return false;
+        return false;
 
     //kDebug() << this << "Sending command " << _cmd << " of size " << data.size();
     Task task;
@@ -510,7 +510,7 @@ bool Connection::hasTaskAvailable() const
 bool Connection::waitForIncomingTask(int ms)
 {
     if (!isConnected())
-	return false;
+        return false;
 
     if (d->backend)
         return d->backend->waitForIncomingTask(ms);
