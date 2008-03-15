@@ -86,6 +86,9 @@ public:
     BufferedPainter(QPixmap* px, QPainter*& p, const QRegion &rr, bool replacePainter) {
          QRect br = rr.boundingRect();
          m_rect = br;
+         bool doFill = !px->hasAlphaChannel();
+         if (doFill)
+             px->fill(Qt::transparent);
          m_painter.begin(px);
          
          m_off = br.topLeft() + QPoint( static_cast<int>(p->worldTransform().dx()),
@@ -95,13 +98,15 @@ public:
          m_painter.setClipRegion(m_region = rr);
          //foreach(QRect rrr, m_region.rects())
          //    kDebug() << rrr;
-         
-         m_painter.setCompositionMode(QPainter::CompositionMode_Clear);         
-         m_painter.eraseRect(br);
+
+         if (!doFill) {
+             m_painter.setCompositionMode( QPainter::CompositionMode_Source );
+             m_painter.fillRect(br, Qt::transparent);
+         }
+
          m_painter.setCompositionMode(p->compositionMode());
-         
          m_buf = px;
-         
+
          m_painter.setFont( p->font() );
          m_painter.setBrush( p->brush() );
          m_painter.setPen( p->pen() );
