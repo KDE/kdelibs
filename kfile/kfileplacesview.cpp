@@ -661,14 +661,15 @@ void KFilePlacesView::Private::adaptItemSize()
 
     int textWidth = 0;
     QFontMetrics fm = q->fontMetrics();
-    for (int i=0; i<rowCount; ++i) {
+    for (int i=0; i<placesModel->rowCount(); ++i) {
         QModelIndex index = placesModel->index(i, 0);
 
         if (!placesModel->isHidden(index))
            textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
-    const int maxWidth = q->width() - textWidth - 2 * KDialog::marginHint();
+    const int margin = q->style()->pixelMetric(QStyle::PM_FocusFrameHMargin, 0, q) + 1;
+    const int maxWidth = q->viewport()->width() - textWidth - 4 * margin - 1;
     const int maxHeight = ((q->height() - KDialog::marginHint() * rowCount) / rowCount) - 1;
 
     int size = qMin(maxHeight, maxWidth);
@@ -679,8 +680,7 @@ void KFilePlacesView::Private::adaptItemSize()
         size = maxSize;
     } else {
         // Make it a multiple of 16
-        size>>= 4;
-        size<<= 4;
+        size &= ~0xf;
     }
 
     KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
