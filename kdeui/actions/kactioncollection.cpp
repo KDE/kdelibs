@@ -66,6 +66,8 @@ public:
   void _k_associatedWidgetDestroyed(QObject *obj);
   void _k_actionDestroyed(QObject *obj);
 
+  bool writeKXMLGUIConfigFile();
+
   KComponentData m_componentData;
 
   QMap<QString, QAction*> actionByName;
@@ -395,7 +397,7 @@ void KActionCollection::writeGlobalShortcuts( KConfigGroup* config, bool writeAl
           continue;
       QString actionName = it.key();
 
-      if( kaction->isShortcutConfigurable() && kaction->globalShortcutAllowed() ) {
+      if( kaction->isShortcutConfigurable() && kaction->isGlobalShortcutEnabled() ) {
           bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
           bool bSameAsDefault = kaction->isGlobalShortcutModified();
           // If we're using a global config or this setting
@@ -422,15 +424,21 @@ void KActionCollection::writeGlobalShortcuts( KConfigGroup* config, bool writeAl
   config->sync();
 }
 
-void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
+
+bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
 {
-  if (parentGUIClient() && !parentGUIClient()->xmlFile().isEmpty()) {
-    kDebug(129) << "xmlFile=" << parentGUIClient()->xmlFile();
+    const KXMLGUIClient *kxmlguiClient = q->parentGUIClient();
+    // return false if there is no KXMLGUIClient
+    if (!kxmlguiClient || kxmlguiClient->xmlFile().isEmpty()) {
+        return false;
+    }
+
+    kDebug(129) << "xmlFile=" << kxmlguiClient->xmlFile();
 
     QString attrShortcut = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml(KXMLGUIFactory::readConfigFile(parentGUIClient()->xmlFile(), componentData()));
+    QString sXml(KXMLGUIFactory::readConfigFile(kxmlguiClient->xmlFile(), q->componentData()));
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -440,17 +448,19 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
 
     // now, iterate through our actions
-    for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
-         it != d->actionByName.constEnd(); ++it) {
+    for (QMap<QString, QAction *>::ConstIterator it = actionByName.constBegin();
+         it != actionByName.constEnd(); ++it) {
       KAction *kaction = qobject_cast<KAction*>(it.value());
-      if (!kaction)
+      if (!kaction) {
         continue;
+      }
 
       QString actionName = it.key();
 
       bool bSameAsDefault = !kaction->isModified();
       kDebug(129) << "name = " << actionName 
-                  << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString() 
+                  << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
+                  << " globalshortcut = " << kaction->globalShortcut(KAction::ActiveShortcut).toString()
                   << " def = " << kaction->shortcut(KAction::DefaultShortcut).toString();
 
       // now see if this element already exists
@@ -470,9 +480,18 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile(doc, parentGUIClient()->xmlFile(), componentData());
-    return;
+    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->xmlFile(), q->componentData());
+    return true;
   }
+
+
+void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
+{
+    // If the caller didn't provide a config group we try to save the KXMLGUI
+    // Configuration file. If that succeeds we are finished.
+    if (config==0 && d->writeKXMLGUIConfigFile() ) {
+            return;
+    }
 
   KConfigGroup cg(KGlobal::config() , configGroup() );
   if (!config)

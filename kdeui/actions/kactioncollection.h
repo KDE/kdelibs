@@ -168,11 +168,16 @@ public:
   void writeGlobalShortcuts( KConfigGroup* config, bool writeDefaults = false, QAction* oneAction = 0 ) const;
 
   /**
-    * Write the current configurable key associations to @p config,
-    * or (if @p config is zero) to the application's
+    * Write the current configurable key associations to @a config. What the
+    * function does if @a config is zero depends. If this action collection
+    * belongs to a KXMLGuiClient the setting are saved to the kxmlgui
+    * definition file. If not the settings are written to the applications
+    * config file.
+    *
+    * \note oneAction() and writeDefaults() have no meaning for the kxmlgui
     * configuration file.
     *
-    * \param config Config object to save to, or null to use the application's config object.
+    * \param config Config object to save to, or null (see above)
     * \param writeDefaults set to true to write settings which are already at defaults.
     * \param oneAction pass an action here if you just want to save the values for one action, eg.
     *                  if you know that action is the only one which has changed.
