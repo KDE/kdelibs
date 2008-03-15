@@ -40,6 +40,7 @@ public:
 
     bool isDevice() const;
     KBookmark bookmark() const;
+    void setBookmark(const KBookmark &bookmark);
     Solid::Device device() const;
     QVariant data(int role) const;
 

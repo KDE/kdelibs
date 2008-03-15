@@ -76,6 +76,11 @@ KBookmark KFilePlacesItem::bookmark() const
     return m_bookmark;
 }
 
+void KFilePlacesItem::setBookmark(const KBookmark &bookmark)
+{
+    m_bookmark = bookmark;
+}
+
 Solid::Device KFilePlacesItem::device() const
 {
     return Solid::Device(bookmark().metaDataItem("UDI"));
