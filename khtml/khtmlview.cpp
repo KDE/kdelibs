@@ -3391,7 +3391,7 @@ void KHTMLView::addStaticObject(bool fixed)
     else
         d->staticObjectsCount++;
 
-    setHasStaticBackground( !d->staticObjectsCount /*partial*/ );
+    setHasStaticBackground( true /*partial*/ );
 }
 
 void KHTMLView::removeStaticObject(bool fixed)
@@ -3406,7 +3406,7 @@ void KHTMLView::removeStaticObject(bool fixed)
     if (!d->staticObjectsCount && !d->fixedObjectsCount)
         setHasNormalBackground();
     else
-        setHasStaticBackground( !d->staticObjectsCount /*partial*/ );
+        setHasStaticBackground( true /*partial*/ );
 }
 
 void KHTMLView::setVerticalScrollBarPolicy( Qt::ScrollBarPolicy policy )

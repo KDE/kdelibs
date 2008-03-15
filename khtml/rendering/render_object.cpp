@@ -1362,23 +1362,24 @@ void RenderObject::setStyle(RenderStyle *style)
          (style->hasFixedBackgroundImage() != (m_style && m_style->hasFixedBackgroundImage())
             || (style->position() == FIXED) != (m_style && (m_style->position() == FIXED)))
             && canvas() && canvas()->view() ) {
-       // some sort of fixed object is added or removed. Let's find out more and report to the view,
-       // so that it may optimize its background display mode accordingly.
+       // some sort of fixed object is added or removed. Let's find out more and report to the canvas,
+       // so that it does some bookkeeping and optimizes the view's background display mode accordingly.
        bool fixedBG = style->hasFixedBackgroundImage();
        bool oldFixedBG = m_style && m_style->hasFixedBackgroundImage();
        bool fixedPos = (style->position() == FIXED);
        bool oldFixedPos = m_style && (m_style->position() == FIXED);
        if (fixedBG != oldFixedBG) {
-           if (fixedBG)
-               canvas()->view()->addStaticObject( false /*canOptimize*/);
-           else
-               canvas()->view()->removeStaticObject( false );
+           if (fixedBG) {
+               canvas()->addStaticObject(this);
+           } else {
+               canvas()->removeStaticObject(this);
+           }
        }
        if (fixedPos != oldFixedPos) {
            if (fixedPos)
-               canvas()->view()->addStaticObject( true /*canOptimize*/);
+               canvas()->addStaticObject( this, true /*positioned*/ );
            else
-               canvas()->view()->removeStaticObject( true );
+               canvas()->removeStaticObject( this, true );
        }
     }
 

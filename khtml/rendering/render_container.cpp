@@ -176,6 +176,14 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         }
         // remove the child from any special layout lists
         oldChild->removeFromObjectLists();
+
+        // keep our fixed object lists updated.
+        if (oldChild->style()->hasFixedBackgroundImage() || oldChild->style()->position() == FIXED) {
+            if (oldChild->style()->hasFixedBackgroundImage())
+                canvas()->removeStaticObject( oldChild );
+            if (oldChild->style()->position() == FIXED)
+                canvas()->removeStaticObject( oldChild, true );
+        }
         
         if (oldChild->isPosWithStaticDim() && childrenInline())
             dirtyLinesFromChangedChild(oldChild);

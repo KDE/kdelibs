@@ -134,6 +134,7 @@ public:
     
     InlineBox *placeHolderBox() { return m_placeHolderBox; }
     void setPlaceHolderBox(InlineBox* placeHolder) { m_placeHolderBox = placeHolder; /* assert !m_placeHolderBox */ }
+    QRect getFixedBackgroundImageRect( const BackgroundLayer* bglayer, int& sx, int& sy, int& scaledImageWidth, int& scaledImageHeight );
 
 protected:
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
