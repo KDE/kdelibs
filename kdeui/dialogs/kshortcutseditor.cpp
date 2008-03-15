@@ -137,11 +137,11 @@ void KShortcutsEditor::importConfiguration( KConfig *config)
         QString groupName = "Global Shortcuts";
         KConfigGroup group( config, groupName );
         foreach (KActionCollection* collection, d->actionCollections) {
-            collection->readGlobalShortcuts( &group );
+            collection->importGlobalShortcuts( &group );
         }
     }
     if (d->actionTypes & ~KShortcutsEditor::GlobalAction) {
-        QString groupName = "Local Shortcuts";
+        QString groupName = "Shortcuts";
         KConfigGroup group( config, groupName );
         foreach (KActionCollection* collection, d->actionCollections) {
             collection->readSettings( &group );
@@ -155,11 +155,11 @@ void KShortcutsEditor::exportConfiguration( KConfig *config) const
         QString groupName = "Global Shortcuts";
         KConfigGroup group( config, groupName );
         foreach (KActionCollection* collection, d->actionCollections) {
-            collection->writeGlobalShortcuts( &group, true );
+            collection->exportGlobalShortcuts( &group, true );
         }
     }
     if (d->actionTypes & ~KShortcutsEditor::GlobalAction) {
-        QString groupName = "Local Shortcuts";
+        QString groupName = "Shortcuts";
         KConfigGroup group( config, groupName );
         foreach (KActionCollection* collection, d->actionCollections) {
             collection->writeSettings( &group, true );
