@@ -1458,13 +1458,13 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
 
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 {
-    unsigned short fromTabIndex;
+    short fromTabIndex;
 
     if (!fromNode) {
 	// No starting node supplied; begin with the top of the document
 	NodeImpl *n;
 
-	int lowestTabIndex = 65535;
+	int lowestTabIndex = SHRT_MAX + 1;
 	for (n = this; n != 0; n = n->traverseNextNode()) {
 	    if (n->isTabFocusable()) {
 		if ((n->tabIndex() > 0) && (n->tabIndex() < lowestTabIndex))
@@ -1472,7 +1472,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 	    }
 	}
 
-	if (lowestTabIndex == 65535)
+	if (lowestTabIndex == SHRT_MAX + 1)
 	    lowestTabIndex = 0;
 
 	// Go to the first node in the document that has the desired tab index
@@ -1499,7 +1499,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 	// tab index. For nodes with the same tab index as fromNode, we are only interested in those that come after
 	// fromNode in document order.
 	// If we don't find a suitable tab index, the next focus node will be one with a tab index of 0.
-	unsigned short lowestSuitableTabIndex = 65535;
+	int lowestSuitableTabIndex = SHRT_MAX + 1;
 	NodeImpl *n;
 
 	bool reachedFromNode = false;
@@ -1519,7 +1519,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 		reachedFromNode = true;
 	}
 
-	if (lowestSuitableTabIndex == 65535) {
+	if (lowestSuitableTabIndex == SHRT_MAX + 1) {
 	    // No next node with a tab index -> just take first node with tab index of 0
 	    NodeImpl *n = this;
 	    while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
@@ -1573,7 +1573,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	return 0;
     }
     else {
-	unsigned short fromTabIndex = fromNode->tabIndex();
+	short fromTabIndex = fromNode->tabIndex();
 
 	if (fromTabIndex == 0) {
 	    // Find the previous selectable node before fromNode (in document order) that doesn't have a tab index
@@ -1606,7 +1606,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	    // tab index. For nodes with the same tab index as fromNode, we are only interested in those before
 	    // fromNode.
 	    // If we don't find a suitable tab index, then there will be no previous focus node.
-	    unsigned short highestSuitableTabIndex = 0;
+	    short highestSuitableTabIndex = 0;
 	    NodeImpl *n;
 
 	    bool reachedFromNode = false;
