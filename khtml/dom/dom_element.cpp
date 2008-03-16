@@ -224,6 +224,12 @@ NodeList Element::getElementsByTagNameNS( const DOMString &namespaceURI,
     return static_cast<ElementImpl*>(impl)->getElementsByTagNameNS( namespaceURI, localName );
 }
 
+NodeList Element::getElementsByClassName( const DOMString& className )
+{
+    if (!impl) return 0;
+    return impl->getElementsByClassName( className );
+}
+
 DOMString Element::getAttributeNS( const DOMString &namespaceURI,
                                    const DOMString &localName)
 {
