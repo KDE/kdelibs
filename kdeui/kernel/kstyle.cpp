@@ -923,8 +923,11 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
             const QStyleOptionViewItemV4 *opt = qstyleoption_cast<const QStyleOptionViewItemV4*>(option);
             const QAbstractItemView *view = qobject_cast<const QAbstractItemView *>(widget);
-            bool hover = (option->state & State_MouseOver) && view &&
-                         view->selectionMode() != QAbstractItemView::NoSelection;
+            bool hover = (option->state & State_MouseOver) && (!view ||
+                         view->selectionMode() != QAbstractItemView::NoSelection);
+
+            if (!hover && !(option->state & State_Selected))
+                return;
 
             QPalette::ColorGroup cg;
             if (option->state & State_Enabled)
