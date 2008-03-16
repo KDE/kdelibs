@@ -145,7 +145,7 @@ void OutputDeviceChoice::updateDeviceList()
                 SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
                 this, SLOT(updateButtonsEnabled()));
     }
-    if (currentItem->type() == 1001) {
+    if (currentItem && currentItem->type() == 1001) {
         CategoryItem *catItem = static_cast<CategoryItem *>(currentItem);
         deviceList->setModel(m_outputModel[catItem->category()]);
         /*
