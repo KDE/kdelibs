@@ -295,6 +295,8 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
+    virtual void copyNonAttributeProperties(const ElementImpl* source);
+
     virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
