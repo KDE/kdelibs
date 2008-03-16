@@ -623,11 +623,9 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
     case DOMNode::Contains:
     {
       DOM::NodeImpl* other = toNode(args[0]);
-      if (other && node.isElementNode())
-      {
-          bool retval = other->isAncestor(&node);
-          return jsBoolean(retval);
-      }
+      if (other && other->isElementNode())
+          return jsBoolean(other->isAncestor(&node));
+      setDOMException(exec, DOMException::TYPE_MISMATCH_ERR); // ### a guess
       return jsUndefined();
     }
     case DOMNode::InsertAdjacentHTML:
