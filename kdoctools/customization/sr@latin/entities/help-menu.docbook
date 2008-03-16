@@ -15,7 +15,7 @@
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">Shift<keycap>F1</keycap></keycombo>
+<keycombo action="simul"><keycap>Shift</keycap><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Pomoć</guimenu>
 <guimenuitem>Šta je ovo?</guimenuitem>
