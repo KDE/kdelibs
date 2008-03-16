@@ -196,9 +196,11 @@ namespace KIO
             
             /// If set, contains the label to display instead of
             /// the 'real name' in UDS_NAME
+            /// @since 4.1
             UDS_DISPLAY_NAME = 22 | UDS_STRING,
             /// This file is a shortcut or mount, pointing to an
             /// URL in a different hierarchy
+            /// @since 4.1
             UDS_TARGET_URL = 23 | UDS_STRING,
             
             /// Extra data (used only if you specified Columns/ColumnsTypes)
