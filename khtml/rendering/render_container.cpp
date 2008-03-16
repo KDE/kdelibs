@@ -55,6 +55,8 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
     kDebug( 6040 ) << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
         newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
+    // protect ourselves from deletion
+    setDoNotDelete(true);
 
     bool needsTable = false;
 
@@ -135,6 +137,8 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             static_cast<RenderText*>(newChild)->setText(textToTransform, true);
     }
     newChild->attach();
+    
+    setDoNotDelete(false);
 }
 
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
@@ -583,7 +587,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 	RenderObject *next = child->nextSibling();
 
 	if ( child->isRenderBlock() && child->isAnonymousBlock() && !child->continuation() &&
-             !child->childrenInline() && !child->isTableCell() ) {
+             !child->childrenInline() && !child->isTableCell() && !child->doNotDelete()) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();
 	    if ( firstAnChild ) {
@@ -598,17 +602,21 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 		    child->previousSibling()->setNextSibling( firstAnChild );
 		if ( child->nextSibling() )
 		    child->nextSibling()->setPreviousSibling( lastAnChild );
+		if ( child == firstChild() )
+		    m_first = firstAnChild;
+		if ( child == lastChild() )
+		    m_last = lastAnChild;
 	    } else {
 		if ( child->previousSibling() )
 		    child->previousSibling()->setNextSibling( child->nextSibling() );
 		if ( child->nextSibling() )
 		    child->nextSibling()->setPreviousSibling( child->previousSibling() );
-
+		if ( child == firstChild() )
+		    m_first = child->nextSibling();
+		if ( child == lastChild() )
+		    m_last = child->previousSibling();
 	    }
-	    if ( child == firstChild() )
-		m_first = firstAnChild;
-	    if ( child == lastChild() )
-		m_last = lastAnChild;
+
 	    child->setParent( 0 );
 	    child->setPreviousSibling( 0 );
 	    child->setNextSibling( 0 );
