@@ -15,7 +15,7 @@
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">шифт<keycap>Ф1</keycap></keycombo>
+<keycombo action="simul"><keycap>шифт</keycap><keycap>Ф1</keycap></keycombo>
 </shortcut>
 <guimenu>Помоћ</guimenu>
 <guimenuitem>Шта је ово?</guimenuitem>
