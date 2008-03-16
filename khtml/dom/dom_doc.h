@@ -517,24 +517,6 @@ public:
                                      const DOMString &localName );
 
     /**
-     * Introduced in HTML 5.
-     * No Exceptions.
-     *
-     * Returns a \c NodeList of all the \c Element 's
-     * with a given class name in the order in which they
-     * would be encountered in a preorder traversal of the
-     * \c Document tree.
-     *
-     * @param tagname An unordered set of unique space-separated
-     * tokens representing classes.
-     *
-     * @return A new \c NodeList object containing all the
-     * matched \c Element s.
-     *
-     */
-    NodeList getElementsByClassName ( const DOMString &className );
-
-    /**
      * Introduced in DOM Level 2
      *
      * Imports a node from another document to this document. The returned node
