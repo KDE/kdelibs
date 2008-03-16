@@ -314,8 +314,8 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         MetaData meta_data;
         stream >> meta_data;
         d->m_incomingMetaData += meta_data;
-        kDebug(7007) << "incoming metadata now" << d->m_incomingMetaData
-                 << "\n newly arrived metadata is" << meta_data;
+//         kDebug(7007) << "incoming metadata now" << d->m_incomingMetaData
+//                  << "\n newly arrived metadata is" << meta_data;
         emit metaData(meta_data);
         break;
     }
