@@ -196,6 +196,7 @@
 <!ENTITY kdesktop	"<application>KDesktop</application>">
 <!ENTITY kdessh	"<application>kdessh</application>">
 <!ENTITY kdesu	"<application>KDE su</application>">
+<!ENTITY kdiamond	"<application>KDiamond</application>">
 <!ENTITY kdiskfree	"<application>KDiskFree</application>">
 <!ENTITY kdict	"<application>KDict</application>">
 <!ENTITY kdm	"<application>kdm</application>">
