@@ -40,7 +40,7 @@ public:
         m_timeline = new QTimeLine(200, this);
         m_timeline->setFrameRange(0, 255);
         m_timeline->setCurveShape(QTimeLine::EaseInOutCurve);
-        m_timeline->setDirection(QTimeLine::Backward);
+        m_timeline->setDirection(QTimeLine::Forward);
         connect(m_timeline, SIGNAL(finished()), this, SLOT(animationFinished()));
         connect(m_timeline, SIGNAL(frameChanged(int)), this, SLOT(update()));
     }
@@ -94,8 +94,7 @@ public:
         // it wont be painted, resulting (m->timeLine->currentTime() == 0) true,
         // and therefore a bad painting. This is needed for the case that we
         // come from a non animated widget and want it animated. (ereslibre)
-        if ((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) &&
-            m_timeline->direction() == QTimeLine::Forward) {
+        if (animationsEnabled && m_timeline->direction() == QTimeLine::Forward) {
             m_timeline->setCurrentTime(150);
         }
     }
