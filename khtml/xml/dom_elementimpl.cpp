@@ -469,6 +469,9 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
         }
     }
 
+    // ### fold above style cloning into this function?
+    clone->copyNonAttributeProperties(this);
+
     if (deep)
         cloneChildNodes(clone);
 }

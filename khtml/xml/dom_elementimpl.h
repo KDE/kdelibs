@@ -209,6 +209,8 @@ public:
     // State of the element.
     virtual QString state() { return QString(); }
 
+    virtual void copyNonAttributeProperties(const ElementImpl* source) {}
+
     virtual void attach();
     virtual void close();
     virtual void detach();

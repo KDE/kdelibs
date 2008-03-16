@@ -1487,6 +1487,18 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+void HTMLInputElementImpl::copyNonAttributeProperties(const ElementImpl* source)
+{
+    const HTMLInputElementImpl *e =
+        static_cast<const HTMLInputElementImpl*>(source);
+
+    m_value = e->m_value;
+    m_checked = e->m_checked;
+    // ### copy more?
+
+    HTMLGenericFormElementImpl::copyNonAttributeProperties(source);
+}
+
 void HTMLInputElementImpl::attach()
 {
     assert(!attached());
