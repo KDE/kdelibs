@@ -247,7 +247,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     connect(&m_captureModel, SIGNAL(layoutChanged()), this, SIGNAL(changed()));
     connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), this, SIGNAL(changed()));
     */
-
+    connect(showCheckBox, SIGNAL(stateChanged (int)), this, SIGNAL(changed()));
     connect(Phonon::BackendCapabilities::notifier(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(updateAudioOutputDevices()));
 
     if (!categoryTree->currentIndex().isValid()) {
