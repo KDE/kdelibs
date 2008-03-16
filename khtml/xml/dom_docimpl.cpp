@@ -85,6 +85,7 @@
 #include <kio/job.h>
 
 #include <stdlib.h>
+#include <limits.h>
 
 using namespace DOM;
 using namespace khtml;
