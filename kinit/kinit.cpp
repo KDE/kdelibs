@@ -120,6 +120,7 @@ static struct {
   int exit_status;
   pid_t fork;
   pid_t launcher_pid;
+  pid_t kded_pid;
   pid_t my_pid;
   int n;
   char **argv;
@@ -1497,7 +1498,9 @@ int kdeinit_xio_errhandler( Display *disp )
     {
        if (d.launcher_pid)
           kill(d.launcher_pid, SIGTERM);
-      exit( 0 );
+       if (d.kded_pid)
+          kill(d.kded_pid, SIGTERM);
+       exit( 0 );
     }
 
     if ( disp )
@@ -1691,6 +1694,7 @@ int main(int argc, char **argv, char **envp)
 
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
+   d.kded_pid = 0;
    d.wrapper = 0;
    d.wrapper_old = 0;
    d.debug_wait = false;
@@ -1754,6 +1758,7 @@ int main(int argc, char **argv, char **envp)
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit4: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
+      d.kded_pid = pid;
       handle_requests(pid);
    }
 
