@@ -252,8 +252,8 @@ public:
     bool hasClassList() const { return m_hasClassList; }
     void setHasClassList(bool b) { m_hasClassList = b; }
 
-    unsigned short tabIndex() const { return m_tabIndex; }
-    void setTabIndex(unsigned short _tabIndex) { m_tabIndex = _tabIndex; }
+    short tabIndex() const { return m_tabIndex; }
+    void setTabIndex(short _tabIndex) { m_tabIndex = _tabIndex; }
 
     virtual bool isFocusable() const { return false; }
     virtual bool isMouseFocusable() const { return isFocusable(); }
@@ -470,7 +470,7 @@ protected:
     khtml::RenderObject *m_render;
     RegisteredListenerList m_regdListeners;
 
-    unsigned short m_tabIndex : 15;
+    signed m_tabIndex : 15; // ### needs one bit more
 
     bool m_hasId : 1;
     bool m_attached : 1;
