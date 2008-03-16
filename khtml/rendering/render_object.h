@@ -761,6 +761,9 @@ public:
     virtual void dirtyInlineBoxes(bool /*fullLayout*/, bool /*isRootLineBox*/ = false) {}
     virtual void dirtyLinesFromChangedChild(RenderObject*) {}
     virtual void detach( );
+    
+    void setDoNotDelete(bool b) { m_doNotDelete = b; }
+    bool doNotDelete() const { return m_doNotDelete; }
 
     const QFont &font(bool firstLine) const {
 	return style( firstLine )->font();
@@ -847,7 +850,9 @@ private:
     bool m_hasOverflowClip           : 1;
     bool m_inPosObjectList           : 1;
 
-    // ### we have 16 + 26 bits.
+    bool m_doNotDelete 	             : 1; // This object should not be auto-deleted
+
+    // ### we have 16 + 27 bits.
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);
