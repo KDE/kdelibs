@@ -114,16 +114,12 @@ void KUrlNavigatorButton::updateMinimumWidth()
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    painter.setClipRect(event->rect());
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    const QColor bgColor = backgroundColor();
     const QColor fgColor = foregroundColor();
 
-    // draw button background
-    if (bgColor != Qt::transparent)
-        painter.fillRect(rect(), bgColor);
+    drawHoverBackground(&painter);
 
     int textLeft = 0;
     int textWidth = buttonWidth;
@@ -174,6 +170,8 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     const int align = clipped ? Qt::AlignVCenter : Qt::AlignCenter;
     const QRect textRect(textLeft, 0, textWidth, buttonHeight);
     if (clipped) {
+        QColor bgColor = fgColor;
+        bgColor.setAlpha(0);
         QLinearGradient gradient(textRect.topLeft(), textRect.topRight());
         if (leftToRight) {
             gradient.setColorAt(0.8, fgColor);

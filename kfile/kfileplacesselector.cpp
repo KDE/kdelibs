@@ -145,24 +145,16 @@ QSize KFilePlacesSelector::sizeHint() const
     return QSize(height, height);
 }
 
-void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
+void KFilePlacesSelector::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
-
-    const int buttonWidth  = width();
-    const int buttonHeight = height();
-
-    const QColor bgColor = backgroundColor();
-
-    // draw button backround
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(bgColor);
-    painter.drawRect(0, 0, buttonWidth, buttonHeight);
+    drawHoverBackground(&painter);
 
     // draw icon
     const QPixmap pixmap = icon().pixmap(QSize(22, 22), QIcon::Normal);
-    const int x = (buttonWidth -  pixmap.width()) / 2;
-    const int y = (buttonHeight - pixmap.height()) / 2;
+    const int x = (width() -  pixmap.width()) / 2;
+    const int y = (height() - pixmap.height()) / 2;
     painter.drawPixmap(x, y, pixmap);
 }
 

@@ -59,11 +59,10 @@ protected:
     virtual void leaveEvent(QEvent* event);
     virtual void contextMenuEvent(QContextMenuEvent* event);
 
+    void drawHoverBackground(QPainter* painter);
+
     /** Returns the foreground color by respecting the current display hint. */
     QColor foregroundColor() const;
-
-    /** Returns the background color by respecting the current display hint. */
-    QColor backgroundColor() const;
 
 private:
     int m_displayHint;

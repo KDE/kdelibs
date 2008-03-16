@@ -29,6 +29,8 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
+#include <QStyle>
+#include <QStyleOptionFocusRect>
 
 KUrlButton::KUrlButton(KUrlNavigator* parent) :
     QPushButton(parent),
@@ -123,6 +125,26 @@ void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
+void KUrlButton::drawHoverBackground(QPainter* painter)
+{
+    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
+                               isDisplayHintEnabled(DraggedHint) ||
+                               isDisplayHintEnabled(PopupActiveHint);
+
+    QColor backgroundColor = isHighlighted ? palette().color(QPalette::Highlight) : Qt::transparent;
+    if (!urlNavigator()->isActive() && isHighlighted) {
+        backgroundColor.setAlpha(128);
+    }
+
+    if (backgroundColor != Qt::transparent) {
+        // TODO: the backgroundColor should be applied to the style
+        QStyleOptionFocusRect option;
+        option.initFrom(this);
+        option.state = QStyle::State_Enabled | QStyle::State_MouseOver;
+        style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, this);
+    }
+}
+
 QColor KUrlButton::foregroundColor() const
 {
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
@@ -140,20 +162,6 @@ QColor KUrlButton::foregroundColor() const
     foregroundColor.setAlpha(alpha);
 
     return foregroundColor;
-}
-
-QColor KUrlButton::backgroundColor() const
-{
-    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
-                               isDisplayHintEnabled(DraggedHint) ||
-                               isDisplayHintEnabled(PopupActiveHint);
-
-    QColor backgroundColor = isHighlighted ? palette().color(QPalette::Highlight) : Qt::transparent;
-    if (!urlNavigator()->isActive() && isHighlighted) {
-        backgroundColor.setAlpha(128);
-    }
-
-    return backgroundColor;
 }
 
 #include "kurlbutton_p.moc"

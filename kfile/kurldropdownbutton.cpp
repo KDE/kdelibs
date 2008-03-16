@@ -46,12 +46,7 @@ QSize KUrlDropDownButton::sizeHint() const
 void KUrlDropDownButton::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    painter.setClipRect(event->rect());
-
-    // draw button background
-    QColor bgColor = backgroundColor();
-    if (bgColor != Qt::transparent)
-        painter.fillRect(rect(), bgColor);
+    drawHoverBackground(&painter);
 
     // draw '...'
     painter.setPen(foregroundColor());

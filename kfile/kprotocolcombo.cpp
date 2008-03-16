@@ -88,17 +88,12 @@ QString KProtocolCombo::currentProtocol() const
 void KProtocolCombo::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    painter.setClipRect(event->rect());
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    const QColor bgColor = backgroundColor();
+    drawHoverBackground(&painter);
+
     const QColor fgColor = foregroundColor();
-
-    // draw button background
-    if (bgColor != Qt::transparent)
-        painter.fillRect(rect(), bgColor);
-
     painter.setPen(fgColor);
 
     // draw arrow
