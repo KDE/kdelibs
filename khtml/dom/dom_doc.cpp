@@ -319,6 +319,12 @@ NodeList Document::getElementsByTagNameNS( const DOMString &namespaceURI, const 
     return impl->getElementsByTagNameNS( namespaceURI, localName );
 }
 
+NodeList Document::getElementsByClassName( const DOMString& className )
+{
+    if (!impl) return 0;
+    return impl->getElementsByClassName( className );
+}
+
 Node Document::importNode( const Node & importedNode, bool deep )
 {
     if (!impl)
