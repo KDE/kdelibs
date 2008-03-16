@@ -234,6 +234,7 @@ bool KAction::enableGlobalShortcut()
     //If the object name was nonempty before and globalShortcutEnabled() == true -
     //well, you shouldn't have changed the objectName() anyway so we don't check that.
     if (objectName().isEmpty()) {
+        kWarning() << "Attempt to set global shortcut for action without objectName(). See enableGlobalShortcut()";
         return false;
     }
     if (d->globalShortcutEnabled) {
