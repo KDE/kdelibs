@@ -291,7 +291,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               if (sub_entry->path == e->path + '/' + path) break;
 
             if (sub_entry /*&& sub_entry->isDir*/) {
-              removeEntry(0,e->path, sub_entry);
+              removeEntry(0, e, sub_entry);
               KDE_struct_stat stat_buf;
               QByteArray tpath = QFile::encodeName(path);
               KDE_stat(tpath, &stat_buf);
@@ -607,8 +607,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   {
     if (sub_entry) {
        (*it).m_entries.append(sub_entry);
-       kDebug(7001) << "Added already watched Entry " << path
-                    << " (for " << sub_entry->path << ")";
+       kDebug(7001) << "Added already watched Entry" << path
+                    << "(for" << sub_entry->path << ")";
 #ifdef HAVE_SYS_INOTIFY_H
        Entry* e = &(*it);
        if( (e->m_mode == INotifyMode) && (e->wd > 0) ) {
@@ -639,10 +639,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   QByteArray tpath (QFile::encodeName(path));
   bool exists = (KDE_stat(tpath, &stat_buf) == 0);
 
-  Entry newEntry;
-  m_mapEntries.insert( path, newEntry );
+  EntryMap::iterator newIt = m_mapEntries.insert( path, Entry() );
   // the insert does a copy, so we have to use <e> now
-  Entry* e = &(m_mapEntries[path]);
+  Entry* e = &(*newIt);
 
   if (exists) {
     e->isDir = S_ISDIR(stat_buf.st_mode);
@@ -757,17 +756,26 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 }
 
 
-void KDirWatchPrivate::removeEntry( KDirWatch* instance,
-                                    const QString& _path, Entry* sub_entry )
+void KDirWatchPrivate::removeEntry(KDirWatch* instance,
+                                   const QString& _path,
+                                   Entry* sub_entry)
 {
-  kDebug(7001)  << "KDirWatchPrivate::removeEntry for" << _path
-                << "sub_entry:" << sub_entry;
+  kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001)  << "KDirWatch::removeDir can't handle"
                     << _path;
     return;
   }
+
+  removeEntry(instance, e, sub_entry);
+}
+
+void KDirWatchPrivate::removeEntry(KDirWatch* instance,
+                                   Entry* e,
+                                   Entry* sub_entry)
+{
+  removeList.remove(e);
 
   if (sub_entry)
     e->m_entries.removeAll(sub_entry);
@@ -778,9 +786,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     return;
 
   if (delayRemove) {
-    // removeList is allowed to contain any entry at most once
-    if (!removeList.contains(e))
-      removeList.append(e);
+    removeList.insert(e);
     // now e->isValid() is false
     return;
   }
@@ -1117,9 +1123,13 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
 void KDirWatchPrivate::slotRemoveDelayed()
 {
   delayRemove = false;
-  foreach(Entry* e, removeList)
-    removeEntry(0, e->path, 0);
-  removeList.clear();
+  // Removing an entry could also take care of removing its parent
+  // (e.g. in FAM or inotify mode), which would remove other entries in removeList,
+  // so don't use foreach or iterators here...
+  while (!removeList.isEmpty()) {
+    Entry* entry = *removeList.begin();
+    removeEntry(0, entry, 0); // this will remove entry from removeList
+  }
 }
 
 /* Scan all entries to be watched for changes. This is done regularly
@@ -1322,16 +1332,15 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
       case FAMCreated: {
           // check for creation of a directory we have to watch
-        QByteArray tpath (QFile::encodeName( e->path + '/' +
-            (const char *)fe->filename));
+        QByteArray tpath(QFile::encodeName(e->path + '/' +
+                                           fe->filename));
 
         Entry* sub_entry = 0;
         foreach(sub_entry, e->m_entries)
           if (sub_entry->path == tpath) break;
 
         if (sub_entry && sub_entry->isDir) {
-          QString path (e->path);
-          removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
+          removeEntry(0, e, sub_entry);
           sub_entry->m_status = Normal;
           if (!useFAM(sub_entry)) {
 #ifdef HAVE_SYS_INOTIFY_H
@@ -1455,7 +1464,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
         }
       }
       if (sub_entry) {
-        removeEntry(0, e->path, sub_entry);
+        removeEntry(0, e, sub_entry);
         KDE_struct_stat stat_buf;
         QByteArray tpath = QFile::encodeName(path);
         KDE_stat(tpath, &stat_buf);

@@ -30,6 +30,7 @@
 #include "kdirwatch.h"
 
 #include <QtCore/QList>
+#include <QtCore/QSet>
 #include <QtCore/QMap>
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -131,7 +132,8 @@ public:
   void useFreq(Entry* e, int newFreq);
   void addEntry(KDirWatch* instance,const QString& _path, Entry* sub_entry,
         bool isDir, KDirWatch::WatchModes watchModes = KDirWatch::WatchDirOnly);
-  void removeEntry(KDirWatch*,const QString&, Entry*);
+  void removeEntry(KDirWatch*,const QString&, Entry* sub_entry);
+  void removeEntry(KDirWatch*,Entry* e, Entry* sub_entry);
   bool stopEntryScan(KDirWatch*, Entry*);
   bool restartEntryScan(KDirWatch*, Entry*, bool );
   void stopScan(KDirWatch*);
@@ -168,7 +170,8 @@ public:
   int m_ref;
   bool useStat(Entry*);
 
-  QList<Entry *> removeList;
+  // removeList is allowed to contain any entry at most once
+  QSet<Entry *> removeList;
   bool delayRemove;
 
   bool rescan_all;
