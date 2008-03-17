@@ -394,6 +394,7 @@ public:
      * @return A new \c NodeList object containing all the
      * matched \c Element s.
      *
+     * @since 4.1
      */
     NodeList getElementsByClassName ( const DOMString &className );
 
