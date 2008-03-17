@@ -898,7 +898,7 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param list the list of UDSEntries
          */
-        void entries( KIO::Job *job, const KIO::UDSEntryList& list);
+        void entries( KIO::Job *job, const KIO::UDSEntryList& list); // TODO KDE5: use KIO::ListJob* argument to avoid casting
 
         /**
          * Signals a redirection.

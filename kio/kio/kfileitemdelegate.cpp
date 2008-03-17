@@ -19,9 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "kfileitemdelegate.h"
+
+#include <config.h> // for HAVE_XRENDER
 
 #include <QApplication>
 #include <QStyle>

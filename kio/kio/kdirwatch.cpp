@@ -763,8 +763,7 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
   kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
   Entry* e = entry(_path);
   if (!e) {
-    kWarning(7001)  << "KDirWatch::removeDir can't handle"
-                    << _path;
+    kWarning(7001) << "doesn't know" << _path;
     return;
   }
 
