@@ -39,6 +39,7 @@
 Nepomuk::Resource::Resource()
 {
     m_data = ResourceData::data( QUrl(), QUrl() );
+    m_data->ref();
 }
 
 
@@ -93,8 +94,8 @@ Nepomuk::Resource::~Resource()
 Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        if ( m_data && m_data->deref() == 0 ) {
-//            m_data->deleteData();
+        if ( m_data && m_data->deref() == 0 && !m_data->isValid() ) {
+            m_data->deleteData();
         }
         m_data = res.m_data;
         if ( m_data )
@@ -338,6 +339,15 @@ QString Nepomuk::Resource::genericIcon() const
          resourceUri().scheme() == "file" ) {
         return KMimeType::iconNameForUrl( resourceUri() );
     }
+
+    // FIXME: This method should return a QIcon. Too bad!
+    // Otherwise we could perfectly use Types::Class::icon():
+//     foreach( QUrl typeUri, types() ) {
+//         Types::Class type( typeUri );
+//         if ( !type.icon().isNull() ) {
+//             return type.icon();
+//         }
+//     }
 
     return QString();
 }

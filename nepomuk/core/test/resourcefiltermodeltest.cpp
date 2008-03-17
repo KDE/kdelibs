@@ -18,10 +18,29 @@
 #include <qtest_kde.h>
 #include "../resourcefiltermodel.h"
 
+#include <Soprano/Global>
 #include <Soprano/QueryResultIterator>
+#include <Soprano/StatementIterator>
+#include <Soprano/Statement>
+#include <Soprano/LiteralValue>
 #include <Soprano/Util/DummyModel>
 #include <Soprano/Vocabulary/XMLSchema>
+#include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Vocabulary/NAO>
+#include <Soprano/Vocabulary/Xesam>
 
+#include <QtCore/QUuid>
+
+
+static QUrl generateUniqueUri()
+{
+    // FIXME: check if the uri already exists
+    QString uid = QUuid::createUuid().toString();
+    uid = uid.mid( 1, uid.length()-2 );
+    return QUrl( "http://soprano.org/test#" + uid );
+}
 
 class TestModel : public Soprano::Util::DummyModel
 {
@@ -61,6 +80,41 @@ void ResourceFilterModelTest::testUpdateProperty1()
     // check that we have a new graph which is an InstanceBase and contains the new property
     // check that we have a new graph that is a GraphMetadata and contains info about the InstanceBase
 
+    Soprano::Model* model = Soprano::createModel();
+    QVERIFY( model );
+    Nepomuk::ResourceFilterModel fm( model );
+
+    QUrl res = generateUniqueUri();
+    QUrl graph = generateUniqueUri();
+
+    // create a resource
+    model->addStatement( res, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::RDFS::Resource(), graph );
+    model->addStatement( graph, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::NRL::InstanceBase() );
+
+    // update the type
+    fm.updateProperty( res, Soprano::Vocabulary::RDF::type(), Soprano::Vocabulary::Xesam::File() );
+
+    // now check if we have:
+    // 1. A new InstanceBase
+    // 2. No more type = rdfs:Resource
+    // 3. a proper datetime
+    QList<Soprano::Statement> sl = model->listStatements( res, Soprano::Vocabulary::RDF::type(), Soprano::Node() ).allStatements();
+    QCOMPARE( sl.count(), 1 );
+    QCOMPARE( sl.first().object().uri(), Soprano::Vocabulary::Xesam::File() );
+
+    QUrl newGraph = sl.first().context().uri();
+
+    sl = model->listStatements( newGraph, Soprano::Vocabulary::RDF::type(), Soprano::Node() ).allStatements();
+    QCOMPARE( sl.count(), 1 );
+    QCOMPARE( sl.first().object().uri(), Soprano::Vocabulary::NRL::InstanceBase() );
+
+    sl = model->listStatements( newGraph, Soprano::Vocabulary::NAO::created(), Soprano::Node() ).allStatements();
+    QCOMPARE( sl.count(), 1 );
+    QVERIFY( sl.first().object().isLiteral() );
+    QVERIFY( sl.first().object().literal().isDateTime() );
+    QVERIFY( sl.first().object().literal().toDateTime() <= QDateTime::currentDateTime() );
+
+    delete model;
 }
 
 
@@ -91,7 +145,7 @@ void ResourceFilterModelTest::testRemoveStatement()
 //     Soprano::LiteralValue val2( "test2" );
 
 //     Soprano::Model* model = Soprano::createModel();
-//     Q_VERIFY( model );
+//     QVERIFY( model );
 //     Nepomuk::ResourceFilterModel fm( model );
 
 //     model->addStatement( res1, prop1, val1, dataGraph );

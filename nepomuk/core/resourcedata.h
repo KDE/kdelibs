@@ -189,6 +189,7 @@ namespace Nepomuk {
         QString m_kickoffUriOrId;
         QUrl m_uri;
 
+
         /**
          * The kickoffIdentifier is the identifier used to construct the resource object.
          * If the object has been constructed via a URI or determineUri has not been called

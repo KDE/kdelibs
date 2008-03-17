@@ -46,12 +46,14 @@ public:
     Private( ResourceManager* manager )
         : client( "org.kde.NepomukServer" ),
           mainModel( 0 ),
+          overrideModel( 0 ),
           dummyModel( 0 ),
           m_parent(manager) {
     }
 
     Soprano::Client::DBusClient client;
     Soprano::Model* mainModel;
+    Soprano::Model* overrideModel;
 
     Soprano::Util::DummyModel* dummyModel;
 
@@ -129,13 +131,14 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
 
     if( !type.isEmpty() ) {
         // check local data
-        QList<ResourceData*> localData = ResourceData::allResourceDataOfType( type );
-        for( QList<ResourceData*>::iterator rdIt = localData.begin();
-             rdIt != localData.end(); ++rdIt ) {
-            l.append( Resource( *rdIt ) );
-        }
+        // no need ATM since we do not cache changes
+//         QList<ResourceData*> localData = ResourceData::allResourceDataOfType( type );
+//         for( QList<ResourceData*>::iterator rdIt = localData.begin();
+//              rdIt != localData.end(); ++rdIt ) {
+//             l.append( Resource( *rdIt ) );
+//         }
 
-        kDebug(300004) << " added local resources: " << l.count();
+//         kDebug(300004) << " added local resources: " << l.count();
 
         Soprano::Model* model = mainModel();
         Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), type ) );
@@ -169,11 +172,12 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
     }
     else {
         // check local data
-        QList<ResourceData*> localData = ResourceData::allResourceDataWithProperty( uri, v );
-        for( QList<ResourceData*>::iterator rdIt = localData.begin();
-             rdIt != localData.end(); ++rdIt ) {
-            l.append( Resource( *rdIt ) );
-        }
+        // no need ATM since we do not cache changes
+//         QList<ResourceData*> localData = ResourceData::allResourceDataWithProperty( uri, v );
+//         for( QList<ResourceData*>::iterator rdIt = localData.begin();
+//              rdIt != localData.end(); ++rdIt ) {
+//             l.append( Resource( *rdIt ) );
+//         }
 
         // check remote data
         Soprano::Node n;
@@ -217,6 +221,10 @@ QString Nepomuk::ResourceManager::generateUniqueUri()
 
 Soprano::Model* Nepomuk::ResourceManager::mainModel()
 {
+    if ( d->overrideModel ) {
+        return d->overrideModel;
+    }
+
     // make sure we are initialized
     if ( !initialized() ) {
         delete d->mainModel;
@@ -242,6 +250,17 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 void Nepomuk::ResourceManager::slotStoreChanged()
 {
 //    kDebug();
+    Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
+        data->invalidateCache();
+    }
+}
+
+
+void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
+{
+    d->overrideModel = model;
+
+    // clear cache to make sure we do not mix data
     Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
         data->invalidateCache();
     }

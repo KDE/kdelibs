@@ -23,6 +23,7 @@
 #include "generated/resource.h"
 #include "tools.h"
 #include "resourcefiltermodel.h"
+#include "nie.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -313,6 +314,17 @@ bool Nepomuk::ResourceData::load()
                                        storedTypeClass.isSubClassOf( xesamContentClass ) ) ) {
                                     m_mainType = storedTypeClass.uri();
                                 }
+                                else {
+                                    // the same is true for nie:DataObject vs. nie:InformationElement
+                                    Types::Class nieInformationElementClass( Vocabulary::NIE::InformationElement() );
+                                    Types::Class nieDataObjectClass( Vocabulary::NIE::DataObject() );
+                                    if( ( currentTypeClass == nieDataObjectClass ||
+                                          currentTypeClass.isSubClassOf( nieDataObjectClass ) ) &&
+                                        ( storedTypeClass == nieInformationElementClass ||
+                                          storedTypeClass.isSubClassOf( nieInformationElementClass ) ) ) {
+                                        m_mainType = storedTypeClass.uri();
+                                    }
+                                }
                             }
                         }
                     }
@@ -467,7 +479,7 @@ bool Nepomuk::ResourceData::determineUri()
             // The kickoffUriOrId is actually a URI
             //
             m_uri = kickoffUriOrId();
-            kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
+//            kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
         }
         else {
             //
@@ -521,7 +533,7 @@ bool Nepomuk::ResourceData::determineUri()
                 }
                 else {
                     m_uri = it.current().subject().uri();
-                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
+//                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
                 }
             }
 
@@ -546,7 +558,7 @@ bool Nepomuk::ResourceData::determineUri()
                     m_uri = ResourceManager::instance()->generateUniqueUri();
                 }
 
-                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
+//                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
             }
         }
 
@@ -608,7 +620,6 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
 
     if( that->m_uri != other.m_uri ||
         that->m_mainType != other.m_mainType ) {
-        kDebug(300004) << "different uri or type";
         return false;
     }
 
@@ -636,7 +647,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
     // The uriOrId has no local representation yet -> create one
     //
     if( it == initializedData()->end() ) {
-        kDebug(300004) << "No existing ResourceData instance found for uri " << uri;
+//        kDebug(300004) << "No existing ResourceData instance found for uri " << uri;
         //
         // The actual URI is already known here
         //
@@ -697,7 +708,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
     // The uriOrId has no local representation yet -> create one
     //
     if( !resFound ) {
-        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId;
+//        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId;
         //
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //
