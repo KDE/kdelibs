@@ -24,6 +24,8 @@
 
 #include "../resourcemanager.h"
 
+#include <QExplicitlySharedDataPointer>
+
 Q_GLOBAL_STATIC( Nepomuk::Types::EntityManager, entityManager )
 
 Nepomuk::Types::EntityManager::EntityManager()
