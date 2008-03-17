@@ -167,7 +167,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            authorPageText += "<br />";
+            authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
@@ -190,7 +190,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            creditsPageText += "<br />";
+            creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
@@ -210,7 +210,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
             translatorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg((*it).name());
             if (!(*it).emailAddress().isEmpty())
                 translatorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
-            translatorPageText += "<br />";
+            translatorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         translatorPageText += KAboutData::aboutTranslationTeam();
