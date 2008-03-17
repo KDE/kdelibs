@@ -274,8 +274,8 @@ KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
       break;
    case 'm':
 //       ret << "-miniicon" << service.icon().replace( '%', "%%" );
-      kWarning() << "-miniicon isn't supported anymore (service "
-                  << service.name() << ')' << endl;
+      kWarning() << "-miniicon isn't supported anymore (service"
+                  << service.name() << ')';
       break;
    case 'u':
    case 'U':
@@ -348,9 +348,9 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
    case 'v':
       if( urls.isEmpty() ) {
          if (!ignFile)
-            kDebug() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str;
+            kDebug() << "No URLs supplied to single-URL service" << str;
       } else if( urls.count() > 1 )
-          kWarning() << "KRun::processDesktopExec: " << urls.count() << " URLs supplied to single-URL service " << str;
+          kWarning() << urls.count() << "URLs supplied to single-URL service" << str;
       else
          subst( option, urls.first(), ret );
       break;
@@ -464,7 +464,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     terminal += ' ';
     terminal += _service.terminalOptions();
     if( !mx1.expandMacrosShellQuote( terminal ) ) {
-      kWarning() << "KRun: syntax error in command `" << terminal << "', service `" << _service.name() << "'";
+      kWarning() << "KRun: syntax error in command" << terminal << ", service" << _service.name();
       return QStringList();
     }
     mx2.expandMacrosShellQuote( terminal );
@@ -836,7 +836,7 @@ void KRun::KRunPrivate::init ( const KUrl& url, QWidget* window, mode_t mode, bo
   m_bInit = true;
   q->connect( &m_timer, SIGNAL( timeout() ), q, SLOT( slotTimeout() ) );
   startTimer();
-  kDebug(7010) << " new KRun " << q << " " << url.prettyUrl() << " timer=" << &m_timer;
+  //kDebug(7010) << "new KRun" << q << url << "timer=" << &m_timer;
 
   KGlobal::ref();
 }
@@ -974,12 +974,12 @@ void KRun::init()
 
 KRun::~KRun()
 {
-  kDebug(7010) << "KRun::~KRun() " << this;
-  d->m_timer.stop();
-  killJob();
-  KGlobal::deref();
-  kDebug(7010) << "KRun::~KRun() done " << this;
-  delete d;
+    //kDebug(7010) << this;
+    d->m_timer.stop();
+    killJob();
+    KGlobal::deref();
+    //kDebug(7010) << this << "done";
+    delete d;
 }
 
 void KRun::scanFile()
@@ -1005,7 +1005,7 @@ void KRun::scanFile()
 
   if ( !KProtocolManager::supportsReading( d->m_strURL ) )
   {
-    kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
+    kError(7010) << "#### NO SUPPORT FOR READING!";
     d->m_bFault = true;
     d->m_bFinished = true;
     d->startTimer();
@@ -1069,7 +1069,7 @@ void KRun::slotStatResult( KJob * job )
   if (job->error())
   {
     d->m_showingDialog = true;
-    kError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
+    kError(7010) << this << "ERROR" << job->error() << ' ' << job->errorString();
     job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
     d->m_showingDialog = false;
@@ -1117,7 +1117,7 @@ void KRun::slotStatResult( KJob * job )
 void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
 {
   if ( mimetype.isEmpty() )
-    kWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug.";
+    kWarning(7010) << "MimetypeJob didn't find a mimetype! Probably a kioslave bug.";
   mimeTypeDetermined( mimetype );
   d->m_job = 0;
 }
@@ -1128,7 +1128,7 @@ void KRun::slotScanFinished( KJob *job )
   if (job->error())
   {
     d->m_showingDialog = true;
-    kError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
+    kError(7010) << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
     job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
     d->m_showingDialog = false;
@@ -1261,7 +1261,7 @@ void KRun::killJob()
 {
   if ( d->m_job )
   {
-    kDebug(7010) << "KRun::killJob run=" << this << " m_job=" << d->m_job;
+    kDebug(7010) << this << "m_job=" << d->m_job;
     d->m_job->kill();
     d->m_job = 0L;
   }
@@ -1269,7 +1269,7 @@ void KRun::killJob()
 
 void KRun::abort()
 {
-  kDebug(7010) << "KRun::abort " << this << " m_showingDialog=" << d->m_showingDialog;
+  kDebug(7010) << this << "m_showingDialog=" << d->m_showingDialog;
   killJob();
   // If we're showing an error message box, the rest will be done
   // after closing the msgbox -> don't autodelete nor emit signals now.

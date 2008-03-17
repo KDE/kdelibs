@@ -106,7 +106,6 @@ void DavJob::slotData( const QByteArray& data )
 void DavJob::slotFinished()
 {
   Q_D(DavJob);
-  // kDebug(7113) << "DavJob::slotFinished()";
   // kDebug(7113) << d->str_response;
 	if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() &&
             (d->m_command == CMD_SPECIAL)) {

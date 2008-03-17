@@ -346,8 +346,8 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
         }
     }
 
-    //kDebug() << "Using " << use_plugins.count() << " out of the "
-    //          << d->lstPlugins.count() << " available plugins" << endl;
+    //kDebug() << "Using" << use_plugins.count() << "out of the"
+    //          << d->lstPlugins.count() << "available plugins";
     bool filtered = false;
     for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
           it != end; ++it ) {

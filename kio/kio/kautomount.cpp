@@ -70,8 +70,8 @@ void KAutoMountPrivate::slotResult( KJob * job )
     } else {
         KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( m_strDevice );
         if (!mp) {
-            kWarning(7015) << m_strDevice << " was correctly mounted, but findByDevice() didn't find it. "
-                           << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device" << endl;
+            kWarning(7015) << m_strDevice << "was correctly mounted, but findByDevice() didn't find it."
+                           << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device";
         } else {
             KUrl url(mp->mountPoint());
             //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint;

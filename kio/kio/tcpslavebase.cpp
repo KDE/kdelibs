@@ -276,20 +276,20 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
     while (true) {
         disconnectFromHost();  //Reset some state, even if we are already disconnected
         d->host = host;
-    
+
         //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
-    
-        kDebug(7029) << "before connectToHost: Socket error is "
-                    << d->socket.error() << ", Socket state is " << d->socket.state();
+
+        kDebug(7029) << "before connectToHost: Socket error is"
+                    << d->socket.error() << ", Socket state is" << d->socket.state();
         d->socket.connectToHost(host, port);
-        kDebug(7029) << "after connectToHost: Socket error is "
-                    << d->socket.error() << ", Socket state is " << d->socket.state();
-    
+        kDebug(7029) << "after connectToHost: Socket error is"
+                    << d->socket.error() << ", Socket state is" << d->socket.state();
+
         bool connectOk = d->socket.waitForConnected(d->timeout > -1 ? d->timeout * 1000 : -1);
-        kDebug(7029) << "after waitForConnected: Socket error is "
-                    << d->socket.error() << ", Socket state is " << d->socket.state()
+        kDebug(7029) << "after waitForConnected: Socket error is"
+                    << d->socket.error() << ", Socket state is" << d->socket.state()
                     << ", waitForConnected returned " << connectOk;
-    
+
         if (d->socket.state() != KTcpSocket::ConnectedState) {
             if (d->socket.error() == KTcpSocket::HostNotFoundError) {
                 error(ERR_UNKNOWN_HOST,
@@ -300,12 +300,12 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
             }
             return false;
         }
-    
+
         //### check for proxyAuthenticationRequiredError
-    
+
         d->ip = d->socket.peerAddress().toString();
         d->port = d->socket.peerPort();
-    
+
         if (d->autoSSL) {
             SslResult res = startTLSInternal(trySslVersion);
             if ((res & ResultFailed) && (res & ResultFailedEarly)
@@ -315,7 +315,7 @@ bool TCPSlaveBase::connectToHost(const QString &protocol,
                 //### SSL 2.0 is (close to) dead and it's a good thing, too.
             }
             if (res & ResultFailed) {
-                error(ERR_COULD_NOT_CONNECT, 
+                error(ERR_COULD_NOT_CONNECT,
                       host + i18n(": SSL negotiation failed"));
                 return false;
             }

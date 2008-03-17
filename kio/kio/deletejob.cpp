@@ -137,9 +137,6 @@ void DeleteJobPrivate::slotStart()
     statNextSrc();
 }
 
-//this is called often, so calling the functions
-//from Observer here directly might improve the performance a little bit
-//aleXXX
 void DeleteJobPrivate::slotReport()
 {
    Q_Q(DeleteJob);
@@ -188,7 +185,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
             m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
 
-            //kDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")";
+            //kDebug(7007) << displayName << "(" << url << ")";
             if ( entry.isLink() )
                 symlinks.append( url );
             else if ( entry.isDir() )
@@ -257,7 +254,7 @@ void DeleteJobPrivate::deleteNextFile()
             // Normal deletion
             // If local file, try do it directly
             if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
-                //kdDebug(7007) << "DeleteJob deleted " << (*it).path() << endl;
+                //kdDebug(7007) << "DeleteJob deleted" << (*it).path();
                 job = 0;
                 m_processedFiles++;
                 if ( m_processedFiles % 300 == 0 || m_totalFilesDirs < 300) { // update progress info every 300 files
@@ -345,7 +342,7 @@ void DeleteJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
    m_fileProcessedSize = data_size;
    q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 
-   //kDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize);
+   //kDebug(7007) << (unsigned int) (m_processedSize + m_fileProcessedSize);
 
    q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 

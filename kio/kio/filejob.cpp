@@ -136,7 +136,7 @@ void FileJobPrivate::slotData( const QByteArray &_data)
 void FileJobPrivate::slotRedirection( const KUrl &url)
 {
     Q_Q(FileJob);
-    kDebug(7007) << "FileJobPrivate::slotRedirection(" << url << ")";
+    kDebug(7007) << url;
     emit q->redirection(q, url);
 }
 
@@ -176,7 +176,7 @@ void FileJobPrivate::slotWritten( KIO::filesize_t t_written )
 void FileJobPrivate::slotFinished()
 {
     Q_Q(FileJob);
-    kDebug(7007) << "FileJobPrivate::slotFinished(" << this << ", " << m_url << ")";
+    kDebug(7007) << this << m_url;
     emit q->close( q );
     // Return slave to the scheduler
     slaveDone();

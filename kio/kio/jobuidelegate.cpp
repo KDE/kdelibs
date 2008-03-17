@@ -68,9 +68,9 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            time_t mtimeSrc,
                                                            time_t mtimeDest)
 {
-    kDebug() << "Observer::RenameDialog::open job=" << job;
-    // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
-    // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
+    //kDebug() << "job=" << job;
+    // We now do it in process, so that opening the rename dialog
+    // doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
     KIO::RenameDialog dlg( window(), caption, src, dest, mode,
                                                      sizeSrc, sizeDest,
                                                      ctimeSrc, ctimeDest, mtimeSrc,

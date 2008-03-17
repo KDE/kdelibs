@@ -287,7 +287,7 @@ bool SocketConnectionBackend::sendCommand(const Task &task)
 
     //kDebug() << this << " Sending command " << hex << task.cmd << " of "
     //         << task.data.size() << " bytes (" << socket->bytesToWrite()
-    //         << " bytes left to write" << endl;
+    //         << " bytes left to write";
 
     // blocking mode:
     while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
@@ -352,7 +352,7 @@ void SocketConnectionBackend::socketReadyRead()
             cmd = strtol( p, 0L, 16 );
 
             // kDebug() << this << " Beginning of command " << hex << cmd << " of size "
-            //        << len << endl;
+            //        << len;
         }
 
         QPointer<SocketConnectionBackend> that = this;
@@ -451,7 +451,7 @@ void Connection::connectToRemote(const QString &address)
         d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this));
     } else {
         kWarning(7017) << "Unknown requested KIO::Connection protocol='" << scheme
-                       << "' (" << address << ")" << endl;
+                       << "' (" << address << ")";
         Q_ASSERT(0);
         return;
     }
@@ -526,7 +526,7 @@ int Connection::read( int* _cmd, QByteArray &data )
     }
     const Task task = d->incomingTasks.dequeue();
     //kDebug() << this << "Command " << task.cmd << " removed from the queue (size "
-    //         << task.data.size() << ")" << endl;
+    //         << task.data.size() << ")";
     *_cmd = task.cmd;
     data = task.data;
 

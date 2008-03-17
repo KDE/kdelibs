@@ -23,8 +23,8 @@
 #include <strigi/indexwriter.h>
 #include <strigi/analysisresult.h>
 #include <strigi/fieldtypes.h>
-#include "kurl.h"
-#include <QDebug>
+#include <kurl.h>
+#include <kdebug.h>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QStringList>
@@ -75,7 +75,7 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     return nwritten;
 }
 /**
- * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and 
+ * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and
  * store it in a KFileMetaInfo.
  **/
 class KMetaInfoWriter : public IndexWriter {
@@ -182,7 +182,7 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     StreamAnalyzer& indexer = PredicatePropertyProvider::self()->indexer();
     KMetaInfoWriter writer;
     QIODeviceInputStream strigiStream(stream);
-    qDebug() << "'" << url.url().toUtf8().data() << "'";
+    kDebug() << url;
     AnalysisResult idx(url.url().toUtf8().data(), mtime, writer, indexer);
 
     idx.setWriterData(&items);

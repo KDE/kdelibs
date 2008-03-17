@@ -313,8 +313,8 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     const int newItemsCount = items.count();
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << items.count() << " in " << dir
-             << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
+    kDebug(7008) << items.count() << "in" << dir
+             << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
 #endif
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 

@@ -55,7 +55,7 @@ K_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
 KDirListerCache::KDirListerCache()
     : itemsCached( 10 ) // keep the last 10 directories around
 {
-    //kDebug(7004) << "+KDirListerCache";
+    //kDebug(7004);
 
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
   pendingUpdateTimer.setSingleShot( true );
@@ -80,7 +80,7 @@ KDirListerCache::KDirListerCache()
 
 KDirListerCache::~KDirListerCache()
 {
-    kDebug(7004) << "-KDirListerCache";
+    kDebug(7004);
 
     qDeleteAll(itemsInUse);
     itemsInUse.clear();
@@ -101,7 +101,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
   _url.adjustPath(KUrl::RemoveTrailingSlash);
-  QString urlStr = _url.url();
+  const QString urlStr = _url.url();
 
   if ( !validUrl( lister, _url ) )
     return false;
@@ -110,7 +110,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   printDebug();
 #endif
   kDebug(7004) << lister << "url=" << _url
-                << "keep=" << _keep << "reload=" << _reload << endl;
+                << "keep=" << _keep << "reload=" << _reload;
 
   if ( !_keep )
   {
@@ -292,7 +292,7 @@ bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("Malformed URL\n%1",  url.prettyUrl() );
+      QString tmp = i18n("Malformed URL\n%1", url.prettyUrl() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;
@@ -302,7 +302,7 @@ bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("URL cannot be listed\n%1",  url.prettyUrl() );
+      QString tmp = i18n("URL cannot be listed\n%1", url.prettyUrl() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;
@@ -504,7 +504,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
             if ( isManuallyMounted || containsManuallyMounted )
             {
                 kDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
-                    ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" ) << endl;
+                    ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" );
                 item->complete = false; // set to "dirty"
             }
             else
@@ -742,7 +742,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
     KUrl url( *it );
     if ( url.isLocalFile() )
     {
-      kDebug(7004) << "KDirListerCache::slotFilesChanged " << url;
+      kDebug(7004) << url;
       KFileItem *fileitem = findByUrl( 0, url );
       if ( fileitem )
       {
@@ -1653,7 +1653,7 @@ void KDirListerCache::printDebug()
                      << " rootItem: " << ( !itu.value()->rootItem.isNull() ? itu.value()->rootItem.url() : KUrl() )
                      << " autoUpdates refcount: " << itu.value()->autoUpdates
                      << " complete: " << itu.value()->complete
-                     << QString(" with %1 items.").arg(itu.value()->lstItems.count()) << endl;
+                     << QString(" with %1 items.").arg(itu.value()->lstItems.count());
     }
 
     kDebug(7004) << "Directory data: ";
@@ -1680,9 +1680,9 @@ void KDirListerCache::printDebug()
     const QList<QString> cachedDirs = itemsCached.keys();
     foreach(const QString& cachedDir, cachedDirs) {
         DirItem* dirItem = itemsCached.object(cachedDir);
-        kDebug(7004) << "   " << cachedDir << "  rootItem: "
-                     << ( !dirItem->rootItem.isNull() ? dirItem->rootItem.url().prettyUrl() : QString("NULL") )
-                     << QString(" with %1 items.").arg(dirItem->lstItems.count()) << endl;
+        kDebug(7004) << "   " << cachedDir << "rootItem:"
+                     << (!dirItem->rootItem.isNull() ? dirItem->rootItem.url().prettyUrl() : QString("NULL") )
+                     << "with" << dirItem->lstItems.count() << "items.";
     }
 }
 #endif

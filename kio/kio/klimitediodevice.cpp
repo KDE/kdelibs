@@ -21,13 +21,13 @@
 KLimitedIODevice::KLimitedIODevice( QIODevice *dev, int start, int length )
     : m_dev( dev ), m_start( start ), m_length( length )
 {
-    //kDebug(7005) << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length;
+    //kDebug(7005) << "start=" << start << "length=" << length;
     open( QIODevice::ReadOnly );
 }
 
 bool KLimitedIODevice::open( QIODevice::OpenMode m )
 {
-    //kDebug(7005) << "KLimitedIODevice::open m=" << m;
+    //kDebug(7005) << "m=" << m;
     if ( m & QIODevice::ReadOnly ) {
         /*bool ok = false;
           if ( m_dev->isOpen() )

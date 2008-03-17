@@ -129,10 +129,9 @@ void ChmodJobPrivate::_k_processList()
                           << "\n with mask=" << QString::number(m_mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~m_mask,8)
                           << "\n bits we keep =" << QString::number(item->permissions() & ~m_mask,8)
-                          << "\n new permissions = " << QString::number(info.permissions,8)
-                          << endl;*/
+                          << "\n new permissions = " << QString::number(info.permissions,8);*/
             m_infos.prepend( info );
-            //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl();
+            //kDebug(7007) << "processList : Adding info for " << info.url;
             // Directory and recursive -> list
             if ( item.isDir() && m_recursive )
             {
@@ -190,8 +189,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
                           << "\n with mask=" << QString::number(mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~mask,8)
                           << "\n bits we keep =" << QString::number(permissions & ~mask,8)
-                          << "\n new permissions = " << QString::number(info.permissions,8)
-                          << endl;*/
+                          << "\n new permissions = " << QString::number(info.permissions,8);*/
             // Prepend this info in our todo list.
             // This way, the toplevel dirs are done last.
             m_infos.prepend( info );
@@ -222,8 +220,8 @@ void ChmodJobPrivate::chmodNextFile()
             }
         }
 
-        kDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyUrl()
-                      << " to " << QString::number(info.permissions,8) << endl;
+        kDebug(7007) << "chmod'ing" << info.url
+                      << "to" << QString::number(info.permissions,8);
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
         // copy the metadata for acl and default acl
         const QString aclString = q->queryMetaData( QLatin1String("ACL_STRING") );
@@ -249,18 +247,18 @@ void ChmodJob::slotResult( KJob * job )
         emitResult();
         return;
     }
-    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) d->m_lstItems:" << d->m_lstItems.count();
+    //kDebug(7007) << "d->m_lstItems:" << d->m_lstItems.count();
     switch ( d->state )
     {
         case CHMODJOB_STATE_LISTING:
             removeSubjob(job);
             d->m_lstItems.removeFirst();
-            kDebug(7007) << "ChmodJob::slotResult -> processList";
+            kDebug(7007) << "-> processList";
             d->_k_processList();
             return;
         case CHMODJOB_STATE_CHMODING:
             removeSubjob(job);
-            kDebug(7007) << "ChmodJob::slotResult -> chmodNextFile";
+            kDebug(7007) << "-> chmodNextFile";
             d->chmodNextFile();
             return;
         default:
@@ -278,7 +276,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
     {
         struct passwd* pw = getpwnam(QFile::encodeName(owner));
         if ( pw == 0L )
-            kError(250) << " ERROR: No user " << owner << endl;
+            kError(250) << " ERROR: No user" << owner;
         else
             newOwnerID = pw->pw_uid;
     }
@@ -287,7 +285,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
     {
         struct group* g = getgrnam(QFile::encodeName(group));
         if ( g == 0L )
-            kError(250) << " ERROR: No group " << group << endl;
+            kError(250) << " ERROR: No group" << group;
         else
             newGroupID = g->gr_gid;
     }

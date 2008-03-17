@@ -62,8 +62,8 @@ KDataToolInfo::KDataToolInfo(const KService::Ptr& service, const KComponentData 
 
     if ( !d->service && !d->service->serviceTypes().contains( "KDataTool" ) )
     {
-        kDebug(30003) << "The service " << d->service->name()
-                       << " does not feature the service type KDataTool" << endl;
+        kDebug(30003) << "The service" << d->service->name()
+                       << "does not feature the service type KDataTool";
         d->service = 0;
     }
 }
@@ -212,8 +212,8 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
     } */
 
     // Query the trader
-    //kDebug() << "KDataToolInfo::query " << constr;
-    KService::List offers = KServiceTypeTrader::self()->query( "KDataTool", constr );
+    //kDebug() << constr;
+    const KService::List offers = KServiceTypeTrader::self()->query( "KDataTool", constr );
 
     KService::List::ConstIterator it = offers.begin();
     for( ; it != offers.end(); ++it )
@@ -286,8 +286,8 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         Q_ASSERT(!commands.isEmpty());
         if ( commands.count() != userCommands.count() )
             kWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
-                        << "). " << commands.count() << " commands and "
-                        << userCommands.count() << " descriptions." << endl;
+                        << ")." << commands.count() << "commands and"
+                        << userCommands.count() << " descriptions.";
         QStringList::ConstIterator uit = userCommands.begin();
         QStringList::ConstIterator cit = commands.begin();
         for (; uit != userCommands.end() && cit != commands.end(); ++uit, ++cit )

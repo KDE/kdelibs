@@ -103,12 +103,12 @@ public:
     KRemoteEncoding *remotefile;
     time_t timeout;
     QByteArray timeoutData;
- 
+
     // Reconstructs configGroup from configData and mIncomingMetaData
     void rebuildConfig()
     {
         configGroup->deleteGroup(KConfigGroup::WriteConfigFlags());
-        
+
         // mIncomingMetaData cascades over config, so we write config first,
         // to let it be overwritten
         MetaData::ConstIterator end = configData.constEnd();
@@ -296,8 +296,8 @@ void SlaveBase::connectSlave(const QString &address)
 
     if (!d->appConnection.inited())
     {
-        kDebug(7019) << "SlaveBase: failed to connect to " << address << endl
-		      << "Reason: " << d->appConnection.errorString() << endl;
+        kDebug(7019) << "SlaveBase: failed to connect to" << address << endl
+		      << "Reason:" << d->appConnection.errorString();
         exit();
         return;
     }
@@ -508,7 +508,7 @@ void SlaveBase::position( KIO::filesize_t _pos )
 
 void SlaveBase::processedPercent( float /* percent */ )
 {
-  kDebug(7019) << "SlaveBase::processedPercent: STUB";
+  kDebug(7019) << "STUB";
 }
 
 
@@ -543,7 +543,7 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  // kDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'";
+  // kDebug(7019) << "(" << getpid() << ")" << _type;
   int cmd;
   do
   {
@@ -787,7 +787,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     const long windowId = metaData("window-id").toLong();
     const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
-    kDebug(7019) << "SlaveBase::openPasswordDialog window-id=" << windowId;
+    kDebug(7019) << "window-id=" << windowId;
 
     QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
@@ -823,8 +823,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 
     info = authResult;
 
-    kDebug(7019) << "SlaveBase::openPasswordDialog: username=" << info.username;
-    kDebug(7019) << "SlaveBase::openPasswordDialog: password=[hidden]";
+    kDebug(7019) << "username=" << info.username << "password=[hidden]";
 
     return true;
 }
@@ -855,7 +854,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
 
 bool SlaveBase::canResume( KIO::filesize_t offset )
 {
-    kDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset);
+    kDebug(7019) << "offset=" << KIO::number(offset);
     d->needSendCanResume = false;
     KIO_DATA << KIO_FILESIZE_T(offset);
     send( MSG_RESUME, data );
@@ -864,7 +863,7 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
         int cmd;
         if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
         {
-            kDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER);
+            kDebug(7019) << "returning" << (cmd == CMD_RESUMEANSWER);
             return cmd == CMD_RESUMEANSWER;
         } else
             return false;
@@ -884,7 +883,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
             result = d->appConnection.read( &cmd, data );
         }
         if (result == -1) {
-            kDebug(7019) << "SlaveBase::waitForAnswer has read error.";
+            kDebug(7019) << "read error.";
             return -1;
         }
 
@@ -1113,7 +1112,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     long windowId = metaData("window-id").toLong();
     unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
-    kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url();
+    kDebug(7019) << "window =" << windowId << "url =" << info.url;
 
     QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 

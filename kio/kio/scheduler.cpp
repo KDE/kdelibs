@@ -365,7 +365,7 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
 void SchedulerPrivate::doJob(SimpleJob *job) {
     JobData jobData;
     jobData.protocol = KProtocolManager::slaveProtocol(job->url(), jobData.proxy);
-//    kDebug(7006) << "SchedulerPrivate::doJob protocol=" << jobData->protocol;
+//    kDebug(7006) << "protocol=" << jobData->protocol;
     if (jobCommand(job) == CMD_GET)
     {
        jobData.checkOnHold = checkOnHold;
@@ -385,7 +385,7 @@ void SchedulerPrivate::scheduleJob(SimpleJob *job) {
     JobData jobData = extraJobData.value(job);
 
     QString protocol = jobData.protocol;
-//    kDebug(7006) << "SchedulerPrivate::scheduleJob protocol=" << protocol;
+//    kDebug(7006) << "protocol=" << protocol;
     ProtocolInfo *protInfo = protInfoDict.get(protocol);
     protInfo->joblist.append(job);
 
@@ -654,7 +654,7 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exa
           {
             KIO::MetaData outgoing = tJob->outgoingMetaData();
             QString resume = (!outgoing.contains("resume")) ? QString() : outgoing["resume"];
-            kDebug(7006) << "Resume metadata is '" << resume << "'";
+            kDebug(7006) << "Resume metadata is" << resume;
             bCanReuse = (resume.isEmpty() || resume == "0");
           }
        }
@@ -663,12 +663,12 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exa
        {
           if (job->url() == urlOnHold)
           {
-             kDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyUrl();
+             kDebug(7006) << "HOLD: Reusing held slave for" << urlOnHold;
              slave = slaveOnHold;
           }
           else
           {
-             kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyUrl() << ")";
+             kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold << ")";
              slaveOnHold->kill();
           }
           slaveOnHold = 0;
@@ -697,7 +697,7 @@ Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job, con
    }
    else
    {
-      kError() <<": couldn't create slave : " << errortext << endl;
+      kError() << "couldn't create slave:" << errortext;
       if (job)
       {
          protInfo->joblist.removeAll(job);

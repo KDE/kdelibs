@@ -768,7 +768,7 @@ QStringList KFileItem::overlays() const
         if (KSambaShare::instance()->isDirectoryShared( d->m_url.path() ) ||
             KNFSShare::instance()->isDirectoryShared( d->m_url.path() ))
         {
-            //kDebug()<<"KFileShare::isDirectoryShared : "<<d->m_url.path();
+            //kDebug() << d->m_url.path();
             names.append("share");
         }
     }
@@ -818,7 +818,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     {
         KUrl sf;
         sf.setPath( d->m_url.path().left( d->m_url.path().length() - 3 ) );
-        //kDebug() << "KFileItem::pixmap subFileName=" << subFileName;
+        //kDebug() << "subFileName=" << subFileName;
         mime = KMimeType::findByUrl( sf, 0, d->m_bIsLocalUrl );
     }
 
@@ -898,7 +898,7 @@ bool KFileItem::isDir() const
 {
     if ( d->m_fileMode == KFileItem::Unknown )
     {
-        kDebug() << " KFileItem::isDir can't say -> false ";
+        kDebug() << "can't say -> false";
         return false; // can't say for sure, so no
     }
     return (S_ISDIR(d->m_fileMode));

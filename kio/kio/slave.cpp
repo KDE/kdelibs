@@ -89,7 +89,7 @@ namespace KIO {
         {
             slaveconnserver->listenForRemote();
             if ( !slaveconnserver->isListening() )
-                kWarning() << "Connection server not listening, could not connect" << endl;
+                kWarning() << "Connection server not listening, could not connect";
         }
         ~SlavePrivate()
         {
@@ -338,7 +338,7 @@ void Slave::kill()
     Q_D(Slave);
     d->dead = true; // OO can be such simple.
     kDebug(7002) << "killing slave pid=" << d->m_pid << " (" << d->m_protocol << "://"
-		  << d->m_host << ")" << endl;
+		  << d->m_host << ")";
     if (d->m_pid)
     {
        ::kill(d->m_pid, SIGTERM);
@@ -377,7 +377,7 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
 {
-    kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyUrl();
+    kDebug(7002) << "createSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
@@ -449,7 +449,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
 Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
 {
-    //kDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyUrl();
+    //kDebug(7002) << "holdSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;

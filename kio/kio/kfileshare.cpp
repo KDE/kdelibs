@@ -54,7 +54,7 @@ static QString findExe( const char* exeName )
 #endif
    QString exe = KStandardDirs::findExe( exeName, path );
    if (exe.isEmpty())
-       kError() << exeName << " not found in " << path << endl;
+       kError() << exeName << "not found in" << path;
    return exe;
 }
 
@@ -88,7 +88,7 @@ void KFileSharePrivate::slotFileChange(const QString &file)
   }
 }
 
-KFileShare::ShareMode readEntry(const KConfigGroup &cg, const char* key, 
+KFileShare::ShareMode readEntry(const KConfigGroup &cg, const char* key,
 	const KFileShare::ShareMode& aDefault)
 {
     const QByteArray data=cg.readEntry(key, QByteArray());
@@ -193,7 +193,7 @@ void KFileShare::readShareList()
     QProcess proc;
     proc.start( exe, QStringList() );
     if ( !proc.waitForFinished() ) {
-        kError() << "Can't run " << exe << endl;
+        kError() << "Can't run" << exe;
         s_authorization = ErrorNotFound;
         return;
     }
@@ -238,7 +238,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
           KFileShare::shareMode() == Advanced)
        return false;
 
-    kDebug(7000) << "KFileShare::setShared " << path << "," << shared;
+    kDebug(7000) << path << "," << shared;
     QString exe = ::findExe( "fileshareset" );
     if (exe.isEmpty())
         return false;
@@ -249,7 +249,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
     else
         args << "--remove";
     int ec = QProcess::execute( exe, args ); // should be ok, the perl script terminates fast
-    kDebug(7000) << "KFileSharePropsPlugin::setShared exitCode=" << ec;
+    kDebug(7000) << "exitCode=" << ec;
     bool ok = !ec;
     switch (ec) {
         case 1:

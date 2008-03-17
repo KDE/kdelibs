@@ -342,7 +342,7 @@ KZip::KZip( QIODevice * dev )
 
 KZip::~KZip()
 {
-    //kDebug(7040) << "~KZip reached.";
+    //kDebug(7040) << this;
     if( isOpen() )
         close();
     delete d;
@@ -350,7 +350,7 @@ KZip::~KZip()
 
 bool KZip::openArchive( QIODevice::OpenMode mode )
 {
-    //kDebug(7040) << "openarchive reached.";
+    //kDebug(7040);
     d->m_fileList.clear();
 
     if ( mode == QIODevice::WriteOnly )
@@ -804,7 +804,7 @@ bool KZip::closeArchive()
 {
     if ( ! ( mode() & QIODevice::WriteOnly ) )
     {
-        //kDebug(7040) << "closearchive readonly reached.";
+        //kDebug(7040) << "readonly";
         return true;
     }
 
@@ -825,9 +825,9 @@ bool KZip::closeArchive()
 	    it.next();
         if ( !device()->seek( it.value()->headerStart() + 14 ) )
             return false;
-	//kDebug(7040) << "closearchive setcrcandcsize: fileName: "
+	//kDebug(7040) << "closearchive setcrcandcsize: fileName:"
 	//    << it.current()->path()
-	//    << " encoding: "<< it.current()->encoding() << endl;
+	//    << "encoding:" << it.current()->encoding();
 
         uLong mycrc = it.value()->crc32();
         buffer[0] = char(mycrc); // crc checksum, at headerStart+14
@@ -856,8 +856,8 @@ bool KZip::closeArchive()
     while (it.hasNext())
     {
 	it.next();
-        //kDebug(7040) << "closearchive: fileName: " << it.current()->path()
-        //              << " encoding: "<< it.current()->encoding() << endl;
+        //kDebug(7040) << "fileName:" << it.current()->path()
+        //              << "encoding:" << it.current()->encoding();
 
         QByteArray path = QFile::encodeName(it.value()->path());
 
@@ -987,7 +987,6 @@ bool KZip::closeArchive()
     if ( device()->write( buffer, 22 ) != 22 )
         return false;
 
-    //kDebug(7040) << __FILE__" reached.";
     return true;
 }
 
@@ -999,7 +998,7 @@ bool KZip::doWriteDir( const QString&, const QString&, const QString&,
 bool KZip::doPrepareWriting(const QString &name, const QString &user,
                                const QString &group, qint64 /*size*/, mode_t perm,
                                time_t atime, time_t mtime, time_t ctime) {
-    //kDebug(7040) << "prepareWriting reached.";
+    //kDebug(7040);
     if ( !isOpen() )
     {
         qWarning( "KZip::writeFile: You must open the zip file before writing to it\n");
@@ -1046,7 +1045,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     {
         QString dir = name.left( i );
         fileName = name.mid( i + 1 );
-        //kDebug(7040) << "KZip::prepareWriting ensuring " << dir << " exists. fileName=" << fileName;
+        //kDebug(7040) << "ensuring" << dir << "exists. fileName=" << fileName;
         parentDir = findOrCreate( dir );
     }
 
@@ -1068,7 +1067,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     // write out zip header
     QByteArray encodedName = QFile::encodeName(name);
     int bufferSize = extra_field_len + encodedName.length() + 30;
-    //kDebug(7040) << "KZip::prepareWriting bufferSize=" << bufferSize;
+    //kDebug(7040) << "bufferSize=" << bufferSize;
     char* buffer = new char[ bufferSize ];
 
     buffer[ 0 ] = 'P'; //local file header signature
@@ -1178,7 +1177,6 @@ bool KZip::doFinishWriting( qint64 size )
     d->m_currentDev = 0L;
 
     Q_ASSERT( d->m_currentFile );
-    //kDebug(7040) << "donewriting reached.";
     //kDebug(7040) << "fileName: " << d->m_currentFile->path();
     //kDebug(7040) << "getpos (at): " << device()->pos();
     d->m_currentFile->setSize(size);
@@ -1214,20 +1212,20 @@ bool KZip::doWriteSymLink(const QString &name, const QString &target,
   setCompression(NoCompression);	// link targets are never compressed
 
   if (!doPrepareWriting(name, user, group, 0, perm, atime, mtime, ctime)) {
-    kWarning() << "KZip::writeFile prepareWriting failed";
+    kWarning() << "prepareWriting failed";
     setCompression(c);
     return false;
   }
 
   QByteArray symlink_target = QFile::encodeName(target);
   if (!writeData(symlink_target, symlink_target.length())) {
-    kWarning() << "KZip::writeFile writeData failed";
+    kWarning() << "writeData failed";
     setCompression(c);
     return false;
   }
 
   if (!finishWriting(symlink_target.length())) {
-    kWarning() << "KZip::writeFile finishWriting failed";
+    kWarning() << "finishWriting failed";
     setCompression(c);
     return false;
   }
@@ -1254,7 +1252,7 @@ bool KZip::writeData(const char * data, qint64 size)
     d->m_crc = crc32(d->m_crc, (const Bytef *) data , size);
 
     qint64 written = d->m_currentDev->write( data, size );
-    //kDebug(7040) << "KZip::writeData wrote " << size << " bytes.";
+    //kDebug(7040) << "wrote" << size << "bytes.";
     return written == size;
 }
 
@@ -1367,7 +1365,7 @@ QByteArray KZipFileEntry::data() const
 
 QIODevice* KZipFileEntry::createDevice() const
 {
-    //kDebug(7040) << "KZipFileEntry::device creating iodevice limited to pos=" << position() << ", csize=" << compressedSize();
+    //kDebug(7040) << "creating iodevice limited to pos=" << position() << ", csize=" << compressedSize();
     // Limit the reading to the appropriate part of the underlying device (e.g. file)
     KLimitedIODevice* limitedDev = new KLimitedIODevice( archive()->device(), position(), compressedSize() );
     if ( encoding() == 0 || compressedSize() == 0 ) // no compression (or even no data)
@@ -1385,8 +1383,8 @@ QIODevice* KZipFileEntry::createDevice() const
         return filterDev;
     }
 
-    kError() << "This zip file contains files compressed with method "
-              << encoding() <<", this method is currently not supported by KZip,"
-              <<" please use a command-line tool to handle this file." << endl;
+    kError() << "This zip file contains files compressed with method"
+              << encoding() << ", this method is currently not supported by KZip,"
+              << "please use a command-line tool to handle this file.";
     return 0L;
 }

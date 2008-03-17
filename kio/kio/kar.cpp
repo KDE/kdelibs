@@ -42,18 +42,15 @@ public:
 KAr::KAr( const QString& filename )
     : KArchive( filename ), d(new KArPrivate)
 {
-    //kDebug(7042) << "KAr(filename) reached.";
 }
 
 KAr::KAr( QIODevice * dev )
     : KArchive( dev ), d(new KArPrivate)
 {
-    //kDebug(7042) << "KAr::KAr( QIODevice * dev) reached.";
 }
 
 KAr::~KAr()
 {
-    //kDebug(7042) << "~KAr reached.";
     if( isOpen() )
         close();
     delete d;
@@ -85,8 +82,6 @@ bool KAr::doWriteSymLink( const QString&, const QString&, const QString&,
 bool KAr::openArchive( QIODevice::OpenMode mode )
 {
     // Open archive
-
-    //kDebug(7042) << "openarchive reached.";
 
     if ( mode == QIODevice::WriteOnly )
         return true;

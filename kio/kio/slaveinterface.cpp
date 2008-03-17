@@ -119,13 +119,12 @@ void SlaveInterface::calcSpeed()
 
         KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
 
-//      kDebug() << "proceeed " << (long)d->filesize << " " << diff << " "
-//          << long(d->sizes[d->nums-1] - d->sizes[0]) << " "
-//          <<    d->times[d->nums-1] - d->times[0] << " "
-//          << long(lspeed) << " " << double(d->filesize) / diff
-//          << " " << convertSize(lspeed) << " "
-//          << convertSize(long(double(d->filesize) / diff) * 1000) << " "
-//          <<    endl ;
+//      kDebug() << (long)d->filesize << diff
+//          << long(d->sizes[d->nums-1] - d->sizes[0])
+//          << d->times[d->nums-1] - d->times[0]
+//          << long(lspeed) << double(d->filesize) / diff
+//          << convertSize(lspeed)
+//          << convertSize(long(double(d->filesize) / diff) * 1000);
 
         if (!lspeed) {
             d->nums = 1;
@@ -374,7 +373,7 @@ void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 void SlaveInterface::sendResumeAnswer( bool resume )
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume;
+    kDebug(7007) << "ok for resuming:" << resume;
     d->connection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
@@ -408,7 +407,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                       const QString &caption, const QString &buttonYes,
                                       const QString &buttonNo, const QString &dontAskAgainName)
 {
-    kDebug() << "Observer::messageBox " << type << " " << text << " - " << caption;
+    kDebug() << type << text << "caption=" << caption;
     int result = -1;
     KConfig *config = new KConfig("kioslaverc");
     KMessageBox::setDontShowAskAgainConfig(config);
@@ -488,7 +487,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         break;
     }
     default:
-        kWarning() << "Observer::messageBox: unknown type " << type;
+        kWarning() << "unknown type" << type;
         result = 0;
         break;
     }

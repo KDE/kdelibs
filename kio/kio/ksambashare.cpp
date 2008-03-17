@@ -111,10 +111,10 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
 {
   QFile f(smbConf);
 
-  kDebug(7000) << "KSambaShare::readSmbConf " << smbConf;
+  kDebug(7000) << smbConf;
 
   if (!f.open(QIODevice::ReadOnly)) {
-    kError() << "KSambaShare: Could not open " << smbConf << endl;
+    kError() << "KSambaShare: Could not open" << smbConf;
     return false;
   }
 

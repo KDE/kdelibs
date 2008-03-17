@@ -172,7 +172,7 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
   static const QString& charset = KGlobal::staticQString("charset");
   static const QString& us_ascii = KGlobal::staticQString("us-ascii");
   static const QString& base64 = KGlobal::staticQString("base64");
-  
+
   // initialize header info members
   header_info.mime_type = text_plain;
   header_info.charset = header_info.attributes.insert(charset,us_ascii).value();
@@ -240,20 +240,19 @@ DataProtocol::DataProtocol(const QByteArray &pool_socket, const QByteArray &app_
 #else
 DataProtocol::DataProtocol() {
 #endif
-  kDebug() << "DataProtocol::DataProtocol()";
+  kDebug();
 }
 
 /* --------------------------------------------------------------------- */
 
 DataProtocol::~DataProtocol() {
-  kDebug() << "DataProtocol::~DataProtocol()";
+  kDebug();
 }
 
 /* --------------------------------------------------------------------- */
 
 void DataProtocol::get(const KUrl& url) {
   ref();
-  //kDebug() << "===============================================================================================================================================================================";
   kDebug() << "kio_data@"<<this<<"::get(const KUrl& url)";
 
   DataHeader hdr;
@@ -282,14 +281,11 @@ void DataProtocol::get(const KUrl& url) {
     }/*end if*/
   }/*end if*/
 
-  //kDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
   //kDebug() << "emit mimeType@"<<this;
   mimeType(hdr.mime_type);
-  //kDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
   //kDebug() << "emit totalSize@"<<this;
   totalSize(outData.size());
 
-  //kDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
   //kDebug() << "emit setMetaData@"<<this;
 #if defined(TESTKIO) || defined(DATAKIOSLAVE)
   MetaData::ConstIterator it;
@@ -300,10 +296,8 @@ void DataProtocol::get(const KUrl& url) {
   setAllMetaData(hdr.attributes);
 #endif
 
-  //kDebug() << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
   //kDebug() << "emit sendMetaData@"<<this;
   sendMetaData();
-  //kDebug() << "^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C";
 //   kDebug() << "(1) queue size " << dispatchQueue.size();
   // empiric studies have shown that this shouldn't be queued & dispatched
   data(outData);

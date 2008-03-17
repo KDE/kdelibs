@@ -108,9 +108,6 @@ QString KShellCompletion::makeCompletion(const QString &text)
  */
 void KShellCompletion::postProcessMatch( QString *match ) const
 {
-	//kDebugInfo("KShellCompletion::postProcessMatch() in: '%s'",
-	//	match->latin1());
-
 	KUrlCompletion::postProcessMatch( match );
 
 	if ( match->isNull() )
@@ -122,9 +119,6 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 		d->quoteText( match, false, false ); // quote the whole text
 
 	match->prepend( d->m_text_start );
-
-	//kDebugInfo("KShellCompletion::postProcessMatch() ut: '%s'",
-	//	match->latin1());
 }
 
 void KShellCompletion::postProcessMatches( QStringList *matches ) const
@@ -221,11 +215,6 @@ void KShellCompletionPrivate::splitText(const QString &text, QString &text_start
 
 	// the last part without trailing blanks
 	text_compl = text.mid( last_unquoted_space + 1 );
-
-//	text_compl = text.mid( last_unquoted_space + 1,
-//						   text.length() - end_space_len - (last_unquoted_space + 1) );
-
-	//kDebugInfo("split right = '%s'", text_compl.toLatin1().constData());
 }
 
 /*
