@@ -24,8 +24,6 @@
 
 #include "../resourcemanager.h"
 
-#include <QExplicitlySharedDataPointer>
-
 Q_GLOBAL_STATIC( Nepomuk::Types::EntityManager, entityManager )
 
 Nepomuk::Types::EntityManager::EntityManager()
@@ -86,9 +84,9 @@ Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUr
         return cp;
     }
     else {
-        QExplicitlySharedDataPointer<ClassPrivate> cp( new ClassPrivate( uri ) );
-        m_classMap.insert( uri, cp );
-        return cp.data();
+        QExplicitlySharedDataPointer<ClassPrivate> scp( new ClassPrivate( uri ) );
+        m_classMap.insert( uri, scp );
+        return scp.data();
     }
 }
 
