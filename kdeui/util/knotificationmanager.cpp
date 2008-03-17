@@ -102,11 +102,7 @@ void KNotificationManager::notificationClosed( int id )
 
 void KNotificationManager::close( int id )
 {
-    QDBusReply<void> reply = d->knotify->call("closeNotification", id);
-    if (!reply.isValid())
-    {
-        kWarning(299) << "error while contacting knotify server";
-    }
+    d->knotify->call(QDBus::NoBlock, "closeNotification", id);
 }
 
 void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
