@@ -512,7 +512,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
     CARD32 *data32;
     unsigned long i, j, k, sz, s;
     unsigned long *d = (unsigned long *) buffer;
-    for (i = 0, j = 0; i < bufsize; i++) {
+    for (i = 0, j = 0; i < bufsize;) {
 	icons[j].size.width = *d++;
 	i += sizeof(long);
 	icons[j].size.height = *d++;
