@@ -76,6 +76,40 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
      * @li InformationList showInformation() const
      */
     Q_PROPERTY(InformationList information READ showInformation WRITE setShowInformation)
+
+    /**
+     * This property holds the color used for the text shadow.
+     *
+     * The alpha value in the color determines the opacity of the shadow.
+     * Shadows are only rendered when the alpha value is non-zero.
+     * The default value for this property is Qt::transparent.
+     *
+     * Access functions:
+     * @li void setShadowColor(const QColor &color)
+     * @li QColor shadowColor() const
+     */
+    Q_PROPERTY(QColor shadowColor READ shadowColor WRITE setShadowColor)
+
+    /**
+     * This property holds the horizontal and vertical offset for the text shadow.
+     * The default value for this property is (1, 1).
+     *
+     * Access functions:
+     * @li void setShadowOffset(const QPointF &offset)
+     * @li QPointF shadowOffset() const
+     */
+    Q_PROPERTY(QPointF shadowOffset READ shadowOffset WRITE setShadowOffset)
+
+    /**
+     * This property holds the blur radius for the text shadow.
+     * The default value for this property is 2.
+     *
+     * Access functions:
+     * @li void setShadowBlur(qreal radius)
+     * @li qreal shadowBlur() const
+     */
+    Q_PROPERTY(qreal shadowBlur READ shadowBlur WRITE setShadowBlur)
+
     Q_ENUMS(Information)
 
 
@@ -235,6 +269,57 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * Returns the file item information that should be shown below item labels in list views.
          */
         InformationList showInformation() const;
+
+
+        /**
+         * Sets the color used for drawing the text shadow.
+         *
+         * To enable text shadows, set the shadow color to a non-transparent color.
+         * To disable text shadows, set the color to Qt::transparent.
+         *
+         * @see shadowColor()
+         */
+        void setShadowColor(const QColor &color);
+
+
+        /**
+         * Returns the color used for the text shadow.
+         *
+         * @see setShadowColor()
+         */
+        QColor shadowColor() const;
+
+
+        /**
+         * Sets the horizontal and vertical offset for the text shadow.
+         *
+         * @see shadowOffset()
+         */
+        void setShadowOffset(const QPointF &offset);
+
+
+        /**
+         * Returns the offset used for the text shadow.
+         *
+         * @see setShadowOffset()
+         */
+        QPointF shadowOffset() const;
+
+
+        /**
+         * Sets the blur radius for the text shadow.
+         *
+         * @see shadowBlur()
+         */
+        void setShadowBlur(qreal radius);
+
+
+        /**
+         * Returns the blur radius for the text shadow.
+         *
+         * @see setShadowBlur()
+         */
+        qreal shadowBlur() const;
 
 
         /**

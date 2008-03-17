@@ -20,6 +20,7 @@
 */
 
 #include "kfileitemdelegate.h"
+#include "imagefilter_p.h"
 
 #include <config.h> // for HAVE_XRENDER
 
@@ -34,6 +35,7 @@
 #include <QListView>
 #include <QPaintEngine>
 #include <QTextEdit>
+#include <qmath.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -99,8 +101,8 @@ class KFileItemDelegate::Private
         QRect labelRectangle(const QStyleOptionViewItemV4 &option) const;
         void layoutTextItems(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                              QTextLayout *labelLayout, QTextLayout *infoLayout, QRect *textBoundingRect) const;
-        void drawTextItems(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index,
-                           const QTextLayout &labelLayout, const QTextLayout &infoLayout) const;
+        void drawTextItems(QPainter *painter, const QTextLayout &labelLayout, const QTextLayout &infoLayout,
+                           const QRect &textBoundingRect) const;
         KIO::AnimationState *animationState(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                                             const QAbstractItemView *view) const;
         QPixmap applyHoverEffect(const QPixmap &icon) const;
@@ -110,6 +112,9 @@ class KFileItemDelegate::Private
 
     public:
         KFileItemDelegate::InformationList informationList;
+        QColor shadowColor;
+        QPointF shadowOffset;
+        qreal shadowBlur;
 
     private:
         KFileItemDelegate * const q;
@@ -121,7 +126,8 @@ class KFileItemDelegate::Private
 
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
-    : q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent))
+     : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2),
+       q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent))
 {
 }
 
@@ -680,12 +686,45 @@ void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItemV4 &o
 }
 
 
-void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QStyleOptionViewItemV4 &option,
-                                               const QModelIndex &index, const QTextLayout &labelLayout,
-                                               const QTextLayout &infoLayout) const
+void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QTextLayout &labelLayout,
+                                               const QTextLayout &infoLayout, const QRect &boundingRect) const
 {
-    QPen pen(foregroundBrush(option, index), 0);
-    painter->setPen(pen);
+    if (shadowColor.alpha() > 0)
+    {
+        QPixmap pixmap(boundingRect.size());
+        pixmap.fill(Qt::transparent);
+
+        QPainter p(&pixmap);
+        p.translate(-labelLayout.position());
+        p.setPen(painter->pen());
+        labelLayout.draw(&p, QPoint());
+
+        if (!infoLayout.text().isEmpty())
+        {
+            QColor color = p.pen().color();
+            color.setAlphaF(0.6);
+
+            p.setPen(color);
+            infoLayout.draw(&p, QPoint());
+        }
+        p.end();
+
+        int padding = qCeil(shadowBlur);
+        int blurFactor = qRound(shadowBlur);
+
+        QImage image(boundingRect.size() + QSize(padding * 2, padding * 2), QImage::Format_ARGB32_Premultiplied);
+        image.fill(Qt::transparent);
+        p.begin(&image);
+        p.drawImage(padding, padding, pixmap.toImage());
+        p.end();
+
+        KIO::ImageFilter::shadowBlur(image, blurFactor, shadowColor);
+
+        painter->drawImage(labelLayout.position() + QPoint(-padding, -padding) + shadowOffset.toPoint(), image);
+        painter->drawPixmap(labelLayout.position(), pixmap);
+        return;
+    }
+
     labelLayout.draw(painter, QPoint());
 
     if (!infoLayout.text().isEmpty())
@@ -693,7 +732,7 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QStyleOp
         // TODO - for apps not doing funny things with the color palette,
         // KColorScheme::InactiveText would be a much more correct choice. We
         // should provide an API to specify what color to use for information.
-        QColor color = pen.color();
+        QColor color = painter->pen().color();
         color.setAlphaF(0.6);
 
         painter->setPen(color);
@@ -860,6 +899,42 @@ void KFileItemDelegate::setShowInformation(Information value)
 KFileItemDelegate::InformationList KFileItemDelegate::showInformation() const
 {
     return d->informationList;
+}
+
+
+void KFileItemDelegate::setShadowColor(const QColor &color)
+{
+    d->shadowColor = color;
+}
+
+
+QColor KFileItemDelegate::shadowColor() const
+{
+    return d->shadowColor;
+}
+
+
+void KFileItemDelegate::setShadowOffset(const QPointF &offset)
+{
+    d->shadowOffset = offset;
+}
+
+
+QPointF KFileItemDelegate::shadowOffset() const
+{
+    return d->shadowOffset;
+}
+
+
+void KFileItemDelegate::setShadowBlur(qreal factor)
+{
+    d->shadowBlur = factor;
+}
+
+
+qreal KFileItemDelegate::shadowBlur() const
+{
+    return d->shadowBlur;
 }
 
 
@@ -1045,6 +1120,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QIcon::Mode iconMode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
     QIcon::State iconState = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
     QPixmap icon           = opt.icon.pixmap(opt.decorationSize, iconMode, iconState);
+    const QPen pen         = QPen(d->foregroundBrush(opt, index), 0);
 
     ///### Apply the selection effect to the icon when the item is selected and
     //     showDecorationSelected is false.
@@ -1073,9 +1149,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         p.begin(&cache->regular);
         p.translate(-option.rect.topLeft());
         p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(pen);
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
-        d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
+        d->drawTextItems(&p, labelLayout, infoLayout, textBoundingRect);
         d->drawFocusRect(&p, opt, focusRect);
         p.end();
 
@@ -1085,9 +1162,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         p.begin(&cache->hover);
         p.translate(-option.rect.topLeft());
         p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(pen);
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &p, opt.widget);
         p.drawPixmap(iconPos, icon);
-        d->drawTextItems(&p, opt, index, labelLayout, infoLayout);
+        d->drawTextItems(&p, labelLayout, infoLayout, textBoundingRect);
         d->drawFocusRect(&p, opt, focusRect);
         p.end();
 
@@ -1103,6 +1181,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // ========================================================================
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
+    painter->setPen(pen);
 
     if (progress > 0 && !(opt.state & QStyle::State_MouseOver))
     {
@@ -1112,7 +1191,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
     painter->drawPixmap(iconPos, icon);
-    d->drawTextItems(painter, opt, index, labelLayout, infoLayout);
+    d->drawTextItems(painter, labelLayout, infoLayout, textBoundingRect);
     d->drawFocusRect(painter, opt, focusRect);
 
     painter->restore();
