@@ -42,6 +42,8 @@ class QRect;
  * For showing a rating in a widget see KRatingWidget.
  *
  * \author Sebastian Trueg <trueg@kde.org>
+ *
+ * \since 4.1
  */
 class NEPOMUK_EXPORT KRatingPainter
 {
@@ -100,6 +102,14 @@ public:
     QIcon icon() const;
 
     /**
+     * The rating can be painted in a disabled state where no color
+     * is used and hover ratings are ignored.
+     *
+     * \sa setEnabled
+     */
+    bool isEnabled() const;
+
+    /**
      * The custom pixmap set to draw a star. If no custom
      * pixmap has been set, an invalid pixmap is returned.
      *
@@ -140,6 +150,11 @@ public:
      * Set a custom icon. Defaults to "rating".
      */
     void setIcon( const QIcon& icon );
+
+    /**
+     * Enable or disable the rating. Default is enabled.
+     */
+    void setEnabled( bool enabled );
 
     /**
      * Set a custom pixmap.

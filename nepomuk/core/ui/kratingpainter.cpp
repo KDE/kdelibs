@@ -36,6 +36,7 @@ class KRatingPainter::Private
 public:
     Private()
         : maxRating(10),
+          isEnabled( true ),
           bHalfSteps(true),
           alignment(Qt::AlignCenter),
           direction(Qt::LeftToRight),
@@ -46,6 +47,7 @@ public:
 
     int maxRating;
     QIcon icon;
+    bool isEnabled;
     bool bHalfSteps;
     Qt::Alignment alignment;
     Qt::LayoutDirection direction;
@@ -111,6 +113,12 @@ QIcon KRatingPainter::icon() const
 }
 
 
+bool KRatingPainter::isEnabled() const
+{
+    return d->isEnabled;
+}
+
+
 QPixmap KRatingPainter::customPixmap() const
 {
     return d->customPixmap;
@@ -153,6 +161,12 @@ void KRatingPainter::setIcon( const QIcon& icon )
 }
 
 
+void KRatingPainter::setEnabled( bool enabled )
+{
+    d->isEnabled = enabled;
+}
+
+
 void KRatingPainter::setCustomPixmap( const QPixmap& pixmap )
 {
     d->customPixmap = pixmap;
@@ -187,12 +201,18 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     QPixmap disabledRatingPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), false );
     QPixmap hoverPix;
 
+    // if we are disabled we become gray and more transparent
+    if ( !d->isEnabled ) {
+        ratingPix = disabledRatingPix;
+        KIconEffect::semiTransparent( disabledRatingPix );
+    }
+
     bool half = d->bHalfSteps && rating%2;
     int numRatingStars = d->bHalfSteps ? rating/2 : rating;
 
     int numHoverStars = 0;
     bool halfHover = false;
-    if ( hoverRating > 0 && rating != hoverRating ) {
+    if ( hoverRating > 0 && rating != hoverRating && d->isEnabled ) {
         numHoverStars = d->bHalfSteps ? hoverRating/2 : hoverRating;
         halfHover = d->bHalfSteps && hoverRating%2;
         hoverPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), false );

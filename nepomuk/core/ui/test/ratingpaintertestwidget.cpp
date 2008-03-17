@@ -20,6 +20,7 @@ RatingPainterTestWidget::RatingPainterTestWidget()
     m_ratingWidget = new KRatingWidget( this );
     m_ratingWidget->setFrameStyle( QFrame::StyledPanel|QFrame::Sunken );
     m_checkHalfSteps = new QCheckBox( "Enable half steps", this );
+    m_checkEnalbed = new QCheckBox( "Rating disabled", this );
     m_spinMaxRating = new QSpinBox( this );
     m_spinRating = new QSpinBox( this );
     m_spinSpacing = new QSpinBox( this );
@@ -43,6 +44,7 @@ RatingPainterTestWidget::RatingPainterTestWidget()
     layout->addWidget( m_comboAlignmentH );
     layout->addWidget( m_comboAlignmentV );
     layout->addWidget( m_checkHalfSteps );
+    layout->addWidget( m_checkEnalbed );
 
     QHBoxLayout* ratingLayout = new QHBoxLayout;
     ratingLayout->addWidget( new QLabel( "Rating:", this ) );
@@ -73,6 +75,8 @@ RatingPainterTestWidget::RatingPainterTestWidget()
              m_ratingWidget, SLOT(setSpacing(int)) );
     connect( m_checkHalfSteps, SIGNAL(toggled(bool)),
              m_ratingWidget, SLOT(setHalfStepsEnabled(bool)) );
+    connect( m_checkEnalbed, SIGNAL(toggled(bool)),
+             m_ratingWidget, SLOT(setDisabled(bool)) );
     connect( m_ratingWidget, SIGNAL(ratingChanged(int)),
              m_spinRating, SLOT(setValue(int)) );
     connect( m_buttonIcon, SIGNAL(clicked()),

@@ -229,6 +229,7 @@ void KRatingWidget::paintEvent( QPaintEvent* e )
 {
     QFrame::paintEvent( e );
     QPainter p( this );
+    d->ratingPainter.setEnabled( isEnabled() );
     d->ratingPainter.paint( &p, contentsRect(), d->rating, d->hoverRating );
 }
 

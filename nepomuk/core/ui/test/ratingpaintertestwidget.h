@@ -29,6 +29,7 @@ private:
     QComboBox* m_comboAlignmentH;
     QComboBox* m_comboAlignmentV;
     QCheckBox* m_checkHalfSteps;
+    QCheckBox* m_checkEnalbed;
 
     QPushButton* m_buttonIcon;
 
