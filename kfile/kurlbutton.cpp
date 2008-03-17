@@ -151,8 +151,7 @@ QColor KUrlButton::foregroundColor() const
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
 
-    QColor foregroundColor = isHighlighted ? palette().color(QPalette::HighlightedText) :
-                                             palette().color(foregroundRole());
+    QColor foregroundColor = palette().color(foregroundRole());
     const bool isActive = m_urlNavigator->isActive();
 
     int alpha = isActive ? 255 : 128;

@@ -143,7 +143,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         if (m_hoverArrow) {
             // highlight the background of the arrow to indicate that the directories
             // popup can be opened by a mouse click
-            QColor hoverColor = fgColor;
+            QColor hoverColor = palette().color(QPalette::HighlightedText);
             hoverColor.setAlpha(96);
             painter.setPen(Qt::NoPen);
             painter.setBrush(hoverColor);
