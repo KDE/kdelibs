@@ -72,6 +72,9 @@ bool KUniqueApplication::Private::s_nofork = false;
 bool KUniqueApplication::Private::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
+#ifdef Q_WS_WIN
+QString KUniqueApplication::Private::s_dbusServiceName;
+#endif
 
 void
 KUniqueApplication::addCmdLineOptions()
@@ -151,6 +154,9 @@ KUniqueApplication::start()
                  << endl;
         ::exit(255);
      }
+#ifdef Q_WS_WIN
+     Private::s_dbusServiceName = appName;
+#endif
 
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
@@ -331,6 +337,16 @@ KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
 
 KUniqueApplication::~KUniqueApplication()
 {
+#ifdef Q_WS_WIN
+  // work around for KUniqueApplication being not completely implemented on windows
+  QDBusConnectionInterface* dbusService;
+  if (QDBusConnection::sessionBus().isConnected()
+    && (dbusService = QDBusConnection::sessionBus().interface()))
+  {
+    dbusService->unregisterService(Private::s_dbusServiceName);
+  }
+#endif
+
   delete d;
 }
 
