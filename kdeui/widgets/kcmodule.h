@@ -104,10 +104,11 @@ public:
   /**
    * An enumeration type for the buttons used by this module.
    * You should only use Help, Default and Apply. The rest is obsolete.
+   * None can be used when we do not want have other button that Ok Cancel
    *
    * @see KCModule::buttons @see KCModule::setButtons
    */
-  enum Button { Help=1, Default=2, Apply=4 };
+  enum Button { None=0, Help=1, Default=2, Apply=4 };
   Q_DECLARE_FLAGS( Buttons, Button )
 
 #ifdef KDE3_SUPPORT
