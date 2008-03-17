@@ -78,14 +78,6 @@ Q_SIGNALS:
 	*/
 	void selected(DNSSD::RemoteService::Ptr);
 
-protected:
-	/**
-	Creates action to represent a service. Default implementation sets action text to service name.
-	Reimplement this function if you want to change presentation of services in the menu. Do not 
-	use data(), because it will be overwritten. 
-	*/
-	virtual QAction* makeAction(DNSSD::RemoteService::Ptr srv);
-
 private:
 	ServicesActionPrivate* const d;
 	friend class ServicesActionPrivate;

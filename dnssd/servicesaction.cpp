@@ -51,16 +51,10 @@ void ServicesActionPrivate::serviceSelected()
     emit m_parent->selected(srv);
 }
 
-QAction* ServicesAction::makeAction(RemoteService::Ptr srv)
-{
-    QAction* act=new QAction(srv->serviceName(),this);
-    return act;
-}
-
 void ServicesActionPrivate::serviceAdded(RemoteService::Ptr srv)
 {
     if (!m_parent->isEnabled()) m_parent->setEnabled(true);
-    QAction* act=m_parent->makeAction(srv);
+    QAction* act=new QAction(srv->serviceName(), m_parent);
     QVariant v;
     v.setValue(srv);
     act->setData(v);
