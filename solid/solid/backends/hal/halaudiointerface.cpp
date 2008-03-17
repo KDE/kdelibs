@@ -180,7 +180,7 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
         }
         else
         {
-            QString busName = parentDevice.property("info.bus").toString();
+            QString busName = parentDevice.property("info.subsystem").toString();
             QString driverName = parentDevice.property("info.linux.driver").toString();
             if (busName == "ieee1394")
             {

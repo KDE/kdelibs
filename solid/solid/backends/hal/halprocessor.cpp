@@ -137,7 +137,7 @@ static Solid::Processor::InstructionSets cpuFeatures()
             "popl   %%ebx               \n\t"   // Restore EBX
             : "=d"(result) : : "%eax", "%ecx" );
 
-        features = result & 0x00E00000; //copy the mmx and sse bits to features
+        features = result & 0x06800000; //copy the mmx and sse bits to features
 
         __asm__ __volatile__ (
              "pushl %%ebx             \n\t"
@@ -156,14 +156,14 @@ static Solid::Processor::InstructionSets cpuFeatures()
 
 #ifdef HAVE_X86_SSE
         // Test bit 25 (SSE support)
-        if (features & 0x00600000) {
+        if (features & 0x02000000) {
             // OS support test for SSE.
             // Install our own sighandler for SIGILL.
             kde_sighandler_t oldhandler = std::signal(SIGILL, sighandler);
 
             // Try executing an SSE insn to see if we get a SIGILL
             if (setjmp(env))
-                features &= ~0x00600000; // The OS support test failed
+                features &= ~0x06000000; // The OS support test failed
             else
                 __asm__ __volatile__("xorps %xmm0, %xmm0");
 
@@ -196,9 +196,9 @@ static Solid::Processor::InstructionSets cpuFeatures()
         featureflags |= Solid::Processor::Amd3DNow;
     if (features & 0x00800000)
         featureflags |= Solid::Processor::IntelMmx;
-    if (features & 0x00200000)
+    if (features & 0x02000000)
         featureflags |= Solid::Processor::IntelSse;
-    if (features & 0x00400000)
+    if (features & 0x04000000)
         featureflags |= Solid::Processor::IntelSse2;
     if (features & 0x1)
         featureflags |= Solid::Processor::AltiVec;
