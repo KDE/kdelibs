@@ -73,7 +73,7 @@ KDirListerCache::KDirListerCache()
   connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(slotFilesChanged(QStringList)));
   connect(kdirnotify, SIGNAL(FilesRemoved(QStringList)), SLOT(slotFilesRemoved(QStringList)));
 
-  // The use of QUrl::url() in ~DirItem (sendSignal) crashes if the static for QRegExpEngine got deleted already,
+  // The use of KUrl::url() in ~DirItem (sendSignal) crashes if the static for QRegExpEngine got deleted already,
   // so we need to destroy the KDirListerCache before that.
   qAddPostRoutine(kDirListerCache.destroy);
 }
@@ -139,90 +139,52 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
       lister->d->rootFileItem = KFileItem();
   }
 
-  lister->d->lstDirs.append( _url );
+    lister->d->lstDirs.append(_url);
 
-  if ( lister->d->url.isEmpty() || !_keep ) // set toplevel URL only if not set yet
-    lister->d->url = _url;
+    if (lister->d->url.isEmpty() || !_keep) // set toplevel URL only if not set yet
+        lister->d->url = _url;
 
-  DirItem *itemU = itemsInUse.value(urlStr);
-  DirItem *itemC;
+    DirItem *itemU = itemsInUse.value(urlStr);
 
-  DirectoryData& dirData = directoryData[urlStr]; // find or insert
+    DirectoryData& dirData = directoryData[urlStr]; // find or insert
 
-  if ( dirData.listersCurrentlyListing.isEmpty() )
-  {
-    // if there is an update running for _url already we get into
-    // the following case - it will just be restarted by updateDirectory().
+    if (dirData.listersCurrentlyListing.isEmpty()) {
+        // if there is an update running for _url already we get into
+        // the following case - it will just be restarted by updateDirectory().
 
-    if ( itemU )
-    {
-      kDebug(7004) << "Entry already in use:" << _url;
+        DirItem *itemFromCache;
+        if (itemU || (!_reload && (itemFromCache = itemsCached.take(urlStr)) ) ) {
+            if (itemU) {
+                kDebug(7004) << "Entry already in use:" << _url;
+            } else {
+                kDebug(7004) << "Entry in cache:" << _url;
+                itemFromCache->decAutoUpdate();
+                itemsInUse.insert(urlStr, itemFromCache);
+                itemU = itemFromCache;
+            }
 
-      bool oldState = lister->d->complete;
-      lister->d->complete = false;
+            emit lister->started(_url);
 
-      emit lister->started( _url );
+            // List items from the cache in a delayed manner, just like things would happen
+            // if we were not using the cache.
+            KDirLister::Private::CachedItemsJob* cachedItemsJob =
+                new KDirLister::Private::CachedItemsJob(lister, _url, _reload, true /*emit completed*/);
+            cachedItemsJob->start();
+            lister->d->m_cachedItemsJob = cachedItemsJob;
 
-      if ( lister->d->rootFileItem.isNull() && lister->d->url == _url )
-        lister->d->rootFileItem = itemU->rootItem;
+        } else {
+            // dir not in cache or _reload is true
+            if (_reload) {
+                kDebug(7004) << "Reloading directory:" << _url;
+                itemsCached.remove(urlStr);
+            } else {
+                kDebug(7004) << "Listing directory:" << _url;
+            }
 
-      lister->d->addNewItems( itemU->lstItems );
-      lister->d->emitItems();
+            dirData.listersCurrentlyListing.append(lister);
 
-      lister->d->complete = oldState;
-
-      emit lister->completed( _url );
-      if ( lister->d->complete )
-        emit lister->completed();
-
-      // _url is already in use, so there is already an entry in listersCurrentlyHolding
-      assert( !dirData.listersCurrentlyHolding.isEmpty() );
-      dirData.listersCurrentlyHolding.append( lister );
-
-      if ( _reload || !itemU->complete )
-        updateDirectory( _url );
-    }
-    else if ( !_reload && (itemC = itemsCached.take(urlStr)) )
-    {
-      kDebug(7004) << "Entry in cache:" << _url;
-
-      itemC->decAutoUpdate();
-      itemsInUse.insert( urlStr, itemC );
-      itemU = itemC;
-
-      bool oldState = lister->d->complete;
-      lister->d->complete = false;
-
-      emit lister->started( _url );
-
-      if ( lister->d->rootFileItem.isNull() && lister->d->url == _url )
-        lister->d->rootFileItem = itemC->rootItem;
-
-      lister->d->addNewItems( itemC->lstItems );
-      lister->d->emitItems();
-
-      lister->d->complete = oldState;
-
-      emit lister->completed( _url );
-      if ( lister->d->complete )
-        emit lister->completed();
-
-      Q_ASSERT( dirData.listersCurrentlyHolding.isEmpty() );
-      dirData.listersCurrentlyHolding.append( lister );
-
-      if ( !itemC->complete )
-        updateDirectory( _url );
-    }
-    else  // dir not in cache or _reload is true
-    {
-      kDebug(7004) << "Entry not in cache or reloaded:" << _url;
-
-      dirData.listersCurrentlyListing.append( lister );
-
-      if (_reload)
-          itemsCached.remove( urlStr );
-      itemU = new DirItem( _url );
-      itemsInUse.insert( urlStr, itemU );
+            itemU = new DirItem(_url);
+            itemsInUse.insert(urlStr, itemU);
 
 //        // we have a limit of MAX_JOBS_PER_LISTER concurrently running jobs
 //        if ( lister->d->numJobs() >= MAX_JOBS_PER_LISTER )
@@ -230,60 +192,101 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 //          pendingUpdates.insert( _url );
 //        }
 //        else
-//        {
+            {
+                KIO::ListJob* job = KIO::listDir(_url, KIO::HideProgressInfo);
+                jobs.insert(job, KIO::UDSEntryList());
 
-      if ( lister->d->url == _url )
-        lister->d->rootFileItem = KFileItem();
+                lister->d->jobStarted(job);
+                lister->d->connectJob(job);
 
-      KIO::ListJob* job = KIO::listDir( _url, KIO::HideProgressInfo );
-      jobs.insert( job, KIO::UDSEntryList() );
+                if (lister->d->window)
+                    job->ui()->setWindow(lister->d->window);
 
-      lister->d->jobStarted( job );
-      lister->d->connectJob( job );
+                connect(job, SIGNAL(entries(KIO::Job *, KIO::UDSEntryList)),
+                        this, SLOT(slotEntries(KIO::Job *, KIO::UDSEntryList)));
+                connect(job, SIGNAL(result(KJob *)),
+                        this, SLOT(slotResult(KJob *)));
+                connect(job, SIGNAL(redirection(KIO::Job *,KUrl)),
+                        this, SLOT(slotRedirection(KIO::Job *,KUrl)));
 
-      if ( lister->d->window )
-        job->ui()->setWindow( lister->d->window );
+                emit lister->started(_url);
+            }
+        }
+    } else {
 
-      connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
-               this, SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
-      connect( job, SIGNAL( result( KJob * ) ),
-               this, SLOT( slotResult( KJob * ) ) );
-      connect( job, SIGNAL( redirection( KIO::Job *, const KUrl & ) ),
-               this, SLOT( slotRedirection( KIO::Job *, const KUrl & ) ) );
+        kDebug(7004) << "Entry currently being listed:" << _url;
 
-      emit lister->started( _url );
+        emit lister->started( _url );
 
-//        }
+        dirData.listersCurrentlyListing.append( lister );
+
+        KIO::ListJob *job = jobForUrl( urlStr );
+        Q_ASSERT( job );
+
+        lister->d->jobStarted( job );
+        lister->d->connectJob( job );
+
+        Q_ASSERT( itemU );
+
+        // List existing items in a delayed manner, just like things would happen
+        // if we were not using the cache.
+        KDirLister::Private::CachedItemsJob* cachedItemsJob =
+            new KDirLister::Private::CachedItemsJob(lister, _url, _reload, false /*do not emit completed*/);
+        cachedItemsJob->start();
+        lister->d->m_cachedItemsJob = cachedItemsJob;
     }
-  }
-  else
-  {
-    kDebug(7004) << "Entry currently being listed:" << _url;
 
-    emit lister->started( _url );
+    // automatic updating of directories
+    if (lister->d->autoUpdate)
+        itemU->incAutoUpdate();
 
-    dirData.listersCurrentlyListing.append( lister );
+    return true;
+}
 
-    KIO::ListJob *job = jobForUrl( urlStr );
-    Q_ASSERT( job );
+void KDirLister::Private::CachedItemsJob::done()
+{
+    kDirListerCache->emitItemsFromCache(m_lister, m_url, m_reload, m_emitCompleted);
+    emitResult();
+}
 
-    lister->d->jobStarted( job );
-    lister->d->connectJob( job );
+void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KUrl& _url, bool _reload, bool _emitCompleted)
+{
+    lister->d->m_cachedItemsJob = 0;
 
-    Q_ASSERT( itemU );
+    const QString urlStr = _url.url();
+    DirItem *itemU = kDirListerCache->itemsInUse.value(urlStr);
+    if (!itemU) { // WHAT? someone removed that cached item between openUrl and this call? nasty...
+        kWarning(7004) << urlStr << "not in cache anymore; this was unexpected";
+        return;
+    }
 
-    if ( lister->d->rootFileItem.isNull() && lister->d->url == _url )
-      lister->d->rootFileItem = itemU->rootItem;
+    KDirLister::Private* kdl = lister->d;
 
-    lister->d->addNewItems( itemU->lstItems );
-    lister->d->emitItems();
-  }
+    const bool oldState = kdl->complete;
+    kdl->complete = false;
 
-  // automatic updating of directories
-  if ( lister->d->autoUpdate )
-    itemU->incAutoUpdate();
+    if ( kdl->rootFileItem.isNull() && kdl->url == _url )
+        kdl->rootFileItem = itemU->rootItem;
 
-  return true;
+    kdl->addNewItems( itemU->lstItems );
+    kdl->emitItems();
+
+    // _emitCompleted is usually true, but is false for the special case where
+    // listDir() was called while another directory listing for this dir was happening,
+    // so we "joined" it.
+    if (_emitCompleted) {
+        kdl->complete = oldState;
+
+        emit lister->completed( _url );
+        if ( kdl->complete )
+            emit lister->completed();
+
+        DirectoryData& dirData = directoryData[urlStr];
+        dirData.listersCurrentlyHolding.append( lister );
+
+        if ( _reload || !itemU->complete )
+            updateDirectory( _url );
+    }
 }
 
 bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) const
@@ -333,6 +336,12 @@ void KDirListerCache::stop( KDirLister *lister )
         }
     }
 
+    if (lister->d->m_cachedItemsJob) {
+        delete lister->d->m_cachedItemsJob;
+        lister->d->m_cachedItemsJob = 0;
+        stopped = true;
+    }
+
     if ( stopped ) {
         emit lister->canceled();
         lister->d->complete = true;
@@ -347,6 +356,11 @@ void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
     KUrl url(_u);
     url.adjustPath( KUrl::RemoveTrailingSlash );
     const QString urlStr = url.url();
+
+    if (lister->d->m_cachedItemsJob && lister->d->m_cachedItemsJob->url() == url) {
+        delete lister->d->m_cachedItemsJob;
+        lister->d->m_cachedItemsJob = 0;
+    }
 
     // TODO: consider to stop all the "child jobs" of url as well
     kDebug(7004) << lister << " url=" << url;
@@ -2111,7 +2125,6 @@ void KDirLister::Private::addNewItems( const KFileItemList& items )
   // TODO: make this faster - test if we have a filter at all first
   // DF: was this profiled? The matchesFoo() functions should be fast, w/o filters...
   // Of course if there is no filter and we can do a range-insertion instead of a loop, that might be good.
-  // But that's for Qt4, not possible with QPtrList.
   KFileItemList::const_iterator kit = items.begin();
   const KFileItemList::const_iterator kend = items.end();
   for ( ; kit != kend; ++kit )

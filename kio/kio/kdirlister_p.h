@@ -67,8 +67,10 @@ public:
     changes = NONE;
 
     window = 0;
+    m_cachedItemsJob = 0;
   }
 
+    void _k_emitCachedItems(const KUrl&, bool, bool);
   void _k_slotInfoMessage( KJob*, const QString& );
   void _k_slotPercent( KJob*, unsigned long );
   void _k_slotTotalSize( KJob*, qulonglong );
@@ -128,7 +130,9 @@ public:
 
   int changes;
 
-  QWidget *window; // Main window ths lister is associated with
+    QWidget *window; // Main window this lister is associated with
+    class CachedItemsJob;
+    CachedItemsJob* m_cachedItemsJob;
 
   QString nameFilter;
   QList<QRegExp> lstFilters, oldFilters;
@@ -176,6 +180,10 @@ public:
   KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
   KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+
+    // Called by CachedItemsJob:
+    // Emits items from the cache, for this lister and this url
+    void emitItemsFromCache(KDirLister* lister, const KUrl& _url, bool _reload, bool _emitCompleted);
 
 public Q_SLOTS:
   /**
@@ -226,6 +234,7 @@ private Q_SLOTS:
   void processPendingUpdates();
 
 private:
+
   KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
   const KUrl& joburl( KIO::ListJob *job );
 
@@ -381,5 +390,33 @@ private:
 };
 
 //const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
+
+// This job tells KDirListerCache to emit cached items asynchronously from listDir()
+// to give the KDirLister user enough time for connecting to its signals, and so
+// that KDirListerCache behaves just like when a real KIO::Job is used: nothing
+// is emitted during the openUrl call itself.
+class KDirLister::Private::CachedItemsJob : public KJob {
+    Q_OBJECT
+public:
+    CachedItemsJob(KDirLister* lister, const KUrl& url, bool reload, bool emitCompleted)
+        : KJob(lister),
+          m_lister(lister), m_url(url),
+          m_reload(reload), m_emitCompleted(emitCompleted) {
+        setAutoDelete(true);
+    }
+
+    /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
+
+    KUrl url() const { return m_url; }
+
+public Q_SLOTS:
+    void done();
+
+private:
+    KDirLister* m_lister;
+    KUrl m_url;
+    bool m_reload;
+    bool m_emitCompleted;
+};
 
 #endif

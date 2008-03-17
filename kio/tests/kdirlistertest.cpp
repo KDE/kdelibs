@@ -96,32 +96,13 @@ void KDirListerTest::testOpenUrl()
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
 void KDirListerTest::testOpenUrlFromCache()
 {
-    m_items.clear();
-    const QString path = m_tempDir.name();
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
-    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-    // The call to openUrl itself, emits started, the items, and completed, since it's all in the cache
-    // ### Maybe we should get rid of this behavior difference...
-    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags); // TODO turn those bools into an enum
-
-    QCOMPARE(spyStarted.count(), 1);
-    QCOMPARE(spyCompleted.count(), 1);
-    QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 0);
-    QCOMPARE(spyCanceledKUrl.count(), 0);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(m_items.count(), 4);
+    // Do the same again, it should behave the same, even with the items in the cache
+    testOpenUrl();
 
     // Get into the case where another dirlister is holding the items
     {
         m_items.clear();
+        const QString path = m_tempDir.name();
         KDirLister secondDirLister;
         QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
         QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
@@ -131,7 +112,20 @@ void KDirListerTest::testOpenUrlFromCache()
         QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
         QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
         connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-        secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags); // TODO turn those bools into an enum
+        secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+        QCOMPARE(spyStarted.count(), 1);
+        QCOMPARE(spyCompleted.count(), 0);
+        QCOMPARE(spyCompletedKUrl.count(), 0);
+        QCOMPARE(spyCanceled.count(), 0);
+        QCOMPARE(spyCanceledKUrl.count(), 0);
+        QCOMPARE(spyClear.count(), 1);
+        QCOMPARE(spyClearKUrl.count(), 0);
+        QCOMPARE(m_items.count(), 0);
+
+        // then wait for completed
+        qDebug("waiting for completed");
+        connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+        enterLoop();
         QCOMPARE(spyStarted.count(), 1);
         QCOMPARE(spyCompleted.count(), 1);
         QCOMPARE(spyCompletedKUrl.count(), 1);
@@ -267,6 +261,8 @@ void KDirListerTest::testDeleteItem()
     m_items.clear();
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+    enterLoop();
     QCOMPARE(m_items.count(), 4);
 
     disconnect(&m_dirLister, 0, this, 0);

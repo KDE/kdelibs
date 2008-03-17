@@ -72,7 +72,6 @@ private:
     int m_nextExpectedExpandSignals; // index into m_expectedExpandSignals
     KDirModel* m_dirModelForExpand;
     bool m_rowsInsertedEmitted;
-    bool m_listingCompleted;
 };
 
 

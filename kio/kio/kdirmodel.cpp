@@ -800,8 +800,13 @@ void KDirModel::expandToUrl(const KUrl& url)
 
     d->m_urlsBeingFetched[result.second].append(url);
 
-    if (result.second == d->m_rootNode) // the root is fetched by default, so it must be currently being fetched
+    if (result.second == d->m_rootNode) {
+        kDebug(7008) << "Remembering to emit expand after listing the root url";
+        // the root is fetched by default, so it must be currently being fetched
         return;
+    }
+
+    kDebug(7008) << "Remembering to emit expand after listing" << result.second->item().url();
 
     // start a new fetch to look for the next level down the URL
     const QModelIndex parentIndex = d->indexForNode(result.second, result.first);

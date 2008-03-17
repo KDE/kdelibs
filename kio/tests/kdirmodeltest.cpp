@@ -86,11 +86,9 @@ void KDirModelTest::fillModel( bool reload )
 {
     const QString path = m_tempDir->name();
     KDirLister* dirLister = m_dirModel.dirLister();
-    m_listingCompleted = false;
-    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
-    if (!m_listingCompleted)
-        enterLoop();
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop();
 
     m_dirIndex = QModelIndex();
     m_fileIndex = QModelIndex();
@@ -147,7 +145,6 @@ void KDirModelTest::enterLoop()
 
 void KDirModelTest::slotListingCompleted()
 {
-    m_listingCompleted = true;
     m_eventLoop.quit();
 }
 
@@ -389,23 +386,24 @@ void KDirModelTest::testExpandToUrl_data()
 
     QTest::newRow("the root, nothing to do")
         << false << QString() << QStringList();
-    QTest::newRow("already known child, nothing to do")
-        << false << "subdir" << QStringList();
+    // When KDirLister was sync, subdir would already be known by the time we call expand
+    // But now that listing is always async, we get a reliable result: expand(subdir) emitted.
+    QTest::newRow("subdir")
+        << false << "subdir" << (QStringList()<<"subdir");
+
     const QString subsubdir = "subdir/subsubdir";
-    QStringList sigs; sigs << subsubdir;
-    // must list subdir and then expand is emitted
+    // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir.
     QTest::newRow("subdir/subsubdir")
-        << false << subsubdir << sigs;
-    // must list subdir, emit expand for subsubdir, and then list subsubdir
+        << false << subsubdir << (QStringList()<<"subdir"<<subsubdir);
+
+    // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir, list subsubdir.
     QTest::newRow("subdir/subsubdir/testfile sync")
-        << false << subsubdir + "/testfile" << sigs;
-    // We need an async test too (to emit expand twice)
-    // Let's force a reload of the dirlister so that it doesn't use the cache.
-    // It should then list root, emit expand for subdir, list subdir, emit expand for subsubdir, list subsubdir.
-    sigs.clear();
-    sigs << "subdir" << subsubdir;
+        << false << subsubdir + "/testfile" << (QStringList()<<"subdir"<<subsubdir);
+
+    // Do a cold-cache test too, but nowadays it doesn't change anything anymore,
+    // apart from testing different code paths inside KDirLister.
     QTest::newRow("subdir/subsubdir/testfile with reload")
-        << true << subsubdir + "/testfile" << sigs;
+        << true << subsubdir + "/testfile" << (QStringList()<<"subdir"<<subsubdir);
 }
 
 void KDirModelTest::testExpandToUrl()
@@ -423,9 +421,7 @@ void KDirModelTest::testExpandToUrl()
     const QString path = m_tempDir->name();
     KDirModel dirModelForExpand;
     KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-    // if reload==false, it gets them from the cache, so this is sync
-    // otherwise this is async, but we'll wait for expand signals anyhow
-    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags);
+    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // async
     connect(&dirModelForExpand, SIGNAL(expand(QModelIndex)),
             this, SLOT(slotExpand(QModelIndex)));
     connect(&dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
@@ -436,11 +432,12 @@ void KDirModelTest::testExpandToUrl()
     m_nextExpectedExpandSignals = 0;
     QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
     dirModelForExpand.expandToUrl(KUrl(path + expandToPath));
+    QCOMPARE(spyExpand.count(), 0); // nothing emitted yet
     if (expectedExpandSignals.isEmpty()) {
+        QTest::qWait(20); // to make sure we process queued connection calls, otherwise spyExpand.count() is always 0 even if there's a bug...
         QCOMPARE(spyExpand.count(), 0);
     } else {
-        if (spyExpand.count() < expectedExpandSignals.count())
-            enterLoop();
+        enterLoop();
         QCOMPARE(spyExpand.count(), expectedExpandSignals.count());
         QVERIFY(m_rowsInsertedEmitted);
     }
