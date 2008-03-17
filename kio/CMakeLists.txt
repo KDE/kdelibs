@@ -62,6 +62,7 @@ set(kiocore_STAT_SRCS
   kio/filejob.cpp
   kio/forwardingslavebase.cpp
   kio/global.cpp
+  kio/imagefilter.cpp
   kio/job.cpp
   kio/jobuidelegate.cpp
   kio/kacl.cpp
