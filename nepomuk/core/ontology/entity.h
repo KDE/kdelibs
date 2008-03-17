@@ -23,6 +23,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QString>
 #include <QtCore/QSharedData>
+#include <QtCore/QHash>
 
 #include <Soprano/Node>
 
@@ -33,6 +34,7 @@
 
 class QIcon;
 
+
 namespace Nepomuk {
     namespace Types {
         class EntityPrivate;
@@ -41,6 +43,9 @@ namespace Nepomuk {
          * Base class for static ontology entities Class and Property.
          * It encapsulates the generic labels and comments that both
          * types have.
+         *
+         * Due to internal optimizations comparing two Entities is much
+         * faster than comparing two QUrl objects.
          *
          * \author Sebastian Trueg <trueg@kde.org>
          */
@@ -122,6 +127,21 @@ namespace Nepomuk {
             bool isAvailable();
 
             /**
+             * The Types classes are optimized for performance under the 
+             * aasumption that ontologies never change during the execution
+             * time of an application.
+             *
+             * Since there might be situations where this does not apply
+             * the internal cache can be reset via this method.
+             *
+             * \param recursive If \p true all related entities will be reset
+             * as well.
+             *
+             * \since 4.1
+             */
+            void reset( bool recursive = false );
+
+            /**
              * An Entity can be used as a QUrl automagically.
              */
             operator QUrl() const { return uri(); }
@@ -129,12 +149,12 @@ namespace Nepomuk {
             /**
              * Compares two Entity instances by simply comparing their URI.
              */
-            bool operator==( const Entity& other );
+            bool operator==( const Entity& other ) const;
 
             /**
              * Compares two Entity instances by simply comparing their URI.
              */
-            bool operator!=( const Entity& other );
+            bool operator!=( const Entity& other ) const;
 
         protected:
             /**
@@ -144,6 +164,11 @@ namespace Nepomuk {
 
             QExplicitlySharedDataPointer<EntityPrivate> d;
         };
+
+        inline uint qHash( const Entity& c )
+        {
+            return qHash( c.uri().toString() );
+        }
     }
 }
 

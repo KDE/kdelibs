@@ -98,6 +98,27 @@ bool Nepomuk::Types::OntologyPrivate::addAncestorProperty( const QUrl&, const QU
 }
 
 
+void Nepomuk::Types::OntologyPrivate::reset( bool recursive )
+{
+    EntityPrivate::reset( recursive );
+
+    if ( entitiesAvailable != -1 ) {
+        if ( recursive ) {
+            foreach( Class c, classes ) {
+                c.reset( true );
+            }
+            foreach( Property p, properties ) {
+                p.reset( true );
+            }
+        }
+        classes.clear();
+        properties.clear();
+
+        entitiesAvailable = -1;
+    }
+}
+
+
 
 Nepomuk::Types::Ontology::Ontology()
 {

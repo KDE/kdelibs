@@ -44,6 +44,64 @@ Nepomuk::Types::ClassPrivate::ClassPrivate( const QUrl& uri )
 }
 
 
+bool Nepomuk::Types::ClassPrivate::load()
+{
+    //
+    // Nearly all here can be done in a very clean way. There is only
+    // one special case: rdfs:Resource, the base class of them all
+    //
+    if ( EntityPrivate::load() ) {
+        // undefined super class means that we are derived from rdfs:Resource directly
+        if ( parents.isEmpty() ) {
+            if ( uri != Soprano::Vocabulary::RDFS::Resource() ) {
+                parents += Soprano::Vocabulary::RDFS::Resource();
+            }
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+bool Nepomuk::Types::ClassPrivate::loadAncestors()
+{
+    //
+    // Nearly all here can be done in a very clean way. There is only
+    // one special case: rdfs:Resource, the base class of them all
+    //
+    if ( uri == Soprano::Vocabulary::RDFS::Resource() ) {
+        //
+        // All classes that do not explicetely state a superclass are
+        // derived from rdfs:Resource. This query selects those classes
+        // (might fail on redland though)
+        //
+        Soprano::QueryResultIterator it
+            = ResourceManager::instance()->mainModel()->executeQuery( QString("select distinct ?s where { "
+                                                                              "graph ?g1 { ?s a <%1> . } . "
+                                                                              "OPTIONAL { graph ?g2 { ?s <%2> ?ss . } } . "
+                                                                              "?g1 a <%3> . "
+                                                                              "?g2 a <%3> . "
+                                                                              "FILTER(!BOUND(?ss)) . }")
+                                                                      .arg( Soprano::Vocabulary::RDFS::Class().toString() )
+                                                                      .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() )
+                                                                      .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                      Soprano::Query::QueryLanguageSparql );
+        bool success = false;
+        while ( it.next() ) {
+            success = true;
+            QUrl resUri = it.binding( "s" ).uri();
+            if ( resUri != Soprano::Vocabulary::RDFS::Resource() ) {
+                children.append( resUri );
+            }
+        }
+    }
+
+    return EntityPrivate::loadAncestors();
+}
+
+
 bool Nepomuk::Types::ClassPrivate::addProperty( const QUrl& property, const Soprano::Node& value )
 {
     if( property == Soprano::Vocabulary::RDFS::subClassOf() ) {
@@ -109,6 +167,79 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
 }
 
 
+void Nepomuk::Types::ClassPrivate::reset( bool recursive )
+{
+    EntityPrivate::reset( recursive );
+
+    if ( propertiesAvailable != -1 ) {
+        if ( recursive ) {
+            foreach( Property p, domainOf ) {
+                p.reset( true );
+            }
+            foreach( Property p, rangeOf ) {
+                p.reset( true );
+            }
+        }
+
+        domainOf.clear();
+        rangeOf.clear();
+        propertiesAvailable = -1;
+    }
+
+    if ( available != -1 ) {
+        if ( recursive ) {
+            foreach( Class c, parents ) {
+                c.reset( true );
+            }
+        }
+        parents.clear();
+        available = -1;
+    }
+
+    if ( ancestorsAvailable != -1 ) {
+        if ( recursive ) {
+            foreach( Class c, children ) {
+                c.reset( true );
+            }
+        }
+        children.clear();
+        ancestorsAvailable = -1;
+    }
+}
+
+
+QSet<Nepomuk::Types::Class> Nepomuk::Types::ClassPrivate::findParentClasses( ClassPrivate* requestingClass )
+{
+    QSet<Class> allParents;
+
+    for ( QList<Class>::iterator it = parents.begin(); it != parents.end(); ++it ) {
+        ClassPrivate* p = static_cast<Nepomuk::Types::ClassPrivate*>( it->d.data() );
+        if ( p != requestingClass ) {
+            allParents += p->findParentClasses( requestingClass );
+            allParents += *it;
+        }
+    }
+
+    return allParents;
+}
+
+
+QSet<Nepomuk::Types::Class> Nepomuk::Types::ClassPrivate::findSubClasses( ClassPrivate* requestingClass )
+{
+    QSet<Class> allChildren;
+
+    for ( QList<Class>::iterator it = children.begin(); it != children.end(); ++it ) {
+        ClassPrivate* p = static_cast<Nepomuk::Types::ClassPrivate*>( it->d.data() );
+        if ( p != requestingClass ) {
+            allChildren += p->findSubClasses( requestingClass );
+            allChildren += *it;
+        }
+    }
+
+    return allChildren;
+}
+
+
 
 Nepomuk::Types::Class::Class()
     : Entity()
@@ -142,7 +273,19 @@ Nepomuk::Types::Class& Nepomuk::Types::Class::operator=( const Class& other )
 }
 
 
-QList<Nepomuk::Types::Property> Nepomuk::Types::Class::allProperties()
+QList<Nepomuk::Types::Property> Nepomuk::Types::Class::rangeOf()
+{
+    if ( d ) {
+        D->initProperties();
+        return D->rangeOf;
+    }
+    else {
+        return QList<Nepomuk::Types::Property>();
+    }
+}
+
+
+QList<Nepomuk::Types::Property> Nepomuk::Types::Class::domainOf()
 {
     if ( d ) {
         D->initProperties();
@@ -212,10 +355,34 @@ QList<Nepomuk::Types::Class> Nepomuk::Types::Class::subClasses()
 }
 
 
-bool Nepomuk::Types::Class::isParentOf( const Class& other )
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allParentClasses()
 {
     if ( d ) {
         D->init();
+        return D->findParentClasses( D ).toList();
+    }
+    else {
+        return QList<Nepomuk::Types::Class>();
+    }
+}
+
+
+QList<Nepomuk::Types::Class> Nepomuk::Types::Class::allSubClasses()
+{
+    if ( d ) {
+        D->initAncestors();
+        return D->findSubClasses( D ).toList();
+    }
+    else {
+        return QList<Nepomuk::Types::Class>();
+    }
+}
+
+
+bool Nepomuk::Types::Class::isParentOf( const Class& other )
+{
+    if ( d ) {
+        D->initAncestors();
 
         if ( D->children.contains( other ) ) {
             return true;
@@ -237,7 +404,7 @@ bool Nepomuk::Types::Class::isParentOf( const Class& other )
 bool Nepomuk::Types::Class::isSubClassOf( const Class& other )
 {
     if ( d ) {
-        D->initAncestors();
+        D->init();
 
         if ( D->parents.contains( other ) ) {
             return true;

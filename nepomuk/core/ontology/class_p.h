@@ -51,6 +51,16 @@ namespace Nepomuk {
 
             void initProperties();
             bool loadProperties();
+
+            void reset( bool recursive );
+
+            // recursively find all parent or sub classes but stop at requestingClass to avoid endless loops
+            QSet<Class> findParentClasses( ClassPrivate* requestingClass );
+            QSet<Class> findSubClasses( ClassPrivate* requestingClass );
+
+        protected:
+            virtual bool load();
+            virtual bool loadAncestors();
         };
     }
 }

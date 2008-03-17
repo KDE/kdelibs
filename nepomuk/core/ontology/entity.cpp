@@ -32,6 +32,12 @@
 #include <kicon.h>
 
 
+// uint qHash( const Nepomuk::Types::Entity& c )
+// {
+//     return (uint)(ulong)c.d.data();
+// }
+
+
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
     : uri( uri_ ),
       available( uri_.isValid() ? -1 : 0 ),
@@ -118,6 +124,21 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
     }
 
     return success;
+}
+
+
+
+void Nepomuk::Types::EntityPrivate::reset( bool )
+{
+    QString label = QString();
+    QString comment = QString();
+    l10nLabels.clear();
+    l10nComments.clear();;
+
+    icon = QIcon();
+
+    available = -1;
+    ancestorsAvailable = -1;
 }
 
 
@@ -225,15 +246,23 @@ bool Nepomuk::Types::Entity::isAvailable()
 }
 
 
-bool Nepomuk::Types::Entity::operator==( const Entity& other )
+void Nepomuk::Types::Entity::reset( bool recursive )
 {
-    return d && other.d && d->uri == other.d->uri;
+    d->reset( recursive );
 }
 
 
-bool Nepomuk::Types::Entity::operator!=( const Entity& other )
+bool Nepomuk::Types::Entity::operator==( const Entity& other ) const
 {
-    return !d || !other.d || d->uri != other.d->uri;
+    // since we use one instace cache we can improve comparation operations
+    // intensly by not comparing URLs but pointers.
+    return( d && other.d && d == other.d );
+}
+
+
+bool Nepomuk::Types::Entity::operator!=( const Entity& other ) const
+{
+    return !d || !other.d || d != other.d;
 }
 
 

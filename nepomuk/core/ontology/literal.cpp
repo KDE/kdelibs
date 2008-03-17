@@ -23,6 +23,9 @@
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
 
+#include <Soprano/Vocabulary/RDFS>
+
+
 namespace {
 QHash<QString, QVariant::Type> s_xmlSchemaTypes;
 
@@ -70,9 +73,14 @@ Nepomuk::Types::Literal::Literal( const QUrl& dataType )
     initXmlSchemaTypes();
 
     // check if it is a known type, otherwise leave it as QVariant::Invalid
-    QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );
-    if ( it != s_xmlSchemaTypes.constEnd() ) {
-        d->dataType = it.value();
+    if ( dataType == Soprano::Vocabulary::RDFS::Literal() ) {
+        d->dataType = QVariant::String;
+    }
+    else {
+        QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );
+        if ( it != s_xmlSchemaTypes.constEnd() ) {
+            d->dataType = it.value();
+        }
     }
 }
 

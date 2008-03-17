@@ -56,9 +56,11 @@ namespace Nepomuk {
             virtual bool addProperty( const QUrl& property, const Soprano::Node& value ) = 0;
             virtual bool addAncestorProperty( const QUrl& ancestorResource, const QUrl& property ) = 0;
 
-        private:
-            bool load();
-            bool loadAncestors();
+            virtual void reset( bool recursive );
+
+        protected:
+            virtual bool load();
+            virtual bool loadAncestors();
         };
     }
 }

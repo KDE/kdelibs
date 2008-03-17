@@ -28,8 +28,13 @@ inline uint qHash( const QUrl& url ) {
     return qHash( url.toString() );
 }
 
+namespace Soprano {
+    class Statement;
+}
+
 namespace Nepomuk {
     namespace Types {
+        class EntityPrivate;
         class ClassPrivate;
         class PropertyPrivate;
         class OntologyPrivate;
@@ -49,6 +54,11 @@ namespace Nepomuk {
             static EntityManager* self();
 
         private:
+            EntityPrivate* findEntity( const QUrl& uri ) const;
+            ClassPrivate* findClass( const QUrl& uri ) const;
+            PropertyPrivate* findProperty( const QUrl& uri ) const;
+            OntologyPrivate* findOntology( const QUrl& uri ) const;
+
             QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> > m_classMap;
             QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> > m_propertyMap;
             QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> > m_ontologyMap;

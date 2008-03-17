@@ -22,6 +22,7 @@
 #include "property_p.h"
 #include "ontology_p.h"
 
+#include "../resourcemanager.h"
 
 Q_GLOBAL_STATIC( Nepomuk::Types::EntityManager, entityManager )
 
@@ -30,11 +31,57 @@ Nepomuk::Types::EntityManager::EntityManager()
 }
 
 
-Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUrl& uri )
+Nepomuk::Types::EntityPrivate* Nepomuk::Types::EntityManager::findEntity( const QUrl& uri ) const
 {
-    QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> >::iterator it = m_classMap.find( uri );
+    if ( ClassPrivate* cp = findClass( uri ) ) {
+        return cp;
+    }
+    else if ( PropertyPrivate* pp = findProperty( uri ) ) {
+        return pp;
+    }
+    else if ( OntologyPrivate* op = findOntology( uri ) ) {
+        return op;
+    }
+    else {
+        return 0;
+    }
+}
+
+
+Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::findClass( const QUrl& uri ) const
+{
+    QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> >::const_iterator it = m_classMap.find( uri );
     if ( it != m_classMap.end() ) {
         return it.value().data();
+    }
+    return 0;
+}
+
+
+Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::findProperty( const QUrl& uri ) const
+{
+    QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> >::const_iterator it = m_propertyMap.find( uri );
+    if ( it != m_propertyMap.end() ) {
+        return it.value().data();
+    }
+    return 0;
+}
+
+
+Nepomuk::Types::OntologyPrivate* Nepomuk::Types::EntityManager::findOntology( const QUrl& uri ) const
+{
+    QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> >::const_iterator it = m_ontologyMap.find( uri );
+    if ( it != m_ontologyMap.end() ) {
+        return it.value().data();
+    }
+    return 0;
+}
+
+
+Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUrl& uri )
+{
+    if ( ClassPrivate* cp = findClass( uri ) ) {
+        return cp;
     }
     else {
         QExplicitlySharedDataPointer<ClassPrivate> cp( new ClassPrivate( uri ) );
@@ -46,9 +93,8 @@ Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUr
 
 Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::getProperty( const QUrl& uri )
 {
-    QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> >::iterator it = m_propertyMap.find( uri );
-    if ( it != m_propertyMap.end() ) {
-        return it.value().data();
+    if ( PropertyPrivate* pp = findProperty( uri ) ) {
+        return pp;
     }
     else {
         QExplicitlySharedDataPointer<PropertyPrivate> cp( new PropertyPrivate( uri ) );
@@ -60,9 +106,8 @@ Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::getProperty( con
 
 Nepomuk::Types::OntologyPrivate* Nepomuk::Types::EntityManager::getOntology( const QUrl& uri )
 {
-    QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> >::iterator it = m_ontologyMap.find( uri );
-    if ( it != m_ontologyMap.end() ) {
-        return it.value().data();
+    if ( OntologyPrivate* op = findOntology( uri ) ) {
+        return op;
     }
     else {
         QExplicitlySharedDataPointer<OntologyPrivate> cp( new OntologyPrivate( uri ) );

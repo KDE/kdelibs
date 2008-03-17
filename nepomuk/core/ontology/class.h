@@ -46,6 +46,8 @@ namespace Nepomuk {
          */ 
         class NEPOMUK_EXPORT Class : public Entity
         {
+            friend class ClassPrivate;
+            
         public:
             /**
              * Default constructor. Creates an empty Class.
@@ -78,8 +80,19 @@ namespace Nepomuk {
              */
             Class& operator=( const Class& );
 
-            // an alternative would be: QList<Property> rangeOf() and QList<Property> domainOf()
-            QList<Property> allProperties();
+            /**
+             * A Property has a certain range which is a Class or a Literal.
+             * \return A list of all properties that have this Class as a range.
+             * \sa Property::range()
+             */
+            QList<Property> rangeOf();
+
+            /**
+             * A Property has a certain domain which is a Class.
+             * \return A list of all properties that have this Class as a domain.
+             * \sa Property::domain()
+             */
+            QList<Property> domainOf();
 
             /**
              * Search for a property in the class by its name.
@@ -98,10 +111,12 @@ namespace Nepomuk {
             Property findPropertyByLabel( const QString& label, const QString& language = QString() );
 
             /**
-             * Each class can have multiple parent classes.
+             * Each class can have multiple parent classes. This method
+             * provides a list of all direct parents.
              * \return A list of all parent classes of this class.
              * If the list is emppty it means that the class has no direct
              * parents, i.e. it is derived from rdf:Resource.
+             * \sa allParentClasses()
              */
             QList<Class> parentClasses();
 
@@ -112,6 +127,22 @@ namespace Nepomuk {
              * from this class.
              */
             QList<Class> subClasses();
+
+            /**
+             * Recursively determines all parent classes of this class, not
+             * only the direct ones.
+             * \return A list of parent classes of this class.
+             * \sa parentClasses()
+             */
+            QList<Class> allParentClasses();
+
+            /**
+             * Recursively determines all sub classes of this class, not
+             * only the direct ones.
+             * \return A list of sub classes of this class.
+             * \sa subClasses()
+             */
+            QList<Class> allSubClasses();
 
             /**
              * Check if a class inherits this class. This is a recursive method which
@@ -131,7 +162,6 @@ namespace Nepomuk {
         };
     }
 }
-
 
 
 namespace Nepomuk {

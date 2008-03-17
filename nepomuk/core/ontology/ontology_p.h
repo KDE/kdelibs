@@ -51,6 +51,8 @@ namespace Nepomuk {
 
             void initEntities();
             bool loadEntities();
+
+            void reset( bool recursive );
         };
     }
 }

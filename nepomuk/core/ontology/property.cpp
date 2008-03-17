@@ -56,6 +56,9 @@ bool Nepomuk::Types::PropertyPrivate::addProperty( const QUrl& property, const S
         if ( value.toString().startsWith( Soprano::Vocabulary::XMLSchema::xsdNamespace().toString() ) ) {
             literalRange = Literal( value.uri() );
         }
+        else if ( value.uri() == Soprano::Vocabulary::RDFS::Literal()) {
+            literalRange = Literal( value.uri() );
+        }
         else {
             range = value.uri();
         }
@@ -89,11 +92,46 @@ bool Nepomuk::Types::PropertyPrivate::addProperty( const QUrl& property, const S
 bool Nepomuk::Types::PropertyPrivate::addAncestorProperty( const QUrl& ancestorResource, const QUrl& property )
 {
     if( property == Soprano::Vocabulary::RDFS::subPropertyOf() ) {
-        parents.append( ancestorResource );
+        children.append( ancestorResource );
+        return true;
+    }
+    else if ( property == Soprano::Vocabulary::NRL::inverseProperty() ) {
+        inverse = ancestorResource;
         return true;
     }
 
     return false;
+}
+
+
+void Nepomuk::Types::PropertyPrivate::reset( bool recursive )
+{
+    EntityPrivate::reset( recursive );
+
+    if ( available != -1 ) {
+        if ( recursive ) {
+            range.reset( true );
+            domain.reset( true );
+            inverse.reset( true );
+            foreach( Property p, parents ) {
+                p.reset( true );
+            }
+        }
+
+        parents.clear();
+        available = -1;
+    }
+
+    if ( ancestorsAvailable != -1 ) {
+        if ( recursive ) {
+            foreach( Property p, children ) {
+                p.reset( true );
+            }
+        }
+
+        children.clear();
+        ancestorsAvailable = -1;
+    }
 }
 
 
@@ -142,10 +180,10 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentProperties()
 }
 
 
-QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
+QList<Nepomuk::Types::Property> Nepomuk::Types::Property::subProperties()
 {
     if ( d ) {
-        D->init();
+        D->initAncestors();
         return D->children;
     }
     else {
@@ -157,6 +195,7 @@ QList<Nepomuk::Types::Property> Nepomuk::Types::Property::parentOf()
 Nepomuk::Types::Property Nepomuk::Types::Property::inverseProperty()
 {
     if ( d ) {
+        D->init();
         D->initAncestors();
         return D->inverse;
     }
@@ -236,6 +275,51 @@ int Nepomuk::Types::Property::maxCardinality()
         return -1;
     }
 }
+
+
+bool Nepomuk::Types::Property::isParentOf( const Property& other )
+{
+    if ( d ) {
+        D->initAncestors();
+
+        if ( D->children.contains( other ) ) {
+            return true;
+        }
+        else {
+            for ( QList<Nepomuk::Types::Property>::iterator it = D->children.begin();
+                  it != D->children.end(); ++it ) {
+                if ( ( *it ).isParentOf( other ) ) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
+bool Nepomuk::Types::Property::isSubPropertyOf( const Property& other )
+{
+    if ( d ) {
+        D->init();
+
+        if ( D->parents.contains( other ) ) {
+            return true;
+        }
+        else {
+            for ( QList<Nepomuk::Types::Property>::iterator it = D->parents.begin();
+                  it != D->parents.end(); ++it ) {
+                if ( ( *it ).isSubPropertyOf( other ) ) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 
 
 

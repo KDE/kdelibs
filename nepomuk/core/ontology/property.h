@@ -95,7 +95,7 @@ namespace Nepomuk {
              * that have not been loaded yet may contain properties that are derived
              * from this property.
              */
-            QList<Property> parentOf();
+            QList<Property> subProperties();
 
             /**
              * The inverse property (nrl:inverseProperty).
@@ -148,6 +148,22 @@ namespace Nepomuk {
              * \return the maximum cardinality of the property or -1 if none was set.
              */
             int maxCardinality();
+
+            /**
+             * Check if a property inherits this property. This is a recursive method which
+             * does not only check direct child propertyes.
+             *
+             * \return true if other is derived from this property, false otherwise.
+             */
+            bool isParentOf( const Property& other );
+
+            /**
+             * Check if this property is derived from another property. This is a recursive method which
+             * does not only check direct child propertyes.
+             *
+             * \return true if this property is derived from other, false otherwise.
+             */
+            bool isSubPropertyOf( const Property& other );
         };
     }
 }
