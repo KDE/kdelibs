@@ -180,13 +180,12 @@ void KSystemTrayIcon::minimizeRestoreAction()
         minimizeRestore( restore );
     }
 }
-#include <QDebug>
+
 void KSystemTrayIcon::maybeQuit()
 {
     QString caption = KGlobal::caption();
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>",
                          caption);
-    qDebug()<<" d->window :"<<d->window;
     if (KMessageBox::warningContinueCancel(d->window, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStandardGuiItem::quit(),
@@ -298,10 +297,9 @@ void KSystemTrayIcon::toggleActive()
 {
     activateOrHide( QSystemTrayIcon::Trigger );
 }
-#include <QDebug>
+
 bool KSystemTrayIcon::parentWidgetTrayClose() const
 {
-    qDebug()<<" kapp :::::::::::::: "<<kapp;
     if( kapp != NULL && kapp->sessionSaving())
         return false; // normal close
     return true;
