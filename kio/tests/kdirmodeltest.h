@@ -30,6 +30,7 @@ class KDirModelTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
     void testRowCount();
     void testIndex();
     void testNames();
@@ -50,12 +51,13 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
     void slotRowsInserted(const QModelIndex& index, int, int);
 
 private:
+    void recreateTestData();
     void enterLoop();
     void fillModel( bool reload );
 
 private:
     QEventLoop m_eventLoop;
-    KTempDir m_tempDir;
+    KTempDir* m_tempDir;
     KDirModel m_dirModel;
     QModelIndex m_fileIndex;
     QModelIndex m_specialFileIndex;
@@ -66,8 +68,11 @@ private:
     QStringList m_topLevelFileNames; // files only
 
     // for slotExpand
-    QString m_nextExpectedExpandPath;
+    QStringList m_expectedExpandSignals;
+    int m_nextExpectedExpandSignals; // index into m_expectedExpandSignals
+    KDirModel* m_dirModelForExpand;
     bool m_rowsInsertedEmitted;
+    bool m_listingCompleted;
 };
 
 

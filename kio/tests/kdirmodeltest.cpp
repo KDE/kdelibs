@@ -39,7 +39,20 @@ QTEST_KDEMAIN( KDirModelTest, NoGUI )
 void KDirModelTest::initTestCase()
 {
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
+    m_tempDir = 0;
+    m_topLevelFileNames << "toplevelfile_1"
+                        << "toplevelfile_2"
+                        << "toplevelfile_3"
+                        << "specialchars%:";
+    recreateTestData();
 
+    fillModel( false );
+}
+
+void KDirModelTest::recreateTestData()
+{
+    delete m_tempDir;
+    m_tempDir = new KTempDir;
     // Create test data:
     /*
      * PATH/toplevelfile_1
@@ -51,27 +64,33 @@ void KDirModelTest::initTestCase()
      * PATH/subdir/subsubdir
      * PATH/subdir/subsubdir/testfile
      */
-    const QString path = m_tempDir.name();
-    m_topLevelFileNames << "toplevelfile_1"
-                        << "toplevelfile_2"
-                        << "toplevelfile_3"
-                        << "specialchars%:";
+    const QString path = m_tempDir->name();
     foreach(const QString &f, m_topLevelFileNames) {
         createTestFile(path+f);
     }
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir", NoSymlink);
 
-    fillModel( false );
+    m_dirIndex = QModelIndex();
+    m_fileIndex = QModelIndex();
+    m_secondFileIndex = QModelIndex();
+}
+
+void KDirModelTest::cleanupTestCase()
+{
+    delete m_tempDir;
+    m_tempDir = 0;
 }
 
 void KDirModelTest::fillModel( bool reload )
 {
-    const QString path = m_tempDir.name();
+    const QString path = m_tempDir->name();
     KDirLister* dirLister = m_dirModel.dirLister();
-    dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
+    m_listingCompleted = false;
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
-    enterLoop();
+    dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
+    if (!m_listingCompleted)
+        enterLoop();
 
     m_dirIndex = QModelIndex();
     m_fileIndex = QModelIndex();
@@ -118,6 +137,7 @@ void KDirModelTest::fillModel( bool reload )
 
     // Index of ... well, subdir/subsubdir/testfile
     m_fileInSubdirIndex = m_dirModel.index(0, 0, subdirIndex);
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
 
 void KDirModelTest::enterLoop()
@@ -127,6 +147,7 @@ void KDirModelTest::enterLoop()
 
 void KDirModelTest::slotListingCompleted()
 {
+    m_listingCompleted = true;
     m_eventLoop.quit();
 }
 
@@ -203,25 +224,25 @@ void KDirModelTest::testItemForIndex()
     QVERIFY(!fileItem.isNull());
     QCOMPARE(fileItem.name(), QString("toplevelfile_1"));
     QVERIFY(!fileItem.isDir());
-    QCOMPARE(fileItem.url().path(), m_tempDir.name() + "toplevelfile_1");
+    QCOMPARE(fileItem.url().path(), m_tempDir->name() + "toplevelfile_1");
 
     KFileItem dirItem = m_dirModel.itemForIndex(m_dirIndex);
     QVERIFY(!dirItem.isNull());
     QCOMPARE(dirItem.name(), QString("subdir"));
     QVERIFY(dirItem.isDir());
-    QCOMPARE(dirItem.url().path(), m_tempDir.name() + "subdir");
+    QCOMPARE(dirItem.url().path(), m_tempDir->name() + "subdir");
 
     KFileItem fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
     QVERIFY(!fileInDirItem.isNull());
     QCOMPARE(fileInDirItem.name(), QString("testfile"));
     QVERIFY(!fileInDirItem.isDir());
-    QCOMPARE(fileInDirItem.url().path(), m_tempDir.name() + "subdir/testfile");
+    QCOMPARE(fileInDirItem.url().path(), m_tempDir->name() + "subdir/testfile");
 
     KFileItem fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
     QVERIFY(!fileInSubdirItem.isNull());
     QCOMPARE(fileInSubdirItem.name(), QString("testfile"));
     QVERIFY(!fileInSubdirItem.isDir());
-    QCOMPARE(fileInSubdirItem.url().path(), m_tempDir.name() + "subdir/subsubdir/testfile");
+    QCOMPARE(fileInSubdirItem.url().path(), m_tempDir->name() + "subdir/subsubdir/testfile");
 }
 
 void KDirModelTest::testIndexForItem()
@@ -298,7 +319,7 @@ Q_DECLARE_METATYPE(QModelIndex) // needed for .value<QModelIndex>()
 
 void KDirModelTest::testModifyFile()
 {
-    const QString file = m_tempDir.name() + "toplevelfile_2";
+    const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
 
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
@@ -311,8 +332,8 @@ void KDirModelTest::testModifyFile()
 
     // In stat mode, kdirwatch doesn't notice file changes; we need to trigger it
     // by creating a file.
-    //createTestFile(m_tempDir.name() + "toplevelfile_5");
-    KDirWatch::self()->setDirty(m_tempDir.name());
+    //createTestFile(m_tempDir->name() + "toplevelfile_5");
+    KDirWatch::self()->setDirty(m_tempDir->name());
 
     // Wait for KDirWatch to notify the change (especially when using Stat)
     enterLoop();
@@ -330,9 +351,9 @@ void KDirModelTest::testModifyFile()
 
 void KDirModelTest::testRenameFile()
 {
-    const QString file = m_tempDir.name() + "toplevelfile_2";
+    const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
-    const QString newFile = m_tempDir.name() + "toplevelfile_2_renamed";
+    const QString newFile = m_tempDir->name() + "toplevelfile_2_renamed";
     const KUrl newUrl(newFile);
 
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
@@ -362,56 +383,97 @@ void KDirModelTest::testRenameFile()
 
 void KDirModelTest::testExpandToUrl_data()
 {
-    QTest::addColumn<QString>("expandToPath");
+    QTest::addColumn<bool>("newdir"); // whether to re-create a new KTempDir completely, to avoid cached fileitems
+    QTest::addColumn<QString>("expandToPath"); // relative path
     QTest::addColumn<QStringList>("expectedExpandSignals");
 
-    const QString path = m_tempDir.name();
     QTest::newRow("the root, nothing to do")
-        << path << QStringList();
+        << false << QString() << QStringList();
     QTest::newRow("already known child, nothing to do")
-        << path+"subdir" << QStringList();
-    const QString subsubdir = path+"subdir/subsubdir";
+        << false << "subdir" << QStringList();
+    const QString subsubdir = "subdir/subsubdir";
     QStringList sigs; sigs << subsubdir;
     // must list subdir and then expand is emitted
     QTest::newRow("subdir/subsubdir")
-        << subsubdir << sigs;
+        << false << subsubdir << sigs;
     // must list subdir, emit expand for subsubdir, and then list subsubdir
-    QTest::newRow("subdir/subsubdir/testfile")
-        << subsubdir + "/testfile" << sigs;
-    // TODO: we need an async test too (to emit expand twice)
+    QTest::newRow("subdir/subsubdir/testfile sync")
+        << false << subsubdir + "/testfile" << sigs;
+    // We need an async test too (to emit expand twice)
+    // Let's force a reload of the dirlister so that it doesn't use the cache.
+    // It should then list root, emit expand for subdir, list subdir, emit expand for subsubdir, list subsubdir.
+    sigs.clear();
+    sigs << "subdir" << subsubdir;
+    QTest::newRow("subdir/subsubdir/testfile with reload")
+        << true << subsubdir + "/testfile" << sigs;
 }
 
 void KDirModelTest::testExpandToUrl()
 {
-    const QString path = m_tempDir.name();
-    QFETCH(QString, expandToPath);
+    QFETCH(bool, newdir);
+    QFETCH(QString, expandToPath); // relative
     QFETCH(QStringList, expectedExpandSignals);
 
+    if (newdir) {
+        recreateTestData();
+        // WARNING! m_dirIndex, m_fileIndex, m_secondFileIndex etc. are not valid anymore after this point!
+
+    }
+
+    const QString path = m_tempDir->name();
     KDirModel dirModelForExpand;
     KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // it gets them from the cache, so this is sync
+    // if reload==false, it gets them from the cache, so this is sync
+    // otherwise this is async, but we'll wait for expand signals anyhow
+    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags);
     connect(&dirModelForExpand, SIGNAL(expand(QModelIndex)),
             this, SLOT(slotExpand(QModelIndex)));
     connect(&dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(slotRowsInserted(QModelIndex,int,int)));
     m_rowsInsertedEmitted = false;
-    m_nextExpectedExpandPath = expectedExpandSignals.isEmpty() ? QString() : expectedExpandSignals.first();
+    m_expectedExpandSignals = expectedExpandSignals;
+    m_dirModelForExpand = &dirModelForExpand;
+    m_nextExpectedExpandSignals = 0;
     QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
-    dirModelForExpand.expandToUrl(KUrl(expandToPath));
+    dirModelForExpand.expandToUrl(KUrl(path + expandToPath));
     if (expectedExpandSignals.isEmpty()) {
         QCOMPARE(spyExpand.count(), 0);
     } else {
-        enterLoop();
-        QCOMPARE(spyExpand.count(), 1);
+        if (spyExpand.count() < expectedExpandSignals.count())
+            enterLoop();
+        QCOMPARE(spyExpand.count(), expectedExpandSignals.count());
         QVERIFY(m_rowsInsertedEmitted);
     }
+    m_dirModelForExpand = 0;
+}
+
+void KDirModelTest::slotExpand(const QModelIndex& index)
+{
+    QVERIFY(index.isValid());
+    const QString path = m_tempDir->name();
+    KFileItem item = m_dirModelForExpand->itemForIndex(index);
+    QVERIFY(!item.isNull());
+    QCOMPARE(item.url().path(), path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]);
+    // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
+    QVERIFY(m_rowsInsertedEmitted);
+    if (m_nextExpectedExpandSignals == m_expectedExpandSignals.count())
+        m_eventLoop.quit(); // done
+}
+
+void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
+{
+    m_rowsInsertedEmitted = true;
 }
 
 // Must be done last because it changes the other indexes
 void KDirModelTest::testDeleteFile()
 {
+    // if the previous test called recreateTestData, we need to refill the model
+    if (!m_fileIndex.isValid())
+        fillModel(false);
+
     const int oldTopLevelRowCount = m_dirModel.rowCount();
-    const QString file = m_tempDir.name() + "toplevelfile_1";
+    const QString file = m_tempDir->name() + "toplevelfile_1";
     const KUrl url(file);
 
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
@@ -430,19 +492,4 @@ void KDirModelTest::testDeleteFile()
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
-}
-
-void KDirModelTest::slotExpand(const QModelIndex& index)
-{
-    QVERIFY(index.isValid());
-    KFileItem item = m_dirModel.itemForIndex(index);
-    QVERIFY(!item.isNull());
-    QCOMPARE(m_nextExpectedExpandPath, item.url().path());
-    // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
-    QVERIFY(m_rowsInsertedEmitted);
-}
-
-void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
-{
-    m_rowsInsertedEmitted = true;
 }
