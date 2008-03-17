@@ -644,14 +644,14 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     return jsBoolean(event.metaKey());
   case Button:
   {
-    if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat ) {
-      // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
-      // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
-      int domButton = event.button();
-      int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
-      return jsNumber( (unsigned int)button );
+    if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
+        return jsNumber(event.button());
     }
-    return jsNumber(event.button());
+    // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
+    // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
+    int domButton = event.button();
+    int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
+    return jsNumber( (unsigned int)button );
   }
   case ToElement:
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
