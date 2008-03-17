@@ -85,7 +85,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 
     switch (icon) {
     case QMessageBox::NoIcon:
-        return QPixmap();
+        return QIcon();
         break;
     case QMessageBox::Information:
         icon_name = "dialog-information";
@@ -100,7 +100,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KIconLoader::global()->loadIcon(icon_name, KIconLoader::NoGroup, KIconLoader::SizeLarge, KIconLoader::DefaultState, QStringList(), 0, true);
+   QIcon ret = KIconLoader::global()->loadIcon(icon_name, KIconLoader::NoGroup, KIconLoader::SizeHuge, KIconLoader::DefaultState, QStringList(), 0, true);
 
    if (ret.isNull()) {
        return QMessageBox::standardIcon(icon);
@@ -171,11 +171,15 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *iconLabel = new QLabel(mainWidget);
 
     if (!icon.isNull()) {
-       int size = IconSize(KIconLoader::Dialog);
-       iconLabel->setPixmap(icon.pixmap(size, size));
+       iconLabel->setPixmap(icon.pixmap(KIconLoader::SizeHuge));
     }
 
-    hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
+    QVBoxLayout *iconLayout = new QVBoxLayout();
+    iconLayout->addStretch(1);
+    iconLayout->addWidget(iconLabel);
+    iconLayout->addStretch(5);
+
+    hLayout->addLayout(iconLayout);
     hLayout->addSpacing(KDialog::spacingHint());
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
@@ -241,7 +245,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
 
     dialog->setMainWidget(mainWidget);
-    dialog->showButtonSeparator(false);
+    dialog->showButtonSeparator(true);
     if (!listWidget) {
         dialog->layout()->setSizeConstraint(QLayout::SetFixedSize);
     }
