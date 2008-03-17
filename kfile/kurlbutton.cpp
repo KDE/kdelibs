@@ -138,9 +138,10 @@ void KUrlButton::drawHoverBackground(QPainter* painter)
 
     if (backgroundColor != Qt::transparent) {
         // TODO: the backgroundColor should be applied to the style
-        QStyleOptionFocusRect option;
+        QStyleOptionViewItemV4 option;
         option.initFrom(this);
         option.state = QStyle::State_Enabled | QStyle::State_MouseOver;
+        option.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
         style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, this);
     }
 }
