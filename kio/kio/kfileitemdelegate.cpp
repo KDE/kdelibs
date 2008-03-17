@@ -695,7 +695,7 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QTextLay
         pixmap.fill(Qt::transparent);
 
         QPainter p(&pixmap);
-        p.translate(-labelLayout.position());
+        p.translate(-boundingRect.topLeft());
         p.setPen(painter->pen());
         labelLayout.draw(&p, QPoint());
 
@@ -720,8 +720,8 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QTextLay
 
         KIO::ImageFilter::shadowBlur(image, blurFactor, shadowColor);
 
-        painter->drawImage(labelLayout.position() + QPoint(-padding, -padding) + shadowOffset.toPoint(), image);
-        painter->drawPixmap(labelLayout.position(), pixmap);
+        painter->drawImage(boundingRect.topLeft() - QPoint(padding, padding) + shadowOffset.toPoint(), image);
+        painter->drawPixmap(boundingRect.topLeft(), pixmap);
         return;
     }
 
