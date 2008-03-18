@@ -429,6 +429,7 @@ KColorPatch::KColorPatch(QWidget *parent) : QFrame(parent), d(new KColorPatchPri
 {
     setFrameStyle(QFrame::Panel | QFrame::Sunken);
     setAcceptDrops(true);
+    setMinimumSize(12, 12);
 }
 
 KColorPatch::~KColorPatch()
