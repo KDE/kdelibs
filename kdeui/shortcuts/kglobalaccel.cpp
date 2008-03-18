@@ -268,11 +268,16 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
     // TODO The 100%-correct solution should probably be handling this action
     // in the proper place in relation to the X events queue in order to avoid
     // the possibility of wrong ordering of user events.
-    Time timestamp = actionId.at(4).toULong();
-    if( NET::timestampCompare(timestamp, QX11Info::appTime()) > 0)
-        QX11Info::setAppTime(timestamp);
-    if( NET::timestampCompare(timestamp, QX11Info::appUserTime()) > 0)
-        QX11Info::setAppUserTime(timestamp);
+    if (actionId.count() > 4) {
+        Time timestamp = actionId.at(4).toULong();
+        if (NET::timestampCompare(timestamp, QX11Info::appTime()) > 0) {
+            QX11Info::setAppTime(timestamp);
+        }
+
+        if (NET::timestampCompare(timestamp, QX11Info::appUserTime()) > 0) {
+            QX11Info::setAppUserTime(timestamp);
+        }
+    }
 #endif
 
     action->trigger();
