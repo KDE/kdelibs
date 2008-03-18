@@ -28,6 +28,16 @@
 #include <QtCore/QVariant>
 
 
+namespace {
+    template<typename T1, typename T2> QList<T2> convertList( const QList<T1>& l ) {
+        QList<T2> il;
+        for( int i = 0; i < l.count(); ++i ) {
+            il.append( static_cast<T2>( l[i] ) );
+        }
+        return il;
+    }
+}
+
 
 class Nepomuk::Variant::Private
 {
@@ -729,37 +739,37 @@ bool Nepomuk::Variant::isResourceList() const
 
 int Nepomuk::Variant::toInt() const
 {
-    return d->value.value<int>();
+    return d->value.toInt();
 }
 
 
 qlonglong Nepomuk::Variant::toInt64() const
 {
-    return d->value.value<qlonglong>();
+    return d->value.toLongLong();
 }
 
 
 uint Nepomuk::Variant::toUnsignedInt() const
 {
-    return d->value.value<uint>();
+    return d->value.toUInt();
 }
 
 
 qulonglong Nepomuk::Variant::toUnsignedInt64() const
 {
-    return d->value.value<qulonglong>();
+    return d->value.toULongLong();
 }
 
 
 bool Nepomuk::Variant::toBool() const
 {
-    return d->value.value<bool>();
+    return d->value.toBool();
 }
 
 
 double Nepomuk::Variant::toDouble() const
 {
-    return d->value.value<double>();
+    return d->value.toDouble();
 }
 
 
@@ -803,25 +813,25 @@ QString Nepomuk::Variant::toString() const
 
 QDate Nepomuk::Variant::toDate() const
 {
-    return d->value.value<QDate>();
+    return d->value.toDate();
 }
 
 
 QTime Nepomuk::Variant::toTime() const
 {
-    return d->value.value<QTime>();
+    return d->value.toTime();
 }
 
 
 QDateTime Nepomuk::Variant::toDateTime() const
 {
-    return d->value.value<QDateTime>();
+    return d->value.toDateTime();
 }
 
 
 QUrl Nepomuk::Variant::toUrl() const
 {
-    return d->value.value<QUrl>();
+    return d->value.toUrl();
 }
 
 
@@ -834,49 +844,101 @@ Nepomuk::Resource Nepomuk::Variant::toResource() const
 
 QList<int> Nepomuk::Variant::toIntList() const
 {
-    if( isInt() ) {
+    if( isUnsignedInt() ||
+        isInt() ||
+        isUnsignedInt64() ||
+        isInt64() ) {
         QList<int> l;
         l.append( toInt() );
         return l;
     }
-    else
+    else if ( isUnsignedIntList() ) {
+        return convertList<uint, int>( d->value.value<QList<uint> >() );
+    }
+    else if ( isUnsignedInt64List() ) {
+        return convertList<qulonglong, int>( d->value.value<QList<qulonglong> >() );
+    }
+    else if ( isInt64List() ) {
+        return convertList<qlonglong, int>( d->value.value<QList<qlonglong> >() );
+    }
+    else {
         return d->value.value<QList<int> >();
+    }
 }
 
 
 QList<qlonglong> Nepomuk::Variant::toInt64List() const
 {
-    if( isInt64() ) {
+    if( isUnsignedInt() ||
+        isInt() ||
+        isUnsignedInt64() ||
+        isInt64() ) {
         QList<qlonglong> l;
         l.append( toInt64() );
         return l;
     }
-    else
+    else if ( isIntList() ) {
+        return convertList<int, qlonglong>( d->value.value<QList<int> >() );
+    }
+    else if ( isUnsignedIntList() ) {
+        return convertList<uint, qlonglong>( d->value.value<QList<uint> >() );
+    }
+    else if ( isUnsignedInt64List() ) {
+        return convertList<qulonglong, qlonglong>( d->value.value<QList<qulonglong> >() );
+    }
+    else {
         return d->value.value<QList<qlonglong> >();
+    }
 }
 
 
 QList<uint> Nepomuk::Variant::toUnsignedIntList() const
 {
-    if( isUnsignedInt() ) {
+    if( isUnsignedInt() ||
+        isInt() ||
+        isUnsignedInt64() ||
+        isInt64() ) {
         QList<uint> l;
         l.append( toUnsignedInt() );
         return l;
     }
-    else
+    else if ( isIntList() ) {
+        return convertList<int, uint>( d->value.value<QList<int> >() );
+    }
+    else if ( isUnsignedInt64List() ) {
+        return convertList<qulonglong, uint>( d->value.value<QList<qulonglong> >() );
+    }
+    else if ( isInt64List() ) {
+        return convertList<qlonglong, uint>( d->value.value<QList<qlonglong> >() );
+    }
+    else {
         return d->value.value<QList<uint> >();
+    }
 }
 
 
 QList<qulonglong> Nepomuk::Variant::toUnsignedInt64List() const
 {
-    if( isUnsignedInt64() ) {
+    if( isUnsignedInt() ||
+        isInt() ||
+        isUnsignedInt64() ||
+        isInt64() ) {
         QList<qulonglong> l;
-        l.append( toUnsignedInt64() );
+        l.append( toUnsignedInt() );
         return l;
     }
-    else
+    else if ( isIntList() ) {
+        return convertList<int, qulonglong>( d->value.value<QList<int> >() );
+    }
+    else if ( isUnsignedIntList() ) {
+        return convertList<uint, qulonglong>( d->value.value<QList<uint> >() );
+    }
+    else if ( isInt64List() ) {
+        return convertList<qlonglong, qulonglong>( d->value.value<QList<qlonglong> >() );
+    }
+    else {
         return d->value.value<QList<qulonglong> >();
+    }
 }
 
 
