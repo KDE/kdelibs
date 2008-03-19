@@ -85,7 +85,9 @@ namespace Nepomuk {
         void setAssignedTags( const QList<Tag>& tags );
 
     private Q_SLOTS:
-        void slotShowTagMenu();
+        void fillTagMenu();
+        void createTag();
+        void updateAssignedTagsFromMenu();
 
     private:
         class Private;

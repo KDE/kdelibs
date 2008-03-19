@@ -57,10 +57,13 @@ public:
         sa->setWidget( label );
         button = new KArrowButton( parent, Qt::DownArrow );
 
+        tagMenu = new QMenu( parent );
+        button->setMenu( tagMenu );
+
         lay->addWidget( sa, 1 );
         lay->addWidget( button );
 
-        connect( button, SIGNAL( pressed() ), parent, SLOT( slotShowTagMenu() ) );
+        connect( tagMenu, SIGNAL( aboutToShow() ), parent, SLOT( fillTagMenu() ) );
     }
 
     QStringList extractTagNames( QList<Tag> tags ) {
@@ -95,6 +98,8 @@ public:
     KTagDisplayWidget* label;
     KArrowButton* button;
     TagWidget* parent;
+    QMenu* tagMenu;
+    QMap<QAction*, Tag> tagFromAction;
 };
 
 
@@ -162,58 +167,58 @@ void Nepomuk::TagWidget::setAssignedTags( const QList<Tag>& tags )
 }
 
 
-void Nepomuk::TagWidget::slotShowTagMenu()
+void Nepomuk::TagWidget::fillTagMenu()
 {
     QList<Tag> allTags = Tag::allTags();
     QList<Tag> assignedTags = d->intersectTags();
 
-    QMenu* popup = new QMenu( i18n( "Tag Resource" ), this );
-    QMap<QAction*, Tag> tagMap;
+    d->tagMenu->clear();
+    d->tagFromAction.clear();
     foreach( Tag tag,  allTags ) {
         if ( tag.label().isEmpty() ) {
             tag.setLabel( tag.genericLabel() );
         }
-        QAction* a = new QAction( tag.label(), popup );
+        QAction* a = d->tagMenu->addAction( tag.label(), this, SLOT( updateAssignedTagsFromMenu() ) );
+        d->tagFromAction.insert( a, tag );
         a->setCheckable( true );
-        popup->addAction( a );
-        tagMap.insert( a,  tag );
         a->setChecked( assignedTags.contains( tag ) );
     }
 
-    QAction* newTagAction = new QAction( i18n( "Create New Tag..." ), popup );
-    popup->addAction( newTagAction );
+    d->tagMenu->addAction( i18n( "Create New Tag..."), this, SLOT(createTag()) );
+}
 
-    if ( QAction* a = popup->exec( mapToGlobal( d->button->geometry().topRight() ) ) ) {
-        if ( a == newTagAction ) {
-            QString s = KInputDialog::getText( i18n("New Tag"), i18n("Please insert the name of the new tag:"), QString(), 0, this );
-            if( !s.isEmpty() ) {
-                // see if the tag exists
-                QList<Tag> l = Tag::allTags();
-                QListIterator<Tag> tagIt( l );
-                while( tagIt.hasNext() ) {
-                    const Nepomuk::Tag& tag = tagIt.next();
-                    if( tag.label() == s ||
-                        tag.identifiers().contains( s ) ) {
-                        KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag Exists") );
-                        return;
-                    }
-                }
 
-                Nepomuk::Tag( s ).setLabel( s );
+void Nepomuk::TagWidget::createTag()
+{
+    QString s = KInputDialog::getText( i18n("New Tag"), i18n("Please insert the name of the new tag:"), QString(), 0, this );
+    if( !s.isEmpty() ) {
+        // see if the tag exists
+        QList<Tag> l = Tag::allTags();
+        QListIterator<Tag> tagIt( l );
+        while( tagIt.hasNext() ) {
+            const Nepomuk::Tag& tag = tagIt.next();
+            if( tag.label() == s ||
+                tag.identifiers().contains( s ) ) {
+                KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag Exists") );
+                return;
             }
         }
-        else {
-            QList<Tag> tags;
-            for ( QMap<QAction*, Tag>::const_iterator it = tagMap.constBegin();
-                  it != tagMap.constEnd(); ++it )
-                if ( it.key()->isChecked() )
-                    tags.append( it.value() );
 
-            setAssignedTags( tags );
-        }
+        Nepomuk::Tag( s ).setLabel( s );
     }
-
-    delete popup;
 }
+
+
+void Nepomuk::TagWidget::updateAssignedTagsFromMenu()
+{
+    QList<Tag> tags;
+    for ( QMap<QAction*, Tag>::const_iterator it = d->tagFromAction.constBegin();
+          it != d->tagFromAction.constEnd(); ++it )
+        if ( it.key()->isChecked() )
+            tags.append( it.value() );
+
+    setAssignedTags( tags );
+}
+
 
 #include "kmetadatatagwidget.moc"
