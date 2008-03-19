@@ -125,12 +125,6 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::updateProperty( const QU
 
 Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeProperty( const QUrl& resource, const QUrl& property )
 {
-    // get all graphs that contain our data
-    QList<Node> graphs = executeQuery( QString("select distinct ?g where { graph ?g { <%1> <%2> ?v . } }")
-                                       .arg( QString::fromAscii( resource.toEncoded() ) )
-                                       .arg( property.toString() ),
-                                       Query::QueryLanguageSparql ).iterateBindings( "g" ).allNodes();
-
     // remove the data
     Soprano::Error::ErrorCode c = removeAllStatements( Statement( resource, property, Node() ) );
     if ( c != Soprano::Error::ErrorNone ) {
@@ -204,6 +198,11 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeGraphIfEmpty( cons
     if ( !executeQuery( QString("ask where { graph <%1> { ?s ?p ?o . } . FILTER(?s != <%1>) .}")
                         .arg( QString::fromAscii( graph.uri().toEncoded() ) ),
                         Query::QueryLanguageSparql ).boolValue() ) {
+
+        // do not do anything stupid if the backend fails to handle graph queries
+        if ( lastError() ) {
+            return Error::convertErrorCode( lastError().code() );
+        }
 
         // remove the graph itself (do not use the direct call which will result in a recursion)
         if ( ( c = parentModel()->removeContext( graph ) ) != Error::ErrorNone ) {
