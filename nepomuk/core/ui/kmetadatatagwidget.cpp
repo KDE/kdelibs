@@ -167,17 +167,28 @@ void Nepomuk::TagWidget::setAssignedTags( const QList<Tag>& tags )
 }
 
 
+static bool tagLabelLessThan( const Nepomuk::Tag& t1, const Nepomuk::Tag& t2 )
+{
+    return t1.label() < t2.label();
+}
+
+
 void Nepomuk::TagWidget::fillTagMenu()
 {
     QList<Tag> allTags = Tag::allTags();
+    // Prepare allTags list
+    foreach( Tag tag, allTags ) {
+        if ( tag.label().isEmpty() ) {
+            tag.setLabel( tag.genericLabel() );
+        }
+    }
+    qSort( allTags.begin(), allTags.end(), tagLabelLessThan );
+
     QList<Tag> assignedTags = d->intersectTags();
 
     d->tagMenu->clear();
     d->tagFromAction.clear();
     foreach( Tag tag,  allTags ) {
-        if ( tag.label().isEmpty() ) {
-            tag.setLabel( tag.genericLabel() );
-        }
         QAction* a = d->tagMenu->addAction( tag.label(), this, SLOT( updateAssignedTagsFromMenu() ) );
         d->tagFromAction.insert( a, tag );
         a->setCheckable( true );
