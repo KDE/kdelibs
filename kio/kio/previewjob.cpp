@@ -103,7 +103,7 @@ public:
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
     // Over that, it's too much
-    long long maximumSize;
+    KIO::filesize_t maximumSize;
     // the size for the icon overlay
     int iconSize;
     // the transparency of the blended mimetype icon
@@ -256,8 +256,7 @@ void PreviewJobPrivate::startPreview()
     }
 
   // Read configuration value for the maximum allowed size
-    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
-    maximumSize = cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
+    maximumSize = PreviewJob::maximumFileSize();
 
     if (bNeedCache)
     {
@@ -573,6 +572,12 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     }
     return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
                           scale, save, enabledPlugins);
+}
+
+KIO::filesize_t PreviewJob::maximumFileSize()
+{
+    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
+    return cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
 }
 
 #include "previewjob.moc"

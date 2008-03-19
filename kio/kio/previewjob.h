@@ -88,6 +88,14 @@ namespace KIO {
          */
         static QStringList supportedMimeTypes();
 
+        /**
+         * Returns the default "maximum file size", in bytes, used by PreviewJob.
+         * This is useful for applications providing a GUI for letting the user change the size.
+         * @since 4.1
+         */
+        static KIO::filesize_t maximumFileSize();
+
+
     Q_SIGNALS:
         /**
          * Emitted when a thumbnail picture for @p item has been successfully
