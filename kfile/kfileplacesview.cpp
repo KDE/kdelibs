@@ -84,7 +84,7 @@ KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
     m_appearingIconSize(0),
     m_appearingOpacity(0.0),
     m_disappearingIconSize(0),
-    m_disappearingOpacity(0),
+    m_disappearingOpacity(0.0),
     m_showHoverIndication(true)
 {
 }
