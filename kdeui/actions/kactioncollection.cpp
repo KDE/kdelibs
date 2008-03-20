@@ -586,7 +586,8 @@ void KActionCollection::connectNotify ( const char * signal )
   if (d->connectHovered && d->connectTriggered)
     return;
 
-  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal) {
+  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal || 
+      QMetaObject::normalizedSignature(SIGNAL(actionHovered(QAction*))) == signal) {
     if (!d->connectHovered) {
       d->connectHovered = true;
       foreach (QAction* action, actions())
