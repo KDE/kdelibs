@@ -635,43 +635,13 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         else
         {
             //fixed
-            QRect vr = viewRect();
-            int pw = vr.width();
-            int ph = vr.height();
-            scaledImageWidth = pw;
-            scaledImageHeight = ph;
-            calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
-            EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
-
-            int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
-            if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
-                cw = qMin(scaledImageWidth, pw - xPosition);
-                cx = vr.x() + xPosition;
-            } else {
-                cw = pw;
-                cx = vr.x();
-                if (scaledImageWidth > 0)
-                    sx = scaledImageWidth - xPosition % scaledImageWidth;
-            }
-
-            int yPosition = bgLayer->backgroundYPosition().minWidth(ph-scaledImageHeight);
-            if (bgr == NO_REPEAT || bgr == REPEAT_X) {
-                ch = qMin(scaledImageHeight, ph - yPosition);
-                cy = vr.y() + yPosition;
-            } else {
-                ch = ph;
-                cy = vr.y();
-                if (scaledImageHeight > 0)
-                    sy = scaledImageHeight - yPosition % scaledImageHeight;
-            }
-
-            QRect fix(cx, cy, cw, ch);
+            QRect fix = getFixedBackgroundImageRect(bgLayer, sx, sy, scaledImageWidth, scaledImageHeight);
             QRect ele(_tx, _ty, w, h);
             QRect b = fix.intersect(ele);
 
             //kDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix;
-            sx+=b.x()-cx;
-            sy+=b.y()-cy;
+            sx+=b.x()-fix.x();
+            sy+=b.y()-fix.y();
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
         }
         // restrict painting to repaint-clip
@@ -696,6 +666,41 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     if (bgLayer->backgroundClip() != BGBORDER)
         p->restore(); // Undo the background clip
 
+}
+
+QRect RenderBox::getFixedBackgroundImageRect( const BackgroundLayer* bgLayer, int& sx, int& sy, int& scaledImageWidth, int& scaledImageHeight )
+{
+    int cx, cy, cw, ch;
+    QRect vr = viewRect();
+    int pw = vr.width();
+    int ph = vr.height();
+    scaledImageWidth = pw;
+    scaledImageHeight = ph;
+    calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
+    EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
+
+    int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+    if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
+        cw = qMin(scaledImageWidth, pw - xPosition);
+        cx = vr.x() + xPosition;
+    } else {
+        cw = pw;
+        cx = vr.x();
+        if (scaledImageWidth > 0)
+            sx = scaledImageWidth - xPosition % scaledImageWidth;
+    }
+
+    int yPosition = bgLayer->backgroundYPosition().minWidth(ph-scaledImageHeight);
+    if (bgr == NO_REPEAT || bgr == REPEAT_X) {
+        ch = qMin(scaledImageHeight, ph - yPosition);
+        cy = vr.y() + yPosition;
+    } else {
+        ch = ph;
+        cy = vr.y();
+        if (scaledImageHeight > 0)
+            sy = scaledImageHeight - yPosition % scaledImageHeight;
+    }
+    return QRect(cx, cy, cw, ch);
 }
 
 void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)

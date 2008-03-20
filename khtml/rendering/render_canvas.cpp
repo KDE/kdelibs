@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
- *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2007-2008 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -296,6 +296,8 @@ void RenderCanvas::updateDocSizeAfterLayerTranslation( RenderObject* o, bool pos
 QRegion RenderCanvas::staticRegion() const
 {
    QRegion ret = QRegion();
+
+   // position:fixed objects
    if (m_positionedObjects) {
        RenderObject* obj;
        QListIterator<RenderObject*> it(*m_positionedObjects);
@@ -304,7 +306,27 @@ QRegion RenderCanvas::staticRegion() const
             if (obj->style()->position() == FIXED && obj->layer())
                 ret += obj->layer()->paintedRegion(layer());
         }
-   }                                                                                                                        
+   }
+
+   // background-attachment:fixed images
+   QSetIterator<RenderObject *> i(m_fixedBackground);
+   while (i.hasNext()) {
+       RenderObject *ro = i.next();
+       if (ro && ro->isBox()) {
+           int d1, d2, d3, d4;
+           const BackgroundLayer* bgLayer = ro->style()->backgroundLayers();
+           while (bgLayer) {
+               CachedImage* bg = bgLayer->backgroundAttachment() ? 0 : bgLayer->backgroundImage();
+               if (bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage()) {
+                   int xpos, ypos;
+                   absolutePosition(xpos,ypos);
+                   ret += static_cast<RenderBox*>(ro)->getFixedBackgroundImageRect(bgLayer, d1, d2, d3, d4)
+                             .intersected(QRect(xpos,ypos,ro->width(),ro->height()));
+               }
+               bgLayer = bgLayer->next();
+           }
+       }
+   }
    return ret;
 }
 
@@ -459,6 +481,22 @@ static QRect enclosingPositionedRect (RenderObject *n)
         rect.setHeight(enclosingParent->effectiveHeight());
     }
     return rect;
+}
+
+void RenderCanvas::addStaticObject( RenderObject*o, bool pos)
+{ 
+    if (!pos && o && o->isBox()) 
+        m_fixedBackground.insert(o);
+    if (view())
+        view()->addStaticObject(pos);
+}
+
+void RenderCanvas::removeStaticObject( RenderObject*o, bool pos)
+{
+    if (!pos && o && o->isBox())
+        m_fixedBackground.remove(o); 
+    if (view())
+        view()->removeStaticObject(pos);
 }
 
 QRect RenderCanvas::selectionRect() const

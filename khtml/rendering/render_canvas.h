@@ -130,6 +130,9 @@ public:
     
     void setNeedsWidgetMasks( bool b=true);
     bool needsWidgetMasks() const { return m_needsWidgetMasks; }
+    
+    void addStaticObject( RenderObject*o, bool positioned=false );
+    void removeStaticObject( RenderObject*o, bool positioned=false );
 
     void updateDocSizeAfterLayerTranslation( RenderObject* o, bool posXOffset, bool posYOffset );
 protected:
@@ -182,6 +185,7 @@ protected:
 
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
     QList<RenderObject*> m_dirtyChildren;
+    QSet<RenderObject*>m_fixedBackground;
 };
 
 inline RenderCanvas* RenderObject::canvas() const
