@@ -736,13 +736,13 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // blocks that have overflowed content.
         // Check for an overhanging float first.
         // FIXME: This needs to look at the last flow, not the last child.
-        if (lastChild() && lastChild()->hasOverhangingFloats() && !lastChild()->style()->hidesOverflow()) {
+        if (lastChild() && lastChild()->hasOverhangingFloats() && !lastChild()->hasOverflowClip()) {
             KHTMLAssert(lastChild()->isRenderBlock());
             m_height = lastChild()->yPos() + static_cast<RenderBlock*>(lastChild())->floatBottom();
             m_height += borderBottom() + paddingBottom();
         }
 
-        if (m_overflowHeight > m_height && !style()->hidesOverflow())
+        if (m_overflowHeight > m_height && !hasOverflowClip())
             m_height = m_overflowHeight + borderBottom() + paddingBottom();
     }
 
@@ -780,7 +780,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     // Update our scrollbars if we're overflow:auto/scroll now that we know if
     // we overflow or not.
-    if (style()->hidesOverflow() && m_layer)
+    if (hasOverflowClip() && m_layer)
         m_layer->checkScrollbarsAfterLayout();
 
     setNeedsLayout(false);
@@ -1640,7 +1640,7 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
     // 2. paint contents
     int scrolledX = _tx;
     int scrolledY = _ty;
-    if (style()->hidesOverflow() && m_layer)
+    if (hasOverflowClip() && m_layer)
         m_layer->subtractScrollOffset(scrolledX, scrolledY);
 
     if (childrenInline())
@@ -1927,7 +1927,7 @@ void RenderBlock::positionNewFloats()
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 
-        if ( m_layer && style()->hidesOverflow()) {
+        if ( m_layer && hasOverflowClip()) {
             if (o->xPos()+o->width() > m_overflowWidth)
                 m_overflowWidth = o->xPos()+o->width();
             else
@@ -2097,7 +2097,7 @@ int RenderBlock::floatBottom() const
 int RenderBlock::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int bottom = RenderFlow::lowestPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
     if (includeSelf && m_overflowHeight > bottom)
         bottom = m_overflowHeight;
@@ -2144,7 +2144,7 @@ int RenderBlock::lowestAbsolutePosition() const
 int RenderBlock::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int right = RenderFlow::rightmostPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return right;
     if (includeSelf && m_overflowWidth > right)
         right = m_overflowWidth;
@@ -2190,7 +2190,7 @@ int RenderBlock::rightmostAbsolutePosition() const
 int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int left = RenderFlow::leftmostPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return left;
 
     if (includeSelf && m_overflowLeft < left)
@@ -2235,7 +2235,7 @@ int RenderBlock::leftmostAbsolutePosition() const
 int RenderBlock::highestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int top = RenderFlow::highestPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return top;
 
     if (includeSelf && m_overflowTop < top)
@@ -2551,7 +2551,7 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
     if (hitTestAction != HitTestSelfOnly && m_floatingObjects && !inScrollbar) {
         int stx = _tx + xPos();
         int sty = _ty + yPos();
-        if (style()->hidesOverflow() && m_layer)
+        if (hasOverflowClip() && m_layer)
             m_layer->subtractScrollOffset(stx, sty);
         FloatingObject* o;
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
@@ -3135,7 +3135,7 @@ InlineFlowBox* RenderBlock::getFirstLineBox()
 
 bool RenderBlock::inRootBlockContext() const
 {
-    if (isTableCell() || isFloatingOrPositioned() || style()->hidesOverflow())
+    if (isTableCell() || isFloatingOrPositioned() || hasOverflowClip())
         return false;
 
     if (isRoot() || isCanvas())

@@ -178,7 +178,8 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_isRoot( false ),
       m_afterPageBreak( false ),
       m_needsPageClear( false ),
-      m_containsPageBreak( false )
+      m_containsPageBreak( false ),
+      m_hasOverflowClip(false)
 {
   assert( node );
   if (node->getDocument()->documentElement() == node) setIsRoot(true);
@@ -508,12 +509,12 @@ int RenderObject::clientHeight() const
 // scrollWidth/scrollHeight is the size including the overflow area
 short RenderObject::scrollWidth() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollWidth() : overflowWidth() - overflowLeft();
+    return (hasOverflowClip() && layer()) ? layer()->scrollWidth() : overflowWidth() - overflowLeft();
 }
 
 int RenderObject::scrollHeight() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight() - overflowTop();
+    return (hasOverflowClip() && layer()) ? layer()->scrollHeight() : overflowHeight() - overflowTop();
 }
 
 bool RenderObject::hasStaticX() const
@@ -1302,6 +1303,7 @@ void RenderObject::setStyle(RenderStyle *style)
         m_positioned = false;
         m_relPositioned = false;
         m_paintBackground = false;
+        m_hasOverflowClip = false;
     }
 
     // only honour z-index for non-static objects
@@ -1486,9 +1488,9 @@ QRect RenderObject::viewRect() const
 bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f) const
 {
     RenderObject* p = parent();
-    if(p) {
-        parent()->absolutePosition(xPos, yPos, f);
-        if ( p->style()->hidesOverflow() && p->layer() )
+    if (p) {
+        p->absolutePosition(xPos, yPos, f);
+        if ( p->hasOverflowClip() )
             p->layer()->subtractScrollOffset( xPos, yPos );
         return true;
     }
@@ -1782,7 +1784,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         isTableRow() || isTableSection() || inside || mouseInside() ))) {
         if ( hitTestAction == HitTestChildrenOnly )
             inside = false;
-        if ( style()->hidesOverflow() && layer() )
+        if ( hasOverflowClip() && layer() )
             layer()->subtractScrollOffset(tx, ty);
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, HitTestAll))

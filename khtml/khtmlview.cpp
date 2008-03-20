@@ -813,16 +813,20 @@ void KHTMLView::layout()
         } else {
             ref = root;
         }
-
         if (ref) {
-            if( ref->style()->overflowX() == OHIDDEN )
+            if( ref->style()->overflowX() == OHIDDEN ) {
                 if (d->hmode == Auto) QScrollView::setHScrollBarMode(AlwaysOff);
-            else
+            } else if (ref->style()->overflowX() == OSCROLL ) {
+                if (d->hmode == Auto) QScrollView::setHScrollBarMode(AlwaysOn);
+            } else {
                 if (QScrollView::hScrollBarMode() == AlwaysOff) QScrollView::setHScrollBarMode(d->hmode);
-            if ( ref->style()->overflowY() == OHIDDEN )
+            } if ( ref->style()->overflowY() == OHIDDEN ) {
                 if (d->vmode == Auto) QScrollView::setVScrollBarMode(AlwaysOff);
-            else
+            } else if (ref->style()->overflowY() == OSCROLL ) {
+                if (d->vmode == Auto) QScrollView::setVScrollBarMode(AlwaysOn);
+            } else {
                 if (QScrollView::vScrollBarMode() == AlwaysOff) QScrollView::setVScrollBarMode(d->vmode);
+            }
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;

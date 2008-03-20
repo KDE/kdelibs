@@ -314,7 +314,7 @@ int
 RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int bottom = RenderBox::lowestPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
 
     // FIXME: Come up with a way to use the layer tree to avoid visiting all the kids.
@@ -339,7 +339,7 @@ RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int right = RenderBox::rightmostPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return right;
 
     // FIXME: Come up with a way to use the layer tree to avoid visiting all the kids.
@@ -364,7 +364,7 @@ int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf
 int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int left = RenderBox::leftmostPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return left;
 
     // FIXME: Come up with a way to use the layer tree to avoid visiting all the kids.
@@ -389,7 +389,7 @@ int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf)
 int RenderFlow::highestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
     int top = RenderBox::highestPosition(includeOverflowInterior, includeSelf);
-    if (!includeOverflowInterior && style()->hidesOverflow())
+    if (!includeOverflowInterior && hasOverflowClip())
         return top;
 
     // FIXME: Come up with a way to use the layer tree to avoid visiting all the kids.

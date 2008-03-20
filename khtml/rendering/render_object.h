@@ -173,11 +173,11 @@ public:
 	{ return QRect(0,0,0,0); }
     virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
     bool hasClip() const { return isPositioned() &&  style()->hasClip(); }
-    bool hasOverflowClip() const { return style()->hidesOverflow(); }
+    bool hasOverflowClip() const { return m_hasOverflowClip; }
 
     bool scrollsOverflow() const { return scrollsOverflowX() || scrollsOverflowY(); }
-    bool scrollsOverflowX() const { return (style()->overflowX() == OSCROLL || style()->overflowX() == OAUTO); }
-    bool scrollsOverflowY() const { return (style()->overflowY() == OSCROLL || style()->overflowY() == OAUTO); }
+    bool scrollsOverflowX() const { return  hasOverflowClip() && (style()->overflowX() == OSCROLL || style()->overflowX() == OAUTO); }
+    bool scrollsOverflowY() const { return  hasOverflowClip() && (style()->overflowY() == OSCROLL || style()->overflowY() == OAUTO); }
 
     virtual int getBaselineOfFirstLineBox() { return -1; } // Tables and blocks implement this.
     virtual InlineFlowBox* getFirstLineBox() { return 0; } // Tables and blocks implement this.
@@ -353,6 +353,7 @@ public:
     void setShouldPaintBackgroundOrBorder(bool b=true) { m_paintBackground = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
+    void setHasOverflowClip(bool b = true) { m_hasOverflowClip = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
     void scheduleRelayout(RenderObject *clippedObj = 0);
@@ -834,8 +835,10 @@ private:
 
     bool m_needsPageClear            : 1;
     bool m_containsPageBreak         : 1;
+    
+    bool m_hasOverflowClip           : 1;
 
-    // ### we have 16 + 24 bits. Cut 8 and save 32
+    // ### we have 16 + 25 bits.
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);
