@@ -60,6 +60,8 @@ public:
     void addDisappearingItem(const QModelIndex &index);
     void setDisappearingItemProgress(qreal value);
 
+    void setShowHoverIndication(bool show);
+
 private:
     KFilePlacesView *m_view;
     int m_iconSize;
@@ -71,10 +73,19 @@ private:
     QList<QPersistentModelIndex> m_disappearingItems;
     int m_disappearingIconSize;
     qreal m_disappearingOpacity;
+
+    bool m_showHoverIndication;
 };
 
 KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
-    QStyledItemDelegate(parent), m_view(parent), m_iconSize(48)
+    QStyledItemDelegate(parent),
+    m_view(parent),
+    m_iconSize(48),
+    m_appearingIconSize(0),
+    m_appearingOpacity(0.0),
+    m_disappearingIconSize(0),
+    m_disappearingOpacity(0),
+    m_showHoverIndication(true)
 {
 }
 
@@ -109,6 +120,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     QStyleOptionViewItemV4 opt = option;
     opt.decorationSize = QSize(m_iconSize, m_iconSize);
+    if (!m_showHoverIndication) {
+        opt.state &= ~QStyle::State_MouseOver;
+    }
     QStyledItemDelegate::paint(painter, opt, index);
 
     painter->restore();
@@ -172,6 +186,11 @@ void KFilePlacesViewDelegate::setDisappearingItemProgress(qreal value)
         m_disappearingIconSize = m_iconSize;
         m_disappearingOpacity = (value-0.25)*4/3;
     }
+}
+
+void KFilePlacesViewDelegate::setShowHoverIndication(bool show)
+{
+    m_showHoverIndication = show;
 }
 
 class KFilePlacesView::Private
@@ -478,6 +497,10 @@ void KFilePlacesView::dragEnterEvent(QDragEnterEvent *event)
 {
     QListView::dragEnterEvent(event);
     d->dragging = true;
+
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+    delegate->setShowHoverIndication(false);
+
     d->dropRect = QRect();
 }
 
@@ -485,6 +508,10 @@ void KFilePlacesView::dragLeaveEvent(QDragLeaveEvent *event)
 {
     QListView::dragLeaveEvent(event);
     d->dragging = false;
+
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+    delegate->setShowHoverIndication(true);
+
     setDirtyRegion(d->dropRect);
 }
 
@@ -532,6 +559,9 @@ void KFilePlacesView::dropEvent(QDropEvent *event)
 
     QListView::dropEvent(event);
     d->dragging = false;
+
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+    delegate->setShowHoverIndication(true);
 }
 
 void KFilePlacesView::paintEvent(QPaintEvent* event)
@@ -542,14 +572,15 @@ void KFilePlacesView::paintEvent(QPaintEvent* event)
         QPainter painter(viewport());
 
         const QModelIndex index = indexAt(d->dropRect.topLeft());
-        const int itemHeight = visualRect(index).height();
+        const QRect itemRect = visualRect(index);
         const bool drawInsertIndicator = !d->dropOnPlace ||
-                                         d->dropRect.height() <= d->insertIndicatorHeight(itemHeight);
-        QBrush blendedBrush = viewOptions().palette.brush(QPalette::Normal, QPalette::Highlight);
-        QColor color = blendedBrush.color();
+                                         d->dropRect.height() <= d->insertIndicatorHeight(itemRect.height());
 
         if (drawInsertIndicator) {
             // draw indicator for inserting items
+            QBrush blendedBrush = viewOptions().palette.brush(QPalette::Normal, QPalette::Highlight);
+            QColor color = blendedBrush.color();
+
             const int y = (d->dropRect.top() + d->dropRect.bottom()) / 2;
             const int thickness = d->dropRect.height() / 2;
             Q_ASSERT(thickness >= 1);
@@ -564,9 +595,11 @@ void KFilePlacesView::paintEvent(QPaintEvent* event)
             }
         } else {
             // draw indicator for copying/moving/linking to items
-            color.setAlpha(64);
-            blendedBrush.setColor(color);
-            painter.fillRect(d->dropRect, blendedBrush);
+            QStyleOptionViewItemV4 opt;
+            opt.initFrom(this);
+            opt.rect = itemRect;
+            opt.state = QStyle::State_Enabled | QStyle::State_MouseOver;
+            style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, &painter, this);
         }
     }
 }
