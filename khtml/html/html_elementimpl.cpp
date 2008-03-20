@@ -259,6 +259,10 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::BLUR_EVENT,
             getDocument()->createHTMLEventListener(attr->value().string(), "onblur", this));
         break;
+    case ATTR_ONSCROLL:
+        setHTMLEventListener(EventImpl::SCROLL_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(), "onscroll", this));
+        break;
 // other misc attributes
     default:
 #ifdef UNSUPPORTED_ATTR
