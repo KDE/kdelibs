@@ -431,7 +431,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     QLinkedList<KUrlNavigatorButton*>::const_iterator it = m_navButtons.begin();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
     while (it != itEnd) {
-        (*it)->close();
+        (*it)->hide();
         (*it)->deleteLater();
         ++it;
     }
@@ -657,7 +657,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
     // delete buttons which are not used anymore
     QLinkedList<KUrlNavigatorButton*>::iterator itBegin = it;
     while (it != itEnd) {
-        (*it)->close();
+        (*it)->hide();
         (*it)->deleteLater();
         ++it;
     }
@@ -756,7 +756,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
 void KUrlNavigator::Private::deleteButtons()
 {
     foreach (KUrlNavigatorButton* button, m_navButtons) {
-        button->close();
+        button->hide();
         button->deleteLater();
     }
     m_navButtons.clear();
