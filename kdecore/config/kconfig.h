@@ -38,6 +38,38 @@ class KComponentData;
 class KEntryMap;
 class KConfigPrivate;
 
+/**
+ * \brief The central class of the KDE configuration data system.
+ *
+ * Quickstart:
+ * 
+ * Get the default application config object via KGlobal::config() 
+ * (which returns a shared config file) or
+ * by simply creating an instance of KConfig without parameters:
+ * \code
+ * KConfig config;
+ * \endcode
+ *
+ * Load a specific configuration file:
+ * \code
+ * KConfig config( "/etc/kderc" );
+ * \endcode
+ *
+ * Load the configuration of a specific component (taking into account
+ * possible custom dirs in KStandardDirs):
+ * \code
+ * KConfig config( componentData(), "pluginrc" );
+ * \endcode
+ *
+ * In general it is recommended to use KSharedConfig instead of
+ * creating multiple instances of KConfig to avoid the overhead of
+ * separate objects or concerns about syncronizing writes to disk
+ * even if the configuration object is updated from multiple code paths.
+ * KSharedConfig provides a set of open methods as counterparts for the
+ * KConfig constructors.
+ *
+ * \sa KSharedConfig, KConfigGroup, <a href="http://techbase.kde.org/index.php?title=Development/Tutorials/KConfig">the techbase HOWTO on KConfig</a>.
+ */
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
 public:
