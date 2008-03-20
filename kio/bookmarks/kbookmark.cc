@@ -3,6 +3,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
    Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2008 Norbert Frese <nf2 scheinwelt at>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,6 +32,69 @@
 
 #include <qdatetime.h>
 #include <qmimedata.h>
+
+#define METADATA_KDE_OWNER "http://www.kde.org"
+#define METADATA_FREEDESKTOP_OWNER "http://freedesktop.org"
+
+////// utility functions
+
+static QDomNode cd(QDomNode node, const QString &name, bool create)
+{
+    QDomNode subnode = node.namedItem(name);
+    if (create && subnode.isNull())
+    {
+        subnode = node.ownerDocument().createElement(name);
+        node.appendChild(subnode);
+    }
+    return subnode;
+}
+
+static QDomNode cd_or_create(QDomNode node, const QString &name)
+{
+    return cd(node, name, true);
+}
+
+static QDomText get_or_create_text(QDomNode node)
+{
+    QDomNode subnode = node.firstChild();
+    if (subnode.isNull())
+    {
+        subnode = node.ownerDocument().createTextNode("");
+        node.appendChild(subnode);
+    }
+    return subnode.toText();
+}
+
+static QDomNode findMetadata(const QString & forOwner, QDomNode& parent, bool create)
+{
+    bool forOwnerIsKDE = forOwner == METADATA_KDE_OWNER;
+  
+    QDomElement metadataElement;
+    for ( QDomNode _node = parent.firstChild(); !_node.isNull(); _node = _node.nextSibling() ) {
+        QDomElement elem = _node.toElement();
+        if ( !elem.isNull() && elem.tagName() == "metadata" ) {
+            const QString owner = elem.attribute( "owner" );
+            if ( owner == forOwner )
+                return elem;
+            if ( owner.isEmpty() && forOwnerIsKDE )
+                metadataElement = elem;
+        }
+    }
+    if ( create && metadataElement.isNull() ) {
+        metadataElement = parent.ownerDocument().createElement( "metadata" );
+        parent.appendChild(metadataElement);
+        metadataElement.setAttribute( "owner", forOwner );
+    }
+    if (!metadataElement.isNull() && forOwnerIsKDE)
+    {
+        // i'm not sure if this is good, we shouln't take over foreign metatdata
+        metadataElement.setAttribute( "owner", METADATA_KDE_OWNER );
+        return metadataElement;
+    }    
+    return QDomNode();
+}
+
+//////
 
 KBookmarkGroup::KBookmarkGroup()
  : KBookmark( QDomElement() )
@@ -155,13 +219,15 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
     QDomElement elem = doc.createElement( "bookmark" );    
     elem.setAttribute( "href", url.url() ); // gives us utf8
 
-    elem.setAttribute( "icon", icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
-
     QDomElement textElem = doc.createElement( "title" );
     elem.appendChild( textElem );
     textElem.appendChild( doc.createTextNode( text ) );
 
-    return addBookmark( KBookmark( elem ) );
+    KBookmark newBookmark =  addBookmark( KBookmark( elem ) );
+
+    // as icons are moved to metadata, we have to use the KBookmark API for this   
+    newBookmark.setIcon(icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
+    return newBookmark;
 }
 
 void KBookmarkGroup::deleteBookmark( const KBookmark &bk )
@@ -284,7 +350,16 @@ void KBookmark::setUrl(const KUrl &url)
 
 QString KBookmark::icon() const
 {
-    QString icon = element.attribute("icon");
+    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, false);
+    QDomElement iconElement = cd(metaDataNode, "bookmark:icon", false).toElement();
+    
+    QString icon = iconElement.attribute("name");
+    
+    // migration code
+    if (icon.isEmpty())
+      icon = element.attribute("icon");
+    // end migration code
+    
     if (icon == "bookmark_folder") {
         return "folder-bookmarks";
     }
@@ -297,8 +372,16 @@ QString KBookmark::icon() const
         else {
             if (isSeparator()) {
                 icon = "edit-clear"; // whatever
-            }
-            else {
+            } else {
+                // get icon from mimeType
+                QString _mimeType = mimeType();
+                if (!_mimeType.isEmpty()) {
+                    KMimeType::Ptr mime = KMimeType::mimeType (_mimeType);
+                    if (mime) {
+                        return mime->iconName();
+                    }
+                }
+                // get icon from URL
                 icon = KMimeType::iconNameForUrl(url());
             }
         }
@@ -308,7 +391,27 @@ QString KBookmark::icon() const
 
 void KBookmark::setIcon(const QString &icon)
 {
-    element.setAttribute("icon", icon);
+    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, true);
+    QDomElement iconElement = cd_or_create(metaDataNode, "bookmark:icon").toElement();
+    iconElement.setAttribute ( "name", icon );
+    
+    // migration code
+    if(!element.attribute("icon").isEmpty())
+        element.removeAttribute("icon");
+}
+
+QString KBookmark::mimeType() const
+{
+    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, false);
+    QDomElement mimeTypeElement = cd(metaDataNode, "mime:mime-type", false).toElement();
+    return mimeTypeElement.attribute("type");
+}
+
+void KBookmark::setMimeType(const QString &mimeType)
+{
+    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, true);
+    QDomElement iconElement = cd_or_create(metaDataNode, "mime:mime-type").toElement();
+    iconElement.setAttribute ( "type", mimeType );
 }
 
 bool KBookmark::showInToolbar() const
@@ -403,51 +506,6 @@ QString KBookmark::commonParent(const QString &first, const QString &second)
     return A.left(lastCommonSlash);
 }
 
-static QDomNode cd_or_create(QDomNode node, const QString &name)
-{
-    QDomNode subnode = node.namedItem(name);
-    if (subnode.isNull())
-    {
-        subnode = node.ownerDocument().createElement(name);
-        node.appendChild(subnode);
-    }
-    return subnode;
-}
-
-static QDomText get_or_create_text(QDomNode node)
-{
-    QDomNode subnode = node.firstChild();
-    if (subnode.isNull())
-    {
-        subnode = node.ownerDocument().createTextNode("");
-        node.appendChild(subnode);
-    }
-    return subnode.toText();
-}
-
-// Look for a metadata with owner="http://www.kde.org" or without any owner (for compatibility)
-static QDomNode findOrCreateMetadata( QDomNode& parent )
-{
-    static const char kdeOwner[] = "http://www.kde.org";
-    QDomElement metadataElement;
-    for ( QDomNode _node = parent.firstChild(); !_node.isNull(); _node = _node.nextSibling() ) {
-        QDomElement elem = _node.toElement();
-        if ( !elem.isNull() && elem.tagName() == "metadata" ) {
-            const QString owner = elem.attribute( "owner" );
-            if ( owner == kdeOwner )
-                return elem;
-            if ( owner.isEmpty() )
-                metadataElement = elem;
-        }
-    }
-    if ( metadataElement.isNull() ) {
-        metadataElement = parent.ownerDocument().createElement( "metadata" );
-        parent.appendChild(metadataElement);
-    }
-    metadataElement.setAttribute( "owner", kdeOwner );
-    return metadataElement;
-}
-
 void KBookmark::updateAccessMetadata()
 {
     kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyUrl();
@@ -491,15 +549,18 @@ QString KBookmark::nextAddress( const QString & address )
         QString::number(positionInParent(address)+1);
 }
 
+QDomNode KBookmark::metaData(const QString &owner, bool create) const
+{
+    QDomNode infoNode = cd( internalElement(), "info", create);
+    if (infoNode.isNull()) return QDomNode();
+    return findMetadata(owner, infoNode , create);  
+}
+
 QString KBookmark::metaDataItem( const QString &key ) const
 {
-    QDomNode infoNode = cd_or_create( internalElement(), "info" );
-    infoNode = findOrCreateMetadata( infoNode );
-    for ( QDomNode n = infoNode.firstChild(); !n.isNull(); n = n.nextSibling() ) {
-        if ( !n.isElement() ) {
-            continue;
-        }
-        const QDomElement e = n.toElement();
+    QDomNode metaDataNode = metaData(METADATA_KDE_OWNER, false);
+    for ( QDomElement e = metaDataNode.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) 
+    {
         if ( e.tagName() == key ) {
             return e.text();
         }
@@ -509,10 +570,8 @@ QString KBookmark::metaDataItem( const QString &key ) const
 
 void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode )
 {
-    QDomNode infoNode = cd_or_create( internalElement(), "info" );
-    infoNode = findOrCreateMetadata( infoNode );
-
-    QDomNode item = cd_or_create( infoNode, key );
+    QDomNode metaDataNode = metaData(METADATA_KDE_OWNER, true);
+    QDomNode item = cd_or_create( metaDataNode, key );
     QDomText text = get_or_create_text( item );
     if ( mode == DontOverwriteMetaData && !text.data().isEmpty() ) {
         return;

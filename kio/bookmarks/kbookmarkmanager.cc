@@ -3,6 +3,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
    Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2008 Norbert Frese <nf2 scheinwelt at>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,6 +32,7 @@
 #include <kmessagebox.h>
 #include <qprocess.h>
 #include <klocale.h>
+#include <kdirwatch.h>
 #include <QtGui/QApplication>
 #include <kconfiggroup.h>
 #include <qfile.h>
@@ -39,6 +41,7 @@
 #include <QtCore/QTextStream>
 #include "kbookmarkmanageradaptor_p.h"
 
+#define BOOKMARK_CHANGE_NOTIFY_INTERFACE "org.kde.KIO.KBookmarkManager"
 
 class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
@@ -111,9 +114,15 @@ public:
       : m_doc("xbel")
       , m_dbusObjectName(dbusObjectName)
       , m_docIsLoaded(bDocIsloaded)
+      , m_typeExternal(false)
+      , m_kDirWatch(0)
 
     {}
 
+    ~Private() {
+        delete m_kDirWatch;
+    }    
+    
     mutable QDomDocument m_doc;
     mutable QDomDocument m_toolbarDoc;
     QString m_bookmarksFile;
@@ -123,22 +132,46 @@ public:
 
     bool m_browserEditor;
     QString m_editorCaption;
+    
+    bool m_typeExternal;
+    KDirWatch * m_kDirWatch;  // for external bookmark files
 
 };
 
 // ################
 // KBookmarkManager
-KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName )
+
+static KBookmarkManager* lookupExisting(const QString& bookmarksFile)
 {
     for ( KBookmarkManagerList::ConstIterator bmit = s_pSelf->constBegin(), bmend = s_pSelf->constEnd();
-          bmit != bmend; ++bmit )
+          bmit != bmend; ++bmit ) {
         if ( (*bmit)->path() == bookmarksFile )
             return *bmit;
+    }
+    return 0; 
+}
 
-    KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, dbusObjectName );
+
+KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName )
+{
+    KBookmarkManager* mgr = lookupExisting(bookmarksFile);
+    if (mgr) return mgr;
+    
+    mgr = new KBookmarkManager( bookmarksFile, dbusObjectName );
     s_pSelf->append( mgr );
     return mgr;
 }
+
+KBookmarkManager* KBookmarkManager::managerForExternalFile( const QString& bookmarksFile )
+{
+    KBookmarkManager* mgr = lookupExisting(bookmarksFile);
+    if (mgr) return mgr;
+    
+    mgr = new KBookmarkManager( bookmarksFile );
+    s_pSelf->append( mgr );
+    return mgr;
+}
+
 
 // principally used for filtered toolbars
 KBookmarkManager* KBookmarkManager::createTempManager()
@@ -150,7 +183,18 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
-KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName )
+static QDomElement createXbelTopLevelElement(QDomDocument & doc)
+{
+    QDomElement topLevel = doc.createElement("xbel");
+    topLevel.setAttribute("xmlns:mime", "http://www.freedesktop.org/standards/shared-mime-info");
+    topLevel.setAttribute("xmlns:bookmark", "http://www.freedesktop.org/standards/desktop-bookmarks");
+    topLevel.setAttribute("xmlns:kdepriv", "http://www.kde.org/kdepriv");
+    doc.appendChild( topLevel );
+    doc.insertBefore( doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
+    return topLevel;
+}
+
+KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName)
  : d(new Private(false, dbusObjectName))
 {
     if(dbusObjectName.isNull()) // get dbusObjectName from file
@@ -166,13 +210,43 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
 
     if ( !QFile::exists(d->m_bookmarksFile) )
     {
-        QDomElement topLevel = d->m_doc.createElement("xbel");
+        QDomElement topLevel = createXbelTopLevelElement(d->m_doc);
         topLevel.setAttribute("dbusName", dbusObjectName);
-        d->m_doc.appendChild( topLevel );
-        d->m_doc.insertBefore( d->m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
         d->m_docIsLoaded = true;
     }
 }
+
+KBookmarkManager::KBookmarkManager(const QString & bookmarksFile)
+    : d(new Private(false))
+{
+    // use KDirWatch to monitor this bookmarks file
+    d->m_typeExternal = true;
+    d->m_update = true;
+
+    Q_ASSERT( !bookmarksFile.isEmpty() );
+    d->m_bookmarksFile = bookmarksFile;
+
+    if ( !QFile::exists(d->m_bookmarksFile) )
+    {
+        createXbelTopLevelElement(d->m_doc);
+    }
+    else
+    {
+        parse();
+    }
+    d->m_docIsLoaded = true;
+
+    // start KDirWatch
+    d->m_kDirWatch = new KDirWatch;
+    d->m_kDirWatch->addFile(d->m_bookmarksFile);
+    QObject::connect( d->m_kDirWatch, SIGNAL(dirty(const QString&)),
+            this, SLOT(slotFileChanged(const QString&)));
+    QObject::connect( d->m_kDirWatch, SIGNAL(created(const QString&)),
+            this, SLOT(slotFileChanged(const QString&)));
+    QObject::connect( d->m_kDirWatch, SIGNAL(deleted(const QString&)),
+            this, SLOT(slotFileChanged(const QString&)));
+    kDebug(7043) << "starting KDirWatch for " << d->m_bookmarksFile;
+}  
 
 KBookmarkManager::KBookmarkManager( )
     : d(new Private(true))
@@ -180,9 +254,7 @@ KBookmarkManager::KBookmarkManager( )
     init( "/KBookmarkManager/generated" );
     d->m_update = false; // TODO - make it read/write
 
-    QDomElement topLevel = d->m_doc.createElement("xbel");
-    d->m_doc.appendChild( topLevel );
-    d->m_doc.insertBefore( d->m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
+    createXbelTopLevelElement(d->m_doc);
 }
 
 void KBookmarkManager::init( const QString& dbusPath )
@@ -194,10 +266,23 @@ void KBookmarkManager::init( const QString& dbusPath )
         new KBookmarkManagerAdaptor(this);
         QDBusConnection::sessionBus().registerObject( dbusPath, this );
 
-        QDBusConnection::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+        QDBusConnection::sessionBus().connect(QString(), dbusPath, BOOKMARK_CHANGE_NOTIFY_INTERFACE,
                                     "bookmarksChanged", this, SLOT(notifyChanged(QString,QDBusMessage)));
-        QDBusConnection::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+        QDBusConnection::sessionBus().connect(QString(), dbusPath, BOOKMARK_CHANGE_NOTIFY_INTERFACE,
                                     "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
+    }
+}
+
+void KBookmarkManager::slotFileChanged(const QString& path)
+{
+    if (path == d->m_bookmarksFile)
+    {
+        kDebug(7043) << "file changed (KDirWatch) " << path ;
+        // Reparse
+        parse();
+        // Tell our GUI
+        // (emit where group is "" to directly mark the root menu as dirty)
+        emit changed( "", QString() );      
     }
 }
 
@@ -315,7 +400,9 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
         stream << internalDocument().toString();
         stream.flush();
         if ( file.finalize() )
+        {
             return true;
+        }
     }
 
     static int hadSaveError = false;

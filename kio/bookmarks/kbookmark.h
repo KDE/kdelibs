@@ -148,11 +148,13 @@ public:
      * @param url the new bookmark URL
      */
     void setUrl(const KUrl &url);
+    
     /**
      * @return the pixmap file for this bookmark
      * (i.e. the name of the icon)
      */
     QString icon() const;
+    
     /**
      * Set the icon name of the bookmark
      *
@@ -160,7 +162,20 @@ public:
      */
     void setIcon(const QString &icon);
 
-
+    /**
+     * @return Mime-Type of this item
+     * @since 4.1
+     */
+    QString mimeType() const;
+    
+    /**
+     * Set the Mime-Type of this item
+     * 
+     * @param Mime-Type
+     * @since 4.1
+     */
+    void setMimeType(const QString &mimeType);
+    
     /**
      * @return if the bookmark should be shown in the toolbar
      * (used by the filtered toolbar)
@@ -244,10 +259,16 @@ public:
      * @return the common parent of both addresses which
      * has the greatest depth
      */
-     static QString commonParent( const QString &A, const QString &B );
+    static QString commonParent( const QString &A, const QString &B );
 
     /**
-     * Get the value of a specific metadata item.
+     * @return the metadata container node for a certain matadata owner
+     * @since 4.1
+     */
+    QDomNode metaData(const QString &owner, bool create) const;     
+     
+    /**
+     * Get the value of a specific metadata item (owner = "http://www.kde.org").
      * @param key Name of the metadata item
      * @return Value of the metadata item. QString() is returned in case
      * the specified key does not exist.
@@ -256,7 +277,7 @@ public:
 
     /**
      * Change the value of a specific metadata item, or create the given item
-     * if it doesn't exist already.
+     * if it doesn't exist already (owner = "http://www.kde.org").     
      * @param key Name of the metadata item to change
      * @param value Value to use for the specified metadata item
      * @param mode Whether to overwrite the item's value if it exists already or not.

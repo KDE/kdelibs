@@ -85,6 +85,16 @@ private:
      */
     KBookmarkManager( const QString & bookmarksFile, const QString& dbusObjectName );
 
+    /**
+     * Creates a bookmark manager for an external file
+     * (Using KDirWatch for change monitoring)
+     * @since 4.1
+     */
+    KBookmarkManager( const QString & bookmarksFile );
+    
+    /**
+     * Creates a temp bookmark manager
+     */
     KBookmarkManager();
 
 public:
@@ -213,6 +223,15 @@ public:
      */
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                              const QString& dbusObjectName );
+
+    /**
+     * Returns a KBookmarkManager, which will use KDirWatch for change detection
+     * This is important when sharing bookmarks with other Desktops.
+     * @param bookmarksFile full path to the bookmarks file
+     * @since 4.1
+     */
+    static KBookmarkManager* managerForExternalFile( const QString& bookmarksFile);
+    
     /**
      * only used for KBookmarkBar
      */
@@ -281,6 +300,9 @@ Q_SIGNALS:
      */
     void configChanged();
 
+private Q_SLOTS:    
+    void slotFileChanged(const QString& path); // external bookmarks
+    
 private:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
@@ -295,7 +317,7 @@ private:
     */
     static KBookmarkManager* managerForFile( const QString&, int);
     void init( const QString& dbusPath );
-
+    
     class Private;
     Private * const d;
 
