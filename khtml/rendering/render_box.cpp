@@ -534,10 +534,19 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     if (!bgLayer->next() && isRoot())
     {
         KHTMLView* v = canvas()->view();
-        if (!v || !v->m_kwp->isRedirected()) {
-            if (bgColor.alpha() == 0)
-                bgColor = p->background().color();
-            bgColor.setAlpha(255);
+        if (bgColor.alpha() != 255) {
+            if (v && v->m_kwp->isRedirected()) {
+                RenderStyle* ws = v->m_kwp->renderWidget()->style();
+                // only set static background on transparent subframes if the underlying RenderWidget background
+                // has something to show through.
+                if (!ws || !ws->backgroundColor().isValid() || !ws->backgroundColor().alpha() == 255
+                        || ws->hasBackgroundImage())
+                    v->setHasStaticBackground();
+            } else {
+                if (bgColor.alpha() == 0)
+                    bgColor = p->background().color();
+                bgColor.setAlpha(255);
+            }
         }
     }
 

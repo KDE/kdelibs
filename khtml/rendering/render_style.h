@@ -1032,6 +1032,7 @@ public:
             return background->m_background.hasImage();
     }
     bool hasFixedBackgroundImage() const { return background->m_background.hasFixedImage(); }
+    bool hasBackgroundImage()  const { return background->m_background.hasImage(); }
 
     bool visuallyOrdered() const { return inherited_flags.f._visuallyOrdered; }
     void setVisuallyOrdered(bool b) {  inherited_flags.f._visuallyOrdered = b; }
