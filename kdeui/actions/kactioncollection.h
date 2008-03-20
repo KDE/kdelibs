@@ -255,8 +255,14 @@ Q_SIGNALS:
 
   /**
    * Indicates that \a action was highlighted (hovered over).
+   * @deprecated Replaced by actionHovered(QAction* action);
    */
-  void actionHighlighted(QAction* action);
+  QT_MOC_COMPAT void actionHighlighted(QAction* action);
+  
+  /**
+   * Indicates that \a action was hovered.
+   */
+  void actionHovered(QAction* action);
 
   /**
    * Indicates that \a action was triggered
@@ -268,7 +274,16 @@ protected Q_SLOTS:
   virtual void connectNotify ( const char * signal );
 
   virtual void slotActionTriggered();
-  virtual void slotActionHighlighted();
+  
+  /**
+   * @internal
+   * @deprecated Replaced by slotActionHovered();
+   */
+  QT_MOC_COMPAT virtual void slotActionHighlighted();
+
+private Q_SLOTS:
+  void slotActionHovered();
+  
 
 public:
   /**

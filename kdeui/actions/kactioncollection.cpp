@@ -56,7 +56,7 @@ public:
 
     configIsGlobal = false;
 
-    connectHighlighted = connectTriggered = false;
+    connectHovered = connectTriggered = false;
 
     configGroup = "Shortcuts";
   }
@@ -79,7 +79,7 @@ public:
   bool configIsGlobal : 1;
 
   bool connectTriggered : 1;
-  bool connectHighlighted : 1;
+  bool connectHovered : 1;
 
   KActionCollection *q;
 
@@ -244,8 +244,8 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
 
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
 
-    if (d->connectHighlighted)
-        connect(action, SIGNAL(hovered()), SLOT(slotActionHighlighted()));
+    if (d->connectHovered)
+        connect(action, SIGNAL(hovered()), SLOT(slotActionHovered()));
 
     if (d->connectTriggered)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
@@ -555,9 +555,16 @@ void KActionCollection::slotActionTriggered( )
 
 void KActionCollection::slotActionHighlighted( )
 {
+	slotActionHovered();
+}
+
+void KActionCollection::slotActionHovered( )
+{
   QAction* action = qobject_cast<QAction*>(sender());
-  if (action)
+  if (action) {
     emit actionHighlighted(action);
+    emit actionHovered(action);
+  }
 }
 
 void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
@@ -576,14 +583,14 @@ void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
 
 void KActionCollection::connectNotify ( const char * signal )
 {
-  if (d->connectHighlighted && d->connectTriggered)
+  if (d->connectHovered && d->connectTriggered)
     return;
 
   if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal) {
-    if (!d->connectHighlighted) {
-      d->connectHighlighted = true;
+    if (!d->connectHovered) {
+      d->connectHovered = true;
       foreach (QAction* action, actions())
-        connect(action, SIGNAL(hovered()), SLOT(slotActionHighlighted()));
+        connect(action, SIGNAL(hovered()), SLOT(slotActionHovered()));
     }
 
   } else if (QMetaObject::normalizedSignature(SIGNAL(actionTriggered(QAction*))) == signal) {
