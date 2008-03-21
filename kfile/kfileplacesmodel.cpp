@@ -330,7 +330,13 @@ void KFilePlacesModel::Private::_k_reloadBookmarks()
             q->endRemoveRows();
 
         } else if ((*it_i)->id()==(*it_c)->id()) {
+            bool shouldEmit = !((*it_i)->bookmark()==(*it_c)->bookmark());
             (*it_i)->setBookmark((*it_c)->bookmark());
+            if (shouldEmit) {
+                int row = items.indexOf(*it_i);
+                QModelIndex idx = q->index(row, 0);
+                emit q->dataChanged(idx, idx);
+            }
             ++it_i;
             ++it_c;
         } else if ((*it_i)->id()!=(*it_c)->id()) {

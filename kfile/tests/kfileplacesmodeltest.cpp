@@ -151,37 +151,37 @@ void KFilePlacesModelTest::testInitialList()
 void KFilePlacesModelTest::testReparse()
 {
     QList<QString> urls;
-    
+
     // add item
-    
+
     m_places->addPlace("foo", KUrl("/foo"),
                                     QString(), QString());
-    
+
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/floppy0" << "/foreign" << "/media/XO-Y4" << "/foo";
 
     CHECK_PLACES_URLS(urls);
 
     // reparse the bookmark file
-    
+
     const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
-    
+
     bookmarkManager->notifyCompleteChange(QString());
-    
+
     // check if they are the same
-    
+
     CHECK_PLACES_URLS(urls);
-    
+
     // try to remove item
-    
+
     m_places->removePlace(m_places->index(7, 0));
-    
+
     urls.clear();
 
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/floppy0" << "/foreign" << "/media/XO-Y4";
-    
+
     CHECK_PLACES_URLS(urls);
 }
 
@@ -497,6 +497,22 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     args = spy_changed.takeFirst();
     QCOMPARE(args.at(0).value<QModelIndex>(), m_places->index(3, 0));
     QCOMPARE(args.at(1).value<QModelIndex>(), m_places->index(3, 0));
+
+    foo = m_places->bookmarkForIndex(m_places->index(3, 0));
+    foo.setFullText("Bar");
+    bookmarkManager->notifyCompleteChange(QString());
+
+    urls.clear();
+    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
+         << "trash:/" << "/media/floppy0" << "/foreign" << "/media/XO-Y4";
+    CHECK_PLACES_URLS(urls);
+    QCOMPARE(spy_inserted.count(), 0);
+    QCOMPARE(spy_removed.count(), 0);
+    QCOMPARE(spy_changed.count(), 8);
+    args = spy_changed[3];
+    QCOMPARE(args.at(0).value<QModelIndex>(), m_places->index(3, 0));
+    QCOMPARE(args.at(1).value<QModelIndex>(), m_places->index(3, 0));
+    spy_changed.clear();
 
     m_places->removePlace(m_places->index(3, 0));
 
