@@ -101,7 +101,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
-    QList<KSslError> nonIgnorableErrors(const QList<KSslError> &e) const
+    QList<KSslError> nonIgnorableErrors(const QList<KSslError> &/*e*/) const
     {
         QList<KSslError> ret;
         //TODO :)
@@ -240,7 +240,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 }
 
 
-bool TCPSlaveBase::connectToHost(const QString &protocol,
+bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
                                  const QString &host,
                                  quint16 port)
 {
