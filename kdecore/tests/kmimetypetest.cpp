@@ -72,8 +72,19 @@ void KMimeTypeTest::initTestCase()
 
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
-        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
+        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     }
+}
+
+void KMimeTypeTest::cleanupTestCase()
+{
+    // If I want the konqueror unit tests to work, then I better not have a non-working part
+    // as the preferred part for text/plain...
+    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
+    QFile::remove(fakePart);
+    const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
+    QFile::remove(fakePlugin);
+    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
 }
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
