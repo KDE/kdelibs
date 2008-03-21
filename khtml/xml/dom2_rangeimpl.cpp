@@ -881,6 +881,8 @@ DOMString RangeImpl::toString( int &exceptioncode )
     }
 
     while(n) {
+        if(n == m_endContainer && m_endOffset == 0)
+            break;
         if(n->nodeType() == DOM::Node::TEXT_NODE ||
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
 
