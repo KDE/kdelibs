@@ -21,6 +21,7 @@
 #include "kmetadatatagwidget.h"
 #include "kautoscrollarea.h"
 #include "ktagdisplaywidget.h"
+#include "nepomukmassupdatejob.h"
 
 #include "../tools.h"
 #include "../generated/tag.h"
@@ -159,11 +160,19 @@ void Nepomuk::TagWidget::setTaggedResources( const QList<Resource>& resources )
 void Nepomuk::TagWidget::setAssignedTags( const QList<Tag>& tags )
 {
     if ( !d->res.isEmpty() ) {
-        for ( QList<Resource>::iterator it = d->res.begin(); it != d->res.end(); ++it ) {
-            (*it).setTags( tags );
-        }
         d->label->setTags( d->extractTagNames( tags ) );
+        Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::tagResources( d->res, tags );
+        connect( job, SIGNAL( result( KJob* ) ),
+                 this, SLOT( slotTagUpdateDone() ) );
+        setEnabled( false ); // no updates during execution
+        job->start();
     }
+}
+
+
+void Nepomuk::TagWidget::slotTagUpdateDone()
+{
+    setEnabled( true );
 }
 
 

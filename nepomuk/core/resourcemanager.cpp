@@ -21,15 +21,13 @@
 #include "resourcemanager.h"
 #include "resourcedata.h"
 #include "tools.h"
-
+#include "nepomukmainmodel.h"
 #include "resource.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
 #include <krandom.h>
 
-#include <Soprano/Client/DBusClient>
-#include <Soprano/Client/DBusModel>
 #include <Soprano/Node>
 #include <Soprano/Statement>
 #include <Soprano/Vocabulary/RDF>
@@ -44,15 +42,13 @@ class Nepomuk::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
-        : client( "org.kde.NepomukServer" ),
-          mainModel( 0 ),
+        : mainModel( 0 ),
           overrideModel( 0 ),
           dummyModel( 0 ),
           m_parent(manager) {
     }
 
-    Soprano::Client::DBusClient client;
-    Soprano::Model* mainModel;
+    Nepomuk::MainModel* mainModel;
     Soprano::Model* overrideModel;
 
     Soprano::Util::DummyModel* dummyModel;
@@ -97,13 +93,15 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 
 int Nepomuk::ResourceManager::init()
 {
-    return ( initialized() ? 0 : -1 );
+    delete d->mainModel;
+    d->mainModel = new MainModel( this );
+    return d->mainModel->isValid() ? 0 : -1;
 }
 
 
 bool Nepomuk::ResourceManager::initialized() const
 {
-    return d->client.isValid();
+    return d->mainModel && d->mainModel->isValid();
 }
 
 
@@ -227,13 +225,7 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 
     // make sure we are initialized
     if ( !initialized() ) {
-        delete d->mainModel;
-        d->mainModel = 0;
         init();
-    }
-
-    if ( !d->mainModel ) {
-        d->mainModel = d->client.createModel( "main" );
     }
 
     if ( !d->mainModel ) {

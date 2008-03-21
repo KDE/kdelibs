@@ -88,6 +88,7 @@ namespace Nepomuk {
         void fillTagMenu();
         void createTag();
         void updateAssignedTagsFromMenu();
+        void slotTagUpdateDone();
 
     private:
         class Private;

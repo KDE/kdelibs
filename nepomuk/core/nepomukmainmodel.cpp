@@ -1,0 +1,230 @@
+/*
+ * This file is part of the Nepomuk KDE project.
+ * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#include "nepomukmainmodel.h"
+
+#include <Soprano/Node>
+#include <Soprano/Statement>
+#include <Soprano/StatementIterator>
+#include <Soprano/NodeIterator>
+#include <Soprano/QueryResultIterator>
+#include <Soprano/Client/DBusModel>
+#include <Soprano/Client/DBusClient>
+#include <Soprano/Client/LocalSocketClient>
+#include <Soprano/Query/QueryLanguage>
+
+#include <kglobal.h>
+#include <kstandarddirs.h>
+#include <kdebug.h>
+
+
+using namespace Soprano;
+
+namespace {
+class GlobalModelContainer
+{
+public:
+    GlobalModelContainer()
+        : dbusClient( "org.kde.NepomukServer" ),
+          dbusModel( 0 ),
+          localSocketModel( 0 ),
+          m_initialized( false ) {
+    }
+
+    Soprano::Client::DBusClient dbusClient;
+    Soprano::Client::LocalSocketClient localSocketClient;
+    Soprano::Client::DBusModel* dbusModel;
+    Soprano::Model* localSocketModel;
+
+    void init() {
+        if ( !dbusModel ) {
+            dbusModel = dbusClient.createModel( "main" );
+        }
+
+        if ( !localSocketModel ) {
+            if ( !localSocketClient.isConnected() ) {
+                if ( localSocketClient.connect( KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" ) ) ) {
+                    localSocketModel = localSocketClient.createModel( "main" );
+                }
+                else {
+                    kDebug() << "Failed to connect to Nepomuk server via local socket.";
+                }
+            }
+        }
+
+        m_initialized = true;
+    }
+
+    Soprano::Model* model() {
+        if ( !m_initialized ) {
+            init();
+        }
+
+        // we always prefer the faster local socket client
+        if ( localSocketModel ) {
+            return localSocketModel;
+        }
+        else {
+            return dbusModel;
+        }
+    }
+
+private:
+    bool m_initialized;
+};
+}
+
+Q_GLOBAL_STATIC( GlobalModelContainer, modelContainer )
+
+
+class Nepomuk::MainModel::Private
+{
+public:
+    Private( MainModel* p )
+        : q(p) {
+    }
+
+private:
+    MainModel* q;
+};
+
+
+Nepomuk::MainModel::MainModel( QObject* parent )
+    : Soprano::Model(),
+      d( new Private(this) )
+{
+    setParent( parent );
+
+    modelContainer()->init();
+
+    // we have to use the dbus model for signals in any case
+    connect( modelContainer()->dbusModel, SIGNAL( statementsAdded() ),
+             this, SIGNAL( statementsAdded() ) );
+    connect( modelContainer()->dbusModel, SIGNAL( statementsRemoved() ),
+             this, SIGNAL( statementsRemoved() ) );
+    connect( modelContainer()->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
+             this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
+    connect( modelContainer()->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
+             this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
+}
+
+
+Nepomuk::MainModel::~MainModel()
+{
+    delete d;
+}
+
+
+bool Nepomuk::MainModel::isValid() const
+{
+    return modelContainer()->dbusClient.isValid() || modelContainer()->localSocketClient.isConnected();
+}
+
+
+Soprano::StatementIterator Nepomuk::MainModel::listStatements( const Statement& partial ) const
+{
+    Soprano::StatementIterator it = modelContainer()->model()->listStatements( partial );
+    setError( modelContainer()->model()->lastError() );
+    return it;
+}
+
+
+Soprano::NodeIterator Nepomuk::MainModel::listContexts() const
+{
+    Soprano::NodeIterator it = modelContainer()->model()->listContexts();
+    setError( modelContainer()->model()->lastError() );
+    return it;
+}
+
+
+Soprano::QueryResultIterator Nepomuk::MainModel::executeQuery( const QString& query,
+                                                               Soprano::Query::QueryLanguage language,
+                                                               const QString& userQueryLanguage ) const
+{
+    Soprano::QueryResultIterator it = modelContainer()->model()->executeQuery( query, language, userQueryLanguage );
+    setError( modelContainer()->model()->lastError() );
+    return it;
+}
+
+
+bool Nepomuk::MainModel::containsStatement( const Statement& statement ) const
+{
+    bool b = modelContainer()->model()->containsStatement( statement );
+    setError( modelContainer()->model()->lastError() );
+    return b;
+}
+
+
+bool Nepomuk::MainModel::containsAnyStatement( const Statement &statement ) const
+{
+    bool b = modelContainer()->model()->containsAnyStatement( statement );
+    setError( modelContainer()->model()->lastError() );
+    return b;
+}
+
+
+bool Nepomuk::MainModel::isEmpty() const
+{
+    bool b = modelContainer()->model()->isEmpty();
+    setError( modelContainer()->model()->lastError() );
+    return b;
+}
+
+
+int Nepomuk::MainModel::statementCount() const
+{
+    int c = modelContainer()->model()->statementCount();
+    setError( modelContainer()->model()->lastError() );
+    return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::addStatement( const Statement& statement )
+{
+    Soprano::Error::ErrorCode c = modelContainer()->model()->addStatement( statement );
+    setError( modelContainer()->model()->lastError() );
+    return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::removeStatement( const Statement& statement )
+{
+    Soprano::Error::ErrorCode c = modelContainer()->model()->removeStatement( statement );
+    setError( modelContainer()->model()->lastError() );
+    return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::removeAllStatements( const Statement& statement )
+{
+    Soprano::Error::ErrorCode c = modelContainer()->model()->removeAllStatements( statement );
+    setError( modelContainer()->model()->lastError() );
+    return c;
+}
+
+
+Soprano::Node Nepomuk::MainModel::createBlankNode()
+{
+    Soprano::Node n = modelContainer()->model()->createBlankNode();
+    setError( modelContainer()->model()->lastError() );
+    return n;
+}
+
+#include "nepomukmainmodel.moc"

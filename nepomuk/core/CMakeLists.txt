@@ -17,6 +17,7 @@ set(nepomuk_LIB_SRCS
   variant.cpp
   resourcedata.cpp
   resourcemanager.cpp
+  nepomukmainmodel.cpp
   resourcefiltermodel.cpp
   tools.cpp
   ui/kratingwidget.cpp
@@ -27,6 +28,7 @@ set(nepomuk_LIB_SRCS
   ui/kautoscrollarea.cpp
   ui/ktagdisplaywidget.cpp
   ui/kratingpainter.cpp
+  ui/nepomukmassupdatejob.cpp
   generated/resource.cpp
   generated/tag.cpp
   ontology/entity.cpp
