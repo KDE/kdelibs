@@ -1630,8 +1630,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
 
         // delete the entry for deletedUrl - should not be needed, it's in
         // items cached now
-        int count = itemsInUse.remove( deletedUrlStr );
-        Q_ASSERT( count == 0 );
+        Q_ASSERT( itemsInUse.remove( deletedUrlStr ) == 0 );
     }
 
     // remove the children from the cache
