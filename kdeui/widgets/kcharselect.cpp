@@ -300,9 +300,6 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->fontSizeSpinBox->setSingleStep(1);
     d->fontSizeSpinBox->setToolTip(i18n("Set font size"));
 
-    if (((FontCombo & controls) || (FontSize & controls)) && (BlockCombos & controls)) {
-        comboLayout->addSpacing(20);
-    }
     connect(d->fontCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(_k_fontSelected()));
     connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
 
