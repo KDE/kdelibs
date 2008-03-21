@@ -24,6 +24,7 @@
 #include "khtml_settings.h"
 
 #include "css/cssstyleselector.h"
+#include "css/css_mediaquery.h"
 #include "html/html_imageimpl.h"
 #include "rendering/render_style.h"
 #include "rendering/break_lines.h"
@@ -93,6 +94,7 @@ KHTMLGlobal::~KHTMLGlobal()
         khtml::CSSStyleSelector::clear();
         khtml::RenderStyle::cleanup();
         khtml::PaintBuffer::cleanup();
+        khtml::MediaQueryEvaluator::cleanup();
         khtml::Cache::clear();
         khtml::cleanup_thaibreaks();
         khtml::ArenaFinish();

@@ -60,31 +60,37 @@
      KHTML_RULE_SYM = 276,
      KHTML_DECLS_SYM = 277,
      KHTML_VALUE_SYM = 278,
-     IMPORTANT_SYM = 279,
-     QEMS = 280,
-     EMS = 281,
-     EXS = 282,
-     PXS = 283,
-     CMS = 284,
-     MMS = 285,
-     INS = 286,
-     PTS = 287,
-     PCS = 288,
-     DEGS = 289,
-     RADS = 290,
-     GRADS = 291,
-     MSECS = 292,
-     SECS = 293,
-     HERZ = 294,
-     KHERZ = 295,
-     DIMEN = 296,
-     PERCENTAGE = 297,
-     FLOAT = 298,
-     INTEGER = 299,
-     URI = 300,
-     FUNCTION = 301,
-     NOTFUNCTION = 302,
-     UNICODERANGE = 303
+     KHTML_MEDIAQUERY_SYM = 279,
+     IMPORTANT_SYM = 280,
+     MEDIA_ONLY = 281,
+     MEDIA_NOT = 282,
+     MEDIA_AND = 283,
+     QEMS = 284,
+     EMS = 285,
+     EXS = 286,
+     PXS = 287,
+     CMS = 288,
+     MMS = 289,
+     INS = 290,
+     PTS = 291,
+     PCS = 292,
+     DEGS = 293,
+     RADS = 294,
+     GRADS = 295,
+     MSECS = 296,
+     SECS = 297,
+     HERZ = 298,
+     KHERZ = 299,
+     DPI = 300,
+     DPCM = 301,
+     DIMEN = 302,
+     PERCENTAGE = 303,
+     FLOAT = 304,
+     INTEGER = 305,
+     URI = 306,
+     FUNCTION = 307,
+     NOTFUNCTION = 308,
+     UNICODERANGE = 309
    };
 #endif
 /* Tokens.  */
@@ -109,31 +115,37 @@
 #define KHTML_RULE_SYM 276
 #define KHTML_DECLS_SYM 277
 #define KHTML_VALUE_SYM 278
-#define IMPORTANT_SYM 279
-#define QEMS 280
-#define EMS 281
-#define EXS 282
-#define PXS 283
-#define CMS 284
-#define MMS 285
-#define INS 286
-#define PTS 287
-#define PCS 288
-#define DEGS 289
-#define RADS 290
-#define GRADS 291
-#define MSECS 292
-#define SECS 293
-#define HERZ 294
-#define KHERZ 295
-#define DIMEN 296
-#define PERCENTAGE 297
-#define FLOAT 298
-#define INTEGER 299
-#define URI 300
-#define FUNCTION 301
-#define NOTFUNCTION 302
-#define UNICODERANGE 303
+#define KHTML_MEDIAQUERY_SYM 279
+#define IMPORTANT_SYM 280
+#define MEDIA_ONLY 281
+#define MEDIA_NOT 282
+#define MEDIA_AND 283
+#define QEMS 284
+#define EMS 285
+#define EXS 286
+#define PXS 287
+#define CMS 288
+#define MMS 289
+#define INS 290
+#define PTS 291
+#define PCS 292
+#define DEGS 293
+#define RADS 294
+#define GRADS 295
+#define MSECS 296
+#define SECS 297
+#define HERZ 298
+#define KHERZ 299
+#define DPI 300
+#define DPCM 301
+#define DIMEN 302
+#define PERCENTAGE 303
+#define FLOAT 304
+#define INTEGER 305
+#define URI 306
+#define FUNCTION 307
+#define NOTFUNCTION 308
+#define UNICODERANGE 309
 
 
 
@@ -161,6 +173,11 @@ typedef union YYSTYPE
     char tok;
     Value value;
     ValueList *valueList;
+
+    khtml::MediaQuery* mediaQuery;
+    khtml::MediaQueryExp* mediaQueryExp;
+    QList<khtml::MediaQueryExp*>* mediaQueryExpList;
+    khtml::MediaQuery::Restrictor mediaQueryRestrictor;
 }
 /* Line 1489 of yacc.c.  */
 

@@ -230,7 +230,8 @@ CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, MediaListImpl *mediaL
 {
     m_type = CSSRule::MEDIA_RULE;
     m_lstMedia = mediaList;
-    m_lstMedia->ref();
+    if (m_lstMedia)
+        m_lstMedia->ref();
     m_lstCSSRules = ruleList;
     m_lstCSSRules->ref();
 }
@@ -279,6 +280,28 @@ unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
     return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
 }
 
+DOM::DOMString CSSMediaRuleImpl::cssText() const
+{
+    DOMString result("@media ");
+    if (m_lstMedia) {
+        result += m_lstMedia->mediaText();
+        result += " ";
+    }
+    result += "{ \n";
+
+    if (m_lstCSSRules) {
+        unsigned len = m_lstCSSRules->length();
+        for (unsigned i = 0; i < len; i++) {
+            result += "  ";
+            result += m_lstCSSRules->item(i)->cssText();
+            result += "\n";
+        }
+    }
+
+    result += "}";
+    return result;
+}
+
 // ---------------------------------------------------------------------------
 
 CSSPageRuleImpl::CSSPageRuleImpl(StyleBaseImpl *parent)
@@ -322,6 +345,17 @@ CSSStyleRuleImpl::~CSSStyleRuleImpl()
     }
     qDeleteAll(*m_selector);
     delete m_selector;
+}
+
+DOMString CSSStyleRuleImpl::cssText() const
+{
+    DOMString result(selectorText());
+
+    result += " { ";
+    result += m_style->cssText();
+    result += "}";
+
+    return result;
 }
 
 DOM::DOMString CSSStyleRuleImpl::selectorText() const

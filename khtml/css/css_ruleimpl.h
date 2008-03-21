@@ -55,7 +55,7 @@ public:
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;
 
-    DOM::DOMString cssText() const;
+    virtual DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
     virtual void init() {}
 
@@ -169,6 +169,7 @@ public:
     void deleteRule ( unsigned long index ) { m_lstCSSRules->deleteRule( index ); }
 
     virtual bool isMediaRule() const { return true; }
+    virtual DOM::DOMString cssText() const;
 
     /* Not part of the DOM */
     unsigned long append( CSSRuleImpl *rule );
@@ -207,6 +208,7 @@ public:
     CSSStyleDeclarationImpl *style() const { return m_style; }
 
     virtual bool isStyleRule() const { return true; }
+    virtual DOM::DOMString cssText() const;
 
     DOM::DOMString selectorText() const;
     void setSelectorText(DOM::DOMString str);

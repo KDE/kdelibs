@@ -31,6 +31,7 @@
 namespace khtml {
     class CachedCSSStyleSheet;
     class DocLoader;
+    class MediaQuery;
 }
 
 namespace DOM {
@@ -148,38 +149,33 @@ public:
 class MediaListImpl : public StyleBaseImpl
 {
 public:
-    MediaListImpl()
-	: StyleBaseImpl( 0 ) {}
-    MediaListImpl( CSSStyleSheetImpl *parentSheet )
-        : StyleBaseImpl(parentSheet) {}
+    MediaListImpl(bool fallbackToDescription = false)
+	: StyleBaseImpl( 0 ), m_fallback(fallbackToDescription) {}
+    MediaListImpl( CSSStyleSheetImpl *parentSheet, bool fallbackToDescription = false)
+        : StyleBaseImpl(parentSheet), m_fallback(fallbackToDescription) {}
     MediaListImpl( CSSStyleSheetImpl *parentSheet,
-                   const DOM::DOMString &media );
-    MediaListImpl( CSSRuleImpl *parentRule, const DOM::DOMString &media );
+                   const DOM::DOMString &media, bool fallbackToDescription = false);
+    MediaListImpl( CSSRuleImpl *parentRule, const DOM::DOMString &media, bool fallbackToDescription = false);
+    ~MediaListImpl();
 
     virtual bool isMediaList() const { return true; }
 
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;
-    unsigned long length() const { return m_lstMedia.count(); }
-    DOM::DOMString item ( unsigned long index ) const { return m_lstMedia[index]; }
-    void deleteMedium ( const DOM::DOMString &oldMedium );
-    void appendMedium ( const DOM::DOMString &newMedium ) { m_lstMedia.append(newMedium); }
+    unsigned long length() const { return  m_queries.size(); }
+    DOM::DOMString item ( unsigned long index ) const;
+    void deleteMedium ( const DOM::DOMString &oldMedium, int& ec);
+    void appendMedium ( const DOM::DOMString &newMedium, int& ec);
 
     DOM::DOMString mediaText() const;
-    void setMediaText(const DOM::DOMString &value);
+    void setMediaText(const DOM::DOMString &value, int& ec);
 
-    /**
-     * Check if the list contains either the requested medium, or the
-     * catch-all "all" media type. Returns true when found, false otherwise.
-     * Since not specifying media types should be treated as "all" according
-     * to DOM specs, an empty list always returns true.
-     *
-     * _NOT_ part of the DOM!
-     */
-    bool contains( const DOM::DOMString &medium ) const;
+    void appendMediaQuery(khtml::MediaQuery* mediaQuery);
+    const QList<khtml::MediaQuery*>* mediaQueries() const { return &m_queries; }
 
 protected:
-    QList<DOM::DOMString> m_lstMedia;
+    QList<khtml::MediaQuery*> m_queries;
+    bool m_fallback; // true if failed media query parsing should fallback to media description parsing
 };
 
 

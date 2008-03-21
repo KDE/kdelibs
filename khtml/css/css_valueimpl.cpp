@@ -978,6 +978,24 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, int
     return floatValue(type)*factor;
 }
 
+int CSSPrimitiveValueImpl::getDPIResolution() const
+{
+    unsigned short type = primitiveType();
+    double factor = 1.;
+    switch(type)
+    {
+    case CSSPrimitiveValue::CSS_DPI:
+        break;
+    case CSSPrimitiveValue::CSS_DPCM:
+        factor = 2.54;
+        break;
+    default:
+        return -1;
+    }
+
+    return (int)(0.01+floatValue(type)*factor);
+}
+
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, double floatValue, int &exceptioncode )
 {
     exceptioncode = 0;

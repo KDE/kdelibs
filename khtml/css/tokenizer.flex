@@ -1,6 +1,8 @@
 %option case-insensitive
 %option noyywrap
 %option 8bit
+%option stack
+%s mediaquery
 
 h               [0-9a-fA-F]
 nonascii        [\200-\377]
@@ -35,6 +37,9 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 "^="                    {yyTok = BEGINSWITH; return yyTok;}
 "$="                    {yyTok = ENDSWITH; return yyTok;}
 "*="                    {yyTok = CONTAINS; return yyTok;}
+<mediaquery>"not"       {yyTok = MEDIA_NOT; return yyTok;}
+<mediaquery>"only"      {yyTok = MEDIA_ONLY; return yyTok;}
+<mediaquery>"and"       {yyTok = MEDIA_AND; return yyTok;}
 
 {string}                {yyTok = STRING; return yyTok;}
 
@@ -44,15 +49,16 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 
 "#"{name}               {yyTok = HASH; return yyTok;}
 
-"@import"               {yyTok = IMPORT_SYM; return yyTok;}
+"@import"               {BEGIN(mediaquery); yyTok = IMPORT_SYM; return yyTok;}
 "@page"                 {yyTok = PAGE_SYM; return yyTok;}
-"@media"                {yyTok = MEDIA_SYM; return yyTok;}
+"@media"                {BEGIN(mediaquery); yyTok = MEDIA_SYM; return yyTok;}
 "@font-face"            {yyTok = FONT_FACE_SYM; return yyTok;}
 "@charset"              {yyTok = CHARSET_SYM; return yyTok;}
 "@namespace"		{yyTok = NAMESPACE_SYM; return yyTok; }
 "@-khtml-rule"    {yyTok = KHTML_RULE_SYM; return yyTok; }
 "@-khtml-decls"   {yyTok = KHTML_DECLS_SYM; return yyTok; }
 "@-khtml-value"   {yyTok = KHTML_VALUE_SYM; return yyTok; }
+"@-khtml-mediaquery"   {BEGIN(mediaquery); yyTok = KHTML_MEDIAQUERY_SYM; return yyTok; }
 
 "!"{w}"important"         {yyTok = IMPORTANT_SYM; return yyTok;}
 
@@ -71,6 +77,8 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 {num}ms                 {yyTok = MSECS; return yyTok;}
 {num}s                  {yyTok = SECS; return yyTok;}
 {num}Hz                 {yyTok = HERZ; return yyTok;}
+<mediaquery>{num}dpi    {yyTok = DPI; return yyTok;}
+<mediaquery>{num}dpcm   {yyTok = DPCM; return yyTok;}
 {num}kHz                {yyTok = KHERZ; return yyTok;}
 {num}{ident}            {yyTok = DIMEN; return yyTok;}
 {num}%                  {yyTok = PERCENTAGE; return yyTok;}
@@ -86,6 +94,8 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 U\+{range}              {yyTok = UNICODERANGE; return yyTok;}
 U\+{h}{1,6}-{h}{1,6}    {yyTok = UNICODERANGE; return yyTok;}
 
+<mediaquery>"{"         |
+<mediaquery>";"         {BEGIN(INITIAL); yyTok = *yytext; return yyTok; }
 .                       {yyTok = *yytext; return yyTok;}
 
 %%

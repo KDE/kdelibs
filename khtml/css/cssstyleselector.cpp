@@ -4,8 +4,8 @@
  * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright 2003-2004 Apple Computer, Inc.
  * Copyright 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
- * Copyright 2004 Germain Garand (germain@ebooksfrance.org)
- *           (C) 2005, 2006 Apple Computer, Inc.
+ * Copyright 2004-2008 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2005, 2006, 2008 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -43,6 +43,7 @@ using namespace DOM;
 
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
+#include "css/css_mediaquery.h"
 
 #include "misc/khtmllayout.h"
 #include "khtml_settings.h"
@@ -219,7 +220,6 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     init(view ? view->part()->settings() : 0, doc);
 
     strictParsing = _strictParsing;
-    m_medium = view ? view->mediaType() : QString("all");
 
     selectors = 0;
     selectorCache = 0;
@@ -231,12 +231,21 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     if(logicalDpiY) // this may be null, not everyone uses khtmlview (Niko)
         computeFontSizes(logicalDpiY, view ? view->part()->fontScaleFactor() : 100);
 
+    // build a limited default style suitable to evaluation of media queries
+    // containing relative constraints, like "screen and (max-width: 10em)"
+    setupDefaultRootStyle(doc);
+
+    if (view) 
+        m_medium = new MediaQueryEvaluator(view->mediaType(), view->part(), m_rootDefaultStyle);
+    else
+        m_medium = new MediaQueryEvaluator("all", 0, m_rootDefaultStyle);
+
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl(doc);
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, m_medium );
+        userStyle->append( userSheet, m_medium, this );
     }
 
     // add stylesheets from document
@@ -248,11 +257,11 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
             if ( static_cast<CSSStyleSheetImpl*>(sh)->implicit() ) {
                 if (!implicitStyle)
                     implicitStyle = new CSSStyleSelectorList();
-                implicitStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
+                implicitStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium, this );
             } else if ( sh->isCSSStyleSheet() && !sh->disabled()) {
                 if (!authorStyle)
                     authorStyle = new CSSStyleSelectorList();
-                authorStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
+                authorStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium, this );
             }
         }
     }
@@ -284,14 +293,20 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     init(0L, 0L);
 
     KHTMLView *view = sheet->doc()->view();
-    m_medium = view ? view->mediaType() : "screen";
+
+    setupDefaultRootStyle(sheet->doc());
+
+    if (view)
+        m_medium = new MediaQueryEvaluator(view->mediaType(), view->part(), m_rootDefaultStyle);
+    else
+        m_medium = new MediaQueryEvaluator("screen", 0, m_rootDefaultStyle);
 
     if (sheet->implicit()) {
         implicitStyle = new CSSStyleSelectorList();
-        implicitStyle->append( sheet, m_medium );
+        implicitStyle->append( sheet, m_medium, this );
     } else {
         authorStyle = new CSSStyleSelectorList();
-        authorStyle->append( sheet, m_medium );
+        authorStyle->append( sheet, m_medium, this );
     }
 }
 
@@ -310,6 +325,8 @@ void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
     defaultPrintStyle = s_defaultPrintStyle;
     defaultQuirksStyle = s_defaultQuirksStyle;
     defaultNonCSSHintsStyle = s_defaultNonCSSHintsStyle;
+    m_rootDefaultStyle = 0;
+    m_medium = 0;
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -321,26 +338,37 @@ CSSStyleSelector::~CSSStyleSelector()
     delete userSheet;
     free(propsToApply);
     free(pseudoProps);
+    delete m_rootDefaultStyle;
 }
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
     KHTMLView *view = sheet->doc()->view();
-    m_medium = view ? view->mediaType() : "screen";
+
+    setupDefaultRootStyle(sheet->doc());
+
+    if (view)
+        m_medium = new MediaQueryEvaluator(view->mediaType(), view->part(), m_rootDefaultStyle);
+    else
+        m_medium = new MediaQueryEvaluator("screen", 0, m_rootDefaultStyle);
+
     if (sheet->implicit()) {
         if (!implicitStyle)
             implicitStyle = new CSSStyleSelectorList();
-        implicitStyle->append( sheet, m_medium );
+        implicitStyle->append( sheet, m_medium, this );
     } else {
         if (!authorStyle)
             authorStyle = new CSSStyleSelectorList();
-        authorStyle->append( sheet, m_medium );
+        authorStyle->append( sheet, m_medium, this );
     }
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *doc)
 {
     if(s_defaultStyle) return;
+
+    MediaQueryEvaluator screenEval("screen");
+    MediaQueryEvaluator printEval("print");
 
     {
 	QFile f(KStandardDirs::locate( "data", "khtml/css/html4.css" ) );
@@ -359,13 +387,13 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 
 	s_defaultSheet = new DOM::CSSStyleSheetImpl(doc);
 	s_defaultSheet->parseString( str );
-
+	
 	// Collect only strict-mode rules.
 	s_defaultStyle = new CSSStyleSelectorList();
-	s_defaultStyle->append( s_defaultSheet, "screen" );
+	s_defaultStyle->append( s_defaultSheet, &screenEval, doc->styleSelector() );  
 
 	s_defaultPrintStyle = new CSSStyleSelectorList();
-	s_defaultPrintStyle->append( s_defaultSheet, "print" );
+	s_defaultPrintStyle->append( s_defaultSheet, &printEval, doc->styleSelector() );
     }
     {
 	QFile f(KStandardDirs::locate( "data", "khtml/css/quirks.css" ) );
@@ -385,7 +413,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 
 	// Collect only quirks-mode rules.
 	s_defaultQuirksStyle = new CSSStyleSelectorList();
-	s_defaultQuirksStyle->append( s_quirksSheet, "screen" );
+	s_defaultQuirksStyle->append( s_quirksSheet, &screenEval, doc->styleSelector() );
     }
     {
 	QFile f(KStandardDirs::locate( "data", "khtml/css/presentational.css" ) );
@@ -404,7 +432,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	s_defaultNonCSSHintsSheet->parseString( str );
 
         s_defaultNonCSSHintsStyle = new CSSStyleSelectorList();
-	s_defaultNonCSSHintsStyle->append( s_defaultNonCSSHintsSheet, "screen" );
+	s_defaultNonCSSHintsStyle->append( s_defaultNonCSSHintsSheet, &screenEval, doc->styleSelector() );
     }
     //kDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements";
 }
@@ -1703,6 +1731,31 @@ void CSSStyleSelector::clearLists()
     selectorCache = 0;
 }
 
+void CSSStyleSelector::setupDefaultRootStyle(DOM::DocumentImpl *d)
+{
+    assert(m_fontSizes.size());
+
+    // We only care about setting up a default font
+    // that the media queries module can use early for
+    // computing its font-relative units (e.g.em/ex)
+    if (d) {
+        // setup some variables needed by applyRule
+        logicalDpiY = d->logicalDpiY();
+        if (d->view())
+            view = d->view();
+        if (view)
+            part = view->part();
+        if (part)
+           settings = part->settings();
+    }
+    parentNode = 0;
+    if (m_rootDefaultStyle)
+        delete m_rootDefaultStyle;
+    m_rootDefaultStyle = style = new RenderStyle();
+    CSSInitialValueImpl i(true);
+    applyRule( CSS_PROP_FONT_SIZE, &i );
+    style->htmlFont().update( logicalDpiY );
+}
 
 void CSSStyleSelector::buildLists()
 {
@@ -1712,7 +1765,7 @@ void CSSStyleSelector::buildLists()
     QList<CSSSelector*> selectorList;
     CSSOrderedPropertyList propertyList;
 
-    if(m_medium == "print" && defaultPrintStyle)
+    if(defaultPrintStyle && m_medium->mediaTypeMatchSpecific("print"))
       defaultPrintStyle->collect( &selectorList, &propertyList, Default,
         Default );
     else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
@@ -1810,13 +1863,13 @@ CSSStyleSelectorList::~CSSStyleSelectorList()
 }
 
 void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
-                                   const DOMString &medium )
+                                   MediaQueryEvaluator* medium, CSSStyleSelector* styleSelector )
 {
     if(!sheet || !sheet->isCSSStyleSheet()) return;
 
     // No media implies "all", but if a medialist exists it must
     // contain our current medium
-    if( sheet->media() && !sheet->media()->contains( medium ) )
+    if( sheet->media() && !medium->eval(sheet->media(), styleSelector) )
         return; // style sheet not applicable for this medium
 
     int len = sheet->length();
@@ -1841,10 +1894,10 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
             //kDebug( 6080 ) << "@import: Media: "
             //                << import->media()->mediaText().string() << endl;
 
-            if( !import->media() || import->media()->contains( medium ) )
+            if( !import->media() || medium->eval(import->media(), styleSelector) )
             {
                 CSSStyleSheetImpl *importedSheet = import->styleSheet();
-                append( importedSheet, medium );
+                append( importedSheet, medium, styleSelector );
             }
         }
         else if( item->isMediaRule() )
@@ -1852,11 +1905,10 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
             CSSMediaRuleImpl *r = static_cast<CSSMediaRuleImpl *>( item );
             CSSRuleListImpl *rules = r->cssRules();
 
-            //DOMString mediaText = media->mediaText();
             //kDebug( 6080 ) << "@media: Media: "
             //                << r->media()->mediaText().string() << endl;
 
-            if( ( !r->media() || r->media()->contains( medium ) ) && rules)
+            if( ( !r->media() || medium->eval(r->media(), styleSelector)) && rules)
             {
                 // Traverse child elements of the @import rule. Since
                 // many elements are not allowed as child we do not use
@@ -4115,6 +4167,23 @@ void CSSStyleSelector::checkForGenericFamilyChange(RenderStyle* aStyle, RenderSt
   aStyle->setFontDef(newFontDef);
 }
 #endif
+
+// #### FIXME!! this is ugly and isn't even properly updated or destroyed.
+
+void CSSStyleSelector::addViewportDependentMediaQueryResult(const MediaQueryExp* expr, bool result)
+{
+    m_viewportDependentMediaQueryResults.append( new MediaQueryResult(*expr, result) );
+}
+
+bool CSSStyleSelector::affectedByViewportChange() const
+{
+    unsigned s = m_viewportDependentMediaQueryResults.size();
+    for (unsigned i = 0; i < s; i++) {
+        if (m_medium->eval(&m_viewportDependentMediaQueryResults[i]->m_expression) != m_viewportDependentMediaQueryResults[i]->m_result)
+            return true;
+    }
+    return false;
+}
 
 } // namespace khtml
 

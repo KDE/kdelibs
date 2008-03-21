@@ -26,7 +26,9 @@
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
 #include "xml/dom_restyler.h"
+#include "css/css_mediaquery.h"
 #include <QtCore/QVarLengthArray>
+#include <QtCore/QList>
 
 class KHTMLSettings;
 class KHTMLView;
@@ -53,6 +55,7 @@ namespace khtml
     class CSSOrderedRule;
     class CSSOrderedPropertyList;
     class RenderStyle;
+    class MediaQueryEvaluator;
 
     /*
      * to remember the source where a rule came from. Differentiates between
@@ -108,6 +111,18 @@ namespace khtml
 	unsigned int position;
 
 	quint32 priority;
+    };
+
+    class MediaQueryResult
+    {
+    public:
+        MediaQueryResult(const MediaQueryExp& expr, bool result)
+        : m_expression(expr)
+        , m_result(result)
+        {}
+
+        MediaQueryExp m_expression;
+        bool m_result;
     };
 
     /**
@@ -182,6 +197,9 @@ namespace khtml
 	void computeFontSizesFor(int logicalDpiY, int zoomFactor, QVector<int>& fontSizes, bool isFixed);
 
 	static void precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel);
+        void addViewportDependentMediaQueryResult(const MediaQueryExp*, bool result);
+        bool affectedByViewportChange() const;
+	
     protected:
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
 	    with given relationships matches the given Element */
@@ -193,6 +211,7 @@ namespace khtml
         SelectorMatch checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
 
         void addDependency(StructuralDependencyType dependencyType, DOM::ElementImpl* dependency);
+        void setupDefaultRootStyle(DOM::DocumentImpl *d=0);
 #ifdef APPLE_CHANGES
 	/* This function fixes up the default font size if it detects that the
 	   current generic font family has changed. -dwh */
@@ -273,7 +292,7 @@ public:
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
 	QVarLengthArray<CSSOrderedProperty> inlineProps;
-        QString m_medium;
+        MediaQueryEvaluator* m_medium;
 	CSSOrderedProperty **propsToApply;
 	CSSOrderedProperty **pseudoProps;
 	unsigned int propsToApplySize;
@@ -290,10 +309,12 @@ public:
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
 	int logicalDpiY;
+  	RenderStyle*     m_rootDefaultStyle;
         QVector<int>     m_fontSizes;
 	QVector<int>     m_fixedFontSizes;
 
 	bool fontDirty;
+        QList<MediaQueryResult*> m_viewportDependentMediaQueryResults;
 
 	void applyRule(int id, DOM::CSSValueImpl *value);
     };
@@ -328,7 +349,7 @@ public:
 	virtual ~CSSStyleSelectorList();
 
 	void append( DOM::CSSStyleSheetImpl *sheet,
-		     const DOM::DOMString &medium = "screen" );
+		     MediaQueryEvaluator *medium, CSSStyleSelector* styleSelector );
 
 	void collect( QList<DOM::CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );

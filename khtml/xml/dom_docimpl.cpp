@@ -203,7 +203,7 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* /*t
 	// generate an exception.
 	CSSStyleSheetImpl *parent = 0L;
 	CSSStyleSheetImpl *sheet = new CSSStyleSheetImpl(parent, DOMString());
-	sheet->setMedia(new MediaListImpl(sheet, media));
+	sheet->setMedia(new MediaListImpl(sheet, media, true /*fallbackToDescriptor*/));
 	return sheet;
 }
 

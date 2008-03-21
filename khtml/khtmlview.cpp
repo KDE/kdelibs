@@ -5,8 +5,8 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
- *                     2003-2004 Apple Computer, Inc.
- *                     2006 Germain Garand <germain@ebooksfrance.org>
+ *                     2003-2008 Apple Computer, Inc.
+ *                     2006-2008 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -819,9 +819,14 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
     revertTransforms(x, y, dummy, dummy);
 }
 
-void KHTMLView::resizeEvent (QResizeEvent* e)
+void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 {
     updateScrollBars();
+
+    // Viewport-dependent media queries may cause us to need completely different style information.
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->styleSelector()->affectedByViewportChange()) {
+         m_part->xmlDocImpl()->updateStyleSelector();
+    }
 
     if (d->layoutSchedulingEnabled)
         layout();
@@ -941,7 +946,7 @@ void KHTMLView::layout()
         // the reference object for the overflow property on canvas
         RenderObject * ref = 0;
         RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
-
+        
         if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {

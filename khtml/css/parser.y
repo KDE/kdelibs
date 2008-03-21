@@ -32,8 +32,11 @@
 #include <css/css_ruleimpl.h>
 #include <css/css_stylesheetimpl.h>
 #include <css/css_valueimpl.h>
+#include <css/css_mediaquery.h>
 #include <misc/htmlhashes.h>
 #include "cssparser.h"
+
+
 
 #include <assert.h>
 #include <kdebug.h>
@@ -81,9 +84,13 @@ int DOM::getValueID(const char *tagStr, int len)
 }
 
 #define YYDEBUG 0
-#undef YYMAXDEPTH
+#define YYMAXDEPTH 10000
 #define YYPARSE_PARAM parser
+#define YYENABLE_NLS 0
+#define YYLTYPE_IS_TRIVIAL 1
 %}
+
+%expect 33
 
 %pure_parser
 
@@ -107,6 +114,11 @@ int DOM::getValueID(const char *tagStr, int len)
     char tok;
     Value value;
     ValueList *valueList;
+
+    khtml::MediaQuery* mediaQuery;
+    khtml::MediaQueryExp* mediaQueryExp;
+    QList<khtml::MediaQueryExp*>* mediaQueryExpList;
+    khtml::MediaQuery::Restrictor mediaQueryRestrictor;
 }
 
 %{
@@ -131,6 +143,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %destructor { delete $$; $$ = 0; } expr;
 %destructor { delete $$; $$ = 0; } maybe_media_list media_list;
+%destructor { delete $$; $$ = 0; } maybe_media_query_exp_list media_query_exp_list;
 %destructor { if ($$) qDeleteAll(*$$); delete $$; $$ = 0; } selector_list;
 %destructor { delete $$; $$ = 0; } ruleset_list;
 %destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector selector class attrib pseudo;
@@ -171,8 +184,12 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token KHTML_RULE_SYM
 %token KHTML_DECLS_SYM
 %token KHTML_VALUE_SYM
+%token KHTML_MEDIAQUERY_SYM
 
 %token IMPORTANT_SYM
+%token MEDIA_ONLY
+%token MEDIA_NOT
+%token MEDIA_AND
 
 %token <val> QEMS
 %token <val> EMS
@@ -190,6 +207,8 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token <val> SECS
 %token <val> HERZ
 %token <val> KHERZ
+%token <val> DPI
+%token <val> DPCM
 %token <string> DIMEN
 %token <val> PERCENTAGE
 %token <val> FLOAT
@@ -222,8 +241,15 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <string> hexcolor
 %type <string> maybe_ns_prefix
 
+%type <string> media_feature
 %type <mediaList> media_list
 %type <mediaList> maybe_media_list
+%type <mediaQuery> media_query
+%type <mediaQueryRestrictor> maybe_media_restrictor
+%type <valueList> maybe_media_value
+%type <mediaQueryExp> media_query_exp
+%type <mediaQueryExpList> media_query_exp_list
+%type <mediaQueryExpList> maybe_media_query_exp_list
 
 %type <ruleList> ruleset_list
 
@@ -264,6 +290,7 @@ stylesheet:
   | khtml_rule maybe_space
   | khtml_decls maybe_space
   | khtml_value maybe_space
+  | khtml_mediaquery maybe_space
   ;
 
 ruleset_or_import:
@@ -307,6 +334,13 @@ khtml_value:
 	delete p->valueList;
 	p->valueList = 0;
     }
+;
+
+khtml_mediaquery:
+     KHTML_MEDIAQUERY_SYM S maybe_space media_query '}' {
+         CSSParser *p = static_cast<CSSParser *>(parser);
+         p->mediaQuery = $4;
+     }
 ;
 
 maybe_space:
@@ -424,6 +458,63 @@ string_or_uri:
     STRING
   | URI
     ;
+ 
+media_feature:
+    IDENT maybe_space {
+        $$ = $1;
+    }
+    ;
+
+maybe_media_value:
+    /*empty*/ {
+        $$ = 0;
+    }
+    | ':' maybe_space expr maybe_space {
+        $$ = $3;
+    }
+    ;
+
+media_query_exp:
+    MEDIA_AND maybe_space '(' maybe_space media_feature maybe_space maybe_media_value ')' maybe_space {
+        $$ = new khtml::MediaQueryExp(domString($5).lower(), $7);
+    }
+    ;
+
+media_query_exp_list:
+    media_query_exp {
+      $$ =  new QList<khtml::MediaQueryExp*>;
+      $$->append($1);
+    }
+    | media_query_exp_list media_query_exp {
+      $$ = $1;
+      $$->append($2);
+    }
+    ;
+
+maybe_media_query_exp_list:
+    /*empty*/ {
+        $$ = new QList<khtml::MediaQueryExp*>;
+    }
+    | media_query_exp_list
+    ;
+
+maybe_media_restrictor:
+    /*empty*/ {
+        $$ = khtml::MediaQuery::None;
+    }
+    | MEDIA_ONLY {
+        $$ = khtml::MediaQuery::Only;
+    }
+    | MEDIA_NOT {
+        $$ = khtml::MediaQuery::Not;
+    }
+    ;
+
+media_query:
+    maybe_media_restrictor maybe_space medium maybe_media_query_exp_list {
+        $$ = new khtml::MediaQuery($1, domString($3).lower(), $4);
+    }
+    ;
 
 maybe_media_list:
     /* empty */ {
@@ -434,14 +525,14 @@ maybe_media_list:
 
 
 media_list:
-    medium {
-	$$ = new MediaListImpl();
-	$$->appendMedium( domString($1).lower() );
+    media_query {
+        $$ = new MediaListImpl();
+        $$->appendMediaQuery($1);
     }
-    | media_list ',' maybe_space medium {
+    | media_list ',' maybe_space media_query {
 	$$ = $1;
 	if ($$)
-	    $$->appendMedium( domString($4).lower() );
+	    $$->appendMediaQuery( $4 );
     }
     | media_list error {
        delete $1;
@@ -460,6 +551,15 @@ media:
 	    delete $3;
 	    delete $6;
 	}
+    }
+    | MEDIA_SYM maybe_space '{' maybe_space ruleset_list '}' {
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if ($5 && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+            $$ = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(p->styleElement), 0, $5);
+        } else {
+            $$ = 0;
+            delete $5;
+        }
     }
   ;
 
@@ -1004,6 +1104,8 @@ unary_term:
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | QEMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = Value::Q_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
+  | DPI maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_DPI; }
+  | DPCM maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_DPCM; }
     ;
 
 

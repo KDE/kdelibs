@@ -34,6 +34,7 @@
 #include "css_valueimpl.h"
 #include "css_ruleimpl.h"
 #include "css_stylesheetimpl.h"
+#include "css_mediaquery.h"
 #include "cssproperties.h"
 #include "cssvalues.h"
 #include "csshelper.h"
@@ -165,14 +166,20 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
     styleElement = sheet;
 
-    int length = string.length() + 3;
+    int length = string.length() + 3 + 2;
+    if (data) 
+        free( data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     memcpy( data, string.unicode(), string.length()*sizeof( unsigned short) );
+
+    // some more padding to keep flex happy (invalid reads on css/invalid-rules-005.html)
+    data[length-1] = 0;
+    data[length-2] = 0;
 
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << ">>>>>>> start parsing style sheet";
 #endif
-    runParser(length);
+    runParser(length-2);
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << "<<<<<<< done parsing style sheet";
 #endif
@@ -286,6 +293,38 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     return ok;
 }
 
+bool CSSParser::parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMString& string)
+{
+    if (string.isEmpty() || string.isNull()) {
+        return true;
+    }
+
+    mediaQuery = 0;
+    // can't use { because tokenizer state switches from mediaquery to initial state when it sees { token.
+    // instead insert one " " (which is S in parser.y)
+    const char khtml_queries[] = "@-khtml-mediaquery ";
+    int length = string.length() + 4 + strlen(khtml_queries);
+    if (data)
+        free( data );
+    data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
+    for ( unsigned int i = 0; i < strlen(khtml_queries); i++ )
+        data[i] = khtml_queries[i];
+    memcpy( data + strlen( khtml_queries ), string.unicode(), string.length()*sizeof( unsigned short) );
+    data[length-4] = '}';
+
+    runParser(length);
+
+    bool ok = false;
+    if (mediaQuery) {
+        ok = true;
+        queries->appendMediaQuery(mediaQuery);
+        mediaQuery = 0;
+    }
+
+    return ok;
+}
+
+
 void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
 {
     CSSProperty *prop = new CSSProperty;
@@ -368,6 +407,8 @@ bool CSSParser::validUnit( Value *value, int unitflags, bool strict )
     case CSSPrimitiveValue::CSS_GRAD:
     case CSSPrimitiveValue::CSS_HZ:
     case CSSPrimitiveValue::CSS_KHZ:
+    case CSSPrimitiveValue::CSS_DPI:
+    case CSSPrimitiveValue::CSS_DPCM:
     case CSSPrimitiveValue::CSS_DIMENSION:
     default:
         break;
@@ -2407,10 +2448,12 @@ int DOM::CSSParser::lex( void *_yylval )
     case QEMS:
         length--;
     case GRADS:
+    case DPCM:
         length--;
     case DEGS:
     case RADS:
     case KHERZ:
+    case DPI:
         length--;
     case MSECS:
     case HERZ:

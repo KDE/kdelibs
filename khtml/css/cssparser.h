@@ -27,6 +27,10 @@
 #include <QtCore/QVector>
 #include <dom/dom_string.h>
 
+namespace khtml {
+    class MediaQuery;
+}
+
 namespace DOM {
     class StyleListImpl;
     class CSSStyleSheetImpl;
@@ -38,6 +42,7 @@ namespace DOM {
     class CSSPrimitiveValueImpl;
     class CSSStyleDeclarationImpl;
     class CSSProperty;
+    class MediaListImpl;
     
 
     struct ParseString {
@@ -102,6 +107,7 @@ namespace DOM {
 	bool parseValue( DOM::CSSStyleDeclarationImpl *decls, int id, const DOM::DOMString &string,
 			 bool _important );
 	bool parseDeclaration( DOM::CSSStyleDeclarationImpl *decls, const DOM::DOMString &string );
+	bool parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMString& string);
 
 	static CSSParser *current() { return currentParser; }
 
@@ -177,6 +183,7 @@ namespace DOM {
 	unsigned int id;
 	DOM::StyleListImpl* styleElement;
 	DOM::CSSRuleImpl *rule;
+	khtml::MediaQuery* mediaQuery;
 	ValueList *valueList;
 	CSSProperty **parsedProperties;
 	int numParsedProperties;

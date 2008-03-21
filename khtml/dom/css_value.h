@@ -411,6 +411,8 @@ public:
         CSS_COUNTER = 23,
         CSS_RECT = 24,
         CSS_RGBCOLOR = 25,
+        CSS_DPI = 26,
+        CSS_DPCM = 27,
         CSS_PAIR = 100, // We envision this being exposed as a means of getting computed style values for pairs 
         CSS_HTML_RELATIVE = 255
     };

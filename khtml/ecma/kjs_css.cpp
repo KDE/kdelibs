@@ -541,9 +541,10 @@ bool DOMMediaList::getOwnPropertySlot(ExecState *exec, const Identifier& propert
 
 void DOMMediaList::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
-  if (propertyName == "mediaText")
-    m_impl->setMediaText(value->toString(exec).domString());
-  else
+  if (propertyName == "mediaText") {
+    DOMExceptionTranslator exception(exec);
+    m_impl->setMediaText(value->toString(exec).domString(), exception);
+  } else
     DOMObject::put(exec, propertyName, value, attr);
 }
 
@@ -556,14 +557,15 @@ JSValue *DOMMediaListProtoFunc::callAsFunction(ExecState *exec, JSObject *thisOb
 {
   KJS_CHECK_THIS( KJS::DOMMediaList, thisObj );
   DOM::MediaListImpl& mediaList = *static_cast<DOMMediaList *>(thisObj)->impl();
+  DOMExceptionTranslator exception(exec);
   switch (id) {
     case DOMMediaList::Item:
       return jsString(mediaList.item(args[0]->toInteger(exec)));
     case DOMMediaList::DeleteMedium:
-      mediaList.deleteMedium(args[0]->toString(exec).domString());
+      mediaList.deleteMedium(args[0]->toString(exec).domString(), exception);
       return jsUndefined();
     case DOMMediaList::AppendMedium:
-      mediaList.appendMedium(args[0]->toString(exec).domString());
+      mediaList.appendMedium(args[0]->toString(exec).domString(), exception);
       return jsUndefined();
     default:
       return jsUndefined();

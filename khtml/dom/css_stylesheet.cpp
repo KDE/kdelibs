@@ -297,8 +297,12 @@ DOM::DOMString MediaList::mediaText() const
 
 void MediaList::setMediaText(const DOM::DOMString &value )
 {
-    if(impl)
-        static_cast<MediaListImpl *>(impl)->setMediaText( value );
+    if(!impl)
+        return;
+    int exceptioncode = 0;
+    static_cast<MediaListImpl *>(impl)->setMediaText( value, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 unsigned long MediaList::length() const
@@ -315,14 +319,22 @@ DOM::DOMString MediaList::item(unsigned long index) const
 
 void MediaList::deleteMedium(const DOM::DOMString &oldMedium)
 {
-    if(impl)
-        ((MediaListImpl *)impl)->deleteMedium( oldMedium );
+    if(!impl)
+        return;
+    int exceptioncode = 0;
+    ((MediaListImpl *)impl)->deleteMedium( oldMedium, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 void MediaList::appendMedium(const DOM::DOMString &newMedium)
 {
-    if(impl)
-        ((MediaListImpl *)impl)->appendMedium( newMedium );
+    if(!impl)
+        return;
+    int exceptioncode = 0;
+    ((MediaListImpl *)impl)->appendMedium( newMedium, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 MediaListImpl *MediaList::handle() const

@@ -38,6 +38,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/csshelper.h"
+#include "css/css_mediaquery.h"
 
 #include "ecma/kjs_proxy.h"
 
@@ -188,7 +189,12 @@ void HTMLLinkElementImpl::process()
         (type.contains("text/css") || rel.contains("stylesheet"))) {
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
-        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") ) {
+        khtml::MediaQueryEvaluator allEval(true);
+        khtml::MediaQueryEvaluator screenEval("screen", true);
+        khtml::MediaQueryEvaluator printEval("print", true);
+        MediaListImpl* media = new MediaListImpl((CSSStyleSheetImpl*)0, m_media, true);
+        media->ref();
+        if (allEval.eval(media) || screenEval.eval(media) || printEval.eval(media)) {
             m_loading = true;
             // Add ourselves as a pending sheet, but only if we aren't an alternate
             // stylesheet.  Alternate stylesheets don't hold up render tree construction.
@@ -212,6 +218,7 @@ void HTMLLinkElementImpl::process()
                 getDocument()->styleSheetLoaded();
             }
         }
+        media->deref();
     }
     else if (m_sheet) {
 	// we no longer contain a stylesheet, e.g. perhaps rel or type was changed
@@ -243,7 +250,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     m_sheet->setCharset(charset);
     m_sheet->parseString( sheetStr, !getDocument()->inCompatMode() );
 
-    MediaListImpl *media = new MediaListImpl( m_sheet, m_media );
+    MediaListImpl *media = new MediaListImpl( (CSSStyleSheetImpl*)0, m_media );
     m_sheet->setMedia( media );
 
     finished();
@@ -610,16 +617,22 @@ void HTMLStyleElementImpl::childrenChanged()
     }
 
     m_loading = false;
-    if ((m_type.isEmpty() || m_type == "text/css") // Type must be empty or CSS
-         && (m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print"))) {
-        getDocument()->addPendingSheet();
-        m_loading = true;
-        m_sheet = new CSSStyleSheetImpl(this);
-        m_sheet->ref();
-        m_sheet->parseString( text, !getDocument()->inCompatMode() );
-        MediaListImpl* media = new MediaListImpl( m_sheet, DOMString( m_media ) );
-        m_sheet->setMedia( media );
-        m_loading = false;
+    if (m_type.isEmpty() || m_type == "text/css") // Type must be empty or CSS
+    {
+        MediaListImpl* media = new MediaListImpl((CSSStyleSheetImpl*)0, m_media, true);
+        media->ref();
+        khtml::MediaQueryEvaluator screenEval("screen", true);
+        khtml::MediaQueryEvaluator printEval("print", true);
+        if (screenEval.eval(media) || printEval.eval(media)) {
+            getDocument()->addPendingSheet();
+            m_loading = true;
+            m_sheet = new CSSStyleSheetImpl(this);
+            m_sheet->ref();
+            m_sheet->parseString( text, !getDocument()->inCompatMode() );
+            m_sheet->setMedia( media );
+            m_loading = false;
+        }
+        media->deref();
     }
 
     if (!isLoading() && m_sheet)

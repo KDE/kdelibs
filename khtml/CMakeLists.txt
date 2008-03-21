@@ -168,6 +168,7 @@ set(khtmlcss_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/css/csshelper.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/parser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_renderstyledeclarationimpl.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/css_mediaquery.cpp
 )
 
 # khtml/xml/Makefile.am: khtmlxml

@@ -203,10 +203,14 @@ public:
 
     double computeLengthFloat( khtml::RenderStyle *style, int logicalDpiY);
 
+    // Retrieves an explicit resolution from the CSSValue if it contains one.
+    // This is specific to the CSS3 Media Queries module's resolution feature.
+    int getDPIResolution() const;
+
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
     void setFloatValue ( unsigned short unitType, double floatValue, int &exceptioncode );
-    double floatValue ( unsigned short/* unitType */) const { return m_value.num; }
+    double floatValue ( unsigned short unitType = CSSPrimitiveValue::CSS_UNKNOWN) const { (void)unitType; return m_value.num; }
 
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue () const {
