@@ -29,19 +29,17 @@
 #include "kactioncollection.h"
 #include "kstandardaction.h"
 
-#include <config.h>
-
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
 #include <QX11Info>
 #endif
 
-#include <kconfig.h>
 #include <kiconloader.h>
 #include <kapplication.h>
+#include <kconfiggroup.h>
 
 #include <QMouseEvent>
-#include <kconfiggroup.h>
+#include <QToolButton>
 
 class KSystemTrayIconPrivate
 {
@@ -64,6 +62,7 @@ public:
     KActionCollection* actionCollection;
     KMenu* menu;
     QWidget* window;
+    QAction* titleAction;
     bool onAllDesktops : 1; // valid only when the parent widget was hidden
     bool hasQuit : 1;
 };
@@ -92,7 +91,7 @@ KSystemTrayIcon::KSystemTrayIcon( const QIcon& icon, QWidget* parent )
 void KSystemTrayIcon::init( QWidget* parent )
 {
     d->menu = new KMenu( parent );
-    d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
+    d->titleAction = d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
     d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );
     connect( d->menu, SIGNAL( aboutToShow() ), this, SLOT( contextMenuAboutToShow() ) );
     setContextMenu( d->menu );
@@ -305,5 +304,17 @@ bool KSystemTrayIcon::parentWidgetTrayClose() const
     return true;
 }
 
-#include "ksystemtrayicon.moc"
+void KSystemTrayIcon::setContextMenuTitle(QAction *action)
+{
+    // can never be null, and is always the requsted type, so no need to do null checks after casts.
+    QToolButton *button = static_cast<QToolButton*>((static_cast<QWidgetAction*>(d->titleAction))->defaultWidget());
+    button->setDefaultAction(action);
+}
 
+QAction *KSystemTrayIcon::contextMenuTitle() const
+{
+    QToolButton *button = static_cast<QToolButton*>((static_cast<QWidgetAction*>(d->titleAction))->defaultWidget());
+    return button->defaultAction();
+}
+
+#include "ksystemtrayicon.moc"

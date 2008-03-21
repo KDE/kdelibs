@@ -25,13 +25,14 @@
 
 class KActionCollection;
 class KSystemTrayIconPrivate;
+class QAction;
 
 /**
  * \brief %KDE System Tray Window class
  *
  * This class implements system tray windows.
  *
- * A tray window is a small window (typically 24x24 pixel) that docks
+ * A tray window is a small window (typically 22x22 pixel) that docks
  * into the system tray in the desktop panel. It usually displays an
  * icon or an animated icon there. The icon represents
  * the application, similar to a taskbar button, but consumes less
@@ -76,7 +77,7 @@ public:
      */
     explicit KSystemTrayIcon( const QIcon& icon, QWidget* parent = 0 );
 
-    /*
+    /**
       Destructor
      */
     ~KSystemTrayIcon();
@@ -107,6 +108,24 @@ public:
      * It's commonly used in the form : systray->setPixmap( systray->loadIcon( "mysystray" ) );
      */
     static QIcon loadIcon(const QString &icon, const KComponentData &componentData = KGlobal::mainComponent());
+
+    /**
+     * Sets the context menu title action to @p action.
+     * The following code shows how to change the current title.
+     * <code>
+     * QAction *titleAction = contextMenuTitle();
+     * titleAction->setText("New Title");
+     * setContextMenuTitle(titleAction);
+     * </code>
+     * @since 4.1
+     */
+    void setContextMenuTitle(QAction *action);
+
+    /**
+     * Returns the context menu title action.
+     * @since 4.1
+     */
+    QAction *contextMenuTitle() const;
 
 Q_SIGNALS:
     /**
