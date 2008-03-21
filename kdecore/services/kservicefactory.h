@@ -35,6 +35,8 @@ class KSycocaDict;
  * A sycoca factory for services (e.g. applications)
  * It loads the services from parsing directories (e.g. applnk/)
  * but can also create service from data streams or single config files
+ *
+ * Exported for kbuildsycoca, but not installed.
  */
 class KDECORE_EXPORT KServiceFactory : public KSycocaFactory
 {

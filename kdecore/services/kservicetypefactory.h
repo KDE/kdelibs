@@ -37,6 +37,8 @@ class KServiceType;
  * It loads the service types from parsing directories (e.g. servicetypes/)
  * but can also create service types from data streams or single config files
  * @see KServiceType
+ *
+ * Exported for kbuildsycoca, but not installed.
  */
 class KDECORE_EXPORT KServiceTypeFactory : public KSycocaFactory
 {

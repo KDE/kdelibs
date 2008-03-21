@@ -32,6 +32,8 @@ class KSycocaDict;
  * @internal
  * A sycoca factory for service groups (e.g. list of applications)
  * It loads the services from parsing directories (e.g. applnk/)
+ *
+ * Exported for kbuildsycoca, but not installed.
  */
 class KDECORE_EXPORT KServiceGroupFactory : public KSycocaFactory
 {
