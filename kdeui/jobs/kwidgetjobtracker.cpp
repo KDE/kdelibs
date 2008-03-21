@@ -276,7 +276,8 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
         processedSize = amount;
 
         if (totalSizeKnown) {
-            tmp = i18n( "%1 of %2 complete",
+            tmp = i18np( "%2 of %3 complete", "%2 of %3 complete",
+						amount,
                         KGlobal::locale()->formatByteSize(amount),
                         KGlobal::locale()->formatByteSize(totalSize));
         } else {
@@ -340,7 +341,7 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
         const QString speedStr = KGlobal::locale()->formatByteSize(value);
         if (totalSizeKnown) {
             const int remaining = 1000*(totalSize - processedSize)/value;
-            speedLabel->setText(i18n("%1/s ( %2 remaining )", speedStr,
+            speedLabel->setText(i18np("%2/s ( %3 remaining )", "%2/s ( %3 remaining )", remaining, speedStr,
                                      KGlobal::locale()->formatDuration(remaining)));
         } else { // total size is not known (#24228)
             speedLabel->setText(i18nc("speed in bytes per second", "%1/s", speedStr));
