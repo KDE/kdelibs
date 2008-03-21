@@ -2,7 +2,7 @@ docs we need to write (handbook and manpages):
 
 <DONE> kde4-config
 kconfig_compiler
-preparetips
+<DONE> preparetips
 makekdewidgets
 meinproc4
 <DONE> checkXML

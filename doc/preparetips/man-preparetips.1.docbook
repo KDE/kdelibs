@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN"
+"dtd/kdex.dtd" [
+<!ENTITY % English "INCLUDE">
+]>
+
+<refentry lang="&language;">
+<refentryinfo>
+<title>Translation Tool</title>
+
+<author>
+<firstname>Matthias</firstname>
+<surname>Kiefer</surname>
+<affiliation>
+<address>
+<email>matthias.kiefer@gmx.de</email>
+</address>
+</affiliation>
+</author>
+
+<date>2006-06-01</date>
+<productname>K Desktop Environment</productname>
+</refentryinfo>
+
+<refmeta>
+<refentrytitle>
+<command>preparetips</command>
+</refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>
+<command>preparetips</command>
+</refname>
+<refpurpose>extract text from tips file</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>preparetips</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+<para>
+<command>preparetips</command> is a script to extract the text from a tips file. It outputs the text so <command>xgettext</command> can add the tips to a PO file. PO files provide a human-readable string format used for translations.
+</para>
+
+<para>
+<command>preparetips</command> looks for <emphasis role="underline">data/tips-en</emphasis> as tips file.
+</para>
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para>
+<command>kdeoptions</command>(7)
+</para>
+</refsect1>
+
+<refsect1>
+<title>Bugs</title>
+<para>
+Please use http://bugs.kde.org to report bugs, do not mail the author directly.
+</para>
+</refsect1>
+
+</refentry>
