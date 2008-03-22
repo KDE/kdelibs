@@ -459,7 +459,6 @@ install( FILES
   DNSSD/RemoteService
   DNSSD/ServiceBase
   DNSSD/ServiceBrowser
-  DNSSD/ServicesAction
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 
 
