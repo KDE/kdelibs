@@ -169,7 +169,9 @@ namespace KJS {
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
            GetElementsByClassName };
   private:
+#if 0
     static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);
+#endif
   };
 
   DOM::AttrImpl    *toAttr   (JSValue *); // returns 0 if passed-in value is not a DOMAtt object
