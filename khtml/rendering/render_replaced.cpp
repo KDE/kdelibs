@@ -425,6 +425,8 @@ void RenderWidget::updateFromElement()
                 lineEdit->setFrame(false);
         }
 
+        // Font:
+        setStyle(style());
     }
 
     RenderReplaced::updateFromElement();
