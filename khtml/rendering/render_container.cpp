@@ -491,6 +491,13 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
     if (newChild->firstChild() || newChild->layer()) {
         layer = enclosingLayer();
         newChild->addLayers(layer, newChild);
+        // keep our fixed object lists updated.
+        if (newChild->style()&& (newChild->style()->hasFixedBackgroundImage() || newChild->style()->position() == FIXED)) {
+            if (newChild->style()->hasFixedBackgroundImage())
+                canvas()->addStaticObject( newChild );
+            if (newChild->style()->position() == FIXED)
+                canvas()->addStaticObject( newChild, true );
+        }
     }
 
     // if the new child is visible but this object was not, tell the layer it has some visible content
@@ -544,6 +551,14 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     if (child->firstChild() || child->layer()) {
         layer = enclosingLayer();
         child->addLayers(layer, child);
+        // keep our fixed object lists updated.
+        if (child->style() && (child->style()->hasFixedBackgroundImage() || child->style()->position() == FIXED)) {
+            if (child->style()->hasFixedBackgroundImage())
+                canvas()->addStaticObject( child );
+            if (child->style()->position() == FIXED)
+                canvas()->addStaticObject( child, true );
+        }
+
     }
 
     // if the new child is visible but this object was not, tell the layer it has some visible content
