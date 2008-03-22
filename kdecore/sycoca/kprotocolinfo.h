@@ -51,6 +51,7 @@ class KDECORE_EXPORT KProtocolInfo : public KSycocaEntry
   friend class KProtocolManager;
 public:
   typedef KSharedPtr<KProtocolInfo> Ptr;
+    typedef QList<Ptr> List;
 
 public:
 
@@ -322,6 +323,8 @@ public:
   bool supportsListing() const;
   /// @internal. Use KProtocolManager instead.
   QString defaultMimeType() const;
+  /// @internal. Use KProtocolManager instead.
+  QString archiveMimeType() const;
 
 protected:
   QString m_name;

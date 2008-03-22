@@ -99,7 +99,7 @@ public:
    *
    * @since 4.1
    */
-  static QString userAgentForApplication( const QString &appName, const QString& appVersion, 
+  static QString userAgentForApplication( const QString &appName, const QString& appVersion,
     const QStringList& extraInfo = QStringList() );
 
   /**
@@ -606,6 +606,19 @@ public:
    *         protocol is a filter (e.g. gzip)
    */
   static bool isSourceProtocol( const KUrl &url );
+
+  /**
+   * Returns which protocol handles this mimetype, if it's an archive mimetype.
+   * For instance zip:/ handles application/x-zip.
+   *
+   * This is defined in the protocol description file using an entry like
+   * "archiveMimetype=application/x-zip"
+   *
+   * @param mimetype the mimetype to check
+   * @return the protocol that can handle this archive mimetype, for instance "zip".
+   * @since 4.1
+   */
+  static QString protocolForArchiveMimetype( const QString& mimeType );
 
   /*=============================== OTHERS ====================================*/
 

@@ -64,6 +64,11 @@ public:
   KProtocolInfo::Ptr findProtocol(const QString &protocol);
 
   /**
+   * @return all protocols
+   */
+  KProtocolInfo::List allProtocols() const;
+
+  /**
    * Returns list of all known protocols.
    * @return a list of all protocols
    */

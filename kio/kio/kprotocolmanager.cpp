@@ -57,6 +57,8 @@ public:
    QString proxy;
    QString modifiers;
    QString useragent;
+
+    QMap<QString /*mimetype*/, QString /*protocol*/> protocolForArchiveMimetypes;
 };
 
 K_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
@@ -472,7 +474,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   return d->useragent;
 }
 
-QString KProtocolManager::userAgentForApplication( const QString &appName, const QString& appVersion, 
+QString KProtocolManager::userAgentForApplication( const QString &appName, const QString& appVersion,
   const QStringList& extraInfo )
 {
   QString systemName, systemVersion, machine;
@@ -785,6 +787,22 @@ QString KProtocolManager::defaultMimetype( const KUrl &url )
     return QString();
 
   return prot->m_defaultMimetype;
+}
+
+QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
+{
+    PRIVATE_DATA;
+    if (d->protocolForArchiveMimetypes.isEmpty()) {
+        const KProtocolInfo::List allProtocols = KProtocolInfoFactory::self()->allProtocols();
+        for (KProtocolInfo::List::const_iterator it = allProtocols.begin();
+             it != allProtocols.end(); ++it) {
+            const QString archiveMimetype = (*it)->archiveMimeType();
+            if (!archiveMimetype.isEmpty()) {
+                d->protocolForArchiveMimetypes.insert(archiveMimetype, (*it)->name());
+            }
+        }
+    }
+    return d->protocolForArchiveMimetypes.value(mimeType);
 }
 
 #undef PRIVATE_DATA
