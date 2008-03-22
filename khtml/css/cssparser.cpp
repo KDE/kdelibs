@@ -145,9 +145,13 @@ unsigned int CSSParser::defaultNamespace()
 
 void CSSParser::runParser(int length)
 {
+    // the flex scanner sometimes give invalid reads for any
+    // smaller padding - try e.g. css/invalid-rules-005.html
     data[length-1] = 0;
     data[length-2] = 0;
-    data[length-3] = ' ';
+    data[length-3] = 0;
+    data[length-4] = 0;
+    data[length-5] = ' ';
 
     yyTok = -1;
     block_nesting = 0;
@@ -166,20 +170,16 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
     styleElement = sheet;
 
-    int length = string.length() + 3 + 2;
+    int length = string.length() + 5;
     if (data) 
         free( data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     memcpy( data, string.unicode(), string.length()*sizeof( unsigned short) );
 
-    // some more padding to keep flex happy (invalid reads on css/invalid-rules-005.html)
-    data[length-1] = 0;
-    data[length-2] = 0;
-
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << ">>>>>>> start parsing style sheet";
 #endif
-    runParser(length-2);
+    runParser(length);
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << "<<<<<<< done parsing style sheet";
 #endif
@@ -193,14 +193,14 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
     styleElement = sheet;
 
     const char khtml_rule[] = "@-khtml-rule{";
-    int length = string.length() + 4 + strlen(khtml_rule);
+    int length = string.length() + 6 + strlen(khtml_rule);
     assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_rule); i++ )
         data[i] = khtml_rule[i];
     memcpy( data + strlen( khtml_rule ), string.unicode(), string.length()*sizeof( unsigned short) );
     // qDebug("parse string = '%s'", QString::fromRawData( (const QChar *)data, length ).toLatin1().constData() );
-    data[length-4] = '}';
+    data[length-6] = '}';
 
     runParser(length);
 
@@ -233,14 +233,14 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     styleElement = declaration->stylesheet();
 
     const char khtml_value[] = "@-khtml-value{";
-    int length = string.length() + 4 + strlen(khtml_value);
+    int length = string.length() + 6 + strlen(khtml_value);
     assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_value); i++ )
         data[i] = khtml_value[i];
     memcpy( data + strlen( khtml_value ), string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-4] = '}';
     // qDebug("parse string = '%s'", QString::fromRawData( (const QChar *)data, length ).toLatin1().constData() );
+    data[length-6] = '}';
 
     id = _id;
     important = _important;
@@ -270,13 +270,13 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     styleElement = declaration->stylesheet();
 
     const char khtml_decls[] = "@-khtml-decls{";
-    int length = string.length() + 4 + strlen(khtml_decls);
+    int length = string.length() + 6 + strlen(khtml_decls);
     assert( !data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_decls); i++ )
         data[i] = khtml_decls[i];
     memcpy( data + strlen( khtml_decls ), string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-4] = '}';
+    data[length-6] = '}';
 
     runParser(length);
 
@@ -303,14 +303,14 @@ bool CSSParser::parseMediaQuery(DOM::MediaListImpl* queries, const DOM::DOMStrin
     // can't use { because tokenizer state switches from mediaquery to initial state when it sees { token.
     // instead insert one " " (which is S in parser.y)
     const char khtml_queries[] = "@-khtml-mediaquery ";
-    int length = string.length() + 4 + strlen(khtml_queries);
+    int length = string.length() + 6 + strlen(khtml_queries);
     if (data)
         free( data );
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
     for ( unsigned int i = 0; i < strlen(khtml_queries); i++ )
         data[i] = khtml_queries[i];
     memcpy( data + strlen( khtml_queries ), string.unicode(), string.length()*sizeof( unsigned short) );
-    data[length-4] = '}';
+    data[length-6] = '}';
 
     runParser(length);
 
