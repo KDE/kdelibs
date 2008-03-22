@@ -344,7 +344,8 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
-    // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
+    // NOTE: Keep this function in sync with
+    // kdebase/apps/konqueror/settings/filetypes/filetypedetails.cpp
     //       FileTypeDetails::updateAskSave()
 
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
@@ -384,6 +385,7 @@ void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )
     simpleSave( url, suggestedFileName, d->m_window );
 }
 
+// static
 void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName,
                              QWidget* window )
 {
