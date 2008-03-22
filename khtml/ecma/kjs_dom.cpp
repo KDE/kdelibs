@@ -1190,16 +1190,19 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   if (proto->isObject() && static_cast<JSObject *>(proto)->getOwnPropertySlot(exec, propertyName, slot))
     return true;
 
+#if 0 // IE-only feature
   // Give access to attributes
   ElementImpl &element = *static_cast<ElementImpl *>(impl());
   if (element.hasAttribute(propertyName.domString())) {
     slot.setCustom(this, attributeGetter);
     return true;
   }
+#endif
 
   return false;
 }
 
+#if 0
 JSValue *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   DOMElement *thisObj = static_cast<DOMElement *>(slot.slotBase());
@@ -1208,6 +1211,7 @@ JSValue *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& pr
   DOM::DOMString attr = element->getAttribute(propertyName.domString());
   return getStringOrNull(attr);
 }
+#endif
 
 JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
