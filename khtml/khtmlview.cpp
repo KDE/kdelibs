@@ -3600,11 +3600,12 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
             // ### should use the dom
             KHTMLWidget*w = dynamic_cast<KHTMLWidget*>(static_cast<QWidget*>(d->m_mouseEventsTarget));
             QPoint p = w->m_kwp->absolutePos();
-            QMouseEvent fw(_mouse->type(), _mouse->pos()-p, _mouse->button(), _mouse->buttons(), _mouse->modifiers());
+            QMouseEvent fw(_mouse->type(), QPoint(pageX, pageY)-p, _mouse->button(), _mouse->buttons(), _mouse->modifiers());
             static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(d->m_mouseEventsTarget))->sendEvent(&fw);
             if (_mouse->type() == QMouseEvent::MouseButtonPress && _mouse->button() == Qt::RightButton) {
                 QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
                 static_cast<RenderWidget::EventPropagator *>(static_cast<QWidget*>(d->m_mouseEventsTarget))->sendEvent(&cme);
+                d->m_mouseEventsTarget = 0;
             }
             swallowEvent = true;
         } else {
