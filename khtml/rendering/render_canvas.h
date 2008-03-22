@@ -186,6 +186,7 @@ protected:
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
     QList<RenderObject*> m_dirtyChildren;
     QSet<RenderObject*>m_fixedBackground;
+    QSet<RenderObject*>m_fixedPosition;
 };
 
 inline RenderCanvas* RenderObject::canvas() const

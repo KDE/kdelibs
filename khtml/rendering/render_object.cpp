@@ -1359,7 +1359,7 @@ void RenderObject::setStyle(RenderStyle *style)
     if (style->hasAutoZIndex() && (isRoot() || style->opacity() < 1.0f))
         style->setZIndex( 0 );
 
-    if ( d > RenderStyle::Position && 
+    if ( d > RenderStyle::Position &&
          (style->hasFixedBackgroundImage() != (m_style && m_style->hasFixedBackgroundImage())
             || (style->position() == FIXED) != (m_style && (m_style->position() == FIXED)))
             && canvas() && canvas()->view() ) {
@@ -2353,16 +2353,26 @@ void RenderObject::updateWidgetMasks() {
 QRegion RenderObject::visibleFlowRegion(int x, int y) const
 {
     QRegion r;
+    bool done = false;
     for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
-        if( !ro->layer() && !ro->isInlineFlow() && !ro->isFloating() && ro->style()->visibility() == VISIBLE) {
+        if( !ro->layer() && !ro->isFloating() && ro->style()->visibility() == VISIBLE) {
             // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
+            int ow = s ? s->outlineSize() : 0;
             if (ro->isRelPositioned())
                 static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
-            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() )
-                r += QRect(x + ro->effectiveXPos(),y + ro->effectiveYPos(), ro->effectiveWidth(), ro->effectiveHeight());
-            else
-                r += ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || ro->isInline() ) {
+                while( ro->isInlineFlow() ) {
+                    ro = ro->parent();
+                    done = true;
+                }
+                r += QRect(x -ow +ro->effectiveXPos(),y -ow + ro->effectiveYPos(), 
+                                  ro->effectiveWidth()+ow*2, ro->effectiveHeight()+ow*2);
+            } else {
+                QRegion tmp = ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
+                r += tmp;
+            }
+            if (done) break;
         }
     }
     return r;

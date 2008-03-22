@@ -303,8 +303,10 @@ QRegion RenderCanvas::staticRegion() const
        QListIterator<RenderObject*> it(*m_positionedObjects);
         while (it.hasNext()) {
             obj = it.next();
-            if (obj->style()->position() == FIXED && obj->layer())
+            if (obj->style()->position() == FIXED && obj->layer()) {
                 ret += obj->layer()->paintedRegion(layer());
+                assert( m_fixedPosition.contains(obj) );
+            }
         }
    }
 
@@ -485,16 +487,20 @@ static QRect enclosingPositionedRect (RenderObject *n)
 
 void RenderCanvas::addStaticObject( RenderObject*o, bool pos)
 { 
-    if (!pos && o && o->isBox()) 
-        m_fixedBackground.insert(o);
+    QSet<RenderObject*>& set = pos ? m_fixedPosition : m_fixedBackground;
+    if (!o || !o->isBox() || set.contains(o))
+        return;
+    set.insert(o);
     if (view())
         view()->addStaticObject(pos);
 }
 
 void RenderCanvas::removeStaticObject( RenderObject*o, bool pos)
 {
-    if (!pos && o && o->isBox())
-        m_fixedBackground.remove(o); 
+    QSet<RenderObject*>& set = pos ? m_fixedPosition : m_fixedBackground;
+    if (!o || !o->isBox() || !set.contains(o))
+        return;
+    set.remove(o); 
     if (view())
         view()->removeStaticObject(pos);
 }
