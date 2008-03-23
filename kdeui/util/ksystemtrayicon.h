@@ -43,6 +43,9 @@ class QAction;
  * right mouse button, she gets a popupmenu with application specific
  * commands, including "Minimize/Restore" and "Quit".
  *
+ * Please note that QSystemTrayIcon::showMessage(..) should not be
+ * used for KDE appliaction. Use Knotify or KPassivePopup instead.
+ *
  * @author Matthias Ettrich <ettrich@kde.org>
  **/
 class KDEUI_EXPORT KSystemTrayIcon : public QSystemTrayIcon
@@ -60,7 +63,7 @@ public:
      * the tray window @p is the parent's taskbar icon.
      *
      * Furthermore, the parent widget is shown or raised respectively
-     * when the user clicks on the trray window with the left mouse
+     * when the user clicks on the tray window with the left mouse
      * button.
      **/
     explicit KSystemTrayIcon( QWidget* parent = 0 );
