@@ -1525,7 +1525,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
     m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
-    QString value = policyGroup.readEntry("CookieGlobalAdvice", L1("Ask"));
+    QString value = policyGroup.readEntry("CookieGlobalAdvice", L1("Accept"));
     m_globalAdvice = strToAdvice(value);
 
     // Reset current domain settings first.
