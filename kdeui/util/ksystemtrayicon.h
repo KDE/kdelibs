@@ -44,7 +44,9 @@ class QAction;
  * commands, including "Minimize/Restore" and "Quit".
  *
  * Please note that QSystemTrayIcon::showMessage(..) should not be
- * used for KDE appliaction. Use Knotify or KPassivePopup instead.
+ * used for KDE appliaction because the popup message has no KDE standard
+ * look & feel and cannot be controlled by KDE configurations. 
+ * Use Knotify or KPassivePopup instead.
  *
  * @author Matthias Ettrich <ettrich@kde.org>
  **/
