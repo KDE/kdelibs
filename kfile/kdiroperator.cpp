@@ -1997,7 +1997,10 @@ void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
         return;
     }
 
-    _k_slotActivated(index);
+    if (!parent->onlyDoubleClickSelectsFiles())
+        _k_slotDoubleClicked(index);
+    else
+        _k_slotActivated(index);
 }
 
 void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
