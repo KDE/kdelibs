@@ -110,6 +110,13 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
      */
     Q_PROPERTY(qreal shadowBlur READ shadowBlur WRITE setShadowBlur)
 
+    /**
+     * This property holds the maximum size that can be returned
+     * by KFileItemDelegate::sizeHint(). If the maximum size is empty,
+     * it will be ignored.
+     */
+    Q_PROPERTY(QSize maximumSize READ maximumSize WRITE setMaximumSize)
+
     Q_ENUMS(Information)
 
 
@@ -321,6 +328,19 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          */
         qreal shadowBlur() const;
 
+        /**
+         * Sets the maximum size for KFileItemDelegate::sizeHint().
+         *
+         * @see maximumSize()
+         */
+        void setMaximumSize(const QSize &size);
+
+        /**
+         * Returns the maximum size for KFileItemDelegate::sizeHint().
+         *
+         * @see setMaximumSize()
+         */
+        QSize maximumSize() const;
 
         /**
          * Reimplemented from @ref QAbstractItemDelegate.

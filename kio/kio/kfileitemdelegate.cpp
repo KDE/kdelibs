@@ -115,6 +115,7 @@ class KFileItemDelegate::Private
         QColor shadowColor;
         QPointF shadowOffset;
         qreal shadowBlur;
+        QSize maximumSize;
 
     private:
         KFileItemDelegate * const q;
@@ -126,7 +127,7 @@ class KFileItemDelegate::Private
 
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
-     : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2),
+     : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2), maximumSize(0, 0),
        q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent))
 {
 }
@@ -418,8 +419,18 @@ QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItemV4 &
                                                   const QModelIndex &index) const
 {
     QString label = option.text;
-    const int maxWidth = verticalLayout(option) && (option.features & QStyleOptionViewItemV2::WrapText)
-            ? option.decorationSize.width() + 10 : 32757;
+    int maxWidth = 0;
+    if (maximumSize.isEmpty()) {
+        maxWidth = verticalLayout(option) && (option.features & QStyleOptionViewItemV2::WrapText)
+                   ? option.decorationSize.width() + 10 : 32757;
+    }
+    else {
+        const Margin &itemMargin = activeMargins[ItemMargin];
+        const Margin &textMargin = activeMargins[TextMargin];
+        maxWidth = maximumSize.width() -
+                   (itemMargin.left + itemMargin.right) -
+                   (textMargin.left + textMargin.right);
+    }
 
     KFileItem item = fileItem(index);
 
@@ -852,7 +863,12 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
         size.rheight() = qMax(decorationSize.height(), displaySize.height());
     }
 
-    return d->addMargin(size, Private::ItemMargin);
+    size = d->addMargin(size, Private::ItemMargin);
+    if (!d->maximumSize.isEmpty()) {
+        size = size.boundedTo(d->maximumSize);
+    }
+
+    return size;
 }
 
 
@@ -937,6 +953,18 @@ void KFileItemDelegate::setShadowBlur(qreal factor)
 qreal KFileItemDelegate::shadowBlur() const
 {
     return d->shadowBlur;
+}
+
+
+void KFileItemDelegate::setMaximumSize(const QSize &size)
+{
+    d->maximumSize = size;
+}
+
+
+QSize KFileItemDelegate::maximumSize() const
+{
+    return d->maximumSize;
 }
 
 
