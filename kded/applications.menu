@@ -33,6 +33,19 @@
 				</And>
 				<!-- Don't list SUSE's YaST in here -->
 				<Category>X-SuSE-YaST</Category>
+				<Category>X-KDE-settings-hardware</Category>
+				<Category>X-KDE-settings-accessibility</Category>
+				<Category>X-KDE-settings-components</Category>
+				<Category>X-KDE-settings-desktop</Category>
+				<Category>X-KDE-settings-looknfeel</Category>
+				<Category>X-KDE-settings-network</Category>
+				<Category>X-KDE-settings-webbrowsing</Category>
+				<Category>X-KDE-settings-peripherals</Category>
+				<Category>X-KDE-settings-hardware</Category>
+				<Category>X-KDE-settings-power</Category>
+				<Category>X-KDE-settings-security</Category>
+				<Category>X-KDE-settings-sound</Category>
+				<Category>X-KDE-settings-system</Category>
 			</Not>
 		</Include>
 	</Menu>
@@ -376,73 +389,17 @@
 		<Name>Utilities</Name>
 		<Directory>kde-utilities.directory</Directory>
 		<Include>
-			<And>
+			<Or>
 				<Category>Utility</Category>
-				<Not><Category>Accessibility</Category></Not>
-				<Not><Category>X-KDE-Utilities-Desktop</Category></Not>
-				<Not><Category>X-KDE-Utilities-File</Category></Not>
-				<Not><Category>X-KDE-Utilities-Peripherals</Category></Not>
-				<Not><Category>X-KDE-Utilities-PIM</Category></Not>
-				<Not><Category>X-KDE-More</Category></Not>
-			</And>
+				<Category>TextEditor</Category>
+				<Category>Accessibility</Category>
+				<Category>X-KDE-Utilities-Desktop</Category>
+				<Category>X-KDE-Utilities-File</Category>
+				<Category>X-KDE-Utilities-Peripherals</Category>
+				<Category>X-KDE-Utilities-PIM</Category>
+				<Category>X-KDE-More</Category>
+			</Or>
 		</Include>
-		<Menu>
-			<Name>Accessibility</Name>
-			<Directory>kde-utilities-accessibility.directory</Directory>
-			<Include>
-				<And>
-					<Category>Utility</Category>
-					<Category>Accessibility</Category>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Desktop</Name>
-			<Directory>kde-utilities-desktop.directory</Directory>
-			<Include>
-				<And>
-					<Category>Utility</Category>
-					<Category>X-KDE-Utilities-Desktop</Category>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Editors</Name>
-			<Directory>kde-editors.directory</Directory>
-			<Include>
-					<Category>TextEditor</Category>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>File</Name>
-			<Directory>kde-utilities-file.directory</Directory>
-			<Include>
-				<And>
-					<Category>Utility</Category>
-					<Category>X-KDE-Utilities-File</Category>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>Peripherals</Name>
-			<Directory>kde-utilities-peripherals.directory</Directory>
-			<Include>
-				<And>
-					<Category>Utility</Category>
-					<Category>X-KDE-Utilities-Peripherals</Category>
-				</And>
-			</Include>
-		</Menu>
-		<Menu>
-			<Name>PIM</Name>
-			<Directory>kde-utilities-pim.directory</Directory>
-			<Include>
-				<And>
-					<Category>Utility</Category>
-					<Category>X-KDE-Utilities-PIM</Category>
-				</And>
-			</Include>
-		</Menu>
 		<Menu>
 			<Name>XUtilities</Name>
 			<Directory>kde-utilities-xutils.directory</Directory>
