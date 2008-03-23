@@ -81,8 +81,6 @@ pre {
     font-family: Courier, 'Courier New', 'Andale Mono', Monaco, monospace;
     color: #000000;
     background: #f9f9f9;
-    border: #2f6fab dashed;
-    border-width: 1px;
 }
 
 input, textarea, select {
