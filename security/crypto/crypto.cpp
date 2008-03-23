@@ -856,7 +856,7 @@ void KCryptoConfig::load()
   KConfigGroup cgWarning(config, "Warnings");
   mWarnOnEnter->setChecked(cgWarning.readEntry("OnEnter", false));
   mWarnOnLeave->setChecked(cgWarning.readEntry("OnLeave", true));
-  mWarnOnUnencrypted->setChecked(cgWarning.readEntry("OnUnencrypted", true));
+  mWarnOnUnencrypted->setChecked(cgWarning.readEntry("OnUnencrypted", false));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnMixed->setChecked(cg.readEntry("OnMixed", true));

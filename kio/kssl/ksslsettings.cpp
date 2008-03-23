@@ -187,7 +187,7 @@ void KSSLSettings::load() {
         KConfigGroup cfg(m_cfg, "Warnings");
 	m_bWarnOnEnter = cfg.readEntry("OnEnter", false);
 	m_bWarnOnLeave = cfg.readEntry("OnLeave", true);
-	m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", true);
+	m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", false);
 	m_bWarnOnMixed = cfg.readEntry("OnMixed", true);
 
 	cfg.changeGroup("Validation");
