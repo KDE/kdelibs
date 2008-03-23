@@ -49,7 +49,6 @@
 #include <QtGui/QPainter>
 #include "khtmlview.h"
 #include <khtml_part.h>
-#include <QBitmap>
 #include <QPaintEngine>
 
 #include <assert.h>
@@ -808,32 +807,20 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             }
         }
 
-        //Make the mask pixmap.
-        QBitmap mask;
+        QPainterPath path;
         if (s == BSBottom || s == BSTop) //Horizontal
         {
-            mask = QBitmap(onLen + offLen, width);
-            QPainter pmask(&mask);
-            pmask.fillRect(0,     0, onLen  + 1, width + 1, Qt::color1);
-            pmask.fillRect(onLen, 0, offLen + 1, width + 1, Qt::color0);
+            for (int x = x1; x < x2; x += onLen + offLen)
+                path.addRect(x, y1, qMin(onLen, (x2 - x)), width);
         }
         else //Vertical
         {
-            mask = QBitmap(width, onLen + offLen);
-            QPainter pmask(&mask);
-            pmask.fillRect(0, 0,     width + 1, onLen  + 1, Qt::color1);
-            pmask.fillRect(0, onLen, width + 1, offLen + 1, Qt::color0);
+            for (int y = y1; y < y2; y += onLen + offLen)
+                path.addRect(x1, y, width, qMin(onLen, (y2 - y)));
         }
 
-        //Make a drawing pixmap.
-        QPixmap drawTile(mask.size());
-        QPainter fillDrawTile(&drawTile);
-        fillDrawTile.fillRect(0, 0, drawTile.width(), drawTile.height(), c);
-        fillDrawTile.end();
-        drawTile.setMask(mask);
-
         //Finally paint the line
-        p->drawTiledPixmap(x1, y1, x2 - x1, y2 - y1, drawTile);
+        p->fillPath(path, c);
         break;
     }
     case DOUBLE:
