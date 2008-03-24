@@ -44,6 +44,7 @@
 #include <QtCore/QFile>
 #include <QtGui/QHeaderView>
 #include <QtGui/QImage>
+#include <QtGui/QItemDelegate>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QPainter>
@@ -146,6 +147,8 @@ public:
 KColorCells::KColorCells(QWidget *parent, int rows, int cols)
         : QTableWidget(parent), d(new KColorCellsPrivate(this))
 {
+    setItemDelegate(new QItemDelegate(this));
+
     setFrameShape(QFrame::NoFrame);
     d->shade = true;
     setRowCount(rows);
