@@ -50,4 +50,6 @@ QStringList Object::getCalls()
 
 void Object::hook(int id, void* ptr)
 {
+    Q_UNUSED(id);
+    Q_UNUSED(ptr);
 }
