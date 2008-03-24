@@ -2,11 +2,12 @@ include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_IN
 
 set(krosscore_LIB_SRCS
    krossconfig.cpp
-   interpreter.cpp 
+   interpreter.cpp
    script.cpp
    action.cpp
    actioncollection.cpp
    manager.cpp
+   object.cpp
 )
 
 kde4_add_library(krosscore SHARED ${krosscore_LIB_SRCS})
@@ -26,4 +27,5 @@ install(FILES
     action.h
     actioncollection.h
     manager.h
+    object.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core COMPONENT Devel)
