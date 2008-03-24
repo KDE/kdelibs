@@ -90,7 +90,7 @@ namespace Kross {
              * \internal used virtual hook to easier the job to keep
              * biny compatiblity.
              */
-            virtual void hook(int id, void* ptr);
+            virtual void virtual_hook(int id, void* ptr);
 
         private:
             class Private;

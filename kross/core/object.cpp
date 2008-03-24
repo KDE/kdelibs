@@ -48,7 +48,7 @@ QStringList Object::getCalls()
     return QStringList();
 }
 
-void Object::hook(int id, void* ptr)
+void Object::virtual_hook(int id, void* ptr)
 {
     Q_UNUSED(id);
     Q_UNUSED(ptr);
