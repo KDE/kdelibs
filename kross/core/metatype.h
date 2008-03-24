@@ -85,12 +85,12 @@ namespace Kross {
         public:
             MetaTypeVariant(const VARIANTTYPE& v) : m_value(v) {
                 #ifdef KROSS_METATYPE_DEBUG
-                    krossdebug( QString("MetaTypeVariant<VARIANTTYPE> Ctor value=%1 typename=%2").arg(qVariantFromValue(m_value).toString()).arg(qVariantFromValue(m_value).type()) );
+                    krossdebug( QString("MetaTypeVariant<VARIANTTYPE> Ctor value=%1 typename=%2").arg(qVariantFromValue(m_value).toString()).arg(qVariantFromValue(m_value).typeName()) );
                 #endif
             }
             virtual ~MetaTypeVariant() {
                 #ifdef KROSS_METATYPE_DEBUG
-                    krossdebug( QString("MetaTypeVariant<VARIANTTYPE> Dtor value=%1 typename=%2").arg(qVariantFromValue(m_value).toString()).arg(qVariantFromValue(m_value).type()) );
+                    krossdebug( QString("MetaTypeVariant<VARIANTTYPE> Dtor value=%1 typename=%2").arg(qVariantFromValue(m_value).toString()).arg(qVariantFromValue(m_value).typeName()) );
                 #endif
             }
 

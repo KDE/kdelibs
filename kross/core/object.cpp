@@ -21,12 +21,19 @@
 
 using namespace Kross;
 
-Object::Object() : KShared()
+class Object::Private
+{
+};
+
+Object::Object()
+    : KShared()
+    , d(new Private)
 {
 }
 
 Object::~Object()
 {
+    delete d;
 }
 
 QVariant Object::call(const QString& name, const QVariantList& args)
@@ -39,4 +46,8 @@ QVariant Object::call(const QString& name, const QVariantList& args)
 QStringList Object::getCalls()
 {
     return QStringList();
+}
+
+void Object::hook(int id, void* ptr)
+{
 }

@@ -475,7 +475,9 @@ void Action::slotTriggered()
                 krossdebug( QString("Action::slotTriggered() after exec, errorMessage=%2").arg(errorMessage()) );
             #endif
             setError(d->script);
+            //emit finished(this);
             finalize();
+            //return;
         }
     }
 

@@ -85,6 +85,16 @@ namespace Kross {
              * \return List of supported calls.
              */
             virtual QStringList getCalls();
+
+            /**
+             * \internal used virtual hook to easier the job to keep
+             * biny compatiblity.
+             */
+            virtual void hook(int id, void* ptr);
+
+        private:
+            class Private;
+            Private* const d;
     };
 }
 
