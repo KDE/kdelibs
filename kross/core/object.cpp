@@ -23,10 +23,17 @@ using namespace Kross;
 
 class Object::Private
 {
+    public:
 };
 
 Object::Object()
-    : KShared()
+    : QSharedData()
+    , d(new Private)
+{
+}
+
+Object::Object(const Object &other)
+    : QSharedData()
     , d(new Private)
 {
 }

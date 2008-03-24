@@ -31,17 +31,13 @@
 namespace Kross {
 
     /**
-     * The common Object class all other object-classes are
-     * inheritated from.
-     *
-     * The Object class is used as base class to provide
-     * common functionality. It's similar to what we know
-     * in Python as PyObject or in Qt as QObject.
-     *
-     * Inherited from e.g. \a Value, \a Module and \a Class .
+     * The class Object does provide us scripting objects like
+     * class instances to the C++ world.
      *
      * This class implementates reference counting for shared
      * objects. So, no need to take care of freeing objects.
+     *
+     * \since 4.1
      */
     class KROSSCORE_EXPORT Object : public QSharedData, public ErrorInterface
     {
@@ -53,9 +49,14 @@ namespace Kross {
             typedef KSharedPtr<Object> Ptr;
 
             /**
-             * Constructor.
+             * Default constructor.
              */
             explicit Object();
+
+            /**
+             * Copy constructor.
+             */
+            Object(const Object &other);
 
             /**
              * Destructor.
@@ -63,18 +64,13 @@ namespace Kross {
             virtual ~Object();
 
             /**
-             * Pass a call to the object and evaluated it recursive
-             * down the object-hierachy. Objects like \a Class are able
-             * to handle call's by just implementing this function.
-             * If the call is done the \a called() method will be
-             * executed recursive from bottom up the call hierachy.
+             * Pass a call to the object and evaluated it.
              *
              * \param name Each call has a name that says what
-             *        should be called. In the case of a \a Class
-             *        the name is the functionname.
-             * \param arguments The list of arguments passed to
-             *        the call.
-             * \return The call-result as QVariant
+             * should be called.
+             * \param arguments The optional list of arguments
+             * passed to the call.
+             * \return The call-result as QVariant.
              */
             virtual QVariant call(const QString& name,
                                   const QVariantList& args = QVariantList());
@@ -88,12 +84,14 @@ namespace Kross {
 
             /**
              * \internal used virtual hook to easier the job to keep
-             * biny compatiblity.
+             * binary compatiblity.
              */
             virtual void virtual_hook(int id, void* ptr);
 
         private:
+            /// \internal d-pointer class.
             class Private;
+            /// \internal d-pointer instance.
             Private* const d;
     };
 }
