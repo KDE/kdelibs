@@ -1653,7 +1653,7 @@ void KDirOperator::setupActions()
     // an interface to add a custom action collection.
 
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 4, 0))
-    d->actionCollection->addAssociatedWidget(topLevelWidget());
+    d->actionCollection->addAssociatedWidget(parentWidget());
     foreach (QAction* action, d->actionCollection->actions())
       action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #endif
