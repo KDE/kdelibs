@@ -35,7 +35,7 @@ KTranslatable::KTranslatable()
 KTranslatable::KTranslatable(const KTranslatable& other)
         : d(0)
 {
-    m_strings == other.m_strings;
+    m_strings = other.m_strings;
 }
 
 KTranslatable& KTranslatable::operator=(const KTranslatable & other)
