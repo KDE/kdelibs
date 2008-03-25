@@ -796,9 +796,9 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
         const KProtocolInfo::List allProtocols = KProtocolInfoFactory::self()->allProtocols();
         for (KProtocolInfo::List::const_iterator it = allProtocols.begin();
              it != allProtocols.end(); ++it) {
-            const QString archiveMimetype = (*it)->archiveMimeType();
-            if (!archiveMimetype.isEmpty()) {
-                d->protocolForArchiveMimetypes.insert(archiveMimetype, (*it)->name());
+            const QStringList archiveMimetypes = (*it)->archiveMimeTypes();
+            Q_FOREACH(const QString& mime, archiveMimetypes) {
+                d->protocolForArchiveMimetypes.insert(mime, (*it)->name());
             }
         }
     }

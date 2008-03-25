@@ -324,7 +324,7 @@ public:
   /// @internal. Use KProtocolManager instead.
   QString defaultMimeType() const;
   /// @internal. Use KProtocolManager instead.
-  QString archiveMimeType() const;
+  QStringList archiveMimeTypes() const;
 
 protected:
   QString m_name;

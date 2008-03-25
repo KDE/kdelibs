@@ -65,7 +65,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
   m_determineMimetypeFromExtension = config.readEntry( "determineMimetypeFromExtension", true );
-  d->archiveMimetype = config.readEntry("archiveMimetype");
+  d->archiveMimetype = config.readEntry("archiveMimetype", QStringList());
   m_icon = config.readEntry( "Icon", "unknown" );
   m_config = config.readEntry( "config", m_name );
   m_maxSlaves = config.readEntry( "maxInstances", 1);
@@ -371,7 +371,7 @@ QString KProtocolInfo::defaultMimeType() const
 }
 
 
-QString KProtocolInfo::archiveMimeType() const
+QStringList KProtocolInfo::archiveMimeTypes() const
 {
     Q_D(const KProtocolInfo);
     return d->archiveMimetype;
