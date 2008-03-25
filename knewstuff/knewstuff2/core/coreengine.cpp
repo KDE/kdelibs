@@ -51,18 +51,9 @@
 using namespace KNS;
 
 CoreEngine::CoreEngine(QObject* parent)
-        : QObject(parent)
+        : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
+            m_initialized(false), m_cachepolicy(CacheNever), m_automationpolicy(AutomationOn)
 {
-    m_initialized = false;
-    m_cachepolicy = CacheNever;
-    m_automationpolicy = AutomationOn;
-
-    m_uploadedentry = NULL;
-    m_uploadprovider = NULL;
-
-    m_installation = NULL;
-
-    m_activefeeds = 0;
 }
 
 CoreEngine::~CoreEngine()

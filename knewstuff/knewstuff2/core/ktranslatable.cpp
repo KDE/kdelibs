@@ -34,11 +34,14 @@ KTranslatable::KTranslatable()
 KTranslatable::KTranslatable(const KTranslatable& other)
         : d(0)
 {
-    *this = other;
+    m_strings = other.m_strings;
 }
 
 KTranslatable& KTranslatable::operator=(const KTranslatable & other)
 {
+    if (this == &other) {
+        return *this;
+    }
     m_strings = other.m_strings;
     return *this;
 }
