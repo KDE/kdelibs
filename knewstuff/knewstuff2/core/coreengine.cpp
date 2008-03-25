@@ -51,18 +51,9 @@
 using namespace KNS;
 
 CoreEngine::CoreEngine(QObject* parent)
-        : QObject(parent)
+        : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
+            m_initialized(false), m_cachepolicy(CacheNever), m_automationpolicy(AutomationOn)
 {
-    m_initialized = false;
-    m_cachepolicy = CacheNever;
-    m_automationpolicy = AutomationOn;
-
-    m_uploadedentry = NULL;
-    m_uploadprovider = NULL;
-
-    m_installation = NULL;
-
-    m_activefeeds = 0;
 }
 
 CoreEngine::~CoreEngine()
@@ -1330,7 +1321,7 @@ bool CoreEngine::install(const QString &payloadfile)
                 installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
             }
             else { // system scope
-                installdir = KStandardDirs::locate(m_installation->standardResourceDir().toUtf8(), "/");
+                installdir = KStandardDirs::installPath(m_installation->standardResourceDir().toUtf8());
             }
             pathcounter++;
         }
@@ -1340,7 +1331,7 @@ bool CoreEngine::install(const QString &payloadfile)
                 installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
             }
             else { // system scope
-                installdir = KStandardDirs::locate("data", m_installation->targetDir() + '/');
+                installdir = KStandardDirs::installPath("data") + m_installation->targetDir() + '/';
             }
             pathcounter++;
         }
@@ -1354,6 +1345,8 @@ bool CoreEngine::install(const QString &payloadfile)
             kError() << "Wrong number of installation directories given." << endl;
             return false;
         }
+
+        kDebug() << "installdir: " << installdir;
 
         // respect the uncompress flag in the knsrc
         if (!m_installation->uncompression().isEmpty()) {
