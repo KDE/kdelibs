@@ -444,7 +444,7 @@ public:
     void load(const DOMString &uri);
     void loadXML(const DOMString &source);
     // from cachedObjectClient
-    void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset);
+    void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset, const DOM::DOMString &mimetype);
     void error(int err, const QString &text);
 
     typedef QMap<QString, ProcessingInstructionImpl*> LocalStyleRefs;

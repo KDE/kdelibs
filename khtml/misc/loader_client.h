@@ -26,7 +26,7 @@ namespace khtml {
         // return whether we need manual update
         // don't ref() or deref() elements in setPixmap!!
 	virtual void updatePixmap(const QRect&, CachedImage *);
-	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/, const DOM::DOMString &/*charset*/);
+	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/, const DOM::DOMString &/*charset*/, const DOM::DOMString &/*mimetype*/);
 	virtual void notifyFinished(CachedObject * /*finishedObj*/);
 	virtual void error(int err, const QString &text);
     };

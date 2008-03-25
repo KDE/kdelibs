@@ -89,7 +89,7 @@ public:
     virtual void removedFromDocument();
 
     // from CachedObjectClient
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset);
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset, const DOM::DOMString &mimetype);
     virtual void error(int err, const QString &text);
     bool isLoading() const;
     bool sheetLoaded();

@@ -241,14 +241,18 @@ void HTMLLinkElementImpl::removedFromDocument()
     getDocument()->updateStyleSelector();
 }
 
-void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset)
+void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset, const DOM::DOMString &mimetype)
 {
     if (m_sheet)
         m_sheet->deref();
+    bool strict = !getDocument()->inCompatMode();
+    DOMString sheet = sheetStr;
+    if (strict && !khtml::isAcceptableCSSMimetype(mimetype))
+         sheet = "";
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->setCharset(charset);
-    m_sheet->parseString( sheetStr, !getDocument()->inCompatMode() );
+    m_sheet->parseString( sheet, strict );
 
     MediaListImpl *media = new MediaListImpl( (CSSStyleSheetImpl*)0, m_media );
     m_sheet->setMedia( media );
