@@ -332,6 +332,7 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * Sets the maximum size for KFileItemDelegate::sizeHint().
          *
          * @see maximumSize()
+         * @since 4.1
          */
         void setMaximumSize(const QSize &size);
 
@@ -339,6 +340,7 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * Returns the maximum size for KFileItemDelegate::sizeHint().
          *
          * @see setMaximumSize()
+         * @since 4.1
          */
         QSize maximumSize() const;
 
