@@ -274,8 +274,6 @@ public:
   QString m_encoding;
   QString m_sheetUsed;
   qlonglong m_cacheId;
-  QString scheduledScript;
-  DOM::Node scheduledScriptNode;
 
 #ifndef KHTML_NO_WALLET
   KWallet::Wallet* m_wallet;

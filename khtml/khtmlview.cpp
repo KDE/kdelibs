@@ -1340,9 +1340,6 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 	d->clickCount = 0;  // moving the mouse outside the threshold invalidates the click
     }
 
-    // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
-    m_part->executeScheduledScript();
-
     khtml::RenderObject* r = target ? target->renderer() : 0;
     bool setCursor = true;
     if (r && r->isWidget()) {
