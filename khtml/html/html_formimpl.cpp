@@ -348,7 +348,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                     form_data.append(hstr);
                     form_data.append(*it);
                     form_data.append("\r\n");
-                    
+
 		    // reset unsubmittedFormChange flag
                     if (current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT)
@@ -796,7 +796,7 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
-    int i = formElements.indexOf(e); 
+    int i = formElements.indexOf(e);
     if (i != -1)
         formElements.removeAt(i);
 }
@@ -808,7 +808,7 @@ void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
 
 void HTMLFormElementImpl::removeImgElement(HTMLImageElementImpl *e)
 {
-    int i = imgElements.indexOf(e); 
+    int i = imgElements.indexOf(e);
     if (i != -1)
         imgElements.removeAt(i);
 }
@@ -1390,6 +1390,9 @@ void HTMLInputElementImpl::restoreState(const QString &state)
     case FILE:
         m_value = DOMString(state.left(state.length()-1));
         setChanged();
+        break;
+    case HIDDEN:
+        // Don't mess with those...
         break;
     default:
         setValue(DOMString(state.left(state.length()-1)));
@@ -2703,10 +2706,10 @@ HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const
 /*
  The rules for storing the value are simple:
 
- If there is no renderer, either m_value or defaultValue() is definitive, 
+ If there is no renderer, either m_value or defaultValue() is definitive,
     depending on whether m_initialized is true or not.
  If there is a renderer, m_render->text() is definitive. During its construction,
-    m_value is initialized if needed,  so there is no longer any need to worry 
+    m_value is initialized if needed,  so there is no longer any need to worry
     about default values or not.
 */
 

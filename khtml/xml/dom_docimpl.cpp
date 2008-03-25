@@ -388,6 +388,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_documentElement = 0;
     m_cssTarget = 0;
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
+    m_stateRestorePos = 0;
 }
 
 void DocumentImpl::removedLastRef()
@@ -1075,22 +1076,50 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     return n;
 }
 
-QString DocumentImpl::nextState()
+void DocumentImpl::attemptRestoreState(NodeImpl* n)
 {
-   QString state;
-   if (!m_state.isEmpty())
-   {
-      state = m_state.first();
-      m_state.erase(m_state.begin());
-   }
-   return state;
+    if (!n->isElementNode())
+        return;
+
+    ElementImpl* el = static_cast<ElementImpl*>(n);
+
+    if (m_stateRestorePos >= m_state.size())
+        return;
+
+    // Grab the state and element info..
+    QString idStr = m_state[m_stateRestorePos];
+    QString nmStr = m_state[m_stateRestorePos + 1];
+    QString tpStr = m_state[m_stateRestorePos + 2];
+    QString stStr = m_state[m_stateRestorePos + 3];
+
+    // Make sure it matches!
+    if (idStr.toUInt() != el->id())
+        return;
+    if (nmStr != el->getAttribute(ATTR_NAME).string())
+        return;
+    if (tpStr != el->getAttribute(ATTR_TYPE).string())
+        return;
+
+    m_stateRestorePos += 4;
+    if (!stStr.isNull())
+        el->restoreState(stStr);
 }
 
 QStringList DocumentImpl::docState()
 {
     QStringList s;
-    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();)
-        s.append(it.next()->state());
+    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();) {
+        NodeImpl* n = it.next();
+        if (!n->isElementNode())
+            continue;
+
+        ElementImpl* el = static_cast<ElementImpl*>(n);
+        // Encode the element ID, as well as the name and type attributes
+        s.append(QString::number(el->id()));
+        s.append(el->getAttribute(ATTR_NAME).string());
+        s.append(el->getAttribute(ATTR_TYPE).string());
+        s.append(el->state());
+    }
 
     return s;
 }
@@ -2741,6 +2770,7 @@ DOMString DocumentImpl::toString() const
 void DOM::DocumentImpl::setRestoreState( const QStringList &s)
 {
     m_state = s;
+    m_stateRestorePos = 0;
 }
 
 KHTMLView* DOM::DocumentImpl::view() const

@@ -269,7 +269,9 @@ public:
     void recalcStyleSelector();
     void rebuildStyleSelector();
 
-    QString nextState();
+    // Tries to restore the elements value from the doc state,
+    // if it seems like the same thing
+    void attemptRestoreState(NodeImpl* e);
 
     // Query all registered elements for their state
     QStringList docState();
@@ -552,6 +554,7 @@ protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;
     QStringList m_state;
+    int         m_stateRestorePos;
 
     khtml::DocLoader *m_docLoader;
     khtml::Tokenizer *m_tokenizer;
