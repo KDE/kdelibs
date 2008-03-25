@@ -158,11 +158,15 @@ namespace khtml
         QString accept() const { return m_accept; }
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
+        // the mimetype that was eventually used
+        QString mimetype() const { return m_mimetype; }
+
     protected:
         void setSize(int size);
         QHash<CachedObjectClient*,CachedObjectClient*> m_clients;
 	DOM::DOMString m_url;
         QString m_accept;
+        QString m_mimetype;
         Request *m_request;
 	Type m_type;
 	Status m_status;
@@ -182,8 +186,11 @@ namespace khtml
         CachedObject* m_prev;
         friend class Cache;
         friend class ::KHTMLPart;
+        friend class Loader;
     };
 
+
+    bool isAcceptableCSSMimetype( const DOM::DOMString& mimetype );
 
     /**
      * a cached style sheet. also used for loading xml documents.
@@ -207,6 +214,7 @@ namespace khtml
         virtual bool schedule() const { return true; }
         void setCharsetHint( const QString& charset ) { m_charsetHint = charset; }
         void setCharset( const QString& charset ) { m_charset = charset; }
+
 
     protected:
         void checkNotify();
@@ -434,6 +442,7 @@ namespace khtml
      */
     class Loader : public QObject
     {
+
 	Q_OBJECT
 
     public:
@@ -455,6 +464,7 @@ namespace khtml
 
     protected Q_SLOTS:
 	void slotFinished( KJob * );
+	void slotMimetype( KIO::Job *, const QString& s);
 	void slotData( KIO::Job *, const QByteArray & );
 	void servePendingRequests();
 
@@ -464,7 +474,7 @@ namespace khtml
 #ifdef HAVE_LIBJPEG
         // TODO KJPEGFormatType m_jpegloader;
 #endif
-        QTimer m_timer;
+        QTimer m_timer;     
     };
 
         /**

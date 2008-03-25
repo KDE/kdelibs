@@ -150,7 +150,7 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
     StyleSheetImpl *sheet() const;
     void checkStyleSheet();
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset);
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset, const DOM::DOMString &mimetype);
     virtual void setStyleSheet(CSSStyleSheetImpl* sheet);
 
     virtual DOMString toString() const;

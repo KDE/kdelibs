@@ -431,14 +431,14 @@ StyleSheetImpl *ProcessingInstructionImpl::sheet() const
     return m_sheet;
 }
 
-void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset)
+void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset, const DOM::DOMString &mimetype)
 {
     if (m_sheet)
 	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(getDocument(), url);
     m_sheet->ref();
     m_sheet->setCharset(charset);
-    m_sheet->parseString(sheet);
+    m_sheet->parseString(khtml::isAcceptableCSSMimetype(mimetype) ? sheet : "");
     if (m_cachedSheet)
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;

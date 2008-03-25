@@ -241,6 +241,11 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const QString &st
     m_sheet = DOMString(stylesheet_data);
 }
 
+bool khtml::isAcceptableCSSMimetype( const DOM::DOMString& mimetype )
+{
+    // matches Mozilla's check (cf. nsCSSLoader.cpp)
+    return mimetype.isEmpty() || mimetype == "text/css" || mimetype == "application/x-unknown-content-type";
+}
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 {
@@ -250,7 +255,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 	if (m_hadError)
 	    c->error( m_err, m_errText );
 	else
-	    c->setStyleSheet( m_url, m_sheet, m_charset );
+	    c->setStyleSheet( m_url, m_sheet, m_charset, m_mimetype );
     }
 }
 
@@ -285,7 +290,7 @@ void CachedCSSStyleSheet::checkNotify()
     CDEBUG << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 
     for (QHashIterator<CachedObjectClient*,CachedObjectClient*> it( m_clients ); it.hasNext();)
-        it.next().value()->setStyleSheet( m_url, m_sheet, m_charset );
+        it.next().value()->setStyleSheet( m_url, m_sheet, m_charset, m_mimetype );
 }
 
 
@@ -1266,6 +1271,7 @@ void Loader::servePendingRequests()
         }
 
         connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotFinished( KJob * ) ) );
+        connect( job, SIGNAL( mimetype( KIO::Job *, const QString& ) ), this, SLOT( slotMimetype( KIO::Job *, const QString& ) ) );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
                  SLOT( slotData( KIO::Job*, const QByteArray &)));
 
@@ -1274,6 +1280,16 @@ void Loader::servePendingRequests()
 
         m_requestsLoading.insertMulti(job, req);
     }
+}
+
+void Loader::slotMimetype( KIO::Job *j, const QString& s )
+{
+    KIO::TransferJob* job = static_cast<KIO::TransferJob*>(j);
+    Request *r = m_requestsLoading.value( j );
+    if (!r)
+        return;
+    CachedObject *o = r->object;
+    o->m_mimetype = s;
 }
 
 void Loader::slotFinished( KJob* job )
@@ -1759,7 +1775,7 @@ void Cache::insertInLRUList(CachedObject *object)
 // --------------------------------------
 
 void CachedObjectClient::updatePixmap(const QRect&, CachedImage *) {}
-void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/, const DOM::DOMString &/*charset*/) {}
+void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/, const DOM::DOMString &/*charset*/, const DOM::DOMString &/*mimetype*/) {}
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
 void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}
 

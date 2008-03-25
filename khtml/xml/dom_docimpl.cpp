@@ -2561,11 +2561,11 @@ void DocumentImpl::loadXML(const DOMString &source)
     dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
-void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &/*charset*/)
+void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &/*charset*/, const DOM::DOMString &mimetype)
 {
     if (!m_hadLoadError) {
 	m_url = url.string();
-	loadXML(sheet);
+	loadXML(khtml::isAcceptableCSSMimetype(mimetype) ? sheet : "");
     }
 
     m_docLoading = false;

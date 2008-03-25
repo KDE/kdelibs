@@ -131,7 +131,7 @@ CSSImportRuleImpl::~CSSImportRuleImpl()
     if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
-void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset)
+void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset, const DOM::DOMString &mimetype)
 {
     if ( m_styleSheet ) {
         m_styleSheet->setParent(0);
@@ -142,7 +142,11 @@ void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMS
     m_styleSheet->ref();
 
     CSSStyleSheetImpl *parent = parentStyleSheet();
-    m_styleSheet->parseString( sheet, parent ? parent->useStrictParsing() : true );
+    bool strict = parent ? parent->useStrictParsing() : true;
+    DOMString sheet = sheetStr;
+    if (strict && !khtml::isAcceptableCSSMimetype(mimetype))
+        sheet = "";
+    m_styleSheet->parseString( sheet, strict );
     m_loading = false;
     m_done = true;
 
