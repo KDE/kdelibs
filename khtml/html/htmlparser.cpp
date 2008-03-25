@@ -1714,6 +1714,12 @@ void KHTMLParser::createHead()
         delete head;
         head = 0;
     }
+        
+    // If the body does not exist yet, then the <head> should be pushed as the current block.
+    if (head && !body) {
+        pushBlock(head->id(), tagPriority(head->id()));
+        setCurrent(head);
+    }
 }
 
 NodeImpl *KHTMLParser::handleIsindex( Token *t )
