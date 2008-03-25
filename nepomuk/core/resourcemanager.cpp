@@ -32,7 +32,6 @@
 #include <Soprano/Statement>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/StatementIterator>
-#include <Soprano/Util/DummyModel>
 
 using namespace Soprano;
 
@@ -44,14 +43,11 @@ public:
     Private( ResourceManager* manager )
         : mainModel( 0 ),
           overrideModel( 0 ),
-          dummyModel( 0 ),
           m_parent(manager) {
     }
 
     Nepomuk::MainModel* mainModel;
     Soprano::Model* overrideModel;
-
-    Soprano::Util::DummyModel* dummyModel;
 
 private:
     ResourceManager* m_parent;
@@ -71,7 +67,6 @@ Nepomuk::ResourceManager::ResourceManager()
 
 Nepomuk::ResourceManager::~ResourceManager()
 {
-    delete d->dummyModel;
     delete d;
 }
 
@@ -226,13 +221,6 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
     // make sure we are initialized
     if ( !initialized() ) {
         init();
-    }
-
-    if ( !d->mainModel ) {
-        if ( !d->dummyModel ) {
-            d->dummyModel = new Soprano::Util::DummyModel();
-        }
-        return d->dummyModel;
     }
 
     return d->mainModel;

@@ -29,11 +29,15 @@
 #include <Soprano/Client/DBusClient>
 #include <Soprano/Client/LocalSocketClient>
 #include <Soprano/Query/QueryLanguage>
+#include <Soprano/Util/DummyModel>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
+
+// FIXME: connect to some NepomukServer signal which emit enabled/disabled information
+//        when the server shuts down and is started again
 
 using namespace Soprano;
 
@@ -45,6 +49,7 @@ public:
         : dbusClient( "org.kde.NepomukServer" ),
           dbusModel( 0 ),
           localSocketModel( 0 ),
+          dummyModel( 0 ),
           m_initialized( false ) {
     }
 
@@ -53,6 +58,8 @@ public:
     Soprano::Client::DBusModel* dbusModel;
     Soprano::Model* localSocketModel;
 
+    Soprano::Util::DummyModel* dummyModel;
+
     void init() {
         if ( !dbusModel ) {
             dbusModel = dbusClient.createModel( "main" );
@@ -60,11 +67,12 @@ public:
 
         if ( !localSocketModel ) {
             if ( !localSocketClient.isConnected() ) {
-                if ( localSocketClient.connect( KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" ) ) ) {
+                QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+                if ( localSocketClient.connect( socketName ) ) {
                     localSocketModel = localSocketClient.createModel( "main" );
                 }
                 else {
-                    kDebug() << "Failed to connect to Nepomuk server via local socket.";
+                    kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
                 }
             }
         }
@@ -81,8 +89,14 @@ public:
         if ( localSocketModel ) {
             return localSocketModel;
         }
-        else {
+        else if ( dbusModel ) {
             return dbusModel;
+        }
+        else {
+            if ( !dummyModel ) {
+                dummyModel = new Soprano::Util::DummyModel();
+            }
+            return dummyModel;
         }
     }
 
