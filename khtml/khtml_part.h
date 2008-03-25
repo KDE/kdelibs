@@ -1582,10 +1582,7 @@ private:
 
   void clear();
 
-  bool scheduleScript( const DOM::Node &n, const QString& script);
-
   QVariant crossFrameExecuteScript(const QString& target, const QString& script);
-  QVariant executeScheduledScript();
 
   bool requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QString &url, const QString &frameName,
                      const QStringList &args = QStringList(), bool isIFrame = false );

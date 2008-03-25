@@ -1248,30 +1248,6 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   return ret;
 }
 
-bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
-{
-    //kDebug(6050) << "KHTMLPart::scheduleScript "<< script;
-
-    d->scheduledScript = script;
-    d->scheduledScriptNode = n;
-
-    return true;
-}
-
-QVariant KHTMLPart::executeScheduledScript()
-{
-  if( d->scheduledScript.isEmpty() )
-    return QVariant();
-
-  //kDebug(6050) << "executing delayed " << d->scheduledScript;
-
-  QVariant ret = executeScript( d->scheduledScriptNode, d->scheduledScript );
-  d->scheduledScript.clear();
-  d->scheduledScriptNode = DOM::Node();
-
-  return ret;
-}
-
 void KHTMLPart::setJavaEnabled( bool enable )
 {
   d->m_bJavaForce = enable;
