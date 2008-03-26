@@ -43,7 +43,7 @@ public:
         _buttons( KCModule::Help | KCModule::Default | KCModule::Apply ),
         _about( 0 ),
         _useRootOnlyMessage( false ),
-        _firstshow(false),
+        _firstshow(true),
         _unmanagedWidgetChangeState( false )
         { }
 

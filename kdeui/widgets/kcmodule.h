@@ -267,6 +267,8 @@ protected:
 
   virtual void showEvent(QShowEvent *ev);
 
+  friend class KCModuleProxy;
+
 Q_SIGNALS:
 
   /**
