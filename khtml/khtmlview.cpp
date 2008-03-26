@@ -719,36 +719,14 @@ int KHTMLView::visibleHeight() const
 
 void KHTMLView::setContentsPos( int x, int y)
 {
-    int dx = horizontalScrollBar()->value() - x;
-    int dy = verticalScrollBar()->value() - y;
-    horizontalScrollBar()->setValue( x );
-    verticalScrollBar()->setValue( y );
-    scrollContentsBy(dx,dy);
-/*
-    d->contentsX = QApplication::isRightToLeft() ?
-                     horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
-    d->contentsY = verticalScrollBar()->value();
-    if ( d->staticWidget )
-	widget()->update();
-    else
-	QScrollArea::scrollContentsBy(0,0); // argument is irrelevant
-*/
+   horizontalScrollBar()->setValue( x );
+   verticalScrollBar()->setValue( y );
 }
 
-void KHTMLView::scrollBy(int dx, int dy)
+void KHTMLView::scrollBy(int x, int y)
 {
-    /*
-    horizontalScrollBar()->setValue( horizontalScrollBar()->value()+x );
-    verticalScrollBar()->setValue( verticalScrollBar()->value()+y );
-    d->contentsX = QApplication::isRightToLeft() ?
-                     horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
-    d->contentsY = verticalScrollBar()->value();
-    if ( d->staticWidget )
-	widget()->update();
-    else
-	QScrollArea::scrollContentsBy(x,y);
-    */
-    scrollContentsBy(dx,dy);
+   horizontalScrollBar()->setValue( horizontalScrollBar()->value()+x );
+   verticalScrollBar()->setValue( verticalScrollBar()->value()+y );
 }
 
 QPoint KHTMLView::contentsToViewport(const QPoint& p) const
