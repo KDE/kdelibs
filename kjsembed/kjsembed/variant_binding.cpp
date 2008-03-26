@@ -265,6 +265,7 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
     QVariant returnValue;
     switch( value->type() )
     {
+        case KJS::UndefinedType:
         case KJS::NullType:
             break;
 
