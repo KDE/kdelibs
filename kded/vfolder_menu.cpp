@@ -1001,7 +1001,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       isDir = ep->d_type == DT_DIR;
       isReg = ep->d_type == DT_REG;
 
-      if (ep->d_type == DT_UNKNOWN)
+      if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
 #endif
       {
 	KDE_struct_stat buff;
@@ -1119,7 +1119,7 @@ kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " <
       isDir = ep->d_type == DT_DIR;
       isReg = ep->d_type == DT_REG;
 
-      if (ep->d_type == DT_UNKNOWN)
+      if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
 #endif
       {
 	KDE_struct_stat buff;
