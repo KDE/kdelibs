@@ -228,6 +228,9 @@ public:
   /**
    * Set the \a componentData associated with this action collection.
    *
+   * \warning Don't call this method on a KActionCollection that contains
+   * actions. This is not supported.
+   *
    * \param componentData the KComponentData which is to be associated with this action collection,
    * or an invalid KComponentData instance to indicate the default KComponentData.
    */
