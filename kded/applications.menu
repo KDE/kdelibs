@@ -46,6 +46,10 @@
 				<Category>X-KDE-settings-security</Category>
 				<Category>X-KDE-settings-sound</Category>
 				<Category>X-KDE-settings-system</Category>
+				<Category>X-KDE-information</Category>
+				<Filename>kde-kcm_knetworkconfmodule_ss.desktop</Filename>
+				<Filename>kde-medianotifications.desktop</Filename>
+				<Filename>kde-audioencoding.desktop</Filename>
 			</Not>
 		</Include>
 	</Menu>
