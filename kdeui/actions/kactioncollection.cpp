@@ -227,13 +227,10 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
         index_name = index_name.sprintf("unnamed-%p", (void*)action);
 
     // look if we already have THIS action under THIS name ;)
-    QMap<QString, QAction*>::const_iterator it = d->actionByName.find(index_name);
-    while (it != d->actionByName.constEnd() && it.key() == index_name)
-    {
-        if ( it.value() == action )
-            return action;
-
-        ++it;
+    if (d->actionByName.contains(index_name) && d->actionByName.value(index_name) == action ) {
+        // This is not a multi map!
+        Q_ASSERT( d->actionByName.count(index_name)==1);
+        return action;
     }
 
     if (!KAuthorized::authorizeKAction(index_name)) {
