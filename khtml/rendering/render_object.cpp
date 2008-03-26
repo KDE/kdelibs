@@ -2340,27 +2340,28 @@ void RenderObject::updateWidgetMasks() {
 QRegion RenderObject::visibleFlowRegion(int x, int y) const
 {
     QRegion r;
-    bool done = false;
+    bool returnSelf = false;
     for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
         if( !ro->layer() && !ro->isFloating() && ro->style()->visibility() == VISIBLE) {
             // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
-            int ow = s ? s->outlineSize() : 0;
-            if (ro->isRelPositioned())
-                static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
-            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || ro->isInline() ) {
-                while( ro->isInlineFlow() ) {
-                    ro = ro->parent();
-                    done = true;
-                }
+            int ow = s->outlineSize();
+            if (ro->isInlineFlow()) {
+                returnSelf = true;
+                break;
+            }
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || ro->isReplaced() ) {
                 r += QRect(x -ow +ro->effectiveXPos(),y -ow + ro->effectiveYPos(), 
                                   ro->effectiveWidth()+ow*2, ro->effectiveHeight()+ow*2);
             } else {
-                QRegion tmp = ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
-                r += tmp;
+                r += ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
             }
-            if (done) break;
         }
+    }
+    if (returnSelf) {
+        int ow = style()->outlineSize();
+        r+= QRect(x-xPos()-ow +effectiveXPos(),y-yPos()-ow + effectiveYPos(),
+                               effectiveWidth()+ow*2, effectiveHeight()+ow*2);
     }
     return r;
 }
