@@ -605,7 +605,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
             isDir = ep->d_type == DT_DIR;
             isReg = ep->d_type == DT_REG;
 
-            if (ep->d_type == DT_UNKNOWN)
+            if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
 #endif
             {
                 KDE_struct_stat buff;
@@ -715,7 +715,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 #ifdef HAVE_DIRENT_D_TYPE
             isDir = ep->d_type == DT_DIR;
 
-            if (ep->d_type == DT_UNKNOWN)
+            if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
 #endif
             {
                 QString pathfn = path + fn;
