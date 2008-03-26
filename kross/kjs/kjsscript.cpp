@@ -191,6 +191,10 @@ bool KjsScript::initialize()
     kjsinterpreter->setShouldPrintExceptions(true);
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
+    // publish our own action and the manager
+    d->publishObject(exec, "self", action());
+    d->publishObject(exec, "Kross", &Manager::self());
+
     d->m_defaultFunctionNames = functionNames();
     d->m_defaultFunctionNames << "Kross";
 
@@ -227,6 +231,7 @@ void KjsScript::finalize()
 {
     KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
     KJS::ExecState* exec = kjsinterpreter->globalExec();
+    Q_UNUSED(exec);
 
     QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator it( d->m_publishedObjects.begin() );
     QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator end( d->m_publishedObjects.end() );
@@ -288,7 +293,13 @@ void KjsScript::execute()
     }
 
     KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
-    Q_ASSERT( ! exec->hadException() );
+    if( exec->hadException() ) {
+        ErrorInterface error = extractError(d->m_engine->completion(), exec);
+        exec->clearException();
+        krossdebug(QString("KjsScript::execute() failed: %1").arg(error.errorMessage()));
+        setError(&error);
+        return;
+    }
 
     foreach(QObject* object, d->m_autoconnect) {
         const QMetaObject* metaobject = object->metaObject();
@@ -386,7 +397,7 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
     }
 
     KJS::List kjsargs;
-    foreach(QVariant variant, args) {
+    foreach(const QVariant &variant, args) {
         if( qVariantCanConvert< QWidget* >(variant) ) {
             if( QWidget* widget = qvariant_cast< QWidget* >(variant) ) {
                 kjsargs.append( KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned) );
@@ -415,7 +426,7 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
         return QVariant();
     }
 
-    QVariant result = KJSEmbed::convertToVariant(exec, retValue);
+    QVariant result = retValue ? KJSEmbed::convertToVariant(exec, retValue) : QVariant();
     Q_ASSERT( ! exec->hadException() );
     return result;
 }
