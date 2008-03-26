@@ -295,9 +295,9 @@ void KjsScript::execute()
     KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
     if( exec->hadException() ) {
         ErrorInterface error = extractError(d->m_engine->completion(), exec);
-        exec->clearException();
         krossdebug(QString("KjsScript::execute() failed: %1").arg(error.errorMessage()));
         setError(&error);
+        //exec->clearException();
         return;
     }
 
