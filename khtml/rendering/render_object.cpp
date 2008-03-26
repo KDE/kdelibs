@@ -789,6 +789,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case DOTTED:
     case DASHED:
     {
+        if (width <= 0)
+            break;
+
         //Figure out on/off spacing
         int onLen  = width;
         int offLen = width;
