@@ -1058,7 +1058,7 @@ void KRun::slotTimeout()
 
   if ( d->m_bAutoDelete )
   {
-    delete this;
+    deleteLater();
     return;
   }
 }
