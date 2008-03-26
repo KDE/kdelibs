@@ -28,14 +28,17 @@ class Object::Private
 
 Object::Object()
     : QSharedData()
+    , ErrorInterface()
     , d(new Private)
 {
 }
 
 Object::Object(const Object &other)
     : QSharedData()
+    , ErrorInterface()
     , d(new Private)
 {
+    Q_UNUSED(other);
 }
 
 Object::~Object()
@@ -43,14 +46,14 @@ Object::~Object()
     delete d;
 }
 
-QVariant Object::call(const QString& name, const QVariantList& args)
+QVariant Object::callMethod(const QString& name, const QVariantList& args)
 {
     Q_UNUSED(name);
     Q_UNUSED(args);
     return QVariant();
 }
 
-QStringList Object::getCalls()
+QStringList Object::methodNames()
 {
     return QStringList();
 }
