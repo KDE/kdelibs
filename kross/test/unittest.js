@@ -319,12 +319,27 @@ var testobj2 = TestObject2
 
 //TODO test also following cases
 //variant
-//propertymembers
-//propertymethods
-//enumerators
 //signals and slots
 
-// variantlist
+// properties
+{
+    testobj1.intProperty = 5278;
+    tester.assert(testobj1.intProperty, 5278);
+
+    testobj1.doubleProperty = 928.581;
+    tester.assert(testobj1.doubleProperty, 928.581);
+
+    testobj1.stringProperty = "StRiNg";
+    tester.assert(testobj1.stringProperty, "StRiNg");
+}
+
+// enumerations
+{
+    tester.assert(testobj1.TESTENUM1, 1);
+    tester.assert(testobj1.TESTENUM2, 2);
+}
+
+// callback functions
 {
     function myEmptyFunction() {}
     tester.assert(self.callFunction("myEmptyFunction"), null);
