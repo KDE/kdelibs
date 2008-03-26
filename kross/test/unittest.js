@@ -324,6 +324,17 @@ var testobj2 = TestObject2
 //enumerators
 //signals and slots
 
+// variantlist
+{
+    function myEmptyFunction() {}
+    tester.assert(self.callFunction("myEmptyFunction"), null);
+
+    //function myValueFunction(arg) { return arg; }
+    //a = new Array("Some String");
+    //b = self.callFunction("myValueFunction",a);
+    //tester.assertArray(b, a);
+}
+
 // print the test-results
 tester.printResult();
 

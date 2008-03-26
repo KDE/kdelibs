@@ -60,6 +60,7 @@ class TestObject : public QObject
 
     public:
         explicit TestObject(QObject* parent = 0, const QString& name = QString());
+        //TestObject(const TestObject&) {}
         virtual ~TestObject();
 
         enum TestEnum { TESTENUM1 = 1, TESTENUM2 = 2, TESTENUM3 = 4, TESTENUM4 = 8 };
@@ -164,6 +165,7 @@ class TestObject : public QObject
         // TestObject
         void func_void_testobject(TestObject*);
         TestObject* func_testobject_testobject(TestObject*);
+        TestObject* func_testobject_qobject(QObject*);
 
         //QObject* self() { return this; }
 };
@@ -238,6 +240,7 @@ class TestThread : public QThread
         int m_steps, m_msecs;
 };
 
-Q_DECLARE_METATYPE( TestObject* )
+//Q_DECLARE_METATYPE( TestObject* )
+//Q_DECLARE_METATYPE( TestObject )
 
 #endif

@@ -33,6 +33,8 @@ TestObject::TestObject(QObject* parent, const QString& name)
     : QObject(parent)
 {
     setObjectName(name);
+qRegisterMetaType<TestObject*>("TestObject");
+
     //kDebug() << "TestObject(const QString&) objectName=" << objectName();
 
     //connect(this, SIGNAL(testSignal()), this, SLOT(testSignalSlot()));
@@ -220,6 +222,13 @@ TestObject* TestObject::func_testobject_testobject(TestObject* obj)
 {
     //kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
+}
+
+TestObject* TestObject::func_testobject_qobject(QObject* obj)
+{
+    TestObject* tobj = dynamic_cast<TestObject*>(obj);
+    Q_ASSERT(tobj);
+    return tobj;
 }
 
 TestThread::TestThread(TestObject* parent, int steps, int msecs)
