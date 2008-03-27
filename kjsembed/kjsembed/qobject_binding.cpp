@@ -545,12 +545,12 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                     }
                 }
             }
-            else {
-                QVariant v = KJSEmbed::extractVariant(exec, args[idx]);
-                if (! v.isNull()) {
-                    return new Value<QVariant>(v);
-                }
+
+            QVariant v = KJSEmbed::extractVariant(exec, args[idx]);
+            if (! v.isNull()) {
+                return new Value<QVariant>(v);
             }
+
             break;
     }
 
