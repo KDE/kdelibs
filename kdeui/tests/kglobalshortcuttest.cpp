@@ -38,8 +38,10 @@ QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
 void KGlobalShortcutTest::initTestCase()
 {
-    m_actionA = new KAction("Action A", this);
-    m_actionB = new KAction("Action B", this);
+    m_actionA = new KAction("Text For Action A", this);
+    m_actionA->setObjectName("Action A");
+    m_actionB = new KAction("Text For Action B", this);
+    m_actionB->setObjectName("Action B");
 }
 
 
@@ -119,35 +121,46 @@ void KGlobalShortcutTest::testSaveRestore()
     //It /would be nice/ to test persistent storage. That is not so easy...
     KShortcut cutA = m_actionA->globalShortcut();
     delete m_actionA;
-    m_actionA = new KAction("Action A", this);
+    m_actionA = new KAction("Text For Action A", this);
+    m_actionA->setObjectName("Action A");
     QVERIFY(m_actionA->globalShortcut().isEmpty());
 
-    m_actionA->setGlobalShortcutAllowed(true);
+    m_actionA->enableGlobalShortcut();
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 
     delete m_actionA;
-    m_actionA = new KAction("Action A", this);
+    m_actionA = new KAction("Text For Action A", this);
+    m_actionA->setObjectName("Action A");
     m_actionA->setGlobalShortcut(KShortcut(QKeySequence(), cutA.primary()));
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 }
 
+// Duplicated again!
+enum actionIdFields
+{
+    ComponentUnique = 0,
+    ActionUnique = 1,
+    ComponentFriendly = 2,
+    ActionFriendly = 3
+};
 
 void KGlobalShortcutTest::testListActions()
 {
     // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
-    QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusInterface* iface = new QDBusInterface( "org.kde.kded", "/KdedGlobalAccel", "org.kde.KdedGlobalAccel", bus, this );
-    QDBusReply<QStringList> reply = iface->call("allComponents");
-    QVERIFY(reply.isValid());
-    const QStringList components = reply.value();
-    QVERIFY(components.contains("qttest"));
+    KGlobalAccel *kga = KGlobalAccel::self();
+    QList<QStringList> components = kga->allMainComponents();
+    //qDebug() << components;
+    QStringList componentId;
+    componentId << "qttest" << QString() << "KDE Test Program" << QString();
+    QVERIFY(components.contains(componentId));
 
-    reply = iface->call("allActionsForComponent", QString("qttest") );
-    QVERIFY(reply.isValid());
-    const QStringList actions = reply.value();
+    QList<QStringList> actions = kga->allActionsForComponent(componentId);
     QVERIFY(!actions.isEmpty());
-    QVERIFY(actions.contains("Action A"));
-    QVERIFY(actions.contains("Action B"));
+    QStringList actionIdA; actionIdA << "qttest" << "Action A" << "KDE Test Program" << "Text For Action A";
+    QStringList actionIdB; actionIdB << "qttest" << "Action B" << "KDE Test Program" << "Text For Action B";
+    //qDebug() << actions;
+    QVERIFY(actions.contains(actionIdA));
+    QVERIFY(actions.contains(actionIdB));
 }
 
 void KGlobalShortcutTest::cleanupTestCase()
