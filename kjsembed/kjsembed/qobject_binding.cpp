@@ -545,6 +545,12 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                     }
                 }
             }
+            else {
+                QVariant v = KJSEmbed::extractVariant(exec, args[idx]);
+                if (! v.isNull()) {
+                    return new Value<QVariant>(v);
+                }
+            }
             break;
     }
 
@@ -665,8 +671,6 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     }
 
     switch( returnTypeId ) {
-        case QVariant::Invalid:
-            return KJS::jsNull();
         case QVariant::UserType: {
             int tp = QMetaType::type( metaMember.typeName() );
             switch( tp ) {
@@ -685,6 +689,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                 default: break;
             }
         } // fall through
+        case QVariant::Invalid: // fall through
         default:
             return KJSEmbed::convertToValue(exec, returnValue);
     }

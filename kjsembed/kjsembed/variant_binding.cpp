@@ -319,6 +319,7 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
 
 KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &value )
 {
+    //qDebug()<<"KJSEmbed::convertToValue typeid="<<value.type()<<"typename="<<value.typeName()<<"toString="<<value.toString();
     KJS::JSValue *returnValue;
     switch( value.type() )
     {
@@ -359,7 +360,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             KJS::List items;
             QList<QVariant> lst = value.toList();
-            foreach( QVariant item, lst)
+            foreach( const QVariant &item, lst)
             {
                 items.append( convertToValue( exec, item ) );
             }
