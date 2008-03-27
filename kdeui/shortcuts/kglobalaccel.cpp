@@ -84,6 +84,19 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
             q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
 }
 
+void KGlobalAccelPrivate::readComponentData( const KComponentData &componentData )
+{
+    Q_ASSERT(!componentData.componentName().isEmpty());
+
+    mainComponentName = componentData.componentName();
+    if (!componentData.aboutData()->programName().isEmpty()) {
+        mainComponentFriendlyName = componentData.aboutData()->programName();
+    } else {
+        kDebug(123) << componentData.componentName() << " has empty programName()";
+        mainComponentFriendlyName = componentData.componentName();
+    }
+}
+
 
 KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate(this))
@@ -96,8 +109,7 @@ KGlobalAccel::KGlobalAccel()
             SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
 
     if (KGlobal::hasMainComponent()) {
-        d->mainComponentName = KGlobal::mainComponent().componentName();
-        d->mainComponentFriendlyName = KGlobal::mainComponent().aboutData()->programName();
+        d->readComponentData( KGlobal::mainComponent() );
     }
 }
 
@@ -137,8 +149,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 
 void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
 {
-    d->mainComponentName = kcd.componentName();
-    d->mainComponentFriendlyName = kcd.aboutData()->programName();
+    d->readComponentData( kcd );
     d->isUsingForeignComponentName = true;
 }
 
@@ -233,10 +244,10 @@ QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
 {
     Q_ASSERT(!mainComponentName.isEmpty());
     Q_ASSERT(!action->objectName().isEmpty());
-    QStringList ret(mainComponentName);
-    ret.append(action->objectName());
-    ret.append(mainComponentFriendlyName);
-    ret.append(action->text());
+    QStringList ret(mainComponentName);    // Component Unique Id ( see actionIdFields )
+    ret.append(action->objectName());      // Action Unique Name
+    ret.append(mainComponentFriendlyName); // Component Friendly name
+    ret.append(action->text());            // Action Friendly Name
     return ret;
 }
 

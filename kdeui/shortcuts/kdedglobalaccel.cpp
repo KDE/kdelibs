@@ -361,7 +361,6 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
     actionData *ad = d->findAction(actionId);
     if (!ad) {
-        kDebug() << "Could not find action " << actionId;
         return QList<int>();
     }
 
