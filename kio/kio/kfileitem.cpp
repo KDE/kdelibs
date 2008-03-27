@@ -1324,3 +1324,23 @@ KUrl::List KFileItemList::urlList() const {
     return lst;
 }
 
+bool KFileItem::isDesktopFile() const
+{
+    // only local files
+    bool isLocal;
+    const KUrl url = mostLocalUrl(isLocal);
+    if (!isLocal)
+        return false;
+
+    // only regular files
+    if (!S_ISREG(d->m_fileMode))
+        return false;
+
+    // only if readable
+    if (!isReadable())
+        return false;
+
+    // return true if desktop file
+    return determineMimeType()->is("application/x-desktop");
+}
+

@@ -648,26 +648,7 @@ KPropertiesDialogPlugin::~KPropertiesDialogPlugin()
 
 bool KPropertiesDialogPlugin::isDesktopFile( const KFileItem& _item )
 {
-  // only local files
-  bool isLocal;
-  const KUrl url = _item.mostLocalUrl( isLocal );
-  if ( !isLocal )
-    return false;
-
-  // only regular files
-  if ( !S_ISREG( _item.mode() ) )
-    return false;
-
-  QString t( url.path() );
-
-  // only if readable
-  FILE *f = fopen( QFile::encodeName(t), "r" );
-  if ( f == 0L )
-    return false;
-  fclose(f);
-
-  // return true if desktop file
-  return ( _item.mimetype() == "application/x-desktop" );
+    return _item.isDesktopFile();
 }
 
 void KPropertiesDialogPlugin::setDirty( bool b )
@@ -756,7 +737,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   const KFileItem item = properties->item();
   KUrl url = item.mostLocalUrl( isLocal );
   bool isReallyLocal = item.url().isLocalFile();
-  bool bDesktopFile = isDesktopFile(item);
+  bool bDesktopFile = item.isDesktopFile();
   mode_t mode = item.mode();
   bool hasDirs = item.isDir() && !item.isLink();
   bool hasRoot = url.path() == QLatin1String("/");
@@ -854,7 +835,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       // at the beginning of this method.
       if ( url.isLocalFile() != isLocal )
         isLocal = false; // not all local
-      if ( bDesktopFile && isDesktopFile(*kit) != bDesktopFile )
+      if ( bDesktopFile && (*kit).isDesktopFile() != bDesktopFile )
         bDesktopFile = false; // not all desktop files
       if ( (*kit).mode() != mode )
         mode = (mode_t)0;
@@ -2613,7 +2594,7 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
     return false;
   const KFileItem item = _items.first();
   // check if desktop file
-  if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
+  if (!item.isDesktopFile())
     return false;
 
   // open file and check type
@@ -2907,7 +2888,7 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
     return false;
   const KFileItem item = _items.first();
   // check if desktop file
-  if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
+  if (!item.isDesktopFile())
     return false;
   // open file and check type
   KDesktopFile config( item.url().path() );
@@ -3363,7 +3344,7 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
     return false;
   const KFileItem item = _items.first();
   // check if desktop file
-  if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
+  if (!item.isDesktopFile())
     return false;
   // open file and check type
   KDesktopFile config( item.url().path() );

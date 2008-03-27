@@ -123,6 +123,7 @@ void KFileItemTest::testBasic()
     QVERIFY(fileItem.isWritable());
     QVERIFY(fileItem.isFile());
     QVERIFY(!fileItem.isDir());
+    QVERIFY(!fileItem.isDesktopFile());
     QCOMPARE(fileItem.user(), KUser().loginName());
 #ifndef Q_OS_WIN
     QCOMPARE(fileItem.group(), KUserGroup().name());

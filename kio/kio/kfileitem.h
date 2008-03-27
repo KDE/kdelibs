@@ -248,6 +248,14 @@ public:
     bool isHidden() const;
 
     /**
+     * Checks whether the file is a readable local .desktop file,
+     * i.e. a file whose path can be given to KDesktopFile
+     * @return true if the file is a desktop file.
+     * @since 4.1
+     */
+    bool isDesktopFile() const;
+
+    /**
      * Returns the link destination if isLink() == true.
      * @return the link destination. QString() if the item is not a link
      */
@@ -256,7 +264,7 @@ public:
     /**
      * Returns the target url of the file, which is the same as url()
      * in cases where the slave doesn't specify UDS_TARGET_URL
-     * @return the target url. 
+     * @return the target url.
      * @since 4.1
      */
     KUrl targetUrl() const;
