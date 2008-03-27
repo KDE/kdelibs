@@ -357,7 +357,7 @@ public:
      * allow an action to respond to key shortcuts independently of the focused window,
      * i.e. the action will trigger if the keys were pressed no matter where in the X session.
      *
-     * This method will do nothing if isGlobalShortcutEnabled() returns false.
+     * This method calls enableGlobalShortcut() implicitly.
      *
      * When an action, identified by main component name and objectName(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
