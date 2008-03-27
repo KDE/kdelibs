@@ -81,6 +81,7 @@ void DomainBrowserPrivate::gotNewDomain(int,int,const QString& domain,uint)
 {
 	QString decoded=DNSToDomain(domain);
 	if (m_domains.contains(decoded)) return;
+	m_domains+=decoded;
 	emit m_parent->domainAdded(decoded);
 }
 
@@ -88,8 +89,8 @@ void DomainBrowserPrivate::gotRemoveDomain(int,int,const QString& domain,uint)
 {
 	QString decoded=DNSToDomain(domain);
 	if (!m_domains.contains(decoded)) return;
-	m_domains.remove(decoded);
 	emit m_parent->domainRemoved(decoded);
+	m_domains.remove(decoded);
 }
 
 
