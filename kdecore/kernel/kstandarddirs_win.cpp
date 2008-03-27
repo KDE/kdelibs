@@ -45,7 +45,7 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("kcfg", type) == 0)
                 return share + QLatin1String("/config.kcfg/");
             if (strcmp("kdedir", type) == 0)
-                return getKde4Prefix() + '/';
+                return prefix + '/';
             break;
         case 'd':
             if (strcmp("data", type) == 0)
