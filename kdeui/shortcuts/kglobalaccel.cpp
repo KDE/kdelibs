@@ -49,6 +49,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <ktoolinvocation.h>
+#include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -94,8 +95,10 @@ KGlobalAccel::KGlobalAccel()
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
             SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
 
-    if (KGlobal::hasMainComponent())
+    if (KGlobal::hasMainComponent()) {
         d->mainComponentName = KGlobal::mainComponent().componentName();
+        d->mainComponentFriendlyName = KGlobal::mainComponent().aboutData()->programName();
+    }
 }
 
 
@@ -135,6 +138,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
 {
     d->mainComponentName = kcd.componentName();
+    d->mainComponentFriendlyName = kcd.aboutData()->programName();
     d->isUsingForeignComponentName = true;
 }
 
@@ -231,7 +235,7 @@ QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
     Q_ASSERT(!action->objectName().isEmpty());
     QStringList ret(mainComponentName);
     ret.append(action->objectName());
-    ret.append(mainComponentName); //### find (or introduce) a way to get a "friendly" component name
+    ret.append(mainComponentFriendlyName);
     ret.append(action->text());
     return ret;
 }

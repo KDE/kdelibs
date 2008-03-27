@@ -64,6 +64,7 @@ public:
     QHash<KAction *, QString> actionToName;
 
     QString mainComponentName;
+    QString mainComponentFriendlyName;
     bool isUsingForeignComponentName;
     bool enabled;
 
