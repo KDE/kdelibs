@@ -267,6 +267,8 @@ public:
 
     void globalSettingsChangedSystemwide(int);
 
+    void printShortcuts();
+
 // members
     QList<KActionCollection *> actionCollections;
     KShortcutsEditor *q;

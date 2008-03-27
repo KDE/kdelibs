@@ -30,12 +30,19 @@
 
 #include <QHeaderView>
 #include <QTimer>
+#include <QTextDocument>
+#include <QTextTable>
+#include <QTextCursor>
+#include <QTextTableFormat>
+#include <QPrinter>
+#include <QPrintDialog>
 
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
+#include "kaboutdata.h"
 
 //---------------------------------------------------------------------
 // KShortcutsEditor
@@ -266,6 +273,10 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
     //hide the editor widget chen its item becomes hidden
     QObject::connect(ui.searchFilter->searchLine(), SIGNAL(hiddenChanged(QTreeWidgetItem *, bool)),
                      delegate, SLOT(hiddenBySearchLine(QTreeWidgetItem *, bool)));
+    
+    QObject::connect(ui.printButton, SIGNAL(clicked()), 
+                     q, SLOT(printShortcuts()));
+    
     ui.searchFilter->setFocus();
 }
 
@@ -543,5 +554,127 @@ void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
     //update display or similar
 }
 
+/*TODO for the printShortcuts function
+Nice to have features (which I'm not sure I can do before may due to
+more important things):
+
+- adjust the general page borders, IMHO they're too wide
+
+- add a custom printer options page that allows to filter out all
+  actions that don't have a shortcut set to reduce this list. IMHO this
+  should be optional as people might want to simply print all and  when
+  they find a new action that they assign a shortcut they can simply use
+  a pen to fill out the empty space
+
+- find a way to align the Main/Alternate/Global entries in the shortcuts
+  column without adding borders. I first did this without a nested table
+  but instead simply added 3 rows and merged the 3 cells in the Action
+  name and description column, but unfortunately I didn't find a way to
+  remove the borders between the 6 shortcut cells.
+*/
+void KShortcutsEditorPrivate::printShortcuts()
+{
+    QTreeWidgetItem* root = ui.list->invisibleRootItem();
+    QTextDocument doc;
+    doc.setDefaultFont(KGlobalSettings::generalFont());
+    QTextCursor cursor(&doc);
+    cursor.beginEditBlock();
+    QTextCharFormat headerFormat;
+    headerFormat.setProperty(QTextFormat::FontSizeAdjustment, 3);
+    headerFormat.setFontWeight(QFont::Bold);
+    cursor.insertText(i18nc("header for an applications shortcut list","Shortcuts for %1",
+                            KGlobal::mainComponent().aboutData()->shortDescription()),
+                      headerFormat);
+    QTextCharFormat componentFormat;
+    componentFormat.setProperty(QTextFormat::FontSizeAdjustment, 2);
+    componentFormat.setFontWeight(QFont::Bold);
+    QTextBlockFormat componentBlockFormat = cursor.blockFormat();
+    componentBlockFormat.setTopMargin(16);
+    componentBlockFormat.setBottomMargin(16);
+    
+    QTextTableFormat tableformat;
+    tableformat.setHeaderRowCount(1);
+    tableformat.setCellPadding(4.0);
+    tableformat.setCellSpacing(0);
+    tableformat.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+    tableformat.setBorder(0.5);
+
+    QList<QPair<QString,ColumnDesignation> > shortcutTitleToColumn;
+    shortcutTitleToColumn << qMakePair(i18n("Main:"), LocalPrimary);
+    shortcutTitleToColumn << qMakePair(i18n("Alternate:"), LocalAlternate);
+    shortcutTitleToColumn << qMakePair(i18n("Global:"), GlobalPrimary);
+    
+    for (int i = 0; i < root->childCount(); i++) {
+        QTreeWidgetItem* item = root->child(i);
+        cursor.insertBlock(componentBlockFormat, componentFormat);
+        cursor.insertText(item->text(0));
+        
+        QTextTable* table = cursor.insertTable(1,3);
+        table->setFormat(tableformat);
+        int currow = 0;
+
+        QTextTableCell cell = table->cellAt(currow,0);
+        QTextCharFormat format = cell.format();
+        format.setFontWeight(QFont::Bold);
+        cell.setFormat(format);
+        cell.firstCursorPosition().insertText(i18n("Action Name"));
+
+        cell = table->cellAt(currow,1);
+        cell.setFormat(format);
+        cell.firstCursorPosition().insertText(i18n("Shortcuts"));
+    
+        cell = table->cellAt(currow,2);
+        cell.setFormat(format);
+        cell.firstCursorPosition().insertText(i18n("Description"));
+        currow++;
+      
+        for (int j = 0; j < item->childCount(); j++) {
+            QTreeWidgetItem* actionitem = item->child(j);
+            KShortcutsEditorItem* editoritem = 
+                    dynamic_cast<KShortcutsEditorItem*>(actionitem);
+            table->insertRows(table->rows(),1);
+            QVariant data = editoritem->data(Name,Qt::DisplayRole);
+            table->cellAt(currow, 0).firstCursorPosition().insertText(data.toString());
+
+            QTextTable* shortcutTable = 0 ;
+            for(int k = 0; k < shortcutTitleToColumn.count(); k++) {
+              data = editoritem->data(shortcutTitleToColumn.at(k).second,Qt::DisplayRole);
+              QString key = data.value<QKeySequence>().toString();
+              
+              if(!key.isEmpty()) {
+                if( !shortcutTable ) {
+                  shortcutTable = table->cellAt(currow, 1).firstCursorPosition().insertTable(1,2);
+                  QTextTableFormat shortcutTableFormat = tableformat;
+                  shortcutTableFormat.setCellSpacing(0.0);
+                  shortcutTableFormat.setHeaderRowCount(0);
+                  shortcutTableFormat.setBorder(0.0);
+                  shortcutTable->setFormat(shortcutTableFormat);
+                } else {
+                  shortcutTable->insertRows(shortcutTable->rows(),1);
+                }
+                shortcutTable->cellAt(k,0).firstCursorPosition().insertText(shortcutTitleToColumn.at(k).first);
+                shortcutTable->cellAt(k,1).firstCursorPosition().insertText(key);
+              }
+            }
+
+            KAction* action = editoritem->m_action;
+            cell = table->cellAt(currow, 2);
+            format = cell.format();
+            format.setProperty(QTextFormat::FontSizeAdjustment, -1);
+            cell.setFormat(format);
+            cell.firstCursorPosition().insertHtml(action->whatsThis());
+
+            currow++;
+        }
+        cursor.movePosition(QTextCursor::End);
+    }
+    cursor.endEditBlock();
+    
+    QPrinter printer;
+    QPrintDialog dlg(&printer);
+    if (dlg.exec() == QDialog::Accepted) {
+        doc.print(&printer);
+    }
+}
 
 #include "kshortcutseditor.moc"

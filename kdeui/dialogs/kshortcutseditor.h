@@ -230,6 +230,7 @@ private:
 	Q_PRIVATE_SLOT(d, void capturedShortcut(QVariant, const QModelIndex &))
 
 	Q_PRIVATE_SLOT(d, void globalSettingsChangedSystemwide(int))
+	Q_PRIVATE_SLOT(d, void printShortcuts())
 
 private:
 	friend class KShortcutsDialog;
