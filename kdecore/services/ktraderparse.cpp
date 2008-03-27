@@ -34,7 +34,7 @@ void KTraderParse_mainParse( const char *_code );
 
 using namespace KTraderParse;
 
-static ParseTreeBase::Ptr *pTree = 0;
+K_GLOBAL_STATIC(ParseTreeBase::Ptr, pTree)
 static const char* sCode = 0;
 
 ParseTreeBase::Ptr KTraderParse::parseConstraints( const QString& _constr )
@@ -49,9 +49,6 @@ ParseTreeBase::Ptr KTraderParse::parseConstraints( const QString& _constr )
 
 void KTraderParse_setParseTree( void *_ptr1 )
 {
-  if ( !pTree )
-    pTree = new ParseTreeBase::Ptr; // ### leak; should use K_GLOBAL_STATIC
-
   *pTree = static_cast<ParseTreeBase*>( _ptr1 );
 }
 
