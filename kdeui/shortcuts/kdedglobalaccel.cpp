@@ -288,6 +288,8 @@ QStringList KdedGlobalAccel::actionId(int key)
     if (actionData *ad = d->findAction(key)) {
         ret.append(ad->parent->uniqueName);
         ret.append(ad->uniqueName);
+        ret.append(ad->parent->friendlyName);
+        ret.append(ad->friendlyName);
     }
     return ret;
 }
@@ -359,6 +361,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
     actionData *ad = d->findAction(actionId);
     if (!ad) {
+        kDebug() << "Could not find action " << actionId;
         return QList<int>();
     }
 

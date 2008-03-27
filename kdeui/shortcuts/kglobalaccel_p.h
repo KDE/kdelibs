@@ -52,6 +52,7 @@ public:
     QStringList makeActionId(const KAction *action);
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
+    void readComponentData( const KComponentData &component );
 
     //private slot implementations
     void _k_invokeAction(const QStringList&);
