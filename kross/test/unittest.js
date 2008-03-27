@@ -323,6 +323,9 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_qvariant_qvariant(1892), 1892);
     tester.assert(testobj1.func_qvariant_qvariant(8529.54), 8529.54);
     tester.assert(testobj1.func_qvariant_qvariant(" String "), " String ");
+
+    //same prob as described bellow
+    //tester.assert(testobj1.func_qvariant_qvariant(["One","Two"]), ["One","Two"]);
 }
 
 // properties
