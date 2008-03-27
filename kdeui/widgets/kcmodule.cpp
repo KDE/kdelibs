@@ -100,6 +100,7 @@ void KCModule::showEvent(QShowEvent *ev)
         load();
     }
     QWidget::showEvent(ev);
+    emit( changed( false ));
 }
 
 KCModule::Buttons KCModule::buttons() const
@@ -134,6 +135,7 @@ void KCModule::load()
     KConfigDialogManager* manager;
     Q_FOREACH( manager , d->managers )
         manager->updateWidgets();
+    emit( changed( false ));
 }
 
 void KCModule::save()
