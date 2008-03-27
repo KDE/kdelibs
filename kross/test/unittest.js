@@ -317,9 +317,13 @@ var testobj2 = TestObject2
     tester.assertMap(testobj1.func_qvariantmap_qvariantmap([]), [])
 }
 
-//TODO test also following cases
-//variant
-//signals and slots
+// variant
+{
+    tester.assert(testobj1.func_qvariant_qvariant(true), true);
+    tester.assert(testobj1.func_qvariant_qvariant(1892), 1892);
+    tester.assert(testobj1.func_qvariant_qvariant(8529.54), 8529.54);
+    tester.assert(testobj1.func_qvariant_qvariant(" String "), " String ");
+}
 
 // properties
 {
@@ -344,11 +348,16 @@ var testobj2 = TestObject2
     function myEmptyFunction() {}
     tester.assert(self.callFunction("myEmptyFunction"), null);
 
-    //function myValueFunction(arg) { return arg; }
-    //a = new Array("Some String");
-    //b = self.callFunction("myValueFunction",a);
-    //tester.assertArray(b, a);
+    function myValueFunction(arg) { return arg; }
+    tester.assert(self.callFunction("myValueFunction", [true]), true);
+    tester.assert(self.callFunction("myValueFunction", [1892]), 1892); // take care here, something like "new Array(12)" means array with 12 elements while "new Array(12,13)" means the 2 elements 12 and 13 :-/
+    tester.assert(self.callFunction("myValueFunction", [8529.54]), 8529.54);
+    tester.assert(self.callFunction("myValueFunction", ["Some String Again"]), "Some String Again");
+    tester.assert(self.callFunction("myValueFunction", [ ["One",2] ]), "One,2"); //WTF?!
 }
+
+//TODO test also following cases
+//signals and slots
 
 // print the test-results
 tester.printResult();
