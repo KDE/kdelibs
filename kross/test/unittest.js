@@ -37,7 +37,7 @@ function UnitTest()
     this.assertArray = function(actual, expected) {
         if(actual.length != expected.length) {
             this.failed(actual, expected);
-            println("Array-Length does not match");
+            println("Array-Length does not match. Actual=" + actual.length + " Expected=" + expected.length);
         }
         else {
             var failed = false;
@@ -353,7 +353,11 @@ var testobj2 = TestObject2
     tester.assert(self.callFunction("myValueFunction", [1892]), 1892); // take care here, something like "new Array(12)" means array with 12 elements while "new Array(12,13)" means the 2 elements 12 and 13 :-/
     tester.assert(self.callFunction("myValueFunction", [8529.54]), 8529.54);
     tester.assert(self.callFunction("myValueFunction", ["Some String Again"]), "Some String Again");
-    tester.assert(self.callFunction("myValueFunction", [ ["One",2] ]), "One,2"); //WTF?!
+
+    //TODO this seems to be a Kjs/WebKitScript/Qt related bug since both kjs from trunk and QtScript from Qt4.4 have that problem.
+    //Problem: Seems a list in a list got flatten to one big list but for whatever reason it shows only up if wrapped in a QVariant :-/
+    //See also unittest.es
+    tester.assertArray(self.callFunction("myValueFunction", [ ["One","Two"] ]), "One,Two"); // result should be ["One","Two"]
 }
 
 // signals and slots

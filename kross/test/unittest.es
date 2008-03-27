@@ -194,7 +194,9 @@ tester.assert(self.callFunction("name"), self.name());
 tester.assert(self.callFunction("code"), self.code());
 tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
-//TODO work around it somehow!
+//TODO this seems to be a Kjs/WebKitScript/Qt related bug since both kjs from trunk and QtScript from Qt4.4 have that problem.
+//Problem: Seems a list in a list got flatten to one big list but for whatever reason it shows only up if wrapped in a QVariant :-/
+//See also unittest.js
 //var stringlist = self.callFunction("functionNames");
 //println( stringlist.length ); // numbers of chars in stringlist.toString() rather then number of items
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails
@@ -206,7 +208,6 @@ tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 //for(a in stringlist) { println(a); } //each char, seems it's now handled as .toString()
 //println(stringlist); //prints the correct output of the stringlist, just like .toString()
 //println(stringlist.toString()); //prints the correct output of the stringlist as string
-
 //println( testobj1.func_qvariant_qvariant( Variant(new Array("One","Two")) ) ); //empty QVariant()
 //println( Variant(new Array("One","Two")) ); //empty QVariant()
 //println( Variant("test")); //empty QVariant()
