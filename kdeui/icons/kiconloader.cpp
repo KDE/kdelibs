@@ -986,7 +986,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     // Is the icon in the cache?
     if (d->mIconCache->find(key, pix, path_store)) {
         //kDebug() << "KIL: " << "found icon from KIC";
-        return pix;
+        if (!pix.isNull() || canReturnNull) {
+            return pix;
+        } else {
+            return loadIcon(str_unknown, group, size, state,
+                            overlays, path_store, canReturnNull);
+        }
     }
     if (!d->initIconThemes()) {
         return pix; // null pixmap
@@ -1168,11 +1173,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     delete img;
 
-    if (unknownIcon)
+    if (unknownIcon && addToCache)
     {
-        addToCache = false;
+        d->mIconCache->insert(key, QPixmap(), QString());
     }
-    if (addToCache)
+    else if (addToCache)
     {
         d->mIconCache->insert(key, pix, path);
     }
