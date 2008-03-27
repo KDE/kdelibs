@@ -202,10 +202,10 @@ public:
   QAction *action(int index) const;
 
   /**
-   * Find the first action with a given \a name in the action collection.
+   * Get the action with the given \a name from the action collection.
    *
-   * @param name Name of the KAction, or null to match all actions
-   * @return A pointer to the first KAction in the collection which matches the parameters or
+   * @param name Name of the KAction
+   * @return A pointer to the KAction in the collection which matches the parameters or
    * null if nothing matches.
    */
   QAction* action( const QString& name ) const;
