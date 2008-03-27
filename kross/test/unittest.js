@@ -362,11 +362,11 @@ var testobj2 = TestObject2
     function mySlotFunction(arg) { slottestresult = arg; }
 
     connect(testobj1, "signalString(QString)", this, "mySlotFunction(QString)");
-    testobj1.emitSignalString("more beer");
+    testobj1.signalString("more beer");
     tester.assert(slottestresult, "more beer");
 
     connect(testobj1, "signalObject(QObject*)", this, "mySlotFunction(QObject*)");
-    testobj1.emitSignalObject(testobj2);
+    testobj1.signalObject(testobj2);
     tester.assert(slottestresult.objectName, testobj2.objectName);
 }
 
