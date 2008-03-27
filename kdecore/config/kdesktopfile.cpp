@@ -386,3 +386,20 @@ QString KDesktopFile::fileName() const
 {
     return name();
 }
+
+bool KDesktopFile::noDisplay() const
+{
+    Q_D(const KDesktopFile);
+    if (d->desktopGroup.readEntry("NoDisplay", false)) {
+        return true;
+    }
+    if (d->desktopGroup.hasKey("OnlyShowIn")) {
+        if (!d->desktopGroup.readXdgListEntry("OnlyShowIn").contains("KDE"))
+            return true;
+    }
+    if (d->desktopGroup.hasKey("NotShowIn")) {
+        if (d->desktopGroup.readXdgListEntry("NotShowIn").contains("KDE"))
+            return true;
+    }
+    return false;
+}

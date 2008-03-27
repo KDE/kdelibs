@@ -61,19 +61,7 @@ void KServiceGroupPrivate::load(const QString &cfg)
   m_strIcon = config.readEntry( "Icon" );
   m_strComment = config.readEntry( "Comment" );
   deleted = config.readEntry("Hidden", false );
-  m_bNoDisplay = config.readEntry("NoDisplay", false );
-  QStringList tmpList;
-  if (config.hasKey("OnlyShowIn"))
-  {
-     if (!config.readXdgListEntry("OnlyShowIn").contains("KDE"))
-        m_bNoDisplay = true;
-  }
-  if (config.hasKey("NotShowIn"))
-  {
-     if (config.readXdgListEntry("NotShowIn").contains("KDE"))
-        m_bNoDisplay = true;
-  }
-
+  m_bNoDisplay = desktopFile.noDisplay();
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   suppressGenericNames = config.readEntry( "X-KDE-SuppressGenericNames", QStringList() );
 //  d->sortOrder = config.readEntry("SortOrder", QStringList());

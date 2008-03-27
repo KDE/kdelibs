@@ -202,6 +202,14 @@ public:
   QStringList sortOrder() const;
 
   /**
+   * Whether the entry should be suppressed in menus.
+   * This handles the NoDisplay key, but also OnlyShowIn / NotShowIn.
+   * @return true to suppress this service
+   * @since 4.1
+   */
+  bool noDisplay() const;
+
+  /**
    * Copies all entries from this config object to a new
    * KDesktopFile object that will save itself to @p file.
    *

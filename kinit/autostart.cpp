@@ -112,17 +112,8 @@ AutoStart::loadAutoStartList()
           continue;
        if (grp.readEntry("Hidden", false))
           continue;
-
-       if (grp.hasKey("OnlyShowIn"))
-       {
-          if (!grp.readXdgListEntry("OnlyShowIn").contains("KDE"))
-              continue;
-       }
-       if (grp.hasKey("NotShowIn"))
-       {
-           if (grp.readXdgListEntry("NotShowIn").contains("KDE"))
-               continue;
-       }
+       if (config.noDisplay()) // handles OnlyShowIn, NotShowIn (and NoDisplay, but that's not used here)
+           continue;
 
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
