@@ -418,12 +418,17 @@ QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  value );
     if( imp )
         return imp->variant();
-    else if( value->type() == KJS::StringType)
+    if( value->type() == KJS::StringType)
         return QVariant(toQString(value->toString(exec)));
-    else if( value->type() == KJS::NumberType)
+    if( value->type() == KJS::NumberType)
         return QVariant(value->toNumber(exec));
-    else if( value->type() == KJS::BooleanType)
+    if( value->type() == KJS::BooleanType)
         return QVariant(value->toBoolean(exec));
+
+    KJS::JSObject *obj = value->toObject( exec );
+    if ( obj && toQString(obj->className()) == "Array" )
+        return convertArrayToList( exec, value );
+
     return QVariant();
 }
 
