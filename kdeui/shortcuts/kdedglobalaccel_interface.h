@@ -108,6 +108,14 @@ public Q_SLOTS: // METHODS
                              argumentList);
     }
 
+    Q_NOREPLY void unRegister(const QStringList &actionId)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(actionId);
+        callWithArgumentList(QDBus::NoBlock, QLatin1String("unRegister"),
+                             argumentList);
+    }
+
     QDBusReply<QList<QStringList> > allMainComponents()
     {
         QList<QVariant> argumentList;

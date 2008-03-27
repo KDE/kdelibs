@@ -148,11 +148,12 @@ KGlobalAccel *KGlobalAccel::self( )
 
 void KGlobalAccelPrivate::doRegister(KAction *action)
 {
-    if (!action)
+    if (!action || action->objectName().isEmpty()) {
         return;
+    }
 
     const bool isRegistered = actionToName.contains(action);
-    if (isRegistered || action->objectName().isEmpty())
+    if (isRegistered)
         return;
 
     QStringList actionId = makeActionId(action);
@@ -163,19 +164,25 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
 }
 
 
-void KGlobalAccelPrivate::setInactive(KAction *action)
+void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
 {
-    if (!action)
+    if (!action  || action->objectName().isEmpty()) {
         return;
+    }
 
     const bool isRegistered = actionToName.contains(action);
-    if (!isRegistered || action->objectName().isEmpty())
+    if (!isRegistered) {
         return;
+    }
 
     QStringList actionId = makeActionId(action);
 
     nameToAction.remove(actionToName.take(action));
-    iface.setInactive(actionId);
+    if (removal == UnRegister) {
+        iface.unRegister(actionId);
+    } else {
+        iface.setInactive(actionId);
+    }
 }
 
 

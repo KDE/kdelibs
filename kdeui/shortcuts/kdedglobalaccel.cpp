@@ -337,6 +337,17 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
 }
 
 
+void KdedGlobalAccel::unRegister(const QStringList &actionId)
+{
+    if (actionId.size() < 4) {
+        return;
+    }
+    setInactive(actionId);
+    delete d->takeAction(actionId);
+    scheduleWriteSettings();
+}
+
+
 //TODO: make sure and document that we don't want trailing zero shortcuts in the list
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)

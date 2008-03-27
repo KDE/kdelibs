@@ -89,7 +89,7 @@ KAction::~KAction()
             // - remove the action from KGlobalAccel
             // - mark the action as inactive in the KDED module
             d->globalShortcutEnabled = false;
-            KGlobalAccel::self()->d->setInactive(this);
+            KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
         }
     } else {
         // we leak memory in KGlobalAccel for this action's data set.
@@ -225,7 +225,7 @@ void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading load
   if (allowed) {
     KGlobalAccel::self()->d->doRegister(this);
   } else {
-    KGlobalAccel::self()->d->setInactive(this);
+    KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
   }
 }
 
@@ -251,7 +251,7 @@ void KAction::disableGlobalShortcut()
     d->defaultGlobalShortcut = KShortcut();
     if (d->globalShortcutEnabled) {
         d->globalShortcutEnabled = false;
-        KGlobalAccel::self()->d->setInactive(this);
+        KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::UnRegister);
     }
 }
 

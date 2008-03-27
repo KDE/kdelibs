@@ -421,6 +421,10 @@ public:
     /**
      * Sets the globalShortcutEnabled property to false and sets the global shortcut to an
      * empty shortcut.
+     * This will also wipe out knowlegde about the existence of this action's global shorctut
+     * so it will not be considered anymore for shortcut conflict resolution. It will also not be
+     * visible anymore in the KControl module which presents a list of global shorcuts.
+     * This method should not be used if these side-effects are not explicitly desired.
      */
     void disableGlobalShortcut();
 

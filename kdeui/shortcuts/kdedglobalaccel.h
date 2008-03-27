@@ -80,19 +80,11 @@ public:
 
     void doRegister(const QStringList &actionId);
 
+    void unRegister(const QStringList &actionId);
+
     //called by the implementation to inform us about key presses
     //returns true if the key was handled
     bool keyPressed(int keyQt);
-
-////////////////////////////////////////
-    //should be called from KAction::setGlobalShortcut() once after application startup.
-    //as a little hack, to lose the data of a component permanently you can first "unset"
-    //all shortcuts and then set the component name to the empty string.
-    void setComponentCommonName(const QString &uniqueName, const QString &commonName);
-
-    QString componentCommonName(const QString &uniqueName);
-    QString actionCommonName(const QString &uniqueName);
-
 
 Q_SIGNALS:
     void invokeAction(const QStringList &actionId);

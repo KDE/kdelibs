@@ -84,6 +84,8 @@ public Q_SLOTS:
         { return p()->setInactive(actionId); }
     inline Q_NOREPLY void doRegister(const QStringList &actionId)
         { return p()->doRegister(actionId); }
+    inline Q_NOREPLY void unRegister(const QStringList &actionId)
+        { return p()->unRegister(actionId); }
 
 Q_SIGNALS:
     void invokeAction(const QStringList &actionId);

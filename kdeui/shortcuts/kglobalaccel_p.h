@@ -33,6 +33,10 @@ class KShortcut;
 class KGlobalAccelPrivate
 {
 public:
+    enum Removal {
+        SetInactive = 0,    ///< Forget the action in this class and mark it as not present in the KDED module
+        UnRegister          ///< Remove any trace of the action in this class and in the KDED module
+    };
     KGlobalAccelPrivate(KGlobalAccel*);
 
     ///Propagate any shortcut changes to the KDED module that does the bookkeeping
@@ -41,8 +45,8 @@ public:
 
     ///Register the action in this class and in the KDED module
     void doRegister(KAction *action);   //"register" is a C keyword :p
-    ///"Forget" the action in this class and mark it as not present in the KDED module
-    void setInactive(KAction *action);
+    ///cf. the RemoveAction enum
+    void remove (KAction *action, Removal r);
 
     //"private" helpers
     QStringList makeActionId(const KAction *action);
