@@ -356,8 +356,19 @@ var testobj2 = TestObject2
     tester.assert(self.callFunction("myValueFunction", [ ["One",2] ]), "One,2"); //WTF?!
 }
 
-//TODO test also following cases
-//signals and slots
+// signals and slots
+{
+    var slottestresult = null;
+    function mySlotFunction(arg) { slottestresult = arg; }
+
+    connect(testobj1, "signalString(QString)", this, "mySlotFunction(QString)");
+    testobj1.emitSignalString("more beer");
+    tester.assert(slottestresult, "more beer");
+
+    connect(testobj1, "signalObject(QObject*)", this, "mySlotFunction(QObject*)");
+    testobj1.emitSignalObject(testobj2);
+    tester.assert(slottestresult.objectName, testobj2.objectName);
+}
 
 // print the test-results
 tester.printResult();
