@@ -172,5 +172,9 @@ or even run one by oneself?
 
 There will be separate documentation on this topic. For the time being, there is
 GHNS hosting tested with KNewStuff2 being offered at new.kstuff.org, a server sponsored
-by OSU-OSL for the advancement of collaborative data sharing.
+by OSU-OSL for the advancement of collaborative data sharing. The KDE-Look server
+also provides GHNS feeds.
+
+http://data.kstuff.org/
+http://www.kde-look.org/help/ghns.php
 
