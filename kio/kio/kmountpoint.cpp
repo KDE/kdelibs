@@ -393,7 +393,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
         if(bits & (1 << i))
         {
             Ptr mp(new KMountPoint);
-            mp->d->mountPoint = QString(QChar('A' + i) + QString(":\\"));
+            mp->d->mountPoint = QString(QChar('A' + i) + QString(":/"));
             result.append(mp);
         }
     }
@@ -460,8 +460,12 @@ KMountPoint::List::List()
 
 KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 {
+#ifndef Q_WS_WIN
     /* If the path contains symlinks, get the real name */
     const QString realname = KStandardDirs::realFilePath(path);
+#else
+    const QString realname = path;
+#endif
 
     int max = 0;
     KMountPoint::Ptr result;
