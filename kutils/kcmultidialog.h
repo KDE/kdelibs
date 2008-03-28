@@ -29,7 +29,7 @@
 class KCMultiDialogPrivate;
 
 /**
- * @short A method that offers a KPageDialog containing arbitrary
+ * @short A class that offers a KPageDialog containing arbitrary
  *        KControl Modules.
  *
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
