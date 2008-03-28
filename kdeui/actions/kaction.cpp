@@ -48,6 +48,7 @@ void KActionPrivate::init(KAction *q_ptr)
 {
   q = q_ptr;
   globalShortcutEnabled = false;
+  firstTimeSetGlobalShortcut = true;
 
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
 
@@ -181,17 +182,11 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   Q_ASSERT(type);
   bool changed = false;
   if (!d->globalShortcutEnabled) {
+    //return;
+    changed = true;
     enableGlobalShortcut();   //backwards compatibility
   }
 
-  // enableGlobalShortcut() got the currently configured shortcuts from
-  // kdedglobalaccel. If the caller doesn't want to overwrite these we are
-  // finished
-  if (load & Autoloading) {
-      return;
-  }
-
-  // The caller wants to set new shortcuts. Let's do it.
   if ((type & DefaultShortcut) && d->defaultGlobalShortcut != shortcut) {
     d->defaultGlobalShortcut = shortcut;
     changed = true;
@@ -202,10 +197,12 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
     changed = true;
   }
 
-  if (changed) {
-    // The new values differ from the currently set, load is guaranteed to
-    // have NoAutoloading set. Update the shortcuts
+  //We want to have updateGlobalShortcuts called on a new action in any case so that
+  //it will be registered properly. In the case of the first setShortcut() call getting an
+  //empty shortcut parameter this would not happen...
+  if (changed || d->firstTimeSetGlobalShortcut) {
     KGlobalAccel::self()->d->updateGlobalShortcut(this, type | load);
+    d->firstTimeSetGlobalShortcut = false;
   }
 }
 
@@ -241,12 +238,6 @@ bool KAction::enableGlobalShortcut()
     }
     d->globalShortcutEnabled = true;
     KGlobalAccel::self()->d->doRegister(this);
-
-    // We have to call updateGlobalShortcut because we don't know if
-    // setGlobalShortcut() will be called. It could be the program allows
-    // setting of global shortcuts but will not configure one.
-    KGlobalAccel::self()->d->updateGlobalShortcut(this, DefaultShortcut | ActiveShortcut | Autoloading);
-
     return true;
 }
 

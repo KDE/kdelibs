@@ -42,6 +42,7 @@ class KActionPrivate
         KRockerGesture rockerGesture, defaultRockerGesture;
 
         bool globalShortcutEnabled : 1;
+        bool firstTimeSetGlobalShortcut : 1;
         KAction *q;
 };
 
