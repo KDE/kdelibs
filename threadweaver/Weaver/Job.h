@@ -57,6 +57,9 @@ namespace ThreadWeaver {
 	Jobs may declare dependencies. If Job B depends on Job A, B may not be
 	executed before A is finished. To learn about dependencies, see
 	DependencyPolicy.
+
+	Job objects finish by emitting the done(Job*) signal.  Once this has been emitted,
+	ThreadWeaver is no longer using the Job which may then be deleted.
     */
 
     class THREADWEAVER_EXPORT Job : public QObject
@@ -191,7 +194,11 @@ namespace ThreadWeaver {
 	/** This signal is emitted when this job is being processed by a
 	    thread. */
 	void started ( ThreadWeaver::Job* );
-	/** This signal is emitted when the job has been finished. */
+	/** 
+	 * This signal is emitted when the job has been finished.
+	 * After this signal has been emitted, ThreadWeaver no longer references the Job internally
+	 * and the Job can be deleted.
+	 */
 	void done ( ThreadWeaver::Job* );
 
         /** This job has failed.

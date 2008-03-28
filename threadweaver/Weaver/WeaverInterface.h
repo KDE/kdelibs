@@ -174,16 +174,11 @@ namespace ThreadWeaver {
             finished, this signal is emitted. */
         void suspended ();
 
-	/** This signal is emitted when a job is done.
-	    The Job object emits a signal jobDone(), too, when the individual
-	    job has finished.
+	/** This signal is emitted when a job is finished.  In addition,
+	    the Job itself emits a done() signal just before the jobDone() signal
+		is emitted.  
+	 	*/
 
-	    This signal here is emitted by the Weaver object for
-	    each single job that is finished.
-
-	    It is up to the
-	    programmer to decide if this signal or the done signal of the job
-	    is more handy. */
         void jobDone ( ThreadWeaver::Job* );
         // FIXME (0.7) test if signal is emitted properly
         // FIXME (0.7) provide jobStarted and jobFailed signals

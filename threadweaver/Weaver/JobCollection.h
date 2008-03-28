@@ -42,6 +42,9 @@ namespace ThreadWeaver {
      *
      * It is intended that the collection is set up first and then
      * queued. After queuing, no further jobs should be added to the collection.
+	 *
+	 * JobCollection emits a done(Job*) signal when all of the jobs in the collection
+	 * have completed.
      */
     class THREADWEAVER_EXPORT JobCollection : public Job
     {
