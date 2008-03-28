@@ -21,7 +21,7 @@
 #include "medianode.h"
 #include "medianode_p.h"
 #include "medianodedestructionhandler.h"
-#include "factory.h"
+#include "factory_p.h"
 
 QT_BEGIN_NAMESPACE
 

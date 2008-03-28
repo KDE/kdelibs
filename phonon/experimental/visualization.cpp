@@ -21,7 +21,7 @@
 #include "visualization_p.h"
 #include "../objectdescription.h"
 #include "../path.h"
-#include "../factory.h"
+#include "../factory_p.h"
 
 #define PHONON_CLASSNAME Visualization
 

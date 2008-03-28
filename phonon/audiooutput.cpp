@@ -18,7 +18,7 @@
 */
 #include "audiooutput.h"
 #include "audiooutput_p.h"
-#include "factory.h"
+#include "factory_p.h"
 #include "objectdescription.h"
 #include "audiooutputadaptor.h"
 #include "globalconfig.h"

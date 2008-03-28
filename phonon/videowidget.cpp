@@ -20,7 +20,7 @@
 #include "videowidget.h"
 #include "videowidget_p.h"
 #include "videowidgetinterface.h"
-#include "factory.h"
+#include "factory_p.h"
 #include "phonondefs_p.h"
 #include "phononnamespace_p.h"
 

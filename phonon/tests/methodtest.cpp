@@ -22,7 +22,7 @@
 
 #include <qtest_kde.h>
 
-#include "../factory.h"
+#include "../factory_p.h"
 #include <phonon/streaminterface.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/backendinterface.h>

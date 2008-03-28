@@ -22,7 +22,7 @@
 
 #include "phonondefs_p.h"
 #include "backendinterface.h"
-#include "factory.h"
+#include "factory_p.h"
 #include "globalconfig.h"
 #include "globalstatic_p.h"
 #include "objectdescription.h"

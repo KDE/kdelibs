@@ -27,7 +27,7 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QIcon>
 #include <QtGui/QStyle>
-#include "factory.h"
+#include "factory_p.h"
 #include <QtCore/QPointer>
 #include "platform_p.h"
 

@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef PHONON_EXPERIMENTAL_FACTORY_H
-#define PHONON_EXPERIMENTAL_FACTORY_H
+#ifndef PHONON_EXPERIMENTAL_FACTORY_P_H
+#define PHONON_EXPERIMENTAL_FACTORY_P_H
 
 #include <QtCore/QObject>
 #include "export.h"
@@ -55,4 +55,4 @@ namespace Factory
 } // namespace Experimental
 } // namespace Phonon
 
-#endif // PHONON_EXPERIMENTAL_FACTORY_H
+#endif // PHONON_EXPERIMENTAL_FACTORY_P_H

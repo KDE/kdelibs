@@ -18,7 +18,7 @@ Boston, MA 02110-1301, USA.
 */
 #include "abstractaudiooutput.h"
 #include "abstractaudiooutput_p.h"
-#include "factory.h"
+#include "factory_p.h"
 
 #define PHONON_CLASSNAME AbstractAudioOutput
 

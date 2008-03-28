@@ -17,7 +17,6 @@
 
 */
 
-#include "factory.h"
 #include "factory_p.h"
 
 #include "backendinterface.h"
@@ -25,6 +24,7 @@
 #include "audiooutput.h"
 #include "audiooutput_p.h"
 #include "globalstatic_p.h"
+#include "objectdescription.h"
 #include "platformplugin.h"
 #include "phononnamespace_p.h"
 
@@ -34,6 +34,7 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QList>
 #include <QtCore/QPluginLoader>
+#include <QtCore/QPointer>
 #include <QtGui/QIcon>
 #ifndef QT_NO_DBUS
 #include <QtDBus/QtDBus>
@@ -43,6 +44,38 @@ QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
+
+class PlatformPlugin;
+class FactoryPrivate : public Phonon::Factory::Sender
+{
+    friend QObject *Factory::backend(bool);
+    Q_OBJECT
+    public:
+        FactoryPrivate();
+        ~FactoryPrivate();
+        bool createBackend();
+        PlatformPlugin *platformPlugin();
+
+        QPointer<QObject> m_backendObject;
+        PlatformPlugin *m_platformPlugin;
+        bool m_noPlatformPlugin;
+
+        QList<QObject *> objects;
+        QList<MediaNodePrivate *> mediaNodePrivateList;
+
+    private Q_SLOTS:
+        /**
+         * This is called via DBUS when the user changes the Phonon Backend.
+         */
+        void phononBackendChanged();
+
+        /**
+         * unregisters the backend object
+         */
+        void objectDestroyed(QObject *);
+
+        void objectDescriptionChanged(ObjectDescriptionType);
+};
 
 PHONON_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 
@@ -349,7 +382,7 @@ QObject *Factory::registerQObject(QObject *o)
 
 QT_END_NAMESPACE
 
-#include "moc_factory.cpp"
+#include "factory.moc"
 #include "moc_factory_p.cpp"
 
 // vim: sw=4 ts=4

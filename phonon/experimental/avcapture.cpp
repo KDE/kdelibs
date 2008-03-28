@@ -18,7 +18,7 @@
 */
 #include "avcapture.h"
 #include "avcapture_p.h"
-#include "factory.h"
+#include "factory_p.h"
 #include "objectdescription.h"
 
 #define PHONON_CLASSNAME AvCapture

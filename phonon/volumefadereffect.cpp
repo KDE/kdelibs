@@ -20,7 +20,7 @@
 #include "volumefadereffect.h"
 #include "volumefadereffect_p.h"
 #include "volumefaderinterface.h"
-#include "factory.h"
+#include "factory_p.h"
 
 #include <qmath.h>
 

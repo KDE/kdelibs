@@ -21,7 +21,7 @@
 #include "path_p.h"
 
 #include "backendinterface.h"
-#include "factory.h"
+#include "factory_p.h"
 #include "medianode.h"
 #include "medianode_p.h"
 

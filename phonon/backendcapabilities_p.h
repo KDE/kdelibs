@@ -22,7 +22,7 @@
 
 #include "backendcapabilities.h"
 #include <QtCore/QObject>
-#include "factory.h"
+#include "factory_p.h"
 
 QT_BEGIN_NAMESPACE
 

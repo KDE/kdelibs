@@ -20,7 +20,7 @@
 #include "effect_p.h"
 #include "effectparameter.h"
 #include "effectinterface.h"
-#include "factory.h"
+#include "factory_p.h"
 
 #define PHONON_INTERFACENAME EffectInterface
 

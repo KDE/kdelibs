@@ -19,7 +19,7 @@
 
 #include "globalconfig.h"
 
-#include "factory.h"
+#include "factory_p.h"
 #include "objectdescription.h"
 #include "phonondefs_p.h"
 #include "backendinterface.h"

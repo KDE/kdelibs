@@ -28,7 +28,7 @@
 #include <kservicetypetrader.h>
 
 #include "../backendcapabilities.h"
-#include "../factory.h"
+#include "../factory_p.h"
 #include "../objectdescription.h"
 #include "../backendinterface.h"
 

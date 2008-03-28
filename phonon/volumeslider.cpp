@@ -22,7 +22,7 @@
 #include "audiooutput.h"
 #include "phonondefs_p.h"
 #include "phononnamespace_p.h"
-#include "factory.h"
+#include "factory_p.h"
 
 QT_BEGIN_NAMESPACE
 

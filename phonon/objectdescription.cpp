@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QSet>
-#include "factory.h"
+#include "factory_p.h"
 #include <QtCore/QStringList>
 #include "backendinterface.h"
 

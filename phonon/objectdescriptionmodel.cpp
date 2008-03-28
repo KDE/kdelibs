@@ -27,7 +27,7 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 #include <QtGui/QIcon>
-#include "factory.h"
+#include "factory_p.h"
 
 #if Q_MOC_OUTPUT_REVISION != 59
 #ifdef __GNUC__

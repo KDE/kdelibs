@@ -19,7 +19,7 @@
 
 #include "platform_p.h"
 #include "platformplugin.h"
-#include "factory.h"
+#include "factory_p.h"
 #include <QtCore/QCoreApplication>
 #include <QtGui/QIcon>
 

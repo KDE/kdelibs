@@ -26,7 +26,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPixmap>
 #include <QtGui/QToolButton>
-#include "factory.h"
+#include "factory_p.h"
 #include "audiooutput.h"
 #include <QtGui/QIcon>
 #include <QtCore/QPointer>

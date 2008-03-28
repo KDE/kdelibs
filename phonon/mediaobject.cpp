@@ -19,7 +19,7 @@
 #include "mediaobject.h"
 #include "mediaobject_p.h"
 
-#include "factory.h"
+#include "factory_p.h"
 #include "mediaobjectinterface.h"
 #include "frontendinterface_p.h"
 #include "mediasource.h"

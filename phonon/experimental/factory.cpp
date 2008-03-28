@@ -18,9 +18,9 @@
 
 */
 
-#include "factory.h"
+#include "factory_p.h"
 #include "objectdescription.h"
-#include "../factory.h"
+#include "../factory_p.h"
 #include "../globalstatic_p.h"
 #include "../backendinterface.h"
 #include "backendinterface.h"

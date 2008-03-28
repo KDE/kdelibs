@@ -20,7 +20,7 @@
 #ifndef TESTS_LOADFAKEBACKEND_H
 #define TESTS_LOADFAKEBACKEND_H
 
-#include "../factory.h"
+#include "../factory_p.h"
 #include <QtCore/QUrl>
 #include <QtTest>
 #include <stdlib.h>
