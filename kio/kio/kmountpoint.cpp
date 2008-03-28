@@ -464,7 +464,7 @@ KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
     /* If the path contains symlinks, get the real name */
     const QString realname = KStandardDirs::realFilePath(path);
 #else
-    const QString realname = path;
+    const QString realname = QDir::fromNativeSeparators(QDir(path).absolutePath());
 #endif
 
     int max = 0;
