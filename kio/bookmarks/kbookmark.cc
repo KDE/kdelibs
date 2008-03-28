@@ -35,6 +35,7 @@
 
 #define METADATA_KDE_OWNER "http://www.kde.org"
 #define METADATA_FREEDESKTOP_OWNER "http://freedesktop.org"
+#define METADATA_MIME_OWNER "http://www.freedesktop.org/standards/shared-mime-info"
 
 ////// utility functions
 
@@ -84,14 +85,12 @@ static QDomNode findMetadata(const QString & forOwner, QDomNode& parent, bool cr
         metadataElement = parent.ownerDocument().createElement( "metadata" );
         parent.appendChild(metadataElement);
         metadataElement.setAttribute( "owner", forOwner );
-    }
-    if (!metadataElement.isNull() && forOwnerIsKDE)
-    {
+        
+    } else if (!metadataElement.isNull() && forOwnerIsKDE) {
         // i'm not sure if this is good, we shouln't take over foreign metatdata
         metadataElement.setAttribute( "owner", METADATA_KDE_OWNER );
-        return metadataElement;
     }    
-    return QDomNode();
+    return metadataElement;
 }
 
 //////
@@ -214,7 +213,6 @@ KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
 
 KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
-    //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address;
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );    
     elem.setAttribute( "href", url.url() ); // gives us utf8
@@ -402,14 +400,14 @@ void KBookmark::setIcon(const QString &icon)
 
 QString KBookmark::mimeType() const
 {
-    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, false);
+    QDomNode metaDataNode = metaData(METADATA_MIME_OWNER, false);
     QDomElement mimeTypeElement = cd(metaDataNode, "mime:mime-type", false).toElement();
     return mimeTypeElement.attribute("type");
 }
 
 void KBookmark::setMimeType(const QString &mimeType)
 {
-    QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, true);
+    QDomNode metaDataNode = metaData(METADATA_MIME_OWNER, true);
     QDomElement iconElement = cd_or_create(metaDataNode, "mime:mime-type").toElement();
     iconElement.setAttribute ( "type", mimeType );
 }
