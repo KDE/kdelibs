@@ -159,9 +159,6 @@ void KActionCollection::setComponentData(const KComponentData &cData)
     // shortcuts ) will stop to work when the action ( through it's collection
     // ) changes the component. Prohibit that.
     kWarning(129) << "Attempt to call setComponentData() on a KActionCollection containing actions!";
-    Q_ASSERT(count()==0);
-    // In production code proceed. Global Shortcuts will get messed up, but
-    // those are the exception.
   }
 
   if (cData.isValid()) {
