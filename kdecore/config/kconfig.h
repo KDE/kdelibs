@@ -43,16 +43,11 @@ class KConfigPrivate;
  *
  * Quickstart:
  * 
- * Get the default application config object via KGlobal::config() 
- * (which returns a shared config file) or
- * by simply creating an instance of KConfig without parameters:
- * \code
- * KConfig config;
- * \endcode
+ * Get the default application config object via KGlobal::config().
  *
  * Load a specific configuration file:
  * \code
- * KConfig config( "/etc/kderc" );
+ * KConfig config( "/etc/kderc", KConfig::SimpleConfig );
  * \endcode
  *
  * Load the configuration of a specific component (taking into account
