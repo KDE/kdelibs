@@ -31,6 +31,10 @@
 #include <solid/device.h>
 #include <solid/block.h>
 
+#ifdef Q_WS_WIN
+#include <windows.h>
+#endif
+
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
 #endif
@@ -379,9 +383,21 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 
     free( mntctl_buffer );
 #elif defined(Q_WS_WIN)
-    //TODO?
-    // either just return the drives to get information about mounted
-    // filesystem from ntfs - but don't know how
+	//nothing fancy with infoNeeded but it gets the job done
+    DWORD bits = GetLogicalDrives();
+    if(!bits)
+        return result;
+
+    for(int i = 0; i < 26; i++)
+    {
+        if(bits & (1 << i))
+        {
+            Ptr mp(new KMountPoint);
+            mp->d->mountPoint = QString(QChar('A' + i) + QString(":\\"));
+            result.append(mp);
+        }
+    }
+	
 #else
    STRUCT_SETMNTENT mnttab;
    if ((mnttab = SETMNTENT(MNTTAB, "r")) == 0)
