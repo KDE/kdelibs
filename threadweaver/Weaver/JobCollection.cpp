@@ -80,7 +80,7 @@ void JobCollectionJobRunner::execute ( Thread *t )
     if ( m_payload )
     {
         m_payload->execute ( t );
-        m_collection->internalJobDone ( m_payload);
+		m_collection->internalJobDone ( m_payload);
     } else {
         debug ( 1, "JobCollection: job in collection has been deleted." );
     }
@@ -146,7 +146,10 @@ void JobCollection::addJob ( Job *job )
 {
     REQUIRE( d->weaver == 0 );
     REQUIRE( job != 0);
-    d->elements->append ( new JobCollectionJobRunner( this, job, this ) );
+
+	JobCollectionJobRunner* runner = new JobCollectionJobRunner( this, job, this );
+    d->elements->append ( runner );
+	connect( runner , SIGNAL(done(ThreadWeaver::Job*)) , this , SLOT(jobRunnerDone()) );
 }
 
 void JobCollection::stop( Job *job )
@@ -257,32 +260,46 @@ bool JobCollection::canBeExecuted()
     return Job::canBeExecuted() && inheritedCanRun;
 }
 
+void JobCollection::jobRunnerDone()
+{
+	// Note:  d->mutex must be unlocked before emitting the done() signal
+	// because this JobCollection may be deleted by a slot connected to done()
+	// in another thread
+	bool emitDone = false;
+
+	{
+		QMutexLocker l(&d->mutex);
+
+		if ( d->jobCounter == 0 )
+		{   // there is a small chance that (this) has been dequeued in the
+			// meantime, in this case, there is nothing left to clean up:
+			d->weaver = 0;
+			return;
+		}
+
+		--d->jobCounter;
+
+		ENSURE (d->jobCounter >= 0);
+
+		if (d->jobCounter == 0)
+		{
+			if (! success())
+			{
+				emit failed(this);
+			}
+
+			finalCleanup();
+			emitDone = true;
+		}
+	}
+
+	if (emitDone)
+		emit done(this);
+}
 void JobCollection::internalJobDone ( Job* job )
 {
-    REQUIRE (job != 0);
+	REQUIRE( job != 0 );
     Q_UNUSED (job);
-
-    QMutexLocker l( &d->mutex );
-
-    if ( d->jobCounter == 0 )
-    {   // there is a small chance that (this) has been dequeued in the
-        // meantime, in this case, there is nothing left to clean up:
-        d->weaver = 0;
-        return;
-    }
-
-    --d->jobCounter;
-
-    if (d->jobCounter == 0)
-    {
-        if (! success())
-	    {
-            emit failed(this);
-	    }
-
-        finalCleanup();
-    }
-    ENSURE (d->jobCounter >= 0);
 }
 
 void JobCollection::finalCleanup()
@@ -290,36 +307,46 @@ void JobCollection::finalCleanup()
     freeQueuePolicyResources();
     setFinished(true);
     d->weaver = 0;
-    emit done(this);
 }
 
 void JobCollection::dequeueElements()
-{   // dequeue everything:
-    QMutexLocker l( &d->mutex );
+{
+	// Note:  d->mutex must be unlocked before emitting the done() signal
+	// because this JobCollection may be deleted by a slot connected to done() in another
+	// thread
+	
+	bool emitDone = false;
 
-    if ( d->weaver != 0 )
-    {
-        for ( int index = 1; index < d->elements->size(); ++index )
-	    {
-            if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) // ... a QPointer
-	        {
-                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
-                       (void*)d->elements->at( index ) );
-                d->weaver->dequeue ( d->elements->at( index ) );
-	        } else {
-                debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
-                       (void*)d->elements->at( index ) );
-	        }
-	    }
+	{
+		// dequeue everything:
+		QMutexLocker l( &d->mutex );
 
-        if (d->jobCounter != 0)
-	{ // if jobCounter is not zero, then we where waiting for the
-	  // last job to finish before we would have freed our queue
-	  // policies, but in this case we have to do it here:
-            finalCleanup();
+		if ( d->weaver != 0 )
+		{
+			for ( int index = 1; index < d->elements->size(); ++index )
+			{
+				if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) // ... a QPointer
+				{
+					debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
+							(void*)d->elements->at( index ) );
+					d->weaver->dequeue ( d->elements->at( index ) );
+				} else {
+					debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+							(void*)d->elements->at( index ) );
+				}
+			}
+
+			if (d->jobCounter != 0)
+			{ 	// if jobCounter is not zero, then we where waiting for the
+				// last job to finish before we would have freed our queue
+				// policies, but in this case we have to do it here:
+				finalCleanup();
+			}
+			d->jobCounter = 0;
+		}
 	}
-        d->jobCounter = 0;
-    }
+	if (emitDone)
+		emit done(this);
 }
 
 #include "JobCollection.moc"

@@ -61,11 +61,13 @@ void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
 void JobSequence::internalJobDone( Job* job)
 {
     REQUIRE ( job != 0 );
-    JobCollection::internalJobDone(job);
-    if ( ! job->success() )
+    
+	if ( !job->success() )
     {
         stop( job );
     }
+
+	JobCollection::internalJobDone(job);
 }
 
 #include "JobSequence.moc"

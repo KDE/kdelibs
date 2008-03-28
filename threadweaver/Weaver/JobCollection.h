@@ -85,11 +85,17 @@ namespace ThreadWeaver {
         */
         virtual void internalJobDone( Job* );
 
-	/** Perform the task usually done when one individual job is
-	    finished, but in our case only when the whole collection
-	    is finished or partly dequeued.
-	*/
-	void finalCleanup();
+		/** 
+	 	 * Perform the task usually done when one individual job is
+	     * finished, but in our case only when the whole collection
+	     * is finished or partly dequeued.  
+		 */
+		void finalCleanup();
+
+	private Q_SLOTS:
+		// called when an internal job runner emits its done(Job*) signal.
+		// JobCollection emits done(Job*) after the last JobCollectionJobRunner finishes
+		void jobRunnerDone();
 
     private:
         /** Overload the execute method. */
