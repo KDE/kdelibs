@@ -216,16 +216,12 @@ bool KAction::isGlobalShortcutEnabled() const
   return d->globalShortcutEnabled;
 }
 
-void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading load )
+void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* load */ )
 {
-  if (d->globalShortcutEnabled == allowed)
-    return;
-  
-  d->globalShortcutEnabled = allowed;
   if (allowed) {
-    KGlobalAccel::self()->d->doRegister(this);
+      enableGlobalShortcut();
   } else {
-    KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
+      disableGlobalShortcut();
   }
 }
 
