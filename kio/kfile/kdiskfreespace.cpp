@@ -124,19 +124,19 @@ void KDiskFreeSpace::Private::_k_dfDone()
           s=s.remove(0,s.indexOf(BLANK)+1 ); // eat fs type
 
       QString u=s.left(s.indexOf(BLANK));
-      quint64 kBSize = u.toULongLong();
+      quint64 kibSize = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Size:       [" << kBSize << "]";
+      //kDebug(kfile_area) << "    Size:       [" << kibSize << "]";
 
       u=s.left(s.indexOf(BLANK));
-      quint64 kBUsed = u.toULongLong();
+      quint64 kibUsed = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Used:       [" << kBUsed << "]";
+      //kDebug(kfile_area) << "    Used:       [" << kibUsed << "]";
 
       u=s.left(s.indexOf(BLANK));
-      quint64 kBAvail = u.toULongLong();
+      quint64 kibAvail = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Avail:       [" << kBAvail << "]";
+      //kDebug(kfile_area) << "    Avail:       [" << kibAvail << "]";
 
 
       s=s.remove(0,s.indexOf(BLANK)+1 );  // delete the capacity 94%
@@ -146,7 +146,7 @@ void KDiskFreeSpace::Private::_k_dfDone()
       if ( mountPoint == m_mountPoint )
       {
         //kDebug(kfile_area) << "Found mount point. Emitting";
-        emit m_parent->foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
+        emit m_parent->foundMountPoint( mountPoint, kibSize, kibUsed, kibAvail );
       }
     }//if not header
   }//while further lines available

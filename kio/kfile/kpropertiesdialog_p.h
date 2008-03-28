@@ -79,8 +79,8 @@ protected Q_SLOTS:
   void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KJob * );
-  void slotFoundMountPoint( const QString& mp, quint64 kBSize,
-                            quint64 kBUsed, quint64 kBAvail );
+  void slotFoundMountPoint( const QString& mp, quint64 kibSize,
+                            quint64 kibUsed, quint64 kibAvail );
   void slotSizeStop();
   void slotSizeDetermine();
 
@@ -210,8 +210,8 @@ public:
 private Q_SLOTS:
   void slotActivated( int );
   void slotDeviceChanged();
-  void slotFoundMountPoint( const QString& mp, quint64 kBSize,
-                            quint64 kBUsed, quint64 kBAvail );
+  void slotFoundMountPoint( const QString& mp, quint64 kibSize,
+                            quint64 kibUsed, quint64 kibAvail );
 
 private:
   void updateInfo();

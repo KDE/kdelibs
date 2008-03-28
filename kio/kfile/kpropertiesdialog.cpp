@@ -1175,15 +1175,15 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
 }
 
 void KFilePropsPlugin::slotFoundMountPoint( const QString&,
-					    quint64 kBSize,
-					    quint64 /*kBUsed*/,
-					    quint64 kBAvail )
+					    quint64 kibSize,
+					    quint64 /*kibUsed*/,
+					    quint64 kibAvail )
 {
     d->m_freeSpaceLabel->setText(
 	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
-	 KIO::convertSizeFromKiB(kBAvail),
-	 KIO::convertSizeFromKiB(kBSize),
-	  100 - (int)(100.0 * kBAvail / kBSize) ));
+	 KIO::convertSizeFromKiB(kibAvail),
+	 KIO::convertSizeFromKiB(kibSize),
+	  100 - (int)(100.0 * kibAvail / kibSize) ));
 }
 
 void KFilePropsPlugin::slotDirSizeUpdate()
@@ -2862,20 +2862,20 @@ void KDevicePropsPlugin::slotDeviceChanged()
 }
 
 void KDevicePropsPlugin::slotFoundMountPoint( const QString&,
-                                              quint64 kBSize,
-                                              quint64 /*kBUsed*/,
-                                              quint64 kBAvail )
+                                              quint64 kibSize,
+                                              quint64 /*kibUsed*/,
+                                              quint64 kibAvail )
 {
   d->m_freeSpaceText->show();
   d->m_freeSpaceLabel->show();
 
-  int percUsed = 100 - (int)(100.0 * kBAvail / kBSize);
+  int percUsed = 100 - (int)(100.0 * kibAvail / kibSize);
 
   d->m_freeSpaceLabel->setText(
       i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
-       KIO::convertSizeFromKiB(kBAvail),
-       KIO::convertSizeFromKiB(kBSize),
-        100 - (int)(100.0 * kBAvail / kBSize) ));
+       KIO::convertSizeFromKiB(kibAvail),
+       KIO::convertSizeFromKiB(kibSize),
+        100 - (int)(100.0 * kibAvail / kibSize) ));
 
   d->m_freeSpaceBar->setRange(0, 100);
   d->m_freeSpaceBar->setValue(percUsed);

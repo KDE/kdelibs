@@ -76,11 +76,11 @@ Q_SIGNALS:
     /**
      * Emitted when the information about the requested mount point was found.
      * @param mountPoint the requested mount point
-     * @param kBSize the total size of the partition in kB
-     * @param kBUsed the amount of kB being used on the partition
-     * @param kBAvail the available space on the partition in kB
+     * @param kibSize the total size of the partition in KiB
+     * @param kibUsed the amount of KiB being used on the partition
+     * @param kibAvail the available space on the partition in KiB
      */
-    void foundMountPoint( const QString & mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail );
+    void foundMountPoint( const QString & mountPoint, quint64 kibSize, quint64 kibUsed, quint64 kibAvail );
 
     /**
      * Emitted when the request made via readDF is over, whether foundMountPoint was emitted or not.
