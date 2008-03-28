@@ -70,15 +70,12 @@ void KGlobalShortcutTest::testSetShortcut()
 
 void KGlobalShortcutTest::testFindActionByKey()
 {
-    QStringList actionNames = KGlobalAccel::self()->findActionNameSystemwide(Qt::Key_F29);
-    QCOMPARE(actionNames.count(), 2);
-    QCOMPARE(actionNames.at(0), QString("qttest"));
-    QCOMPARE(actionNames.at(1), QString("Action A"));
-    actionNames = KGlobalAccel::self()->findActionNameSystemwide(Qt::SHIFT + Qt::META + Qt::CTRL
+    QStringList actionId = KGlobalAccel::self()->findActionNameSystemwide(Qt::Key_F29);
+    QStringList actionIdA; actionIdA << "qttest" << "Action A" << "KDE Test Program" << "Text For Action A";
+    QCOMPARE(actionId, actionIdA);
+    actionId = KGlobalAccel::self()->findActionNameSystemwide(Qt::SHIFT + Qt::META + Qt::CTRL
                                                                  + Qt::ALT + Qt::Key_F28);
-    QCOMPARE(actionNames.count(), 2);
-    QCOMPARE(actionNames.at(1),
-             QString("Action A"));
+    QCOMPARE(actionId, actionIdA);
 }
 
 
