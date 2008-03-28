@@ -33,6 +33,7 @@
 
 #ifdef Q_WS_WIN
 #include <windows.h>
+#include <QDir>
 #endif
 
 #ifdef HAVE_VOLMGT
