@@ -48,6 +48,10 @@ class QString;
  *
  * Additionally, KActionCollection provides several convenience functions for locating
  * named actions, and actions grouped by QActionGroup.
+ *
+ * \note If you create your own action collection and need to assign shortcuts
+ * to the actions within, you have to call associateWidget() or
+ * addAssociatedWidget() to have them working.
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {
