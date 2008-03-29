@@ -142,7 +142,7 @@ void KSSLInfoDialog::updateWhichPartsEncrypted()
     } else {
         if (d->auxPartsEncrypted) {
             d->ui.encryptionIndicator->setPixmap(BarIcon("security-medium"));
-            d->ui.explanation->setText(i18n("Some of this document is secured with SSL,"
+            d->ui.explanation->setText(i18n("Some of this document is secured with SSL, "
                                             "but the main part is not."));
         } else {
             d->ui.encryptionIndicator->setPixmap(BarIcon("security-low"));
