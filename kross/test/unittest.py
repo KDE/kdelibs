@@ -267,6 +267,16 @@ class TestKross(unittest.TestCase):
 		#qo = sip.wrapinstance (qobj, QObject)
 		#print ">>>>>>>>>>>>>>>>>>> %s" % qo
 
+	def testClass(self):
+		class MyClass:
+			def __init__(self, result):
+				self.result = result
+			def myMethod(self):
+				return self.result
+		s = "my string"
+		myclass = MyClass(s)
+		self.assert_( self.object1.call_krossobject_method(myclass, "myMethod") == s )
+
 print "__name__ = %s" % __name__
 #print "__main__ = %s %s" % (__main__,dir(__main__))
 #print "TestObject3.name = %s" % TestObject3.name()
