@@ -28,6 +28,12 @@
 #include "kglobal.h"
 #include "kglobal_p.h"
 
+#include <config.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
 #include <QtCore/QList>
 #include <QtCore/QSet>
 
@@ -64,6 +70,10 @@ class KGlobalPrivate
             locale(0),
             charsets(0)
         {
+            // the umask is read here before any threads are created to avoid race conditions
+            mode_t tmp = 0;
+            umsk = umask(tmp);
+            umask(umsk);
         }
 
         inline ~KGlobalPrivate()
@@ -81,6 +91,7 @@ class KGlobalPrivate
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
+        mode_t umsk;
 };
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
@@ -149,6 +160,12 @@ KCharsets *KGlobal::charsets()
     }
 
     return d->charsets;
+}
+
+mode_t KGlobal::umask()
+{
+    PRIVATE_DATA;
+    return d->umsk;
 }
 
 KComponentData KGlobal::activeComponent()

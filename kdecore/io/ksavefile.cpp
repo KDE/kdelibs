@@ -119,6 +119,10 @@ bool KSaveFile::open(OpenMode flags)
         if (!fchown(tempFile.handle(), fi.ownerId(), fi.groupId()))
             tempFile.setPermissions(fi.permissions());
     }
+    else {
+        mode_t umsk = KGlobal::umask();
+        fchmod(tempFile.handle(), 0666&(~umsk));
+    }
 
     //Open oursleves with the temporary file
     QFile::setFileName(tempFile.fileName());
