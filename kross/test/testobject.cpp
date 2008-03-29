@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "testobject.h"
-#include "../core/action.h"
 
 #include <QtCore/QSize>
 #include <QtCore/QPoint>
@@ -184,18 +183,23 @@ QVariant TestObject::func_qvariant_qvariant(const QVariant& v)
     return v;
 }
 
-/*
-void TestObject::func_void_krossobject(Kross::Object::Ptr obj)
+Kross::Object::Ptr TestObject::func_krossobject_krossobject(Kross::Object::Ptr object)
 {
-    kDebug() << "TestObject::func_void_krossobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    //kDebug() << "TestObject::func_krossobject_krossobject";
+    return object;
 }
 
-Kross::Object::Ptr TestObject::func_krossobject_krossobject(Kross::Object::Ptr obj)
+QStringList TestObject::get_krossobject_methods(Kross::Object::Ptr object)
 {
-    kDebug() << "TestObject::func_krossobject_krossobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
-    return obj;
+    //kDebug() << "TestObject::get_krossobject_methods";
+    return object->methodNames();
 }
-*/
+
+QVariant TestObject::call_krossobject_method(Kross::Object::Ptr object, const QString& methodname, const QVariantList& args)
+{
+    //kDebug() << "TestObject::call_krossobject_method";
+    return object->callMethod(methodname, args);
+}
 
 QObject* TestObject::func_createChildTestObject(const QString& objectname)
 {

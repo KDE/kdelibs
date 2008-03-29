@@ -44,6 +44,9 @@ class QDateTime;
 
 #include <kdebug.h>
 
+#include "../core/action.h"
+#include "../core/object.h"
+
 /// \internal
 class TestObject : public QObject
 {
@@ -154,8 +157,9 @@ class TestObject : public QObject
         QString func_qstring_qstring_int(QString,int);
 
         // Kross::Object
-        //void func_void_krossobject(Kross::Object::Ptr);
-        //Kross::Object::Ptr func_krossobject_krossobject(Kross::Object::Ptr);
+        Kross::Object::Ptr func_krossobject_krossobject(Kross::Object::Ptr object);
+        QStringList get_krossobject_methods(Kross::Object::Ptr object);
+        QVariant call_krossobject_method(Kross::Object::Ptr object, const QString& methodname, const QVariantList& args = QVariantList());
 
         // QObject
         QObject* func_createChildTestObject(const QString& objectname);

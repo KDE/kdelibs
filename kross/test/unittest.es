@@ -212,9 +212,18 @@ tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 //println( Variant(new Array("One","Two")) ); //empty QVariant()
 //println( Variant("test")); //empty QVariant()
 
-// Properties
+// properties
 self.callFunction("setIconName",new Array("MyIconName"));
 tester.assert(self.callFunction("iconName"), "MyIconName");
+
+// test Kross::Object::Ptr and EcmaObject functionality
+function MyClass(result) {
+    this.myMethod = function() {
+        return result;
+    }
+}
+var myclass = new MyClass("my string");
+tester.assert(TestObject1.call_krossobject_method(myclass,"myMethod"), "my string");
 
 // print the test-results
 tester.printResult();

@@ -68,7 +68,7 @@ namespace Kross {
              *
              * \param name Each call has a name that says what
              * should be called.
-             * \param arguments The optional list of arguments
+             * \param args The optional list of arguments
              * passed to the call.
              * \return The call-result as QVariant.
              */

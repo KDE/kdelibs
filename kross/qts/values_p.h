@@ -20,6 +20,7 @@
 #include "plugin.h"
 
 #include "../core/manager.h"
+#include "../core/object.h"
 
 #include <QByteArray>
 #include <QUrl>
@@ -34,11 +35,49 @@
 #include <QAbstractItemView>
 #include <QAbstractItemModel>
 #include <QStringListModel>
+#include <QScriptClass>
+#include <QScriptValueIterator>
 #include <QDebug>
 
 using namespace Kross;
 
 namespace Kross {
+
+    class EcmaObject : public QScriptClass, public Kross::Object
+    {
+        public:
+            QScriptValue m_object;
+
+            explicit EcmaObject(QScriptEngine* engine, const QScriptValue& object = QScriptValue())
+                : QScriptClass(engine), Kross::Object(), m_object(object) {}
+            virtual ~EcmaObject() {}
+
+            virtual QVariant callMethod(const QString& name, const QVariantList& args = QVariantList())
+            {
+                QScriptValue function = m_object.property(name);
+                if( ! function.isFunction() ) {
+                    krosswarning( QString("EcmaScript::callFunction No such function '%1'").arg(name) );
+                    return QVariant();
+                }
+                QScriptValueList arguments;
+                foreach(const QVariant &v, args)
+                    arguments << engine()->newVariant(v);
+                QScriptValue result = function.call(m_object, arguments);
+                return result.toVariant();
+            }
+
+            virtual QStringList methodNames()
+            {
+                QStringList methods;
+                QScriptValueIterator it( m_object );
+                while( it.hasNext() ) {
+                    it.next();
+                    if( it.value().isFunction() )
+                        methods << it.name();
+                }
+                return methods;
+            }
+    };
 
     QScriptValue toByteArray(QScriptEngine *e, const QByteArray &ba) {
         return ba.isNull() ? e->nullValue() : e->newVariant(ba);
@@ -100,6 +139,30 @@ namespace Kross {
         s = v.isArray() ? QSizeF(v.property(0).toNumber(),v.property(1).toNumber()) : QSizeF();
     }
 
+    /*
+    QScriptValue toVariantList(QScriptEngine *e, const QVariantList &l) {
+        const int len = l.size();
+        QScriptValue a = e->newArray(len);
+        for(int i = 0; i < len; ++i)
+            a.setProperty(i, e->toScriptValue(l[i]));
+        return a;
+    }
+    void fromVariantList(const QScriptValue &v, QVariantList &l) {
+        l.clear();
+        const int len = v.isArray() ? v.property("length").toInt32() : 0;
+        for(int i = 0; i < len; ++i)
+            l << v.property(i).toVariant();
+    }
+    */
+
+    QScriptValue toObjPtr(QScriptEngine *e, const Kross::Object::Ptr &ptr) {
+        EcmaObject* obj = dynamic_cast<EcmaObject*>( const_cast<Kross::Object*>(ptr.data()) );
+        return obj ? obj->m_object : e->nullValue();
+    }
+    void fromObjPtr(const QScriptValue &v, Kross::Object::Ptr &ptr) {
+        ptr = new EcmaObject(v.engine(), v);
+    }
+
     QScriptValue createWidget(QScriptContext *context, QScriptEngine *engine) {
         const QString widgetname = context->callee().prototype().property("className").toString();
         Q_ASSERT( ! widgetname.isEmpty() );
@@ -116,21 +179,21 @@ namespace Kross {
     }
 
     QScriptValue addWidgetLayout(QScriptContext *c, QScriptEngine *engine) {
-        QLayout *layout = dynamic_cast<QLayout*>( qscriptvalue_cast<QObject*>(c->thisObject()) );
-        Q_ASSERT( layout );
-        QGridLayout *gridLayout = dynamic_cast<QGridLayout*>(layout);
-        QObject *obj = qscriptvalue_cast<QObject*>( c->argument(0) );
-        if( QWidget *w = dynamic_cast<QWidget*>(obj) ) {
-            if( gridLayout )
-                gridLayout->addWidget(w, c->argument(1).toInt32(), c->argument(2).toInt32(), (Qt::Alignment)c->argument(3).toInt32());
-            else
-                layout->addWidget(w);
-        }
-        else if( QLayout *l = dynamic_cast<QLayout*>( qscriptvalue_cast<QObject*>(c->argument(0)) ) ) {
-            if( gridLayout )
-                gridLayout->addLayout(l, c->argument(1).toInt32(), c->argument(2).toInt32(), (Qt::Alignment)c->argument(3).toInt32());
-            else if( QBoxLayout *bl = dynamic_cast<QBoxLayout*>(layout) )
-                bl->addLayout(l);
+        if( QLayout *layout = dynamic_cast<QLayout*>( qscriptvalue_cast<QObject*>(c->thisObject()) ) ) {
+            QGridLayout *gridLayout = dynamic_cast<QGridLayout*>(layout);
+            QObject *obj = qscriptvalue_cast<QObject*>( c->argument(0) );
+            if( QWidget *w = dynamic_cast<QWidget*>(obj) ) {
+                if( gridLayout )
+                    gridLayout->addWidget(w, c->argument(1).toInt32(), c->argument(2).toInt32(), (Qt::Alignment)c->argument(3).toInt32());
+                else
+                    layout->addWidget(w);
+            }
+            else if( QLayout *l = dynamic_cast<QLayout*>( qscriptvalue_cast<QObject*>(c->argument(0)) ) ) {
+                if( gridLayout )
+                    gridLayout->addLayout(l, c->argument(1).toInt32(), c->argument(2).toInt32(), (Qt::Alignment)c->argument(3).toInt32());
+                else if( QBoxLayout *bl = dynamic_cast<QBoxLayout*>(layout) )
+                    bl->addLayout(l);
+            }
         }
         return engine->nullValue();
     }
@@ -163,15 +226,18 @@ namespace Kross {
             global.setProperty("println", global.property("print"));
 
         // register common used types
-        qScriptRegisterMetaType< QByteArray >(engine, toByteArray, fromByteArray);
-        qScriptRegisterMetaType< QUrl       >(engine, toUrl,       fromUrl);
-        qScriptRegisterMetaType< QColor     >(engine, toColor,     fromColor);
-        qScriptRegisterMetaType< QRect      >(engine, toRect,      fromRect);
-        qScriptRegisterMetaType< QRectF     >(engine, toRectF,     fromRectF);
-        qScriptRegisterMetaType< QPoint     >(engine, toPoint,     fromPoint);
-        qScriptRegisterMetaType< QPointF    >(engine, toPointF,    fromPointF);
-        qScriptRegisterMetaType< QSize      >(engine, toSize,      fromSize);
-        qScriptRegisterMetaType< QSizeF     >(engine, toSizeF,     fromSizeF);
+        qScriptRegisterMetaType< QByteArray         >(engine, toByteArray,   fromByteArray);
+        qScriptRegisterMetaType< QUrl               >(engine, toUrl,         fromUrl);
+        qScriptRegisterMetaType< QColor             >(engine, toColor,       fromColor);
+        qScriptRegisterMetaType< QRect              >(engine, toRect,        fromRect);
+        qScriptRegisterMetaType< QRectF             >(engine, toRectF,       fromRectF);
+        qScriptRegisterMetaType< QPoint             >(engine, toPoint,       fromPoint);
+        qScriptRegisterMetaType< QPointF            >(engine, toPointF,      fromPointF);
+        qScriptRegisterMetaType< QSize              >(engine, toSize,        fromSize);
+        qScriptRegisterMetaType< QSizeF             >(engine, toSizeF,       fromSizeF);
+        //qScriptRegisterMetaType< QVariant           >(engine, toVariant,     fromVariant);
+        //qScriptRegisterMetaType< QVariantList       >(engine, toVariantList, fromVariantList);
+        qScriptRegisterMetaType< Kross::Object::Ptr >(engine, toObjPtr,      fromObjPtr);
     }
 
     void initializeGui(QScriptEngine *engine) {

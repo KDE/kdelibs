@@ -25,6 +25,7 @@
 #include <kross/core/manager.h>
 #include <kross/core/script.h>
 #include <kross/core/action.h>
+#include <kross/core/object.h>
 
 namespace Kross {
 
