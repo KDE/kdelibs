@@ -37,6 +37,30 @@ namespace Kross {
      * This class implementates reference counting for shared
      * objects. So, no need to take care of freeing objects.
      *
+     * Sample that does use the \a Object functionality to
+     * pass a Javascript classinstance to C++ code which then
+     * calls a method the classinstance provides.
+     * \code
+     * class MyObject : public QObject
+     * {
+     *     public Q_SLOTS:
+     *         QVariant myFunction(Kross::Object::Ptr obj) {
+     *             QVariantList args;
+     *             return obj->callMethod("myMethod", args);
+     *         }
+     * };
+     * \endcode
+     * \code
+     * function MyClass(result) {
+     *     this.myMethod = function() {
+     *         return result;
+     *     }
+     * }
+     * var myclass = new MyClass("my string");
+     * var r = MyObject.myFunction(myclass);
+     * print(r); // prints "my string"
+     * \endcode
+     *
      * \since 4.1
      */
     class KROSSCORE_EXPORT Object : public QSharedData, public ErrorInterface
