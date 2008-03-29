@@ -22,9 +22,12 @@
 
 #include <QPainter>
 #include <QStyleOption>
+#include <QApplication>
 
 #include <kiconloader.h>
 #include <kcategorizedsortfilterproxymodel.h>
+
+#define HORIZONTAL_HINT 3
 
 KCategoryDrawer::KCategoryDrawer()
 {
@@ -55,33 +58,13 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    if (option.state & QStyle::State_Selected)
-    {
-        QColor selected = option.palette.color(QPalette::Highlight);
-
-        QLinearGradient gradient(option.rect.topLeft(),
-                                 option.rect.bottomRight());
-        gradient.setColorAt(option.direction == Qt::LeftToRight ? 0
-                                                                : 1, selected);
-        gradient.setColorAt(option.direction == Qt::LeftToRight ? 1
-                                                                : 0, Qt::transparent);
-
-        painter->fillRect(option.rect, gradient);
-    }
-    else if (option.state & QStyle::State_MouseOver)
-    {
-        QColor hover = option.palette.color(QPalette::Highlight).light();
-        hover.setAlpha(88);
-
-        QLinearGradient gradient(option.rect.topLeft(),
-                                 option.rect.bottomRight());
-        gradient.setColorAt(option.direction == Qt::LeftToRight ? 0
-                                                                : 1, hover);
-        gradient.setColorAt(option.direction == Qt::LeftToRight ? 1
-                                                                : 0, Qt::transparent);
-
-        painter->fillRect(option.rect, gradient);
-    }
+    QStyleOptionViewItemV4 viewOptions;
+    viewOptions.rect = option.rect;
+    viewOptions.palette = option.palette;
+    viewOptions.direction = option.direction;
+    viewOptions.state = option.state;
+    viewOptions.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
+    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &viewOptions, painter, 0);
 
     QFont painterFont = painter->font();
     painterFont.setWeight(QFont::Bold);
@@ -104,7 +87,10 @@ void KCategoryDrawer::drawCategory(const QModelIndex &index,
 
     painter->setPen(color);
 
-    painter->drawText(option.rect, Qt::AlignVCenter | Qt::AlignLeft,
+    QRect textRect(option.rect);
+    textRect.setLeft(textRect.left() + HORIZONTAL_HINT);
+    textRect.setRight(textRect.right() - HORIZONTAL_HINT);
+    painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft,
     metrics.elidedText(category, Qt::ElideRight, option.rect.width()));
 
     painter->restore();
