@@ -161,15 +161,7 @@ QString KUser::fullName() const
 
 QString KUser::homeDir() const
 {
-    wchar_t profilesDir[MAX_PATH + 1] = { 0 };
-    DWORD Size = MAX_PATH+1;
-
-    if (d->userInfo == NULL || !GetProfilesDirectoryW(profilesDir, &Size)) {
-        return QString();
-    }
-
-    QDir dir = QDir::fromNativeSeparators(QString::fromUtf16((ushort *) profilesDir));
-    return dir.absolutePath().append(QLatin1Char('/')).append(loginName());
+	return QDir::fromNativeSeparators(qgetenv("USERPROFILE"));
 }
 
 QString KUser::faceIconPath() const
