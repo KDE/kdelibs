@@ -24,7 +24,7 @@
 
 class KKeySequenceButton: public QPushButton
 {
-	Q_OBJECT
+	Q_OBJECT 
 
 public:
 	explicit KKeySequenceButton(KKeySequenceWidgetPrivate *d, QWidget *parent)

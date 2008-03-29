@@ -301,11 +301,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
   if ( dock )
   {
       //QWidgetStackAccelManager::manage( wds );
-#if QT_VERSION < KDE_MAKE_VERSION(4,3,0)
-      return;
-#else
       manageDockWidget(dock, item);
-#endif
   }
 
 
