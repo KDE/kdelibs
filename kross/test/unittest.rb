@@ -7,6 +7,15 @@ require "TestObject2"
 
 KrossAction = self.action()
 
+class MyClass
+    def initialize(result)
+        @result = result
+    end
+    def myMethod
+        return @result
+    end
+end
+
 def testFunction1(arg1)
     return arg1
 end
@@ -359,6 +368,12 @@ class TestKross < Test::Unit::TestCase
 	#	TestObject1.signalObject(TestObject2)
 	#	assert( @myTestObject == TestObject2 )
 	#end
+
+	def testClass
+		s = "my string"
+		myclass = MyClass.new(s)
+		assert(TestObject1.call_krossobject_method(myclass, "myMethod") == s)
+	end
 
 end
 
