@@ -143,7 +143,7 @@ public:
    * Changes the text in a status bar field.
    *
    * The item will be resized to fit the text. If you change text to be empty,
-   * item will not be visible (untill you add some text).
+   * item will not be visible (until you add some text).
    *
    * @param text The label's text string
    * @param id The id of item.
