@@ -214,7 +214,7 @@ public:
   /**
    * Returns an extended property.
    *
-   * Under Windows, @p RoomNumber, @p WorkPhone and @p HomePhone are unsopported.
+   * Under Windows, @p RoomNumber, @p WorkPhone and @p HomePhone are unsupported.
    *
    * @return a QVariant with the value of the property or an invalid QVariant,
    *         if the property is not set
