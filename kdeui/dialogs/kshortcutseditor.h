@@ -183,32 +183,6 @@ public:
      */
     void importConfiguration( KConfig *config);
 
-	/**
-	 * Checks whether the given shortcut conflicts with global keyboard shortcuts.
-	 * If yes, and the warnUser argument is true, warns the user and gives them a chance
-	 * to reassign the shortcut from the global shortcut.
-	 *
-	 * @return true if there was conflict (and the user didn't reassign the shortcut)
-	 * @param cut the shortcut that will be checked for conflicts
-	 * @param warnUser if true, the user will be warned about a conflict and given a chance
-	 *        to reassign the shortcut
-	 * @param parent parent widget for the warning dialog
-	 */
-	static bool checkGlobalShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
-
-	/**
-	 * Checks whether the given shortcut conflicts with standard keyboard shortcuts.
-	 * If yes, and the warnUser argument is true, warns the user and gives them a chance
-	 * to reassign the shortcut from the standard shortcut.
-	 *
-	 * @return true if there was conflict (and the user didn't reassign the shortcut)
-	 * @param cut the shortcut that will be checked for conflicts
-	 * @param warnUser if true, the user will be warned about a conflict and given a chance
-	 *        to reassign the shortcut
-	 * @param parent parent widget for the warning dialog
-	 */
-	static bool checkStandardShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
-
 Q_SIGNALS:
 	/**
 	 * Emitted when an action's shortcut has been changed.
