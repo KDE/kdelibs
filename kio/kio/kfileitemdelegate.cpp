@@ -864,7 +864,8 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     }
 
     size = d->addMargin(size, Private::ItemMargin);
-    if (!d->maximumSize.isEmpty()) {
+    if (!d->maximumSize.isEmpty())
+    {
         size = size.boundedTo(d->maximumSize);
     }
 
