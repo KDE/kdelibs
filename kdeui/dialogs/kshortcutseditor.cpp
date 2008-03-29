@@ -640,7 +640,7 @@ void KShortcutsEditorPrivate::printShortcuts()
             for(int k = 0; k < shortcutTitleToColumn.count(); k++) {
               data = editoritem->data(shortcutTitleToColumn.at(k).second,Qt::DisplayRole);
               QString key = data.value<QKeySequence>().toString();
-              
+
               if(!key.isEmpty()) {
                 if( !shortcutTable ) {
                   shortcutTable = table->cellAt(currow, 1).firstCursorPosition().insertTable(1,2);
@@ -652,8 +652,8 @@ void KShortcutsEditorPrivate::printShortcuts()
                 } else {
                   shortcutTable->insertRows(shortcutTable->rows(),1);
                 }
-                shortcutTable->cellAt(k,0).firstCursorPosition().insertText(shortcutTitleToColumn.at(k).first);
-                shortcutTable->cellAt(k,1).firstCursorPosition().insertText(key);
+                shortcutTable->cellAt(shortcutTable->rows()-1,0).firstCursorPosition().insertText(shortcutTitleToColumn.at(k).first);
+                shortcutTable->cellAt(shortcutTable->rows()-1,1).firstCursorPosition().insertText(key);
               }
             }
 
