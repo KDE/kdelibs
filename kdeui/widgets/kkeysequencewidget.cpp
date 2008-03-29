@@ -387,6 +387,16 @@ bool KKeySequenceButton::event (QEvent* e)
 		return true;
 	}
 
+	// mjansen - 29.03.08
+	// The shortcut 'alt+c' ( or any other dialog local action shortcut )
+	// ended the recording and triggered the action associated with the
+	// action. In case of 'alt+c' ending the dialog.  It seems that those
+	// ShortcutOverride events get sent even if grabKeyboard() is active.
+	if (d->isRecording && e->type() == QEvent::ShortcutOverride) {
+		e->accept();
+		return true;
+	}
+
 	return QPushButton::event(e);
 }
 
@@ -407,6 +417,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
 	if (!d->isRecording)
 		return QPushButton::keyPressEvent(e);
+
+	e->accept();
+
+	Q_ASSERT( QWidget::keyboardGrabber() == this );
 
 	if (d->nKey == 0)
 		d->modifierKeys = newModifiers;
@@ -459,6 +473,8 @@ void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 {
 	if (!d->isRecording)
 		return QPushButton::keyReleaseEvent(e);
+
+	e->accept();
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 
