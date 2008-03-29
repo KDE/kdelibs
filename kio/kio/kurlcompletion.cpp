@@ -468,7 +468,7 @@ void KUrlCompletionPrivate::MyURL::init(const QString &_url, const QString &cwd)
 	}
 
 	// Look for a protocol in 'url'
-	QRegExp protocol_regex = QRegExp( "^[^/\\s\\\\]*:" );
+	QRegExp protocol_regex = QRegExp( "^(?![A-Za-z]:)[^/\\s\\\\]*:" );
 
 	// Assume "file:" or whatever is given by 'cwd' if there is
 	// no protocol.  (KUrl does this only for absoute paths)
