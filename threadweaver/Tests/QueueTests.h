@@ -32,7 +32,7 @@ public:
 namespace ThreadWeaver {
     class Job;
     class JobCollection;
-};
+}
 
 using ThreadWeaver::Job;
 
