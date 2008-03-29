@@ -271,8 +271,8 @@ namespace Phonon
         inline Iface(MediaNodePrivate *const d) : iface(cast(d)) {}
         inline operator       T0 *()       { return iface; }
         inline operator const T0 *() const { return iface; }
-        inline       T0 *operator->()       { return iface; }
-        inline const T0 *operator->() const { return iface; }
+        inline       T0 *operator->()       { Q_ASSERT(iface); return iface; }
+        inline const T0 *operator->() const { Q_ASSERT(iface); return iface; }
     private:
         T0 *const iface;
     };
@@ -283,7 +283,7 @@ namespace Phonon
     public:
         inline ConstIface(const MediaNodePrivate *const d) : iface(Iface<T0, T1, T2>::cast(d)) {}
         inline operator const T0 *() const { return iface; }
-        inline const T0 *operator->() const { return iface; }
+        inline const T0 *operator->() const { Q_ASSERT(iface); return iface; }
     private:
         const T0 *const iface;
     };
