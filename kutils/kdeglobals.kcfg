@@ -28,7 +28,7 @@
   <entry key="windowForeground" type="String" />
   <entry key="UseSystemBell" type="Bool" >
    <label>Use the PC speaker</label>
-   <whatsthis>If the ordinary PC speaker should be used instead of KDE's own notifications system.</whatsthis>
+   <whatsthis>Whether the ordinary PC speaker should be used instead of KDE's own notifications system.</whatsthis>
    <default>false</default>
   </entry>
   <entry key="TerminalApplication" type="String" >
@@ -51,7 +51,7 @@
   </entry>
   <entry key="linkColor" type="Color" >
    <label>Color for links</label>
-   <whatsthis>What color links which are yet not clicked on should have.</whatsthis>
+   <whatsthis>What color links should be that have not yet been clicked on</whatsthis>
   </entry>
   <entry key="visitedLinkColor" type="Color" >
    <label>Color for visited links</label>
@@ -385,7 +385,7 @@
 
   <entry key="Sort directories first" type="Bool" name="Sort directories first" >
    <label>Show directories first</label>
-   <whatsthis>If directories should be placed at the top when displaying files</whatsthis>
+   <whatsthis>Whether directories should be placed at the top when displaying files</whatsthis>
    <default>true</default>
   </entry>
 
@@ -393,8 +393,8 @@
   <entry key="Width 1024" type="String" name="Width 1024" />
 
   <entry key="Recent URLs" type="Path" name="Recent URLs" >
-   <label>The recent URLs recently visited</label>
-   <whatsthis>Used for auto completion in file dialogs for example.</whatsthis>
+   <label>The URLs recently visited</label>
+   <whatsthis>Used for auto-completion in file dialogs, for example</whatsthis>
   </entry>
 
   <entry key="Show Preview" type="Bool" name="Show Preview" >
@@ -404,7 +404,7 @@
 
   <entry key="Show hidden files" type="Bool" name="Show hidden files" >
    <label>Show hidden files</label>
-   <whatsthis>Determines if files starting with a dot(convention for hidden files) should be shown</whatsthis>
+   <whatsthis>Whether files starting with a dot (convention for hidden files) should be shown</whatsthis>
    <default>false</default>
   </entry>
 
@@ -430,11 +430,11 @@
  <group name="Locale" >
   <entry key="Country" type="String" >
    <label>What country</label>
-   <whatsthis>Used to determine how to display numbers, currency and time/date for example</whatsthis>
+   <whatsthis>Used to determine how to display numbers, currency and time/date, for example</whatsthis>
    <default>C</default>
   </entry>
   <entry key="Language" type="String" >
-   <label>What language to display text in</label>
+   <label>What language to use to display text</label>
   </entry>
   <entry key="PositiveSign" type="String" >
    <label>Character used for indicating positive numbers</label>
@@ -453,7 +453,7 @@
   </entry>
   <entry key="Desktop" type="Path" >
     <label>Path to the desktop directory</label>
-    <whatsthis>In this directory the files on the desktop are stored</whatsthis>
+    <whatsthis>Directory where the files on the desktop are stored</whatsthis>
     <default>$HOME/Desktop</default>
   </entry>
   <entry key="Documents" type="Path" >
