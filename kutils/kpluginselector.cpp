@@ -221,13 +221,13 @@ void KPluginSelector::Private::DependenciesWidget::clearDependencies()
 
 void KPluginSelector::Private::DependenciesWidget::showDependencyDetails()
 {
-    QString message = i18n("Automatically changes have been performed in order to satisfy plugin dependencies:\n");
+    QString message = i18n("Automatic changes have been performed in order to satisfy plugin dependencies:\n");
     foreach(const QString &dependency, dependencyMap.keys())
     {
         if (dependencyMap[dependency].added)
-            message += i18n("\n    %1 plugin has been automatically checked because the dependency of %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
+            message += i18n("\n    %1 plugin has been automatically checked because of the dependency of %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
         else
-            message += i18n("\n    %1 plugin has been automatically unchecked because its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
+            message += i18n("\n    %1 plugin has been automatically unchecked because of its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
     }
     KMessageBox::information(this, message, i18n("Dependency Check"));
 
@@ -1680,7 +1680,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
             if (!pluginInfo.email().isEmpty())
             {
-                QLabel *authorEmail = new QLabel(i18n("E-Mail:"), aboutWidget);
+                QLabel *authorEmail = new QLabel(i18n("Email:"), aboutWidget);
                 KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), pluginInfo.email());
 
                 sendEmail->setGlowEnabled(false);

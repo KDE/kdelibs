@@ -131,7 +131,7 @@ void KCModuleProxyPrivate::loadModule()
 			const QString message = kcm->rootOnlyMessage();
 			if( message.isEmpty() )
 				rootInfo->setText( i18n(
-   					  "<b>Changes in this section requires root access.</b><br />"
+   					  "<b>Changes in this section require root access.</b><br />"
 					  "On applying your changes you will have to supply your root "
 					  "password." ) );
 			else
