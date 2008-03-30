@@ -86,7 +86,7 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
             QString message = toQString(c.value()->toString(exec));
             int line = c.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
             return throwError(exec, KJS::EvalError, 
-                              toUString(i18n("Error seen while processing include '%1' line %2: %3", toQString(filename), line, message)));
+                              toUString(i18n("Error encountered while processing include '%1' line %2: %3", toQString(filename), line, message)));
         }
     }
     else
@@ -126,7 +126,7 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
                 QString message = toQString(c.value()->toString(exec));
                 int line = c.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
                 return throwError(exec, KJS::EvalError, 
-                                  toUString(i18n("Error seen while processing include '%1' line %2: %3", toQString(filename), line, message)));
+                                  toUString(i18n("Error encountered while processing include '%1' line %2: %3", toQString(filename), line, message)));
             }
         }
         else {

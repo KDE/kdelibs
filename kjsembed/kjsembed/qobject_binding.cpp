@@ -407,7 +407,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
 
     if ( types.size() <= idx )
     {
-        errorText = i18n("The slot sked for %1 arguments but there are only %2 arguments available.", idx, types.size());
+        errorText = i18n("The slot asked for %1 arguments but there are only %2 arguments available.", idx, types.size());
         return 0;
     }
 
