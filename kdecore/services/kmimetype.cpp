@@ -126,7 +126,7 @@ void KMimeType::checkEssentialMimeTypes()
     // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
 
     // No mimetypes installed? Are you setting XDG_DATA_DIRS without including /usr/share in it?
-    KMessage::message( KMessage::Error, i18n( "No mime types installed. Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share" ) );
+    KMessage::message( KMessage::Error, i18n( "No mime types installed. Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share." ) );
     return; // no point in going any further
   }
 
