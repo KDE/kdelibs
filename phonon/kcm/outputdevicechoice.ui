@@ -73,7 +73,7 @@
        <item>
         <widget class="QPushButton" name="applyPreferencesButton" >
          <property name="text" >
-          <string>Apply Device List to ...</string>
+          <string>Apply Device List To...</string>
          </property>
         </widget>
        </item>
