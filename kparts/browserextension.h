@@ -792,7 +792,7 @@ public:  // yes, those signals are public; don't tell moc or doxygen :)
   /**
    * notify a event from the part of object objid
    */
-  void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
+  void partEvent( const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args );
 
 private:
   class LiveConnectExtensionPrivate;
