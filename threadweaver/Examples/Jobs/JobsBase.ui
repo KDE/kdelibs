@@ -16,7 +16,7 @@
    <string>ThreadWeaver Jobs Examples</string>
   </property>
   <property name="toolTip" >
-   <string>The program executes 100 jobs in 4 threads. Each job waits for a random amount of milliseconds between 1 and 1000.</string>
+   <string>The program executes 100 jobs in 4 threads. Each job waits for a random number of milliseconds between 1 and 1000.</string>
   </property>
   <layout class="QGridLayout" >
    <property name="margin" >
