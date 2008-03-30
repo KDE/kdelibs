@@ -128,7 +128,7 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
     Q_ASSERT(service.isValid());
 
     if (service.isApplication()) {
-        d->errorString = i18n("The service '%1' provides no library or the Library key is missing in the .desktop file", service.name());
+        d->errorString = i18n("The service '%1' provides no library or the Library key is missing in the .desktop file.", service.name());
         return;
     }
     load();
@@ -184,7 +184,7 @@ bool KPluginLoader::load()
     d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");
     if (d->verificationData) {
         if ((d->verificationData->KDEVersion > KDE_VERSION) || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000))) {
-            d->errorString = i18n("The plugin '%1' uses incompatible KDE library. (%2)", d->name, d->verificationData->KDEVersionString);
+            d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, d->verificationData->KDEVersionString);
             lib.unload();
             unload();
             return false;
