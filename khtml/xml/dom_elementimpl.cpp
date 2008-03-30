@@ -63,7 +63,6 @@ using namespace khtml;
 AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attrId,
 		   DOMStringImpl *value, DOMStringImpl *prefix)
     : NodeBaseImpl(docPtr),
-      m_element(element),
       m_attrId(attrId)
 {
     m_value = value;
@@ -73,6 +72,14 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attr
     if (m_prefix)
 	m_prefix->ref();
     m_specified = true; // we don't yet support default attributes
+
+    // When creating the text node initially, we want element = 0,
+    // so we don't attempt to update the getElementById cache or
+    // call parseAttribute, etc. This is because we're normally lazily,
+    // from previous attributes, so there is nothing really changing
+    m_element = 0; 
+    createTextChild();
+    m_element = element;
 }
 
 AttrImpl::~AttrImpl()
@@ -148,12 +155,44 @@ DOMString AttrImpl::name() const
     return n;
 }
 
+void AttrImpl::createTextChild()
+{
+    // add a text node containing the attribute value
+    if (m_value->length() > 0) {
+	TextImpl* textNode = ownerDocument()->createTextNode(m_value);
+	int exceptioncode;
+	appendChild(textNode, exceptioncode);
+	assert(exceptioncode == 0);
+    }
+}
+
+void AttrImpl::childrenChanged()
+{
+    NodeBaseImpl::childrenChanged();
+
+    // update value
+    DOMStringImpl* oldVal = m_value;
+    m_value = new DOMStringImpl(0, 0);
+    m_value->ref();
+    for (NodeImpl* n = firstChild(); n; n = n->nextSibling()) {
+	DOMStringImpl* data = static_cast<const TextImpl*>(n)->string();
+	m_value->append(data);
+    }
+
+    if (m_element) {
+	if (m_attrId == ATTR_ID)
+	    m_element->updateId(oldVal, m_value);
+	m_element->parseAttribute(m_attrId, m_value);
+	m_element->attributeChanged(m_attrId);
+    }
+
+    oldVal->deref();
+}
+
 void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
 {
     exceptioncode = 0;
 
-    // ### according to the DOM docs, we should create an unparsed Text child
-    // node here
     // do not interprete entities in the string, its literal!
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
@@ -171,17 +210,9 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     if (m_value == v.implementation())
 	return;
 
-    if (m_element && m_attrId == ATTR_ID)
-        m_element->updateId(m_value, v.implementation());
-
-    m_value->deref();
-    m_value = v.implementation();
-    m_value->ref();
-
-    if (m_element) {
-        m_element->parseAttribute(m_attrId,m_value);
-        m_element->attributeChanged(m_attrId);
-    }
+    int e = 0;
+    removeChildren();
+    appendChild(ownerDocument()->createTextNode(v.implementation()), e);
 }
 
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
@@ -229,15 +260,7 @@ DOMString AttrImpl::toString() const
     // maybe easier to just use text value and ignore existing
     // entity refs?
 
-    if ( firstChild() ) {
-	result += "=\"";
-
-	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
-	    result += child->toString();
-	}
-
-	result += "\"";
-    } else if ( !nodeValue().isEmpty() ){
+    if ( !nodeValue().isEmpty() ) {
         //remove the else once the AttributeImpl changes are merged
         result += "=\"";
         result += nodeValue();
@@ -1217,7 +1240,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStrin
 	    if (id == ATTR_ID)
 	       m_element->updateId(m_attrs[i].val(), 0);
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
-	    m_attrs[i].free();
+	    m_attrs[i].free(); // Also sets the remove'd ownerElement to 0
 	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));

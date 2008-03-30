@@ -226,9 +226,6 @@ DOMString NodeImpl::textContent() const
     case Node::DOCUMENT_FRAGMENT_NODE: {
         DOMString s = "";
 
-        if (nodeType() == Node::ATTRIBUTE_NODE)
-            s += nodeValue();
-
 	for (NodeImpl *child = firstChild(); child; child = child->nextSibling()) {
             if (child->nodeType() == Node::COMMENT_NODE ||
                 child->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
