@@ -124,16 +124,16 @@ KMacroExpanderTest::expandMacrosShellQuote()
 	list << QString("Restaurant \"Chew It\"");
 	map.insert('n', list);
 	list.clear();
-	list << QString("element1") << QString("'element2'");
+	list << QString("element1") << QString("'element2'") << QString("\"element3\"");
 	map.insert('l', list);
 
 	s = "text %l %n text";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map),
-		QLatin1String("text 'element1' ''\\''element2'\\''' 'Restaurant \"Chew It\"' text"));
+		QLatin1String("text element1 ''\\''element2'\\''' '\"element3\"' 'Restaurant \"Chew It\"' text"));
 
 	s = "text \"%l %n\" text";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map),
-		QLatin1String("text \"element1 'element2' Restaurant \\\"Chew It\\\"\" text"));
+		QLatin1String("text \"element1 'element2' \\\"element3\\\" Restaurant \\\"Chew It\\\"\" text"));
 
 	QHash<QChar,QString> map2;
 	map2.insert('a', "%n");
@@ -143,35 +143,35 @@ KMacroExpanderTest::expandMacrosShellQuote()
 
 	s = "Title: %a - %f - %u - %n - %%";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("Title: '%n' - 'filename.txt' - 'http://www.kde.org/index.html' - 'Restaurant \"Chew It\"' - '%'"));
+		QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - 'Restaurant \"Chew It\"' - %"));
 
 	s = "kedit --caption %n %f";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption 'Restaurant \"Chew It\"' 'filename.txt'"));
+		QLatin1String("kedit --caption 'Restaurant \"Chew It\"' filename.txt"));
 
 	map2.insert('n', "Restaurant 'Chew It'");
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption 'Restaurant '\\''Chew It'\\''' 'filename.txt'"));
+		QLatin1String("kedit --caption 'Restaurant '\\''Chew It'\\''' filename.txt"));
 
 	s = "kedit --caption \"%n\" %f";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption \"Restaurant 'Chew It'\" 'filename.txt'"));
+		QLatin1String("kedit --caption \"Restaurant 'Chew It'\" filename.txt"));
 
 	map2.insert('n', "Restaurant \"Chew It\"");
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption \"Restaurant \\\"Chew It\\\"\" 'filename.txt'"));
+		QLatin1String("kedit --caption \"Restaurant \\\"Chew It\\\"\" filename.txt"));
 
 	map2.insert('n', "Restaurant $HOME");
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption \"Restaurant \\$HOME\" 'filename.txt'"));
+		QLatin1String("kedit --caption \"Restaurant \\$HOME\" filename.txt"));
 
 	map2.insert('n', "Restaurant `echo hello`");
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption \"Restaurant \\`echo hello\\`\" 'filename.txt'"));
+		QLatin1String("kedit --caption \"Restaurant \\`echo hello\\`\" filename.txt"));
 
 	s = "kedit --caption \"`echo %n`\" %f";
 	QCOMPARE(KMacroExpander::expandMacrosShellQuote(s, map2),
-		QLatin1String("kedit --caption \"$( echo 'Restaurant `echo hello`')\" 'filename.txt'"));
+		QLatin1String("kedit --caption \"$( echo 'Restaurant `echo hello`')\" filename.txt"));
 }
 
 void

@@ -22,6 +22,8 @@
 
 #include "kmacroexpander_p.h"
 
+#include "kshell.h"
+
 #include <QtCore/QStringList>
 #include <QtCore/QStack>
 #include <QtCore/QRegExp>
@@ -83,21 +85,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                     str.remove( pos, len );
                     continue;
                 } else {
-                    rsts = QLatin1Char('\'');
-#if 0 // this could pay off if join() would be cleverer and the strings were long
-                    for (QStringList::Iterator it = rst.begin(); it != rst.end(); ++it)
-                        (*it).replace( '\'', "'\\''" );
-                    rsts += rst.join( "' '" );
-#else
-                    for (QStringList::ConstIterator it = rst.begin(); it != rst.end(); ++it) {
-                        if (it != rst.begin())
-                            rsts += QLatin1String("' '");
-                        QString trsts( *it );
-                        trsts.replace( QLatin1Char('\''), QLatin1String("'\\''" ) );
-                        rsts += trsts;
-                    }
-#endif
-                    rsts += QLatin1Char('\'');
+                    rsts = KShell::joinArgs( rst );
                 }
             }
             rst.clear();
