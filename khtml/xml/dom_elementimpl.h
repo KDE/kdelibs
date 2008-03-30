@@ -60,6 +60,7 @@ public:
 private:
     AttrImpl(const AttrImpl &other);
     AttrImpl &operator = (const AttrImpl &other);
+    void createTextChild();
 public:
 
     // DOM methods & attributes for Attr
@@ -88,6 +89,7 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl::Id id() const { return m_attrId; }
+    virtual void childrenChanged();
 
     virtual DOMString toString() const;
 
