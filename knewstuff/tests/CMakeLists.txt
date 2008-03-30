@@ -9,6 +9,16 @@ set(CMAKE_SKIP_RPATH TRUE)
 
 ##########################
 
+set(testTranslatable_SRCS
+    testTranslatable.cpp
+)
+
+kde4_add_unit_test(testTranslatable ${testTranslatable_SRCS})
+
+target_link_libraries(testTranslatable ${KDE4_KDECORE_LIBS} knewstuff2 ${QT_QTTEST_LIBRARY})
+
+##########################
+
 set(knewstuff2_test_SRCS
    knewstuff2_test.cpp
 )
