@@ -396,11 +396,11 @@ bool Action::initialize()
     if( ! d->scriptfile.isNull() ) {
         QFile f( d->scriptfile );
         if( ! f.exists() ) {
-            setError(i18n("There exists no such scriptfile \"%1\"", d->scriptfile));
+            setError(i18n("Scriptfile \"%1\" does not exist.", d->scriptfile));
             return false;
         }
         if( d->interpretername.isNull() ) {
-            setError(i18n("Failed to determinate interpreter for scriptfile \"%1\"", d->scriptfile));
+            setError(i18n("Failed to determine interpreter for scriptfile \"%1\"", d->scriptfile));
             return false;
         }
         if( ! f.open(QIODevice::ReadOnly) ) {
