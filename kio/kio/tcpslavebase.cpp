@@ -316,7 +316,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
             }
             if (res & ResultFailed) {
                 error(ERR_COULD_NOT_CONNECT,
-                      host + i18n(": SSL negotiation failed"));
+                      i18nc("%1 is a host name", "%1: SSL negotiation failed", host));
                 return false;
             }
         }
@@ -675,7 +675,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     if (d->sslNoUi)
         return ResultFailed;
 
-    QString message = i18n("The server failed the authenticity check (%1)\n\n",
+    QString message = i18n("The server failed the authenticity check (%1).\n\n",
                            d->host);
 
     foreach (const KSslError &err, se) {
