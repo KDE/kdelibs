@@ -144,10 +144,10 @@
                </size>
               </property>
               <property name="toolTip" >
-               <string>You may select a file where the log content is stored, before the regression testing started!</string>
+               <string>You may select a file where the log content is stored, before the regression testing started.</string>
               </property>
               <property name="whatsThis" >
-               <string>You may select a file where the log content is stored, before the regression testing started!</string>
+               <string>You may select a file where the log content is stored, before the regression testing started.</string>
               </property>
               <property name="text" >
                <string>Output to file...</string>
@@ -254,7 +254,7 @@
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Do not supress debug output</string>
+    <string>Do not suppress debug output</string>
    </property>
   </action>
   <action name="actionDo_not_use_Xvfb" >
