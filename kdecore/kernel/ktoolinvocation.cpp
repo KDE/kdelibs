@@ -107,7 +107,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
         QString rpl = reply.arguments().count() > 0 ? reply.arguments().at(0).toString() : QLatin1String("empty");
-        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1:\n%2\n",function, rpl), error);
+        printError(i18n("KLauncher could not be reached via D-Bus. Error when calling %1:\n%2\n",function, rpl), error);
         //qDebug() << reply;
         return EINVAL;
     }
