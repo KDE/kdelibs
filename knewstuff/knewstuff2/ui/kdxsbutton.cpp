@@ -562,7 +562,7 @@ bool KDXSButton::authenticate()
 
 	return true; // FIXME: hack during development only
 
-	KIO::PasswordDialog dlg(i18n("This operation needs authentication"),
+	KIO::PasswordDialog dlg(i18n("This operation requires authentication."),
 		QString());
 	int ret = dlg.exec();
 	if(ret == QDialog::Accepted)

@@ -69,7 +69,7 @@ UploadDialog::UploadDialog( /*Engine *engine,*/ QWidget *parent ) :
   mAuthorEdit = new QLineEdit( topPage );
   topLayout->addWidget( mAuthorEdit, 1, 1 );
 
-  QLabel *emailLabel = new QLabel( i18n("E-mail address:"), topPage );
+  QLabel *emailLabel = new QLabel( i18n("Email address:"), topPage );
   topLayout->addWidget( emailLabel, 2, 0 );
   mEmailEdit = new QLineEdit( topPage );
   topLayout->addWidget( mEmailEdit, 2, 1 );
@@ -106,7 +106,7 @@ UploadDialog::UploadDialog( /*Engine *engine,*/ QWidget *parent ) :
   mSummaryEdit = new KTextEdit( topPage );
   topLayout->addWidget( mSummaryEdit, 9, 0, 1, 2 );
 
-  QLabel *sectionlangLabel = new QLabel( i18n("In which language did you describe above?"), topPage );
+  QLabel *sectionlangLabel = new QLabel( i18n("In which language did you describe the above?"), topPage );
   topLayout->addWidget( sectionlangLabel, 10, 0, 1, 2 );
 
   QLabel *languageLabel = new QLabel( i18n("Language:"), topPage );

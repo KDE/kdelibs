@@ -93,7 +93,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     setWindowTitle(i18n("Get Hot New Stuff!"));
     m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-                                  "%1 Add On Installer",
+                                  "%1 Add-On Installer",
                                   KGlobal::activeComponent().aboutData()->programName()));
     if (qApp && !qApp->windowIcon().isNull()) {
         m_titleWidget->setPixmap(qApp->windowIcon());
@@ -165,7 +165,7 @@ void DownloadDialog::slotResetMessage() // SLOT
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
 {
-    displayMessage( i18n("Timeout. Check internet connection!"), KTitleWidget::ErrorMessage );
+    displayMessage( i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage );
 }
 
 void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
