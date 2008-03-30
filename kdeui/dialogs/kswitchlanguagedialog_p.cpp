@@ -105,7 +105,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     setMainWidget(d->page);
     QVBoxLayout *topLayout = new QVBoxLayout( d->page );
     topLayout->setSpacing( spacingHint() );
-    QLabel *label = new QLabel( i18n("Please choose language which should be used for this application:"), d->page );
+    QLabel *label = new QLabel( i18n("Please choose the language which should be used for this application:"), d->page );
     topLayout->addWidget( label );
 
     QHBoxLayout *languageHorizontalLayout = new QHBoxLayout();
@@ -134,7 +134,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     topLayout->addLayout(addButtonHorizontalLayout);
 
     KPushButton *addLangButton = new KPushButton(i18n("Add Fallback Language"), d->page);
-    addLangButton->setToolTip(i18n("Adds one more language which will be used if other translations do not contain proper translation"));
+    addLangButton->setToolTip(i18n("Adds one more language which will be used if other translations do not contain a proper translation."));
     connect(addLangButton, SIGNAL(clicked()), this, SLOT(slotAddLanguageButton()));
     addButtonHorizontalLayout->addWidget(addLangButton);
     addButtonHorizontalLayout->addStretch();
@@ -223,8 +223,8 @@ void KSwitchLanguageDialog::slotOk()
 
         KMessageBox::information(
             this,
-            i18n("Language for this application has been changed. The change will take effect upon next start of application"), //text
-            i18n("Application language changed"), //caption
+            i18n("The language for this application has been changed. The change will take effect the next time the application is started."), //text
+            i18n("Application Language Changed"), //caption
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
 
@@ -308,8 +308,8 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
     }
 
     languageButton->setToolTip(primaryLanguage
-          ? i18n("This is main application language which will be used first before any other languages")
-          : i18n("This is language which will be used if any previous languages does not contain proper translation"));
+          ? i18n("This is the main application language which will be used first, before any other languages.")
+          : i18n("This is the language which will be used if any previous languages do not contain a proper translation."));
 
     int numRows = languagesLayout->rowCount();
 

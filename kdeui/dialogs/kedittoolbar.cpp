@@ -524,7 +524,7 @@ void KEditToolBarPrivate::_k_acceptOK(bool b)
 
 void KEditToolBarPrivate::_k_slotDefault()
 {
-    if ( KMessageBox::warningContinueCancel(q, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset ToolBars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
+    if ( KMessageBox::warningContinueCancel(q, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
         return;
 
     delete m_widget;
