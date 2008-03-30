@@ -75,7 +75,7 @@ bool KMemFile::Private::loadContentsFromFile()
   }
   if ( !f.open ( QIODevice::ReadOnly ) ) {
     close();
-    parent->setErrorString ( i18n ( "Can't open %1 for reading" ).arg ( filename ) );
+    parent->setErrorString ( i18n ( "Cannot open %1 for reading" ).arg ( filename ) );
     return false;
   }
 
@@ -85,7 +85,7 @@ bool KMemFile::Private::loadContentsFromFile()
   shmData.setKey ( getShmKey ( infoPtr->shmCounter ) );
   if ( !shmData.create ( infoPtr->shmDataSize ) ) {
     close();
-    parent->setErrorString ( i18n ( "Can not create memory segment for file %1" ).arg ( filename ) );
+    parent->setErrorString ( i18n ( "Cannot create memory segment for file %1" ).arg ( filename ) );
     return false;
   }
   shmData.lock();
@@ -164,7 +164,7 @@ bool KMemFile::open ( OpenMode mode )
   if ( !d->shmInfo.attach ( QSharedMemory::ReadWrite ) ) {
     if ( !d->shmInfo.create ( sizeof ( Private::sharedInfoData ) ) ) {
       lock.unlock();
-      setErrorString ( i18n ( "Can't create memory segment for file %1" ).arg ( d->filename ) );
+      setErrorString ( i18n ( "Cannot create memory segment for file %1" ).arg ( d->filename ) );
       return false;
     }
     d->shmInfo.lock();
@@ -202,7 +202,7 @@ bool KMemFile::open ( OpenMode mode )
 bool KMemFile::seek ( qint64 pos )
 {
   if ( d->shmDataSize < pos ) {
-    setErrorString ( i18n ( "Can't seek over eof" ) );
+    setErrorString ( i18n ( "Cannot seek past eof" ) );
     return false;
   }
   d->readWritePos = pos;
