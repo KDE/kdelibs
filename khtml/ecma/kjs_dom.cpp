@@ -616,8 +616,8 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
     case DOMNode::InsertBefore:
       return getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1]), exception));
     case DOMNode::ReplaceChild: {
-      SharedPtr<DOM::NodeImpl> oldKid = toNode(args[0]);
-      node.replaceChild(oldKid.get(), toNode(args[1]), exception);
+      SharedPtr<DOM::NodeImpl> oldKid = toNode(args[1]);
+      node.replaceChild(toNode(args[0]), oldKid.get(), exception);
       return getDOMNode(exec, oldKid.get());
     }
     case DOMNode::Contains:
