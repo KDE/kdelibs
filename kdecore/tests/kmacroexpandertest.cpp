@@ -16,11 +16,21 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kmacroexpandertest.h"
-#include "qtest_kde.h"
-#include "kmacroexpander.h"
-#include "kmacroexpandertest.moc"
+#include <qtest_kde.h>
+#include <kmacroexpander.h>
+
 #include <QtCore/QHash>
+#include <QtCore/QObject>
+
+class KMacroExpanderTest : public QObject
+{
+	Q_OBJECT
+
+private Q_SLOTS:
+	void expandMacros();
+	void expandMacrosShellQuote();
+	void expandMacrosSubClass();
+};
 
 class MyCExpander : public KCharMacroExpander
 {
@@ -181,3 +191,5 @@ KMacroExpanderTest::expandMacrosSubClass()
 }
 
 QTEST_KDEMAIN_CORE(KMacroExpanderTest)
+
+#include "kmacroexpandertest.moc"
