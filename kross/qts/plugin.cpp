@@ -43,12 +43,12 @@ EcmaPlugin::EcmaPlugin(QObject* parent)
     : QScriptExtensionPlugin(parent)
     , d(new Private)
 {
-    qDebug()<<QString("EcmaPlugin Ctor");
+    //qDebug()<<QString("EcmaPlugin Ctor");
 }
 
 EcmaPlugin::~EcmaPlugin()
 {
-    qDebug()<<QString("EcmaPlugin Dtor");
+    //qDebug()<<QString("EcmaPlugin Dtor");
     delete d;
 }
 
@@ -70,7 +70,7 @@ void EcmaPlugin::initialize(const QString& key, QScriptEngine* engine)
 
 QStringList EcmaPlugin::keys() const
 {
-    qDebug()<<"> Plugin::keys";
+    //qDebug()<<"> Plugin::keys";
     return QStringList() << "kross";
 }
 

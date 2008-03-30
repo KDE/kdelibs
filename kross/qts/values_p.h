@@ -36,27 +36,36 @@
 #include <QAbstractItemModel>
 #include <QStringListModel>
 #include <QScriptClass>
+#include <QScriptContext>
 #include <QScriptValueIterator>
 #include <QDebug>
+
+#include <klocale.h>
 
 using namespace Kross;
 
 namespace Kross {
 
+    /**
+    * The EcmaObject implements QScriptClass and Kross::Object to provide
+    * custom behavior to QtScript objects.
+    */
     class EcmaObject : public QScriptClass, public Kross::Object
     {
         public:
-            QScriptValue m_object;
-
             explicit EcmaObject(QScriptEngine* engine, const QScriptValue& object = QScriptValue())
                 : QScriptClass(engine), Kross::Object(), m_object(object) {}
             virtual ~EcmaObject() {}
+            virtual QString name() const { return "KrossObject"; }
+            virtual QScriptValue prototype() const { return m_object; }
 
             virtual QVariant callMethod(const QString& name, const QVariantList& args = QVariantList())
             {
                 QScriptValue function = m_object.property(name);
                 if( ! function.isFunction() ) {
-                    krosswarning( QString("EcmaScript::callFunction No such function '%1'").arg(name) );
+                    krosswarning( QString("EcmaScript::callFunction No such function \"%1\"").arg(name) );
+                    if( QScriptContext* context = engine()->currentContext() )
+                        context->throwError(QScriptContext::ReferenceError, i18n("No such function \"%1\"", name));
                     return QVariant();
                 }
                 QScriptValueList arguments;
@@ -77,6 +86,9 @@ namespace Kross {
                 }
                 return methods;
             }
+
+        private:
+            QScriptValue m_object;
     };
 
     QScriptValue toByteArray(QScriptEngine *e, const QByteArray &ba) {
@@ -156,8 +168,8 @@ namespace Kross {
     */
 
     QScriptValue toObjPtr(QScriptEngine *e, const Kross::Object::Ptr &ptr) {
-        EcmaObject* obj = dynamic_cast<EcmaObject*>( const_cast<Kross::Object*>(ptr.data()) );
-        return obj ? obj->m_object : e->nullValue();
+        const EcmaObject* obj = dynamic_cast<const EcmaObject*>( ptr.data() );
+        return obj ? obj->prototype() : e->nullValue();
     }
     void fromObjPtr(const QScriptValue &v, Kross::Object::Ptr &ptr) {
         ptr = new EcmaObject(v.engine(), v);
@@ -218,6 +230,10 @@ namespace Kross {
         return createLayout(context, engine, new QGridLayout());
     }
 
+    /**
+    * Initialize some core functionality like common used types we like
+    * to use within scripts.
+    */
     void initializeCore(QScriptEngine *engine) {
         QScriptValue global = engine->globalObject();
 
@@ -235,11 +251,19 @@ namespace Kross {
         qScriptRegisterMetaType< QPointF            >(engine, toPointF,      fromPointF);
         qScriptRegisterMetaType< QSize              >(engine, toSize,        fromSize);
         qScriptRegisterMetaType< QSizeF             >(engine, toSizeF,       fromSizeF);
+
+        // we should probably go with an own wrapper for QVariant/QObject...
         //qScriptRegisterMetaType< QVariant           >(engine, toVariant,     fromVariant);
         //qScriptRegisterMetaType< QVariantList       >(engine, toVariantList, fromVariantList);
+
+        // register the Kross::Object::Ptr wrapper
         qScriptRegisterMetaType< Kross::Object::Ptr >(engine, toObjPtr,      fromObjPtr);
     }
 
+    /**
+    * Initialize GUI functionality like widgets the QUiLoader provides
+    * and some layout-managers.
+    */
     void initializeGui(QScriptEngine *engine) {
         QScriptValue global = engine->globalObject();
 
