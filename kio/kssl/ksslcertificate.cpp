@@ -1107,11 +1107,11 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::CertificateRejected:
         return i18n("The root CA (Certificate Authority) has been marked to be rejected for the purpose you tried to use it for.");
     case KSSLCertificate::IssuerSubjectMismatched:
-        return i18n("The certificate's CA's (Certificate Authority) does not match the CA name of the certificate.");
+        return i18n("The certificate's CA (Certificate Authority) does not match the CA name of the certificate.");
     case KSSLCertificate::AuthAndSubjectKeyIDMismatched:
-        return i18n("The CA's (Certificate Authority) certificate's key ID does not match the key ID in the 'Issuer' section of the certificate you are trying to use.");
+        return i18n("The CA (Certificate Authority) certificate's key ID does not match the key ID in the 'Issuer' section of the certificate you are trying to use.");
     case KSSLCertificate::AuthAndSubjectKeyIDAndNameMismatched:
-        return i18n("The CA's (Certificate Authority) certificate's key ID and name do not match the key ID and name in the 'Issuer' section of the certificate you are trying to use.");
+        return i18n("The CA (Certificate Authority) certificate's key ID and name do not match the key ID and name in the 'Issuer' section of the certificate you are trying to use.");
     case KSSLCertificate::KeyMayNotSignCertificate:
         return i18n("The certificate's CA (Certificate Authority) is not allowed to sign certificates.");
     case KSSLCertificate::ApplicationVerificationFailed:
@@ -1122,7 +1122,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::SignatureFailed:
         return i18n("The signature test for this certificate failed. This could mean that the signature of this certificate or any in its trust path are invalid, could not be decoded or that the CRL (Certificate Revocation List) could not be verified. If you see this message, please let the author of the software you are using know that he or she should use the new, more specific error messages.");
     case KSSLCertificate::Expired:
-        return i18n("This certificate, any in its trust path or its CA's (Certificate Authority) CRL (Certificate Revocation List) is not valid. Any of them could not be valid yet or not valid any more. If you see this message, please let the author of the software you are using know that he or she should use the new, morespecific error messages.");
+        return i18n("This certificate, any in its trust path or its CA's (Certificate Authority) CRL (Certificate Revocation List) is not valid. Any of them could not be valid yet or not valid any more. If you see this message, please let the author of the software you are using know that he or she should use the new, more specific error messages.");
     // continue 'useful' messages
 
     // other error messages
