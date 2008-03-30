@@ -70,12 +70,12 @@ bool KMemFile::Private::loadContentsFromFile()
   QFile f ( filename );
   if ( !f.exists() ) {
     close();
-    parent->setErrorString ( i18n ( "File %1 does not exist" ).arg ( filename ) );
+    parent->setErrorString ( i18n ( "File %1 does not exist" , filename ) );
     return false;
   }
   if ( !f.open ( QIODevice::ReadOnly ) ) {
     close();
-    parent->setErrorString ( i18n ( "Cannot open %1 for reading" ).arg ( filename ) );
+    parent->setErrorString ( i18n ( "Cannot open %1 for reading" , filename ) );
     return false;
   }
 
@@ -85,7 +85,7 @@ bool KMemFile::Private::loadContentsFromFile()
   shmData.setKey ( getShmKey ( infoPtr->shmCounter ) );
   if ( !shmData.create ( infoPtr->shmDataSize ) ) {
     close();
-    parent->setErrorString ( i18n ( "Cannot create memory segment for file %1" ).arg ( filename ) );
+    parent->setErrorString ( i18n ( "Cannot create memory segment for file %1" , filename ) );
     return false;
   }
   shmData.lock();
@@ -95,7 +95,7 @@ bool KMemFile::Private::loadContentsFromFile()
   bytesRead = f.read ( data, infoPtr->shmDataSize );
   if ( bytesRead != infoPtr->shmDataSize ) {
     close();
-    parent->setErrorString ( i18n ( "Could not read data from %1 into shm" ).arg( filename ) );
+    parent->setErrorString ( i18n ( "Could not read data from %1 into shm" , filename ) );
     return false;
   }
   shmDataSize = size;
@@ -151,7 +151,7 @@ bool KMemFile::open ( OpenMode mode )
   }
 
   if ( !QFile::exists ( d->filename ) ) {
-    setErrorString ( i18n ( "File %1 does not exist" ).arg ( d->filename ) );
+    setErrorString ( i18n ( "File %1 does not exist" , d->filename ) );
     return false;
   }
 
@@ -164,7 +164,7 @@ bool KMemFile::open ( OpenMode mode )
   if ( !d->shmInfo.attach ( QSharedMemory::ReadWrite ) ) {
     if ( !d->shmInfo.create ( sizeof ( Private::sharedInfoData ) ) ) {
       lock.unlock();
-      setErrorString ( i18n ( "Cannot create memory segment for file %1" ).arg ( d->filename ) );
+      setErrorString ( i18n ( "Cannot create memory segment for file %1" , d->filename ) );
       return false;
     }
     d->shmInfo.lock();
