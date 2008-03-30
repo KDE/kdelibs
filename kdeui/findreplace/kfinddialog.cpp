@@ -225,7 +225,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
             "Enter a replacement string, or select a previous one from the list.") );
     backRef->setWhatsThis(i18n(
             "<qt>If enabled, any occurrence of <code><b>\\N</b></code>, where "
-            "<code><b>N</b></code> is a integer number, will be replaced with "
+            "<code><b>N</b></code> is an integer number, will be replaced with "
             "the corresponding capture (\"parenthesized substring\") from the "
             "pattern.<p>To include (a literal <code><b>\\N</b></code> in your "
             "replacement, put an extra backslash in front of it, like "
