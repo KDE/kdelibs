@@ -238,7 +238,7 @@ public:
      *
      * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
      * \code
-     *   i18n( "Could not read\n%1" ).arg( errorText() );
+     *   i18n( "Could not read\n%1" , errorText() );
      * \endcode
      * Do not call it if error() is not 0.
      *
