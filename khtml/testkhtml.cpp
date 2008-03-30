@@ -35,7 +35,7 @@
 int main(int argc, char *argv[])
 {
     KCmdLineOptions options;
-    options.add("+file", ki18n("url to open"));
+    options.add("+file", ki18n("URL to open"));
 
     KCmdLineArgs::init(argc, argv, "testkhtml", 0, ki18n("Testkhtml"),
             "1.0", ki18n("a basic web browser using the KHTML library"));

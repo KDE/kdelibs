@@ -627,7 +627,7 @@ int main(int argc, char *argv[])
     options.add("noxvfb", ki18n("Do not use Xvfb"));
     options.add("o");
     options.add("output <directory>", ki18n("Put output in <directory> instead of <base_dir>/output"));
-    options.add("+[base_dir]", ki18n("Directory containing tests,basedir and output directories. Only regarded if -b is not specified."));
+    options.add("+[base_dir]", ki18n("Directory containing tests, basedir and output directories. Only regarded if -b is not specified."));
     options.add("+[testcases]", ki18n("Relative path to testcase, or directory of testcases to be run (equivalent to -t)."));
 
     KCmdLineArgs::init(argc, argv, "testregression", 0, ki18n("TestRegression"),
