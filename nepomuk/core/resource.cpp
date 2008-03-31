@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 #include "tools.h"
+#include "tag.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -31,9 +32,6 @@
 #include <Soprano/Vocabulary/RDFS>
 
 #include <kmimetype.h>
-
-// FIXME: let the code generator do this
-#include "tag.h"
 
 
 Nepomuk::Resource::Resource()
@@ -377,65 +375,76 @@ QString Nepomuk::errorString( ErrorCode code )
     }
 }
 
-// do not remove, will be replaced with method definitions by the Nepomuk class generator
+
 QString Nepomuk::Resource::description() const
 {
-    return ( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#description" ) ).toStringList() << QString() ).first();
+    return ( property( Soprano::Vocabulary::NAO::description() ).toStringList() << QString() ).first();
 }
+
 
 void Nepomuk::Resource::setDescription( const QString& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#description"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::description(), Variant( value ) );
 }
+
 
 QString Nepomuk::Resource::descriptionUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#description";
+    return Soprano::Vocabulary::NAO::description().toString();
 }
+
 
 QStringList Nepomuk::Resource::identifiers() const
 {
-    return property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier") ).toStringList();
+    return property( Soprano::Vocabulary::NAO::identifier() ).toStringList();
 }
+
 
 void Nepomuk::Resource::setIdentifiers( const QStringList& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::identifier(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addIdentifier( const QString& value )
 {
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier") );
+    Variant v = property( Soprano::Vocabulary::NAO::identifier() );
     v.append( value );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier"), v );
+    setProperty( Soprano::Vocabulary::NAO::identifier(), v );
 }
+
 
 QString Nepomuk::Resource::identifierUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier";
+    return Soprano::Vocabulary::NAO::identifier().toString();
 }
+
 
 QStringList Nepomuk::Resource::altLabels() const
 {
-    return property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel") ).toStringList();
+    return property( Soprano::Vocabulary::NAO::altLabel() ).toStringList();
 }
+
 
 void Nepomuk::Resource::setAltLabels( const QStringList& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::altLabel(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addAltLabel( const QString& value )
 {
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel") );
+    Variant v = property( Soprano::Vocabulary::NAO::altLabel() );
     v.append( value );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel"), v );
+    setProperty( Soprano::Vocabulary::NAO::altLabel(), v );
 }
+
 
 QString Nepomuk::Resource::altLabelUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel";
+    return Soprano::Vocabulary::NAO::altLabel().toString();
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::annotations() const
 {
@@ -444,13 +453,15 @@ QList<Nepomuk::Resource> Nepomuk::Resource::annotations() const
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation") ).toResourceList() );
+    return convertResourceList<Resource>( property( Soprano::Vocabulary::NAO::annotation() ).toResourceList() );
 }
+
 
 void Nepomuk::Resource::setAnnotations( const QList<Nepomuk::Resource>& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::annotation(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addAnnotation( const Nepomuk::Resource& value )
 {
@@ -459,15 +470,17 @@ void Nepomuk::Resource::addAnnotation( const Nepomuk::Resource& value )
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation") );
+    Variant v = property( Soprano::Vocabulary::NAO::annotation() );
     v.append( Resource( value ) );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation"), v );
+    setProperty( Soprano::Vocabulary::NAO::annotation(), v );
 }
+
 
 QString Nepomuk::Resource::annotationUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation";
+    return Soprano::Vocabulary::NAO::annotation().toString();
 }
+
 
 QList<Nepomuk::Tag> Nepomuk::Resource::tags() const
 {
@@ -476,8 +489,9 @@ QList<Nepomuk::Tag> Nepomuk::Resource::tags() const
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Tag>( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag") ).toResourceList() );
+    return convertResourceList<Tag>( property( Soprano::Vocabulary::NAO::hasTag() ).toResourceList() );
 }
+
 
 void Nepomuk::Resource::setTags( const QList<Nepomuk::Tag>& value )
 {
@@ -491,8 +505,9 @@ void Nepomuk::Resource::setTags( const QList<Nepomuk::Tag>& value )
          it != value.constEnd(); ++it ) {
         l.append( Resource( (*it) ) );
     }
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag"), Variant( l ) );
+    setProperty( Soprano::Vocabulary::NAO::hasTag(), Variant( l ) );
 }
+
 
 void Nepomuk::Resource::addTag( const Nepomuk::Tag& value )
 {
@@ -501,15 +516,17 @@ void Nepomuk::Resource::addTag( const Nepomuk::Tag& value )
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag") );
+    Variant v = property( Soprano::Vocabulary::NAO::hasTag() );
     v.append( Resource( value ) );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag"), v );
+    setProperty( Soprano::Vocabulary::NAO::hasTag(), v );
 }
+
 
 QString Nepomuk::Resource::tagUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTag";
+    return Soprano::Vocabulary::NAO::hasTag().toString();
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::topics() const
 {
@@ -518,13 +535,15 @@ QList<Nepomuk::Resource> Nepomuk::Resource::topics() const
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic") ).toResourceList() );
+    return convertResourceList<Resource>( property( Soprano::Vocabulary::NAO::hasTopic() ).toResourceList() );
 }
+
 
 void Nepomuk::Resource::setTopics( const QList<Nepomuk::Resource>& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::hasTopic(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addTopic( const Nepomuk::Resource& value )
 {
@@ -533,15 +552,17 @@ void Nepomuk::Resource::addTopic( const Nepomuk::Resource& value )
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic") );
+    Variant v = property( Soprano::Vocabulary::NAO::hasTopic() );
     v.append( Resource( value ) );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic"), v );
+    setProperty( Soprano::Vocabulary::NAO::hasTopic(), v );
 }
+
 
 QString Nepomuk::Resource::topicUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic";
+    return Soprano::Vocabulary::NAO::hasTopic().toString();
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::isTopicOfs() const
 {
@@ -550,13 +571,15 @@ QList<Nepomuk::Resource> Nepomuk::Resource::isTopicOfs() const
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf") ).toResourceList() );
+    return convertResourceList<Resource>( property( Soprano::Vocabulary::NAO::isTopicOf() ).toResourceList() );
 }
+
 
 void Nepomuk::Resource::setIsTopicOfs( const QList<Nepomuk::Resource>& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::isTopicOf(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addIsTopicOf( const Nepomuk::Resource& value )
 {
@@ -565,15 +588,17 @@ void Nepomuk::Resource::addIsTopicOf( const Nepomuk::Resource& value )
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf") );
+    Variant v = property( Soprano::Vocabulary::NAO::isTopicOf() );
     v.append( Resource( value ) );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf"), v );
+    setProperty( Soprano::Vocabulary::NAO::isTopicOf(), v );
 }
+
 
 QString Nepomuk::Resource::isTopicOfUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf";
+    return Soprano::Vocabulary::NAO::isTopicOf().toString();
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::isRelateds() const
 {
@@ -582,13 +607,15 @@ QList<Nepomuk::Resource> Nepomuk::Resource::isRelateds() const
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated") ).toResourceList() );
+    return convertResourceList<Resource>( property( Soprano::Vocabulary::NAO::isRelated() ).toResourceList() );
 }
+
 
 void Nepomuk::Resource::setIsRelateds( const QList<Nepomuk::Resource>& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::isRelated(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addIsRelated( const Nepomuk::Resource& value )
 {
@@ -597,81 +624,93 @@ void Nepomuk::Resource::addIsRelated( const Nepomuk::Resource& value )
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated") );
+    Variant v = property( Soprano::Vocabulary::NAO::isRelated() );
     v.append( Resource( value ) );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated"), v );
+    setProperty( Soprano::Vocabulary::NAO::isRelated(), v );
 }
+
 
 QString Nepomuk::Resource::isRelatedUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated";
+    return Soprano::Vocabulary::NAO::isRelated().toString();
 }
+
 
 QString Nepomuk::Resource::label() const
 {
-    return ( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#label") ).toStringList() << QString() ).first();
+    return ( property( Soprano::Vocabulary::NAO::prefLabel() ).toStringList() << QString() ).first();
 }
+
 
 void Nepomuk::Resource::setLabel( const QString& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#label"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::prefLabel(), Variant( value ) );
 }
+
 
 QString Nepomuk::Resource::labelUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#label";
+    return Soprano::Vocabulary::NAO::prefLabel().toString();
 }
+
 
 quint32 Nepomuk::Resource::rating() const
 {
-    return ( property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasRating") ).toUnsignedIntList() << 0 ).first();
+    return ( property( Soprano::Vocabulary::NAO::numericRating() ).toUnsignedIntList() << 0 ).first();
 }
+
 
 void Nepomuk::Resource::setRating( const quint32& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasRating"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::numericRating(), Variant( value ) );
 }
+
 
 QString Nepomuk::Resource::ratingUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasRating";
+    return Soprano::Vocabulary::NAO::numericRating().toString();
 }
+
 
 QStringList Nepomuk::Resource::symbols() const
 {
-    return property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol") ).toStringList();
+    return property( Soprano::Vocabulary::NAO::hasSymbol() ).toStringList();
 }
+
 
 void Nepomuk::Resource::setSymbols( const QStringList& value )
 {
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol"), Variant( value ) );
+    setProperty( Soprano::Vocabulary::NAO::hasSymbol(), Variant( value ) );
 }
+
 
 void Nepomuk::Resource::addSymbol( const QString& value )
 {
-    Variant v = property( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol") );
+    Variant v = property( Soprano::Vocabulary::NAO::hasSymbol() );
     v.append( value );
-    setProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol"), v );
+    setProperty( Soprano::Vocabulary::NAO::hasSymbol(), v );
 }
+
 
 QString Nepomuk::Resource::symbolUri()
 {
-    return "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol";
+    return Soprano::Vocabulary::NAO::hasSymbol().toString();
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::annotationOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation"), *this ) );
+    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( Soprano::Vocabulary::NAO::annotation(), *this ) );
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::isRelatedOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( QUrl("http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated"), *this ) );
+    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( Soprano::Vocabulary::NAO::isRelated(), *this ) );
 }
+
 
 QList<Nepomuk::Resource> Nepomuk::Resource::allResources()
 {
-    return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( QUrl("http://www.w3.org/2000/01/rdf-schema#Resource") ) );
+    return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( Soprano::Vocabulary::RDFS::Resource() ) );
 }
-
-

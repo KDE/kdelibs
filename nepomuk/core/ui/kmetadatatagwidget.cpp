@@ -24,7 +24,7 @@
 #include "nepomukmassupdatejob.h"
 
 #include "../tools.h"
-#include "../generated/tag.h"
+#include "../tag.h"
 
 #include <karrowbutton.h>
 #include <kinputdialog.h>

@@ -138,7 +138,7 @@ namespace Nepomuk {
  * \param classname The name of the Nepomuk::Service subclass to export.
  * \param libname The name of the library which should export the service.
  */
-#define NEPOMUK_EXPORT_SERVICE( classname, libname )   \
+#define NEPOMUK_EXPORT_SERVICE( classname, libname )    \
 K_PLUGIN_FACTORY(factory, registerPlugin<classname>();) \
 K_EXPORT_PLUGIN(factory(#libname))
 

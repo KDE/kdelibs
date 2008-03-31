@@ -20,7 +20,7 @@
 
 #include "resourcedata.h"
 #include "resourcemanager.h"
-#include "generated/resource.h"
+#include "resource.h"
 #include "tools.h"
 #include "resourcefiltermodel.h"
 #include "nie.h"

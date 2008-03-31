@@ -4,7 +4,6 @@ include_directories(
   ${nepomuk_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/nepomuk/
   ${nepomukcore_SOURCE_DIR}
-  ${nepomukcore_SOURCE_DIR}/generated
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
   ${KDE4_INCLUDES}
@@ -29,8 +28,8 @@ set(nepomuk_LIB_SRCS
   ui/ktagdisplaywidget.cpp
   ui/kratingpainter.cpp
   ui/nepomukmassupdatejob.cpp
-  generated/resource.cpp
-  generated/tag.cpp
+  resource.cpp
+  tag.cpp
   ontology/entity.cpp
   ontology/ontology.cpp
   ontology/class.cpp
@@ -70,8 +69,8 @@ install(FILES
   resourcemanager.h
   tools.h
   nepomukservice.h
-  generated/resource.h
-  generated/tag.h
+  resource.h
+  tag.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +19,7 @@
  */
 
 #include "variant.h"
-#include "generated/resource.h"
+#include "resource.h"
 
 #include <soprano/literalvalue.h>
 

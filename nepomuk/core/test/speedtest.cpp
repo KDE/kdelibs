@@ -14,7 +14,7 @@
 
 #include "speedtest.h"
 #include "../resourcemanager.h"
-#include "../generated/resource.h"
+#include "../resource.h"
 #include "../variant.h"
 
 #include <Soprano/Model>
