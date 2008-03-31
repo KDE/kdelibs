@@ -20,6 +20,15 @@ A KDED module will be loaded on KDE startup if it has a line
 Note that this flag doesn't cause the module to be loaded if the KDE desktop
 is not running (i.e. when running a KDE application in another environment).
 
+[The following paragraph was copied from kdebase/workspace/ksmserver/README]
+The exact way autoloading works is controlled by X-KDE-Kded-phase=,
+which may be 0, 1 or 2 (the default). Kded phase 0 means the module is
+always loaded by kded, even outside of KDE session. It should used only
+by kded modules which must be always running. Kded phase 1 modules are
+loaded right after kded startup, but only during KDE startup, i.e. it is
+for modules that are always needed by the KDE session. Phase 2 modules
+will be loaded later. 
+
 Normally KDED modules are loaded whenever they are accessed, so you don't
 need autoloading enabled. On demand loading can be disabled by putting
 the following line in the .desktop file:
