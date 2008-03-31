@@ -82,6 +82,7 @@ void ProviderLoader::slotJobResult(KJob *job)
     if (providers.tagName() != "ghnsproviders" &&
             providers.tagName() != "knewstuffproviders") {
         kWarning(550) << "No document in providers.xml.";
+        emit signalProvidersFailed();
         return;
     }
 
