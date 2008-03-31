@@ -330,9 +330,11 @@ var testobj2 = TestObject2
 
 // url
 {
-    //TODO following crashes in kjsembed;
+    tester.assert(testobj1.func_qurl_qurl("/home/me"), "/home/me");
+    tester.assert(testobj1.func_qurl_qurl("file://home/me/myfile.txt"), "file://home/me/myfile.txt");
+    tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere/path/file?arg=val"), "http://nowhere.anywhere/path/file?arg=val");
 
-    //tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere"), "http://nowhere.anywhere");
+    //TODO following crashes in kjsembed;
     //tester.assert(testobj1.func_kurl_kurl("/home/otheruser/"), "/home/otheruser/");
     //tester.assert(testobj1.func_kurl_kurl("http://www.kde.org/whatiskde/test?123"), "http://www.kde.org/whatiskde/test?123");
 }
