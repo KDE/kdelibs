@@ -171,8 +171,10 @@ tester.assertArray(testobj1.func_qpointf_qpointf([12.34,34.56]), [12.34,34.56]);
 tester.assertArray(testobj1.func_qrect_qrect([12,34,56,78]), [12,34,56,78]);
 tester.assertArray(testobj1.func_qrectf_qrectf([12.34,34.56,56.78,78.9]), [12.34,34.56,56.78,78.9]);
 
-// QUrl
+// QUrl and KUrl
 tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere"), "http://nowhere.anywhere");
+tester.assert(testobj1.func_kurl_kurl("/home/otheruser/"), "/home/otheruser/");
+tester.assert(testobj1.func_kurl_kurl("http://www.kde.org/whatiskde/test?123"), "http://www.kde.org/whatiskde/test?123");
 
 // QVariantMap
 var v = new Array;
@@ -196,7 +198,6 @@ tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
 //TODO this seems to be a Kjs/WebKitScript/Qt related bug since both kjs from trunk and QtScript from Qt4.4 have that problem.
 //Problem: Seems a list in a list got flatten to one big list but for whatever reason it shows only up if wrapped in a QVariant :-/
-//See also unittest.js
 //var stringlist = self.callFunction("functionNames");
 //println( stringlist.length ); // numbers of chars in stringlist.toString() rather then number of items
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails

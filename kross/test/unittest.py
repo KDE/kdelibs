@@ -136,6 +136,7 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qurl_qurl("/home/myuser") == "/home/myuser" )
 		self.assert_( self.object1.func_qurl_qurl("file:///home/myuser/myfile.txt") == "file:///home/myuser/myfile.txt" )
 		self.assert_( self.object1.func_qurl_qurl("http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456") == "http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456" )
+		self.assert_( self.object1.func_kurl_kurl("http://www.kde.org/whatiskde/") == "http://www.kde.org/whatiskde/" )
 
 	#def testColor(self):
 		#import Kross

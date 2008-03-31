@@ -42,6 +42,7 @@ class QDate;
 class QTime;
 class QDateTime;
 
+#include <kurl.h>
 #include <kdebug.h>
 
 #include "../core/action.h"
@@ -139,6 +140,7 @@ class TestObject : public QObject
         QRect func_qrect_qrect(const QRect&);
         QRectF func_qrectf_qrectf(const QRectF&);
         QUrl func_qurl_qurl(const QUrl&);
+        KUrl func_kurl_kurl(const KUrl&);
 
         QColor func_qcolor_qcolor(const QColor&);
         QFont func_qfont_qfont(const QFont&);
