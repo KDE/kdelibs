@@ -441,10 +441,6 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
             break;
-        case QVariant::Url:
-            if( args[idx]->type() == KJS::StringType )
-                return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
-            break;
         case QVariant::List:
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
@@ -455,6 +451,13 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case QVariant::UserType:
         default:
+            if ( args[idx]->type() == KJS::StringType )
+            {
+                if ( varianttype == QVariant::Url || strcmp(types[idx].constData(),"KUrl") == 0 ) {
+                    return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
+                }
+            }
+
             if( args[idx]->type() == KJS::NullType )
             {
                 return new NullPtr();
@@ -676,6 +679,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     }
 
     switch( returnTypeId ) {
+        case QVariant::Invalid: // fall through
         case QVariant::UserType: {
             int tp = QMetaType::type( metaMember.typeName() );
             switch( tp ) {
@@ -694,7 +698,6 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                 default: break;
             }
         } // fall through
-        case QVariant::Invalid: // fall through
         default:
             return KJSEmbed::convertToValue(exec, returnValue);
     }
