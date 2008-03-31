@@ -44,6 +44,7 @@ set(nepomuk_LIB_SRCS
   ontology/global.cpp
   ontology/entitymanager.cpp
   nie.cpp
+  nepomukservice.cpp
 )
 
 
@@ -68,6 +69,7 @@ install(FILES
   variant.h
   resourcemanager.h
   tools.h
+  nepomukservice.h
   generated/resource.h
   generated/tag.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel

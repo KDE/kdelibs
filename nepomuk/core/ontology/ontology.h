@@ -36,6 +36,8 @@ namespace Nepomuk {
         class Property;
 
         /**
+         * \class Ontology ontology.h Nepomuk/Types/Ontology
+         *
          * \brief Represents one ontology.
          *
          * \author Sebastian Trueg <trueg@kde.org>

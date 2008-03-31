@@ -34,7 +34,9 @@ namespace Nepomuk {
         class Property;
 
         /**
-         * A Class is a resource of type rdf:Class.
+         * \class Class class.h Nepomuk/Types/Class
+         *
+         * \brief A Class is a resource of type rdf:Class.
          *
          * Class instances are explicitly shared. Two instances created
          * with the same uri reference the same data.

@@ -33,7 +33,9 @@ namespace Nepomuk {
     class Resource;
 
     /**
-     * The KMetaData Variant extends over QVariant by introducing
+     * \class Variant variant.h Nepomuk/Variant
+     *
+     * The %Nepomuk Variant extends over QVariant by introducing
      * direct support for Resource embedding, automatic list conversion 
      * and a restricted set of supported types.
      *
@@ -47,6 +49,8 @@ namespace Nepomuk {
      *     conversion from the actual type used in the Variant. Thus, if one only
      *     needs to display the value in a Variant toString and toStringList 
      *     do the job.
+     *
+     * \author Sebastian Trueg <trueg@kde.org>
      */
     class NEPOMUK_EXPORT Variant
     {

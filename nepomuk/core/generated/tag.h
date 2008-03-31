@@ -30,11 +30,15 @@ namespace Nepomuk {
 
 namespace Nepomuk {
 
-/**
- * A Tag can be assigned to any Thing. This allows simple grouping 
- * of resources. Each Tag is identifed by its label which should 
- * be unique. 
- */
+    /**
+     * \class Tag tag.h Nepomuk/Tag
+     *
+     * A Tag can be assigned to any Thing. This allows simple grouping 
+     * of resources. Each Tag is identifed by its label which should 
+     * be unique. 
+     *
+     * \author Sebastian Trueg <trueg@kde.org>
+     */
     class NEPOMUK_EXPORT Tag : public Resource
     {
     public:

@@ -35,9 +35,13 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
+#include <QtCore/QTimer>
+
 
 // FIXME: connect to some NepomukServer signal which emit enabled/disabled information
 //        when the server shuts down and is started again
+// FIXME: disconnect localSocketClient after n seconds of idling (but take care of not
+//        disconnecting when iterators are open)
 
 using namespace Soprano;
 
@@ -46,11 +50,11 @@ class GlobalModelContainer
 {
 public:
     GlobalModelContainer()
-        : dbusClient( "org.kde.NepomukServer" ),
+        : dbusClient( "org.kde.nepomuk.services.nepomukstorage" ),
           dbusModel( 0 ),
           localSocketModel( 0 ),
           dummyModel( 0 ),
-          m_initialized( false ) {
+          m_socketConnectFailed( false ) {
     }
 
     Soprano::Client::DBusClient dbusClient;
@@ -65,25 +69,23 @@ public:
             dbusModel = dbusClient.createModel( "main" );
         }
 
-        if ( !localSocketModel ) {
-            if ( !localSocketClient.isConnected() ) {
-                QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
-                if ( localSocketClient.connect( socketName ) ) {
-                    localSocketModel = localSocketClient.createModel( "main" );
-                }
-                else {
-                    kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
-                }
+        // we may get disconnected from the server but we don't want to try
+        // to connect every time the model is requested
+        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
+            delete localSocketModel;
+            QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+            if ( localSocketClient.connect( socketName ) ) {
+                localSocketModel = localSocketClient.createModel( "main" );
+            }
+            else {
+                m_socketConnectFailed = true;
+                kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
             }
         }
-
-        m_initialized = true;
     }
 
     Soprano::Model* model() {
-        if ( !m_initialized ) {
-            init();
-        }
+        init();
 
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
@@ -101,7 +103,7 @@ public:
     }
 
 private:
-    bool m_initialized;
+    bool m_socketConnectFailed;
 };
 }
 
@@ -128,15 +130,17 @@ Nepomuk::MainModel::MainModel( QObject* parent )
 
     modelContainer()->init();
 
-    // we have to use the dbus model for signals in any case
-    connect( modelContainer()->dbusModel, SIGNAL( statementsAdded() ),
-             this, SIGNAL( statementsAdded() ) );
-    connect( modelContainer()->dbusModel, SIGNAL( statementsRemoved() ),
-             this, SIGNAL( statementsRemoved() ) );
-    connect( modelContainer()->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
-             this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
-    connect( modelContainer()->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
-             this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
+    if ( modelContainer()->dbusModel ) {
+        // we have to use the dbus model for signals in any case
+        connect( modelContainer()->dbusModel, SIGNAL( statementsAdded() ),
+                 this, SIGNAL( statementsAdded() ) );
+        connect( modelContainer()->dbusModel, SIGNAL( statementsRemoved() ),
+                 this, SIGNAL( statementsRemoved() ) );
+        connect( modelContainer()->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
+                 this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
+        connect( modelContainer()->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
+                 this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
+    }
 }
 
 

@@ -41,7 +41,11 @@ namespace Nepomuk {
     class ResourceManagerHelper;
 
     /**
+     * \class ResourceManager resourcemanager.h Nepomuk/ResourceManager
+     *
      * \brief The ResourceManager is the central \a %KMetaData configuration point.
+     *
+     * \author Sebastian Trueg <trueg@kde.org>
      */
     class NEPOMUK_EXPORT ResourceManager : public QObject
     {
