@@ -14,8 +14,8 @@ kbuildsycoca recreates the sycoca file by:
 * creating all objects in memory
 * saving everything in the sycoca file (see below for ksycoca internals)
 * clearing all memory
-* notifying the applications that use ksycoca by a DCOP call to the ksycoca
-object (KSycoca::notifyDatabaseChanged()).
+* notifying the applications that use ksycoca by a DBUS signal emitted to 
+the ksycoca object (KSycoca::notifyDatabaseChanged()).
 
 Format of the sycoca database file
 ==================================
