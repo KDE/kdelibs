@@ -27,6 +27,7 @@
 #include <QtCore/QMetaType>
 #include <QtCore/QVariant>
 #include <QtCore/QVector>
+#include <QtCore/QUrl>
 #include <QtCore/QDebug>
 #include <QWidget>
 
@@ -439,6 +440,10 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         case QVariant::StringList:
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
+            break;
+        case QVariant::Url:
+            if( args[idx]->type() == KJS::StringType )
+                return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
             break;
         case QVariant::List:
             if( args[idx]->type() == KJS::ObjectType )
