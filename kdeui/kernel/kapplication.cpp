@@ -729,6 +729,7 @@ commitDataRestart:
     d->session_save = false;
 }
 
+#ifdef Q_WS_X11
 static void checkRestartVersion( QSessionManager& sm )
 {
     Display* dpy = QX11Info::display();
@@ -756,6 +757,7 @@ static void checkRestartVersion( QSessionManager& sm )
     restartCommand.prepend( wrapper );
     sm.setRestartCommand( restartCommand );
 }
+#endif // Q_WS_X11
 
 void KApplication::saveState( QSessionManager& sm )
 {
@@ -810,7 +812,9 @@ void KApplication::saveState( QSessionManager& sm )
         sm.setRestartCommand( restartCommand );
     }
 
+#ifdef Q_WS_X11
     checkRestartVersion( sm );
+#endif
 
     // finally: do session management
     emit saveYourself(); // for compatibility
