@@ -234,7 +234,13 @@ QKeySequence KKeySequenceWidget::keySequence() const
 //slot
 void KKeySequenceWidget::setKeySequence(const QKeySequence &seq, Validation validate)
 {
-	d->oldKeySequence = d->keySequence;
+	// oldKeySequence holds the key sequence before recording started, if setKeySequence()
+	// is called while not recording then set oldKeySequence to the existing sequence so
+	// that the keySequenceChanged() signal is emitted if the new and previous key
+	// sequences are different
+	if (!d->isRecording)
+		d->oldKeySequence = d->keySequence;
+
 	d->keySequence = seq;
 	d->doneRecording(validate == Validate);
 }
