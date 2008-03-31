@@ -9,12 +9,23 @@ set(CMAKE_SKIP_RPATH TRUE)
 
 ##########################
 
+# unit tests
+
+
+#author test
+
+set(knewstuffauthortest_SRCS
+    knewstuffauthortest.cpp
+)
+kde4_add_unit_test(knewstuffauthortest ${knewstuffauthortest_SRCS})
+target_link_libraries(knewstuffauthortest ${KDE4_KDECORE_LIBS} knewstuff2 ${QT_QTTEST_LIBRARY})
+
+#ktranslatable test
+
 set(testTranslatable_SRCS
     testTranslatable.cpp
 )
-
 kde4_add_unit_test(testTranslatable ${testTranslatable_SRCS})
-
 target_link_libraries(testTranslatable ${KDE4_KDECORE_LIBS} knewstuff2 ${QT_QTTEST_LIBRARY})
 
 ##########################
