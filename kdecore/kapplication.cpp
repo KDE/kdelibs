@@ -1244,6 +1244,32 @@ void KApplication::commitData( QSessionManager& sm )
     d->session_save = false;
 }
 
+static void checkRestartVersion( QSessionManager& sm )
+{
+    Display* dpy = qt_xdisplay();
+    Atom type;
+    int format;
+    unsigned long nitems, after;
+    unsigned char* data;
+    if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_FULL_SESSION", False ),
+        0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
+        if( type == XA_STRING && format == 8 ) { // session set, check if KDE_SESSION_VERSION is not set (meaning KDE3)
+            unsigned char* data;
+            if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
+                0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
+                XFree( data ); // KDE4 or newer
+            } else {
+                return; // we run in our native session, no need to wrap
+            }
+        }
+        XFree( data );
+    }
+    QString wrapper = KStandardDirs::findExe( "kde3" );
+    QStringList restartCommand = sm.restartCommand();
+    restartCommand.prepend( wrapper );
+    sm.setRestartCommand( restartCommand );
+}
+
 void KApplication::saveState( QSessionManager& sm )
 {
     d->session_save = true;
@@ -1297,6 +1323,7 @@ void KApplication::saveState( QSessionManager& sm )
         sm.setRestartCommand( restartCommand );
     }
 
+    checkRestartVersion( sm );
 
     // finally: do session management
     emit saveYourself(); // for compatibility
