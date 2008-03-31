@@ -921,3 +921,20 @@ install( FILES
   khtml/MouseReleaseEvent
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml )
 
+
+install(FILES
+  Nepomuk/Service
+  Nepomuk/Resource
+  Nepomuk/ResourceManager
+  Nepomuk/Tag
+  Nepomuk/Tools
+  Nepomuk/Variant
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk )
+
+
+install(FILES
+  Nepomuk/Types/Class
+  Nepomuk/Types/Literal
+  Nepomuk/Types/Ontology
+  Nepomuk/Types/Property
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types )
