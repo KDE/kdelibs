@@ -97,6 +97,7 @@ bool CoreEngine::init(const QString &configfile)
     m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
     m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
     m_installation->setInstallPath(group.readEntry("InstallPath", QString()));
+    m_installation->setAbsoluteInstallPath(group.readEntry("AbsoluteInstallPath", QString()));
     m_installation->setCustomName(group.readEntry("CustomName", false));
 
     QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
@@ -1338,6 +1339,11 @@ bool CoreEngine::install(const QString &payloadfile)
 
         if (!m_installation->installPath().isEmpty()) {
             installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
+            pathcounter++;
+        }
+
+        if (!m_installation->absoluteInstallPath().isEmpty()) {
+            installdir = m_installation->absoluteInstallPath() + '/';
             pathcounter++;
         }
 

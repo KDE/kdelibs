@@ -243,13 +243,18 @@ Q_SIGNALS:
     void signalProviderLoaded(KNS::Provider *provider);
     void signalProviderChanged(KNS::Provider *provider);
     void signalProvidersFailed();
+
     void signalEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void signalEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void signalEntryChanged(KNS::Entry *entry);
     void signalEntriesFailed();
+
     void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
+
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed();
+
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
 
@@ -312,7 +317,12 @@ private:
     QString pid(const Provider *p);
 
     QList<Provider*> m_provider_cache;
+
+    // holds all the entries
     QList<Entry*> m_entry_cache;
+
+    // holds the registered entries mapped by their id
+    QMap<QString, Entry*> m_entry_registry;
 
     QMap<QString, Provider*> m_provider_index;
     QMap<QString, Entry*> m_entry_index;

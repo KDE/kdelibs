@@ -33,6 +33,7 @@ struct KNS::InstallationPrivate {
     QString m_standardresourcedir;
     QString m_targetdir;
     QString m_installpath;
+    QString m_absoluteinstallpath;
     Installation::Policy m_checksumpolicy;
     Installation::Policy m_signaturepolicy;
     Installation::Scope m_scope;
@@ -74,6 +75,11 @@ void Installation::setTargetDir(const QString& dir)
 void Installation::setInstallPath(const QString& dir)
 {
     d->m_installpath = dir;
+}
+
+void Installation::setAbsoluteInstallPath(const QString& dir)
+{
+    d->m_absoluteinstallpath = dir;
 }
 
 void Installation::setChecksumPolicy(Policy policy)
@@ -119,6 +125,11 @@ QString Installation::targetDir() const
 QString Installation::installPath() const
 {
     return d->m_installpath;
+}
+
+QString Installation::absoluteInstallPath() const
+{
+    return d->m_absoluteinstallpath;
 }
 
 bool Installation::isRemote() const
