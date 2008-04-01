@@ -29,7 +29,7 @@ namespace DNSSD
 ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&, const QString&) : d(0)
 {}
 
-bool ServiceBrowser::isAutoResolving()
+bool ServiceBrowser::isAutoResolving() const
 {
     return false;
 }

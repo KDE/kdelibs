@@ -125,7 +125,7 @@ public:
 	Returns true if newly discovered services are resolved before being reported with serviceAdded()
 	\since 4.1
 	 */
-	bool isAutoResolving();
+	bool isAutoResolving() const;
 
 Q_SIGNALS:
 	/**

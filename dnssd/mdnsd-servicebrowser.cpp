@@ -63,7 +63,7 @@ ServiceBrowser::~ ServiceBrowser()
 	delete d;
 }
 
-bool ServiceBrowser::isAutoResolving()
+bool ServiceBrowser::isAutoResolving() const
 {
     return d->m_autoResolve;
 }

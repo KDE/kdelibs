@@ -48,7 +48,7 @@ ServiceModel::~ServiceModel()
     delete d;
 }
 
-int ServiceModel::columnCount(const QModelIndex& parent) const
+int ServiceModel::columnCount(const QModelIndex&) const
 {
     return d->m_browser->isAutoResolving() ? 3 : 1;
 }
@@ -57,7 +57,7 @@ int ServiceModel::rowCount(const QModelIndex& parent ) const
     return (parent.isValid()) ? 0 : d->m_browser->services().size();
 }
 
-QModelIndex ServiceModel::parent(const QModelIndex& index ) const
+QModelIndex ServiceModel::parent(const QModelIndex&) const
 {
     return QModelIndex();
 }
