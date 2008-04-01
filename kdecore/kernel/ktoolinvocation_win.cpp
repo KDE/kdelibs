@@ -155,6 +155,30 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 */
 }
 
+void KToolInvocation::invokeTerminal(const QString &command, const QByteArray &startup_id)
+{
+/*
+    if (!isMainThreadActive()) {
+        return;
+    }
+
+    KConfigGroup confGroup( KGlobal::config(), "General" );
+    QString exec = confGroup.readPathEntry("TerminalApplication", "konsole");
+    exec = exec + " -e " + command;
+
+    QStringList cmdTokens = KShell::splitArgs(command);
+    QString cmd = cmdTokens.takeFirst();
+
+    QString error;
+    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
+    {
+      KMessage::message(KMessage::Error,
+                      i18n("Could not launch the mail client:\n\n%1", error),
+                      i18n("Could not Launch Mail Client"));
+    }
+*/
+}
+
 void KToolInvocation::startKdeinit()
 {
    KComponentData inst( "startkdeinitlock" );

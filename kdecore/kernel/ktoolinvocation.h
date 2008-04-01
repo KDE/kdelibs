@@ -145,6 +145,17 @@ public Q_SLOTS:
    */
   static void invokeBrowser( const QString &url, const QByteArray& startup_id = "" );
 
+  /**
+   * Invokes the standard terminal application.
+   *
+   * @param command the command to execute
+   * @param startup_id for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
+   *
+   * @since 4.1
+   */
+  static void invokeTerminal(const QString &command, const QByteArray &startup_id = "");
+
 public:
   /**
    * Returns the DBus interface of the service launcher.

@@ -361,6 +361,37 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     }
 }
 
+void KToolInvocation::invokeTerminal(const QString &command, const QByteArray &startup_id)
+{
+    if (!isMainThreadActive()) {
+        return;
+    }
+
+    KConfigGroup confGroup( KGlobal::config(), "General" );
+    QString exec = confGroup.readPathEntry("TerminalApplication", "konsole");
+
+    if (exec == "konsole") {
+        exec += " --noclose";
+    } else if (exec == "xterm") {
+        exec += " -hold";
+    }
+
+    if (!command.isEmpty()) {
+        exec += " -e " + command;
+    }
+
+    QStringList cmdTokens = KShell::splitArgs(exec);
+    QString cmd = cmdTokens.takeFirst();
+
+    QString error;
+    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
+    {
+      KMessage::message(KMessage::Error,
+                      i18n("Could not launch the terminal client:\n\n%1", error),
+                      i18n("Could not Launch Terminal Client"));
+    }
+}
+
 void KToolInvocation::startKdeinit()
 {
   KComponentData inst( "startkdeinitlock" );
