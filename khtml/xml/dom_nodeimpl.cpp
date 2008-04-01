@@ -451,6 +451,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
         NodeImpl* cur = it.next();
         if (cur == this || evt->propagationStopped())
             break;
+        evt->setCurrentTarget(cur);
         cur->handleLocalEvents(evt,true);
     }
 
