@@ -108,6 +108,7 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setDragDropMode(QListView::DragOnly);
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setHorizontalScrollMode(QListView::ScrollPerPixel);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QFontMetrics metrics(viewOptions().font);
     const int fontHeight = metrics.height();
