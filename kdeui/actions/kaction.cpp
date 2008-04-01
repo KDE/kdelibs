@@ -182,9 +182,14 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   Q_ASSERT(type);
   bool changed = false;
   if (!d->globalShortcutEnabled) {
-    //return;
     changed = true;
-    enableGlobalShortcut();   //backwards compatibility
+    if (objectName().isEmpty()) {
+      kWarning(283) << "Attempt to set global shortcut for action without objectName()."
+                       "Read the setGlobalShortcut() documentation.";
+      return;
+    }
+    d->globalShortcutEnabled = true;
+    KGlobalAccel::self()->d->doRegister(this);
   }
 
   if ((type & DefaultShortcut) && d->defaultGlobalShortcut != shortcut) {
@@ -219,29 +224,13 @@ bool KAction::isGlobalShortcutEnabled() const
 void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* load */ )
 {
   if (allowed) {
-      enableGlobalShortcut();
+      //### no-op
   } else {
-      disableGlobalShortcut();
+      forgetGlobalShortcut();
   }
 }
 
-bool KAction::enableGlobalShortcut()
-{
-    //If the object name was nonempty before and globalShortcutEnabled() == true -
-    //well, you shouldn't have changed the objectName() anyway so we don't check that.
-    if (objectName().isEmpty()) {
-        kWarning(283) << "Attempt to set global shortcut for action without objectName(). See enableGlobalShortcut()";
-        return false;
-    }
-    if (d->globalShortcutEnabled) {
-        return true;
-    }
-    d->globalShortcutEnabled = true;
-    KGlobalAccel::self()->d->doRegister(this);
-    return true;
-}
-
-void KAction::disableGlobalShortcut()
+void KAction::forgetGlobalShortcut()
 {
     d->globalShortcut = KShortcut();
     d->defaultGlobalShortcut = KShortcut();

@@ -1,5 +1,4 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
+/* This file is part of the KDE libraries Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
@@ -357,7 +356,15 @@ public:
      * allow an action to respond to key shortcuts independently of the focused window,
      * i.e. the action will trigger if the keys were pressed no matter where in the X session.
      *
-     * This method calls enableGlobalShortcut() implicitly.
+     * The action must have a per main component unique
+     * objectName() to enable cross-application bookeeping. If the objectName() is empty this method will
+     * do nothing, otherwise the isGlobalShortcutEnabled() property will be set to true and the 
+     * shortcut will be enabled.
+     * It is mandatory that the objectName() doesn't change once isGlobalshortcutEnabled()
+     * has become true.
+     * 
+     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
+     * don't have to set an objectName explicitly.
      *
      * When an action, identified by main component name and objectName(), is assigned
      * a global shortcut for the first time on a KDE installation the assignment will
@@ -374,9 +381,10 @@ public:
      *                   That way user preferences and changes made to avoid clashes will be conserved.
      *                if NoAutoloading the given shortcut will be assigned without looking up old values.
      *                   You should only do this if the user wants to change the shortcut or if you have
-     *                   another very good reason.
+     *                   another very good reason. Key combinations that clash with other shortcuts will be
+     *                   dropped.
+     *                   
      * \note the default shortcut will never be influenced by autoloading - it will be set as given.
-     * \sa isGlobalShortcutEnabled()
      * \sa globalShortcut()
      */
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type =
@@ -402,31 +410,21 @@ public:
 
     /**
      * Returns true if this action is enabled to have a global shortcut.
+     * This will be respected by \class KGlobalShortcutsEditor.
      * Defaults to false.
-     * @see setGlobalShortcutEnabled()
      */
     bool isGlobalShortcutEnabled() const;
-
-    /**
-     * Enables this action to have a global shortcut. The action must have a per main component unique
-     * objectName() to enable cross-application bookeeping. If the objectName() is empty this method will
-     * return false.
-     * It is mandatory that the objectName() doesn't change once isGlobalshortcutEnabled()
-     * has become true.
-     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
-     * don't have to set an objectName explicitly.
-     */
-    bool enableGlobalShortcut();
 
     /**
      * Sets the globalShortcutEnabled property to false and sets the global shortcut to an
      * empty shortcut.
      * This will also wipe out knowlegde about the existence of this action's global shorctut
      * so it will not be considered anymore for shortcut conflict resolution. It will also not be
-     * visible anymore in the KControl module which presents a list of global shorcuts.
-     * This method should not be used if these side-effects are not explicitly desired.
+     * visible anymore in the shortcuts KControl module.
+     * This method should not be used unless these effects are explicitly desired.
+     * @since: 4.1
      */
-    void disableGlobalShortcut();
+    void forgetGlobalShortcut();
 
     KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
     KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;
