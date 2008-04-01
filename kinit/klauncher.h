@@ -20,31 +20,28 @@
 #ifndef _KLAUNCHER_H_
 #define _KLAUNCHER_H_
 
+#include "autostart.h"
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
-#include <QtCore/QString>
-#include <QtCore/QSocketNotifier>
-#include <QtCore/QTimer>
-#include <QtCore/QList>
-#include <QtCore/QObject>
 
-#include <kurl.h>
-#include <kio/connection.h>
-
-#include <kservice.h>
-
-#include <QtDBus/QtDBus>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #endif
 
-#include "autostart.h"
+#include <QtCore/QString>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QTimer>
+#include <QtCore/QList>
+#include <QtCore/QObject>
+#include <QtDBus/QtDBus>
 
-#ifdef Q_WS_WIN
-class QProcess;
-#endif
+#include <kservice.h>
+#include <kprocess.h>
+#include <kurl.h>
+#include <kio/connection.h>
 
 class IdleSlave : public QObject
 {
@@ -103,6 +100,11 @@ public:
 #endif
    QStringList envs; // env. variables to be app's environment
    QString cwd;
+#ifdef Q_WS_WIN
+protected:
+   KProcess *process;
+   friend class KLauncher;
+#endif
 };
 
 struct serviceResult
@@ -193,9 +195,7 @@ protected:
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
    int kdeinitSocket;
-#ifdef Q_WS_WIN
-   QList<QProcess *>processList;
-#else
+#ifndef Q_WS_WIN
    QSocketNotifier *kdeinitNotifier;
 #endif
    KIO::ConnectionServer mConnectionServer;
@@ -214,6 +214,9 @@ protected:
    void processRequestReturn(int status, const QByteArray &requestData);
 
 protected Q_SLOTS:
-    void slotGotOutput();
+#ifdef Q_WS_WIN
+    void slotGotOutput();   
+    void slotFinished(int exitCode, QProcess::ExitStatus exitStatus);
+#endif
 };
 #endif

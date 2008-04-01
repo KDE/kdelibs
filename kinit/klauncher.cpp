@@ -30,10 +30,12 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include <QtCore/QFile>
-#ifdef Q_WS_WIN
-#include <QtCore/QProcess>
+#ifdef Q_WS_X11
+#include <kstartupinfo.h>
+#include <X11/Xlib.h>
 #endif
+
+#include <QtCore/QFile>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -49,13 +51,6 @@
 #include <kio/global.h>
 #include <kio/connection.h>
 #include <kio/slaveinterface.h>
-
-#ifdef Q_WS_X11
-#include <kstartupinfo.h>
-#include <X11/Xlib.h>
-#endif
-
-#include <QtCore/QCoreApplication>
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE	30
@@ -548,30 +543,29 @@ KLauncher::requestStart(KLaunchRequest *request)
    requestList.append( request );
    lastRequest = request;
 
-   QProcess *process  = new QProcess;
-   process->setProcessChannelMode(QProcess::MergedChannels);
+   KProcess *process  = new KProcess;
+   process->setOutputChannelMode(KProcess::MergedChannels);
    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
-   processList << process;
+   connect(process ,SIGNAL(finished(int, QProcess::ExitStatus)),this, SLOT(slotFinished(int, QProcess::ExitStatus)) );
+   request->process = process;
 
 // process.setEnvironment(envlist);
    QStringList args;
    foreach (const QString &arg, request->arg_list)
       args << arg;
 
-   process->start(request->name,args);
+   process->setProgram(request->name,args);
+   process->start();
 
-   _PROCESS_INFORMATION* _pid = process->pid();
-    int pid = _pid ? _pid->dwProcessId : 0;
-
-   if (pid)
+   if (!process->waitForStarted())
    {
-      request->pid = pid;
-      QByteArray data((char *)&pid, sizeof(int));
-      processRequestReturn(LAUNCHER_OK,data);
+       processRequestReturn(LAUNCHER_ERROR,"");
    }
    else
    {
-      processRequestReturn(LAUNCHER_ERROR,"");
+       request->pid = process->pid();
+       QByteArray data((char *)&request->pid, sizeof(int));
+       processRequestReturn(LAUNCHER_OK,data);
    }
    return;
 
@@ -1168,15 +1162,36 @@ void KLauncher::reparseConfiguration()
       slave->reparseConfiguration();
 }
 
+#ifdef Q_WS_WIN
 void
 KLauncher::slotGotOutput()
 {
-#ifdef Q_WS_WIN
-  foreach (QProcess *p, processList) {
-    QByteArray _stdout = p->readAllStandardOutput();
-    kDebug(7016) << _stdout.data();
-  }
-#endif
+  KProcess *p = static_cast<KProcess *>(sender());
+  QByteArray _stdout = p->readAllStandardOutput();
+  kDebug(7016) << _stdout.data();
 }
+
+void
+KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
+{
+    KProcess *p = static_cast<KProcess *>(sender());
+    kDebug(7016) << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
+    
+    foreach (KLaunchRequest *request, requestList)
+    {
+        if (request->process == p) 
+        {
+            kDebug() << "found process setting to done";
+            if (exitCode == 0  && exitStatus == QProcess::NormalExit)
+                request->status = KLaunchRequest::Done;
+            else
+                request->status = KLaunchRequest::Error;
+            requestDone(request);
+            request->process = 0;
+        }
+    }
+    delete p;
+}
+#endif
 
 #include "klauncher.moc"
