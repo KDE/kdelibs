@@ -46,11 +46,15 @@ ServiceBrowser::State ServiceBrowser::isAvailable()
 	QDBusReply<int> rep= s.GetState();
 	return (rep.isValid() && rep.value()==2) ? Working:Stopped;
 }
-ServiceBrowser::~ ServiceBrowser()
+ServiceBrowser::~ServiceBrowser()
 {
     delete d;
 }
 
+bool ServiceBrowser::isAutoResolving()
+{
+    return d->m_autoResolve;
+}
 
 void ServiceBrowser::startBrowse()
 {

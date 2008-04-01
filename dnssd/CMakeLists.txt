@@ -4,7 +4,7 @@ macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 macro_log_feature(AVAHI_FOUND "Avahi" "For Linux and BSDs: a system which facilitates service discovery on a local network, based on the Zeroconf standard" "http://avahi.org" FALSE "" "Enables KDE applications access to multicast DNS/DNS-SD service discovery.")
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
-set(kdnssd_LIB_SRCS  servicebase.cpp )
+set(kdnssd_LIB_SRCS  servicebase.cpp servicemodel.cpp domainmodel.cpp)
 kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
 
 if (HAVE_AVAHI) 
@@ -67,7 +67,7 @@ install(TARGETS kdnssd ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h publicservice.h 
-               servicebase.h servicebrowser.h  ${CMAKE_CURRENT_BINARY_DIR}/settings.h
+               servicebase.h servicebrowser.h  servicemodel.h domainmodel.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd COMPONENT Devel)
 
 

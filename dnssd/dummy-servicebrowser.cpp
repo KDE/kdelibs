@@ -29,6 +29,11 @@ namespace DNSSD
 ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&, const QString&) : d(0)
 {}
 
+bool ServiceBrowser::isAutoResolving()
+{
+    return false;
+}
+
 
 ServiceBrowser::State ServiceBrowser::isAvailable()
 {

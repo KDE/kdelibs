@@ -63,6 +63,12 @@ ServiceBrowser::~ ServiceBrowser()
 	delete d;
 }
 
+bool ServiceBrowser::isAutoResolving()
+{
+    return d->m_autoResolve;
+}
+
+
 void ServiceBrowserPrivate::serviceResolved(bool success)
 {
 	QObject* sender_obj = const_cast<QObject*>(sender());

@@ -120,6 +120,12 @@ public:
 
 	 */
 	static State isAvailable();
+	
+	/**
+	Returns true if newly discovered services are resolved before being reported with serviceAdded()
+	\since 4.1
+	 */
+	bool isAutoResolving();
 
 Q_SIGNALS:
 	/**
