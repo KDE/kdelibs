@@ -185,8 +185,7 @@ void HTMLLinkElementImpl::process()
         part->browserExtension()->setIconUrl( KUrl(m_url.string()) );
 
     // Stylesheet
-    else if (!m_isDisabled &&
-        (type.contains("text/css") || rel.contains("stylesheet"))) {
+    else if (!m_isDisabled && rel.contains("stylesheet")) {
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
         khtml::MediaQueryEvaluator allEval(true);
@@ -195,7 +194,6 @@ void HTMLLinkElementImpl::process()
         MediaListImpl* media = new MediaListImpl((CSSStyleSheetImpl*)0, m_media, true);
         media->ref();
         if (allEval.eval(media) || screenEval.eval(media) || printEval.eval(media)) {
-            m_loading = true;
             // Add ourselves as a pending sheet, but only if we aren't an alternate
             // stylesheet.  Alternate stylesheets don't hold up render tree construction.
             m_alternate = rel.contains("alternate");
@@ -206,8 +204,12 @@ void HTMLLinkElementImpl::process()
             // set chset to charset of referring document when attribute CHARSET is absent.
             // http://www.w3.org/TR/CSS21/syndata.html(4.4)
             if (chset.isEmpty() && part) chset = part->encoding();
-            if (m_cachedSheet)
+            if (m_cachedSheet) {
+                if (m_loading)
+                    getDocument()->styleSheetLoaded();
 		m_cachedSheet->deref(this);
+            }
+            m_loading = true;
             m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(m_url, chset);
             if (m_cachedSheet) {
                 m_isCSSSheet = true;
@@ -215,6 +217,7 @@ void HTMLLinkElementImpl::process()
             }
             else if (!isAlternate()) {
                 // Error requesting sheet; decrement pending sheet count
+                m_loading = false;
                 getDocument()->styleSheetLoaded();
             }
         }
@@ -289,7 +292,16 @@ bool HTMLLinkElementImpl::isLoading() const
     return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
 }
 
-bool HTMLLinkElementImpl::sheetLoaded()
+bool HTMLLinkElementImpl::checkAddPendingSheet()
+{
+    if (!isLoading() && !isDisabled() && !isAlternate()) {
+        getDocument()->addPendingSheet();
+        return true;
+    }
+    return false;
+}
+
+bool HTMLLinkElementImpl::checkRemovePendingSheet()
 {
     if (!isLoading() && !isDisabled() && !isAlternate()) {
         getDocument()->styleSheetLoaded();
@@ -650,10 +662,19 @@ bool HTMLStyleElementImpl::isLoading() const
     return static_cast<CSSStyleSheetImpl *>(m_sheet)->isLoading();
 }
 
-bool HTMLStyleElementImpl::sheetLoaded()
+bool HTMLStyleElementImpl::checkRemovePendingSheet()
 {
     if (!isLoading()) {
         getDocument()->styleSheetLoaded();
+        return true;
+    }
+    return false;
+}
+
+bool HTMLStyleElementImpl::checkAddPendingSheet()
+{
+    if (!isLoading()) {
+        getDocument()->addPendingSheet();
         return true;
     }
     return false;

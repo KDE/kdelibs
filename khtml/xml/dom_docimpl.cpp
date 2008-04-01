@@ -2053,6 +2053,11 @@ void DocumentImpl::styleSheetLoaded()
   updateStyleSelector();
 }
 
+void DocumentImpl::addPendingSheet()
+{ 
+     m_pendingStylesheets++; 
+}
+
 DOMString DocumentImpl::selectedStylesheetSet() const
 {
     if (!view()) return DOMString();
