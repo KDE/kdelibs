@@ -455,10 +455,12 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck )
 install( FILES
   DNSSD/Configuration
   DNSSD/DomainBrowser
+  DNSSD/DomainModel
   DNSSD/PublicService
   DNSSD/RemoteService
   DNSSD/ServiceBase
   DNSSD/ServiceBrowser
+  DNSSD/ServiceModel
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 
 
