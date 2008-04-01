@@ -137,11 +137,20 @@ class KIconLoaderPrivate
 public:
     KIconLoaderPrivate(KIconLoader *q)
         : q(q)
+        , mpGroups(0)
+        , mIconCache(0)
     {
     }
 
     ~KIconLoaderPrivate()
     {
+        /* antlarr: There's no need to delete d->mpThemeRoot as it's already
+        deleted when the elements of d->links are deleted */
+        qDeleteAll(imgDict);
+        qDeleteAll(links);
+        qDeleteAll(svgRenderers);
+        delete[] mpGroups;
+        delete mIconCache;
     }
 
     /**
@@ -478,14 +487,6 @@ KIconLoader::~KIconLoader()
             }
         }
 #endif
-    /* antlarr: There's no need to delete d->mpThemeRoot as it's already
-       deleted when the elements of d->links are deleted */
-    d->mpThemeRoot=0;
-    delete[] d->mpGroups;
-    qDeleteAll(d->imgDict);
-    qDeleteAll(d->links);
-    qDeleteAll(d->svgRenderers);
-    delete d->mIconCache;
     delete d;
 }
 
