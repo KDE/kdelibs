@@ -1225,6 +1225,8 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         child = nextChild;
     }
 
+    if (!newChild->closed()) newChild->close();
+
     structureChanged();
 
     // ### set style in case it's attached
@@ -1300,6 +1302,8 @@ void NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &e
         prev = child;
         child = nextChild;
     }
+
+    if (!newChild->closed()) newChild->close();
 
     structureChanged();
 
@@ -1445,6 +1449,8 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 
         child = nextChild;
     }
+
+    if (!newChild->closed()) newChild->close();
 
     backwardsStructureChanged();
 
