@@ -312,6 +312,8 @@
 <!ENTITY Carsten.Pfeiffer.mail '<email>pfeiffer@kde.org</email>'>
 <!ENTITY Kurt.Pfeifle '<personname><firstname>Kurt</firstname><surname>Pfeifle</surname></personname>'>
 <!ENTITY Kurt.Pfeifle.mail '<email>kpfeifle@danka.de</email>'>
+<!ENTITY Mauricio.Piacentini '<personname><firstname>Mauricio</firstname><surname>Piacentini</surname></personname>'>
+<!ENTITY Mauricio.Piacentini.mail '<email>piacentini@kde.org</email>'>
 <!ENTITY Dan.Pilone '<personname><firstname>Dan</firstname><surname>Pilone</surname></personname>'>
 <!ENTITY Dan.Pilone.mail '<email>pilone@slac.com</email>'>
 <!ENTITY Clay.Pradarits '<personname><firstname>Clay</firstname><surname>Pradarits</surname></personname>'>
