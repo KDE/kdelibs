@@ -295,7 +295,7 @@ KUrl::List::operator QVariant() const
   return qVariantFromValue(*this);
 }
 
-////
+///
 
 KUrl::KUrl()
     : QUrl(), d(0)
@@ -314,10 +314,8 @@ KUrl::KUrl( const QString &str )
 #ifdef Q_WS_WIN
     int len = str.length();
     QString pathToSet;
-    //kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
-    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) && str[8].isLetter() && str[9] == QLatin1Char(':') )
-      pathToSet = str.mid(8);
-    else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
+    kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
       pathToSet = str.mid(7);
     else if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
       pathToSet = str.mid(1);
@@ -340,7 +338,7 @@ KUrl::KUrl( const char * str )
   : QUrl(), d(0)
 {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::KUrl " << " " << str;
+    kDebug(126) << "KUrl::KUrl " << " " << str;
   if ( str && str[0] && str[1] && str[2] ) {
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	setPath( QString::fromUtf8( str+1 ) );
@@ -361,7 +359,7 @@ KUrl::KUrl( const QByteArray& str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::KUrl " << " " << str.data();
+    kDebug(126) << "KUrl::KUrl " << " " << str.data();
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	  setPath( QString::fromUtf8( str.mid( 1 ) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
@@ -379,7 +377,7 @@ KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
 
@@ -387,7 +385,7 @@ KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
+    kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
 
@@ -395,7 +393,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
+    kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
@@ -1577,18 +1575,12 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #ifdef Q_WS_WIN
-    //kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
+    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( "file" );
     QString path = KShell::tildeExpand( _path );
-#ifdef Q_WS_WIN
-	if( !path.isEmpty() && path[0] != QLatin1Char('/') )
-		path = QLatin1Char('/') + path;
-#endif
-	//kDebug() << "is parent? " << (isParentOf(KUrl("C:/Documents and Settings/Jeff/Blah"))?"yes":"no");
     QUrl::setPath( path );
-	//kDebug() << "now is parent? " << (isParentOf(KUrl("C:/Documents and Settings/Jeff/Blah"))?"yes":"no");
 }
 
 #if 0 // this would be if we didn't decode '+' into ' '
@@ -1705,17 +1697,5 @@ QString KUrl::ref() const
 
 bool KUrl::isParentOf( const KUrl& u ) const
 {
-	kDebug() << "incoming url: " << u.url();
-	kDebug() << "this url: " << this->url();
-	kDebug() << "incoming.path(): " << u.path();
-	kDebug() << "this.path(): " << this->path();
-	bool qurlsez = QUrl::isParentOf(u);
-	kDebug() << "QUrl thinks this is a parent? " << (qurlsez?"yes":"no");
-	QUrl url1((*this).url());
-	QUrl url2(u.url());
-	kDebug() << "incoming.toString(): " << url1.toString().toLatin1().data();
-	kDebug() << "this.toString(): " << url2.toString().toLatin1().data();
-	qurlsez = url1.isParentOf(url2);
-	kDebug() << "Now does QUrl think this is a parent? " << (qurlsez?"yes":"no");
-	return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash );
+  return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash );
 }
