@@ -439,13 +439,13 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     if (effectiveServiceType.isEmpty() && effectiveURL.startsWith("data:")) {
         // Extract the MIME type from the data URL.
-        int index = url.indexOf(';');
+        int index = effectiveURL.indexOf(';');
         if (index == -1)
-            index = url.indexOf(',');
+            index = effectiveURL.indexOf(',');
         if (index != -1) {
             int len = index - 5;
             if (len > 0)
-                effectiveServiceType = url.mid(5, len);
+                effectiveServiceType = effectiveURL.mid(5, len);
             else
                 effectiveServiceType = "text/plain"; // Data URLs with no MIME type are considered text/plain.
         }
