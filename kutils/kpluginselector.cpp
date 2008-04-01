@@ -784,7 +784,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 {
     painter->save();
 
-    QStyleOptionViewItem optionCopy(option);
+    QStyleOptionViewItemV4 optionCopy(option);
+    optionCopy.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
     const PluginModel *model = static_cast<const PluginModel*>(index.model());
 
     QRect theCheckRect = checkRect(index, optionCopy);
@@ -809,19 +810,9 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     if (index.internalPointer())
     {
-        const KPluginInfo info(*static_cast<KPluginInfo*>(index.internalPointer()));
+        QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &optionCopy, painter);
 
-        if (option.state & QStyle::State_Selected)
-        {
-            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Highlight));
-        }
-        else
-        {
-            if (model->alternateColor(info))
-                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
-            else
-                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
-        }
+        const KPluginInfo info(*static_cast<KPluginInfo*>(index.internalPointer()));
 
         QString display;
         QString secondaryDisplay = fontMetrics.elidedText(comment(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width());
@@ -1475,7 +1466,8 @@ void KPluginSelector::Private::PluginDelegate::invokeBrowser(const QString &url)
 QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
     QSize canvasSize = sizeHint(option, index);
-    QRect checkDimensions = KApplication::style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &option);
+    QSize checkDimensions = QSize(QApplication::style()->pixelMetric(QStyle::PM_IndicatorHeight),
+                                  QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
     QRect retRect;
     retRect.setTopLeft(QPoint(option.direction == Qt::LeftToRight ? option.rect.left() + leftMargin
