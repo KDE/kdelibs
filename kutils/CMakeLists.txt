@@ -1,8 +1,6 @@
 project(kutils)
 include_directories( ${KDE4_KDEUI_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
-
 set(ksettings_STAT_SRCS
   ksettings/dispatcher.cpp
   ksettings/dialog.cpp
