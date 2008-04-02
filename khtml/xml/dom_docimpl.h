@@ -189,6 +189,7 @@ public:
     // DOM methods & attributes for Document
 
     DocumentTypeImpl *doctype() const;
+    void setDocType(DocumentTypeImpl* dt);
 
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
