@@ -1,5 +1,6 @@
 /*
    This file is part of the KDE libraries
+   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
    Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
 
@@ -22,9 +23,12 @@
 
 #include <config.h>
 #include <QtCore/QBool>
+#include <QtCore/QTextCodec>
 
 #ifdef Q_OS_WIN
-#include <kdebug.h>
+
+#include "kglobal.h"
+#include <klocale.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QString>
@@ -41,14 +45,12 @@
 
 static void kMessageOutput(QtMsgType type, const char *msg);
 
-static class kGlobalClass {
-    public: 
-        kGlobalClass() {
+static class kMessageOutputInstaller {
+    public:
+        kMessageOutputInstaller() {
             qInstallMsgHandler(kMessageOutput);
         }
-
-        QString kde4prefix;
-} myGlobals; 
+} kMessageOutputInstallerInstance;
 
 static HINSTANCE kdecoreDllInstance = NULL;
 
@@ -68,31 +70,42 @@ BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID )
     return true;
 }
 
+
+class kGlobalClass {
+    public: 
+        kGlobalClass();
+        QString kde4Prefix;
+};
+
+kGlobalClass::kGlobalClass()
+{
+    wchar_t kde4prefixUtf16[MAX_PATH + 1];
+    //the path is C:\some\path\kde4\bin\kdecore.dll
+    GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
+    int bs1 = 0, bs2 = 0;
+
+    //we convert \ to / and remove \bin\kdecore.dll from the string
+    int pos;
+    for (pos = 0; pos < MAX_PATH + 1 && kde4prefixUtf16[pos] != 0; ++pos) {
+        if (kde4prefixUtf16[pos] == '\\') {
+            bs1 = bs2;
+            bs2 = pos;
+            kde4prefixUtf16[pos] = '/';
+        }
+    }
+    Q_ASSERT(bs1);
+    Q_ASSERT(pos < MAX_PATH + 1);
+    kde4prefixUtf16[bs1] = 0;
+    kde4Prefix = QString::fromUtf16((ushort *) kde4prefixUtf16);
+}
+
+K_GLOBAL_STATIC(kGlobalClass, myGlobals)
+
 // can't use QCoreApplication::applicationDirPath() because sometimes we
 // don't have an instantiated QCoreApplication
 QString getKde4Prefix()
 {
-    if (myGlobals.kde4prefix.isEmpty()) {
-        wchar_t kde4prefix[MAX_PATH + 1];
-        //the path is C:\some\path\kde4\bin\kdecore.dll
-        GetModuleFileNameW(kdecoreDllInstance, kde4prefix, MAX_PATH + 1);
-        int bs1 = 0, bs2 = 0;
-
-        //we convert \ to / and remove \bin\kdecore.dll from the string
-        int pos;
-        for (pos = 0; pos < MAX_PATH + 1 && kde4prefix[pos] != 0; ++pos) {
-            if (kde4prefix[pos] == '\\') {
-                bs1 = bs2;
-                bs2 = pos;
-                kde4prefix[pos] = '/';
-            }
-        }
-        Q_ASSERT(bs1);
-        Q_ASSERT(pos < MAX_PATH + 1);
-        kde4prefix[bs1] = 0;
-        myGlobals.kde4prefix = QString::fromUtf16((ushort *) kde4prefix);
-    }
-    return myGlobals.kde4prefix;
+    return myGlobals->kde4Prefix;
 }
 
 /**
@@ -152,6 +165,8 @@ bool showWin32FilePropertyDialog ( const QString& fileName )
     execInfo.lpFile = WIN32_CAST_CHAR path_.utf16();
     return ShellExecuteExW ( &execInfo );
 }
+
+// note: QLocale().name().left(2).toLatin1() returns the same
 
 QByteArray getWin32LocaleName()
 {
