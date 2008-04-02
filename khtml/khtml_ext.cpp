@@ -538,7 +538,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
     if (!url.isEmpty()) {
         QList<QAction *> linkActions;
         if (url.protocol() == "mailto") {
-            KAction *action = new KAction( i18n( "Copy Email Address" ), this );
+            KAction *action = new KAction( i18n( "&Copy Email Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
             linkActions.append(action);
@@ -548,7 +548,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveLinkAs()) );
             linkActions.append(action);
 
-            action = new KAction( i18n( "Copy &Link Address" ), this );
+            action = new KAction( i18n( "&Copy Link Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyLinkLocation() ) );
             linkActions.append(action);
@@ -700,7 +700,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         separator->setSeparator(true);
         partActions.append(separator);
     }
-    if (!hasSelection || isImage || !url.isEmpty()) {
+    if (!hasSelection && url.isEmpty()) { // only when right-clicking on the page itself
         partActions.append(khtml->actionCollection()->action("viewDocumentSource"));
     }
     if (!hasSelection && url.isEmpty() && !isImage) {
