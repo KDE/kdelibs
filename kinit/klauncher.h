@@ -123,7 +123,9 @@ public:
    ~KLauncher();
 
    void close();
-   static void destruct(int exit_code); // exit!
+
+public slots:
+   void destruct(); // exit!
 
 protected:
    void processDied(pid_t pid, long exitStatus);

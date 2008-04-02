@@ -231,16 +231,19 @@ void KLauncher::close()
 {
 #ifdef Q_WS_X11
    if( mCached_dpy != NULL )
+   {
        XCloseDisplay( mCached_dpy );
+       mCached_dpy = NULL;
+   }
 #endif
 }
 
 void
-KLauncher::destruct(int exit_code)
+KLauncher::destruct()
 {
     if (QCoreApplication::instance()) ((KLauncher*)QCoreApplication::instance())->close();
     // We don't delete the app here, that's intentional.
-    ::_exit(exit_code);
+    ::_exit(255);
 }
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
@@ -312,7 +315,7 @@ KLauncher::slotKDEInitData(int)
       kDebug(7016) << "Exiting on read_socket errno:" << errno;
       ::signal( SIGHUP, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
-      destruct(255); // Exit!
+      destruct(); // Exit!
    }
    requestData.resize(request_header.arg_length);
    result = read_socket(kdeinitSocket, (char *) requestData.data(),
