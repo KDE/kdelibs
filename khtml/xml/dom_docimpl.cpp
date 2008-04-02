@@ -344,11 +344,10 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     // ### this should be created during parsing a <!DOCTYPE>
     // not during construction. Not sure who added that and why (Dirk)
-    m_doctype = new DocumentTypeImpl(_implementation, getDocument(),
+    setDocType( new DocumentTypeImpl(_implementation, getDocument(),
                                      DOMString() /* qualifiedName */,
                                      DOMString() /* publicId */,
-                                     DOMString() /* systemId */);
-    m_doctype->ref();
+                                     DOMString() /* systemId */) );
 
     m_implementation = _implementation;
     m_implementation->ref();
@@ -497,6 +496,12 @@ DocumentImpl::~DocumentImpl()
 DocumentTypeImpl *DocumentImpl::doctype() const
 {
     return m_doctype;
+}
+
+void DocumentImpl::setDocType(DocumentTypeImpl* dt)
+{
+    m_doctype = dt;
+    m_doctype->ref();
 }
 
 DOMImplementationImpl *DocumentImpl::implementation() const
