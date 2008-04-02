@@ -40,7 +40,9 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         m_bookmark.setMetaDataItem("ID", generateNewId());
     } else if (udi.isEmpty()) {
         if (hasFullIcon(m_bookmark)) {
+            // TODO if this is only for the trash, it would be much faster to just read trashrc
             m_lister = new KDirLister(this);
+            m_lister->setAutoErrorHandlingEnabled(false, 0); // don't bother the user if trash:/ doesn't exist
             m_lister->setDelayedMimeTypes(true); // we don't need the mimetypes, so don't penalize other KDirLister users
             connect(m_lister, SIGNAL(completed()),
                     this, SLOT(onListerCompleted()));
