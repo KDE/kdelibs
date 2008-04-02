@@ -144,24 +144,20 @@ bool KSocketDevice::setSocketOptions(int opts)
     return true;		// flags are stored
 
 #ifdef Q_WS_WIN
-    if (opts & Blocking)
-    {
-        u_long iMode = 0;
-        qDebug("socket set blocking");
-        // disable non blocking
-        if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
-        {
-            // socket can't made blocking because WSAAsyncSelect/WSAEventSelect (==QSocketNotifier)
-            // is activated for them
-            if(WSAGetLastError() == WSAEINVAL)
-                return true;
-            qDebug("socket set blocking failed %d",GetLastError());
-            setError(UnknownError);
-            return false;		// error
-        }
-        return true;
-    }
-#endif
+  u_long iMode = ((opts & Blocking) == Blocking) ? 0 : 1;
+  // disable non blocking
+  if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
+  {
+    // socket can't made blocking because WSAAsyncSelect/WSAEventSelect (==QSocketNotifier)
+    // is activated for them
+    if(WSAGetLastError() == WSAEINVAL)
+      return true;
+    qDebug("socket set %s failed %d", iMode ? "nonblocking" : "blocking", GetLastError());
+    setError(UnknownError);
+    return false;  // error
+  }
+
+#else
     {
       int fdflags = fcntl(m_sockfd, F_GETFL, 0);
       if (fdflags == -1)
@@ -181,6 +177,7 @@ bool KSocketDevice::setSocketOptions(int opts)
 	  return false;		// error
 	}
     }
+#endif
 
     {
       int on = opts & AddressReuseable ? 1 : 0;
