@@ -1097,7 +1097,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
     case KSSLCertificate::InvalidCA:
         return i18n("The certificate's CA (Certificate Authority) is invalid.");
     case KSSLCertificate::PathLengthExceeded:
-        return i18n("The length of the trust chain exceeded one of the CA's (Certificate Authority) 'pathlength' parameter, making all subsequent signatures invalid.");
+        return i18n("The length of the trust chain exceeded one of the CA's (Certificate Authority) 'pathlength' parameters, making all subsequent signatures invalid.");
     case KSSLCertificate::InvalidPurpose:
         return i18n("The certificate has not been signed for the purpose you tried to use it for. This means the CA (Certificate Authority) does not allow this usage.");
     case KSSLCertificate::Untrusted:     // this is obsolete and kept around for backwards compability, only
