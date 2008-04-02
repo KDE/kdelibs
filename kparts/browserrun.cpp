@@ -291,9 +291,9 @@ static QString makeQuestion( const KURL& url, const QString& mimeType, const QSt
     // The strange order in the i18n() calls below is due to the possibility
     // of surl containing a '%'
     if ( suggestedFilename.isEmpty() )
-        return i18n("Open '%2'?\nType: %1").arg(comment).arg(surl);
+        return i18n("Open '%2'?\nType: %1").arg(comment, surl);
     else
-        return i18n("Open '%3'?\nName: %2\nType: %1").arg(comment).arg(suggestedFilename).arg(surl);
+        return i18n("Open '%3'?\nName: %2\nType: %1").arg(comment, suggestedFilename, surl);
 }
 
 //static
