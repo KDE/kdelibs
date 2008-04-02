@@ -7,8 +7,6 @@ set (KDE_VERSION_RELEASE 68)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.0.68 >= 20080402)")
 
-# this line was only required with cmake 2.6.0beta, cvs HEAD and 2.6 branch don't need it, Alex
-# cmake_minimum_required(VERSION 2.4.5 FATAL_ERROR)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
