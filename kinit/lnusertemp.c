@@ -35,11 +35,15 @@
 #include <limits.h>
 #endif
 
-int check_tmp_dir(const char *tmp_dir);
+int check_tmp_dir(const char *tmp_dir, int check_ownership);
 int create_link(const char *file, const char *tmp_dir);
-int build_link(const char *tmp_prefix, const char *kde_prefix);
+int build_link(const char* tmp, const char *tmp_prefix, const char *kde_prefix);
 
-int check_tmp_dir(const char *tmp_dir)
+/* checks that tmp_dir exists, otherwise creates it
+ * @param check_ownership: if 1, also check that user owns the dir
+ * returns 0 on success
+ */
+int check_tmp_dir(const char *tmp_dir, int check_ownership)
 {
   /* reserve some space for an error string + a path name */
   char errorstring[PATH_MAX+1024];
@@ -67,7 +71,7 @@ int check_tmp_dir(const char *tmp_dir)
      return 1;
   }
 
-  if (stat_buf.st_uid != getuid())
+  if (check_ownership && stat_buf.st_uid != getuid())
   {
      fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", tmp_dir, stat_buf.st_uid, getuid());
      return 1;
@@ -78,7 +82,7 @@ int check_tmp_dir(const char *tmp_dir)
 int create_link(const char *file, const char *tmp_dir)
 {
   int result;
-  result = check_tmp_dir(tmp_dir);
+  result = check_tmp_dir(tmp_dir, 1);
   if (result) 
   {
      return result;
@@ -96,7 +100,7 @@ int create_link(const char *file, const char *tmp_dir)
 }
 
 
-int build_link(const char *tmp_prefix, const char *kde_prefix)
+int build_link(const char* tmp, const char *tmp_prefix, const char *kde_prefix)
 {
   struct passwd *pw_ent;
   char kde_tmp_dir[PATH_MAX+1];
@@ -234,7 +238,9 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
 #endif
      return create_link(kde_tmp_dir, user_tmp_dir);
   }
-  result = check_tmp_dir(tmp_buf);
+  result = check_tmp_dir(tmp, 0);
+  if (result != 0) return result; /* Failure to create parent dir */
+  result = check_tmp_dir(tmp_buf, 1);
   if (result == 0) return 0; /* Success */
   unlink(kde_tmp_dir);
   strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
@@ -297,7 +303,7 @@ int main(int argc, char **argv)
     kde_prefix = "/cache-"; 
   }
 
-  res = build_link(tmp_prefix, kde_prefix); 
+  res = build_link(tmp, tmp_prefix, kde_prefix); 
     
   free(tmp_prefix);
 
