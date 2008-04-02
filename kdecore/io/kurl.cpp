@@ -315,10 +315,13 @@ KUrl::KUrl( const QString &str )
     int len = str.length();
     QString pathToSet;
     kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    //this should maybe be replaced with some (faster?)/nicer logic
     if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) && str[8].isLetter() && str[9] == QLatin1Char(':') )
       pathToSet = str.mid(8);
     else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
       pathToSet = str.mid(7);
+    else if ( len > 8 && str.startsWith( QLatin1String( "file:/" ) ) && str[6].isLetter() && str[7] == QLatin1Char(':') )
+      pathToSet = str.mid(6);
     else if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
       pathToSet = str.mid(1);
     else if ( len >= 2 && str[0].isLetter() && str[1] == QLatin1Char(':') )
@@ -1583,6 +1586,9 @@ void KUrl::setPath( const QString& _path )
         setScheme( "file" );
     QString path = KShell::tildeExpand( _path );
 #ifdef Q_WS_WIN
+    //This is necessary because QUrl has the "path" part including the first slash
+    //Without this QUrl doesn't understand that this is a path, and some operations fail
+    //e.g. C:/blah needs to become /C:/blah
     if( !path.isEmpty() && path[0] != QLatin1Char('/') )
         path = QLatin1Char('/') + path;
 #endif
