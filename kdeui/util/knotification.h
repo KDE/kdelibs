@@ -145,7 +145,7 @@ class QDBusError;
  * This portion of code will fire the event for the "contactOnline" event
  * 
  * @code
-	KNotification *notification= new KNotification ( "contactOnline" );
+	KNotification *notification= new KNotification ( "contactOnline", widget );
 	notification->setText( i18n("The contact <i>%1</i> has gone online").arg( contact->name() ) );
 	notification->setPixmap( contact->pixmap() );
 	notification->setActions( QStringList( i18n( "Open chat" ) ) );
