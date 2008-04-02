@@ -1,4 +1,5 @@
-/* This file is part of the KDE libraries Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
