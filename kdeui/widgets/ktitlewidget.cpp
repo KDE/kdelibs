@@ -103,6 +103,8 @@ KTitleWidget::KTitleWidget(QWidget *parent)
 
     d->commentLabel = new QLabel(titleFrame);
     d->commentLabel->setVisible(false);
+    d->commentLabel->setOpenExternalLinks(true);
+    d->commentLabel->setWordWrap(true);
     d->headerLayout->addWidget(d->commentLabel, 1, 0);
 
     // default image / text part end
