@@ -59,7 +59,8 @@ class KFileItemPrivate : public QSharedData
 public:
     KFileItemPrivate(const KIO::UDSEntry& entry,
                      mode_t mode, mode_t permissions,
-                     const KUrl& url, bool urlIsDirectory,
+                     const KUrl& url, // item url if entry.isEmpty(), otherwise directory url
+                     bool urlIsDirectory,
                      bool delayedMimeTypes)
         : m_entry( entry ),
           m_url( url ),
@@ -223,36 +224,6 @@ void KFileItemPrivate::init()
     }
 }
 
-// let's see if we can just copy everything (default copy ctor)
-/*
-KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
-    : QSharedData(other)
-{
-    Q_ASSERT(this != &other);
-    m_entry = other.m_entry;
-    m_url = other.m_url;
-    m_bIsLocalUrl = other.m_bIsLocalUrl;
-    m_strName = other.m_strName;
-    m_strText = other.m_strText;
-    m_fileMode = other.m_fileMode;
-    m_permissions = other.m_permissions;
-    m_bLink = other.m_bLink;
-    m_pMimeType = other.m_pMimeType;
-    m_strLowerCaseName = other.m_strLowerCaseName;
-    m_bMimeTypeKnown = other.m_bMimeTypeKnown;
-    m_hidden = other.m_hidden;
-    m_guessedMimeType   = other.m_guessedMimeType;
-    m_access            = other.m_access;
-    m_metaInfo          = other.m_metaInfo;
-    for ( int i = 0; i < NumFlags; i++ )
-        m_time[i] = other.m_time[i];
-    // note: m_extra is NOT copied, as we'd have no control over who is
-    // deleting the data or not.
-
-    // We had a mimetype previously (probably), so we need to re-determine it
-//    determineMimeType();
-}
-*/
 void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 {
     // extract fields from the KIO::UDS Entry
@@ -432,10 +403,10 @@ KFileItem::KFileItem()
 {
 }
 
-KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& url,
+KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& directoryUrl,
                       bool delayedMimeTypes, bool urlIsDirectory )
     : d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown,
-                             url, urlIsDirectory, delayedMimeTypes))
+                             directoryUrl, urlIsDirectory, delayedMimeTypes))
 {
 }
 
