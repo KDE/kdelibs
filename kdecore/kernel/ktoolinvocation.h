@@ -4,6 +4,7 @@
     Copyright (c) 1998-2005 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999-2004 Waldo Bastian <bastian@kde.org>
     Copyright (c) 2001-2005 Lubos Lunak <l.lunak@kde.org>
+    Copyright (C) 2008 Aaron Seigo <aseigo@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
