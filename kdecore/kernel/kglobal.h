@@ -21,6 +21,8 @@
 
 #include <kdecore_export.h>
 #include <QtCore/QAtomicPointer>
+#include <sys/types.h>
+
 
 //
 // WARNING!!
@@ -352,6 +354,12 @@ namespace KGlobal
      * @return the global charset manager
      */
     KDECORE_EXPORT KCharsets *charsets();
+
+    /**
+     * Returns the umask of the process.
+     * @return the umask of the process
+     */
+    KDECORE_EXPORT mode_t umask();
 
     /**
      * Creates a static QString.

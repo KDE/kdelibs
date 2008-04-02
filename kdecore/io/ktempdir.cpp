@@ -94,9 +94,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    d->tmpName = QFile::decodeName(realNameStr)+'/';
    kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
 	        << endl;
-   mode_t tmp = 0;
-   mode_t umsk = umask(tmp);
-   umask(umsk);
+   mode_t umsk = KGlobal::umask();
    chmod(nme, mode&(~umsk));
 
    // Success!
