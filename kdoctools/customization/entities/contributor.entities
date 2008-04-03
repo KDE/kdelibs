@@ -247,6 +247,8 @@
 <!ENTITY Ulrich.Kuettler.mail '<email>ulrich.kuettler@gmx.de</email>'>
 <!ENTITY Stephan.Kulow '<personname><firstname>Stephan</firstname><surname>Kulow</surname></personname>'>
 <!ENTITY Stephan.Kulow.mail '<email>coolo@kde.org</email>'>
+<!ENTITY Vladimir.Kuznetsov '<personname><firstname>Vladimir</firstname><surname>Kuznetsov</surname></personname>'>
+<!ENTITY Vladimir.Kuznetsov.mail '<email>ks.vladimir@gmail.com</email>'>
 
 <!ENTITY Raphael.Langerhorst '<personname><firstname>Raphael</firstname><surname>Langerhorst</surname></personname>'>
 <!ENTITY Raphael.Langerhorst.mail '<email>raphael.langerhorst@kdemail.net</email>'>

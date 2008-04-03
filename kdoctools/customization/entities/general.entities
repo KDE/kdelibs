@@ -261,6 +261,7 @@
 <!ENTITY kmoon	"<application>KMoon</application>">
 <!ENTITY kmouth "<application>KMouth</application>">
 <!ENTITY kmousetool "<application>KMouseTool</application>">
+<!ENTITY kmplot	"<application>KmPlot</application>">
 <!ENTITY knetattach     "<application>KNetAttach</application>">
 <!ENTITY knetwalk       "<application>KNetWalk</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
@@ -397,6 +398,7 @@
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
+<!ENTITY step "<application>Step</application>">
 <!ENTITY superkaramba	"<application>SuperKaramba</application>">
 <!ENTITY SuSE	'<acronym><trademark class="registered">SuSE</trademark></acronym>'>
 <!ENTITY systemsettings	"<application>System Settings</application>">
@@ -428,7 +430,6 @@
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kchat	"<application>KChat</application>">
 <!ENTITY keystone	"<application>Keystone</application>">
-<!ENTITY kmplot	"<application>KmPlot</application>">
 <!ENTITY knorskverbs	"<application>KNorskVerbs</application>">
 <!ENTITY kontour	"<application>Kontour</application>">
 <!ENTITY kpanel	"<application>KPanel</application>">
