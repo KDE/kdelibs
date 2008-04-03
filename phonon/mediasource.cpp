@@ -19,7 +19,7 @@
 
 #include "mediasource.h"
 #include "mediasource_p.h"
-#include "iodevicestream.h"
+#include "iodevicestream_p.h"
 #include "abstractmediastream2_p.h"
 
 #include <QtCore/QFileInfo>

@@ -17,8 +17,8 @@ Boston, MA 02110-1301, USA.
 
 */
 
-#ifndef PHONON_GLOBALCONFIG_H
-#define PHONON_GLOBALCONFIG_H
+#ifndef PHONON_GLOBALCONFIG_P_H
+#define PHONON_GLOBALCONFIG_P_H
 
 #include <QtCore/QObject>
 #include <QtCore/QSettings>
@@ -59,4 +59,4 @@ Q_SIGNALS:
 QT_END_NAMESPACE
 QT_END_HEADER
 
-#endif // PHONON_GLOBALCONFIG_H
+#endif // PHONON_GLOBALCONFIG_P_H

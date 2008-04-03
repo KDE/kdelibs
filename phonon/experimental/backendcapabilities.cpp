@@ -18,7 +18,7 @@
 
 */
 #include "backendcapabilities.h"
-#include "globalconfig.h"
+#include "globalconfig_p.h"
 
 namespace Phonon
 {

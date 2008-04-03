@@ -7,11 +7,10 @@
  * This is an auto-generated file. This file has been hand-edited.
  */
 
-#ifndef AUDIOOUTPUTADAPTOR_H_56661149284959
-#define AUDIOOUTPUTADAPTOR_H_56661149284959
+#ifndef AUDIOOUTPUTADAPTOR_P_H
+#define AUDIOOUTPUTADAPTOR_P_H
 
 #include <QtCore/QObject>
-#include "phonon/phonon_export.h"
 
 #ifndef QT_NO_DBUS
 #include <QtDBus/QtDBus>
@@ -68,4 +67,4 @@ QT_END_HEADER
 
 #endif // QT_NO_DBUS
 
-#endif // AUDIOOUTPUTADAPTOR_H_56661149284959
+#endif // AUDIOOUTPUTADAPTOR_P_H

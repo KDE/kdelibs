@@ -25,7 +25,7 @@
 #include "mediaobject_p.h"
 #include "streaminterface.h"
 
-#include "medianodedestructionhandler.h"
+#include "medianodedestructionhandler_p.h"
 
 QT_BEGIN_NAMESPACE
 

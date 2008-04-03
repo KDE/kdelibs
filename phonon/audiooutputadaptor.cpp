@@ -7,7 +7,7 @@
  * This is an auto-generated file.
  */
 
-#include "audiooutputadaptor.h"
+#include "audiooutputadaptor_p.h"
 #include "audiooutput.h"
 #include <QtCore/QArgument>
 #include <QtCore/QByteRef>
@@ -73,5 +73,5 @@ QString AudioOutputAdaptor::name()
     return name;
 }
 
-#include "moc_audiooutputadaptor.cpp"
+#include "moc_audiooutputadaptor_p.cpp"
 

@@ -34,7 +34,7 @@
 #include "../libkaudiodevicelist/audiodeviceenumerator.h"
 #include "../libkaudiodevicelist/audiodevice.h"
 #include "../qsettingsgroup_p.h"
-#include "../globalconfig.h"
+#include "../globalconfig_p.h"
 #include <kfadewidgeteffect.h>
 
 #include <kdialog.h>

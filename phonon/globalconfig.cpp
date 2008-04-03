@@ -17,7 +17,7 @@
 
 */
 
-#include "globalconfig.h"
+#include "globalconfig_p.h"
 
 #include "factory_p.h"
 #include "objectdescription.h"
@@ -155,6 +155,6 @@ int GlobalConfig::audioCaptureDevice() const
 
 QT_END_NAMESPACE
 
-#include "moc_globalconfig.cpp"
+#include "moc_globalconfig_p.cpp"
 
 // vim: sw=4 ts=4

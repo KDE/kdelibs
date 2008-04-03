@@ -25,7 +25,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSharedData>
 #include "effect.h"
-#include "medianodedestructionhandler.h"
+#include "medianodedestructionhandler_p.h"
 
 QT_BEGIN_NAMESPACE
 

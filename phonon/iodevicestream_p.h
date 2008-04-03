@@ -17,41 +17,35 @@
 
 */
 
-#ifndef IODEVICESTREAM_P_H
-#define IODEVICESTREAM_P_H
+#ifndef PHONON_IODEVICESTREAM_P_H
+#define PHONON_IODEVICESTREAM_P_H
 
-#include "iodevicestream.h"
-#include "abstractmediastream2_p.h"
+#include "abstractmediastream2.h"
 
-#include <QtCore/QIODevice>
-
+QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
+
+class QIODevice;
 
 namespace Phonon
 {
-class IODeviceStreamPrivate : public AbstractMediaStream2Private
+
+class IODeviceStreamPrivate;
+class IODeviceStream : public AbstractMediaStream2
 {
-    Q_DECLARE_PUBLIC(IODeviceStream)
-    protected:
-        IODeviceStreamPrivate(QIODevice *_ioDevice)
-            : ioDevice(_ioDevice)
-        {
-            if (!ioDevice->isOpen()) {
-                ioDevice->open(QIODevice::ReadOnly);
-            }
-            Q_ASSERT(ioDevice->isOpen());
-            Q_ASSERT(ioDevice->isReadable());
-            streamSize = ioDevice->size();
-            streamSeekable = !ioDevice->isSequential();
-        }
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(IODeviceStream)
+    public:
+        explicit IODeviceStream(QIODevice *ioDevice, QObject *parent = 0);
+        ~IODeviceStream();
 
-    private:
-        QIODevice *ioDevice;
+        void reset();
+        void needData(quint32);
+        void seekStream(qint64);
 };
-
 } // namespace Phonon
 
 QT_END_NAMESPACE
+QT_END_HEADER
 
-#endif // IODEVICESTREAM_P_H
-// vim: sw=4 sts=4 et tw=100
+#endif // PHONON_IODEVICESTREAM_P_H

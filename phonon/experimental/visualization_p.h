@@ -22,7 +22,7 @@
 
 #include "visualization.h"
 #include "../medianode_p.h"
-#include "../medianodedestructionhandler.h"
+#include "../medianodedestructionhandler_p.h"
 #include "../phonondefs_p.h"
 
 namespace Phonon

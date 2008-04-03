@@ -23,7 +23,7 @@
 #include "mediaobject.h"
 #include "medianode_p.h"
 #include <QtCore/QString>
-#include "medianodedestructionhandler.h"
+#include "medianodedestructionhandler_p.h"
 #include "mediasource.h"
 #include <QtCore/QQueue>
 

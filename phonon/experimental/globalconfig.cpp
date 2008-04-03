@@ -17,7 +17,7 @@
 
 */
 
-#include "globalconfig.h"
+#include "globalconfig_p.h"
 
 #include "../factory_p.h"
 #include "objectdescription.h"
@@ -115,4 +115,4 @@ int GlobalConfig::videoCaptureDeviceFor(Phonon::Category category) const
 } // namespace Experimental
 } // namespace Phonon
 
-#include "moc_globalconfig.cpp"
+#include "moc_globalconfig_p.cpp"
