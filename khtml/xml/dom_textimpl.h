@@ -67,6 +67,9 @@ public:
 
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
 
+    virtual bool offsetInCharacters() const { return true; }
+    virtual int maxCharacterOffset() const { return static_cast<int>(length()); }
+
     virtual long minOffset() const;
     virtual long maxOffset() const;
 

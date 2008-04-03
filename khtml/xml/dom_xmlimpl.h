@@ -155,6 +155,8 @@ public:
 
     virtual DOMString toString() const;
 
+    virtual bool offsetInCharacters() const { return true; }
+    virtual int maxCharacterOffset() const;
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;

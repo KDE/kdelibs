@@ -117,6 +117,8 @@ private:
     void setEndContainer(NodeImpl *_endContainer);
     void checkDeleteExtract(int &exceptioncode);
     bool containedByReadOnly();
+    unsigned long maxEndOffset() const;
+    unsigned long maxStartOffset() const;
 };
 
 } // namespace
