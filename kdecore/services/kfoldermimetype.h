@@ -27,7 +27,8 @@ class KFolderMimeTypePrivate;
 /**
  * @internal  - this header is not installed
  *
- * Folder mime type. Handles locked folders, for instance.
+ * Folder mime type. Handles the .directory file inside a folder, which modifies
+ * the comment and icon for this folder.
  * @short Mimetype for a folder (inode/directory)
  */
 class KDECORE_EXPORT KFolderMimeType : public KMimeType
