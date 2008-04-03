@@ -6,7 +6,7 @@
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * (C) 2001 Peter Kelly (pmk@post.com)
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2003-2008 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1428,7 +1428,7 @@ void RangeImpl::selectNodeContents( NodeImpl *refNode, int &exceptioncode )
     setStartContainer(refNode);
     m_startOffset = 0;
     setEndContainer(refNode);
-    m_endOffset = refNode->childNodeCount();
+    m_endOffset = maxEndOffset();
 }
 
 void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
@@ -1488,7 +1488,17 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
     // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
     // does not allow children of the type of newParent or if newParent is an ancestor of the container
     // or if node would end up with a child node of a type not allowed by the type of node.
-    if (!m_startContainer->childTypeAllowed(newParent->nodeType())) {
+
+    // If m_startContainer is a character data node, it will be split and it will be its parent that will 
+    // need to accept newParent (or in the case of a comment, it logically "would" be inserted into the parent,
+    // although this will fail below for another reason).
+
+    NodeImpl* parentOfNewParent = m_startContainer;
+
+    if (parentOfNewParent->offsetInCharacters())
+        parentOfNewParent = parentOfNewParent->parentNode();
+
+    if (!parentOfNewParent->childTypeAllowed(newParent->nodeType())) {
         exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
         return;
     }
@@ -1504,22 +1514,18 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
 
     // BAD_BOUNDARYPOINTS_ERR: Raised if the Range partially selects a non-text node.
     if (m_startContainer->nodeType() != Node::TEXT_NODE &&
-        m_startContainer->nodeType() != Node::COMMENT_NODE &&
-        m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
-        m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+        m_startContainer->nodeType() != Node::CDATA_SECTION_NODE) {
 
-        if (m_startOffset > 0 && m_startOffset < m_startContainer->childNodeCount()) {
+        if (m_startOffset > 0 && m_startOffset < maxStartOffset()) {
             exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
             return;
         }
     }
 
     if (m_endContainer->nodeType() != Node::TEXT_NODE &&
-        m_endContainer->nodeType() != Node::COMMENT_NODE &&
-        m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
-        m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+        m_endContainer->nodeType() != Node::CDATA_SECTION_NODE) {
 
-        if (m_endOffset > 0 && m_endOffset < m_endContainer->childNodeCount()) {
+        if (m_endOffset > 0 && m_endOffset < maxEndOffset()) {
             exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
             return;
         }
@@ -1541,6 +1547,26 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
         return;
     selectNode( newParent, exceptioncode );
 }
+
+
+unsigned long RangeImpl::maxStartOffset() const
+{
+    if (!m_startContainer)
+        return 0;
+    if (!m_startContainer->offsetInCharacters())
+        return m_startContainer->childNodeCount();
+    return m_startContainer->maxCharacterOffset();
+}
+
+unsigned long RangeImpl::maxEndOffset() const
+{
+    if (!m_endContainer)
+        return 0;
+    if (!m_endContainer->offsetInCharacters())
+        return m_endContainer->childNodeCount();
+    return m_endContainer->maxCharacterOffset();
+}
+     
 
 void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
 {

@@ -339,6 +339,12 @@ public:
     bool isAncestor( NodeImpl *other );
     virtual bool childAllowed( NodeImpl *newChild );
 
+    // Used to determine whether range offsets use characters or node indices.
+    virtual bool offsetInCharacters() const { return false; }
+    // Number of DOM 16-bit units contained in node. Note that rendered text length can be different - e.g. because of
+    // css-transform:capitalize breaking up precomposed characters and ligatures.
+    virtual int maxCharacterOffset() const { return 0; }
+
     /**
      * Returns the minimum caret offset that is allowed for this node.
      *

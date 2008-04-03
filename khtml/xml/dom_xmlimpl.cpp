@@ -465,6 +465,11 @@ DOMString ProcessingInstructionImpl::toString() const
     return result;
 }
 
+int ProcessingInstructionImpl::maxCharacterOffset() const
+{ 
+    return m_data ? static_cast<int>(m_data->length()) : 0;
+}
+
 // -------------------------------------------------------------------------
 
 XMLAttributeReader::XMLAttributeReader(const QString& _attrString)
