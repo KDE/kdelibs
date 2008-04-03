@@ -218,7 +218,9 @@ public:
     };
 
     // for LINK and STYLE
-    virtual bool sheetLoaded() { return true; }
+    // will increase/decrease the document's pending sheet count if appropriate
+    virtual bool checkAddPendingSheet() { return true; }
+    virtual bool checkRemovePendingSheet() { return true; }
 
     bool hasID() const      { return m_hasId; }
     bool hasClass() const   { return m_hasClass; }

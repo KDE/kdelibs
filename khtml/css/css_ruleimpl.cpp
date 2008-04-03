@@ -131,6 +131,13 @@ CSSImportRuleImpl::~CSSImportRuleImpl()
     if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
+void CSSImportRuleImpl::checkLoaded() const
+{
+    if (isLoading())
+        return;
+    CSSRuleImpl::checkLoaded();
+}
+
 void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset, const DOM::DOMString &mimetype)
 {
     if ( m_styleSheet ) {
@@ -167,7 +174,7 @@ void CSSImportRuleImpl::error(int /*err*/, const QString &/*text*/)
     checkLoaded();
 }
 
-bool CSSImportRuleImpl::isLoading()
+bool CSSImportRuleImpl::isLoading() const
 {
     return ( m_loading || (m_styleSheet && m_styleSheet->isLoading()) );
 }
@@ -212,20 +219,26 @@ void CSSImportRuleImpl::init()
       // if the import rule is issued dynamically, the sheet may have already been
       // removed from the pending sheet count, so let the doc know
       // the sheet being imported is pending.
-      if (parentSheet && parentSheet->processed())
-          parentSheet->doc()->addPendingSheet();
+      checkPending();
 
+      m_loading = true;
       m_cachedSheet->ref(this);
-
-      // If the imported sheet is in the cache, then setStyleSheet gets called,
-      // and the sheet even gets parsed (via parseString).  In this case we have
-      // loaded (even if our subresources haven't), so if we have stylesheet after
-      // checking the cache, then we've clearly loaded. -dwh
-      // This can also happen when error() is called from within ref(). In either case,
-      // m_done is set to true.
-      if (!m_done)
-	m_loading = true;
     }
+}
+
+DOMString CSSImportRuleImpl::cssText() const
+{
+    DOMString result = "@import url(\"";
+    result += m_strHref;
+    result += "\")";
+
+    if (m_lstMedia) {
+        result += " ";
+        result += m_lstMedia->mediaText();
+    }
+    result += ";";
+
+    return result;
 }
 
 // --------------------------------------------------------------------------

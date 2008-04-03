@@ -113,12 +113,15 @@ public:
     CSSStyleSheetImpl *styleSheet() const { return m_styleSheet; }
 
     virtual bool isImportRule() const { return true; }
+    virtual DOM::DOMString cssText() const;
+    virtual void checkLoaded() const;
+    
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset, const DOM::DOMString& mimetype);
     virtual void error(int err, const QString &text);
 
-    bool isLoading();
+    bool isLoading() const;
     virtual void init();
 
 protected:

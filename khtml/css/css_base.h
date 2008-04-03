@@ -226,7 +226,11 @@ namespace DOM {
 
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 
+        // verifies if the resource chain is fully loaded,
+        // and in the affirmative, notifies the owner document
 	virtual void checkLoaded() const;
+	// makes sure the resource chain is considered 'Pending' by the owner document
+        virtual void checkPending() const;
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
 	bool useStrictParsing() const { return strictParsing; }

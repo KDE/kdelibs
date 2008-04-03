@@ -46,6 +46,11 @@ void StyleBaseImpl::checkLoaded() const
     if(m_parent) m_parent->checkLoaded();
 }
 
+void StyleBaseImpl::checkPending() const
+{
+    if(m_parent) m_parent->checkPending();
+} 
+
 StyleSheetImpl* StyleBaseImpl::stylesheet()
 {
     StyleBaseImpl* b = this;

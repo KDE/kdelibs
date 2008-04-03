@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright 2004 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2004 Apple Computer, Inc.
+ *           (C) 2008 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -115,7 +116,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
-    m_processed = false;
+    m_loadedHint = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
@@ -126,7 +127,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
     m_implicit = _implicit;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
-    m_processed = false;
+    m_loadedHint = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
@@ -137,7 +138,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
-    m_processed = false;
+    m_loadedHint = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -156,7 +157,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
-    m_processed = false;
+    m_loadedHint = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -176,7 +177,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
-    m_processed = false;
+    m_loadedHint = false;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
@@ -299,18 +300,37 @@ bool CSSStyleSheetImpl::isLoading() const
 #ifdef CSS_STYLESHEET_DEBUG
                 kDebug( 6080 ) << "--> not loaded";
 #endif
+                m_loadedHint = false;
                 return true;
             }
         }
     }
+    m_loadedHint = true;
     return false;
 }
 
 void CSSStyleSheetImpl::checkLoaded() const
 {
-    if(isLoading()) return;
-    if(m_parent) m_parent->checkLoaded();
-    m_processed = m_parentNode ? m_parentNode->sheetLoaded() : true;
+    if (isLoading()) 
+        return;
+    if (m_parent) 
+        m_parent->checkLoaded();
+    if (m_parentNode)
+        m_loadedHint = m_parentNode->checkRemovePendingSheet();
+    else if (parentStyleSheet() && parentStyleSheet()->isCSSStyleSheet())
+        m_loadedHint = static_cast<CSSStyleSheetImpl*>(parentStyleSheet())->loadedHint();
+    else
+        m_loadedHint = true;
+}
+
+void CSSStyleSheetImpl::checkPending() const
+{
+    if (!m_loadedHint)
+        return;
+    if (m_parent)
+        m_parent->checkPending();
+    else if (m_parentNode)
+        m_parentNode->checkAddPendingSheet();
 }
 
 // ---------------------------------------------------------------------------

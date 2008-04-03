@@ -244,7 +244,7 @@ public:
      * Increments the number of pending sheets.  The \<link\> elements
      * invoke this to add themselves to the loading list.
      */
-    void addPendingSheet() { m_pendingStylesheets++; }
+    void addPendingSheet();
 
     /**
      * Returns true if the document has pending stylesheets

@@ -108,7 +108,8 @@ public:
     bool isLoading() const;
 
     virtual void checkLoaded() const;
-    bool processed() const { return m_processed; }
+    virtual void checkPending() const;
+    bool loadedHint() const { return m_loadedHint; }
 
     // ### remove? (clients should use sheet->doc()->docLoader())
     khtml::DocLoader *docLoader() const
@@ -119,7 +120,7 @@ public:
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
-    mutable bool m_processed;
+    mutable bool m_loadedHint;
     quint32 m_defaultNamespace;
     CSSNamespace* m_namespaces;
     DOMString m_charset;
