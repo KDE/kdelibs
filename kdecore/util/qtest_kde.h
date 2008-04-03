@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/local" ), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/config" ), 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
-    KAboutData aboutData( componentName, 0, ki18n("KDE Test Program"), "version" );  \
+    KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
     KComponentData cData(&aboutData); \
     QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/local" ), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/config" ), 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
-    KAboutData aboutData( "qttest", 0, ki18n("KDE Test Program"), "version" );  \
+    KAboutData aboutData( QByteArray("qttest"), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
     app.setApplicationName( "qttest" ); \
