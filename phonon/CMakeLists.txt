@@ -59,7 +59,6 @@ set(phonon_LIB_SRCS
    iodevicestream.cpp
    lockfreequeue.cpp
    streameventqueue.cpp
-   ringbuffer.cpp
    )
 
 kde4_add_library(phonon SHARED ${phonon_LIB_SRCS})
