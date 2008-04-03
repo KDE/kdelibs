@@ -1,0 +1,16 @@
+After the release of KDE 4.0 the Phonon Frontend and Backend APIs need to keep
+binary compatibility. This poses a lot of constraints on the things you can do
+if you want to add functionality to Phonon. Here's what you can do:
+
+- If you only need methods in the Frontend API without support from the backend
+  you can simply add it (non virtual, of course with new data members in the
+  private class).
+
+- If you need new factory-methods in Phonon::Ifaces::Backend:
+  - add a new Phonon::Ifaces::BackendV2 interface that inherits
+    Phonon::Ifaces::Backend and in Phonon::Factory check whether you can
+    qobject_cast<Phonon::Ifaces::BackendV2*>( d->backend ). If the cast succeeds
+    you have a backend that implements your new virtual functions.
+  - simply add the new Phonon::Ifaces classes to libphononifaces and backends
+    can then implement those interfaces and instead of implementing
+    Ifaces::Backend implementing Ifaces::BackendV2.

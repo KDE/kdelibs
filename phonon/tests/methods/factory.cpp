@@ -1,0 +1,1 @@
+addSignal("objectDescriptionChanged(ObjectDescriptionType)");
