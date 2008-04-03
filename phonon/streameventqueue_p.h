@@ -22,7 +22,7 @@
 #define PHONON_STREAMEVENTQUEUE_P_H
 
 #include <QtCore/QVariant>
-#include "lockfreequeue.h"
+#include "lockfreequeue_p.h"
 
 QT_BEGIN_NAMESPACE
 

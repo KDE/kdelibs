@@ -18,7 +18,7 @@
 
 */
 
-#include "../lockfreequeue.h"
+#include "../lockfreequeue_p.h"
 
 #include <qtest_kde.h>
 

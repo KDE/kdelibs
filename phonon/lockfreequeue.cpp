@@ -18,7 +18,7 @@
 
 */
 
-#include "lockfreequeue.h"
+#include "lockfreequeue_p.h"
 #include <QtCore/QHash>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>

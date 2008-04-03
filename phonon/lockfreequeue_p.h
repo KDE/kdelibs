@@ -18,8 +18,8 @@
 
 */
 
-#ifndef LOCKFREEQUEUE_H
-#define LOCKFREEQUEUE_H
+#ifndef LOCKFREEQUEUE_P_H
+#define LOCKFREEQUEUE_P_H
 
 #include <QtCore/QVector>
 
@@ -142,4 +142,4 @@ class LockFreeQueue : public LockFreeQueueBase
         }
 };
 
-#endif // LOCKFREEQUEUE_H
+#endif // LOCKFREEQUEUE_P_H
