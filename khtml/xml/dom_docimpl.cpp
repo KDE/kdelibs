@@ -1276,6 +1276,9 @@ void DocumentImpl::updateDocumentsRendering()
 
 void DocumentImpl::updateLayout()
 {
+    if (ElementImpl* oe = ownerElement())
+        oe->getDocument()->updateLayout();
+
     bool oldIgnore = m_ignorePendingStylesheets;
 
     if (!haveStylesheetsLoaded()) {

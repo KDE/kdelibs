@@ -211,12 +211,27 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = isRedirectedWidget();
-        ref();
-        element()->ref();
-        QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
-        element()->deref();
-        deref();
+        if (isRedirectedWidget() && qobject_cast<KHTMLView*>(m_widget)) {
+             m_widget->resize( w, h);
+             if (!m_widget->isVisible()) {
+                 // Emission of Resize event is delayed.
+                 // we have to pre-call KHTMLView::resizeEvent
+                 // so that viewport size change and subsequent layout update
+                 // is effective synchronously, which is important for JS.
+                 // This only work because m_widget is a redirected view,
+                 // and thus has visibleWidth()/visibleHeight() that mirror this RenderWidget,
+                 // rather than the effective widget size. - gg.
+                 QResizeEvent e( QSize(w,h), QSize(m_widget->width(),m_widget->height()));
+                 static_cast<KHTMLView*>(m_widget)->resizeEvent( &e );
+             }
+        } else {
+            m_resizePending = isRedirectedWidget();
+            ref();
+            element()->ref();
+            QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
+            element()->deref();
+            deref();
+        }
     }
 }
 
