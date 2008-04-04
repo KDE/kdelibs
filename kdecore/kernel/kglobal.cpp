@@ -46,6 +46,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 #include "kcmdlineargs.h"
+#include <unistd.h> // umask
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \
@@ -61,6 +62,7 @@
 Q_CONSTRUCTOR_FUNCTION(qrand)
 
 typedef QSet<QString> KStringDict;
+mode_t s_umsk;
 
 class KGlobalPrivate
 {
@@ -72,8 +74,8 @@ class KGlobalPrivate
         {
             // the umask is read here before any threads are created to avoid race conditions
             mode_t tmp = 0;
-            umsk = umask(tmp);
-            umask(umsk);
+            s_umsk = umask(tmp);
+            umask(s_umsk);
         }
 
         inline ~KGlobalPrivate()
@@ -91,7 +93,6 @@ class KGlobalPrivate
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
-        mode_t umsk;
 };
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
@@ -164,8 +165,8 @@ KCharsets *KGlobal::charsets()
 
 mode_t KGlobal::umask()
 {
-    PRIVATE_DATA;
-    return d->umsk;
+    // Don't use PRIVATE_DATA here. This is called by ~KGlobalPrivate -> ~KConfig -> sync -> KSaveFile, so there's no KGlobalPrivate anymore.
+    return s_umsk;
 }
 
 KComponentData KGlobal::activeComponent()

@@ -1021,3 +1021,12 @@ void KConfigTest::testCreateDir()
     QVERIFY(QFile::exists(file));
 }
 
+void KConfigTest::testSyncOnExit()
+{
+    // Often, the KGlobalPrivate global static's destructor ends up calling ~KConfig ->
+    // KConfig::sync ... and if that code triggers KGlobal code again then things could crash.
+    // So here's a test for modifying KGlobal::config() and not syncing, the process exit will sync.
+    KConfigGroup grp(KGlobal::config(), "syncOnExit");
+    grp.writeEntry("key", "value");
+}
+
