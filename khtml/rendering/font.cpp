@@ -316,11 +316,16 @@ int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAd
 {
     int w = 0;
 
+
    // #### Qt 4 has a major speed regression : QFontMetrics::width() is around 15 times slower than Qt 3's.
    // This is a great speed bottleneck as we are now spending up to 70% of the layout time in that method
    // (compared to around 5% before).
    // It as been reported to TT and acknowledged as issue N138867, but whether they intend to give it some
    // care in the near future is unclear :-/
+   // 
+   // #### Qt 4.4 RC is now *40* times slower than Qt 3.3. This is a complete and utter disaster.
+   // New issue about this as N203591, because the report from 2006 was apparently discarded.
+   //
 
     const QString qstr = QString::fromRawData(chs+pos, len);
     if ( scFont ) {
