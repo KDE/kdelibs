@@ -810,7 +810,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
             return;
 
         if (m_startContainer == m_endContainer) {
-            endOffsetDelta = -m_startOffset;
+            endOffsetDelta = -(long)m_startOffset;
             setEndContainer(newText);
             // ### what about border cases where start or end are at
             // ### the margins of the text?
