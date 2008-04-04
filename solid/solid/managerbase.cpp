@@ -46,12 +46,12 @@ void Solid::ManagerBasePrivate::loadBackend()
     if (!solidFakeXml.isEmpty()) {
         m_backend = new Solid::Backends::Fake::FakeManager(0, solidFakeXml);
     } else {
-		#if defined (Q_OS_MAC)
-		#elif defined (Q_OS_UNIX)
-			m_backend = new Solid::Backends::Hal::HalManager(0);
-		#elif defined (Q_WS_WIN)
-			m_backend = new Solid::Backends::Wmi::WmiManager(0);
-		#endif		
+        #if defined (Q_OS_MAC)
+        #elif defined (Q_OS_UNIX)
+            m_backend = new Solid::Backends::Hal::HalManager(0);
+        #elif defined (Q_WS_WIN)
+            m_backend = new Solid::Backends::Wmi::WmiManager(0);
+        #endif		
     }
 }
 
