@@ -175,7 +175,8 @@ void PaintBuffer::reset()
     m_resetWidth = m_resetHeight = 0;
     m_buf = QPixmap();
     m_overflow = false;
-    killTimer( m_timer );
+    if( m_timer )
+      killTimer( m_timer );
     m_timer = 0;
 }
 
