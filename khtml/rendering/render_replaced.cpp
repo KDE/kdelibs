@@ -618,9 +618,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             pp.fillRect(r, Qt::transparent);
         }
         d = pm;
-    } else {
-        p->end();
     }
+    p->end();
 
     setInPaintEventFlag( widget, false );
 
@@ -628,7 +627,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     setInPaintEventFlag( widget );
 
-    if (!buffered) {
+//    if (!buffered) {
         p->begin(x);
         p->setWorldTransform(t);
         p->setWindow(w);
@@ -641,7 +640,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setOpacity(op);
         p->setPen(pen);
         p->setBrush(brush);
-    } else {
+//    } else {
+    if (buffered) {
         // transfer results
         QPoint off(r.x(), r.y());
         p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
