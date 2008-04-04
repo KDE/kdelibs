@@ -402,7 +402,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
     return true;
 }
 
-RenderObject *TextImpl::createRenderer(RenderArena *arena, RenderStyle */*style*/)
+RenderObject *TextImpl::createRenderer(RenderArena *arena, RenderStyle * /*style*/)
 {
     return new (arena) RenderText(this, str);
 }
