@@ -48,6 +48,9 @@ public:
   QPixmap                pixmap;
   QTimer                 timer;
   QString                icon_name;
+  QVector<QPixmap*>      framesCache; // We keep copies of each frame so that
+                                      // the icon code can properly cache them in QPixmapCache,
+                                      // and not fill it up with dead copies
 };
 
 KAnimatedButton::KAnimatedButton( QWidget *parent )
@@ -59,6 +62,7 @@ KAnimatedButton::KAnimatedButton( QWidget *parent )
 KAnimatedButton::~KAnimatedButton()
 {
   d->timer.stop();
+  qDeleteAll(d->framesCache);
 
   delete d;
 }
@@ -110,14 +114,18 @@ void KAnimatedButtonPrivate::updateCurrentIcon()
   int w = pixmap.width();
   int h = w;
 
-  QPixmap pix(w, h);
 
+  QPixmap* frame = framesCache[current_frame];
+  if (!frame)
   {
-    QPainter p(&pix);
+    frame = new QPixmap(w, h);
+    QPainter p(frame);
     p.drawPixmap(QPoint(0,0), pixmap, QRect(0, current_frame * h, w, h));
+    p.end();
+    framesCache[current_frame] = frame;
   }
 
-  q->setIcon(QIcon(pix));
+  q->setIcon(QIcon(*frame));
 }
 
 void KAnimatedButton::updateIcons()
@@ -135,6 +143,9 @@ void KAnimatedButton::updateIcons()
      img = img.scaled(iconDimensions(), iconDimensions()*d->frames, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
   }
   d->pixmap = QPixmap::fromImage(img);
+
+  qDeleteAll(d->framesCache);
+  d->framesCache.resize(d->frames);
 
   d->updateCurrentIcon();
 }
