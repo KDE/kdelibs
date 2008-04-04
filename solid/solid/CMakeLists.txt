@@ -123,7 +123,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halvolume.cpp
    
    )
-endif(!WIN32 AND !APPLE)
+endif(NOT WIN32 AND NOT APPLE)
 
 if(WIN32)
    MESSAGE( "-- Building Solid WMI backend." )
