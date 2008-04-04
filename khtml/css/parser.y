@@ -5,6 +5,7 @@
  *  Copyright (C) 2002-2003 Lars Knoll (knoll@kde.org)
  *  Copyright (c) 2003 Apple Computer
  *  Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
+ *  Copyright (C) 2008 Germain Garand (germain@ebooksfrance.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -146,7 +147,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %destructor { delete $$; $$ = 0; } maybe_media_query_exp_list media_query_exp_list;
 %destructor { if ($$) qDeleteAll(*$$); delete $$; $$ = 0; } selector_list;
 %destructor { delete $$; $$ = 0; } ruleset_list;
-%destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector selector class attrib pseudo;
+%destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector simple_css3_selector selector class attrib pseudo;
 
 %no-lines
 %verbose
@@ -258,6 +259,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <selector> specifier
 %type <selector> specifier_list
 %type <selector> simple_selector
+%type <selector> simple_css3_selector
 %type <selector> selector
 %type <selectorList> selector_list
 %type <selector> class
@@ -760,6 +762,34 @@ simple_selector:
     }
   ;
 
+simple_css3_selector:
+    element_name maybe_space {
+	$$ = new CSSSelector();
+	$$->tag = $1;
+    }
+    | specifier maybe_space {
+	$$ = $1;
+        if ( $$ )
+            $$->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
+    }
+    | namespace_selector element_name maybe_space {
+        $$ = new CSSSelector();
+        $$->tag = $2;
+	CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tag, domString($1));
+    }
+    | namespace_selector specifier maybe_space {
+        $$ = $2;
+        if ($$) {
+            $$->tag = makeId(anyNamespace, anyLocalName);
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tag, domString($1));
+        }
+    }
+  ;
+
 element_name:
     IDENT {
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -945,7 +975,7 @@ pseudo:
         $$->value = domString($2);
     }
     // used only by :not
-    | ':' NOTFUNCTION maybe_space simple_selector ')' {
+    | ':' NOTFUNCTION maybe_space simple_css3_selector ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
         $$->simpleSelector = $4;
