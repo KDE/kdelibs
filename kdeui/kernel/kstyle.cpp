@@ -918,15 +918,18 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
 
         case PE_PanelItemViewItem: {
-            if (!(option->state & (State_Selected | State_MouseOver)))
-                return;
-
+            
             const QStyleOptionViewItemV4 *opt = qstyleoption_cast<const QStyleOptionViewItemV4*>(option);
             const QAbstractItemView *view = qobject_cast<const QAbstractItemView *>(widget);
             bool hover = (option->state & State_MouseOver) && (!view ||
                          view->selectionMode() != QAbstractItemView::NoSelection);
 
-            if (!hover && !(option->state & State_Selected))
+			bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush;
+			bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
+
+            const qreal rounding = 2.5;
+
+            if (!hover && !(option->state & State_Selected) && !hasCustomBackground)
                 return;
 
             QPalette::ColorGroup cg;
@@ -935,8 +938,14 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             else
                 cg = QPalette::Disabled;
 
-            QColor color = option->palette.color(cg, QPalette::Highlight);
-            if (hover) {
+            QColor color;
+			
+			if (hasCustomBackground && hasSolidBackground)
+				color = opt->backgroundBrush.color();
+			else
+				color = option->palette.color(cg, QPalette::Highlight);
+
+            if (hover && !hasCustomBackground) {
                 if (!(option->state & State_Selected))
                     color.setAlphaF(.20);
                 else
@@ -947,21 +956,24 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 painter->fillRect(option->rect, option->palette.brush(cg, QPalette::AlternateBase));
 
             quint64 key = quint64(option->rect.height()) << 32 | color.rgba();
-            SelectionTiles *tiles = d->selectionCache.object(key);
-            if (!tiles)
+            SelectionTiles* tiles = d->selectionCache.object(key);
+            if (!tiles && hasSolidBackground)
             {
                 QImage image(32 + 16, option->rect.height(), QImage::Format_ARGB32_Premultiplied);
                 image.fill(Qt::transparent);
 
                 QRect r = image.rect().adjusted(0, 0, -1, -1);
-                qreal rounding = 2.5;
 
                 QPainterPath path1, path2;
                 path1.addRoundedRect(r, rounding, rounding);
                 path2.addRoundedRect(r.adjusted(1, 1, -1, -1), rounding - 1, rounding - 1);
 
+				// items with custom background brushes always have their background drawn
+				// regardless of whether they are hovered or selected or neither so
+				// the gradient effect needs to be more subtle
+				int lightenAmount = hasCustomBackground ? 110 : 130;
                 QLinearGradient gradient(0, 0, 0, r.bottom());
-                gradient.setColorAt(0, color.lighter(130));
+                gradient.setColorAt(0, color.lighter(lightenAmount));
                 gradient.setColorAt(1, color);
 
                 QPainter p(&image);
@@ -979,8 +991,16 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 tiles->left   = pixmap.copy(0, 0, 8, image.height());
                 tiles->center = pixmap.copy(8, 0, 32, image.height());
                 tiles->right  = pixmap.copy(40, 0, 8, image.height());
+
                 d->selectionCache.insert(key, tiles);
             }
+			else if (hasCustomBackground && !hasSolidBackground)
+			{
+				painter->setBrush(opt->backgroundBrush);
+				painter->setPen(Qt::NoPen);
+				painter->drawRect(opt->rect);
+				return;
+			}
 
             bool roundedLeft  = false;
             bool roundedRight = false;
