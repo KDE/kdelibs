@@ -61,6 +61,9 @@ private Q_SLOTS:
 
     // unrelated
     void testKAboutDataOrganizationDomain();
+
+    // should be last
+    void testSyncOnExit();
 private:
     void revertEntries();
     QList<QByteArray> readLines();
