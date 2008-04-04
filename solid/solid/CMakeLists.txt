@@ -96,7 +96,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakevolume.cpp
 )
 
-if(!WIN32 AND !APPLE)
+if(NOT WIN32 AND NOT APPLE)
    MESSAGE( "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
 	
