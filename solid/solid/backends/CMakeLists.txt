@@ -1,8 +1,8 @@
 add_subdirectory(fakehw)
 
-if(!WIN32 AND !APPLE)
+if(NOT WIN32 AND NOT APPLE)
 add_subdirectory(hal)
-endif(!WIN32 AND !APPLE)
+endif(NOT WIN32 AND NOT APPLE)
 
 if(WIN32)
 add_subdirectory(wmi)
