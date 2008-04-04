@@ -160,7 +160,7 @@ public:
     /**
      * Retrieve the standard help menu.
      *
-     * It contains entires for the
+     * It contains entries for the
      * help system (activated by F1), an optional "What's This?" entry
      * (activated by Shift F1), an application specific dialog box,
      * and an "About KDE" dialog box.
