@@ -22,7 +22,13 @@
 #include <stdlib.h>
 
 #include "backends/fakehw/fakemanager.h"
+
+#if defined (Q_OS_MAC)
+#elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
+#elif defined (Q_WS_WIN)
+#include "backends/wmi/wmimanager.h"
+#endif
 
 Solid::ManagerBasePrivate::ManagerBasePrivate()
     : m_backend(0)
@@ -40,7 +46,12 @@ void Solid::ManagerBasePrivate::loadBackend()
     if (!solidFakeXml.isEmpty()) {
         m_backend = new Solid::Backends::Fake::FakeManager(0, solidFakeXml);
     } else {
-        m_backend = new Solid::Backends::Hal::HalManager(0);
+		#if defined (Q_OS_MAC)
+		#elif defined (Q_OS_UNIX)
+			m_backend = new Solid::Backends::Hal::HalManager(0);
+		#elif defined (Q_WS_WIN)
+			m_backend = new Solid::Backends::Wmi::WmiManager(0);
+		#endif		
     }
 }
 

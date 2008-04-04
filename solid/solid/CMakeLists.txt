@@ -74,28 +74,6 @@ set(solid_LIB_SRCS
    ifaces/storageaccess.cpp
    ifaces/video.cpp
 
-   backends/hal/halacadapter.cpp
-   backends/hal/halaudiointerface.cpp
-   backends/hal/halbattery.cpp
-   backends/hal/halblock.cpp
-   backends/hal/halbutton.cpp
-   backends/hal/halcamera.cpp
-   backends/hal/halcdrom.cpp
-   backends/hal/haldeviceinterface.cpp
-   backends/hal/haldvbinterface.cpp
-   backends/hal/halfstabhandling.cpp
-   backends/hal/halgenericinterface.cpp
-   backends/hal/haldevice.cpp
-   backends/hal/halmanager.cpp
-   backends/hal/halnetworkinterface.cpp
-   backends/hal/halopticaldisc.cpp
-   backends/hal/halportablemediaplayer.cpp
-   backends/hal/halprocessor.cpp
-   backends/hal/halstorageaccess.cpp
-   backends/hal/halstorage.cpp
-   backends/hal/halvideo.cpp
-   backends/hal/halvolume.cpp
-
    backends/fakehw/fakeacadapter.cpp
    backends/fakehw/fakeaudiointerface.cpp
    backends/fakehw/fakebattery.cpp
@@ -117,6 +95,64 @@ set(solid_LIB_SRCS
    backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
 )
+
+if(!WIN32 AND !APPLE)
+   MESSAGE( "-- Building Solid HAL backend." )
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+	
+   backends/hal/halacadapter.cpp
+   backends/hal/halaudiointerface.cpp
+   backends/hal/halbattery.cpp
+   backends/hal/halblock.cpp
+   backends/hal/halbutton.cpp
+   backends/hal/halcamera.cpp
+   backends/hal/halcdrom.cpp
+   backends/hal/haldeviceinterface.cpp
+   backends/hal/haldvbinterface.cpp
+   backends/hal/halfstabhandling.cpp
+   backends/hal/halgenericinterface.cpp
+   backends/hal/haldevice.cpp
+   backends/hal/halmanager.cpp
+   backends/hal/halnetworkinterface.cpp
+   backends/hal/halopticaldisc.cpp
+   backends/hal/halportablemediaplayer.cpp
+   backends/hal/halprocessor.cpp
+   backends/hal/halstorageaccess.cpp
+   backends/hal/halstorage.cpp
+   backends/hal/halvideo.cpp
+   backends/hal/halvolume.cpp
+   
+   )
+endif(!WIN32 AND !APPLE)
+
+if(WIN32)
+   MESSAGE( "-- Building Solid WMI backend." )
+
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+   backends/wmi/wmiacadapter.cpp
+   backends/wmi/wmiaudiointerface.cpp
+   backends/wmi/wmibattery.cpp
+   backends/wmi/wmiblock.cpp
+   backends/wmi/wmibutton.cpp
+   backends/wmi/wmicamera.cpp
+   backends/wmi/wmicdrom.cpp
+   backends/wmi/wmideviceinterface.cpp
+   backends/wmi/wmidvbinterface.cpp
+   backends/wmi/wmifstabhandling.cpp
+   backends/wmi/wmigenericinterface.cpp
+   backends/wmi/wmidevice.cpp
+   backends/wmi/wmimanager.cpp
+   backends/wmi/wminetworkinterface.cpp
+   backends/wmi/wmiopticaldisc.cpp
+   backends/wmi/wmiportablemediaplayer.cpp
+   backends/wmi/wmiprocessor.cpp
+   backends/wmi/wmistorageaccess.cpp
+   backends/wmi/wmistorage.cpp
+   backends/wmi/wmivideo.cpp
+   backends/wmi/wmivolume.cpp
+
+   )   
+endif(WIN32)	
 
 set_source_files_properties( org.kde.Solid.PowerManagement.xml
                              org.kde.Solid.PowerManagement.Inhibit.xml 
