@@ -343,7 +343,7 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
         if (entry.isDir()) {
             const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
             if ((name != ".") && (name != "..")) {
-                m_subdirs.append(name);
+                m_subdirs.append(KStringHandler::csqueeze(name, 60));
             }
         }
 
