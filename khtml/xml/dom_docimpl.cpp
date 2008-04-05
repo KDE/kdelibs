@@ -176,6 +176,11 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 
     // ### this is completely broken.. without a view it will not work (Dirk)
     DocumentImpl *doc = new DocumentImpl(this, 0);
+    // ### this should be created during parsing a <!DOCTYPE>
+    doc->setDocType(new DocumentTypeImpl(this, doc,
+                                         DOMString() /* qualifiedName */,
+                                         DOMString() /* publicId */,
+                                         DOMString() /* systemId */));
 
     // now get the interesting parts of the doctype
     // ### create new one if not there (currently always there)
@@ -209,12 +214,24 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* /*t
 
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 {
-    return new DocumentImpl(this, v);
+    DocumentImpl* doc = new DocumentImpl(this, v);
+    // ### this should be created during parsing a <!DOCTYPE>
+    doc->setDocType(new DocumentTypeImpl(doc->implementation(), doc,
+                                         DOMString() /* qualifiedName */,
+                                         DOMString() /* publicId */,
+                                         DOMString() /* systemId */));
+    return doc;
 }
 
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
-    return new HTMLDocumentImpl(this, v);
+    HTMLDocumentImpl* doc = new HTMLDocumentImpl(this, v);
+    // ### this should be created during parsing a <!DOCTYPE>
+    doc->setDocType(new DocumentTypeImpl(doc->implementation(), doc,
+                                         DOMString() /* qualifiedName */,
+                                         DOMString() /* publicId */,
+                                         DOMString() /* systemId */));
+    return doc;
 }
 
 HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
@@ -341,14 +358,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docChanged = false;
     m_elemSheet = 0;
     m_tokenizer = 0;
-
-    // ### this should be created during parsing a <!DOCTYPE>
-    // not during construction. Not sure who added that and why (Dirk)
-    setDocType( new DocumentTypeImpl(_implementation, getDocument(),
-                                     DOMString() /* qualifiedName */,
-                                     DOMString() /* publicId */,
-                                     DOMString() /* systemId */) );
-
+    m_doctype = 0;
     m_implementation = _implementation;
     m_implementation->ref();
     pMode = Strict;
