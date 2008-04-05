@@ -159,7 +159,6 @@ const ClassInfo KJS::HTMLDocument::info =
   { "HTMLDocument", &DOMDocument::info, &HTMLDocumentTable, 0 };
 /* Source for HTMLDocumentTable.
 @begin HTMLDocumentTable 31
-  title			HTMLDocument::Title		DontDelete
   referrer		HTMLDocument::Referrer		DontDelete|ReadOnly
   domain		HTMLDocument::Domain		DontDelete
   URL			HTMLDocument::URL		DontDelete|ReadOnly
@@ -348,8 +347,6 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
   DOM::HTMLElementImpl* body = doc.body();
 
   switch (token) {
-    case Title:
-      return jsString(doc.title());
     case Referrer:
       return jsString(doc.referrer());
     case Domain:
@@ -440,9 +437,6 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
   DOMExceptionTranslator exception(exec);
 
   switch (token) {
-    case Title:
-      if (doc.title() != val) doc.setTitle(val);
-      return;
     case Body: {
       DOM::NodeImpl* body = toNode(value);
       if (body->isHTMLElement())

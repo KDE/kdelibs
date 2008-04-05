@@ -915,6 +915,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
   readyState      DOMDocument::ReadyState                      DontDelete|ReadOnly
   defaultView     DOMDocument::DefaultView                     DontDelete|ReadOnly
   async           DOMDocument::Async                           DontDelete
+  title           DOMDocument::Title                           DontDelete
 @end
 */
 
@@ -985,6 +986,8 @@ JSValue* DOMDocument::getValueProperty(ExecState *exec, int token) const
     }
   case Async:
     return jsBoolean(doc.async());
+  case Title:
+    return jsString(doc.title());
   default:
     kDebug(6070) << "WARNING: DOMDocument::getValueProperty unhandled token " << token;
     return jsNull();
@@ -1009,6 +1012,11 @@ void DOMDocument::putValueProperty(ExecState *exec, int token, JSValue* value, i
     }
     case Async: {
       doc.setAsync(value->toBoolean(exec));
+      break;
+    }
+    case Title: {
+      DOM::DOMString val = value->toString(exec).domString();
+      if (doc.title() != val) doc.setTitle(val);
       break;
     }
   }

@@ -45,7 +45,7 @@ namespace KJS {
 
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
+    enum { Referrer, Domain, URL, Body, Location, Cookie,
            Images, Applets, Links, Forms, Layers, Anchors, Scripts, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName, GetSelection, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
