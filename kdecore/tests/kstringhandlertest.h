@@ -11,6 +11,7 @@ private Q_SLOTS:
     void capwords();
     void tagURLs();
     void perlSplit();
+    void naturalCompare();
 
 private:
     static QString test;

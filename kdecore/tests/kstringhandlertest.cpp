@@ -48,3 +48,44 @@ void KStringHandlerTest::perlSplit()
   QCOMPARE(KStringHandler::perlSplit(QRegExp("[! ]"), "Split me up ! I'm bored ! OK ?", 3),expected);
 }
 
+void KStringHandlerTest::naturalCompare()
+{
+    QCOMPARE(KStringHandler::naturalCompare("a", "b", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("b", "a", Qt::CaseSensitive), +1);
+    QCOMPARE(KStringHandler::naturalCompare("a", "a", Qt::CaseSensitive), 0);
+
+    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseInsensitive), 0);
+    QCOMPARE(KStringHandler::naturalCompare("a", "A", Qt::CaseInsensitive), 0);
+    QCOMPARE(KStringHandler::naturalCompare("aAa", "AaA", Qt::CaseInsensitive), 0);
+    QCOMPARE(KStringHandler::naturalCompare("aaa", "AAA", Qt::CaseInsensitive), 0);
+
+    QCOMPARE(KStringHandler::naturalCompare("1", "2", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("1", "10", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("9", "10", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("1", "11", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("1", "12", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("1", "100", Qt::CaseSensitive), -1);
+
+    QCOMPARE(KStringHandler::naturalCompare("a1", "a2", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1", "a10", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a9", "a10", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1", "a11", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1", "a12", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1", "a100", Qt::CaseSensitive), -1);
+
+    QCOMPARE(KStringHandler::naturalCompare("a1a1", "a2a1", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1a1", "a1a2", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1a1", "a10a1", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("a1a1", "a1a10", Qt::CaseSensitive), -1);
+
+    QCOMPARE(KStringHandler::naturalCompare("Test 1.gif", "Test 2.gif", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("Test 1.gif", "Test 10.gif", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("Test 9.gif", "Test 10.gif", Qt::CaseSensitive), -1);
+
+    QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.6", "cmake_2.4.10", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.10", "cmake_2.4.11", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.6", "cmake_2.5.6", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.6", "cmake_3.4.6", Qt::CaseSensitive), -1);
+}
+
