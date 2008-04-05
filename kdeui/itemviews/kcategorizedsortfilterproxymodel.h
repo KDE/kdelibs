@@ -2,8 +2,6 @@
   * This file is part of the KDE project
   * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
   * Copyright (C) 2007 John Tapsell <tapsell@kde.org>
-  * Copyright (C) 2006 by Dominic Battre <dominic@battre.de>
-  * Copyright (C) 2006 by Martin Pool <mbp@canonical.com>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -110,8 +108,10 @@ public:
       * Does a natural comparing of the strings. -1 is returned if \a a
       * is smaller than \a b. +1 is returned if \a a is greater than \a b. 0
       * is returned if both values are equal.
+      * @deprecated
+      * Use KStringHandler::naturalCompare() instead.
       */
-    static int naturalCompare(const QString &a, const QString &b);
+    KDE_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
 
 protected:
     /**

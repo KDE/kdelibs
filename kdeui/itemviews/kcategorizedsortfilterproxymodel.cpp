@@ -2,8 +2,6 @@
   * This file is part of the KDE project
   * Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
   * Copyright (C) 2007 John Tapsell <tapsell@kde.org>
-  * Copyright (C) 2006 by Dominic Battre <dominic@battre.de>
-  * Copyright (C) 2006 by Martin Pool <mbp@canonical.com>
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Library General Public
@@ -29,6 +27,8 @@
 #include <QItemSelection>
 #include <QStringList>
 #include <QSize>
+
+#include <kstringhandler.h>
 
 KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
@@ -97,120 +97,7 @@ bool KCategorizedSortFilterProxyModel::sortCategoriesByNaturalComparison() const
 int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a,
                                                      const QString &b)
 {
-    // This method chops the input a and b into pieces of
-    // digits and non-digits (a1.05 becomes a | 1 | . | 05)
-    // and compares these pieces of a and b to each other
-    // (first with first, second with second, ...).
-    //
-    // This is based on the natural sort order code code by Martin Pool
-    // http://sourcefrog.net/projects/natsort/
-    // Martin Pool agreed to license this under LGPL or GPL.
-
-    const QChar* currA = a.unicode(); // iterator over a
-    const QChar* currB = b.unicode(); // iterator over b
-
-    if (currA == currB) {
-        return 0;
-    }
-
-    const QChar* begSeqA = currA; // beginning of a new character sequence of a
-    const QChar* begSeqB = currB;
-
-    while (!currA->isNull() && !currB->isNull()) {
-        if (currA->unicode() == QChar::ObjectReplacementCharacter) {
-            return 1;
-        }
-
-        if (currB->unicode() == QChar::ObjectReplacementCharacter) {
-            return -1;
-        }
-
-        if (currA->unicode() == QChar::ReplacementCharacter) {
-            return 1;
-        }
-
-        if (currB->unicode() == QChar::ReplacementCharacter) {
-            return -1;
-        }
-
-        // find sequence of characters ending at the first non-character
-        while (!currA->isNull() && !currA->isDigit()) {
-            ++currA;
-        }
-
-        while (!currB->isNull() && !currB->isDigit()) {
-            ++currB;
-        }
-
-        // compare these sequences
-        const QString subA(begSeqA, currA - begSeqA);
-        const QString subB(begSeqB, currB - begSeqB);
-        const int cmp = QString::localeAwareCompare(subA, subB);
-        if (cmp != 0) {
-            return cmp;
-        }
-
-        if (currA->isNull() || currB->isNull()) {
-            break;
-        }
-
-        // now some digits follow...
-        if ((*currA == '0') || (*currB == '0')) {
-            // one digit-sequence starts with 0 -> assume we are in a fraction part
-            // do left aligned comparison (numbers are considered left aligned)
-            while (1) {
-                if (!currA->isDigit() && !currB->isDigit()) {
-                    break;
-                } else if (!currA->isDigit()) {
-                    return -1;
-                } else if (!currB->isDigit()) {
-                    return + 1;
-                } else if (*currA < *currB) {
-                    return -1;
-                } else if (*currA > *currB) {
-                    return + 1;
-                }
-                ++currA;
-                ++currB;
-            }
-        } else {
-            // No digit-sequence starts with 0 -> assume we are looking at some integer
-            // do right aligned comparison.
-            //
-            // The longest run of digits wins. That aside, the greatest
-            // value wins, but we can't know that it will until we've scanned
-            // both numbers to know that they have the same magnitude.
-
-            int weight = 0;
-            while (1) {
-                if (!currA->isDigit() && !currB->isDigit()) {
-                    if (weight != 0) {
-                        return weight;
-                    }
-                    break;
-                } else if (!currA->isDigit()) {
-                    return -1;
-                } else if (!currB->isDigit()) {
-                    return + 1;
-                } else if ((*currA < *currB) && (weight == 0)) {
-                    weight = -1;
-                } else if ((*currA > *currB) && (weight == 0)) {
-                    weight = + 1;
-                }
-                ++currA;
-                ++currB;
-            }
-        }
-
-        begSeqA = currA;
-        begSeqB = currB;
-    }
-
-    if (currA->isNull() && currB->isNull()) {
-        return 0;
-    }
-
-    return currA->isNull() ? -1 : + 1;
+    return KStringHandler::naturalCompare(a, b);
 }
 
 bool KCategorizedSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
@@ -253,7 +140,7 @@ int KCategorizedSortFilterProxyModel::compareCategories(const QModelIndex &left,
 
         if (d->sortCategoriesByNaturalComparison)
         {
-            return naturalCompare(lstr, rstr);
+            return KStringHandler::naturalCompare(lstr, rstr);
         }
         else
         {
