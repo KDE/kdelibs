@@ -755,6 +755,9 @@ public:
     virtual void deleteInlineBoxes(RenderArena* arena=0) {(void)arena;}
     virtual void detach( );
 
+    void setDoNotDelete(bool b) { m_doNotDelete = b; }
+    bool doNotDelete() const { return m_doNotDelete; }
+
     const QFont &font(bool firstLine) const {
 	return style( firstLine )->font();
     }
@@ -838,7 +841,9 @@ private:
     
     bool m_hasOverflowClip           : 1;
 
-    // ### we have 16 + 25 bits.
+    bool m_doNotDelete 	             : 1; // This object should not be auto-deleted
+
+    // ### we have 16 + 26 bits.
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

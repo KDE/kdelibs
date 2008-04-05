@@ -179,7 +179,8 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_afterPageBreak( false ),
       m_needsPageClear( false ),
       m_containsPageBreak( false ),
-      m_hasOverflowClip(false)
+      m_hasOverflowClip( false ),
+      m_doNotDelete( false )
 {
   assert( node );
   if (node->getDocument()->documentElement() == node) setIsRoot(true);
