@@ -28,6 +28,7 @@
 #include <kio/jobclasses.h>
 #include <kglobalsettings.h>
 #include <kmenu.h>
+#include <kstringhandler.h>
 
 #include <QtCore/QTimer>
 #include <QtGui/QPainter>
@@ -355,7 +356,7 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
  */
 static bool naturalLessThan(const QString& s1, const QString& s2)
 {
-    return KDirSortFilterProxyModel::naturalCompare(s1.toLower(), s2.toLower()) < 0;
+    return KStringHandler::naturalCompare(s1, s2, Qt::CaseInsensitive) < 0;
 }
 
 void KUrlNavigatorButton::listJobFinished(KJob* job)
