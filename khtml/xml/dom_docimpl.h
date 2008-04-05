@@ -739,7 +739,6 @@ public:
     void setPublicId(const DOMString& publicId) { m_publicId = publicId; }
     void setSystemId(const DOMString& systemId) { m_systemId = systemId; }
     DOMImplementationImpl *implementation() const { return m_implementation; }
-    void copyFrom(const DocumentTypeImpl&);
 
     virtual DOMString toString() const;
 

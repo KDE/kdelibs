@@ -186,11 +186,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
                                              DOMString() /* systemId */));
     }
 
-    // now get the interesting parts of the doctype
-    // ### create new one if not there (currently always there)
-    if (doc->doctype() && dtype)
-        doc->doctype()->copyFrom(*dtype);
-
     // the document must be created empty if all parameters are null
     // (or empty for qName/nsURI as a tolerance) - see DOM 3 Core.
     if (dtype || !qualifiedName.isEmpty() || !namespaceURI.isEmpty()) {
@@ -2937,14 +2932,6 @@ DocumentTypeImpl::~DocumentTypeImpl()
         m_entities->deref();
     if (m_notations)
         m_notations->deref();
-}
-
-void DocumentTypeImpl::copyFrom(const DocumentTypeImpl& other)
-{
-    m_qualifiedName = other.m_qualifiedName;
-    m_publicId = other.m_publicId;
-    m_systemId = other.m_systemId;
-    m_subset = other.m_subset;
 }
 
 DOMString DocumentTypeImpl::toString() const
