@@ -1125,6 +1125,26 @@ DocumentImpl* NodeImpl::ownerDocument() const
         return doc;
 }
 
+void NodeImpl::setDocument(DocumentImpl* doc)
+{
+    if (m_document == doc)
+        return;
+
+#if 1 // implemented for one special case only so far
+    assert(m_document == 0 && doc != 0 &&
+           nodeType() == Node::DOCUMENT_TYPE_NODE);
+    m_document = doc;
+#else // for general use do something like this
+    m_document = 0;
+    if (inDocument())
+        removedFromDocument();
+
+    ScriptInterpreter::updateDOMNodeDocument(this, m_document, doc);
+
+    m_document = doc;
+    insertedIntoDocument();
+#endif
+}
 
 //-------------------------------------------------------------------------
 

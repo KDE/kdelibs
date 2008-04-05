@@ -277,6 +277,7 @@ public:
     // Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
     // DOM's ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes).
     DocumentImpl* getDocument() const { return m_document.get(); }
+    void setDocument(DocumentImpl* doc);
 
     void addEventListener(int id, EventListener *listener, const bool useCapture);
     void removeEventListener(int id, EventListener *listener, bool useCapture);
