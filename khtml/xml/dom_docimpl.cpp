@@ -176,11 +176,15 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 
     // ### this is completely broken.. without a view it will not work (Dirk)
     DocumentImpl *doc = new DocumentImpl(this, 0);
-    // ### this should be created during parsing a <!DOCTYPE>
-    doc->setDocType(new DocumentTypeImpl(this, doc,
-                                         DOMString() /* qualifiedName */,
-                                         DOMString() /* publicId */,
-                                         DOMString() /* systemId */));
+    if (dtype) {
+        doc->setDocType(dtype);
+    } else {
+        // ### this should be created during parsing a <!DOCTYPE>
+        doc->setDocType(new DocumentTypeImpl(this, doc,
+                                             DOMString() /* qualifiedName */,
+                                             DOMString() /* publicId */,
+                                             DOMString() /* systemId */));
+    }
 
     // now get the interesting parts of the doctype
     // ### create new one if not there (currently always there)
@@ -510,8 +514,10 @@ DocumentTypeImpl *DocumentImpl::doctype() const
 
 void DocumentImpl::setDocType(DocumentTypeImpl* dt)
 {
+    assert(m_doctype == 0 && dt != 0);
     m_doctype = dt;
     m_doctype->ref();
+    m_doctype->setDocument(this);
 }
 
 DOMImplementationImpl *DocumentImpl::implementation() const
