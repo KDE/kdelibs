@@ -1356,22 +1356,27 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         c = QCursor(Qt::BusyCursor); // working_cursor
         break;
     case CURSOR_MOVE:
+    case CURSOR_ALL_SCROLL:
         c = QCursor(Qt::SizeAllCursor);
         break;
     case CURSOR_E_RESIZE:
     case CURSOR_W_RESIZE:
+    case CURSOR_EW_RESIZE:
         c = QCursor(Qt::SizeHorCursor);
         break;
     case CURSOR_N_RESIZE:
     case CURSOR_S_RESIZE:
+    case CURSOR_NS_RESIZE:
         c = QCursor(Qt::SizeVerCursor);
         break;
     case CURSOR_NE_RESIZE:
     case CURSOR_SW_RESIZE:
+    case CURSOR_NESW_RESIZE:
         c = QCursor(Qt::SizeBDiagCursor);
         break;
     case CURSOR_NW_RESIZE:
     case CURSOR_SE_RESIZE:
+    case CURSOR_NWSE_RESIZE:
         c = QCursor(Qt::SizeFDiagCursor);
         break;
     case CURSOR_TEXT:
@@ -1384,6 +1389,24 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         c = QCursor(Qt::WhatsThisCursor);
         break;
     case CURSOR_DEFAULT:
+        break;
+    case CURSOR_NONE:
+    case CURSOR_NOT_ALLOWED:
+        c = QCursor(Qt::ForbiddenCursor);
+        break;
+    case CURSOR_ROW_RESIZE:
+        c = QCursor(Qt::SplitVCursor);
+        break;
+    case CURSOR_COL_RESIZE:
+        c = QCursor(Qt::SplitHCursor);
+        break;
+    case CURSOR_VERTICAL_TEXT:
+    case CURSOR_CONTEXT_MENU:
+    case CURSOR_NO_DROP:
+    case CURSOR_CELL:
+    case CURSOR_COPY:
+    case CURSOR_ALIAS:
+        c = QCursor(Qt::ArrowCursor);
         break;
     }
 

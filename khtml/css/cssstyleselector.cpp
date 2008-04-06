@@ -2616,8 +2616,16 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_CURSOR:
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(cursor, Cursor)
-        if(primitiveValue)
-	    style->setCursor( (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO) );
+        if (!primitiveValue) break;
+	ECursor cursor;
+        switch(primitiveValue->getIdent()) {
+        case CSS_VAL_NONE:
+	    cursor = CURSOR_NONE;
+            break;
+	default:
+	    cursor = (ECursor) (primitiveValue->getIdent() - CSS_VAL_AUTO);
+	}
+	style->setCursor(cursor);
         break;
 // colors || inherit
     case CSS_PROP_BACKGROUND_COLOR:

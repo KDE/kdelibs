@@ -519,38 +519,68 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         switch (style->cursor()) {
         case CURSOR_AUTO:
             return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
-        case CURSOR_CROSS:
-            return new CSSPrimitiveValueImpl(CSS_VAL_CROSSHAIR);
         case CURSOR_DEFAULT:
             return new CSSPrimitiveValueImpl(CSS_VAL_DEFAULT);
+        case CURSOR_NONE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NONE);
+        case CURSOR_CONTEXT_MENU:
+            return new CSSPrimitiveValueImpl(CSS_VAL_CONTEXT_MENU);
+        case CURSOR_HELP:
+            return new CSSPrimitiveValueImpl(CSS_VAL_HELP);
         case CURSOR_POINTER:
             return new CSSPrimitiveValueImpl(CSS_VAL_POINTER);
-        case CURSOR_MOVE:
-            return new CSSPrimitiveValueImpl(CSS_VAL_MOVE);
         case CURSOR_PROGRESS:
             return new CSSPrimitiveValueImpl(CSS_VAL_PROGRESS);
+        case CURSOR_WAIT:
+            return new CSSPrimitiveValueImpl(CSS_VAL_WAIT);
+        case CURSOR_CELL:
+            return new CSSPrimitiveValueImpl(CSS_VAL_CELL);
+        case CURSOR_CROSS:
+            return new CSSPrimitiveValueImpl(CSS_VAL_CROSSHAIR);
+        case CURSOR_TEXT:
+            return new CSSPrimitiveValueImpl(CSS_VAL_TEXT);
+        case CURSOR_VERTICAL_TEXT:
+            return new CSSPrimitiveValueImpl(CSS_VAL_VERTICAL_TEXT);
+        case CURSOR_ALIAS:
+            return new CSSPrimitiveValueImpl(CSS_VAL_ALIAS);
+        case CURSOR_COPY:
+            return new CSSPrimitiveValueImpl(CSS_VAL_COPY);
+        case CURSOR_MOVE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_MOVE);
+        case CURSOR_NO_DROP:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NO_DROP);
+        case CURSOR_NOT_ALLOWED:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NOT_ALLOWED);
         case CURSOR_E_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_E_RESIZE);
+        case CURSOR_N_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_N_RESIZE);
         case CURSOR_NE_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_NE_RESIZE);
         case CURSOR_NW_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_NW_RESIZE);
-        case CURSOR_N_RESIZE:
-            return new CSSPrimitiveValueImpl(CSS_VAL_N_RESIZE);
+        case CURSOR_S_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_S_RESIZE);
         case CURSOR_SE_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_SE_RESIZE);
         case CURSOR_SW_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_SW_RESIZE);
-        case CURSOR_S_RESIZE:
-            return new CSSPrimitiveValueImpl(CSS_VAL_S_RESIZE);
         case CURSOR_W_RESIZE:
             return new CSSPrimitiveValueImpl(CSS_VAL_W_RESIZE);
-        case CURSOR_TEXT:
-            return new CSSPrimitiveValueImpl(CSS_VAL_TEXT);
-        case CURSOR_WAIT:
-            return new CSSPrimitiveValueImpl(CSS_VAL_WAIT);
-        case CURSOR_HELP:
-            return new CSSPrimitiveValueImpl(CSS_VAL_HELP);
+        case CURSOR_EW_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_EW_RESIZE);
+        case CURSOR_NS_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NS_RESIZE);
+        case CURSOR_NESW_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NESW_RESIZE);
+        case CURSOR_NWSE_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_NWSE_RESIZE);
+        case CURSOR_COL_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_COL_RESIZE);
+        case CURSOR_ROW_RESIZE:
+            return new CSSPrimitiveValueImpl(CSS_VAL_ROW_RESIZE);
+        case CURSOR_ALL_SCROLL:
+            return new CSSPrimitiveValueImpl(CSS_VAL_ALL_SCROLL);
         }
         Q_ASSERT(0);
         break;
