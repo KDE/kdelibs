@@ -23,7 +23,7 @@
 
 #include <kdecore_export.h>
 
-#include <Qt>
+#include <QtCore/qnamespace.h>
 
 class QChar;
 class QRegExp;
