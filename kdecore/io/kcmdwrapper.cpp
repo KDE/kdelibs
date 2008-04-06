@@ -64,6 +64,7 @@ int main(int argc, char **argv)
     LPWSTR *argList;
     int nArgs;
     WCHAR command[COMMAND_BUFFER_SIZE];
+    OSVERSIONINFO vi;
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
     DWORD exitCode;
@@ -76,7 +77,15 @@ int main(int argc, char **argv)
     if (nArgs != 3)
         printUsage();
 
-    _snwprintf(command, COMMAND_BUFFER_SIZE, L"/S /C \"%s\"", argList[2]);
+    // Instead of checking the OS version we might check the for presence of
+    // the reg keys that enable delayed variable expansion by default - that
+    // would also cover the pathological case of running cmd from win2k under
+    // winNT. OTOH, who cares?
+    GetVersionEx(&vi);
+    _snwprintf(Command, COMMAND_BUFFER_SIZE,
+        (vi.dwMajorVersion >= 5 /* Win2k */) ?
+            L"/V:OFF /S /C \"%s\"" : L"/S /C \"%s\"",
+        argList[2]);
 
 
     ZeroMemory( &si, sizeof(si) );
