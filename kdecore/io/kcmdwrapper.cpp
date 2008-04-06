@@ -24,7 +24,7 @@
 #include <wchar.h>
 #include <stdio.h>
 
-void ErrorExit(LPWSTR lpszFunction)
+void errorExit(LPWSTR lpszFunction)
 {
     WCHAR szBuf[100];
     LPVOID lpMsgBuf;
@@ -48,7 +48,7 @@ void ErrorExit(LPWSTR lpszFunction)
     ExitProcess(-1);
 }
 
-void PrintUsage(void)
+void printUsage(void)
 {
     wprintf(L"A Wrapper for cmd.exe\n\n");
     wprintf(L"calls shell /S /C argument with proper quoting\n");
@@ -61,22 +61,22 @@ void printError(const char * p) {}
 
 int main(int argc, char **argv)
 {
-    LPWSTR *Arglist;
+    LPWSTR *argList;
     int nArgs;
-    WCHAR Command[COMMAND_BUFFER_SIZE];
+    WCHAR command[COMMAND_BUFFER_SIZE];
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
-    DWORD ExitCode;
+    DWORD exitCode;
 
-    Arglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    argList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
 
-    if (NULL == Arglist)
-        ErrorExit(L"CommandLineToArgvW");
+    if (NULL == argList)
+        errorExit(L"CommandLineToArgvW");
 
     if (nArgs != 3)
-        PrintUsage();
+        printUsage();
 
-    _snwprintf(Command, COMMAND_BUFFER_SIZE, L"/S /C \"%s\"", Arglist[2]);
+    _snwprintf(command, COMMAND_BUFFER_SIZE, L"/S /C \"%s\"", argList[2]);
 
 
     ZeroMemory( &si, sizeof(si) );
@@ -84,22 +84,22 @@ int main(int argc, char **argv)
     ZeroMemory( &pi, sizeof(pi) );
 
 
-    if (CreateProcessW(Arglist[1], Command, NULL, NULL, true, 0, NULL, NULL, &si, &pi) == 0)
-        ErrorExit(L"CreateProcessW");
+    if (CreateProcessW(argList[1], command, NULL, NULL, true, 0, NULL, NULL, &si, &pi) == 0)
+        errorExit(L"CreateProcessW");
 
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
     CloseHandle(GetStdHandle(STD_ERROR_HANDLE));
     CloseHandle(GetStdHandle(STD_OUTPUT_HANDLE));
 
     if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED)
-        ErrorExit(L"WaitForSingleObject");
+        errorExit(L"WaitForSingleObject");
 
-    if (!GetExitCodeProcess(pi.hProcess, &ExitCode))
-        ErrorExit(L"WaitForSingleObject");
+    if (!GetExitCodeProcess(pi.hProcess, &exitCode))
+        errorExit(L"WaitForSingleObject");
 
-    if (ExitCode == STILL_ACTIVE )
+    if (exitCode == STILL_ACTIVE )
         OutputDebugStringW(L"cmdwrapper: STILL_ACTIVE returned");
 
-    return ExitCode;
+    return exitCode;
 }
 
