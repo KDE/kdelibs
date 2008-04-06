@@ -1685,14 +1685,14 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && _ke->modifiers()==0 && !d->accessKeysActivated)
+    if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && !(_ke->modifiers() & ~Qt::ControlModifier) && !d->accessKeysActivated)
     {
         d->accessKeysPreActivate=true;
         _ke->accept();
         return;
     }
 
-    if (_ke->key() == Qt::Key_Shift && _ke->modifiers()==0)
+    if (_ke->key() == Qt::Key_Shift && !(_ke->modifiers() & ~Qt::ShiftModifier))
 	    d->scrollSuspendPreActivate=true;
 
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
@@ -1923,8 +1923,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
-    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && _ke->modifiers() == Qt::ShiftModifier
-        && !(QApplication::keyboardModifiers() & Qt::ShiftModifier))
+    if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && !(_ke->modifiers() & Qt::ShiftModifier))
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
@@ -1932,8 +1931,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     {
         if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control)
             d->accessKeysPreActivate=false;
-        if (d->accessKeysPreActivate && _ke->modifiers() == Qt::ControlModifier &&
-            !(QApplication::keyboardModifiers() & Qt::ControlModifier))
+        if (d->accessKeysPreActivate && !(_ke->modifiers() & Qt::ControlModifier))
         {
 	    displayAccessKeys();
 	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
@@ -2596,10 +2594,11 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
 	        lab->setFrameStyle(QFrame::Box | QFrame::Plain);
 	        lab->setMargin(3);
 	        lab->adjustSize();
-                lab->setParent( widget() );
+	        lab->setParent( widget() );
+		lab->setAutoFillBackground(true);
 	        lab->move(
-                    qMin(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
-                    qMin(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
+			qMin(rec.left()+rec.width()/2 - contentsX(), contentsWidth() - lab->width()),
+			qMin(rec.top()+rec.height()/2 - contentsY(), contentsHeight() - lab->height()));
 	        lab->show();
                 taken.append( accesskey[ 0 ] );
 	    }
@@ -2834,7 +2833,8 @@ struct AccessKeyData {
 QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
 {
     // build a list of all possible candidate elements that could use an accesskey
-    QList< AccessKeyData > data;
+    QLinkedList< AccessKeyData > data; // Note: this has to be a list type that keep iterators valid
+                                       // when other entries are removed
     QMap< NodeImpl*, QString > labels = buildLabels( m_part->xmlDocImpl());
     for( NodeImpl* n = m_part->xmlDocImpl();
          n != NULL;
@@ -2975,10 +2975,8 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
     }
 
     QMap< ElementImpl*, QChar > ret;
-    for( int priority = 10;
-         priority >= 0;
-         --priority ) {
-        for( QList< AccessKeyData >::Iterator it = data.begin();
+    for( int priority = 10; priority >= 0; --priority ) {
+        for( QLinkedList< AccessKeyData >::Iterator it = data.begin();
              it != data.end();
              ) {
             if( (*it).priority != priority ) {
@@ -3030,7 +3028,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             it = data.erase( it );
             // assign the same accesskey also to other elements pointing to the same url
             if( !url.isEmpty() && !url.startsWith( "javascript:", Qt::CaseInsensitive )) {
-                for( QList< AccessKeyData >::Iterator it2 = data.begin();
+                for( QLinkedList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
                      ) {
                     if( (*it2).url == url ) {
