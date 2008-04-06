@@ -222,7 +222,7 @@ void Entry::setStatus(Status status)
     d->mStatus = status;
 }
 
-Entry::Source Entry::source()
+Entry::Source Entry::source() const
 {
     return d->mSource;
 }
