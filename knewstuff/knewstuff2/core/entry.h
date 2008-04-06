@@ -293,7 +293,7 @@ public:
      *
      * @return Current status of the entry
      */
-    Status status();
+    Status status() const;
 
     /** 
      * Source of the entry, A entry's data is coming from either cache, or an online provider
