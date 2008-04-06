@@ -16,7 +16,7 @@
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA 02110-1301, USA. 
+    Boston, MA 02110-1301, USA.
 */
 
 #include <windows.h>
@@ -24,14 +24,14 @@
 #include <wchar.h>
 #include <stdio.h>
 
-void ErrorExit(LPWSTR lpszFunction) 
-{ 
-    WCHAR szBuf[100]; 
+void ErrorExit(LPWSTR lpszFunction)
+{
+    WCHAR szBuf[100];
     LPVOID lpMsgBuf;
-    DWORD dw = GetLastError(); 
+    DWORD dw = GetLastError();
 
     FormatMessageW(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM,
         NULL,
         dw,
@@ -40,12 +40,12 @@ void ErrorExit(LPWSTR lpszFunction)
         0, NULL);
 
     _snwprintf(szBuf, 100,
-        L"kcmdwrapper: %s failed with error %d: %s", 
-        lpszFunction, dw, lpMsgBuf); 
- 
+        L"kcmdwrapper: %s failed with error %d: %s",
+        lpszFunction, dw, lpMsgBuf);
+
     OutputDebugStringW(szBuf);
     LocalFree(lpMsgBuf);
-    ExitProcess(-1); 
+    ExitProcess(-1);
 }
 
 void PrintUsage(void)
@@ -67,9 +67,9 @@ int main(int argc, char **argv)
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
     DWORD ExitCode;
- 
+
     Arglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
-    
+
     if (NULL == Arglist)
         ErrorExit(L"CommandLineToArgvW");
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     ZeroMemory( &pi, sizeof(pi) );
 
 
-    if (CreateProcessW(Arglist[1], Command, NULL, NULL, true, 0, NULL, NULL, &si, &pi) == 0) 
+    if (CreateProcessW(Arglist[1], Command, NULL, NULL, true, 0, NULL, NULL, &si, &pi) == 0)
         ErrorExit(L"CreateProcessW");
 
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
