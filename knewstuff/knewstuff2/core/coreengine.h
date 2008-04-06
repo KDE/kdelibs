@@ -253,7 +253,7 @@ Q_SIGNALS:
     void signalPreviewFailed();
 
     void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
-    void signalPayloadFailed();
+    void signalPayloadFailed(KNS::Entry *entry);
 
     void signalEntryUploaded(); // FIXME: rename to signalEntryUploadFinished?
     void signalEntryFailed(); // FIXME: rename to signalEntryUploadFailed?
@@ -270,13 +270,17 @@ Q_SIGNALS:
 private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
     void slotProvidersFailed();
+
     void slotEntriesLoaded(KNS::Entry::List list);
     void slotEntriesFailed();
+
     void slotPayloadResult(KJob *job);
     void slotPreviewResult(KJob *job);
+
     void slotUploadPayloadResult(KJob *job);
     void slotUploadPreviewResult(KJob *job);
     void slotUploadMetaResult(KJob *job);
+
     void slotProgress(KJob *job, unsigned long percent);
 
     void slotInstallationVerification(int result);
@@ -299,7 +303,7 @@ private:
       @param feed feed to be cached
       @param entries entries to cache in the feed file
     */
-    void cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries);
+    void cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries);
     void registerEntry(Entry *entry);
     void unregisterEntry(Entry *entry);
     void mergeProviders(Provider::List providers);

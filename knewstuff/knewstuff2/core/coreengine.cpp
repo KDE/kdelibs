@@ -92,7 +92,17 @@ bool CoreEngine::init(const QString &configfile)
     // FIXME: add support for several categories later on
     // FIXME: read out only when actually installing as a performance improvement?
     m_installation = new Installation();
-    m_installation->setUncompression(group.readEntry("Uncompress", QString()));
+    QString uncompresssetting = group.readEntry("Uncompress", QString("never"));
+    // support old value of true as equivalent of always
+    if (uncompresssetting == "true") {
+        uncompresssetting = "always";
+    }
+    if (uncompresssetting != "always" && uncompresssetting != "archive" && uncompresssetting != "never") {
+        kError() << "invalid Uncompress setting chosen, must be one of: always, archive, or never" << endl;
+        return false;
+    }
+    m_installation->setUncompression(uncompresssetting);
+    
     m_installation->setCommand(group.readEntry("InstallationCommand", QString()));
     m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
     m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
@@ -176,18 +186,17 @@ void CoreEngine::start()
         return;
     }
 
+    // first load the registry, so we know which entries are installed
+    loadRegistry();
+
+    // then load the providersCache if caching is enabled
     if (m_cachepolicy != CacheNever) {
         loadProvidersCache();
-#if 0
-        loadEntriesCache();
-#endif
     }
-
-    loadRegistry();
 
     // FIXME: also return if CacheResident and its conditions fulfilled
     if (m_cachepolicy == CacheOnly) {
-        emit signalEntriesFinished();
+        //emit signalEntriesFinished();
         return;
     }
 
@@ -294,7 +303,7 @@ void CoreEngine::downloadPayload(Entry *entry)
     }
 
     KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
-    //kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
+    kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
 
     // FIXME: check for validity
     KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
@@ -403,26 +412,26 @@ void CoreEngine::slotProgress(KJob *job, unsigned long percent)
 
 void CoreEngine::slotPayloadResult(KJob *job)
 {
-    if (job->error()) {
-        kError() << "Cannot load payload file." << endl;
-        kError() << job->errorString() << endl;
-
+    // for some reason this slot is getting called 3 times on one job error
+    if (m_entry_jobs.contains(job)) {
+        Entry *entry = m_entry_jobs[job];
         m_entry_jobs.remove(job);
-        emit signalPayloadFailed();
-    } else {
-        KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-        if (m_entry_jobs.contains(job)) {
+
+        if (job->error()) {
+            kError() << "Cannot load payload file." << endl;
+            kError() << job->errorString() << endl;
+
+            emit signalPayloadFailed(entry);
+        } else {
+            KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
             // FIXME: this is only so exposing the KUrl suffices for downloaded entries
-            Entry *entry = m_entry_jobs[job];
             entry->setStatus(Entry::Installed);
-            m_entry_jobs.remove(job);
             m_payloadfiles[entry] = fcjob->destUrl().path();
+
+            install(fcjob->destUrl().pathOrUrl());
+
+            emit signalPayloadLoaded(fcjob->destUrl());
         }
-        // FIXME: ignore if not? shouldn't happen...
-
-        install(fcjob->destUrl().pathOrUrl());
-
-        emit signalPayloadLoaded(fcjob->destUrl());
     }
 }
 
@@ -566,6 +575,7 @@ void CoreEngine::loadRegistry()
 
             // first see if this file is even for this app
             // because the registry contains entries for all apps
+            // FIXMEE: should be able to do this with a filter on the entryList above probably
             QString thisAppName = QString::fromUtf8(QByteArray::fromBase64(info.baseName().toUtf8()));
 
             // NOTE: the ":" needs to always coincide with the separator character used in
@@ -609,22 +619,23 @@ void CoreEngine::loadRegistry()
 
             Entry *e = handler.entryptr();
             e->setStatus(Entry::Installed);
-            QString thisid = id(e);
-
+            e->setSource(Entry::Registry);
+            m_entry_registry.insert(id(e), e);
+            //QString thisid = id(e);
 
             // we must overwrite cache entries with registered entries
             // and not just append the latter ones
-            if (m_entry_index.contains(thisid)) {
-                // it's in the cache, so replace the cache entry with the registered entry
-                Entry * oldEntry = m_entry_index[thisid];
-                int index = m_entry_cache.indexOf(oldEntry);
-                m_entry_cache[index] = e;
-                delete oldEntry;
-            }
-            else {
-                m_entry_cache.append(e);
-            }
-            m_entry_index[thisid] = e;
+            //if (entryCached(e)) {
+            //    // it's in the cache, so replace the cache entry with the registered entry
+            //    Entry * oldEntry = m_entry_index[thisid];
+            //    int index = m_entry_cache.indexOf(oldEntry);
+            //    m_entry_cache[index] = e;
+            //    //delete oldEntry;
+            //}
+            //else {
+            //    m_entry_cache.append(e);
+            //}
+            //m_entry_index[thisid] = e;
         }
     }
 }
@@ -696,6 +707,10 @@ void CoreEngine::loadProvidersCache()
 
         provider = provider.nextSiblingElement("provider");
     }
+
+    if (m_cachepolicy == CacheOnly) {
+        emit signalEntriesFinished();
+    }
 }
 
 void CoreEngine::loadFeedCache(Provider *provider)
@@ -759,16 +774,25 @@ void CoreEngine::loadFeedCache(Provider *provider)
 
         while (!entryel.isNull()) {
             QString idbase64 = entryel.text();
-            kDebug() << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
+            //kDebug() << "loading cache for entry: " << QByteArray::fromBase64(idbase64.toUtf8());
 
             QString filepath = entrycachedir + '/' + idbase64 + ".meta";
 
-            kDebug() << "from file '" + filepath + "'.";
+            //kDebug() << "from file '" + filepath + "'.";
 
             // FIXME: pass feed and make loadEntryCache return void for consistency?
             Entry *entry = loadEntryCache(filepath);
             if (entry) {
+                QString entryid = id(entry);
+
+                if (m_entry_registry.contains(entryid)) {
+                    Entry * registryEntry = m_entry_registry.value(entryid);
+                    entry->setStatus(registryEntry->status());
+                    entry->setInstalledFiles(registryEntry->installedFiles());
+                }
+
                 feed->addEntry(entry);
+                kDebug() << "entry " << entry->name().representation() << " loaded from cache";
                 emit signalEntryLoaded(entry, feed, provider);
             }
 
@@ -783,7 +807,7 @@ KNS::Entry *CoreEngine::loadEntryCache(const QString& filepath)
     QFile f(filepath);
     ret = f.open(QIODevice::ReadOnly);
     if (!ret) {
-        kWarning() << "The file could not be opened.";
+        kWarning() << "The file " << filepath << " could not be opened.";
         return NULL;
     }
 
@@ -991,11 +1015,12 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
         // TODO: find entry in entrycache, replace if needed
         // don't forget marking as 'updateable'
         Entry *e = (*it);
+        QString thisId = id(e);
         // set it to Installed if it's in the registry
         // FIXME: just because it's in m_entry_index, does not mean it's in the registry...
-        if (m_entry_index.contains(id(e))) {
+        if (m_entry_registry.contains(thisId)) {
             // see if the one online is newer (higher version, release, or release date)
-            Entry *oldentry = m_entry_index[id(e)];
+            Entry *oldentry = m_entry_registry[thisId];
             e->setInstalledFiles(oldentry->installedFiles());
 
             if (entryChanged(oldentry, e)) {
@@ -1004,15 +1029,33 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
             } else {
                 e->setStatus(oldentry->status());
             }
-            emit signalEntryLoaded(e, feed, provider);
-            feed->removeEntry(oldentry);
+
+            if (entryCached(e)) {
+                // in the registry and the cache, so take the cache one out
+                Entry * cachedentry = m_entry_index[thisId];
+                if (entryChanged(cachedentry, e)) {
+                    //kDebug() << "CACHE: update entry";
+                    e->setStatus(Entry::Updateable);
+                    // entry has changed
+                    if (m_cachepolicy != CacheNever) {
+                        cacheEntry(e);
+                    }
+                    emit signalEntryChanged(e);
+                }
+
+                // take cachedentry out of the feed
+                feed->removeEntry(cachedentry);
+                //emit signalEntryRemoved(cachedentry, feed);
+            }
+            
+            //emit signalEntryLoaded(e, feed, provider);
         } else {
             e->setStatus(Entry::Downloadable);
 
             if (entryCached(e)) {
                 //kDebug() << "CACHE: hit entry " << e->name().representation();
                 // FIXME: separate version updates from server-side translation updates?
-                Entry *cachedentry = m_entry_index[id(e)];
+                Entry *cachedentry = m_entry_index[thisId];
                 if (entryChanged(cachedentry, e)) {
                     //kDebug() << "CACHE: update entry";
                     e->setStatus(Entry::Updateable);
@@ -1024,9 +1067,10 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
                     // FIXME: cachedentry can now be deleted, but it's still in the list!
                     // FIXME: better: assigne all values to 'e', keeps refs intact
                 }
-                kDebug() << "removing entry " << cachedentry->name().representation() << " from feed";
+                kDebug() << "removing cached entry " << cachedentry->name().representation() << " from feed";
                 // take cachedentry out of the feed
                 feed->removeEntry(cachedentry);
+                //emit signalEntryRemoved(cachedentry, feed);
             } else {
                 if (m_cachepolicy != CacheNever) {
                     //kDebug() << "CACHE: miss entry " << e->name().representation();
@@ -1036,7 +1080,7 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
             }
 
             m_entry_cache.append(e);
-            m_entry_index[id(e)] = e;
+            m_entry_index[thisId] = e;
         }
     }
 
@@ -1103,7 +1147,7 @@ void CoreEngine::cacheProvider(Provider *provider)
     }*/
 }
 
-void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries)
+void CoreEngine::cacheFeed(const Provider *provider, const QString & feedname, const Feed *feed, Entry::List entries)
 {
     // feed cache file is a list of entry-id's that are part of this feed
     KStandardDirs d;
@@ -1183,6 +1227,7 @@ void CoreEngine::cacheEntry(Entry *entry)
 
 void CoreEngine::registerEntry(Entry *entry)
 {
+    m_entry_registry.insert(id(entry), entry);
     KStandardDirs d;
 
     //kDebug() << "Registering entry.";
@@ -1230,6 +1275,9 @@ void KNS::CoreEngine::unregisterEntry(Entry * entry)
     QString registryfile = QString(id(entry).toUtf8().toBase64()) + ".meta";
 
     QFile::remove(registrydir + registryfile);
+
+    // remove the entry from m_entry_registry
+    m_entry_registry.remove(id(entry));
 }
 
 QString CoreEngine::id(Entry *e)
@@ -1347,6 +1395,11 @@ bool CoreEngine::install(const QString &payloadfile)
             pathcounter++;
         }
 
+        if (!m_installation->absoluteInstallPath().isEmpty()) {
+            installdir = m_installation->absoluteInstallPath() + '/';
+            pathcounter++;
+        }
+
         if (pathcounter != 1) {
             kError() << "Wrong number of installation directories given." << endl;
             return false;
@@ -1354,8 +1407,10 @@ bool CoreEngine::install(const QString &payloadfile)
 
         kDebug() << "installdir: " << installdir;
 
+        bool isarchive = true;
+
         // respect the uncompress flag in the knsrc
-        if (!m_installation->uncompression().isEmpty()) {
+        if (m_installation->uncompression() == "always" || m_installation->uncompression() == "archive") {
             // this is weird but a decompression is not a single name, so take the path instead
             installpath = installdir;
             KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
@@ -1376,30 +1431,46 @@ bool CoreEngine::install(const QString &payloadfile)
             else {
                 delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
-                return false;
+                if (m_installation->uncompression() == "always") {
+                    return false;
+                }
+                isarchive = false;
             }
-    
-            bool success = archive->open(QIODevice::ReadOnly);
-            if (!success) {
-                kError() << "Cannot open archive file '" << payloadfile << "'";
-                return false;
+
+            if (isarchive) {
+                bool success = archive->open(QIODevice::ReadOnly);
+                if (!success) {
+                    kError() << "Cannot open archive file '" << payloadfile << "'";
+                    if (m_installation->uncompression() == "always") {
+                        return false;
+                    }
+                    // otherwise, just copy the file
+                    isarchive = false;
+                }
+
+                if (isarchive) {
+                    const KArchiveDirectory *dir = archive->directory();
+                    dir->copyTo(installdir);
+
+                    installedFiles << archiveEntries(installdir, dir);
+                    installedFiles << installdir + "/";
+
+                    archive->close();
+                    QFile::remove(payloadfile);
+                    delete archive;
+                }
             }
-            const KArchiveDirectory *dir = archive->directory();
-            dir->copyTo(installdir);
-    
-            installedFiles << archiveEntries(installdir, dir);
-            installedFiles << installdir + "/";
-    
-            archive->close();
-            QFile::remove(payloadfile);
-            delete archive;
-        } 
-        else {
+        }
+
+        kDebug() << "isarchive: " << isarchive;
+
+        if (m_installation->uncompression() == "never" || (m_installation->uncompression() == "archive" && !isarchive)) {
             // no decompress but move to target
-    
+
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
             // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
             KUrl source = KUrl(entry->payload().representation());
+            kDebug() << "installing non-archive from " << source.url();
             QString installfile;
             QString ext = source.fileName().section('.', -1);
             if (m_installation->customName()) {
@@ -1411,7 +1482,7 @@ bool CoreEngine::install(const QString &payloadfile)
                 installfile = source.fileName();
             }
             installpath = installdir + '/' + installfile;
-    
+
             //kDebug() << "Install to file " << installpath;
             // FIXME: copy goes here (including overwrite checking)
             // FIXME: what must be done now is to update the cache *again*
@@ -1419,7 +1490,7 @@ bool CoreEngine::install(const QString &payloadfile)
             //        - this might or might not need to take uncompression into account
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
-    
+
             bool success = file.rename(installpath);
             if (!success) {
                 kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
