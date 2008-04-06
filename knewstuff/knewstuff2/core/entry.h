@@ -302,7 +302,8 @@ public:
      */
     enum Source {
         Cache,
-        Online
+        Online,
+	Registry
     };
 
     void setSource(Source source);
