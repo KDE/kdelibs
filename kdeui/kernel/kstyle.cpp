@@ -924,7 +924,8 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             bool hover = (option->state & State_MouseOver) && (!view ||
                          view->selectionMode() != QAbstractItemView::NoSelection);
 
-            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush;
+            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush && 
+                                        !(option->state & State_Selected);
             bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
 
             const qreal rounding = 2.5;
