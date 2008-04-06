@@ -259,23 +259,23 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
 void KSystemTrayIcon::minimizeRestore( bool restore )
 {
     QWidget* pw = d->window;
-    if( !pw )
-	return;
+    if (!pw)
+        return;
 #ifdef Q_WS_X11
-    KWindowInfo info = KWindowSystem::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
-    if ( restore )
-    {
-	if( d->onAllDesktops )
-	    KWindowSystem::setOnAllDesktops( pw->winId(), true );
-	else
-	    KWindowSystem::setCurrentDesktop( info.desktop() );
-        pw->move( info.geometry().topLeft() ); // avoid placement policies
+    KWindowInfo info = KWindowSystem::windowInfo(pw->winId(), NET::WMGeometry | NET::WMDesktop);
+    if (restore) {
+        if (d->onAllDesktops) {
+            KWindowSystem::setOnAllDesktops(pw->winId(), true);
+        } else {
+            KWindowSystem::setCurrentDesktop(info.desktop());
+        }
+        pw->move(info.geometry().topLeft()); // avoid placement policies
         pw->show();
         pw->raise();
-	KWindowSystem::activateWindow( pw->winId() );
+        KWindowSystem::activateWindow(pw->winId());
     } else {
-	d->onAllDesktops = info.onAllDesktops();
-	pw->hide();
+        d->onAllDesktops = info.onAllDesktops();
+        pw->hide();
     }
 #endif
 }
