@@ -924,8 +924,8 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             bool hover = (option->state & State_MouseOver) && (!view ||
                          view->selectionMode() != QAbstractItemView::NoSelection);
 
-			bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush;
-			bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
+            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush;
+            bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
 
             const qreal rounding = 2.5;
 
@@ -939,11 +939,11 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 cg = QPalette::Disabled;
 
             QColor color;
-			
-			if (hasCustomBackground && hasSolidBackground)
-				color = opt->backgroundBrush.color();
-			else
-				color = option->palette.color(cg, QPalette::Highlight);
+            
+            if (hasCustomBackground && hasSolidBackground)
+                color = opt->backgroundBrush.color();
+            else
+                color = option->palette.color(cg, QPalette::Highlight);
 
             if (hover && !hasCustomBackground) {
                 if (!(option->state & State_Selected))
@@ -968,10 +968,10 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 path1.addRoundedRect(r, rounding, rounding);
                 path2.addRoundedRect(r.adjusted(1, 1, -1, -1), rounding - 1, rounding - 1);
 
-				// items with custom background brushes always have their background drawn
-				// regardless of whether they are hovered or selected or neither so
-				// the gradient effect needs to be more subtle
-				int lightenAmount = hasCustomBackground ? 110 : 130;
+                // items with custom background brushes always have their background drawn
+                // regardless of whether they are hovered or selected or neither so
+                // the gradient effect needs to be more subtle
+                int lightenAmount = hasCustomBackground ? 110 : 130;
                 QLinearGradient gradient(0, 0, 0, r.bottom());
                 gradient.setColorAt(0, color.lighter(lightenAmount));
                 gradient.setColorAt(1, color);
@@ -994,13 +994,13 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
                 d->selectionCache.insert(key, tiles);
             }
-			else if (hasCustomBackground && !hasSolidBackground)
-			{
-				painter->setBrush(opt->backgroundBrush);
-				painter->setPen(Qt::NoPen);
-				painter->drawRect(opt->rect);
-				return;
-			}
+            else if (hasCustomBackground && !hasSolidBackground)
+            {
+                painter->setBrush(opt->backgroundBrush);
+                painter->setPen(Qt::NoPen);
+                painter->drawRect(opt->rect);
+                return;
+            }
 
             bool roundedLeft  = false;
             bool roundedRight = false;
@@ -3214,7 +3214,7 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 
                     //We do handleRTL here to unreflect things if need be
                     QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
-		    Q_ASSERT (slOpt);
+            Q_ASSERT (slOpt);
 
                     if (slOpt->minimum == slOpt->maximum)
                         return groove;
@@ -3769,13 +3769,13 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     }
                     else
                     {
-						// The width of the accelerator is not included here since
-						// Qt will add that on separately after obtaining the 
-						// sizeFromContents() for each menu item in the menu to be shown
-						// ( see QMenuPrivate::calcActionRects() )
+                        // The width of the accelerator is not included here since
+                        // Qt will add that on separately after obtaining the 
+                        // sizeFromContents() for each menu item in the menu to be shown
+                        // ( see QMenuPrivate::calcActionRects() )
                         QString text = miOpt->text.left(tabPos);
                         textW = fm.width(text) + 
-								widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
+                                widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
                     }
 
 
