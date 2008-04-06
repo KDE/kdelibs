@@ -303,11 +303,11 @@ public:
     enum Source {
         Cache,
         Online,
-	Registry
+        Registry
     };
 
     void setSource(Source source);
-    Source source();
+    Source source() const;
 
 private:
     EntryPrivate * const d;
