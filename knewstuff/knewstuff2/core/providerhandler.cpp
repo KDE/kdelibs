@@ -155,7 +155,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
 
     if (!downloadlatest.isEmpty()) {
         Feed *feedlatest = new Feed();
-        feedlatest->setName(i18n("Latest"));
+        feedlatest->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
         feedlatest->setFeedUrl(downloadlatest);
         provider.addDownloadUrlFeed("latest", feedlatest);
     }
