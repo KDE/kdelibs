@@ -57,7 +57,7 @@ public:
      */
     void expandMacros( QString &str );
 
-    /*
+    /**
      * Perform safe macro expansion (substitution) on a string for use
      * in shell commands.
      *
@@ -114,10 +114,10 @@ protected:
      * @param str the input string
      * @param pos the offset within @p str
      * @param ret return value: the string to substitute for the macro
-     * @return if greater than zero, the number of chars at @p pos in @p str
-     *  to substitute with @p ret (i.e., a valid macro was found). if less
+     * @return If greater than zero, the number of chars at @p pos in @p str
+     *  to substitute with @p ret (i.e., a valid macro was found). If less
      *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
-     *  substitute it with itself). zero requests no special action.
+     *  substitute it with itself). If zero, no macro starts at @p pos.
      */
     virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
 
@@ -130,10 +130,11 @@ protected:
      * @param pos the offset within @p str. Note that this is the position of
      *  the occurrence of the escape char
      * @param ret return value: the string to substitute for the macro
-     * @return if greater than zero, the number of chars at @p pos in @p str
-     *  to substitute with @p ret (i.e., a valid macro was found). if less
+     * @return If greater than zero, the number of chars at @p pos in @p str
+     *  to substitute with @p ret (i.e., a valid macro was found). If less
      *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
-     *  substitute it with itself). zero requests no special action.
+     *  substitute it with itself). If zero, scanning continues as if no
+     *  escape char was encountered at all.
      */
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
