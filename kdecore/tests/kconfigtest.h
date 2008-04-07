@@ -55,6 +55,7 @@ private Q_SLOTS:
     void testChangeGroup();
     void testGroupCopyTo();
     void testConfigCopyTo();
+    void testConfigCopyToSync();
     void testReparent();
     void testKdeglobals();
     void testSubGroup();

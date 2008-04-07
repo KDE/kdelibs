@@ -139,6 +139,7 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
         entry.bDirty = true;
         otherMap[newKey] = entry;
     }
+    otherGroup->config()->d_ptr->bDirty = true;
 }
 
 KConfig::KConfig( const QString& file, OpenFlags mode,
