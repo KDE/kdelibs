@@ -1603,6 +1603,9 @@ private:
                       const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                       const KParts::BrowserArguments& browserArgs = KParts::BrowserArguments() );
 
+  // Called when a child could not be loaded.
+  void childLoadFailure( khtml::ChildFrame *child );
+
   DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node );
 
   DOM::HTMLDocumentImpl *docImpl() const;

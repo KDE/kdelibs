@@ -4345,6 +4345,15 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   }
 }
 
+void KHTMLPart::childLoadFailure( khtml::ChildFrame *child )
+{
+  child->m_bCompleted = true;
+  if ( child->m_partContainerElement )
+    child->m_partContainerElement->partLoadingErrorNotify();
+  
+  checkCompleted();
+}
+
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url, const QString &mimetype )
 {
   //kDebug( 6050 ) << "KHTMLPart::processObjectRequest trying to create part for " << mimetype;
@@ -4357,8 +4366,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   // khtmlrun called us this way to indicate a loading error
   if ( d->m_onlyLocalReferences || ( url.isEmpty() && mimetype.isEmpty() ) )
   {
-      child->m_bCompleted = true;
-      checkCompleted();
+      childLoadFailure(child);
       return true;
   }
 
@@ -4371,8 +4379,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
   if ( child->m_serviceType != mimetype || !child->m_part || (child->m_run && child->m_run->serverSuggestsSave()))
   {
-    // This may have come from a delayed response from KHTMLPart, in regards to
-    // an object/iframe/etc. In this case, let the element veto this.
+    // We often get here if we didn't know the mimetype in advance, and had to rely
+    // on KRun to figure it out. In this case, we let the element check if it wants to
+    // handle this mimetype itself, for e.g. images.
     if ( child->m_partContainerElement &&
          child->m_partContainerElement->mimetypeHandledInternally(mimetype) ) {
       child->m_bCompleted = true;
@@ -4412,10 +4421,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
     if ( !part )
     {
-        if ( child->m_partContainerElement )
-          child->m_partContainerElement->partLoadingErrorNotify();
-
-        checkEmitLoadEvent();
+        childLoadFailure(child);
         return false;
     }
 
