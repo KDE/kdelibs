@@ -18,9 +18,8 @@ add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fa
 
 ########### halbasictest ###############
 
+if (NOT APPLE)
 set(halbasictest_SRCS halbasictest.cpp )
-
-
 
 kde4_add_unit_test(halbasictest ${halbasictest_SRCS})
 
@@ -29,6 +28,7 @@ if(WIN32)
 endif(WIN32)
 
 target_link_libraries(halbasictest solid_static ${KDEWIN32_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
+endif (NOT APPLE)
 
 ########### solidhwtest ###############
 
