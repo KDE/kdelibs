@@ -54,7 +54,6 @@ private Q_SLOTS:
     void testRevertAllEntries();
     void testChangeGroup();
     void testConfigCopyTo();
-    void testConfigCopyToSync();
     void testKdeglobals();
     void testSubGroup();
     void testAddConfigSources();

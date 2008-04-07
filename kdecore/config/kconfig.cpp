@@ -265,7 +265,6 @@ void KConfig::sync()
         if (d->mBackend->isLocked())
             d->mBackend->unlock();
     }
-    otherGroup->config()->d_ptr->bDirty = true;
 }
 
 void KConfig::markAsClean()
