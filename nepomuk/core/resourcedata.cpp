@@ -249,37 +249,40 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
 
 bool Nepomuk::ResourceData::store()
 {
-    if ( determineUri() ) {
-        if ( !exists() ) {
-            QList<Statement> statements;
+    if ( !determineUri() ) {
+        // create a random URI and add us to the initialized data, i.e. make us "valid"
+        m_modificationMutex.lock();
+        m_uri = ResourceManager::instance()->generateUniqueUri();
+        initializedData()->insert( m_uri.toString(), this );
+        m_modificationMutex.unlock();
+    }
 
-            // save type (There should be no need to save all the types since there is only one way
-            // that m_types contains more than one element: if we loaded them)
-            statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
+    if ( !exists() ) {
+        QList<Statement> statements;
 
-            // save the kickoff identifier (other identifiers are stored via setProperty)
-            if ( !m_kickoffIdentifier.isEmpty() ) {
-                statements.append( Statement( m_uri, QUrl(Resource::identifierUri()), LiteralValue(m_kickoffIdentifier) ) );
-            }
+        // save type (There should be no need to save all the types since there is only one way
+        // that m_types contains more than one element: if we loaded them)
+        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
 
-            // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
-            // Dolphin and co.
-            if ( constHasType( Soprano::Vocabulary::Xesam::File() ) &&
-                 QFile::exists( m_uri.toLocalFile()) ) {
-                statements.append( Statement( m_uri,
-                                              Soprano::Vocabulary::Xesam::url(),
-                                              LiteralValue( m_uri.toLocalFile() ) ) );
-            }
-
-            ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-            return fm.addStatements( statements ) == Soprano::Error::ErrorNone;
+        // save the kickoff identifier (other identifiers are stored via setProperty)
+        if ( !m_kickoffIdentifier.isEmpty() ) {
+            statements.append( Statement( m_uri, QUrl(Resource::identifierUri()), LiteralValue(m_kickoffIdentifier) ) );
         }
-        else {
-            return true;
+
+        // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
+        // Dolphin and co.
+        if ( constHasType( Soprano::Vocabulary::Xesam::File() ) &&
+             QFile::exists( m_uri.toLocalFile()) ) {
+            statements.append( Statement( m_uri,
+                                          Soprano::Vocabulary::Xesam::url(),
+                                          LiteralValue( m_uri.toLocalFile() ) ) );
         }
+
+        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+        return fm.addStatements( statements ) == Soprano::Error::ErrorNone;
     }
     else {
-        return false;
+        return true;
     }
 }
 
@@ -467,15 +470,7 @@ bool Nepomuk::ResourceData::determineUri()
     if( m_proxyData )
         return m_proxyData->determineUri();
 
-    if ( m_uri.isEmpty() && m_kickoffUriOrId.isEmpty() ) {
-        // create a random URI and add us to the initialized data, i.e. make us "valid"
-        m_modificationMutex.lock();
-        m_uri = ResourceManager::instance()->generateUniqueUri();
-        initializedData()->insert( m_uri.toString(), this );
-        m_modificationMutex.unlock();
-    }
-
-    else if( m_uri.isEmpty() ) {
+    else if( m_uri.isEmpty() && !m_kickoffUriOrId.isEmpty() ) {
         Q_ASSERT( !m_kickoffUriOrId.isEmpty() );
 
         m_modificationMutex.lock();
