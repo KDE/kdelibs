@@ -24,4 +24,10 @@ Sebastian Trueg \<trueg@kde.org\>
 
 
 // DOXYGEN_EXCLUDE = resourcedata.h
+// DOXYGEN_EXCLUDE += nepomukmainmodel.h
+// DOXYGEN_EXCLUDE += resourcefiltermodel.h
+// DOXYGEN_EXCLUDE += nie.h
+// DOXYGEN_EXCLUDE += ui/nepomukmassupdatejob.h
+// DOXYGEN_EXCLUDE += ui/kautoscrollarea.h
+// DOXYGEN_EXCLUDE += ui/kblocklayout.h
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
