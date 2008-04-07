@@ -45,6 +45,7 @@ public:
             bool hideErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
+  virtual void handleError( KJob* job );
 
   //KHTMLPart *htmlPart() const;
 
