@@ -257,7 +257,12 @@ int Nepomuk::Types::Property::minCardinality()
 {
     if ( d ) {
         D->init();
-        return D->minCardinality;
+        if ( D->minCardinality > 0 ) {
+            return D->minCardinality;
+        }
+        else {
+            return D->cardinality;
+        }
     }
     else {
         return -1;
@@ -269,7 +274,12 @@ int Nepomuk::Types::Property::maxCardinality()
 {
     if ( d ) {
         D->init();
-        return D->maxCardinality;
+        if ( D->maxCardinality > 0 ) {
+            return D->maxCardinality;
+        }
+        else {
+            return D->cardinality;
+        }
     }
     else {
         return -1;
