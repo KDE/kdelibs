@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -444,6 +444,18 @@ NEPOMUK_RESOURCECOMMENT
 
 */
 
-// DOXYGEN_EXCLUDE = core/resourcedata.h
+// DOXYGEN_SET_RECURSIVE = NO
+// DOXYGEN_SET_FILE_PATTERNS = *.h
+// DOXYGEN_SET_INPUT = @topdir@/nepomuk/Mainpage.dox
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/core
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ui
+// DOXYGEN_SET_INPUT += @topdir@/nepomuk/core/ontology
+// DOXYGEN_SET_EXCLUDE = @topdir@/nepomuk/core/resourcedata.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nepomukmainmodel.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/resourcefiltermodel.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nie.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/nepomukmassupdatejob.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kautoscrollarea.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kblocklayout.h
 // DOXYGEN_SET_PROJECT_NAME = Nepomuk
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
