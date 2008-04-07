@@ -85,6 +85,13 @@ void KHTMLRun::foundMimeType( const QString &_type )
     static_cast<KHTMLPart *>(part())->checkCompleted();
 }
 
+void KHTMLRun::handleError(KJob* job)
+{
+    // Tell KHTML that loading failed.
+    static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KUrl(), QString() );
+    setJob(0);
+}
+
 void KHTMLRun::save( const KUrl & url, const QString & suggestedFilename )
 {
     KHTMLPopupGUIClient::saveURL( part()->widget(), i18n( "Save As" ), url, arguments().metaData(), QString(), 0, suggestedFilename );
