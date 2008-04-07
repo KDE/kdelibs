@@ -192,27 +192,34 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
 
 void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 {
-  Q_ASSERT( _job == KRun::job() );
-  KIO::TransferJob *job = static_cast<KIO::TransferJob *>(KRun::job());
-  // Update our URL in case of a redirection
-  //kDebug(1000) << "old URL=" << KRun::url();
-  //kDebug(1000) << "new URL=" << job->url();
-  setUrl( job->url() );
-  kDebug(1000) << "slotBrowserMimetype: found" << type << "for" << KRun::url();
+    Q_ASSERT( _job == KRun::job() );
+    KIO::TransferJob *job = static_cast<KIO::TransferJob *>(KRun::job());
+    // Update our URL in case of a redirection
+    //kDebug(1000) << "old URL=" << KRun::url();
+    //kDebug(1000) << "new URL=" << job->url();
+    setUrl( job->url() );
 
-  // Suggested filename given by the server (e.g. HTTP content-disposition)
-  // When set, we should really be saving instead of embedding
-  const QString suggestedFileName = job->queryMetaData("content-disposition-filename");
-  setSuggestedFileName(suggestedFileName); // store it (in KRun)
-  //kDebug(1000) << "suggestedFileName=" << suggestedFileName;
-  d->m_contentDisposition = job->queryMetaData("content-disposition-type");
+    if (job->isErrorPage()) {
+        d->m_mimeType = type;
+        handleError(job);
+        setJob( 0 );
+    } else {
+        kDebug(1000) << "found" << type << "for" << KRun::url();
 
-  // Make a copy to avoid a dead reference
-  QString _type = type;
-  job->putOnHold();
-  setJob( 0 );
+        // Suggested filename given by the server (e.g. HTTP content-disposition)
+        // When set, we should really be saving instead of embedding
+        const QString suggestedFileName = job->queryMetaData("content-disposition-filename");
+        setSuggestedFileName(suggestedFileName); // store it (in KRun)
+        //kDebug(1000) << "suggestedFileName=" << suggestedFileName;
+        d->m_contentDisposition = job->queryMetaData("content-disposition-type");
 
-  mimeTypeDetermined( _type );
+        // Make a copy to avoid a dead reference
+        QString _type = type;
+        job->putOnHold();
+        setJob( 0 );
+
+        mimeTypeDetermined( _type );
+    }
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& _mimeType )
@@ -465,6 +472,16 @@ void BrowserRun::handleError( KJob * job )
         return;
     }
 
+    KIO::TransferJob *tjob = qobject_cast<KIO::TransferJob *>(job);
+    if (tjob->isErrorPage()) {
+        // The default handling of error pages is to show them like normal pages
+        // But this is done here in handleError so that KHTMLRun can reimplement it
+        tjob->putOnHold();
+        setJob(0);
+        mimeTypeDetermined(d->m_mimeType);
+        return;
+    }
+
     if (d->m_bHideErrorDialog && job->error() != KIO::ERR_NO_CONTENT)
     {
         redirectToError( job->error(), job->errorText() );
@@ -496,7 +513,6 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     KUrl::List lst;
     lst << newURL << runURL;
     KRun::setUrl( KUrl::join( lst ) );
-    //kDebug(1202) << "BrowserRun::handleError KRun::url()=" << ;
 
     setJob( 0 );
     mimeTypeDetermined( "text/html" );
