@@ -33,6 +33,7 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+#include <unistd.h> // umask() for mingw
 
 #include <QtCore/QList>
 #include <QtCore/QSet>
