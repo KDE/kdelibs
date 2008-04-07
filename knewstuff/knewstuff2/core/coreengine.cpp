@@ -991,7 +991,7 @@ bool CoreEngine::entryCached(Entry *entry)
         //QString lang = id(oldentry).section(":", 0, 0);
         //QString oldname = oldentry->name().translated(lang);
         //QString name = entry->name().translated(lang);
-        ////kDebug() << "CACHE: compare entry names " << oldname << "/" << name;
+        ////kDebug() << "CACHE: compare entry names " << oldname << '/' << name;
         //if (name == oldname) return true;
     }
 
@@ -1017,7 +1017,7 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
         Entry *e = (*it);
         QString thisId = id(e);
         // set it to Installed if it's in the registry
-        // FIXME: just because it's in m_entry_index, does not mean it's in the registry...
+
         if (m_entry_registry.contains(thisId)) {
             // see if the one online is newer (higher version, release, or release date)
             Entry *oldentry = m_entry_registry[thisId];
@@ -1047,8 +1047,8 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
                 feed->removeEntry(cachedentry);
                 //emit signalEntryRemoved(cachedentry, feed);
             }
-            
-            //emit signalEntryLoaded(e, feed, provider);
+
+            emit signalEntryLoaded(e, feed, provider);
         } else {
             e->setStatus(Entry::Downloadable);
 
@@ -1453,7 +1453,7 @@ bool CoreEngine::install(const QString &payloadfile)
                     dir->copyTo(installdir);
 
                     installedFiles << archiveEntries(installdir, dir);
-                    installedFiles << installdir + "/";
+                    installedFiles << installdir + '/';
 
                     archive->close();
                     QFile::remove(payloadfile);
@@ -1497,7 +1497,7 @@ bool CoreEngine::install(const QString &payloadfile)
                 return false;
             }
             installedFiles << installpath;
-            installedFiles << installdir + "/";
+            installedFiles << installdir + '/';
         }
     }
 
