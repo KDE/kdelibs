@@ -30,6 +30,7 @@
 #endif
 
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 #include <QtCore/QDataStream>
 #include <QtCore/QVector>
 
@@ -158,7 +159,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     quint8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
     QString path = zone.name();
-    if (!path.startsWith('/'))
+    if (!QFileInfo(path).isAbsolute())
     {
         if (d->location == QLatin1String("/"))
             path.prepend(d->location);
