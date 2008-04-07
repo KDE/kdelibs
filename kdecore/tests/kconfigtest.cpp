@@ -882,6 +882,30 @@ void KConfigTest::testConfigCopyTo()
     QCOMPARE(group3.readEntry("AnotherKey"), QString("Test Worked"));
 }
 
+void KConfigTest::testConfigCopyToSync()
+{
+    KConfig cf1("kconfigtest");
+    // Prepare source file
+    KConfigGroup group(&cf1, "CopyToTest");
+    group.writeEntry("Type", "Test");
+    cf1.sync();
+    
+    // Copy to "destination"
+    const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
+    QFile::remove(destination);
+    
+    KConfig cf2("kconfigcopytotest");
+    KConfigGroup group2(&cf2, "CopyToTest");
+    
+    group.copyTo(&group2);
+    
+    QString testVal = group2.readEntry("Type");
+    QCOMPARE(testVal, QString("Test"));
+    // should write to disk the copied data from group
+    cf2.sync();
+    QVERIFY(QFile::exists(destination));
+}
+
 void KConfigTest::testKAboutDataOrganizationDomain()
 {
     KAboutData data( "app", 0, ki18n("program"), "version",
