@@ -286,7 +286,7 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
 
 void KSystemTimeZonesPrivate::setLocalZone()
 {
-    if (QFileInfo(m_localZoneName).isAbsolute())
+    if (m_localZoneName.startsWith('/'))
     {
         // The time zone is specified by a file outside the zoneinfo directory
         m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), m_localZoneName);
