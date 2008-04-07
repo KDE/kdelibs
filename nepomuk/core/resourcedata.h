@@ -182,6 +182,8 @@ namespace Nepomuk {
         static QList<ResourceData*> allResourceDataWithProperty( const QUrl& _uri, const Variant& v );
 
     private:
+        bool constHasType( const QUrl& type ) const;
+
         /**
          * The kickoff URI or ID is used as long as the resource has not been synced yet
          * to identify it.

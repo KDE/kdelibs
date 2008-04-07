@@ -191,17 +191,24 @@ bool Nepomuk::ResourceData::hasType( const QUrl& uri )
         return m_proxyData->hasType( uri );
 
     if ( load() ) {
-        Types::Class requestedType( uri );
-        for ( QList<QUrl>::const_iterator it = m_types.constBegin();
-              it != m_types.constEnd(); ++it ) {
-            Types::Class availType( *it );
-            if ( availType == requestedType ||
-                 availType.isSubClassOf( requestedType ) ) {
-                return true;
-            }
-        }
+        return constHasType( uri );
     }
 
+    return false;
+}
+
+
+bool Nepomuk::ResourceData::constHasType( const QUrl& uri ) const
+{
+    Types::Class requestedType( uri );
+    for ( QList<QUrl>::const_iterator it = m_types.constBegin();
+          it != m_types.constEnd(); ++it ) {
+        Types::Class availType( *it );
+        if ( availType == requestedType ||
+             availType.isSubClassOf( requestedType ) ) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -257,7 +264,8 @@ bool Nepomuk::ResourceData::store()
 
             // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
             // Dolphin and co.
-            if ( QFile::exists( m_uri.toLocalFile())) {
+            if ( constHasType( Soprano::Vocabulary::Xesam::File() ) &&
+                 QFile::exists( m_uri.toLocalFile()) ) {
                 statements.append( Statement( m_uri,
                                               Soprano::Vocabulary::Xesam::url(),
                                               LiteralValue( m_uri.toLocalFile() ) ) );
