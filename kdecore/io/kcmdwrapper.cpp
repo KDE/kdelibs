@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     // would also cover the pathological case of running cmd from win2k under
     // winNT. OTOH, who cares?
     GetVersionEx(&vi);
-    _snwprintf(Command, COMMAND_BUFFER_SIZE,
+    _snwprintf(command, COMMAND_BUFFER_SIZE,
         (vi.dwMajorVersion >= 5 /* Win2k */) ?
             L"/V:OFF /S /C \"%s\"" : L"/S /C \"%s\"",
         argList[2]);
