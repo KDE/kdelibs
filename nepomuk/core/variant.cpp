@@ -539,8 +539,10 @@ void Nepomuk::Variant::append( const QUrl& url )
 void Nepomuk::Variant::append( const Resource& r )
 {
     QList<Resource> l = toResourceList();
-    l.append( r );
-    operator=( l );
+    if ( !l.contains( r ) ) {
+        l.append( r );
+        operator=( l );
+    }
 }
 
 
