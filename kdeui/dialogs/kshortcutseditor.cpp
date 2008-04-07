@@ -374,8 +374,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
         //refuse to assign a global shortcut occupied by a standard shortcut
         if (column == GlobalPrimary || column == GlobalAlternate) {
             KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(capture);
-            if (ssc != KStandardShortcut::AccelNone) {
-                wontStealStandardShortcut(ssc, capture);
+            if (ssc != KStandardShortcut::AccelNone && !stealStandardShortcut(ssc, capture)) {
                 return;
             }
         }
@@ -408,10 +407,11 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
         //check for conflicts with other applications' global shortcuts
         QStringList conflicting = KGlobalAccel::findActionNameSystemwide(capture);
         if (!conflicting.isEmpty()) {
-            if (KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, capture))
+            if (KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, capture)) {
                 KGlobalAccel::stealShortcutSystemwide(capture);
-            else
+            } else {
                 return;
+            }
         }
     }
 
@@ -502,15 +502,17 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 }
 
 
-void KShortcutsEditorPrivate::wontStealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
+bool KShortcutsEditorPrivate::stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
 {
     QString title = i18n("Conflict with Standard Application Shortcut");
-    QString message = i18n("The '%1' key combination has already been allocated to the standard action "
-                           "\"%2\" that many applications use.\n"
-                           "You cannot use it for global shortcuts for this reason.",
+    QString message = i18n("The '%1' key combination is also being used for the standard action "
+                           "\"%2\" that some applications use.\n"
+                           "Do you really want to use it as a global shortcut, too?",
                            seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
 
-    KMessageBox::sorry(q, message, title);
+    if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
+        return false;
+    }
 }
 
 
