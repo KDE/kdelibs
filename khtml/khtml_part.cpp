@@ -4249,7 +4249,7 @@ bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QS
       // See if we want to replace content with javascript: output..
       QVariant res = p->executeScript( DOM::Node(),
                                        KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
-      if ( res.type() == QVariant::String ) {
+      if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
         p->begin();
         p->write( res.toString() );
         p->end();
