@@ -53,7 +53,8 @@
 399        kimgio
 410        kross (kdelibs)
 500        kdeprint
-550        knewstuff
+550        knewstuff (api)
+551        knewstuff (ui)
 600        phonon (KDE plugin)
 603        phonon (audiodevicelist)
 604        phonon (fake backend)
