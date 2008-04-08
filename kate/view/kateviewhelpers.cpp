@@ -1205,6 +1205,12 @@ void KateIconBorder::hideBlock() {
   m_blockRange=0;
 }
 
+void KateIconBorder::leaveEvent(QEvent *event)
+{
+  hideBlock();
+  QWidget::leaveEvent(event);
+}
+
 void KateIconBorder::mouseMoveEvent( QMouseEvent* e )
 {
   const KateTextLayout& t = m_viewInternal->yToKateTextLayout(e->y());
