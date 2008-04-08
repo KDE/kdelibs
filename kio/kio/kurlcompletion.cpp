@@ -114,7 +114,7 @@ protected:
 		if ( !m_terminationRequested )
 			qApp->postEvent( m_receiver, new CompletionMatchEvent( this ) );
 		else
-			delete this;
+			deleteLater();
 	}
 
 private:
