@@ -368,6 +368,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
     const KEntryMapIterator theEnd = config->d_func()->entryMap.end();
     for (KEntryMapIterator it = config->d_func()->entryMap.begin(); it != theEnd; ++it)
         it->bDirty = true;
+    config->d_ptr->bDirty = true;
 
     return config;
 }
