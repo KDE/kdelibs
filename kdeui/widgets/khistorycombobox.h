@@ -100,23 +100,25 @@ public:
      * You won't have the benefit of weighted completion though, so normally
      * you should do something like
      * \code
-     * KConfig *config = kapp->config();
-     * QStringList list;
+     * KConfigGroup config(KGlobal::config(), "somegroup");
      *
      * // load the history and completion list after creating the history combo
-     * list = config->readListEntry( "Completion list" );
-     * combo->completionObject()->setItems( list );
-     * list = config->readListEntry( "History list" );
-     * combo->setHistoryItems( list );
+     * QStringList list;
+     * list = config.readEntry("Completion list", QStringList());
+     * combo->completionObject()->setItems(list);
+     * list = config.readEntry("History list", QStringList());
+     * combo->setHistoryItems(list);
      *
      * [...]
      *
      * // save the history and completion list when the history combo is
      * // destroyed
-     * list = combo->completionObject()->items()
-     * config->writeEntry( "Completion list", list );
+     * QStringList list;
+     * KConfigGroup config(KGlobal::config(), "somegroup");
+     * list = combo->completionObject()->items();
+     * config.writeEntry("Completion list", list);
      * list = combo->historyItems();
-     * config->writeEntry( "History list", list );
+     * config.writeEntry("History list", list);
      * \endcode
      *
      * Be sure to use different names for saving with KConfig if you have more
@@ -175,7 +177,7 @@ public:
      * Resets the current position of the up/down history. Call this
      * when you manually call setCurrentItem() or clearEdit().
      */
-    void reset(); 
+    void reset();
 
 public Q_SLOTS:
     /**
