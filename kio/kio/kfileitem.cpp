@@ -721,12 +721,12 @@ QStringList KFileItem::overlays() const
 {
     QStringList names;
     if ( d->m_bLink ) {
-        names.append("link");
+        names.append("emblem-symbolic-link");
     }
 
     if ( !S_ISDIR( d->m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
          && !isReadable()) {
-        names.append("lock");
+        names.append("object-locked");
     }
 
     if ( isHidden() ) {
@@ -740,13 +740,14 @@ QStringList KFileItem::overlays() const
             KNFSShare::instance()->isDirectoryShared( d->m_url.path() ))
         {
             //kDebug() << d->m_url.path();
-            names.append("share");
+            names.append("network-workgroup");
         }
     }
 #endif  // Q_OS_WIN
 
-    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) ) {
-        names.append("zio");
+    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") &&
+         d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) ) {
+        names.append("application-zip");
     }
 
     return names;
