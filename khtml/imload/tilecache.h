@@ -94,7 +94,6 @@ public:
         poolHead         = entry;
     }
 
-    
 private:
     int sizeLimit;
     int size;
@@ -110,10 +109,12 @@ private:
     */
     void doDiscard(Node* node)
     {
+        assert(node->tile->cacheNode == node);
         node->tile->discard();
         node->tile->cacheNode = 0;
         node->unlink();
         --size;
+        assert(size >= 0);
     }
 public:
 
@@ -174,7 +175,6 @@ public:
     {
         Node* node = tile->cacheNode;
         doDiscard(node);
-        size--;
 
         release(node);
     }
