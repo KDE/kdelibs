@@ -889,13 +889,15 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
     QPalette::ColorGroup states[3] = { QPalette::Active, QPalette::Inactive,
                                        QPalette::Disabled };
 
+    // TT thinks tooltips shouldn't use active, so we use our active colors for all states
+    KColorScheme schemeTooltip(QPalette::Active, KColorScheme::Tooltip, config);
+
     for ( int i = 0; i < 3 ; i++ ) {
         QPalette::ColorGroup state = states[i];
         KColorScheme schemeView(state, KColorScheme::View, config);
         KColorScheme schemeWindow(state, KColorScheme::Window, config);
         KColorScheme schemeButton(state, KColorScheme::Button, config);
         KColorScheme schemeSelection(state, KColorScheme::Selection, config);
-        KColorScheme schemeTooltip(state, KColorScheme::Tooltip, config);
 
         palette.setBrush( state, QPalette::WindowText, schemeWindow.foreground() );
         palette.setBrush( state, QPalette::Window, schemeWindow.background() );
