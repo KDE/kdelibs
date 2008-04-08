@@ -848,8 +848,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
     }
 }
 
-// Set by KApplication - which is now in kdeui so this needs to be exported
-// In the long run, KGlobalSettings probably belongs to kdeui as well...
+// Set by KApplication
 QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
@@ -874,7 +873,7 @@ void KGlobalSettings::Private::applyGUIStyle()
         if ( !sp && styleStr != defaultStyle)
             sp = QStyleFactory::create( defaultStyle );
         if ( !sp )
-            sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
+            sp = QStyleFactory::create( QStyleFactory::keys().first() );
         qApp->setStyle(sp);
     }
     else
