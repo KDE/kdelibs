@@ -293,7 +293,8 @@ public:
      *
      * @return Current status of the entry
      */
-    Status status() const;
+    // FIXME KDE5 make it const
+    Status status();
 
     /** 
      * Source of the entry, A entry's data is coming from either cache, or an online provider
@@ -307,7 +308,8 @@ public:
     };
 
     void setSource(Source source);
-    Source source() const;
+    // FIXME KDE5 make it const
+    Source source();
 
 private:
     EntryPrivate * const d;

@@ -212,7 +212,7 @@ QString Entry::signature() const
     return d->mSignature;
 }
 
-Entry::Status Entry::status() const
+Entry::Status Entry::status()
 {
     return d->mStatus;
 }
@@ -222,7 +222,7 @@ void Entry::setStatus(Status status)
     d->mStatus = status;
 }
 
-Entry::Source Entry::source() const
+Entry::Source Entry::source()
 {
     return d->mSource;
 }
