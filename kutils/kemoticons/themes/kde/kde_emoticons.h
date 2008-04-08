@@ -20,11 +20,21 @@
 #ifndef KDE_EMOTICONS_H
 #define KDE_EMOTICONS_H
 
-#include <kemoticons.h>
+#include <kemoticonstheme.h>
 
-class KdeEmoticons : public KEmoticons
+class KdeEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
+    public:
+        KdeEmoticons(const QString &theme);
+        ~KdeEmoticons();
+        
+        bool removeEmoticon(const QString &emo);
+        bool addEmoticon(const QString &emo, const QString &text, bool copy);
+        void save();
+        
+    protected:
+        void loadTheme();
     
 }
 

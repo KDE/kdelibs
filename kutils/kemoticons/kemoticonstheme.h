@@ -21,7 +21,12 @@
 #define KEMOTICONS_THEME_H
 
 #include "kemoticons_export.h"
-#include "kemoticonstheme_p.h"
+
+class KEmoticonsThemePrivate
+{
+    public:
+        QString themeName;
+};
 
 class KEMOTICONS_EXPORT KEmoticonsTheme
 {   
@@ -36,8 +41,6 @@ class KEMOTICONS_EXPORT KEmoticonsTheme
         
     protected:
         virtual void loadTheme();
-    
-    private:
         KEmoticonsThemePrivate const *d;
         
 };

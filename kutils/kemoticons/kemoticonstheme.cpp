@@ -19,10 +19,13 @@
 
 #include "kemoticonstheme.h"
 
+KEmoticonsThemePrivate::KEmoticonsThemePrivate()
+{
+}
 
 KEmoticonsTheme::KEmoticonsTheme(const QString &theme)
+    : d(new KEmoticonsThemePrivate)
 {
-    d = new KEmoticonsThemePrivate;
     d->themeName = theme;
 }
 

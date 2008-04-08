@@ -1,5 +1,7 @@
 project(kemoticons)
 
+add_subdirectory(themes)
+
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDES})
 
 set(kemoticons_LIB_SRCS kemoticons.cpp kemoticonstheme.cpp)

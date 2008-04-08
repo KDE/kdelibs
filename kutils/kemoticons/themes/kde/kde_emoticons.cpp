@@ -23,4 +23,9 @@
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticons("KdeEmoticons"))
 
+KdeEmoticons::KdeEmoticons(const QString &theme)
+    : KEmoticonsTheme(theme)
+{
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;
