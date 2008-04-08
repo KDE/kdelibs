@@ -869,7 +869,6 @@ void KConfigTest::testConfigCopyTo()
         KConfigGroup group2(&cf2, "CopyToTest");
         QString testVal = group2.readEntry("Type");
         QCOMPARE(testVal, QString("Test"));
-        group2.writeEntry("AnotherKey", "Test Worked"); // for sync to have something to sync
         cf2.sync();
         QVERIFY(QFile::exists(destination));
     }
@@ -879,7 +878,6 @@ void KConfigTest::testConfigCopyTo()
     KConfigGroup group3(&cf3, "CopyToTest");
     QString testVal = group3.readEntry("Type");
     QCOMPARE(testVal, QString("Test"));
-    QCOMPARE(group3.readEntry("AnotherKey"), QString("Test Worked"));
 }
 
 void KConfigTest::testKAboutDataOrganizationDomain()
