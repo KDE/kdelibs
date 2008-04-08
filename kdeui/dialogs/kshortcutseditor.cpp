@@ -513,6 +513,7 @@ bool KShortcutsEditorPrivate::stealStandardShortcut(KStandardShortcut::StandardS
     if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
         return false;
     }
+    return true;
 }
 
 
