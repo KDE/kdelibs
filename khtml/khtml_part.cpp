@@ -1672,36 +1672,13 @@ void KHTMLPart::showError( KJob* job )
 // This is a protected method, placed here because of it's relevance to showError
 void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUrl )
 {
-  kDebug(6050) << "KHTMLPart::htmlError errorCode=" << errorCode << " text=" << text;
+  kDebug(6050) << "errorCode" << errorCode << "text" << text;
   // make sure we're not executing any embedded JS
   bool bJSFO = d->m_bJScriptForce;
   bool bJSOO = d->m_bJScriptOverride;
   d->m_bJScriptForce = false;
   d->m_bJScriptOverride = true;
   begin();
-  QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
-                           .arg(QApplication::isRightToLeft() ? "rtl" : "ltr");
-  errText += i18n( "Error while loading %1" ,  Qt::escape(reqUrl.prettyUrl()) );
-  errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occurred while loading <B>%1</B>:" ,  Qt::escape(reqUrl.prettyUrl()) );
-  errText += QLatin1String( "</P>" );
-  errText += Qt::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
-  errText += QLatin1String( "</BODY></HTML>" );
-  write(errText);
-  end();
-
-  d->m_bJScriptForce = bJSFO;
-  d->m_bJScriptOverride = bJSOO;
-
-  // make the working url the current url, so that reload works and
-  // emit the progress signals to advance one step in the history
-  // (so that 'back' works)
-  setUrl(reqUrl); // same as d->m_workingURL
-  d->m_workingURL = KUrl();
-  emit started( 0 );
-  emit completed();
-  return;
-  // following disabled until 3.1
 
   QString errorName, techName, description;
   QStringList causes, solutions;
@@ -1712,15 +1689,24 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   stream >> errorName >> techName >> description >> causes >> solutions;
 
   QString url, protocol, datetime;
-  url = reqUrl.prettyUrl();
+  url = Qt::escape( reqUrl.prettyUrl() );
   protocol = reqUrl.protocol();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
-  QString doc = QLatin1String( "<html><head><title>" );
-  doc += i18n( "Error: " );
-  doc += errorName;
-  doc += QString::fromLatin1( " - %1</title></head><body><h1>" ).arg( url );
+  QString filename( KStandardDirs::locate( "data", "khtml/error.html" ) );
+  QFile file( filename );
+  bool isOpened = file.open( QIODevice::ReadOnly );
+  if ( !isOpened )
+    kWarning(6050) << "Could not open error html template:" << filename;
+
+  QString html = QString( QLatin1String( file.readAll() ) );
+
+  html.replace( QLatin1String( "TITLE" ), i18n( "Error: %1 - %2", errorName, url ) );
+  html.replace( QLatin1String( "DIRECTION" ), QApplication::isRightToLeft() ? "rtl" : "ltr" );
+  html.replace( QLatin1String( "ICON_PATH" ), KIconLoader::global()->iconPath( "dialog-warning", -KIconLoader::SizeHuge ) );
+
+  QString doc = QLatin1String( "<h1>" );
   doc += i18n( "The requested operation could not be completed" );
   doc += QLatin1String( "</h1><h2>" );
   doc += errorName;
@@ -1737,8 +1723,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   doc += i18n( "URL: %1" ,  url );
   doc += QLatin1String( "</li><li>" );
   if ( !protocol.isNull() ) {
-    // uncomment for 3.1... i18n change
-    // doc += i18n( "Protocol: %1" ).arg( protocol ).arg( protocol );
+    doc += i18n( "Protocol: %1", protocol );
     doc += QLatin1String( "</li><li>" );
   }
   doc += i18n( "Date and Time: %1" ,  datetime );
@@ -1763,10 +1748,22 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
     doc += solutions.join( "</li><li>" );
     doc += QLatin1String( "</li></ul>" );
   }
-  doc += QLatin1String( "</body></html>" );
 
-  write( doc );
+  html.replace( QLatin1String("TEXT"), doc );
+
+  write( html );
   end();
+
+  d->m_bJScriptForce = bJSFO;
+  d->m_bJScriptOverride = bJSOO;
+
+  // make the working url the current url, so that reload works and
+  // emit the progress signals to advance one step in the history
+  // (so that 'back' works)
+  setUrl(reqUrl); // same as d->m_workingURL
+  d->m_workingURL = KUrl();
+  emit started( 0 );
+  emit completed();
 }
 
 void KHTMLPart::slotFinished( KJob * job )
