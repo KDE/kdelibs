@@ -177,11 +177,26 @@ public:
     void addAppThemes(const QString& appname);
 
     /**
-     * Adds all themes that are part of this node and the themes
-     * below (the fallbacks of the theme) in the tree.
      * @internal
+     * Adds all themes that are part of this node and the themes
+     * below (the fallbacks of the theme) into the tree.
      */
     void addBaseThemes(KIconThemeNode *node, const QString &appname);
+
+    /**
+     * @internal
+     * Recursively adds all themes that are specified in the "Inherits"
+     * property of the given theme into the tree.
+     */
+    void addInheritedThemes(KIconThemeNode *node, const QString &appname);
+
+    /**
+     * @internal
+     * Creates a KIconThemeNode out of a theme name, and adds this theme
+     * as well as all its inherited themes into the tree. Themes that already
+     * exist in the tree will be ignored and not added twice.
+     */
+    void addThemeByName(const QString &themename, const QString &appname);
 
     /**
      * @internal
@@ -443,8 +458,8 @@ bool KIconLoaderPrivate::initIconThemes()
         }
     }
     mpThemeRoot = new KIconThemeNode(def);
+    mThemesInTree.append(def->internalName());
     links.append(mpThemeRoot);
-    mThemesInTree += KIconTheme::current();
     addBaseThemes(mpThemeRoot, appname);
 
     // Insert application specific themes at the top.
@@ -504,44 +519,66 @@ void KIconLoaderPrivate::addAppThemes(const QString& appname)
 {
     initIconThemes();
 
-    if ( KIconTheme::current() != KIconTheme::defaultThemeName() )
-    {
-        KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
-        if (def->isValid())
-        {
-            KIconThemeNode* node = new KIconThemeNode(def);
-            links.append(node);
-            addBaseThemes(node, appname);
-        }
-        else
-            delete def;
+    KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
+    if (!def->isValid()) {
+        delete def;
+        def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     }
-
-    KIconTheme *def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     KIconThemeNode* node = new KIconThemeNode(def);
-    links.append(node);
+
+    if (!mThemesInTree.contains(node->theme->internalName())) {
+        mThemesInTree.append(node->theme->internalName());
+        links.append(node);
+    }
     addBaseThemes(node, appname);
 }
 
 void KIconLoaderPrivate::addBaseThemes(KIconThemeNode *node, const QString &appname)
 {
-    QStringList lst = node->theme->inherits();
-    QStringList::ConstIterator it;
+    // Quote from the icon theme specification:
+    //   The lookup is done first in the current theme, and then recursively
+    //   in each of the current theme's parents, and finally in the
+    //   default theme called "hicolor" (implementations may add more
+    //   default themes before "hicolor", but "hicolor" must be last).
+    //
+    // So we first make sure that all inherited themes are added, then we
+    // add the KDE default theme as fallback for all icons that might not be
+    // present in an inherited theme, and hicolor goes last.
 
-    for (it=lst.begin(); it!=lst.end(); ++it)
-    {
-        if( mThemesInTree.contains(*it) && (*it) != "hicolor")
-            continue;
-        KIconTheme *theme = new KIconTheme(*it,appname);
-        if (!theme->isValid()) {
-            delete theme;
-            continue;
+    addInheritedThemes(node, appname);
+    addThemeByName(KIconTheme::defaultThemeName(), appname);
+    addThemeByName("hicolor", appname);
+}
+
+void KIconLoaderPrivate::addInheritedThemes(KIconThemeNode *node, const QString &appname)
+{
+    QStringList lst = node->theme->inherits();
+
+    for (QStringList::ConstIterator it = lst.begin(); it != lst.end(); ++it) {
+        if ((*it) == "hicolor") {
+          // The icon theme spec says that "hicolor" must be the very last
+          // of all inherited themes, so don't add it here but at the very end
+          // of addBaseThemes().
+          continue;
         }
-        KIconThemeNode *n = new KIconThemeNode(theme);
-        mThemesInTree.append(*it);
-        addBaseThemes(n, appname);
-        links.append(n);
+        addThemeByName(*it, appname);
     }
+}
+
+void KIconLoaderPrivate::addThemeByName(const QString &themename, const QString &appname)
+{
+    if (mThemesInTree.contains(themename)) {
+        return;
+    }
+    KIconTheme *theme = new KIconTheme(themename, appname);
+    if (!theme->isValid()) {
+        delete theme;
+        return;
+    }
+    KIconThemeNode *n = new KIconThemeNode(theme);
+    mThemesInTree.append(themename);
+    links.append(n);
+    addInheritedThemes(n, appname);
 }
 
 void KIconLoader::addExtraDesktopThemes()
@@ -580,17 +617,14 @@ void KIconLoader::addExtraDesktopThemes()
         }
     }
 
-    for (it=list.begin(); it!=list.end(); ++it)
+    for (it = list.begin(); it != list.end(); ++it)
     {
-        if ( d->mThemesInTree.contains(*it) )
-                continue;
-        if ( *it == QLatin1String("default.kde") ) continue;
-
-        KIconTheme *def = new KIconTheme( *it, "" );
-        KIconThemeNode* node = new KIconThemeNode(def);
-        d->mThemesInTree.append(*it);
-        d->links.append(node);
-        d->addBaseThemes(node, "" );
+        // Don't add the KDE defaults once more, we have them anyways.
+        if (*it == QLatin1String("default.kde")
+            || *it == QLatin1String("default.kde4")) {
+            continue;
+        }
+        d->addThemeByName(*it, "");
     }
 
     d->extraDesktopIconsLoaded=true;
