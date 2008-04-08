@@ -23,10 +23,14 @@ KEmoticonsThemePrivate::KEmoticonsThemePrivate()
 {
 }
 
-KEmoticonsTheme::KEmoticonsTheme(const QString &theme)
-    : d(new KEmoticonsThemePrivate)
+KEmoticonsTheme::KEmoticonsTheme(QObject *parent, const QVariantList &args)
+    : QObject(parent), d(new KEmoticonsThemePrivate)
 {
-    d->themeName = theme;
+    Q_UNUSED(args);
 }
 
+KEmoticonsTheme::~KEmoticonsTheme()
+{
+    delete d;
+}
 // kate: space-indent on; indent-width 4; replace-tabs on;

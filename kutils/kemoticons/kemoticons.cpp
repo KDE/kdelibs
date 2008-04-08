@@ -18,20 +18,49 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
  ***************************************************************************/
 
-#ifndef KEMOTICONS_EXPORT_H
-#define KEMOTICONS_EXPORT_H
+#include "kemoticons.h"
+#include <QFile>
+#include <QApplication>
+#include <QFileInfo>
+#include <QDir>
+#include <KDebug>
+#include <KStandardDirs>
+#include <KArchive>
+#include <KProgressDialog>
+#include <KMessageBox>
+#include <KMimeType>
+#include <KZip>
+#include <KTar>
+#include <kio/netaccess.h>
+#include <klocalizedstring.h>
 
-/* needed for KDE_EXPORT and KDE_IMPORT macros */
-#include <kdemacros.h>
 
-#ifndef KEMOTICONS_EXPORT
-#ifdef MAKE_KEMOTICONS_LIB
-   /* We are building this library */
-#  define KEMOTICONS_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */
-#  define KEMOTICONS_EXPORT KDE_IMPORT
-# endif
+KEmoticons::KEmoticons()
+{
+}
 
-#endif
-#endif
+KEmoticons::~KEmoticons()
+{
+}
+
+KEmoticonsTheme *KEmoticons::getTheme()
+{
+}
+
+KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
+{
+}
+        
+void KEmoticons::setTheme(const KEmoticonsTheme &theme)
+{
+}
+
+void KEmoticons::setTheme(const QString &theme)
+{
+}
+
+KEmoticonsTheme *KEmoticons::newTheme(const QString &name)
+{
+}
+
+// kate: space-indent on; indent-width 4; replace-tabs on;

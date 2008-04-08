@@ -21,10 +21,10 @@
 #include <KPluginFactory>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
-K_EXPORT_PLUGIN(KdeEmoticons("KdeEmoticons"))
+K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
 
-KdeEmoticons::KdeEmoticons(const QString &theme)
-    : KEmoticonsTheme(theme)
+KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
+    : KEmoticonsTheme(parent, args)
 {
 }
 

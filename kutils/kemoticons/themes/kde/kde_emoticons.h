@@ -26,7 +26,7 @@ class KdeEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
     public:
-        KdeEmoticons(const QString &theme);
+        KdeEmoticons(QObject *parent, const QVariantList &args);
         ~KdeEmoticons();
         
         bool removeEmoticon(const QString &emo);
@@ -36,7 +36,7 @@ class KdeEmoticons : public KEmoticonsTheme
     protected:
         void loadTheme();
     
-}
+};
 
 #endif /* KDE_EMOTICONS_H */
 

@@ -21,6 +21,7 @@
 #define KEMOTICONS_H
 
 #include "kemoticons_export.h"
+#include "kemoticonstheme.h"
 #include <QtCore/QObject>
 
 class KEMOTICONS_EXPORT KEmoticons : public QObject
@@ -30,13 +31,13 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
         KEmoticons();
         ~KEmoticons();
         
-        KEmoticonsTheme getTheme();
-        KEmoticonsTheme getTheme(QString name);
+        KEmoticonsTheme *getTheme();
+        KEmoticonsTheme *getTheme(const QString &name);
         
         void setTheme(const KEmoticonsTheme &theme);
         void setTheme(const QString &theme);
         
-        KEmoticonsTheme newTheme(const QString &name);
+        KEmoticonsTheme *newTheme(const QString &name);
         
 };
 
