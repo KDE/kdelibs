@@ -610,7 +610,10 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         if (!widget->size().isValid())
             return;
         pm = PaintBuffer::grab(widget->size());
-        if (!pm->hasAlphaChannel()) {
+        // Qt 4.4 regression #1:
+        // QPainter::CompositionMode_Source is severly broken (cf. kde #160518)
+        //
+        if (1 || !pm->hasAlphaChannel()) {
             pm->fill(Qt::transparent);
         } else {
             QPainter pp(pm);
@@ -619,6 +622,12 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         }
         d = pm;
     }
+    // Qt 4.4 regression #2: 
+    // can't let a painter active on the view as Qt thinks it is opened on the *pixmap*
+    // and prints "paint device can only be painted by one painter at a time" warnings.
+    //
+    // Testcase: paintEvent(...) { QPainter p(this); aChildWidget->render( aPixmapTarget, ...); }
+    //
     p->end();
 
     setInPaintEventFlag( widget, false );
@@ -654,6 +663,10 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
+    // Qt 4.4 regression #3: 
+    //    can't use QWidget::render to directly paint widgets on the view anymore.
+    //    Results are unreliable for subrects, leaving blank squares. (cf. kde #158607)
+    //
     bool buffered = true; // p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
