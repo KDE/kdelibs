@@ -139,7 +139,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
         const QModelIndex index = model()->index(row, Private::CityColumn );
         const QString tzName = index.data(Private::ZoneRole).toString();
         if (tzName == zone) {
-            selectionModel()->select(index, selected ? QItemSelectionModel::Select : QItemSelectionModel::Deselect);
+            selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : QItemSelectionModel::Deselect);
 
             // Ensure the selected item is visible as appropriate.
             scrollTo( index );
