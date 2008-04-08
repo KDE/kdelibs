@@ -526,7 +526,11 @@ bool KUrl::equals( const KUrl &_u, const EqualsOptions& options ) const
   {
     QString path1 = path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
     QString path2 = _u.path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
+#ifdef Q_WS_WIN
+    if ( isLocalFile() && _u.isLocalFile() && 0 != QString::compare( path1, path2, Qt::CaseInsensitive ) )
+#else
     if ( path1 != path2 )
+#endif
       return false;
 
     if ( scheme() == _u.scheme() &&
@@ -776,12 +780,14 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
   return trailingSlash( trailing, QUrl::toLocalFile() );
 }
 
-bool KUrl::isLocalFile() const
+inline static bool hasSubUrl( const QUrl& url );
+
+static inline bool isLocalFile( const QUrl& url )
 {
-  if ( ( scheme() != QLatin1String("file") ) || hasSubUrl() )
+  if ( ( url.scheme() != QLatin1String("file") ) || hasSubUrl( url ) )
      return false;
 
-  if (host().isEmpty() || (host() == QLatin1String("localhost")))
+  if (url.host().isEmpty() || (url.host() == QLatin1String("localhost")))
      return true;
 
   char hostname[ 256 ];
@@ -792,7 +798,12 @@ bool KUrl::isLocalFile() const
   for(char *p = hostname; *p; p++)
      *p = tolower(*p);
 
-  return (host() == QString::fromLatin1( hostname ));
+  return (url.host() == QString::fromLatin1( hostname ));
+}
+
+bool KUrl::isLocalFile() const
+{
+  return ::isLocalFile( *this );
 }
 
 void KUrl::setFileEncoding(const QString &encoding)
@@ -849,30 +860,47 @@ QString KUrl::fileEncoding() const
   return QString();
 }
 
-bool KUrl::hasSubUrl() const
+inline static bool hasSubUrl( const QUrl& url )
 {
   // The isValid call triggers QUrlPrivate::validate which needs the full encoded url,
   // all this takes too much time for isLocalFile()
-  if ( scheme().isEmpty() /*|| !isValid()*/ )
+  if ( url.scheme().isEmpty() /*|| !isValid()*/ )
     return false;
-  const QString ref = fragment();
+  const QByteArray ref( url.fragment().toLatin1() );
   if (ref.isEmpty())
      return false;
-  if (ref.startsWith("gzip:"))
-     return true;
-  if (ref.startsWith("bzip:"))
-     return true;
-  if (ref.startsWith("bzip2:"))
-     return true;
-  if (ref.startsWith("tar:"))
-     return true;
-  if (ref.startsWith("ar:"))
-     return true;
-  if (ref.startsWith("zip:"))
-     return true;
-  if ( scheme() == "error" ) // anything that starts with error: has suburls
+  switch ( ref.data()[0] ) {
+  case 'g':
+    if ( ref.startsWith("gzip:") )
+      return true;
+    break;
+  case 'b':
+    if ( ref.startsWith("bzip:") || ref.startsWith("bzip2:") )
+      return true;
+    break;
+  case 't':
+    if ( ref.startsWith("tar:") )
+      return true;
+    break;
+  case 'a':
+    if ( ref.startsWith("ar:") )
+      return true;
+    break;
+  case 'z':
+    if ( ref.startsWith("zip:") )
+      return true;
+    break;
+  default:
+    break;
+  }
+  if ( url.scheme() == "error" ) // anything that starts with error: has suburls
      return true;
   return false;
+}
+
+bool KUrl::hasSubUrl() const
+{
+  return ::hasSubUrl( *this );
 }
 
 QString KUrl::url( AdjustPathOption trailing ) const
@@ -1443,6 +1471,10 @@ bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptio
         options |= QUrl::StripTrailingSlash;
     if ( _options & KUrl::CompareWithoutFragment )
         options |= QUrl::RemoveFragment;
+#ifdef Q_WS_WIN
+    if ( ::isLocalFile( u1 ) && ::isLocalFile( u2 ) )
+      return 0 == QString::compare( u1.toString( options ), u2.toString( options ), Qt::CaseInsensitive );
+#endif
     return u1.toString( options ) == u2.toString( options );
 
 #if 0

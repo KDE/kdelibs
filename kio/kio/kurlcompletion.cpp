@@ -955,7 +955,13 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL &u
 	}
 	else if ( !cwd.isEmpty() ) {
 		// current directory
-		dirList.append( cwd + QLatin1Char('/') + directory );
+		QString dirToAdd = cwd;
+		if ( !directory.isEmpty() ) {
+			if ( !cwd.endsWith('/') )
+				dirToAdd.append( QLatin1Char('/') );
+			dirToAdd.append( directory );
+		}
+		dirList.append( dirToAdd );
 	}
 
 	// No hidden files unless the user types "."
