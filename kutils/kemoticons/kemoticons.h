@@ -35,7 +35,7 @@ class KEmoticonsPrivate
         void loadServiceList();
         void loadThemeLibrary(const KService::Ptr &service);
         
-        QHash<QString, KEmoticonsTheme*> m_loaded;
+        QList<KService::Ptr> m_loaded;
 };
 
 class KEMOTICONS_EXPORT KEmoticons : public QObject
@@ -48,7 +48,7 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
         KEmoticonsTheme getTheme();
         QList<KEmoticonsTheme *> getTheme(const QString &name);
         
-        QHash<QString, KEmoticonsTheme> getThemeList();
+        QList<KEmoticonsTheme> getThemeList();
         
         void setTheme(const KEmoticonsTheme &theme);
         void setTheme(const QString &theme);

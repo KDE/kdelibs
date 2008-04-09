@@ -17,13 +17,6 @@ int main(int argc, char **argv)
     KApplication app;
     
     KEmoticons e;
-    QHash<QString, KEmoticonsTheme*> ls = e.getThemeList();
-    QStringList txt;
-    QHash<QString, KEmoticonsTheme*>::const_iterator i = ls.constBegin();
-    for(; i != ls.constEnd(); ++i) {
-        txt << i.key();
-    }
-    KMessageBox::information(0, txt.join("\n"));
 
     return 0;
 }

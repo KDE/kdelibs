@@ -32,15 +32,16 @@ KEmoticonsPrivate::KEmoticonsPrivate()
 void KEmoticonsPrivate::loadServiceList()
 {
     QString constraint("(exist Library)");
-    KService::List offers = KServiceTypeTrader::self()->query("KEmoticons", constraint);
-    for (int i = 0; i < offers.count(); i++) {
-        kDebug()<<"NAME:"<<offers.at(i)->name();
-        loadThemeLibrary(offers.at(i));
+    KService::List services = KServiceTypeTrader::self()->query("KEmoticons", constraint);
+    foreach (KService::Ptr service, services) {
+        kDebug()<<"NAME:"<<service->name();
+        m_loaded.append(service);
     }    
 }
 
 void KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &service)
 {
+    /*
     KPluginFactory *factory = KPluginLoader(service->library()).factory();
     if (!factory)
     {
@@ -49,6 +50,7 @@ void KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &service)
     }
     KEmoticonsTheme *theme = factory->create<KEmoticonsTheme>(0);
     m_loaded.insert(service->name(), theme);
+    */
 }
 
 KEmoticons::KEmoticons()
@@ -59,15 +61,6 @@ KEmoticons::KEmoticons()
 
 KEmoticons::~KEmoticons()
 {
-    QHash<QString, KEmoticonsTheme*>::const_iterator i = d->m_loaded.constBegin();
-    QHash<QString, KEmoticonsTheme*>::const_iterator end = d->m_loaded.constEnd();
-    
-    for (; i != end; ++i) {
-        delete i.value();
-    }
-    
-    d->m_loaded.clear();
-    
     delete d;
 }
 
@@ -87,9 +80,8 @@ QList<KEmoticonsTheme *> KEmoticons::getTheme(const QString &name)
     return ls;
 }
 
-QHash<QString, KEmoticonsTheme> KEmoticons::getThemeList()
+QList<KEmoticonsTheme> KEmoticons::getThemeList()
 {
-//     return d->m_loaded;
 }
 
 void KEmoticons::setTheme(const KEmoticonsTheme &theme)
