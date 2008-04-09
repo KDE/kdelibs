@@ -217,6 +217,12 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qrectf_qrectf( [-1.1,-2.2,3.3,4.4] ) == [-1.1,-2.2,3.3,4.4] )
 	end
 
+	def testColor
+		assert( TestObject1.func_qcolor_qcolor(nil) == nil )
+		assert( TestObject1.func_qcolor_qcolor("") == nil )
+		assert( TestObject1.func_qcolor_qcolor("#0066ff") == "#0066ff" )
+	end
+
 	def testUrl
 		#assert( TestObject1.func_qurl_qurl(nil) == nil )
 		assert( TestObject1.func_qurl_qurl("") == "" )

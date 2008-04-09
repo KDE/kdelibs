@@ -284,6 +284,14 @@ var testobj2 = TestObject2
     } catch(error) { tester.passed(); }
 }
 
+// color
+{
+    //TODO following crashes in kjsembed;
+    //var c = new QColor("#0066ff");
+    //println("Color: " + c);
+    //tester.assert(testobj1.func_qcolor_qcolor(c), c);
+}
+
 // stringlist
 {
     tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array()), new Array());
@@ -333,6 +341,8 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_qurl_qurl("/home/me"), "/home/me");
     tester.assert(testobj1.func_qurl_qurl("file://home/me/myfile.txt"), "file://home/me/myfile.txt");
     tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere/path/file?arg=val"), "http://nowhere.anywhere/path/file?arg=val");
+
+    tester.assert(testobj1.func_qurl_kurl("/home/otheruser/"), "/home/otheruser/");
 
     //TODO following crashes in kjsembed;
     //tester.assert(testobj1.func_kurl_kurl("/home/otheruser/"), "/home/otheruser/");

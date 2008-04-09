@@ -140,6 +140,7 @@ class TestObject : public QObject
         QRect func_qrect_qrect(const QRect&);
         QRectF func_qrectf_qrectf(const QRectF&);
         QUrl func_qurl_qurl(const QUrl&);
+        QUrl func_qurl_kurl(const KUrl&);
         KUrl func_kurl_kurl(const KUrl&);
 
         QColor func_qcolor_qcolor(const QColor&);

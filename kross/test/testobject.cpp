@@ -164,6 +164,7 @@ QPointF TestObject::func_qpointf_qpointf(const QPointF& p) { return p; }
 QRect TestObject::func_qrect_qrect(const QRect& r) { return r; }
 QRectF TestObject::func_qrectf_qrectf(const QRectF& r) { return r; }
 QUrl TestObject::func_qurl_qurl(const QUrl& u) { return u; }
+QUrl TestObject::func_qurl_kurl(const KUrl& u) { return u; }
 KUrl TestObject::func_kurl_kurl(const KUrl& u) { return u; }
 
 QColor TestObject::func_qcolor_qcolor(const QColor& c) { return c; }

@@ -138,27 +138,15 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qurl_qurl("http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456") == "http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456" )
 		self.assert_( self.object1.func_kurl_kurl("http://www.kde.org/whatiskde/") == "http://www.kde.org/whatiskde/" )
 
-	#def testColor(self):
-		#import Kross
-		#color = Kross.color()
+	def testColor(self):
+		self.assert_( self.object1.func_qcolor_qcolor(None) == None )
+		self.assert_( self.object1.func_qcolor_qcolor("") == None )
+		self.assert_( self.object1.func_qcolor_qcolor("#0066ff") == "#0066ff" )
+		#self.assert_( self.object1.func_qcolor_qcolor((0,0,255)) == "#0000ff" )
+		#self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)) == "#0000ff" )
 
-		#color.setNamedColor("#ff0000");
-		#self.assert_( color.name() == "#ff0000" )
-		#self.assert_( color.red() == 255 and color.green() == 0 and color.blue() == 0 and color.alpha() == 255 )
-
-		#color.setCmyk(1,2,3,4,5)
-		#self.assert_( color.name() == "#fafaf9" )
-		#self.assert_( color.cyan() == 1 and color.magenta() == 2 and color.yellow() == 3 and color.black() == 4 and color.alpha() == 5 )
-
-		#self.assert_( self.object1.func_qcolor_qcolor("#0066ff").name() == "#0066ff" )
-		#self.assert_( self.object1.func_qcolor_qcolor((0,0,255)).name() == "#0000ff" )
-		#self.assert_( self.object1.func_qcolor_qcolor((0.0,0.0,1.0)).name() == "#0000ff" )
-
-		##self.object1.func_qfont_qfont
-		##self.object1.func_qbrush_qbrush
 		##self.object1.func_qtime_qtime
 		##self.object1.func_qdate_qdate
-		##self.object1.func_qdatetime_qdatetime
 
 	def testVariant(self):
 		self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
