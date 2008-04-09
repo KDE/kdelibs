@@ -3012,7 +3012,6 @@ bool KHTMLPart::findTextNext( bool reverse )
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
   khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
-  khtml::RenderTextArea *tmpTextArea=0L;
   //kDebug(6050) << "obj=" << obj << " end=" << end;
   while( res == KFind::NoMatch )
   {
@@ -3035,16 +3034,12 @@ bool KHTMLPart::findTextNext( bool reverse )
       {
         // Grab text from render object
         QString s;
-        bool renderAreaText = obj->parent() && (QByteArray(obj->parent()->renderName())== "RenderTextArea");
-        bool renderLineText = (QByteArray(obj->renderName())== "RenderLineEdit");
-        if ( renderAreaText )
+        if ( obj->renderName() == QLatin1String("RenderTextArea") )
         {
-          khtml::RenderTextArea *parent= static_cast<khtml::RenderTextArea *>(obj->parent());
-          s = parent->text();
+          s = static_cast<khtml::RenderTextArea *>(obj)->text();
           s = s.replace(0xa0, ' ');
-          tmpTextArea = parent;
         }
-        else if ( renderLineText )
+        else if ( obj->renderName() ==  QLatin1String("RenderLineEdit") )
         {
           khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj);
           if (parentLine->widget()->echoMode() == QLineEdit::Normal)
@@ -3074,7 +3069,7 @@ bool KHTMLPart::findTextNext( bool reverse )
             isLink = true;
           }
 
-          if ( isLink && obj->parent()!=tmpTextArea )
+          if ( isLink )
           {
             s = static_cast<khtml::RenderText *>(obj)->data().string();
             s = s.replace(0xa0, ' ');
@@ -3187,25 +3182,20 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   d->m_startOffset = index - (*prev).index;
 
   khtml::RenderObject* obj = node->renderer();
-  khtml::RenderTextArea *parent = 0L;
-  khtml::RenderLineEdit *parentLine = 0L;
-  bool renderLineText =false;
+  khtml::RenderTextArea *renderTextArea = 0L;
+  khtml::RenderLineEdit *renderLineEdit = 0L;
 
   QRect highlightedRect;
-  bool renderAreaText =false;
   Q_ASSERT( obj );
   if ( obj )
   {
     int x = 0, y = 0;
-    renderAreaText = (QByteArray(obj->parent()->renderName())== "RenderTextArea");
-    renderLineText = (QByteArray(obj->renderName())== "RenderLineEdit");
 
-
-    if( renderAreaText )
-      parent= static_cast<khtml::RenderTextArea *>(obj->parent());
-    if ( renderLineText )
-      parentLine= static_cast<khtml::RenderLineEdit *>(obj);
-    if ( !renderLineText )
+    if ( obj->renderName() == QLatin1String("RenderTextArea") )
+      renderTextArea = static_cast<khtml::RenderTextArea *>(obj);
+    if ( obj->renderName() == QLatin1String("RenderLineEdit") )
+      renderLineEdit = static_cast<khtml::RenderLineEdit *>(obj);
+    if ( !renderLineEdit && !renderTextArea )
       //if (static_cast<khtml::RenderText *>(node->renderer())
       //    ->posOfChar(d->m_startOffset, x, y))
       {
@@ -3269,16 +3259,10 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   for ( ; it != d->m_stringPortions.end() ; ++it )
     kDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node;
 #endif
-  if( renderAreaText )
-  {
-    if( parent )
-      parent->highLightWord( length, d->m_endOffset-length );
-  }
-  else if ( renderLineText )
-  {
-    if( parentLine )
-      parentLine->highLightWord( length, d->m_endOffset-length );
-  }
+  if ( renderTextArea )
+    renderTextArea->highLightWord( length, d->m_endOffset-length );
+  else if ( renderLineEdit )
+    renderLineEdit->highLightWord( length, d->m_endOffset-length );
   else
   {
     d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
