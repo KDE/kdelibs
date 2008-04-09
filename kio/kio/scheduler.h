@@ -110,7 +110,7 @@ namespace KIO {
     class KIO_EXPORT Scheduler : public QObject
     {
         Q_OBJECT
-
+        Q_CLASSINFO("D-Bus Interface", "org.kde.KIO.Scheduler")
     public:
         /**
          * Register @p job with the scheduler.
