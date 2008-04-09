@@ -43,6 +43,7 @@
 
 class QPainter;
 class QTextStream;
+template<class Key, class T> class QCache;
 
 #ifndef NDEBUG
 #define KHTMLAssert( x ) if( !(x) ) { \
@@ -133,6 +134,7 @@ class RenderObject : public CachedObjectClient
     RenderObject(const RenderObject&);
     RenderObject& operator=(const RenderObject&);
 public:
+    KHTML_EXPORT static void cleanup();
 
     RenderObject(DOM::NodeImpl* node);
     virtual ~RenderObject();
@@ -854,6 +856,7 @@ private:
 
     // ### we have 16 + 27 bits.
 
+    static QCache<quint64, QPixmap> *s_dashedLineCache;
 
     void arenaDelete(RenderArena *arena, void *objectBase);
 

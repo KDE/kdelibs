@@ -93,6 +93,7 @@ KHTMLGlobal::~KHTMLGlobal()
         // clean up static data
         khtml::CSSStyleSelector::clear();
         khtml::RenderStyle::cleanup();
+        khtml::RenderObject::cleanup();
         khtml::PaintBuffer::cleanup();
         khtml::MediaQueryEvaluator::cleanup();
         khtml::Cache::clear();

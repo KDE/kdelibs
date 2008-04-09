@@ -79,6 +79,14 @@ using namespace khtml;
 static void *baseOfRenderObjectBeingDeleted;
 #endif
 
+QCache<quint64, QPixmap> *RenderObject::s_dashedLineCache = 0;
+
+void RenderObject::cleanup()
+{
+    delete s_dashedLineCache;
+    s_dashedLineCache = 0;
+}
+
 //#define MASK_DEBUG
 
 void* RenderObject::operator new(size_t sz, RenderArena* renderArena) throw()
@@ -748,6 +756,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                               BorderSide s, QColor c, const QColor& textcolor, EBorderStyle style,
                               int adjbw1, int adjbw2, bool invalidisInvert)
 {
+    if (p->hasClipping() && !p->clipRegion().boundingRect().intersects(QRect(x1, y1, x2 - x1, y2 - y1)))
+        return;
+
     int width = (s==BSTop||s==BSBottom?y2-y1:x2-x1);
 
     if(style == DOUBLE && width < 3)
@@ -810,20 +821,67 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             }
         }
 
-        QPainterPath path;
-        if (s == BSBottom || s == BSTop) //Horizontal
+        if ((onLen + offLen) <= 32 && width < 0x7fff)
         {
-            for (int x = x1; x < x2; x += onLen + offLen)
-                path.addRect(x, y1, qMin(onLen, (x2 - x)), width);
-        }
-        else //Vertical
-        {
-            for (int y = y1; y < y2; y += onLen + offLen)
-                path.addRect(x1, y, width, qMin(onLen, (y2 - y)));
-        }
+            if (!s_dashedLineCache)
+                s_dashedLineCache = new QCache<quint64, QPixmap>(30);
 
-        //Finally paint the line
-        p->fillPath(path, c);
+            bool horizontal = (s == BSBottom || s == BSTop);
+            quint64 key = int(horizontal) << 31 | (onLen & 0xff) << 23 | (offLen & 0xff) << 15 | (width & 0x7fff);
+            key = key << 32 | c.rgba();
+
+            QPixmap *tile = s_dashedLineCache->object(key);
+            if (!tile)
+            {
+                QPainterPath path;
+                int size = (onLen + offLen) * (64 / (onLen + offLen));
+                if (horizontal)
+                {
+                    tile = new QPixmap(size, width);
+                    tile->fill(Qt::transparent);
+                    for (int x = 0; x < tile->width(); x += onLen + offLen)
+                        path.addRect(x, 0, onLen, tile->height());
+                }
+                else //Vertical
+                {
+                    tile = new QPixmap(width, size);
+                    tile->fill(Qt::transparent);
+                    for (int y = 0; y < tile->height(); y += onLen + offLen)
+                        path.addRect(0, y, tile->width(), onLen);
+                }
+                QPainter p2(tile);
+                p2.fillPath(path, c);
+                p2.end();
+                s_dashedLineCache->insert(key, tile);
+            }
+
+            QRect r = QRect(x1, y1, x2 - x1, y2 - y1);
+            if (p->hasClipping())
+                r &= p->clipRegion().boundingRect();
+
+            // Make sure we're drawing the pattern in the correct phase
+            if (horizontal && r.left() > x1)
+                r.setLeft(r.left() - onLen - offLen + ((x1 - r.left()) % (onLen + offLen)));
+            else if (!horizontal && r.top() > y1)
+                r.setTop(r.top() - onLen - offLen + ((y1 - r.top()) % (onLen + offLen)));
+
+            p->drawTiledPixmap(r, *tile);
+        }
+        else
+        {
+            QPainterPath path;
+            if (s == BSBottom || s == BSTop) //Horizontal
+            {
+                for (int x = x1; x < x2; x += onLen + offLen)
+                    path.addRect(x, y1, qMin(onLen, (x2 - x)), width);
+            }
+            else //Vertical
+            {
+                for (int y = y1; y < y2; y += onLen + offLen)
+                    path.addRect(x1, y, width, qMin(onLen, (y2 - y)));
+            }
+            p->fillPath(path, c);
+        }
         break;
     }
     case DOUBLE:
