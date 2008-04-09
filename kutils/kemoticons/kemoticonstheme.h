@@ -21,9 +21,10 @@
 #define KEMOTICONS_THEME_H
 
 #include "kemoticons_export.h"
-#include <QtCore/QString>
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
+
+class QString;
 
 class KEmoticonsThemePrivate
 {
@@ -38,14 +39,14 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
     public:
         KEmoticonsTheme(QObject *parent, const QVariantList &args);
         virtual ~KEmoticonsTheme();
-        virtual bool removeEmoticon(const QString &emo) = 0;
-        virtual bool addEmoticon(const QString &emo, const QString &text, bool copy) = 0;
-        virtual void save() = 0;
+        virtual void loadTheme(const QString &theme);
+        virtual bool removeEmoticon(const QString &emo);
+        virtual bool addEmoticon(const QString &emo, const QString &text, bool copy);
+        virtual void save();
         
         QString parseEmoticons(const QString &text);
         
     protected:
-        virtual void loadTheme() = 0;
         KEmoticonsThemePrivate * const d;
         
 };

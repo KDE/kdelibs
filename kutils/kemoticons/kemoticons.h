@@ -45,10 +45,10 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
         KEmoticons();
         ~KEmoticons();
         
-        KEmoticonsTheme *getTheme();
+        KEmoticonsTheme getTheme();
         QList<KEmoticonsTheme *> getTheme(const QString &name);
         
-        QHash<QString, KEmoticonsTheme*> getThemeList();
+        QHash<QString, KEmoticonsTheme> getThemeList();
         
         void setTheme(const KEmoticonsTheme &theme);
         void setTheme(const QString &theme);

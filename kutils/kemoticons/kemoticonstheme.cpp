@@ -33,4 +33,28 @@ KEmoticonsTheme::~KEmoticonsTheme()
 {
     delete d;
 }
+
+void KEmoticonsTheme::loadTheme(const QString &theme)
+{
+    Q_UNUSED(theme);
+}
+
+bool KEmoticonsTheme::removeEmoticon(const QString &emo)
+{
+    Q_UNUSED(emo);
+    return false;
+}
+
+bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, bool copy)
+{
+    Q_UNUSED(emo);
+    Q_UNUSED(text);
+    Q_UNUSED(copy);
+    return false;
+}
+
+void KEmoticonsTheme::save()
+{
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

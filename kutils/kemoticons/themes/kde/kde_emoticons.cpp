@@ -45,7 +45,7 @@ void KdeEmoticons::save()
 {
 }
 
-void KdeEmoticons::loadTheme()
+void KdeEmoticons::loadTheme(const QString &emo)
 {
 }
 
