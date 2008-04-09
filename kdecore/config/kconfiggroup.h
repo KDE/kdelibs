@@ -135,7 +135,7 @@ public:
      *
      * @since 4.1
      */
-    void copyTo(KConfigBase *other, WriteConfigFlags pFlags = Normal) const;
+    void copyTo(KConfigBase *other) const;
 
     /**
      * Changes the group that this group belongs to.
@@ -145,7 +145,7 @@ public:
      *
      * @since 4.1
      */
-    void reparent(KConfigBase* parent, WriteConfigFlags pFlags = Normal);
+    void reparent(KConfigBase* parent);
 
     /**
      * Returns the group that this group belongs to, can be invalid if this is a top-level group.
