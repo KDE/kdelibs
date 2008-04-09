@@ -22,7 +22,21 @@
 
 #include "kemoticons_export.h"
 #include "kemoticonstheme.h"
+
 #include <QtCore/QObject>
+#include <QtCore/QHash>
+
+#include <KServiceTypeTrader>
+
+class KEmoticonsPrivate
+{
+    public:
+        KEmoticonsPrivate();
+        void loadServiceList();
+        void loadThemeLibrary(const KService::Ptr &service);
+        
+        QHash<QString, KEmoticonsTheme*> m_loaded;
+};
 
 class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
@@ -32,12 +46,17 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
         ~KEmoticons();
         
         KEmoticonsTheme *getTheme();
-        KEmoticonsTheme *getTheme(const QString &name);
+        QList<KEmoticonsTheme *> getTheme(const QString &name);
+        
+        QHash<QString, KEmoticonsTheme*> getThemeList();
         
         void setTheme(const KEmoticonsTheme &theme);
         void setTheme(const QString &theme);
         
         KEmoticonsTheme *newTheme(const QString &name);
+    
+    private:
+        KEmoticonsPrivate * const d;
         
 };
 

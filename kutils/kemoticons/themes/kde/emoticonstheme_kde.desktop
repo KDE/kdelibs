@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Service
+Name=Kde Emoticons Theme Library
+Comment=Library to use KDE emoticons theme
+X-KDE-ServiceTypes=KEmoticons
+X-KDE-Library=emoticonstheme_kde

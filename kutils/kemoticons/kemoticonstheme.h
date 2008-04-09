@@ -29,10 +29,10 @@ class KEmoticonsThemePrivate
 {
     public:
         KEmoticonsThemePrivate();
-        QString themeName;
+        QString m_themeName;
 };
 
-class KEmoticonsTheme : public QObject
+class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
 {
     Q_OBJECT
     public:

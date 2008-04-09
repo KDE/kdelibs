@@ -3,6 +3,7 @@ project(kemoticons)
 find_package(KDE4 REQUIRED)
 
 add_subdirectory(themes)
+add_subdirectory(tests)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDES})
 
@@ -10,10 +11,10 @@ set(kemoticons_LIB_SRCS kemoticons.cpp kemoticonstheme.cpp)
 
 kde4_add_library(kemoticons SHARED ${kemoticons_LIB_SRCS})
 
-target_link_libraries(kemoticons ${KDE4_KDEUI_LIBS} )
+target_link_libraries(kemoticons ${KDE4_KDEUI_LIBS})
 
-set_target_properties(kemoticons PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+set_target_properties(kemoticons PROPERTIES VERSION 1.0.0 SOVERSION 1)
 
 install(TARGETS kemoticons DESTINATION ${LIB_INSTALL_DIR})
 
-install(FILES emoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+install(FILES kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})

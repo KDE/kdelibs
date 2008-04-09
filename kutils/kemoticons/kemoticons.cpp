@@ -19,38 +19,78 @@
  ***************************************************************************/
 
 #include "kemoticons.h"
-#include <QFile>
-#include <QApplication>
-#include <QFileInfo>
-#include <QDir>
+
+#include <KPluginLoader>
 #include <KDebug>
 #include <KStandardDirs>
-#include <KArchive>
-#include <KProgressDialog>
-#include <KMessageBox>
-#include <KMimeType>
-#include <KZip>
-#include <KTar>
-#include <kio/netaccess.h>
-#include <klocalizedstring.h>
 
+
+KEmoticonsPrivate::KEmoticonsPrivate()
+{
+}
+
+void KEmoticonsPrivate::loadServiceList()
+{
+    QString constraint("(exist Library)");
+    KService::List offers = KServiceTypeTrader::self()->query("KEmoticons", constraint);
+    for(int i = 0; i < offers.count(); i++) {
+        kDebug()<<"NAME:"<<offers.at(i)->name();
+        loadThemeLibrary(offers.at(i));
+    }    
+}
+
+void KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &service)
+{
+    KPluginFactory *factory = KPluginLoader(service->library()).factory();
+    if (!factory)
+    {
+        kWarning()<<"Invalid plugin factory for"<<service->library();
+        return;
+    }
+    KEmoticonsTheme *theme = factory->create<KEmoticonsTheme>(0);
+    m_loaded.insert(service->name(), theme);
+}
 
 KEmoticons::KEmoticons()
+    : d(new KEmoticonsPrivate)
 {
+    d->loadServiceList();
 }
 
 KEmoticons::~KEmoticons()
 {
+    QHash<QString, KEmoticonsTheme*>::const_iterator i = d->m_loaded.constBegin();
+    for(; i != d->m_loaded.constEnd(); ++i) {
+        delete i.value();
+    }
+    
+    d->m_loaded.clear();
+    
+    delete d;
 }
 
 KEmoticonsTheme *KEmoticons::getTheme()
 {
 }
 
-KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
+QList<KEmoticonsTheme *> KEmoticons::getTheme(const QString &name)
 {
-}
+    QStringList themeDirs = KGlobal::dirs()->findDirs("emoticons", name);
+    QList<KEmoticonsTheme *> ls;
+    
+    if (themeDirs.size()) {
         
+    }
+    
+    return ls;
+    
+}
+
+QHash<QString, KEmoticonsTheme*> KEmoticons::getThemeList()
+{
+    return d->m_loaded;
+}
+
 void KEmoticons::setTheme(const KEmoticonsTheme &theme)
 {
 }

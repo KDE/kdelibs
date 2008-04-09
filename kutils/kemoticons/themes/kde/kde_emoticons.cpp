@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "kde_emoticons.h"
+
 #include <KPluginFactory>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
@@ -25,6 +26,26 @@ K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
 
 KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
     : KEmoticonsTheme(parent, args)
+{
+}
+
+KdeEmoticons::~KdeEmoticons()
+{
+}
+
+bool KdeEmoticons::removeEmoticon(const QString &emo)
+{
+}
+
+bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
+{
+}
+
+void KdeEmoticons::save()
+{
+}
+
+void KdeEmoticons::loadTheme()
 {
 }
 
