@@ -452,7 +452,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       defaultValue = "default" + name;
 
     } else if ( type == "Color" && !defaultValue.isEmpty() ) {
-      QRegExp colorRe("\\d+,\\s*\\d+,\\s*\\d+");
+      QRegExp colorRe("\\d+,\\s*\\d+,\\s*\\d+(,\\s*\\d+)?");
       if (colorRe.exactMatch(defaultValue))
       {
         defaultValue = "QColor( " + defaultValue + " )";
