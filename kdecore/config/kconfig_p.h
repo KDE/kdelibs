@@ -59,7 +59,8 @@ public:
     QStringList groupList(const QByteArray& group) const;
     // copies the entries from @p source to @p otherGroup changing all occurrences
     // of @p source with @p destination
-    void copyGroup(const QByteArray& source, const QByteArray& destination, KConfigGroup *otherGroup) const;
+    void copyGroup(const QByteArray& source, const QByteArray& destination,
+                   KConfigGroup *otherGroup, KConfigBase::WriteConfigFlags flags) const;
 
 protected:
     KSharedPtr<KConfigBackend> mBackend;

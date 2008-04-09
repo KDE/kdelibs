@@ -1288,22 +1288,22 @@ bool KConfigGroup::isGroupImmutableImpl(const QByteArray& b) const
     return config()->isGroupImmutable(d->fullName(b));
 }
 
-void KConfigGroup::copyTo(KConfigBase* other) const
+void KConfigGroup::copyTo(KConfigBase* other, WriteConfigFlags pFlags) const
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::copyTo", "accessing an invalid group");
     Q_ASSERT(other != 0);
 
     if (KConfigGroup *otherGroup = dynamic_cast<KConfigGroup*>(other)) {
-        config()->d_func()->copyGroup(d->fullName(), otherGroup->d->fullName(), otherGroup);
+        config()->d_func()->copyGroup(d->fullName(), otherGroup->d->fullName(), otherGroup, pFlags);
     } else if (KConfig* otherConfig = dynamic_cast<KConfig*>(other)) {
         KConfigGroup newGroup = otherConfig->group(d->fullName());
-        otherConfig->d_func()->copyGroup(d->fullName(), d->fullName(), &newGroup);
+        otherConfig->d_func()->copyGroup(d->fullName(), d->fullName(), &newGroup, pFlags);
     } else {
         Q_ASSERT_X(false, "KConfigGroup::copyTo", "unknown type of KConfigBase");
     }
 }
 
-void KConfigGroup::reparent(KConfigBase* parent)
+void KConfigGroup::reparent(KConfigBase* parent, WriteConfigFlags pFlags)
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::reparent", "accessing an invalid group");
     Q_ASSERT_X(!d->bConst, "KConfigGroup::reparent", "reparenting a read-only group");
@@ -1313,6 +1313,6 @@ void KConfigGroup::reparent(KConfigBase* parent)
     KConfigGroup oldGroup(*this);
 
     d = KConfigGroupPrivate::create(parent, d->mName, false, false);
-    oldGroup.copyTo(this);
+    oldGroup.copyTo(this, pFlags);
     oldGroup.deleteGroup(); // so that the entries with the old group name are deleted on sync
 }

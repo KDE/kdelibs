@@ -114,11 +114,16 @@ bool KConfigPrivate::lockLocal()
 }
 
 void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& destination,
-                                KConfigGroup *otherGroup) const
+                                KConfigGroup *otherGroup, KConfigBase::WriteConfigFlags flags) const
 {
     KEntryMap& otherMap = otherGroup->config()->d_ptr->entryMap;
     const int len = source.length();
     const bool sameName = (destination == source);
+
+    // we keep this bool outside the foreach loop so that if
+    // the group is empty, we don't end up marking the other config
+    // as dirty erroneously
+    bool dirtied = false;
 
     foreach (const KEntryKey& key, entryMap.keys()) {
         const QByteArray& group = key.mGroup;
@@ -132,14 +137,26 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
 
         KEntryKey newKey = key;
 
+        if (flags & KConfigBase::Localized) {
+            newKey.bLocal = true;
+        }
+
         if (!sameName)
             newKey.mGroup.replace(0, len, destination);
 
         KEntry entry = entryMap[key];
-        entry.bDirty = true;
+        dirtied = entry.bDirty = flags & KConfigBase::Persistent;
+
+        if (flags & KConfigBase::Global) {
+            entry.bGlobal = true;
+        }
+
         otherMap[newKey] = entry;
     }
-    otherGroup->config()->d_ptr->bDirty = true;
+
+    if (dirtied) {
+        otherGroup->config()->d_ptr->bDirty = true;
+    }
 }
 
 KConfig::KConfig( const QString& file, OpenFlags mode,
