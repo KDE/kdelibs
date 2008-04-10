@@ -213,9 +213,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLGlobal::registerPart( this );
-    setComponentData(  KHTMLGlobal::componentData(), prof == BrowserViewGUI && !parentPart() );
-    // TODO KDE4 - don't load plugins yet
-    //setComponentData( KHTMLGlobal::componentData(), false );
+    setComponentData( KHTMLGlobal::componentData(), false );
     init( new KHTMLView( this, parentWidget ), prof );
 }
 
@@ -224,9 +222,7 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLGlobal::registerPart( this );
-    setComponentData(  KHTMLGlobal::componentData(), prof == BrowserViewGUI && !parentPart() );
-    // TODO KDE4 - don't load plugins yet
-    //setComponentData( KHTMLGlobal::componentData(), false );
+    setComponentData( KHTMLGlobal::componentData(), false );
     assert( view );
     if (!view->part())
         view->setPart( this );
@@ -463,13 +459,13 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
         kFatal() << "Something is very wrong in KHTMLPart!";
   }
 
-  // TODO KDE4 - load plugins now (see also the constructors)
-  //if ( prof == BrowserViewGUI && !parentPart() )
-  //        loadPlugins( partObject(), this, componentData() );
+  if (prof == BrowserViewGUI && !parentPart())
+      loadPlugins();
 
   // "khtml" catalog does not exist, our translations are in kdelibs.
   // removing this catalog from KGlobal::locale() prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
+  // DF: a better fix would be to set the right catalog name in the KComponentData!
   KGlobal::locale()->removeCatalog("khtml");
 }
 
