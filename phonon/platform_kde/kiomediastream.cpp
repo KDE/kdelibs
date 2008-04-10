@@ -134,11 +134,10 @@ void KioMediaStream::seekStream(qint64 position)
     Q_ASSERT(d->kiojob);
     kDebug(600) << position << " = " << qulonglong(position);
     d->seeking = true;
+    d->seekPosition = position;
     if (d->open) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(d->kiojob);
         filejob->seek(position);
-    } else {
-        d->seekPosition = position;
     }
 }
 
@@ -194,7 +193,15 @@ void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
         }
         // go to ErrorState - NormalError
         q->error(NormalError, kioErrorString);
+    } else if (seeking) {
+        open = false;
+        kiojob = 0;
+        endOfDataSent = false;
+        reading = false;
+        q->reset();
+        return;
     }
+    open = false;
     kiojob = 0;
     kDebug(600) << "KIO Job is done (will delete itself) and d->kiojob reset to 0";
     endOfDataSent = true;
