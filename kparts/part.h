@@ -366,6 +366,7 @@ protected:
      * @since 4.1
      */
     void loadPlugins();
+    using PartBase::loadPlugins;
 
 protected Q_SLOTS:
     /**
