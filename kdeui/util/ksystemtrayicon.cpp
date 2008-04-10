@@ -28,9 +28,9 @@
 #include "kshortcut.h"
 #include "kactioncollection.h"
 #include "kstandardaction.h"
+#include <kwindowsystem.h>
 
 #ifdef Q_WS_X11
-#include <kwindowsystem.h>
 #include <QX11Info>
 #endif
 
@@ -122,7 +122,7 @@ void KSystemTrayIcon::init( QWidget* parent )
 
 QWidget *KSystemTrayIcon::parentWidget() const
 {
-	return d->window;
+    return d->window;
 }
 
 KSystemTrayIcon::~KSystemTrayIcon()
@@ -275,6 +275,15 @@ void KSystemTrayIcon::minimizeRestore( bool restore )
         KWindowSystem::activateWindow(pw->winId());
     } else {
         d->onAllDesktops = info.onAllDesktops();
+        pw->hide();
+    }
+#else
+    if ( restore )
+    {
+        pw->show();
+        pw->raise();
+        KWindowSystem::forceActiveWindow( pw->winId() );
+    } else {
         pw->hide();
     }
 #endif
