@@ -26,7 +26,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
                           const QVariantList& )
  : KParts::ReadWritePart( parent )
 {
-  setComponentData( NotepadFactory::componentData() );
+  setComponentData(NotepadFactory::componentData(), false);
 
   m_edit = new QTextEdit( parentWidget );
   m_edit->setPlainText( "NotepadPart's multiline edit" );
@@ -42,6 +42,9 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
   setXMLFile( "notepadpart.rc" );
 
   setReadWrite( true );
+
+  // Always write this as the last line of your constructor
+  loadPlugins();
 }
 
 NotepadPart::~NotepadPart()

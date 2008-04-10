@@ -103,6 +103,8 @@ protected:
    * because it loads the i18n catalogs.
    */
   virtual void setComponentData(const KComponentData &componentData, bool loadPlugins);
+  // TODO KDE5: merge the above two methods, using loadPlugins=true. Or better, remove loadPlugins
+  // altogether and change plugins to call loadPlugins() manually at the end of their ctor.
 
   /**
    * We have three different policies, whether to load new plugins or not. The
@@ -356,6 +358,14 @@ protected:
      * @return a container widget owned by the Part's GUI.
      */
     QWidget *hostContainer( const QString &containerName );
+
+    /**
+     * Load this part's plugins now.
+     * Normally you want to call this at the end of the part constructor,
+     * if you used setComponentData(componentData, false)
+     * @since 4.1
+     */
+    void loadPlugins();
 
 protected Q_SLOTS:
     /**

@@ -23,8 +23,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     : KParts::ReadOnlyPart(parent),
     m_componentData("kpartstestpart")
 {
-    setObjectName( "Part1" );
-    setComponentData( m_componentData );
+    setComponentData(m_componentData, false);
     m_edit = new QTextEdit( parentWidget );
     setWidget( m_edit );
 
@@ -35,6 +34,8 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 
     KAction* testAction = actionCollection()->addAction("p1_blah");
     testAction->setText("Part1's action");
+
+    loadPlugins();
 }
 
 Part1::~Part1()
@@ -66,8 +67,7 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
     : KParts::Part(parent),
     m_componentData("part2")
 {
-    setObjectName( "Part2" );
-    setComponentData( m_componentData );
+    setComponentData(m_componentData, false);
     QWidget * w = new QWidget( parentWidget );
     w->setObjectName( "Part2Widget" );
     setWidget( w );
@@ -82,6 +82,8 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
     w->setFocusPolicy( Qt::ClickFocus );
 
     // setXMLFile( ... ); // no actions currently
+
+    // loadPlugins(); // in case we want to allow plugins for this part.
 }
 
 Part2::~Part2()

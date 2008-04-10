@@ -356,6 +356,11 @@ void Part::slotWidgetDestroyed()
     }
 }
 
+void Part::loadPlugins()
+{
+    PartBase::loadPlugins(this, this, componentData());
+}
+
 //////////////////////////////////////////////////
 
 namespace KParts
