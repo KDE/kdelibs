@@ -78,7 +78,6 @@ public:
 
 FileInfo *readEntry( const QString &filename)
 {
-   kWarning(7113)<<"readEntry";
    QByteArray CEF = QFile::encodeName(filename);
    gzFile fs = gzopen( CEF.data(), "r");
    if (!fs)
