@@ -155,12 +155,7 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
    sycoca_mmap = 0;
    QDataStream* &m_str = KSycocaPrivate::_self->m_str;
    m_str = 0;
-   QString path;
-   QByteArray ksycoca_env = getenv("KDESYCOCA");
-   if (ksycoca_env.isEmpty())
-      path = KGlobal::dirs()->saveLocation("cache") + KSYCOCA_FILENAME;
-   else
-      path = QFile::decodeName(ksycoca_env);
+   QString path = KSycoca::absoluteFilePath();
 
    kDebug(7011) << "Trying to open ksycoca from " << path;
 #ifdef Q_OS_WIN
@@ -171,7 +166,7 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
    bool bOpen = m_database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
-     path = KStandardDirs::locate("services", KSYCOCA_FILENAME);
+     path = KSycoca::absoluteFilePath(KSycoca::GlobalDatabase);
      if (!path.isEmpty())
      {
        kDebug(7011) << "Trying to open global ksycoca from " << path;
@@ -495,6 +490,18 @@ quint32 KSycoca::updateSignature()
    if (!d->timeStamp)
       (void) kfsstnd_prefixes();
    return d->updateSig;
+}
+
+QString KSycoca::absoluteFilePath(DatabaseType type)
+{
+   if (type == GlobalDatabase)
+      return KStandardDirs::locate("services", KSYCOCA_FILENAME);
+
+   QByteArray ksycoca_env = getenv("KDESYCOCA");
+   if (ksycoca_env.isEmpty())
+      return KGlobal::dirs()->saveLocation("cache") + KSYCOCA_FILENAME;
+   else
+      return QFile::decodeName(ksycoca_env);
 }
 
 QString KSycoca::language()

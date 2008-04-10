@@ -104,22 +104,7 @@ void crashHandler(int)
 
 static QString sycocaPath()
 {
-  QString path;
-
-  if (bGlobalDatabase)
-  {
-     path = KGlobal::dirs()->saveLocation("services")+KSYCOCA_FILENAME;
-  }
-  else
-  {
-     QByteArray ksycoca_env = getenv("KDESYCOCA");
-     if (ksycoca_env.isEmpty())
-        path = KGlobal::dirs()->saveLocation("cache")+KSYCOCA_FILENAME;
-     else
-        path = QFile::decodeName(ksycoca_env);
-  }
-
-  return path;
+  return KSycoca::absoluteFilePath(bGlobalDatabase ? KSycoca::GlobalDatabase : KSycoca::LocalDatabase);
 }
 
 KBuildSycoca::KBuildSycoca()

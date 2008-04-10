@@ -63,6 +63,11 @@ protected:
    explicit KSycoca( bool /* buildDatabase */ );
 
 public:
+   /**
+    * type of database 
+    * @see absoluteFilePath()
+    */
+   typedef enum { LocalDatabase, GlobalDatabase } DatabaseType;
 
    /**
     * Read-only database
@@ -101,6 +106,16 @@ public:
     * @internal - returns kfsstnd stored inside database
     */
    QString kfsstnd_prefixes();
+   /**
+    * @internal - returns absolute file path of the database
+    * 
+    * for global database type the database is searched under 
+    * the 'services' install path. 
+    * Otherwise, the value from the environment variable KDESYCOCA 
+    * is returned if set. If not set the path is build based on  
+    * KStandardDirs cache save location. 
+    */
+   static QString absoluteFilePath(DatabaseType type=LocalDatabase);
    /**
     * @internal - returns language stored inside database
     */
