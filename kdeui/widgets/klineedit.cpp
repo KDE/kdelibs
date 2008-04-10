@@ -388,7 +388,7 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
           comp->nextMatch();
 
        // Skip rotation if previous/next match is null or the same text
-       if ( input.isNull() || input == displayText() )
+       if ( input.isEmpty() || input == displayText() )
             return;
        setCompletedText( input, hasSelectedText() );
     }
@@ -407,7 +407,7 @@ void KLineEdit::makeCompletion( const QString& text )
     if ( mode == KGlobalSettings::CompletionPopup ||
          mode == KGlobalSettings::CompletionPopupAuto )
     {
-        if ( match.isNull() )
+        if ( match.isEmpty() )
         {
             if ( d->completionBox )
             {
@@ -422,7 +422,7 @@ void KLineEdit::makeCompletion( const QString& text )
     {
         // all other completion modes
         // If no match or the same match, simply return without completing.
-        if ( match.isNull() || match == text )
+        if ( match.isEmpty() || match == text )
             return;
 
         if ( mode != KGlobalSettings::CompletionShell )
@@ -1551,7 +1551,7 @@ void KLineEdit::clear()
 
 void KLineEdit::setTextWorkaround( const QString& text )
 {
-    if (!text.isNull())
+    if (!text.isEmpty())
     {
         setText( text );
         end( false ); // force cursor at end
