@@ -1,3 +1,6 @@
 [Desktop Entry]
 Type=ServiceType
 X-KDE-ServiceType=KEmoticons
+
+[PropertyDef::X-KDE-EmoticonsFileName]
+Type=QString

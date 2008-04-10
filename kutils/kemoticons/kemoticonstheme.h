@@ -38,6 +38,7 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
     Q_OBJECT
     public:
         KEmoticonsTheme(QObject *parent, const QVariantList &args);
+        
         virtual ~KEmoticonsTheme();
         virtual void loadTheme(const QString &theme);
         virtual bool removeEmoticon(const QString &emo);
@@ -45,6 +46,9 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         virtual void save();
         
         QString parseEmoticons(const QString &text);
+        
+        QString themeName();
+        void setThemeName(const QString &name);
         
     protected:
         KEmoticonsThemePrivate * const d;

@@ -57,4 +57,14 @@ void KEmoticonsTheme::save()
 {
 }
 
+QString KEmoticonsTheme::themeName()
+{
+    return d->m_themeName;
+}
+
+void KEmoticonsTheme::setThemeName(const QString &name)
+{
+    d->m_themeName = name;
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

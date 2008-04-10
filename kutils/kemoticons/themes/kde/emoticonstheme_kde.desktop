@@ -4,3 +4,4 @@ Name=Kde Emoticons Theme Library
 Comment=Library to use KDE emoticons theme
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_kde
+X-KDE-EmoticonsFileName=emoticons.xml
