@@ -23,6 +23,8 @@
 #include "kemoticons_export.h"
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
+#include <QtCore/QStringList>
+#include <QtXml/QDomDocument>
 
 class QString;
 
@@ -31,6 +33,9 @@ class KEmoticonsThemePrivate
     public:
         KEmoticonsThemePrivate();
         QString m_themeName;
+        QString m_fileName;
+        QMap<QString, QStringList> m_themeMap;
+        
 };
 
 class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
@@ -40,7 +45,7 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         KEmoticonsTheme(QObject *parent, const QVariantList &args);
         
         virtual ~KEmoticonsTheme();
-        virtual void loadTheme(const QString &theme);
+        virtual bool loadTheme(const QString &path);
         virtual bool removeEmoticon(const QString &emo);
         virtual bool addEmoticon(const QString &emo, const QString &text, bool copy);
         virtual void save();

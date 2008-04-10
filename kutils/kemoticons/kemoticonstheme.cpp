@@ -19,6 +19,9 @@
 
 #include "kemoticonstheme.h"
 
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+
 KEmoticonsThemePrivate::KEmoticonsThemePrivate()
 {
 }
@@ -34,9 +37,12 @@ KEmoticonsTheme::~KEmoticonsTheme()
     delete d;
 }
 
-void KEmoticonsTheme::loadTheme(const QString &theme)
+bool KEmoticonsTheme::loadTheme(const QString &path)
 {
-    Q_UNUSED(theme);
+    QFileInfo info(path);
+    d->m_fileName = info.fileName();
+    d->m_themeName = info.dir().dirName();
+    return true;
 }
 
 bool KEmoticonsTheme::removeEmoticon(const QString &emo)

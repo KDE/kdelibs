@@ -29,12 +29,14 @@ class KdeEmoticons : public KEmoticonsTheme
         KdeEmoticons(QObject *parent, const QVariantList &args);
         ~KdeEmoticons();
         
-        void loadTheme(const QString &emo);
+        bool loadTheme(const QString &path);
         
         bool removeEmoticon(const QString &emo);
         bool addEmoticon(const QString &emo, const QString &text, bool copy);
         void save();
-        
+    
+    private:
+        QDomDocument m_themeXml;
 };
 
 #endif /* KDE_EMOTICONS_H */

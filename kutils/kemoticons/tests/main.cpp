@@ -16,9 +16,9 @@ int main(int argc, char **argv)
     KApplication app;
     
     KEmoticons e;
-    kDebug()<<"ThemeList:"<<e.getThemeList();
+    kDebug() << "ThemeList:" << e.getThemeList();
     KEmoticonsTheme *t = e.getTheme("kde4");
-    kDebug()<<"theme:"<<t;
+    kDebug() << "theme:" << t;
     delete t;
 
     return 0;

@@ -38,7 +38,7 @@ void KEmoticonsPrivate::loadServiceList()
     KService::List services = KServiceTypeTrader::self()->query("KEmoticons", constraint);
     
     foreach (KService::Ptr service, services) {
-        kDebug()<<"NAME:"<<service->name();
+        kDebug() << "NAME:" << service->name();
         m_loaded.append(service);
     }    
 }
@@ -48,7 +48,7 @@ KEmoticonsTheme *KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &servic
     KPluginFactory *factory = KPluginLoader(service->library()).factory();
     if (!factory)
     {
-        kWarning()<<"Invalid plugin factory for"<<service->library();
+        kWarning() << "Invalid plugin factory for" << service->library();
         return 0;
     }
     KEmoticonsTheme *theme = factory->create<KEmoticonsTheme>(0);
