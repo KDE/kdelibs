@@ -342,7 +342,7 @@ void PreviewJob::slotResult( KJob *job )
             const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
             d->tOrig = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, 0 );
             if ( !d->ignoreMaximumSize &&
-                 entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 ) > d->maximumSize &&
+                 (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 ) > d->maximumSize &&
                  !d->currentItem.plugin->property("IgnoreMaximumSize").toBool()
                 ) {
                 d->determineNextFile();
