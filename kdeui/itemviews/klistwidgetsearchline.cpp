@@ -30,8 +30,6 @@
 
 #define DEFAULT_CASESENSITIVE Qt::CaseInsensitive
 
-typedef QList <QListWidgetItem *> QListWidgetItemList;
-
 class KListWidgetSearchLine::KListWidgetSearchLinePrivate
 {
 public:
@@ -48,8 +46,6 @@ public:
     void _k_activateSearch();
 
     void init( QListWidget *listWidget = 0 );
-    void hideItem( QListWidgetItem *item );
-    void showItem( QListWidgetItem *item );
 
     KListWidgetSearchLine *q;
     QListWidget *listWidget;
@@ -57,7 +53,6 @@ public:
     bool activeSearch;
     QString search;
     int queuedSearches;
-    QListWidgetItemList hiddenItems;
 };
 
 /******************************************************************************
@@ -73,7 +68,7 @@ KListWidgetSearchLine::KListWidgetSearchLine( QWidget *parent, QListWidget *list
 
 KListWidgetSearchLine::~KListWidgetSearchLine()
 {
-    clear(); // empty hiddenItems, returning items back to listWidget
+    clear(); // returning items back to listWidget
     delete d;
 }
 
@@ -98,38 +93,27 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
 
     QString search = d->search = s.isNull() ? text() : s;
 
-    QListWidgetItemList *hi = &(d->hiddenItems);
-
     QListWidgetItem *currentItem = lw->currentItem();
 
-    // Remove Non-Matching items, add them them to hidden list
+    // Remove Non-Matching items
     int index = 0;
     while ( index < lw->count() ) {
         QListWidgetItem *item = lw->item(index);
         if ( ! itemMatches( item, search ) ) {
-            d->hideItem( item );
+        	item->setHidden( true );
 
             if ( item == currentItem ) {
                 currentItem = 0; // It's not in listWidget anymore.
             }
-        } else {
-            index++;
+        } else if ( item->isHidden() ){
+        	item->setHidden( false );
         }
-    }
-
-    // Add Matching items, remove from hidden list
-    index = 0;
-    while ( index < hi->count() ) {
-        QListWidgetItem *item = hi->at(index); 
         
-        if ( itemMatches( item, search ) ) {
-            d->showItem( item );
-        } else {
-            index++;
-        }
+        index++;
     }
 
-    lw->sortItems();
+    if ( lw->isSortingEnabled() )
+    	lw->sortItems();
 
     if ( currentItem != 0 )
         lw->scrollToItem( currentItem );
@@ -137,23 +121,13 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
 
 void KListWidgetSearchLine::clear()
 {
-    // Clear hidden list, give items back to QListWidget, if it still exists
+    // Show items back to QListWidget
     QListWidgetItem *item = 0;
-    QListWidgetItemList::iterator it = d->hiddenItems.begin();
-    while ( it != d->hiddenItems.end() ) {
-        item = *it;
-        ++it;
-        if ( item != 0 ) {
-            if ( d->listWidget != 0 )
-                d->showItem( item );
-            else
-                delete item;
-        }
+    if ( d->listWidget != 0 ) {
+	    for (int i = 0 ; i < d->listWidget->count(); ++i) {
+            d->listWidget->item( i )->setHidden( false );
+	    }
     }
-    if ( ! d->hiddenItems.isEmpty() )
-        kDebug() << __FILE__ << ":" << __LINE__ <<
-        "hiddenItems is not empty as it should be. " <<
-        d->hiddenItems.count() << " items are still there.\n" << endl;
 
     d->search = "";
     d->queuedSearches = 0;
@@ -213,27 +187,6 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_li
     }
 
     q->setClearButtonShown(true);
-}
-
-void KListWidgetSearchLine::KListWidgetSearchLinePrivate::hideItem( QListWidgetItem *item )
-{
-    if ( ( item == 0 ) || ( listWidget == 0 ) )
-        return ;
-
-    hiddenItems.append( item );
-    listWidget->takeItem( listWidget->row( item ) );
-}
-
-void KListWidgetSearchLine::KListWidgetSearchLinePrivate::showItem( QListWidgetItem *item )
-{
-    if ( listWidget == 0 ) {
-        kDebug() << __FILE__ << ":" << __LINE__ <<
-        "showItem() could not be called while there's no listWidget set." <<
-        endl;
-        return ;
-    }
-    listWidget->addItem( item );
-    hiddenItems.removeAll( item );
 }
 
 bool KListWidgetSearchLine::event(QEvent *event) {
