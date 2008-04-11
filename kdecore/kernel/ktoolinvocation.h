@@ -92,7 +92,7 @@ public Q_SLOTS:
 
   static void invokeHelp( const QString& anchor = QString(),
                    const QString& appname = QString(),
-		   const QByteArray& startup_id = "");
+		   const QByteArray& startup_id = QByteArray());
 
   /**
    * Convenience method; invokes the standard email application.
@@ -102,7 +102,8 @@ public Q_SLOTS:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  static void invokeMailer( const QString &address, const QString &subject,const QByteArray& startup_id = "" );
+  static void invokeMailer( const QString &address, const QString &subject,
+          const QByteArray& startup_id = QByteArray() );
 
   /**
    * Invokes the standard email application.
@@ -113,7 +114,8 @@ public Q_SLOTS:
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
                The default is false; do not honor requests for attachments.
    */
-  static void invokeMailer( const KUrl &mailtoURL, const QByteArray& startup_id = "" ,  bool allowAttachments = false );
+  static void invokeMailer( const KUrl &mailtoURL, const QByteArray& startup_id = QByteArray(),
+          bool allowAttachments = false );
 
   /**
    * Convenience method; invokes the standard email application.
@@ -132,7 +134,9 @@ public Q_SLOTS:
    */
   static void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
-                    const QString &messageFile = QString(), const QStringList &attachURLs = QStringList(),const QByteArray& startup_id = "" );
+                    const QString &messageFile = QString(), 
+                    const QStringList &attachURLs = QStringList(),
+                    const QByteArray& startup_id = QByteArray() );
 
   /**
    * Invokes the standard browser.
@@ -144,7 +148,8 @@ public Q_SLOTS:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  static void invokeBrowser( const QString &url, const QByteArray& startup_id = "" );
+  static void invokeBrowser( const QString &url,
+          const QByteArray& startup_id = QByteArray() );
 
   /**
    * Invokes the standard terminal application.
@@ -186,7 +191,7 @@ public:
    */
   static int startServiceByName( const QString& _name, const QString &URL,
                                  QString *error=0, QString *serviceName=0, int *pid=0,
-                                 const QByteArray &startup_id = "", bool noWait = false );
+                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -209,7 +214,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QString *serviceName=0, int *pid=0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid=0, 
+                const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -232,7 +238,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error=0, QString *serviceName=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid = 0,
+                const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -254,7 +261,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QString *serviceName=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid = 0, 
+                const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -278,7 +286,7 @@ public:
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
                                         QString *error=0, QString *serviceName=0, int *pid = 0,
-                                        const QByteArray &startup_id = "", bool noWait = false );
+                                        const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -302,7 +310,7 @@ public:
    */
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
                                         QString *error=0, QString *serviceName=0, int *pid = 0,
-                                        const QByteArray &startup_id = "", bool noWait = false );
+                                        const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
    * Starts a program via kdeinit.
@@ -322,7 +330,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
-                QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
+                QString *error=0, int *pid = 0, const QByteArray& startup_id = QByteArray() );
 
   /**
    * Starts a program via kdeinit and wait for it to finish.
@@ -342,7 +350,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
-                QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
+                QString *error=0, int *pid = 0, const QByteArray& startup_id = QByteArray() );
 
 Q_SIGNALS:
   /**
