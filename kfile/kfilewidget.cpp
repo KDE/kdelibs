@@ -346,7 +346,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>",  KUser().loginName() ));
 
-        d->toolbar->addAction( coll->action( "back" ) );
+    d->toolbar->addAction( coll->action( "back" ) );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
     d->toolbar->addAction( coll->action( "forward" ) );
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
