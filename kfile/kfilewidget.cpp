@@ -134,6 +134,8 @@ public:
 
     void addToRecentDocuments();
 
+    QString locationEditCurrentText() const;
+
     // the last selected url
     KUrl url;
 
@@ -206,6 +208,30 @@ static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in
                                                   "with possible matches. "
                                                   "This feature can be controlled by clicking with the right mouse button "
                                                   "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
+
+// returns true if the string contains "<a>:/" sequence, where <a> is at least 2 alpha chars
+static bool containsProtocolSection( const QString& string )
+{
+    int len = string.length();
+    static const char prot[] = ":/";
+    for (int i=0; i < len;) {
+        i = string.indexOf( QLatin1String(prot), i );
+        if (i == -1)
+            return false;
+        int j=i-1;
+        for (; j >= 0; j--) {
+            const QChar& ch( string[j] );
+            if (ch.toAscii() == 0 || !ch.isLetter())
+                break;
+            if (ch.isSpace() && (i-j-1) >= 2)
+                return true;
+        }
+        if (j < 0 && i >= 2)
+            return true; // at least two letters before ":/"
+        i += 3; // skip : and / and one char
+    }
+    return false;
+}
 
 KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
@@ -576,8 +602,10 @@ void KFileWidget::slotOk()
     // can only be used if the user didn't type any filenames/urls himself
     const KFileItemList items = d->ops->selectedItems();
 
+    const QString locationEditCurrentText( d->locationEditCurrentText() );
+
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
-        if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
+        if ( locationEditCurrentText.isEmpty() ) {
             if (items.isEmpty() )
             {
                 QString msg;
@@ -657,10 +685,9 @@ void KFileWidget::slotOk()
     KUrl selectedUrl;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
-        QString locationText = d->locationEdit->currentText();
-        if ( locationText.contains( '/' )) {
+        if ( locationEditCurrentText.contains( '/' ) ) {
             // relative path? -> prepend the current directory
-            KUrl u( d->ops->url(), KShell::tildeExpand(locationText));
+            KUrl u( d->ops->url(), KShell::tildeExpand( locationEditCurrentText ));
             if ( u.isValid() )
                 selectedUrl = u;
             else
@@ -671,7 +698,7 @@ void KFileWidget::slotOk()
     }
 
     else {
-        selectedUrl = d->getCompleteUrl(d->locationEdit->currentText());
+        selectedUrl = d->getCompleteUrl( locationEditCurrentText );
 
         // appendExtension() may change selectedUrl
         d->appendExtension (selectedUrl);
@@ -699,7 +726,7 @@ void KFileWidget::slotOk()
         kDebug(kfile_area) << "Directory";
         bool done = true;
         if ( d->url.isLocalFile() ) {
-            if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
+            if ( locationEditCurrentText.isEmpty() ) {
                 QFileInfo info( d->url.toLocalFile() );
                 if ( info.isDir() ) {
                     d->filenames.clear();
@@ -727,7 +754,7 @@ void KFileWidget::slotOk()
                 {
                     if ( d->ops->dirOnlyMode() )
                     {
-                        KUrl fullURL(d->url, d->locationEdit->currentText());
+                        KUrl fullURL(d->url, locationEditCurrentText);
                         if ( QFile::exists( fullURL.toLocalFile() ) )
                         {
                             d->url = fullURL;
@@ -741,7 +768,7 @@ void KFileWidget::slotOk()
                     }
                 }
 
-                d->filenames = d->locationEdit->currentText();
+                d->filenames = locationEditCurrentText;
                 emit accepted(); // what can we do?
             }
 
@@ -761,6 +788,17 @@ void KFileWidget::slotOk()
         if ( done )
             return;
     }
+    else { // we don't want dir
+        KUrl::List urls = d->tokenize( locationEditCurrentText );
+        if ( urls.count()==1 && urls.first().isLocalFile() ) {
+            QFileInfo info( urls.first().toLocalFile() );
+            if ( info.isDir() && this->selectedUrl().isValid() && !this->selectedUrl().equals( urls.first(), KUrl::CompareWithoutTrailingSlash ) ) {
+                setSelection( info.absolutePath() );
+                slotOk();
+                return;
+            }
+        }
+    }
 
     if (!KAuthorized::authorizeUrlAction("open", KUrl(), d->url))
     {
@@ -771,10 +809,10 @@ void KFileWidget::slotOk()
 
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
-    d->filenames = KShell::tildeExpand(d->locationEdit->currentText());
+    d->filenames = KShell::tildeExpand( locationEditCurrentText );
 
     if ( (mode() & KFile::Files) == KFile::Files &&
-         !d->locationEdit->currentText().contains( '/' )) {
+         !locationEditCurrentText.contains( '/' ) ) {
         kDebug(kfile_area) << "Files\n";
         KUrl::List list = d->parseSelectedUrls();
         for ( KUrl::List::ConstIterator it = list.begin();
@@ -1133,7 +1171,7 @@ void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 // Protected
 void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 {
-    QString filename = locationEdit->currentText();
+    QString filename = locationEditCurrentText();
     selection.clear();
 
     KUrlComboBox* pathCombo = urlNavigator->editor();
@@ -1168,12 +1206,16 @@ void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
 
 void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
 {
-    q->setUrl( url );
+    KUrl fixedUrl( url );
+    // append '/' if needed: url combo does not add it
+    // tokenize() expects it because uses KUrl::setFileName()
+    fixedUrl.adjustPath( KUrl::AddTrailingSlash );
+    q->setUrl( fixedUrl );
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const QString& url )
 {
-    q->setUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
+    _k_enterUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
@@ -1293,9 +1335,8 @@ KUrl::List& KFileWidgetPrivate::parseSelectedUrls()
 
     urlList.clear();
     if ( filenames.contains( '/' )) { // assume _one_ absolute filename
-        static const QString &prot = KGlobal::staticQString(":/");
         KUrl u;
-        if ( filenames.indexOf( prot ) != -1 )
+        if ( containsProtocolSection( filenames ) )
             u = filenames;
         else
             u.setPath( filenames );
@@ -1790,7 +1831,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
     if (!autoSelectExtCheckBox->isChecked() || extension.isEmpty())
         return;
 
-    QString urlStr = locationEdit->currentText();
+    QString urlStr = locationEditCurrentText();
     if (urlStr.isEmpty())
         return;
 
@@ -1838,7 +1879,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
 
         // add extension
         const QString newText = urlStr.left (fileNameOffset) + fileName + extension;
-        if ( newText != locationEdit->currentText() )
+        if ( newText != locationEditCurrentText() )
         {
             locationEdit->setItemText(locationEdit->currentIndex(),urlStr.left (fileNameOffset) + fileName + extension);
             locationEdit->lineEdit()->setModified (true);
@@ -1851,7 +1892,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
 void KFileWidgetPrivate::updateFilter()
 {
     if ((operationMode == KFileWidget::Saving) && (ops->mode() & KFile::File) ) {
-        const QString urlStr = locationEdit->currentText();
+        const QString urlStr = locationEditCurrentText();
         if (urlStr.isEmpty())
             return;
 
@@ -2088,7 +2129,7 @@ void KFileWidget::setStartDir( const KUrl& directory )
 void KFileWidgetPrivate::setNonExtSelection()
 {
     // Enhanced rename: Don't highlight the file extension.
-    QString filename = locationEdit->currentText().trimmed();
+    QString filename = locationEditCurrentText();
     QString extension = KMimeType::extractKnownExtension( filename );
 
     if ( !extension.isEmpty() )
@@ -2142,6 +2183,11 @@ void KFileWidget::virtual_hook( int id, void* data )
 {
     Q_UNUSED(id);
     Q_UNUSED(data);
+}
+
+QString KFileWidgetPrivate::locationEditCurrentText() const
+{
+    return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());
 }
 
 #include "kfilewidget.moc"
