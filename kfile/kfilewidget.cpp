@@ -1202,12 +1202,16 @@ void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
 
 void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
 {
-    q->setUrl( url );
+    KUrl fixedUrl( url );
+    // append '/' if needed: url combo does not add it
+    // tokenize() expects it because uses KUrl::setFileName()
+    fixedUrl.adjustPath( KUrl::AddTrailingSlash );
+    q->setUrl( fixedUrl );
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const QString& url )
 {
-    q->setUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
+    _k_enterUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
