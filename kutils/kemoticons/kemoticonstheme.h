@@ -34,8 +34,9 @@ class KEmoticonsThemePrivate
         KEmoticonsThemePrivate();
         QString m_themeName;
         QString m_fileName;
+        QString m_themePath;
         QMap<QString, QStringList> m_themeMap;
-        
+   
 };
 
 class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
@@ -43,21 +44,23 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
     Q_OBJECT
     public:
         KEmoticonsTheme(QObject *parent, const QVariantList &args);
-        
+
         virtual ~KEmoticonsTheme();
         virtual bool loadTheme(const QString &path);
         virtual bool removeEmoticon(const QString &emo);
         virtual bool addEmoticon(const QString &emo, const QString &text, bool copy);
         virtual void save();
-        
+
         QString parseEmoticons(const QString &text);
-        
+
         QString themeName();
         void setThemeName(const QString &name);
-        
+
+        QMap<QString, QStringList> themeMap();
+  
     protected:
         KEmoticonsThemePrivate * const d;
-        
+  
 };
 
 #endif /* KEMOTICONS_THEME_H */

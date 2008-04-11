@@ -22,6 +22,9 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
+#include <kio/netaccess.h>
+#include <KStandardDirs>
+
 KEmoticonsThemePrivate::KEmoticonsThemePrivate()
 {
 }
@@ -42,6 +45,7 @@ bool KEmoticonsTheme::loadTheme(const QString &path)
     QFileInfo info(path);
     d->m_fileName = info.fileName();
     d->m_themeName = info.dir().dirName();
+    d->m_themePath = info.absolutePath();
     return true;
 }
 
@@ -53,9 +57,11 @@ bool KEmoticonsTheme::removeEmoticon(const QString &emo)
 
 bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    Q_UNUSED(emo);
+    if(copy) {
+        KIO::NetAccess::dircopy(KUrl(emo), KUrl(d->m_themePath));
+    }
+
     Q_UNUSED(text);
-    Q_UNUSED(copy);
     return false;
 }
 
@@ -71,6 +77,11 @@ QString KEmoticonsTheme::themeName()
 void KEmoticonsTheme::setThemeName(const QString &name)
 {
     d->m_themeName = name;
+}
+
+QMap<QString, QStringList> KEmoticonsTheme::themeMap()
+{
+    return d->m_themeMap;
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
