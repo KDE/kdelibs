@@ -640,7 +640,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
         group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
         group.prepend(" Toolbar");
         group.prepend(configGroup);
-        KConfigGroup groupGrp(cg.config(), group);
+        KConfigGroup groupGrp(&cg, group);
         toolbar->saveSettings(groupGrp);
         n++;
     }
@@ -735,7 +735,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        KConfigGroup configGroup(cg.config(), group);
+        KConfigGroup configGroup(&cg, group);
         toolbar->applySettings(configGroup, force);
         n++;
     }
