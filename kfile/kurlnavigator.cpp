@@ -1028,14 +1028,14 @@ void KUrlNavigator::setUrl(const KUrl& url)
 
     const KUrl transformedUrl(urlStr);
 
-    if (d->m_historyIndex > 0) {
-        // Check whether current history element has the same URL.
-        // If this is the case, just ignore setting the URL.
-        const HistoryElem& historyElem = d->m_history[d->m_historyIndex];
-        if (transformedUrl == historyElem.url()) {
-            return;
-        }
+    // Check whether current history element has the same URL.
+    // If this is the case, just ignore setting the URL.
+    const HistoryElem& historyElem = d->m_history[d->m_historyIndex];
+    if (transformedUrl.equals(historyElem.url(), KUrl::CompareWithoutTrailingSlash)) {
+        return;
+    }
 
+    if (d->m_historyIndex > 0) {
         // If an URL is set when the history index is not at the end (= 0),
         // then clear all previous history elements so that a new history
         // tree is started from the current position.
@@ -1045,23 +1045,20 @@ void KUrlNavigator::setUrl(const KUrl& url)
         d->m_historyIndex = 0;
     }
 
-    if (this->url() != transformedUrl) {
-        // don't insert duplicate history elements
-        Q_ASSERT(d->m_historyIndex == 0);
-        d->m_history.insert(0, HistoryElem(transformedUrl));
+    Q_ASSERT(d->m_historyIndex == 0);
+    d->m_history.insert(0, HistoryElem(transformedUrl));
 
-        // Prevent an endless growing of the history: remembering
-        // the last 100 Urls should be enough...
-        const int historyMax = 100;
-        if (d->m_history.size() > historyMax) {
-            QList<HistoryElem>::iterator begin = d->m_history.begin() + historyMax;
-            QList<HistoryElem>::iterator end = d->m_history.end();
-            d->m_history.erase(begin, end);
-        }
-
-        emit historyChanged();
-        emit urlChanged(transformedUrl);
+    // Prevent an endless growing of the history: remembering
+    // the last 100 Urls should be enough...
+    const int historyMax = 100;
+    if (d->m_history.size() > historyMax) {
+        QList<HistoryElem>::iterator begin = d->m_history.begin() + historyMax;
+        QList<HistoryElem>::iterator end = d->m_history.end();
+        d->m_history.erase(begin, end);
     }
+
+    emit historyChanged();
+    emit urlChanged(transformedUrl);
 
     d->updateContent();
 

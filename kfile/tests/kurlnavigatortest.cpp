@@ -143,6 +143,11 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
+    // insert same URL with a trailing slash as the current history index
+    m_navigator->setUrl(KUrl("G/"));
+    QCOMPARE(m_navigator->historyIndex(), 0);
+    QCOMPARE(m_navigator->historySize(), 4);
+
     // jump to "C" and insert same URL as the current history index
     ok = m_navigator->goBack();
     QVERIFY(ok);
