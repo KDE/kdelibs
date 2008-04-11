@@ -676,7 +676,7 @@ void KFileWidget::slotOk()
     KUrl selectedUrl;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
-        if ( d->locationEditCurrentText().contains( '/' ) ) {
+        if ( locationEditCurrentText.contains( '/' ) ) {
             // relative path? -> prepend the current directory
             KUrl u( d->ops->url(), KShell::tildeExpand( locationEditCurrentText ));
             if ( u.isValid() )
