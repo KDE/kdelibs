@@ -657,7 +657,12 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
       watchModes = KDirWatch::WatchDirOnly;
     }
 
+#ifdef Q_OS_WIN
+    // ctime is the 'creation time' on windows - use mtime instead
+    e->m_ctime = stat_buf.st_mtime;
+#else
     e->m_ctime = stat_buf.st_ctime;
+#endif
     e->m_status = Normal;
     e->m_nlink = stat_buf.st_nlink;
   }
@@ -933,7 +938,12 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
       KDE_struct_stat stat_buf;
       bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
       if (exists) {
+#ifdef Q_OS_WIN
+        // ctime is the 'creation time' on windows - use mtime instead
+        e->m_ctime = stat_buf.st_mtime;
+#else
         e->m_ctime = stat_buf.st_ctime;
+#endif
         e->m_status = Normal;
         e->m_nlink = stat_buf.st_nlink;
       }
@@ -1010,7 +1020,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   }
 #endif
 
-#if defined( USE_QFILSYSTEMWATCHER )
+#if defined( HAVE_QFILESYSTEMWATCHER )
   if (e->m_mode == QFSWatchMode ) {
     // we know nothing has changed, no need to stat
     if(!e->dirty) return NoChange;
@@ -1033,12 +1043,20 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   if (exists) {
 
     if (e->m_status == NonExistent) {
+#ifdef Q_OS_WIN
+      // ctime is the 'creation time' on windows - use mtime instead
+      e->m_ctime = stat_buf.st_mtime;
+#else
       e->m_ctime = stat_buf.st_ctime;
+#endif
       e->m_status = Normal;
       e->m_nlink = stat_buf.st_nlink;
       return Created;
     }
 
+#ifdef Q_OS_WIN
+    stat_buf.st_ctime = stat_buf.st_mtime;
+#endif
     if ( (e->m_ctime != invalid_ctime) &&
           ((stat_buf.st_ctime != e->m_ctime) ||
           (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
