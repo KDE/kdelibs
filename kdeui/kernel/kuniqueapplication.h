@@ -113,7 +113,7 @@ public:
 	   * in a single process but under certain circumstances new instances may require
 	   * their own process.
 	   */
-  	  NonUniqueInstance = 0x1,
+  	  NonUniqueInstance = 0x1
   };
   Q_DECLARE_FLAGS(StartFlags,StartFlag)
 
