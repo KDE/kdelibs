@@ -45,15 +45,10 @@ public:
 
     /**
      * send the close dcop call to the knotify server for the notification with the identifier @p id .
+     * And remove the notification from the internal map
      * @param id the id of the notification
      */
     void close(int id);
-
-    /**
-     * remove the KNotification ptr from the internal map
-     * To be called in the KNotification destructor
-     */
-    void remove(int id);
 
     /**
      * Insert the notification and its id in the internal map

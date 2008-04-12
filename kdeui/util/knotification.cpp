@@ -92,7 +92,7 @@ KNotification::~KNotification()
 {
 	kDebug( 299 ) << d->id;
 	if(d ->id != 0)
-		KNotificationManager::self()->remove( d->id );
+		KNotificationManager::self()->close( d->id );
 	delete d;
 }
 

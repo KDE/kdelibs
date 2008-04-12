@@ -102,7 +102,11 @@ void KNotificationManager::notificationClosed( int id )
 
 void KNotificationManager::close( int id )
 {
-    d->knotify->call(QDBus::NoBlock, "closeNotification", id);
+    if(d->notifications.contains(id)) {
+	d->notifications.remove(id);
+        kDebug( 299 ) << id;
+	d->knotify->call(QDBus::NoBlock, "closeNotification", id);
+    }
 }
 
 void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
@@ -134,12 +138,6 @@ void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     args << n->text() <<  pixmapData << actions << qlonglong(winId) ;
     d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
 
-}
-
-
-void KNotificationManager::remove( int id)
-{
-    d->notifications.remove(id);
 }
 
 void KNotificationManager::insert(KNotification *n, int id)
