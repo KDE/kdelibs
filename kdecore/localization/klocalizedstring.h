@@ -265,7 +265,7 @@ class KDECORE_EXPORT KLocalizedString
 public:
     /**
      * Constructs an empty message, which is not valid for finalization.
-     * Usefull when you later need to assign KLocalizedString obtained by one
+     * Useful when you later need to assign KLocalizedString obtained by one
      * of ki18n* calls.
      *
      * @see isEmpty()

@@ -284,7 +284,7 @@ public:
     void setAutoDelete( bool autodelete );
 
     /**
-     * Returns wether this job automatically deletes itself once
+     * Returns whether this job automatically deletes itself once
      * the job is finished.
      *
      * @return whether the job is deleted automatically after

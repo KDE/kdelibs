@@ -1291,7 +1291,7 @@ public:
    * This method is implemented by usrUseDefaults(), which can be overridden
    * in derived classes if you have special requirements and can call
    * usrUseDefaults() directly.
-   * If you don't have control wether useDefaults() or usrUseDefaults() is
+   * If you don't have control whether useDefaults() or usrUseDefaults() is
    * called override useDefaults() directly.
    * @param b true to make this object reflect the default values,
    *          false to make it reflect the actual values.

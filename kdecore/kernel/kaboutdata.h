@@ -59,7 +59,7 @@ class KAboutData;
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
  * calls are used to produce KLocalizedStrings, which can delay the translation
- * lookup. This is necessary because the translation catalogs are usualy not
+ * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  *
  * @bc KDE4
@@ -151,7 +151,7 @@ class KAboutLicense;
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
  * calls are used to produce KLocalizedStrings, which can delay the translation
- * lookup. This is necessary because the translation catalogs are usualy not
+ * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  *
  * @short Holds information needed by the "About" box and other

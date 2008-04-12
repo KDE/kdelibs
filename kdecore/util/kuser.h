@@ -327,7 +327,7 @@ public:
   bool operator !=(const KUserGroup& group) const;
 
   /**
-   * Returns wether the group is valid.
+   * Returns whether the group is valid.
    * A KUserGroup object can be invalid if it is
    * created with a non-existing gid or name.
    * @return true if the group is valid
