@@ -24,15 +24,20 @@
 #include <kapplication.h>
 
 /**
- * Maintains only a single instance of a running application at a time.
- * Please note that this supports only one instance per KDE session. If
+ * KUniqueApplication is a KApplication which only uses a single process.  When
+ * a KUniqueApplication is started, it attempts to contact an existing copy 
+ * of the application.  If successful, the program asks the 
+ * existing process to create a new instance by calling its newInstance() method
+ * and then exits.  If there is no existing process then the program forks and
+ * calls the newInstance() method.  When newInstance() is called, the application
+ * will typically create a new window or activate an existing one.
+ *
+ * Instances of KUniqueApplication can be made to behave like a normal application by passing
+ * the StartFlag::NonUniqueInstance flag to start().
+ *
+ * Please note that this supports only one process per KDE session. If
  * your application can only be opened once per user or once per host, you
  * need to ensure this independently of KUniqueApplication.
- *
- * If another instance
- * is started, it will determine (via DBUS) whether it is the first instance
- * or a second instance.  If it is a second instance, it will forward on
- * the information to the first instance and then quit.
  *
  * The .desktop file for the application should state X-DBUS-StartupType=Unique,
  * see ktoolinvocation.h
@@ -91,6 +96,27 @@ public:
    */
   static void addCmdLineOptions();
 
+  /** 
+   * These flags can be used to specify how new instances of 
+   * unique applications are created.
+   */
+  enum StartFlag
+  {
+	  /** 
+	   * Create a new instance of the application in a new process and 
+	   * do not attempt to re-use an existing process.
+	   * 
+	   * With this flag set, the new instance of the application will 
+	   * behave as if it were a plain KApplication rather than a KUniqueApplication.
+	   *
+	   * This is useful if you have an application where all instances are typically run
+	   * in a single process but under certain circumstances new instances may require
+	   * their own process.
+	   */
+  	  NonUniqueInstance = 0x1,
+  };
+  Q_DECLARE_FLAGS(StartFlags,StartFlag)
+
   /**
    * Forks and registers with D-Bus.
    *
@@ -120,9 +146,13 @@ public:
    * Also note that you MUST call KUniqueApplication::addCmdLineOptions(),
    * if you use command line options before start() is called.
    *
+   * @param flags 	Optional flags which control how a new instance 
+   * 				of the application is started.
    * @return true if registration is successful.
    *         false if another process was already running.
    */
+  static bool start(StartFlags flags);
+  // BIC: merge with start(StartFlags flags = StartFlags()) 
   static bool start();
 
   /**
@@ -191,5 +221,6 @@ private:
 
   Q_PRIVATE_SLOT(d, void _k_newInstanceNoFork())
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUniqueApplication::StartFlags)
 
 #endif

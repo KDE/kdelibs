@@ -99,8 +99,13 @@ static QDBusConnectionInterface *tryToInitDBusConnection()
     return dbusService;
 }
 
+bool KUniqueApplication::start()
+{
+	return start(0);
+}
+
 bool
-KUniqueApplication::start()
+KUniqueApplication::start(StartFlags flags)
 {
   if( s_kuniqueapplication_startCalled )
     return true;
@@ -136,11 +141,13 @@ KUniqueApplication::start()
   mac_initialize_dbus();
 #endif
 
+  bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance; 
+
   if (Private::s_nofork)
   {
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
 
-     if (Private::s_multipleInstances)
+     if (forceNewProcess)
      {
         QString pid = QString::number(getpid());
         appName = appName + '-' + pid;
@@ -188,7 +195,7 @@ KUniqueApplication::start()
 
         QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
         ::close(fd[0]);
-        if (Private::s_multipleInstances)
+        if (forceNewProcess)
            appName.append("-").append(QString::number(getpid()));
 
         QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
@@ -236,7 +243,7 @@ KUniqueApplication::start()
   default:
      // Parent
 
-     if (Private::s_multipleInstances)
+     if (forceNewProcess)
         appName.append("-").append(QString::number(fork_result));
      ::close(fd[1]);
 
