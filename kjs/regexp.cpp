@@ -143,6 +143,12 @@ RegExp::RegExp(const UString &p, char flags)
 
 #ifdef HAVE_PCREPOSIX
   int options = 0;
+
+  // we are close but not 100% the same as Perl
+#ifdef PCRE_JAVASCRIPT_COMPAT // introduced in PCRE 7.7
+  options |= PCRE_JAVASCRIPT_COMPAT;
+#endif
+
   // Note: the Global flag is already handled by RegExpProtoFunc::execute.
   // FIXME: That last comment is dubious. Not all RegExps get run through RegExpProtoFunc::execute.
   if (flags & IgnoreCase)
