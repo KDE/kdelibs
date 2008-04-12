@@ -125,3 +125,21 @@ knewstuff/doc             - documentation
 Under review:
 plasmagik/                - packaging handler
 
+
+knsrc file format:
+[KNewStuff2]
+ProvidersUrl=
+TargetDir/InstallPath/etc=
+Uncompress=always/never/archive
+CachePolicy=never/resident/only/replaceable
+Categories=foo,bar
+
+[foo]
+TargetDir/InstallPath/etc=
+Uncompress=...
+CachePolicy=
+
+[bar]
+# empty, then use defaults
+
+
