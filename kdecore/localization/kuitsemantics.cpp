@@ -1158,7 +1158,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             QString firstChar = text.left(1);
             if (s->xmlEntitiesInverse.contains(firstChar)) {
                 QString entname = s->xmlEntitiesInverse[firstChar];
-                text = "&" + entname + ";" + text.mid(1);
+                text = '&' + entname + ';' + text.mid(1);
             }
             openEls.top().formattedText += text;
         }
