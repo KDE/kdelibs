@@ -20,6 +20,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kconfigbackend.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QStringList>
 #include <QtCore/QDir>
@@ -33,7 +35,6 @@
 #include "kservicetypetrader.h"
 //#include "kapplication.h"
 #include "kconfig.h"
-#include "kconfigbackend.h"
 #include "kconfigini_p.h"
 #include "kconfigdata.h"
 #include "kdebug.h"

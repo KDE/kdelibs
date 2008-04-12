@@ -20,12 +20,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kconfig.h"
+#include "kconfig_p.h"
+
 #include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "kconfig.h"
-#include "kconfig_p.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include <kstringhandler.h>

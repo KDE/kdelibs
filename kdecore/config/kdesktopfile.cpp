@@ -19,12 +19,13 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kdesktopfile.h"
+
 #include <unistd.h>
 
 #include <QtCore/QDir>
 
 #include "config.h"
-#include "kdesktopfile.h"
 #include "kconfig_p.h"
 #include "kdebug.h"
 #include "kurl.h"
