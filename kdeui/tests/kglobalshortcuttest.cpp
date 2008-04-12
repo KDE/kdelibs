@@ -122,9 +122,7 @@ void KGlobalShortcutTest::testSaveRestore()
     m_actionA->setObjectName("Action A");
     QVERIFY(m_actionA->globalShortcut().isEmpty());
 
-//TODO drop this section of the test or replace it with something else
-//    m_actionA->prepareGlobalShortcut();
-    QEXPECT_FAIL("", "To be fixed", Continue);
+    m_actionA->setGlobalShortcut(KShortcut());
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 
     delete m_actionA;
