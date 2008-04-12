@@ -2227,7 +2227,7 @@ bool HTTPProtocol::httpOpen()
 
     header += " HTTP/1.1\r\n"; /* start header */
 
-    // Support old HTTP/1.0 style keep-alive header for compatability
+    // Support old HTTP/1.0 style keep-alive header for compatibility
     // purposes as well as performance improvements while giving end
     // users the ability to disable this feature proxy servers that
     // don't not support such feature, e.g. junkbuster proxy server.
@@ -2468,7 +2468,7 @@ bool HTTPProtocol::httpOpen()
 
     if (!sendOk)
     {
-       kDebug(7113) << "sendOk==false. Connnection broken !"
+       kDebug(7113) << "sendOk==false. Connection broken !"
                     << "  -- intended to write " << header.length()
                     << " bytes but wrote " << (int)written << ".";
        error( ERR_CONNECTION_BROKEN, m_state.hostname );
@@ -4310,7 +4310,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       }
       // Oh well... log an error and bug out
       kDebug(7113) << "bytesReceived==-1 sz=" << (int)sz
-                    << " Connnection broken !";
+                    << " Connection broken !";
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
     }
