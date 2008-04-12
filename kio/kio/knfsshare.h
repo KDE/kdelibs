@@ -42,7 +42,7 @@ public:
   /**
    * Whether or not the given path is shared by NFS.
    * @param path the path to check if it is shared by NFS.
-   * @return wether the given path is shared by NFS.
+   * @return whether the given path is shared by NFS.
    */
   bool isDirectoryShared( const QString & path ) const;
   

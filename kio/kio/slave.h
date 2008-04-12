@@ -153,7 +153,7 @@ namespace KIO {
 	 */
         virtual void resume();
 	/**
-	 * Tells wether the kioslave is suspended.
+	 * Tells whether the kioslave is suspended.
 	 * @return true if the kioslave is suspended.
 	 */
         virtual bool suspended();

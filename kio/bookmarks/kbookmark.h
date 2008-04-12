@@ -184,7 +184,7 @@ public:
     bool showInToolbar() const;
     
     /**
-     * Set wheter this bookmark is show in a filterd toolbar
+     * Set whether this bookmark is show in a filterd toolbar
      */
     void setShowInToolbar(bool show);
 

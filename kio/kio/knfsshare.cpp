@@ -55,7 +55,7 @@ KNFSShare::KNFSSharePrivate::KNFSSharePrivate( KNFSShare *parent )
  * Try to find the nfs config file path
  * First tries the kconfig, then checks
  * several well-known paths
- * @return wether an 'exports' file was found.
+ * @return whether an 'exports' file was found.
  **/
 bool KNFSShare::KNFSSharePrivate::findExportsFile()
 {

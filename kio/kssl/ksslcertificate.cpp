@@ -1082,7 +1082,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
         return i18n("The OpenSSL process ran out of memory.");
     case KSSLCertificate::SelfSigned:
         return i18n("The certificate is self-signed and not in the list of trusted certificates. If you want to accept this certificate, import it into the list of trusted certificates.");
-    case KSSLCertificate::SelfSignedChain:      // this is obsolete and kept around for backwards compability, only
+    case KSSLCertificate::SelfSignedChain:      // this is obsolete and kept around for backwards compatibility, only
     case KSSLCertificate::SelfSignedInChain:
         return i18n("The certificate is self-signed. While the trust chain could be built up, the root CA's (Certificate Authority) certificate can not be found.");
     case KSSLCertificate::GetIssuerCertLocallyFailed:
@@ -1091,7 +1091,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
         return i18n("The certificate can not be verified as it is the only certificate in the trust chain and not self-signed. If you self-sign the certificate, make sure to import it into the list of trusted certificates.");
     case KSSLCertificate::CertificateChainTooLong:
         return i18n("The certificate chain is longer than the maximum depth specified.");
-    case KSSLCertificate::Revoked:     // this is obsolete and kept around for backwards compability, only
+    case KSSLCertificate::Revoked:     // this is obsolete and kept around for backwards compatibility, only
     case KSSLCertificate::CertificateRevoked:
         return i18n("The certificate has been revoked.");
     case KSSLCertificate::InvalidCA:
@@ -1100,10 +1100,10 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
         return i18n("The length of the trust chain exceeded one of the CA's (Certificate Authority) 'pathlength' parameters, making all subsequent signatures invalid.");
     case KSSLCertificate::InvalidPurpose:
         return i18n("The certificate has not been signed for the purpose you tried to use it for. This means the CA (Certificate Authority) does not allow this usage.");
-    case KSSLCertificate::Untrusted:     // this is obsolete and kept around for backwards compability, only
+    case KSSLCertificate::Untrusted:     // this is obsolete and kept around for backwards compatibility, only
     case KSSLCertificate::CertificateUntrusted:
         return i18n("The root CA (Certificate Authority) is not trusted for the purpose you tried to use this certificate for.");
-    case KSSLCertificate::Rejected:     // this is obsolete and kept around for backwards compability, only     // this is obsolete and kept around for backwards compability, onle
+    case KSSLCertificate::Rejected:     // this is obsolete and kept around for backwards compatibility, only     // this is obsolete and kept around for backwards compatibility, onle
     case KSSLCertificate::CertificateRejected:
         return i18n("The root CA (Certificate Authority) has been marked to be rejected for the purpose you tried to use it for.");
     case KSSLCertificate::IssuerSubjectMismatched:
@@ -1118,7 +1118,7 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
         return i18n("OpenSSL could not be verified.");
 
 
-    // this is obsolete and kept around for backwards compability, only
+    // this is obsolete and kept around for backwards compatibility, only
     case KSSLCertificate::SignatureFailed:
         return i18n("The signature test for this certificate failed. This could mean that the signature of this certificate or any in its trust path are invalid, could not be decoded or that the CRL (Certificate Revocation List) could not be verified. If you see this message, please let the author of the software you are using know that he or she should use the new, more specific error messages.");
     case KSSLCertificate::Expired:

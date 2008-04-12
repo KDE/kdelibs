@@ -66,7 +66,7 @@ bool KSambaShare::KSambaSharePrivate::load()
  * Try to find the samba config file path
  * First tries the kconfig, then checks
  * several well-known paths
- * @return wether a smb.conf was found.
+ * @return whether a smb.conf was found.
  **/
 bool KSambaShare::KSambaSharePrivate::findSmbConf()
 {

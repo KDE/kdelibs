@@ -233,7 +233,7 @@ KIO_EXPORT QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 /**
  * A Singleton class that provides access to passwords
  * stored in .netrc files for automatic login purposes.
- * This is only meant to address backward compatability
+ * This is only meant to address backward compatibility
  * with old automated ftp client style logins...
  *
  * @short An interface to the ftp .netrc files
