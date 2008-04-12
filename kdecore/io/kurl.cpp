@@ -364,7 +364,9 @@ KUrl::KUrl( const QByteArray& str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
+#if defined(DEBUG_KURL)
     kDebug(126) << "KUrl::KUrl " << " " << str.data();
+#endif
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	  setPath( QString::fromUtf8( str.mid( 1 ) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
@@ -381,7 +383,7 @@ KUrl::KUrl( const QByteArray& str )
 KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
     kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
@@ -389,7 +391,7 @@ KUrl::KUrl( const KUrl& _u )
 KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
     kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
@@ -397,7 +399,7 @@ KUrl::KUrl( const QUrl &u )
 KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
     kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
