@@ -320,7 +320,7 @@ void KEditListBox::setButtons( Buttons buttons )
 
     QGridLayout* grid = static_cast<QGridLayout *>( layout() );
     if ( ( buttons & Add ) && !d->servNewButton ) {
-        d->servNewButton = new KPushButton(KIcon("edit-add"), i18n("&Add"), this);
+        d->servNewButton = new KPushButton(KIcon("list-add"), i18n("&Add"), this);
         d->servNewButton->setEnabled(false);
         d->servNewButton->show();
         connect(d->servNewButton, SIGNAL(clicked()), SLOT(addItem()));
@@ -332,7 +332,7 @@ void KEditListBox::setButtons( Buttons buttons )
     }
 
     if ( ( buttons & Remove ) && !d->servRemoveButton ) {
-        d->servRemoveButton = new KPushButton(KIcon("edit-delete"), i18n("&Remove"), this);
+        d->servRemoveButton = new KPushButton(KIcon("list-remove"), i18n("&Remove"), this);
         d->servRemoveButton->setEnabled(false);
         d->servRemoveButton->show();
         connect(d->servRemoveButton, SIGNAL(clicked()), SLOT(removeItem()));
