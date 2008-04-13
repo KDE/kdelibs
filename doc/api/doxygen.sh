@@ -18,31 +18,31 @@ preprocess=0
 manpages=0
 
 while test -n "$1" ; do
-case "x$1" in
-"x--no-cleanup" )
+case $1 in
+--no-cleanup)
 	cleanup=NO
 	;;
-"x--no-recurse" )
+--no-recurse)
 	recurse=0
 	recurse_given=YES
 	;;
-"x--recurse" )
+--recurse)
 	recurse=1
 	recurse_given=YES
 	;;
-"x--no-modulename" )
+--no-modulename)
 	use_modulename=0
 	;;
-"x--modulename" )
+--modulename)
 	use_modulename=1
 	;;
-"x--preprocess" )
+--preprocess)
 	preprocess=1
 	;;
-"x--manpages" )
+--manpages)
         manpages=1
         ;;
-"x--help" )
+--help)
 	echo "doxygen.sh usage:"
 	echo "doxygen.sh [--options] <srcdir> [<subdir>]"
 	echo "  --no-cleanup     Do not remove Doxyfile and other cruft from build"
@@ -54,17 +54,17 @@ case "x$1" in
         echo "  --manpages       Generate man pages in addition to html"
 	exit 2
 	;;
-x--doxdatadir=* )
+--doxdatadir=*)
 	DOXDATA=`echo $1 | sed -e 's+--doxdatadir=++'`
 	;;
-x--installdir=*)
+--installdir=*)
 	PREFIX=`echo $1 | sed -e 's+--installdir=++'`
 	;;
-x--* )
+--*)
 	echo "Unknown option: $1"
 	exit 1
 	;;
-* )
+*)
 	top_srcdir="$1"
 	break
 	;;
