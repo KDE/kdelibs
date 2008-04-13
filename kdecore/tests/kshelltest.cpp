@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2003,2007 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2003,2007-2008 Oswald Buddenhagen <ossi@kde.org>
     Copyright (c) 2005 Thomas Braxton <brax108@cox.net>
 
     This library is free software; you can redistribute it and/or
@@ -67,7 +67,7 @@ KShellTest::quoteArg()
     QCOMPARE(KShell::quoteArg("\"a space\\\""), QString("\\^\"\"a space\"\\\\\\^\""));
     QCOMPARE(KShell::quoteArg("as df\\"), QString("\"as df\\\\\""));
     QCOMPARE(KShell::quoteArg("foo bar\"\\\"bla"), QString("\"foo bar\"\\^\"\\\\\\^\"\"bla\""));
-
+    QCOMPARE(KShell::quoteArg("a % space"), QString("\"a %PERCENT_SIGN% space\""));
 #else
     QCOMPARE(KShell::quoteArg("a space"), QString("'a space'"));
 #endif
@@ -92,8 +92,8 @@ KShellTest::splitJoin()
     KShell::Errors err = KShell::NoError;
 
 #ifdef Q_OS_WIN
-    QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap'", KShell::NoOptions, &err),
-             QString("\"~sulli\" \"'text'\" \"'jo'jo\" \"$'crap'\""));
+    QCOMPARE(sj("\"(sulli)\" text", KShell::NoOptions, &err),
+             QString("\"(sulli)\" text"));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj(" ha\\ lo ", KShell::NoOptions, &err),
@@ -112,18 +112,17 @@ KShellTest::splitJoin()
              QString());
     QVERIFY(err == KShell::BadQuoting);
 
-    QCOMPARE(sj("say `echo no error(", KShell::NoOptions, &err),
-             QString("say \"`echo\" no \"error(\""));
-    QVERIFY(err == KShell::NoError);
-
-    QCOMPARE(sj("BLA;asdf sdfess d", KShell::NoOptions, &err), 
+    QCOMPARE(sj("BLA;asdf sdfess d", KShell::NoOptions, &err),
              QString("\"BLA;asdf\" sdfess d"));
     QVERIFY(err == KShell::NoError);
 
-    QCOMPARE(sj("B\"L\"A&sdf FOO~bar sdf wer ", KShell::NoOptions, &err),
-             QString("\"BLA&sdf\" \"FOO~bar\" sdf wer"));
+    QCOMPARE(sj("B\"L\"A&sdf FOO|bar sdf wer ", KShell::NoOptions, &err),
+             QString("\"BLA&sdf\" \"FOO|bar\" sdf wer"));
     QVERIFY(err == KShell::NoError);
 
+    QCOMPARE(sj("\"\"\"just \"\" fine\"\"\"", KShell::NoOptions, &err),
+             QString("\\^\"\"just \"\\^\"\" fine\"\\^\""));
+    QVERIFY(err == KShell::NoError);
 #else
     QCOMPARE(sj("\"~qU4rK\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo \\a", KShell::NoOptions, &err),
              QString("~qU4rK text jojo crap '\\'\\''\x1b!' 'ha lo' a"));
@@ -164,6 +163,17 @@ KShellTest::abortOnMeta()
     QVERIFY(KShell::splitArgs("BLA & asdf sdfess d", KShell::AbortOnMeta, &err1).isEmpty());
     QVERIFY(err1 == KShell::FoundMeta);
 
+    QVERIFY(KShell::splitArgs("foo %PATH% bar", KShell::AbortOnMeta, &err1).isEmpty());
+    QVERIFY(err1 == KShell::FoundMeta);
+
+    QCOMPARE(sj("foo %PERCENT_SIGN% bar", KShell::AbortOnMeta, &err1),
+             QString("foo %PERCENT_SIGN% bar"));
+    QVERIFY(err1 == KShell::NoError);
+
+    QCOMPARE(sj("@foo ^& bar", KShell::AbortOnMeta, &err1),
+             QString("foo \"&\" bar"));
+    QVERIFY(err1 == KShell::NoError);
+
     QCOMPARE(sj("\"BLA|asdf\" sdfess d", KShell::AbortOnMeta, &err1),
              QString("\"BLA|asdf\" sdfess d"));
     QVERIFY(err1 == KShell::NoError);
@@ -172,6 +182,9 @@ KShellTest::abortOnMeta()
              QString("\"BLA|sdf\" \"FOO | bar\" sdf wer"));
     QVERIFY(err1 == KShell::NoError);
 
+    QCOMPARE(sj("b-q me \\\\^|\\\\\\^\"", KShell::AbortOnMeta, &err1),
+             QString("b-q me \"\\\\|\"\\\\\\^\""));
+    QVERIFY(err1 == KShell::NoError);
 #else
     QCOMPARE(sj("say \" error", KShell::NoOptions, &err1),
              QString());

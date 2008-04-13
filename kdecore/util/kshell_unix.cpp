@@ -20,14 +20,12 @@
 */
 
 #include "kshell.h"
-#include "kuser.h"
+#include "kshell_p.h"
+
+#include <kuser.h>
 
 #include <QtCore/QChar>
 #include <QtCore/QStringList>
-
-namespace KShell {
-QString homeDir( const QString &user );
-}
 
 static int fromHex( QChar cUnicode )
 {

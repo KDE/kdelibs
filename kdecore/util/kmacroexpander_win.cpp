@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (c) 2007 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2008 Oswald Buddenhagen <ossi@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,8 +20,96 @@
 */
 
 #include "kmacroexpander_p.h"
+#include "kshell_p.h"
+
+#include "kshell.h"
+
+#include <QString>
+#include <QStringList>
 
 bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
 {
-    return false;
+    int len;
+    int pos2;
+    ushort uc;
+    QChar ec( d->escapechar );
+    bool shellQuote = false; // shell is in quoted state
+    bool crtQuote = false; // c runtime is in quoted state
+    bool escaped = false; // previous char was a circumflex
+    int bslashes = 0; // previous chars were backslashes
+    int parens = 0; // parentheses nesting level
+    QStringList rst;
+    QString rsts;
+
+    while (pos < str.length()) {
+        QChar cc( str.unicode()[pos] );
+        if (escaped) // prevent anomalies due to expansion
+            goto notcf;
+        if (ec != QLatin1Char(0)) {
+            if (cc != ec)
+                goto nohit;
+            if (!(len = expandEscapedMacro( str, pos, rst )))
+                goto nohit;
+        } else {
+            if (!(len = expandPlainMacro( str, pos, rst )))
+                goto nohit;
+        }
+            if (len < 0) {
+                pos -= len;
+                continue;
+            }
+            if (shellQuote != crtQuote) // Silly, isn't it? Ahoy to Redmond.
+                return false;
+            if (shellQuote) {
+                rsts = KShell::quoteArgInternal( rst.join( QLatin1String(" ") ), true );
+            } else {
+                if (rst.isEmpty()) {
+                    str.remove( pos, len );
+                    continue;
+                }
+                rsts = KShell::joinArgs( rst );
+            }
+            pos2 = 0;
+            while (pos2 < rsts.length() &&
+                   ((uc = rsts[pos2].unicode()) == '\\' || uc == '^'))
+                pos2++;
+            if (pos2 < rsts.length() && rsts[pos2].unicode() == '"') {
+                QString bsl;
+                bsl.reserve( bslashes );
+                for (; bslashes; bslashes--)
+                    bsl.append( QLatin1String("\\") );
+                rsts.prepend( bsl );
+            }
+            bslashes = 0;
+            rst.clear();
+            str.replace( pos, len, rsts );
+            pos += rsts.length();
+            continue;
+      nohit:
+        if (!escaped && !shellQuote && cc == QLatin1Char('^')) {
+            escaped = true;
+        } else {
+          notcf:
+            if (cc == QLatin1Char('\\')) {
+                bslashes++;
+            } else {
+                if (cc == QLatin1Char('"')) {
+                    if (!escaped)
+                        shellQuote = !shellQuote;
+                    if (!(bslashes & 1))
+                        crtQuote = !crtQuote;
+                } else if (!shellQuote) {
+                    if (cc == QLatin1Char('('))
+                        parens++;
+                    else if (cc == QLatin1Char(')'))
+                        if (--parens < 0)
+                            break;
+                }
+                bslashes = 0;
+            }
+            escaped = false;
+        }
+        pos++;
+    }
+    return true;
 }

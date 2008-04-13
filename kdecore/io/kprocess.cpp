@@ -22,6 +22,9 @@
 #include "kprocess_p.h"
 
 #include <kstandarddirs.h>
+#ifdef Q_OS_WIN
+# include <kshell_p.h>
+#endif
 
 #include <qfile.h>
 
@@ -268,6 +271,10 @@ void KProcess::setShellCommand(const QString &cmd)
 
     d->args << "-c" << cmd;
 #else // Q_OS_UNIX
+    // KMacroExpander::expandMacrosShellQuote(), KShell::quoteArg() and
+    // KShell::joinArgs() may generate these for security reasons.
+    setEnv(PERCENT_VARIABLE, "%");
+
     //see also TrollTechTaskTracker entry 88373.
     d->prog = KStandardDirs::findExe("kcmdwrapper");
 
