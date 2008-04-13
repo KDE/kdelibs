@@ -34,6 +34,7 @@
 #include "nodes.h"
 #include "operations.h"
 #include "debugger.h"
+#include "context.h"
 #include "PropertyNameArray.h"
 
 #include <stdio.h>
@@ -41,22 +42,58 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include "wtf/DisallowCType.h"
-#include "wtf/ASCIICType.h"
+#include <ctype.h>
 
 using namespace WTF;
 
 namespace KJS {
 
+// ----------------------------- LookupOptimizer ------------------------------
+class LookupOptimizer : public NodeVisitor {
+public:
+  LookupOptimizer(ExecState* exec, FunctionBodyNode* body) : m_exec(exec), m_body(body) {}
+
+  void optimize() {
+    visit(m_body);
+  }
+  
+  virtual Node* visit(Node* node)
+  {
+    //Do not recurse inside nodes that introduce new scopes:
+    //that includes 'with' and various function literals.
+    if (node->introducesNewScope()) return 0;
+
+    //Catch can introduce a new scope as well, but 
+    //the rest of try is fine..
+    if (node->isTryNode()) {
+       static_cast<TryNode*>(node)->recurseVisitNonCatch(this);
+       return 0;
+    }
+
+    //Now try optimizing..
+    if (Node* resultNode = node->optimizeLocalAccess(m_exec, m_body)) {
+      //We optimized this node, but it may make sense to optimize 
+      //inside it as well, so recurse, too. 
+      NodeVisitor::visit(resultNode);
+      return resultNode;
+    }
+
+    //Just recurse..
+    return NodeVisitor::visit(node);
+  }
+private:
+  ExecState*        m_exec;
+  FunctionBodyNode* m_body;
+};
+
 // ----------------------------- FunctionImp ----------------------------------
 
 const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
-FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b, const ScopeChain& sc)
+FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
                         (exec->lexicalInterpreter()->builtinFunctionPrototype()), n)
   , body(b)
-  , _scope(sc)
 {
 }
 
@@ -72,70 +109,58 @@ FunctionImp::~FunctionImp()
 
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
+  JSObject* globalObj = exec->dynamicInterpreter()->globalObject();
+
   // enter a new execution context
-  FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(), exec, this);
+  Context ctx(globalObj, exec->dynamicInterpreter(), thisObj, body.get(),
+                 FunctionCode, exec->context(), this, &args);
+  ExecState newExec(exec->dynamicInterpreter(), &ctx);
   if (exec->hadException())
     newExec.setException(exec->exception());
-
-  FunctionBodyNode* body = this->body.get();
-
-  // The first time we're called, compute the set of local variables,
-  // and compile the body. (note that parameters have been collected
-  // during the AST build)
-  if (!body->isCompiled()) {
-    // Reserve various slots needed for the activation object
-    body->reserveSlot(ActivationImp::LengthSlot, false);
-    body->reserveSlot(ActivationImp::OnStackSlot, false);
-    body->reserveSlot(ActivationImp::FunctionSlot, true);
-    body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
-
-    // Create declarations for parameters, and allocate the symbols.
-    // We always just give them sequential positions, to make passInParameters
-    // simple (though perhaps wasting memory in the trivial case)
-    for (size_t i = 0; i < body->numParams(); ++i)
-      body->addSymbolOverwriteID(i + ActivationImp::NumReservedSlots, body->paramName(i), DontDelete);
-
+    
+  // Compute the set of all local variables, and functions.
+  // and optimize access to them the first time we're called.
+  // The AST building already took care of parameter declarations for us.
+  if (!body->builtSymbolList()) {
+   // now handle other locals (functions, variables)
     body->processDecls(&newExec);
-    body->compile(FunctionCode);
+    body->setBuiltSymbolList();
+
+    LookupOptimizer optimizer(&newExec, body.get());
+    optimizer.optimize();
   }
 
-  size_t stackSize              = 0;
-  LocalStorageEntry* stackSpace = 0;
-  if (body->stackAllocateActivation()) {
-    stackSize  = sizeof(LocalStorageEntry) * body->numLocalsAndRegisters();
-    stackSpace = (LocalStorageEntry*)exec->dynamicInterpreter()->stackAlloc(stackSize);
-  }
+  ActivationImp* activation = static_cast<ActivationImp*>(ctx.activationObject());
 
-  ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
-  activation->setup(&newExec, this, &args, stackSpace);
+  // Here, we actually fill stuff in, going by increasing priorities: 
+  // first, initialize flags and set to undefined...
+  activation->setupLocals();
+
+  // Next, assign user supplied arguments to parameters
+  passInParameters(&newExec, args);
+
+  // Now, fill in function objects. These should override everything else
+  activation->setupFunctionLocals(&newExec);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
+  int sourceId = -1;
+  int lineNo = -1;
   if (dbg) {
-    bool cont = dbg->enterContext(&newExec, body->sourceId(), body->firstLine(), this, args);
+    if (inherits(&DeclaredFunctionImp::info)) {
+      sourceId = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
+      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
+    }
+
+    bool cont = dbg->enterContext(&newExec, sourceId, lineNo, this, args);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
     }
   }
 
-  Completion comp = body->execute(&newExec);
+  Completion comp = execute(&newExec);
 
-  // Make sure to clear a stack activation, since it points to outside stuff,
-  // and a conservative GC may try marking it, making it access out-of-date
-  // data
-  if (activation->onStackSlot()) {
-    activation->localStorage = 0;
-
-    // Recycle it for reuse
-    exec->dynamicInterpreter()->recycleActivation(activation);
-  }
-
-   // Also free the stack space. This should be done if we originally
-   // allocated on the stack, even if it got torn off
-  if (body->stackAllocateActivation())
-    exec->dynamicInterpreter()->stackFree(stackSize);
-
-  // if an exception occurred, propogate it back to the previous execution object
+  // if an exception occurred, propagate it back to the previous execution object
   if (newExec.hadException())
     comp = Completion(Throw, newExec.exception());
 
@@ -154,10 +179,13 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   dbg = exec->dynamicInterpreter()->debugger();
 
   if (dbg) {
+    if (inherits(&DeclaredFunctionImp::info))
+      lineNo = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
+
     if (comp.complType() == Throw)
         newExec.setException(comp.value());
 
-    int cont = dbg->exitContext(&newExec, body->sourceId(), body->lastLine(), this);
+    int cont = dbg->exitContext(&newExec, sourceId, lineNo, this);
     if (!cont) {
       dbg->imp()->abort();
       return jsUndefined();
@@ -174,15 +202,43 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     return jsUndefined();
 }
 
+// ECMA 10.1.3q
+void FunctionImp::passInParameters(ExecState* exec, const List& args)
+{
+  assert (exec->context()->variableObject()->isActivation());
+  ActivationImp* variable = static_cast<ActivationImp*>(exec->context()->variableObject());
+
+#ifdef KJS_VERBOSE
+  fprintf(stderr, "---------------------------------------------------\n"
+	  "processing parameters for %s call\n",
+	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
+#endif
+
+  ListIterator it = args.begin();
+  for (int paramPos = 0; paramPos < body->numParams(); ++paramPos) {
+    int writeTo = body->paramSymbolID(paramPos);
+    JSValue*  v = jsUndefined();
+    if (it != args.end()) {
+      v = *it;
+      ++it;
+    }
+#ifdef KJS_VERBOSE
+    fprintf(stderr, "setting parameter %s", body->paramName(paramPos).ascii());
+    printInfo(exec,"to", v);
+#endif
+    variable->putLocal(writeTo, v);
+  }
+}
+
 JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
-  ExecState *context = exec;
+  Context *context = exec->m_context;
   while (context) {
     if (context->function() == thisObj) {
       return static_cast<ActivationImp *>(context->activationObject())->get(exec, propertyName);
     }
-    context = context->callingExecState();
+    context = context->callingContext();
   }
   return jsNull();
 }
@@ -190,17 +246,17 @@ JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifi
 JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
     FunctionImp* thisObj = static_cast<FunctionImp*>(slot.slotBase());
-    ExecState* context = exec;
+    Context* context = exec->m_context;
     while (context) {
         if (context->function() == thisObj)
             break;
-        context = context->callingExecState();
+        context = context->callingContext();
     }
 
     if (!context)
         return jsNull();
 
-    ExecState* callingContext = context->callingExecState();
+    Context* callingContext = context->callingContext();
     if (!callingContext)
         return jsNull();
 
@@ -275,13 +331,25 @@ Identifier FunctionImp::getParameterName(int index)
   return name;
 }
 
-bool FunctionImp::implementsConstruct() const
+// ------------------------------ DeclaredFunctionImp --------------------------
+
+// ### is "Function" correct here?
+const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
+
+DeclaredFunctionImp::DeclaredFunctionImp(ExecState* exec, const Identifier& n,
+					 FunctionBodyNode* b, const ScopeChain& sc)
+  : FunctionImp(exec, n, b)
+{
+  setScope(sc);
+}
+
+bool DeclaredFunctionImp::implementsConstruct() const
 {
   return true;
 }
 
 // ECMA 13.2.2 [[Construct]]
-JSObject *FunctionImp::construct(ExecState *exec, const List &args)
+JSObject *DeclaredFunctionImp::construct(ExecState *exec, const List &args)
 {
   JSObject *proto;
   JSValue *p = get(exec, exec->propertyNames().prototype);
@@ -298,6 +366,15 @@ JSObject *FunctionImp::construct(ExecState *exec, const List &args)
     return static_cast<JSObject *>(res);
   else
     return obj;
+}
+
+Completion DeclaredFunctionImp::execute(ExecState *exec)
+{
+  Completion result = body->execute(exec);
+
+  if (result.complType() == Throw || result.complType() == ReturnValue)
+      return result;
+  return Completion(Normal, jsUndefined()); // TODO: or ReturnValue ?
 }
 
 // ------------------------------ IndexToNameMap ---------------------------------
@@ -437,164 +514,137 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-void ActivationImp::setup(ExecState* exec, FunctionImp *function,
-                          const List* arguments, LocalStorageEntry* stackSpace)
+ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
+    : _function(function), _arguments(arguments), _locals(0)
 {
-    FunctionBodyNode* body = function->body.get();
-
-    // Allocate space..
-    size_t total = body->numLocalsAndRegisters();
-
-    if (body->stackAllocateActivation()) {
-        localStorage  = stackSpace;
-        onStackSlot() = true;
-    } else {
-        localStorage  = new LocalStorageEntry[total];
-        onStackSlot() = false;
-    }
-    lengthSlot() = total;
-
-    // Cache in locals..
-    LocalStorageEntry* entries = localStorage;
-
-    const FunctionBodyNode::SymbolInfo* symInfo = body->getLocalInfo();
-
-    // Setup our fields
-    this->arguments = arguments;
-    functionSlot()  = function;
-    argumentsObjectSlot() = jsUndefined();
-    symbolTable     = &body->symbolTable();
-
-    // Set the mark/don't mark flags and attributes for everything
-    for (size_t p = 0; p < total; ++p)
-      entries[p].attributes = symInfo[p].attr;
-
-    // Pass in the parameters (ECMA 10.1.3q)
-#ifdef KJS_VERBOSE
-    fprintf(stderr, "---------------------------------------------------\n"
-            "processing parameters for %s call\n",
-            function->functionName().isEmpty() ? "(internal)" : function->functionName().ascii());
-#endif
-    size_t numParams = body->numParams();
-    for (size_t pos = 0; pos < numParams; ++pos) {
-        size_t symNum = pos + ActivationImp::NumReservedSlots;
-        JSValue* v = (*arguments)[pos];
-
-        entries[symNum].val.valueVal = v;
-
-#ifdef KJS_VERBOSE
-        fprintf(stderr, "setting parameter %s", body->paramName(pos).ascii());
-        printInfo(exec, "to", v);
-#endif
-    }
-
-    // Initialize the rest of the locals to 'undefined'
-    for (size_t pos = numParams + ActivationImp::NumReservedSlots; pos < total; ++pos)
-        entries[pos].val.valueVal = jsUndefined();
-
-    // Finally, put in the functions. Note that this relies on above
-    // steps to have completed, since it can trigger a GC.
-    size_t  numFuns  = body->numFunctionLocals();
-    size_t* funsData = body->getFunctionLocalInfo();
-    for (size_t fun = 0; fun < numFuns; ++fun) {
-        size_t id = funsData[fun];
-        entries[id].val.valueVal = symInfo[id].funcDecl->makeFunctionObject(exec);
-    }
+  // FIXME: Do we need to support enumerating the arguments property?
 }
 
-void ActivationImp::tearOff(ExecState* myExec)
-{
-    ASSERT(myExec->variableObject() == this);
-    if (!onStackSlot())
-      return;
-    // Create a new local array, copy stuff over
-    size_t total = lengthSlot();
-    LocalStorageEntry* entries = new LocalStorageEntry[total];
-    std::memcpy(entries, localStorage, total*sizeof(LocalStorageEntry));
-    localStorage  = entries;
+void ActivationImp::setupLocals() {
+  int numLocals = _function->body->numLocals();
+  _locals  = new Local[numLocals + 1];
+  _locals[0].value = 0;
+  _locals[0].attr  = numLocals + 1; 
+  for (int l = 1; l < numLocals + 1; ++l) {
+    _locals[l].value = jsUndefined();
+    _locals[l].attr  = _function->body->getLocalAttr(l); 
+  }
+}
 
-    // Our data is no longer on the stack
-    onStackSlot() = false;
-
-    // Update the ExecState and the interpreter
-    myExec->updateLocalStorage(localStorage);
+void ActivationImp::setupFunctionLocals(ExecState *exec) {
+  int numLocals = _function->body->numLocals();
+  for (int l = 1; l < numLocals + 1; ++l) {
+    if (FuncDeclNode* funcDecl = _function->body->getLocalFuncDecl(l))
+      _locals[l].value = funcDecl->makeFunctionObject(exec);
+  }
 }
 
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
-  ActivationImp* thisObj = static_cast<ActivationImp*>(slot.slotBase());
+  ActivationImp *thisObj = static_cast<ActivationImp *>(slot.slotBase());
 
-  if (thisObj->argumentsObjectSlot() == jsUndefined())
+  // default: return builtin arguments array
+  if (!thisObj->_locals[0].value)
     thisObj->createArgumentsObject(exec);
 
-  return thisObj->argumentsObjectSlot();
+  return thisObj->_locals[0].value;
 }
-
 
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
 {
   return ActivationImp::argumentsGetter;
 }
 
+void ActivationImp::getPropertyNames(ExecState* exec, PropertyNameArray& props)
+{
+    // This is used for debugging only -- no way to access from script code.
+    int numLocals = _function->body->numLocals();
+    for (int l = 1; l < numLocals + 1; ++l)
+        props.add(_function->body->getLocalName(l));
+
+    JSObject::getPropertyNames(exec, props);
+}
+
 bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    if (symbolTableGet(propertyName, slot))
-        return true;
+    // do this first so property map arguments property wins over the below
+    // we don't call JSObject because we won't have getter/setter properties
+    // and we don't want to support __proto__
+    
+    // See if we're doing fallback  lookup on a local..
+    int id = _function->body->lookupSymbolID(propertyName);
+
+    if (validLocal(id)) {
+      slot.setValueSlot(this, &_locals[id].value, (_locals[id].attr & ReadOnly) != 0);
+      return true;
+    }
 
     if (JSValue** location = getDirectLocation(propertyName)) {
         slot.setValueSlot(this, location);
         return true;
     }
 
-    // Only return the built-in arguments object if it wasn't overridden above.
+    // Important: if you add more dynamic properties here, 
+    // make sure to make the optimizeResolver call honor them.
     if (propertyName == exec->propertyNames().arguments) {
         slot.setCustom(this, getArgumentsGetter());
         return true;
     }
 
-    // We don't call through to JSObject because there's no way to give an
-    // activation object getter properties or a prototype.
-    ASSERT(!_prop.hasGetterSetterProperties());
-    ASSERT(prototype() == jsNull());
     return false;
 }
 
 bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
+    // If someone tries to delete a local, return false, that's not permitted
+    int id = _function->body->lookupSymbolID(propertyName);
+    if (validLocal(id))
+        return false;
+    
     if (propertyName == exec->propertyNames().arguments)
         return false;
-
-    return JSVariableObject::deleteProperty(exec, propertyName);
+    return JSObject::deleteProperty(exec, propertyName);
 }
 
 void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* value, int attr)
 {
-    // If any bits other than DontDelete are set, then we bypass the read-only check.
-    bool checkReadOnly = !(attr & ~DontDelete);
-    if (symbolTablePut(propertyName, value, checkReadOnly))
-        return;
+  // There's no way that an activation object can have a prototype or getter/setter properties
+  assert(!_prop.hasGetterSetterProperties());
+  assert(prototype() == jsNull());
+  
+  // See if we're setting a local..
+  int id = _function->body->lookupSymbolID(propertyName);
+  if (validLocal(id)) {
+    putLocalChecked(id, value);
+    return;
+  }
 
-    // We don't call through to JSObject because __proto__ and getter/setter
-    // properties are non-standard extensions that other implementations do not
-    // expose in the activation object.
-    ASSERT(!_prop.hasGetterSetterProperties());
-    _prop.put(propertyName, value, attr, checkReadOnly);
+  //### Document this, ugh.
+  _prop.put(propertyName, value, attr, (attr == None || attr == DontDelete));
+}
+
+void ActivationImp::mark()
+{
+    if (_function && !_function->marked())
+        _function->mark();
+    for (int pos = 0; pos < numLocals(); ++pos) {
+      JSValue *val = _locals[pos].value;
+      if (val && !val->marked())
+        val->mark();
+    }
+    JSObject::mark();
+}
+
+ActivationImp::~ActivationImp()
+{
+    delete[] _locals;
 }
 
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
-    if (onStackSlot()) {
-        // Find our execState, and make a non-stack copy
-        for (ExecState* e = exec; e; e = e->callingExecState()) {
-            if (e->activationObject() == this) {
-                tearOff(e);
-                break;
-            }
-        }
-    }
-
-    argumentsObjectSlot() = new Arguments(exec, static_cast<FunctionImp*>(functionSlot()),
-                                          *arguments, const_cast<ActivationImp*>(this));
+    _locals[0].value = new Arguments(exec, _function, _arguments, const_cast<ActivationImp*>(this));
+     // The arguments list is only needed to create the arguments object, so discard it now
+    _arguments.reset();
 }
 
 // ------------------------------ GlobalFunc -----------------------------------
@@ -636,7 +686,7 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
     UChar c = *p;
     if (c == '%') {
       int charLen = 0;
-      if (k <= len - 3 && isASCIIHexDigit(p[1].uc) && isASCIIHexDigit(p[2].uc)) {
+      if (k <= len - 3 && isxdigit(p[1].uc) && isxdigit(p[2].uc)) {
         const char b0 = Lexer::convertHex(p[1].uc, p[2].uc);
         const int sequenceLen = UTF8SequenceLength(b0);
         if (sequenceLen != 0 && k <= len - sequenceLen * 3) {
@@ -645,7 +695,7 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
           sequence[0] = b0;
           for (int i = 1; i < sequenceLen; ++i) {
             const UChar *q = p + i * 3;
-            if (q[0] == '%' && isASCIIHexDigit(q[1].uc) && isASCIIHexDigit(q[2].uc))
+            if (q[0] == '%' && isxdigit(q[1].uc) && isxdigit(q[2].uc))
               sequence[i] = Lexer::convertHex(q[1].uc, q[2].uc);
             else {
               charLen = 0;
@@ -879,11 +929,14 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
           return throwError(exec, SyntaxError, errMsg, errLine, sourceId, NULL);
 
         // enter a new execution context
-        EvalExecState newExec(exec->dynamicInterpreter(),
-                       exec->dynamicInterpreter()->globalObject(),
+        Context ctx(exec->dynamicInterpreter()->globalObject(),
+                       exec->dynamicInterpreter(),
+                       0, /* thisVal is inherited in EvalCode */
                        progNode.get(),
-                       exec);
+                       EvalCode,
+                       exec->context());
 
+        ExecState newExec(exec->dynamicInterpreter(), &ctx);
         if (exec->hadException())
             newExec.setException(exec->exception());
 

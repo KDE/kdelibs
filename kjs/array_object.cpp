@@ -40,7 +40,428 @@ using std::strncpy;
 using std::memset;
 using std::memcpy;
 
-namespace KJS {
+using namespace KJS;
+
+
+// ------------------------------ ArrayInstance -----------------------------
+
+const unsigned sparseArrayCutoff = 10000;
+
+const ClassInfo ArrayInstance::info = {"Array", 0, 0, 0};
+
+static inline JSValue** allocateStorage(size_t capacity)
+{
+  if (capacity == 0)
+      return 0;
+
+  // store capacity in extra space before the beginning of the storage array to save space
+  JSValue** storage = static_cast<JSValue**>(fastCalloc(capacity + 1, sizeof(JSValue *))) + 1;
+  storage[-1] = reinterpret_cast<JSValue*>(capacity);
+  return storage;
+}
+
+static inline void reallocateStorage(JSValue**& storage, size_t newCapacity)
+{
+  if (!storage) {
+    storage =  allocateStorage(newCapacity);
+    return;
+  }
+
+  // store capacity in extra space before the beginning of the storage array to save space
+  storage = static_cast<JSValue**>(fastRealloc(storage - 1, (newCapacity + 1) * sizeof (JSValue*))) + 1;
+  storage[-1] = reinterpret_cast<JSValue*>(newCapacity);
+}
+
+static inline void freeStorage(JSValue** storage)
+{
+  if (storage)
+    fastFree(storage - 1);
+}
+
+ArrayInstance::ArrayInstance(JSObject *proto, unsigned initialLength)
+  : JSObject(proto)
+  , length(initialLength)
+  , storageLength(initialLength < sparseArrayCutoff ? initialLength : 0)
+  , storage(allocateStorage(storageLength))
+{
+}
+
+ArrayInstance::ArrayInstance(JSObject *proto, const List &list)
+  : JSObject(proto)
+  , length(list.size())
+  , storageLength(length)
+  , storage(allocateStorage(storageLength))
+{
+  ListIterator it = list.begin();
+  unsigned l = length;
+  for (unsigned i = 0; i < l; ++i) {
+    storage[i] = it++;
+  }
+}
+
+ArrayInstance::~ArrayInstance()
+{
+  freeStorage(storage);
+}
+
+JSValue* ArrayInstance::getItem(unsigned i) const
+{
+    if (i >= length)
+        return jsUndefined();
+    JSValue* val = (i < storageLength) ?
+                            storage[i] :
+                            getDirect(Identifier::from(i));
+    return val ? val : jsUndefined();
+}
+
+JSValue *ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
+{
+  return jsNumber(static_cast<ArrayInstance *>(slot.slotBase())->length);
+}
+
+bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+{
+  if (propertyName == exec->propertyNames().length) {
+    slot.setCustom(this, lengthGetter);
+    return true;
+  }
+
+  bool ok;
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    if (index >= length)
+      return false;
+    if (index < storageLength) {
+      JSValue *v = storage[index];
+      if (!v)
+        return false;      
+      slot.setValueSlot(this, &storage[index]);
+      return true;
+    }
+  }
+
+  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
+}
+
+bool ArrayInstance::getOwnPropertySlot(ExecState *exec, unsigned index, PropertySlot& slot)
+{
+  if (index > MAX_ARRAY_INDEX)
+    return getOwnPropertySlot(exec, Identifier::from(index), slot);
+
+  if (index >= length)
+    return false;
+  if (index < storageLength) {
+    JSValue *v = storage[index];
+    if (!v)
+      return false;
+    slot.setValueSlot(this, &storage[index]);
+    return true;
+  }
+
+  return JSObject::getOwnPropertySlot(exec, index, slot);
+}
+
+// Special implementation of [[Put]] - see ECMA 15.4.5.1
+void ArrayInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
+{
+  if (propertyName == exec->propertyNames().length) {
+    unsigned int newLen = value->toUInt32(exec);
+    if (value->toNumber(exec) != double(newLen)) {
+      throwError(exec, RangeError, "Invalid array length.");
+      return;
+    }
+    setLength(newLen, exec);
+    return;
+  }
+  
+  bool ok;
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    put(exec, index, value, attr);
+    return;
+  }
+  
+  JSObject::put(exec, propertyName, value, attr);
+}
+
+void ArrayInstance::put(ExecState *exec, unsigned index, JSValue *value, int attr)
+{
+  //0xFFFF FFFF is a bit weird --- it should be treated as a non-array index, even when
+  //it's a string 
+  if (index > MAX_ARRAY_INDEX) {
+    put(exec, Identifier::from(index), value, attr);
+    return;
+  }
+
+  if (index < sparseArrayCutoff && index >= storageLength) {
+    resizeStorage(index + 1);
+  }
+
+  if (index >= length) {
+    length = index + 1;
+  }
+
+  if (index < storageLength) {
+    storage[index] = value;
+    return;
+  }
+  
+  assert(index >= sparseArrayCutoff);
+  JSObject::put(exec, Identifier::from(index), value, attr);
+}
+
+bool ArrayInstance::deleteProperty(ExecState *exec, const Identifier &propertyName)
+{
+  if (propertyName == exec->propertyNames().length)
+    return false;
+  
+  bool ok;
+  uint32_t index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    if (index >= length)
+      return true;
+    if (index < storageLength) {
+      storage[index] = 0;
+      return true;
+    }
+  }
+  
+  return JSObject::deleteProperty(exec, propertyName);
+}
+
+bool ArrayInstance::deleteProperty(ExecState *exec, unsigned index)
+{
+  if (index > MAX_ARRAY_INDEX)
+    return deleteProperty(exec, Identifier::from(index));
+
+  if (index >= length)
+    return true;
+  if (index < storageLength) {
+    storage[index] = 0;
+    return true;
+  }
+  
+  return JSObject::deleteProperty(exec, Identifier::from(index));
+}
+
+void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+{
+  // avoid fetching this every time through the loop
+  JSValue* undefined = jsUndefined();
+  
+  for (unsigned i = 0; i < storageLength; ++i) {
+    JSValue* value = storage[i];
+    if (value && value != undefined)
+      propertyNames.add(Identifier::from(i));
+  }
+ 
+  JSObject::getPropertyNames(exec, propertyNames);
+}
+
+void ArrayInstance::resizeStorage(unsigned newLength)
+{
+    if (newLength < storageLength) {
+      memset(storage + newLength, 0, sizeof(JSValue *) * (storageLength - newLength));
+    }
+    size_t cap = capacity();
+    if (newLength > cap) {
+      unsigned newCapacity;
+      if (newLength > sparseArrayCutoff) {
+        newCapacity = newLength;
+      } else {
+        newCapacity = (newLength * 3 + 1) / 2;
+        if (newCapacity > sparseArrayCutoff) {
+          newCapacity = sparseArrayCutoff;
+        }
+      }
+      
+      reallocateStorage(storage, newCapacity);
+      memset(storage + cap, 0, sizeof(JSValue*) * (newCapacity - cap));
+    }
+    storageLength = newLength;
+}
+
+void ArrayInstance::setLength(unsigned newLength, ExecState *exec)
+{
+  if (newLength <= storageLength) {
+    resizeStorage(newLength);
+  }
+
+  if (newLength < length) {
+    PropertyNameArray sparseProperties;
+    
+    _prop.getSparseArrayPropertyNames(sparseProperties);
+    
+    PropertyNameArrayIterator end = sparseProperties.end();
+    
+    for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
+      Identifier name = *it;
+      bool ok;
+      unsigned index = name.toArrayIndex(&ok);
+      if (ok && index > newLength)
+        deleteProperty(exec, name);
+    }
+  }
+  
+  length = newLength;
+}
+
+void ArrayInstance::mark()
+{
+  JSObject::mark();
+  unsigned l = storageLength;
+  for (unsigned i = 0; i < l; ++i) {
+    JSValue *imp = storage[i];
+    if (imp && !imp->marked())
+      imp->mark();
+  }
+}
+
+static ExecState* execForCompareByStringForQSort;
+
+static int compareByStringForQSort(const void *a, const void *b)
+{
+    ExecState *exec = execForCompareByStringForQSort;
+    JSValue *va = *(JSValue **)a;
+    JSValue *vb = *(JSValue **)b;
+    if (va->isUndefined()) {
+        return vb->isUndefined() ? 0 : 1;
+    }
+    if (vb->isUndefined()) {
+        return -1;
+    }
+    return compare(va->toString(exec), vb->toString(exec));
+}
+
+void ArrayInstance::sort(ExecState* exec)
+{
+    size_t lengthNotIncludingUndefined = compactForSorting();
+      
+    ExecState* oldExec = execForCompareByStringForQSort;
+    execForCompareByStringForQSort = exec;
+#if HAVE(MERGESORT)
+    // mergesort usually does fewer compares, so it is actually faster than qsort for JS sorts.
+    // however, because it requires extra copies of the storage buffer, don't use it for very
+    // large arrays
+    // FIXME: for sorting by string value, the fastest thing would actually be to convert all the
+    // values to string once up front, and then use a radix sort. That would be O(N) rather than 
+    // O(N log N).
+    if (lengthNotIncludingUndefined < sparseArrayCutoff) {
+        JSValue** storageCopy = static_cast<JSValue**>(fastMalloc(capacity * sizeof(JSValue*)));
+        memcpy(storageCopy, storage, capacity * sizeof(JSValue*));
+        mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareByStringForQSort);
+        fastFree(storage);
+        storage = storageCopy;
+        execForCompareByStringForQSort = oldExec;
+        return;
+    }
+#endif
+
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+    execForCompareByStringForQSort = oldExec;
+}
+
+struct CompareWithCompareFunctionArguments {
+    CompareWithCompareFunctionArguments(ExecState *e, JSObject *cf)
+        : exec(e)
+        , compareFunction(cf)
+        , globalObject(e->dynamicInterpreter()->globalObject())
+    {
+        arguments.append(jsUndefined());
+        arguments.append(jsUndefined());
+    }
+
+    ExecState *exec;
+    JSObject *compareFunction;
+    List arguments;
+    JSObject *globalObject;
+};
+
+static CompareWithCompareFunctionArguments* compareWithCompareFunctionArguments;
+
+static int compareWithCompareFunctionForQSort(const void *a, const void *b)
+{
+    CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
+
+    JSValue *va = *(JSValue **)a;
+    JSValue *vb = *(JSValue **)b;
+    if (va->isUndefined()) {
+        return vb->isUndefined() ? 0 : 1;
+    }
+    if (vb->isUndefined()) {
+        return -1;
+    }
+
+    args->arguments.clear();
+    args->arguments.append(va);
+    args->arguments.append(vb);
+    double compareResult = args->compareFunction->call
+        (args->exec, args->globalObject, args->arguments)->toNumber(args->exec);
+    return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
+}
+
+void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
+{
+    size_t lengthNotIncludingUndefined = compactForSorting();
+
+    CompareWithCompareFunctionArguments* oldArgs = compareWithCompareFunctionArguments;
+    CompareWithCompareFunctionArguments args(exec, compareFunction);
+    compareWithCompareFunctionArguments = &args;
+#if HAVE(MERGESORT)
+    // mergesort usually does fewer compares, so it is actually faster than qsort for JS sorts.
+    // however, because it requires extra copies of the storage buffer, don't use it for very
+    // large arrays
+    // FIXME: a tree sort using a perfectly balanced tree (e.g. an AVL tree) could do an even
+    // better job of minimizing compares
+    if (lengthNotIncludingUndefined < sparseArrayCutoff) {
+        JSValue** storageCopy = static_cast<JSValue**>(fastMalloc(capacity * sizeof(JSValue*)));
+        memcpy(storageCopy, storage, capacity * sizeof(JSValue*));
+        mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareWithCompareFunctionForQSort);
+        fastFree(storage);
+        storage = storageCopy;
+        compareWithCompareFunctionArguments = oldArgs;
+        return;
+    }
+#endif
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+    compareWithCompareFunctionArguments = oldArgs;
+}
+
+unsigned ArrayInstance::compactForSorting()
+{
+    JSValue *undefined = jsUndefined();
+
+    unsigned o = 0;
+    
+    for (unsigned i = 0; i != storageLength; ++i) {
+        JSValue *v = storage[i];
+        if (v && v != undefined) {
+            if (o != i)
+                storage[o] = v;
+            o++;
+        }
+    }
+   
+    PropertyNameArray sparseProperties;
+    _prop.getSparseArrayPropertyNames(sparseProperties);
+    unsigned newLength = o + sparseProperties.size();
+    
+    if (newLength > storageLength)
+        resizeStorage(newLength);
+    
+    PropertyNameArrayIterator end = sparseProperties.end();
+    for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
+        Identifier name = *it;
+        storage[o] = getDirect(name);
+        _prop.remove(name);
+        o++;
+    }
+    
+    if (newLength != storageLength)
+        memset(storage + o, 0, sizeof(JSValue *) * (storageLength - o));
+    
+    return o;
+}
 
 // ------------------------------ ArrayPrototype ----------------------------
 
@@ -83,12 +504,12 @@ bool ArrayPrototype::getOwnPropertySlot(ExecState* exec, const Identifier& prope
 
 // ------------------------------ ArrayProtoFunc ----------------------------
 
-ArrayProtoFunc::ArrayProtoFunc(ExecState* exec, int i, int len, const Identifier& name)
+ArrayProtoFunc::ArrayProtoFunc(ExecState *exec, int i, int len, const Identifier& name)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
                         (exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
   , id(i)
 {
-  put(exec, exec->propertyNames().length, jsNumber(len), DontDelete | ReadOnly | DontEnum);
+  put(exec, exec->propertyNames().length,jsNumber(len),DontDelete|ReadOnly|DontEnum);
 }
 
 static JSValue *getProperty(ExecState *exec, JSObject *obj, unsigned index)
@@ -100,12 +521,12 @@ static JSValue *getProperty(ExecState *exec, JSObject *obj, unsigned index)
 }
 
 // ECMA 15.4.4
-JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
+JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
   unsigned length = thisObj->get(exec, exec->propertyNames().length)->toUInt32(exec);
 
   JSValue *result = 0; // work around gcc 4.0 bug in uninitialized variable warning
-
+  
   switch (id) {
   case ToLocaleString:
   case ToString:
@@ -116,61 +537,51 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
     // fall through
   case Join: {
     static HashSet<JSObject*> visitedElems;
-    static const UString* empty = new UString("");
-    static const UString* comma = new UString(",");
-    bool alreadyVisited = !visitedElems.add(thisObj).second;
-    if (alreadyVisited)
-        return jsString(*empty);
-    UString separator = *comma;
-    UString str = *empty;
+    if (visitedElems.contains(thisObj))
+      return jsString("");
+    UString separator = ",";
+    UString str = "";
 
+    visitedElems.add(thisObj);
     if (id == Join && !args[0]->isUndefined())
-        separator = args[0]->toString(exec);
+      separator = args[0]->toString(exec);
     for (unsigned int k = 0; k < length; k++) {
-        if (k >= 1)
-            str += separator;
-        if (str.isNull()) {
-            JSObject *error = Error::create(exec, GeneralError, "Out of memory");
-            exec->setException(error);
-            break;
+      if (k >= 1)
+        str += separator;
+      
+      JSValue *element = thisObj->get(exec, k);
+      if (element->isUndefinedOrNull())
+        continue;
+
+      bool fallback = false;
+      if (id == ToLocaleString) {
+        JSObject *o = element->toObject(exec);
+        JSValue *conversionFunction = o->get(exec, exec->propertyNames().toLocaleString);
+        if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
+          str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
+        } else {
+          // try toString() fallback
+          fallback = true;
         }
+      }
 
-        JSValue* element = thisObj->get(exec, k);
-        if (element->isUndefinedOrNull())
-            continue;
-
-        bool fallback = false;
-        if (id == ToLocaleString) {
-            JSObject* o = element->toObject(exec);
-            JSValue* conversionFunction = o->get(exec, exec->propertyNames().toLocaleString);
-            if (conversionFunction->isObject() && static_cast<JSObject*>(conversionFunction)->implementsCall())
-                str += static_cast<JSObject*>(conversionFunction)->call(exec, o, List())->toString(exec);
-            else
-                // try toString() fallback
-                fallback = true;
+      if (id == ToString || id == Join || fallback) {
+        if (element->isObject()) {
+          JSObject *o = static_cast<JSObject *>(element);
+          JSValue *conversionFunction = o->get(exec, exec->propertyNames().toString);
+          if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
+            str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
+          } else {
+            visitedElems.remove(thisObj);
+            return throwError(exec, RangeError, "Cannot convert " + o->className() + " object to string");
+          }
+        } else {
+          str += element->toString(exec);
         }
+      }
 
-        if (id == ToString || id == Join || fallback) {
-            if (element->isObject()) {
-                JSObject *o = static_cast<JSObject *>(element);
-                JSValue *conversionFunction = o->get(exec, exec->propertyNames().toString);
-                if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
-                    str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
-                } else {
-                    visitedElems.remove(thisObj);
-                    return throwError(exec, RangeError, "Can't convert " + o->className() + " object to string");
-                }
-            } else {
-                str += element->toString(exec);
-            }
-            if (str.isNull()) {
-                JSObject* error = Error::create(exec, GeneralError, "Out of memory");
-                exec->setException(error);
-            }
-        }
-
-        if (exec->hadException())
-            break;
+      if ( exec->hadException() )
+        break;
     }
     visitedElems.remove(thisObj);
     result = jsString(str);
@@ -236,7 +647,7 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
       JSValue *obj2 = getProperty(exec, thisObj, lk1);
       JSValue *obj = getProperty(exec, thisObj, k);
 
-      if (obj2)
+      if (obj2) 
         thisObj->put(exec, k, obj2);
       else
         thisObj->deleteProperty(exec, k);
@@ -321,7 +732,7 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
         if (!sortFunction->implementsCall())
           sortFunction = NULL;
       }
-
+    
     if (thisObj->classInfo() == &ArrayInstance::info) {
       if (sortFunction)
         ((ArrayInstance *)thisObj)->sort(exec, sortFunction);
@@ -451,44 +862,44 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
   case Filter:
   case Map: {
     JSObject *eachFunction = args[0]->toObject(exec);
-
+    
     if (!eachFunction->implementsCall())
       return throwError(exec, TypeError);
-
+    
     JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
     JSObject *resultArray;
-
-    if (id == Filter)
+    
+    if (id == Filter) 
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
     else {
       List args;
       args.append(jsNumber(length));
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
     }
-
+    
     unsigned filterIndex = 0;
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
       PropertySlot slot;
 
       if (!thisObj->getPropertySlot(exec, k, slot))
          continue;
-
+        
       JSValue *v = slot.getValue(exec, thisObj, k);
-
+      
       List eachArguments;
-
+      
       eachArguments.append(v);
       eachArguments.append(jsNumber(k));
       eachArguments.append(thisObj);
-
+      
       JSValue *result = eachFunction->call(exec, applyThis, eachArguments);
-
+      
       if (id == Map)
         resultArray->put(exec, k, result);
-      else if (result->toBoolean(exec))
+      else if (result->toBoolean(exec)) 
         resultArray->put(exec, filterIndex++, v);
     }
-
+    
     return resultArray;
   }
   case Every:
@@ -498,33 +909,33 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:every
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:forEach
     //http://developer-test.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:some
-
+    
     JSObject *eachFunction = args[0]->toObject(exec);
-
+    
     if (!eachFunction->implementsCall())
       return throwError(exec, TypeError);
-
+    
     JSObject *applyThis = args[1]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[1]->toObject(exec);
-
+    
     if (id == Some || id == Every)
       result = jsBoolean(id == Every);
     else
       result = jsUndefined();
-
+    
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
       PropertySlot slot;
-
+        
       if (!thisObj->getPropertySlot(exec, k, slot))
         continue;
-
+      
       List eachArguments;
-
+      
       eachArguments.append(slot.getValue(exec, thisObj, k));
       eachArguments.append(jsNumber(k));
       eachArguments.append(thisObj);
-
+      
       bool predicateResult = eachFunction->call(exec, applyThis, eachArguments)->toBoolean(exec);
-
+      
       if (id == Every && !predicateResult) {
         result = jsBoolean(false);
         break;
@@ -565,19 +976,19 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
   }
   case LastIndexOf: {
        // JavaScript 1.6 Extension by Mozilla
-      // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf
+      // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf 
 
     int index = length - 1;
     double d = args[1]->toIntegerPreserveNaN(exec);
 
     if (d < 0) {
         d += length;
-        if (d < 0)
+        if (d < 0) 
             return jsNumber(-1);
     }
     if (d < length)
         index = static_cast<int>(d);
-
+          
     JSValue* searchElement = args[0];
     for (; index >= 0; --index) {
         JSValue* e = getProperty(exec, thisObj, index);
@@ -637,8 +1048,3 @@ JSValue *ArrayObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/,
   // equivalent to 'new Array(....)'
   return construct(exec,args);
 }
-
-}
-
-
-// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;
