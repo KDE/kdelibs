@@ -171,7 +171,7 @@ void KJSApiTest::prototypeProperties()
     KJSObject obj = proto.constructObject(&o0);
 
     QCOMPARE(int(obj.property(ctx, "x").toNumber(ctx)), 42);
-    obj.setProperty(ctx, "x", KJSNumber(44));
+    obj.setProperty(ctx, "x", KJSNumber(43));
     QCOMPARE(int(obj.property(ctx, "x").toNumber(ctx)), 43);
 }
 

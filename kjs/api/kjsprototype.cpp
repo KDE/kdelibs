@@ -41,6 +41,7 @@ public:
     }
 
     JSValue* read(ExecState* exec, void* object);
+    void write(ExecState* exec, void* object, JSValue* value);
 
 private:
     KJSPrototype::PropertyGetter getter;
@@ -55,6 +56,9 @@ public:
     {
     }
 
+    void put(ExecState* exec, const Identifier& id,
+             JSValue *value, int attr = None);
+
     void* internalValue() { return iv; }
 
 private:
@@ -68,6 +72,16 @@ JSValue* KJSCustomProperty::read(ExecState* exec, void* object)
     KJSContext ctx(EXECSTATE_HANDLE(exec));
     KJSObject res = (*getter)(&ctx, object);
     return JSVALUE(&res);
+}
+
+void KJSCustomProperty::write(ExecState* exec, void* object, JSValue* value)
+{
+    assert(setter); // FIXME: cover read-only case
+
+    KJSContext ctx(EXECSTATE_HANDLE(exec));
+
+    KJSObject vo(JSVALUE_HANDLE(value));
+    (*setter)(&ctx, object, vo);
 }
 
 static JSValue* getPropertyValue(ExecState* exec, JSObject *originalObject,
@@ -107,16 +121,6 @@ public:
         return true;
     }
 
-    void put(ExecState* exec, const Identifier& id,
-             JSValue *value, int attr = None)
-    {
-        CustomPropertyMap::iterator it = properties.find(id.ustring());
-        if (it == properties.end())
-            return JSObject::put(exec, id, value, attr);
-
-        // FIXME: a prototype is the wrong place for writable object props
-    }
-
     void registerProperty(const QString& name,
                           KJSPrototype::PropertyGetter g,
                           KJSPrototype::PropertySetter s)
@@ -124,9 +128,30 @@ public:
         properties.insert(toUString(name), new KJSCustomProperty(g, s));
     }
 
+    bool setProperty(ExecState* exec, CustomObject* obj,
+                     const Identifier& id, JSValue* value)
+    {
+        CustomPropertyMap::iterator it = properties.find(id.ustring());
+        if (it == properties.end())
+            return false;
+
+        (*it)->write(exec, obj->internalValue(), value);
+        
+        return true;
+    }
+
 private:
     CustomPropertyMap properties;
 };
+
+void CustomObject::put(ExecState* exec, const Identifier& id,
+                       JSValue* value, int attr)
+{
+    CustomPrototype* p = static_cast<CustomPrototype*>(prototype());
+
+    if (!p->setProperty(exec, this, id, value))
+        JSObject::put(exec, id, value, attr);
+}
 
 KJSPrototype::KJSPrototype(const KJSInterpreter& ip)
 {
