@@ -100,16 +100,16 @@ void KNotificationManager::notificationClosed( int id )
 }
 
 
-void KNotificationManager::close( int id )
+void KNotificationManager::close( int id, bool force )
 {
-    if(d->notifications.contains(id)) {
-	d->notifications.remove(id);
-        kDebug( 299 ) << id;
-	d->knotify->call(QDBus::NoBlock, "closeNotification", id);
-    }
+	if(force || d->notifications.contains(id)) {
+		d->notifications.remove(id);
+		kDebug( 299 ) << id;
+		d->knotify->call(QDBus::NoBlock, "closeNotification", id);
+	}
 }
 
-void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
+bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                                            const QStringList &actions,
                                            const KNotification::ContextList & contexts,
                                            const QString &appname)
@@ -136,8 +136,7 @@ void KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
     args.append( contextList); // not the operator<< or it will concatenate the two list.
     args << n->text() <<  pixmapData << actions << qlonglong(winId) ;
-    d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
-
+    return d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
 }
 
 void KNotificationManager::insert(KNotification *n, int id)

@@ -40,15 +40,16 @@ public:
     /**
      * send the dbus call to the knotify server
      */
-    void notify(KNotification *n, const QPixmap& pix, const QStringList &action,
+    bool notify(KNotification *n, const QPixmap& pix, const QStringList &action,
                         const KNotification::ContextList& contexts, const QString &appname);
 
     /**
      * send the close dcop call to the knotify server for the notification with the identifier @p id .
      * And remove the notification from the internal map
      * @param id the id of the notification
+	 * @param force if false, only close registered notification
      */
-    void close(int id);
+    void close(int id, bool force = false);
 
     /**
      * Insert the notification and its id in the internal map

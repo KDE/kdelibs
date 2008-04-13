@@ -55,7 +55,7 @@
 struct KNotification::Private
 {
     QString eventId;
-    unsigned int id;
+    int id;
     int ref;
 
     QWidget *widget;
@@ -205,16 +205,21 @@ void KNotification::activate(unsigned int action)
             break;
     }
 	emit activated(action);
-	deleteLater();
+	if(d->id != -1)
+		deleteLater();
+	d->id = -2;
 }
 
 
 void KNotification::close()
 {
-	if(d->id != 0)
+	kDebug( 299 ) << d->id;
+	if(d->id >= 0)
 		KNotificationManager::self()->close( d->id );
+	if(d->id != -1) //=-1 mean still waiting for receiving the id
+		deleteLater();
+	d->id = -2;
 	emit closed();
-	deleteLater();
 }
 
 
@@ -324,8 +329,8 @@ void KNotification::sendEvent()
 		{
 			QTimer::singleShot(6*1000, this, SLOT(close()));
 		}
-
-		KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
+		if (KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname ))
+			d->id = -1;
 	}
 	else
 	{
@@ -335,6 +340,12 @@ void KNotification::sendEvent()
 
 void KNotification::slotReceivedId(int id)
 {
+	if(d->id == -2) //we are elready closed 
+	{
+		KNotificationManager::self()->close( id, /*force=*/ true );
+		deleteLater();
+		return;
+	}
 	d->id=id;
 	kDebug(299)  << id;
 	if(d->id>0)
@@ -351,7 +362,13 @@ void KNotification::slotReceivedId(int id)
 
 void KNotification::slotReceivedIdError(const QDBusError& error)
 {
+	if(d->id == -2) //we are elready closed 
+	{
+		deleteLater();
+		return;
+	}
 	kWarning(299) << "Error while contacting notify daemon" << error.message();
+	d->id = -3;
 	QTimer::singleShot(0, this, SLOT(deref()));
 }
 
