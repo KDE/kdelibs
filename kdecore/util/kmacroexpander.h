@@ -57,9 +57,12 @@ public:
      */
     void expandMacros( QString &str );
 
+    // TODO: This documentation is relevant for end-users. Where to put it?
     /**
      * Perform safe macro expansion (substitution) on a string for use
      * in shell commands.
+     *
+     * <h3>*NIX notes</h3>
      *
      * Explicitly supported shell constructs:
      *   \ '' "" $'' $"" {} () $(()) ${} $() ``
@@ -68,13 +71,30 @@ public:
      *   (())
      *
      * Unsupported shell constructs that will cause problems:
-     *  @li Shortened "case $v in pat)" syntax. Use "case $v in (pat)" instead.
+     *  Shortened &quot;<tt>case $v in pat)</tt>&quot; syntax. Use
+     *   &quot;<tt>case $v in (pat)</tt>&quot; instead.
      *
      * The rest of the shell (incl. bash) syntax is simply ignored,
      * as it is not expected to cause problems.
      *
      * Note that bash contains a bug which makes macro expansion within 
-     * double quoted substitutions ("${VAR:-%macro}") inherently insecure.
+     * double quoted substitutions (<tt>"${VAR:-%macro}"</tt>) inherently
+     * insecure.
+     *
+     * For security reasons, @em never put expandos in command line arguments
+     * that are shell commands by themselves -
+     * &quot;<tt>sh -c 'foo \%f'</tt>&quot; is taboo.
+     * &quot;<tt>file=\%f sh -c 'foo "$file"'</tt>&quot; is OK.
+     *
+     * <h3>Windows notes</h3>
+     *
+     * All quoting syntax supported by KShell is supported here as well.
+     * Additionally, command grouping via parentheses is recognized - note
+     * however, that the parser is much stricter about unquoted parentheses
+     * than cmd itself.
+     * The rest of the cmd syntax is simply ignored, as it is not expected
+     * to cause problems - do not use commands that embed other commands,
+     * though - &quot;<tt>for /f ...</tt>&quot; is taboo.
      *
      * @param str the string in which macros are expanded in-place
      * @param pos the position inside the string at which parsing/substitution
@@ -326,7 +346,8 @@ namespace KMacroExpander {
 
     /**
      * Perform safe macro expansion (substitution) on a string for use
-     * in shell commands.
+     * in shell commands. See KMacroExpanderBase::expandMacrosShellQuote()
+     * for the exact semantics.
      * The escape char must be quoted with itself to obtain its literal
      * representation in the resulting string.
      * Macro names can consist of chars in the range [A-Za-z0-9_];
