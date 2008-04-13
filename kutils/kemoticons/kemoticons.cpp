@@ -26,6 +26,7 @@
 #include <KPluginLoader>
 #include <KDebug>
 #include <KStandardDirs>
+#include <KConfigGroup>
 
 
 KEmoticonsPrivate::KEmoticonsPrivate()
@@ -66,8 +67,11 @@ KEmoticons::~KEmoticons()
     delete d;
 }
 
-KEmoticonsTheme KEmoticons::getTheme()
+KEmoticonsTheme *KEmoticons::getTheme()
 {
+    KConfigGroup config(KGlobal::config(), "General");
+    QString name = config.readEntry("emoticonTheme", "kde4");
+    return getTheme(name);
 }
 
 KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
@@ -99,12 +103,15 @@ QStringList KEmoticons::getThemeList()
     return ls;
 }
 
-void KEmoticons::setTheme(const KEmoticonsTheme &theme)
+void KEmoticons::setTheme(KEmoticonsTheme *theme)
 {
+    setTheme(theme->themeName());
 }
 
 void KEmoticons::setTheme(const QString &theme)
 {
+    KConfigGroup config(KGlobal::config(), "General");
+    config.writeEntry("emoticonsTheme", theme);
 }
 
 KEmoticonsTheme *KEmoticons::newTheme(const QString &name, const KService::Ptr &service)
