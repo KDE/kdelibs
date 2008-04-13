@@ -92,7 +92,7 @@ KFileMetaInfoItem::properties() const {
 }
 bool
 KFileMetaInfoItem::isEditable() const {
-    return true;
+    return p->writer != NULL;
 }
 QString
 KFileMetaInfoItem::suffix() const {

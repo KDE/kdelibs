@@ -197,9 +197,8 @@ KFileMetaInfoPrivate::initWriters(const KUrl& file) {
     for (i = items.begin(); i != items.end(); ++i) {
         KFileWritePlugin *w =
             KFileWriterProvider::self()->loadPlugin(i.key());
-        i.value().p->writer = w;
-        if (w) {
-            w->canWrite(file, i.key());
+        if (w && w->canWrite(file, i.key())) {
+            i.value().p->writer = w;
         }
     }
 }
@@ -241,7 +240,7 @@ KFileMetaInfo::applyChanges() {
     QHash<KFileWritePlugin*, QVariantMap> data;
     QHash<QString, KFileMetaInfoItem>::const_iterator i;
     for (i = p->items.begin(); i != p->items.end(); ++i) {
-        if (i.value().isModified()) {
+        if (i.value().isModified() && i.value().p->writer) {
             data[i.value().p->writer][i.key()] = i.value().value();
         }
     }
