@@ -197,7 +197,7 @@ public:
     args->clear();
     return 0;
     }
-   * \encode
+   * \endcode
    *
    * @return An exit value. The calling process will exit with this value.
    */
