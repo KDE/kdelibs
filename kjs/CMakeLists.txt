@@ -4,7 +4,7 @@ project(kjs)
 add_subdirectory(tests)
 
 # Conflict between KJS::HashTable and WTF::HashTable, due to "using namespace" of both namespaces.
-KDE4_NO_ENABLE_FINAL(kjs)
+kde4_no_enable_final(kjs)
 
 # Configuration checks
 include(FindThreads)
@@ -16,7 +16,7 @@ check_include_files(ieeefp.h      HAVE_IEEEFP_H)
 check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
 check_include_files(valgrind/memcheck.h   HAVE_MEMCHECK_H)
 
-MACRO_PUSH_REQUIRED_VARS()
+macro_push_required_vars()
 if(NOT WIN32)
     set(CMAKE_REQUIRED_LIBRARIES "-lm")
 endif(NOT WIN32)
@@ -25,8 +25,10 @@ check_function_exists(finite     HAVE_FUNC_FINITE)
 check_function_exists(posix_memalign     HAVE_FUNC_POSIX_MEMALIGN)
 check_symbol_exists(isnan   "math.h" HAVE_FUNC_ISNAN)
 check_symbol_exists(isinf   "math.h" HAVE_FUNC_ISINF)
-MACRO_POP_REQUIRED_VARS()
+macro_pop_required_vars()
 
+#Do not make PCRE optional here. PCRE is a hard requirement for modern systems
+#but we give old systems some slack... that's why we don't specify "REQUIRED".
 find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
@@ -39,31 +41,33 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
 
 macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
+
 # the check for pcre is in kdelibs/CMakeLists.txt
-if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
+if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
 
    # tell check_symbol_exists to -I pcre dirs.
-   MACRO_PUSH_REQUIRED_VARS()
-   SET(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
+   macro_push_required_vars()
+   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
 
-   CHECK_SYMBOL_EXISTS(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
-   CHECK_SYMBOL_EXISTS(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
+   check_symbol_exists(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
+   check_symbol_exists(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
 
-   MACRO_POP_REQUIRED_VARS()
+   macro_pop_required_vars()
 
-   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version
-   # recent enough, and we don't want to fallback to a completely crippled
-   # POSIX code just like that.
-   if (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
+   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
+   # recent enough, and we don't want to fallback to a completely crippled 
+   # POSIX code just like that. 
+   if (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
-   endif (NOT HAVE_PCRE_UTF8 OR NOT HAVE_PCRE_STACK)
-else (PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
+   endif (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
+
+else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # if we're here, either PCRE support is disabled, or it's not found...
    # it better be disabled.
-   if (NOT KJS_DISABLE_PCRE)
+   if (NOT KJS_FORCE_DISABLE_PCRE)
         message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
-   endif (NOT KJS_DISABLE_PCRE)
+   endif (NOT KJS_FORCE_DISABLE_PCRE)
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
@@ -73,31 +77,7 @@ else (PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    if (NOT HAVE_REGEX_H)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
    endif (NOT HAVE_REGEX_H)
-endif(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
-
-
-########### icemaker, generates some tables for kjs/frostbyte ###############
-set(icemaker_SRCS
-    bytecode/generator/tablebuilder.cpp
-    bytecode/generator/driver.cpp
-    bytecode/generator/lexer.cpp
-    bytecode/generator/parser.cpp
-   )
-KDE4_ADD_EXECUTABLE(icemaker RUN_UNINSTALLED ${icemaker_SRCS})
-
-
-# get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-GET_TARGET_PROPERTY(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
-
-# and the custom command
-ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
-  COMMAND ${ICEMAKER_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bytecode
-  DEPENDS icemaker ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/codes.def
-          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.cpp.in
-          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.h.in
-          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/machine.cpp.in
-)
+endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 
 ########### next target ###############
 add_definitions(-DBUILDING_KDE__)
@@ -138,10 +118,10 @@ set(kjs_LIB_SRCS
    bool_object.cpp
    number_object.cpp
    internal.cpp
+   Context.cpp
    ExecState.cpp
    Parser.cpp
    array_object.cpp
-   array_instance.cpp
    math_object.cpp
    object_object.cpp
    regexp_object.cpp
@@ -165,11 +145,7 @@ set(kjs_LIB_SRCS
    PropertyNameArray.cpp
    JSWrapperObject.cpp
    CommonIdentifiers.cpp
-   JSVariableObject.cpp
-   ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
-   ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
-   nodes2bytecode.cpp
-   CompileState.cpp
+   semantic_checker.cpp
    )
 
 if (NOT DEFINED QT_ONLY)
@@ -183,7 +159,7 @@ kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
-endif(WIN32)
+endif(WIN32) 
 
 if(CMAKE_THREAD_LIBS_INIT)
    target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
@@ -198,7 +174,7 @@ if(PCRE_FOUND)
 endif(PCRE_FOUND)
 
 set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS ${KJSLIBNAME} DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS ${KJSLIBNAME} ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 
@@ -212,6 +188,10 @@ set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME kjs)
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 
 install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
+
+########### KDE-specific API ##############
+
+add_subdirectory(api)
 
 ########### install files ###############
 # install( FILES
@@ -238,10 +218,10 @@ install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 #     ustring.h
 #     value.h
 #     CommonIdentifiers.h
-#
+# 
 #     ${CMAKE_CURRENT_BINARY_DIR}/global.h
-#
-#     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
+# 
+#     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs COMPONENT Devel )
 
 
 

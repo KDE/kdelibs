@@ -1,0 +1,209 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 2008 Harri Porten (porten@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
+ *
+ */
+
+#ifndef KJSOBJECT_H
+#define KJSOBJECT_H
+
+#include "kjsapi_export.h"
+
+class QString;
+class KJSContext;
+class KJSNull;
+class KJSUndefined;
+class KJSBoolean;
+class KJSNumber;
+class KJSString;
+class KJSObjectHandle;
+class KJSCustomProperty;
+
+/**
+ * A class representing a JavaScript value.
+ *
+ * @short Script object
+ */
+class KJSAPI_EXPORT KJSObject
+{
+    friend class KJSNull;
+    friend class KJSUndefined;
+    friend class KJSBoolean;
+    friend class KJSNumber;
+    friend class KJSString;
+    friend class KJSPrototype;
+    friend class KJSInterpreter;
+    friend class KJSCustomProperty;
+public:
+    /**
+     * Constructs an invalid object.
+     */
+    KJSObject();
+    /**
+     * Constructs on object from another one
+     */
+    KJSObject(const KJSObject& o);
+    /**
+     * Assigns another JS object references to this one.
+     */
+    KJSObject& operator=(const KJSObject& o);
+    /**
+     * Destructs this object freeing any references it might have held.
+     */
+    ~KJSObject();
+    /**
+     * Returns whether the object is valid. This is different from an
+     * undefined value in the JavaScript sense.
+     */
+    bool isValid() const;
+    /**
+     * Returns whether this object is undefined.
+     */
+    bool isUndefined() const;
+    /**
+     * Returns whether this object is null.
+     */
+    bool isNull() const;
+    /**
+     * Returns whether this object is a boolean.
+     */
+    bool isBoolean() const;
+    /**
+     * Returns whether this object is a number.
+     */
+    bool isNumber() const;
+    /**
+     * Returns whether this object is a string.
+     */
+    bool isString() const;
+    /**
+     * Returns whether this object is a full blown object.
+     */
+    bool isObject() const;
+
+    /**
+     * Returns this value converted to a boolean. If successfull *ok
+     * will be set to true; if the conversion failed it will be to
+     * false.
+     */
+    bool toBoolean(KJSContext* ctx);
+    /**
+     * Returns this value converted to a number. If successfull *ok
+     * will be set to true; if the conversion failed it will be to
+     * false.
+     */
+    double toNumber(KJSContext* ctx);
+    /**
+     * Returns this value converted to a string. If successfull *ok
+     * will be set to true; if the conversion failed it will be to
+     * false.
+     */
+    QString toString(KJSContext* ctx);
+    /**
+     * Reads the specified property from this object. This operation
+     * might throw an exception.
+     */
+    KJSObject property(KJSContext* ctx, const QString& name);
+    /**
+     * Sets the specified property on this object. This operation
+     * might throw an exception.
+     */
+    void setProperty(KJSContext* ctx, const QString& name,
+                     const KJSObject& value);
+    /**
+     * @overload
+     */
+    void setProperty(KJSContext* ctx, const QString& name, bool value);
+    /**
+     * @overload
+     */
+    void setProperty(KJSContext* ctx, const QString& name, double value);
+    /**
+     * @overload
+     */
+    void setProperty(KJSContext* ctx, const QString& name,
+                     const QString &value);
+    /**
+     * @overload
+     *
+     * Accepts a Latin1 encoded, null-terminated string.
+     */
+    void setProperty(KJSContext* ctx, const QString& name,
+                     const char* value);
+
+
+private:
+    KJSObject(KJSObjectHandle* h) : hnd(h) { }
+    KJSObjectHandle* hnd;
+};
+
+
+class KJSAPI_EXPORT KJSNull : public KJSObject
+{
+public:
+    /**
+     * Constructs a null object.
+     */
+    KJSNull();
+};
+
+class KJSAPI_EXPORT KJSUndefined : public KJSObject
+{
+public:
+    /**
+     * Constructs an undefined object.
+     */
+    KJSUndefined();
+};
+
+class KJSAPI_EXPORT KJSBoolean : public KJSObject
+{
+public:
+    /**
+     * Constructs a boolean object.
+     */
+    KJSBoolean(bool b);
+};
+
+class KJSAPI_EXPORT KJSNumber : public KJSObject
+{
+public:
+    /**
+     * Constructs a number object.
+     */
+    KJSNumber(double d);
+};
+
+class KJSAPI_EXPORT KJSString : public KJSObject
+{
+public:
+    /**
+     * Constructs a string object.
+     */
+    KJSString(const QString& s);
+    /**
+     * Constructs a string object from an Latin1 encoded,
+     * null-terminated string. Note the limited input character range
+     * which rules out a big part of Unicode.
+     *
+     * @overload
+     */
+    KJSString(const char* s);
+};
+
+#endif
