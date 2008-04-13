@@ -24,8 +24,6 @@
 #include "wmistorage.h"
 
 #include <QtCore/QProcess>
-#include <QtDBus/QDBusMessage>
-#include <QtDBus/QDBusError>
 
 namespace Solid
 {
@@ -54,8 +52,6 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotCondition(const QString &name, const QString &reason);
-    void slotDBusReply(const QDBusMessage &reply);
-    void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:

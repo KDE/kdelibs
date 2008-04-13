@@ -20,9 +20,6 @@
 #include "wmistorageaccess.h"
 
 #include <QtCore/QDebug>
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
-#include <QtDBus/QDBusReply>
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
@@ -48,25 +45,25 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
+    // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
 
-        // Might be a bit slow, but I see no cleaner way to do this with WMI...
-        QDBusInterface manager("org.freedesktop.Wmi",
-                               "/org/freedesktop/Wmi/Manager",
-                               "org.freedesktop.Wmi.Manager",
-                               QDBusConnection::systemBus());
+        //Might be a bit slow, but I see no cleaner way to do this with WMI...
+        // QDBusInterface manager("org.freedesktop.Wmi",
+                               // "/org/freedesktop/Wmi/Manager",
+                               // "org.freedesktop.Wmi.Manager",
+                               // QDBusConnection::systemBus());
 
-        QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch",
-                                                     "volume.crypto_luks.clear.backing_volume",
-                                                     m_device->udi());
+        // QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch",
+                                                     // "volume.crypto_luks.clear.backing_volume",
+                                                     // m_device->udi());
 
-        QStringList list = reply;
+        // QStringList list = reply;
 
-        return reply.isValid() && !list.isEmpty();
+        // return reply.isValid() && !list.isEmpty();
 
-    } else {
+    // } else {
         return m_device->property("volume.is_mounted").toBool();
-    }
+    // }
 }
 
 QString StorageAccess::filePath() const
@@ -83,13 +80,14 @@ bool StorageAccess::setup()
     m_setupInProgress = true;
 
 
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
-        return requestPassphrase();
-    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
-        return callSystemMount();
-    } else {
-        return callWmiVolumeMount();
-    }
+    // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
+        // return requestPassphrase();
+    // } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+        // return callSystemMount();
+    // } else {
+        // return callWmiVolumeMount();
+    // }
+    return false;
 }
 
 bool StorageAccess::teardown()
@@ -99,13 +97,14 @@ bool StorageAccess::teardown()
     }
     m_teardownInProgress = true;
 
-    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
-        return callCryptoTeardown();
-    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
-        return callSystemUnmount();
-    } else {
-        return callWmiVolumeUnmount();
-    }
+    // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
+        // return callCryptoTeardown();
+    // } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+        // return callSystemUnmount();
+    // } else {
+        // return callWmiVolumeUnmount();
+    // }
+    return false;
 }
 
 void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
@@ -113,33 +112,6 @@ void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
     if (changes.contains("volume.is_mounted"))
     {
         emit accessibilityChanged(isAccessible(), m_device->udi());
-    }
-}
-
-void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
-{
-    if (m_setupInProgress) {
-        m_setupInProgress = false;
-        emit setupDone(Solid::NoError, QVariant(), m_device->udi());
-    } else if (m_teardownInProgress) {
-        m_teardownInProgress = false;
-        emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
-    }
-}
-
-void StorageAccess::slotDBusError(const QDBusError &error)
-{
-    // TODO: Better error reporting here
-    if (m_setupInProgress) {
-        m_setupInProgress = false;
-        emit setupDone(Solid::UnauthorizedOperation,
-                       error.name()+": "+error.message(),
-                       m_device->udi());
-    } else if (m_teardownInProgress) {
-        m_teardownInProgress = false;
-        emit teardownDone(Solid::UnauthorizedOperation,
-                          error.name()+": "+error.message(),
-                          m_device->udi());
     }
 }
 
@@ -177,83 +149,42 @@ QString generateReturnObjectPath()
     return "/org/kde/solid/WmiStorageAccess_"+QString::number(number++);
 }
 
-bool StorageAccess::requestPassphrase()
-{
-    QString udi = m_device->udi();
-    QString returnService = QDBusConnection::sessionBus().baseService();
-    m_lastReturnObject = generateReturnObjectPath();
-
-    QDBusConnection::sessionBus().registerObject(m_lastReturnObject, this,
-                                                 QDBusConnection::ExportScriptableSlots);
-
-
-    QWidget *activeWindow = QApplication::activeWindow();
-    uint wId = 0;
-    if (activeWindow!=0) {
-        wId = (uint)activeWindow->winId();
-    }
-
-    QString appId = QCoreApplication::applicationName();
-
-    QDBusInterface soliduiserver("org.kde.kded", "/modules/soliduiserver", "org.kde.SolidUiServer");
-    QDBusReply<void> reply = soliduiserver.call("showPassphraseDialog", udi,
-                                                returnService, m_lastReturnObject,
-                                                wId, appId);
-    m_passphraseRequested = reply.isValid();
-    if (!m_passphraseRequested) {
-        qWarning() << "Failed to call the SolidUiServer, D-Bus said:" << reply.error();
-    }
-    return m_passphraseRequested;
-}
-
-void StorageAccess::passphraseReply(const QString &passphrase)
-{
-    if (m_passphraseRequested) {
-        QDBusConnection::sessionBus().unregisterObject(m_lastReturnObject);
-        m_passphraseRequested = false;
-        if (!passphrase.isEmpty()) {
-            callCryptoSetup(passphrase);
-        } else {
-            m_setupInProgress = false;
-            emit setupDone(Solid::NoError, QVariant(), m_device->udi());
-        }
-    }
-}
-
 bool StorageAccess::callWmiVolumeMount()
 {
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      "org.freedesktop.Wmi.Device.Volume",
-                                                      "Mount");
-    QStringList options;
-    QStringList wmiOptions = m_device->property("volume.mount.valid_options").toStringList();
+    // QDBusConnection c = QDBusConnection::systemBus();
+    // QString udi = m_device->udi();
+    // QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
+                                                      // "org.freedesktop.Wmi.Device.Volume",
+                                                      // "Mount");
+    // QStringList options;
+    // QStringList wmiOptions = m_device->property("volume.mount.valid_options").toStringList();
 
-    if (wmiOptions.contains("uid=")) {
-        options << "uid="+QString::number(::getuid());
-    }
+    // if (wmiOptions.contains("uid=")) {
+        // options << "uid="+QString::number(::getuid());
+    // }
 
-    msg << "" << "" << options;
+    // msg << "" << "" << options;
 
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+    // return c.callWithCallback(msg, this,
+                              // SLOT(slotDBusReply(const QDBusMessage &)),
+                              // SLOT(slotDBusError(const QDBusError &)));
+    return false;
 }
 
 bool StorageAccess::callWmiVolumeUnmount()
 {
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      "org.freedesktop.Wmi.Device.Volume",
-                                                      "Unmount");
+    // QDBusConnection c = QDBusConnection::systemBus();
+    // QString udi = m_device->udi();
+    // QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
+                                                      // "org.freedesktop.Wmi.Device.Volume",
+                                                      // "Unmount");
 
-    msg << QStringList();
+    // msg << QStringList();
 
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+    // return c.callWithCallback(msg, this,
+                              // SLOT(slotDBusReply(const QDBusMessage &)),
+                              // SLOT(slotDBusError(const QDBusError &)));
+    return false;
 }
 
 bool Solid::Backends::Wmi::StorageAccess::callSystemMount()
@@ -272,34 +203,6 @@ bool Solid::Backends::Wmi::StorageAccess::callSystemUnmount()
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 
     return m_process!=0;
-}
-
-void StorageAccess::callCryptoSetup(const QString &passphrase)
-{
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      "org.freedesktop.Wmi.Device.Volume.Crypto",
-                                                      "Setup");
-
-    msg << passphrase;
-
-    c.callWithCallback(msg, this,
-                       SLOT(slotDBusReply(const QDBusMessage &)),
-                       SLOT(slotDBusError(const QDBusError &)));
-}
-
-bool StorageAccess::callCryptoTeardown()
-{
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      "org.freedesktop.Wmi.Device.Volume.Crypto",
-                                                      "Teardown");
-
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
 }
 
 #include "backends/wmi/wmistorageaccess.moc"

@@ -22,41 +22,152 @@
 #include "wmideviceinterface.h"
 
 #include <QtCore/QDebug>
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
-#include <QtDBus/QDBusReply>
+
+#ifdef _DEBUG
+# pragma comment(lib, "comsuppwd.lib")
+#else
+# pragma comment(lib, "comsuppw.lib")
+#endif
+# pragma comment(lib, "wbemuuid.lib")
+
+#define _WIN32_DCOM
+#include <iostream>
+#include <comdef.h>
+#include <Wbemidl.h>
+
+# pragma comment(lib, "wbemuuid.lib")
+
 
 using namespace Solid::Backends::Wmi;
 
 class Solid::Backends::Wmi::WmiManagerPrivate
 {
 public:
-    WmiManagerPrivate() : manager("org.freedesktop.Wmi",
-                                   "/org/freedesktop/Wmi/Manager",
-                                   "org.freedesktop.Wmi.Manager",
-                                   QDBusConnection::systemBus()),
-                          cacheSynced(false) { }
+    WmiManagerPrivate()
+        : failed(false)
+        , pLoc(0)
+        , pSvc(0)
+        , pEnumerator(NULL)
+    {
+    
+        //does this all look hacky?  yes...but it came straight from the MSDN example...
+    
+        HRESULT hres;
 
-    QDBusInterface manager;
-    QList<QString> devicesCache;
-    bool cacheSynced;
+        hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
+        if( FAILED(hres) )
+        {
+            qCritical() << "Failed to initialize COM library. " << "Error code = " << hres << endl;
+            failed = true;
+        }
+        if( !failed )
+        {
+            hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
+                        RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
+                             
+            if( FAILED(hres) )
+            {
+                qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
+                CoUninitialize();
+                failed = true;
+            }
+        }
+        if( !failed )
+        {
+            hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &pLoc );
+            if (FAILED(hres))
+            {
+                qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
+                CoUninitialize();
+                failed = true;
+            }
+        }
+        if( !failed )
+        {
+            hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
+            if( FAILED(hres) )
+            {
+                qCritical() << "Could not connect. Error code = " << hres << endl;
+                pLoc->Release();
+                CoUninitialize();
+                failed = true;
+            }
+            else
+                qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+        }
+        
+        if( !failed )
+        {
+            hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
+                        RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
+            if( FAILED(hres) )
+            {
+                qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
+                pSvc->Release();
+                pLoc->Release();     
+                CoUninitialize();
+                failed = true;
+            }
+        }
+    }
+
+    ~WmiManagerPrivate()
+    {
+        pSvc->Release();
+        pLoc->Release();     
+        CoUninitialize();
+    }
+    
+    
+    QList<IWbemClassObject*> sendQuery( const QString &wql )
+    {
+        QList<IWbemClassObject*> retList;
+        
+        HRESULT hres;
+        hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
+                    WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
+    
+        if( FAILED(hres) )
+        {
+            qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
+        }
+        else
+        { 
+            ULONG uReturn = 0;
+       
+            while( pEnumerator )
+            {
+                IWbemClassObject *pclsObj;
+                hres = pEnumerator->Next( WBEM_INFINITE, 1, &pclsObj, &uReturn );
+
+                if( !uReturn )
+                    break;
+                
+                retList.append( pclsObj );
+                
+                //VARIANT vtProp;
+
+                // Get the value of the Name property
+                //hres = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+                //wcout << "Process Name : " << vtProp.bstrVal << endl;
+                //VariantClear(&vtProp);
+            }
+        } 
+    }
+   
+    bool isLegit() { return !failed; }
+    
+    bool failed;
+    IWbemLocator *pLoc;
+    IWbemServices *pSvc;
+    IEnumWbemClassObject* pEnumerator;
 };
 
 
 WmiManager::WmiManager(QObject *parent)
     : DeviceManager(parent),  d(new WmiManagerPrivate())
 {
-    d->manager.connection().connect("org.freedesktop.Wmi",
-                                     "/org/freedesktop/Wmi/Manager",
-                                     "org.freedesktop.Wmi.Manager",
-                                     "DeviceAdded",
-                                     this, SLOT(slotDeviceAdded(const QString &)));
-
-    d->manager.connection().connect("org.freedesktop.Wmi",
-                                     "/org/freedesktop/Wmi/Manager",
-                                     "org.freedesktop.Wmi.Manager",
-                                     "DeviceRemoved",
-                                     this, SLOT(slotDeviceRemoved(const QString &)));
+    
 }
 
 WmiManager::~WmiManager()
@@ -66,50 +177,29 @@ WmiManager::~WmiManager()
 
 QStringList WmiManager::allDevices()
 {
-    if (d->cacheSynced)
-    {
-        return d->devicesCache;
-    }
+    // QDBusReply<QStringList> reply = d->manager.call("GetAllDevices");
 
-    QDBusReply<QStringList> reply = d->manager.call("GetAllDevices");
+    // if (!reply.isValid())
+    // {
+        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+        // return QStringList();
+    // }
 
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return QStringList();
-    }
-
-    d->devicesCache = reply;
-    d->cacheSynced = true;
-
-    return reply;
+    // return reply;
+    return QStringList();
 }
 
 bool WmiManager::deviceExists(const QString &udi)
 {
-    if (d->devicesCache.contains(udi))
-    {
-        return true;
-    }
-    else if (d->cacheSynced)
-    {
-        return false;
-    }
+    // QDBusReply<bool> reply = d->manager.call("DeviceExists", udi);
 
-    QDBusReply<bool> reply = d->manager.call("DeviceExists", udi);
+    // if (!reply.isValid())
+    // {
+        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+        // return false;
+    // }
 
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    if (reply)
-    {
-        d->devicesCache.append(udi);
-    }
-
-    return reply;
+    return false;
 }
 
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
@@ -153,70 +243,70 @@ QObject *WmiManager::createDevice(const QString &udi)
 
 QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString &value)
 {
-    QDBusReply<QStringList> reply = d->manager.call("FindDeviceStringMatch", key, value);
+    // QDBusReply<QStringList> reply = d->manager.call("FindDeviceStringMatch", key, value);
 
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return QStringList();
-    }
+    // if (!reply.isValid())
+    // {
+        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+        // return QStringList();
+    // }
 
-    return reply;
+    // return reply;
+    return QStringList();
 }
 
 QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    QStringList cap_list = DeviceInterface::toStringList(type);
-    QStringList result;
+    // QStringList cap_list = DeviceInterface::toStringList(type);
+    // QStringList result;
 
-    foreach (const QString &cap, cap_list)
-    {
-        QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
+    // foreach (const QString &cap, cap_list)
+    // {
+        // QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
 
-        if (!reply.isValid())
-        {
-            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-            return QStringList();
-        }
-        if ( cap == QLatin1String( "video4linux" ) )
-        {
-            QStringList foundDevices ( reply );
-            QStringList filtered;
-            foreach ( const QString &udi, foundDevices )
-            {
-                QDBusInterface device( "org.freedesktop.Wmi", udi, "org.freedesktop.Wmi.Device", QDBusConnection::systemBus() );
-                QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
-                if (!reply.isValid())
-                {
-                    qWarning() << Q_FUNC_INFO << " error getting video4linux.device: " << reply.error().name() << endl;
-                    continue;
-                }
-                if ( !reply.value().contains( "video" ) )
-                {
-                    continue;
-                }
-                filtered.append( udi );
-            }
-            result += filtered;
-        }
-        else
-        {
-            result << reply;
-        }
-    }
+        // if (!reply.isValid())
+        // {
+            // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+            // return QStringList();
+        // }
+        // if ( cap == QLatin1String( "video4linux" ) )
+        // {
+            // QStringList foundDevices ( reply );
+            // QStringList filtered;
+            // foreach ( const QString &udi, foundDevices )
+            // {
+                // QDBusInterface device( "org.freedesktop.Wmi", udi, "org.freedesktop.Wmi.Device", QDBusConnection::systemBus() );
+                // QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
+                // if (!reply.isValid())
+                // {
+                    // qWarning() << Q_FUNC_INFO << " error getting video4linux.device: " << reply.error().name() << endl;
+                    // continue;
+                // }
+                // if ( !reply.value().contains( "video" ) )
+                // {
+                    // continue;
+                // }
+                // filtered.append( udi );
+            // }
+            // result += filtered;
+        // }
+        // else
+        // {
+            // result << reply;
+        // }
+    // }
 
-    return result;
+    // return result;
+    return QStringList();
 }
 
 void WmiManager::slotDeviceAdded(const QString &udi)
 {
-    d->devicesCache.append(udi);
     emit deviceAdded(udi);
 }
 
 void WmiManager::slotDeviceRemoved(const QString &udi)
 {
-    d->devicesCache.removeAll(udi);
     emit deviceRemoved(udi);
 }
 

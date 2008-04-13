@@ -24,8 +24,6 @@
 #include "wmideviceinterface.h"
 
 #include <QtCore/QProcess>
-#include <QtDBus/QDBusMessage>
-#include <QtDBus/QDBusError>
 
 namespace Solid
 {
@@ -54,13 +52,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
-    void slotDBusReply(const QDBusMessage &reply);
-    void slotDBusError(const QDBusError &error);
     void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
-
-public Q_SLOTS:
-    Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);
 
 private:
     bool callWmiVolumeMount();
@@ -68,10 +60,6 @@ private:
 
     bool callSystemMount();
     bool callSystemUnmount();
-
-    bool requestPassphrase();
-    void callCryptoSetup(const QString &passphrase);
-    bool callCryptoTeardown();
 
 private:
     bool m_setupInProgress;

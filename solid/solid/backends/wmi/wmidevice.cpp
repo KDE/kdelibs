@@ -17,12 +17,21 @@
 
 */
 
+#ifdef _DEBUG
+# pragma comment(lib, "comsuppwd.lib")
+#else
+# pragma comment(lib, "comsuppw.lib")
+#endif
+# pragma comment(lib, "wbemuuid.lib")
+
+#define _WIN32_DCOM
+#include <iostream>
+#include <comdef.h>
+#include <Wbemidl.h>
+
+# pragma comment(lib, "wbemuuid.lib")
+
 #include <QtCore/QDebug>
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
-#include <QtDBus/QDBusReply>
-#include <QtDBus/QDBusArgument>
-#include <QtDBus/QDBusMetaType>
 
 #include <solid/genericinterface.h>
 
@@ -52,51 +61,133 @@ class Solid::Backends::Wmi::WmiDevicePrivate
 {
 public:
     WmiDevicePrivate(const QString &udi)
-        : device("org.freedesktop.Wmi",
-                  udi,
-                  "org.freedesktop.Wmi.Device",
-                  QDBusConnection::systemBus()),
-          cacheSynced(false), parent(0) { }
+        : parent(0)
+        , failed(false)
+        , pLoc(0)
+        , pSvc(0)
+        , pEnumerator(NULL)
+    {
+    
+        //does this all look hacky?  yes...but it came straight from the MSDN example...
+    
+        HRESULT hres;
 
-    QDBusInterface device;
-    QMap<QString,QVariant> cache;
-    bool cacheSynced;
+        hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
+        if( FAILED(hres) )
+        {
+            qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
+            failed = true;
+        }
+        if( !failed )
+        {
+            hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
+                        RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
+                             
+            if( FAILED(hres) )
+            {
+                qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
+                CoUninitialize();
+                failed = true;
+            }
+        }
+        if( !failed )
+        {
+            hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &pLoc );
+            if (FAILED(hres))
+            {
+                qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
+                CoUninitialize();
+                failed = true;
+            }
+        }
+        if( !failed )
+        {
+            hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
+            if( FAILED(hres) )
+            {
+                qCritical() << "Could not connect. Error code = " << hres << endl;
+                pLoc->Release();
+                CoUninitialize();
+                failed = true;
+            }
+            else
+                qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+        }
+        
+        if( !failed )
+        {
+            hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
+                        RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
+            if( FAILED(hres) )
+            {
+                qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
+                pSvc->Release();
+                pLoc->Release();     
+                CoUninitialize();
+                failed = true;
+            }
+        }
+    }
+
+    ~WmiDevicePrivate()
+    {
+        pSvc->Release();
+        pLoc->Release();     
+        CoUninitialize();
+    }
+    
+    
+    QList<IWbemClassObject*> sendQuery( const QString &wql )
+    {
+        QList<IWbemClassObject*> retList;
+        
+        HRESULT hres;
+        hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
+                    WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
+    
+        if( FAILED(hres) )
+        {
+            qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
+        }
+        else
+        { 
+            ULONG uReturn = 0;
+       
+            while( pEnumerator )
+            {
+                IWbemClassObject *pclsObj;
+                hres = pEnumerator->Next( WBEM_INFINITE, 1, &pclsObj, &uReturn );
+
+                if( !uReturn )
+                    break;
+                
+                retList.append( pclsObj );
+                
+                //VARIANT vtProp;
+
+                // Get the value of the Name property
+                //hres = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+                //wcout << "Process Name : " << vtProp.bstrVal << endl;
+                //VariantClear(&vtProp);
+            }
+        } 
+    }
+   
+    bool isLegit() { return !failed; }
+    
     WmiDevice *parent;
+    bool failed;
+    IWbemLocator *pLoc;
+    IWbemServices *pSvc;
+    IEnumWbemClassObject* pEnumerator;
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
 Q_DECLARE_METATYPE(QList<ChangeDescription>)
 
-const QDBusArgument &operator<<(QDBusArgument &arg, const ChangeDescription &change)
-{
-    arg.beginStructure();
-    arg << change.key << change.added << change.removed;
-    arg.endStructure();
-    return arg;
-}
-
-const QDBusArgument &operator>>(const QDBusArgument &arg, ChangeDescription &change)
-{
-    arg.beginStructure();
-    arg >> change.key >> change.added >> change.removed;
-    arg.endStructure();
-    return arg;
-}
-
 WmiDevice::WmiDevice(const QString &udi)
     : Device(), d(new WmiDevicePrivate(udi))
 {
-    qDBusRegisterMetaType<ChangeDescription>();
-    qDBusRegisterMetaType< QList<ChangeDescription> >();
-
-    d->device.connection().connect("org.freedesktop.Wmi",
-                                    udi, "org.freedesktop.Wmi.Device",
-                                    "PropertyModified",
-                                    this, SLOT(slotPropertyModified(int, const QList<ChangeDescription> &)));
-    d->device.connection().connect("org.freedesktop.Wmi",
-                                    udi, "org.freedesktop.Wmi.Device",
-                                    "Condition",
-                                    this, SLOT(slotCondition(const QString &, const QString &)));
 }
 
 WmiDevice::~WmiDevice()
@@ -112,7 +203,7 @@ QString WmiDevice::udi() const
 
 QString WmiDevice::parentUdi() const
 {
-    return property("info.parent").toString();
+    return QString();
 }
 
 QString WmiDevice::vendor() const
@@ -232,79 +323,47 @@ QString WmiDevice::icon() const
 
 QVariant WmiDevice::property(const QString &key) const
 {
-    if (d->cache.contains(key))
-    {
-        return d->cache[key];
-    }
-    else if (d->cacheSynced)
-    {
-        return QVariant();
-    }
+    // QDBusMessage reply = d->device.call("GetProperty", key);
 
-    QDBusMessage reply = d->device.call("GetProperty", key);
+    // if (reply.type()!=QDBusMessage::ReplyMessage
+      // && reply.errorName()!="org.freedesktop.Wmi.NoSuchProperty")
+    // {
+        // qWarning() << Q_FUNC_INFO << " error: " << reply.errorName()
+                   // << ", " << reply.arguments().at(0).toString() << endl;
+        // return QVariant();
+    // }
 
-    if (reply.type()!=QDBusMessage::ReplyMessage
-      && reply.errorName()!="org.freedesktop.Wmi.NoSuchProperty")
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.errorName()
-                   << ", " << reply.arguments().at(0).toString() << endl;
-        return QVariant();
-    }
-
-    if (reply.errorName()=="org.freedesktop.Wmi.NoSuchProperty")
-    {
-        d->cache[key] = QVariant();
-    }
-    else
-    {
-        d->cache[key] = reply.arguments().at(0);
-    }
-
-    return d->cache[key];
+    // return reply.arguments().at(0);
+    return QVariant();
 }
 
 QMap<QString, QVariant> WmiDevice::allProperties() const
 {
-    if (d->cacheSynced)
-    {
-        return d->cache;
-    }
+    // QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");
 
-    QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");
+    // if (!reply.isValid())
+    // {
+        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
+                   // << ", " << reply.error().message() << endl;
+        // return QVariantMap();
+    // }
 
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
-                   << ", " << reply.error().message() << endl;
-        return QVariantMap();
-    }
-
-    d->cache = reply;
-    d->cacheSynced = true;
-
-    return reply;
+    //return reply;
+    return QMap<QString,QVariant>();
 }
 
 bool WmiDevice::propertyExists(const QString &key) const
 {
-    if (d->cache.contains(key))
-    {
-        return d->cache[key].isValid();
-    }
-    else if (d->cacheSynced)
-    {
-        return false;
-    }
+    // QDBusReply<bool> reply = d->device.call("PropertyExists", key);
 
-    QDBusReply<bool> reply = d->device.call("PropertyExists", key);
+    // if (!reply.isValid())
+    // {
+        // qDebug() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+        // return false;
+    // }
 
-    if (!reply.isValid())
-    {
-        qDebug() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    return reply;
+    // return reply;
+    return false;
 }
 
 bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
@@ -324,18 +383,18 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;
 
-    foreach (const QString &cap, cap_list)
-    {
-        QDBusReply<bool> reply = d->device.call("QueryCapability", cap);
+    // foreach (const QString &cap, cap_list)
+    // {
+        // QDBusReply<bool> reply = d->device.call("QueryCapability", cap);
 
-        if (!reply.isValid())
-        {
-            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-            return false;
-        }
+        // if (!reply.isValid())
+        // {
+            // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
+            // return false;
+        // }
 
-        if (reply) return reply;
-    }
+        // if (reply) return reply;
+    // }
 
     return false;
 }
@@ -431,11 +490,7 @@ void WmiDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
         }
 
         result[key] = type;
-
-        d->cache.remove(key);
     }
-
-    d->cacheSynced = false;
 
     emit propertyChanged(result);
 }

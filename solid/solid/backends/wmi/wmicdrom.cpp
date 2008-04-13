@@ -20,9 +20,6 @@
 #include "wmicdrom.h"
 
 #include <QtCore/QStringList>
-#include <QtDBus/QDBusInterface>
-#include <QtDBus/QDBusReply>
-#include <QtDBus/QDBusError>
 
 #include "wmifstabhandling.h"
 
@@ -126,34 +123,35 @@ bool Cdrom::callWmiDriveEject()
 
     // HACK: Eject doesn't work on cdrom drives when there's a mounted disc,
     // let's try to workaround this by calling a child volume...
-    if (m_device->property("storage.removable.media_available").toBool()) {
-        QDBusInterface manager("org.freedesktop.Wmi",
-                               "/org/freedesktop/Wmi/Manager",
-                               "org.freedesktop.Wmi.Manager",
-                               QDBusConnection::systemBus());
+    // if (m_device->property("storage.removable.media_available").toBool()) {
+        // QDBusInterface manager("org.freedesktop.Wmi",
+                               // "/org/freedesktop/Wmi/Manager",
+                               // "org.freedesktop.Wmi.Manager",
+                               // QDBusConnection::systemBus());
 
-        QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch", "info.parent", udi);
+        // QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch", "info.parent", udi);
 
-        if (reply.isValid())
-        {
-            QStringList udis = reply;
-            if (!udis.isEmpty()) {
-                udi = udis[0];
-                interface = "org.freedesktop.Wmi.Device.Volume";
-            }
-        }
-    }
+        // if (reply.isValid())
+        // {
+            // QStringList udis = reply;
+            // if (!udis.isEmpty()) {
+                // udi = udis[0];
+                // interface = "org.freedesktop.Wmi.Device.Volume";
+            // }
+        // }
+    // }
 
-    QDBusConnection c = QDBusConnection::systemBus();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
-                                                      interface, "Eject");
+    // QDBusConnection c = QDBusConnection::systemBus();
+    // QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Wmi", udi,
+                                                      // interface, "Eject");
 
-    msg << QStringList();
+    // msg << QStringList();
 
 
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+    // return c.callWithCallback(msg, this,
+                              // SLOT(slotDBusReply(const QDBusMessage &)),
+                              // SLOT(slotDBusError(const QDBusError &)));
+    return false;
 }
 
 bool Solid::Backends::Wmi::Cdrom::callSystemEject()
@@ -163,22 +161,6 @@ bool Solid::Backends::Wmi::Cdrom::callSystemEject()
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 
     return m_process!=0;
-}
-
-void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
-{
-    m_ejectInProgress = false;
-    emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
-}
-
-void Cdrom::slotDBusError(const QDBusError &error)
-{
-    m_ejectInProgress = false;
-
-    // TODO: Better error reporting here
-    emit ejectDone(Solid::UnauthorizedOperation,
-                   error.name()+": "+error.message(),
-                   m_device->udi());
 }
 
 void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
