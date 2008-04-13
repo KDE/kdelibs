@@ -186,7 +186,7 @@ fi
 
 COPYRIGHT=`grep '^/.*DOXYGEN_COPYRIGHT' "$top_srcdir/Mainpage.dox" | sed -e 's+[^=]*=++' | sed s+\"++g`
 if test -z "$COPYRIGHT" ; then
-    COPYRIGHT="1996-2007 The KDE developers"
+    COPYRIGHT="1996-2008 The KDE developers"
 fi
 
 #
