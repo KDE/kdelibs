@@ -57,9 +57,20 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      */
     bool isTabReorderingEnabled() const;
 
+    /**
+     * If enabled, a close button is shown above the tab icon.
+     * The signal KTabBar::closeRequest() is emitted, if the
+     * close button has been clicked. Note that the tab must have
+     * an icon to use this feature.
+     */
     void setHoverCloseButton( bool );
     bool hoverCloseButton() const;
 
+    /**
+     * If enabled, the close button cannot get clicked until a
+     * minor delay has been passed. This prevents that user
+     * accidentally closes a tab.
+     */
     void setHoverCloseButtonDelayed( bool );
     bool hoverCloseButtonDelayed() const;
 
