@@ -246,6 +246,7 @@ namespace KJS {
      * @param exec The current execution state
      * @param propertyName The name of the property to set
      * @param value The value to set
+     * @param attr The attributes of the property
      */
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual void put(ExecState *exec, unsigned propertyName, JSValue *value, int attr = None);

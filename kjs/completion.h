@@ -52,15 +52,13 @@ namespace KJS {
         : comp(c), val(v), tar(t) { }
 
     /**
-     *
-     * @return
+     * Returns the type of this completion.
      */
     ComplType complType() const { return comp; }
 
     /**
-     *
-     * @param
-     * @return
+     * Returns the value of this completion if it is of type
+     * value-completion, 0 otherwise.
      */
     JSValue *value() const { return val; }
 
@@ -70,9 +68,7 @@ namespace KJS {
     const Node* target() const { return tar; }
 
     /**
-     *
-     * @param
-     * @return
+     * Returns true if this is a value completion, false otherwise.
      */
     bool isValueCompletion() const { return !!val; }
   private:

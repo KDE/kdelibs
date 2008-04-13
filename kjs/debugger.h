@@ -128,7 +128,7 @@ namespace KJS {
      * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
      * @param lineno The line at which the error occurred
-     * @param exceptionObj The exception object
+     * @param exception The exception object
      * @return true if execution should be continue, false if it should
      * be aborted
      */

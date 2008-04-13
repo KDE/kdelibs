@@ -31,12 +31,12 @@ namespace KJS {
 
     class PropertyNameArray;
     class JSValue;
-
+    
     class SavedProperty;
-
+    
     struct PropertyMapHashTable;
-
-/**
+    
+/*
 * Saved Properties
 */
     class SavedProperties {
@@ -44,13 +44,13 @@ namespace KJS {
     public:
         SavedProperties();
         ~SavedProperties();
-
+        
     private:
         int _count;
         OwnArrayPtr<SavedProperty> _properties;
     };
-
-/**
+    
+/*
 * A hashtable entry for the @ref PropertyMap.
 */
     struct PropertyMapHashTableEntry
@@ -72,7 +72,7 @@ namespace KJS {
         ~PropertyMap();
 
         void clear();
-
+        
         void put(const Identifier &name, JSValue *value, int attributes, bool roCheck = false);
         void remove(const Identifier &name);
         JSValue *get(const Identifier &name) const;
@@ -81,6 +81,7 @@ namespace KJS {
 
         void mark() const;
         void getEnumerablePropertyNames(PropertyNameArray&) const;
+        void getSparseArrayPropertyNames(PropertyNameArray&) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);
@@ -100,12 +101,11 @@ namespace KJS {
         void expand();
         void rehash();
         void rehash(int newTableSize);
-        void createTable();
-
+        
         void insert(UString::Rep *, JSValue *value, int attributes, int index);
-
+        
         void checkConsistency();
-
+        
         typedef PropertyMapHashTableEntry Entry;
         typedef PropertyMapHashTable Table;
 
@@ -127,7 +127,7 @@ namespace KJS {
     };
 
     inline PropertyMap::PropertyMap() :
-          m_singleEntryKey(0),
+          m_singleEntryKey(0), 
           m_getterSetterFlag(false),
           m_usingTable(false),
           m_objLocalInjected(false)
