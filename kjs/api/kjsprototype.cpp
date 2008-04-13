@@ -76,12 +76,16 @@ JSValue* KJSCustomProperty::read(ExecState* exec, void* object)
 
 void KJSCustomProperty::write(ExecState* exec, void* object, JSValue* value)
 {
-    assert(setter); // FIXME: cover read-only case
-
     KJSContext ctx(EXECSTATE_HANDLE(exec));
 
-    KJSObject vo(JSVALUE_HANDLE(value));
-    (*setter)(&ctx, object, vo);
+    if (setter) {
+        KJSObject vo(JSVALUE_HANDLE(value));
+        (*setter)(&ctx, object, vo);
+    } else {
+        JSObject *e = Error::create(exec, GeneralError,
+                                    "Property is read-only");
+        exec->setException(e);
+    }
 }
 
 static JSValue* getPropertyValue(ExecState* exec, JSObject *originalObject,

@@ -170,9 +170,15 @@ void KJSApiTest::prototypeProperties()
 
     KJSObject obj = proto.constructObject(&o0);
 
-    QCOMPARE(int(obj.property(ctx, "x").toNumber(ctx)), 42);
+    // read/write property
+    QCOMPARE(obj.property(ctx, "x").toNumber(ctx), 42.0);
     obj.setProperty(ctx, "x", KJSNumber(43));
-    QCOMPARE(int(obj.property(ctx, "x").toNumber(ctx)), 43);
+    QCOMPARE(obj.property(ctx, "x").toNumber(ctx), 43.0);
+
+    QCOMPARE(obj.property(ctx, "readOnlyX").toNumber(ctx), 43.0);
+    obj.setProperty(ctx, "readOnlyX", KJSNumber(44));
+    QVERIFY2(ctx->hasException(), "Write access caused no exception");
+    QCOMPARE(obj.property(ctx, "readOnlyX").toNumber(ctx), 43.0);
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)
