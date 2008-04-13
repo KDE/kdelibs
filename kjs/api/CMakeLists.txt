@@ -5,6 +5,7 @@ set(kjsapi_LIB_SRCS
     kjscontext.cpp
     kjsobject.cpp
     kjsprototype.cpp
+    kjsarguments.cpp
    )
 
 kde4_add_library(kjsapi SHARED ${kjsapi_LIB_SRCS})

@@ -19,40 +19,20 @@
  *
  */
 
-#ifndef KJSARGUMENTS_H
-#define KJSARGUMENTS_H
+#include "kjsarguments.h"
+#include "kjsprivate.h"
 
-#include "kjsapi_export.h"
-#include "kjsobject.h"
-
-class KJSArgumentsHandle;
-class KJSCustomFunction;
-
-/**
- * A class representing a list of JavaScript arguments.
- *
- * @short Argument list
- */
-class KJSAPI_EXPORT KJSArguments
+int KJSArguments::count() const
 {
-    friend class KJSCustomFunction;
-public:
-    /**
-     * Returns the number of arguments.
-     */
-    int count() const;
-    /**
-     * Returns the argument at the specified index. Accessing an
-     * argument outside of the valid range will return an object of
-     * type "undefined".
-     */
-    KJSObject at(int idx) const;
-private:
-    KJSArguments(const KJSArguments&); // undefined
-    KJSArguments& operator=(const KJSArguments&); // undefined
+    const KJS::List* l = LIST(this);
+    return l->size();
+}
 
-    KJSArguments(const KJSArgumentsHandle* h) : hnd(h) { }
-    const KJSArgumentsHandle* hnd;
-};
+KJSObject KJSArguments::at(int idx) const
+{
+    const KJS::List* l = LIST(this);
+    assert(idx >= 0 && idx < l->size());
+    KJS::JSValue* a = l->at(idx);
+    return KJSObject(JSVALUE_HANDLE(a));
+}
 
-#endif

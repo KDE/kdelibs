@@ -24,6 +24,7 @@
 
 #include "kjs/ustring.h"
 #include "kjs/identifier.h"
+#include "kjs/list.h"
 #include <qstring.h>
 
 #define JSVALUE_HANDLE(v) reinterpret_cast<KJSObjectHandle*>(v)
@@ -36,6 +37,21 @@
 
 #define PROTOTYPE_HANDLE(p) reinterpret_cast<KJSPrototypeHandle*>(p)
 #define PROTOTYPE(h) reinterpret_cast<CustomPrototype*>((h)->hnd)
+
+#define LIST_HANDLE(l) reinterpret_cast<const KJSArgumentsHandle*>(l)
+#define LIST(h) reinterpret_cast<const KJS::List*>((h)->hnd)
+
+// FIXME: duplicated in khtml/ecma/kjs_binding.h
+#define KJS_CHECK_THIS( ClassName, theObj ) \
+       if (!theObj || !theObj->inherits(&ClassName::info)) { \
+               KJS::UString errMsg = "Attempt at calling a function that expects a "; \
+               errMsg += ClassName::info.className; \
+               errMsg += " on a "; \
+               errMsg += theObj->className(); \
+               KJS::JSObject *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+               exec->setException(err); \
+               return err; \
+       }
 
 static inline KJS::UString toUString(const QString& s)
 {

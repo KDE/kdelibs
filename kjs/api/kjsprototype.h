@@ -80,8 +80,8 @@ public:
     /**
      * Function signature for a property setter function.
      */
-    typedef void (*FunctionCall)(KJSContext context, KJSObject object,
-                                 const KJSArguments& arguments);
+    typedef KJSObject (*FunctionCall)(KJSContext* context, void* object,
+                                      const KJSArguments& arguments);
 
     /**
      * Define a function. The specified C++ callback function will

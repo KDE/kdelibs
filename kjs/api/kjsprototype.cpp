@@ -21,6 +21,7 @@
 
 #include "kjsprototype.h"
 #include "kjsinterpreter.h"
+#include "kjsarguments.h"
 #include "kjsprivate.h"
 
 #include "kjs/object.h"
@@ -61,9 +62,46 @@ public:
 
     void* internalValue() { return iv; }
 
+    // rtti
+    static const ClassInfo info;
+    const ClassInfo* classInfo() const { return &info; }
+
 private:
     void* iv;
 };
+
+const ClassInfo CustomObject::info = { "CustomObject", 0, 0, 0 };
+
+class KJSCustomFunction : public JSObject {
+public:
+    KJSCustomFunction(ExecState* exec, KJSPrototype::FunctionCall f)
+        : callback(f)
+    {
+        setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
+    }
+
+    JSValue* callAsFunction(ExecState* exec, JSObject* thisObj,
+                            const List &args);
+    bool implementsCall() const { return true; }
+
+private:
+    KJSPrototype::FunctionCall callback;
+};
+
+JSValue* KJSCustomFunction::callAsFunction(ExecState* exec, JSObject* thisObj,
+                                           const List &args)
+{
+    // FIXME: does not protect against mixing custom objects
+    KJS_CHECK_THIS(CustomObject, thisObj);
+
+    CustomObject* co = static_cast<CustomObject*>(thisObj);
+    void* thisValue = co->internalValue();
+
+    KJSContext ctx(EXECSTATE_HANDLE(exec));
+    KJSArguments a(LIST_HANDLE(&args));
+    KJSObject res = (*callback)(&ctx, thisValue, a);
+    return JSVALUE(&res);
+}
 
 JSValue* KJSCustomProperty::read(ExecState* exec, void* object)
 {
@@ -130,6 +168,12 @@ public:
                           KJSPrototype::PropertySetter s)
     {
         properties.insert(toUString(name), new KJSCustomProperty(g, s));
+    }
+
+    void registerFunction(ExecState* exec,
+                          const QString& name, KJSPrototype::FunctionCall f)
+    {
+        putDirect(toIdentifier(name), new KJSCustomFunction(exec, f));
     }
 
     bool setProperty(ExecState* exec, CustomObject* obj,
@@ -206,6 +250,8 @@ void KJSPrototype::defineProperty(KJSContext* ctx,
                                   PropertyGetter getter,
                                   PropertySetter setter)
 {
+    assert(getter);
+
     CustomPrototype* p = PROTOTYPE(this);
 
     p->registerProperty(name, getter, setter);
@@ -214,7 +260,12 @@ void KJSPrototype::defineProperty(KJSContext* ctx,
 void KJSPrototype::defineFunction(KJSContext* ctx,
                                   const QString& name, FunctionCall callback)
 {
+    assert(callback);
+
     CustomPrototype* p = PROTOTYPE(this);
+    ExecState* exec = EXECSTATE(ctx);
+
+    p->registerFunction(exec, name, callback);
 }
 
 

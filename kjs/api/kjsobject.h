@@ -31,8 +31,11 @@ class KJSUndefined;
 class KJSBoolean;
 class KJSNumber;
 class KJSString;
+class KJSArguments;
+class KJSInterpreter;
 class KJSObjectHandle;
 class KJSCustomProperty;
+class KJSCustomFunction;
 
 /**
  * A class representing a JavaScript value.
@@ -47,8 +50,10 @@ class KJSAPI_EXPORT KJSObject
     friend class KJSNumber;
     friend class KJSString;
     friend class KJSPrototype;
+    friend class KJSArguments;
     friend class KJSInterpreter;
     friend class KJSCustomProperty;
+    friend class KJSCustomFunction;
 public:
     /**
      * Constructs an invalid object.

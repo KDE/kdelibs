@@ -21,6 +21,7 @@
 
 #include "kjsobject.h"
 #include "kjsprototype.h"
+#include "kjsarguments.h"
 #include "kjsinterpreter.h"
 
 #include "qtest_kde.h"
@@ -35,6 +36,7 @@ private Q_SLOTS:
     void objectProperties();
     void prototypeConstants();
     void prototypeProperties();
+    void prototypeFunctions();
 };
 
 void KJSApiTest::objectConstruction()
@@ -179,6 +181,41 @@ void KJSApiTest::prototypeProperties()
     obj.setProperty(ctx, "readOnlyX", KJSNumber(44));
     QVERIFY2(ctx->hasException(), "Write access caused no exception");
     QCOMPARE(obj.property(ctx, "readOnlyX").toNumber(ctx), 43.0);
+}
+
+static KJSObject multiply(KJSContext* context, void* object,
+                          const KJSArguments& arguments)
+{
+    double factor = *reinterpret_cast<double*>(object);
+
+    // test number of arguments
+    if (arguments.count() != 1)
+        return KJSNumber(-1);
+
+    KJSObject a0 = arguments.at(0);
+    if (!a0.isNumber())
+        return KJSNumber(-2);
+    
+    double v0 = a0.toNumber(context);
+
+    return KJSNumber(factor * v0);
+}
+
+void KJSApiTest::prototypeFunctions()
+{
+    KJSInterpreter ip;
+    KJSContext* ctx = ip.globalContext();    
+
+    KJSPrototype proto(ip);
+
+    proto.defineFunction(ctx, "multiply", multiply);
+
+    double factor = 3.0;
+    KJSObject obj = proto.constructObject(&factor);
+    ip.globalObject().setProperty(ctx, "obj", obj);
+
+    KJSObject res = ip.evaluate("obj.multiply(4)");
+    QCOMPARE(res.toNumber(ctx), 12.0);
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)

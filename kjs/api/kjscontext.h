@@ -27,6 +27,7 @@
 class KJSObject;
 class KJSContextHandle;
 class KJSCustomProperty;
+class KJSCustomFunction;
 
 /**
  * A class representing a JavaScript execution context.
@@ -39,6 +40,7 @@ class KJSAPI_EXPORT KJSContext
     friend class KJSPrototype;
     friend class KJSInterpreter;
     friend class KJSCustomProperty;
+    friend class KJSCustomFunction;
 public:
     bool hasException() const;
 
