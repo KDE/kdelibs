@@ -54,6 +54,7 @@ public:
 
 class KFileMetaInfoItemPrivate : public QSharedData {
 public:
+    KFileMetaInfoItemPrivate() : writer(0) {}
     static const QVariant null;
     PredicateProperties pp;
     QVariant value;
