@@ -34,7 +34,7 @@ class DomainBrowser;
 /**
 \class DomainModel domainmodel.h DNSSD/DomainModel
 
-DomainModel implements Qt Model inteface around DomainBrowser to allow easy integration
+DomainModel implements Qt Model interface around DomainBrowser to allow easy integration
 of domain discovery into GUI.
 Example of combo box showing list of browsing domains:
 \code
