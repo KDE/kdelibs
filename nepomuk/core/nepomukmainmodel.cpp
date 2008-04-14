@@ -30,6 +30,7 @@
 #include <Soprano/Client/LocalSocketClient>
 #include <Soprano/Query/QueryLanguage>
 #include <Soprano/Util/DummyModel>
+#include <Soprano/Util/MutexModel>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -53,20 +54,33 @@ public:
         : dbusClient( "org.kde.nepomuk.services.nepomukstorage" ),
           dbusModel( 0 ),
           localSocketModel( 0 ),
+          mutexModel( 0 ),
           dummyModel( 0 ),
           m_socketConnectFailed( false ) {
+    }
+
+    ~GlobalModelContainer() {
+        delete mutexModel;
+        delete dbusModel;
+        delete localSocketModel;
+        delete dummyModel;
     }
 
     Soprano::Client::DBusClient dbusClient;
     Soprano::Client::LocalSocketClient localSocketClient;
     Soprano::Client::DBusModel* dbusModel;
     Soprano::Model* localSocketModel;
+    Soprano::Util::MutexModel* mutexModel;
 
     Soprano::Util::DummyModel* dummyModel;
 
     void init() {
         if ( !dbusModel ) {
             dbusModel = dbusClient.createModel( "main" );
+        }
+
+        if ( !mutexModel ) {
+            mutexModel = new Soprano::Util::MutexModel( Soprano::Util::MutexModel::ReadWriteMultiThreading );
         }
 
         // we may get disconnected from the server but we don't want to try
@@ -89,10 +103,14 @@ public:
 
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
-            return localSocketModel;
+            if ( mutexModel->parentModel() != localSocketModel ) {
+                mutexModel->setParentModel( localSocketModel );
+            }
         }
         else if ( dbusModel ) {
-            return dbusModel;
+            if ( mutexModel->parentModel() != dbusModel ) {
+                mutexModel->setParentModel( dbusModel );
+            }
         }
         else {
             if ( !dummyModel ) {
@@ -100,6 +118,8 @@ public:
             }
             return dummyModel;
         }
+
+        return mutexModel;
     }
 
 private:
