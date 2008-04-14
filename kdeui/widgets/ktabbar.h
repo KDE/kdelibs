@@ -150,13 +150,23 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     virtual void dragMoveEvent( QDragMoveEvent *event );
     virtual void dropEvent( QDropEvent *event );
 
+    virtual void paintEvent( QPaintEvent *event );
+    virtual void leaveEvent( QEvent *event );
+    virtual QSize tabSizeHint( int index ) const;
+
   protected Q_SLOTS:
+    /** @deprecated */
     void closeButtonClicked();
+    /** @deprecated */
     void enableCloseButton();
     virtual void activateDragSwitchTab();
 
   protected:
     virtual void tabLayoutChange();
+
+  private:
+    QPoint closeButtonPos( int tabIndex ) const;
+    QRect closeButtonRect( int tabIndex ) const;
 
   private:
     class Private;
