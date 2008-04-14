@@ -4,8 +4,8 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003-2007 Apple Computer, Inc.
- *           (C) 2004-2007 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2003-2008 Apple Computer, Inc.
+ *           (C) 2004-2008 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Charles Samuels (charles@kde.org)
  *
@@ -429,6 +429,50 @@ void RenderBlock::deleteLineBoxTree()
         line = nextLine;
     }
     m_firstLineBox = m_lastLineBox = 0;
+}
+
+short RenderBlock::baselinePosition( bool firstLine ) const
+{
+    // CSS2.1-10.8.1 "The baseline of an 'inline-block' is the baseline of its last line box 
+    // in the normal flow, unless it has either no in-flow line boxes or if its 'overflow' 
+    // property has a computed value other than 'visible', in which case the baseline is the bottom margin edge."
+
+    if (isReplaced() && !hasOverflowClip() && !needsLayout()) {
+        int res = getBaselineOfLastLineBox();
+        if (res != -1) {
+            return  res +marginTop();
+        }
+    }
+    RenderBox::baselinePosition(firstLine);
+}
+
+int RenderBlock::getBaselineOfLastLineBox() const
+{
+    if (!isBlockFlow())
+        return -1;
+
+    if (childrenInline()) {
+//       if (!firstLineBox() && hasLineIfEmpty())
+//            return RenderFlow::baselinePosition(true) + borderTop() + paddingTop();
+        if (lastLineBox())
+            return lastLineBox()->yPos() + lastLineBox()->baseline();
+        return -1;
+    }
+    else {
+//        bool haveNormalFlowChild = false;
+        for (RenderObject* curr = lastChild(); curr; curr = curr->previousSibling()) {
+            if (!curr->isFloatingOrPositioned() && curr->isBlockFlow()) {
+//                haveNormalFlowChild = true;
+                int result = static_cast<RenderBlock*>(curr)->getBaselineOfLastLineBox();
+                if (result != -1)
+                    return curr->yPos() + result; // Translate to our coordinate space.
+            }
+        }
+//        if (!haveNormalFlowChild && isRenderButton()) // hasLineIfEmpty()
+//            return RenderFlow::baselinePosition(true) + borderTop() + paddingTop();
+    }
+
+    return -1;
 }
 
 void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)

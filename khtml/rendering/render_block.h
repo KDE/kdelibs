@@ -41,12 +41,15 @@ public:
     virtual const char *renderName() const;
 
     virtual bool isRenderBlock() const { return true; }
-    virtual bool isBlockFlow() const { return !isInline() && !isTable(); }
+    virtual bool isBlockFlow() const { return (!isInline() || isReplaced()) && !isTable(); }
     virtual bool isInlineFlow() const { return isInline() && !isReplaced(); }
     virtual bool isInlineBlockOrInlineTable() const { return isInline() && isReplaced(); }
 
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual void setChildrenInline(bool b) { m_childrenInline = b; }
+    virtual short baselinePosition( bool firstLine ) const;
+    
+    int getBaselineOfLastLineBox() const;
     void makeChildrenNonInline(RenderObject* insertionPoint = 0);
 
     void makePageBreakAvoidBlocks();
