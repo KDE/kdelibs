@@ -127,8 +127,12 @@ Solid::Predicate &Solid::Predicate::operator=(const Predicate &other)
 
     if (d->type!=Private::AtomType && d->type!=Private::IsType)
     {
-        d->operand1 = new Predicate(*(other.d->operand1));
-        d->operand2 = new Predicate(*(other.d->operand2));
+        Predicate* operand1 = new Predicate(*(other.d->operand1));
+        delete d->operand1;
+        d->operand1 = operand1;
+        Predicate* operand2 = new Predicate(*(other.d->operand2));
+        delete d->operand2;
+        d->operand2 = operand2;
     }
     else
     {
