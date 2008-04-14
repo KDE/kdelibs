@@ -87,7 +87,7 @@ bool KShortcutsEditor::isModified() const
 
 void KShortcutsEditor::clearCollections()
 {
-    d->delegate->clear();
+    d->delegate->contractAll();
     d->ui.list->clear();
     d->actionCollections.clear();
     QTimer::singleShot(0, this, SLOT(resizeColumns()));

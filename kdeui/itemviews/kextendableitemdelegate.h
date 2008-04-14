@@ -22,7 +22,7 @@
 #ifndef KEXTENDABLEITEMDELEGATE_H
 #define KEXTENDABLEITEMDELEGATE_H
 
-#include <QtGui/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 
 #include <kdeui_export.h>
 
@@ -38,8 +38,8 @@
   * you call contractItem() for the associated index. If you fail to do that
   * and the associated item gets deleted you're in trouble. It remains as a
   * visible artefact in your treeview. Additionaly when closing your
-  * application you get an assertion failure from KExtendableItemDelegate. So
-  * ensure you allways call contractItem for Indices before your delete them.
+  * application you get an assertion failure from KExtendableItemDelegate. Make
+  * sure that you always call contractItem for indices before you delete them.
   *
   * @author Andreas Hartmetz <ahartmetz@gmail.com>
   *
@@ -48,7 +48,7 @@
 
 class QAbstractItemView;
 
-class KDEUI_EXPORT KExtendableItemDelegate : public QItemDelegate {
+class KDEUI_EXPORT KExtendableItemDelegate : public QStyledItemDelegate {
 	Q_OBJECT
 
 public:
@@ -80,9 +80,15 @@ public:
 	void extendItem(QWidget *extender, const QModelIndex &index);
 
 	/**
-	 * Remove the extender that logically belongs to @p index from the view.
+	 * Close the extender that logically belongs to @p index from the view. The extender widget
+	 * will be deleted.
 	 */
 	void contractItem(const QModelIndex &index);
+
+	/**
+	 * Close all extenders and delete all extender widgets.
+	 */
+	void contractAll();
 
 	/**
 	 * Return whether there is an extender that belongs to @p index.
@@ -90,16 +96,12 @@ public:
 	bool isExtended(const QModelIndex &index) const;
 
 	/**
-	 * Remove all extenders
-	 */
-	void clear();
-
-	/**
 	 * Reimplement this function to adjust the internal geometry of the extender.
 	 * The external geometry of the extender will be set by the delegate.
 	 */
 	virtual void updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
+                                            painter);
+      
 Q_SIGNALS:
 	/**
 	 * This signal indicates that the item at @p index was extended with @p extender.

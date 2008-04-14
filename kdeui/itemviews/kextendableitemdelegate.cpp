@@ -61,7 +61,7 @@ public:
 
 
 KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
- : QItemDelegate(parent),
+ : QStyledItemDelegate(parent),
    d(new Private(this))
 {
 	//parent->installEventFilter(this); //not sure if this is good
@@ -111,7 +111,7 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 }
 
 
-void KExtendableItemDelegate::clear()
+void KExtendableItemDelegate::contractAll()
 {
 	d->deleteExtenders();
 }
@@ -154,7 +154,7 @@ QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, cons
 	if (d->hasExtenders)
 		ret = d->maybeExtendedSize(option, index);
 	else
-		ret = QItemDelegate::sizeHint(option, index);
+		ret = QStyledItemDelegate::sizeHint(option, index);
 
 	bool showExtensionIndicator = index.model() ? 
 		index.model()->data(index, ShowExtensionIndicatorRole).toBool() : false;
@@ -170,30 +170,35 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	int indicatorX = 0;
 	int indicatorY = 0;
 
-	QStyleOptionViewItem indicatorOption(option);
-	QStyleOptionViewItem itemOption(option);
+	QStyleOptionViewItemV4 indicatorOption(option);
+	initStyleOption(&indicatorOption, index);
+	QStyleOptionViewItemV4 itemOption(option);
+	initStyleOption(&itemOption, index);
+
 	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
-	
+
 	if (showExtensionIndicator) {
 		if (QApplication::isRightToLeft()) {
 			indicatorX = option.rect.right() - d->extendPixmap.width();
 			itemOption.rect.setRight(option.rect.right() - d->extendPixmap.width());
 			indicatorOption.rect.setLeft(option.rect.right() - d->extendPixmap.width());
-		}
-		else {
+		} else {
 			indicatorX = option.rect.left();
 			indicatorOption.rect.setRight(option.rect.left() + d->extendPixmap.width());
 			itemOption.rect.setLeft(option.rect.left() + d->extendPixmap.width());
 		}
 		indicatorY = option.rect.top() + ((option.rect.height() - d->extendPixmap.height()) >> 1);
 	}
-	
+
 	//fast path
 	if (!d->hasExtenders) {
-		QItemDelegate::paint(painter, itemOption, index);
+		QStyledItemDelegate::paint(painter, itemOption, index);
 		if (showExtensionIndicator) {
-			QItemDelegate::drawBackground(painter, indicatorOption, index);
-			painter->drawPixmap(indicatorX, indicatorY,  d->extendPixmap);
+			painter->save();
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+			                                     painter);
+			painter->restore();
+			painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
 		}
 		return;
 	}
@@ -219,9 +224,12 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	}
 
 	if (!extender) {
-		QItemDelegate::paint(painter, itemOption, index);
+		QStyledItemDelegate::paint(painter, itemOption, index);
 		if (showExtensionIndicator) {
-			QItemDelegate::drawBackground(painter, indicatorOption, index);
+			painter->save();
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+			                                     painter);
+			painter->restore();
 			painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
 		}
 		return;
@@ -229,7 +237,8 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
 	//an extender is present - make two rectangles: one to paint the original item, one for the extender
 	if (isExtended(index)) {
-		QStyleOptionViewItem extOption(option);
+		QStyleOptionViewItemV4 extOption(option);
+		initStyleOption(&extOption, index);
 		extOption.rect = extenderRect(extender, option, index);
 		updateExtenderGeometry(extender, extOption, index);
 		//if we show it before, it will briefly flash in the wrong location.
@@ -242,13 +251,16 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	//tricky:make sure that the modified options' rect really has the
 	//same height as the unchanged option.rect if no extender is present
 	//(seems to work OK)
-	QItemDelegate::paint(painter, itemOption, index);
+	QStyledItemDelegate::paint(painter, itemOption, index);
 	
 	if (showExtensionIndicator) {
 		//indicatorOption's height changed, change this too
 		indicatorY = indicatorOption.rect.top() + ((indicatorOption.rect.height() - d->extendPixmap.height()) >> 1);
-		QItemDelegate::drawBackground(painter, indicatorOption, index);
-		
+		painter->save();
+		QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+		                                     painter);
+		painter->restore();
+
 		if (d->extenders.contains(index))
 			painter->drawPixmap(indicatorX, indicatorY, d->contractPixmap);
 		else
@@ -279,7 +291,7 @@ QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptio
 QSize KExtendableItemDelegate::Private::maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QWidget *extender = extenders.value(index);
-	QSize size(q->QItemDelegate::sizeHint(option, index));
+	QSize size(q->QStyledItemDelegate::sizeHint(option, index));
 	if (!extender)
 		return size;
 
@@ -297,10 +309,10 @@ QSize KExtendableItemDelegate::Private::maybeExtendedSize(const QStyleOptionView
 		QModelIndex neighborIndex(index.sibling(row, column));
 		if (!neighborIndex.isValid())
 			break;
-		itemHeight = qMax(itemHeight, q->QItemDelegate::sizeHint(option, neighborIndex).height());
+		itemHeight = qMax(itemHeight, q->QStyledItemDelegate::sizeHint(option, neighborIndex).height());
 	}
 	
-	//we only want to reserve vertical space
+	//we only want to reserve vertical space, the horizontal extender layout is our private business.
 	size.rheight() = itemHeight + extender->sizeHint().height();
 	return size;
 }
@@ -324,7 +336,8 @@ QModelIndex KExtendableItemDelegate::Private::indexOfExtendedColumnInSameRow(con
 }
 
 
-void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option,
+                                                     const QModelIndex &index) const
 {
 	Q_UNUSED(index);
 	extender->setGeometry(option.rect);
@@ -333,24 +346,19 @@ void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QS
 
 void KExtendableItemDelegate::Private::deleteExtenders()
 {
-	// kDebug() << "Delete all extenders for " << this << ":" << extenders.size();
-	Q_FOREACH ( QWidget *ext, extenders.values() ) {
-		// Disconnect from the extender. We wouldn't want
-		// _k_extenderDestructionHandler to be called
-		// kDebug() << "Working on item " << ext;
-		disconnect(
-			ext, SIGNAL(destroyed(QObject *)),
-			q, SLOT(_k_extenderDestructionHandler(QObject *)));
+	foreach (QWidget *ext, extenders.values()) {
+		// Don't call _k_extenderDestructionHandler because (???)
+		// disconnect(ext, SIGNAL(destroyed(QObject *)), q, SLOT(_k_extenderDestructionHandler(QObject *)));
 		ext->hide();
 		ext->deleteLater();
 	}
 	extenders.clear();
 	extenderIndices.clear();
-	// kDebug() << "Finished Deleting all extenders";
 }
 
 
 //make the view re-ask for sizeHint() and redisplay items with their new size
+//### starting from Qt 4.4 we could emit sizeHintChanged() instead
 void KExtendableItemDelegate::Private::scheduleUpdateViewLayout()
 {
 	QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(q->parent());
