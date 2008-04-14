@@ -239,6 +239,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
       const QPoint pos = event->pos();
       const int tabIndex = tabAt( pos );
       if ((tabIndex >= 0) && closeButtonRect( tabIndex ).contains( pos )) {
+        d->mHoveredCloseIconIndex = -1;
         emit closeRequest( tabIndex );
       }
     }
