@@ -16,6 +16,7 @@ target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
 #install(TARGETS wtf ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 install(FILES
+        kjsapi_export.h
         kjsinterpreter.h
         kjscontext.h
         kjsobject.h
