@@ -65,7 +65,7 @@ int check_tmp_dir(const char *tmp_dir, int check_ownership)
     }
     result = stat(tmp_dir, &stat_buf);
   }
-  if ((result == -1) || (!S_ISDIR(stat_buf.st_mode)))
+  if ((result == -1) || ( !S_ISDIR(stat_buf.st_mode) && !S_ISLNK(stat_buf.st_mode) ))
   {
      fprintf(stderr, "Error: \"%s\" is not a directory.\n", tmp_dir);
      return 1;
