@@ -290,13 +290,8 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
   {
     if ( QMenu *menu = qobject_cast<QMenu*>( parent ) )
     {
-      // Don't insert multiple separators in a row
-      if ( before && before->isSeparator() )
-        return 0;
-      // Don't insert a separator at the top of the menu
-      if ( menu->actions().count() == 0 )
-        return 0;
-
+      // QMenu already cares for leading/trailing/repeated separators
+      // no need to check anything
       return menu->insertSeparator( before );
     }
     else if ( QMenuBar* bar = qobject_cast<QMenuBar*>( parent ) )

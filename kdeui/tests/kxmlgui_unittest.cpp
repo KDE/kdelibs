@@ -349,3 +349,50 @@ void KXmlGui_UnitTest::testMergingSeparators()
                  << "separator"
                  << "first_page");
 }
+
+void KXmlGui_UnitTest::testActionListAndSeparator()
+{
+    const QByteArray xml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        " <Menu name=\"groups\"><text>Add to Group</text>\n"
+        "  <ActionList name=\"view_groups_list\"/>\n"
+        "  <Separator />"
+        "   <Action name=\"view_add_to_new_group\" />\n"
+        " </Menu>\n"
+        "</MenuBar>";
+
+    TestGuiClient client(xml);
+    createActions(client.actionCollection(),
+                  QStringList() << "view_add_to_new_group" << "action1");
+    QMainWindow mainWindow;
+    KXMLGUIBuilder builder(&mainWindow);
+    KXMLGUIFactory factory(&builder);
+    factory.addClient(&client);
+
+    QWidget* menuW = factory.container("groups", &client);
+    QVERIFY(menuW);
+    QMenu* menu = qobject_cast<QMenu *>(menuW);
+    QVERIFY(menu);
+
+    //debugActions(menu->actions());
+    checkActions(menu->actions(), QStringList()
+                 << "separator" // that's ok, QMenuPrivate::filterActions won't show it
+                 << "view_add_to_new_group");
+
+    kDebug() << "Now plugging the actionlist";
+
+    QList<QAction*> actionList;
+    actionList << client.actionCollection()->action("action1");
+    client.plugActionList("view_groups_list", actionList);
+
+    //debugActions(menu->actions());
+    checkActions(menu->actions(), QStringList()
+                 << "action1"
+                 << "separator"
+                 << "view_add_to_new_group");
+
+
+}
