@@ -100,8 +100,7 @@ public:
 	 * The external geometry of the extender will be set by the delegate.
 	 */
 	virtual void updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-                                            painter);
-      
+
 Q_SIGNALS:
 	/**
 	 * This signal indicates that the item at @p index was extended with @p extender.
