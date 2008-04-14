@@ -58,8 +58,13 @@ class Backend::BackendPrivate
 {
 };
 
+static void initKWalletDir()
+{
+    KGlobal::dirs()->addResourceType("kwallet", 0, "share/apps/kwallet");
+}
+
 Backend::Backend(const QString& name, bool isPath) : d(0), _name(name), _ref(0) {
-	KGlobal::dirs()->addResourceType("kwallet", 0, "share/apps/kwallet");
+	initKWalletDir();
 	if (isPath) {
 		_path = name;
 	} else {
@@ -244,6 +249,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 
 bool Backend::exists(const QString& wallet) {
+	initKWalletDir();
 	QString path = KGlobal::dirs()->saveLocation("kwallet") + '/' + wallet + ".kwl";
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
