@@ -126,4 +126,7 @@ QList<KService::Ptr> KEmoticons::loadedServices()
     return d->m_loaded;
 }
 
+QStringList KEmoticons::installTheme(const QString &path)
+{
+}
 // kate: space-indent on; indent-width 4; replace-tabs on;
