@@ -90,6 +90,8 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      * @since 4.1
      */
     void setCloseButtonEnabled( bool );
+
+    /** @since 4.1 */
     bool isCloseButtonEnabled() const;
 
     /**
