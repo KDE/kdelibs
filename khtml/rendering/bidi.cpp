@@ -1850,11 +1850,11 @@ static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetS
       bool nssx, nssy;
       bool isInlineType = o->style()->isOriginalDisplayInlineType();
       nssx = o->hasStaticX();
-      if (nssx && !isInlineType && o->isBox()) {
+      if (nssx && o->isBox()) {
           static_cast<RenderBox*>(o)->setStaticX(o->parent()->style()->direction() == LTR ?
                                   p->borderLeft()+p->paddingLeft() :
                                   p->borderRight()+p->paddingRight());
-          nssx = false;
+          nssx = isInlineType;
       }
 
       // If our original display was an INLINE type, then we can
