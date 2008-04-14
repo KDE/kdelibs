@@ -53,6 +53,8 @@ public:
     virtual QString product() const;
     virtual QString icon() const;
 
+    virtual bool isValid() const;
+    
     virtual QVariant property(const QString &key) const;
 
     virtual QMap<QString, QVariant> allProperties() const;

@@ -62,10 +62,13 @@ class Solid::Backends::Wmi::WmiDevicePrivate
 public:
     WmiDevicePrivate(const QString &udi)
         : parent(0)
-        , failed(false)
+        , m_failed(false)
         , pLoc(0)
         , pSvc(0)
         , pEnumerator(NULL)
+        , m_udi(udi)
+        , m_wmiType()
+        , m_solidType( Solid::DeviceInterface::Unknown )
     {
     
         //does this all look hacky?  yes...but it came straight from the MSDN example...
@@ -76,9 +79,9 @@ public:
         if( FAILED(hres) )
         {
             qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
-            failed = true;
+            m_failed = true;
         }
-        if( !failed )
+        if( !m_failed )
         {
             hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
                         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
@@ -87,20 +90,20 @@ public:
             {
                 qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
                 CoUninitialize();
-                failed = true;
+                m_failed = true;
             }
         }
-        if( !failed )
+        if( !m_failed )
         {
             hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &pLoc );
             if (FAILED(hres))
             {
                 qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
                 CoUninitialize();
-                failed = true;
+                m_failed = true;
             }
         }
-        if( !failed )
+        if( !m_failed )
         {
             hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
             if( FAILED(hres) )
@@ -108,13 +111,13 @@ public:
                 qCritical() << "Could not connect. Error code = " << hres << endl;
                 pLoc->Release();
                 CoUninitialize();
-                failed = true;
+                m_failed = true;
             }
             else
                 qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
         }
         
-        if( !failed )
+        if( !m_failed )
         {
             hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
                         RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
@@ -124,7 +127,7 @@ public:
                 pSvc->Release();
                 pLoc->Release();     
                 CoUninitialize();
-                failed = true;
+                m_failed = true;
             }
         }
     }
@@ -171,15 +174,29 @@ public:
                 //VariantClear(&vtProp);
             }
         } 
+        return retList;
     }
    
-    bool isLegit() { return !failed; }
+    void discoverType()
+    {
+    }
+   
+    bool isLegit() { return !m_failed; }
+    
+    const QString udi() const { return m_udi; }
+    
+    const QString wmiType() const { return m_wmiType; }
+    
+    Solid::DeviceInterface::Type type() const { return m_solidType; }
     
     WmiDevice *parent;
-    bool failed;
+    bool m_failed;
     IWbemLocator *pLoc;
     IWbemServices *pSvc;
     IEnumWbemClassObject* pEnumerator;
+    QString m_udi;
+    QString m_wmiType;
+    Solid::DeviceInterface::Type m_solidType;
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
@@ -188,6 +205,7 @@ Q_DECLARE_METATYPE(QList<ChangeDescription>)
 WmiDevice::WmiDevice(const QString &udi)
     : Device(), d(new WmiDevicePrivate(udi))
 {
+    d->discoverType();
 }
 
 WmiDevice::~WmiDevice()
@@ -196,9 +214,15 @@ WmiDevice::~WmiDevice()
     delete d;
 }
 
+bool WmiDevice::isValid() const
+{
+    //return sendQuery( "SELECT * FROM Win32_SystemDevices WHERE PartComponent='\\\\\\\\BEAST\root\cimv2:Win32_Processor.DeviceID=\"CPU0\"'" ).count() == 1;
+    return false;
+}
+
 QString WmiDevice::udi() const
 {
-    return property("info.udi").toString();
+    return d->udi();
 }
 
 QString WmiDevice::parentUdi() const
@@ -208,7 +232,7 @@ QString WmiDevice::parentUdi() const
 
 QString WmiDevice::vendor() const
 {
-    return property("info.vendor").toString();
+    return QString();
 }
 
 QString WmiDevice::product() const
@@ -323,17 +347,7 @@ QString WmiDevice::icon() const
 
 QVariant WmiDevice::property(const QString &key) const
 {
-    // QDBusMessage reply = d->device.call("GetProperty", key);
-
-    // if (reply.type()!=QDBusMessage::ReplyMessage
-      // && reply.errorName()!="org.freedesktop.Wmi.NoSuchProperty")
-    // {
-        // qWarning() << Q_FUNC_INFO << " error: " << reply.errorName()
-                   // << ", " << reply.arguments().at(0).toString() << endl;
-        // return QVariant();
-    // }
-
-    // return reply.arguments().at(0);
+    d->sendQuery( "SELECT " + key + " FROM " + d->wmiType() + " WHERE DeviceID=\"" + d->udi() + "\"" );
     return QVariant();
 }
 
