@@ -65,10 +65,10 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      *
      * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
      */
-    void setHoverCloseButton( bool );
+    KDE_DEPRECATED void setHoverCloseButton( bool );
 
     /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
-    bool hoverCloseButton() const;
+    KDE_DEPRECATED bool hoverCloseButton() const;
 
     /**
      * If enabled, the close button cannot get clicked until a
@@ -77,10 +77,10 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      *
      * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
      */
-    void setHoverCloseButtonDelayed( bool );
+    KDE_DEPRECATED void setHoverCloseButtonDelayed( bool );
 
     /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
-    bool hoverCloseButtonDelayed() const;
+    KDE_DEPRECATED bool hoverCloseButtonDelayed() const;
 
     /**
      * If enabled, a close button is available for each tab. The
@@ -91,7 +91,11 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      */
     void setCloseButtonEnabled( bool );
 
-    /** @since 4.1 */
+    /**
+     * Returns true if the close button is shown on tabs.
+     *
+     * @since 4.1
+     */
     bool isCloseButtonEnabled() const;
 
     /**

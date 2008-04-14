@@ -83,14 +83,25 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     /**
      * Returns true if the close button is shown on tabs
      * when mouse is hovering over them.
+     *
+     * @deprecated Use KTabWidget::isCloseButtonEnabled() instead.
      */
-    bool hoverCloseButton() const;
+    KDE_DEPRECATED bool hoverCloseButton() const;
 
     /**
      * Returns true if the close button is shown on tabs
      * after a delay.
+     *
+     * @deprecated Use KTabWidget::isCloseButtonEnabled() instead.
      */
-    bool hoverCloseButtonDelayed() const;
+    KDE_DEPRECATED bool hoverCloseButtonDelayed() const;
+
+    /**
+     * Returns true if the close button is shown on tabs.
+     *
+     * @since 4.1
+     */
+    bool isCloseButtonEnabled() const;
 
     /**
      * Returns true if closing the current tab activates the previous
@@ -192,14 +203,27 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
      * If \a enable is true, a close button will be shown on mouse hover
      * over tab icons which will emit signal closeRequest( QWidget * )
      * when pressed.
+     *
+     * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
      */
-    void setHoverCloseButton( bool enable );
+    KDE_DEPRECATED void setHoverCloseButton( bool enable );
 
     /**
      * If \a delayed is true, a close button will be shown on mouse hover
      * over tab icons after mouse double click delay else immediately.
+     *
+     * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
      */
-    void setHoverCloseButtonDelayed( bool delayed );
+    KDE_DEPRECATED void setHoverCloseButtonDelayed( bool delayed );
+
+    /**
+     * If enabled, a close button is available for each tab. The
+     * signal KTabWidget::closeRequest() is emitted, if the close button
+     * has been clicked.
+     *
+     * @since 4.1
+     */
+    void setCloseButtonEnabled( bool );
 
     /**
      * If \a previous is true, closing the current tab activates the

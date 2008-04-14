@@ -506,22 +506,37 @@ void KTabWidget::removeTab( int index )
 
 void KTabWidget::setHoverCloseButton( bool button )
 {
-  static_cast<KTabBar*>( tabBar() )->setHoverCloseButton( button );
+  // deprecated
+  setCloseButtonEnabled( button );
 }
 
 bool KTabWidget::hoverCloseButton() const
 {
-  return static_cast<KTabBar*>( tabBar() )->hoverCloseButton();
+  // deprecated
+  return false;
 }
 
 void KTabWidget::setHoverCloseButtonDelayed( bool delayed )
 {
-  static_cast<KTabBar*>( tabBar() )->setHoverCloseButtonDelayed( delayed );
+  // deprecated
+  Q_UNUSED( delayed );
 }
 
 bool KTabWidget::hoverCloseButtonDelayed() const
 {
-  return static_cast<KTabBar*>( tabBar() )->hoverCloseButtonDelayed();
+  // deprecated
+  return isCloseButtonEnabled();
+}
+
+void KTabWidget::setCloseButtonEnabled( bool enable )
+{
+  static_cast<KTabBar*>( tabBar() )->setCloseButtonEnabled( enable );
+}
+
+bool KTabWidget::isCloseButtonEnabled() const
+{
+
+  static_cast<KTabBar*>( tabBar() )->isCloseButtonEnabled();
 }
 
 void KTabWidget::setAutomaticResizeTabs( bool enabled )
