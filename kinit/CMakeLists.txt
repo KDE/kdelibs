@@ -28,12 +28,12 @@ else (WIN32)
   set(kdeinit_LIBS kparts)
 endif (WIN32)
 
-#if (APPLE)
+if (APPLE)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
-#  kde4_add_executable(kdeinit4 ${kdeinit_SRCS})
-#else (APPLE)
+  kde4_add_executable(kdeinit4 ${kdeinit_SRCS})
+else (APPLE)
   kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
-#endif (APPLE)
+endif (APPLE)
 
 target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
 
