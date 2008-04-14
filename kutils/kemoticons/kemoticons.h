@@ -57,7 +57,7 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
 
         QList<KService::Ptr> loadedServices();
 
-        QStringList installTheme(const QString &path);
+        QStringList installTheme(const QString &archiveName);
 
     private:
         KEmoticonsPrivate * const d;

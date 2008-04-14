@@ -1,7 +1,8 @@
 [Desktop Entry]
 Type=Service
-Name=XMPP Emoticons Theme Library
+Name=XMPP Emoticons Theme
 Comment=Library to use XMPP emoticons theme
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_xmpp
 X-KDE-EmoticonsFileName=icondef.xml
+X-KDE-Priority=2

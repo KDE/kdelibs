@@ -27,6 +27,9 @@
 #include <KDebug>
 #include <KStandardDirs>
 #include <KConfigGroup>
+#include <KTar>
+#include <KZip>
+#include <KMimeType>
 
 
 KEmoticonsPrivate::KEmoticonsPrivate()
@@ -126,7 +129,95 @@ QList<KService::Ptr> KEmoticons::loadedServices()
     return d->m_loaded;
 }
 
-QStringList KEmoticons::installTheme(const QString &path)
+QStringList KEmoticons::installTheme(const QString &archiveName)
 {
+    QStringList foundThemes;
+    KArchiveEntry *currentEntry = 0L;
+    KArchiveDirectory* currentDir = 0L;
+    KArchive *archive = 0L;
+
+    QString localThemesDir(KStandardDirs::locateLocal("emoticons", QString()) );
+
+    if (localThemesDir.isEmpty())
+    {
+        kError() << "Could not find a suitable place in which to install the emoticon theme";
+        return QStringList();
+    }
+    
+    QString currentBundleMimeType = KMimeType::findByPath(archiveName, 0, false)->name();
+    
+    if (currentBundleMimeType == "application/zip" ||
+        currentBundleMimeType == "application/x-zip" ||
+        currentBundleMimeType == "application/x-zip-compressed") {
+        archive = new KZip(archiveName);
+    } else if (currentBundleMimeType == "application/x-compressed-tar" ||
+        currentBundleMimeType == "application/x-bzip-compressed-tar" ||
+        currentBundleMimeType == "application/x-gzip" ||
+        currentBundleMimeType == "application/x-bzip") {
+        archive = new KTar(archiveName);
+    } else if (archiveName.endsWith("jisp") || archiveName.endsWith("zip")) {
+        archive = new KZip(archiveName);
+    } else {
+        archive = new KTar(archiveName);
+    }
+    
+    if (!archive || !archive->open(QIODevice::ReadOnly)) {
+        kError() << "Could not open" << archiveName << "for unpacking";
+        delete archive;
+        return QStringList();
+    }
+    
+    const KArchiveDirectory* rootDir = archive->directory();
+    
+    // iterate all the dirs looking for an emoticons.xml file
+    QStringList entries = rootDir->entries();
+    for (QStringList::Iterator it = entries.begin(); it != entries.end(); ++it) {
+        currentEntry = const_cast<KArchiveEntry*>(rootDir->entry(*it));
+        
+        if (currentEntry->isDirectory()) {
+            currentDir = dynamic_cast<KArchiveDirectory*>( currentEntry );
+            
+            for (int i = 0; i < d->m_loaded.size(); ++i) {
+                QString fName = d->m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
+                
+                if (currentDir && currentDir->entry(fName) != NULL) {
+                    foundThemes.append(currentDir->name());
+                }
+            }
+        }
+    }
+    
+    if (foundThemes.isEmpty()) {
+        kError() << "The file" << archiveName << "is not a valid emoticon theme archive";
+        archive->close();
+        delete archive;
+        return QStringList();
+    }
+
+    for (int themeIndex = 0; themeIndex < foundThemes.size(); ++themeIndex) {
+        const QString &theme = foundThemes[themeIndex];
+
+        currentEntry = const_cast<KArchiveEntry *>(rootDir->entry(theme));
+        if (currentEntry == 0) {
+            kDebug() << "couldn't get next archive entry";
+            continue;
+        }
+
+        if (currentEntry->isDirectory()) {
+            currentDir = dynamic_cast<KArchiveDirectory*>(currentEntry);
+
+            if (currentDir == 0) {
+                kDebug() << "couldn't cast archive entry to KArchiveDirectory";
+                continue;
+            }
+
+            currentDir->copyTo(localThemesDir + theme);
+        }
+    }
+
+    archive->close();
+    delete archive;
+
+    return foundThemes;
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

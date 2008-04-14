@@ -127,6 +127,29 @@ bool XmppEmoticons::loadTheme(const QString &path)
 {
     KEmoticonsTheme::loadTheme(path);
 
+    QFile fp(path);
+    
+    if (!fp.exists()) {
+        kWarning() << path << "doesn't exist!";
+        return false;
+    }
+    
+    if (!fp.open(QIODevice::ReadOnly)) {
+        kWarning() << fp.fileName() << "can't open ReadOnly!";
+        return false;
+    }
+    
+    QString error;
+    int eli, eco;
+    if (!m_themeXml.setContent(&fp, &error, &eli, &eco)) {
+        kWarning() << fp.fileName() << "can't copy to xml!";
+        kWarning() << error << "line:" << eli << "column:" << eco;
+        fp.close();
+        return false;
+    }
+    
+    fp.close();
+
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull()) {
