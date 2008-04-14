@@ -44,6 +44,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool tabReorderingEnabled READ isTabReorderingEnabled WRITE setTabReorderingEnabled )
     Q_PROPERTY( bool hoverCloseButton READ hoverCloseButton WRITE setHoverCloseButton )
     Q_PROPERTY( bool hoverCloseButtonDelayed READ hoverCloseButtonDelayed WRITE setHoverCloseButtonDelayed )
+    Q_PROPERTY( bool closeButtonEnabled READ isCloseButtonEnabled WRITE setCloseButtonEnabled )
     Q_PROPERTY( bool tabCloseActivatePrevious READ tabCloseActivatePrevious WRITE setTabCloseActivatePrevious )
     Q_PROPERTY( bool automaticResizeTabs READ automaticResizeTabs WRITE setAutomaticResizeTabs )
 
@@ -300,7 +301,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
 
     /**
      * The close button of a widget's tab was clicked. This signal is
-     * only possible after you have called setHoverCloseButton( true ).
+     * only possible after you have called setCloseButtonEnabled( true ).
      */
     void closeRequest( QWidget * );
 

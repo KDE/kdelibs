@@ -535,8 +535,7 @@ void KTabWidget::setCloseButtonEnabled( bool enable )
 
 bool KTabWidget::isCloseButtonEnabled() const
 {
-
-  static_cast<KTabBar*>( tabBar() )->isCloseButtonEnabled();
+  return static_cast<KTabBar*>( tabBar() )->isCloseButtonEnabled();
 }
 
 void KTabWidget::setAutomaticResizeTabs( bool enabled )
