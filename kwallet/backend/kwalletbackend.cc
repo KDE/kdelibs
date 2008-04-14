@@ -54,8 +54,13 @@ using namespace KWallet;
 #define KWMAGIC "KWALLET\n\r\0\r\n"
 #define KWMAGIC_LEN 12
 
+static void initKWalletDir()
+{
+    KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+}
+
 Backend::Backend(const QString& name, bool isPath) : _name(name), _ref(0) {
-	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+	initKWalletDir();
 	if (isPath) {
 		_path = name;
 	} else {
@@ -239,7 +244,8 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 
 bool Backend::exists(const QString& wallet) {
-QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
+	initKWalletDir();
+	QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
 return QFile::exists(path) && QFileInfo(path).size() >= 60;
