@@ -378,6 +378,14 @@ public:
                               bool saveWindowSize = true );
 
     /**
+     * Overload that lets you specify a KConfigGroup.
+     * This allows the settings to be saved into another file than KGlobal::config().
+     * @since 4.1
+     */
+    void setAutoSaveSettings(const KConfigGroup & group,
+                             bool saveWindowSize = true);
+
+    /**
      * Disable the auto-save-settings feature.
      * You don't normally need to call this, ever.
      */

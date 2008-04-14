@@ -29,6 +29,8 @@
 #ifndef KMAINWINDOW_P_H
 #define KMAINWINDOW_P_H
 
+#include <kconfiggroup.h>
+
 #define K_D(Class) Class##Private * const d = k_func()
 
 class QObject;
@@ -43,7 +45,7 @@ public:
     bool autoSaveWindowSize:1;
     bool care_about_geometry:1;
     bool shuttingDown:1;
-    QString autoSaveGroup;
+    KConfigGroup autoSaveGroup;
     QTimer* settingsTimer;
     QRect defaultWindowSize;
     KHelpMenu *helpMenu;

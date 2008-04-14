@@ -629,7 +629,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
         if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
             cg.revertToDefault("ToolBarsMovable");
         else
-            cg.writeEntry("ToolBarsMovable", KToolBar::toolBarsLocked() ? "Disabled" : "Enabled");    
+            cg.writeEntry("ToolBarsMovable", KToolBar::toolBarsLocked() ? "Disabled" : "Enabled");
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -745,19 +745,19 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 
 #ifdef Q_WS_WIN
 
-/* 
- The win32 implementation for restoring/savin windows size differs 
+/*
+ The win32 implementation for restoring/savin windows size differs
  from the unix/max implementation in three topics:
 
-1. storing and restoring the position, which may not work on x11 
+1. storing and restoring the position, which may not work on x11
     see http://doc.trolltech.com/4.3/geometry.html#x11-peculiarities
-2. using QWidget::saveGeometry() and QWidget::restoreGeometry() 
-    this would probably be usable on x11 and/or on mac, but I'm unable to 
+2. using QWidget::saveGeometry() and QWidget::restoreGeometry()
+    this would probably be usable on x11 and/or on mac, but I'm unable to
     check this on unix/mac, so I leave this fix to the x11/mac experts.
-3. store geometry separately for each resolution -> on unix/max the size 
-    and with of the window are already saved separately on non windows 
-    system although not using ...Geometry functions -> could also be 
-    fixed by x11/mac experts. 
+3. store geometry separately for each resolution -> on unix/max the size
+    and with of the window are already saved separately on non windows
+    system although not using ...Geometry functions -> could also be
+    fixed by x11/mac experts.
 */
 void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
 {
@@ -772,7 +772,7 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
 
     QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
     QByteArray geometry = _cg.readEntry( geometryKey, QByteArray() );
-    // if first time run, center window 
+    // if first time run, center window
     if (!restoreGeometry( QByteArray::fromBase64(geometry) ))
         move( (desk.width()-width())/2, (desk.height()-height())/2 );
 }
@@ -799,11 +799,11 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
     K_D(const KMainWindow);
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);
-    
+
     // if the desktop is virtual then use virtual screen size
     if (QApplication::desktop()->isVirtualDesktop())
         desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
-    
+
     int w, h;
 #if defined Q_WS_X11
     // save maximalization as desktop size + 1 in that direction
@@ -821,7 +821,7 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
     //TODO: add "Maximized" property instead "+1" hack
 #endif
     KConfigGroup cg(_cg);
-    
+
     QRect size( desk.width(), w, desk.height(), h );
     bool defaultSize = (size == d->defaultWindowSize);
     QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
@@ -830,7 +830,7 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
         cg.revertToDefault(widthString);
     else
         cg.writeEntry(widthString, w );
-    
+
     if (!cg.hasDefault(heightString) && defaultSize)
         cg.revertToDefault(heightString);
     else
@@ -932,14 +932,19 @@ bool KMainWindow::settingsDirty() const
 
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
+    setAutoSaveSettings(KConfigGroup(KGlobal::config(), groupName), saveWindowSize);
+}
+
+void KMainWindow::setAutoSaveSettings( const KConfigGroup & group,
+                                       bool saveWindowSize )
+{
     K_D(KMainWindow);
     d->autoSaveSettings = true;
-    d->autoSaveGroup = groupName;
+    d->autoSaveGroup = group;
     d->autoSaveWindowSize = saveWindowSize;
 
-    KConfigGroup cg(KGlobal::config(), groupName);
     // Now read the previously saved settings
-    applyMainWindowSettings(cg);
+    applyMainWindowSettings(d->autoSaveGroup);
 }
 
 void KMainWindow::resetAutoSaveSettings()
@@ -959,7 +964,7 @@ bool KMainWindow::autoSaveSettings() const
 QString KMainWindow::autoSaveGroup() const
 {
     K_D(const KMainWindow);
-    return d->autoSaveGroup;
+    return d->autoSaveGroup.name();
 }
 
 void KMainWindow::saveAutoSaveSettings()
@@ -967,9 +972,8 @@ void KMainWindow::saveAutoSaveSettings()
     K_D(KMainWindow);
     Q_ASSERT( d->autoSaveSettings );
     //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings";
-    KConfigGroup cg(KGlobal::config(), d->autoSaveGroup);
-    saveMainWindowSettings(cg);
-    KGlobal::config()->sync();
+    saveMainWindowSettings(d->autoSaveGroup);
+    d->autoSaveGroup.sync();
     d->settingsDirty = false;
     if ( d->settingsTimer )
         d->settingsTimer->stop();
@@ -979,7 +983,7 @@ bool KMainWindow::event( QEvent* ev )
 {
     K_D(KMainWindow);
     switch( ev->type() ) {
-#ifdef Q_WS_WIN    	
+#ifdef Q_WS_WIN
     case QEvent::Move:
 #endif
     case QEvent::Resize:
