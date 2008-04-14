@@ -6,6 +6,7 @@
  *                     2000-2004 Dirk Mueller <mueller@kde.org>
  *                     2003 Leo Savernik <l.savernik@aon.at>
  *                     2003-2008 Apple Computer, Inc.
+ *                     2008 Allan Sandfeld Jensen <kde@carewolf.com>
  *                     2006-2008 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -128,6 +129,9 @@ static const int sLayoutAttemptDelay = 340;
 static const int sLayoutAttemptIncrement = 20;
 static const int sParsingLayoutsIncrement = 60;
 
+static const int sSmoothScrollTime = 120;
+static const int sSmoothScrollTick = 12;
+
 class KHTMLViewPrivate {
     friend class KHTMLView;
 public:
@@ -159,6 +163,7 @@ public:
 #endif // KHTML_NO_CARET
         postponed_autorepeat = NULL;
         scrollingFromWheelTimerId = 0;
+        smoothScrollMode = KHTMLView::SSMWhenEfficient;
         reset();
         vpolicy = Qt::ScrollBarAsNeeded;
  	hpolicy = Qt::ScrollBarAsNeeded;
@@ -231,6 +236,7 @@ public:
         scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
+	dx = dy = ddx = ddy = rdx = rdy = 0;
         paged = false;
 	clickX = -1;
 	clickY = -1;
@@ -244,6 +250,9 @@ public:
         scrollTimerId = 0;
         scrollSuspended = false;
         scrollSuspendPreActivate = false;
+        smoothScrolling = false;
+        smoothScrollModeIsDefault = true;
+        shouldSmoothScroll = false;
         complete = false;
         firstLayoutPending = true;
         firstRepaintPending = true;
@@ -333,6 +342,22 @@ public:
     }
 #endif // KHTML_NO_CARET
 
+    void startScrolling()
+    {
+        smoothScrolling = true;
+        smoothScrollTimer.start(sSmoothScrollTick);
+        shouldSmoothScroll = false;
+    }
+
+    void stopScrolling()
+    {
+        smoothScrollTimer.stop();
+        dx = dy = 0;
+        smoothScrolling = false;
+        shouldSmoothScroll = false;
+    }
+
+
 #ifdef DEBUG_PIXEL
     QTime timer;
     unsigned int pixelbooth;
@@ -362,6 +387,7 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
+    int dx, dy, ddx, ddy, rdx, rdy;
     KConfig *formCompletions;
 
     int clickX, clickY, clickCount;
@@ -381,6 +407,10 @@ public:
     ScrollDirection scrollDirection		:3;
     bool scrollSuspended			:1;
     bool scrollSuspendPreActivate		:1;
+    KHTMLView::SmoothScrollingMode smoothScrollMode :3;
+    bool smoothScrolling                          :1;
+    bool smoothScrollModeIsDefault                :1;
+    bool shouldSmoothScroll                       :1;
     bool complete				:1;
     bool firstLayoutPending			:1;
     bool firstRepaintPending                    :1;
@@ -394,6 +424,7 @@ public:
     int layoutAttemptCounter;
     int scheduledLayoutCounter;
     QRegion updateRegion;
+    QTimer smoothScrollTimer;
     QHash<void*, QWidget*> visibleWidgets;
 #ifndef KHTML_NO_CARET
     CaretViewContext *m_caretViewContext;
@@ -582,6 +613,8 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
+
+    connect(&d->smoothScrollTimer, SIGNAL(timeout()), this, SLOT(scrollTick()));
 }
 
 void KHTMLView::delayedInit()
@@ -855,6 +888,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     r.translate(off);
 
     r = r.intersect(v);
+
     if (!r.isValid() || r.isEmpty()) return;
 
     if (d->haveZoom()) {
@@ -910,7 +944,7 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
-    if (d->contentsMoving && widget()->underMouse()) {
+    if (d->contentsMoving && !d->smoothScrolling && widget()->underMouse()) {
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, widget()->mapFromGlobal( QCursor::pos() ),
                                               Qt::NoButton, Qt::NoButton, Qt::NoModifier );
         QApplication::postEvent(widget(), tempEvent);
@@ -1070,6 +1104,29 @@ void KHTMLView::setZoomLevel(int percent)
 int KHTMLView::zoomLevel() const
 {
     return d->zoomLevel;
+}
+
+void KHTMLView::setSmoothScrollingMode( SmoothScrollingMode m )
+{
+    d->smoothScrollMode = m;
+    d->smoothScrollModeIsDefault = false;
+    if (d->smoothScrolling && !m)
+        d->stopScrolling();
+}
+
+void KHTMLView::setSmoothScrollingModeDefault( SmoothScrollingMode m )
+{
+    // check for manual override
+    if (!d->smoothScrollModeIsDefault)
+        return;
+    d->smoothScrollMode = m;
+    if (d->smoothScrolling && !m)
+        d->stopScrolling();
+}
+
+KHTMLView::SmoothScrollingMode KHTMLView::smoothScrollingMode( ) const
+{
+    return d->smoothScrollMode;
 }
 
 //
@@ -1929,8 +1986,11 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
     if( _ke->key() == Qt::Key_Shift && d->scrollSuspendPreActivate && !(_ke->modifiers() & Qt::ShiftModifier))
-        if (d->scrollTimerId)
+        if (d->scrollTimerId) {
                 d->scrollSuspended = !d->scrollSuspended;
+                if (d->scrollSuspended)
+                    d->stopScrolling();
+        }
 
     if (d->accessKeysEnabled)
     {
@@ -3719,6 +3779,8 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
 
         d->scrollBarMoved = true;
         d->scrollingFromWheel = QCursor::pos();
+        if (d->smoothScrollMode != SSMDisabled)
+            d->shouldSmoothScroll = true;
         if (d->scrollingFromWheelTimerId)
             killTimer(d->scrollingFromWheelTimerId);
         d->scrollingFromWheelTimerId = startTimer(400);
@@ -3831,6 +3893,8 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
 void KHTMLView::scrollContentsBy( int dx, int dy )
 {
+    if (!dx && !dy) return;
+
     if ( !d->firstLayoutPending && !d->complete && m_part->xmlDocImpl() &&
           d->layoutSchedulingEnabled) {
         // contents scroll while we are not complete: we need to check our layout *now*
@@ -3840,6 +3904,13 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             layout();
         }
     }
+
+    if ( d->smoothScrollMode != SSMDisabled && 
+          (!d->staticWidget||d->smoothScrollMode == SSMEnabled) && d->shouldSmoothScroll ) {
+        setupSmoothScrolling(dx, dy);        
+        return;
+    }
+
     if (!d->scrollingSelf) {
         d->scrollBarMoved = true;
         d->contentsMoving = true;
@@ -3847,13 +3918,17 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         scheduleRepaint(0, 0, 0, 0);
     }
 
-    if ((dx || dy) && m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
-    d->contentsX = QApplication::isRightToLeft() ?
+    if (!d->smoothScrolling) {
+        d->contentsX = QApplication::isRightToLeft() ?
                      horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
-    d->contentsY = verticalScrollBar()->value();
-
+        d->contentsY = verticalScrollBar()->value();
+    } else {
+        d->contentsX -= dx;
+        d->contentsY -= dy;
+    }
     if (widget()->pos() != QPoint(0,0)) {
          kDebug(6000) << "Static widget wasn't positioned at (0,0). This should NOT happen. Please report this event to developers.";
          kDebug(6000) <<  kBacktrace();
@@ -3911,6 +3986,69 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         widget()->scroll(dx, dy);
     }
 }
+
+void KHTMLView::setupSmoothScrolling(int dx, int dy)
+{
+    
+    // scrolling destination
+    int full_dx = d->dx + dx;
+    int full_dy = d->dy + dy;
+
+    // scrolling speed
+    int ddx = 0;
+    int ddy = 0;
+
+    int steps = sSmoothScrollTime/sSmoothScrollTick;
+
+    ddx = (full_dx*16)/steps;
+    ddy = (full_dy*16)/steps;
+
+    // don't go under 1px/step
+    if (ddx > 0 && ddx < 16) ddx = 16;
+    if (ddy > 0 && ddy < 16) ddy = 16;
+    if (ddx < 0 && ddx > -16) ddx = -16;
+    if (ddy < 0 && ddy > -16) ddy = -16;
+
+    d->dx = full_dx;
+    d->dy = full_dy;
+    d->ddx = ddx;
+    d->ddy = ddy;
+
+    if (!d->smoothScrolling) {
+        d->startScrolling();
+        scrollTick();
+    }
+}
+
+void KHTMLView::scrollTick() {
+    if (d->dx == 0 && d->dy == 0) {
+        d->stopScrolling();
+        return;
+    }
+
+    int tddx = d->ddx + d->rdx;
+    int tddy = d->ddy + d->rdy;
+
+    int ddx = tddx / 16;
+    int ddy = tddy / 16;
+    d->rdx = tddx % 16;
+    d->rdy = tddy % 16;
+
+    if (d->dx > 0 && ddx > d->dx) ddx = d->dx;
+    else
+    if (d->dx < 0 && ddx < d->dx) ddx = d->dx;
+
+    if (d->dy > 0 && ddy > d->dy) ddy = d->dy;
+    else
+    if (d->dy < 0 && ddy < d->dy) ddy = d->dy;
+
+    d->dx -= ddx;
+    d->dy -= ddy;
+
+    d->shouldSmoothScroll = false;
+    scrollContentsBy(ddx, ddy);
+}
+
 
 void KHTMLView::addChild(QWidget * child, int x, int y)
 {

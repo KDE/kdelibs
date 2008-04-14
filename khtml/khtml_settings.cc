@@ -93,6 +93,7 @@ public:
     int m_minFontSize;
     int m_maxFormCompletionItems;
     KHTMLSettings::KAnimationAdvice m_showAnimations;
+    KHTMLSettings::KSmoothScrollingMode m_smoothScrolling;
 
     QString m_encoding;
     QString m_userSheet;
@@ -425,6 +426,17 @@ void KHTMLSettings::init( KConfig * config, bool reset )
          d->m_showAnimations = KAnimationLoopOnce;
       else
          d->m_showAnimations = KAnimationEnabled;
+    }
+
+    if ( reset || cgHtml.hasKey( "SmoothScrolling" ) )
+    {
+      QString value = cgHtml.readEntry( "SmoothScrolling", "whenefficient" ).toLower();
+      if (value == "disabled")
+         d->m_smoothScrolling = KSmoothScrollingDisabled;
+      else if (value == "whenefficient")
+         d->m_smoothScrolling = KSmoothScrollingWhenEfficient;
+      else
+         d->m_smoothScrolling = KSmoothScrollingEnabled;
     }
 
     if ( cgHtml.readEntry( "UserStyleSheetEnabled", false ) == true ) {
@@ -1011,6 +1023,11 @@ bool KHTMLSettings::unfinishedImageFrame() const
 KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations() const
 {
   return d->m_showAnimations;
+}
+
+KHTMLSettings::KSmoothScrollingMode KHTMLSettings::smoothScrolling() const
+{
+  return d->m_smoothScrolling;
 }
 
 bool KHTMLSettings::isAutoDelayedActionsEnabled() const

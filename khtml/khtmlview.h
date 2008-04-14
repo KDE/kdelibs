@@ -290,6 +290,31 @@ public:
      */
     int zoomLevel() const;
 
+    /**
+     * Smooth Scrolling Mode enumeration
+     * @li SSMDisabled smooth scrolling is disabled
+     * @li SSMWhenEfficient only use smooth scrolling on pages that do not require a full repaint of the content area when scrolling
+     * @li SSMAlways smooth scrolling is performed unconditionally
+     */
+    enum SmoothScrollingMode { SSMDisabled = 0, SSMWhenEfficient, SSMEnabled };
+
+    /**
+     * Set the smooth scrolling mode.
+     *
+     * Smooth scrolling mode is normally controlled by the configuration file's SmoothScrolling key.
+     * Using this setter will override the configuration file's settings.
+     *
+     * @since 4.1
+     */
+    void setSmoothScrollingMode( SmoothScrollingMode m );
+
+    /**
+     * Retrieve the current smooth scrolling mode
+     *
+     * @since 4.1
+     */    
+    SmoothScrollingMode smoothScrollingMode() const;
+
 public Q_SLOTS:
     /**
      * Resize the contents area
@@ -346,6 +371,8 @@ protected:
     void keyReleaseEvent ( QKeyEvent *_ke );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
+    
+    void setSmoothScrollingModeDefault( SmoothScrollingMode m );
 
 protected Q_SLOTS:
     void slotPaletteChanged();
@@ -355,6 +382,7 @@ private Q_SLOTS:
     void findTimeout();
     void accessKeysTimeout();
     void delayedInit();
+    void scrollTick();
 
     /**
     * @internal
@@ -453,6 +481,7 @@ private:
     void complete( bool pendingAction );
 
     void updateScrollBars();
+    void setupSmoothScrolling(int dx, int dy);
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findAhead(bool increase);

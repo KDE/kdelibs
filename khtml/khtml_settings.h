@@ -56,6 +56,12 @@ public:
         KAnimationEnabled
     };
 
+    enum KSmoothScrollingMode {
+        KSmoothScrollingDisabled=0,
+        KSmoothScrollingWhenEfficient,
+        KSmoothScrollingEnabled
+    };
+
     /**
      * This enum specifies the policy for window.open
      */
@@ -128,6 +134,7 @@ public:
     bool allowTabulation() const;
     bool autoSpellCheck() const;
     KAnimationAdvice showAnimations() const;
+    KSmoothScrollingMode smoothScrolling() const;
 
     // Font settings
     QString stdFontName() const;

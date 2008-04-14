@@ -423,6 +423,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // Set the meta-refresh flag...
   d->m_metaRefreshEnabled = d->m_settings->isAutoDelayedActionsEnabled ();
+  
+  KHTMLSettings::KSmoothScrollingMode ssm = d->m_settings->smoothScrolling();
+  if (ssm == KHTMLSettings::KSmoothScrollingDisabled)
+      d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMDisabled);
+  else if (ssm == KHTMLSettings::KSmoothScrollingWhenEfficient)
+      d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMWhenEfficient);
+  else
+      d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMEnabled);
 
   actionCollection()->associateWidget(view);
 
@@ -5897,6 +5905,16 @@ void KHTMLPart::reparseConfiguration()
   khtml::CSSStyleSelector::reparseConfiguration();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
+
+  if (d->m_view) {
+      KHTMLSettings::KSmoothScrollingMode ssm = d->m_settings->smoothScrolling();
+      if (ssm == KHTMLSettings::KSmoothScrollingDisabled)
+          d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMDisabled);
+      else if (ssm == KHTMLSettings::KSmoothScrollingWhenEfficient)
+          d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMWhenEfficient);
+      else
+          d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMEnabled);
+  }
 
   if (KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled())
      runAdFilter();
