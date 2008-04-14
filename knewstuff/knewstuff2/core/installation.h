@@ -73,6 +73,7 @@ public:
     void setStandardResourceDir(const QString& dir);
     void setTargetDir(const QString& dir);
     void setInstallPath(const QString& dir);
+    void setAbsoluteInstallPath(const QString& dir);
 
     void setScope(Scope scope);
     void setChecksumPolicy(Policy policy);
@@ -86,6 +87,7 @@ public:
     QString standardResourceDir() const;
     QString targetDir() const;
     QString installPath() const;
+    QString absoluteInstallPath() const;
     bool isRemote() const;
 
     Policy checksumPolicy() const;
