@@ -118,6 +118,30 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   return result;
 }
 
+#ifdef Q_WS_WIN
+// Removes file:/// or file:// or file:/ or / prefix assuming that str is (nonempty) Windows absolute path with a drive letter.
+// If there was file protocol, the path is decoded from percent encoding
+static QString removeSlashOrFilePrefix(const QString& str)
+{
+  // FIXME this should maybe be replaced with some (faster?)/nicer logic
+  const int len = str.length();
+  if (str[0]=='f') {
+    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) && str[8].isLetter() && str[9] == QLatin1Char(':') )
+      return QUrl::fromPercentEncoding( str.toLatin1() ).mid(8);
+    else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
+      return QUrl::fromPercentEncoding( str.toLatin1() ).mid(7);
+    else if ( len > 8 && str.startsWith( QLatin1String( "file:/" ) ) && str[6].isLetter() && str[7] == QLatin1Char(':') )
+      return QUrl::fromPercentEncoding( str.toLatin1() ).mid(6);
+  }
+  /* no 'else' since there can be "f:/" path */
+  if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
+    return str.mid(1);
+  else if ( len >= 2 && str[0].isLetter() && str[1] == QLatin1Char(':') )
+    return str;
+  return QString();
+}
+#endif
+
 bool KUrl::isRelativeUrl(const QString &_url)
 {
 #if 0
@@ -312,22 +336,18 @@ KUrl::KUrl( const QString &str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    int len = str.length();
-    QString pathToSet;
     kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
-    //this should maybe be replaced with some (faster?)/nicer logic
-    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) && str[8].isLetter() && str[9] == QLatin1Char(':') )
-      pathToSet = str.mid(8);
-    else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
-      pathToSet = str.mid(7);
-    else if ( len > 8 && str.startsWith( QLatin1String( "file:/" ) ) && str[6].isLetter() && str[7] == QLatin1Char(':') )
-      pathToSet = str.mid(6);
-    else if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
-      pathToSet = str.mid(1);
-    else if ( len >= 2 && str[0].isLetter() && str[1] == QLatin1Char(':') )
-      pathToSet = str;
+    QString pathToSet( removeSlashOrFilePrefix( QDir::fromNativeSeparators(str) ) );
     if ( !pathToSet.isEmpty() ) {
-      setPath( QDir::fromNativeSeparators( pathToSet ) );
+      // we have a prefix indicating this is a local URL
+      // remember the possible query using _setEncodedUrl(), then set up the correct path without query protocol part
+      int index = pathToSet.lastIndexOf('?');
+      if (index == -1)
+        setPath( QDir::fromNativeSeparators( pathToSet ) );
+      else {
+        setPath( QDir::fromNativeSeparators( pathToSet.left( index ) ) );
+        _setQuery( pathToSet.mid( index + 1 ) );
+      }
     }
 #else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
