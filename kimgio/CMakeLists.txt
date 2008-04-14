@@ -120,6 +120,7 @@ install( FILES
   bmp.desktop
   pbm.desktop
   pgm.desktop
+  pnm.desktop
   ppm.desktop
   xbm.desktop
   jpeg.desktop
