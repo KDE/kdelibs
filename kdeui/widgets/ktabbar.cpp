@@ -188,8 +188,8 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
         if ( t == currentIndex() ) {
             xoff = st->pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, &option, this );
             yoff = st->pixelMetric( QStyle::PM_TabBarTabShiftVertical, &option, this ) - 1;
-        }        
-        
+        }
+
         int xPos = 0;
         if (qobject_cast<KStyle *>(style()) && layoutDirection() == Qt::RightToLeft) {
             //KStyle paints the tab icon on the right in RTL mode
@@ -201,9 +201,9 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
             rect.moveLeft( tabRect(t).left() + xPos );
         }
         int yPos = st->pixelMetric( QStyle::PM_TabBarBaseHeight, &option, this ) - st->pixelMetric( QStyle::PM_TabBarTabVSpace, &option, this ) + 1;
-         
+
         rect.moveTop( tabRect(t).center().y() - pixmap.height() / 2 - yoff - yPos );
-        
+
 
         if ( rect.contains( event->pos() ) ) {
           if ( d->mHoverCloseButton ) {
@@ -386,6 +386,18 @@ void KTabBar::setHoverCloseButtonDelayed( bool delayed )
 bool KTabBar::hoverCloseButtonDelayed() const
 {
   return d->mHoverCloseButtonDelayed;
+}
+
+void KTabBar::setCloseButtonEnabled( bool enable )
+{
+    // TODO
+    Q_UNUSED( enable );
+}
+
+bool KTabBar::isCloseButtonEnabled() const
+{
+    // TODO
+    return false;
 }
 
 void KTabBar::tabLayoutChange()

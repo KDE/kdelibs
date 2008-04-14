@@ -62,17 +62,35 @@ class KDEUI_EXPORT KTabBar: public QTabBar
      * The signal KTabBar::closeRequest() is emitted, if the
      * close button has been clicked. Note that the tab must have
      * an icon to use this feature.
+     *
+     * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
      */
     void setHoverCloseButton( bool );
+
+    /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
     bool hoverCloseButton() const;
 
     /**
      * If enabled, the close button cannot get clicked until a
      * minor delay has been passed. This prevents that user
      * accidentally closes a tab.
+     *
+     * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
      */
     void setHoverCloseButtonDelayed( bool );
+
+    /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
     bool hoverCloseButtonDelayed() const;
+
+    /**
+     * If enabled, a close button is available for each tab. The
+     * signal KTabBar::closeRequest() is emitted, if the close button
+     * has been clicked.
+     *
+     * @since 4.1
+     */
+    void setCloseButtonEnabled( bool );
+    bool isCloseButtonEnabled() const;
 
     /**
      * Sets the 'activate previous tab on close' feature enabled
