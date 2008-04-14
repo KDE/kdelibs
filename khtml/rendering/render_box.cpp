@@ -1185,16 +1185,16 @@ int RenderBox::calcHeightUsing(const Length& h)
     return height;
 }
 
-int RenderBox::calcImplicitHeight() const {
+int RenderBox::calcImplicitContentHeight() const {
     assert(hasImplicitHeight());
 
     RenderBlock* cb = containingBlock();
     // padding-box height
-    int ch = cb->height() - cb->borderTop() + cb->borderBottom();
+    int ch = cb->height() - cb->borderTop() - cb->borderBottom();
     int top = style()->top().width(ch);
     int bottom = style()->bottom().width(ch);
 
-    return ch - top - bottom;
+    return ch - top - bottom - borderTop() - borderBottom() - paddingTop() - paddingBottom();;
 }
 
 int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) const
@@ -1239,12 +1239,21 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
                               borderTop() + borderBottom() +
                               paddingTop() + paddingBottom());
     }
+    else if (isPositioned()) {
+        // "10.5 - Note that the height of the containing block of an absolutely positioned element is independent
+        //  of the size of the element itself, and thus a percentage height on such an element can always be resolved."
+        //
+        // take the used height - at the padding edge since we are positioned (10.1)
+        result = cb->height() - cb->borderTop() - cb->borderBottom();
+    }
     else if (cb->isAnonymousBlock() || treatAsReplaced && style()->htmlHacks()) {
         // IE quirk.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
+        if (result != -1)
+            result = cb->calcContentHeight(result);
     }
     else if (cb->hasImplicitHeight()) {
-        result = cb->calcImplicitHeight();
+        result = cb->calcImplicitContentHeight();
     }
 
     if (result != -1) {
@@ -1368,7 +1377,7 @@ int RenderBox::availableHeightUsing(const Length& h) const
 
     // Check for implicit height
     if (hasImplicitHeight())
-        return calcImplicitHeight();
+        return calcImplicitContentHeight();
 
     return containingBlock()->availableHeight();
 }
