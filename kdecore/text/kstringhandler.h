@@ -211,6 +211,8 @@ namespace KStringHandler
       @param a first string to compare
       @param b second string to compare
       @param caseSensitivity whether to use case sensitive compare or not
+
+      @since 4.1
      */
     KDECORE_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
 }
