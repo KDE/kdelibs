@@ -3,8 +3,7 @@
 This library provides an extensible interpreter for ECMAScript - a
 dynamic scripting language also known as JavaScript or JScript. Within
 the set of KDE libraries is used in the HTML component of Konqueror
-and projects like the text editor Kate and the application scripting
-solutions KJSEmbed and Kross.
+and the application scripting solutions KJSEmbed and Kross.
 
 KJS is made up of an internal core library and a public kjsapi library
 that provides a stable and easy-to-use interface for developers
