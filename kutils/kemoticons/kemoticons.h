@@ -47,6 +47,7 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
 
         KEmoticonsTheme *getTheme();
         KEmoticonsTheme *getTheme(const QString &name);
+        QString getCurrentThemeName();
 
         QStringList getThemeList();
 

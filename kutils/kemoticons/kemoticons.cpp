@@ -92,6 +92,13 @@ KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
     return 0;
 }
 
+QString KEmoticons::getCurrentThemeName()
+{
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "General");
+    QString name = config.readEntry("emoticonsTheme", "kde4");
+    return name;
+}
+
 QStringList KEmoticons::getThemeList()
 {
     QStringList ls;
@@ -113,8 +120,9 @@ void KEmoticons::setTheme(KEmoticonsTheme *theme)
 
 void KEmoticons::setTheme(const QString &theme)
 {
-    KConfigGroup config(KGlobal::config(), "General");
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "General");
     config.writeEntry("emoticonsTheme", theme);
+    config.sync();
 }
 
 KEmoticonsTheme *KEmoticons::newTheme(const QString &name, const KService::Ptr &service)
