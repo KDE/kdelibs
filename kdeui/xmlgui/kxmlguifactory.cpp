@@ -552,7 +552,7 @@ int KXMLGUIFactory::configureShortcuts(bool letterCutsOk , bool bSaveSettings )
          qobject_cast<QWidget*>(parent()));
 	foreach (KXMLGUIClient *client, d->m_clients)
 	{
-		if(!client->xmlFile().isEmpty())
+		if(client && !client->xmlFile().isEmpty())
 			dlg.addCollection( client->actionCollection() );
 	}
 	return dlg.configure(bSaveSettings);
