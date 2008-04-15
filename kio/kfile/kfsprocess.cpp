@@ -250,7 +250,7 @@ void KfsProcess::detach()
 
 KfsProcess &KfsProcess::operator<<(const char* arg)
 {
-  arguments.append(arg);
+  arguments.append(QByteArray(arg));
   return *this;
 }
 

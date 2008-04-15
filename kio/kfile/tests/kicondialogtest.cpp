@@ -5,7 +5,7 @@
 int main( int argc, char **argv )
 {
     QApplication app(argc, argv);
-    KComponentData componentData("kicondialogtest");
+    KComponentData componentData(QByteArray("kicondialogtest"));
 
 //    KIconDialog::getIcon();
 
