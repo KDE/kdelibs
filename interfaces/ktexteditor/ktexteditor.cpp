@@ -53,6 +53,7 @@
 #include "documentadaptor_p.moc"
 
 
+#include <QtCore/QCoreApplication>
 //#include <kaction.h>
 #include <kparts/factory.h>
 #include <kpluginfactory.h>
