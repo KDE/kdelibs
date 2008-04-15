@@ -34,6 +34,8 @@ class XmppEmoticons : public KEmoticonsTheme
         bool removeEmoticon(const QString &emo);
         bool addEmoticon(const QString &emo, const QString &text, bool copy);
         void save();
+        
+        void createNew();
     
     private:
         QDomDocument m_themeXml;

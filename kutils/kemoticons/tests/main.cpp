@@ -37,6 +37,11 @@ int main(int argc, char **argv)
     KEmoticonsTheme *t = e.getTheme(tl.at(0));
     kDebug() << "theme:" << t->themeName();
     
+    QList<KService::Ptr> srv = e.loadedServices();
+    foreach (KService::Ptr service, srv) {
+        kDebug()<<"name:"<<service->name();
+    }
+    
     delete t;
     
     return 0;

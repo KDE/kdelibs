@@ -57,6 +57,8 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         void setThemeName(const QString &name);
 
         QMap<QString, QStringList> themeMap();
+        
+        virtual void createNew();
   
     protected:
         KEmoticonsThemePrivate * const d;

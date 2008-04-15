@@ -193,4 +193,24 @@ bool XmppEmoticons::loadTheme(const QString &path)
     return true;
 }
 
+void XmppEmoticons::createNew()
+{
+    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
+    
+    QFile fp(path + '/' + "icondef.xml");
+    
+    if (!fp.open( QIODevice::WriteOnly)) {
+        kWarning() << fp.fileName() << "can't open WriteOnly!";
+        return;
+    }
+    
+    QDomDocument doc;
+    doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\""));
+    doc.appendChild(doc.createElement("icondef"));
+    
+    QTextStream emoStream(&fp);
+    emoStream << doc.toString(4);
+    fp.close();
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

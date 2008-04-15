@@ -84,4 +84,8 @@ QMap<QString, QStringList> KEmoticonsTheme::themeMap()
     return d->m_themeMap;
 }
 
+void KEmoticonsTheme::createNew()
+{
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

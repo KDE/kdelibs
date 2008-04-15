@@ -121,6 +121,9 @@ KEmoticonsTheme *KEmoticons::newTheme(const QString &name, const KService::Ptr &
 {
     KEmoticonsTheme *theme = d->loadThemeLibrary(service);
     theme->setThemeName(name);
+    
+    theme->createNew();
+    
     return theme;
 }
 
