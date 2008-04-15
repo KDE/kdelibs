@@ -1,8 +1,8 @@
 /*
  * kdiskfreespace.h
  *
- * Copyright (c) 1999 Michael Kropfberger <michael.kropfberger@gmx.net>
  * Copyright 2007 David Faure <faure@kde.org>
+ * Copyright 2008 Dirk Mueller <mueller@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,9 @@ class KDiskFreeSpacePrivate;
 class KIO_EXPORT KDiskFreeSpace : public QObject
 {
     Q_OBJECT
+
 public:
+
     /**
      * Constructor
      */
@@ -91,7 +93,7 @@ private:
     class Private;
     Private * const d;
 
-    Q_PRIVATE_SLOT( d, void _k_dfDone() )
+    Q_PRIVATE_SLOT( d, bool _k_calculateFreeSpace() )
 };
 
 #endif
