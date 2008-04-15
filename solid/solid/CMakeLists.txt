@@ -152,6 +152,7 @@ if(WIN32)
    backends/wmi/wmiopticaldisc.cpp
    backends/wmi/wmiportablemediaplayer.cpp
    backends/wmi/wmiprocessor.cpp
+   backends/wmi/wmiquery.cpp
    backends/wmi/wmistorageaccess.cpp
    backends/wmi/wmistorage.cpp
    backends/wmi/wmivideo.cpp

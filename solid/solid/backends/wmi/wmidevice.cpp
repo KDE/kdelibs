@@ -17,20 +17,6 @@
 
 */
 
-#ifdef _DEBUG
-# pragma comment(lib, "comsuppwd.lib")
-#else
-# pragma comment(lib, "comsuppw.lib")
-#endif
-# pragma comment(lib, "wbemuuid.lib")
-
-#define _WIN32_DCOM
-#include <iostream>
-#include <comdef.h>
-#include <Wbemidl.h>
-
-# pragma comment(lib, "wbemuuid.lib")
-
 #include <QtCore/QDebug>
 
 #include <solid/genericinterface.h>
@@ -54,6 +40,21 @@
 #include "wmiaudiointerface.h"
 #include "wmidvbinterface.h"
 #include "wmivideo.h"
+#include "wmiquery.h"
+
+#ifdef _DEBUG
+# pragma comment(lib, "comsuppwd.lib")
+#else
+# pragma comment(lib, "comsuppw.lib")
+#endif
+# pragma comment(lib, "wbemuuid.lib")
+
+#define _WIN32_DCOM
+#include <iostream>
+#include <comdef.h>
+#include <Wbemidl.h>
+
+# pragma comment(lib, "wbemuuid.lib")
 
 using namespace Solid::Backends::Wmi;
 
@@ -62,138 +63,32 @@ class Solid::Backends::Wmi::WmiDevicePrivate
 public:
     WmiDevicePrivate(const QString &udi)
         : parent(0)
-        , m_failed(false)
-        , pLoc(0)
-        , pSvc(0)
-        , pEnumerator(NULL)
+        , m_query()
         , m_udi(udi)
         , m_wmiType()
         , m_solidType( Solid::DeviceInterface::Unknown )
-    {
-    
-        //does this all look hacky?  yes...but it came straight from the MSDN example...
-    
-        HRESULT hres;
-
-        hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
-        if( FAILED(hres) )
-        {
-            qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
-            m_failed = true;
-        }
-        if( !m_failed )
-        {
-            hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
-                        RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
-                             
-            if( FAILED(hres) )
-            {
-                qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
-                CoUninitialize();
-                m_failed = true;
-            }
-        }
-        if( !m_failed )
-        {
-            hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &pLoc );
-            if (FAILED(hres))
-            {
-                qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
-                CoUninitialize();
-                m_failed = true;
-            }
-        }
-        if( !m_failed )
-        {
-            hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
-            if( FAILED(hres) )
-            {
-                qCritical() << "Could not connect. Error code = " << hres << endl;
-                pLoc->Release();
-                CoUninitialize();
-                m_failed = true;
-            }
-            else
-                qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
-        }
-        
-        if( !m_failed )
-        {
-            hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
-                        RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
-            if( FAILED(hres) )
-            {
-                qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
-                pSvc->Release();
-                pLoc->Release();     
-                CoUninitialize();
-                m_failed = true;
-            }
-        }
+    {    
     }
 
     ~WmiDevicePrivate()
     {
-        pSvc->Release();
-        pLoc->Release();     
-        CoUninitialize();
     }
     
-    
-    QList<IWbemClassObject*> sendQuery( const QString &wql )
-    {
-        QList<IWbemClassObject*> retList;
-        
-        HRESULT hres;
-        hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
-                    WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
-    
-        if( FAILED(hres) )
-        {
-            qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
-        }
-        else
-        { 
-            ULONG uReturn = 0;
-       
-            while( pEnumerator )
-            {
-                IWbemClassObject *pclsObj;
-                hres = pEnumerator->Next( WBEM_INFINITE, 1, &pclsObj, &uReturn );
-
-                if( !uReturn )
-                    break;
-                
-                retList.append( pclsObj );
-                
-                //VARIANT vtProp;
-
-                // Get the value of the Name property
-                //hres = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-                //wcout << "Process Name : " << vtProp.bstrVal << endl;
-                //VariantClear(&vtProp);
-            }
-        } 
-        return retList;
-    }
-   
     void discoverType()
     {
     }
    
-    bool isLegit() { return !m_failed; }
-    
     const QString udi() const { return m_udi; }
     
     const QString wmiType() const { return m_wmiType; }
     
     Solid::DeviceInterface::Type type() const { return m_solidType; }
     
+    QList<IWbemClassObject*> sendQuery( const QString &wql )
+        { return m_query.sendQuery( wql ); }
+    
     WmiDevice *parent;
-    bool m_failed;
-    IWbemLocator *pLoc;
-    IWbemServices *pSvc;
-    IEnumWbemClassObject* pEnumerator;
+    WmiQuery m_query;
     QString m_udi;
     QString m_wmiType;
     Solid::DeviceInterface::Type m_solidType;

@@ -17,11 +17,12 @@
 
 */
 
+#include <QtCore/QDebug>
+
 #include "wmimanager.h"
 #include "wmidevice.h"
 #include "wmideviceinterface.h"
-
-#include <QtCore/QDebug>
+#include "wmiquery.h"
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -44,123 +45,18 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 {
 public:
     WmiManagerPrivate()
-        : failed(false)
-        , pLoc(0)
-        , pSvc(0)
-        , pEnumerator(NULL)
-    {
-    
-        //does this all look hacky?  yes...but it came straight from the MSDN example...
-    
-        HRESULT hres;
+        : m_query()
+    {}
 
-        hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
-        if( FAILED(hres) )
-        {
-            qCritical() << "Failed to initialize COM library. " << "Error code = " << hres << endl;
-            failed = true;
-        }
-        if( !failed )
-        {
-            hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
-                        RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
-                             
-            if( FAILED(hres) )
-            {
-                qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
-                CoUninitialize();
-                failed = true;
-            }
-        }
-        if( !failed )
-        {
-            hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &pLoc );
-            if (FAILED(hres))
-            {
-                qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
-                CoUninitialize();
-                failed = true;
-            }
-        }
-        if( !failed )
-        {
-            hres = pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );                              
-            if( FAILED(hres) )
-            {
-                qCritical() << "Could not connect. Error code = " << hres << endl;
-                pLoc->Release();
-                CoUninitialize();
-                failed = true;
-            }
-            else
-                qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
-        }
-        
-        if( !failed )
-        {
-            hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
-                        RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
-            if( FAILED(hres) )
-            {
-                qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
-                pSvc->Release();
-                pLoc->Release();     
-                CoUninitialize();
-                failed = true;
-            }
-        }
-    }
-
-    ~WmiManagerPrivate()
-    {
-        pSvc->Release();
-        pLoc->Release();     
-        CoUninitialize();
-    }
+    ~WmiManagerPrivate() {}
     
     
     QList<IWbemClassObject*> sendQuery( const QString &wql )
     {
-        QList<IWbemClassObject*> retList;
-        
-        HRESULT hres;
-        hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
-                    WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
-    
-        if( FAILED(hres) )
-        {
-            qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
-        }
-        else
-        { 
-            ULONG uReturn = 0;
-       
-            while( pEnumerator )
-            {
-                IWbemClassObject *pclsObj;
-                hres = pEnumerator->Next( WBEM_INFINITE, 1, &pclsObj, &uReturn );
-
-                if( !uReturn )
-                    break;
-                
-                retList.append( pclsObj );
-                
-                //VARIANT vtProp;
-
-                // Get the value of the Name property
-                //hres = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-                //wcout << "Process Name : " << vtProp.bstrVal << endl;
-                //VariantClear(&vtProp);
-            }
-        } 
+        return m_query.sendQuery( wql );
     }
-   
-    bool isLegit() { return !failed; }
     
-    bool failed;
-    IWbemLocator *pLoc;
-    IWbemServices *pSvc;
-    IEnumWbemClassObject* pEnumerator;
+    WmiQuery m_query;
 };
 
 
