@@ -454,6 +454,7 @@ NEPOMUK_RESOURCECOMMENT
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nepomukmainmodel.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/resourcefiltermodel.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/nie.h
+// DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ontology/entitymanager.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/nepomukmassupdatejob.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kautoscrollarea.h
 // DOXYGEN_SET_EXCLUDE += @topdir@/nepomuk/core/ui/kblocklayout.h
