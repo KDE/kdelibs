@@ -892,6 +892,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     bool absolutePath = false;
     bool favIconOverlay = false;
 
+    if (size < 0)
+        return pix;
+
     // Special case for absolute path icons.
     if (name.startsWith("favicons/"))
     {
