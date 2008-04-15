@@ -21,6 +21,12 @@ configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-proce
 
 ########### next target ###############
 
+file(MAKE_DIRECTORY 
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/fakehw
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/hal
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
+)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
 
 set(solid_LIB_SRCS 
