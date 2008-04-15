@@ -24,4 +24,7 @@ Harri Porten \<porten@kde.org\>
 
 // DOXYGEN_REFERENCES = kdecore
 // DOXYGEN_SET_PROJECT_NAME = KJS
+// DOXYGEN_SET_EXCLUDE_PATTERNS += */wtf/* 
+// DOXYGEN_SET_EXCLUDE_PATTERNS += */kjs/*.cpp */kjs/*.h
+
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
