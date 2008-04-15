@@ -30,8 +30,9 @@
 #include <kio/global.h>
 #include <config-kfile.h>
 
-struct KDiskFreeSpace::Private
+class KDiskFreeSpace::Private
 {
+public:
     Private(KDiskFreeSpace *parent)
         : m_parent(parent)
     {}
@@ -88,7 +89,7 @@ bool KDiskFreeSpace::Private::_k_calculateFreeSpace()
         availUser = availUser / 1024;
         total = total / 1024;
         avail = avail / 1024;
-        emit foundMountPoint( mountPoint, total, total-avail, avail );
+        emit m_parent->foundMountPoint( mountPoint, total, total-avail, avail );
         bRet = true;
     }
 #else
