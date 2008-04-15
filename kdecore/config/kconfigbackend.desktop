@@ -17,6 +17,7 @@ Comment[pt]=Armazenamento da infra-estrutura do KConfig
 Comment[pt_BR]=Infra-estrutura de armazenamento para o KConfig
 Comment[sr]=Позадинско складиште за К‑конфиг
 Comment[sr@latin]=Pozadinsko skladište za KConfig
+Comment[sv]=Lagringsgränssnitt för KConfig
 Comment[th]=พื้นที่จัดเก็บข้อมูลเบื้องหลังสำหรับ KConfig
 Comment[uk]=Засіб збереження для KConfig
 Comment[x-test]=xxBackend storage for KConfigxx
