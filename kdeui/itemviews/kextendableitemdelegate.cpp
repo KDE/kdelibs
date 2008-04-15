@@ -172,10 +172,12 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
 	QStyleOptionViewItemV4 indicatorOption(option);
 	initStyleOption(&indicatorOption, index);
+	indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
 	QStyleOptionViewItemV4 itemOption(option);
 	initStyleOption(&itemOption, index);
+	itemOption.viewItemPosition = QStyleOptionViewItemV4::End;
 
-	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
+	const bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
 
 	if (showExtensionIndicator) {
 		if (QApplication::isRightToLeft()) {
