@@ -24,6 +24,52 @@
 #include <kptydevice.h>
 #include <qtest_kde.h>
 
+void KPtyProcessTest::test_pty_fd()
+{
+	// start a first process
+	KPtyProcess p;
+    p.setProgram("/bin/cat"); 
+	p.setPtyChannels(KPtyProcess::AllChannels);
+	p.pty()->setEcho(false);
+	p.start();
+
+	// start a second process using the first one's fd
+	int fd = p.pty()->masterFd();
+
+	KPtyProcess p2(fd);
+    p2.setProgram("/usr/bin/test");
+	p2.setPtyChannels(KPtyProcess::AllChannels);
+	p2.pty()->setEcho(false);
+	p2.start();
+
+	// write to the second process' pty
+	p2.pty()->write("hello from process 2\n");
+    QVERIFY( p2.pty()->waitForBytesWritten(1000) );
+
+ 	// read the result back from the first process' pty
+	QVERIFY( p.pty()->waitForReadyRead(1000) );
+	QString output = p.pty()->readAll();
+
+	// check the output
+    QCOMPARE(output, QLatin1String("hello from process 2\r\n"));
+
+	// write to the first process' pty
+	p.pty()->write("hi from process 1\n");
+	QVERIFY(p.pty()->waitForBytesWritten(1000));
+
+	// read the result back from the second process' pty
+	QVERIFY( p2.pty()->waitForReadyRead(1000) );
+	output = p2.pty()->readAll();
+
+	// check the output
+    QCOMPARE(output, QLatin1String("hi from process 1\r\n"));
+
+	// cleanup
+	p.terminate();
+	p2.terminate();
+	p.waitForFinished(1000);
+	p2.waitForFinished(1000);
+}
 void KPtyProcessTest::test_pty_basic()
 {
     KPtyProcess p;

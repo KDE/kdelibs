@@ -203,7 +203,6 @@ if (UNIX)
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
 
-    check_function_exists(ptsname    HAVE_PTSNAME)
     check_function_exists(revoke     HAVE_REVOKE)
     check_function_exists(_getpty    HAVE__GETPTY)
     check_function_exists(getpt      HAVE_GETPT)
@@ -211,6 +210,8 @@ if (UNIX)
     check_function_exists(unlockpt   HAVE_UNLOCKPT)
     check_function_exists(posix_openpt HAVE_POSIX_OPENPT)
   endif (openpty_in_libc OR openpty_in_libutil)
+
+  check_function_exists(ptsname    HAVE_PTSNAME)
 endif (UNIX)
 
 # it seems this isn't used anywhere

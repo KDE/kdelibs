@@ -247,7 +247,8 @@ static void qt_ignore_sigpipe()
 struct KPtyDevicePrivate : public KPtyPrivate {
     Q_DECLARE_PUBLIC(KPtyDevice)
 
-    KPtyDevicePrivate() :
+    KPtyDevicePrivate(KPty* parent) :
+		KPtyPrivate(parent), 
         emittedReadyRead(false), emittedBytesWritten(false),
         readNotifier(0), writeNotifier(0)
     {
@@ -257,6 +258,7 @@ struct KPtyDevicePrivate : public KPtyPrivate {
     bool _k_canWrite();
 
     bool doWait(int msecs, bool reading);
+    void finishOpen(QIODevice::OpenMode mode);
 
     bool emittedReadyRead;
     bool emittedBytesWritten;
@@ -418,13 +420,26 @@ bool KPtyDevicePrivate::doWait(int msecs, bool reading)
     return false;
 }
 
+void KPtyDevicePrivate::finishOpen(QIODevice::OpenMode mode)
+{
+    Q_Q(KPtyDevice);
+
+    q->QIODevice::open(mode);
+    readBuffer.clear();
+    readNotifier = new QSocketNotifier(q->masterFd(), QSocketNotifier::Read, q);
+    writeNotifier = new QSocketNotifier(q->masterFd(), QSocketNotifier::Write, q);
+    QObject::connect(readNotifier, SIGNAL(activated(int)), q, SLOT(_k_canRead()));
+    QObject::connect(writeNotifier, SIGNAL(activated(int)), q, SLOT(_k_canWrite()));
+    readNotifier->setEnabled(true);
+}
+
 /////////////////////////////
 // public member functions //
 /////////////////////////////
 
 KPtyDevice::KPtyDevice(QObject *parent) :
     QIODevice(parent),
-    KPty(new KPtyDevicePrivate)
+    KPty(new KPtyDevicePrivate(this))
 {
 }
 
@@ -445,13 +460,21 @@ bool KPtyDevice::open(OpenMode mode)
         return false;
     }
 
-    QIODevice::open(mode);
-    d->readBuffer.clear();
-    d->readNotifier = new QSocketNotifier(masterFd(), QSocketNotifier::Read, this);
-    d->writeNotifier = new QSocketNotifier(masterFd(), QSocketNotifier::Write, this);
-    connect(d->readNotifier, SIGNAL(activated(int)), SLOT(_k_canRead()));
-    connect(d->writeNotifier, SIGNAL(activated(int)), SLOT(_k_canWrite()));
-    d->readNotifier->setEnabled(true);
+    d->finishOpen(mode);
+
+    return true;
+}
+
+bool KPtyDevice::open(int fd, OpenMode mode)
+{
+    Q_D(KPtyDevice);
+
+    if (!KPty::open(fd)) {
+        setErrorString(I18N_NOOP("Error opening PTY"));
+        return false;
+    }
+
+    d->finishOpen(mode);
 
     return true;
 }

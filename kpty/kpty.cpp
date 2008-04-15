@@ -147,8 +147,8 @@ extern "C" {
 // private data //
 //////////////////
 
-KPtyPrivate::KPtyPrivate() :
-    masterFd(-1), slaveFd(-1)
+KPtyPrivate::KPtyPrivate(KPty* parent) :
+    masterFd(-1), slaveFd(-1), q_ptr(parent), ownMaster(true)
 {
 }
 
@@ -165,9 +165,8 @@ bool KPtyPrivate::chownpty(bool grant)
 /////////////////////////////
 
 KPty::KPty() :
-    d_ptr(new KPtyPrivate)
+    d_ptr(new KPtyPrivate(this))
 {
-    d_ptr->q_ptr = this;
 }
 
 KPty::KPty(KPtyPrivate *d) :
@@ -188,6 +187,8 @@ bool KPty::open()
 
   if (d->masterFd >= 0)
     return true;
+
+  d->ownMaster = true;
 
   QByteArray ptyName;
 
@@ -353,6 +354,49 @@ bool KPty::open()
   return true;
 }
 
+bool KPty::open(int fd)
+{
+#if !defined(HAVE_PTSNAME) && !defined(TIOCGPTN)
+    kWarning(175) << "Unsupported attempt to open Pty with fd" << fd;
+    return false;
+#else
+    Q_D(KPty);
+
+    if (d->masterFd >= 0) {
+        kWarning(175) << "Attempting to open an already open pty";
+        return false;
+    }
+
+    d->ownMaster = false;
+
+# ifdef HAVE_PTSNAME
+    char *ptsn = ptsname(fd);
+    if (ptsn) {
+        d->ttyName = ptsn;
+# else
+    int ptyno;
+    if (!ioctl(fd, TIOCGPTN, &ptyno)) {
+        char buf[32];
+        sprintf(buf, "/dev/pts/%d", ptyno);
+        d->ttyName = buf;
+# endif
+    } else {
+        kWarning(175) << "Failed to determine pty slave device for fd" << fd;
+        return false;
+    }
+
+    d->masterFd = fd;
+    
+	if (!openSlave())
+	{
+		d->masterFd = -1;
+        return false;
+	}
+
+    return true;
+#endif
+}
+
 void KPty::closeSlave()
 {
     Q_D(KPty);
@@ -384,28 +428,30 @@ bool KPty::openSlave()
 
 void KPty::close()
 {
-   Q_D(KPty);
+    Q_D(KPty);
 
-   if (d->masterFd < 0)
-      return;
-   closeSlave();
+    if (d->masterFd < 0)
+        return;
+    closeSlave();
+    if (d->ownMaster) {
 #ifndef HAVE_OPENPTY
-   // don't bother resetting unix98 pty, it will go away after closing master anyway.
-   if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
-      if (!geteuid()) {
-         struct stat st;
-         if (!stat(d->ttyName.data(), &st)) {
-            chown(d->ttyName.data(), 0, st.st_gid == getgid() ? 0 : -1);
-            chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
-         }
-      } else {
-         fcntl(d->masterFd, F_SETFD, 0);
-         d->chownpty(false);
-      }
-   }
+        // don't bother resetting unix98 pty, it will go away after closing master anyway.
+        if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
+            if (!geteuid()) {
+                struct stat st;
+                if (!stat(d->ttyName.data(), &st)) {
+                    chown(d->ttyName.data(), 0, st.st_gid == getgid() ? 0 : -1);
+                    chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+                }
+            } else {
+                fcntl(d->masterFd, F_SETFD, 0);
+                d->chownpty(false);
+            }
+        }
 #endif
-   ::close(d->masterFd);
-   d->masterFd = -1;
+        ::close(d->masterFd);
+    }
+    d->masterFd = -1;
 }
 
 void KPty::setCTty()

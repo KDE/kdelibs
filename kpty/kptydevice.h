@@ -62,6 +62,16 @@ public:
     virtual bool open(OpenMode mode = ReadWrite | Unbuffered);
 
     /**
+     * Open using an existing pty master. The ownership of the fd
+     * remains with the caller, i.e., close() will not close the fd.
+     *
+     * @param fd an open pty master file descriptor.
+     * @param mode the device mode to open the pty with.
+     * @return true if a pty pair was successfully opened
+     */
+    bool open(int fd, OpenMode mode = ReadWrite | Unbuffered);
+
+    /**
      * Close the pty master/slave pair.
      */
     virtual void close();

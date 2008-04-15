@@ -54,6 +54,15 @@ KPtyProcess::KPtyProcess(QObject *parent) :
     d->pty->open();
 }
 
+KPtyProcess::KPtyProcess(int ptyMasterFd, QObject *parent) :
+    KProcess(new KPtyProcessPrivate, parent)
+{
+    Q_D(KPtyProcess);
+
+    d->pty = new KPtyDevice(this);
+    d->pty->open(ptyMasterFd);
+}
+
 KPtyProcess::~KPtyProcess()
 {
     Q_D(KPtyProcess);

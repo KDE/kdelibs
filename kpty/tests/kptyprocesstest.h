@@ -34,7 +34,7 @@ private Q_SLOTS:
     void test_pty_basic();
     void test_pty_signals();
     void test_ctty();
-
+	void test_pty_fd();
 
 // for pty_signals
 public Q_SLOTS:

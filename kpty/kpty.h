@@ -56,6 +56,16 @@ public:
   bool open();
 
   /**
+   * Open using an existing pty master.
+   *
+   * @param fd an open pty master file descriptor.
+   *   The ownership of the fd remains with the caller;
+   *   it will not be automatically closed at any point.
+   * @return true if a pty pair was successfully opened
+   */
+  bool open(int fd);
+
+  /**
    * Close the pty master/slave pair.
    */
   void close();

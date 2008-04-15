@@ -68,6 +68,15 @@ public:
     explicit KPtyProcess(QObject *parent = 0);
 
     /**
+     * Construct a process using an open pty master.
+     *
+     * @param ptyMasterFd an open pty master file descriptor.
+     *   The process does not take ownership of the descriptor;
+     *   it will not be automatically closed at any point.
+     */
+    KPtyProcess(int ptyMasterFd, QObject *parent = 0);
+
+    /**
      * Destructor
      */
     virtual ~KPtyProcess();

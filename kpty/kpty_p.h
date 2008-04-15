@@ -30,7 +30,7 @@
 struct KPtyPrivate {
     Q_DECLARE_PUBLIC(KPty)
 
-    KPtyPrivate();
+    KPtyPrivate(KPty* parent);
 #ifndef HAVE_OPENPTY
     bool chownpty(bool grant);
 #endif
@@ -41,6 +41,8 @@ struct KPtyPrivate {
     QByteArray ttyName;
 
     KPty *q_ptr;
+    
+	bool ownMaster:1;
 };
 
 #endif
