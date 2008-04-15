@@ -120,7 +120,7 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
     if ( isCloseButtonEnabled() ) {
       const QPoint pos = event->pos();
       const int tabIndex = tabAt( pos );
-      if ((tabIndex >= 0) && closeButtonRect( tabIndex ).contains( pos )) {
+      if (closeButtonRect( tabIndex ).contains( pos )) {
         // the close button is clicked - prevent that the tab gets activated
         return;
       }
@@ -140,6 +140,26 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
 
 void KTabBar::mouseMoveEvent( QMouseEvent *event )
 {
+  if ( isCloseButtonEnabled() ) {
+    if ( d->mHoveredCloseIconIndex >= 0) {
+      // reset previously hovered close button
+      update( closeButtonRect( d->mHoveredCloseIconIndex ));
+      d->mHoveredCloseIconIndex = -1;
+    }
+
+    const QPoint pos = event->pos();
+    const int tabCount = count();
+    for ( int i = 0; i < tabCount; ++i ) {
+      const QRect rect = closeButtonRect( i );
+      if (rect.contains( pos )) {
+        // update currently hovered close button
+        d->mHoveredCloseIconIndex = i;
+        update( rect );
+        break;
+      }
+    }
+  }
+
   if ( event->buttons() == Qt::LeftButton ) {
     int tab = selectTab( event->pos() );
     if ( d->mDragSwitchTab && tab != d->mDragSwitchTab ) {
@@ -186,26 +206,6 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
     }
   }
 
-  if ( isCloseButtonEnabled() ) {
-    if ( d->mHoveredCloseIconIndex >= 0) {
-      // reset previously hovered close button
-      update( closeButtonRect( d->mHoveredCloseIconIndex ));
-      d->mHoveredCloseIconIndex = -1;
-    }
-
-    const QPoint pos = event->pos();
-    const int tabCount = count();
-    for ( int i = 0; i < tabCount; ++i ) {
-      const QRect rect = closeButtonRect( i );
-      if (rect.contains( pos )) {
-        // update currently hovered close button
-        d->mHoveredCloseIconIndex = i;
-        update( rect );
-        break;
-      }
-    }
-  }
-
   QTabBar::mouseMoveEvent( event );
 }
 
@@ -236,9 +236,11 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
   switch ( event->button() ) {
   case Qt::LeftButton:
     if ( isCloseButtonEnabled() ) {
+      update(closeButtonRect( d->mHoveredCloseIconIndex ));
+
       const QPoint pos = event->pos();
       const int tabIndex = tabAt( pos );
-      if ((tabIndex >= 0) && closeButtonRect( tabIndex ).contains( pos )) {
+      if (closeButtonRect( tabIndex ).contains( pos )) {
         d->mHoveredCloseIconIndex = -1;
         emit closeRequest( tabIndex );
       }
@@ -470,6 +472,11 @@ int KTabBar::selectTab( const QPoint &pos ) const
 
 QPoint KTabBar::closeButtonPos( int tabIndex ) const
 {
+  QPoint buttonPos;
+  if ( tabIndex < 0 ) {
+    return buttonPos;
+  }
+
   int availableHeight = height();
   if ( tabIndex == currentIndex() ) {
     QStyleOption option;
@@ -480,7 +487,6 @@ QPoint KTabBar::closeButtonPos( int tabIndex ) const
   const QRect tabBounds = tabRect( tabIndex );
   const int xInc = (height() - KIconLoader::SizeSmall) / 2;
 
-  QPoint buttonPos;
   if ( layoutDirection() == Qt::RightToLeft ) {
     buttonPos = tabBounds.topLeft();
     buttonPos.rx() += xInc;
@@ -495,8 +501,12 @@ QPoint KTabBar::closeButtonPos( int tabIndex ) const
 
 QRect KTabBar::closeButtonRect( int tabIndex ) const
 {
-  return QRect( closeButtonPos( tabIndex ),
-                QSize( KIconLoader::SizeSmall, KIconLoader::SizeSmall ));
+  QRect rect;
+  if ( tabIndex >= 0 ) {
+    rect.setTopLeft(closeButtonPos( tabIndex ));
+    rect.setSize(QSize( KIconLoader::SizeSmall, KIconLoader::SizeSmall));
+  }
+  return rect;
 }
 
 #include "ktabbar.moc"
