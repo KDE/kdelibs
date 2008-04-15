@@ -9,3 +9,4 @@ KDE4_NO_ENABLE_FINAL(solid)
 
 add_subdirectory( solid )
 add_subdirectory( tests )
+add_subdirectory( examples )
