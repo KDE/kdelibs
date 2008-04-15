@@ -138,7 +138,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
 
         while( it.next() ) {
             Statement s = *it;
-            Resource res( s.subject().toString() );
+            Resource res( s.subject().uri() );
             if( !l.contains( res ) )
                 l.append( res );
         }
@@ -186,7 +186,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 
         while( it.next() ) {
             Statement s = *it;
-            Resource res( s.subject().toString() );
+            Resource res( s.subject().uri() );
             if( !l.contains( res ) )
                 l.append( res );
         }
