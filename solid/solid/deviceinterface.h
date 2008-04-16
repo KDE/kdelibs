@@ -97,7 +97,7 @@ namespace Solid
          * @internal
          * Creates a new DeviceInterface object.
          *
-         * @param dd the private d member
+         * @param dd the private d member. It will take care of deleting it upon destruction.
          * @param backendObject the device interface object provided by the backend
          */
         DeviceInterface(DeviceInterfacePrivate &dd, QObject *backendObject);
