@@ -36,7 +36,8 @@ Solid::DeviceInterface::DeviceInterface(DeviceInterfacePrivate &dd, QObject *bac
 
 Solid::DeviceInterface::~DeviceInterface()
 {
-
+    delete d_ptr;
+    d_ptr = 0;
 }
 
 bool Solid::DeviceInterface::isValid() const
