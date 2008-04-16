@@ -179,6 +179,7 @@
 <!ENTITY kblackbox	"<application>KBlackBox</application>">
 <!ENTITY kblocks	"<application>KBlocks</application>">
 <!ENTITY kbounce	"<application>KBounce</application>">
+<!ENTITY kbreakout	"<application>KBreakOut</application>">
 <!ENTITY kbruch	"<application>KBruch</application>">
 <!ENTITY kbugbuster	"<application>kbugbuster</application>">
 <!ENTITY kcalc	"<application>KCalc</application>">
