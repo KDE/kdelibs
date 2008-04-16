@@ -131,7 +131,8 @@ if(NOT WIN32 AND NOT APPLE)
    )
 endif(NOT WIN32 AND NOT APPLE)
 
-if(WIN32)
+# TODO: mingw
+if(msvc)
    MESSAGE( "-- Building Solid WMI backend." )
 
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
