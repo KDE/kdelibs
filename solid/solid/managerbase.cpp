@@ -26,7 +26,7 @@
 #if defined (Q_OS_MAC)
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
-#elif defined (Q_WS_WIN)
+#elif defined (_MSC_VER) // TODO: mingw
 #include "backends/wmi/wmimanager.h"
 #endif
 
