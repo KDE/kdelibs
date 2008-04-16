@@ -132,7 +132,7 @@ if(NOT WIN32 AND NOT APPLE)
 endif(NOT WIN32 AND NOT APPLE)
 
 # TODO: mingw
-if(msvc)
+if(MSVC)
    MESSAGE( "-- Building Solid WMI backend." )
 
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -160,7 +160,7 @@ if(msvc)
    backends/wmi/wmivolume.cpp
 
    )   
-endif(WIN32)	
+endif(MSVC)	
 
 set_source_files_properties( org.kde.Solid.PowerManagement.xml
                              org.kde.Solid.PowerManagement.Inhibit.xml 
