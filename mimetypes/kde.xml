@@ -488,4 +488,10 @@ Notes:
     <glob pattern="*.kexic"/>
   </mime-type>
 
+  <mime-type type="text/x-cmake">
+    <comment>cmake source code</comment>
+    <glob pattern="*.cmake"/>
+    <glob pattern="CMakeLists.txt"/>
+  </mime-type>
+
 </mime-info>
