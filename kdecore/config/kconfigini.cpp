@@ -89,8 +89,12 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
     bool groupSkip = false;
 
     int lineNo=0;
-    while (!file.atEnd()) {
-        QByteArray line = file.readLine().trimmed();
+    // on systems using \r\n as end of line, \r will be taken care of by 
+    // trimmed() below
+    QList<QByteArray> lines=file.readAll().split('\n');
+    for (int i=0;i<lines.size();i++) {
+        QByteArray& line=lines[i];
+        line=line.trimmed();
         lineNo++;
 
         // skip empty lines and lines beginning with '#'
