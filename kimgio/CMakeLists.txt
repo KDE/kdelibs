@@ -25,14 +25,6 @@ macro_log_feature(JASPER_FOUND "JasPer" "JasPer JPEG2000 Library" "http://www.ec
 
 ##################################
 
-set(kimg_ico_LIB_SRCS ico.cpp)
-kde4_add_plugin(kimg_ico ${kimg_ico_LIB_SRCS})
-target_link_libraries(kimg_ico  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
-
-install(TARGETS kimg_ico  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
-
-##################################
-
 set(kimg_eps_LIB_SRCS eps.cpp)
 kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
 target_link_libraries(kimg_eps  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
@@ -126,7 +118,6 @@ install( FILES
   jpeg.desktop
   xv.desktop
   eps.desktop
-  ico.desktop
   gif.desktop
   pcx.desktop
   tga.desktop
