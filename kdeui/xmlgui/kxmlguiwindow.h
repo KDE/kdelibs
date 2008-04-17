@@ -258,6 +258,12 @@ public:
         /**
          * calls createGUI() once ToolBar, Keys and Statusbar have been
          * taken care of.  @see createGUI
+         *
+         * NOTE: when using KParts::MainWindow, remove this flag from the
+         * setupGUI call, since you'll be using createGUI(part) instead.
+         * @code
+         *     setupGUI(ToolBar | Keys | StatusBar | Save);
+         * @endcode
          */
         Create = 16,
 
