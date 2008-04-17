@@ -72,9 +72,7 @@ KEmoticons::~KEmoticons()
 
 KEmoticonsTheme *KEmoticons::getTheme()
 {
-    KConfigGroup config(KGlobal::config(), "General");
-    QString name = config.readEntry("emoticonTheme", "kde4");
-    return getTheme(name);
+    return getTheme(getCurrentThemeName());
 }
 
 KEmoticonsTheme *KEmoticons::getTheme(const QString &name)

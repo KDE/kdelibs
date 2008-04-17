@@ -23,6 +23,64 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 #include <qstring.h>
+#include <klineedit.h>
+#include <qlabel.h>
+#include <kcombobox.h>
+#include <QVBoxLayout>
+
+class KEmoTest : public QWidget
+{
+    Q_OBJECT
+    public:
+        KEmoTest();
+        
+    public slots:
+        void changed();
+        void changeTheme(const QString&theme);
+    
+    private:
+        KLineEdit kl;
+        QLabel lb;
+        KEmoticons e;
+        KEmoticonsTheme *t;
+        KComboBox cb;
+};
+
+KEmoTest::KEmoTest()
+{
+    QStringList tl = e.getThemeList();
+    kDebug() << "ThemeList:" << tl;
+    
+    QList<KService::Ptr> srv = e.loadedServices();
+    foreach (KService::Ptr service, srv) {
+        kDebug()<<"name:"<<service->name();
+    }
+    
+    t = e.getTheme();
+    
+    cb.addItems(e.getThemeList());
+    
+    QVBoxLayout *vb = new QVBoxLayout;
+    vb->addWidget(&kl);
+    vb->addWidget(&cb);
+    vb->addWidget(&lb);
+    setLayout(vb);
+    
+    connect(&kl, SIGNAL(textChanged(const QString&)), this, SLOT(changed()));
+    connect(&cb, SIGNAL(activated(const QString&)), this, SLOT(changeTheme(const QString&)));
+}
+
+void KEmoTest::changed()
+{
+    lb.setText(t->parseEmoticons(kl.text(), KEmoticonsTheme::RelaxedParse));
+}
+
+void KEmoTest::changeTheme(const QString &theme)
+{
+    delete t;
+    t = e.getTheme(theme);
+    changed();
+}
 
 int main(int argc, char **argv)
 {
@@ -30,23 +88,12 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
+
+    KEmoTest kt;
     
-    KEmoticons e;
-    QStringList tl = e.getThemeList();
-    kDebug() << "ThemeList:" << tl;
-    KEmoticonsTheme *t = e.getTheme(tl.at(0));
-    kDebug() << "theme:" << t->themeName();
+    kt.show();
     
-    QList<KService::Ptr> srv = e.loadedServices();
-    foreach (KService::Ptr service, srv) {
-        kDebug()<<"name:"<<service->name();
-    }
-    
-    QString parsed = t->parseEmoticons(":D prova :)  :P", KEmoticonsTheme::RelaxedParse);
-    kDebug()<<"parsed:"<<parsed;
-    
-    delete t;
-    
-    return 0;
+    return app.exec();
 }
 
+#include "main.moc"

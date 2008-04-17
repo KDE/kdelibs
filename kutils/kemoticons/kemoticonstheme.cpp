@@ -113,7 +113,7 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode)
     return result;
 }
 
-QList<Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
+QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
 {
     QList<Token> result;
 
@@ -244,15 +244,16 @@ QList<Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
     for (int i = 0; i < foundEmoticons.size(); ++i) {
         QPair<QString, EmoticonNode> itFound = foundEmoticons.at(i);
         needle = itFound.second.first;
+        
+        QPixmap p(itFound.first);
+        QString htmlCode = QString("<img align=\"center\" src=\"%1\" width=\"%2\" height=\"%3\" />").arg(itFound.first).arg(p.width()).arg(p.height());
  
         if ((length = (itFound.second.second - pos))) {
             result.append(Token(Text, message.mid(pos, length)));
-            result.append(Token(Image, needle, itFound.first, QString("html")));
- 
+            result.append(Token(Image, needle, itFound.first, htmlCode));
             pos += length + needle.length();
         } else {
-            result.append(Token(Image, needle, itFound.first, QString("html")));
- 
+            result.append(Token(Image, needle, itFound.first, htmlCode));
             pos += needle.length();
         }
     }

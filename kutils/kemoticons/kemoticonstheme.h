@@ -29,30 +29,6 @@
 
 class QString;
 
-/**
-* TokenType, a token might be an image ( emoticon ) or text.
-*/
-enum TokenType { Undefined,     /** Undefined, for completeness only */
-                     Image,     /** Token contains a path to an image */
-                     Text       /** Token contains test */
-                   };
-
-/**
-* A token consists of a QString text which is either a regular text
-* or a path to image depending on the type.
-* If type is Image the text refers to an image path.
-* If type is Text the text refers to a regular text.
-*/
-struct Token {
-    Token() : type( Undefined ) {}
-    Token( TokenType t, const QString &m ) : type( t ), text(m) {}
-    Token( TokenType t, const QString &m, const QString &p, const QString &html )
-        : type( t ), text( m ), picPath( p ), picHTMLCode( html ) {}
-    TokenType   type;
-    QString     text;
-    QString     picPath;
-    QString     picHTMLCode;
-};
     
 class KEmoticonsThemePrivate
 {
@@ -73,13 +49,41 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
 
         virtual ~KEmoticonsTheme();
         
+        
+        /**
+        * TokenType, a token might be an image ( emoticon ) or text.
+        */
+        enum TokenType { 
+                            Undefined, /** Undefined, for completeness only */
+                            Image,     /** Token contains a path to an image */
+                            Text       /** Token contains test */
+                        };
+
+        /**
+        * A token consists of a QString text which is either a regular text
+        * or a path to image depending on the type.
+        * If type is Image the text refers to an image path.
+        * If type is Text the text refers to a regular text.
+        */
+        struct Token {
+            Token() : type( Undefined ) {}
+            Token( TokenType t, const QString &m ) : type( t ), text(m) {}
+            Token( TokenType t, const QString &m, const QString &p, const QString &html )
+                : type( t ), text( m ), picPath( p ), picHTMLCode( html ) {}
+            TokenType   type;
+            QString     text;
+            QString     picPath;
+            QString     picHTMLCode;
+        };
+
         /**
         * The possible parse modes
         */
-        enum ParseModeEnum {  DefaultParseMode = 0x0 ,  /**  Use strict or relaxed according the config  */
-            StrictParse = 0x1,          /** Strict parsing requires a space between each emoticon */
-            RelaxedParse = 0x4,         /** Parse mode where all possible emoticon matches are allowed */
-            SkipHTML = 0x2              /** Skip emoticons within HTML */
+        enum ParseModeEnum {  
+            DefaultParseMode = 0x0 , /**  Use strict or relaxed according the config  */
+            StrictParse = 0x1,       /** Strict parsing requires a space between each emoticon */
+            RelaxedParse = 0x4,      /** Parse mode where all possible emoticon matches are allowed */
+            SkipHTML = 0x2           /** Skip emoticons within HTML */
          };
 
         Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
