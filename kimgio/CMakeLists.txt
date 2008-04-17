@@ -118,6 +118,7 @@ install( FILES
   jpeg.desktop
   xv.desktop
   eps.desktop
+  ico.desktop
   gif.desktop
   pcx.desktop
   tga.desktop
