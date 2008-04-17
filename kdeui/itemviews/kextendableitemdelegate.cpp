@@ -28,35 +28,35 @@
 
 class KExtendableItemDelegate::Private {
 public:
-	Private(KExtendableItemDelegate *parent) :
-		q(parent),
-		stateTick(0),
-		hasExtenders(false)
-	{}
+    Private(KExtendableItemDelegate *parent) :
+        q(parent),
+        stateTick(0),
+        hasExtenders(false)
+    {}
 
-	void _k_extenderDestructionHandler(QObject *destroyed);
+    void _k_extenderDestructionHandler(QObject *destroyed);
 
-	QSize maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	QModelIndex indexOfExtendedColumnInSameRow(const QModelIndex &index) const;
-	void scheduleUpdateViewLayout();
+    QSize maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QModelIndex indexOfExtendedColumnInSameRow(const QModelIndex &index) const;
+    void scheduleUpdateViewLayout();
 
-	KExtendableItemDelegate *q;
+    KExtendableItemDelegate *q;
 
-	/**
-	 * Delete all active extenders
-	 */
-	void deleteExtenders();
+    /**
+     * Delete all active extenders
+     */
+    void deleteExtenders();
 
 
-	//this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
-	QHash<QPersistentModelIndex, QWidget *> extenders;
-	QHash<QWidget *, QPersistentModelIndex> extenderIndices;
-	QPixmap extendPixmap;
-	QPixmap contractPixmap;
-	int stateTick;
-	//mostly for quick startup - don't look for extenders while the view
-	//is being populated.
-	bool hasExtenders;
+    //this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
+    QHash<QPersistentModelIndex, QWidget *> extenders;
+    QHash<QWidget *, QPersistentModelIndex> extenderIndices;
+    QPixmap extendPixmap;
+    QPixmap contractPixmap;
+    int stateTick;
+    //mostly for quick startup - don't look for extenders while the view
+    //is being populated.
+    bool hasExtenders;
 };
 
 
@@ -64,7 +64,7 @@ KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
  : QStyledItemDelegate(parent),
    d(new Private(this))
 {
-	//parent->installEventFilter(this); //not sure if this is good
+    //parent->installEventFilter(this); //not sure if this is good
 }
 
 
@@ -76,286 +76,286 @@ KExtendableItemDelegate::~KExtendableItemDelegate()
 
 void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
 {
-	// kDebug() << "Creating extender at " << ext << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
+    // kDebug() << "Creating extender at " << ext << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
 
-	if (!ext || !index.isValid())
-		return;
-	//maintain the invariant "zero or one extender per row"
-	d->stateTick++;
-	contractItem(d->indexOfExtendedColumnInSameRow(index));
-	d->stateTick++;
-	//reparent, as promised in the docs
-	QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(parent());
-	if (!aiv)
-		return;
-	ext->setParent(aiv->viewport());
-	d->extenders.insert(index, ext);
-	d->extenderIndices.insert(ext, index);
-	d->hasExtenders = true;
-	connect(ext, SIGNAL(destroyed(QObject *)), this, SLOT(_k_extenderDestructionHandler(QObject *)));
-	emit extenderCreated(ext, index);
-	d->scheduleUpdateViewLayout();
+    if (!ext || !index.isValid())
+        return;
+    //maintain the invariant "zero or one extender per row"
+    d->stateTick++;
+    contractItem(d->indexOfExtendedColumnInSameRow(index));
+    d->stateTick++;
+    //reparent, as promised in the docs
+    QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(parent());
+    if (!aiv)
+        return;
+    ext->setParent(aiv->viewport());
+    d->extenders.insert(index, ext);
+    d->extenderIndices.insert(ext, index);
+    d->hasExtenders = true;
+    connect(ext, SIGNAL(destroyed(QObject *)), this, SLOT(_k_extenderDestructionHandler(QObject *)));
+    emit extenderCreated(ext, index);
+    d->scheduleUpdateViewLayout();
 }
 
 
 void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 {
-	QWidget *extender = d->extenders.value(index);
-	if (!extender)
-		return;
-	// kDebug() << "Collapse extender at " << extender << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
-	extender->hide();
-	extender->deleteLater();
+    QWidget *extender = d->extenders.value(index);
+    if (!extender)
+        return;
+    // kDebug() << "Collapse extender at " << extender << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
+    extender->hide();
+    extender->deleteLater();
 
-	d->scheduleUpdateViewLayout();
+    d->scheduleUpdateViewLayout();
 }
 
 
 void KExtendableItemDelegate::contractAll()
 {
-	d->deleteExtenders();
+    d->deleteExtenders();
 }
 
 
 //slot
 void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *destroyed)
 {
-	// kDebug() << "Removing extender at " << destroyed;
+    // kDebug() << "Removing extender at " << destroyed;
 
-	QWidget *extender = static_cast<QWidget *>(destroyed);
-	stateTick++;
+    QWidget *extender = static_cast<QWidget *>(destroyed);
+    stateTick++;
 
-	Q_ASSERT(extenderIndices.value(extender).isValid());
+    Q_ASSERT(extenderIndices.value(extender).isValid());
 
-	if (q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
-		QPersistentModelIndex persistentIndex = extenderIndices.take(extender);
-		QModelIndex index = persistentIndex;
-		emit q->extenderDestroyed(extender, index);
-		extenders.remove(persistentIndex);
-	} else
-		extenders.remove(extenderIndices.take(extender));
+    if (q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
+        QPersistentModelIndex persistentIndex = extenderIndices.take(extender);
+        QModelIndex index = persistentIndex;
+        emit q->extenderDestroyed(extender, index);
+        extenders.remove(persistentIndex);
+    } else
+        extenders.remove(extenderIndices.take(extender));
 
-	if (extenders.isEmpty())
-		hasExtenders = false;
+    if (extenders.isEmpty())
+        hasExtenders = false;
 
-	scheduleUpdateViewLayout();
+    scheduleUpdateViewLayout();
 }
 
 
 bool KExtendableItemDelegate::isExtended(const QModelIndex &index) const {
-	return d->extenders.value(index);
+    return d->extenders.value(index);
 }
 
 
 QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	QSize ret;
+    QSize ret;
 
-	if (d->hasExtenders)
-		ret = d->maybeExtendedSize(option, index);
-	else
-		ret = QStyledItemDelegate::sizeHint(option, index);
+    if (d->hasExtenders)
+        ret = d->maybeExtendedSize(option, index);
+    else
+        ret = QStyledItemDelegate::sizeHint(option, index);
 
-	bool showExtensionIndicator = index.model() ? 
-		index.model()->data(index, ShowExtensionIndicatorRole).toBool() : false;
-	if (showExtensionIndicator)
-		ret.rwidth() += d->extendPixmap.width();
+    bool showExtensionIndicator = index.model() ? 
+        index.model()->data(index, ShowExtensionIndicatorRole).toBool() : false;
+    if (showExtensionIndicator)
+        ret.rwidth() += d->extendPixmap.width();
 
-	return ret;
+    return ret;
 }
 
 
 void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	int indicatorX = 0;
-	int indicatorY = 0;
+    int indicatorX = 0;
+    int indicatorY = 0;
 
-	QStyleOptionViewItemV4 indicatorOption(option);
-	initStyleOption(&indicatorOption, index);
-	indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
-	QStyleOptionViewItemV4 itemOption(option);
-	initStyleOption(&itemOption, index);
-	itemOption.viewItemPosition = QStyleOptionViewItemV4::End;
+    QStyleOptionViewItemV4 indicatorOption(option);
+    initStyleOption(&indicatorOption, index);
+    indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+    QStyleOptionViewItemV4 itemOption(option);
+    initStyleOption(&itemOption, index);
+    itemOption.viewItemPosition = QStyleOptionViewItemV4::End;
 
-	const bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
+    const bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
 
-	if (showExtensionIndicator) {
-		if (QApplication::isRightToLeft()) {
-			indicatorX = option.rect.right() - d->extendPixmap.width();
-			itemOption.rect.setRight(option.rect.right() - d->extendPixmap.width());
-			indicatorOption.rect.setLeft(option.rect.right() - d->extendPixmap.width());
-		} else {
-			indicatorX = option.rect.left();
-			indicatorOption.rect.setRight(option.rect.left() + d->extendPixmap.width());
-			itemOption.rect.setLeft(option.rect.left() + d->extendPixmap.width());
-		}
-		indicatorY = option.rect.top() + ((option.rect.height() - d->extendPixmap.height()) >> 1);
-	}
+    if (showExtensionIndicator) {
+        if (QApplication::isRightToLeft()) {
+            indicatorX = option.rect.right() - d->extendPixmap.width();
+            itemOption.rect.setRight(option.rect.right() - d->extendPixmap.width());
+            indicatorOption.rect.setLeft(option.rect.right() - d->extendPixmap.width());
+        } else {
+            indicatorX = option.rect.left();
+            indicatorOption.rect.setRight(option.rect.left() + d->extendPixmap.width());
+            itemOption.rect.setLeft(option.rect.left() + d->extendPixmap.width());
+        }
+        indicatorY = option.rect.top() + ((option.rect.height() - d->extendPixmap.height()) >> 1);
+    }
 
-	//fast path
-	if (!d->hasExtenders) {
-		QStyledItemDelegate::paint(painter, itemOption, index);
-		if (showExtensionIndicator) {
-			painter->save();
-			QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
-			                                     painter);
-			painter->restore();
-			painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
-		}
-		return;
-	}
+    //fast path
+    if (!d->hasExtenders) {
+        QStyledItemDelegate::paint(painter, itemOption, index);
+        if (showExtensionIndicator) {
+            painter->save();
+            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+                                                 painter);
+            painter->restore();
+            painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
+        }
+        return;
+    }
 
-	//indexOfExtendedColumnInSameRow() is very expensive, try to avoid calling it.
-	static int cachedStateTick = -1;
-	static int cachedRow = -20; //Qt uses -1 for invalid indices
-	static QModelIndex cachedParentIndex;
-	static QWidget *extender = 0;
-	static int extenderHeight;
-	int row = index.row();
-	QModelIndex parentIndex = index.parent();
+    //indexOfExtendedColumnInSameRow() is very expensive, try to avoid calling it.
+    static int cachedStateTick = -1;
+    static int cachedRow = -20; //Qt uses -1 for invalid indices
+    static QModelIndex cachedParentIndex;
+    static QWidget *extender = 0;
+    static int extenderHeight;
+    int row = index.row();
+    QModelIndex parentIndex = index.parent();
 
-	if (row != cachedRow || cachedStateTick != d->stateTick
-		|| cachedParentIndex != parentIndex) {
-		extender = d->extenders.value(d->indexOfExtendedColumnInSameRow(index));
-		cachedStateTick = d->stateTick;
-		cachedRow = row;
-		cachedParentIndex = parentIndex;
-		if (extender) {
-			extenderHeight = extender->sizeHint().height();
-		}
-	}
+    if (row != cachedRow || cachedStateTick != d->stateTick
+        || cachedParentIndex != parentIndex) {
+        extender = d->extenders.value(d->indexOfExtendedColumnInSameRow(index));
+        cachedStateTick = d->stateTick;
+        cachedRow = row;
+        cachedParentIndex = parentIndex;
+        if (extender) {
+            extenderHeight = extender->sizeHint().height();
+        }
+    }
 
-	if (!extender) {
-		QStyledItemDelegate::paint(painter, itemOption, index);
-		if (showExtensionIndicator) {
-			painter->save();
-			QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
-			                                     painter);
-			painter->restore();
-			painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
-		}
-		return;
-	}
+    if (!extender) {
+        QStyledItemDelegate::paint(painter, itemOption, index);
+        if (showExtensionIndicator) {
+            painter->save();
+            QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+                                                 painter);
+            painter->restore();
+            painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
+        }
+        return;
+    }
 
-	//an extender is present - make two rectangles: one to paint the original item, one for the extender
-	if (isExtended(index)) {
-		QStyleOptionViewItemV4 extOption(option);
-		initStyleOption(&extOption, index);
-		extOption.rect = extenderRect(extender, option, index);
-		updateExtenderGeometry(extender, extOption, index);
-		//if we show it before, it will briefly flash in the wrong location.
-		//the downside is, of course, that an api user effectively can't hide it.
-		extender->show();
-	}
-	
-	indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
-	itemOption.rect.setHeight(option.rect.height() - extenderHeight);
-	//tricky:make sure that the modified options' rect really has the
-	//same height as the unchanged option.rect if no extender is present
-	//(seems to work OK)
-	QStyledItemDelegate::paint(painter, itemOption, index);
-	
-	if (showExtensionIndicator) {
-		//indicatorOption's height changed, change this too
-		indicatorY = indicatorOption.rect.top() + ((indicatorOption.rect.height() - d->extendPixmap.height()) >> 1);
-		painter->save();
-		QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
-		                                     painter);
-		painter->restore();
+    //an extender is present - make two rectangles: one to paint the original item, one for the extender
+    if (isExtended(index)) {
+        QStyleOptionViewItemV4 extOption(option);
+        initStyleOption(&extOption, index);
+        extOption.rect = extenderRect(extender, option, index);
+        updateExtenderGeometry(extender, extOption, index);
+        //if we show it before, it will briefly flash in the wrong location.
+        //the downside is, of course, that an api user effectively can't hide it.
+        extender->show();
+    }
+    
+    indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
+    itemOption.rect.setHeight(option.rect.height() - extenderHeight);
+    //tricky:make sure that the modified options' rect really has the
+    //same height as the unchanged option.rect if no extender is present
+    //(seems to work OK)
+    QStyledItemDelegate::paint(painter, itemOption, index);
+    
+    if (showExtensionIndicator) {
+        //indicatorOption's height changed, change this too
+        indicatorY = indicatorOption.rect.top() + ((indicatorOption.rect.height() - d->extendPixmap.height()) >> 1);
+        painter->save();
+        QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &indicatorOption,
+                                             painter);
+        painter->restore();
 
-		if (d->extenders.contains(index))
-			painter->drawPixmap(indicatorX, indicatorY, d->contractPixmap);
-		else
-			painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
-	}
+        if (d->extenders.contains(index))
+            painter->drawPixmap(indicatorX, indicatorY, d->contractPixmap);
+        else
+            painter->drawPixmap(indicatorX, indicatorY, d->extendPixmap);
+    }
 }
 
 
 QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	Q_ASSERT(extender);
-	QRect rect(option.rect);
-	rect.setTop(rect.bottom() + 1 - extender->sizeHint().height());
-	
-	rect.setLeft(0);
-	QTreeView *tv = qobject_cast<QTreeView *>(parent());
-	if (tv)
-		for (QModelIndex idx(index.parent()); idx.isValid(); idx = idx.parent())
-			rect.translate(tv->indentation(), 0);
-	
-	QAbstractScrollArea *container = qobject_cast<QAbstractScrollArea *>(parent());
-	Q_ASSERT(container);
-	rect.setRight(container->viewport()->width() - 1);
-	return rect;
+    Q_ASSERT(extender);
+    QRect rect(option.rect);
+    rect.setTop(rect.bottom() + 1 - extender->sizeHint().height());
+    
+    rect.setLeft(0);
+    QTreeView *tv = qobject_cast<QTreeView *>(parent());
+    if (tv)
+        for (QModelIndex idx(index.parent()); idx.isValid(); idx = idx.parent())
+            rect.translate(tv->indentation(), 0);
+    
+    QAbstractScrollArea *container = qobject_cast<QAbstractScrollArea *>(parent());
+    Q_ASSERT(container);
+    rect.setRight(container->viewport()->width() - 1);
+    return rect;
 }
 
 
 QSize KExtendableItemDelegate::Private::maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	QWidget *extender = extenders.value(index);
-	QSize size(q->QStyledItemDelegate::sizeHint(option, index));
-	if (!extender)
-		return size;
+    QWidget *extender = extenders.value(index);
+    QSize size(q->QStyledItemDelegate::sizeHint(option, index));
+    if (!extender)
+        return size;
 
-	//add extender height to maximum height of any column in our row
-	int itemHeight = size.height();
-	
-	int row = index.row();
-	int thisColumn = index.column();
+    //add extender height to maximum height of any column in our row
+    int itemHeight = size.height();
+    
+    int row = index.row();
+    int thisColumn = index.column();
 
-	//this is quite slow, but Qt is smart about when to call sizeHint().
-	for (int column = 0; index.model()->columnCount() < column; column++) {
-		if (column == thisColumn)
-			continue;
+    //this is quite slow, but Qt is smart about when to call sizeHint().
+    for (int column = 0; index.model()->columnCount() < column; column++) {
+        if (column == thisColumn)
+            continue;
 
-		QModelIndex neighborIndex(index.sibling(row, column));
-		if (!neighborIndex.isValid())
-			break;
-		itemHeight = qMax(itemHeight, q->QStyledItemDelegate::sizeHint(option, neighborIndex).height());
-	}
-	
-	//we only want to reserve vertical space, the horizontal extender layout is our private business.
-	size.rheight() = itemHeight + extender->sizeHint().height();
-	return size;
+        QModelIndex neighborIndex(index.sibling(row, column));
+        if (!neighborIndex.isValid())
+            break;
+        itemHeight = qMax(itemHeight, q->QStyledItemDelegate::sizeHint(option, neighborIndex).height());
+    }
+    
+    //we only want to reserve vertical space, the horizontal extender layout is our private business.
+    size.rheight() = itemHeight + extender->sizeHint().height();
+    return size;
 }
 
 
 QModelIndex KExtendableItemDelegate::Private::indexOfExtendedColumnInSameRow(const QModelIndex &index) const
 {
-	const QAbstractItemModel *const model = index.model();
-	const QModelIndex parentIndex(index.parent());
-	const int row = index.row();
-	const int columnCount = model->columnCount();
+    const QAbstractItemModel *const model = index.model();
+    const QModelIndex parentIndex(index.parent());
+    const int row = index.row();
+    const int columnCount = model->columnCount();
 
-	//slow, slow, slow
-	for (int column = 0; column < columnCount; column++) {
-		QModelIndex indexOfExt(model->index(row, column, parentIndex));
-		if (extenders.value(indexOfExt))
-			return indexOfExt;
-	}
+    //slow, slow, slow
+    for (int column = 0; column < columnCount; column++) {
+        QModelIndex indexOfExt(model->index(row, column, parentIndex));
+        if (extenders.value(indexOfExt))
+            return indexOfExt;
+    }
 
-	return QModelIndex();
+    return QModelIndex();
 }
 
 
 void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option,
                                                      const QModelIndex &index) const
 {
-	Q_UNUSED(index);
-	extender->setGeometry(option.rect);
+    Q_UNUSED(index);
+    extender->setGeometry(option.rect);
 }
 
 
 void KExtendableItemDelegate::Private::deleteExtenders()
 {
-	foreach (QWidget *ext, extenders.values()) {
-		// Don't call _k_extenderDestructionHandler because (???)
-		// disconnect(ext, SIGNAL(destroyed(QObject *)), q, SLOT(_k_extenderDestructionHandler(QObject *)));
-		ext->hide();
-		ext->deleteLater();
-	}
-	extenders.clear();
-	extenderIndices.clear();
+    foreach (QWidget *ext, extenders.values()) {
+        // Don't call _k_extenderDestructionHandler because (???)
+        // disconnect(ext, SIGNAL(destroyed(QObject *)), q, SLOT(_k_extenderDestructionHandler(QObject *)));
+        ext->hide();
+        ext->deleteLater();
+    }
+    extenders.clear();
+    extenderIndices.clear();
 }
 
 
@@ -363,35 +363,35 @@ void KExtendableItemDelegate::Private::deleteExtenders()
 //### starting from Qt 4.4 we could emit sizeHintChanged() instead
 void KExtendableItemDelegate::Private::scheduleUpdateViewLayout()
 {
-	QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(q->parent());
-	//prevent crashes during destruction of the view
-	if (aiv)
-		//dirty hack to call aiv's protected scheduleDelayedItemsLayout()
-		aiv->setRootIndex(aiv->rootIndex());
+    QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(q->parent());
+    //prevent crashes during destruction of the view
+    if (aiv)
+        //dirty hack to call aiv's protected scheduleDelayedItemsLayout()
+        aiv->setRootIndex(aiv->rootIndex());
 }
 
 
 void KExtendableItemDelegate::setExtendPixmap(const QPixmap &pixmap)
 {
-	d->extendPixmap = pixmap;
+    d->extendPixmap = pixmap;
 }
 
 
 void KExtendableItemDelegate::setContractPixmap(const QPixmap &pixmap)
 {
-	d->contractPixmap = pixmap;
+    d->contractPixmap = pixmap;
 }
 
 
 QPixmap KExtendableItemDelegate::extendPixmap()
 {
-	return d->extendPixmap;
+    return d->extendPixmap;
 }
 
 
 QPixmap KExtendableItemDelegate::contractPixmap()
 {
-	return d->contractPixmap;
+    return d->contractPixmap;
 }
 
 #include "kextendableitemdelegate.moc"

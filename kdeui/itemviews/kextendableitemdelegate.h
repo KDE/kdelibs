@@ -49,103 +49,103 @@
 class QAbstractItemView;
 
 class KDEUI_EXPORT KExtendableItemDelegate : public QStyledItemDelegate {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	enum auxDataRoles {ShowExtensionIndicatorRole = Qt::UserRole + 200};
+    enum auxDataRoles {ShowExtensionIndicatorRole = Qt::UserRole + 200};
 
-	/**
-	 * Create a new KExtendableItemDelegate that belongs to @p parent. In contrast to generic
-	 * QAbstractItemDelegates, an instance of this class can only ever be the delegate for one
-	 * instance of af QAbstractItemView subclass.
-	 */
-	KExtendableItemDelegate(QAbstractItemView *parent);
-	virtual ~KExtendableItemDelegate();
+    /**
+     * Create a new KExtendableItemDelegate that belongs to @p parent. In contrast to generic
+     * QAbstractItemDelegates, an instance of this class can only ever be the delegate for one
+     * instance of af QAbstractItemView subclass.
+     */
+    KExtendableItemDelegate(QAbstractItemView *parent);
+    virtual ~KExtendableItemDelegate();
 
-	/**
-	 * Re-implemented for internal reasons. API not affected.
-	 */
-	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    /**
+     * Re-implemented for internal reasons. API not affected.
+     */
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-	/**
-	 * Re-implemented for internal reasons. API not affected.
-	 */
-	virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    /**
+     * Re-implemented for internal reasons. API not affected.
+     */
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-	/**
-	 * Insert the @p extender that logically belongs to @p index into the view.
-	 * If you need a parent for the extender at construction time, use the itemview's viewport().
-	 * The extender will be reparented and resized to the viewport by this function.
-	 */
-	void extendItem(QWidget *extender, const QModelIndex &index);
+    /**
+     * Insert the @p extender that logically belongs to @p index into the view.
+     * If you need a parent for the extender at construction time, use the itemview's viewport().
+     * The extender will be reparented and resized to the viewport by this function.
+     */
+    void extendItem(QWidget *extender, const QModelIndex &index);
 
-	/**
-	 * Close the extender that logically belongs to @p index from the view. The extender widget
-	 * will be deleted.
-	 */
-	void contractItem(const QModelIndex &index);
+    /**
+     * Close the extender that logically belongs to @p index from the view. The extender widget
+     * will be deleted.
+     */
+    void contractItem(const QModelIndex &index);
 
-	/**
-	 * Close all extenders and delete all extender widgets.
-	 */
-	void contractAll();
+    /**
+     * Close all extenders and delete all extender widgets.
+     */
+    void contractAll();
 
-	/**
-	 * Return whether there is an extender that belongs to @p index.
-	 */
-	bool isExtended(const QModelIndex &index) const;
+    /**
+     * Return whether there is an extender that belongs to @p index.
+     */
+    bool isExtended(const QModelIndex &index) const;
 
-	/**
-	 * Reimplement this function to adjust the internal geometry of the extender.
-	 * The external geometry of the extender will be set by the delegate.
-	 */
-	virtual void updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    /**
+     * Reimplement this function to adjust the internal geometry of the extender.
+     * The external geometry of the extender will be set by the delegate.
+     */
+    virtual void updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 Q_SIGNALS:
-	/**
-	 * This signal indicates that the item at @p index was extended with @p extender.
-	 */
-	void extenderCreated(QWidget *extender, const QModelIndex &index);
+    /**
+     * This signal indicates that the item at @p index was extended with @p extender.
+     */
+    void extenderCreated(QWidget *extender, const QModelIndex &index);
 
-	/**
-	 * This signal indicates that the @p extender belonging to @p index has emitted the destroyed() signal.
-	 */
-	void extenderDestroyed(QWidget *extender, const QModelIndex &index);
+    /**
+     * This signal indicates that the @p extender belonging to @p index has emitted the destroyed() signal.
+     */
+    void extenderDestroyed(QWidget *extender, const QModelIndex &index);
 
 protected:
-	/**
-	 * Reimplement this function to fine-tune the position of the extender. @p option.rect will be a rectangle
-	 * that is as wide as the viewport and as high as the usual item height plus the extender size hint's height.
-	 * Its upper left corner will be at the upper left corner of the usual item.
-	 * You can place the returned rectangle of this function anywhere inside that area.
-	 */
-	QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    /**
+     * Reimplement this function to fine-tune the position of the extender. @p option.rect will be a rectangle
+     * that is as wide as the viewport and as high as the usual item height plus the extender size hint's height.
+     * Its upper left corner will be at the upper left corner of the usual item.
+     * You can place the returned rectangle of this function anywhere inside that area.
+     */
+    QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-	/**
-	 * The pixmap that is displayed to extend an item. @p pixmap must have the same size as the pixmap in setContractPixmap.
-	 */
-	void setExtendPixmap(const QPixmap &pixmap);
+    /**
+     * The pixmap that is displayed to extend an item. @p pixmap must have the same size as the pixmap in setContractPixmap.
+     */
+    void setExtendPixmap(const QPixmap &pixmap);
 
-	/**
-	 * The pixmap that is displayed to contract an item. @p pixmap must have the same size as the pixmap in setExtendPixmap.
-	 */
-	void setContractPixmap(const QPixmap &pixmap);
+    /**
+     * The pixmap that is displayed to contract an item. @p pixmap must have the same size as the pixmap in setExtendPixmap.
+     */
+    void setContractPixmap(const QPixmap &pixmap);
 
-	/**
-	 * Return the pixmap that is displayed to extend an item.
-	 */
-	QPixmap extendPixmap();
+    /**
+     * Return the pixmap that is displayed to extend an item.
+     */
+    QPixmap extendPixmap();
 
-	/**
-	 * Return the pixmap that is displayed to contract an item.
-	 */
-	QPixmap contractPixmap();
+    /**
+     * Return the pixmap that is displayed to contract an item.
+     */
+    QPixmap contractPixmap();
 
 
 private:
-	class Private;
-	Private *const d;
+    class Private;
+    Private *const d;
 
-	Q_PRIVATE_SLOT(d, void _k_extenderDestructionHandler(QObject *destroyed))
+    Q_PRIVATE_SLOT(d, void _k_extenderDestructionHandler(QObject *destroyed))
 };
 #endif // KEXTENDABLEITEMDELEGATE_H
