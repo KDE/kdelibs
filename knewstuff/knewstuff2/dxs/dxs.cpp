@@ -25,6 +25,7 @@
 #include "knewstuff2/core/entry.h"
 #include "knewstuff2/core/entryhandler.h"
 #include "knewstuff2/core/category.h"
+#include "knewstuff2/core/provider.h"
 
 #include <kdebug.h>
 
@@ -33,8 +34,8 @@
 
 using namespace KNS;
 
-Dxs::Dxs(QObject* parent)
-    : QObject(parent)
+Dxs::Dxs(QObject* parent, KNS::Provider * provider)
+    : QObject(parent), m_provider(provider)
 {
     m_soap = new Soap(this);
     connect(m_soap, SIGNAL(signalResult(QDomNode)), SLOT(slotResult(QDomNode)));
@@ -43,6 +44,11 @@ Dxs::Dxs(QObject* parent)
 
 Dxs::~Dxs()
 {
+}
+
+Provider * Dxs::provider()
+{
+    return m_provider;
 }
 
 void Dxs::setEndpoint(KUrl endpoint)

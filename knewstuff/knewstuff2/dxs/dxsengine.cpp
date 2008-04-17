@@ -22,15 +22,14 @@
 
 #include "dxs.h"
 
+#include <knewstuff2/core/category.h>
 #include <kdebug.h>
 
 using namespace KNS;
 
 DxsEngine::DxsEngine(QObject* parent)
-    : CoreEngine(parent)
+    : CoreEngine(parent), m_dxspolicy(DxsIfPossible)
 {
-    m_dxs = NULL;
-    m_dxspolicy = DxsIfPossible;
 }
 
 DxsEngine::~DxsEngine()
@@ -42,9 +41,15 @@ void DxsEngine::setDxsPolicy(Policy policy)
     m_dxspolicy = policy;
 }
 
+// get the dxs object
+Dxs * DxsEngine::dxsObject(const Provider * provider)
+{
+    return (m_dxsbyprovider.contains(provider) ? m_dxsbyprovider.value(provider) : NULL);
+}
+
 void DxsEngine::loadEntries(Provider *provider)
 {
-    kDebug() << "loading entries";
+    kDebug() << "loading entries for provider " << provider->name().representation();
     // Ensure that the provider offers DXS at all
     // Match DXS offerings with the engine's policy
     if (provider->webService().isValid()) {
@@ -66,31 +71,55 @@ void DxsEngine::loadEntries(Provider *provider)
 
     // From here on, it's all DXS now
 
-    if (!m_dxs) {
-        m_dxs = new Dxs(this);
+    if (!m_dxsbyprovider.contains(provider)) {
+        Dxs * dxs = new Dxs(this, provider);
+        dxs->setEndpoint(provider->webService());
+        // connect entries signal
+        connect(dxs, SIGNAL(signalEntries(KNS::Entry::List)),
+                SLOT(slotEntriesLoadedDXS(KNS::Entry::List)));
+        // FIXME: which one of signalFault()/signalError()? Or both?
+        connect(dxs, SIGNAL(signalFault()),
+                SLOT(slotEntriesFailed()));
+        // connect categories signal
+        connect(dxs, SIGNAL(signalCategories(QList<KNS::Category*>)),
+                SLOT(slotCategories(QList<KNS::Category*>)));
+        m_dxsbyprovider.insert(provider, dxs);
     }
 
-    m_dxs->setEndpoint(provider->webService());
+    Dxs * dxs = m_dxsbyprovider.value(provider);
 
-    // FIXME: load all categories first, then feeds second
-    m_dxs->call_entries(QString(), QString());
-
-    connect(m_dxs,
-            SIGNAL(signalEntries(KNS::Entry::List)),
-            SLOT(slotEntriesLoaded(KNS::Entry::List)));
-    connect(m_dxs,
-            SIGNAL(signalFault()),
-            SLOT(slotEntriesFailed()));
-    // FIXME: which one of signalFault()/signalError()? Or both?
+    dxs->call_categories();
 }
 
-void DxsEngine::slotEntriesLoaded(KNS::Entry::List list)
+void DxsEngine::slotCategories(QList<KNS::Category*> categories)
 {
+    Dxs * dxs = qobject_cast<Dxs*>(sender());
+    Provider * provider = dxs->provider();
+
+    kDebug() << "slotCategories";
+
+    for (QList<KNS::Category*>::iterator it = categories.begin(); it != categories.end(); ++it) {
+        Category *category = (*it);
+        kDebug() << "calling entries on category: " << category->id();
+        QStringList feeds = provider->feeds();
+        for (int i = 0; i < feeds.size(); ++i) {
+            dxs->call_entries(category->id(), feeds[i]);
+        }
+    }
+}
+
+void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list)
+{
+    Dxs * dxs = qobject_cast<Dxs*>(sender());
+    Provider * provider = dxs->provider();
+
+    kDebug() << "slotEntriesLoadedDXS";
+
     // FIXME: we circumvent the cache now...
     for (Entry::List::Iterator it = list.begin(); it != list.end(); ++it) {
         Entry *entry = (*it);
         // FIXME: the association to feed and provider is missing here
-        emit signalEntryLoaded(entry, NULL, NULL);
+        emit signalEntryLoaded(entry, NULL, provider);
     }
 }
 
@@ -99,5 +128,4 @@ void DxsEngine::slotEntriesFailed()
     emit signalEntriesFailed();
 }
 
-// Unneeded for now
-// #include "dxsengine.moc"
+#include "dxsengine.moc"

@@ -26,6 +26,7 @@
 namespace KNS {
 
 class Dxs;
+class Category;
 
 /**
  * KNewStuff DXS engine.
@@ -38,35 +39,41 @@ class Dxs;
  */
 class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
 {
-public:
-    DxsEngine(QObject* parent);
-    ~DxsEngine();
+    Q_OBJECT
+    public:
+        DxsEngine(QObject* parent);
+        ~DxsEngine();
 
-    enum Policy
-    {
-      DxsNever,
-      DxsIfPossible,
-      DxsAlways
-    };
+        enum Policy
+        {
+          DxsNever,
+          DxsIfPossible,
+          DxsAlways
+        };
 
-    void setDxsPolicy(Policy policy);
+        void setDxsPolicy(Policy policy);
 
-    void loadEntries(Provider *provider);
-    //void downloadPreview(Entry *entry);
-    //void downloadPayload(Entry *entry);
-    // FIXME: the upload/download stuff is only necessary when we use
-    // integrated base64-encoded files; maybe delay to later version?
+        void loadEntries(Provider *provider);
+        //void downloadPreview(Entry *entry);
+        //void downloadPayload(Entry *entry);
+        // FIXME: the upload/download stuff is only necessary when we use
+        // integrated base64-encoded files; maybe delay to later version?
 
-    //bool uploadEntry(Provider *provider, Entry *entry);
+        //bool uploadEntry(Provider *provider, Entry *entry);
 
-  //private slots:
-    // FIXME: idem for slots
-    void slotEntriesLoaded(KNS::Entry::List list);
-    void slotEntriesFailed();
+        // get the dxs object
+        Dxs * dxsObject(const Provider * provider);
 
-  private:
-    Dxs *m_dxs;
-    Policy m_dxspolicy;
+    private slots:
+        // FIXME: idem for slots
+        void slotEntriesLoadedDXS(KNS::Entry::List list);
+        void slotEntriesFailed();
+
+        void slotCategories(QList<KNS::Category*>);
+
+    private:
+        QMap<const Provider *, Dxs *> m_dxsbyprovider;
+        Policy m_dxspolicy;
 };
 
 }

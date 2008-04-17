@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_DXS_DXS_H
 #define KNEWSTUFF2_DXS_DXS_H
 
-#include <knewstuff2/knewstuff_export.h>
+#include <knewstuff2/core/entry.h>
 #include <QtCore/QObject>
 
 #include <kurl.h>
@@ -32,8 +32,8 @@ namespace KNS
 {
 
 class Soap;
-class Entry;
 class Category;
+class Provider;
 
 /**
  * KNewStuff DXS proxy.
@@ -46,95 +46,98 @@ class Category;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT Dxs : public QObject
+class Dxs : public QObject
 {
 Q_OBJECT
 public:
-	Dxs(QObject* parent);
-	~Dxs();
-	void setEndpoint(KUrl endpoint);
+    Dxs(QObject* parent, KNS::Provider * provider);
+    ~Dxs();
+    void setEndpoint(KUrl endpoint);
 
-	/**
-	 * 
-	 */
-	void call_info();
-	/**
-	 * 
-	 */
-	void call_categories();
-	/**
-	 * 
-	 * @param category 
-	 * @param feed 
-	 */
-	void call_entries(QString category, QString feed);
-	/**
-	 * 
-	 * @param id 
-	 */
-	void call_comments(int id);
-	/**
-	 * 
-	 * @param id 
-	 */
-	void call_changes(int id);
-	/**
-	 * 
-	 * @param id 
-	 */
-	void call_history(int id);
-	/**
-	 * 
-	 * @param id 
-	 */
-	void call_removal(int id);
-	/**
-	 * 
-	 * @param id 
-	 * @param subscribe 
-	 */
-	void call_subscription(int id, bool subscribe);
-	/**
-	 * 
-	 * @param id 
-	 * @param comment 
-	 */
-	void call_comment(int id, QString comment);
-	/**
-	 *        Change the rating
-	 * @param id 
-	 * @param rating 
-	 */
-	void call_rating(int id, int rating);
+    /**
+     * 
+     */
+    void call_info();
+    /**
+     * 
+     */
+    void call_categories();
+    /**
+     * 
+     * @param category 
+     * @param feed 
+     */
+    void call_entries(QString category, QString feed);
+    /**
+     * 
+     * @param id 
+     */
+    void call_comments(int id);
+    /**
+     * 
+     * @param id 
+     */
+    void call_changes(int id);
+    /**
+     * 
+     * @param id 
+     */
+    void call_history(int id);
+    /**
+     * 
+     * @param id 
+     */
+    void call_removal(int id);
+    /**
+     * 
+     * @param id 
+     * @param subscribe 
+     */
+    void call_subscription(int id, bool subscribe);
+    /**
+     * 
+     * @param id 
+     * @param comment 
+     */
+    void call_comment(int id, QString comment);
+    /**
+     *        Change the rating
+     * @param id 
+     * @param rating 
+     */
+    void call_rating(int id, int rating);
+
+    Provider *provider();
 
 signals:
-	void signalInfo(QString provider, QString server, QString version);
-	void signalCategories(QList<KNS::Category*> categories);
-	void signalEntries(QList<KNS::Entry*> entries);
-	void signalComments(QStringList comments);
-	void signalChanges(QStringList comments);
-	void signalHistory(QStringList entries);
-	void signalRemoval(bool success);
-	void signalSubscription(bool success);
-	void signalComment(bool success);
-	void signalRating(bool success);
-	void signalFault();
-	void signalError();
+    void signalInfo(QString provider, QString server, QString version);
+    void signalCategories(QList<KNS::Category*> categories);
+    void signalEntries(KNS::Entry::List entries);
+    void signalComments(QStringList comments);
+    void signalChanges(QStringList comments);
+    void signalHistory(QStringList entries);
+    void signalRemoval(bool success);
+    void signalSubscription(bool success);
+    void signalComment(bool success);
+    void signalRating(bool success);
+    void signalFault();
+    void signalError();
 
 private slots:
-	/**
-	 * Valid response from server - parsed here to emit the corresponding signal
-	 * @param node 
-	 */
-	void slotResult(QDomNode node);
-	/**
-	 *        Communication error
-	 */
-	void slotError();
+    /**
+     * Valid response from server - parsed here to emit the corresponding signal
+     * @param node 
+     */
+    void slotResult(QDomNode node);
+    /**
+     *        Communication error
+     */
+    void slotError();
 
 private:
-	Soap *m_soap;
-	KUrl m_endpoint;
+    Soap *m_soap;
+    KUrl m_endpoint;
+    Provider *m_provider;
 };
 
 }
