@@ -212,7 +212,7 @@ void KDXSButton::setEngine(DxsEngine *engine)
 
 	if(m_entry) setEnabled(true);
 
-	m_dxs = new KNS::Dxs(m_engine);
+	m_dxs = new KNS::Dxs(m_engine, NULL);
 	m_dxs->setEndpoint(KUrl("http://new.kstuff.org/cgi-bin/hotstuff-dxs"));
 	// FIXME: use real endpoint as soon as provider is loaded
 	// FIXME: actually we would need a setProvider() here as well
