@@ -159,14 +159,21 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         setupTranslations();
     }
 
-    if (keyword.isEmpty() && (obj = reinterpret_cast<QObject *>(createPartObject(parentWidget, parent, iface, variantListToStringList(args))))) {
-        objectCreated(obj);
-        return obj;
-    }
+    if (keyword.isEmpty()) {
 
-    if (keyword.isEmpty() && (obj = createObject(parent, iface, variantListToStringList(args)))) {
-        objectCreated(obj);
-        return obj;
+        // kde3-kparts compatibility, remove in kde5
+        if (args.contains(QVariant("Browser/View")))
+            iface = "Browser/View";
+
+        if ((obj = reinterpret_cast<QObject *>(createPartObject(parentWidget, parent, iface, variantListToStringList(args))))) {
+            objectCreated(obj);
+            return obj;
+        }
+
+        if ((obj = createObject(parent, iface, variantListToStringList(args)))) {
+            objectCreated(obj);
+            return obj;
+        }
     }
 
     const QList<KPluginFactoryPrivate::Plugin> candidates(d->createInstanceHash.values(keyword));
@@ -176,7 +183,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         for (const QMetaObject *current = plugin.first; current; current = current->superClass()) {
             if (0 == qstrcmp(iface, current->className())) {
                 if (obj) {
-                    kFatal(152) << "ambigious interface requested from a DSO containing more than one plugin";
+                    kFatal(152) << "ambiguous interface requested from a DSO containing more than one plugin";
                 }
                 obj = plugin.second(parentWidget, parent, args);
                 break;
