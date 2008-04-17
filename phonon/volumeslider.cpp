@@ -121,7 +121,7 @@ void VolumeSlider::setOrientation(Qt::Orientation o)
     Qt::Alignment align = (o == Qt::Horizontal ? Qt::AlignVCenter : Qt::AlignHCenter);
     d->layout.setAlignment(&d->muteButton, align);
     d->layout.setAlignment(&d->slider, align);
-    d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
+    d->layout.setDirection(o == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::BottomToTop);
     d->slider.setOrientation(o);
 }
 
