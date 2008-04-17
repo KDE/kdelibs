@@ -40,10 +40,6 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
 
-########### KDE-specific API ##############
-
-add_subdirectory(api)
-
 macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
 
 # the check for pcre is in kdelibs/CMakeLists.txt
@@ -192,6 +188,10 @@ set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME kjs)
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 
 install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
+
+########### KDE-specific API ##############
+
+add_subdirectory(api)
 
 ########### install files ###############
 # install( FILES
