@@ -42,6 +42,9 @@ int main(int argc, char **argv)
         kDebug()<<"name:"<<service->name();
     }
     
+    QString parsed = t->parseEmoticons(":D prova :)  :P", KEmoticonsTheme::RelaxedParse);
+    kDebug()<<"parsed:"<<parsed;
+    
     delete t;
     
     return 0;

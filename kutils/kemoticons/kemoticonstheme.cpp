@@ -99,9 +99,11 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode)
         switch (token.type) {
             case Text:
                 result += token.text;
+                kDebug()<<"TEXT:"<<token.text;
                 break;
             case Image:
                 result += token.picHTMLCode;
+                kDebug()<<"IMG:"<<token.picHTMLCode;
                 break;
             default:
                 kWarning() << "Unknown token type. Something's broken.";
@@ -122,8 +124,7 @@ QList<Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
     QChar n;
 
     /* This is the EmoticonNode container, it will represent each matched emoticon */
-    QMap<QString, QPair<QString, int> > foundEmoticons;
-    QMap<QString, QPair<QString, int> >::const_iterator itFound;
+    QList<QPair<QString, EmoticonNode> > foundEmoticons;
     /* First-pass, store the matched emoticon locations in foundEmoticons */
     QMap<QString, QStringList> emoticonList;
     QMap<QString, QStringList>::const_iterator it;
@@ -196,7 +197,7 @@ QList<Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
                         }
                     }
                     /* Perfect match */
-                    foundEmoticons[it.key()] = QPair<QString, int>(needle, pos);
+                    foundEmoticons.append(QPair<QString, EmoticonNode>(it.key(), EmoticonNode(needle, pos)));
                     found = true;
                     /* Skip the matched emoticon's matchText */
                     pos += needle.length() - 1;
@@ -240,16 +241,17 @@ QList<Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
     pos = 0;
     int length;
 
-    for (itFound = foundEmoticons.begin(); itFound != foundEmoticons.end(); ++itFound) {
-        needle = itFound.value().first;
+    for (int i = 0; i < foundEmoticons.size(); ++i) {
+        QPair<QString, EmoticonNode> itFound = foundEmoticons.at(i);
+        needle = itFound.second.first;
  
-        if ((length = (itFound.value().second - pos))) {
+        if ((length = (itFound.second.second - pos))) {
             result.append(Token(Text, message.mid(pos, length)));
-            result.append(Token(Image, needle, itFound.key(), QString()));
+            result.append(Token(Image, needle, itFound.first, QString("html")));
  
             pos += length + needle.length();
         } else {
-            result.append(Token(Image, needle, itFound.key(), QString()));
+            result.append(Token(Image, needle, itFound.first, QString("html")));
  
             pos += needle.length();
         }

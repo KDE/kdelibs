@@ -25,6 +25,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <QtXml/QDomDocument>
+#include <QtCore/QPair>
 
 class QString;
 
@@ -82,7 +83,9 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
          };
 
         Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
-
+        
+        typedef QPair<QString, int> EmoticonNode;
+        
         QString parseEmoticons(const QString &text, ParseMode mode);
         QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParseMode);
         
