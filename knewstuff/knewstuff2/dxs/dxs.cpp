@@ -80,8 +80,7 @@ void Dxs::call_entries(QString category, QString feed)
     QDomText t = doc.createTextNode(category);
     ecategory.appendChild(t);
     entries.appendChild(ecategory);
-    if(!feed.isEmpty())
-    {
+    if (!feed.isEmpty()) {
         QDomElement efeed = doc.createElement("feed");
         QDomText t2 = doc.createTextNode(feed);
         efeed.appendChild(t2);
@@ -189,28 +188,24 @@ void Dxs::slotResult(QDomNode node)
     //kDebug() << "LOCALNAME: " << m_soap->localname(node);
 
     bool success = true;
-    if(m_soap->localname(node) == "Fault")
-    {
+    if (m_soap->localname(node) == "Fault") {
         success = false;
         emit signalFault();
         return;
     }
 
-    if(m_soap->localname(node) == "GHNSInfoResponse")
-    {
+    if (m_soap->localname(node) == "GHNSInfoResponse") {
         QString provider = m_soap->xpath(node, "/provider");
         QString server = m_soap->xpath(node, "/server");
         QString version = m_soap->xpath(node, "/version");
 
         emit signalInfo(provider, server, version);
     }
-    else if(m_soap->localname(node) == "GHNSCategoriesResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSCategoriesResponse") {
         QList<KNS::Category*> categories;
 
         QList<QDomNode> catlist = m_soap->directChildNodes(node, "category");
-        for(int i = 0; i < catlist.count(); i++)
-        {
+        for (int i = 0; i < catlist.count(); i++) {
             KNS::Category *category = new KNS::Category();
 
             QDomNode node = catlist.at(i).toElement();
@@ -229,13 +224,11 @@ void Dxs::slotResult(QDomNode node)
 
         emit signalCategories(categories);
     }
-    else if(m_soap->localname(node) == "GHNSListResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSListResponse") {
         QList<KNS::Entry*> entries;
 
         QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
-        for(int i = 0; i < entrylist.count(); i++)
-        {
+        for (int i = 0; i < entrylist.count(); i++) {
             QDomElement element = entrylist.at(i).toElement();
             element.setTagName("stuff");
             KNS::EntryHandler handler(element);
@@ -248,25 +241,21 @@ void Dxs::slotResult(QDomNode node)
 
         emit signalEntries(entries);
     }
-    else if(m_soap->localname(node) == "GHNSCommentsResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSCommentsResponse") {
         QStringList comments;
 
         QList<QDomNode> comlist = m_soap->directChildNodes(node, "comments");
-        for(int i = 0; i < comlist.count(); i++)
-        {
+        for (int i = 0; i < comlist.count(); i++) {
             comments << comlist.at(i).toElement().text();
         }
 
         emit signalComments(comments);
     }
-    else if(m_soap->localname(node) == "GHNSChangesResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSChangesResponse") {
         QStringList changes;
 
         QList<QDomNode> changelist = m_soap->directChildNodes(node, "entry");
-        for(int i = 0; i < changelist.count(); i++)
-        {
+        for (int i = 0; i < changelist.count(); i++) {
             QDomNode node = changelist.at(i);
 
             QString version = m_soap->xpath(node, "/version");
@@ -279,32 +268,26 @@ void Dxs::slotResult(QDomNode node)
         // FIXME: pass (version, changelog) pairs - Python I miss you :-)
         emit signalChanges(changes);
     }
-    else if(m_soap->localname(node) == "GHNSHistoryResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSHistoryResponse") {
         QStringList entries;
 
         QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
-        for(int i = 0; i < entrylist.count(); i++)
-        {
+        for (int i = 0; i < entrylist.count(); i++) {
             entries << entrylist.at(i).toElement().text();
         }
 
         emit signalHistory(entries);
     }
-    else if(m_soap->localname(node) == "GHNSRemovalResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSRemovalResponse") {
         emit signalRemoval(success);
     }
-    else if(m_soap->localname(node) == "GHNSSubscriptionResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSSubscriptionResponse") {
         emit signalSubscription(success);
     }
-    else if(m_soap->localname(node) == "GHNSCommentResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSCommentResponse") {
         emit signalComment(success);
     }
-    else if(m_soap->localname(node) == "GHNSRatingResponse")
-    {
+    else if (m_soap->localname(node) == "GHNSRatingResponse") {
         emit signalRating(success);
     }
 }

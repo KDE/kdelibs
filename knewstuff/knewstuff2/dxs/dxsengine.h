@@ -37,7 +37,7 @@ class Category;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
+class DxsEngine : public CoreEngine
 {
     Q_OBJECT
     public:

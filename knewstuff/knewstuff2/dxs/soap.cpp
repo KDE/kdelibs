@@ -53,12 +53,10 @@ void Soap::call(const QDomElement& element, const QString &endpoint)
     //    return;
     //}
 
-    if(m_model == canonicaltree)
-    {
+    if (m_model == canonicaltree) {
         call_tree(element, endpoint);
     }
-    else
-    {
+    else {
         call_soap(element, endpoint);
     }
 
@@ -72,8 +70,7 @@ void Soap::call_tree(const QDomElement& element, const QString &endpoint)
     s += localname(element);
     s += '(';
     QDomNodeList l = element.childNodes();
-    for(int i = 0; i < l.count(); i++)
-    {
+    for (int i = 0; i < l.count(); i++) {
         QDomNode tmp = l.item(i);
         s += localname(tmp);
         s += '(';
@@ -164,8 +161,7 @@ void Soap::slotResult(KJob *job)
 {
     //kDebug() << "Result!";
 
-    if((job) && (job->error()))
-    {
+    if ((job) && (job->error())) {
         //job->showErrorDialog(this);
         //kDebug() << "SOAP ERROR!";
         emit signalError();
@@ -181,8 +177,7 @@ void Soap::slotResult(KJob *job)
 
     //kDebug() << "STRING: '" << m_data << "'";
 
-    if(m_model == soap)
-    {
+    if (m_model == soap) {
         QDomDocument doc;
         doc.setContent(m_data);
 
@@ -195,8 +190,7 @@ void Soap::slotResult(KJob *job)
         //m_inprogress = false;
         emit signalResult(contentnode);
     }
-    else
-    {
+    else {
         QDomDocument doc;
 
         // FIXME: dummy data
@@ -227,10 +221,8 @@ QList<QDomNode> Soap::directChildNodes(const QDomNode& node, const QString &name
 {
     QList<QDomNode> list;
     QDomNode n = node.firstChild();
-    while(!n.isNull())
-    {
-        if((n.isElement()) && (n.toElement().tagName() == name))
-        {
+    while (!n.isNull()) {
+        if ((n.isElement()) && (n.toElement().tagName() == name)) {
             list.append(n);
         }
 
@@ -251,11 +243,12 @@ QString Soap::xpath(const QDomNode& node, const QString &expr)
 
     QDomNode n = node;
     QStringList explist = expr.split("/", QString::SkipEmptyParts);
-    for(QStringList::Iterator it = explist.begin(); it != explist.end(); ++it)
-    {
+    for (QStringList::Iterator it = explist.begin(); it != explist.end(); ++it) {
         QDomElement el = n.toElement();
         QDomNodeList l = el.elementsByTagName((*it));
-        if(!l.size()) return QString();
+        if (!l.size()) {
+            return QString();
+        }
         n = l.item(0);
     }
     QString s = n.toElement().text();
@@ -291,8 +284,7 @@ void Soap::slotSocket()
 
     slotData(NULL, a);
 
-    if(m_socket->atEnd())
-    {
+    if (m_socket->atEnd()) {
         m_socket->close();
 //      delete m_socket;
         m_socket = NULL;
@@ -308,35 +300,30 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
     int stack = 0;
     bool quoted = false;
 
-    if(data.indexOf('(') == -1)
-    {
+    if (data.indexOf('(') == -1) {
         QDomText t = doc.createTextNode(data);
         cur.appendChild(t);
         return doc;
     }
 
-    for(int i = 0; i < data.length(); i++)
-    {
+    for (int i = 0; i < data.length(); i++) {
         const QChar c = data.at(i);
-        if(quoted)
-        {
+        if (quoted) {
             quoted = false;
             continue;
         }
-        if(c == '\\')
-        {
+        if (c == '\\') {
             quoted = true;
         }
-        else if(c == '(')
-        {
+        else if (c == '(') {
             stack++;
-            if(start == -1) start = i;
+            if (start == -1) {
+                start = i;
+            }
         }
-        else if(c == ')')
-        {
+        else if (c == ')') {
             stack--;
-            if((stack == 0) && (end == -1))
-            {
+            if ((stack == 0) && (end == -1)) {
                 end = i;
                 //kDebug() << "START-END: " << start << "," << end;
                 QString expression = data.mid(offset, start - offset);
@@ -346,13 +333,11 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
                 //kDebug() << "EXPR-SUB " << sub;
 
                 QDomElement elem;
-                if(cur.isNull())
-                {
+                if (cur.isNull()) {
                     elem = doc.createElement("ns:" + expression);
                     doc.appendChild(elem);
                 }
-                else
-                {
+                else {
                     elem = doc.createElement(expression);
                     cur.appendChild(elem);
                 }
