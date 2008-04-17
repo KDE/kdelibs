@@ -88,8 +88,8 @@ set(kdxspreview_SRCS
 #add_definitions(-DKNSSRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\")
 #set(CMAKE_SKIP_RPATH TRUE)
 
-kde4_add_executable(kdxspreview TEST ${kdxspreview_SRCS})
+#kde4_add_executable(kdxspreview TEST ${kdxspreview_SRCS})
 
-target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} knewstuff2)
-install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
+#target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} knewstuff2)
+#install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
 
