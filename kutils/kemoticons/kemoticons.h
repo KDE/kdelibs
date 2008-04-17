@@ -26,7 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 
-#include <KServiceTypeTrader>
+#include <KDE/KServiceTypeTrader>
 
 class KEmoticonsPrivate
 {
