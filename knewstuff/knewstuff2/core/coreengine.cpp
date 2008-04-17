@@ -63,7 +63,7 @@ CoreEngine::~CoreEngine()
 
 bool CoreEngine::init(const QString &configfile)
 {
-    //kDebug() << "Initializing KNS::CoreEngine from '" << configfile << "'";
+    kDebug() << "Initializing KNS::CoreEngine from '" << configfile << "'";
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -171,6 +171,7 @@ bool CoreEngine::init(const QString &configfile)
             kError() << "Cache policy '" + cachePolicy + "' is unknown." << endl;
         }
     }
+    kDebug() << "cache policy: " << cachePolicy;
 
     m_initialized = true;
 
@@ -1020,22 +1021,23 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
 
         if (m_entry_registry.contains(thisId)) {
             // see if the one online is newer (higher version, release, or release date)
-            Entry *oldentry = m_entry_registry[thisId];
-            e->setInstalledFiles(oldentry->installedFiles());
+            Entry *registryentry = m_entry_registry[thisId];
+            e->setInstalledFiles(registryentry->installedFiles());
 
-            if (entryChanged(oldentry, e)) {
+            if (entryChanged(registryentry, e)) {
                 e->setStatus(Entry::Updateable);
                 emit signalEntryChanged(e);
             } else {
-                e->setStatus(oldentry->status());
+                // it hasn't changed, so set the status to that of the registry entry
+                e->setStatus(registryentry->status());
             }
 
             if (entryCached(e)) {
-                // in the registry and the cache, so take the cache one out
+                // in the registry and the cache, so take the cached one out
                 Entry * cachedentry = m_entry_index[thisId];
                 if (entryChanged(cachedentry, e)) {
                     //kDebug() << "CACHE: update entry";
-                    e->setStatus(Entry::Updateable);
+                    cachedentry->setStatus(Entry::Updateable);
                     // entry has changed
                     if (m_cachepolicy != CacheNever) {
                         cacheEntry(e);
@@ -1047,8 +1049,10 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
                 feed->removeEntry(cachedentry);
                 //emit signalEntryRemoved(cachedentry, feed);
             }
+            else {
+                emit signalEntryLoaded(e, feed, provider);
+            }
 
-            emit signalEntryLoaded(e, feed, provider);
         } else {
             e->setStatus(Entry::Downloadable);
 
