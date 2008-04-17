@@ -41,6 +41,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
+#include <QtCore/QSet>
 
 #include <QLinkedList>
 
@@ -96,6 +97,16 @@ namespace khtml
 	    Cached        // regular case
 	};
 
+        enum PreloadResult {
+            PreloadNotReferenced = 0,
+            PreloadReferenced,
+            PreloadReferencedWhileLoading,
+            PreloadReferencedWhileComplete
+        };
+
+        PreloadResult preloadResult() const { return m_preloadResult; }
+        void setProspectiveRequest() { m_prospectiveRequest = true; }
+
 	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, int size)
             : m_url(url), m_type(type), m_cachePolicy(_cachePolicy),
               m_expireDate(0), m_size(size)
@@ -109,6 +120,9 @@ namespace khtml
             m_hadError = false;
             m_wasBlocked = false;
             m_prev = m_next = 0;
+            m_preloadCount = 0;
+            m_preloadResult = PreloadNotReferenced;
+            m_prospectiveRequest = false;
 	}
         virtual ~CachedObject();
 
@@ -123,6 +137,10 @@ namespace khtml
 
 	int count() const { return m_clients.count(); }
         int accessCount() const { return m_accessCount; }
+
+        bool isPreloaded() const { return m_preloadCount; }
+        void increasePreloadCount() { ++m_preloadCount; }
+        void decreasePreloadCount() { assert(m_preloadCount); --m_preloadCount; } 
 
 	void setStatus(Status s) { m_status = s; }
 	Status status() const { return m_status; }
@@ -142,7 +160,7 @@ namespace khtml
 
         void setRequest(Request *_request);
 
-        bool canDelete() const { return (m_clients.count() == 0 && !m_request); }
+        bool canDelete() const { return (m_clients.count() == 0 && !m_request && !m_preloadCount); }
 
 	void setExpireDate(time_t _expireDate) {  m_expireDate = _expireDate; }
 
@@ -174,11 +192,14 @@ namespace khtml
 	KIO::CacheControl m_cachePolicy;
 	time_t m_expireDate;
 	int m_size;
+        unsigned m_preloadCount;
+        PreloadResult m_preloadResult: 3;
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_free : 1;
 	bool m_hadError : 1;
 	bool m_wasBlocked : 1;
+        bool m_prospectiveRequest: 1;
 
     private:
         bool allowInLRUList() const { return canDelete() && !m_free && status() != Persistent; }
@@ -404,6 +425,9 @@ namespace khtml
         void resumeAnimations();
         void insertCachedObject( CachedObject* o ) const;
         void removeCachedObject( CachedObject* o) const { m_docObjects.remove( o ); }
+        void clearPreloads();
+        void registerPreload(CachedObject*);
+        void printPreloadStats();
 
     private:
         bool needReload(CachedObject *existing, const QString &fullUrl);
@@ -414,6 +438,7 @@ namespace khtml
 
         QStringList m_reloadedURLs;
         mutable QSet<CachedObject*> m_docObjects;
+        QSet<CachedObject*> m_preloads;
 	time_t m_expireDate;
 	time_t m_creationDate;
 	KIO::CacheControl m_cachePolicy;

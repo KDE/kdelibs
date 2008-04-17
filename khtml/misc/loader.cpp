@@ -40,6 +40,8 @@
 #undef LOADER_DEBUG
 //#define LOADER_DEBUG
 
+//#define PRELOAD_DEBUG
+
 #include "loader.h"
 #include "seed.h"
 #include <imload/image.h>
@@ -137,6 +139,14 @@ void CachedObject::setRequest(Request *_request)
 
 void CachedObject::ref(CachedObjectClient *c)
 {
+    if (m_preloadResult == PreloadNotReferenced) {
+        if (isLoaded())
+            m_preloadResult = PreloadReferencedWhileComplete;
+        else if (m_prospectiveRequest)
+            m_preloadResult = PreloadReferencedWhileLoading;
+        else
+            m_preloadResult = PreloadReferenced;
+    }
     // unfortunately we can be ref'ed multiple times from the
     // same object,  because it uses e.g. the same foreground
     // and the same background picture. so deal with it.
@@ -1035,6 +1045,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 
 DocLoader::~DocLoader()
 {
+    clearPreloads();
     Cache::loader()->cancelRequests( this );
     Cache::docloader->removeAll( this );
 }
@@ -1070,7 +1081,7 @@ bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
     {
        if (!m_reloadedURLs.contains(fullURL))
        {
-          if (existing && existing->isExpired())
+          if (existing && existing->isExpired() && !existing->isPreloaded())
           {
              Cache::removeCacheEntry(existing);
              m_reloadedURLs.append(fullURL);
@@ -1082,15 +1093,84 @@ bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
     {
        if (!m_reloadedURLs.contains(fullURL))
        {
-          if (existing)
+          if (existing && !existing->isPreloaded())
           {
              Cache::removeCacheEntry(existing);
           }
-          m_reloadedURLs.append(fullURL);
-          reload = true;
+          if (!existing || !existing->isPreloaded()) {
+              m_reloadedURLs.append(fullURL);
+              reload = true;
+          }
        }
     }
     return reload;
+}
+
+void DocLoader::registerPreload(CachedObject* resource)
+{
+    if (!resource || resource->isLoaded() || m_preloads.contains(resource))
+        return;
+    resource->increasePreloadCount();
+    m_preloads.insert(resource);
+    resource->setProspectiveRequest();
+#ifdef PRELOAD_DEBUG
+    fprintf(stderr, "PRELOADING %s\n", resource->url().string().toLatin1().data());
+#endif
+}
+ 
+void DocLoader::clearPreloads()
+{
+    printPreloadStats();
+    QSet<CachedObject*>::iterator end = m_preloads.end();
+    for (QSet<CachedObject*>::iterator it = m_preloads.begin(); it != end; ++it) {
+        CachedObject* res = *it;
+        if (res->preloadResult() == CachedObject::PreloadNotReferenced || res->hadError())
+            Cache::removeCacheEntry(res);
+        res->decreasePreloadCount();
+    }
+    m_preloads.clear();
+}
+
+void DocLoader::printPreloadStats()
+{
+#ifdef PRELOAD_DEBUG
+    unsigned scripts = 0;
+    unsigned scriptMisses = 0;
+    unsigned stylesheets = 0;
+    unsigned stylesheetMisses = 0;
+    unsigned images = 0;
+    unsigned imageMisses = 0;
+    QSet<CachedObject*>::iterator end = m_preloads.end();
+    for (QSet<CachedObject*>::iterator it = m_preloads.begin(); it != end; ++it) {
+        CachedObject* res = *it;
+        if (res->preloadResult() == CachedObject::PreloadNotReferenced)
+            fprintf(stderr,"!! UNREFERENCED PRELOAD %s\n", res->url().string().toLatin1().data());
+        else if (res->preloadResult() == CachedObject::PreloadReferencedWhileComplete)
+            fprintf(stderr,"HIT COMPLETE PRELOAD %s\n", res->url().string().toLatin1().data());
+        else if (res->preloadResult() == CachedObject::PreloadReferencedWhileLoading)
+            fprintf(stderr,"HIT LOADING PRELOAD %s\n", res->url().string().toLatin1().data());
+        
+        if (res->type() == CachedObject::Script) {
+            scripts++;
+            if (res->preloadResult() < CachedObject::PreloadReferencedWhileLoading)
+                scriptMisses++;
+        } else if (res->type() == CachedObject::CSSStyleSheet) {
+            stylesheets++;
+            if (res->preloadResult() < CachedObject::PreloadReferencedWhileLoading)
+                stylesheetMisses++;
+        } else {
+            images++;
+            if (res->preloadResult() < CachedObject::PreloadReferencedWhileLoading)
+                imageMisses++;
+        }
+    }
+    if (scripts)
+        fprintf(stderr, "SCRIPTS: %d (%d hits, hit rate %d%%)\n", scripts, scripts - scriptMisses, (scripts - scriptMisses) * 100 / scripts);
+    if (stylesheets)
+        fprintf(stderr, "STYLESHEETS: %d (%d hits, hit rate %d%%)\n", stylesheets, stylesheets - stylesheetMisses, (stylesheets - stylesheetMisses) * 100 / stylesheets);
+    if (images)
+        fprintf(stderr, "IMAGES:  %d (%d hits, hit rate %d%%)\n", images, images - imageMisses, (images - imageMisses) * 100 / images);
+#endif
 }
 
 #define DOCLOADER_SECCHECK(doRedirectCheck) \

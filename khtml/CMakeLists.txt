@@ -72,6 +72,7 @@ set(khtmlmisc_STAT_SRCS
 set(khtmlhtml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/html/htmlparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/htmltokenizer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/html/htmlprospectivetokenizer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/dtd.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_headimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_blockimpl.cpp

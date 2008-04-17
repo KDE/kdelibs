@@ -56,6 +56,9 @@
 #include <config.h>
 
 #include "kentities.c"
+#include "htmlprospectivetokenizer.h"
+
+#define PROSPECTIVE_TOKENIZER_ENABLED 1
 
 using namespace khtml;
 
@@ -131,6 +134,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
     m_autoCloseTimer = 0;
+    m_prospectiveTokenizer = 0;
     onHold = false;
 
     reset();
@@ -146,6 +150,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
     m_autoCloseTimer = 0;
+    m_prospectiveTokenizer = 0;
     onHold = false;
 
     reset();
@@ -432,6 +437,17 @@ void HTMLTokenizer::scriptHandler()
         TokenizerString t = pendingQueue.pop();
         pendingQueue.top().prepend( t );
     }
+#if PROSPECTIVE_TOKENIZER_ENABLED
+    if (!cachedScript.isEmpty() && !m_executingScript) {
+        if (!m_prospectiveTokenizer)
+            m_prospectiveTokenizer = new ProspectiveTokenizer(parser->docPtr());
+        if (!m_prospectiveTokenizer->inProgress() && !pendingQueue.isEmpty()) {
+            m_prospectiveTokenizer->begin();
+            m_prospectiveTokenizer->write(pendingQueue.top());
+        }
+    }
+#endif
+
 }
 
 void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptURL,
@@ -1326,6 +1342,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             pendingQueue.bottom().append(str);
         else
             pendingQueue.top().append(str);
+#if PROSPECTIVE_TOKENIZER_ENABLED
+        if (m_prospectiveTokenizer && m_prospectiveTokenizer->inProgress() && appendData)
+            m_prospectiveTokenizer->write(str);
+#endif
         return;
     }
 
@@ -1711,6 +1731,7 @@ void HTMLTokenizer::processToken()
 HTMLTokenizer::~HTMLTokenizer()
 {
     reset();
+    delete m_prospectiveTokenizer;
     delete parser;
 }
 

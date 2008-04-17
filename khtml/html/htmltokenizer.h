@@ -51,6 +51,7 @@ namespace DOM {
 namespace khtml {
     class CachedScript;
     class KHTMLParser;
+    class ProspectiveTokenizer;
 
     /**
      * @internal
@@ -350,6 +351,8 @@ protected:
     KHTMLParser *parser;
 
     KHTMLView *view;
+
+    khtml::ProspectiveTokenizer* m_prospectiveTokenizer;
 };
 
 } // namespace
