@@ -19,13 +19,13 @@
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Symbol>
           a       rdfs:Class ;
           rdfs:comment "Represents a symbol" ;
-          rdfs:label "Symbol" ;
+          rdfs:label "symbol" ;
           rdfs:subClassOf rdfs:Resource .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isTopicOf>
           a       rdf:Property ;
           rdfs:comment "Defines a relationship between two resources, where the subject is a topic of the object" ;
-          rdfs:label "isTopicOf" ;
+          rdfs:label "is topic of" ;
           rdfs:range rdfs:Resource ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated> ;
           nrl:inverseProperty nao:hasTopic .
@@ -34,7 +34,7 @@
           a       rdf:Property ;
           rdfs:comment "States which resources a tag is associated with" ;
           rdfs:domain <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag> ;
-          rdfs:label "isTagFor" ;
+          rdfs:label "is tag for" ;
           rdfs:range rdfs:Resource ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> ;
           nrl:inverseProperty nao:hasTag .
@@ -51,7 +51,7 @@
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#altLabel>
           a       rdf:Property ;
           rdfs:comment "An alternative label alongside the preferred label for a resource" ;
-          rdfs:label "altLabel" ;
+          rdfs:label "alternative label" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf rdfs:label .
 
@@ -59,14 +59,14 @@
           a       rdf:Property ;
           rdfs:comment "Annotation for a resource in the form of a symbol representation" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "hasSymbol" ;
+          rdfs:label "has symbol" ;
           rdfs:range <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Symbol> .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#prefSymbol>
           a       rdf:Property ;
           rdfs:comment "A unique preferred symbol representation for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "prefSymbol" ;
+          rdfs:label "preferred symbol" ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol> ;
           rdfs:range <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Symbol> .
 
@@ -74,14 +74,14 @@
           a       rdf:Property ;
           rdfs:comment "An alternative symbol representation for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "altSymbol" ;
+          rdfs:label "alternative symbol" ;
      	    rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasSymbol> ;
           rdfs:range <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Symbol> .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#hasTopic>
           a       rdf:Property ;
           rdfs:comment "Defines a relationship between two resources, where the object is a topic of the subject" ;
-          rdfs:label "hasTopic" ;
+          rdfs:label "has topic" ;
           rdfs:range rdfs:Resource ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated> ;
           nrl:inverseProperty nao:isTopicOf .
@@ -90,7 +90,7 @@
           a       rdf:Property ;
           rdfs:comment "States the serialization language for a named graph that is represented within a document" ;
           rdfs:domain nrl:DocumentGraph ;
-          rdfs:label "serializationLanguage" ;
+          rdfs:label "serialization language" ;
           rdfs:range rdfs:Literal ;
           nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
 
@@ -120,13 +120,13 @@
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#rating> ;
           rdfs:comment "Annotation for a resource in the form of a numeric decimal rating" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "numeriRating" ;
+          rdfs:label "numeric rating" ;
           rdfs:range xsd:decimal .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag>
           a       rdfs:Class ;
           rdfs:comment "Represents a generic tag" ;
-          rdfs:label "Tag" ;
+          rdfs:label "tag" ;
           rdfs:subClassOf rdfs:Resource .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#contributor>
@@ -141,7 +141,7 @@
           a       rdf:Property ;
           rdfs:comment "Defines the default static namespace for a graph" ;
           rdfs:domain nrl:Data ;
-          rdfs:label "hasDefaultNamespace" ;
+          rdfs:label "has default namespace" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> ;
           nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
@@ -150,7 +150,7 @@
           a       rdf:Property ;
           rdfs:comment "States the modification time for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "modified" ;
+          rdfs:label "modified at" ;
           rdfs:range xsd:dateTime ;
           rdfs:subPropertyOf dcterms:modified , <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> .
 
@@ -158,7 +158,7 @@
           a       rdf:Property ;
           rdfs:comment "States the creation, or first modification time for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "created" ;
+          rdfs:label "created at" ;
           rdfs:range xsd:dateTime ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#modified> ;
           nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
@@ -167,7 +167,7 @@
           a       rdf:Property ;
           rdfs:comment "States the last modification time for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "lastModified" ;
+          rdfs:label "last modified at" ;
           rdfs:range xsd:dateTime ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#modified> ;
           nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
@@ -198,7 +198,7 @@
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#prefLabel>
           a       rdf:Property ;
           rdfs:comment "A preferred label for a resource" ;
-          rdfs:label "prefLabel" ;
+          rdfs:label "preferred label" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf rdfs:label .
 
@@ -206,7 +206,7 @@
           a       rdf:Property ;
           rdfs:comment "Specifies the engineering tool used to generate the graph" ;
           rdfs:domain nrl:Data ;
-          rdfs:label "engineeringTool" ;
+          rdfs:label "engineering tool" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> .
 
@@ -214,7 +214,7 @@
           a       rdf:Property ;
           rdfs:comment "Defines an existing tag for a resource" ;
           rdfs:domain rdfs:Resource ;
-          rdfs:label "hasTag" ;
+          rdfs:label "has tag" ;
           rdfs:range <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag> ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> ;
           nrl:inverseProperty nao:isTagFor .
@@ -222,21 +222,21 @@
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#isRelated>
           a       rdf:Property , nrl:SymmetricProperty ;
           rdfs:comment "Defines an annotation for a resource in the form of a relationship between the subject resource and another resource" ;
-          rdfs:label "isRelated" ;
+          rdfs:label "is related to" ;
           rdfs:range rdfs:Resource ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#personalIdentifier>
           a       rdf:Property , nrl:InverseFunctionalProperty ;
           rdfs:comment "Defines a personal string identifier for a resource" ;
-          rdfs:label "personalIdentifier" ;
+          rdfs:label "personal identifier" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#identifier> .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Party>
           a       rdfs:Class ;
           rdfs:comment "Represents a single or a group of individuals" ;
-          rdfs:label "Party" ;
+          rdfs:label "party" ;
           rdfs:subClassOf rdfs:Resource .
 }
 
