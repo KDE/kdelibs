@@ -206,17 +206,16 @@ void KPluginFactory::setComponentData(const KComponentData &kcd)
     d->componentData = kcd;
 }
 
+// KDE5 TODO: should be static, and possibly public (for apps to use)
 QStringList KPluginFactory::variantListToStringList(const QVariantList &list)
 {
-    QVariantList copy(list);
     QStringList stringlist;
-
-    while (!copy.isEmpty())
-        stringlist << copy.takeFirst().toString();
-
+    Q_FOREACH(const QVariant& var, list)
+        stringlist << var.toString();
     return stringlist;
 }
 
+// KDE5 TODO: should be static, and possibly public (for apps to use)
 QVariantList KPluginFactory::stringListToVariantList(const QStringList &list)
 {
     QVariantList variantlist;
