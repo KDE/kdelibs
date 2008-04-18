@@ -22,7 +22,7 @@
 #define KNEWSTUFF2_UI_KDXSBUTTON_H
 
 #include <QtGui/QToolButton>
-
+#include "knewstuff2/core/entry.h"
 class KMenu;
 class QAction;
 class KUrl;
@@ -67,7 +67,7 @@ public Q_SLOTS:
 
 	void slotInfo(QString provider, QString server, QString version);
 	void slotCategories(QList<KNS::Category*> categories);
-	void slotEntries(QList<KNS::Entry*> entries);
+    void slotEntries(KNS::Entry::List entries);
 	void slotComments(QStringList comments);
 	void slotHistory(QStringList entries);
 	void slotChanges(QStringList entries);
@@ -80,7 +80,7 @@ public Q_SLOTS:
 	void slotError();
 
 	void slotPayloadLoaded(KUrl url);
-	void slotPayloadFailed();
+	void slotPayloadFailed(KNS::Entry *);
 
 private:
 	bool authenticate();
@@ -143,7 +143,7 @@ private:
 
 	QString m_username;
 	QString m_password;
-	
+
 	class Private;
 	Private * const d;
 };

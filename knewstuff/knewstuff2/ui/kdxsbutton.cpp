@@ -225,8 +225,8 @@ void KDXSButton::setEngine(DxsEngine *engine)
 		SIGNAL(signalCategories(QList<KNS::Category*>)),
 		SLOT(slotCategories(QList<KNS::Category*>)));
 	connect(m_dxs,
-		SIGNAL(signalEntries(QList<KNS::Entry*>)),
-		SLOT(slotEntries(QList<KNS::Entry*>)));
+		SIGNAL(signalEntries(KNS::Entry::List)),
+		SLOT(slotEntries(KNS::Entry::List)));
 	connect(m_dxs,
 		SIGNAL(signalComments(QStringList)),
 		SLOT(slotComments(QStringList)));
@@ -276,9 +276,9 @@ void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 	}
 }
 
-void KDXSButton::slotEntries(QList<KNS::Entry*> entries)
+void KDXSButton::slotEntries(KNS::Entry::List entries)
 {
-	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
+    for(KNS::Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
 		//kDebug() << "Entry: " << entry->name().representation();
@@ -496,8 +496,8 @@ void KDXSButton::slotTriggered(QAction *action)
 			SIGNAL(signalPayloadLoaded(KUrl)),
 			SLOT(slotPayloadLoaded(KUrl)));
 		connect(m_engine,
-			SIGNAL(signalPayloadFailed()),
-			SLOT(slotPayloadFailed()));
+			SIGNAL(signalPayloadFailed(KNS::Entry *)),
+			SLOT(slotPayloadFailed(KNS::Entry *)));
 
 		m_engine->downloadPayload(m_entry);
 	}
@@ -597,7 +597,7 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 	m_engine->install(url.pathOrUrl());
 }
 
-void KDXSButton::slotPayloadFailed()
+void KDXSButton::slotPayloadFailed(KNS::Entry *)
 {
 	//kDebug() << "PAYLOAD: failed";
 }
