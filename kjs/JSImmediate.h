@@ -33,6 +33,13 @@
 #endif
 #include <stdlib.h>
 
+#if PLATFORM(SOLARIS_OS)
+static inline int signbit(double x)
+{
+    return (x<0.0) ? 1 : 0;
+}
+#endif
+
 namespace KJS {
 
 class ExecState;

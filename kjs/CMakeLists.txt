@@ -65,9 +65,9 @@ if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # if we're here, either PCRE support is disabled, or it's not found...
    # it better be disabled.
-   if (NOT KJS_DISABLE_PCRE)
+   if (NOT KJS_FORCE_DISABLE_PCRE)
         message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
-   endif (NOT KJS_DISABLE_PCRE)
+   endif (NOT KJS_FORCE_DISABLE_PCRE)
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
