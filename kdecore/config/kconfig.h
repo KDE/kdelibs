@@ -42,7 +42,7 @@ class KConfigPrivate;
  * \brief The central class of the KDE configuration data system.
  *
  * Quickstart:
- * 
+ *
  * Get the default application config object via KGlobal::config().
  *
  * Load a specific configuration file:
@@ -136,6 +136,9 @@ public:
      *
      * @param file the new config object will save itself to.
      * @param config optional config object to reuse
+     *
+     * @return the same as @p config if it was set, otherwise a new KConfig object.
+     * In that case, do not forget to delete it!
      */
     KConfig* copyTo(const QString &file, KConfig *config=0) const;
 
