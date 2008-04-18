@@ -19,6 +19,7 @@ Comment[sr]=Позадинско складиште за К‑конфиг
 Comment[sr@latin]=Pozadinsko skladište za KConfig
 Comment[sv]=Lagringsgränssnitt för KConfig
 Comment[th]=พื้นที่จัดเก็บข้อมูลเบื้องหลังสำหรับ KConfig
+Comment[tr]=KConfig için Arka Uç depolaması
 Comment[uk]=Засіб збереження для KConfig
 Comment[x-test]=xxBackend storage for KConfigxx
 Comment[zh_CN]=KConfig 后端存储
