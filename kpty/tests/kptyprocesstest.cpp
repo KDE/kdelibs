@@ -24,7 +24,34 @@
 #include <kptydevice.h>
 #include <qtest_kde.h>
 
-void KPtyProcessTest::test_pty_fd()
+void KPtyProcessTest::test_suspend_pty()
+{
+	KPtyProcess p;
+	p.setPtyChannels(KPtyProcess::AllChannels);
+	p.setProgram("/bin/ping",QStringList() << "-i" << "0.5" << "localhost");
+	p.start();
+
+	// verify that data is available to read from the pty
+	QVERIFY(p.pty()->waitForReadyRead(1500));
+	
+	// suspend the pty device and read all available data from it
+	p.pty()->setSuspended(true);
+	p.pty()->readAll();
+
+	// verify that no data was read by the pty
+	QVERIFY(!p.pty()->waitForReadyRead(1500));
+	
+	// allow process to write more data
+	p.pty()->setSuspended(false);
+
+	// verify that data is available once more
+	QVERIFY(p.pty()->waitForReadyRead(1500));
+	p.pty()->readAll();
+	
+	p.terminate();
+	p.waitForFinished();
+}
+void KPtyProcessTest::test_shared_pty()
 {
 	// start a first process
 	KPtyProcess p;

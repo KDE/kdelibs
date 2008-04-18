@@ -534,6 +534,16 @@ bool KPtyDevice::waitForBytesWritten(int msecs)
     Q_D(KPtyDevice);
     return d->doWait(msecs, false);
 }
+void KPtyDevice::setSuspended(bool suspended)
+{
+	Q_D(KPtyDevice);
+	d->readNotifier->setEnabled(!suspended);
+}
+bool KPtyDevice::isSuspended() const
+{
+	Q_D(const KPtyDevice);
+	return d->readNotifier->isEnabled();
+}
 
 // protected
 qint64 KPtyDevice::readData(char *data, qint64 maxlen)
