@@ -458,7 +458,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
     const QString urlStr = url.url();
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
-    Q_ASSERT(dit != directoryData.end());
+    if (dit == directoryData.end())
+        return;
     DirectoryData& dirData = *dit;
     dirData.listersCurrentlyHolding.removeAll(lister);
 
