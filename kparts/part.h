@@ -101,10 +101,17 @@ protected:
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogs.
+   *
+   * It is recommended to call setComponentData with loadPlugins set to false,
+   * and to load plugins at the end of your part constructor (in the case of
+   * KParts::MainWindow, plugins are automatically loaded in createGUI anyway,
+   * so set loadPlugins to false for KParts::MainWindow as well).
    */
   virtual void setComponentData(const KComponentData &componentData, bool loadPlugins);
   // TODO KDE5: merge the above two methods, using loadPlugins=true. Or better, remove loadPlugins
   // altogether and change plugins to call loadPlugins() manually at the end of their ctor.
+    // In the case of KParts MainWindows, plugins are automatically loaded in createGUI anyway,
+    // so setComponentData() should really not load the plugins.
 
   /**
    * We have three different policies, whether to load new plugins or not. The
