@@ -749,7 +749,7 @@ static QString simplifiedExecLineFromService(const QString& fullExec)
     return exec.simplified();
 }
 
-void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId)
+void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId /*menu id or storage id*/)
 {
     KSharedConfig::Ptr profile = KSharedConfig::openConfig("mimeapps.list", KConfig::NoGlobals, "xdgdata-apps");
     KConfigGroup addedApps(profile, "Added Associations");
@@ -769,7 +769,7 @@ void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId)
     // kbuildsycoca is the one reading mimeapps.list, so we need to run it now
     KBuildSycocaProgressDialog::rebuildKSycoca(q);
 
-    m_pService = KService::serviceByMenuId(serviceId);
+    m_pService = KService::serviceByStorageId(serviceId);
     Q_ASSERT( m_pService );
 }
 
