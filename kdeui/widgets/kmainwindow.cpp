@@ -618,14 +618,12 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
            cg.writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
 
-    QString configGroup = cg.name();
-
     // Utilise the QMainWindow::saveState() functionality
     QByteArray state = saveState();
     cg.writeEntry("State", state.toBase64());
     // One day will need to save the version number, but for now, assume 0
 
-    if ( !autoSaveSettings() || configGroup == autoSaveGroup() ) {
+    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) {
         if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
             cg.revertToDefault("ToolBarsMovable");
         else
@@ -634,14 +632,13 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {
-        QString group;
+        QString group("Toolbar");
         // Give a number to the toolbar, but prefer a name if there is one,
         // because there's no real guarantee on the ordering of toolbars
-        group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
-        group.prepend(" Toolbar");
-        group.prepend(configGroup);
-        KConfigGroup groupGrp(&cg, group);
-        toolbar->saveSettings(groupGrp);
+        group += (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
+
+        KConfigGroup toolbarGroup(&cg, group);
+        toolbar->saveSettings(toolbarGroup);
         n++;
     }
 }
@@ -665,7 +662,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     applyMainWindowSettings(cg); // Menubar, statusbar and toolbar settings.
 
     s.setNum(number);
-    KConfigGroup grp(cg.config(), s);
+    KConfigGroup grp(config, s);
     readProperties(grp);
     return true;
 }
@@ -714,9 +711,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 #endif
     }
 
-    QString configGroup = cg.name();
-
-    if ( !autoSaveSettings() || configGroup == autoSaveGroup() ) {
+    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) {
         QString entry = cg.readEntry ("ToolBarsMovable", "Enabled");
         if ( entry == "Disabled" )
             KToolBar::setToolBarsLocked(true);
@@ -726,17 +721,13 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {
-        QString group;
-        if (!configGroup.isEmpty())
-        {
-           // Give a number to the toolbar, but prefer a name if there is one,
-           // because there's no real guarantee on the ordering of toolbars
-           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
-           group.prepend(" Toolbar");
-           group.prepend(configGroup);
-        }
-        KConfigGroup configGroup(&cg, group);
-        toolbar->applySettings(configGroup, force);
+        QString group("Toolbar");
+        // Give a number to the toolbar, but prefer a name if there is one,
+        // because there's no real guarantee on the ordering of toolbars
+        group += (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
+
+        KConfigGroup toolbarGroup(&cg, group);
+        toolbar->applySettings(toolbarGroup, force);
         n++;
     }
 
