@@ -59,8 +59,10 @@ namespace KPAC
         delete m_script;
     }
 
-    QString ProxyScout::proxyForUrl( const KUrl& url, const QDBusMessage &msg )
+    QString ProxyScout::proxyForUrl( const QString& checkUrl, const QDBusMessage &msg )
     {
+        KUrl url( checkUrl );
+
         if ( m_suspendTime )
         {
             if ( std::time( 0 ) - m_suspendTime < 300 ) return "DIRECT";

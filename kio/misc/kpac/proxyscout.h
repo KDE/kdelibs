@@ -45,7 +45,7 @@ namespace KPAC
         virtual ~ProxyScout();
 
     public Q_SLOTS:
-        Q_SCRIPTABLE QString proxyForUrl( const KUrl& url, const QDBusMessage & );
+        Q_SCRIPTABLE QString proxyForUrl( const QString& checkUrl, const QDBusMessage & );
         Q_SCRIPTABLE Q_NOREPLY void blackListProxy( const QString& proxy );
         Q_SCRIPTABLE Q_NOREPLY void reset();
 
