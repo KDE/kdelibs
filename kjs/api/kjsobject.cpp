@@ -97,36 +97,43 @@ bool KJSObject::isValid() const
 
 bool KJSObject::isUndefined() const
 {
+    assert(isValid());
     return JSVALUE(this)->isUndefined();
 }
 
 bool KJSObject::isNull() const
 {
+    assert(isValid());
     return JSVALUE(this)->isNull();
 }
 
 bool KJSObject::isBoolean() const
 {
+    assert(isValid());
     return JSVALUE(this)->isBoolean();
 }
 
 bool KJSObject::isNumber() const
 {
+    assert(isValid());
     return JSVALUE(this)->isNumber();
 }
 
 bool KJSObject::isString() const
 {
+    assert(isValid());
     return JSVALUE(this)->isString();
 }
 
 bool KJSObject::isObject() const
 {
+    assert(isValid());
     return JSVALUE(this)->isObject();
 }
 
 bool KJSObject::toBoolean(KJSContext* ctx)
 {
+    assert(isValid());
     ExecState* exec = EXECSTATE(ctx);
     assert(exec);
     return JSVALUE(this)->toBoolean(exec);
@@ -134,6 +141,7 @@ bool KJSObject::toBoolean(KJSContext* ctx)
 
 double KJSObject::toNumber(KJSContext* ctx)
 {
+    assert(isValid());
     ExecState* exec = EXECSTATE(ctx);
     assert(exec);
     return JSVALUE(this)->toNumber(exec);
@@ -141,6 +149,7 @@ double KJSObject::toNumber(KJSContext* ctx)
 
 QString KJSObject::toString(KJSContext* ctx)
 {
+    assert(isValid());
     ExecState* exec = EXECSTATE(ctx);
     assert(exec);
     return toQString(JSVALUE(this)->toString(exec));
@@ -148,6 +157,7 @@ QString KJSObject::toString(KJSContext* ctx)
 
 KJSObject KJSObject::property(KJSContext* ctx, const QString& name)
 {
+    assert(isValid());
     JSValue* v = JSVALUE(this);
     assert(v);
     

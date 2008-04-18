@@ -41,7 +41,7 @@ public:
      * Constructs a prototype object with its own prototype property
      * set to the Object prototype.
      */
-    KJSPrototype(const KJSInterpreter& ip);
+    KJSPrototype();
     /**
      * Destructs this prototype object.
      */
@@ -59,11 +59,13 @@ public:
                         const QString& name, const QString& value);
 
     /**
-     * Function signature for a property getter function.
+     * Function signature for a property getter function. Describes
+     * one of the defineProperty() argument types.
      */
     typedef KJSObject (*PropertyGetter)(KJSContext* context, void* object);
     /**
-     * Function signature for a property setter function.
+     * Function signature for a property setter function. Describes
+     * one of the defineProperty() argument types.
      */
     typedef void (*PropertySetter)(KJSContext* context, void* object,
                                    KJSObject value);
@@ -78,7 +80,9 @@ public:
                         PropertySetter setter = 0);
 
     /**
-     * Function signature for a property setter function.
+     * Signature for function call callback function. The
+     * defineFunction() function parameter accepts a reference to a
+     * function of this type as a parameter.
      */
     typedef KJSObject (*FunctionCall)(KJSContext* context, void* object,
                                       const KJSArguments& arguments);
@@ -100,11 +104,13 @@ public:
 
     /**
      * Construct an object with this prototype and the specified
-     * internal value.
+     * internal value. The value pointer will be passed as the object
+     * parameter to the callbacks defined via defineProperty() and
+     * defineFunction().
      *
-     * @todo provide something better type than void*
+     * @todo Provide a better type than void*
      */
-    KJSObject constructObject(void *internalValue);
+    KJSObject constructObject(KJSContext* ctx, void *internalValue);
 
 private:
     KJSPrototype(const KJSPrototype&); // undefined

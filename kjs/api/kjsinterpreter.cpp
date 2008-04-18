@@ -23,6 +23,7 @@
 #include "kjsprivate.h"
 #include "kjs/interpreter.h"
 #include "kjs/completion.h"
+#include "kjs/object.h"
 #include <qstring.h>
 #include <stdio.h>
 
@@ -32,6 +33,17 @@ KJSInterpreter::KJSInterpreter()
     : globCtx(0)
 {
     Interpreter* ip = new Interpreter();
+    ip->ref();
+    hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
+}
+
+KJSInterpreter::KJSInterpreter(const KJSObject& global)
+    : globCtx(0)
+{
+    JSValue* gv = JSVALUE(&global);
+    assert(gv->isObject());
+    JSObject* go = static_cast<JSObject*>(gv);
+    Interpreter* ip = new Interpreter(go);
     ip->ref();
     hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
 }
@@ -71,13 +83,14 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
 
     if (c.complType() == Throw) {
 #if 0
-        CString msg = res.value()->toString(exec).UTF8String();
-        JSObject* resObj = res.value()->toObject(exec);
+        ExecState* exec = ip->globalExec();
+        CString msg = c.value()->toString(exec).UTF8String();
+        JSObject* resObj = c.value()->toObject(exec);
         CString message = resObj->toString(exec).UTF8String();
         int line = resObj->toObject(exec)->get(exec, "line")->toUInt32(exec);
 
-        if (fileName)
-            fprintf(stderr, "%s (line %d): ", fileName, line);
+        if (!sourceURL.isEmpty())
+            fprintf(stderr, "%s (line %d): ", qPrintable(sourceURL), line);
         fprintf(stderr, "%s\n", msg.c_str());
 #endif
         fprintf(stderr, "evaluate() threw an exception\n");

@@ -39,10 +39,13 @@ class KJSAPI_EXPORT KJSInterpreter
     friend class KJSPrototype;
 public:
     /**
-     * Constructs an interpreter.
+     * Constructs an interpreter with a default global object.
      */
     KJSInterpreter();
-
+    /**
+     * Constructs an interpreter with a custom global object.
+     */
+    KJSInterpreter(const KJSObject& global);
     /**
      * Destructs this interpreter and frees resources it has
      * allocated. This renders any still existing objects referencing

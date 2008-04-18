@@ -142,8 +142,7 @@ typedef QMap<UString, KJSCustomProperty*> CustomPropertyMap;
 
 class CustomPrototype : public JSObject {
 public:
-    CustomPrototype(JSValue* proto)
-        : JSObject(proto)
+    CustomPrototype()
     {
     }
     ~CustomPrototype()
@@ -201,12 +200,9 @@ void CustomObject::put(ExecState* exec, const Identifier& id,
         JSObject::put(exec, id, value, attr);
 }
 
-KJSPrototype::KJSPrototype(const KJSInterpreter& ip)
+KJSPrototype::KJSPrototype()
 {
-    KJS::Interpreter* i = INTERPRETER(&ip);
-    JSObject* objectProto = i->builtinObjectPrototype();
-
-    CustomPrototype* p = new CustomPrototype(objectProto);
+    CustomPrototype* p = new CustomPrototype;
     gcProtect(p);
 
     hnd = PROTOTYPE_HANDLE(p);
@@ -237,9 +233,16 @@ void KJSPrototype::defineConstant(KJSContext* ctx,
            DontEnum|DontDelete|ReadOnly);
 }
 
-KJSObject KJSPrototype::constructObject(void *internalValue)
+KJSObject KJSPrototype::constructObject(KJSContext* ctx, void *internalValue)
 {
     CustomPrototype* p = PROTOTYPE(this);
+
+    if (ctx && !p->prototype()) {
+        ExecState* exec = EXECSTATE(ctx);
+        KJS::Interpreter* i = exec->lexicalInterpreter();
+        JSObject* objectProto = i->builtinObjectPrototype();
+        p->setPrototype(objectProto);
+    }
 
     CustomObject* newObj = new CustomObject(p, internalValue);
     return KJSObject(JSVALUE_HANDLE(newObj));

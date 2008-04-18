@@ -73,7 +73,8 @@ public:
     ~KJSObject();
     /**
      * Returns whether the object is valid. This is different from an
-     * undefined value in the JavaScript sense.
+     * undefined value in the JavaScript sense. An invalid object does
+     * not allow for most of the standard operations.
      */
     bool isValid() const;
     /**
@@ -157,7 +158,11 @@ private:
     KJSObjectHandle* hnd;
 };
 
-
+/**
+ * A class representing a JavaScript null value.
+ *
+ * @short Null value
+ */
 class KJSAPI_EXPORT KJSNull : public KJSObject
 {
 public:
@@ -167,6 +172,11 @@ public:
     KJSNull();
 };
 
+/**
+ * A class representing an undefined JavaScript value.
+ *
+ * @short Undefined value
+ */
 class KJSAPI_EXPORT KJSUndefined : public KJSObject
 {
 public:
@@ -176,6 +186,11 @@ public:
     KJSUndefined();
 };
 
+/**
+ * A class representing a boolean JavaScript value.
+ *
+ * @short Boolean value
+ */
 class KJSAPI_EXPORT KJSBoolean : public KJSObject
 {
 public:
@@ -185,6 +200,11 @@ public:
     KJSBoolean(bool b);
 };
 
+/**
+ * A class representing a JavaScript number value.
+ *
+ * @short Number value
+ */
 class KJSAPI_EXPORT KJSNumber : public KJSObject
 {
 public:
@@ -194,6 +214,11 @@ public:
     KJSNumber(double d);
 };
 
+/**
+ * A class representing a JavaScript string value.
+ *
+ * @short String value
+ */
 class KJSAPI_EXPORT KJSString : public KJSObject
 {
 public:

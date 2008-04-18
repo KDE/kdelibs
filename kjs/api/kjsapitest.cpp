@@ -133,12 +133,12 @@ void KJSApiTest::prototypeConstants()
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();    
 
-    KJSPrototype proto(ip);
+    KJSPrototype proto;
 
     proto.defineConstant(ctx, "d0", 44.4);
     proto.defineConstant(ctx, "s0", QLatin1String("XYZ"));
 
-    KJSObject obj = proto.constructObject(0);
+    KJSObject obj = proto.constructObject(ctx, 0);
 
     QCOMPARE(obj.property(ctx, "d0").toNumber(ctx), 44.4);
     QCOMPARE(obj.property(ctx, "s0").toString(ctx), QLatin1String("XYZ"));
@@ -165,12 +165,12 @@ void KJSApiTest::prototypeProperties()
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();    
 
-    KJSPrototype proto(ip);
+    KJSPrototype proto;
 
     proto.defineProperty(ctx, "x", getX, setX);
     proto.defineProperty(ctx, "readOnlyX", getX);
 
-    KJSObject obj = proto.constructObject(&o0);
+    KJSObject obj = proto.constructObject(ctx, &o0);
 
     // read/write property
     QCOMPARE(obj.property(ctx, "x").toNumber(ctx), 42.0);
@@ -206,12 +206,12 @@ void KJSApiTest::prototypeFunctions()
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();    
 
-    KJSPrototype proto(ip);
+    KJSPrototype proto;
 
     proto.defineFunction(ctx, "multiply", multiply);
 
     double factor = 3.0;
-    KJSObject obj = proto.constructObject(&factor);
+    KJSObject obj = proto.constructObject(ctx, &factor);
     ip.globalObject().setProperty(ctx, "obj", obj);
 
     KJSObject res = ip.evaluate("obj.multiply(4)");
