@@ -49,7 +49,9 @@ namespace KJS {
                    DontDelete   = 1 << 3, // property can't be deleted
                    Internal     = 1 << 4, // an internal property, set to bypass checks
                    Function     = 1 << 5, // property is a function - only used by static hashtables
-                   GetterSetter = 1 << 6 }; // property is a getter or setter
+                   GetterSetter = 1 << 6, // property is a getter or setter
+                   DontMark     = 1 << 7}; // used in locals arrays only --- indicates that the slot
+                                           // does not contain a value, and hence should not be marked.
 
   /**
    * Class Information
@@ -73,34 +75,34 @@ namespace KJS {
      */
     void *dummy;
   };
-  
+
   // This is an internal value object which stores getter and setter functions
   // for a property.
   class GetterSetterImp : public JSCell {
   public:
     JSType type() const { return GetterSetterType; }
-      
+
     GetterSetterImp() : getter(0), setter(0) { }
-      
+
     virtual JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual UString toString(ExecState *exec) const;
     virtual JSObject *toObject(ExecState *exec) const;
-      
+
     virtual void mark();
-      
+
     JSObject *getGetter() { return getter; }
     void setGetter(JSObject *g) { getter = g; }
     JSObject *getSetter() { return setter; }
     void setSetter(JSObject *s) { setter = s; }
-      
+
   private:
     JSObject *getter;
     JSObject *setter;
   };
-  
+
   class KJS_EXPORT JSObject : public JSCell {
   public:
     /**
@@ -423,12 +425,12 @@ namespace KJS {
     virtual double toNumber(ExecState *exec) const;
     virtual UString toString(ExecState *exec) const;
     virtual JSObject *toObject(ExecState *exec) const;
-    
+
     bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
-    
+
     // Returns whether the object should be treated as undefined when doing equality comparisons
     virtual bool masqueradeAsUndefined() const { return false; }
-    
+
     // This get function only looks at the property map.
     // This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
     // to look up in the prototype, it might already exist there)
@@ -441,7 +443,7 @@ namespace KJS {
         { _prop.put(propertyName, value, attr); }
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
     void removeDirect(const Identifier &propertyName);
-    
+
     // convenience to add a function property under the function's own built-in name
     void putDirectFunction(InternalFunctionImp*, int attr = 0);
 
@@ -472,7 +474,7 @@ namespace KJS {
     PropertyMap _prop;
   private:
 
-  
+
     const HashEntry* findPropertyHashEntry( const Identifier& propertyName ) const;
     JSValue *_proto;
 #ifdef WIN32
@@ -578,7 +580,6 @@ inline bool JSValue::isObject(const ClassInfo *c) const
 inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
     JSObject *object = this;
-    slot.setPotentiallyWriteable();
     while (true) {
         if (object->getOwnPropertySlot(exec, propertyName, slot))
             return true;
@@ -586,8 +587,6 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
         JSValue *proto = object->_proto;
         if (!proto->isObject())
             return false;
-
-        slot.setReadOnly();
 
         object = static_cast<JSObject *>(proto);
     }
@@ -608,7 +607,7 @@ ALWAYS_INLINE bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifie
 
     // non-standard Netscape extension
     if (propertyName == exec->propertyNames().underscoreProto) {
-        slot.setValueSlot(this, &_proto, PropertySlot::ForbidDirectWrite);
+        slot.setValueSlot(this, &_proto);
         return true;
     }
 

@@ -135,7 +135,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   if (body->stackAllocateActivation())
     exec->dynamicInterpreter()->stackFree(stackSize);
 
-  // if an exception occurred, propogate it back to the previous execution object
+  // if an exception occurred, propagate it back to the previous execution object
   if (newExec.hadException())
     comp = Completion(Throw, newExec.exception());
 

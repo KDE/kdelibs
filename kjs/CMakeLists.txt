@@ -217,6 +217,10 @@ target_link_libraries(kjs_bin ${KJSLIBNAME})
 
 install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 
+########### KDE-specific API ##############
+
+add_subdirectory(api)
+
 ########### install files ###############
 # install( FILES
 #     ExecState.h
