@@ -505,9 +505,9 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 bool KShortcutsEditorPrivate::stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
 {
     QString title = i18n("Conflict with Standard Application Shortcut");
-    QString message = i18n("The '%1' key combination is also being used for the standard action "
+    QString message = i18n("The '%1' key combination is also used for the standard action "
                            "\"%2\" that some applications use.\n"
-                           "Do you really want to use it as a global shortcut, too?",
+                           "Do you really want to use it as a global shortcut as well?",
                            seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
 
     if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
