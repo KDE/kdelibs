@@ -65,9 +65,9 @@ if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # if we're here, either PCRE support is disabled, or it's not found...
    # it better be disabled.
-   if (NOT KJS_FORCE_DISABLE_PCRE)
+   if (NOT KJS_DISABLE_PCRE)
         message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
-   endif (NOT KJS_FORCE_DISABLE_PCRE)
+   endif (NOT KJS_DISABLE_PCRE)
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
@@ -78,6 +78,30 @@ else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
    endif (NOT HAVE_REGEX_H)
 endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
+
+
+########### icemaker, generates some tables for kjs/frostbyte ###############
+set(icemaker_SRCS
+    bytecode/generator/tablebuilder.cpp
+    bytecode/generator/driver.cpp
+    bytecode/generator/lexer.cpp
+    bytecode/generator/parser.cpp
+   )
+KDE4_ADD_EXECUTABLE(icemaker RUN_UNINSTALLED ${icemaker_SRCS})
+
+
+# get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
+GET_TARGET_PROPERTY(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
+
+# and the custom command
+ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
+  COMMAND ${ICEMAKER_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bytecode
+  DEPENDS icemaker ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/codes.def
+          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.cpp.in
+          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/opcodes.h.in
+          ${CMAKE_CURRENT_SOURCE_DIR}/bytecode/machine.cpp.in
+)
 
 ########### next target ###############
 add_definitions(-DBUILDING_KDE__)
@@ -118,10 +142,10 @@ set(kjs_LIB_SRCS
    bool_object.cpp
    number_object.cpp
    internal.cpp
-   Context.cpp
    ExecState.cpp
    Parser.cpp
    array_object.cpp
+   array_instance.cpp
    math_object.cpp
    object_object.cpp
    regexp_object.cpp
@@ -145,7 +169,11 @@ set(kjs_LIB_SRCS
    PropertyNameArray.cpp
    JSWrapperObject.cpp
    CommonIdentifiers.cpp
-   semantic_checker.cpp
+   JSVariableObject.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
+   nodes2bytecode.cpp
+   CompileState.cpp
    )
 
 if (NOT DEFINED QT_ONLY)
@@ -159,7 +187,7 @@ kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
-endif(WIN32) 
+endif(WIN32)
 
 if(CMAKE_THREAD_LIBS_INIT)
    target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
@@ -189,10 +217,6 @@ target_link_libraries(kjs_bin ${KJSLIBNAME})
 
 install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 
-########### KDE-specific API ##############
-
-add_subdirectory(api)
-
 ########### install files ###############
 # install( FILES
 #     ExecState.h
@@ -218,7 +242,7 @@ add_subdirectory(api)
 #     ustring.h
 #     value.h
 #     CommonIdentifiers.h
-# 
+#
 #     ${CMAKE_CURRENT_BINARY_DIR}/global.h
 # 
 #     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs COMPONENT Devel )
