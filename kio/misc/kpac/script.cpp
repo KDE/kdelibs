@@ -120,7 +120,7 @@ namespace
     // @returns true if @p host doesn't contains a domain part
     struct IsPlainHostName : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return jsUndefined();
             return jsBoolean( args[ 0 ]->toString( exec ).qstring().indexOf( "." ) == -1 );
@@ -131,7 +131,7 @@ namespace
     // @returns true if the domain part of @p host matches @p domain
     struct DNSDomainIs : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return jsUndefined();
             QString host = args[ 0 ]->toString( exec ).qstring().toLower();
@@ -144,7 +144,7 @@ namespace
     // @returns true if @p host is unqualified or equals @p fqdn
     struct LocalHostOrDomainIs : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return jsUndefined();
             UString host = args[ 0 ]->toString( exec ).qstring().toLower();
@@ -158,7 +158,7 @@ namespace
     // @returns true if host can be resolved via DNS
     struct IsResolvable : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return jsUndefined();
             try { Address::resolve( args[ 0 ]->toString( exec ) ); }
@@ -172,7 +172,7 @@ namespace
     //          specified via @p subnet and @p mask
     struct IsInNet : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 3 ) return jsUndefined();
             try
@@ -195,7 +195,7 @@ namespace
     // @returns the IP address of @p host in dotted quad notation
     struct DNSResolve : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return jsUndefined();
             try { return jsString(Address::resolve( args[ 0 ]->toString( exec ) )); }
@@ -207,7 +207,7 @@ namespace
     // @returns the local machine's IP address in dotted quad notation
     struct MyIpAddress : public Function
     {
-        virtual JSValue *call( ExecState*, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState*, JSObject*, const List& args )
         {
             if ( args.size() ) return jsUndefined();
             char hostname[ 256 ];
@@ -222,7 +222,7 @@ namespace
     // @returns the number of dots ('.') in @p host
     struct DNSDomainLevels : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 1 ) return jsUndefined();
             UString host = args[ 0 ]->toString( exec );
@@ -246,7 +246,7 @@ namespace
     // @returns true if @p str matches the shell @p pattern
     struct ShExpMatch : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() != 2 ) return jsUndefined();
             QRegExp pattern( args[ 1 ]->toString( exec ).qstring(), Qt::CaseSensitive, QRegExp::Wildcard );
@@ -260,7 +260,7 @@ namespace
     // If the last argument is "GMT", GMT timezone is used, otherwise local time
     struct WeekdayRange : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 3 ) return jsUndefined();
             static const char* const days[] =
@@ -287,7 +287,7 @@ namespace
     // presence of "GMT" as last argument) is within the given range
     struct DateRange : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 7 ) return jsUndefined();
             static const char* const months[] =
@@ -366,7 +366,7 @@ namespace
     // of "GMT" argument) is within the given range
     struct TimeRange : public Function
     {
-        virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
+        virtual JSValue *callAsFunction( ExecState* exec, JSObject*, const List& args )
         {
             if ( args.size() < 1 || args.size() > 7 ) return jsUndefined();
 

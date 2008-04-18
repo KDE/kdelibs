@@ -260,7 +260,7 @@ QString KProtocolManager::proxyForUrl( const KUrl &url )
             {
               QDBusReply<QString> reply =
                   QDBusInterface( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )
-                  .call( "proxyForURL", u.url() );
+                  .call( "proxyForUrl", u.url() );
               proxy = reply;
             }
           }
