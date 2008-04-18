@@ -835,7 +835,7 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & config )
         parseGeometry(true);
     } else {
         // restore the size
-        int scnum = QApplication::desktop()->screenNumber(parentWidget());
+        const int scnum = QApplication::desktop()->screenNumber(parentWidget());
         QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
         // if the desktop is virtual then use virtual screen size
@@ -844,20 +844,8 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & config )
 
         if ( d->defaultWindowSize.isNull() ) // only once
           d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
-        QSize size( config.readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
+        const QSize size( config.readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
                     config.readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
-
-        if (size.isEmpty()) {
-            // try the KDE 2.0 way
-            size = QSize( config.readEntry( QLatin1String("Width"), 0 ),
-                          config.readEntry( QLatin1String("Height"), 0 ) );
-            if (!size.isEmpty()) {
-                KConfigGroup cgw = config;
-                // make sure the other resolutions don't get old settings
-                cgw.writeEntry( QLatin1String("Width"), 0 );
-                cgw.writeEntry( QLatin1String("Height"), 0 );
-            }
-        }
         if ( !size.isEmpty() ) {
 #ifdef Q_WS_X11
             int state = ( size.width() > desk.width() ? NET::MaxHoriz : 0 )
