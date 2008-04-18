@@ -879,16 +879,16 @@ void KConfigTest::testConfigCopyToSync()
     KConfigGroup group(&cf1, "CopyToTest");
     group.writeEntry("Type", "Test");
     cf1.sync();
-    
+
     // Copy to "destination"
     const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
     QFile::remove(destination);
-    
+
     KConfig cf2("kconfigcopytotest");
     KConfigGroup group2(&cf2, "CopyToTest");
-    
+
     group.copyTo(&group2);
-    
+
     QString testVal = group2.readEntry("Type");
     QCOMPARE(testVal, QString("Test"));
     // should write to disk the copied data from group
@@ -1050,5 +1050,16 @@ void KConfigTest::testSyncOnExit()
     // So here's a test for modifying KGlobal::config() and not syncing, the process exit will sync.
     KConfigGroup grp(KGlobal::config(), "syncOnExit");
     grp.writeEntry("key", "value");
+}
+
+void KConfigTest::testSharedConfig()
+{
+    // Can I use a KConfigGroup even after the KSharedConfigPtr goes out of scope?
+    KConfigGroup myConfigGroup;
+    {
+        KSharedConfigPtr config = KSharedConfig::openConfig("kconfigtest");
+        myConfigGroup = KConfigGroup(config, "Hello");
+    }
+    QCOMPARE(myConfigGroup.readEntry("stringEntry1"), QString(STRINGENTRY1));
 }
 
