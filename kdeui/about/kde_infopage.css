@@ -37,7 +37,6 @@ a:hover {
 
 #headerL {
   position: absolute;
-  background-image: url(top-left.png);
   left: 0px;
   height: 131px;
   width: 147px;
@@ -47,6 +46,9 @@ a:hover {
 #headerR {
   position: absolute;
   right: 0px;
+  width: 430px;
+  height: 131px;
+  background-image: url(top-right.png);
 }
 
 /* title and tagline are part of the header diff */
@@ -124,7 +126,7 @@ a:hover {
 }
 
 #barCenter li:not(:first-child):before { /* Aren't css3 selectors great? */
-  content: " · ";
+  content: " \0387  "; /* unicode for Â· */
 }
 
 /*
