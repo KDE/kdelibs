@@ -65,6 +65,11 @@ public:
      * Open using an existing pty master. The ownership of the fd
      * remains with the caller, i.e., close() will not close the fd.
      *
+     * This is useful if you wish to attach a secondary "controller" to an
+     * existing pty device such as a terminal widget.
+     * Note that you will need to use setSuspended() on both devices to
+     * control which one gets the incoming data from the pty.
+     *
      * @param fd an open pty master file descriptor.
      * @param mode the device mode to open the pty with.
      * @return true if a pty pair was successfully opened
@@ -77,20 +82,24 @@ public:
     virtual void close();
 
     /**
-     * Sets whether the KPtyDevice monitors the Pty for 
-     * available data to read.
-     * When the KPtyDevice is suspended, it will no longer attempt to buffer
-     * data that becomes available from the pty.
+     * Sets whether the KPtyDevice monitors the pty for incoming data.
      *
-     * This is useful if you wish to connect to the pty with another device such
-     * as a terminal widget.  Suspending the KPtyDevice will allow the other device
-     * to read from the pty without the data being consumed first by the KPtyDevice.
+     * When the KPtyDevice is suspended, it will no longer attempt to buffer
+     * data that becomes available from the pty and it will not emit any
+     * signals.
+     *
+     * Do not use on closed ptys.
+     * After a call to open(), the pty is not suspended. If you need to
+     * ensure that no data is read, call this function before the main loop
+     * is entered again (i.e., immediately after opening the pty).
      */
     void setSuspended(bool suspended);
 
     /**
-     * Returns true if the KPtyDevice is not monitoring for data available to read from 
-     * the pty.
+     * Returns true if the KPtyDevice is not monitoring the pty for incoming
+     * data.
+     *
+     * Do not use on closed ptys.
      *
      * See setSuspended()
      */
