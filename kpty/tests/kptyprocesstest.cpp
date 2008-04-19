@@ -28,7 +28,7 @@ void KPtyProcessTest::test_suspend_pty()
 {
     KPtyProcess p;
     p.setPtyChannels(KPtyProcess::AllChannels);
-    p.setProgram("/bin/ping", QStringList() << "-i" << "0.5" << "localhost");
+    p.setProgram("ping", QStringList() << "-i" << "0.5" << "localhost");
     p.start();
 
     // verify that data is available to read from the pty
@@ -56,7 +56,7 @@ void KPtyProcessTest::test_shared_pty()
 {
     // start a first process
     KPtyProcess p;
-    p.setProgram("/bin/cat"); 
+    p.setProgram("cat"); 
     p.setPtyChannels(KPtyProcess::AllChannels);
     p.pty()->setEcho(false);
     p.start();
@@ -65,10 +65,14 @@ void KPtyProcessTest::test_shared_pty()
     int fd = p.pty()->masterFd();
 
     KPtyProcess p2(fd);
-    p2.setProgram("/usr/bin/test");
+    p2.setProgram("echo", QStringList() << "hello from me");
     p2.setPtyChannels(KPtyProcess::AllChannels);
     p2.pty()->setEcho(false);
     p2.start();
+
+    // read the second processes greeting from the first process' pty
+    QVERIFY(p.pty()->waitForReadyRead(1000));
+    QCOMPARE(p.pty()->readAll(), QByteArray("hello from me\r\n"));
 
     // write to the second process' pty
     p2.pty()->write("hello from process 2\n");
@@ -76,10 +80,7 @@ void KPtyProcessTest::test_shared_pty()
 
     // read the result back from the first process' pty
     QVERIFY(p.pty()->waitForReadyRead(1000));
-    QString output = p.pty()->readAll();
-
-    // check the output
-    QCOMPARE(output, QLatin1String("hello from process 2\r\n"));
+    QCOMPARE(p.pty()->readAll(), QByteArray("hello from process 2\r\n"));
 
     // write to the first process' pty
     p.pty()->write("hi from process 1\n");
@@ -87,10 +88,7 @@ void KPtyProcessTest::test_shared_pty()
 
     // read the result back from the second process' pty
     QVERIFY(p2.pty()->waitForReadyRead(1000));
-    output = p2.pty()->readAll();
-
-    // check the output
-    QCOMPARE(output, QLatin1String("hi from process 1\r\n"));
+    QCOMPARE(p2.pty()->readAll(), QByteArray("hi from process 1\r\n"));
 
     // cleanup
     p.terminate();
