@@ -66,7 +66,7 @@ class DxsEngine : public CoreEngine
 
     private slots:
         // FIXME: idem for slots
-        void slotEntriesLoadedDXS(KNS::Entry::List list);
+        void slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed);
         void slotEntriesFailed();
 
         void slotCategories(QList<KNS::Category*>);

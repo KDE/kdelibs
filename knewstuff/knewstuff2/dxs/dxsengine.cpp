@@ -75,8 +75,8 @@ void DxsEngine::loadEntries(Provider *provider)
         Dxs * dxs = new Dxs(this, provider);
         dxs->setEndpoint(provider->webService());
         // connect entries signal
-        connect(dxs, SIGNAL(signalEntries(KNS::Entry::List)),
-                SLOT(slotEntriesLoadedDXS(KNS::Entry::List)));
+        connect(dxs, SIGNAL(signalEntries(KNS::Entry::List, Feed*)),
+                SLOT(slotEntriesLoadedDXS(KNS::Entry::List, Feed*)));
         // FIXME: which one of signalFault()/signalError()? Or both?
         connect(dxs, SIGNAL(signalFault()),
                 SLOT(slotEntriesFailed()));
@@ -103,12 +103,12 @@ void DxsEngine::slotCategories(QList<KNS::Category*> categories)
         kDebug() << "calling entries on category: " << category->id();
         QStringList feeds = provider->feeds();
         for (int i = 0; i < feeds.size(); ++i) {
-            dxs->call_entries(category->id(), feeds[i]);
+            dxs->call_entries(category->id(), feeds.at(i));
         }
     }
 }
 
-void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list)
+void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed)
 {
     Dxs * dxs = qobject_cast<Dxs*>(sender());
     Provider * provider = dxs->provider();
@@ -119,7 +119,7 @@ void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list)
     for (Entry::List::Iterator it = list.begin(); it != list.end(); ++it) {
         Entry *entry = (*it);
         // FIXME: the association to feed and provider is missing here
-        emit signalEntryLoaded(entry, NULL, provider);
+        emit signalEntryLoaded(entry, feed, provider);
     }
 }
 

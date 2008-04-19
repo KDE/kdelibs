@@ -33,6 +33,7 @@ namespace KNS
 
 class Soap;
 class Category;
+class Feed;
 class Provider;
 
 /**
@@ -121,7 +122,7 @@ public:
 signals:
     void signalInfo(QString provider, QString server, QString version);
     void signalCategories(QList<KNS::Category*> categories);
-    void signalEntries(KNS::Entry::List entries);
+    void signalEntries(KNS::Entry::List entries, Feed * feed);
     void signalComments(QStringList comments);
     void signalChanges(QStringList comments);
     void signalHistory(QStringList entries);
@@ -137,7 +138,7 @@ private slots:
      * Valid response from server - parsed here to emit the corresponding signal
      * @param node 
      */
-    void slotResult(QDomNode node);
+    void slotResult(QDomNode node, int jobid);
 
     /**
      *        Communication error
@@ -148,6 +149,7 @@ private:
     Soap *m_soap;
     KUrl m_endpoint;
     Provider *m_provider;
+    QMap<int, Feed*> m_jobfeeds;
 };
 
 }

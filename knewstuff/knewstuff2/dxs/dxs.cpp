@@ -38,7 +38,7 @@ Dxs::Dxs(QObject* parent, KNS::Provider * provider)
     : QObject(parent), m_provider(provider)
 {
     m_soap = new Soap(this);
-    connect(m_soap, SIGNAL(signalResult(QDomNode)), SLOT(slotResult(QDomNode)));
+    connect(m_soap, SIGNAL(signalResult(QDomNode, int)), SLOT(slotResult(QDomNode, int)));
     connect(m_soap, SIGNAL(signalError()), SLOT(slotError()));
 }
 
@@ -86,7 +86,8 @@ void Dxs::call_entries(QString category, QString feed)
         efeed.appendChild(t2);
         entries.appendChild(efeed);
     }
-    m_soap->call(entries, m_endpoint.url());
+    int jobid = m_soap->call(entries, m_endpoint.url());
+    m_jobfeeds.insert(jobid, m_provider->downloadUrlFeed(feed));
 }
 
 void Dxs::call_comments(int id)
@@ -183,7 +184,7 @@ void Dxs::slotError()
     emit signalError();
 }
 
-void Dxs::slotResult(QDomNode node)
+void Dxs::slotResult(QDomNode node, int jobid)
 {
     //kDebug() << "LOCALNAME: " << m_soap->localname(node);
 
@@ -227,6 +228,7 @@ void Dxs::slotResult(QDomNode node)
     else if (m_soap->localname(node) == "GHNSListResponse") {
         QList<KNS::Entry*> entries;
 
+        Feed * thisFeed = m_jobfeeds.value(jobid);
         QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
         for (int i = 0; i < entrylist.count(); i++) {
             QDomElement element = entrylist.at(i).toElement();
@@ -235,11 +237,11 @@ void Dxs::slotResult(QDomNode node)
             KNS::Entry *entry = handler.entryptr();
 
             entries << entry;
-
+            thisFeed->addEntry(entry);
             //kDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name();
         }
 
-        emit signalEntries(entries);
+        emit signalEntries(entries, thisFeed);
     }
     else if (m_soap->localname(node) == "GHNSCommentsResponse") {
         QStringList comments;

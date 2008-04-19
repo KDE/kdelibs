@@ -38,6 +38,7 @@ Soap::Soap(QObject* parent)
     //m_model = canonicaltree;
     m_model = soap;
     m_socket = NULL;
+    m_lastjobid = 0;
     //m_inprogress = false;
 }
 
@@ -45,7 +46,7 @@ Soap::~Soap()
 {
 }
 
-void Soap::call(const QDomElement& element, const QString &endpoint)
+int Soap::call(const QDomElement& element, const QString &endpoint)
 {
     //if(m_inprogress)
     //{
@@ -55,9 +56,11 @@ void Soap::call(const QDomElement& element, const QString &endpoint)
 
     if (m_model == canonicaltree) {
         call_tree(element, endpoint);
+        // cDxs doesn't support job ids yet
+        return -1;
     }
     else {
-        call_soap(element, endpoint);
+        return call_soap(element, endpoint);
     }
 
     //m_inprogress = true;
@@ -105,8 +108,9 @@ void Soap::call_tree(const QDomElement& element, const QString &endpoint)
     m_buffer = QByteArray();
 }
 
-void Soap::call_soap(QDomElement element, const QString &endpoint)
+int Soap::call_soap(QDomElement element, const QString &endpoint)
 {
+    kDebug() << "calling soap";
     KUrl url(endpoint);
 
     QDomDocument doc;
@@ -126,6 +130,8 @@ void Soap::call_soap(QDomElement element, const QString &endpoint)
 
     KIO::TransferJob *job;
     job = KIO::http_post(url, data, KIO::HideProgressInfo);
+    int thisjobid = ++m_lastjobid;
+    m_jobids.insert(job, thisjobid);
     job->addMetaData("content-type", "Content-Type: text/xml");
 
     //kDebug() << "Call!";
@@ -138,6 +144,7 @@ void Soap::call_soap(QDomElement element, const QString &endpoint)
         SLOT(slotResult(KJob*)));
 
     m_buffer = QByteArray();
+    return thisjobid;
 }
 
 void Soap::slotData(KIO::Job *job, const QByteArray& data)
@@ -159,7 +166,7 @@ void Soap::slotData(KIO::Job *job, const QByteArray& data)
 
 void Soap::slotResult(KJob *job)
 {
-    //kDebug() << "Result!";
+    kDebug() << "Result!";
 
     if ((job) && (job->error())) {
         //job->showErrorDialog(this);
@@ -188,7 +195,8 @@ void Soap::slotResult(KJob *job)
         //kDebug() << "(signal) Result!";
 
         //m_inprogress = false;
-        emit signalResult(contentnode);
+        emit signalResult(contentnode, m_jobids.value(job));
+        m_jobids.remove(job);
     }
     else {
         QDomDocument doc;
@@ -206,7 +214,7 @@ void Soap::slotResult(KJob *job)
         //kDebug() << doc.toString();
 
         //m_inprogress = false;
-        emit signalResult(root);
+        emit signalResult(root, -1);
     }
 }
 

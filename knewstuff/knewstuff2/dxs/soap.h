@@ -73,7 +73,7 @@ public:
 	 * @param element 
 	 * @param endpoint 
 	 */
-	void call(const QDomElement& element, const QString &endpoint);
+	int call(const QDomElement& element, const QString &endpoint);
 
 	/**
 	 * Name of the QDomElement for node without the namespace
@@ -98,7 +98,7 @@ public:
 	QList<QDomNode> directChildNodes(const QDomNode& node, const QString &name);
 
 signals:
-	void signalResult(QDomNode node);
+	void signalResult(QDomNode node, int jobid);
 	void signalError();
 
 private slots:
@@ -113,7 +113,8 @@ private:
 	 * @param element the message
 	 * @param endpoint server URL
 	 */
-	void call_soap(QDomElement element, const QString& endpoint);
+	int call_soap(QDomElement element, const QString& endpoint);
+
 	/**
 	 * Same as call_soap but with canonicaltree as model
 	 * @param element 
@@ -134,6 +135,8 @@ private:
 	QTcpSocket *m_socket;
 	QByteArray m_buffer;
 	bool m_inprogress;
+	QMap<KJob*, int> m_jobids;
+	int m_lastjobid;
 };
 
 }
