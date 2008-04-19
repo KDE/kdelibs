@@ -64,6 +64,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     if (!aboutData) {
         QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
                                              "The supplied KAboutData object does not exist.</qt>"), this);
+    
+        errorLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
         setMainWidget(errorLabel);
         return;
     }
@@ -102,6 +104,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     aboutLabel->setWordWrap(true);
     aboutLabel->setOpenExternalLinks(true);
     aboutLabel->setText(aboutPageText.replace('\n', "<br />"));
+    aboutLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
     QVBoxLayout *aboutLayout = new QVBoxLayout;
     aboutLayout->addStretch();
@@ -115,6 +118,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         showLicenseLabel->setText(QString("<a href=\"%1\">%2</a>").arg(QString::number(i),
                                                                        i18n("License: %1",
                                                                             license.name(KAboutData::FullName))));
+        showLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
         connect(showLicenseLabel, SIGNAL(linkActivated(QString)), this, SLOT(_k_showLicense(QString)));
 
         aboutLayout->addWidget(showLicenseLabel);
