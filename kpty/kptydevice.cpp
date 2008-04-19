@@ -544,7 +544,7 @@ void KPtyDevice::setSuspended(bool suspended)
 bool KPtyDevice::isSuspended() const
 {
     Q_D(const KPtyDevice);
-    return d->readNotifier->isEnabled();
+    return !d->readNotifier->isEnabled();
 }
 
 // protected
