@@ -36,6 +36,7 @@ void KPtyProcessTest::test_suspend_pty()
 
     // suspend the pty device and read all available data from it
     p.pty()->setSuspended(true);
+    QVERIFY(p.pty()->isSuspended());
     p.pty()->readAll();
 
     // verify that no data was read by the pty
@@ -43,6 +44,7 @@ void KPtyProcessTest::test_suspend_pty()
 
     // allow process to write more data
     p.pty()->setSuspended(false);
+    QVERIFY(!p.pty()->isSuspended());
 
     // verify that data is available once more
     QVERIFY(p.pty()->waitForReadyRead(1500));
