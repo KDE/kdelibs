@@ -248,7 +248,7 @@ struct KPtyDevicePrivate : public KPtyPrivate {
     Q_DECLARE_PUBLIC(KPtyDevice)
 
     KPtyDevicePrivate(KPty* parent) :
-		KPtyPrivate(parent), 
+        KPtyPrivate(parent),
         emittedReadyRead(false), emittedBytesWritten(false),
         readNotifier(0), writeNotifier(0)
     {
@@ -534,15 +534,17 @@ bool KPtyDevice::waitForBytesWritten(int msecs)
     Q_D(KPtyDevice);
     return d->doWait(msecs, false);
 }
+
 void KPtyDevice::setSuspended(bool suspended)
 {
-	Q_D(KPtyDevice);
-	d->readNotifier->setEnabled(!suspended);
+    Q_D(KPtyDevice);
+    d->readNotifier->setEnabled(!suspended);
 }
+
 bool KPtyDevice::isSuspended() const
 {
-	Q_D(const KPtyDevice);
-	return d->readNotifier->isEnabled();
+    Q_D(const KPtyDevice);
+    return d->readNotifier->isEnabled();
 }
 
 // protected

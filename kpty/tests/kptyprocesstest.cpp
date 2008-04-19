@@ -26,77 +26,79 @@
 
 void KPtyProcessTest::test_suspend_pty()
 {
-	KPtyProcess p;
-	p.setPtyChannels(KPtyProcess::AllChannels);
-	p.setProgram("/bin/ping",QStringList() << "-i" << "0.5" << "localhost");
-	p.start();
+    KPtyProcess p;
+    p.setPtyChannels(KPtyProcess::AllChannels);
+    p.setProgram("/bin/ping", QStringList() << "-i" << "0.5" << "localhost");
+    p.start();
 
-	// verify that data is available to read from the pty
-	QVERIFY(p.pty()->waitForReadyRead(1500));
-	
-	// suspend the pty device and read all available data from it
-	p.pty()->setSuspended(true);
-	p.pty()->readAll();
+    // verify that data is available to read from the pty
+    QVERIFY(p.pty()->waitForReadyRead(1500));
 
-	// verify that no data was read by the pty
-	QVERIFY(!p.pty()->waitForReadyRead(1500));
-	
-	// allow process to write more data
-	p.pty()->setSuspended(false);
+    // suspend the pty device and read all available data from it
+    p.pty()->setSuspended(true);
+    p.pty()->readAll();
 
-	// verify that data is available once more
-	QVERIFY(p.pty()->waitForReadyRead(1500));
-	p.pty()->readAll();
-	
-	p.terminate();
-	p.waitForFinished();
+    // verify that no data was read by the pty
+    QVERIFY(!p.pty()->waitForReadyRead(1500));
+
+    // allow process to write more data
+    p.pty()->setSuspended(false);
+
+    // verify that data is available once more
+    QVERIFY(p.pty()->waitForReadyRead(1500));
+    p.pty()->readAll();
+
+    p.terminate();
+    p.waitForFinished();
 }
+
 void KPtyProcessTest::test_shared_pty()
 {
-	// start a first process
-	KPtyProcess p;
+    // start a first process
+    KPtyProcess p;
     p.setProgram("/bin/cat"); 
-	p.setPtyChannels(KPtyProcess::AllChannels);
-	p.pty()->setEcho(false);
-	p.start();
+    p.setPtyChannels(KPtyProcess::AllChannels);
+    p.pty()->setEcho(false);
+    p.start();
 
-	// start a second process using the first one's fd
-	int fd = p.pty()->masterFd();
+    // start a second process using the first one's fd
+    int fd = p.pty()->masterFd();
 
-	KPtyProcess p2(fd);
+    KPtyProcess p2(fd);
     p2.setProgram("/usr/bin/test");
-	p2.setPtyChannels(KPtyProcess::AllChannels);
-	p2.pty()->setEcho(false);
-	p2.start();
+    p2.setPtyChannels(KPtyProcess::AllChannels);
+    p2.pty()->setEcho(false);
+    p2.start();
 
-	// write to the second process' pty
-	p2.pty()->write("hello from process 2\n");
-    QVERIFY( p2.pty()->waitForBytesWritten(1000) );
+    // write to the second process' pty
+    p2.pty()->write("hello from process 2\n");
+    QVERIFY(p2.pty()->waitForBytesWritten(1000));
 
- 	// read the result back from the first process' pty
-	QVERIFY( p.pty()->waitForReadyRead(1000) );
-	QString output = p.pty()->readAll();
+    // read the result back from the first process' pty
+    QVERIFY(p.pty()->waitForReadyRead(1000));
+    QString output = p.pty()->readAll();
 
-	// check the output
+    // check the output
     QCOMPARE(output, QLatin1String("hello from process 2\r\n"));
 
-	// write to the first process' pty
-	p.pty()->write("hi from process 1\n");
-	QVERIFY(p.pty()->waitForBytesWritten(1000));
+    // write to the first process' pty
+    p.pty()->write("hi from process 1\n");
+    QVERIFY(p.pty()->waitForBytesWritten(1000));
 
-	// read the result back from the second process' pty
-	QVERIFY( p2.pty()->waitForReadyRead(1000) );
-	output = p2.pty()->readAll();
+    // read the result back from the second process' pty
+    QVERIFY(p2.pty()->waitForReadyRead(1000));
+    output = p2.pty()->readAll();
 
-	// check the output
+    // check the output
     QCOMPARE(output, QLatin1String("hi from process 1\r\n"));
 
-	// cleanup
-	p.terminate();
-	p2.terminate();
-	p.waitForFinished(1000);
-	p2.waitForFinished(1000);
+    // cleanup
+    p.terminate();
+    p2.terminate();
+    p.waitForFinished(1000);
+    p2.waitForFinished(1000);
 }
+
 void KPtyProcessTest::test_pty_basic()
 {
     KPtyProcess p;

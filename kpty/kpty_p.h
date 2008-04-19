@@ -37,12 +37,11 @@ struct KPtyPrivate {
 
     int masterFd;
     int slaveFd;
+    bool ownMaster:1;
 
     QByteArray ttyName;
 
     KPty *q_ptr;
-    
-	bool ownMaster:1;
 };
 
 #endif

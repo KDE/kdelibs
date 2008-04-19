@@ -76,26 +76,27 @@ public:
      */
     virtual void close();
 
-	/**
-	 * Sets whether the KPtyDevice monitors the Pty for 
-	 * available data to read.
-	 * When the KPtyDevice is suspended, it will no longer attempt to buffer
-	 * data that becomes available from the pty.
-	 *
-	 * This is useful if you wish to connect to the pty with another device such
-	 * as a terminal widget.  Suspending the KPtyDevice will allow the other device
-	 * to read from the pty without the data being consumed first by the KPtyDevice.
-	 */
-	void setSuspended(bool suspended);
     /**
-	 * Returns true if the KPtyDevice is not monitoring for data available to read from 
-	 * the pty.
-	 *
-	 * See setSuspended()
-	 */
+     * Sets whether the KPtyDevice monitors the Pty for 
+     * available data to read.
+     * When the KPtyDevice is suspended, it will no longer attempt to buffer
+     * data that becomes available from the pty.
+     *
+     * This is useful if you wish to connect to the pty with another device such
+     * as a terminal widget.  Suspending the KPtyDevice will allow the other device
+     * to read from the pty without the data being consumed first by the KPtyDevice.
+     */
+    void setSuspended(bool suspended);
+
+    /**
+     * Returns true if the KPtyDevice is not monitoring for data available to read from 
+     * the pty.
+     *
+     * See setSuspended()
+     */
     bool isSuspended() const;
 
-	/**
+    /**
      * @return always true
      */
     virtual bool isSequential() const;

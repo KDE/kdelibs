@@ -148,7 +148,7 @@ extern "C" {
 //////////////////
 
 KPtyPrivate::KPtyPrivate(KPty* parent) :
-    masterFd(-1), slaveFd(-1), q_ptr(parent), ownMaster(true)
+    masterFd(-1), slaveFd(-1), ownMaster(true), q_ptr(parent)
 {
 }
 
@@ -357,7 +357,7 @@ bool KPty::open()
 bool KPty::open(int fd)
 {
 #if !defined(HAVE_PTSNAME) && !defined(TIOCGPTN)
-    kWarning(175) << "Unsupported attempt to open Pty with fd" << fd;
+    kWarning(175) << "Unsupported attempt to open pty with fd" << fd;
     return false;
 #else
     Q_D(KPty);
@@ -386,12 +386,10 @@ bool KPty::open(int fd)
     }
 
     d->masterFd = fd;
-    
-	if (!openSlave())
-	{
-		d->masterFd = -1;
+    if (!openSlave()) {
+        d->masterFd = -1;
         return false;
-	}
+    }
 
     return true;
 #endif

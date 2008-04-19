@@ -34,8 +34,8 @@ private Q_SLOTS:
     void test_pty_basic();
     void test_pty_signals();
     void test_ctty();
-	void test_shared_pty();
-	void test_suspend_pty();
+    void test_shared_pty();
+    void test_suspend_pty();
 
 // for pty_signals
 public Q_SLOTS:
