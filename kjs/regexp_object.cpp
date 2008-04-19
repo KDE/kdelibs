@@ -432,7 +432,7 @@ RegExp* RegExpObjectImp::makeEngine(ExecState *exec, const UString &p, JSValue *
       break;
     default: {
         throwError(exec, SyntaxError,
-                    "Invalid regular expression flags");
+                   "Invalid regular expression flags", 1, -1, "<regexp>");
         return 0;
       }
     }
@@ -453,7 +453,7 @@ RegExp* RegExpObjectImp::makeEngine(ExecState *exec, const UString &p, JSValue *
   RegExp *re = new RegExp(p, reflags);
   if (!re->isValid()) {
     throwError(exec, SyntaxError,
-               "Invalid regular expression");
+               "Invalid regular expression", 1, -1, "<regexp>");
     delete re;
     return 0;
   }
