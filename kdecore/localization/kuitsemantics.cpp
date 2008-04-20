@@ -1473,8 +1473,7 @@ bool KuitSemantics::mightBeRichText (const QString &text)
             QChar c = text[p2];
             if (c == '>' || c == '/' || c.isSpace()) {
                 return s->qtHtmlTagNames.contains(text.mid(p1, p2 - p1));
-            }
-            else if (!c.isLetter()) {
+            } else if (!c.isLetter()) {
                 return false;
             }
         }
@@ -1493,14 +1492,11 @@ QString KuitSemantics::escape (const QString &text)
         QChar c = text[i];
         if (c == '&') {
             ntext += "&amp;";
-        }
-        else if (c == '<') {
+        } else if (c == '<') {
             ntext += "&lt;";
-        }
-        else if (c == '>') {
+        } else if (c == '>') {
             ntext += "&gt;";
-        }
-        else {
+        } else {
             ntext += c;
         }
     }
