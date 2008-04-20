@@ -423,7 +423,7 @@ void MouseEventImpl::computeLayerPos()
     m_layerY = m_pageY;
 
     DocumentImpl* doc = view() ? view()->document() : 0;
-    if (doc) {
+    if (doc && doc->renderer()) {
         khtml::RenderObject::NodeInfo renderInfo(true, false);
         doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
 
