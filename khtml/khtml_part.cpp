@@ -1191,7 +1191,8 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
     if (dlg) {
       QString msg = KJSDebugger::DebugWindow::exceptionToString(
                               proxy->interpreter()->globalExec(), comp.value());
-      dlg->addError(i18n("<b>Error</b>: %1: %2", filename, msg));
+      dlg->addError(i18n("<qt><b>Error</b>: %1: %2</qt>",
+                         Qt::escape(filename), Qt::escape(msg)));
     }
   }
 
@@ -1239,7 +1240,8 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
     if (dlg) {
       QString msg = KJSDebugger::DebugWindow::exceptionToString(
                               proxy->interpreter()->globalExec(), comp.value());
-      dlg->addError(i18n("<b>Error</b>: node %1: %2", n.nodeName().string(), msg));
+      dlg->addError(i18n("<qt><b>Error</b>: node %1: %2</qt>",
+                         n.nodeName().string(), Qt::escape(msg)));
     }
   }
 
