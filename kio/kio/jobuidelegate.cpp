@@ -20,10 +20,13 @@
 */
 
 #include "jobuidelegate.h"
-#include <kdebug.h>
 
-#include <kmessagebox.h>
+#include <kdebug.h>
 #include <kjob.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <ksharedconfig.h>
+
 #include <QPointer>
 #include <QWidget>
 
@@ -87,6 +90,76 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *,
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
     KIO::SkipDialog dlg( window(), multi, error_text );
     return static_cast<KIO::SkipDialog_Result>(dlg.exec());
+}
+
+bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
+                                               DeletionType deletionType,
+                                               ConfirmationType confirmationType)
+{
+    QString keyName;
+    bool ask = ( confirmationType == ForceConfirmation );
+    if (!ask) {
+        KSharedConfigPtr kioConfig = KSharedConfig::openConfig("kiorc", KConfig::NoGlobals);
+        keyName = (deletionType == Delete ? "ConfirmDelete" : "ConfirmTrash");
+        // The default value for confirmations is true (for both delete and trash)
+        // If you change this, update kdebase/apps/konqueror/settings/konq/behaviour.cpp
+        const bool defaultValue = true;
+        ask = kioConfig->group("Confirmations").readEntry(keyName, defaultValue);
+    }
+    if (ask) {
+        QStringList prettyList;
+        Q_FOREACH(const KUrl& url, urls) {
+            if ( url.protocol() == "trash" ) {
+                QString path = url.path();
+                // HACK (#98983): remove "0-foo". Note that it works better than
+                // displaying KFileItem::name(), for files under a subdir.
+                path.remove(QRegExp("^/[0-9]*-"));
+                prettyList.append(path);
+            } else {
+                prettyList.append(url.pathOrUrl());
+            }
+        }
+
+        QWidget* widget = window();
+        int result;
+        switch(deletionType) {
+        case Delete:
+            result = KMessageBox::warningContinueCancelList(
+                widget,
+             	i18np("Do you really want to delete this item?", "Do you really want to delete these %1 items?", prettyList.count()),
+             	prettyList,
+		i18n("Delete Files"),
+		KStandardGuiItem::del(),
+		KStandardGuiItem::cancel(),
+		keyName, KMessageBox::Notify);
+            break;
+
+        case Trash:
+        default:
+            result = KMessageBox::warningContinueCancelList(
+                widget,
+                i18np("Do you really want to move this item to the trash?", "Do you really want to move these %1 items to the trash?", prettyList.count()),
+                prettyList,
+		i18n("Move to Trash"),
+		KGuiItem(i18nc("Verb", "&Trash"), "user-trash"),
+		KStandardGuiItem::cancel(),
+		keyName, KMessageBox::Notify);
+        }
+        if (!keyName.isEmpty()) {
+            // Check kmessagebox setting... erase & copy to konquerorrc.
+            KSharedConfig::Ptr config = KGlobal::config();
+            KConfigGroup notificationGroup(config, "Notification Messages");
+            if (!notificationGroup.readEntry(keyName, true)) {
+                notificationGroup.writeEntry(keyName, true);
+                notificationGroup.sync();
+
+                KSharedConfigPtr kioConfig = KSharedConfig::openConfig("kiorc", KConfig::NoGlobals);
+                kioConfig->group("Confirmations").writeEntry(keyName, false);
+            }
+        }
+        return (result == KMessageBox::Continue);
+    }
+    return true;
 }
 
 #include "jobuidelegate.moc"

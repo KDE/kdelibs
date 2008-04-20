@@ -99,6 +99,33 @@ public:
                                       bool multi,
                                       const QString & error_text);
 
+    /**
+     * The type of deletion: real deletion, or moving the files to the trash
+     * Used by askDeleteConfirmation.
+     */
+    enum DeletionType { Delete, Trash };
+    /**
+     * ForceConfirmation: always ask the user for confirmation
+     * DefaultConfirmation: don't ask the user if he/she said "don't ask again".
+     *
+     * Used by askDeleteConfirmation.
+     */
+    enum ConfirmationType { DefaultConfirmation, ForceConfirmation };
+    /**
+     * Ask for confirmation before deleting/trashing @p urls.
+     *
+     * Note that this method is not called automatically by KIO jobs. It's the application's
+     * responsibility to ask the user for confirmation before calling KIO::del() or KIO::trash().
+     *
+     * @param urls the urls about to be deleted/trashed
+     * @param method the type of deletion (Delete for real deletion, Trash otherwise)
+     * @param confirmation see ConfirmationType. Normally set to DefaultConfirmation.
+     * Note: the window passed to setWindow is used as the parent for the message box.
+     * @return true if confirmed
+     */
+    bool askDeleteConfirmation(const KUrl::List& urls, DeletionType deletionType,
+                               ConfirmationType confirmationType);
+
 private:
     class Private;
     Private * const d;
