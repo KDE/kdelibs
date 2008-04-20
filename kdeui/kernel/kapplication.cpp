@@ -869,7 +869,7 @@ void KApplicationPrivate::parseCommandLine( )
             q->setWindowIcon(KIcon(args->getOption("icon")));
         }
         else {
-            q->setWindowIcon(KIcon(componentData.componentName()));
+            q->setWindowIcon(KIcon(componentData.aboutData()->programIconName()));
         }
     }
 
