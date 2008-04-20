@@ -30,12 +30,13 @@
 #include "types.h"
 
 namespace KJS {
+
+  class Context;
   class Debugger;
   class SavedBuiltins;
   class TimeoutChecker;
   class Package;
-  class ActivationImp;
-
+  
 #if USE(BINDINGS)
   namespace Bindings {
     class RootObject;
@@ -147,6 +148,21 @@ namespace KJS {
      */
     Completion evaluate(const UString& sourceURL, int startingLineNumber, const UChar* code, int codeLength, JSValue* thisV = 0);
     Completion evaluate(const UString& sourceURL, int startingLineNumber, const UString& code, JSValue* thisV = 0);
+
+    /**
+     * Pretty-prints the supplied ECMAScript code after checking it
+     * for syntax errors.
+     *
+     * @param sourceURL A URL denoting the origin of the code
+     * @param startingLineNumber The line offset within an embedding context
+     * @param codeIn The code to check
+     * @param codeIn Pointer to string that will contain reformatted code
+     *        upon successful parsing.
+     * @return A normal completion if there were no syntax errors in the code, 
+     * otherwise a throw completion with the syntax error as its value.
+     */
+    static bool normalizeCode(const UString& codeIn, UString* codeOut,
+                              int* errLine = 0, UString* errMsg = 0);
 
     /**
      * Returns the builtin "Object" object. This is the object that was set
@@ -269,7 +285,7 @@ namespace KJS {
      */
     void setCompatMode(CompatMode mode) { m_compatMode = mode; }
     CompatMode compatMode() const { return m_compatMode; }
-
+    
     /**
      * Run the garbage collection. Returns true when at least one object
      * was collected; false otherwise.
@@ -277,7 +293,7 @@ namespace KJS {
     static bool collect();
 
     /**
-     * Called during the mark phase of the garbage collector. Subclasses
+     * Called during the mark phase of the garbage collector. Subclasses 
      * implementing custom mark methods must make sure to chain to this one.
      */
     virtual void mark(bool currentThreadIsMainThread);
@@ -304,8 +320,8 @@ namespace KJS {
      * security checks.
      */
     virtual bool isGlobalObject(JSValue*) { return false; }
-
-    /**
+    
+    /** 
      * Find the interpreter for a particular global object.  This should really
      * be a static method, but we can't do that is C++.  Again, as with isGlobalObject()
      * implementation really need to know about all instances of Interpreter
@@ -313,7 +329,7 @@ namespace KJS {
      * override of this method is currently in WebCore.
      */
     virtual Interpreter* interpreterForGlobalObject(const JSValue*) { return 0; }
-
+    
     /**
      * Determine if the it is 'safe' to execute code in the target interpreter from an
      * object that originated in this interpreter.  This check is used to enforce WebCore
@@ -321,7 +337,7 @@ namespace KJS {
      * not allowed unless isSafeScript returns true.
      */
     virtual bool isSafeScript(const Interpreter*) { return true; }
-
+  
 #if USE(BINDINGS)
     virtual void *createLanguageInstanceForValue(ExecState*, int language, JSObject* value, const Bindings::RootObject* origin, const Bindings::RootObject* current);
 #endif
@@ -333,14 +349,12 @@ namespace KJS {
 
     Debugger* debugger() const { return m_debugger; }
     void setDebugger(Debugger* d) { m_debugger = d; }
-
-    void setExecState(ExecState* e) { m_execState = e; }
-
-    // Note: may be 0, if in globalExec
-    ExecState* execState() { return m_execState ? m_execState : &m_globalExec; }
-
+    
+    void setContext(Context* c) { m_context = c; }
+    Context* context() const { return m_context; }
+    
     static Interpreter* interpreterWithGlobalObject(JSObject*);
-
+    
     void setTimeoutTime(unsigned timeoutTime) { m_timeoutTime = timeoutTime; }
 
     void startTimeoutCheck();
@@ -351,35 +365,13 @@ namespace KJS {
 
     void pauseTimeoutCheck();
     void resumeTimeoutCheck();
-
+    
     bool checkTimeout();
-
+    
     void ref() { ++m_refCount; }
     void deref() { if (--m_refCount <= 0) delete this; }
     int refCount() const { return m_refCount; }
-
-    unsigned char* stackAlloc(size_t size) {
-        unsigned char* nextPtr = stackPtr + size;
-        if (nextPtr <= stackEnd) {
-            unsigned char* toRet = stackPtr;
-            stackPtr = nextPtr;
-            return toRet;
-        }
-        return extendStack(size);
-    }
-
-    void stackFree(size_t size) { stackPtr-= size; } // ### shrink it?
-
-    ActivationImp* getRecycledActivation() {
-        ActivationImp* out = 0;
-        if (m_numCachedActivations) {
-            m_numCachedActivations--;
-            out = m_cachedActivations[m_numCachedActivations];
-        }
-        return out;
-    }
-
-    void recycleActivation(ActivationImp* act);
+    
 protected:
     virtual ~Interpreter(); // only deref should delete us
     virtual bool shouldInterruptScript() const { return true; }
@@ -397,40 +389,28 @@ private:
      * pointers to an interpreter instance instead.
      */
     Interpreter(const Interpreter&);
-
+    
     /**
      * This operator is not implemented, in order to prevent assignment of
      * Interpreter objects. You should always pass around pointers to an
      * interpreter instance instead.
      */
     Interpreter operator=(const Interpreter&);
-
+    
     int m_refCount;
-
+    
+    ExecState m_globalExec;
     JSObject* m_globalObject;
-    GlobalExecState m_globalExec;
     Package *globPkg;
-
-    // Execution stack stuff for this interpreter.
-    unsigned char* stackBase; // lowest address in the array
-    unsigned char* stackPtr;  // current top/next to allocate
-    unsigned char* stackEnd;  // last address in the stack
-    unsigned char* extendStack(size_t needed);
-
-    // A list of cached activations
-    enum {MaxCachedActivations = 32};
-
-    ActivationImp* m_cachedActivations[MaxCachedActivations];
-    int            m_numCachedActivations;
 
     // Chained list of interpreters (ring) - for collector
     static Interpreter* s_hook;
     Interpreter *next, *prev;
-
+    
     int m_recursion;
-
+    
     Debugger* m_debugger;
-    ExecState* m_execState;
+    Context* m_context;
     CompatMode m_compatMode;
 
     TimeoutChecker* m_timeoutChecker;
@@ -448,7 +428,7 @@ private:
     ProtectedPtr<JSObject> m_Date;
     ProtectedPtr<JSObject> m_RegExp;
     ProtectedPtr<JSObject> m_Error;
-
+    
     ProtectedPtr<JSObject> m_ObjectPrototype;
     ProtectedPtr<JSObject> m_FunctionPrototype;
     ProtectedPtr<JSObject> m_ArrayPrototype;
@@ -458,14 +438,14 @@ private:
     ProtectedPtr<JSObject> m_DatePrototype;
     ProtectedPtr<JSObject> m_RegExpPrototype;
     ProtectedPtr<JSObject> m_ErrorPrototype;
-
+    
     ProtectedPtr<JSObject> m_EvalError;
     ProtectedPtr<JSObject> m_RangeError;
     ProtectedPtr<JSObject> m_ReferenceError;
     ProtectedPtr<JSObject> m_SyntaxError;
     ProtectedPtr<JSObject> m_TypeError;
     ProtectedPtr<JSObject> m_UriError;
-
+    
     ProtectedPtr<JSObject> m_EvalErrorPrototype;
     ProtectedPtr<JSObject> m_RangeErrorPrototype;
     ProtectedPtr<JSObject> m_ReferenceErrorPrototype;
@@ -511,7 +491,7 @@ private:
 #define KJS_QT_UNICODE_IMPL \
 namespace KJS { \
   static bool qtIdentStart(int c) { if (c & 0xffff0000) return false; QChar::Category cat = QChar((unsigned short)c).category(); return cat == QChar::Letter_Uppercase || cat == QChar::Letter_Lowercase || cat == QChar::Letter_Titlecase || cat == QChar::Letter_Modifier || cat == QChar::Letter_Other || c == '$' || c == '_'; } \
-  static bool qtIdentPart(int c) { if (c & 0xffff0000) return false; QChar::Category cat = QChar((unsigned short)c).category(); return cat == QChar::Letter_Uppercase || cat == QChar::Letter_Lowercase || cat == QChar::Letter_Titlecase || cat == QChar::Letter_Modifier | cat == QChar::Letter_Other | cat == QChar::Mark_NonSpacing | cat == QChar::Mark_SpacingCombining | cat == QChar::Number_DecimalDigit | cat == QChar::Punctuation_Connector || c == '$' || c == '_'; } \
+  static bool qtIdentPart(int c) { if (c & 0xffff0000) return false; QChar::Category cat = QChar((unsigned short)c).category(); return cat == QChar::Letter_Uppercase || cat == QChar::Letter_Lowercase || cat == QChar::Letter_Titlecase || cat == QChar::Letter_Modifier || cat == QChar::Letter_Other || cat == QChar::Mark_NonSpacing || cat == QChar::Mark_SpacingCombining || cat == QChar::Number_DecimalDigit || cat == QChar::Punctuation_Connector || c == '$' || c == '_'; } \
   static int qtToLower(uint16_t* str, int strLength, uint16_t*& destIfNeeded) { \
       destIfNeeded = 0; \
       for (int i = 0; i < strLength; ++i) \
@@ -534,7 +514,7 @@ namespace KJS { \
     KJS::UnicodeSupport::setIdentPartChecker(KJS::qtIdentPart); \
     KJS::UnicodeSupport::setToLowerFunction(KJS::qtToLower); \
     KJS::UnicodeSupport::setToUpperFunction(KJS::qtToUpper); }
-
+  
 } // namespace
 
 #endif // _KJS_INTERPRETER_H_

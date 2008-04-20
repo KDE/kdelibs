@@ -108,3 +108,19 @@ KJSObject KJSInterpreter::evaluate(const QString& code,
 {
     return evaluate("<string>", 0, code, thisValue);
 }
+
+bool KJSInterpreter::normalizeCode(const QString& code, QString* normalized,
+                                   int* errLine, QString* errMsg)
+{
+    assert(normalized);
+
+    UString codeOut, msg;
+    bool success = Interpreter::normalizeCode(toUString(code), &codeOut,
+                                              errLine, &msg);
+
+    *normalized = toQString(codeOut);
+    *errMsg = toQString(msg);
+
+    return success;
+}
+

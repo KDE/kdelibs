@@ -77,6 +77,23 @@ public:
     KJSObject evaluate(const QString& code,
                        KJSObject* thisValue = 0);
 
+    /**
+     * Reformat the given script code to an easy to read format with
+     * only one statement per line. This can be useful when debugging
+     * a script that was e.g. condensed into a single line to a single
+     * line. While comments will be removed the script will remain
+     * unchanged semantically.
+     *
+     * @param codeIn The code to be reformatted
+     * @param codeOut Points to string holding the result.
+     * @param errLine Will hold the line of a parse error
+     * @param errMsg Will hold the message of a parse error
+     *
+     * @return Returns true if the reformatting was successful, false
+     * on a parse error.
+     */
+    static bool normalizeCode(const QString& codeIn, QString* codeOut,
+                              int* errLine = 0, QString* errMsg = 0);
 private:
     KJSInterpreter(const KJSInterpreter&); // undefined
     KJSInterpreter& operator=(const KJSInterpreter&); // undefined

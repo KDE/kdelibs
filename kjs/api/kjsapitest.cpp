@@ -33,6 +33,7 @@ class KJSApiTest : public QObject
 private Q_SLOTS:
     void objectConstruction();
     void interpreterEvaluate();
+    void interpreterNormalizeCode();
     void objectProperties();
     void prototypeConstants();
     void prototypeProperties();
@@ -93,6 +94,31 @@ void KJSApiTest::interpreterEvaluate()
     QVERIFY2(res.isValid(), "Evaluation returned invalid object");
     QVERIFY2(res.isNumber(), "Evaluation returned non-number object");
     QCOMPARE(res.toNumber(ctx), 33.0);
+}
+
+void KJSApiTest::interpreterNormalizeCode()
+{
+    int errLine = -1;
+    QString errMsg;
+    QString norm;
+    bool ok;
+
+    // syntax error case
+    ok = KJSInterpreter::normalizeCode(")(", &norm, &errLine, &errMsg);
+    QVERIFY(!ok);
+    QVERIFY(!errMsg.isEmpty());
+    QVERIFY(errLine >= 0 && errLine <= 2); // ### imprecise
+
+    // success case
+    ok = KJSInterpreter::normalizeCode("foo(); bar();", &norm);
+    QVERIFY(ok);
+    QVERIFY(!norm.isEmpty());
+    QStringList lines = norm.split('\n');
+    QVERIFY(lines.size() >= 2); // ### imprecise
+    int fooLine = lines.indexOf(QRegExp(" *foo\\(\\);"));
+    int barLine = lines.indexOf(QRegExp(" *bar\\(\\);"));
+    QVERIFY(fooLine >= 0);
+    QVERIFY(barLine > fooLine);
 }
 
 void KJSApiTest::objectProperties()
