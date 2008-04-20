@@ -75,6 +75,7 @@
 #include <QSplitter>
 #include <QTabWidget>
 #include <QToolButton>
+#include <QTextDocument>
 
 #include "breakpointsdock.h"
 #include "consoledock.h"
@@ -590,7 +591,8 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 
         int      line = lineValue->toNumber(exec);
         QString  url  = urlValue->toString(exec).qstring();
-        exceptionMsg = i18n("Parse error at %1 line %2", url, line - 1);
+        exceptionMsg = i18n("Parse error at %1 line %2",
+                            Qt::escape(url), line - 1);
     }
     else
     {
