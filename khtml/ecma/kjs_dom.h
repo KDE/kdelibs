@@ -317,10 +317,12 @@ namespace KJS {
   class DOMText : public DOMCharacterData {
   public:
     DOMText(ExecState *exec, DOM::TextImpl* t);
+    virtual bool getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot);
+    JSValue* getValueProperty(ExecState* exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::TextImpl* impl() const { return static_cast<DOM::TextImpl*>(m_impl.get()); }
-    enum { SplitText };
+    enum { SplitText, WholeText, ReplaceWholeText, };
   };
 
 } // namespace
