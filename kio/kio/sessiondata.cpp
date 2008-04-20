@@ -27,12 +27,12 @@
 #include <QtCore/QTextCodec>
 
 #include <kdebug.h>
-#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kprotocolmanager.h>
+#include <ksharedconfig.h>
 #include <kstandarddirs.h>
 
 #include <kdesu/client.h>
@@ -263,7 +263,7 @@ void SessionData::reset()
 {
     d->initDone = true;
     // Get Cookie settings...
-    d->useCookie = KConfig("kcookiejarrc", KConfig::NoGlobals).
+    d->useCookie = KSharedConfig::openConfig("kcookiejarrc", KConfig::NoGlobals)->
                    group("Cookie Policy" ).
                    readEntry("Cookies", true);
 
