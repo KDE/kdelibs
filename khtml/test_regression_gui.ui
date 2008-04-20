@@ -207,7 +207,7 @@
     </property>
     <addaction name="actionOnly_run_JS_tests" />
     <addaction name="actionOnly_run_HTML_tests" />
-    <addaction name="actionDo_not_supress_debug_output" />
+    <addaction name="actionDo_not_suppress_debug_output" />
     <addaction name="actionDo_not_use_Xvfb" />
    </widget>
    <widget class="QMenu" name="menuMain" >
@@ -249,7 +249,7 @@
     <string>Only run HTML tests</string>
    </property>
   </action>
-  <action name="actionDo_not_supress_debug_output" >
+  <action name="actionDo_not_suppress_debug_output" >
    <property name="checkable" >
     <bool>true</bool>
    </property>

@@ -53,7 +53,7 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	// Setup actions/connections
 	connect(m_ui.actionOnly_run_JS_tests, SIGNAL(toggled(bool)), SLOT(toggleJSTests(bool)));
 	connect(m_ui.actionOnly_run_HTML_tests, SIGNAL(toggled(bool)), SLOT(toggleHTMLTests(bool)));
-	connect(m_ui.actionDo_not_supress_debug_output, SIGNAL(toggled(bool)), SLOT(toggleDebugOutput(bool)));
+	connect(m_ui.actionDo_not_suppress_debug_output, SIGNAL(toggled(bool)), SLOT(toggleDebugOutput(bool)));
 	connect(m_ui.actionDo_not_use_Xvfb, SIGNAL(toggled(bool)), SLOT(toggleNoXvfbUse(bool)));
 	connect(m_ui.actionSpecify_tests_directory, SIGNAL(triggered(bool)), SLOT(setTestsDirectory()));
 	connect(m_ui.actionSpecify_khtml_directory, SIGNAL(triggered(bool)), SLOT(setKHTMLDirectory()));
