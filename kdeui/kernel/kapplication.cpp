@@ -601,7 +601,7 @@ void KApplicationPrivate::init(bool GUIenabled)
       if (QSystemTrayIcon::isSystemTrayAvailable())
       {
           trayIcon = new QSystemTrayIcon(q);
-          trayIcon->setIcon(KIcon(KCmdLineArgs::appName()));
+          trayIcon->setIcon(q->windowIcon());
           /* it's counter-intuitive, but once you do setIcon it's already set the
              dock icon... ->show actually shows an icon in the menu bar too  :P */
           // trayIcon->show();
