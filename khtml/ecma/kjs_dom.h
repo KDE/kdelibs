@@ -322,7 +322,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     DOM::TextImpl* impl() const { return static_cast<DOM::TextImpl*>(m_impl.get()); }
-    enum { SplitText, WholeText, ReplaceWholeText, };
+    enum { SplitText, WholeText, ReplaceWholeText };
   };
 
 } // namespace
