@@ -64,6 +64,16 @@ class KuitSemantics
      */
     ~KuitSemantics ();
 
+    /**
+     * Poor man's version of Qt::mightBeRichText() (cannot link to QtGui).
+     */
+    static bool mightBeRichText (const QString &text);
+
+    /**
+     * Like Qt::escape() (cannot link to QtGui).
+     */
+    static QString escape (const QString &text);
+
     private:
 
     KuitSemantics (const KuitSemantics &t);

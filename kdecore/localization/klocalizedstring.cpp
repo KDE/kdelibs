@@ -38,6 +38,7 @@
 #include <QHash>
 #include <QList>
 #include <QVector>
+#include <QTextDocument>
 
 // Truncates string, for output of long messages.
 static QString shortenMessage (const QString &str)
@@ -879,10 +880,18 @@ KLocalizedString KLocalizedString::subs (QChar a, int fieldWidth,
     return kls;
 }
 
-KLocalizedString KLocalizedString::subs (const QString &a, int fieldWidth,
+KLocalizedString KLocalizedString::subs (const QString &a_, int fieldWidth,
                                          const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
+    QString a = a_;
+    if (!KuitSemantics::mightBeRichText(a)) {
+        a = KuitSemantics::escape(a);
+        int dlen = a.length() - a_.length();
+        if (dlen > 0 && fieldWidth != 0) {
+            fieldWidth += dlen * (fieldWidth > 0 ? 1 : -1);
+        }
+    }
     kls.d->args.append(QString("%1").arg(a, fieldWidth, fillChar));
     kls.d->vals.append(a);
     return kls;

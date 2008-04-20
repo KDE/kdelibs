@@ -1449,3 +1449,62 @@ QString KuitSemantics::format (const QString &text, const QString &ctxt) const
     return d->format(text, ctxt);
 }
 
+bool KuitSemantics::mightBeRichText (const QString &text)
+{
+    KuitSemanticsStaticData *s = staticData;
+
+    // Check by appearance of a valid XML entity at first ampersand.
+    int p1 = text.indexOf('&');
+    if (p1 >= 0) {
+        p1 += 1;
+        int p2 = text.indexOf(';', p1);
+        return (p2 > p1 && s->xmlEntities.contains(text.mid(p1, p2 - p1)));
+    }
+
+    // Check by appearance of a valid Qt rich-text tag at first less-than.
+    int tlen = text.length();
+    p1 = text.indexOf('<');
+    if (p1 >= 0) {
+        p1 += 1;
+        while (p1 < tlen && text[p1].isSpace()) {
+            ++p1;
+        }
+        for (int p2 = p1; p2 < tlen; ++p2) {
+            QChar c = text[p2];
+            if (c == '>' || c == '/' || c.isSpace()) {
+                return s->qtHtmlTagNames.contains(text.mid(p1, p2 - p1));
+            }
+            else if (!c.isLetter()) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    return false;
+}
+
+QString KuitSemantics::escape (const QString &text)
+{
+    int tlen = text.length();
+    QString ntext;
+    ntext.reserve(tlen);
+    for (int i = 0; i < tlen; ++i) {
+        QChar c = text[i];
+        if (c == '&') {
+            ntext += "&amp;";
+        }
+        else if (c == '<') {
+            ntext += "&lt;";
+        }
+        else if (c == '>') {
+            ntext += "&gt;";
+        }
+        else {
+            ntext += c;
+        }
+    }
+
+    return ntext;
+}
+
