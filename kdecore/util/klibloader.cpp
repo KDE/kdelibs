@@ -95,7 +95,7 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 
     // Klibrary search magic did work?
     if (lib->fileName().isEmpty()) {
-        kLibLoaderPrivate->errorString = i18n("Library not found");
+        kLibLoaderPrivate->errorString = i18n("Library \"%1\" not found",_name);
         delete lib;
         return 0;
     }
