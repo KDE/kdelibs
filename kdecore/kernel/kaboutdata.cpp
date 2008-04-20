@@ -356,6 +356,7 @@ public:
     KLocalizedString translatorName;
     KLocalizedString translatorEmail;
     QString productName;
+    QString programIconName;
     QVariant programLogo;
     KLocalizedString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
@@ -643,6 +644,19 @@ KAboutData::translateInternalProgramName() const
   d->_translatedProgramName.clear();
   if( KGlobal::locale())
       d->_translatedProgramName = programName().toUtf8();
+}
+
+QString
+KAboutData::programIconName() const
+{
+    return d->programIconName.isEmpty() ? appName() : d->programIconName;
+}
+
+KAboutData &
+KAboutData::setProgramIconName( const QString &iconName )
+{
+    d->programIconName = iconName;
+    return *this;
 }
 
 QVariant

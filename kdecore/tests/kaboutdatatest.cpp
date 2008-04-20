@@ -30,6 +30,7 @@
 static const char AppName[] =            "app";
 static const char CatalogName[] =        "Catalog";
 static const char ProgramName[] =        "ProgramName";
+static const char ProgramIconName[] =    "program-icon";
 static const char Version[] =            "Version";
 static const char ShortDescription[] =   "ShortDescription";
 static const char CopyrightStatement[] = "CopyrightStatement";
@@ -49,6 +50,7 @@ void KAboutDataTest::testConstructorWithDefaults()
     QCOMPARE( aboutData.appName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.productName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programName(), ki18n(ProgramName).toString() );
+    QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
     QCOMPARE( aboutData.organizationDomain(), QString("kde.org") );
     QCOMPARE( aboutData.version(), QString(Version) );
@@ -92,6 +94,7 @@ void KAboutDataTest::testConstructor()
     QCOMPARE( aboutData.appName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.productName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programName(), ki18n(ProgramName).toString() );
+    QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
     QCOMPARE( aboutData.organizationDomain(), QString(OrganizationDomain) );
     QCOMPARE( aboutData.version(), QString(Version) );
@@ -209,6 +212,20 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::ShortName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::FullName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(3).text(), copyrightStatement.toString()+lineFeed+ki18n(LicenseFileText).toString() );
+}
+
+void KAboutDataTest::testSetProgramIconName()
+{
+    const QLatin1String programIconName( ProgramIconName );
+
+    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
+                ki18n(ShortDescription), KAboutData::License_Unknown,
+                ki18n(CopyrightStatement), ki18n(Text),
+                HomePageAddress, BugsEmailAddress );
+
+    // set different iconname
+    aboutData.setProgramIconName( programIconName );
+    QCOMPARE( aboutData.programIconName(), programIconName );
 }
 
 QTEST_KDEMAIN_CORE( KAboutDataTest )

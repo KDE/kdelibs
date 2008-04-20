@@ -30,6 +30,7 @@ private Q_SLOTS:
     void testConstructorWithDefaults();
     void testConstructor();
     void testSetAddLicense();
+    void testSetProgramIconName();
 };
 
 

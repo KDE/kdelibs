@@ -139,6 +139,9 @@ private:
 
 class KAboutLicense;
 
+// KDE5: refactor together with KComponentData.
+// Like changing all property names which contain Program or App.
+
 /**
  * This class is used to store information about a program. It can store
  * such values as version number, program name, home page, email address
@@ -148,6 +151,7 @@ class KAboutLicense;
  * Currently, the values set here are shown by the "About" box
  * (see KAboutDialog), used by the bug report dialog (see KBugReport),
  * and by the help shown on command line (see KCmdLineArgs).
+ * They are also used for the icon and the name of the program's windows.
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
  * calls are used to produce KLocalizedStrings, which can delay the translation
@@ -404,6 +408,18 @@ class KDECORE_EXPORT KAboutData
     KAboutData &setProgramName( const KLocalizedString &programName );
 
     /**
+     * Defines the program icon.
+     *
+     * Use this if you need to have an application icon
+     * whose name is different than the application name.
+     *
+     * @param iconName name of the icon. Example: "accessories-text-editor"
+     * @see programIconName()
+     * @since 4.1
+     */
+    KAboutData &setProgramIconName( const QString &iconName );
+
+    /**
      * Defines the program logo.
      *
      * Use this if you need to have an application logo
@@ -563,6 +579,19 @@ class KDECORE_EXPORT KAboutData
      * Provided for use by KCrash
      */
     void translateInternalProgramName() const;
+
+    /**
+     * Returns the program's icon name.
+     *
+     * The default value is @p appName .
+     * Use @p setProgramIconName if you need to have an icon
+     * whose name is different from the internal application name.
+     *
+     * @return the program's icon name.
+     * @see setProgramIconName()
+     * @since 4.1
+     */
+    QString programIconName() const;
 
     /**
      * Returns the program logo image.
