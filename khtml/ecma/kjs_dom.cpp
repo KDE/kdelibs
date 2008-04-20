@@ -1884,11 +1884,16 @@ JSValue* DOMCharacterDataProtoFunc::callAsFunction(ExecState *exec, JSObject *th
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMText::info = { "Text",
-				 &DOMCharacterData::info, 0, 0 };
+const ClassInfo DOMText::info = { "Text", &DOMCharacterData::info,
+                                  &DOMTextTable , 0 };
+
 /*
-@begin DOMTextProtoTable 1
-  splitText	DOMText::SplitText	DontDelete|Function 1
+@begin DOMTextTable 2
+  wholeText        DOMText::WholeText        DontDelete|ReadOnly
+@end
+@begin DOMTextProtoTable 2
+  splitText	   DOMText::SplitText	     DontDelete|Function 1
+  replaceWholeText DOMText::ReplaceWholeText DontDelete|Function 1
 @end
 */
 KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextProto, DOMCharacterDataProto)
@@ -1901,7 +1906,22 @@ DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
   setPrototype(DOMTextProto::self(exec));
 }
 
+bool DOMText::getOwnPropertySlot(ExecState* exec,
+                                 const Identifier& propertyName,
+                                 PropertySlot& slot)
+{
+    return getStaticValueSlot<DOMText, DOMCharacterData>(exec, &DOMTextTable, this, propertyName, slot);
+}
 
+JSValue* DOMText::getValueProperty(ExecState*, int token) const
+{
+    TextImpl* text = static_cast<TextImpl*>(impl());
+    switch (token) {
+    case WholeText:
+        return jsString(text->wholeText());
+    }
+    return jsNull(); // not reached
+}
 
 JSValue* DOMTextProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
@@ -1911,6 +1931,8 @@ JSValue* DOMTextProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
   switch(id) {
     case DOMText::SplitText:
       return getDOMNode(exec,text.splitText(args[0]->toInteger(exec), exception));
+    case DOMText::ReplaceWholeText:
+      return getDOMNode(exec, text.replaceWholeText(args[0]->toString(exec).domString(), exception));
     default:
       break;
   }

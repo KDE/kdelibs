@@ -31,6 +31,7 @@
 #include <misc/htmlhashes.h>
 #include <rendering/render_text.h>
 #include <rendering/render_flow.h>
+#include <wtf/RefPtr.h>
 
 #include <kdebug.h>
 
@@ -340,6 +341,97 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
         (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
     return newText;
+}
+
+static const TextImpl* earliestLogicallyAdjacentTextNode(const TextImpl* t)
+{
+    const NodeImpl* n = t;
+    while ((n = n->previousSibling())) {
+        unsigned short type = n->nodeType();
+        if (type == Node::TEXT_NODE || type == Node::CDATA_SECTION_NODE) {
+            t = static_cast<const TextImpl*>(n);
+            continue;
+        }
+
+        // We would need to visit EntityReference child text nodes if they existed
+        assert(type != Node::ENTITY_REFERENCE_NODE || !n->hasChildNodes());
+        break;
+    }
+    return t;
+}
+
+static const TextImpl* latestLogicallyAdjacentTextNode(const TextImpl* t)
+{
+    const NodeImpl* n = t;
+    while ((n = n->nextSibling())) {
+        unsigned short type = n->nodeType();
+        if (type == Node::TEXT_NODE || type == Node::CDATA_SECTION_NODE) {
+            t = static_cast<const TextImpl*>(n);
+            continue;
+        }
+
+        // We would need to visit EntityReference child text nodes if they existed
+        assert(type != Node::ENTITY_REFERENCE_NODE || !n->hasChildNodes());
+        break;
+    }
+    return t;
+}
+
+DOMString TextImpl::wholeText() const
+{
+    const TextImpl* startText = earliestLogicallyAdjacentTextNode(this);
+    const TextImpl* endText = latestLogicallyAdjacentTextNode(this);
+
+    DOMString result;
+    NodeImpl* onePastEndText = endText->nextSibling();
+    for (const NodeImpl* n = startText; n != onePastEndText; n = n->nextSibling()) {
+        if (!n->isTextNode())
+            continue;
+        const TextImpl* t = static_cast<const TextImpl*>(n);
+        const DOMString& data = t->data();
+        result += data;
+    }
+
+    return result;
+}
+
+TextImpl* TextImpl::replaceWholeText(const DOMString& newText, int &ec)
+{
+    // We don't support "read-only" text nodes (no Entity node support)
+    // Thus, we remove all adjacent text nodes, and replace the contents of this one.
+    assert(!isReadOnly());
+    // This method only raises exceptions when dealing with Entity nodes (which we don't support)
+
+    // Protect startText and endText against mutation event handlers removing the last ref
+    RefPtr<TextImpl> startText = const_cast<TextImpl*>(earliestLogicallyAdjacentTextNode(this));
+    RefPtr<TextImpl> endText = const_cast<TextImpl*>(latestLogicallyAdjacentTextNode(this));
+
+    RefPtr<TextImpl> protectedThis(this); // Mutation event handlers could cause our last ref to go away
+    NodeImpl* parent = parentNode(); // Protect against mutation handlers moving this node during traversal
+    int ignored = 0;
+    for (RefPtr<NodeImpl> n = startText; n && n != this && n->isTextNode() && n->parentNode() == parent;) {
+        RefPtr<NodeImpl> nodeToRemove(n.release());
+        n = nodeToRemove->nextSibling();
+        parent->removeChild(nodeToRemove.get(), ignored);
+    }
+
+    if (this != endText) {
+        NodeImpl* onePastEndText = endText->nextSibling();
+        for (RefPtr<NodeImpl> n = nextSibling(); n && n != onePastEndText && n->isTextNode() && n->parentNode() == parent;) {
+            RefPtr<NodeImpl> nodeToRemove(n.release());
+            n = nodeToRemove->nextSibling();
+            parent->removeChild(nodeToRemove.get(), ignored);
+        }
+    }
+
+    if (newText.isEmpty()) {
+        if (parent && parentNode() == parent)
+            parent->removeChild(this, ignored);
+        return 0;
+    }
+
+    setData(newText, ignored);
+    return protectedThis.release().get();
 }
 
 DOMString TextImpl::nodeName() const
