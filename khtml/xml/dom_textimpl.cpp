@@ -205,6 +205,13 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
     if (parentNode())
         parentNode()->childrenChanged();
+    if ((str->length() == 0) != (prevValue->length() == 0)) {
+       // changes in emptiness triggers changes in :empty selector
+       if (parentNode() && parentNode()->isElementNode())
+           parentNode()->backwardsStructureChanged();
+       // ### to fully support dynamic changes to :contains selector
+       // backwardsStructureChanged should be called for all changes
+    }
     if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
         return;
 
