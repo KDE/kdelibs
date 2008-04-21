@@ -24,8 +24,9 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
-#include <qtest_kde.h>
+#include <QtCore/QBuffer>
 #include <QtCore/QObject>
+#include <QtTest/QTest>
 
 class MediaSourceTest : public QObject
 {

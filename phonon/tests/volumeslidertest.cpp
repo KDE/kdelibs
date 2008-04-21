@@ -25,8 +25,8 @@
 #include <QtCore/QObject>
 #include <QtGui/QSlider>
 #include <QtGui/QToolButton>
-
-#include <qtest_kde.h>
+#include <QtGui/QApplication>
+#include <QtTest/QTest>
 
 #include <cstdlib>
 
@@ -97,4 +97,3 @@ int main(int argc, char *argv[])
 }
 
 #include "volumeslidertest.moc"
-// vim: ts=4

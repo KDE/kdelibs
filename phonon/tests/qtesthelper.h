@@ -20,7 +20,7 @@
 #ifndef QTESTHELPER_H
 #define QTESTHELPER_H
 
-#include <qtest_kde.h>
+#include <QtTest/QTest>
 #include "../phononnamespace.h"
 #include <QtCore/QVariant>
 

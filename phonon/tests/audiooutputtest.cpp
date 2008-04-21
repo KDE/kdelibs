@@ -24,8 +24,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kglobal.h>
-#include <qtest_kde.h>
+#include <QtTest/QTest>
+#include <QtTest/QSignalSpy>
 
 class AudioOutputTest : public QObject
 {

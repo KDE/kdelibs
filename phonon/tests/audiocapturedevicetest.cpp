@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 
-#include <qtest_kde.h>
+#include <QtTest/QTest>
 
 class AudioCaptureDeviceTest : public QObject
 {

@@ -23,9 +23,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
 
-#include <qtest_kde.h>
-#include <kservice.h>
-#include <kservicetypetrader.h>
+#include <QtTest/QTest>
 
 #include "../backendcapabilities.h"
 #include "../factory_p.h"
@@ -114,6 +112,6 @@ void BackendCapabilitiesTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(BackendCapabilitiesTest)
+QTEST_MAIN(BackendCapabilitiesTest)
 #include "backendcapabilitiestest.moc"
 // vim: sw=4 ts=4

@@ -20,13 +20,14 @@
 
 #include "../lockfreequeue_p.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QTest>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QVariant>
 #include <QtCore/QVector>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
+#include <QtCore/QtDebug>
 
 enum CommandType {
     SetStreamSize,

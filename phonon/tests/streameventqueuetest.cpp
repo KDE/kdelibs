@@ -20,8 +20,8 @@
 
 #include "../streameventqueue_p.h"
 
-#include <qtest_kde.h>
-
+#include <QtTest/QTest>
+#include <QtCore/QtDebug>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>

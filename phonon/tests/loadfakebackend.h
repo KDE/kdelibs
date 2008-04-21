@@ -22,8 +22,9 @@
 
 #include "../factory_p.h"
 #include <QtCore/QUrl>
-#include <QtTest>
-#include <stdlib.h>
+#include <QtTest/QTest>
+#include <QtTest/QSignalSpy>
+#include <cstdlib>
 #ifdef USE_FAKE_BACKEND
 #include "fakebackend/backend.h"
 #endif

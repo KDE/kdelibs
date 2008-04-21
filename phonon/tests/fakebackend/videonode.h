@@ -20,7 +20,7 @@
 #ifndef VIDEONODE_H
 #define VIDEONODE_H
 
-#include <QtPlugin>
+#include <QtCore/QtPlugin>
 
 
 namespace Phonon

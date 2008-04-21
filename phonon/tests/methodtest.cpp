@@ -19,8 +19,8 @@
 #include "qtesthelper.h"
 
 #include <QtCore/QObject>
-
-#include <qtest_kde.h>
+#include <QtGui/QApplication>
+#include <QtTest/QTest>
 
 #include "../factory_p.h"
 #include <phonon/streaminterface.h>

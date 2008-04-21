@@ -18,8 +18,7 @@
 */
 
 #include "backendtester.h"
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QtGui/QApplication>
 
 MainWindow::MainWindow()
 {
@@ -32,8 +31,7 @@ MainWindow::~MainWindow()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "backendtester", 0, ki18n("Backend Tester"), 0);
-    KApplication app;
+    QApplication app(argc, argv);
     MainWindow mw;
     mw.show();
     return app.exec();

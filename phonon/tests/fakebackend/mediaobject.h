@@ -19,10 +19,10 @@
 #ifndef Phonon_FAKE_MEDIAOBJECT_H
 #define Phonon_FAKE_MEDIAOBJECT_H
 
-#include <qurl.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/addoninterface.h>
 #include <phonon/experimental/videoframe.h>
+#include <QtCore/QUrl>
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
