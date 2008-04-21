@@ -57,7 +57,6 @@ public:
     bool mIsImmutable; ///< Indicates this item is immutable
 
     QString mLabel; ///< The label for this item
-    QString mToolTip; ///< The ToolTip text for this item
     QString mWhatsThis; ///< The What's This text for this item
 };
 

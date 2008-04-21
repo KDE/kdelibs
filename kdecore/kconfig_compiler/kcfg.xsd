@@ -80,7 +80,6 @@
                                     <xsd:choice maxOccurs="unbounded">
                                         <xsd:element name="parameter" minOccurs="0" type="kcfg:parameter"/>
                                         <xsd:element name="label" minOccurs="0" type="xsd:string"/>
-                                        <xsd:element name="tooltip" minOccurs="0" type="xsd:string"/>
                                         <xsd:element name="whatsthis" minOccurs="0" type="xsd:string"/>
                                         <xsd:element name="choices" minOccurs="0">
                                             <xsd:complexType>
@@ -89,7 +88,6 @@
                                                         <xsd:complexType>
                                                             <xsd:all>
                                                                 <xsd:element minOccurs="0" name="label" type="xsd:string"/>
-                                                                <xsd:element minOccurs="0" name="tooltip" type="xsd:string"/>
                                                                 <xsd:element minOccurs="0" name="whatsthis" type="xsd:string"/>
                                                             </xsd:all>
                                                             <xsd:attribute name="name" use="required" type="xsd:string"/>

@@ -108,18 +108,6 @@
     QString label() const;
 
     /**
-      Set ToolTip description of item.
-      @since 4.1
-    */
-    void setToolTip( const QString &t );
-
-    /**
-      Return ToolTip description of item. See setToolTip().
-      @since 4.1
-    */
-    QString toolTip() const;
-
-    /**
       Set WhatsThis description of item.
     */
     void setWhatsThis( const QString &w );
@@ -603,7 +591,6 @@ public:
     {
       QString name;
       QString label;
-      //KDE5: QString toolTip; so, no tooltips for Enums in KDE4
       QString whatsThis;
     };
 
