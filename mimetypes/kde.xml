@@ -255,8 +255,8 @@ Notes:
       <match type="string" value="&lt;FictionBook" offset="0:256"/>
     </magic>
   </mime-type>
-  <mime-type type="application/epub+zip"> <!-- fdo #12625 -->
-    <comment>eBook document</comment>
+  <mime-type type="application/epub+zip"> <!-- fdo #12625, FIXED 0.24 -->
+    <comment>Electronic book document</comment>
     <magic priority="50">
       <match type="string" value="PK\003\004" offset="0">
         <match type="string" value="mimetype" offset="30">
@@ -265,6 +265,11 @@ Notes:
       </match>
     </magic>
     <glob pattern="*.epub"/>
+  </mime-type>
+  <mime-type type="text/x-cmake"> <!-- fdo #15561, FIXED 0.24 -->
+    <comment>CMake source code</comment>
+    <glob pattern="*.cmake"/>
+    <glob pattern="CMakeLists.txt"/>
   </mime-type>
 
   <!-- all/ fake mime types -->
@@ -486,12 +491,6 @@ Notes:
   <mime-type type="application/x-kexi-connectiondata">
     <comment>data for database server connection</comment>
     <glob pattern="*.kexic"/>
-  </mime-type>
-
-  <mime-type type="text/x-cmake">
-    <comment>cmake source code</comment>
-    <glob pattern="*.cmake"/>
-    <glob pattern="CMakeLists.txt"/>
   </mime-type>
 
 </mime-info>
