@@ -73,11 +73,11 @@ namespace Phonon
             /**
              * Emitted when a new device is available.
              */
-            void devicePlugged(const AudioDevice &device);
+            void devicePlugged(const Phonon::AudioDevice &device);
             /**
              * Emitted when a device disappeared.
              */
-            void deviceUnplugged(const AudioDevice &device);
+            void deviceUnplugged(const Phonon::AudioDevice &device);
 
         protected:
             AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *);

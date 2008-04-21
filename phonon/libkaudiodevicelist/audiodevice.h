@@ -23,10 +23,10 @@
 #include "kaudiodevicelist_export.h"
 #include <solid/audiointerface.h>
 #include <ksharedconfig.h>
+#include <QtCore/QDebug>
 #include <QtCore/QSharedData>
+#include <QtCore/QStringList>
 
-class QString;
-class QStringList;
 class KConfigGroup;
 
 namespace Solid
@@ -171,4 +171,11 @@ namespace Phonon
             QExplicitlySharedDataPointer<AudioDevicePrivate> d;
     };
 } // namespace Phonon
+
+inline QDebug operator<<(QDebug &s, const Phonon::AudioDevice &dev)
+{
+    s.space() << "\n-" << dev.cardName() << dev.driver() << dev.deviceIds() << "index:" << dev.index() << "preference:" << dev.initialPreference() << "avail:" << dev.isAvailable() << "advanced:" << dev.isAdvancedDevice();
+    return s.space();
+}
+
 #endif // PHONON_AUDIODEVICE_H

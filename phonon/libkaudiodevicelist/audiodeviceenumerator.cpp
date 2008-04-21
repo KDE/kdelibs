@@ -30,7 +30,7 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <kdebug.h>
-#include <phonon/config-alsa.h>
+#include <../config-alsa.h>
 
 #ifdef HAVE_LIBASOUND2
 #include <alsa/asoundlib.h>
@@ -439,11 +439,6 @@ QDebug operator<<(QDebug &s, const Solid::AudioInterface::AudioDriver &driver)
         s.nospace() << "unknown driver";
         break;
     }
-    return s.space();
-}
-QDebug operator<<(QDebug &s, const AudioDevice &dev)
-{
-    s.space() << "\n-" << dev.cardName() << dev.driver() << dev.deviceIds() << "index:" << dev.index() << "preference:" << dev.initialPreference() << "avail:" << dev.isAvailable() << "advanced:" << dev.isAdvancedDevice();
     return s.space();
 }
 

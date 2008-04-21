@@ -21,7 +21,7 @@
 #define PHONON_AUDIODEVICE_P_H
 
 #include "audiodevice.h"
-#include <phonon/config-alsa.h>
+#include <../config-alsa.h>
 #include <QtCore/QStringList>
 #include <QtCore/QSharedData>
 
