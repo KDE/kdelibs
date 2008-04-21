@@ -26,15 +26,28 @@
 #include "phononnamespace_p.h"
 #include "platform_p.h"
 
-#include <QtCore/qmath.h>
+#include <qmath.h>
 
 #define PHONON_CLASSNAME AudioOutput
-#define PHONON_INTERFACENAME AudioOutputInterface
+#define IFACES2 AudioOutputInterface
+#define IFACES1 IFACES2
+#define IFACES0 AudioOutputInterface0, IFACES1
+#define PHONON_INTERFACENAME IFACES0
 
 QT_BEGIN_NAMESPACE
 
 namespace Phonon
 {
+
+static inline bool callSetOutputDevice(MediaNodePrivate *const d, int index)
+{
+    Iface<IFACES2> iface(d);
+    if (iface) {
+        return iface->setOutputDevice(AudioOutputDevice::fromIndex(index));
+    }
+    return Iface<IFACES0>::cast(d)->setOutputDevice(index);
+}
+
 AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
     : AbstractAudioOutput(*new AudioOutputPrivate, parent)
 {
@@ -193,7 +206,7 @@ bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
         d->outputDeviceIndex = newAudioOutputDevice.index();
     }
     if (k_ptr->backendObject()) {
-        return INTERFACE_CALL(setOutputDevice(d->outputDeviceIndex));
+        return callSetOutputDevice(k_ptr, d->outputDeviceIndex);
     }
     return true;
 }
@@ -219,7 +232,7 @@ void AudioOutputPrivate::setupBackendObject()
     pINTERFACE_CALL(setVolume(pow(volume, VOLTAGE_TO_LOUDNESS_EXPONENT)));
 
     // if the output device is not available and the device was not explicitly set
-    if (!pINTERFACE_CALL(setOutputDevice(outputDeviceIndex)) && !outputDeviceOverridden) {
+    if (!outputDeviceOverridden && !callSetOutputDevice(this, outputDeviceIndex)) {
         // fall back in the preference list of output devices
         QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
         if (deviceList.isEmpty()) {
@@ -228,7 +241,7 @@ void AudioOutputPrivate::setupBackendObject()
         if (outputDeviceIndex == deviceList.takeFirst()) { // removing the first device so that
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
-                if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
+                if (callSetOutputDevice(this, devIndex)) {
                     handleAutomaticDeviceChange(devIndex, AudioOutputPrivate::FallbackChange);
                     break; // found one that works
                 }
@@ -251,7 +264,7 @@ void AudioOutputPrivate::_k_revertFallback()
         return;
     }
     outputDeviceIndex = deviceBeforeFallback;
-    pINTERFACE_CALL(setOutputDevice(outputDeviceIndex));
+    callSetOutputDevice(this, outputDeviceIndex);
     Q_Q(AudioOutput);
     emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
 }
@@ -265,7 +278,7 @@ void AudioOutputPrivate::_k_audioDeviceFailed()
     foreach (int devIndex, deviceList) {
         // if it's the same device as the one that failed, ignore it
         if (outputDeviceIndex != devIndex) {
-            if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
+            if (callSetOutputDevice(this, devIndex)) {
                 handleAutomaticDeviceChange(devIndex, FallbackChange);
                 break; // found one that works
             }
@@ -288,7 +301,7 @@ void AudioOutputPrivate::_k_deviceListChanged()
             }
             changeType = FallbackChange;
         }
-        if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
+        if (callSetOutputDevice(this, devIndex)) {
             handleAutomaticDeviceChange(devIndex, changeType);
             break; // found one with higher preference that works
         }
@@ -328,4 +341,6 @@ QT_END_NAMESPACE
 
 #undef PHONON_CLASSNAME
 #undef PHONON_INTERFACENAME
-// vim: sw=4 ts=4 tw=100 et
+#undef IFACES2
+#undef IFACES1
+#undef IFACES0

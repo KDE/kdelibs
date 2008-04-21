@@ -21,6 +21,7 @@
 #define PHONON_AUDIOOUTPUTINTERFACE_H
 
 #include "phononnamespace.h"
+#include "objectdescription.h"
 #include <QtCore/QtGlobal>
 
 QT_BEGIN_HEADER
@@ -33,10 +34,10 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class AudioOutputInterface
+class AudioOutputInterface0
 {
     public:
-        virtual ~AudioOutputInterface() {}
+        virtual ~AudioOutputInterface0() {}
 
         /**
          * Returns the current software volume.
@@ -59,6 +60,8 @@ class AudioOutputInterface
          */
         virtual int outputDevice() const = 0;
         /**
+         * \deprecated
+         *
          * Requests to change the current output device to the one identified by the passed index.
          *
          * The index is the number returned from
@@ -69,9 +72,25 @@ class AudioOutputInterface
          */
         virtual bool setOutputDevice(int) = 0;
 };
+
+class AudioOutputInterface : public AudioOutputInterface0
+{
+    public:
+        /**
+         * Requests to change the current output device.
+         *
+         * \returns \c true if the requested device works and is used after this call.
+         * \returns \c false if something failed and the device is not used after this call.
+         */
+        virtual bool setOutputDevice(const Phonon::AudioOutputDevice &) = 0;
+
+        using AudioOutputInterface0::setOutputDevice;
+};
+
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface, "AudioOutputInterface2.phonon.kde.org")
+Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface0, "AudioOutputInterface2.phonon.kde.org")
+Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface,  "3AudioOutputInterface.phonon.kde.org")
 
 QT_END_NAMESPACE
 QT_END_HEADER
