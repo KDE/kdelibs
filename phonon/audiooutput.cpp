@@ -26,7 +26,7 @@
 #include "phononnamespace_p.h"
 #include "platform_p.h"
 
-#include <qmath.h>
+#include <QtCore/qmath.h>
 
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface

@@ -20,7 +20,7 @@
 #include "effectwidget.h"
 #include "effectwidget_p.h"
 
-#include <QtAlgorithms>
+#include <QtCore/QtAlgorithms>
 #include <QtCore/QList>
 
 #include "effect.h"

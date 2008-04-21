@@ -20,7 +20,7 @@ Boston, MA 02110-1301, USA.
 #ifndef PHONON_MEDIANODE_P_H
 #define PHONON_MEDIANODE_P_H
 
-#include <qglobal.h>
+#include <QtCore/QtGlobal>
 #include <QtCore/QList>
 #include <QtCore/QObject>
 #include "path.h"

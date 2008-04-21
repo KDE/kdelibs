@@ -23,7 +23,7 @@
 #include "../../audiooutput.h"
 #include "../../tests/loadfakebackend.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QTest>
 #include <cstdlib>
 #include <QtCore/QUrl>
 #include <QtCore/QObject>
