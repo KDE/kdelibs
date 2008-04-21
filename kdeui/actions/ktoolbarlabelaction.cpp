@@ -27,24 +27,23 @@ class KToolBarLabelAction::Private
 {
   public:
     QPointer<QAction> buddy;
-    QString oldText;
+    QPointer<QLabel> label;
 };
 
 KToolBarLabelAction::KToolBarLabelAction(const QString &text, QObject *parent)
   : KAction(text, parent),
     d( new Private )
 {
-  d->oldText = KToolBarLabelAction::text();
+  d->label = 0;
 }
 
 KToolBarLabelAction::KToolBarLabelAction(QAction* buddy, const QString &text, QObject *parent)
   : KAction(text, parent),
     d( new Private )
 {
-
   setBuddy( buddy );
 
-  d->oldText = KToolBarLabelAction::text();
+  d->label = 0;
 }
 
 KToolBarLabelAction::~KToolBarLabelAction()
@@ -79,9 +78,9 @@ QAction* KToolBarLabelAction::buddy() const
 bool KToolBarLabelAction::event( QEvent *event )
 {
   if ( event->type() == QEvent::ActionChanged ) {
-    if ( text() != d->oldText ) {
+    if ( d->label && text() != d->label->text() ) {
       emit textChanged( text() );
-      d->oldText = text();
+      d->label->setText(text());
     }
   }
 
@@ -93,26 +92,31 @@ QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
   if (!parent)
     return KAction::createWidget(_parent);
-  QLabel* newLabel = new QLabel( parent );
+  if (!d->label) {
+    d->label = new QLabel( parent );
 
-  /**
-   * These lines were copied from Konqueror's KonqDraggableLabel class in
-   * konq_misc.cc
-   */
-  newLabel->setBackgroundRole( QPalette::Button );
-  newLabel->setAlignment( (QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft) |
-                          Qt::AlignVCenter );
-  newLabel->adjustSize();
+    /**
+     * These lines were copied from Konqueror's KonqDraggableLabel class in
+     * konq_misc.cc
+     */
+    d->label->setBackgroundRole( QPalette::Button );
+    d->label->setAlignment( (QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft) |
+                            Qt::AlignVCenter );
+    d->label->adjustSize();
+    d->label->setText(text());
 
-  if ( d->buddy )
-    foreach ( QWidget* widget, d->buddy->associatedWidgets() )
-      if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
-        QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
-        newLabel->setBuddy( newBuddy );
-        break;
+    if ( d->buddy ) {
+      foreach ( QWidget* widget, d->buddy->associatedWidgets() ) {
+        if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
+          QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
+          d->label->setBuddy( newBuddy );
+          break;
+        }
       }
+    }
+  }
 
-  return newLabel;
+  return d->label;
 }
 
 #include "ktoolbarlabelaction.moc"
