@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2007-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,7 +33,6 @@ namespace Phonon
 /** \class AddonInterface addoninterface.h Phonon/AddonInterface
  * \short Interface for Menu, Chapter, Angle and Title/Track control.
  *
- * \ingroup Backend
  * \author Matthias Kretz <kretz@kde.org>
  */
 class AddonInterface
@@ -71,14 +70,14 @@ class AddonInterface
             setAutoplayTitles
         };
         enum SubtitleCommand {
-            availableSubtitleStreams,
-            currentSubtitleStream,
-            setCurrentSubtitleStream
+            availableSubtitles,
+            currentSubtitle,
+            setCurrentSubtitle
         };
         enum AudioChannelCommand {
-            availableAudioStreams,
-            currentAudioStream,
-            setCurrentAudioStream
+            availableAudioChannels,
+            currentAudioChannel,
+            setCurrentAudioChannel
         };
 
         virtual bool hasInterface(Interface iface) const = 0;

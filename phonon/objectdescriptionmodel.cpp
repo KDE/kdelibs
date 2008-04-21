@@ -53,17 +53,18 @@ static const uint qt_meta_data_Phonon__ObjectDescriptionModel[] = {
 };
 
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioOutputDeviceType[]  = { "Phonon::AudioOutputDevice\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_EffectType[]             = { "Phonon::EffectDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioChannelType[]        = { "Phonon::AudioChannelDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleType[]     = { "Phonon::SubtitleDescription\0" };
+/*
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCaptureDeviceType[] = { "Phonon::AudioCaptureDevice\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoOutputDeviceType[]  = { "Phonon::VideoOutputDevice\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCaptureDeviceType[] = { "Phonon::VideoCaptureDevice\0" };
-static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_EffectType[]             = { "Phonon::EffectDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCodecType[]         = { "Phonon::AudioCodecDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCodecType[]         = { "Phonon::VideoCodecDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_ContainerFormatType[]    = { "Phonon::ContainerFormatDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType[]      = { "Phonon::VisualizationDescription\0" };
-static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioStreamType[]        = { "Phonon::AudioStreamDescription\0" };
-static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoStreamType[]        = { "Phonon::VideoStreamDescription\0" };
-static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleStreamType[]     = { "Phonon::SubtitleStreamDescription\0" };
+*/
 
 namespace Phonon
 {
@@ -74,6 +75,14 @@ template<> const QMetaObject ObjectDescriptionModel<AudioOutputDeviceType>::stat
 };
 template<> const QMetaObject ObjectDescriptionModel<EffectType>::staticMetaObject = {
     { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_EffectType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<AudioChannelType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioChannelType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<SubtitleType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleType,
       qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
 };
 /*template<> const QMetaObject ObjectDescriptionModel<AudioCaptureDeviceType>::staticMetaObject = {
@@ -102,18 +111,6 @@ template<> const QMetaObject ObjectDescriptionModel<ContainerFormatType>::static
 };
 template<> const QMetaObject ObjectDescriptionModel<VisualizationType>::staticMetaObject = {
     { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType,
-      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
-};
-template<> const QMetaObject ObjectDescriptionModel<AudioStreamType>::staticMetaObject = {
-    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioStreamType,
-      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
-};
-template<> const QMetaObject ObjectDescriptionModel<VideoStreamType>::staticMetaObject = {
-    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoStreamType,
-      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
-};
-template<> const QMetaObject ObjectDescriptionModel<SubtitleStreamType>::staticMetaObject = {
-    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleStreamType,
       qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
 };*/
 
@@ -372,6 +369,8 @@ template void *ObjectDescriptionModel<type>::qt_metacast(const char *)
 
 INSTANTIATE_META_FUNCTIONS(AudioOutputDeviceType);
 INSTANTIATE_META_FUNCTIONS(EffectType);
+INSTANTIATE_META_FUNCTIONS(AudioChannelType);
+INSTANTIATE_META_FUNCTIONS(SubtitleType);
 #endif
 /*INSTANTIATE_META_FUNCTIONS(AudioCaptureDeviceType);
 INSTANTIATE_META_FUNCTIONS(VideoOutputDeviceType);
@@ -380,9 +379,6 @@ INSTANTIATE_META_FUNCTIONS(AudioCodecType);
 INSTANTIATE_META_FUNCTIONS(VideoCodecType);
 INSTANTIATE_META_FUNCTIONS(ContainerFormatType);
 INSTANTIATE_META_FUNCTIONS(VisualizationType);
-INSTANTIATE_META_FUNCTIONS(AudioStreamType);
-INSTANTIATE_META_FUNCTIONS(VideoStreamType);
-INSTANTIATE_META_FUNCTIONS(SubtitleStreamType);
 */
 } // namespace Phonon
 

@@ -55,6 +55,12 @@ namespace Phonon
          * that can make backends use the same identifiers.
          */
         AudioOutputDeviceType,
+        /**
+         * Lists all processing effects the backend supports.
+         */
+        EffectType,
+        AudioChannelType,
+        SubtitleType
 
         /**
          * Audio capture devices. This can be soundcards (with different drivers), soundservers or
@@ -76,10 +82,6 @@ namespace Phonon
          */
         //VideoCaptureDeviceType,
         /**
-         * Lists all processing effects the backend supports.
-         */
-        EffectType,
-        /**
          * Not used yet.
          */
         //AudioCodecType,
@@ -95,9 +97,6 @@ namespace Phonon
          * Not used yet.
          */
         //VisualizationType,
-        //VideoStreamType,
-        AudioStreamType,
-        SubtitleStreamType
     };
 
 /** \internal
@@ -316,14 +315,19 @@ typedef ObjectDescription<EffectType> EffectDescription;
  * \ingroup BackendInformation
  */
 //typedef ObjectDescription<VisualizationType> VisualizationDescription;
-typedef ObjectDescription<AudioStreamType> AudioStreamDescription;
-typedef ObjectDescription<SubtitleStreamType> SubtitleStreamDescription;
+typedef ObjectDescription<AudioChannelType> AudioChannelDescription;
+typedef ObjectDescription<SubtitleType> SubtitleDescription;
 
 } //namespace Phonon
-Q_DECLARE_METATYPE(Phonon::AudioStreamDescription)
-Q_DECLARE_METATYPE(QList<Phonon::AudioStreamDescription>)
-Q_DECLARE_METATYPE(Phonon::SubtitleStreamDescription)
-Q_DECLARE_METATYPE(QList<Phonon::SubtitleStreamDescription>)
+
+Q_DECLARE_METATYPE(Phonon::AudioChannelDescription)
+Q_DECLARE_METATYPE(QList<Phonon::AudioChannelDescription>)
+Q_DECLARE_METATYPE(Phonon::SubtitleDescription)
+Q_DECLARE_METATYPE(QList<Phonon::SubtitleDescription>)
+Q_DECLARE_METATYPE(Phonon::AudioOutputDevice);
+Q_DECLARE_METATYPE(Phonon::EffectDescription);
+Q_DECLARE_METATYPE(QList<Phonon::AudioOutputDevice>);
+Q_DECLARE_METATYPE(QList<Phonon::EffectDescription>);
 
 QT_END_NAMESPACE
 QT_END_HEADER

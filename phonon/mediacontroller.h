@@ -24,6 +24,7 @@
 #include "objectdescription.h"
 
 #include <QtCore/QObject>
+#include <QtCore/QtGlobal>
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
@@ -70,36 +71,36 @@ class PHONON_EXPORT MediaController : public QObject
         /**
          * Returns the selected audio stream.
          *
-         * \see availableAudioStreams
-         * \see setCurrentAudioStream
+         * \see availableAudioChannels
+         * \see setCurrentAudioChannel
          */
-        AudioStreamDescription currentAudioStream() const;
+        AudioChannelDescription currentAudioChannel() const;
 
         /**
          * Returns the selected subtitle stream.
          *
-         * \see availableSubtitleStreams
-         * \see setCurrentSubtitleStream
+         * \see availableSubtitles
+         * \see setCurrentSubtitle
          */
-        SubtitleStreamDescription currentSubtitleStream() const;
+        SubtitleDescription currentSubtitle() const;
 
         /**
          * Returns the audio streams that can be selected by the user. The
          * strings can directly be used in the user interface.
          *
-         * \see selectedAudioStream
-         * \see setCurrentAudioStream
+         * \see selectedAudioChannel
+         * \see setCurrentAudioChannel
          */
-        QList<AudioStreamDescription> availableAudioStreams() const;
+        QList<AudioChannelDescription> availableAudioChannels() const;
 
         /**
          * Returns the subtitle streams that can be selected by the user. The
          * strings can directly be used in the user interface.
          *
-         * \see selectedSubtitleStream
-         * \see setCurrentSubtitleStream
+         * \see selectedSubtitle
+         * \see setCurrentSubtitle
          */
-        QList<SubtitleStreamDescription> availableSubtitleStreams() const;
+        QList<SubtitleDescription> availableSubtitles() const;
 
         /**
          * Selects an audio stream from the media.
@@ -109,10 +110,10 @@ class PHONON_EXPORT MediaController : public QObject
          *
          * \param stream Description of an audio stream
          *
-         * \see availableAudioStreams()
-         * \see currentAudioStream()
+         * \see availableAudioChannels()
+         * \see currentAudioChannel()
          */
-        void setCurrentAudioStream(const Phonon::AudioStreamDescription &stream);
+        void setCurrentAudioChannel(const Phonon::AudioChannelDescription &stream);
 
         /**
          * Selects a subtitle stream from the media.
@@ -122,10 +123,10 @@ class PHONON_EXPORT MediaController : public QObject
          *
          * \param stream description of a subtitle stream
          *
-         * \see availableSubtitleStreams()
-         * \see currentSubtitleStream()
+         * \see availableSubtitles()
+         * \see currentSubtitle()
          */
-        void setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream);
+        void setCurrentSubtitle(const Phonon::SubtitleDescription &stream);
 
     public Q_SLOTS:
         void setCurrentAngle(int angleNumber);

@@ -174,51 +174,51 @@ void MediaController::setCurrentAngle(int titleNumber)
             AddonInterface::setAngle, QList<QVariant>() << QVariant(titleNumber));
 }
 
-AudioStreamDescription MediaController::currentAudioStream() const
+AudioChannelDescription MediaController::currentAudioChannel() const
 {
-    IFACE AudioStreamDescription();
+    IFACE AudioChannelDescription();
     return iface->interfaceCall(AddonInterface::AudioChannelInterface,
-        AddonInterface::currentAudioStream).value<AudioStreamDescription>();
+        AddonInterface::currentAudioChannel).value<AudioChannelDescription>();
 }
 
-SubtitleStreamDescription MediaController::currentSubtitleStream() const
+SubtitleDescription MediaController::currentSubtitle() const
 {
-    IFACE SubtitleStreamDescription();
+    IFACE SubtitleDescription();
     return iface->interfaceCall(AddonInterface::SubtitleInterface,
-        AddonInterface::currentSubtitleStream).value<SubtitleStreamDescription>();
+        AddonInterface::currentSubtitle).value<SubtitleDescription>();
 }
 
-QList<AudioStreamDescription> MediaController::availableAudioStreams() const
+QList<AudioChannelDescription> MediaController::availableAudioChannels() const
 {
-    QList<AudioStreamDescription> retList;
+    QList<AudioChannelDescription> retList;
     IFACE retList;
     retList = iface->interfaceCall(AddonInterface::AudioChannelInterface,
-        AddonInterface::availableAudioStreams).value< QList<AudioStreamDescription> >();
+        AddonInterface::availableAudioChannels).value< QList<AudioChannelDescription> >();
     return retList;
 }
 
-QList<SubtitleStreamDescription> MediaController::availableSubtitleStreams() const
+QList<SubtitleDescription> MediaController::availableSubtitles() const
 {
-    QList<SubtitleStreamDescription> retList;
+    QList<SubtitleDescription> retList;
     IFACE retList;
     retList = iface->interfaceCall(AddonInterface::SubtitleInterface,
-        AddonInterface::availableSubtitleStreams)
-        .value< QList<SubtitleStreamDescription> >();
+        AddonInterface::availableSubtitles)
+        .value< QList<SubtitleDescription> >();
     return retList;
 }
 
-void MediaController::setCurrentAudioStream(const Phonon::AudioStreamDescription &stream)
+void MediaController::setCurrentAudioChannel(const Phonon::AudioChannelDescription &stream)
 {
     IFACE;
     iface->interfaceCall(AddonInterface::AudioChannelInterface,
-        AddonInterface::setCurrentAudioStream, QList<QVariant>() << qVariantFromValue(stream));
+        AddonInterface::setCurrentAudioChannel, QList<QVariant>() << qVariantFromValue(stream));
 }
 
-void MediaController::setCurrentSubtitleStream(const Phonon::SubtitleStreamDescription &stream)
+void MediaController::setCurrentSubtitle(const Phonon::SubtitleDescription &stream)
 {
     IFACE;
     iface->interfaceCall(AddonInterface::SubtitleInterface,
-        AddonInterface::setCurrentSubtitleStream, QList<QVariant>() << qVariantFromValue(stream));
+        AddonInterface::setCurrentSubtitle, QList<QVariant>() << qVariantFromValue(stream));
 }
 
 #undef IFACE
