@@ -47,18 +47,21 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
 
         KEmoticonsTheme *getTheme();
         KEmoticonsTheme *getTheme(const QString &name);
-        QString getCurrentThemeName();
+        static QString getCurrentThemeName();
 
-        QStringList getThemeList();
+        static QStringList getThemeList();
 
-        void setTheme(KEmoticonsTheme *theme);
-        void setTheme(const QString &theme);
+        static void setTheme(KEmoticonsTheme *theme);
+        static void setTheme(const QString &theme);
 
         KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
 
         QList<KService::Ptr> loadedServices();
 
         QStringList installTheme(const QString &archiveName);
+        
+        static void setParseMode(KEmoticonsTheme::ParseMode);
+        static KEmoticonsTheme::ParseMode parseMode();
 
     private:
         KEmoticonsPrivate * const d;

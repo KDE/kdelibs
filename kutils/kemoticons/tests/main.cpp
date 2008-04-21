@@ -72,7 +72,7 @@ KEmoTest::KEmoTest()
 
 void KEmoTest::changed()
 {
-    lb.setText(t->parseEmoticons(kl.text(), KEmoticonsTheme::RelaxedParse));
+    lb.setText(t->parseEmoticons(kl.text()));
 }
 
 void KEmoTest::changeTheme(const QString &theme)

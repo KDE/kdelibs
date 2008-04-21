@@ -92,7 +92,7 @@ KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
 
 QString KEmoticons::getCurrentThemeName()
 {
-    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "General");
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "Emoticons");
     QString name = config.readEntry("emoticonsTheme", "kde4");
     return name;
 }
@@ -118,7 +118,7 @@ void KEmoticons::setTheme(KEmoticonsTheme *theme)
 
 void KEmoticons::setTheme(const QString &theme)
 {
-    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "General");
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "Emoticons");
     config.writeEntry("emoticonsTheme", theme);
     config.sync();
 }
@@ -229,4 +229,18 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
 
     return foundThemes;
 }
+
+void KEmoticons::setParseMode(KEmoticonsTheme::ParseMode mode)
+{
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "Emoticons");
+    config.writeEntry("parseMode", int(mode));
+    config.sync();
+}
+
+KEmoticonsTheme::ParseMode KEmoticons::parseMode()
+{
+    KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "Emoticons");
+    return (KEmoticonsTheme::ParseMode) config.readEntry("parseMode", int(KEmoticonsTheme::RelaxedParse));
+}
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

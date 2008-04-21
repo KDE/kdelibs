@@ -54,10 +54,10 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         * TokenType, a token might be an image ( emoticon ) or text.
         */
         enum TokenType { 
-                            Undefined, /** Undefined, for completeness only */
-                            Image,     /** Token contains a path to an image */
-                            Text       /** Token contains test */
-                        };
+            Undefined, /** Undefined, for completeness only */
+            Image,     /** Token contains a path to an image */
+            Text       /** Token contains test */
+        };
 
         /**
         * A token consists of a QString text which is either a regular text
@@ -82,15 +82,15 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         enum ParseModeEnum {  
             DefaultParseMode = 0x0 , /**  Use strict or relaxed according the config  */
             StrictParse = 0x1,       /** Strict parsing requires a space between each emoticon */
-            RelaxedParse = 0x4,      /** Parse mode where all possible emoticon matches are allowed */
-            SkipHTML = 0x2           /** Skip emoticons within HTML */
+            RelaxedParse = 0x2,      /** Parse mode where all possible emoticon matches are allowed */
+            SkipHTML = 0x4           /** Skip emoticons within HTML */
          };
 
         Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
         
         typedef QPair<QString, int> EmoticonNode;
         
-        QString parseEmoticons(const QString &text, ParseMode mode);
+        QString parseEmoticons(const QString &text, ParseMode mode = DefaultParseMode);
         QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParseMode);
         
         virtual bool loadTheme(const QString &path);

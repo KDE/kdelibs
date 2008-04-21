@@ -23,6 +23,7 @@
 #include <QtCore/QDir>
 #include <QtGui/QTextDocument>
 
+#include <kemoticons.h>
 #include <kio/netaccess.h>
 #include <KStandardDirs>
 #include <KDebug>
@@ -115,6 +116,11 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode)
 
 QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
 {
+    if (!(mode & (StrictParse|RelaxedParse))) {
+        //if none of theses two mode are selected, use the mode from the config
+        mode |=  KEmoticons::parseMode();
+    }
+    
     QList<Token> result;
 
     /* previous char, in the firs iteration assume that it is space since we want
