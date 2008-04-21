@@ -21,7 +21,7 @@
 #ifndef BUFFERFRAGMENT_H
 #define BUFFERFRAGMENT_H
 
-#define isspace(str) ((str == ' ') || (str == '\t') || (str == '\r'))
+#define bf_isspace(str) ((str == ' ') || (str == '\t') || (str == '\r'))
 
 // This class provides wrapper around fragment of existing buffer (array of bytes). 
 // If underlying buffer gets deleted, all BufferFragment objects referencing it become invalid.
@@ -74,11 +74,11 @@ public:
 
     void trim() 
     {
-        while (isspace(*d) && len > 0) {
+        while (bf_isspace(*d) && len > 0) {
             d++;
             len--;
         }
-        while (len > 0 && isspace(d[len - 1])) 
+        while (len > 0 && bf_isspace(d[len - 1])) 
             len--;
     }
 
