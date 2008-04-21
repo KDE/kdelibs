@@ -41,7 +41,6 @@
 #include <kfiledialog.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kicon.h>
 #include <kurl.h>
 
 #include <cstdlib>
@@ -298,6 +297,7 @@ int main(int argc, char ** argv)
     KAboutData about("phononmediaplayer", 0, ki18n("Phonon Media Player"),
             "0.1", ki18n("Media Player"),
             KAboutData::License_GPL);
+    about.setProgramIconName("phonon");
     about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
 
     KCmdLineArgs::init(argc, argv, &about);
@@ -307,7 +307,6 @@ int main(int argc, char ** argv)
 
     KApplication app;
     MediaPlayer foo;
-    foo.setWindowIcon(KIcon("phonon"));
     foo.show();
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

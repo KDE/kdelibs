@@ -28,7 +28,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include "audiooutputitem.h"
 #include "videowidgetitem.h"
 #include "pathitem.h"
@@ -150,7 +149,6 @@ bool PathWidget::connectInput(MediaObject *m)
 
 MainWindow::MainWindow()
 {
-    setWindowIcon(KIcon("phonon"));
     m_scene = new MyGraphicsScene(this);
     m_view = new QGraphicsView(m_scene);
     m_scene->setView(m_view);
@@ -223,6 +221,7 @@ int main(int argc, char **argv)
     KAboutData about("phonontester", 0, ki18n("KDE Multimedia Test"),
             "0.2", KLocalizedString(),
             KAboutData::License_LGPL);
+    about.setProgramIconName("phonon");
     about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
