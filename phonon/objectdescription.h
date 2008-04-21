@@ -324,10 +324,10 @@ Q_DECLARE_METATYPE(Phonon::AudioChannelDescription)
 Q_DECLARE_METATYPE(QList<Phonon::AudioChannelDescription>)
 Q_DECLARE_METATYPE(Phonon::SubtitleDescription)
 Q_DECLARE_METATYPE(QList<Phonon::SubtitleDescription>)
-Q_DECLARE_METATYPE(Phonon::AudioOutputDevice);
-Q_DECLARE_METATYPE(Phonon::EffectDescription);
-Q_DECLARE_METATYPE(QList<Phonon::AudioOutputDevice>);
-Q_DECLARE_METATYPE(QList<Phonon::EffectDescription>);
+Q_DECLARE_METATYPE(Phonon::AudioOutputDevice)
+Q_DECLARE_METATYPE(Phonon::EffectDescription)
+Q_DECLARE_METATYPE(QList<Phonon::AudioOutputDevice>)
+Q_DECLARE_METATYPE(QList<Phonon::EffectDescription>)
 
 QT_END_NAMESPACE
 QT_END_HEADER
