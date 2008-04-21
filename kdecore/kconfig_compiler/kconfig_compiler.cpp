@@ -1850,8 +1850,7 @@ int main( int argc, char **argv )
     }
 
     QString key = paramString( (*itEntry)->key(), parameters );
-    if ( !(*itEntry)->code().isEmpty())
-    {
+    if ( !(*itEntry)->code().isEmpty() ) {
       cpp << (*itEntry)->code() << endl;
     }
     if ( (*itEntry)->type() == "Enum" ) {
@@ -1872,13 +1871,14 @@ int main( int argc, char **argv )
               cpp << "i18n(";
             cpp << quoteString((*it).label) << ");" << endl;
           }
-          if ( !(*it).whatsThis.isEmpty() )
+          if ( !(*it).whatsThis.isEmpty() ) {
             cpp << "    choice.whatsThis = ";
             if ( !(*it).context.isEmpty() )
               cpp << "i18nc(" + quoteString((*it).context) + ", ";
             else
               cpp << "i18n(";
             cpp << quoteString((*it).whatsThis) << ");" << endl;
+          }
         }
         cpp << "    values" << (*itEntry)->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;
