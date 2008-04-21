@@ -65,6 +65,15 @@ namespace BackendCapabilities
              * current list of available devices.
              */
             void availableAudioOutputDevicesChanged();
+
+            /**
+             * This signal is emitted when audio capture devices were plugged or
+             * unplugged.
+             *
+             * Check BackendCapabilities::availableAudioCaptureDevices to get the
+             * current list of available devices.
+             */
+            void availableAudioCaptureDevicesChanged();
     };
 
     /**
@@ -163,7 +172,7 @@ namespace BackendCapabilities
      * \return A list of AudioCaptureDevice objects that give a name and
      * description for every supported audio capture device.
      */
-//    PHONON_EXPORT QList<AudioCaptureDevice> availableAudioCaptureDevices();
+    PHONON_EXPORT QList<AudioCaptureDevice> availableAudioCaptureDevices();
 
     /**
      * Returns the video output devices the backend supports.

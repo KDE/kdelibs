@@ -22,7 +22,7 @@
 #define MAIN_H
 
 #include <kcmodule.h>
-class OutputDeviceChoice;
+class DevicePreference;
 class BackendSelection;
 
 class PhononKcm : public KCModule
@@ -36,7 +36,7 @@ class PhononKcm : public KCModule
         void defaults();
 
     private:
-        OutputDeviceChoice *m_outputDeviceWidget;
+        DevicePreference *m_devicePreferenceWidget;
         BackendSelection *m_backendSelection;
 };
 

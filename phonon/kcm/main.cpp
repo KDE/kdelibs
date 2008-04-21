@@ -25,7 +25,7 @@
 #include <kdeversion.h>
 #include <QtGui/QBoxLayout>
 #include <kdialog.h>
-#include "outputdevicechoice.h"
+#include "devicepreference.h"
 #include "backendselection.h"
 
 K_PLUGIN_FACTORY(PhononKcmFactory, registerPlugin<PhononKcm>();)
@@ -48,31 +48,31 @@ PhononKcm::PhononKcm(QWidget *parent, const QVariantList &args)
     KTabWidget *tabs = new KTabWidget(this);
     layout()->addWidget(tabs);
 
-    m_outputDeviceWidget = new OutputDeviceChoice;
-    tabs->addTab(m_outputDeviceWidget, i18n("Device Preference"));
+    m_devicePreferenceWidget = new DevicePreference;
+    tabs->addTab(m_devicePreferenceWidget, i18n("Device Preference"));
     m_backendSelection = new BackendSelection;
     tabs->addTab(m_backendSelection, i18n("Backend"));
     load();
     connect(m_backendSelection, SIGNAL(changed()), SLOT(changed()));
-    connect(m_outputDeviceWidget, SIGNAL(changed()), SLOT(changed()));
+    connect(m_devicePreferenceWidget, SIGNAL(changed()), SLOT(changed()));
     setButtons( KCModule::Default|KCModule::Apply );
 }
 
 void PhononKcm::load()
 {
-    m_outputDeviceWidget->load();
+    m_devicePreferenceWidget->load();
     m_backendSelection->load();
 }
 
 void PhononKcm::save()
 {
-    m_outputDeviceWidget->save();
+    m_devicePreferenceWidget->save();
     m_backendSelection->save();
 }
 
 void PhononKcm::defaults()
 {
-    m_outputDeviceWidget->defaults();
+    m_devicePreferenceWidget->defaults();
     m_backendSelection->defaults();
 }
 

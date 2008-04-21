@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2008 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,10 +18,10 @@
 
 */
 
-#ifndef OUTPUTDEVICECHOICE_H_STUPID_UIC
-#define OUTPUTDEVICECHOICE_H_STUPID_UIC
+#ifndef DEVICEPREFERENCE_H_STUPID_UIC
+#define DEVICEPREFERENCE_H_STUPID_UIC
 
-#include "ui_outputdevicechoice.h"
+#include "ui_devicepreference.h"
 #include <phonon/objectdescriptionmodel.h>
 #include <phonon/objectdescription.h>
 #include <QtGui/QStandardItem>
@@ -29,11 +29,11 @@
 #include <QtCore/QList>
 class QLabel;
 
-class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
+class DevicePreference : public QWidget, private Ui::DevicePreference
 {
     Q_OBJECT
     public:
-        OutputDeviceChoice(QWidget *parent = 0);
+        DevicePreference(QWidget *parent = 0);
         void load();
         void save();
         void defaults();
@@ -53,15 +53,16 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         void updateButtonsEnabled();
         void updateDeviceList();
         void updateAudioOutputDevices();
+        void updateAudioCaptureDevices();
 
     private:
         QList<Phonon::AudioOutputDevice> availableAudioOutputDevices() const;
+        QList<Phonon::AudioCaptureDevice> availableAudioCaptureDevices() const;
         QMap<int, Phonon::AudioOutputDeviceModel *> m_outputModel;
-        //Phonon::AudioCaptureDeviceModel m_captureModel;
+        QMap<int, Phonon::AudioCaptureDeviceModel *> m_captureModel;
         QStandardItemModel m_categoryModel;
-        //QStandardItem *m_captureItem;
         QStandardItemModel m_headerModel;
         bool m_noCategoryChangeEventQueued;
 };
 
-#endif // OUTPUTDEVICECHOICE_H_STUPID_UIC
+#endif // DEVICEPREFERENCE_H_STUPID_UIC

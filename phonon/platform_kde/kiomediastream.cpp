@@ -145,6 +145,9 @@ void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data
 {
     Q_Q(KioMediaStream);
     Q_ASSERT(kiojob);
+    if (q->streamSize() == 0) {
+        q->setStreamSize(-1);
+    }
     if (seeking) {
         // seek doesn't block, so don't send data to the backend until it signals us
         // that the seek is done
@@ -213,7 +216,7 @@ void KioMediaStreamPrivate::_k_bytestreamTotalSize(KJob *, qulonglong size)
 {
     Q_Q(KioMediaStream);
     kDebug(600) << size;
-    q->setStreamSize(size);
+    q->setStreamSize(size > 0 ? size : -1);
 }
 
 void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
@@ -224,7 +227,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
     endOfDataSent = false;
     KIO::FileJob *filejob = static_cast<KIO::FileJob *>(kiojob);
     kDebug(600) << filejob->size();
-    q->setStreamSize(filejob->size());
+    q->setStreamSize(filejob->size() > 0 ? filejob->size() : -1);
 
     if (seeking) {
         filejob->seek(seekPosition);

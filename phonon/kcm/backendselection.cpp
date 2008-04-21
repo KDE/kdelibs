@@ -20,7 +20,7 @@
 
 #include "backendselection.h"
 
-#include <kio/krun.h>
+#include <krun.h>
 #include <kservicetypeprofile.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>

@@ -55,12 +55,13 @@ namespace Phonon
          * that can make backends use the same identifiers.
          */
         AudioOutputDeviceType,
+
         /**
          * Lists all processing effects the backend supports.
          */
         EffectType,
         AudioChannelType,
-        SubtitleType
+        SubtitleType,
 
         /**
          * Audio capture devices. This can be soundcards (with different drivers), soundservers or
@@ -72,30 +73,13 @@ namespace Phonon
          * devices even when they are unplugged and provide a unique identifier
          * that can make backends use the same identifiers.
          */
-        //AudioCaptureDeviceType,
-        /**
-         * Not used yet.
-         */
+        AudioCaptureDeviceType
+
         //VideoOutputDeviceType,
-        /**
-         * Not used yet.
-         */
         //VideoCaptureDeviceType,
-        /**
-         * Not used yet.
-         */
         //AudioCodecType,
-        /**
-         * Not used yet.
-         */
         //VideoCodecType,
-        /**
-         * Not used yet.
-         */
         //ContainerFormatType,
-        /**
-         * Not used yet.
-         */
         //VisualizationType,
     };
 
@@ -286,7 +270,7 @@ typedef ObjectDescription<AudioOutputDeviceType> AudioOutputDevice;
 /**
  * \ingroup BackendInformation
  */
-//typedef ObjectDescription<AudioCaptureDeviceType> AudioCaptureDevice;
+typedef ObjectDescription<AudioCaptureDeviceType> AudioCaptureDevice;
 /**
  * \ingroup BackendInformation
  */
@@ -321,12 +305,14 @@ typedef ObjectDescription<SubtitleType> SubtitleDescription;
 } //namespace Phonon
 
 Q_DECLARE_METATYPE(Phonon::AudioChannelDescription)
-Q_DECLARE_METATYPE(QList<Phonon::AudioChannelDescription>)
 Q_DECLARE_METATYPE(Phonon::SubtitleDescription)
-Q_DECLARE_METATYPE(QList<Phonon::SubtitleDescription>)
 Q_DECLARE_METATYPE(Phonon::AudioOutputDevice)
+Q_DECLARE_METATYPE(Phonon::AudioCaptureDevice)
 Q_DECLARE_METATYPE(Phonon::EffectDescription)
+Q_DECLARE_METATYPE(QList<Phonon::AudioChannelDescription>)
+Q_DECLARE_METATYPE(QList<Phonon::SubtitleDescription>)
 Q_DECLARE_METATYPE(QList<Phonon::AudioOutputDevice>)
+Q_DECLARE_METATYPE(QList<Phonon::AudioCaptureDevice>)
 Q_DECLARE_METATYPE(QList<Phonon::EffectDescription>)
 
 QT_END_NAMESPACE

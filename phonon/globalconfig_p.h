@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+Copyright (C) 2006-2008 Matthias Kretz <kretz@kde.org>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -45,11 +45,12 @@ namespace Phonon
         QList<int> audioOutputDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override = FromSettings) const;
         int audioOutputDeviceFor(Phonon::Category category) const;
 
-//        QList<int> audioCaptureDeviceList() const;
-//        int audioCaptureDevice() const;
+        QList<int> audioCaptureDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override = FromSettings) const;
+        int audioCaptureDeviceFor(Phonon::Category category) const;
 
-Q_SIGNALS:
+    Q_SIGNALS:
         void audioOutputDeviceConfigChanged();
+        void audioCaptureDeviceConfigChanged();
 
     private:
         QSettings m_config;

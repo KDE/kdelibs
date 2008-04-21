@@ -132,7 +132,17 @@ QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
     return ret;
 }
 
-/*availableDevicesImpl(AudioCaptureDevice)
+QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
+{
+    QList<AudioCaptureDevice> ret;
+    const QList<int> deviceIndexes = GlobalConfig().audioCaptureDeviceListFor(Phonon::NoCategory);
+    foreach (int i, deviceIndexes) {
+        ret.append(AudioCaptureDevice::fromIndex(i));
+    }
+    return ret;
+}
+
+/*
 availableDevicesImpl(VideoOutputDevice)
 availableDevicesImpl(VideoCaptureDevice)
 availableDevicesImpl2(Visualization)

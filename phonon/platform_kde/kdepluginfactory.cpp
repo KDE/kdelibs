@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2007-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,7 +20,7 @@
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
 
-#include <phonon/config-phonon.h>
+#include "../config-phonon.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -41,6 +41,7 @@
 #include <kservicetypetrader.h>
 #include <kconfiggroup.h>
 #include <kstandarddirs.h>
+#include "devicelisting.h"
 
 namespace Phonon
 {
@@ -66,9 +67,15 @@ static const KComponentData &componentData()
 }
 
 KdePlatformPlugin::KdePlatformPlugin()
+    : m_devList(0)
 {
     ensureMainComponentData();
     KGlobal::locale()->insertCatalog(QLatin1String("phonon_kde"));
+}
+
+KdePlatformPlugin::~KdePlatformPlugin()
+{
+    delete m_devList;
 }
 
 AbstractMediaStream *KdePlatformPlugin::createMediaStream(const QUrl &url, QObject *parent)
@@ -251,6 +258,39 @@ qreal KdePlatformPlugin::loadVolume(const QString &outputName) const
     ensureMainComponentData();
     KConfigGroup config(KGlobal::config(), "Phonon::AudioOutput");
     return config.readEntry<qreal>(outputName + "_Volume", 1.0);
+}
+
+void KdePlatformPlugin::ensureDeviceListingObject() const
+{
+    if (!m_devList) {
+        m_devList = new DeviceListing;
+        connect(m_devList, SIGNAL(objectDescriptionChanged(Phonon::ObjectDescriptionType)),
+                SIGNAL(objectDescriptionChanged(Phonon::ObjectDescriptionType)));
+    }
+}
+
+QList<int> KdePlatformPlugin::objectDescriptionIndexes(ObjectDescriptionType type) const
+{
+    switch (type) {
+    case AudioOutputDeviceType:
+    case AudioCaptureDeviceType:
+        ensureDeviceListingObject();
+        return m_devList->objectDescriptionIndexes(type);
+    default:
+        return QList<int>();
+    }
+}
+
+QHash<QByteArray, QVariant> KdePlatformPlugin::objectDescriptionProperties(ObjectDescriptionType type, int index) const
+{
+    switch (type) {
+    case AudioOutputDeviceType:
+    case AudioCaptureDeviceType:
+        ensureDeviceListingObject();
+        return m_devList->objectDescriptionProperties(type, index);
+    default:
+        return QHash<QByteArray, QVariant>();
+    }
 }
 
 } // namespace Phonon

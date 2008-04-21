@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,8 +22,10 @@
 #include "factory_p.h"
 #include "objectdescription.h"
 #include "phonondefs_p.h"
+#include "platformplugin.h"
 #include "backendinterface.h"
 #include "qsettingsgroup_p.h"
+#include "phononnamespace_p.h"
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>
@@ -55,31 +57,28 @@ static void filterAdvanced(BackendInterface *backendIface, QList<int> *list)
     }
 }
 
-QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override) const
+static QList<int> listSortedByConfig(const QSettingsGroup &backendConfig, Phonon::Category category, QList<int> &defaultList)
 {
-    //The devices need to be stored independently for every backend
-    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice")); // + Factory::identifier());
-    const QSettingsGroup generalGroup(&m_config, QLatin1String("General"));
-    const bool hideAdvancedDevices = (override == FromSettings
-            ? generalGroup.value(QLatin1String("HideAdvancedDevices"), true)
-            : static_cast<bool>(override));
-
-    //First we lookup the available devices directly from the backend
-    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
-    if (!backendIface) {
-        return QList<int>();
-    }
-
-    // this list already is in default order (as defined by the backend)
-    QList<int> defaultList = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
-    if (hideAdvancedDevices) {
-        filterAdvanced(backendIface, &defaultList);
+    if (defaultList.size() <= 1) {
+        // nothing to sort
+        return defaultList;
+    } else {
+        // make entries unique
+        QSet<int> seen;
+        QMutableListIterator<int> it(defaultList);
+        while (it.hasNext()) {
+            if (seen.contains(it.next())) {
+                it.remove();
+            } else {
+                seen.insert(it.value());
+            }
+        }
     }
 
     QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
     if (!backendConfig.hasKey(categoryKey)) {
         // no list in config for the given category
-        QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(Phonon::NoCategory));
+        categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(Phonon::NoCategory));
         if (!backendConfig.hasKey(categoryKey)) {
             // no list in config for NoCategory
             return defaultList;
@@ -103,6 +102,46 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category, Hid
     return deviceList;
 }
 
+QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override) const
+{
+    //The devices need to be stored independently for every backend
+    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice")); // + Factory::identifier());
+    const QSettingsGroup generalGroup(&m_config, QLatin1String("General"));
+    const bool hideAdvancedDevices = (override == FromSettings
+            ? generalGroup.value(QLatin1String("HideAdvancedDevices"), true)
+            : static_cast<bool>(override));
+
+    PlatformPlugin *platformPlugin = Factory::platformPlugin();
+    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
+
+    QList<int> defaultList;
+    if (platformPlugin) {
+        // the platform plugin lists the audio devices for the platform
+        // this list already is in default order (as defined by the platform plugin)
+        defaultList = platformPlugin->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
+        QMutableListIterator<int> it(defaultList);
+        while (it.hasNext()) {
+            AudioOutputDevice objDesc = AudioOutputDevice::fromIndex(it.next());
+            const QVariant var = objDesc.property("isAdvanced");
+            if (var.isValid() && var.toBool()) {
+                it.remove();
+            }
+        }
+    }
+
+    // lookup the available devices directly from the backend (mostly for virtual devices)
+    if (backendIface) {
+        // this list already is in default order (as defined by the backend)
+        QList<int> list = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
+        if (hideAdvancedDevices) {
+            filterAdvanced(backendIface, &list);
+        }
+        defaultList += list;
+    }
+
+    return listSortedByConfig(backendConfig, category, defaultList);
+}
+
 int GlobalConfig::audioOutputDeviceFor(Phonon::Category category) const
 {
     QList<int> ret = audioOutputDeviceListFor(category);
@@ -111,45 +150,53 @@ int GlobalConfig::audioOutputDeviceFor(Phonon::Category category) const
     return ret.first();
 }
 
-/*QList<int> GlobalConfig::audioCaptureDeviceList() const
+QList<int> GlobalConfig::audioCaptureDeviceListFor(Phonon::Category category, HideAdvancedDevicesOverride override) const
 {
-    //First we lookup the available devices directly from the backend
-    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
-    if (!backendIface) {
-        return QList<int>();
-    }
-    QList<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
-
-    QList<int> defaultList = deviceIndexes;
-
-    //Now the list from m_config
     //The devices need to be stored independently for every backend
-    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioCaptureDevice_") +
-            Factory::identifier());
-    QList<int> deviceList = backendConfig.value(QLatin1String("DeviceOrder"), QList<int>());
-    if (deviceList.isEmpty()) {
-        //try to read from global group for defaults
-        const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioCaptureDevice"));
-        deviceList = globalConfig.value(QLatin1String("DeviceOrder"), defaultList);
-    }
+    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioCaptureDevice")); // + Factory::identifier());
+    const QSettingsGroup generalGroup(&m_config, QLatin1String("General"));
+    const bool hideAdvancedDevices = (override == FromSettings
+            ? generalGroup.value(QLatin1String("HideAdvancedDevices"), true)
+            : static_cast<bool>(override));
 
-    QMutableListIterator<int> i(deviceList);
-    while (i.hasNext()) {
-        if (0 == defaultList.removeAll(i.next())) {
-            //if there are devices in m_config that the backend doesn't report, remove them from the list
-            i.remove();
+    PlatformPlugin *platformPlugin = Factory::platformPlugin();
+    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
+
+    QList<int> defaultList;
+    if (platformPlugin) {
+        // the platform plugin lists the audio devices for the platform
+        // this list already is in default order (as defined by the platform plugin)
+        defaultList = platformPlugin->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
+        QMutableListIterator<int> it(defaultList);
+        while (it.hasNext()) {
+            AudioCaptureDevice objDesc = AudioCaptureDevice::fromIndex(it.next());
+            const QVariant var = objDesc.property("isAdvanced");
+            if (var.isValid() && var.toBool()) {
+                it.remove();
+            }
         }
     }
-    //if the backend reports more devices that are not in m_config append them to the list
-    deviceList += defaultList;
 
-    return deviceList;
+    // lookup the available devices directly from the backend (mostly for virtual devices)
+    if (backendIface) {
+        // this list already is in default order (as defined by the backend)
+        QList<int> list = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
+        if (hideAdvancedDevices) {
+            filterAdvanced(backendIface, &list);
+        }
+        defaultList += list;
+    }
+
+    return listSortedByConfig(backendConfig, category, defaultList);
 }
 
-int GlobalConfig::audioCaptureDevice() const
+int GlobalConfig::audioCaptureDeviceFor(Phonon::Category category) const
 {
-    return audioCaptureDeviceList().first();
-}*/
+    QList<int> ret = audioCaptureDeviceListFor(category);
+    if (ret.isEmpty())
+        return -1;
+    return ret.first();
+}
 
 } // namespace Phonon
 

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 #include "factory_p.h"
 #include <QtCore/QStringList>
 #include "backendinterface.h"
+#include "platformplugin.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -104,6 +105,17 @@ bool ObjectDescriptionData::isValid() const
 
 ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType type, int index)
 {
+    // prefer to get the ObjectDescriptionData from the platform plugin for audio devices
+    if (type == AudioOutputDeviceType || type == AudioCaptureDeviceType) {
+        PlatformPlugin *platformPlugin = Factory::platformPlugin();
+        if (platformPlugin) {
+            QList<int> indexes = platformPlugin->objectDescriptionIndexes(type);
+            if (indexes.contains(index)) {
+                QHash<QByteArray, QVariant> properties = platformPlugin->objectDescriptionProperties(type, index);
+                return new ObjectDescriptionData(index, properties);
+            }
+        }
+    }
     QObject *b = Factory::backend();
     BackendInterface *iface = qobject_cast<BackendInterface *>(b);
     if (iface) {

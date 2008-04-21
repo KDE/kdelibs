@@ -343,11 +343,11 @@ namespace Phonon
     };
 
     typedef ObjectDescriptionModel<AudioOutputDeviceType> AudioOutputDeviceModel;
+    typedef ObjectDescriptionModel<AudioCaptureDeviceType> AudioCaptureDeviceModel;
     typedef ObjectDescriptionModel<EffectType> EffectDescriptionModel;
     typedef ObjectDescriptionModel<AudioChannelType> AudioChannelDescriptionModel;
     typedef ObjectDescriptionModel<SubtitleType> SubtitleDescriptionModel;
 /*
-    typedef ObjectDescriptionModel<AudioCaptureDeviceType> AudioCaptureDeviceModel;
     typedef ObjectDescriptionModel<VideoOutputDeviceType> VideoOutputDeviceModel;
     typedef ObjectDescriptionModel<VideoCaptureDeviceType> VideoCaptureDeviceModel;
     typedef ObjectDescriptionModel<AudioCodecType> AudioCodecDescriptionModel;

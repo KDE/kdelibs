@@ -1,7 +1,7 @@
 <ui version="4.0" >
  <author>Matthias Kretz &lt;kretz@kde.org></author>
- <class>OutputDeviceChoice</class>
- <widget class="QWidget" name="OutputDeviceChoice" >
+ <class>DevicePreference</class>
+ <widget class="QWidget" name="DevicePreference" >
   <property name="geometry" >
    <rect>
     <x>0</x>

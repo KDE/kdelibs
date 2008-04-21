@@ -1,10 +1,11 @@
-include_directories(${KDE4_KIO_INCLUDES})
+include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid)
 set(kde_PART_SRCS
 	kdepluginfactory.cpp
 	kiomediastream.cpp
+   devicelisting.cpp
 	)
 kde4_add_plugin(kde ${kde_PART_SRCS})
-target_link_libraries(kde ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kde ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${KDE4_KAUDIODEVICELIST_LIBS})
 if(NOT WIN32)
   set_target_properties(kde PROPERTIES
                             INSTALL_RPATH_USE_LINK_PATH TRUE
@@ -15,5 +16,3 @@ if(NOT WIN32)
 endif(NOT WIN32)
 install(TARGETS kde DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/phonon_platform)
 install(FILES phonon.notifyrc DESTINATION ${DATA_INSTALL_DIR}/phonon)
-
-# vim: noet

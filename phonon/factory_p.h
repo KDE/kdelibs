@@ -178,7 +178,7 @@ namespace Factory
     PHONON_EXPORT void setBackend(QObject *);
     //PHONON_EXPORT void createBackend(const QString &library, const QString &version = QString());
 
-    PlatformPlugin *platformPlugin();
+    PHONON_EXPORT PlatformPlugin *platformPlugin();
 
 //X    It is probably better if we can get away with internal handling of
 //X    freeing the soundcard device when it's not needed anymore and

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2007-2008 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include "phonon_export.h"
+#include "objectdescription.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
@@ -90,11 +91,14 @@ class PlatformPlugin
          * Loads the volume for the given output.
          */
         virtual qreal loadVolume(const QString &outputName) const = 0;
+
+        virtual QList<int> objectDescriptionIndexes(ObjectDescriptionType type) const = 0;
+        virtual QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const = 0;
 };
 
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE(Phonon::PlatformPlugin, "PlatformPlugin1.phonon.kde.org")
+Q_DECLARE_INTERFACE(Phonon::PlatformPlugin, "2PlatformPlugin.phonon.kde.org")
 
 QT_END_NAMESPACE
 QT_END_HEADER

@@ -24,6 +24,8 @@
 #include <QtCore/QObject>
 #include <kservice.h>
 
+class DeviceListing;
+
 namespace Phonon
 {
 
@@ -33,6 +35,7 @@ class KdePlatformPlugin : public QObject, public PlatformPlugin
     Q_OBJECT
     public:
         KdePlatformPlugin();
+        ~KdePlatformPlugin();
 
         AbstractMediaStream *createMediaStream(const QUrl &url, QObject *parent);
 
@@ -47,8 +50,16 @@ class KdePlatformPlugin : public QObject, public PlatformPlugin
         void saveVolume(const QString &outputName, qreal volume);
         qreal loadVolume(const QString &outputName) const;
 
+        virtual QList<int> objectDescriptionIndexes(ObjectDescriptionType type) const;
+        virtual QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const;
+
+    signals:
+        void objectDescriptionChanged(Phonon::ObjectDescriptionType);
+
     private:
         QObject *createBackend(KService::Ptr newService);
+        void ensureDeviceListingObject() const;
+        mutable DeviceListing *m_devList;
 };
 
 } // namespace Phonon

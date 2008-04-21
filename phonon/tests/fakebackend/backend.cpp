@@ -127,9 +127,10 @@ QList<int> Backend::objectDescriptionIndexes(ObjectDescriptionType type) const
             << 10006 << 10007
             << 10008 << 10009;
         break;
-/*    case Phonon::AudioCaptureDeviceType:
+    case Phonon::AudioCaptureDeviceType:
         list << 20000 << 20001;
         break;
+    /*
     case Phonon::VideoOutputDeviceType:
         list << 40000 << 40001 << 40002 << 40003;
         break;
@@ -196,7 +197,7 @@ QHash<QByteArray, QVariant> Backend::objectDescriptionProperties(ObjectDescripti
             break;
         }
         break;
-/*    case Phonon::AudioCaptureDeviceType:
+    case Phonon::AudioCaptureDeviceType:
         switch (index) {
         case 20000:
             ret.insert("name", QLatin1String("Soundcard"));
@@ -208,6 +209,7 @@ QHash<QByteArray, QVariant> Backend::objectDescriptionProperties(ObjectDescripti
             break;
         }
         break;
+    /*
     case Phonon::VideoOutputDeviceType:
         switch (index) {
         case 40000:
