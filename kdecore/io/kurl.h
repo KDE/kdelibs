@@ -214,14 +214,14 @@ public:
   /**
    * Constructor taking a char * @p urlOrPath, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
-   * then URL, in its encoded form, is strictly ascii.
+   * the URL, in its encoded form, is strictly ascii.
    * @param urlOrPath An encoded URL, or a path.
    */
   explicit KUrl( const char * urlOrPath );
   /**
    * Constructor taking a QByteArray @p urlOrPath, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
-   * then URL, in its encoded form, is strictly ascii.
+   * the URL, in its encoded form, is strictly ascii.
    * @param urlOrPath An encoded URL, or a path.
    */
   explicit KUrl( const QByteArray& urlOrPath );
