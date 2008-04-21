@@ -177,6 +177,7 @@
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
+5120        kmail (storage internals)
 
 # kdepim
 5150        libkleo
