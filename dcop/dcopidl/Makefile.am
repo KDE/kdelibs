@@ -11,7 +11,7 @@ dcopidl_SOURCES = main.cpp yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
 
 dcopidl_LDADD = $(LIB_QT)
-dcopidl_LDFLAGS = $(KDE_RPATH)
+dcopidl_LDFLAGS = $(KDE_RPATH) $(AM_LDFLAGS)
 
 ####### Build rules
 

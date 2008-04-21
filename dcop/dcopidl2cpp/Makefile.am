@@ -10,7 +10,7 @@ dcopidl2cpp_SOURCES = main.cpp skel.cpp stub.cpp stubimpl.cpp
 noinst_HEADERS = main.h
 
 dcopidl2cpp_LDADD = $(LIB_QT)
-dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
+dcopidl2cpp_LDFLAGS = $(KDE_RPATH) $(AM_LDFLAGS)
 
 dcopidl_output.kidl: ../dcopidl/dcopidl $(srcdir)/dcopidl_test.h
 	../dcopidl/dcopidl $(srcdir)/dcopidl_test.h > dcopidl_output.kidl
