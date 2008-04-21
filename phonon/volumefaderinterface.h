@@ -20,7 +20,7 @@
 #ifndef PHONON_VOLUMEFADERINTERFACE_H
 #define PHONON_VOLUMEFADERINTERFACE_H
 
-#include "phonon/volumefadereffect.h"
+#include "volumefadereffect.h"
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER

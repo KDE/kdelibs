@@ -20,8 +20,8 @@
 #ifndef PHONON_VOLUMEFADEREFFECT_H
 #define PHONON_VOLUMEFADEREFFECT_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/effect.h"
+#include "phonon_export.h"
+#include "effect.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

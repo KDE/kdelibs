@@ -20,9 +20,9 @@
 #ifndef PHONON_MEDIASOURCE_H
 #define PHONON_MEDIASOURCE_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phononnamespace.h"
-#include "phonon/objectdescription.h"
+#include "phonon_export.h"
+#include "phononnamespace.h"
+#include "objectdescription.h"
 #include <QtCore/QSharedData>
 
 QT_BEGIN_HEADER

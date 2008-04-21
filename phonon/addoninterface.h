@@ -20,7 +20,7 @@
 #ifndef PHONON_ADDONINTERFACE_H
 #define PHONON_ADDONINTERFACE_H
 
-#include "phonon/phononnamespace.h"
+#include "phononnamespace.h"
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>

@@ -20,9 +20,9 @@
 #ifndef PHONON_UI_SEEKSLIDER_H
 #define PHONON_UI_SEEKSLIDER_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phonondefs.h"
-#include "phonon/phononnamespace.h"
+#include "phonon_export.h"
+#include "phonondefs.h"
+#include "phononnamespace.h"
 #include <QtGui/QWidget>
 
 QT_BEGIN_HEADER

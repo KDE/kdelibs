@@ -20,8 +20,8 @@
 #ifndef Phonon_BACKENDCAPABILITIES_H
 #define Phonon_BACKENDCAPABILITIES_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/objectdescription.h"
+#include "phonon_export.h"
+#include "objectdescription.h"
 
 #include <QtCore/QObject>
 

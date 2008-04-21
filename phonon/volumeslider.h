@@ -20,8 +20,8 @@
 #ifndef PHONON_UI_VOLUMESLIDER_H
 #define PHONON_UI_VOLUMESLIDER_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phonondefs.h"
+#include "phonon_export.h"
+#include "phonondefs.h"
 #include <QtGui/QWidget>
 
 QT_BEGIN_HEADER

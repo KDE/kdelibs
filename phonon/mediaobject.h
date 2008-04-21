@@ -19,11 +19,11 @@
 #ifndef Phonon_MEDIAOBJECT_H
 #define Phonon_MEDIAOBJECT_H
 
-#include "phonon/medianode.h"
-#include "phonon/mediasource.h"
-#include "phonon/phonon_export.h"
-#include "phonon/phonondefs.h"
-#include "phonon/phononnamespace.h"
+#include "medianode.h"
+#include "mediasource.h"
+#include "phonon_export.h"
+#include "phonondefs.h"
+#include "phononnamespace.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

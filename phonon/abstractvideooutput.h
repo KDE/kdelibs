@@ -19,9 +19,9 @@
 #ifndef Phonon_ABSTRACTVIDEOOUTPUTBASE_H
 #define Phonon_ABSTRACTVIDEOOUTPUTBASE_H
 
-#include "phonon/phonondefs.h"
-#include "phonon/phonon_export.h"
-#include "phonon/medianode.h"
+#include "phonondefs.h"
+#include "phonon_export.h"
+#include "medianode.h"
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER

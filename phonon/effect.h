@@ -19,10 +19,10 @@
 #ifndef PHONON_EFFECT_H
 #define PHONON_EFFECT_H
 
-#include "phonon/phonondefs.h"
+#include "phonondefs.h"
 #include <QtCore/QObject>
-#include "phonon/objectdescription.h"
-#include "phonon/medianode.h"
+#include "objectdescription.h"
+#include "medianode.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

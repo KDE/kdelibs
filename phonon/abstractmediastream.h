@@ -20,8 +20,8 @@
 #ifndef PHONON_ABSTRACTMEDIASTREAM_H
 #define PHONON_ABSTRACTMEDIASTREAM_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phononnamespace.h"
+#include "phonon_export.h"
+#include "phononnamespace.h"
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER

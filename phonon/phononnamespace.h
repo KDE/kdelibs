@@ -20,7 +20,7 @@
 #ifndef PHONONNAMESPACE_H
 #define PHONONNAMESPACE_H
 
-#include "phonon/phonon_export.h"
+#include "phonon_export.h"
 
 #define PHONON_VERSION 0x040200
 /*

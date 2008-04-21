@@ -20,8 +20,8 @@
 #ifndef PHONON_PATH_H
 #define PHONON_PATH_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/objectdescription.h"
+#include "phonon_export.h"
+#include "objectdescription.h"
 
 #include <QtCore/QExplicitlySharedDataPointer>
 

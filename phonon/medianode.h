@@ -21,9 +21,9 @@
 #ifndef PHONON_MEDIANODE_H
 #define PHONON_MEDIANODE_H
 
-#include "phonon/phonondefs.h"
-#include "phonon/phonon_export.h"
-#include "phonon/path.h"
+#include "phonondefs.h"
+#include "phonon_export.h"
+#include "path.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

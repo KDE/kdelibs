@@ -19,11 +19,11 @@
 #ifndef Phonon_AUDIOOUTPUT_H
 #define Phonon_AUDIOOUTPUT_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/abstractaudiooutput.h"
-#include "phonon/phonondefs.h"
-#include "phonon/phononnamespace.h"
-#include "phonon/objectdescription.h"
+#include "phonon_export.h"
+#include "abstractaudiooutput.h"
+#include "phonondefs.h"
+#include "phononnamespace.h"
+#include "objectdescription.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

@@ -20,7 +20,7 @@
 #ifndef PHONON_VIDEOWIDGETINTERFACE_H
 #define PHONON_VIDEOWIDGETINTERFACE_H
 
-#include "phonon/videowidget.h"
+#include "videowidget.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

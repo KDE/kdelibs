@@ -20,7 +20,7 @@
 #ifndef PHONON_MEDIAOBJECTINTERFACE_H
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
-#include "phonon/mediaobject.h"
+#include "mediaobject.h"
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER

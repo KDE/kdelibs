@@ -20,7 +20,7 @@
 #ifndef PHONON_FACTORY_P_H
 #define PHONON_FACTORY_P_H
 
-#include "phonon/phonon_export.h"
+#include "phonon_export.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>

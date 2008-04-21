@@ -23,7 +23,7 @@ Boston, MA 02110-1301, USA.
 #include <QtCore/QObject>
 #include <QtCore/QSettings>
 
-#include "phonon/phononnamespace.h"
+#include "phononnamespace.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

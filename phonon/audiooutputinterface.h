@@ -20,7 +20,7 @@
 #ifndef PHONON_AUDIOOUTPUTINTERFACE_H
 #define PHONON_AUDIOOUTPUTINTERFACE_H
 
-#include "phonon/phononnamespace.h"
+#include "phononnamespace.h"
 #include <QtCore/QtGlobal>
 
 QT_BEGIN_HEADER

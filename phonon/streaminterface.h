@@ -20,7 +20,7 @@
 #ifndef PHONON_STREAMINTERFACE_H
 #define PHONON_STREAMINTERFACE_H
 
-#include "phonon/phonon_export.h"
+#include "phonon_export.h"
 #include <QtCore/QObject>
 
 QT_BEGIN_HEADER

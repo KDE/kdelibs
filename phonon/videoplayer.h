@@ -20,9 +20,9 @@
 #ifndef Phonon_VIDEOPLAYER_H
 #define Phonon_VIDEOPLAYER_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phononnamespace.h"
-#include "phonon/mediasource.h"
+#include "phonon_export.h"
+#include "phononnamespace.h"
+#include "mediasource.h"
 #include <QtGui/QWidget>
 
 QT_BEGIN_HEADER

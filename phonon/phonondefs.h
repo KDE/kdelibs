@@ -21,7 +21,7 @@
 #define PHONONDEFS_H
 
 #include <QtCore/QtGlobal>
-#include "phonon/phonon_export.h"
+#include "phonon_export.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE

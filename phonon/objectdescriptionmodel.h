@@ -20,9 +20,9 @@
 #ifndef PHONON_OBJECTDESCRIPTIONMODEL_H
 #define PHONON_OBJECTDESCRIPTIONMODEL_H
 
-#include "phonon/phonon_export.h"
-#include "phonon/phonondefs.h"
-#include "phonon/objectdescription.h"
+#include "phonon_export.h"
+#include "phonondefs.h"
+#include "objectdescription.h"
 #include <QtCore/QList>
 #include <QtCore/QModelIndex>
 #include <QtCore/QStringList>
