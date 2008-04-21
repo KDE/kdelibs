@@ -72,16 +72,34 @@ QColor KColorUtils::shade(const QColor &color, qreal ky, qreal kc)
     return c.qColor();
 }
 
+QColor tintHelper(const QColor &base, const QColor &color, qreal amount)
+{
+    KColorSpaces::KHCY result(KColorUtils::mix(base, color, pow(amount, 0.3)));
+    result.y = mixQreal(KColorUtils::luma(base), result.y, amount);
+
+    return result.qColor();
+}
+
 QColor KColorUtils::tint(const QColor &base, const QColor &color, qreal amount)
 {
     if (amount <= 0.0) return base;
     if (amount >= 1.0) return color;
     if (isnan(amount)) return base;
 
-    KColorSpaces::KHCY result(mix(base, color, pow(amount, 0.3)));
-    result.y = mixQreal(luma(base), result.y, amount);
-
-    return result.qColor();
+    double ri = contrastRatio(base, color);
+    double rg = 1.0 + ((ri + 1.0) * amount * amount * amount);
+    double u = 1.0, l = 0.0;
+    QColor result;
+    for (int i = 12 ; i ; --i) {
+        double a = 0.5 * (l+u);
+        result = tintHelper(base, color, a);
+        double ra = contrastRatio(base, result);
+        if (ra > rg)
+            u = a;
+        else
+            l = a;
+    }
+    return result;
 }
 
 QColor KColorUtils::mix(const QColor &c1, const QColor &c2, qreal bias)
