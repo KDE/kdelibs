@@ -29,6 +29,7 @@
 #include "kconfig.h"
 #include "kconfigbackend.h"
 #include "kconfigini_p.h"
+#include "bufferfragment_p.h"
 #include "kconfigdata.h"
 #include <ksavefile.h>
 #include <kde_file.h>
@@ -88,13 +89,17 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
     bool groupOptionImmutable = false;
     bool groupSkip = false;
 
-    int lineNo=0;
+    int lineNo = 0;
     // on systems using \r\n as end of line, \r will be taken care of by 
-    // trimmed() below
-    QList<QByteArray> lines=file.readAll().split('\n');
-    for (int i=0;i<lines.size();i++) {
-        QByteArray& line=lines[i];
-        line=line.trimmed();
+    // trim() below
+    QByteArray buffer = file.readAll();
+    BufferFragment contents(buffer.data(), buffer.size());
+    unsigned int len = contents.length();
+    unsigned int startOfLine = 0;
+
+    while (startOfLine < len) {
+        BufferFragment line = contents.split('\n', &startOfLine);
+        line.trim();
         lineNo++;
 
         // skip empty lines and lines beginning with '#'
@@ -129,7 +134,9 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 else {
                     if (!newGroup.isEmpty())
                         newGroup += '\x1d';
-                    newGroup += printableToString(line.mid(start, end - start), file, lineNo);
+                    BufferFragment namePart=line.mid(start, end - start);
+                    printableToString(&namePart, file, lineNo);
+                    newGroup += namePart.toByteArray();
                 }
             } while ((start = end + 2) <= line.length() && line.at(end + 1) == '[');
             currentGroup = newGroup;
@@ -147,14 +154,16 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (groupSkip && !bDefault)
                 continue; // skip entry
 
-            QByteArray aKey;
+            BufferFragment aKey;
             int eqpos = line.indexOf('=');
             if (eqpos < 0) {
                 aKey = line;
                 line.clear();
             } else {
-                aKey = line.left(eqpos).trimmed();
-                line.remove(0, eqpos + 1);
+                BufferFragment temp = line.left(eqpos);
+                temp.trim();
+                aKey = temp;
+                line.truncateLeft(eqpos + 1);
             }
             if (aKey.isEmpty()) {
                 qWarning() << warningProlog(file, lineNo) << "Invalid entry (empty key)";
@@ -165,17 +174,17 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (groupOptionImmutable)
                 entryOptions |= KEntryMap::EntryImmutable;
 
-            QByteArray locale;
-            QByteArray rawKey;
+            BufferFragment locale;
+            BufferFragment rawKey;
             int start;
-            while ((start = aKey.indexOf('[')) >= 0) {
+            while ((start = aKey.lastIndexOf('[')) >= 0) {
                 int end = aKey.indexOf(']', start);
                 if (end < 0) {
                     qWarning() << warningProlog(file, lineNo)
                             << "Invalid entry (missing ']')";
                     goto next_line;
                 } else if (end > start + 1 && aKey.at(start + 1) == '$') { // found option(s)
-                    int i = start+2;
+                    int i = start + 2;
                     while (i < end) {
                         switch (aKey.at(i)) {
                             case 'i':
@@ -188,8 +197,9 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                                 break;
                             case 'd':
                                 entryOptions |= KEntryMap::EntryDeleted;
-                                aKey = printableToString(aKey.left(start), file, lineNo);
-                                entryMap.setEntry(currentGroup, aKey, QByteArray(), entryOptions);
+                                aKey = aKey.left(start);
+                                printableToString(&aKey, file, lineNo);
+                                entryMap.setEntry(currentGroup, aKey.toByteArray(), QByteArray(), entryOptions);
                                 goto next_line;
                             default:
                                 break;
@@ -203,17 +213,16 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                         goto next_line;
                     }
 
-                    locale = aKey.mid(start+1,end-start-1);
-                    rawKey = aKey.left(end+1);
+                    locale = aKey.mid(start + 1,end - start - 1);
+                    rawKey = aKey.left(end + 1);
                 }
-                aKey.remove(start, end-start+1);
+                aKey.truncate(start);
             }
-
             if (eqpos < 0) { // Do this here after [$d] was checked
                 qWarning() << warningProlog(file, lineNo) << "Invalid entry (missing '=')";
                 continue;
             }
-            aKey = printableToString(aKey, file, lineNo);
+            printableToString(&aKey, file, lineNo);
             if (!locale.isEmpty()) {
                 if (locale != currentLocale) {
                     // backward compatibility. C == en_US
@@ -221,12 +230,12 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                         if (merging){
                             entryOptions |= KEntryMap::EntryRawKey;
                             aKey = rawKey; // store as unprocessed key
-                            locale = QByteArray();
+                            locale = BufferFragment();
                         } else
                             goto next_line; // skip this entry if we're not merging
                     }
                 }
-            }
+            } 
 
             if (options&ParseGlobal)
                 entryOptions |= KEntryMap::EntryGlobal;
@@ -234,7 +243,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 entryOptions |= KEntryMap::EntryDefault;
             if (!locale.isNull())
                 entryOptions |= KEntryMap::EntryLocalized;
-            entryMap.setEntry(currentGroup, aKey, printableToString(line, file, lineNo), entryOptions);
+            printableToString(&line, file, lineNo);
+            entryMap.setEntry(currentGroup, aKey.toByteArray(), line.toByteArray(), entryOptions);
         }
 next_line:
         continue;
@@ -642,31 +652,18 @@ char KConfigIniBackend::charFromHex(const char *str, const QFile& file, int line
     return char(ret);
 }
 
-QByteArray KConfigIniBackend::printableToString(const QByteArray& aString, const QFile& file, int line)
+void KConfigIniBackend::printableToString(BufferFragment* aString, const QFile& file, int line)
 {
-    if (aString.isEmpty())
-        return QByteArray("");
-
-    const char *str = aString.constData();
-    int l = aString.length();
-
-    // Strip leading white-space.
-    while((l > 0) && ((*str == ' ') || (*str == '\t') || (*str == '\r'))) {
-        str++; l--;
-     }
-
-
-    // Strip trailing white-space.
-    while((l > 0) && ((str[l-1] == ' ') || (str[l-1] == '\t') || (str[l-1] == '\r'))) {
-        l--;
-    }
-
-    QByteArray result(l, 0);
-    char *r = result.data();
+    if (aString->isEmpty() || aString->indexOf('\\')==-1) 
+        return;
+    aString->trim();
+    int l = aString->length();
+    char *r = aString->data();
+    char *str=r;
 
     for(int i = 0; i < l; i++, r++) {
-        if (str[i] != '\\') {
-            *r = str[i];
+        if (str[i]!= '\\') {
+            *r=str[i];
         } else {
             // Probable escape sequence
             i++;
@@ -707,6 +704,5 @@ QByteArray KConfigIniBackend::printableToString(const QByteArray& aString, const
             }
         }
     }
-    result.truncate(r - result.constData());
-    return result;
+    aString->truncate(r - aString->constData());
 }
