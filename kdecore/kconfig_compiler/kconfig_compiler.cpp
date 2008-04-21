@@ -6,6 +6,7 @@
     Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
     Copyright (c) 2003 Zack Rusin <zack@kde.org>
     Copyright (c) 2006 Michaël Larouche <michael.larouche@kdemail.net>
+    Copyright (c) 2008 Allen Winter <winter@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -125,6 +126,7 @@ class CfgEntry
       QString name;
       QString context;
       QString label;
+      QString toolTip;
       QString whatsThis;
     };
     class Choices
@@ -150,11 +152,11 @@ class CfgEntry
 
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &context, const QString &label,
-              const QString &whatsThis, const QString &code,
+              const QString &toolTip, const QString &whatsThis, const QString &code,
               const QString &defaultValue, const Choices &choices, const QList<Signal> signalList,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
-        mContext( context ), mLabel( label ), mWhatsThis( whatsThis ),
+        mContext( context ), mLabel( label ), mToolTip( toolTip ), mWhatsThis( whatsThis ),
         mCode( code ), mDefaultValue( defaultValue ), mChoices( choices ),
         mSignalList(signalList), mHidden( hidden )
     {
@@ -177,6 +179,9 @@ class CfgEntry
 
     void setLabel( const QString &label ) { mLabel = label; }
     QString label() const { return mLabel; }
+
+    void setToolTip( const QString &toolTip ) { mToolTip = toolTip; }
+    QString toolTip() const { return mToolTip; }
 
     void setWhatsThis( const QString &whatsThis ) { mWhatsThis = whatsThis; }
     QString whatsThis() const { return mWhatsThis; }
@@ -252,6 +257,7 @@ class CfgEntry
     QString mName;
     QString mContext;
     QString mLabel;
+    QString mToolTip;
     QString mWhatsThis;
     QString mCode;
     QString mDefaultValue;
@@ -503,6 +509,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString hidden = element.attribute( "hidden" );
   QString context = element.attribute( "context" );
   QString label;
+  QString toolTip;
   QString whatsThis;
   QString defaultValue;
   QString code;
@@ -521,6 +528,10 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     QString tag = e.tagName();
     if ( tag == "label" ) {
       label = e.text();
+      context = e.attribute( "context" );
+    }
+    else if ( tag == "tooltip" ) {
+      toolTip = e.text();
       context = e.attribute( "context" );
     }
     else if ( tag == "whatsthis" ) {
@@ -605,6 +616,10 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           for( QDomElement e3 = e2.firstChildElement(); !e3.isNull(); e3 = e3.nextSiblingElement() ) {
             if ( e3.tagName() == "label" ) {
               choice.label = e3.text();
+              choice.context = e3.attribute( "context" );
+            }
+            if ( e3.tagName() == "tooltip" ) {
+              choice.toolTip = e3.text();
               choice.context = e3.attribute( "context" );
             }
             if ( e3.tagName() == "whatsthis" ) {
@@ -740,7 +755,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     preProcessDefault(defaultValue, name, type, choices, code);
   }
 
-  CfgEntry *result = new CfgEntry( group, type, key, name, context, label, whatsThis,
+  CfgEntry *result = new CfgEntry( group, type, key, name, context, label, toolTip, whatsThis,
                                    code, defaultValue, choices, signalList,
                                    hidden == "true" );
   if (!param.isEmpty())
@@ -988,6 +1003,18 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i
     else
       txt+= quoteString(e->label());
     txt+= ") );\n";
+  }
+  if ( !e->toolTip().isEmpty() ) {
+    txt += "  " + itemVarStr + "->setToolTip( ";
+    if ( !e->context().isEmpty() )
+      txt += "i18nc(" + quoteString(e->context()) + ", ";
+    else
+      txt += "i18n(";
+    if ( !e->param().isEmpty() )
+      txt += quoteString(e->toolTip().replace("$("+e->param()+')', i));
+    else
+      txt+= quoteString(e->toolTip());
+    txt+=") );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
     txt += "  " + itemVarStr + "->setWhatsThis( ";
@@ -1870,6 +1897,14 @@ int main( int argc, char **argv )
             else
               cpp << "i18n(";
             cpp << quoteString((*it).label) << ");" << endl;
+          }
+          if ( !(*it).toolTip.isEmpty() ) {
+            cpp << "    choice.toolTip = ";
+            if ( !(*it).context.isEmpty() )
+              cpp << "i18nc(" + quoteString((*it).context) + ", ";
+            else
+              cpp << "i18n(";
+            cpp << quoteString((*it).toolTip) << ");" << endl;
           }
           if ( !(*it).whatsThis.isEmpty() ) {
             cpp << "    choice.whatsThis = ";

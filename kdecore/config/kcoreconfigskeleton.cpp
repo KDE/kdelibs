@@ -80,6 +80,16 @@ QString KConfigSkeletonItem::label() const
     return d->mLabel;
 }
 
+void KConfigSkeletonItem::setToolTip( const QString &t )
+{
+    d->mToolTip = t;
+}
+
+QString KConfigSkeletonItem::toolTip() const
+{
+    return d->mToolTip;
+}
+
 void KConfigSkeletonItem::setWhatsThis( const QString &w )
 {
     d->mWhatsThis = w;
