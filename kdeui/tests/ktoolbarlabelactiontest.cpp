@@ -44,36 +44,46 @@ class MainWindow : public KXmlGuiWindow
 
       KSqueezedTextLabel* accel = new KSqueezedTextLabel( "&Really long, long, long and boring text goes here", main );
 
-      new KSqueezedTextLabel( "Really long, long, long and boring text goes here", main );
-
+      mainLabel = new KSqueezedTextLabel( "Click me to change Label 1 text", main );
+      mainLabel->installEventFilter(this);
 
       // first constructor
-      KToolBarLabelAction* label1 = new KToolBarLabelAction( "&Label 1", this );
+      label1 = new KToolBarLabelAction( "&Label 1", this );
       actionCollection()->addAction("label1", label1);
 
-      // second constructor
       KLineEdit* lineEdit = new KLineEdit( this );
       KAction* lineEditAction = new KAction( "Line Edit", this );
       actionCollection()->addAction( "lineEdit", lineEditAction );
       lineEditAction->setDefaultWidget(lineEdit);
-
-      new KToolBarLabelAction( lineEditAction, "L&abel 2", this );
-      actionCollection()->addAction( "label2", lineEditAction );
+      
+      // second constructor
+      KToolBarLabelAction *label2 = new KToolBarLabelAction( lineEditAction, "This is the &second label", this );
+      actionCollection()->addAction( "label2", label2 );
+      
 
       // set buddy for label1
       label1->setBuddy( lineEditAction );
+      
+      // set buddy for accel
       accel->setBuddy( lineEdit );
-
-      // third constructor
-      KToolBarLabelAction* label3 = new KToolBarLabelAction( "&Really long, long, long and boring text goes here",
-                                                             this );
-      actionCollection()->addAction( "label3", label3 );
-
-      // set buddy for label3
-      label3->setBuddy( lineEditAction );
+            
+      // another widget so lineEdit can loose focus and check budyness works
+      new KLineEdit( main );
 
       setupGUI( Default, "ktoolbarlabelactiontestui.rc" );
     }
+    
+    bool eventFilter(QObject * watched, QEvent * event )
+    {
+      if (watched == mainLabel && event->type() == QEvent::MouseButtonPress)
+      {
+        label1->setText("&You clicked to make me change!");
+      }
+      return KXmlGuiWindow::eventFilter(watched, event);
+    }
+    
+    KToolBarLabelAction* label1;
+    KSqueezedTextLabel *mainLabel;
 };
 
 int main( int argc, char **argv )

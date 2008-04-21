@@ -2,8 +2,7 @@
 <kpartgui name="ktoolbarlabelactiontest" version="0.1">
 <ToolBar name="mytoolbar">
 <Action name="label1"/>
-<Action name="label2"/>
 <Action name="lineEdit"/>
-<Action name="label3"/>
+<Action name="label2"/>
 </ToolBar>
 </kpartgui>
