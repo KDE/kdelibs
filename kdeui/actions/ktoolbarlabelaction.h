@@ -102,6 +102,7 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction
 
   protected:
     virtual bool event( QEvent* );
+    virtual bool eventFilter( QObject *watched, QEvent *event );
 
   private:
     class Private;

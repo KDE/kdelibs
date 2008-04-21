@@ -87,6 +87,20 @@ bool KToolBarLabelAction::event( QEvent *event )
   return KAction::event( event );
 }
 
+bool KToolBarLabelAction::eventFilter( QObject *watched, QEvent *event )
+{
+  if ( d->label && d->buddy && event->type() == QEvent::PolishRequest && watched == d->label) {
+    foreach ( QWidget* widget, d->buddy->associatedWidgets() ) {
+      if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
+        QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
+        d->label->setBuddy( newBuddy );
+      }
+    }
+  }
+  
+  return KAction::eventFilter( watched, event );
+}
+
 QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
 {
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
@@ -104,16 +118,7 @@ QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
                             Qt::AlignVCenter );
     d->label->adjustSize();
     d->label->setText(text());
-
-    if ( d->buddy ) {
-      foreach ( QWidget* widget, d->buddy->associatedWidgets() ) {
-        if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
-          QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
-          d->label->setBuddy( newBuddy );
-          break;
-        }
-      }
-    }
+    d->label->installEventFilter( this );
   }
 
   return d->label;
