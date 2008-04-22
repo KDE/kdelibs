@@ -90,7 +90,7 @@ class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
         
         typedef QPair<QString, int> EmoticonNode;
         
-        QString parseEmoticons(const QString &text, ParseMode mode = DefaultParseMode);
+        QString parseEmoticons(const QString &text, ParseMode mode = DefaultParseMode, const QStringList &exclude = QStringList());
         QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParseMode);
         
         virtual bool loadTheme(const QString &path);

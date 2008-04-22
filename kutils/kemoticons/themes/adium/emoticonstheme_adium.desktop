@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+Name=Adium Emoticons Theme
+Comment=Library to use Adium emoticons theme
+X-KDE-ServiceTypes=KEmoticons
+X-KDE-Library=emoticonstheme_adium
+X-KDE-EmoticonsFileName=Emoticons.plist
+X-KDE-Priority=10

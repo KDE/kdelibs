@@ -91,7 +91,7 @@ void KEmoticonsTheme::createNew()
 {
 }
 
-QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode)
+QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude)
 {
     QList<Token> tokens = tokenize(text, mode);
     QString result;
@@ -103,8 +103,13 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode)
                 kDebug()<<"TEXT:"<<token.text;
                 break;
             case Image:
-                result += token.picHTMLCode;
-                kDebug()<<"IMG:"<<token.picHTMLCode;
+                if (!exclude.contains(token.text)) {
+                    result += token.picHTMLCode;
+                    kDebug()<<"IMG:"<<token.picHTMLCode;
+                } else {
+                    result += token.text;
+                    kDebug()<<"TEXT:"<<token.text;
+                }
                 break;
             default:
                 kWarning() << "Unknown token type. Something's broken.";
