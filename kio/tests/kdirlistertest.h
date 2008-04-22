@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testDeleteItem();
     void testRenameItem();
     void testOpenAndStop();
+    void testConcurrentListing();
     // TODO test filtering
     // TODO test concurrent listings from two KDirListers
 
@@ -49,9 +50,10 @@ Q_SIGNALS:
     void refreshItemsReceived();
 
 private:
-    void enterLoop();
+    void enterLoop(int exitCount = 1);
 
 private:
+    int m_exitCount;
     QEventLoop m_eventLoop;
     KTempDir m_tempDir;
     KDirLister m_dirLister;
