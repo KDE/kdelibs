@@ -289,48 +289,50 @@ FACTORY_IMPL(VideoWidget)
 
 PlatformPlugin *FactoryPrivate::platformPlugin()
 {
-    if (!m_platformPlugin) {
-        if (m_noPlatformPlugin) {
-            return 0;
-        }
+    if (m_platformPlugin) {
+        return m_platformPlugin;
+    }
+    if (m_noPlatformPlugin) {
+        return 0;
+    }
 #ifndef QT_NO_DBUS
-        if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
-            pWarning() << "Phonon needs QCoreApplication::applicationName to be set to export audio output names through the DBUS interface";
-        }
+    if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
+        pWarning() << "Phonon needs QCoreApplication::applicationName to be set to export audio output names through the DBUS interface";
+    }
 #endif
-        const QString suffix(QLatin1String("/phonon_platform/"));
-        Q_ASSERT(QCoreApplication::instance());
-        foreach (QString libPath, QCoreApplication::libraryPaths()) {
-            libPath += suffix;
-            const QDir dir(libPath);
-            if (!dir.exists()) {
-                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
+    const QString suffix(QLatin1String("/phonon_platform/"));
+    Q_ASSERT(QCoreApplication::instance());
+    foreach (QString libPath, QCoreApplication::libraryPaths()) {
+        libPath += suffix;
+        const QDir dir(libPath);
+        if (!dir.exists()) {
+            pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
+            continue;
+        }
+        foreach (const QString &pluginName, dir.entryList(QDir::Files)) {
+            QPluginLoader pluginLoader(libPath + pluginName);
+            if (!pluginLoader.load()) {
+                pDebug() << Q_FUNC_INFO << "  platform plugin load failed:"
+                    << pluginLoader.errorString();
                 continue;
             }
-            foreach (const QString &pluginName, dir.entryList(QDir::Files)) {
-                QPluginLoader pluginLoader(libPath + pluginName);
-                if (!pluginLoader.load()) {
-                    pDebug() << Q_FUNC_INFO << "  platform plugin load failed:"
-                        << pluginLoader.errorString();
-                    continue;
-                }
-                pDebug() << pluginLoader.instance();
-                m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
-                pDebug() << m_platformPlugin;
-                if (m_platformPlugin) {
-                    return m_platformPlugin;
-                } else {
-                    pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the platform plugin was not loadable:" << pluginLoader.errorString();
-                    pluginLoader.unload();
-                }
+            pDebug() << pluginLoader.instance();
+            QObject *qobj = pluginLoader.instance();
+            m_platformPlugin = qobject_cast<PlatformPlugin *>(qobj);
+            pDebug() << m_platformPlugin;
+            if (m_platformPlugin) {
+                connect(qobj, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
+                        SLOT(objectDescriptionChanged(ObjectDescriptionType)));
+                return m_platformPlugin;
+            } else {
+                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the platform plugin was not loadable:" << pluginLoader.errorString();
+                pluginLoader.unload();
             }
         }
-        if (!m_platformPlugin) {
-            pDebug() << Q_FUNC_INFO << "phonon_platform/kde plugin could not be loaded";
-            m_noPlatformPlugin = true;
-        }
     }
-    return m_platformPlugin;
+    pDebug() << Q_FUNC_INFO << "phonon_platform/kde plugin could not be loaded";
+    m_noPlatformPlugin = true;
+    return 0;
 }
 
 PlatformPlugin *Factory::platformPlugin()
