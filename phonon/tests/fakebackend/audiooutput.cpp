@@ -67,6 +67,15 @@ bool AudioOutput::setOutputDevice(int newDevice)
     return true;
 }
 
+bool AudioOutput::setOutputDevice(const Phonon::AudioOutputDevice &newDevice)
+{
+    Q_ASSERT(newDevice.index() >= 10000);
+    Q_ASSERT(newDevice.index() <= 10009);
+    m_device = newDevice.index();
+    return true;
+}
+
+
 void AudioOutput::processBuffer(QVector<float> &_buffer)
 {
     const QVector<float> &buffer(_buffer);

@@ -43,6 +43,7 @@ namespace Fake
             // Attributes Setters:
             void setVolume(qreal newVolume);
             bool setOutputDevice(int newDevice);
+            bool setOutputDevice(const Phonon::AudioOutputDevice &);
 
         public:
             virtual void processBuffer(QVector<float> &buffer);
