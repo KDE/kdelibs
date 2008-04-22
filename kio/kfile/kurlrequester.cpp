@@ -266,7 +266,7 @@ void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
      if (d->myFileDialog) {
-        d->myFileDialog->setWindowTitle(windowTitle());
+        d->myFileDialog->setCaption(windowTitle());
      }
    }
    KHBox::changeEvent(e);
@@ -355,7 +355,7 @@ KFileDialog * KUrlRequester::fileDialog() const
         d->myFileDialog = new KFileDialog(QString(), d->fileDialogFilter, p);
         d->myFileDialog->setModal(true);
         d->myFileDialog->setMode(d->fileDialogMode);
-        d->myFileDialog->setWindowTitle(windowTitle());
+        d->myFileDialog->setCaption(windowTitle());
     }
 
     return d->myFileDialog;

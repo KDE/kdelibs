@@ -128,7 +128,7 @@ KUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
 {
     KUrlRequesterDialog dlg(dir, parent);
 
-    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
 

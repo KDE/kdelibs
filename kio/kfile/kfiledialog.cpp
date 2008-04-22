@@ -222,7 +222,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
     dlg.setOperationMode( Opening );
 
     dlg.setMode( KFile::File | KFile::LocalOnly );
-    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
     //dlg.d->ops->clearHistory();
     dlg.exec();
@@ -246,7 +246,7 @@ QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
     dlg.setOperationMode( KFileDialog::Opening );
 
     dlg.setMode( KFile::File | KFile::LocalOnly );
-    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
     //dlg.d->ops->clearHistory();
     dlg.exec();
@@ -262,7 +262,7 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
-    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files | KFile::LocalOnly);
     //dlg.d->ops->clearHistory();
     dlg.exec();
@@ -276,7 +276,7 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
-    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
     dlg.setMode( KFile::File );
     //dlg.d->ops->clearHistory();
     dlg.exec();
@@ -292,7 +292,7 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
-    dlg.setWindowTitle(caption.isNull() ? i18n("Open") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
     //dlg.d->ops->clearHistory();
     dlg.exec();
@@ -330,7 +330,7 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
                     mimetypes.join(" "),
                     parent);
     dlg.setOperationMode( Opening );
-    dlg.setWindowTitle( caption.isNull() ? i18n("Open") : caption );
+    dlg.setCaption( caption.isEmpty() ? i18n("Open") : caption );
     dlg.setMode( KFile::File );
 
     KImageFilePreview *ip = new KImageFilePreview( &dlg );
@@ -380,7 +380,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
 
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
-    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -414,7 +414,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
-    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -434,7 +434,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     if ( !specialDir )
         dlg.setSelection( dir.url() ); // may also be a filename
 
-    dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
 
