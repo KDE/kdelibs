@@ -1965,11 +1965,8 @@ short RenderObject::lineHeight( bool firstLine ) const
 
 short RenderObject::baselinePosition( bool firstLine ) const
 {
-    // Inline blocks are replaced elements. Otherwise, just pass off to
-    // the base class.  If we're being queried as though we're the root line
-    // box, then the fact that we're an inline-block is irrelevant, and we behave
-    // just like a block.
-
+    // If we're an inline-block and need layout, it means our replaced boundaries
+    // are not yet fully established, so we behave just like a block.
     if (isReplaced() && (!isInlineBlockOrInlineTable() || !needsLayout()))
         return height()+marginTop()+marginBottom();
 

@@ -8,6 +8,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2008 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -122,11 +123,17 @@ short RenderTable::lineHeight(bool b) const
 
 short RenderTable::baselinePosition(bool b) const
 {
-    // Inline tables are replaced elements. Otherwise, just pass off to
-    // the base class.
-    if (isReplaced())
-        return height()+marginTop()+marginBottom();
-    return RenderBlock::baselinePosition(b);
+    // CSS2.1 - 10.8.1 The baseline of an 'inline-table' is the baseline of the first row of the table.
+    if (isReplaced() && !needsLayout()) {
+        // compatibility with Gecko: only apply to generic containers, not to HTML Table.
+        if (element() && element()->id() == ID_TABLE)
+            return height()+marginTop()+marginBottom();
+
+        if (firstBodySection() && firstBodySection()->grid.size())
+            return firstBodySection()->grid[0].baseLine + firstBodySection()->yPos() + marginTop();
+        return 0;
+    }
+    return RenderBox::baselinePosition(b);
 }
 
 static inline void resetSectionPointerIfNotBefore(RenderTableSection*& ptr, RenderObject* before)
