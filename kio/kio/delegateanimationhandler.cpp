@@ -119,13 +119,7 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
                                                          const QModelIndex &index,
                                                          const QAbstractItemView *view)
 {
-#if (QT_VERSION < 0x040300) || (QT_VERSION == 0x040300 && !defined(QT_KDE_QT_COPY))
-    // Qt 4.3.0 and earlier versions have a bug that causes component alpha text
-    // to be misrendered when drawn on a non-opaque background.
-    return NULL;
-#endif
-
-    // We can't do animations reliably when an item is being dragged, since that
+   // We can't do animations reliably when an item is being dragged, since that
     // item will be drawn in two locations at the same time and hovered in one and
     // not the other. We can't tell them apart because they both have the same index.
     if (!view || static_cast<const ProtectedAccessor*>(view)->draggingState())

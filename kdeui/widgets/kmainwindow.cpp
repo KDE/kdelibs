@@ -698,17 +698,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         state = cg.readEntry("State", state);
         state = QByteArray::fromBase64(state);
         // One day will need to load the version number, but for now, assume 0
-#if QT_VERSION < 0x040400
-        //In older versions of Qt, the call to restoreState is causing bad flicker
-        //in the toolbars and menus.  This happens for instance when switching
-        //between tabs in Konqueror.  This is apparently fixed in Qt 4.4+ since it
-        //uses alien child windows.
-        setUpdatesEnabled(false);
         restoreState(state);
-        setUpdatesEnabled(true);
-#else
-        restoreState(state);
-#endif
     }
 
     if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) {

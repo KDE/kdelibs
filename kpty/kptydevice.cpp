@@ -218,18 +218,6 @@ private:
 
 // Lifted from Qt. I don't think they would mind. ;)
 // Re-lift again from Qt whenever a proper replacement for pthread_once appears
-#if QT_VERSION < 0x040400
-static void qt_ignore_sigpipe()
-{
-    static QBasicAtomic atom = Q_ATOMIC_INIT(0);
-    if (atom.testAndSet(0, 1)) {
-        struct sigaction noaction;
-        memset(&noaction, 0, sizeof(noaction));
-        noaction.sa_handler = SIG_IGN;
-        sigaction(SIGPIPE, &noaction, 0);
-    }
-}
-#else
 static void qt_ignore_sigpipe()
 {
     static QBasicAtomicInt atom = Q_BASIC_ATOMIC_INITIALIZER(0);
@@ -240,7 +228,6 @@ static void qt_ignore_sigpipe()
         sigaction(SIGPIPE, &noaction, 0);
     }
 }
-#endif
 
 #define NO_INTR(ret,func) do { ret = func; } while (ret < 0 && errno == EINTR)
 

@@ -35,29 +35,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                                                QWidget *parent)
 {
     QPrintDialog *dialog = createPrintDialog(printer, parent);
-#if QT_VERSION >= KDE_MAKE_VERSION(4,4,0)
     dialog->setOptionTabs(customTabs);
-#else
-    if (! customTabs.isEmpty()) {
-        QWidget *generalWidget = dialog->findChild<QWidget*>("generalWidget");
-        QWidget *buttons = dialog->findChild<QWidget*>("buttonBox");
-        if (generalWidget && buttons) {
-            QTabWidget *tabs = new QTabWidget(dialog);
-            tabs->addTab(generalWidget, i18n("General"));
-            QStyle *style = dialog->style();
-            generalWidget->layout()->setContentsMargins(style->pixelMetric(QStyle::PM_LayoutLeftMargin),
-                                       style->pixelMetric(QStyle::PM_LayoutTopMargin),
-                                       style->pixelMetric(QStyle::PM_LayoutRightMargin),
-                                       style->pixelMetric(QStyle::PM_LayoutBottomMargin));
-            dialog->layout()->addWidget(tabs);
-            dialog->layout()->addWidget(buttons);
-
-            foreach(QWidget* tab, customTabs)
-                tabs->addTab(tab, tab->windowTitle());
-        }
-    }
-#endif
-
     return dialog;
 }
 

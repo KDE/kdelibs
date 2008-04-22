@@ -67,11 +67,6 @@ namespace Solid
     };
 }
 
-#if QT_VERSION < 0x040400
-# define Q_BASIC_ATOMIC_INITIALIZER     Q_ATOMIC_INIT
-# define testAndSetOrdered              testAndSet
-#endif
-
 #ifdef Q_CC_MSVC
 # define SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME) _solid_##NAME##__LINE__
 #else
