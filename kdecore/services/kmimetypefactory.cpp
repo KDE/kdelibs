@@ -190,8 +190,10 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     int len = filename.length();
 
     // Patterns like "*~", "*.extension"
-    if (pattern[0] == '*' && len + 1 >= pattern_len && pattern.indexOf('[') == -1)
+    if (pattern[0] == '*'  && pattern.indexOf('[') == -1)
     {
+        if ( len + 1 < pattern_len ) return false;
+    
         const QChar *c1 = pattern.unicode() + pattern_len - 1;
         const QChar *c2 = filename.unicode() + len - 1;
         int cnt = 1;
@@ -201,7 +203,8 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     }
 
     // Patterns like "README*" (well this is currently the only one like that...)
-    if (pattern[pattern_len - 1] == '*' && len + 1 >= pattern_len) {
+    if (pattern[pattern_len - 1] == '*') {
+        if ( len + 1 < pattern_len ) return false;
         if (pattern[0] == '*')
             return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
 
@@ -213,7 +216,11 @@ static bool matchFileName( const QString &filename, const QString &pattern )
         return cnt == pattern_len;
     }
 
-    // Other patterns, like "[Mm]akefile" or "README": use slow but correct method
+    // Names without any wildcards like "README"
+    if (pattern.indexOf('[') == -1 && pattern.indexOf('*') == -1 && pattern.indexOf('?')) 
+        return (pattern == filename);
+
+    // Other patterns, like "[Mm]akefile": use slow but correct method
     QRegExp rx(pattern);
     rx.setPatternSyntax(QRegExp::Wildcard);
     return rx.exactMatch(filename);
