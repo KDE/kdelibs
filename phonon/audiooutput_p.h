@@ -60,7 +60,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
             FallbackChange,
             HigherPreferenceChange
         };
-        void handleAutomaticDeviceChange(int newIndex, DeviceChangeType type);
+        void handleAutomaticDeviceChange(const AudioOutputDevice &newDev, DeviceChangeType type);
 
         void _k_volumeChanged(qreal);
         void _k_revertFallback();

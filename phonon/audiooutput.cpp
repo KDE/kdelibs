@@ -48,6 +48,15 @@ static inline bool callSetOutputDevice(MediaNodePrivate *const d, int index)
     return Iface<IFACES0>::cast(d)->setOutputDevice(index);
 }
 
+static inline bool callSetOutputDevice(MediaNodePrivate *const d, const AudioOutputDevice &dev)
+{
+    Iface<IFACES2> iface(d);
+    if (iface) {
+        return iface->setOutputDevice(dev);
+    }
+    return Iface<IFACES0>::cast(d)->setOutputDevice(dev.index());
+}
+
 AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
     : AbstractAudioOutput(*new AudioOutputPrivate, parent)
 {
@@ -242,7 +251,7 @@ void AudioOutputPrivate::setupBackendObject()
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
                 if (callSetOutputDevice(this, devIndex)) {
-                    handleAutomaticDeviceChange(devIndex, AudioOutputPrivate::FallbackChange);
+                    handleAutomaticDeviceChange(AudioOutputDevice::fromIndex(devIndex), AudioOutputPrivate::FallbackChange);
                     break; // found one that works
                 }
             }
@@ -278,9 +287,12 @@ void AudioOutputPrivate::_k_audioDeviceFailed()
     foreach (int devIndex, deviceList) {
         // if it's the same device as the one that failed, ignore it
         if (outputDeviceIndex != devIndex) {
-            if (callSetOutputDevice(this, devIndex)) {
-                handleAutomaticDeviceChange(devIndex, FallbackChange);
-                break; // found one that works
+            const AudioOutputDevice info = AudioOutputDevice::fromIndex(devIndex);
+            if (info.property("available").toBool()) {
+                if (callSetOutputDevice(this, info)) {
+                    handleAutomaticDeviceChange(info, FallbackChange);
+                    break; // found one that works
+                }
             }
         }
     }
@@ -293,30 +305,35 @@ void AudioOutputPrivate::_k_deviceListChanged()
     QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
     DeviceChangeType changeType = HigherPreferenceChange;
     foreach (int devIndex, deviceList) {
-        pDebug() << devIndex;
-        if (outputDeviceIndex == devIndex) {
-            AudioOutputDevice info = AudioOutputDevice::fromIndex(devIndex);
-            if (info.property("available").toBool()) {
-                break; // we've reached the currently used device, nothing to change
+        const AudioOutputDevice info = AudioOutputDevice::fromIndex(devIndex);
+        if (!info.property("available").toBool()) {
+            if (outputDeviceIndex == devIndex) {
+                // we've reached the currently used device
+                changeType = FallbackChange;
             }
-            changeType = FallbackChange;
+            pDebug() << devIndex << "is not available";
+            continue;
         }
-        if (callSetOutputDevice(this, devIndex)) {
-            handleAutomaticDeviceChange(devIndex, changeType);
+        pDebug() << devIndex << "is available";
+        if (outputDeviceIndex == devIndex) {
+            // we've reached the currently used device, nothing to change
+            break;
+        }
+        if (callSetOutputDevice(this, info)) {
+            handleAutomaticDeviceChange(info, changeType);
             break; // found one with higher preference that works
         }
     }
 }
 
-void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeType type)
+void AudioOutputPrivate::handleAutomaticDeviceChange(const AudioOutputDevice &device2, DeviceChangeType type)
 {
     Q_Q(AudioOutput);
     deviceBeforeFallback = outputDeviceIndex;
-    outputDeviceIndex = newIndex;
-    emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
+    outputDeviceIndex = device2.index();
+    emit q->outputDeviceChanged(device2);
     QString text;
-    AudioOutputDevice device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
-    AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
+    const AudioOutputDevice &device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
     switch (type) {
     case FallbackChange:
         text = AudioOutput::tr("<html>The audio playback device <b>%1</b> does not work.<br/>"
