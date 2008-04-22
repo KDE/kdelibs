@@ -332,6 +332,7 @@ button {
         display: inline-block;
         border: 2px outset buttonface;
         background-color: buttonface;
+        font-size: small;
         -khtml-background-clip: padding;
         color: buttontext;
         padding: 2px 2px 2px 2px;

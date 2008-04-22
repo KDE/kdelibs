@@ -444,7 +444,10 @@ void RenderSubmitButton::updateFromElement()
 
 short RenderSubmitButton::baselinePosition( bool f ) const
 {
-    return RenderFormElement::baselinePosition( f );
+    int ret = (height()-paddingTop()-paddingBottom()+1)/2;
+    ret += marginTop() + paddingTop();
+    ret += ((fontMetrics( f ).ascent())/2)-2;
+    return ret;
 }
 
 
@@ -659,6 +662,17 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     }
 
     setQWidget(edit);
+}
+
+short RenderLineEdit::baselinePosition( bool f ) const
+{
+    bool hasFrame = static_cast<LineEditWidget*>(widget())->hasFrame();
+    int bTop = hasFrame ? 0 : borderTop();
+    int bBottom = hasFrame ? 0 : borderBottom();
+    int ret = (height()-paddingTop()-paddingBottom()-bTop-bBottom+1)/2;
+    ret += marginTop() + paddingTop() + bTop;
+    ret += ((fontMetrics( f ).ascent())/2)-2;
+    return ret;
 }
 
 void RenderLineEdit::setStyle(RenderStyle* _style)
@@ -1012,7 +1026,15 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     m_haveFocus = false;
 }
 
-
+short RenderFileButton::baselinePosition( bool f ) const
+{
+    int bTop = borderTop();
+    int bBottom = borderBottom();
+    int ret = (height()-paddingTop()-paddingBottom()-bTop-bBottom+1)/2;
+    ret += marginTop() + paddingTop() + bTop;
+    ret += ((fontMetrics( f ).ascent())/2)-2;
+    return ret;
+}
 
 void RenderFileButton::calcMinMaxWidth()
 {
@@ -1331,6 +1353,20 @@ void RenderSelect::updateFromElement()
     m_ignoreSelectEvents = false;
 
     RenderFormElement::updateFromElement();
+}
+
+short RenderSelect::baselinePosition( bool f ) const
+{
+    if (m_useListBox)
+        return RenderFormElement::baselinePosition(f);
+
+    bool hasFrame = static_cast<KComboBox*>(widget())->hasFrame();
+    int bTop = hasFrame ? 0 : borderTop();
+    int bBottom = hasFrame ? 0 : borderBottom();
+    int ret = (height()-paddingTop()-paddingBottom()-bTop-bBottom+1)/2;
+    ret += marginTop() + paddingTop() + bTop;
+    ret += ((fontMetrics( f ).ascent())/2)-2;
+    return ret;
 }
 
 void RenderSelect::calcMinMaxWidth()

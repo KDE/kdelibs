@@ -255,6 +255,7 @@ public:
     virtual const char *renderName() const { return "RenderLineEdit"; }
     virtual void updateFromElement();
     virtual void setStyle(RenderStyle *style);
+    virtual short baselinePosition( bool ) const;
 
     void select();
 
@@ -351,6 +352,7 @@ public:
     virtual const char *renderName() const { return "RenderFileButton"; }
     virtual void calcMinMaxWidth();
     virtual void updateFromElement();
+    virtual short baselinePosition( bool ) const;
     void select();
 
     KUrlRequester *widget() const { return static_cast<KUrlRequester*>(m_widget); }
@@ -445,6 +447,7 @@ public:
     bool selectionChanged() { return m_selectionChanged; }
     void setSelectionChanged(bool _selectionChanged) { m_selectionChanged = _selectionChanged; }
     virtual void updateFromElement();
+    virtual short baselinePosition( bool ) const;
 
     void updateSelection();
 
