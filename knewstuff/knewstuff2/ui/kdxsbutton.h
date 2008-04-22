@@ -35,7 +35,7 @@ class Entry;
 class Provider;
 class DxsEngine;
 class Category;
-
+class Feed;
 /**
  * KNewStuff DXS interaction button.
  *
@@ -67,7 +67,7 @@ public Q_SLOTS:
 
 	void slotInfo(QString provider, QString server, QString version);
 	void slotCategories(QList<KNS::Category*> categories);
-    void slotEntries(KNS::Entry::List entries);
+    void slotEntries(KNS::Entry::List entries, Feed * feed);
 	void slotComments(QStringList comments);
 	void slotHistory(QStringList entries);
 	void slotChanges(QStringList entries);

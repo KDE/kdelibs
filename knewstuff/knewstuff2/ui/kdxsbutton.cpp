@@ -225,8 +225,8 @@ void KDXSButton::setEngine(DxsEngine *engine)
 		SIGNAL(signalCategories(QList<KNS::Category*>)),
 		SLOT(slotCategories(QList<KNS::Category*>)));
 	connect(m_dxs,
-		SIGNAL(signalEntries(KNS::Entry::List)),
-		SLOT(slotEntries(KNS::Entry::List)));
+		SIGNAL(signalEntries(KNS::Entry::List, Feed *)),
+		SLOT(slotEntries(KNS::Entry::List, Feed *)));
 	connect(m_dxs,
 		SIGNAL(signalComments(QStringList)),
 		SLOT(slotComments(QStringList)));
@@ -276,7 +276,7 @@ void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 	}
 }
 
-void KDXSButton::slotEntries(KNS::Entry::List entries)
+void KDXSButton::slotEntries(KNS::Entry::List entries, Feed * feed )
 {
     for(KNS::Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
