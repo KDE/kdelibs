@@ -264,8 +264,8 @@ void KdePlatformPlugin::ensureDeviceListingObject() const
 {
     if (!m_devList) {
         m_devList = new DeviceListing;
-        connect(m_devList, SIGNAL(objectDescriptionChanged(Phonon::ObjectDescriptionType)),
-                SIGNAL(objectDescriptionChanged(Phonon::ObjectDescriptionType)));
+        connect(m_devList, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
+                SIGNAL(objectDescriptionChanged(ObjectDescriptionType)));
     }
 }
 

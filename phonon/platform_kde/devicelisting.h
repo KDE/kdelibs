@@ -33,8 +33,8 @@
 
 namespace Phonon
 {
-    class AudioDevice;
-} // namespace Phonon
+
+class AudioDevice;
 
 class DeviceListing : public QObject
 {
@@ -50,7 +50,7 @@ class DeviceListing : public QObject
         Q_SCRIPTABLE void ossSettingChanged(bool useOss);
 
     signals:
-        void objectDescriptionChanged(Phonon::ObjectDescriptionType);
+        void objectDescriptionChanged(ObjectDescriptionType);
 
     protected:
         void timerEvent(QTimerEvent *e);
@@ -69,5 +69,7 @@ class DeviceListing : public QObject
         QBasicTimer m_signalTimer;
         bool m_useOss : 1;
 };
+
+} // namespace Phonon
 
 #endif // DEVICELISTING_H

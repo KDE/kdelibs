@@ -24,10 +24,10 @@
 #include <QtCore/QObject>
 #include <kservice.h>
 
-class DeviceListing;
-
 namespace Phonon
 {
+
+class DeviceListing;
 
 class KdePlatformPlugin : public QObject, public PlatformPlugin
 {
@@ -54,7 +54,7 @@ class KdePlatformPlugin : public QObject, public PlatformPlugin
         virtual QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const;
 
     signals:
-        void objectDescriptionChanged(Phonon::ObjectDescriptionType);
+        void objectDescriptionChanged(ObjectDescriptionType);
 
     private:
         QObject *createBackend(KService::Ptr newService);

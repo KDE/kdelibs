@@ -29,6 +29,9 @@
 #include <klocale.h>
 #include <ksharedconfig.h>
 
+namespace Phonon
+{
+
 QList<int> DeviceListing::objectDescriptionIndexes(Phonon::ObjectDescriptionType type)
 {
     switch (type) {
@@ -196,6 +199,7 @@ void DeviceListing::timerEvent(QTimerEvent *e)
 {
     if (e->timerId() == m_signalTimer.timerId()) {
         m_signalTimer.stop();
+        kDebug(600) << "emitting objectDescriptionChanged for AudioOutputDeviceType and AudioCaptureDeviceType";
         emit objectDescriptionChanged(Phonon::AudioOutputDeviceType);
         emit objectDescriptionChanged(Phonon::AudioCaptureDeviceType);
     }
@@ -266,3 +270,5 @@ void DeviceListing::deviceUnplugged(const Phonon::AudioDevice &dev)
         m_signalTimer.start(0, this);
     }
 }
+
+} // namespace Phonon
