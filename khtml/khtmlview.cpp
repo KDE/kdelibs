@@ -4042,6 +4042,18 @@ void KHTMLView::scrollTick() {
     else
     if (d->dy < 0 && ddy < d->dy) ddy = d->dy;
 
+    // progressive slow down, in bisected steps
+    if (qAbs(d->dx-ddx) < 2 && qAbs(ddx)>2) {
+        ddx /= 2;
+        if (qAbs(ddx) < qAbs(d->dx-ddx))
+            ddx = d->dx-ddx;        
+    }
+    if (qAbs(d->dy-ddy) < 2 && qAbs(ddy)>2) {
+        ddy /= 2;
+        if (qAbs(ddy) < qAbs(d->dy-ddy))
+            ddy = d->dy-ddy;
+    }
+
     d->dx -= ddx;
     d->dy -= ddy;
 
