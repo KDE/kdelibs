@@ -1878,11 +1878,17 @@ void RenderTextArea::calcMinMaxWidth()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
     w->setTabStopWidth(8 * m.width(" "));
-    QSize size( qMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
-                w->verticalScrollBar()->sizeHint().width(),
-                qMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
+    int lvs = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutVerticalSpacing));
+    int lhs = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing));
+    int llm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutLeftMargin));
+    int lrm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutRightMargin));
+    int lbm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutBottomMargin));
+    int ltm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutTopMargin));
+    QSize size( qMax(element()->cols(), 1L)*m.width('x') + w->frameWidth()*2 + llm+lrm +
+                w->verticalScrollBar()->sizeHint().width()+lhs,
+                qMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 + lbm+ltm +
                 (w->lineWrapMode() == QTextEdit::NoWrap ?
-                 w->horizontalScrollBar()->sizeHint().height() : 0)
+                 w->horizontalScrollBar()->sizeHint().height()+lvs : 0)
         );
 
     setIntrinsicWidth( size.width() );
@@ -1930,10 +1936,28 @@ void RenderTextArea::setText(const QString& newText)
     if ( newText != text() ) {
         bool blocked = w->blockSignals(true);
         QTextCursor tc = w->textCursor();
+        bool atEnd = tc.atEnd();
+        bool atStart = tc.atStart();
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
-        w->setPlainText( newText );
+        QString oldText = w->toPlainText();
+        int ex = 0;
+        int otl = oldText.length();
+        if (otl && newText.length() > otl) {
+            while (ex < otl && newText[ex] == oldText[ex])
+                ++ex;
+            QTextCursor tc(w->document());
+            tc.setPosition( ex, QTextCursor::MoveAnchor );
+            tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+            tc.insertText(newText.right( newText.length()-ex ));
+        } else {                            
+            w->setPlainText( newText );
+        }
         w->setTextCursor(tc);
+        if (atEnd)
+           tc.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+        else if (atStart)
+           tc.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
         w->horizontalScrollBar()->setValue( cx );
         w->verticalScrollBar()->setValue( cy );
         w->blockSignals(blocked);
