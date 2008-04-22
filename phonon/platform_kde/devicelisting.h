@@ -64,8 +64,8 @@ class DeviceListing : public QObject
         void checkAudioInputs();
         QMultiMap<int, int> m_sortedOutputIndexes;
         QMultiMap<int, int> m_sortedInputIndexes;
-        QMap<int, QHash<QByteArray, QVariant> > m_outputInfos;
-        QMap<int, QHash<QByteArray, QVariant> > m_inputInfos;
+        QHash<int, QHash<QByteArray, QVariant> > m_outputInfos;
+        QHash<int, QHash<QByteArray, QVariant> > m_inputInfos;
         QBasicTimer m_signalTimer;
         bool m_useOss : 1;
 };

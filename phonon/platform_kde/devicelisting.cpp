@@ -22,7 +22,7 @@
 
 #include "../libkaudiodevicelist/audiodeviceenumerator.h"
 #include "../libkaudiodevicelist/audiodevice.h"
-#include <QtCore/QMutableMapIterator>
+#include <QtCore/QMutableHashIterator>
 #include <QtCore/QTimerEvent>
 #include <kconfiggroup.h>
 #include <kdebug.h>
@@ -166,7 +166,7 @@ void DeviceListing::ossSettingChanged(bool useOss)
         }
     } else {
         // remove all OSS devices
-        QMutableMapIterator<int, QHash<QByteArray, QVariant> > it(m_outputInfos);
+        QMutableHashIterator<int, QHash<QByteArray, QVariant> > it(m_outputInfos);
         while (it.hasNext()) {
             it.next();
             if (it.value().value("driver") == QLatin1String("oss")) {
@@ -238,36 +238,47 @@ void DeviceListing::devicePlugged(const Phonon::AudioDevice &dev)
     kDebug(600) << dev.cardName();
     if (dev.isPlaybackDevice()) {
         m_outputInfos.insert(-dev.index(), propertiesHashFor(dev));
-        m_sortedOutputIndexes.insert(-m_outputInfos[-dev.index()].value("initialPreference").toInt(), -dev.index());
+        const int initialPreference = m_outputInfos[-dev.index()].value("initialPreference").toInt();
+        if (!m_sortedOutputIndexes.contains(-initialPreference, -dev.index())) {
+            m_sortedOutputIndexes.insert(-initialPreference, -dev.index());
+        }
         m_signalTimer.start(0, this);
     }
     if (dev.isCaptureDevice()) {
         m_inputInfos.insert(-dev.index(), propertiesHashFor(dev));
-        m_sortedInputIndexes.insert(-m_inputInfos[-dev.index()].value("initialPreference").toInt(), -dev.index());
+        const int initialPreference = m_inputInfos[-dev.index()].value("initialPreference").toInt();
+        if (!m_sortedInputIndexes.contains(-initialPreference, -dev.index())) {
+            m_sortedInputIndexes.insert(-initialPreference, -dev.index());
+        }
         m_signalTimer.start(0, this);
     }
+}
+
+static bool markAsUnavailable(QHash<int, QHash<QByteArray, QVariant> > &infos, int index)
+{
+    QHash<int, QHash<QByteArray, QVariant> >::iterator it = infos.find(index);
+    if (it != infos.end()) {
+        it.value().insert("description", i18n("<html>This device is currently not available "
+                    "(either it is unplugged or the driver is not loaded).</html>"));
+        it.value().insert("available", false);
+        it.value().insert("deviceIds", QStringList());
+        return true;
+    }
+    return false;
 }
 
 void DeviceListing::deviceUnplugged(const Phonon::AudioDevice &dev)
 {
     kDebug(600) << dev.cardName();
     if (dev.isPlaybackDevice()) {
-        QMap<int, QHash<QByteArray, QVariant> >::iterator it = m_outputInfos.find(-dev.index());
-        if (it != m_outputInfos.end()) {
-            const int initialPreference = it.value().value("initialPreference").toInt();
-            m_sortedOutputIndexes.remove(-initialPreference, it.key());
-            m_outputInfos.erase(it);
+        if (markAsUnavailable(m_outputInfos, -dev.index())) {
+            m_signalTimer.start(0, this);
         }
-        m_signalTimer.start(0, this);
     }
     if (dev.isCaptureDevice()) {
-        QMap<int, QHash<QByteArray, QVariant> >::iterator it = m_inputInfos.find(-dev.index());
-        if (it != m_inputInfos.end()) {
-            const int initialPreference = it.value().value("initialPreference").toInt();
-            m_sortedInputIndexes.remove(-initialPreference, it.key());
-            m_inputInfos.erase(it);
+        if (markAsUnavailable(m_inputInfos, -dev.index())) {
+            m_signalTimer.start(0, this);
         }
-        m_signalTimer.start(0, this);
     }
 }
 
