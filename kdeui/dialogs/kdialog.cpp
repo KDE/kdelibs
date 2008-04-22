@@ -161,6 +161,8 @@ void KDialogPrivate::init(KDialog *q)
 
     q->connect(q, SIGNAL(layoutHintChanged()), q, SLOT(updateGeometry()));
     q->connect(&mButtonSignalMapper, SIGNAL(mapped(int)), q, SLOT(slotButtonClicked(int)));
+
+    q->setPlainCaption(KGlobal::caption()); // set appropriate initial window title for case it gets not set later
 }
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
