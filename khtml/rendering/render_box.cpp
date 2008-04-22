@@ -804,7 +804,11 @@ short RenderBox::containingBlockWidth() const
         //captions are not affected by table border or padding
         return cb->width();
     }
-    if (usesLineWidth())
+    if (isPositioned())
+        // cf. 10.1.4.2 - use padding edge
+        // ### FIXME: still wrong for inline CBs - 10.1.4.1
+        return cb->contentWidth() + cb->paddingLeft() + cb->paddingRight();
+    else if (usesLineWidth())
         return cb->lineWidth(m_y);
     else
         return cb->contentWidth();
@@ -1464,9 +1468,7 @@ void RenderBox::calcAbsoluteHorizontal()
     // relative positioned inline.
     const RenderObject* containerBlock = container();
 
-    // FIXME: This is incorrect for cases where the container block is a relatively
-    // positioned inline.
-    const int containerWidth = containingBlockWidth() + containerBlock->paddingLeft() + containerBlock->paddingRight();
+    const int containerWidth = containingBlockWidth();
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
     // instead of the the container block's.
@@ -1982,9 +1984,7 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
     // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
     const RenderObject* containerBlock = container();
 
-    // FIXME: This is incorrect for cases where the container block is a relatively
-    // positioned inline.
-    const int containerWidth = containingBlockWidth() + containerBlock->paddingLeft() + containerBlock->paddingRight();
+    const int containerWidth = containingBlockWidth();
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
     // instead of the the container block's.
