@@ -69,8 +69,10 @@ bool AudioOutput::setOutputDevice(int newDevice)
 
 bool AudioOutput::setOutputDevice(const Phonon::AudioOutputDevice &newDevice)
 {
-    Q_ASSERT(newDevice.index() >= 10000);
-    Q_ASSERT(newDevice.index() <= 10009);
+    if (newDevice.index() >= 0) {
+        Q_ASSERT(newDevice.index() >= 10000);
+        Q_ASSERT(newDevice.index() <= 10009);
+    }
     m_device = newDevice.index();
     return true;
 }
