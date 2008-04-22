@@ -144,7 +144,7 @@ protected:
     int calcPercentageHeight(const Length& height, bool treatAsReplaced = false) const;
     int availableHeightUsing(const Length& h) const;
     int availableWidthUsing(const Length& w) const;
-    int calcImplicitHeight() const;
+    int calcImplicitContentHeight() const;
     bool hasImplicitHeight() const {
         return isPositioned() && !style()->top().isVariable() && !style()->bottom().isVariable();
     }
