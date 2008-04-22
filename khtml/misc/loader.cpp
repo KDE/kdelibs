@@ -424,6 +424,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     imgSource = 0;
     setAccept( acceptHeader );
     m_showAnimations = dl->showAnimations();
+    m_loading = true;
 
     if ( KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( url.string() ) ) {
         m_wasBlocked = true;
@@ -685,6 +686,7 @@ void CachedImage::imageDone(khtmlImLoad::Image* /*img*/)
     kDebug(6060)<<"Image is done:" << this;
 #endif
     m_status = Persistent;
+    m_loading = false;
     doNotifyFinished();
 }
 
@@ -955,6 +957,7 @@ void CachedImage::finish()
 	const QPixmap &pm = pixmap();
 	do_notify( pm, pm.rect() );
     }*/
+    m_loading = false;
     QSize s = pixmap_size();
     setSize( s.width() * s.height() * 2);
 }
