@@ -91,15 +91,11 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     restoreDialogSize(group);
     setMinimumSize(700, 400);
 
-    setWindowTitle(i18n("Get Hot New Stuff!"));
+    setCaption(i18n("Get Hot New Stuff"));
     m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
                                   "%1 Add-On Installer",
                                   KGlobal::activeComponent().aboutData()->programName()));
-    if (qApp && !qApp->windowIcon().isNull()) {
-        m_titleWidget->setPixmap(qApp->windowIcon());
-    } else {
-        m_titleWidget->setPixmap(KGlobal::activeComponent().aboutData()->appName());
-    }
+    m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
     connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
