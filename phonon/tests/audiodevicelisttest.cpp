@@ -53,17 +53,19 @@ void SimpleTest::listDevices()
 void SimpleTest::checkCopy()
 {
     QList<AudioDevice> deviceList = AudioDeviceEnumerator::availablePlaybackDevices();
-    AudioDevice dev = deviceList.first();
-    QCOMPARE(dev, deviceList.first());
-    AudioDevice dev1;
-    AudioDevice dev2;
-    QCOMPARE(dev1, dev2);
-    QVERIFY(dev1 != dev);
-    QVERIFY(dev2 != dev);
-    dev1 = dev;
-    QCOMPARE(dev1, dev);
-    QCOMPARE(dev1, deviceList.first());
-    QVERIFY(dev1 != dev2);
+    if (deviceList.count() > 0) {
+        AudioDevice dev = deviceList.first();
+        QCOMPARE(dev, deviceList.first());
+        AudioDevice dev1;
+        AudioDevice dev2;
+        QCOMPARE(dev1, dev2);
+        QVERIFY(dev1 != dev);
+        QVERIFY(dev2 != dev);
+        dev1 = dev;
+        QCOMPARE(dev1, dev);
+        QCOMPARE(dev1, deviceList.first());
+        QVERIFY(dev1 != dev2);
+    }
 }
 
 QTEST_KDEMAIN_CORE(SimpleTest)
