@@ -393,20 +393,12 @@ bool KTcpSocket::open(QIODevice::OpenMode open)
 
 bool KTcpSocket::waitForBytesWritten(int msecs)
 {
-#if (QT_VERSION < 0x040304)
-    if (msecs == -1)
-        msecs = 60*1000;
-#endif
     return d->sock.waitForBytesWritten(msecs);
 }
 
 
 bool KTcpSocket::waitForReadyRead(int msecs)
 {
-#if (QT_VERSION < 0x040304)
-    if (msecs == -1)
-        msecs = 60*1000;
-#endif
     return d->sock.waitForReadyRead(msecs);
 }
 
@@ -676,13 +668,6 @@ void KTcpSocket::setPrivateKey(const QString &fileName, KSslKey::Algorithm algor
 
 bool KTcpSocket::waitForEncrypted(int msecs)
 {
-#if (QT_VERSION < 0x040304)
-    //It's the super cheap fix but it is really short and hard to get wrong.
-    //Good enough for a hotfix I'm sure. The full version would look like a
-    //copy of the fixed implementation from QSslSocket.
-    if (msecs == -1)
-        msecs = 60*1000;    
-#endif
     return d->sock.waitForEncrypted(msecs);
 }
 
