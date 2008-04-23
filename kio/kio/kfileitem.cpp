@@ -99,6 +99,7 @@ public:
 
     KIO::filesize_t size() const;
     KDateTime time( KFileItem::FileTimes which ) const;
+    void setTime(KFileItem::FileTimes which, long long time_t_val) const;
     bool cmp( const KFileItemPrivate & item ) const;
 
     /**
@@ -213,8 +214,8 @@ void KFileItemPrivate::init()
                         mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
                 }
                 // While we're at it, store the times
-                m_time[ KFileItem::ModificationTime ].setTime_t(buf.st_mtime);
-                m_time[ KFileItem::AccessTime ].setTime_t(buf.st_atime);
+                setTime(KFileItem::ModificationTime, buf.st_mtime);
+                setTime(KFileItem::AccessTime, buf.st_atime);
                 if ( m_fileMode == KFileItem::Unknown )
                     m_fileMode = mode & S_IFMT; // extract file type
                 if ( m_permissions == KFileItem::Unknown )
@@ -280,6 +281,12 @@ KIO::filesize_t KFileItemPrivate::size() const
     return 0;
 }
 
+void KFileItemPrivate::setTime(KFileItem::FileTimes mappedWhich, long long time_t_val) const
+{
+    m_time[mappedWhich].setTime_t(time_t_val);
+    m_time[mappedWhich] = m_time[mappedWhich].toLocalZone(); // #160979
+}
+
 KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
 {
     if ( !m_time[mappedWhich].isNull() )
@@ -299,7 +306,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
         break;
     }
     if ( fieldVal != -1 ) {
-        m_time[mappedWhich].setTime_t( fieldVal );
+        setTime(mappedWhich, fieldVal);
         return m_time[mappedWhich];
     }
 
@@ -309,8 +316,8 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
         KDE_struct_stat buf;
         if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
         {
-            m_time[KFileItem::ModificationTime].setTime_t(buf.st_mtime);
-            m_time[KFileItem::AccessTime].setTime_t(buf.st_atime);
+            setTime(KFileItem::ModificationTime, buf.st_mtime);
+            setTime(KFileItem::AccessTime, buf.st_atime);
             m_time[KFileItem::CreationTime] = KDateTime();
             return m_time[mappedWhich];
         }
