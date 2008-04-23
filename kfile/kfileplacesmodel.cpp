@@ -19,6 +19,7 @@
 */
 #include "kfileplacesmodel.h"
 #include "kfileplacesitem_p.h"
+#include "kfileplacessharedbookmarks_p.h"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
@@ -48,8 +49,8 @@
 class KFilePlacesModel::Private
 {
 public:
-    Private(KFilePlacesModel *self) : q(self), bookmarkManager(0) {}
-
+    Private(KFilePlacesModel *self) : q(self), bookmarkManager(0), sharedBookmarks(0) {}
+    ~Private() { delete sharedBookmarks; }
 
     KFilePlacesModel *q;
 
@@ -59,7 +60,8 @@ public:
 
     Solid::Predicate predicate;
     KBookmarkManager *bookmarkManager;
-
+    KFilePlacesSharedBookmarks * sharedBookmarks;
+    
     void reloadAndSignal();
     QList<KFilePlacesItem *> loadBookmarkList();
 
@@ -77,23 +79,24 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 {
     const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
     d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
-
+    d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
+    
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18nc("Home Directory", "Home"), KUrl(KUser().homeDir()), "user-home");
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Network"), KUrl("remote:/"), "network-workgroup");
 #ifdef Q_OS_WIN
 	//C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Root"), KUrl("C:/"), "folder-red");
 #else
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Root"), KUrl("/"), "folder-red");
 #endif
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 

@@ -185,13 +185,24 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
     return bookmark;
 }
 
+KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
+                                          const QString &label,
+                                          const KUrl &url,
+                                          const QString &iconName)
+{
+    KBookmark bookmark = createBookmark(manager, label, url, iconName);
+    bookmark.setMetaDataItem("isSystemItem", "true");
+    return bookmark;
+}
+
+
 KBookmark KFilePlacesItem::createDeviceBookmark(KBookmarkManager *manager,
                                                 const QString &udi)
 {
     KBookmarkGroup root = manager->root();
     KBookmark bookmark = root.createNewSeparator();
     bookmark.setMetaDataItem("UDI", udi);
-
+    bookmark.setMetaDataItem("isSystemItem", "true");
     return bookmark;
 }
 
@@ -199,7 +210,11 @@ QString KFilePlacesItem::generateNewId()
 {
     static int count = 0;
 
-    return QString::number(count++);
+//    return QString::number(count++);
+    
+    return QString::number(QDateTime::currentDateTime().toTime_t())
+      + '/' + QString::number(count++);
+    
 
 //    return QString::number(QDateTime::currentDateTime().toTime_t())
 //         + '/' + QString::number(qrand());

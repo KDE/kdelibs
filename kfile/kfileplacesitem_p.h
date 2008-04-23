@@ -16,6 +16,7 @@
     Boston, MA 02110-1301, USA.
 
 */
+
 #ifndef KFILEPLACESITEM_P_H
 #define KFILEPLACESITEM_P_H
 
@@ -45,6 +46,10 @@ public:
     QVariant data(int role) const;
 
     static KBookmark createBookmark(KBookmarkManager *manager,
+                                    const QString &label,
+                                    const KUrl &url,
+                                    const QString &iconName);
+    static KBookmark createSystemBookmark(KBookmarkManager *manager,
                                     const QString &label,
                                     const KUrl &url,
                                     const QString &iconName);
