@@ -362,7 +362,7 @@ void KDirListerTest::testConcurrentListing()
 
     // The call to openUrl itself, emits started
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
-    dirLister2.openUrl(KUrl(path), KDirLister::NoFlags);
+    dirLister2.openUrl(KUrl(path), KDirLister::Reload);
 
     QCOMPARE(spyStarted1.count(), 1);
     QCOMPARE(spyCompleted1.count(), 0);
@@ -386,6 +386,8 @@ void KDirListerTest::testConcurrentListing()
     connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop(2);
+
+    QEXPECT_FAIL("", "Using KDirLister::Reload for dirLister2.openUrl() has sideeffects m_dirLister.", Continue);
     QCOMPARE(spyStarted1.count(), 1);
     QCOMPARE(spyCompleted1.count(), 1);
     QCOMPARE(spyCompletedKUrl1.count(), 1);
@@ -396,6 +398,7 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(m_items.count(), 4);
     disconnect(&m_dirLister, 0, this, 0);
 
+    QEXPECT_FAIL("", "Using KDirLister::Reload for dirLister2.openUrl() triggers 2 started signals instead of one.", Continue);
     QCOMPARE(spyStarted2.count(), 1);
     QCOMPARE(spyCompleted2.count(), 1);
     QCOMPARE(spyCompletedKUrl2.count(), 1);
