@@ -267,7 +267,7 @@ public:
 
     void globalSettingsChangedSystemwide(int);
 
-    void printShortcuts();
+    void printShortcuts() const;
 
 // members
     QList<KActionCollection *> actionCollections;

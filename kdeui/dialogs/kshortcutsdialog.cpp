@@ -57,11 +57,13 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 : KDialog( parent ), d(new KShortcutsDialogPrivate(this))
 {
     setCaption(i18n("Configure Shortcuts"));
-    setButtons(Default|Ok|Cancel);
+    setButtons(Default|Ok|Cancel|KDialog::User1);
+    setButtonText(KDialog::User1, i18n("Print"));
     setModal(true);
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
     setMainWidget( d->m_keyChooser );
     connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
+    connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
 
     KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
     resize( group.readEntry( "Dialog Size", sizeHint() ) );

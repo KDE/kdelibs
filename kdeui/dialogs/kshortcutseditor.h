@@ -183,6 +183,7 @@ public:
      */
     void importConfiguration( KConfig *config);
 
+
 Q_SIGNALS:
 	/**
 	 * Emitted when an action's shortcut has been changed.
@@ -199,12 +200,16 @@ public Q_SLOTS:
 	 * Set all shortcuts to their default values (bindings).
 	 **/
 	void allDefault();
+        
+        /**
+         * Opens a printing dialog to print all the shortcuts
+         */
+        void printShortcuts() const;
 
 private:
 	Q_PRIVATE_SLOT(d, void capturedShortcut(QVariant, const QModelIndex &))
 
 	Q_PRIVATE_SLOT(d, void globalSettingsChangedSystemwide(int))
-	Q_PRIVATE_SLOT(d, void printShortcuts())
 
 private:
 	friend class KShortcutsDialog;

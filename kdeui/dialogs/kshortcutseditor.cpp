@@ -230,6 +230,11 @@ void KShortcutsEditor::allDefault()
 }
 
 
+void KShortcutsEditor::printShortcuts() const
+{
+    d->printShortcuts();
+}
+
 
 //---------------------------------------------------------------------
 // KShortcutsEditorPrivate
@@ -273,9 +278,6 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
     //hide the editor widget chen its item becomes hidden
     QObject::connect(ui.searchFilter->searchLine(), SIGNAL(hiddenChanged(QTreeWidgetItem *, bool)),
                      delegate, SLOT(hiddenBySearchLine(QTreeWidgetItem *, bool)));
-    
-    QObject::connect(ui.printButton, SIGNAL(clicked()), 
-                     q, SLOT(printShortcuts()));
     
     ui.searchFilter->setFocus();
 }
@@ -575,7 +577,7 @@ more important things):
   name and description column, but unfortunately I didn't find a way to
   remove the borders between the 6 shortcut cells.
 */
-void KShortcutsEditorPrivate::printShortcuts()
+void KShortcutsEditorPrivate::printShortcuts() const
 {
     QTreeWidgetItem* root = ui.list->invisibleRootItem();
     QTextDocument doc;
