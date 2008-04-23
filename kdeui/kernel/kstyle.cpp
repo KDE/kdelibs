@@ -1257,18 +1257,18 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             // draw the pixmap, if there is one
             if (!bOpt->icon.isNull())
             {
-                int iconSize = pixelMetric(PM_SmallIconSize);
                 IconOption icoOpt;
                 icoOpt.icon   = bOpt->icon;
+                icoOpt.size   = bOpt->iconSize;
                 icoOpt.active = flags & State_HasFocus;
 
-                QRect iconRect(r.x(), r.y() + (r.height()-iconSize)/2,
-                               iconSize, iconSize);
+                QRect iconRect(r.x(), r.y() + (r.height()-bOpt->iconSize.height())/2,
+                               bOpt->iconSize.width(), bOpt->iconSize.height());
                 drawKStylePrimitive(WT_CheckBox, Generic::Icon, option,
                                     handleRTL(bOpt, iconRect),
                                     pal, flags, p, widget, &icoOpt);
 
-                textShift = iconSize +
+                textShift = bOpt->iconSize.width() +
                         widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
             }
 
@@ -1317,18 +1317,18 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             // draw the pixmap, if there is one
             if (!bOpt->icon.isNull())
             {
-                int iconSize = pixelMetric(PM_SmallIconSize);
                 IconOption icoOpt;
                 icoOpt.icon   = bOpt->icon;
                 icoOpt.active = flags & State_HasFocus;
+                icoOpt.size   = bOpt->iconSize;
 
-                QRect iconRect(r.x(), r.y() + (r.height()-iconSize)/2,
-                               iconSize, iconSize);
+                QRect iconRect(r.x(), r.y() + (r.height()-bOpt->iconSize.height())/2,
+                               bOpt->iconSize.width(), bOpt->iconSize.height());
                 drawKStylePrimitive(WT_RadioButton, Generic::Icon, option,
                                     handleRTL(bOpt, iconRect),
                                     pal, flags, p, widget, &icoOpt);
 
-                textShift = iconSize +
+                textShift = bOpt->iconSize.width() +
                         widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
             }
 
