@@ -24,7 +24,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
-#include <QtXml/QDomDocument>
 #include <QtCore/QPair>
 
 class QString;

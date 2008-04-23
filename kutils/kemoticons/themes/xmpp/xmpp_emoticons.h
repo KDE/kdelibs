@@ -22,6 +22,8 @@
 
 #include <kemoticonstheme.h>
 
+#include <QtXml/QDomDocument>
+
 class XmppEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT

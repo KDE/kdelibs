@@ -205,7 +205,7 @@ void XmppEmoticons::createNew()
     }
     
     QDomDocument doc;
-    doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\""));
+    doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
     doc.appendChild(doc.createElement("icondef"));
     
     QTextStream emoStream(&fp);

@@ -22,6 +22,8 @@
 
 #include <kemoticonstheme.h>
 
+#include <QtXml/QDomDocument>
+
 class AdiumEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT

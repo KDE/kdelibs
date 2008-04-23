@@ -59,6 +59,7 @@ KEmoTest::KEmoTest()
     t = e.getTheme();
     
     cb.addItems(e.getThemeList());
+    cb.setCurrentIndex(e.getThemeList().indexOf(t->themeName()));
     
     QVBoxLayout *vb = new QVBoxLayout;
     vb->addWidget(&kl);

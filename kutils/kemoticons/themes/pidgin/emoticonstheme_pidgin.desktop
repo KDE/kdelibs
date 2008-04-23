@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+Name=Pidgin Emoticons Theme
+Comment=Library to use Pidgin emoticons theme
+X-KDE-ServiceTypes=KEmoticons
+X-KDE-Library=emoticonstheme_pidgin
+X-KDE-EmoticonsFileName=theme
+X-KDE-Priority=7
