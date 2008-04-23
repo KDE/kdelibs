@@ -261,11 +261,14 @@ K3TempFile::sync()
 
    if (mFd >= 0)
    {
-      result = FDATASYNC(mFd);
-      if (result)
+      if( qstrcmp( getenv( "KDE_EXTRA_FSYNC" ), "1" ) == 0 )
       {
-         kWarning() << "K3TempFile: Error trying to sync " << mTmpName << ": " << strerror(errno);
-         mError = errno;
+         result = FDATASYNC(mFd);
+         if (result)
+         {
+            kWarning() << "K3TempFile: Error trying to sync " << mTmpName << ": " << strerror(errno);
+            mError = errno;
+         }
       }
    }
 
