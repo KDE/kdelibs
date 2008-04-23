@@ -233,11 +233,14 @@ KTempFile::sync()
 
    if (mFd >= 0)
    {
-      result = FDATASYNC(mFd);
-      if (result)
+      if( qstrcmp( getenv( "KDE_EXTRA_FSYNC" ), "1" ) == 0 )
       {
-         kdWarning() << "KTempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
-         mError = errno;
+         result = FDATASYNC(mFd);
+         if (result)
+         {
+            kdWarning() << "KTempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
+            mError = errno;
+         }
       }
    }
 
