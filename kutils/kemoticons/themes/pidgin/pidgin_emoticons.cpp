@@ -42,20 +42,45 @@ PidginEmoticons::~PidginEmoticons()
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
-    QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
+    
+    bool start;
+    for (int i = 0; i < m_text.size(); ++i) {
+        QString line = m_text.at(i);
+        
+        if (line.startsWith('#') || line.isEmpty()) {
+            continue;
+        }
+        
+        QRegExp re("^\\[(.*)\\]$");
+        int pos = re.indexIn(line.trimmed());
+        if (pos > -1) {
+            if (!re.cap(1).compare("default", Qt::CaseInsensitive)) {
+                start = true;
+            } else {
+                start = false;
+            }
+            continue;
+        }
+        
+        if (!start) {
+            continue;
+        }
+        
+        QStringList splitted = line.split(' ');
+        QString emoName;
 
-    if (fce.isNull())
-        return false;
-
-    QDomNodeList nl = fce.childNodes();
-    for (uint i = 0; i < nl.length(); i++) {
-        QDomElement de = nl.item(i).toElement();
-        if(!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
-            fce.removeChild(de);
-            d->m_emoticonsMap.remove(d->m_emoticonsMap.key(emo.split(" ")));
+        if (splitted.at(0) == "!") {
+            emoName = splitted.at(1);
+        } else {
+            emoName = splitted.at(0);
+        }
+        
+        if (emoName == emoticon) {
+            m_text.removeAt(i);
             return true;
         }
     }
+    
     return false;
 }
 
@@ -64,23 +89,15 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool 
     KEmoticonsTheme::addEmoticon(emo, text, copy);
 
     QStringList splitted = text.split(" ");
-    QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
-
-    if (fce.isNull())
+    int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));
+    
+    if (i == -1) {
         return false;
-
-    QDomElement emoticon = m_themeXml.createElement("emoticon");
-    emoticon.setAttribute("file", QFileInfo(emo).fileName());
-    fce.appendChild(emoticon);
-    QStringList::const_iterator constIterator;
-    for(constIterator = splitted.begin(); constIterator != splitted.end(); constIterator++)
-    {
-        QDomElement emoText = m_themeXml.createElement("string");
-        QDomText txt = m_themeXml.createTextNode((*constIterator).trimmed());
-        emoText.appendChild(txt);
-        emoticon.appendChild(emoText);
     }
-    d->m_emoticonsMap[emo] = splitted;
+    
+    QString emoticon = QString("%1 %2").arg(QFileInfo(emo).fileName()).arg(text);
+    m_text.insert(i+1, emoticon);
+    
     return true;
 }
 
@@ -99,7 +116,15 @@ void PidginEmoticons::save()
     }
 
     QTextStream emoStream(&fp);
-    emoStream << m_themeXml.toString(4);
+    //TODO:fix this
+    if (m_text.indexOf(QRegExp("^Icon=.*", Qt::CaseInsensitive)) == -1) {
+        int i = m_text.indexOf(QRegExp("^Description=.*", Qt::CaseInsensitive));
+        kDebug()<<"FILE:"<<d->m_emoticonsMap.constBegin().key();
+        QString file = QFileInfo(d->m_emoticonsMap.constBegin().key()).fileName();
+        m_text.insert(i+1, "Icon=" + file);
+    }
+    
+    emoStream << m_text.join("\n");
     fp.close();
 }
 
@@ -118,29 +143,55 @@ bool PidginEmoticons::loadTheme(const QString &path)
         kWarning() << fp.fileName() << "can't open ReadOnly!";
         return false;
     }
-    
+
     QTextStream str(&fp);
     bool start = false;
+    m_text.clear();
     while (!str.atEnd()) {
-         QString line = str.readLine();
-         
-         if (line.startsWith('#') || line.isEmpty()) {
+        QString line = str.readLine();
+        m_text << line;
+        
+        if (line.startsWith('#') || line.isEmpty()) {
             continue;
-         }
-         
-         QRegExp re("^\[(.*)\]$");
-         int pos = re.indexIn(line.trim());
-         if (pos > -1) {
-            
-         }
-         
+        }
+
+        QRegExp re("^\\[(.*)\\]$");
+        int pos = re.indexIn(line.trimmed());
+        if (pos > -1) {
+            if (!re.cap(1).compare("default", Qt::CaseInsensitive)) {
+                start = true;
+            } else {
+                start = false;
+            }
+            continue;
+        }
+        
+        if (!start) {
+            continue;
+        }
+
+        QStringList splitted = line.split(' ');
+        QString emo;
+        int i = 1;
+        if (splitted.at(0) == "!") {
+            i = 2;
+            emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + splitted.at(1));
+        } else {
+            emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + splitted.at(0));
+        }
+
+        QStringList sl;
+        for (; i < splitted.size(); ++i) {
+            if (!splitted.at(i).isEmpty() && splitted.at(i) != " ") {
+                sl << splitted.at(i);
+            }
+        }
+
+        d->m_emoticonsMap[emo] = sl;
     }
 
     fp.close();
 
-  
-
-            d->m_emoticonsMap[emo] = sl;
     return true;
 }
 
@@ -155,12 +206,14 @@ void PidginEmoticons::createNew()
         return;
     }
     
-    QDomDocument doc;
-    doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\""));
-    doc.appendChild(doc.createElement("messaging-emoticon-map"));
+    QTextStream out(&fp);
     
-    QTextStream emoStream(&fp);
-    emoStream << doc.toString(4);
+    out << "Name=" + themeName() << endl;
+    out << "Description=" + themeName() << endl;
+    out << "Author=" << endl;
+    out << endl;
+    out << "[default]" << endl;
+    
     fp.close();
 }
 

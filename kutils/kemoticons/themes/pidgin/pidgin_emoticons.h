@@ -36,6 +36,9 @@ class PidginEmoticons : public KEmoticonsTheme
         void save();
         
         void createNew();
+    
+    private:
+        QStringList m_text;
 };
 
 #endif /* PIDGIN_EMOTICONS_H */
