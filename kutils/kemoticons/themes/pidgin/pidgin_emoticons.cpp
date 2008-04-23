@@ -97,7 +97,7 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool 
     
     QString emoticon = QString("%1 %2").arg(QFileInfo(emo).fileName()).arg(text);
     m_text.insert(i+1, emoticon);
-    
+    d->m_emoticonsMap[emo] = splitted;
     return true;
 }
 
@@ -116,11 +116,10 @@ void PidginEmoticons::save()
     }
 
     QTextStream emoStream(&fp);
-    //TODO:fix this
+
     if (m_text.indexOf(QRegExp("^Icon=.*", Qt::CaseInsensitive)) == -1) {
         int i = m_text.indexOf(QRegExp("^Description=.*", Qt::CaseInsensitive));
-        kDebug()<<"FILE:"<<d->m_emoticonsMap.constBegin().key();
-        QString file = QFileInfo(d->m_emoticonsMap.constBegin().key()).fileName();
+        QString file = QFileInfo(d->m_emoticonsMap.keys().value(0)).fileName();
         m_text.insert(i+1, "Icon=" + file);
     }
     
