@@ -1319,7 +1319,6 @@ bool CoreEngine::install(const QString &payloadfile)
         kError() << "ASSERT: payloadfile is not associated" << endl;
         return false;
     }
-
     Entry *entry = entries.first();
 
     // FIXME: first of all, do the security stuff here
@@ -1338,7 +1337,6 @@ bool CoreEngine::install(const QString &payloadfile)
             //kDebug() << "Verify checksum...";
         }
     }
-
     if (m_installation->signaturePolicy() != Installation::CheckNever) {
         if (entry->signature().isEmpty()) {
             if (m_installation->signaturePolicy() == Installation::CheckIfPossible) {
@@ -1363,7 +1361,6 @@ bool CoreEngine::install(const QString &payloadfile)
     // Collect all files that were installed
     QStringList installedFiles;
     QString installpath(payloadfile);
-
     if (!m_installation->isRemote()) {
         // installdir is the target directory
         QString installdir;
@@ -1378,7 +1375,6 @@ bool CoreEngine::install(const QString &payloadfile)
             }
             pathcounter++;
         }
-
         if (!m_installation->targetDir().isEmpty()) {
             if (m_installation->scope() == Installation::ScopeUser) {
                 installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
@@ -1388,29 +1384,20 @@ bool CoreEngine::install(const QString &payloadfile)
             }
             pathcounter++;
         }
-
         if (!m_installation->installPath().isEmpty()) {
             installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
             pathcounter++;
         }
-
         if (!m_installation->absoluteInstallPath().isEmpty()) {
             installdir = m_installation->absoluteInstallPath() + '/';
             pathcounter++;
         }
-
-        if (!m_installation->absoluteInstallPath().isEmpty()) {
-            installdir = m_installation->absoluteInstallPath() + '/';
-            pathcounter++;
-        }
-
         if (pathcounter != 1) {
             kError() << "Wrong number of installation directories given." << endl;
             return false;
         }
 
         kDebug() << "installdir: " << installdir;
-
         bool isarchive = true;
 
         // respect the uncompress flag in the knsrc

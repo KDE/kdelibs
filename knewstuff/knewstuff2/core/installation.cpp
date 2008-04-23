@@ -136,6 +136,7 @@ bool Installation::isRemote() const
 {
     if (!installPath().isEmpty()) return false;
     if (!targetDir().isEmpty()) return false;
+    if (!absoluteInstallPath().isEmpty()) return false;
     if (!standardResourceDir().isEmpty()) return false;
     return true;
 }
