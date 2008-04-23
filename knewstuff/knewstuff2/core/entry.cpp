@@ -28,7 +28,7 @@ struct KNS::EntryPrivate {
             , mRelease(0)
             , mRating(0)
             , mDownloads(0)
-            , mStatus(Entry::Invalid) 
+            , mStatus(Entry::Invalid)
             , mSource(Entry::Online) {}
 
     QString mCategory;
@@ -44,6 +44,7 @@ struct KNS::EntryPrivate {
     KTranslatable mPayload;
     KTranslatable mPreview;
     QStringList mInstalledFiles;
+    QStringList mUnInstalledFiles;
 
     QString mChecksum;
     QString mSignature;
@@ -240,5 +241,15 @@ void KNS::Entry::setInstalledFiles(const QStringList & files)
 QStringList KNS::Entry::installedFiles() const
 {
     return d->mInstalledFiles;
+}
+
+void KNS::Entry::setUnInstalledFiles(const QStringList & files)
+{
+    d->mUnInstalledFiles = files;
+}
+
+QStringList KNS::Entry::uninstalledFiles() const
+{
+    return d->mUnInstalledFiles;
 }
 

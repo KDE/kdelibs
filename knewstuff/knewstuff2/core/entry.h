@@ -192,10 +192,27 @@ public:
     void setInstalledFiles(const QStringList& files);
 
     /**
+     * Set the files that have been uninstalled by the uninstall command.
+     * @param files local file names
+     * @since 4.1
+     */
+    void setUnInstalledFiles(const QStringList& files);
+
+
+    /**
      * Retrieve the locally installed files.
      * @return file names
      */
     QStringList installedFiles() const;
+
+    /**
+     * Retrieve the locally uninstalled files.
+     * @return file names
+     * @since 4.1
+     */
+    QStringList uninstalledFiles() const;
+
+
 
     /**
      * Sets the rating between 0 (worst) and 100 (best).
@@ -296,10 +313,10 @@ public:
     // FIXME KDE5 make it const
     Status status();
 
-    /** 
+    /**
      * Source of the entry, A entry's data is coming from either cache, or an online provider
      * this helps the engine know which data to use when merging cached entries with online
-     * entry data 
+     * entry data
      */
     enum Source {
         Cache,

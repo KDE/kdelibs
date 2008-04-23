@@ -102,7 +102,7 @@ bool CoreEngine::init(const QString &configfile)
         return false;
     }
     m_installation->setUncompression(uncompresssetting);
-    
+
     m_installation->setCommand(group.readEntry("InstallationCommand", QString()));
     m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
     m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
@@ -1419,11 +1419,11 @@ bool CoreEngine::install(const QString &payloadfile)
             installpath = installdir;
             KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
             //kDebug() << "Postinstallation: uncompress the file";
-    
+
             // FIXME: check for overwriting, malicious archive entries (../foo) etc.
             // FIXME: KArchive should provide "safe mode" for this!
             KArchive *archive = 0;
-    
+
             if (mimeType->name() == "application/zip") {
                 archive = new KZip(payloadfile);
             }
@@ -1569,8 +1569,8 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
             }
         }
     }
+    entry->setUnInstalledFiles( entry->installedFiles());
     entry->setInstalledFiles(QStringList());
-
     unregisterEntry(entry);
 
     emit signalEntryChanged(entry);
