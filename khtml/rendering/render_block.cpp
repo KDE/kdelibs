@@ -443,7 +443,7 @@ short RenderBlock::baselinePosition( bool firstLine ) const
             return  res +marginTop();
         }
     }
-    RenderBox::baselinePosition(firstLine);
+    return RenderBox::baselinePosition(firstLine);
 }
 
 int RenderBlock::getBaselineOfLastLineBox() const
