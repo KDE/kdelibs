@@ -19,7 +19,6 @@
 */
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QtDebug>
 #include <QtCore/QMutableListIterator>
 #include <QtCore/QList>
 #include "../qsettingsgroup_p.h"
@@ -51,7 +50,6 @@ int main(int argc, char **argv)
         }
     }
 
-    qDebug() << newIndexForZero;
     qRegisterMetaTypeStreamOperators<QList<int> >("QList<int>");
 
     QSettings qconfig(QLatin1String("kde.org"), QLatin1String("libphonon"));
@@ -59,14 +57,12 @@ int main(int argc, char **argv)
     for (int i = -1; i < 10; ++i) {
         const QString oldKey = QLatin1String("Category") + QString::number(i);
         const QString newKey = QLatin1String("Category_") + QString::number(i);
-        qDebug() << oldKey << newKey;
         if (outputGroup.hasKey(oldKey) && !outputGroup.hasKey(newKey)) {
             QList<int> deviceIndexes = outputGroup.value(oldKey, QList<int>());
             QMutableListIterator<int> index(deviceIndexes);
             while (index.hasNext()) {
                 index.next();
                 if (index.value() < 10000 && index.value() >= 0) {
-                    qDebug() << "changing index" << index.value();
                     if (index.value() == 0) {
                         Q_ASSERT(newIndexForZero);
                         index.setValue(-newIndexForZero);
