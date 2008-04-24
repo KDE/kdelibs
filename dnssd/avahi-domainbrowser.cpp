@@ -64,7 +64,7 @@ void DomainBrowser::startBrowse()
     	    QString domains_evar=qgetenv("AVAHI_BROWSE_DOMAINS");
 	    if (!domains_evar.isEmpty()) {
 		QStringList edomains=domains_evar.split(':');
-		Q_FOREACH(QString s, edomains) d->gotNewDomain(-1,-1,s,0);
+		Q_FOREACH(const QString &s, edomains) d->gotNewDomain(-1,-1,s,0);
 	    }
 	    KStandardDirs dirs;
 	    //FIXME: watch this file and restart browser if it changes

@@ -171,7 +171,7 @@ bool PublicServicePrivate::fillEntryGroup()
 	else txt.append(it.key().toAscii()+'='+it.value());
     m_group->AddService(-1,-1, 0, m_serviceName, m_type , domainToDNS(m_domain) ,
 	m_hostName, m_port,txt);
-    Q_FOREACH(QString subtype, m_subtypes) 
+    Q_FOREACH(const QString &subtype, m_subtypes) 
 	m_group->AddServiceSubtype(-1,-1, 0, m_serviceName, m_type, domainToDNS(m_domain) , subtype);
     return true;
 }

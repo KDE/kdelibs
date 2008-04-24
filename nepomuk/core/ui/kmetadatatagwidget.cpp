@@ -197,7 +197,7 @@ void Nepomuk::TagWidget::fillTagMenu()
 
     d->tagMenu->clear();
     d->tagFromAction.clear();
-    foreach( Tag tag,  allTags ) {
+    foreach( const Tag &tag,  allTags ) {
         QAction* a = d->tagMenu->addAction( tag.label(), this, SLOT( updateAssignedTagsFromMenu() ) );
         d->tagFromAction.insert( a, tag );
         a->setCheckable( true );

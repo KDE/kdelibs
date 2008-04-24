@@ -83,7 +83,7 @@ void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const 
     Q_FOREACH(const QString& mime, group.keyList()) {
         int pref = basePreference;
         const QStringList services = group.readXdgListEntry(mime);
-        Q_FOREACH(QString service, services) {
+        Q_FOREACH(const QString &service, services) {
             KService::Ptr pService = KService::serviceByStorageId(service);
             if (!pService) {
                 kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();

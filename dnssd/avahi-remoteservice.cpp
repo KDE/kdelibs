@@ -95,7 +95,7 @@ void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString
 	m_hostName = host;
 	m_port = port;
 	m_domain=DNSToDomain(domain);
-	Q_FOREACH(QByteArray x, txt) {
+	Q_FOREACH(const QByteArray &x, txt) {
 		int pos=x.indexOf("=");
 		if (pos==-1) m_textData[x]=QByteArray();
 		else m_textData[x.mid(0,pos)]=x.mid(pos+1,x.size()-pos);
