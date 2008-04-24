@@ -752,8 +752,8 @@ QStringList KFileItem::overlays() const
     }
 #endif  // Q_OS_WIN
 
-    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") &&
-         d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) ) {
+    if ( d->m_pMimeType && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) &&
+         d->m_pMimeType->is("application/x-gzip") ) {
         names.append("application-zip");
     }
 
