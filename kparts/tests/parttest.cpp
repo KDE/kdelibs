@@ -160,4 +160,67 @@ void PartTest::testAutomaticMimeType()
     delete part;
 }
 
+#include <kparts/mainwindow.h>
+#include <ktoolbar.h>
+#include <kconfiggroup.h>
+#include <ktoggletoolbaraction.h>
+class MyMainWindow : public KParts::MainWindow
+{
+public:
+    MyMainWindow() : KParts::MainWindow() {
+        tb = new KToolBar(this);
+        tb->setObjectName("testtbvisibility");
+    }
+
+    // createGUI and saveAutoSaveSettings are protected, so the whole test is here:
+    void testToolbarVisibility()
+    {
+        QVERIFY(tb->isVisible());
+
+        TestPart* part = new TestPart(0, 0);
+        // TODO define xml with a toolbar for the part
+        // and put some saved settings into qttestrc in order to test
+        // r347935+r348051, i.e. the fact that KParts::MainWindow::createGUI
+        // will apply the toolbar settings (and that they won't have been
+        // erased by the previous call to saveMainWindowSettings...)
+        this->createGUI(part);
+
+        QVERIFY(tb->isVisible());
+        this->saveAutoSaveSettings();
+
+        // Hide the toolbar using the action (so that setSettingsDirty is called, too)
+        KToggleToolBarAction action(tb, QString(), 0);
+        action.trigger();
+        QVERIFY(!tb->isVisible());
+
+        // Switch the active part, and check that
+        // the toolbar doesn't magically reappear,
+        // as it did when createGUI was calling applyMainWindowSettings
+        this->createGUI(0);
+        QVERIFY(!tb->isVisible());
+        this->createGUI(part);
+        QVERIFY(!tb->isVisible());
+
+        // All ok, show it again so that test can be run again :)
+        action.trigger();
+        QVERIFY(tb->isVisible());
+        close();
+    }
+private:
+    KToolBar* tb;
+};
+
+// A KParts::MainWindow unit test
+void PartTest::testToolbarVisibility()
+{
+    // The bug was: hide a toolbar in konqueror,
+    // then switch tabs -> the toolbar shows again
+    // (unless you waited for the autosave timer to kick in)
+    MyMainWindow window;
+    KConfigGroup cg(KGlobal::config(), "kxmlgui_unittest");
+    window.setAutoSaveSettings(cg.name());
+    window.show();
+    window.testToolbarVisibility();
+}
+
 #include "parttest.moc"

@@ -89,6 +89,13 @@ void MainWindow::createGUI( Part * part )
 
   assert( factory );
 
+    if (autoSaveSettings() && settingsDirty()) {
+        // Save any unsaved window settings before we change the gui,
+        // so that the applyMainWindowSettings call below will re-apply the right settings.
+        // Testcase: hiding a konqueror toolbar and switching tabs immediately.
+        saveAutoSaveSettings();
+    }
+
   if ( d->m_activePart )
   {
     kDebug(1000) << "deactivating GUI for " << d->m_activePart << " "
@@ -126,6 +133,11 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
 
+    // If the saved mainwindow settings contain settings for a part-specific
+    // toolbar, that just appeared right now (when activating this part for the first time),
+    // then those settings need to be applied --> done by applyMainWindowSettings below.
+    // Technically, this isn't KParts specific so it should probably be done inside
+    // KXMLGUIFactory/KXMLGUIBuilder, though...
     if ( autoSaveSettings() ) {
         QWidget *focus = QApplication::focusWidget();
         KConfigGroup cg(KGlobal::config(), autoSaveGroup());
