@@ -24,7 +24,7 @@
 #include <assert.h>
 
 namespace DOM {
-    unsigned int qHash(const DOM::DOMString& key) {
+    static unsigned int qHash(const DOM::DOMString& key) {
         return key.implementation()->hash();
     }
 }

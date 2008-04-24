@@ -44,7 +44,7 @@ using namespace khtml;
 
 namespace DOM  { // workaround for gcc bug #26311
 
-  uint qHash( const DOM::DOMString &k ) { 
+  static uint qHash( const DOM::DOMString &k ) { 
       return qHash( QString::fromRawData(k.implementation()->s, k.implementation()->l) ); 
   }
 
