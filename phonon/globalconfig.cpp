@@ -91,10 +91,10 @@ static QList<int> listSortedByConfig(const QSettingsGroup &backendConfig, Phonon
         }
     }
 
-    QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
+    QString categoryKey = QLatin1String("Category_") + QString::number(static_cast<int>(category));
     if (!backendConfig.hasKey(categoryKey)) {
         // no list in config for the given category
-        categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(Phonon::NoCategory));
+        categoryKey = QLatin1String("Category_") + QString::number(static_cast<int>(Phonon::NoCategory));
         if (!backendConfig.hasKey(categoryKey)) {
             // no list in config for NoCategory
             return defaultList;

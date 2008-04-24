@@ -413,7 +413,7 @@ void DevicePreference::load()
             hash.insert(dev.index(), dev);
         }
         for (int i = 0; i <= Phonon::LastCategory; ++i) {
-            const QString configKey(QLatin1String("Category") + QString::number(i));
+            const QString configKey(QLatin1String("Category_") + QString::number(i));
             if (!outputDeviceGroup.hasKey(configKey)) {
                 m_outputModel[i]->setModelData(list); // use the NoCategory order
                 continue;
@@ -450,7 +450,7 @@ void DevicePreference::load()
         }
         for (int i = 1; i < captureCategoriesCount; ++i) { // i == 1 to skip NoCategory
             const Phonon::Category cat = captureCategories[i];
-            const QString configKey(QLatin1String("Category") + QString::number(cat));
+            const QString configKey(QLatin1String("Category_") + QString::number(cat));
             if (!captureDeviceGroup.hasKey(configKey)) {
                 m_captureModel[cat]->setModelData(list); // use the NoCategory order
                 continue;
@@ -490,29 +490,29 @@ void DevicePreference::save()
     {
         QSettingsGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
         const QList<int> noCategoryOrder = m_outputModel.value(Phonon::NoCategory)->tupleIndexOrder();
-        globalGroup.setValue(QLatin1String("Category") + QString::number(Phonon::NoCategory), noCategoryOrder);
+        globalGroup.setValue(QLatin1String("Category_") + QString::number(Phonon::NoCategory), noCategoryOrder);
         for (int i = 0; i <= Phonon::LastCategory; ++i) {
             Q_ASSERT(m_outputModel.value(i));
             const QList<int> order = m_outputModel.value(i)->tupleIndexOrder();
             if (order == noCategoryOrder) {
-                globalGroup.removeEntry(QLatin1String("Category") + QString::number(i));
+                globalGroup.removeEntry(QLatin1String("Category_") + QString::number(i));
             } else {
-                globalGroup.setValue(QLatin1String("Category") + QString::number(i), order);
+                globalGroup.setValue(QLatin1String("Category_") + QString::number(i), order);
             }
         }
     }
     {
         QSettingsGroup globalGroup(&config, QLatin1String("AudioCaptureDevice"));
         const QList<int> noCategoryOrder = m_captureModel.value(Phonon::NoCategory)->tupleIndexOrder();
-        globalGroup.setValue(QLatin1String("Category") + QString::number(Phonon::NoCategory), noCategoryOrder);
+        globalGroup.setValue(QLatin1String("Category_") + QString::number(Phonon::NoCategory), noCategoryOrder);
         for (int i = 1; i < captureCategoriesCount; ++i) {
             const Phonon::Category cat = captureCategories[i];
             Q_ASSERT(m_captureModel.value(cat));
             const QList<int> order = m_captureModel.value(cat)->tupleIndexOrder();
             if (order == noCategoryOrder) {
-                globalGroup.removeEntry(QLatin1String("Category") + QString::number(cat));
+                globalGroup.removeEntry(QLatin1String("Category_") + QString::number(cat));
             } else {
-                globalGroup.setValue(QLatin1String("Category") + QString::number(cat), order);
+                globalGroup.setValue(QLatin1String("Category_") + QString::number(cat), order);
             }
         }
     }

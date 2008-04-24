@@ -24,7 +24,6 @@
 #include <QtCore/QSettings>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include "phonon_export.h"
 
 QT_BEGIN_HEADER
 QT_BEGIN_NAMESPACE
