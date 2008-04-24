@@ -25,6 +25,7 @@
 
 #include <QtCore/QString>
 
+#include "dom/dom_string.h"
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"
 #include "misc/shared.h"
@@ -103,5 +104,10 @@ public:
     QChar *s;
 };
 
+inline unsigned int qHash(const DOMString& key) {
+    return key.implementation()->hash();
 }
+
+}
+
 #endif

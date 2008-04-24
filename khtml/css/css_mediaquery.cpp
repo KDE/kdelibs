@@ -42,14 +42,6 @@
 using namespace DOM;
 using namespace khtml;
 
-namespace DOM  { // workaround for gcc bug #26311
-
-  static uint qHash( const DOM::DOMString &k ) { 
-      return qHash( QString::fromRawData(k.implementation()->s, k.implementation()->l) ); 
-  }
-
-}
-
 MediaQuery::MediaQuery(Restrictor r, const DOMString& mediaType, QList<MediaQueryExp*>* exprs)
     : m_restrictor(r)
     , m_mediaType(mediaType)

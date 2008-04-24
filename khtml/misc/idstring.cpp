@@ -23,12 +23,6 @@
 #include "idstring.h"
 #include <assert.h>
 
-namespace DOM {
-    static unsigned int qHash(const DOM::DOMString& key) {
-        return key.implementation()->hash();
-    }
-}
-
 namespace khtml {
 
 void IDTableBase::releaseId(unsigned id)
