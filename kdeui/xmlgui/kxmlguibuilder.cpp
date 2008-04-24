@@ -394,7 +394,8 @@ void KXMLGUIBuilder::setBuilderComponentData(const KComponentData &componentData
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget || !qobject_cast<KXmlGuiWindow*>( d->m_widget ) )
+    KXmlGuiWindow* window = qobject_cast<KXmlGuiWindow*>(d->m_widget);
+    if (!window)
         return;
 #if 0
     KToolBar *toolbar = 0;
@@ -405,7 +406,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
         toolbar->positionYourself();
     }
 #else
-    static_cast<KXmlGuiWindow *>(d->m_widget)->finalizeGUI( false );
+    window->finalizeGUI( false );
 #endif
 }
 
