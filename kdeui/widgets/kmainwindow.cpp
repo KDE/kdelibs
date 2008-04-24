@@ -933,7 +933,7 @@ bool KMainWindow::autoSaveSettings() const
 QString KMainWindow::autoSaveGroup() const
 {
     K_D(const KMainWindow);
-    return d->autoSaveGroup.name();
+    return d->autoSaveSettings ? d->autoSaveGroup.name() : QString();
 }
 
 void KMainWindow::saveAutoSaveSettings()
