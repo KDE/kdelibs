@@ -587,13 +587,13 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
       return jsBoolean(node.isSupported(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMNode::AddEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        int id = EventImpl::typeToId(args[0]->toString(exec).domString());
+        EventName id = EventName::fromString(args[0]->toString(exec).domString());
         node.addEventListener(id,listener,args[2]->toBoolean(exec));
         return jsUndefined();
     }
     case DOMNode::RemoveEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
-        int id = EventImpl::typeToId(args[0]->toString(exec).domString());
+        EventName id = EventName::fromString(args[0]->toString(exec).domString());
         node.removeEventListener(id,listener,args[2]->toBoolean(exec));
         return jsUndefined();
     }

@@ -65,6 +65,7 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/stringit.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/paintbuffer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/imagefilter.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/idstring.cpp
 )
 
 # khtml/html/Makefile.am: khtmlhtml
@@ -204,7 +205,7 @@ set(khtmlimload_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/imload/image.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/imagemanager.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/animtimer.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/imload/canvasimage.cpp  
+  ${CMAKE_SOURCE_DIR}/khtml/imload/canvasimage.cpp
 )
 
 # khtml/imload/decoders/Makefile.am: decoders

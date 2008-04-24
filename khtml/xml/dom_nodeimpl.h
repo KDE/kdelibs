@@ -30,6 +30,7 @@
 #include "dom/dom_node.h"
 #include "misc/helper.h"
 #include "misc/shared.h"
+#include "misc/idstring.h"
 
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
@@ -60,13 +61,13 @@ struct RegisteredListenerList {
 
     ~RegisteredListenerList();
 
-    void addEventListener(int id, EventListener *listener, const bool useCapture);
-    void removeEventListener(int id, EventListener *listener, bool useCapture);
+    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
+    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
 
-    void setHTMLEventListener(int id, EventListener *listener);
-    EventListener *getHTMLEventListener(int id);
+    void setHTMLEventListener(EventName id, EventListener *listener);
+    EventListener *getHTMLEventListener(EventName id);
 
-    bool hasEventListener(int id);
+    bool hasEventListener(EventName id);
     void clear();
 
     //### KDE4: should disappear
@@ -125,7 +126,7 @@ public:
     // insertBefore, replaceChild and appendChild also close newChild
     // unlike the speed optimized addChild (which is used by the parser)
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
-    
+
     /* These two methods may delete the old node, so make sure to reference it if you need it */
     virtual void replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual void removeChild ( NodeImpl *oldChild, int &exceptioncode );
@@ -279,10 +280,12 @@ public:
     DocumentImpl* getDocument() const { return m_document.get(); }
     void setDocument(DocumentImpl* doc);
 
-    void addEventListener(int id, EventListener *listener, const bool useCapture);
-    void removeEventListener(int id, EventListener *listener, bool useCapture);
-    void setHTMLEventListener(int id, EventListener *listener);
-    EventListener *getHTMLEventListener(int id);
+    void addEventListener(EventName id, EventListener *listener, const bool useCapture);
+    void removeEventListener(EventName id, EventListener *listener, bool useCapture);
+    void setHTMLEventListener(EventName id, EventListener *listener);
+    void setHTMLEventListener(unsigned id, EventListener *listener);
+    EventListener *getHTMLEventListener(EventName id);
+    EventListener *getHTMLEventListener(unsigned id);
 
     void dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
     void dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
@@ -458,17 +461,17 @@ public:
      * @param found          When this is set to true, don't print anymore but closing tags.
      * @return An html formatted string for this node and its children between the selectionStart and selectionEnd.
      */
-    virtual DOMString selectionToString(NodeImpl * selectionStart, 
-                                        NodeImpl * selectionEnd, 
-                                        int startOffset, 
-                                        int endOffset, 
-                                        bool &found) const 
+    virtual DOMString selectionToString(NodeImpl * selectionStart,
+                                        NodeImpl * selectionEnd,
+                                        int startOffset,
+                                        int endOffset,
+                                        bool &found) const
     { Q_UNUSED(selectionStart);
       Q_UNUSED(selectionEnd);
       Q_UNUSED(startOffset);
       Q_UNUSED(endOffset);
       Q_UNUSED(found);
-      return toString(); 
+      return toString();
     }
 
 private: // members
@@ -597,7 +600,7 @@ public:
     struct Cache: public khtml::Shared<Cache>
     {
         static Cache* make() { return new Cache; }
-    
+
         CacheKey key;//### We must store this in here due to QCache in Qt3 sucking
 
         unsigned int version;
@@ -609,7 +612,7 @@ public:
         unsigned int position;
         unsigned int length;
         bool         hasLength;
-        
+
         void updateNodeListInfo(DocumentImpl* doc);
 
         virtual void clear(DocumentImpl* doc);
@@ -634,7 +637,7 @@ protected:
     NodeImpl *recursiveItem    ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
     NodeImpl *recursiveItemBack( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
 
-    // Override this to determine what nodes to return. Set doRecurse to 
+    // Override this to determine what nodes to return. Set doRecurse to
     // false if the children of this node do not need to be entered.
     virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const = 0;
 
@@ -645,9 +648,9 @@ protected:
 class ChildNodeListImpl : public NodeListImpl
 {
 public:
- 
+
     ChildNodeListImpl( NodeImpl *n);
-    
+
 protected:
     virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
 };

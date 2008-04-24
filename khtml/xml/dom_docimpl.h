@@ -452,13 +452,18 @@ public:
     LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
 
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual void setHTMLWindowEventListener(int id, EventListener *listener);
-    EventListener *getHTMLWindowEventListener(int id);
+
+    void setHTMLWindowEventListener(EventName id, EventListener *listener);
+    void setHTMLWindowEventListener(unsigned id, EventListener *listener);
+
+    EventListener *getHTMLWindowEventListener(EventName id);
+    EventListener *getHTMLWindowEventListener(unsigned id);
+
     EventListener *createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node);
 
-    void addWindowEventListener(int id, EventListener *listener, const bool useCapture);
-    void removeWindowEventListener(int id, EventListener *listener, bool useCapture);
-    bool hasWindowEventListener(int id);
+    void addWindowEventListener(EventName id, EventListener *listener, const bool useCapture);
+    void removeWindowEventListener(EventName id, EventListener *listener, bool useCapture);
+    bool hasWindowEventListener(EventName id);
 
     EventListener *createHTMLEventListener(QString code);
 

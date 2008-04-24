@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001-2003 Dirk Mueller ( mueller@kde.org )
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002, 2004 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -456,5 +456,54 @@ DOMStringImpl *DOMStringImpl::escapeHTML()
         }
     }
     return toRet;
+}
+
+// Golden ratio - arbitrary start value to avoid mapping all 0's to all 0's
+// or anything like that.
+const unsigned PHI = 0x9e3779b9U;
+
+// Paul Hsieh's SuperFastHash
+// http://www.azillionmonkeys.com/qed/hash.html
+unsigned DOMStringImpl::hash() const
+{
+  // Note: this is originally from KJS>.
+  unsigned l = this->l;
+  QChar*   s = this->s;
+  unsigned hash = PHI;
+  unsigned tmp;
+
+  int rem = l & 1;
+  l >>= 1;
+
+  // Main loop
+  for (; l > 0; l--) {
+    hash += s[0].unicode();
+    tmp = (s[1].unicode() << 11) ^ hash;
+    hash = (hash << 16) ^ tmp;
+    s += 2;
+    hash += hash >> 11;
+  }
+
+  // Handle end case
+  if (rem) {
+    hash += s[0].unicode();
+    hash ^= hash << 11;
+    hash += hash >> 17;
+  }
+
+  // Force "avalanching" of final 127 bits
+  hash ^= hash << 3;
+  hash += hash >> 5;
+  hash ^= hash << 2;
+  hash += hash >> 15;
+  hash ^= hash << 10;
+
+  // this avoids ever returning a hash code of 0, since that is used to
+  // signal "hash not computed yet", using a value that is likely to be
+  // effectively the same as 0 when the low bits are masked
+  if (hash == 0)
+    hash = 0x80000000;
+
+  return hash;
 }
 

@@ -27,6 +27,7 @@
 
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
+#include "misc/idstring.h"
 
 #undef FOCUS_EVENT //for win32
 
@@ -38,14 +39,11 @@ class AbstractViewImpl;
 class DOMStringImpl;
 class NodeImpl;
 
-// ### support user-defined events
-
 class EventImpl : public khtml::Shared<EventImpl>
 {
 public:
     enum EventId {
-	UNKNOWN_EVENT = 0,
-	// UI events
+       // UI events
         DOMFOCUSIN_EVENT,
         DOMFOCUSOUT_EVENT,
         DOMACTIVATE_EVENT,
@@ -64,41 +62,42 @@ public:
         DOMNODEINSERTEDINTODOCUMENT_EVENT,
         DOMATTRMODIFIED_EVENT,
         DOMCHARACTERDATAMODIFIED_EVENT,
-	// HTML events
-	LOAD_EVENT,
-	UNLOAD_EVENT,
-	ABORT_EVENT,
-	ERROR_EVENT,
-	SELECT_EVENT,
-	CHANGE_EVENT,
-	SUBMIT_EVENT,
-	RESET_EVENT,
-	FOCUS_EVENT,
-	BLUR_EVENT,
-	RESIZE_EVENT,
-	SCROLL_EVENT,
+       // HTML events
+       LOAD_EVENT,
+       UNLOAD_EVENT,
+       ABORT_EVENT,
+       ERROR_EVENT,
+       SELECT_EVENT,
+       CHANGE_EVENT,
+       SUBMIT_EVENT,
+       RESET_EVENT,
+       FOCUS_EVENT,
+       BLUR_EVENT,
+       RESIZE_EVENT,
+       SCROLL_EVENT,
         // keyboard events
-	KEYDOWN_EVENT,
-	KEYUP_EVENT,
-	KEYPRESS_EVENT, //Mostly corresponds to DOM3 textInput event.
-	// khtml events (not part of DOM)
-	KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
-	KHTML_ECMA_CLICK_EVENT, // for html onclick
-	KHTML_DRAGDROP_EVENT,
-	KHTML_MOVE_EVENT,
-	KHTML_MOUSEWHEEL_EVENT,
-	KHTML_CONTENTLOADED_EVENT,
+       KEYDOWN_EVENT,
+       KEYUP_EVENT,
+       KEYPRESS_EVENT, //Mostly corresponds to DOM3 textInput event.
+       // khtml events (not part of DOM)
+       KHTML_ECMA_DBLCLICK_EVENT, // for html ondblclick
+       KHTML_ECMA_CLICK_EVENT, // for html onclick
+       KHTML_DRAGDROP_EVENT,
+       KHTML_MOVE_EVENT,
+       KHTML_MOUSEWHEEL_EVENT,
+       KHTML_CONTENTLOADED_EVENT,
         // XMLHttpRequest events
         KHTML_READYSTATECHANGE_EVENT
     };
 
     EventImpl();
-    EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg);
+    EventImpl(EventId id, bool canBubbleArg, bool cancelableArg);
     virtual ~EventImpl();
 
-    EventId id() const { return KDE_CAST_BF_ENUM(EventId, m_id); }
+    EventId id() const { return EventId(m_eventName.id()); }
+    DOMString type() const { return m_eventName.toString(); }
+    EventName name() const { return m_eventName; }
 
-    DOMString type() const { return m_type; }
     NodeImpl *target() const { return m_target; }
     void setTarget(NodeImpl *_target);
     NodeImpl *currentTarget() const { return m_currentTarget; }
@@ -123,24 +122,28 @@ public:
     bool propagationStopped() const { return m_propagationStopped; }
     bool defaultPrevented() const { return m_defaultPrevented; }
 
-    static EventId typeToId(DOMString type);
-    static DOMString idToType(EventId id);
-
     void setDefaultHandled() { m_defaultHandled = true; }
     bool defaultHandled() const { return m_defaultHandled; }
 
     DOMString message() const { return m_message; }
     void setMessage(const DOMString &_message) { m_message = _message; }
 
+    static khtml::IDTable<EventImpl>* idTable() {
+        if (s_idTable)
+            return s_idTable;
+        else
+            return initIdTable();
+    }
 protected:
-    DOMStringImpl *m_type;
-    bool m_canBubble;
-    bool m_cancelable;
+    static khtml::IDTable<EventImpl>* s_idTable;
+    static khtml::IDTable<EventImpl>* initIdTable();
+    EventName m_eventName;
+    bool m_canBubble  : 1;
+    bool m_cancelable : 1;
 
-    bool m_propagationStopped;
-    bool m_defaultPrevented;
-    bool m_defaultHandled;
-    KDE_BF_ENUM(EventId) m_id : 6;
+    bool m_propagationStopped : 1;
+    bool m_defaultPrevented   : 1;
+    bool m_defaultHandled     : 1;
     unsigned short m_eventPhase : 2;
     NodeImpl *m_currentTarget; // ref > 0 maintained externally
     NodeImpl *m_target;
@@ -386,7 +389,7 @@ public:
     TextEventImpl();
 
     TextEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view);
-    
+
     void initTextEvent(const DOMString &typeArg,
                        bool canBubbleArg,
                        bool cancelableArg,
@@ -437,7 +440,7 @@ class MutationEventImpl : public EventImpl {
 // ### fire these during parsing (if necessary)
 public:
     MutationEventImpl();
-    MutationEventImpl(EventId _id,
+    MutationEventImpl(EventId _id, /* for convenience */
 		      bool canBubbleArg,
 		      bool cancelableArg,
 		      const Node &relatedNodeArg,
@@ -472,27 +475,28 @@ protected:
 
 class RegisteredEventListener {
 public:
-    RegisteredEventListener() : id(EventImpl::EventId(0)), useCapture(false), listener(0) {}
+    RegisteredEventListener() : useCapture(false), listener(0) {}
 
-    RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-        : id(_id), useCapture(_useCapture), listener(_listener) { if (listener) listener->ref(); }
+    RegisteredEventListener(EventName _id, EventListener *_listener, bool _useCapture)
+        : eventName(_id), useCapture(_useCapture), listener(_listener) { if (listener) listener->ref(); }
 
     ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
 
     bool operator==(const RegisteredEventListener &other) const
-    { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
+    { return eventName == other.eventName && listener == other.listener
+             && useCapture == other.useCapture; }
 
 
-    KDE_BF_ENUM(EventImpl::EventId) id : 6;
+    EventName eventName;
     bool useCapture;
     EventListener *listener;
 
-    RegisteredEventListener( const RegisteredEventListener &other ) : 
-                id(other.id), useCapture(other.useCapture), listener(other.listener) 
+    RegisteredEventListener( const RegisteredEventListener &other ) :
+                eventName(other.eventName), useCapture(other.useCapture), listener(other.listener)
     { if (listener) listener->ref(); }
 
     RegisteredEventListener & operator=( const RegisteredEventListener &other ) {
-        id         = other.id;
+        eventName  = other.eventName;
         useCapture = other.useCapture;
         if (other.listener)
             other.listener->ref();

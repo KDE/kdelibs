@@ -218,7 +218,7 @@ DOMString NodeImpl::textContent() const
     case Node::COMMENT_NODE:
     case Node::PROCESSING_INSTRUCTION_NODE:
 	return nodeValue();
-        
+
     case Node::ELEMENT_NODE:
     case Node::ATTRIBUTE_NODE:
     case Node::ENTITY_NODE:
@@ -236,12 +236,12 @@ DOMString NodeImpl::textContent() const
 
             return s;
         }
-        
+
     case Node::DOCUMENT_NODE:
     case Node::DOCUMENT_TYPE_NODE:
     case Node::NOTATION_NODE:
     default:
-	return DOMString();            
+	return DOMString();
     }
 }
 
@@ -265,9 +265,9 @@ void NodeImpl::setTextContent(const DOMString& text, int& ec)
         case Node::ENTITY_REFERENCE_NODE:
         case Node::DOCUMENT_FRAGMENT_NODE: {
             NodeBaseImpl *container = static_cast<NodeBaseImpl *>(this);
-            
+
             container->removeChildren();
-            
+
             if (!text.isEmpty())
                 appendChild(getDocument()->createTextNode(text.implementation()), ec);
             break;
@@ -363,9 +363,9 @@ unsigned long NodeImpl::nodeIndex() const
     return count;
 }
 
-void NodeImpl::addEventListener(int id, EventListener *listener, const bool useCapture)
+void NodeImpl::addEventListener(EventName id, EventListener *listener, const bool useCapture)
 {
-    switch (id) {
+    switch (id.id()) {
 	case EventImpl::DOMSUBTREEMODIFIED_EVENT:
 	    getDocument()->addListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER);
 	    break;
@@ -394,19 +394,29 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
     m_regdListeners.addEventListener(id, listener, useCapture);
 }
 
-void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
+void NodeImpl::removeEventListener(EventName id, EventListener *listener, bool useCapture)
 {
     m_regdListeners.removeEventListener(id, listener, useCapture);
 }
 
-void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
+void NodeImpl::setHTMLEventListener(EventName id, EventListener *listener)
 {
     m_regdListeners.setHTMLEventListener(id, listener);
 }
 
-EventListener *NodeImpl::getHTMLEventListener(int id)
+void NodeImpl::setHTMLEventListener(unsigned id, EventListener *listener)
+{
+    m_regdListeners.setHTMLEventListener(EventName::fromId(id), listener);
+}
+
+EventListener *NodeImpl::getHTMLEventListener(EventName id)
 {
     return m_regdListeners.getHTMLEventListener(id);
+}
+
+EventListener *NodeImpl::getHTMLEventListener(unsigned id)
+{
+    return m_regdListeners.getHTMLEventListener(EventName::fromId(id));
 }
 
 void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
@@ -432,14 +442,14 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // work out what nodes to send event to
     QList<NodeImpl*> nodeChain;
     NodeImpl *n;
- 
+
     if (inDocument()) {
         for (n = this; n; n = n->parentNode()) {
             n->ref();
             nodeChain.prepend(n);
-        } 
+        }
     } else {
-        // if node is not in the document just send event to itself 
+        // if node is not in the document just send event to itself
         ref();
         nodeChain.prepend(this);
     }
@@ -562,7 +572,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
 {
     bool cancelable = true;
     int detail = overrideDetail; // defaults to 0
-    EventImpl::EventId evtId = EventImpl::UNKNOWN_EVENT;
+    EventImpl::EventId evtId;
     if (overrideId) {
         evtId = static_cast<EventImpl::EventId>(overrideId);
     }
@@ -583,12 +593,9 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
                 cancelable = false;
                 break;
             default:
-                break;
+                return;
         }
     }
-    if (evtId == EventImpl::UNKNOWN_EVENT)
-        return; // shouldn't happen
-
 
     int exceptioncode = 0;
     int pageX = _mouse->x();
@@ -695,7 +702,7 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
             continue;
 
         RegisteredEventListener& current = (*it);
-        if (current.id == evt->id() && current.useCapture == useCapture)
+        if (current.eventName == evt->name() && current.useCapture == useCapture)
             current.listener->handleEvent(ev);
 
         // ECMA legacy hack
@@ -707,8 +714,8 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
                 // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
                 // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
                 // dblclicks from the DOM API, we'll need a timer here (well in the doc).
-                if ( ( !me->isDoubleClick() && current.id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-                  ( me->isDoubleClick() && current.id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
+                if ( ( !me->isDoubleClick() && current.eventName.id() == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+                  ( me->isDoubleClick() && current.eventName.id() == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
                     current.listener->handleEvent(ev);
             }
         }
@@ -2146,9 +2153,9 @@ NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
 
 // -----------------------------------------------------------------------------
 
-void RegisteredListenerList::addEventListener(int id, EventListener *listener, const bool useCapture)
+void RegisteredListenerList::addEventListener(EventName id, EventListener *listener, const bool useCapture)
 {
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
+    RegisteredEventListener rl(id,listener,useCapture);
     if (!listeners)
         listeners = new QList<RegisteredEventListener>;
 
@@ -2163,12 +2170,12 @@ void RegisteredListenerList::addEventListener(int id, EventListener *listener, c
     listeners->append(rl);
 }
 
-void RegisteredListenerList::removeEventListener(int id, EventListener *listener, bool useCapture)
+void RegisteredListenerList::removeEventListener(EventName id, EventListener *listener, bool useCapture)
 {
     if (!listeners) // nothing to remove
         return;
 
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
+    RegisteredEventListener rl(id,listener,useCapture);
 
     QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
@@ -2183,7 +2190,7 @@ bool RegisteredListenerList::isHTMLEventListener(EventListener* listener)
     return (listener->eventListenerType() == "_khtml_HTMLEventListener");
 }
 
-void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listener)
+void RegisteredListenerList::setHTMLEventListener(EventName name, EventListener *listener)
 {
     if (!listeners)
         listeners = new QList<RegisteredEventListener>;
@@ -2191,7 +2198,7 @@ void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listene
     QList<RegisteredEventListener>::iterator it;
     if (!listener) {
         for (it = listeners->begin(); it != listeners->end(); ++it) {
-            if ((*it).id == id && isHTMLEventListener((*it).listener)) {
+            if ((*it).eventName == name && isHTMLEventListener((*it).listener)) {
                 listeners->erase(it);
                 break;
             }
@@ -2201,11 +2208,11 @@ void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listene
 
     // if this event already has a registered handler, insert the new one in
     // place of the old one, to preserve the order.
-    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,false);
+    RegisteredEventListener rl(name,listener,false);
 
     for (int i = 0; i < listeners->size(); ++i) {
         const RegisteredEventListener& listener = listeners->at(i);
-        if (listener.id == id && isHTMLEventListener(listener.listener)) {
+        if (listener.eventName == name && isHTMLEventListener(listener.listener)) {
             listeners->replace(i, rl);
             return;
         }
@@ -2214,27 +2221,27 @@ void RegisteredListenerList::setHTMLEventListener(int id, EventListener *listene
     listeners->append(rl);
 }
 
-EventListener *RegisteredListenerList::getHTMLEventListener(int id)
+EventListener *RegisteredListenerList::getHTMLEventListener(EventName name)
 {
     if (!listeners)
         return 0;
 
     QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
-        if ((*it).id == id && isHTMLEventListener((*it).listener)) {
+        if ((*it).eventName == name && isHTMLEventListener((*it).listener)) {
             return (*it).listener;
         }
     return 0;
 }
 
-bool RegisteredListenerList::hasEventListener(int id)
+bool RegisteredListenerList::hasEventListener(EventName name)
 {
     if (!listeners)
         return false;
 
     QList<RegisteredEventListener>::iterator it;
     for (it = listeners->begin(); it != listeners->end(); ++it)
-        if ((*it).id == id)
+        if ((*it).eventName == name)
             return true;
 
     return false;
