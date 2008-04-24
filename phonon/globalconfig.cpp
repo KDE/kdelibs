@@ -45,14 +45,30 @@ GlobalConfig::~GlobalConfig()
 {
 }
 
-static void filterAdvanced(BackendInterface *backendIface, QList<int> *list)
+enum WhatToFilter {
+    FilterAdvancedDevices = 1,
+    FilterHardwareDevices = 2
+};
+
+static void filter(ObjectDescriptionType type, BackendInterface *backendIface, QList<int> *list, int whatToFilter)
 {
     QMutableListIterator<int> it(*list);
     while (it.hasNext()) {
-        const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(Phonon::AudioOutputDeviceType, it.next());
-        QVariant var = properties.value("isAdvanced");
-        if (var.isValid() && var.toBool()) {
-            it.remove();
+        const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(type, it.next());
+        QVariant var;
+        if (whatToFilter & FilterAdvancedDevices) {
+            var = properties.value("isAdvanced");
+            if (var.isValid() && var.toBool()) {
+                it.remove();
+                continue;
+            }
+        }
+        if (whatToFilter & FilterHardwareDevices) {
+            var = properties.value("isHardwareDevice");
+            if (var.isValid() && var.toBool()) {
+                it.remove();
+                continue;
+            }
         }
     }
 }
@@ -133,8 +149,12 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category, Hid
     if (backendIface) {
         // this list already is in default order (as defined by the backend)
         QList<int> list = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
-        if (hideAdvancedDevices) {
-            filterAdvanced(backendIface, &list);
+        if (hideAdvancedDevices || !defaultList.isEmpty()) {
+            filter(AudioOutputDeviceType, backendIface, &list,
+                    (hideAdvancedDevices ? FilterAdvancedDevices : 0)
+                    // the platform plugin already provided the hardware devices
+                    | (defaultList.isEmpty() ? 0 : FilterHardwareDevices)
+                    );
         }
         defaultList += list;
     }
@@ -181,8 +201,12 @@ QList<int> GlobalConfig::audioCaptureDeviceListFor(Phonon::Category category, Hi
     if (backendIface) {
         // this list already is in default order (as defined by the backend)
         QList<int> list = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
-        if (hideAdvancedDevices) {
-            filterAdvanced(backendIface, &list);
+        if (hideAdvancedDevices || !defaultList.isEmpty()) {
+            filter(AudioCaptureDeviceType, backendIface, &list,
+                    (hideAdvancedDevices ? FilterAdvancedDevices : 0)
+                    // the platform plugin already provided the hardware devices
+                    | (defaultList.isEmpty() ? 0 : FilterHardwareDevices)
+                  );
         }
         defaultList += list;
     }
