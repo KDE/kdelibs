@@ -31,6 +31,7 @@
 #include <misc/htmlhashes.h>
 #include <rendering/render_text.h>
 #include <rendering/render_flow.h>
+#include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 
 #include <kdebug.h>
