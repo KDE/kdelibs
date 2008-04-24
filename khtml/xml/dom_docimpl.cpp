@@ -2070,8 +2070,8 @@ void DocumentImpl::styleSheetLoaded()
 }
 
 void DocumentImpl::addPendingSheet()
-{ 
-     m_pendingStylesheets++; 
+{
+     m_pendingStylesheets++;
 }
 
 DOMString DocumentImpl::selectedStylesheetSet() const
@@ -2640,7 +2640,7 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
             if (!m_windowEventListeners.stillContainsListener(*it))
                 continue;
 
-            if ((*it).id == evt->id()) {
+            if ((*it).eventName == evt->name()) {
                 // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
                 // (this is how we identify events dispatched to the window, like window.onmousedown)
                 // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
@@ -2653,27 +2653,37 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
         contentLoaded();
 }
 
-void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
+void DocumentImpl::setHTMLWindowEventListener(EventName id, EventListener *listener)
 {
     m_windowEventListeners.setHTMLEventListener(id, listener);
 }
 
-EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
+void DocumentImpl::setHTMLWindowEventListener(unsigned id, EventListener *listener)
+{
+    m_windowEventListeners.setHTMLEventListener(EventName::fromId(id), listener);
+}
+
+EventListener *DocumentImpl::getHTMLWindowEventListener(EventName id)
 {
     return m_windowEventListeners.getHTMLEventListener(id);
 }
 
-void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
+EventListener *DocumentImpl::getHTMLWindowEventListener(unsigned id)
+{
+    return m_windowEventListeners.getHTMLEventListener(EventName::fromId(id));
+}
+
+void DocumentImpl::addWindowEventListener(EventName id, EventListener *listener, const bool useCapture)
 {
     m_windowEventListeners.addEventListener(id, listener, useCapture);
 }
 
-void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bool useCapture)
+void DocumentImpl::removeWindowEventListener(EventName id, EventListener *listener, bool useCapture)
 {
     m_windowEventListeners.removeEventListener(id, listener, useCapture);
 }
 
-bool DocumentImpl::hasWindowEventListener(int id)
+bool DocumentImpl::hasWindowEventListener(EventName id)
 {
     return m_windowEventListeners.hasEventListener(id);
 }

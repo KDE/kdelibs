@@ -42,13 +42,11 @@ using namespace khtml;
 
 EventImpl::EventImpl()
 {
-    m_type = 0;
     m_canBubble = false;
     m_cancelable = false;
 
     m_propagationStopped = false;
     m_defaultPrevented = false;
-    m_id = UNKNOWN_EVENT;
     m_currentTarget = 0;
     m_eventPhase = 0;
     m_target = 0;
@@ -58,16 +56,12 @@ EventImpl::EventImpl()
 
 EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
 {
-    DOMString t = EventImpl::idToType(_id);
-    m_type = t.implementation();
-    if (m_type)
-	m_type->ref();
+    m_eventName = EventName::fromId(_id);
     m_canBubble = canBubbleArg;
     m_cancelable = cancelableArg;
 
     m_propagationStopped = false;
     m_defaultPrevented = false;
-    m_id = _id;
     m_currentTarget = 0;
     m_eventPhase = 0;
     m_target = 0;
@@ -77,8 +71,6 @@ EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
 
 EventImpl::~EventImpl()
 {
-    if (m_type)
-        m_type->deref();
     if (m_target)
         m_target->deref();
 }
@@ -103,183 +95,62 @@ void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool
 {
     // ### ensure this is not called after we have been dispatched (also for subclasses)
 
-    if (m_type)
-	m_type->deref();
-
-    m_type = eventTypeArg.implementation();
-    if (m_type)
-	m_type->ref();
-
-    m_id = typeToId(eventTypeArg);
+    m_eventName = EventName::fromString(eventTypeArg);
 
     m_canBubble = canBubbleArg;
     m_cancelable = cancelableArg;
 }
 
-EventImpl::EventId EventImpl::typeToId(DOMString type)
-{
-    if (type == "DOMFocusIn")
-	return DOMFOCUSIN_EVENT;
-    else if (type == "DOMFocusOut")
-	return DOMFOCUSOUT_EVENT;
-    else if (type == "DOMActivate")
-	return DOMACTIVATE_EVENT;
-    else if (type == "click")
-	return CLICK_EVENT;
-    else if (type == "mousedown")
-	return MOUSEDOWN_EVENT;
-    else if (type == "mouseup")
-	return MOUSEUP_EVENT;
-    else if (type == "mouseover")
-	return MOUSEOVER_EVENT;
-    else if (type == "mousemove")
-	return MOUSEMOVE_EVENT;
-    else if (type == "mouseout")
-	return MOUSEOUT_EVENT;
-    else if (type == "DOMSubtreeModified")
-	return DOMSUBTREEMODIFIED_EVENT;
-    else if (type == "DOMNodeInserted")
-	return DOMNODEINSERTED_EVENT;
-    else if (type == "DOMNodeRemoved")
-	return DOMNODEREMOVED_EVENT;
-    else if (type == "DOMNodeRemovedFromDocument")
-	return DOMNODEREMOVEDFROMDOCUMENT_EVENT;
-    else if (type == "DOMNodeInsertedIntoDocument")
-	return DOMNODEINSERTEDINTODOCUMENT_EVENT;
-    else if (type == "DOMAttrModified")
-	return DOMATTRMODIFIED_EVENT;
-    else if (type == "DOMCharacterDataModified")
-	return DOMCHARACTERDATAMODIFIED_EVENT;
-    else if (type == "load")
-	return LOAD_EVENT;
-    else if (type == "unload")
-	return UNLOAD_EVENT;
-    else if (type == "abort")
-	return ABORT_EVENT;
-    else if (type == "error")
-	return ERROR_EVENT;
-    else if (type == "select")
-	return SELECT_EVENT;
-    else if (type == "change")
-	return CHANGE_EVENT;
-    else if (type == "submit")
-	return SUBMIT_EVENT;
-    else if (type == "reset")
-	return RESET_EVENT;
-    else if (type == "focus")
-	return FOCUS_EVENT;
-    else if (type == "blur")
-	return BLUR_EVENT;
-    else if (type == "resize")
-	return RESIZE_EVENT;
-    else if (type == "scroll")
-	return SCROLL_EVENT;
-    else if ( type == "keydown" )
-        return KEYDOWN_EVENT;
-    else if ( type == "keyup" )
-        return KEYUP_EVENT;
-    else if ( type == "textInput" )
-        return KEYPRESS_EVENT;
-    else if ( type == "keypress" )
-        return KEYPRESS_EVENT;
-    else if ( type == "readystatechange" )
-        return KHTML_READYSTATECHANGE_EVENT;
-    else if ( type == "dblclick" )
-        return KHTML_ECMA_DBLCLICK_EVENT;
-    else if ( type == "DOMMouseScroll" )
-        return KHTML_MOUSEWHEEL_EVENT;
-    else if ( type == "DOMContentLoaded" )
-        return KHTML_CONTENTLOADED_EVENT;
+khtml::IDTable<EventImpl>* EventImpl::s_idTable;
 
-    // ignore: KHTML_CLICK_EVENT
-    return UNKNOWN_EVENT;
-}
-
-DOMString EventImpl::idToType(EventImpl::EventId id)
+khtml::IDTable<EventImpl>* EventImpl::initIdTable()
 {
-    switch (id) {
-    case DOMFOCUSIN_EVENT:
-        return "DOMFocusIn";
-    case DOMFOCUSOUT_EVENT:
-        return "DOMFocusOut";
-    case DOMACTIVATE_EVENT:
-        return "DOMActivate";
-    case CLICK_EVENT:
-        return "click";
-    case MOUSEDOWN_EVENT:
-        return "mousedown";
-    case MOUSEUP_EVENT:
-        return "mouseup";
-    case MOUSEOVER_EVENT:
-        return "mouseover";
-    case MOUSEMOVE_EVENT:
-        return "mousemove";
-    case MOUSEOUT_EVENT:
-        return "mouseout";
-    case DOMSUBTREEMODIFIED_EVENT:
-        return "DOMSubtreeModified";
-    case DOMNODEINSERTED_EVENT:
-        return "DOMNodeInserted";
-    case DOMNODEREMOVED_EVENT:
-        return "DOMNodeRemoved";
-    case DOMNODEREMOVEDFROMDOCUMENT_EVENT:
-        return "DOMNodeRemovedFromDocument";
-    case DOMNODEINSERTEDINTODOCUMENT_EVENT:
-        return "DOMNodeInsertedIntoDocument";
-    case DOMATTRMODIFIED_EVENT:
-        return "DOMAttrModified";
-    case DOMCHARACTERDATAMODIFIED_EVENT:
-        return "DOMCharacterDataModified";
-    case LOAD_EVENT:
-        return "load";
-    case UNLOAD_EVENT:
-        return "unload";
-    case ABORT_EVENT:
-        return "abort";
-    case ERROR_EVENT:
-        return "error";
-    case SELECT_EVENT:
-        return "select";
-    case CHANGE_EVENT:
-        return "change";
-    case SUBMIT_EVENT:
-        return "submit";
-    case RESET_EVENT:
-        return "reset";
-    case FOCUS_EVENT:
-        return "focus";
-    case BLUR_EVENT:
-        return "blur";
-    case RESIZE_EVENT:
-        return "resize";
-    case SCROLL_EVENT:
-        return "scroll";
-    case KEYDOWN_EVENT:
-        return "keydown";
-    case KEYUP_EVENT:
-        return "keyup";
-    case KEYPRESS_EVENT:
-        return "keypress"; //DOM3 ev. suggests textInput, but it's better for compat this way
+    s_idTable = new khtml::IDTable<EventImpl>();
+    s_idTable->addStaticMapping(DOMFOCUSIN_EVENT, "DOMFocusIn");
+    s_idTable->addStaticMapping(DOMFOCUSOUT_EVENT, "DOMFocusOut");
+    s_idTable->addStaticMapping(DOMACTIVATE_EVENT, "DOMActivate");
+    s_idTable->addStaticMapping(CLICK_EVENT, "click");
+    s_idTable->addStaticMapping(MOUSEDOWN_EVENT, "mousedown");
+    s_idTable->addStaticMapping(MOUSEUP_EVENT, "mouseup");
+    s_idTable->addStaticMapping(MOUSEOVER_EVENT, "mouseover");
+    s_idTable->addStaticMapping(MOUSEMOVE_EVENT, "mousemove");
+    s_idTable->addStaticMapping(MOUSEOUT_EVENT, "mouseout");
+    s_idTable->addStaticMapping(DOMSUBTREEMODIFIED_EVENT, "DOMSubtreeModified");
+    s_idTable->addStaticMapping(DOMNODEINSERTED_EVENT, "DOMNodeInserted");
+    s_idTable->addStaticMapping(DOMNODEREMOVED_EVENT, "DOMNodeRemoved");
+    s_idTable->addStaticMapping(DOMNODEREMOVEDFROMDOCUMENT_EVENT, "DOMNodeRemovedFromDocument");
+    s_idTable->addStaticMapping(DOMNODEINSERTEDINTODOCUMENT_EVENT,"DOMNodeInsertedIntoDocument");
+    s_idTable->addStaticMapping(DOMATTRMODIFIED_EVENT, "DOMAttrModified");
+    s_idTable->addStaticMapping(DOMCHARACTERDATAMODIFIED_EVENT, "DOMCharacterDataModified");
+    s_idTable->addStaticMapping(LOAD_EVENT, "load");
+    s_idTable->addStaticMapping(UNLOAD_EVENT, "unload");
+    s_idTable->addStaticMapping(ABORT_EVENT, "abort");
+    s_idTable->addStaticMapping(ERROR_EVENT, "error");
+    s_idTable->addStaticMapping(SELECT_EVENT, "select");
+    s_idTable->addStaticMapping(CHANGE_EVENT, "change");
+    s_idTable->addStaticMapping(SUBMIT_EVENT, "submit");
+    s_idTable->addStaticMapping(RESET_EVENT, "reset");
+    s_idTable->addStaticMapping(FOCUS_EVENT, "focus");
+    s_idTable->addStaticMapping(BLUR_EVENT, "blur");
+    s_idTable->addStaticMapping(RESIZE_EVENT, "resize");
+    s_idTable->addStaticMapping(SCROLL_EVENT, "scroll");
+    s_idTable->addStaticMapping(KEYDOWN_EVENT, "keydown");
+    s_idTable->addStaticMapping(KEYUP_EVENT, "keyup");
+    s_idTable->addStaticMapping(KEYPRESS_EVENT, "keypress");
+        //DOM3 ev. suggests textInput, but it's better for compat this way
 
     //khtml extensions
-    case KHTML_ECMA_DBLCLICK_EVENT:
-        return "dblclick";
-    case KHTML_ECMA_CLICK_EVENT:
-        return "click";
-    case KHTML_DRAGDROP_EVENT:
-        return "khtml_dragdrop";
-    case KHTML_MOVE_EVENT:
-        return "khtml_move";
-    case KHTML_READYSTATECHANGE_EVENT:
-        return "readystatechange";
-    case KHTML_MOUSEWHEEL_EVENT:
-        return "DOMMouseScroll"; // adopt the mozilla name for compatibility
-    case KHTML_CONTENTLOADED_EVENT:
-        return "DOMContentLoaded"; // idem
-    default:
-        return DOMString();
-        break;
-    }
+    s_idTable->addStaticMapping(KHTML_ECMA_DBLCLICK_EVENT, "dblclick");
+    s_idTable->addHiddenMapping(KHTML_ECMA_CLICK_EVENT, "click");
+    s_idTable->addStaticMapping(KHTML_DRAGDROP_EVENT, "khtml_dragdrop");
+    s_idTable->addStaticMapping(KHTML_MOVE_EVENT, "khtml_move");
+    s_idTable->addStaticMapping(KHTML_MOUSEWHEEL_EVENT, "DOMMouseScroll");
+        // adopt the mozilla name for compatibility
+    s_idTable->addStaticMapping(KHTML_CONTENTLOADED_EVENT, "DOMContentLoaded");
+        // idem
+    s_idTable->addStaticMapping(KHTML_READYSTATECHANGE_EVENT, "readystatechange");
+
+    return s_idTable;
 }
 
 bool EventImpl::isUIEvent() const
@@ -340,7 +211,7 @@ void UIEventImpl::initUIEvent(const DOMString &typeArg,
       m_view->deref();
 
     m_view = viewArg;
-    
+
     m_detail = detailArg;
 }
 
@@ -768,7 +639,7 @@ KeyboardEventImpl::KeyboardEventImpl(QKeyEvent* key, DOM::AbstractViewImpl* view
     if (key->modifiers() & Qt::KeypadModifier)
         m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_NUMPAD;
     else {
-        //It's generally standard, but for the modifiers, 
+        //It's generally standard, but for the modifiers,
         //it should be left/right, so guess left.
         m_keyLocation = KeyboardEvent::DOM_KEY_LOCATION_STANDARD;
         switch (m_virtKeyVal) {

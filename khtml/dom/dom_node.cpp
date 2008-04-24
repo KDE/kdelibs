@@ -72,7 +72,7 @@ Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    
+
     int exceptioncode = 0;
     Node r = impl->setNamedItem(arg, exceptioncode);
     if (exceptioncode)
@@ -261,7 +261,7 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
     int exceptioncode = 0;
     impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
     if (exceptioncode)
-	throw DOMException(exceptioncode);    
+	throw DOMException(exceptioncode);
     return oldChild;
 }
 
@@ -272,7 +272,7 @@ Node Node::removeChild( const Node &oldChild )
     impl->removeChild( oldChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-	
+
     return oldChild;
 }
 
@@ -349,7 +349,7 @@ void Node::addEventListener(const DOMString &type,
 {
     if (!impl) return;
     if (listener)
-        impl->addEventListener(EventImpl::typeToId(type),listener,useCapture);
+        impl->addEventListener(EventName::fromString(type),listener,useCapture);
 }
 
 void Node::removeEventListener(const DOMString &type,
@@ -357,7 +357,7 @@ void Node::removeEventListener(const DOMString &type,
 			     bool useCapture)
 {
     if (!impl) return;
-    impl->removeEventListener(EventImpl::typeToId(type),listener,useCapture);
+    impl->removeEventListener(EventName::fromString(type),listener,useCapture);
 }
 
 bool Node::dispatchEvent(const Event &evt)

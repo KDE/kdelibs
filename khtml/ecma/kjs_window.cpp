@@ -2105,7 +2105,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->addWindowEventListener(DOM::EventImpl::typeToId(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+            docimpl->addWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
         }
         return jsUndefined();
     }
@@ -2113,7 +2113,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         if (listener) {
 	    DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl *>(part->document().handle());
-            docimpl->removeWindowEventListener(DOM::EventImpl::typeToId(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
+            docimpl->removeWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
         }
         return jsUndefined();
     }

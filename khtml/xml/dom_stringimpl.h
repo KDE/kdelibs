@@ -96,6 +96,9 @@ public:
     uint length() const { return l; }
     QString string() const;
 
+    // Note: this actually computes the hash, so shouldn't be used lightly
+    unsigned hash() const;
+
     unsigned int l;
     QChar *s;
 };
