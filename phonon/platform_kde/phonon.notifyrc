@@ -205,6 +205,7 @@ Comment[hu]=Értesítés a másodlagos eszköz aktiválásáról, ha az elsődle
 Comment[is]=Tilkynning um sjálfvirka varaleið ef valið tæki er ekki nothæft
 Comment[it]=Notifica in caso di ripristino automatico se il dispositivo preferito non è disponibile
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
+Comment[kk]=Таңдалған құрылғысы істемегенде қосалқысына көшу туралы құлақтандыру
 Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[ko]=선호하는 장치를 사용할 수 없을 때 자동으로 다음 장치로 넘어가는 알림
 Comment[lv]=Paziņojums par automātisku atkāpsistēmas izmantošanu, ja vēlamā ierīce nav pieejama
