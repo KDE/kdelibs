@@ -12,7 +12,7 @@ set(kemoticons_LIB_SRCS kemoticons.cpp kemoticonstheme.cpp)
 
 kde4_add_library(kemoticons SHARED ${kemoticons_LIB_SRCS})
 
-target_link_libraries(kemoticons ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kemoticons ${KDE4_KIO_LIBS})
 
 set_target_properties(kemoticons PROPERTIES VERSION 1.0.0 SOVERSION 1)
 
