@@ -21,7 +21,6 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtGui/QImageReader>
 
 #include <KPluginFactory>
 #include <KDebug>
