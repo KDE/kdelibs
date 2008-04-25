@@ -633,6 +633,8 @@ void DevicePreference::on_applyPreferencesButton_clicked()
 {
     const QModelIndex idx = categoryTree->currentIndex();
     const QStandardItem *item = m_categoryModel.itemFromIndex(idx);
+    if( !item ) 
+        return;
     Q_ASSERT(item->type() == 1001);
     const CategoryItem *catItem = static_cast<const CategoryItem *>(item);
     const QList<Phonon::AudioOutputDevice> modelData = m_outputModel.value(catItem->category())->modelData();
