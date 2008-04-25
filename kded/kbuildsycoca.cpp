@@ -704,7 +704,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
      // kapp registered already, but with the PID in the name.
      // We need to re-register without it, to detect already-running kbuildsycoca instances.
-     if (QDBusConnection::sessionBus().interface()->registerService(appFullName, QDBusConnectionInterface::QueueService))
+     if (QDBusConnection::sessionBus().interface()->registerService(appFullName, QDBusConnectionInterface::QueueService)
+         != QDBusConnectionInterface::ServiceQueued)
      {
        break; // Go
      }
