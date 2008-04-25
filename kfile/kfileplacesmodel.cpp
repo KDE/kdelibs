@@ -38,6 +38,8 @@
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
 
+#include <kio/netaccess.h>
+
 #include <solid/devicenotifier.h>
 #include <solid/storageaccess.h>
 #include <solid/storagedrive.h>
@@ -531,7 +533,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KBookmarkGroup group = d->bookmarkManager->root();
 
         foreach (const KUrl &url, urls) {
-            KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
+            KMimeType::Ptr mimetype = KMimeType::mimeType(KIO::NetAccess::mimetype(url, 0));
 
             if (!mimetype->is("inode/directory")) {
                 // Only directories are allowed
