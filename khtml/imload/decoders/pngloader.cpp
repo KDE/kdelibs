@@ -109,6 +109,8 @@ private:
             
             if (colorType == PNG_COLOR_TYPE_RGB)
                 colorType =  PNG_COLOR_TYPE_RGB_ALPHA; //Paranoia..
+            else if (colorType == PNG_COLOR_TYPE_GRAY)
+                colorType = PNG_COLOR_TYPE_GRAY_ALPHA;
         }    
             
         ImageFormat imFrm;    
@@ -192,6 +194,7 @@ private:
     {
         if (interlaced)
         {
+            Q_ASSERT(pngReadStruct->row_info.pixel_depth <= depth * 8);
             requestScanline(rowNum, scanlineBuf);
             png_progressive_combine_row(pngReadStruct, scanlineBuf, data);
             notifyScanline(pass + 1, scanlineBuf);
