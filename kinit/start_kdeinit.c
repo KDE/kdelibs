@@ -37,9 +37,10 @@
  not have this protection, kdeinit will after forking send the new
  PID using the pipe and wait for a signal. This parent will reset the protection
  and SIGUSR1 the process to continue.
+ returns 1 if pid is valid
 */
 
-static void set_protection( pid_t pid, int enable )
+static int set_protection( pid_t pid, int enable )
 {
    char buf[ 1024 ];
    int procfile;
@@ -49,7 +50,7 @@ static void set_protection( pid_t pid, int enable )
           belongs to this user. */
        struct stat st;
        if( lstat( buf, &st ) < 0 || st.st_uid != getuid())
-           return;
+           return 0;
    }
    procfile = open( buf, O_WRONLY );
    if( procfile >= 0 ) {
@@ -59,6 +60,7 @@ static void set_protection( pid_t pid, int enable )
          write( procfile, "0", sizeof( "0" ));
       close( procfile );
    }
+   return 1;
 }
 
 int main(int argc, char **argv)
@@ -67,14 +69,14 @@ int main(int argc, char **argv)
    int new_argc;
    const char** new_argv;
    char helper_num[ 1024 ];
-   int i;
+   unsigned i;
    char** orig_environ = NULL;
    char header[ 7 ];
    if( pipe( pipes ) < 0 ) {
       perror( "pipe()" );
       return 1;
    }
-   if( argc > 1000 )
+   if( argc < 0 || argc > 1000 )
        abort(); /* paranoid */
    set_protection( getpid(), 1 );
    switch( fork()) {
@@ -82,29 +84,30 @@ int main(int argc, char **argv)
          perror( "fork()" );
          return 1;
       default: /* parent, drop privileges and exec */
-#if defined (HAVE_SETEUID) && !defined (HAVE_SETEUID_FAKE) 
-         seteuid(getuid());
-#else
-         setreuid(-1, getuid());
-#endif
-         if (geteuid() != getuid()) {
+         if (setgid(getgid())) {
+             perror("setgid()");
+             return 1;
+         }
+         if (setuid(getuid()) || geteuid() != getuid()) {
             perror("setuid()");
             return 1;
          }
          close( pipes[ 0 ] );
          /* read original environment passed by start_kdeinit_wrapper */
          if( read( 0, header, 7 ) == 7 && strncmp( header, "environ", 7 ) == 0 ) {
-             int count;
-             if( read( 0, &count, sizeof( int )) == sizeof( int )) {
+             unsigned count;
+             if( read( 0, &count, sizeof( unsigned )) == sizeof( unsigned )
+                 && count && count < (1<<16)) {
                  char** env = malloc(( count + 1 ) * sizeof( char* ));
                  int ok = 1;
                  for( i = 0;
                       i < count && ok;
                       ++i ) {
-                     int len;
-                     if( read( 0, &len, sizeof( int )) == sizeof( int )) {
+                     unsigned len;
+                     if( read( 0, &len, sizeof( unsigned )) == sizeof( unsigned )
+                         && len && len < (1<<12)) {
                          env[ i ] = malloc( len + 1 );
-                         if( read( 0, env[ i ], len ) == len ) {
+                         if( (unsigned) read( 0, env[ i ], len ) == len ) {
                              env[ i ][ len ] = '\0';
                          } else {
                              ok = 0;
@@ -128,7 +131,7 @@ int main(int argc, char **argv)
          sprintf( helper_num, "%d", pipes[ 1 ] );
          new_argv[ 2 ] = helper_num;
          for( i = 1;
-              i <= argc;
+              i <= (unsigned) argc;
               ++i )
              new_argv[ i + 2 ] = argv[ i ];
          if( orig_environ )
@@ -145,10 +148,10 @@ int main(int argc, char **argv)
             if( ret < 0 && errno == EINTR )
                continue;
             if( ret <= 0 ) /* pipe closed or error, exit */
-               return 0;
+               _exit(0);
             if( pid != 0 ) {
-                set_protection( pid, 0 );
-                kill( pid, SIGUSR1 );
+                if (set_protection( pid, 0 ))
+                    kill( pid, SIGUSR1 );
             }
          }
    }
