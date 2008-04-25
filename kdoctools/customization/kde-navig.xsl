@@ -40,19 +40,24 @@
     <xsl:variable name="home" select="/*[1]"/>
     <xsl:variable name="up" select="parent::*"/>
     <xsl:if test="$suppress.navigation = '0'">
+      <div style="position: absolute; left 0px;">
+        <img src="{$kde.common}top-left.png" style="margin: 0px" alt="" />
+      </div>
       <div style="background-image: url({$kde.common}top-middle.png); width: 100%; height: 131px;">
         <div style="position: absolute; 
                     right: 0px;">
-          <img src="{$kde.common}top-right-konqueror.png"
+          <img src="{$kde.common}top-right.png"
             style="margin: 0px" alt="" />
           </div>
             <div style="position: absolute;
-                        top: 25px; 
-                        right: 100px; 
+                        top: 63px;
+                        right: 0px;
+                        margin-top: -1em;
+                        margin-right: 5%;
                         text-align: right; 
                         font-size: xx-large; 
                         font-weight: bold; 
-                        text-shadow: #fff 0px 0px 5px; 
+                        text-shadow: #CDE1FF 0px 0px 5px; 
                         color: #444">
               <xsl:apply-templates select="." mode="title.markup"/>
             </div>
@@ -191,18 +196,18 @@
       <div class="bannerBottom" style="background-image: url({$kde.common}bottom-middle.png);
                                        background-repeat: x-repeat; 
                                        width: 100%; 
-                                       height: 100px; 
+                                       height: 70px; 
                                        bottom:0px;">
 	
         <div class="BannerBottomRight">
-          <img src="{$kde.common}bottom-right.png" style="margin: 0px" alt=""/>
+          <img src="{$kde.common}bottom-right.png" style="height: 70px; margin: 0px" alt=""/>
         </div>
         <div class="bannerBottomLeft">
-          <img src="{$kde.common}bottom-left.png" style="margin: 0px;" alt=""/>
+          <img src="{$kde.common}bottom-left.png" style="height: 70px; margin: 0px;" alt=""/>
         </div>
-<div id="comments" style="position:relative; top: 5px; left: 1em; height:85px; width: 50%; color: #cfe1f6">
+<div id="comments" style="position:relative; top: 15px; left: 1em; width: 50%; color: #282828;">
 	<p>Would you like to make a comment or contribute an update to this page?<br/>
-        Send feedback to the <a href="mailto:kde-docs@kdemail.net" style="background:transparent; color:#cfe1f6; text-decoration: underline;">KDE Docs Team</a></p>
+        Send feedback to the <a href="mailto:kde-docs@kdemail.net" style="background:transparent; color: #282828; text-decoration: underline;">KDE Docs Team</a></p>
 	</div>
 
       </div>
