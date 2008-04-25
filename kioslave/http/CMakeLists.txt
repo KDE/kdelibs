@@ -31,8 +31,8 @@ add_subdirectory( kcookiejar )
 ########### next target ###############
 
 set(kio_http_cache_cleaner_KDEINIT_SRCS
-http_cache_cleaner.cpp
-)
+   http_cache_cleaner.cpp
+   )
 
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
@@ -49,10 +49,10 @@ install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 # kio/httpfilter/Makefile.am: httpfilter
 
 set(kio_http_PART_SRCS
-http.cpp
-${httpfilter_STAT_SRCS}
-${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
-)
+   http.cpp
+   ${httpfilter_STAT_SRCS}
+   ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
+   )
 
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
@@ -68,11 +68,11 @@ install(TARGETS  kio_http  DESTINATION ${PLUGIN_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
-  http_cache_cleaner.desktop
-  http.protocol
-  https.protocol
-  webdav.protocol
-  webdavs.protocol
-DESTINATION  ${SERVICES_INSTALL_DIR} )
+    http_cache_cleaner.desktop
+    http.protocol
+    https.protocol
+    webdav.protocol
+    webdavs.protocol
+  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
