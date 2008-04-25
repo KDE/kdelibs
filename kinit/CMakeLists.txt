@@ -7,18 +7,28 @@ include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
 ########### Configuring (mainly for proctitle) ###########
 
-INCLUDE (CheckFunctionExists)
-INCLUDE (CheckIncludeFiles)
-INCLUDE (CheckVariableExists)
-CHECK_VARIABLE_EXISTS(__progname HAVE___PROGNAME)
-CHECK_VARIABLE_EXISTS(__progname_full HAVE___PROGNAME_FULL)
-CHECK_INCLUDE_FILES(sys/pstat.h HAVE_SYS_PSTAT_H)
-CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
-CHECK_INCLUDE_FILES(unistd.h HAVE_UNISTD_H)
-CHECK_FUNCTION_EXISTS(pstat HAVE_PSTAT)
-CHECK_FUNCTION_EXISTS(setproctitle HAVE_SETPROCTITLE)
+include (CheckFunctionExists)
+include (CheckIncludeFiles)
+include (CheckVariableExists)
+check_variable_exists(__progname HAVE___PROGNAME)
+check_variable_exists(__progname_full HAVE___PROGNAME_FULL)
+check_include_files(sys/pstat.h HAVE_SYS_PSTAT_H)
+check_include_files(sys/types.h HAVE_SYS_TYPES_H)
+check_include_files(unistd.h HAVE_UNISTD_H)
+check_function_exists(pstat HAVE_PSTAT)
+check_function_exists(setproctitle HAVE_SETPROCTITLE)
 configure_file(config-kdeinit.h.cmake
-	       ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
+               ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
+
+
+# used by 4 executables in this file
+if(HAVE_SOCKET_LIBRARY)
+  set(KINIT_SOCKET_LIBRARY socket)
+else(HAVE_SOCKET_LIBRARY)
+  set(KINIT_SOCKET_LIBRARY)
+endif(HAVE_SOCKET_LIBRARY)
+
+
 ########### kdeinit4 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp  )
@@ -48,64 +58,50 @@ endif (WIN32)
 
 kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
 
-target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} )
-
-IF(HAVE_SOCKET_LIBRARY)
-  target_link_libraries(kwrapper4 socket)
-ENDIF(HAVE_SOCKET_LIBRARY)
+target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
 
 install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
 
 if (NOT WIN32)
-########### kdeinit4_wrapper ###############
 
-kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
+  ########### kdeinit4_wrapper ###############
 
-target_link_libraries(kdeinit4_wrapper  ${KDE4_KDECORE_LIBS} )
+  kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
 
-IF(HAVE_SOCKET_LIBRARY)
-  target_link_libraries(kdeinit4_wrapper socket)
-ENDIF(HAVE_SOCKET_LIBRARY)
+  target_link_libraries(kdeinit4_wrapper  ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
 
-if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
-add_definitions(-DNO_DISPLAY)
-endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+  if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+    add_definitions(-DNO_DISPLAY)
+  endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-install(TARGETS kdeinit4_wrapper DESTINATION ${BIN_INSTALL_DIR} )
+  install(TARGETS kdeinit4_wrapper DESTINATION ${BIN_INSTALL_DIR} )
 
-########### kshell4 ###############
+  ########### kshell4 ###############
 
-kde4_add_executable(kshell4 NOGUI shell.c)
+  kde4_add_executable(kshell4 NOGUI shell.c)
 
-target_link_libraries(kshell4 ${KDE4_KDECORE_LIBS} )
+  target_link_libraries(kshell4 ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
 
-IF(HAVE_SOCKET_LIBRARY)
-  target_link_libraries(kshell4 socket)
-ENDIF(HAVE_SOCKET_LIBRARY)
+  install(TARGETS kshell4 DESTINATION ${BIN_INSTALL_DIR} )
 
-install(TARGETS kshell4 DESTINATION ${BIN_INSTALL_DIR} )
+  ########### kdeinit4_shutdown ###############
 
-########### kdeinit4_shutdown ###############
+  kde4_add_executable(kdeinit4_shutdown NOGUI wrapper.c)
 
-kde4_add_executable(kdeinit4_shutdown NOGUI wrapper.c)
+  target_link_libraries(kdeinit4_shutdown  ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
 
-target_link_libraries(kdeinit4_shutdown  ${KDE4_KDECORE_LIBS} )
+  install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
-IF(HAVE_SOCKET_LIBRARY)
-  target_link_libraries(kdeinit4_shutdown socket)
-ENDIF(HAVE_SOCKET_LIBRARY)
+  ########### lnusertemp ###############
 
-install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
+  set(lnusertemp_SRCS lnusertemp.c )
 
-########### lnusertemp ###############
+  kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 
-set(lnusertemp_SRCS lnusertemp.c )
+  target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
-kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
+  install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
-target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 endif (NOT WIN32)
 
 
@@ -146,8 +142,4 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
-
-
-
-
 
