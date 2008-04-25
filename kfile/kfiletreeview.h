@@ -103,6 +103,9 @@ class KFILE_EXPORT KFileTreeView : public QTreeView
          */
         void currentChanged(const KUrl &url);
 
+    protected:
+        virtual void contextMenuEvent( QContextMenuEvent* );
+
     private:
       class Private;
       Private* const d;

@@ -22,11 +22,15 @@
 #include "kfiletreeview.h"
 
 #include <QtCore/QDir>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QMenu>
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
 #include <kdirsortfilterproxymodel.h>
 #include <kfileitemdelegate.h>
+#include <klocale.h>
+#include <ktoggleaction.h>
 #include <kurl.h>
 
 class KFileTreeView::Private
@@ -172,6 +176,17 @@ void KFileTreeView::setCurrentUrl(const KUrl &url)
 void KFileTreeView::setRootUrl(const KUrl &url)
 {
     d->mSourceModel->dirLister()->openUrl(url);
+}
+
+void KFileTreeView::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu;
+    KToggleAction *showHiddenAction = new KToggleAction(i18n("Show Hidden Folders"), &menu);
+    showHiddenAction->setChecked(d->mSourceModel->dirLister()->showingDotFiles());
+    connect(showHiddenAction, SIGNAL(toggled(bool)), this, SLOT(setShowHiddenFiles(bool)));
+
+    menu.addAction(showHiddenAction);
+    menu.exec(event->globalPos());
 }
 
 #include "kfiletreeview.moc"
