@@ -50,13 +50,14 @@ class KJSAPI_EXPORT KJSObject
     friend class KJSNumber;
     friend class KJSString;
     friend class KJSPrototype;
+    friend class KJSContext;
     friend class KJSArguments;
     friend class KJSInterpreter;
     friend class KJSCustomProperty;
     friend class KJSCustomFunction;
 public:
     /**
-     * Constructs an invalid object.
+     * Constructs a JavaScript object of the generic Object type.
      */
     KJSObject();
     /**
@@ -71,12 +72,6 @@ public:
      * Destructs this object freeing any references it might have held.
      */
     ~KJSObject();
-    /**
-     * Returns whether the object is valid. This is different from an
-     * undefined value in the JavaScript sense. An invalid object does
-     * not allow for most of the standard operations.
-     */
-    bool isValid() const;
     /**
      * Returns whether this object is undefined.
      */
@@ -139,6 +134,10 @@ public:
      * @overload
      */
     void setProperty(KJSContext* ctx, const QString& name, double value);
+    /**
+     * @overload
+     */
+    void setProperty(KJSContext* ctx, const QString& name, int value);
     /**
      * @overload
      */

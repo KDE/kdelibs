@@ -20,8 +20,11 @@
  */
 
 #include "kjscontext.h"
+#include "kjsinterpreter.h"
 #include "kjsprivate.h"
+#include "kjs/object.h"
 #include "kjs/ExecState.h"
+#include "kjs/interpreter.h"
 
 using namespace KJS;
 
@@ -33,4 +36,23 @@ KJSContext::KJSContext(KJSContextHandle* h)
 bool KJSContext::hasException() const
 {
     return EXECSTATE(this)->hadException();
+}
+
+KJSObject KJSContext::throwException(const QString& message) const
+{
+    ExecState* exec = EXECSTATE(this);
+
+    JSValue* ex = Error::create(exec, GeneralError, toUString(message),
+                                -1, -1, UString());
+    exec->setException(ex);
+
+    return KJSObject(JSVALUE_HANDLE(ex));
+}
+
+KJSInterpreter KJSContext::interpreter()
+{
+    ExecState* exec = EXECSTATE(this);
+    Interpreter* ip = exec->dynamicInterpreter();
+
+    return KJSInterpreter(INTERPRETER_HANDLE(ip));
 }

@@ -25,6 +25,7 @@
 #include "kjsapi_export.h"
 
 class KJSObject;
+class KJSInterpreter;
 class KJSContextHandle;
 class KJSCustomProperty;
 class KJSCustomFunction;
@@ -42,8 +43,18 @@ class KJSAPI_EXPORT KJSContext
     friend class KJSCustomProperty;
     friend class KJSCustomFunction;
 public:
+    /**
+     * Returns true if this context has an unhandled exception.
+     */
     bool hasException() const;
-
+    /**
+     * Throws a general exception with the specified error message.
+     */
+    KJSObject throwException(const QString& message) const;
+    /**
+     * Returns the currently executing interpreter.
+     */
+    KJSInterpreter interpreter();
 private:
     KJSContext(KJSContextHandle* h);
     KJSContext(const KJSContext&); // undefined

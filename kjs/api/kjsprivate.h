@@ -33,6 +33,7 @@
 #define EXECSTATE_HANDLE(c) reinterpret_cast<KJSContextHandle*>(c)
 #define EXECSTATE(ctx) reinterpret_cast<ExecState*>((ctx)->hnd)
 
+#define INTERPRETER_HANDLE(i) reinterpret_cast<KJSInterpreterHandle*>(i)
 #define INTERPRETER(h) reinterpret_cast<KJS::Interpreter*>((h)->hnd)
 
 #define PROTOTYPE_HANDLE(p) reinterpret_cast<KJSPrototypeHandle*>(p)

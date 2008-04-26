@@ -45,8 +45,8 @@ void KJSApiTest::objectConstruction()
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();
 
-    // invalid
-    QVERIFY2(!KJSObject().isValid(), "Default object is valid");
+    // Object
+    QVERIFY2(KJSObject().isObject(), "Broken default object");
 
     // undefined
     QVERIFY2(KJSUndefined().isUndefined(),
@@ -88,10 +88,10 @@ void KJSApiTest::interpreterEvaluate()
 
     // syntax error
     res = ip.evaluate(")(");
-    QVERIFY2(!res.isValid(), "Syntax error not caught");
+    QVERIFY2(res.isUndefined(), "Syntax error not caught");
+    // ### real error check
 
     res = ip.evaluate("11+22");
-    QVERIFY2(res.isValid(), "Evaluation returned invalid object");
     QVERIFY2(res.isNumber(), "Evaluation returned non-number object");
     QCOMPARE(res.toNumber(ctx), 33.0);
 }
@@ -140,6 +140,12 @@ void KJSApiTest::objectProperties()
    v = global.property(ctx, "myprop");
    QVERIFY(v.isNumber());
    QCOMPARE(v.toNumber(ctx), 21.0);
+
+   // int
+   global.setProperty(ctx, "myprop", 22);
+   v = global.property(ctx, "myprop");
+   QVERIFY(v.isNumber());
+   QCOMPARE(v.toNumber(ctx), 22.0);
 
    // string (8-bit)
    global.setProperty(ctx, "myprop", "myvalue8");
@@ -216,7 +222,7 @@ static KJSObject multiply(KJSContext* context, void* object,
 
     // test number of arguments
     if (arguments.count() != 1)
-        return KJSNumber(-1);
+        return context->throwException("Missing argument");
 
     KJSObject a0 = arguments.at(0);
     if (!a0.isNumber())
@@ -242,6 +248,12 @@ void KJSApiTest::prototypeFunctions()
 
     KJSObject res = ip.evaluate("obj.multiply(4)");
     QCOMPARE(res.toNumber(ctx), 12.0);
+
+    // expect exception
+    res = ip.evaluate("obj.multiply()");
+    QVERIFY2(!res.isNumber(), "Exception did not work");
+    //    QVERIFY2(ip.globalContext()->hasException(), "Exception did not work");
+
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)

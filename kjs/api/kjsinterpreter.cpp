@@ -34,7 +34,7 @@ KJSInterpreter::KJSInterpreter()
 {
     Interpreter* ip = new Interpreter();
     ip->ref();
-    hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
+    hnd = INTERPRETER_HANDLE(ip);
 }
 
 KJSInterpreter::KJSInterpreter(const KJSObject& global)
@@ -45,7 +45,36 @@ KJSInterpreter::KJSInterpreter(const KJSObject& global)
     JSObject* go = static_cast<JSObject*>(gv);
     Interpreter* ip = new Interpreter(go);
     ip->ref();
-    hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
+    hnd = INTERPRETER_HANDLE(ip);
+}
+
+KJSInterpreter::KJSInterpreter(const KJSInterpreter& other)
+    : globCtx(0)
+{
+    Interpreter* ip = INTERPRETER(&other);
+    ip->ref();
+    hnd = INTERPRETER_HANDLE(ip);
+    globCtx.hnd = EXECSTATE_HANDLE(ip->globalExec());
+}
+
+KJSInterpreter& KJSInterpreter::operator=(const KJSInterpreter& other)
+{
+    Interpreter* thisIp = INTERPRETER(this);
+    Interpreter* otherIp = INTERPRETER(&other);
+    if (otherIp != thisIp) {
+        otherIp->ref();
+        thisIp->deref();
+        hnd = INTERPRETER_HANDLE(otherIp);
+        globCtx.hnd = EXECSTATE_HANDLE(otherIp->globalExec());
+    }
+    return *this;
+}
+
+KJSInterpreter::KJSInterpreter(KJSInterpreterHandle* h)
+    : hnd(h), globCtx(0)
+{
+    Interpreter* ip = INTERPRETER(this);
+    globCtx.hnd = EXECSTATE_HANDLE(ip->globalExec());
 }
 
 KJSInterpreter::~KJSInterpreter()
@@ -94,7 +123,7 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
         fprintf(stderr, "%s\n", msg.c_str());
 #endif
         fprintf(stderr, "evaluate() threw an exception\n");
-        return KJSObject();
+        return KJSUndefined();
     } else {
         if (c.isValueCompletion())
             return KJSObject(JSVALUE_HANDLE(c.value()));
@@ -119,7 +148,8 @@ bool KJSInterpreter::normalizeCode(const QString& code, QString* normalized,
                                               errLine, &msg);
 
     *normalized = toQString(codeOut);
-    *errMsg = toQString(msg);
+    if (errMsg)
+        *errMsg = toQString(msg);
 
     return success;
 }
