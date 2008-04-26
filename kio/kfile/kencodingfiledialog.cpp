@@ -55,7 +55,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   if (sEncoding.isEmpty())
      sEncoding = systemEncoding;
 
-  QStringList encodings (KGlobal::charsets()->availableEncodingNames());
+  const QStringList encodings (KGlobal::charsets()->availableEncodingNames());
   int insert = 0, system = 0;
   bool foundRequested=false;
   for (int i=0; i < encodings.count(); i++)
