@@ -130,7 +130,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::App
    KServiceGroup::Ptr root = KServiceGroup::group(_relPath);
    if (!root || !root->isValid()) return;
 
-   KServiceGroup::List list = root->entries();
+   const KServiceGroup::List list = root->entries();
 
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); ++it)

@@ -1199,10 +1199,9 @@ void KLineEdit::completionMenuActivated( QAction  *act)
 
 void KLineEdit::dropEvent(QDropEvent *e)
 {
-    KUrl::List urlList;
     if( d->handleURLDrops )
     {
-        urlList = KUrl::List::fromMimeData( e->mimeData() );
+        const KUrl::List urlList = KUrl::List::fromMimeData( e->mimeData() );
         if ( !urlList.isEmpty() )
         {
             QString dropText = text();

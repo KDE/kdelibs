@@ -2256,7 +2256,7 @@ QString KLocale::languageCodeToName(const QString &language) const
 QStringList KLocale::allCountriesList() const
 {
   QStringList countries;
-  QStringList paths = KGlobal::dirs()->findAllResources("locale", "l10n/*/entry.desktop");
+  const QStringList paths = KGlobal::dirs()->findAllResources("locale", "l10n/*/entry.desktop");
   for(QStringList::ConstIterator it = paths.begin();
       it != paths.end(); ++it)
   {

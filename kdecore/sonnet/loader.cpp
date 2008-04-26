@@ -140,7 +140,7 @@ QStringList Loader::languageNames() const
         return d->languagesNameCache;
 
     QStringList allLocalizedDictionaries;
-    QStringList allDictionaries = languages();
+    const QStringList allDictionaries = languages();
     QString currentDictionary,   // e.g. en_GB-ize-wo_accents
         lISOName,            // language ISO name
         cISOName,            // country ISO name
@@ -183,7 +183,7 @@ QStringList Loader::languageNames() const
         { 0, 0 }
     };
 
-    for (QStringList::Iterator it = allDictionaries.begin();
+    for (QStringList::ConstIterator it = allDictionaries.begin();
          it != allDictionaries.end(); ++it) {
         currentDictionary = *it;
         minusPos = currentDictionary.indexOf("-");

@@ -858,7 +858,7 @@ KCompletionMatches::KCompletionMatches( const KCompletionMatchesWrapper& matches
     if( matches.sortedList != 0L )
         KCompletionMatchesList::operator=( *matches.sortedList );
     else {
-        QStringList l = matches.list();
+        const QStringList l = matches.list();
         for( QStringList::ConstIterator it = l.begin();
              it != l.end();
              ++it )

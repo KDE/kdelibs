@@ -111,7 +111,7 @@ void KFileSharePropsPlugin::init()
         if ( home[home.length()-1] != '/' )
             home += '/';
         bool ok = true;
-        KFileItemList items = properties->items();
+        const KFileItemList items = properties->items();
         // We have 3 possibilities: all shared, all unshared, or mixed.
         d->m_bAllShared = true;
         d->m_bAllUnshared = true;

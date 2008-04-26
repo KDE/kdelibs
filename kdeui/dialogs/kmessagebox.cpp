@@ -995,9 +995,9 @@ void KMessageBox::enableAllMessages()
 
    typedef QMap<QString, QString> configMap;
 
-   configMap map = cg.entryMap();
+   const configMap map = cg.entryMap();
 
-   configMap::Iterator it;
+   configMap::ConstIterator it;
    for (it = map.begin(); it != map.end(); ++it) {
       cg.deleteEntry( it.key() );
    }

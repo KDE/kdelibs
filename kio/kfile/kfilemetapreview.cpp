@@ -49,7 +49,7 @@ void KFileMetaPreview::initPreviewProviders()
     m_stack->setCurrentWidget ( imagePreview );
     resize( imagePreview->sizeHint() );
 
-    QStringList mimeTypes = imagePreview->supportedMimeTypes();
+    const QStringList mimeTypes = imagePreview->supportedMimeTypes();
     QStringList::ConstIterator it = mimeTypes.begin();
     for ( ; it != mimeTypes.end(); ++it )
     {
@@ -82,7 +82,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
             {
                 haveAudioPreview = true;
                 (void) m_stack->addWidget( audioPreview );
-                QStringList mimeTypes = audioPreview->supportedMimeTypes();
+                const QStringList mimeTypes = audioPreview->supportedMimeTypes();
                 QStringList::ConstIterator it = mimeTypes.begin();
                 for ( ; it != mimeTypes.end(); ++it )
                     m_previewProviders.insert( *it, audioPreview );

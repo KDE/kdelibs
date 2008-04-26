@@ -67,8 +67,8 @@ QString KTranslatable::representation() const
 {
     if (m_strings.isEmpty()) return QString();
 
-    QStringList langs = KGlobal::locale()->languageList();
-    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+    const QStringList langs = KGlobal::locale()->languageList();
+    for (QStringList::ConstIterator it = langs.begin(); it != langs.end(); ++it)
         if (m_strings.contains(*it)) return m_strings[*it];
 
     if (m_strings.contains(QString())) return m_strings[QString()];
@@ -80,8 +80,8 @@ QString KTranslatable::language() const
 {
     if (m_strings.isEmpty()) return QString();
 
-    QStringList langs = KGlobal::locale()->languageList();
-    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+    const QStringList langs = KGlobal::locale()->languageList();
+    for (QStringList::ConstIterator it = langs.begin(); it != langs.end(); ++it)
         if (m_strings.contains(*it)) return (*it);
 
     if (m_strings.contains(QString())) return QString();

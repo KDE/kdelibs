@@ -67,8 +67,8 @@ Provider *ProviderHandler::providerptr()
     provider->setWebService(mProvider.webService());
     provider->setIcon(mProvider.icon());
 
-    QStringList feeds = mProvider.feeds();
-    for (QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
+    const QStringList feeds = mProvider.feeds();
+    for (QStringList::ConstIterator it = feeds.begin(); it != feeds.end(); ++it) {
         Feed *feed = mProvider.downloadUrlFeed((*it));
         provider->addDownloadUrlFeed((*it), feed);
     }
@@ -90,9 +90,7 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
 
     QStringList::ConstIterator it;
     QDomElement e;
-    QStringList langs;
-
-    langs = name.languages();
+    const QStringList langs = name.languages();
     for (it = langs.begin(); it != langs.end(); ++it) {
         e = addElement(doc, el, "title", name.translated(*it));
         e.setAttribute("lang", *it);
@@ -118,8 +116,8 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
         el.setAttribute("icon", provider.icon().url());
     }
 
-    QStringList feeds = provider.feeds();
-    for (QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
+    const QStringList feeds = provider.feeds();
+    for (QStringList::ConstIterator it = feeds.begin(); it != feeds.end(); ++it) {
         Feed *feed = provider.downloadUrlFeed((*it));
         if ((*it).isEmpty())
             el.setAttribute("downloadurl", feed->feedUrl().url());

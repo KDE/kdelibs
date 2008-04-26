@@ -870,7 +870,7 @@ QString KUrl::fileEncoding() const
   if (q[0] == '?')
      q = q.mid(1);
 
-  QStringList args = q.split('&', QString::SkipEmptyParts);
+  const QStringList args = q.split('&', QString::SkipEmptyParts);
   for(QStringList::ConstIterator it = args.begin();
       it != args.end();
       ++it)
@@ -1559,8 +1559,8 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
    if (_base_dir[_base_dir.length()-1] != QLatin1Char('/'))
       _base_dir.append(QLatin1Char('/') );
 
-   QStringList list1 = _base_dir.split(QLatin1Char('/'), QString::SkipEmptyParts);
-   QStringList list2 = _path.split(QLatin1Char('/'), QString::SkipEmptyParts);
+   const QStringList list1 = _base_dir.split(QLatin1Char('/'), QString::SkipEmptyParts);
+   const QStringList list2 = _path.split(QLatin1Char('/'), QString::SkipEmptyParts);
 
    // Find where they meet
    int level = 0;

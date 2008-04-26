@@ -300,9 +300,9 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
         return;
 
     QString address = KUrl::fromPercentEncoding(mailtoURL.path().toLatin1()), subject, cc, bcc, body;
-    QStringList queries = mailtoURL.query().mid(1).split( '&');
+    const QStringList queries = mailtoURL.query().mid(1).split( '&');
     QStringList attachURLs;
-    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+    for (QStringList::ConstIterator it = queries.begin(); it != queries.end(); ++it)
     {
         QString q = (*it).toLower();
         if (q.startsWith("subject="))

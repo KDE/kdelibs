@@ -659,7 +659,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
         return errors;
     }
 
-    QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
+    const QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
 
     if (qsl.isEmpty()) {
         errors << KSSLCertificate::NoCARoot;
@@ -668,7 +668,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
     KSSLCertificate::KSSLValidation ksslv = Unknown;
 
-    for (QStringList::Iterator j = qsl.begin(); j != qsl.end(); ++j) {
+    for (QStringList::ConstIterator j = qsl.begin(); j != qsl.end(); ++j) {
         struct stat sb;
         QString _j = (*j) + "ca-bundle.crt";
         if (-1 == stat(_j.toAscii().constData(), &sb)) {

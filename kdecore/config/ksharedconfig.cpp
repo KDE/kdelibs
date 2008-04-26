@@ -40,7 +40,7 @@ KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
                                             OpenFlags flags,
                                             const char *resType)
 {
-    QList<KSharedConfig*> *list = globalSharedConfigList;
+    const QList<KSharedConfig*> *list = globalSharedConfigList;
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if ( (*it)->name() == fileName &&

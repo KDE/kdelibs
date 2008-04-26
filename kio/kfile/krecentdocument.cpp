@@ -57,7 +57,7 @@ QStringList KRecentDocument::recentDocuments()
     if (!d.exists())
         d.mkdir(recentDocumentDirectory());
 
-    QStringList list = d.entryList();
+    const QStringList list = d.entryList();
     QStringList fullList;
 
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
@@ -120,10 +120,10 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 
     QDir dir(path);
     // check for max entries, delete oldest files if exceeded
-    QStringList list = dir.entryList(QDir::Files | QDir::Hidden, QFlags<QDir::SortFlag>(QDir::Time | QDir::Reversed));
+    const QStringList list = dir.entryList(QDir::Files | QDir::Hidden, QFlags<QDir::SortFlag>(QDir::Time | QDir::Reversed));
     i = list.count();
     if(i > maxEntries-1){
-        QStringList::Iterator it;
+        QStringList::ConstIterator it;
         it = list.begin();
         while(i > maxEntries-1){
             QFile::remove(dir.absolutePath() + QLatin1String("/") + (*it));
@@ -155,9 +155,9 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
 
 void KRecentDocument::clear()
 {
-  QStringList list = recentDocuments();
+  const QStringList list = recentDocuments();
   QDir dir;
-  for(QStringList::Iterator it = list.begin(); it != list.end() ; ++it)
+  for(QStringList::ConstIterator it = list.begin(); it != list.end() ; ++it)
     dir.remove(*it);
 }
 

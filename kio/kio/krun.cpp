@@ -506,7 +506,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
 QString KRun::binaryName( const QString & execLine, bool removePath )
 {
   // Remove parameters and/or trailing spaces.
-  QStringList args = KShell::splitArgs( execLine );
+  const QStringList args = KShell::splitArgs( execLine );
   for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it)
     if (!(*it).contains('='))
       // Remove path if wanted

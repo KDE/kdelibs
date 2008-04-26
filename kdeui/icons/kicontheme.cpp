@@ -247,7 +247,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
         d->mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
-        QList<int> exp, lst = cg.readEntry(*it + "Sizes", QList<int>());
+	const QList<int> lst = cg.readEntry(*it + "Sizes", QList<int>());
+        QList<int> exp;
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {

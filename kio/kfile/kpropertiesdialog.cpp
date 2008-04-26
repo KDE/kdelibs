@@ -2666,7 +2666,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   properties->addPage(d->m_frame, i18n("De&vice"));
 
   QStringList devices;
-  KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
+  const KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
 
   for(KMountPoint::List::ConstIterator it = mountPoints.begin();
       it != mountPoints.end(); ++it)
@@ -3020,7 +3020,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   if( d->m_dbusStartusType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
          d->m_dbusStartusType = config.readEntry("X-DCOP-ServiceType").toLower();
 
-  QStringList mimeTypes = config.readXdgListEntry( "MimeType" );
+  const QStringList mimeTypes = config.readXdgListEntry( "MimeType" );
 
   if ( nameStr.isEmpty() || bKDesktopMode ) {
     // We'll use the file name if no name is specified

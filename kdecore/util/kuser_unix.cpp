@@ -170,7 +170,7 @@ QString KUser::shell() const {
 
 QList<KUserGroup> KUser::groups() const {
   QList<KUserGroup> result;
-  QList<KUserGroup> allGroups = KUserGroup::allGroups();
+  const QList<KUserGroup> allGroups = KUserGroup::allGroups();
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
     QList<KUser> users = (*it).users();
@@ -183,7 +183,7 @@ QList<KUserGroup> KUser::groups() const {
 
 QStringList KUser::groupNames() const {
   QStringList result;
-  QList<KUserGroup> allGroups = KUserGroup::allGroups();
+  const QList<KUserGroup> allGroups = KUserGroup::allGroups();
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
     QList<KUser> users = (*it).users();

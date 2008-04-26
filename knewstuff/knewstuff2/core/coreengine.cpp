@@ -561,12 +561,12 @@ void CoreEngine::loadRegistry()
     QString realAppName = m_componentname.split(":")[0];
 
     // this must be same as in registerEntry()
-    QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
-    for (QStringList::Iterator it = dirs.begin(); it != dirs.end(); ++it) {
+    const QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
+    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it) {
         //kDebug() << " + Load from directory '" + (*it) + "'.";
         QDir dir((*it));
-        QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-        for (QStringList::iterator fit = files.begin(); fit != files.end(); ++fit) {
+        const QStringList files = dir.entryList(QDir::Files | QDir::Readable);
+        for (QStringList::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
             QString filepath = (*it) + '/' + (*fit);
             //kDebug() << "  + Load from file '" + filepath + "'.";
 

@@ -243,11 +243,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       return 0;
    }
 
-   QStringList dirs = cacheDir.entryList( );
+   const QStringList dirs = cacheDir.entryList( );
 
    FileInfoList cachedEntries;
 
-   for(QStringList::Iterator it = dirs.begin();
+   for(QStringList::ConstIterator it = dirs.begin();
        it != dirs.end();
        ++it)
    {

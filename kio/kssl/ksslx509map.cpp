@@ -79,11 +79,11 @@ unsigned int length = str.length();
 
 
 void KSSLX509Map::parse(const QString& name) {
-QStringList vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
+const QStringList vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
 
 	m_pairs.clear();
 
-	for (QStringList::Iterator j = vl.begin(); j != vl.end(); ++j) {
+	for (QStringList::ConstIterator j = vl.begin(); j != vl.end(); ++j) {
 		QStringList apair = tokenizeBy(*j, QRegExp("="), false);
 		if( apair.count() >0 ) {
 		if (m_pairs.contains(apair[0])) {

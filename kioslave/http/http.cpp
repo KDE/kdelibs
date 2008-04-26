@@ -156,7 +156,7 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 static QString sanitizeCustomHTTPHeader(const QString& _header)
 {
   QString sanitizedHeaders;
-  QStringList headers = _header.split(QRegExp("[\r\n]"));
+  const QStringList headers = _header.split(QRegExp("[\r\n]"));
 
   for(QStringList::ConstIterator it = headers.begin(); it != headers.end(); ++it)
   {
@@ -2428,8 +2428,8 @@ bool HTTPProtocol::httpOpen()
 
   kDebug(7103) << "============ Sending Header:";
 
-  QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
-  QStringList::Iterator it = headerOutput.begin();
+  const QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
+  QStringList::ConstIterator it = headerOutput.begin();
 
   for (; it != headerOutput.end(); ++it)
     kDebug(7103) << (*it);
@@ -2890,7 +2890,7 @@ try_again:
     }
     // Keep Alive
     else if (strncasecmp(buf, "Keep-Alive:", 11) == 0) {
-      QStringList options = QString::fromLatin1(trimLead(buf+11)).
+      const QStringList options = QString::fromLatin1(trimLead(buf+11)).
           split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = options.begin();
           it != options.end();
@@ -2906,7 +2906,7 @@ try_again:
 
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
-      QStringList cacheControls = QString::fromLatin1(trimLead(buf+14)).
+      const QStringList cacheControls = QString::fromLatin1(trimLead(buf+14)).
           split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
@@ -3121,8 +3121,8 @@ try_again:
       QString p3pstr = buf;
       p3pstr = p3pstr.mid(4).simplified();
       QStringList policyrefs, compact;
-      QStringList policyfields = p3pstr.split(QRegExp(",[ ]*"), QString::SkipEmptyParts);
-      for (QStringList::Iterator it = policyfields.begin();
+      const QStringList policyfields = p3pstr.split(QRegExp(",[ ]*"), QString::SkipEmptyParts);
+      for (QStringList::ConstIterator it = policyfields.begin();
                                   it != policyfields.end();
                                                       ++it) {
          QStringList policy = (*it).split('=',QString::SkipEmptyParts);
@@ -3135,10 +3135,10 @@ try_again:
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
                // efficient but I'm going for correctness right now.
-               QStringList cps = policy[1].replace(QRegExp("[\"\']"), "")
+               const QStringList cps = policy[1].replace(QRegExp("[\"\']"), "")
                    .simplified().split(' ',QString::SkipEmptyParts);
 
-               for (QStringList::Iterator j = cps.begin(); j != cps.end(); ++j)
+               for (QStringList::ConstIterator j = cps.begin(); j != cps.end(); ++j)
                  compact << *j;
             }
          }

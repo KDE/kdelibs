@@ -133,14 +133,13 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 void KCrashBookmarkImporterImpl::parse()
 {
     QSet<QString> signatureSet;
-    QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
+    const QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
-    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it )
+    for ( QStringList::ConstIterator it = crashFiles.begin(); it != crashFiles.end(); ++it )
     {
-        ViewMap views;
-        views = parseCrashLog_noemit( *it, m_shouldDelete );
+        const ViewMap views = parseCrashLog_noemit( *it, m_shouldDelete );
         QString signature;
-        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
+        for ( ViewMap::ConstIterator vit = views.begin(); vit != views.end(); ++vit )
             signature += '|'+vit.value();
         if (signatureSet.contains(signature))
         {
@@ -154,7 +153,7 @@ void KCrashBookmarkImporterImpl::parse()
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
-        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
+        for ( ViewMap::ConstIterator vit = views.begin(); vit != views.end(); ++vit )
             emit newBookmark( vit.value(), vit.value(), QString("") );
         if ( outerFolder )
             emit endFolder();

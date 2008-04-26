@@ -467,14 +467,14 @@ KSycocaDict::save(QDataStream &str)
       //kDebug(7011) << QString("Writing duplicate lists (pass #%1)").arg(pass);
       for(uint i=0; i < d->hashTableSize; i++)
       {
-         QList<string_entry*> *dups = hashTable[i].duplicates;
+         const QList<string_entry*> *dups = hashTable[i].duplicates;
          if (dups)
          {
             hashTable[i].duplicate_offset = str.device()->pos();
 
             /*kDebug(7011) << QString("Duplicate lists: Offset = %1 list_size = %2")                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count());
 */
-	    for(QList<string_entry*>::Iterator dup = dups->begin(); dup != dups->end(); ++dup)
+	    for(QList<string_entry*>::ConstIterator dup = dups->begin(); dup != dups->end(); ++dup)
             {
                const qint32 offset = (*dup)->payload->offset();
                // save() must have been called on the entry

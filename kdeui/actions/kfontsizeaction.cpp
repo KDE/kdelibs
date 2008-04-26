@@ -81,9 +81,9 @@ void KFontSizeAction::Private::init()
 {
     q->setEditable( true );
     QFontDatabase fontDB;
-    QList<int> sizes = fontDB.standardSizes();
+    const QList<int> sizes = fontDB.standardSizes();
     QStringList lst;
-    for ( QList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
+    for ( QList<int>::ConstIterator it = sizes.begin(); it != sizes.end(); ++it )
         lst.append( QString::number( *it ) );
 
     q->setItems( lst );

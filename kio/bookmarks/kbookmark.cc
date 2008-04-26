@@ -683,7 +683,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         }
         return bookmarks;
     }
-    KUrl::List urls = KUrl::List::fromMimeData( mimeData );
+    const KUrl::List urls = KUrl::List::fromMimeData( mimeData );
     if ( !urls.isEmpty() )
     {
         KUrl::List::ConstIterator uit = urls.begin();

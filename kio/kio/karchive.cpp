@@ -287,8 +287,8 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     if ( !dir.exists() )
         return false;
     dir.setFilter(dir.filter() | QDir::Hidden);
-    QStringList files = dir.entryList();
-    for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
+    const QStringList files = dir.entryList();
+    for ( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
     {
         if ( *it != "." && *it != ".." )
         {
@@ -754,8 +754,6 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   QMap<qint64, QString> fileToDir;
 
   // placeholders for iterated items
-  QStringList dirEntries;
-
   QStack<const KArchiveDirectory *> dirStack;
   QStack<QString> dirNameStack;
 
@@ -766,7 +764,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     const QString curDirName = dirNameStack.pop();
     root.mkdir(curDirName);
 
-    dirEntries = curDir->entries();
+    const QStringList dirEntries = curDir->entries();
     for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       const KArchiveEntry* curEntry = curDir->entry(*it);
       if (!curEntry->symLinkTarget().isEmpty()) {

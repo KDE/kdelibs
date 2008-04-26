@@ -552,7 +552,7 @@ void KIconLoaderPrivate::addBaseThemes(KIconThemeNode *node, const QString &appn
 
 void KIconLoaderPrivate::addInheritedThemes(KIconThemeNode *node, const QString &appname)
 {
-    QStringList lst = node->theme->inherits();
+    const QStringList lst = node->theme->inherits();
 
     for (QStringList::ConstIterator it = lst.begin(); it != lst.end(); ++it) {
         if ((*it) == "hicolor") {
@@ -588,7 +588,7 @@ void KIconLoader::addExtraDesktopThemes()
     d->initIconThemes();
 
     QStringList list;
-    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
+    const QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
     char buf[1000];
     int r;
@@ -597,7 +597,7 @@ void KIconLoader::addExtraDesktopThemes()
         QDir dir(*it);
         if (!dir.exists())
             continue;
-        QStringList lst = dir.entryList(QStringList( "default.*" ), QDir::Dirs);
+        const QStringList lst = dir.entryList(QStringList( "default.*" ), QDir::Dirs);
         QStringList::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
