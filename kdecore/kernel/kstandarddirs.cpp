@@ -501,7 +501,7 @@ QStringList KStandardDirs::findDirs( const char *type,
 
     if (d->restrictionsActive && (strcmp(type, "data")==0))
         applyDataRestrictions(reldir);
-    QStringList candidates = resourceDirs(type);
+    const QStringList candidates = resourceDirs(type);
 
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); ++it) {
@@ -532,7 +532,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 #endif
     if (d->restrictionsActive && (strcmp(type, "data")==0))
         applyDataRestrictions(filename);
-    QStringList candidates = resourceDirs(type);
+    const QStringList candidates = resourceDirs(type);
     QString fullPath;
 
     for (QStringList::ConstIterator it = candidates.begin();
@@ -969,7 +969,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                     // grab the "data" from "%data/apps"
                     QString rel = (*it).mid(1, (*it).indexOf('/') - 1);
                     QString rest = (*it).mid((*it).indexOf('/') + 1);
-                    QStringList basedirs = resourceDirs(rel.toUtf8().constData());
+                    const QStringList basedirs = resourceDirs(rel.toUtf8().constData());
                     for (QStringList::ConstIterator it2 = basedirs.begin();
                          it2 != basedirs.end(); ++it2)
                     {
@@ -1189,7 +1189,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     QString p;
     list.clear();
 
-    QStringList exePaths = systemPaths( pstr );
+    const QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
         p = (*it) + '/';
@@ -1334,7 +1334,7 @@ QString KStandardDirs::relativeLocation(const char *type, const QString &absPath
         fullPath = realFilePath(absPath); // Normalize
     }
 
-    QStringList candidates = resourceDirs(type);
+    const QStringList candidates = resourceDirs(type);
 
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); ++it) {
@@ -1645,7 +1645,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     }
 
     const KConfigGroup generalGrp(&mapCfgFile, "General");
-    QStringList groups = generalGrp.readEntry("groups", QStringList());
+    const QStringList groups = generalGrp.readEntry("groups", QStringList());
 
     const KConfigGroup groupsGrp(&mapCfgFile, "Groups");
 
@@ -1737,7 +1737,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         while(true)
         {
             KConfigGroup cg(config, group);
-            QStringList list = cg.readEntry("prefixes", QStringList());
+            const QStringList list = cg.readEntry("prefixes", QStringList());
             for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it)
             {
                 addPrefix(*it, priority);
@@ -1756,7 +1756,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
             // iterating over all entries in the group Directories
             // to find entries that start with dir_$type
-            QMap<QString, QString> entries = config->entryMap(group);
+            const QMap<QString, QString> entries = config->entryMap(group);
             for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
                  it2 != entries.end(); it2++)
             {
@@ -1785,7 +1785,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     if (!kde_kiosk_admin || QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
     {
         KConfigGroup cg(config, "KDE Resource Restrictions");
-        QMap<QString, QString> entries = cg.entryMap();
+        const QMap<QString, QString> entries = cg.entryMap();
         for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
              it2 != entries.end(); it2++)
         {

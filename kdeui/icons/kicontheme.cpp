@@ -533,7 +533,7 @@ QStringList KIconTheme::list()
     if (!_theme_list->isEmpty())
         return *_theme_list;
 
-    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
+    const QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
      << KGlobal::dirs()->resourceDirs("xdgdata-icon")
      << "/usr/share/pixmaps"
      // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
@@ -545,7 +545,7 @@ QStringList KIconTheme::list()
         QDir dir(*it);
         if (!dir.exists())
             continue;
-        QStringList lst = dir.entryList(QDir::Dirs);
+        const QStringList lst = dir.entryList(QDir::Dirs);
         QStringList::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
@@ -689,7 +689,7 @@ QStringList KIconThemeDir::iconList() const
 
     QStringList formats;
     formats << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
-    QStringList lst = dir.entryList( formats, QDir::Files);
+    const QStringList lst = dir.entryList( formats, QDir::Files);
 
     QStringList result;
     QStringList::ConstIterator it;

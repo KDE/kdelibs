@@ -483,8 +483,8 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   if ( q->type() == KApplication::GuiClient )
   {
-    QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
-    QStringList::Iterator it = plugins.begin();
+    const QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
+    QStringList::ConstIterator it = plugins.begin();
     while (it != plugins.end()) {
       q->addLibraryPath( *it );
       ++it;
