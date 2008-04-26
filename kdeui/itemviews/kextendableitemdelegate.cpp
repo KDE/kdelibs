@@ -348,7 +348,7 @@ void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QS
 
 void KExtendableItemDelegate::Private::deleteExtenders()
 {
-    foreach (QWidget *ext, extenders.values()) {
+    foreach (QWidget *ext, extenders) {
         // Don't call _k_extenderDestructionHandler because (???)
         // disconnect(ext, SIGNAL(destroyed(QObject *)), q, SLOT(_k_extenderDestructionHandler(QObject *)));
         ext->hide();

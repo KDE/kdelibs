@@ -46,7 +46,7 @@ Solid::DeviceManagerPrivate::DeviceManagerPrivate()
 
 Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
 {
-    foreach (DevicePrivate *dev, m_devicesMap.values()) {
+    foreach (DevicePrivate *dev, m_devicesMap) {
         delete dev;
     }
 

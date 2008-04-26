@@ -78,7 +78,7 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
         Kross::Manager::self().actionCollection()->readXmlFile(d->userActionsFile);
     }
     else {
-        foreach(QString f, allActionFiles) {
+        foreach(const QString &f, allActionFiles) {
             Kross::Manager::self().actionCollection()->readXmlFile(f);
         }
     }
@@ -130,7 +130,7 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
         actionCollection()->addAction(action->name(), action);
     }
 
-    foreach(QString collectionname, collection->collections()) {
+    foreach(const QString &collectionname, collection->collections()) {
         Kross::ActionCollection* c = collection->collection(collectionname);
         if(c->isEnabled()) {
             buildDomDocument(document, c);

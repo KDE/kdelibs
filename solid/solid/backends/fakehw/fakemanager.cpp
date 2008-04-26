@@ -62,7 +62,7 @@ QStringList FakeManager::allDevices()
 {
     QStringList deviceUdiList;
 
-    foreach (FakeDevice *device, d->loadedDevices.values())
+    foreach (FakeDevice *device, d->loadedDevices)
     {
         deviceUdiList.append(device->udi());
     }
@@ -132,7 +132,7 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
 {
     QStringList result;
     FakeDevice *device;
-    foreach (device, d->loadedDevices.values())
+    foreach (device, d->loadedDevices)
     {
         if (device->property(key).toString() == value)
         {
@@ -147,7 +147,7 @@ QStringList FakeManager::findDeviceByDeviceInterface(const Solid::DeviceInterfac
 {
     QStringList result;
     FakeDevice *device;
-    foreach (device, d->loadedDevices.values())
+    foreach (device, d->loadedDevices)
     {
         if (device->queryDeviceInterface(type))
         {

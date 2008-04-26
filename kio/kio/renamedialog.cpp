@@ -162,7 +162,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         if(!plugin_offers.isEmpty() ){
             RenameDialogPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
             RenameDialogPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
-            foreach (const KService::Ptr ptr, plugin_offers) {
+            foreach (const KService::Ptr &ptr, plugin_offers) {
                 RenameDialogPlugin *plugin = ptr->createInstance<RenameDialogPlugin>(this);
                 if( !plugin )
                     continue;

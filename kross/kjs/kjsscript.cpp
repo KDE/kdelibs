@@ -397,7 +397,7 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
     }
 
     KJS::List kjsargs;
-    foreach(const QVariant variant, args) {
+    foreach(const QVariant &variant, args) {
         if( qVariantCanConvert< QWidget* >(variant) ) {
             if( QWidget* widget = qvariant_cast< QWidget* >(variant) ) {
                 kjsargs.append( KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned) );

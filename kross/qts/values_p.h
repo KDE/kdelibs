@@ -278,7 +278,7 @@ namespace Kross {
 
         // register UI widgets
         QUiLoader loader;
-        foreach(QString widgetname, loader.availableWidgets()) {
+        foreach(const QString &widgetname, loader.availableWidgets()) {
             QScriptValue proto = engine->newObject();
             proto.setProperty("className", QScriptValue(engine, widgetname));
             QScriptValue func = engine->newFunction(createWidget);

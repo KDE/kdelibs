@@ -116,7 +116,7 @@ track(const QString &menuId, const QString &menuName, const QHash<QString,KServi
 void
 VFolderMenu::includeItems(QHash<QString,KService::Ptr>& items1, const QHash<QString,KService::Ptr>& items2)
 {
-   foreach (KService::Ptr p, items2) {
+   foreach (const KService::Ptr &p, items2) {
        items1.insert(p->menuId(), p);
    }
 }
@@ -124,7 +124,7 @@ VFolderMenu::includeItems(QHash<QString,KService::Ptr>& items1, const QHash<QStr
 void
 VFolderMenu::matchItems(QHash<QString,KService::Ptr>& items1, const QHash<QString,KService::Ptr>& items2)
 {
-   foreach (KService::Ptr p, items1)
+   foreach (const KService::Ptr &p, items1)
    {
        QString id = p->menuId();
        if (!items2.contains(id))
@@ -135,7 +135,7 @@ VFolderMenu::matchItems(QHash<QString,KService::Ptr>& items1, const QHash<QStrin
 void
 VFolderMenu::excludeItems(QHash<QString,KService::Ptr>& items1, const QHash<QString,KService::Ptr>& items2)
 {
-   foreach (KService::Ptr p, items2)
+   foreach (const KService::Ptr &p, items2)
        items1.remove(p->menuId());
 }
 
@@ -1628,7 +1628,7 @@ VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout) /
 void
 VFolderMenu::markUsedApplications(const QHash<QString,KService::Ptr>& items)
 {
-   foreach(KService::Ptr p, items)
+   foreach(const KService::Ptr &p, items)
       m_usedAppsDict.insert(p->menuId(), p);
 }
 

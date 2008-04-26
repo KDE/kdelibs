@@ -1549,7 +1549,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             // The first proxy is owned by the dialog itself
             QWidget * moduleProxyParentWidget = configDialog;
 
-            foreach(KService::Ptr servicePtr, services)
+            foreach(const KService::Ptr &servicePtr, services)
             {
                 if(!servicePtr->noDisplay())
                 {

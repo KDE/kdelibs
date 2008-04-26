@@ -78,7 +78,7 @@ int main(int argc, char **argv)
             }
             QString paths = QString::fromLocal8Bit(kdedirs);
             QStringList pathlist = paths.split(';');
-            Q_FOREACH(QString path, pathlist) {
+            Q_FOREACH(const QString &path, pathlist) {
               QString slave_path = path + QLatin1String("/lib/kde4/") + libpath;
               qDebug("trying to load '%s'",slave_path.toAscii().data());
               lib.setFileName(slave_path);

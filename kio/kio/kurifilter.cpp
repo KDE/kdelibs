@@ -400,7 +400,7 @@ void KUriFilter::loadPlugins()
 {
     const KService::List offers = KServiceTypeTrader::self()->query( "KUriFilter/Plugin" );
 
-    foreach (const KService::Ptr ptr, offers) {
+    foreach (const KService::Ptr &ptr, offers) {
         KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
         if (!plugin)
             continue;

@@ -558,7 +558,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
 
   kDebug( 250 ) << "trader query: " << query;
   KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
-  foreach (const KService::Ptr ptr, offers) {
+  foreach (const KService::Ptr &ptr, offers) {
     KPropertiesDialogPlugin *plugin = ptr->createInstance<KPropertiesDialogPlugin>(q);
     if (!plugin)
         continue;

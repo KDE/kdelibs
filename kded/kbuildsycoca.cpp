@@ -378,7 +378,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      caption += '/';
   if (name.isEmpty())
      name += '/';
-  foreach (KService::Ptr p, menu->items)
+  foreach (const KService::Ptr &p, menu->items)
   {
      if (bMenuTest)
      {

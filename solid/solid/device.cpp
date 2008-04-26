@@ -261,7 +261,7 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     }
 
     if (!m_ifaces.isEmpty()) {
-        foreach (DeviceInterface *iface, m_ifaces.values()) {
+        foreach (DeviceInterface *iface, m_ifaces) {
             delete iface->d_ptr->backendObject();
             delete iface;
         }

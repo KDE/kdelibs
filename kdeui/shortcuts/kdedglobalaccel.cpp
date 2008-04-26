@@ -233,7 +233,7 @@ QList<QStringList> KdedGlobalAccel::allComponents()
         emptyList.append(QString());
     }
 
-    foreach (const componentData *const cd, d->mainComponents.values()) {
+    foreach (const componentData *const cd, d->mainComponents) {
         QStringList actionId(emptyList);
         actionId[ComponentUnique] = cd->uniqueName;
         actionId[ComponentFriendly] = cd->friendlyName;
@@ -258,7 +258,7 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     partialId.append(cd->friendlyName);                 //ComponentFriendly
     partialId.append(QString());                        //ActionFriendly
 
-    foreach (const actionData *const ad, cd->actions.values()) {
+    foreach (const actionData *const ad, cd->actions) {
         QStringList actionId(partialId);
         actionId[ActionUnique] = ad->uniqueName;
         actionId[ActionFriendly] = ad->friendlyName;

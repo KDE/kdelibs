@@ -65,7 +65,7 @@ static bool offerListHasService( const KService::List& offers,
                                  const QString& entryPath )
 {
     bool found = false;
-    Q_FOREACH(KService::Ptr serv, offers) {
+    Q_FOREACH(const KService::Ptr &serv, offers) {
         if ( serv->entryPath() == entryPath ) {
             if( found ) { // should be there only once
                 qWarning( "ERROR: %s was found twice in the list", qPrintable( entryPath ) );
