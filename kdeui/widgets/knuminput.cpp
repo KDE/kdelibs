@@ -658,6 +658,7 @@ void KDoubleNumInput::init(double value, double lower, double upper,
     d->spin->setSingleStep(step);
     d->spin->setValue(value);
     d->spin->setDecimals(precision);
+    d->spin->setAlignment(Qt::AlignRight);
 
     d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);
