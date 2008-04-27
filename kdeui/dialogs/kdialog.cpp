@@ -665,7 +665,7 @@ void KDialog::incrementInitialSize( const QSize &size )
 KPushButton *KDialog::button( ButtonCode id ) const
 {
     Q_D(const KDialog);
-  return d->mButtonList.contains( id ) ? d->mButtonList[ id ] : 0;
+  return d->mButtonList.value( id, 0 );
 }
 
 void KDialog::enableButton( ButtonCode id, bool state )
