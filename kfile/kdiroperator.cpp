@@ -399,28 +399,37 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::sortByName()
 {
+    d->sorting = QDir::Name;
     d->actionCollection->action("by name")->setChecked(true);
 }
 
 void KDirOperator::sortBySize()
 {
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Size;
     d->actionCollection->action("by size")->setChecked(true);
 }
 
 void KDirOperator::sortByDate()
 {
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Time;
     d->actionCollection->action("by date")->setChecked(true);
 }
 
 void KDirOperator::sortByType()
 {
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Type;
     d->actionCollection->action("by type")->setChecked(true);
 }
 
 void KDirOperator::sortReversed()
 {
-    QAction* action = d->actionCollection->action("descending");
-    action->setChecked(!action->isChecked());
+    if (d->sorting & QDir::Reversed) {
+        d->sorting = d->sorting & ~QDir::Reversed;
+        d->actionCollection->action("descending")->setChecked(false);
+    } else {
+        d->sorting = d->sorting | QDir::Reversed;
+        d->actionCollection->action("descending")->setChecked(true);
+    }
 }
 
 void KDirOperator::toggleDirsFirst()
@@ -570,41 +579,31 @@ void KDirOperator::Private::_k_togglePreview(bool on)
 
 void KDirOperator::Private::_k_slotSortByName()
 {
-    sorting = QDir::Name;
-    actionCollection->action("by name")->setChecked(true);
+    parent->sortByName();
     triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortBySize()
 {
-    sorting = (sorting & ~QDir::SortByMask) | QDir::Size;
-    actionCollection->action("by size")->setChecked(true);
+    parent->sortBySize();
     triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortByDate()
 {
-    sorting = (sorting & ~QDir::SortByMask) | QDir::Time;
-    actionCollection->action("by date")->setChecked(true);
+    parent->sortByDate();
     triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortByType()
 {
-    sorting = (sorting & ~QDir::SortByMask) | QDir::Type;
-    actionCollection->action("by type")->setChecked(true);
+    parent->sortByType();
     triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortReversed()
 {
-    if (sorting & QDir::Reversed) {
-        sorting = sorting & ~QDir::Reversed;
-        actionCollection->action("descending")->setChecked(false);
-    } else {
-        sorting = sorting | QDir::Reversed;
-        actionCollection->action("descending")->setChecked(true);
-    }
+    parent->sortReversed();
     triggerSorting();
 }
 
@@ -994,7 +993,9 @@ void KDirOperator::Private::triggerSorting()
     QTreeView* treeView = qobject_cast<QTreeView*>(itemView);
     if (treeView != 0) {
         QHeaderView* headerView = treeView->header();
+        headerView->blockSignals(true);
         headerView->setSortIndicator(sortColumn(), sortOrder());
+        headerView->blockSignals(false);
     }
 
     _k_assureVisibleSelection();
