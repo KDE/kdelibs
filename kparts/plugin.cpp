@@ -225,7 +225,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
         int interfaceVersionRequired)
 {
     KConfigGroup cfgGroup( componentData.config(), "KParts Plugins" );
-    QList<PluginInfo> plugins = pluginInfos( componentData );
+    const QList<PluginInfo> plugins = pluginInfos( componentData );
     QList<PluginInfo>::ConstIterator pIt = plugins.begin();
     const QList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
