@@ -87,18 +87,16 @@ public:
      * That means you @em have to take care about the @p target argument.
      * (This is very easy to do, please see the example below.)
      *
-     * Download is synchronous. That means you can use it like
-     * this, (assuming @p u is a string which represents a URL and your
-     * application has a loadFile() function):
+     * Download is synchronous. That means you can use it like this:
+     * (assuming your application has a loadFile() function)
      *
      * \code
      * QString tmpFile;
-     * if( KIO::NetAccess::download( u, tmpFile, window ) )
-     * {
-     *   loadFile( tmpFile );
-     *   KIO::NetAccess::removeTempFile( tmpFile );
+     * if( KIO::NetAccess::download(url, tmpFile, window)) {
+     *     loadFile(tmpFile);
+     *     KIO::NetAccess::removeTempFile(tmpFile);
      * } else {
-     *   KMessageBox::error(this, KIO::NetAccess::lastErrorString() );
+     *     KMessageBox::error(this, KIO::NetAccess::lastErrorString());
      * }
      * \endcode
      *
@@ -106,6 +104,20 @@ public:
      * events during the download.
      *
      * If the download fails, lastError() and lastErrorString() will be set.
+     *
+     * If the url is always remote, then you could also just write the more usual way:
+     * \code
+     * KTemporaryFile tmpFile;
+     * if (tmpFile.open()) {
+     *     KIO::Job* getJob = KIO::file_copy(url, KUrl(tmpFile.fileName()), -1, KIO::Overwrite | KIO::HideProgressInfo);
+     *     getJob->ui()->setWindow(window);
+     *     if (KIO::NetAccess::synchronousRun(getJob, 0)) {
+     *         loadFile(tmpFile.fileName());
+     *     } else {
+     *         getJob->ui()->showErrorMessage();
+     *     }
+     * }
+     * \endcode
      *
      * @param src URL Reference to the file to download.
      * @param target String containing the final local location of the

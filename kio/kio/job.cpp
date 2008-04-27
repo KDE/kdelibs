@@ -2254,7 +2254,9 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                 itemURL = entry.stringValue(KIO::UDSEntry::UDS_URL);
             else { // no URL, use the name
                 itemURL = q->url();
-                itemURL.addPath( entry.stringValue( KIO::UDSEntry::UDS_NAME ) );
+                const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+                Q_ASSERT(!fileName.isEmpty()); // we'll recurse forever otherwise :)
+                itemURL.addPath(fileName);
             }
 
             if (entry.isDir() && !entry.isLink()) {
