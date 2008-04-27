@@ -1029,7 +1029,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
   KActionCollection* actionCollection = m_currentXmlData->actionCollection();
 
   // store the names of our active actions
-  QMap<QString, bool> active_list;
+  QSet<QString> active_list;
 
   // i18n filtering message for action names
   KLocalizedString nameFilter = ki18nc("@item:intable Action name in toolbar editor", "%1");
@@ -1081,7 +1081,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
         act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
         act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
 
-        active_list.insert(action->objectName(), true);
+        active_list.insert(action->objectName());
         break;
       }
     }
