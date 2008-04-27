@@ -224,7 +224,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
         index_name = index_name.sprintf("unnamed-%p", (void*)action);
 
     // look if we already have THIS action under THIS name ;)
-    if (d->actionByName.contains(index_name) && d->actionByName.value(index_name) == action ) {
+    if (d->actionByName.value(index_name, 0) == action ) {
         // This is not a multi map!
         Q_ASSERT( d->actionByName.count(index_name)==1);
         return action;
