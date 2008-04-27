@@ -337,9 +337,7 @@ void KConfigDialogManager::updateWidgets()
      if (item->isImmutable())
      {
         widget->setEnabled(false);
-        QWidget *buddy = 0;
-        if(d->buddyWidget.contains(it.key()))
-           buddy = d->buddyWidget.value(it.key());
+        QWidget *buddy = d->buddyWidget.value(it.key(), 0);
         if (buddy)
            buddy->setEnabled(false);
      }
