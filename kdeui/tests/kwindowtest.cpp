@@ -28,6 +28,7 @@ TestWindow::TestWindow (QWidget *parent)
     exitB = true;   // exit button is shown
     lineL = true;   // LineEdit is enabled
     greenF = false;  // Frame not inserted
+    timer = 0;
 
     setCaption("test window");
 
@@ -195,12 +196,15 @@ void TestWindow::slotNew()
 }
 void TestWindow::slotOpen()
 {
-  if (pr == 0)
+  if (pr == 0) {
     pr = new QProgressBar (statusBar);
+    pr->show();
+  }
 //  statusBar->message(pr);
-  timer = new QTimer (pr);
-
-  connect (timer, SIGNAL(timeout()), this, SLOT(slotGoGoGoo()));
+  if (!timer) {
+      timer = new QTimer (this);
+      connect (timer, SIGNAL(timeout()), this, SLOT(slotGoGoGoo()));
+  }
   timer->start(100);
 }
 

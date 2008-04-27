@@ -50,7 +50,7 @@ Q_SIGNALS:
 protected:
     virtual Qt::DropActions supportedDropActions() const
     {
-        return Qt::MoveAction | Qt::CopyAction /*workaround for Qt-4.3.2 bug, TT task 188301*/;
+        return Qt::MoveAction;
     }
     virtual QStringList mimeTypes() const
     {
@@ -60,6 +60,12 @@ protected:
     virtual QMimeData* mimeData(const QList<QListWidgetItem*> items) const;
 
     virtual bool dropMimeData(int index, const QMimeData * data, Qt::DropAction action);
+
+    // Skip internal dnd handling in QListWidget ---- how is one supposed to figure this out
+    // without reading the QListWidget code !?
+    virtual void dropEvent(QDropEvent* ev) {
+        QAbstractItemView::dropEvent(ev);
+    }
 
 private:
     bool m_activeList;

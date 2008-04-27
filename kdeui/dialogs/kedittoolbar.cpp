@@ -225,8 +225,7 @@ ToolBarListWidget::ToolBarListWidget(QWidget *parent)
     : QListWidget(parent),
       m_activeList(true)
 {
-    setAcceptDrops(true);
-    setDragEnabled(true);
+    setDragDropMode(QAbstractItemView::DragDrop); // no internal moves
 }
 
 QMimeData* ToolBarListWidget::mimeData(const QList<QListWidgetItem*> items) const
@@ -252,7 +251,7 @@ QMimeData* ToolBarListWidget::mimeData(const QList<QListWidgetItem*> items) cons
 bool ToolBarListWidget::dropMimeData(int index, const QMimeData * mimeData, Qt::DropAction action)
 {
     Q_UNUSED(action)
-        const QByteArray data = mimeData->data("application/x-kde-action-list");
+    const QByteArray data = mimeData->data("application/x-kde-action-list");
     if (data.isEmpty())
         return false;
     QDataStream stream(data);
@@ -844,11 +843,6 @@ void KEditToolBarWidgetPrivate::setupLayout()
   m_inactiveList = new ToolBarListWidget(m_widget);
   m_inactiveList->setDragEnabled(true);
   m_inactiveList->setActiveList(false);
-
-  //KDE4: no replacement?
-  //m_inactiveList->setDropVisualizer(false);
-  //m_inactiveList->setAllColumnsShowFocus(true);
-
   m_inactiveList->setMinimumSize(180, 250);
   inactive_label->setBuddy(m_inactiveList);
   QObject::connect(m_inactiveList, SIGNAL(itemSelectionChanged()),
@@ -863,11 +857,6 @@ void KEditToolBarWidgetPrivate::setupLayout()
   m_activeList = new ToolBarListWidget(m_widget);
   m_activeList->setDragEnabled(true);
   m_activeList->setActiveList(true);
-
-  //KDE4: no replacement?
-  //m_activeList->setDropVisualizer(true);
-  //m_activeList->setAllColumnsShowFocus(true);
-
   // With Qt-4.1 only setting MiniumWidth results in a 0-width icon column ...
   m_activeList->setMinimumSize(m_inactiveList->minimumWidth(), 100);
   active_label->setBuddy(m_activeList);
