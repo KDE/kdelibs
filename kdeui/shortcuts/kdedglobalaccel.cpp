@@ -219,6 +219,21 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
 
 KdedGlobalAccel::~KdedGlobalAccel()
 {
+    // TODO: Rip out all that StringLists and Lists
+    // ... by providing classes for ActionId and Component and whatever is
+    // implemented by a QStringList.
+
+    // Unregister "/KdedGlobalAccel" explicit
+    QDBusConnection::sessionBus().unregisterObject("/KdedGlobalAccel" );
+
+    // Unregister all currently registered actions. Enables the module to be
+    // loaded / unloaded by kded.
+    Q_FOREACH (QStringList component, allComponents()) {
+        Q_FOREACH (QStringList actionId, allActionsForComponent(component)) {
+            setInactive(actionId);
+        }
+    }
+
     //TODO: is this safe?
     delete d->impl;
     delete d;
