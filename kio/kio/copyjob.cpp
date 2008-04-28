@@ -1523,6 +1523,7 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
 
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
   {
+    // Example: download any attachment from bugs.kde.org
     m_totalSize = m_processedSize + m_fileProcessedSize;
     //kDebug(7007) << "Adjusting m_totalSize to " << m_totalSize;
     q->setTotalAmount(KJob::Bytes, m_totalSize); // safety

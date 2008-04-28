@@ -60,6 +60,7 @@ set(kiocore_STAT_SRCS
   kio/deletejob.cpp
   kio/directorysizejob.cpp
   kio/filejob.cpp
+  kio/fileundomanager.cpp
   kio/forwardingslavebase.cpp
   kio/global.cpp
   kio/imagefilter.cpp
@@ -118,6 +119,8 @@ set(kiocore_STAT_SRCS
   kio/tcpslavebase.cpp
   kio/udsentry.cpp
 )
+
+qt4_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
@@ -300,6 +303,7 @@ install(  FILES
   kio/paste.h
   kio/slavebase.h
   kio/filejob.h
+  kio/fileundomanager.h
   kio/tcpslavebase.h
   kio/forwardingslavebase.h
   kio/chmodjob.h
@@ -392,6 +396,10 @@ install( FILES
   bookmarks/kbookmarkdialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES
+   kio/org.kde.KDirNotify.xml
+   kio/org.kde.kio.FileUndoManager.xml
+   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
 
 install(FILES kio/accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})

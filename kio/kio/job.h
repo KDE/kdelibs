@@ -372,6 +372,9 @@ namespace KIO {
      */
     KIO_EXPORT FileCopyJob *file_move( const KUrl& src, const KUrl& dest, int permissions=-1,
                                        JobFlags flags = DefaultFlags );
+    // Catch code mistakes --- not to be committed yet
+    FileCopyJob *file_move( const KUrl& src, const KUrl& dest, JobFlags flags ); // not implemented - on purpose.
+
 
     /**
      * Delete a single file.
