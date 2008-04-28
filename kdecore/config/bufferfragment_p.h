@@ -166,6 +166,12 @@ public:
     QByteArray toByteArray() const {
         return QByteArray(d,len);
     }
+    
+    // this is faster than toByteArray, but returned QByteArray becomes invalid
+    // when buffer for this BufferFragment disappears
+    QByteArray toVolatileByteArray() const {
+        return QByteArray::fromRawData(d, len);
+    }
 
 private:
     char* d;

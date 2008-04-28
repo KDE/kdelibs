@@ -175,7 +175,6 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 entryOptions |= KEntryMap::EntryImmutable;
 
             BufferFragment locale;
-            BufferFragment rawKey;
             int start;
             while ((start = aKey.lastIndexOf('[')) >= 0) {
                 int end = aKey.indexOf(']', start);
@@ -214,7 +213,6 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                     }
 
                     locale = aKey.mid(start + 1,end - start - 1);
-                    rawKey = aKey.left(end + 1);
                 }
                 aKey.truncate(start);
             }
@@ -227,15 +225,16 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 if (locale != currentLocale) {
                     // backward compatibility. C == en_US
                     if (locale.at(0) != 'C' || currentLocale != "en_US") {
-                        if (merging){
+                        if (merging)
                             entryOptions |= KEntryMap::EntryRawKey;
-                            aKey = rawKey; // store as unprocessed key
-                            locale = BufferFragment();
-                        } else
+                        else
                             goto next_line; // skip this entry if we're not merging
                     }
                 }
             } 
+
+            if (!(entryOptions & KEntryMap::EntryRawKey)) 
+                printableToString(&aKey, file, lineNo);
 
             if (options&ParseGlobal)
                 entryOptions |= KEntryMap::EntryGlobal;
@@ -244,7 +243,15 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (!locale.isNull())
                 entryOptions |= KEntryMap::EntryLocalized;
             printableToString(&line, file, lineNo);
-            entryMap.setEntry(currentGroup, aKey.toByteArray(), line.toByteArray(), entryOptions);
+            if (entryOptions & KEntryMap::EntryRawKey) {
+                QByteArray rawKey;
+                rawKey.reserve(aKey.length() + locale.length() + 2);
+                rawKey.append(aKey.toVolatileByteArray());
+                rawKey.append('[').append(locale.toVolatileByteArray()).append(']');
+                entryMap.setEntry(currentGroup, rawKey, line.toByteArray(), entryOptions);
+            } else {
+                entryMap.setEntry(currentGroup, aKey.toByteArray(), line.toByteArray(), entryOptions);
+            }
         }
 next_line:
         continue;

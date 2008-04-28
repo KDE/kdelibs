@@ -63,6 +63,7 @@ private Q_SLOTS:
     void testWriteOnSync();
     void testCreateDir();
     void testSharedConfig();
+    void testOptionOrder();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

@@ -773,6 +773,45 @@ void KConfigTest::testImmutable()
     QVERIFY(cg2.isImmutable());
 }
 
+void KConfigTest::testOptionOrder()
+{
+    {
+        QFile file(KStandardDirs::locateLocal("config", "doubleattrtest"));
+        file.open(QIODevice::WriteOnly|QIODevice::Text);
+        QTextStream out(&file);
+        out.setCodec("UTF-8");
+        out << "[group3]" << endl
+            << "entry2=unlocalized" << endl
+            << "entry2[$i][de_DE]=t2" << endl;
+    }
+    KConfig config("doubleattrtest", KConfig::SimpleConfig);
+    config.setLocale("de_DE");
+    KConfigGroup cg3 = config.group("group3");
+    QVERIFY(!cg3.isImmutable());
+    QCOMPARE(cg3.readEntry("entry2",""), QString("t2"));
+    QVERIFY(cg3.isEntryImmutable("entry2"));
+    config.setLocale("C");
+    QCOMPARE(cg3.readEntry("entry2",""), QString("unlocalized"));
+    QVERIFY(!cg3.isEntryImmutable("entry2"));
+    cg3.writeEntry("entry2","modified");
+    config.sync();
+
+    {
+        QList<QByteArray> lines;
+        // this is what the file should look like
+        lines << "[group3]\n" 
+              << "entry2=modified\n"
+              << "entry2[de_DE][$i]=t2\n";
+
+        QFile file(KStandardDirs::locateLocal("config", "doubleattrtest"));
+        file.open(QIODevice::ReadOnly|QIODevice::Text);
+        foreach (const QByteArray& line, lines) {
+            QCOMPARE(line, file.readLine());
+        }
+    }
+}
+
+
 void KConfigTest::testGroupEscape()
 {
     KConfig config("groupescapetest", KConfig::SimpleConfig);
