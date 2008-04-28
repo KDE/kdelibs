@@ -31,6 +31,9 @@
 #include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kmessagebox.h>
+#include <knotification.h>
+#include <kio/job.h>
 #include <kjob.h>
 #include <solid/storageaccess.h>
 #include <solid/storagedrive.h>
@@ -398,8 +401,16 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     QAction *edit = 0;
     QAction *hide = 0;
+    QAction *emptyTrash = 0;
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
+            if (placesModel->url(index) == KUrl("trash:/")) {
+                emptyTrash = menu.addAction(KIcon("trash-empty"), i18nc("@action:inmenu", "Empty Trash"));
+                KConfig trashConfig("trashrc", KConfig::SimpleConfig);
+                emptyTrash->setEnabled(!trashConfig.group("Status").readEntry("Empty", true));
+                menu.addSeparator();
+            }
+
             edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
         }
 
@@ -435,7 +446,22 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     QAction *result = menu.exec(event->globalPos());
 
-    if (edit != 0 && result == edit) {
+    if (emptyTrash != 0 && result == emptyTrash) {
+        const QString text = i18nc("@info", "Do you really want to empty the Trash? All items will be deleted.");
+        const bool del = KMessageBox::warningContinueCancel(window(),
+                                                            text,
+                                                            QString(),
+                                                            KGuiItem(i18nc("@action:button", "Empty Trash"),
+                                                                     KIcon("user-trash"))
+                                                           ) == KMessageBox::Continue;
+        if (del) {
+            QByteArray packedArgs;
+            QDataStream stream(&packedArgs, QIODevice::WriteOnly);
+            stream << int(1);
+            KIO::special(KUrl("trash:/"), packedArgs);
+            KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
+        }
+    } else if (edit != 0 && result == edit) {
         KBookmark bookmark = placesModel->bookmarkForIndex(index);
         KUrl url = bookmark.url();
         QString description = bookmark.text();
