@@ -257,7 +257,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
         needle = itFound.second.first;
         
         QPixmap p(itFound.first);
-        QString htmlCode = QString("<img align=\"center\" src=\"%1\" width=\"%2\" height=\"%3\" />").arg(itFound.first).arg(p.width()).arg(p.height());
+        QString htmlCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(needle).arg(itFound.first).arg(p.width()).arg(p.height());
  
         if ((length = (itFound.second.second - pos))) {
             result.append(Token(Text, message.mid(pos, length)));
