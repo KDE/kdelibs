@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <kurl.h>
 
-#include <kio_export.h>
+#include <kio/kio_export.h>
 
 class KDateTime;
 
