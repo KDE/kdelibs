@@ -33,7 +33,7 @@ KEmoticonsThemePrivate::KEmoticonsThemePrivate()
 }
 
 KEmoticonsTheme::KEmoticonsTheme(QObject *parent, const QVariantList &args)
-    : QObject(parent), d(new KEmoticonsThemePrivate)
+        : QObject(parent), d(new KEmoticonsThemePrivate)
 {
     Q_UNUSED(args);
 }
@@ -60,7 +60,7 @@ bool KEmoticonsTheme::removeEmoticon(const QString &emo)
 
 bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    if(copy) {
+    if (copy) {
         KIO::NetAccess::dircopy(KUrl(emo), KUrl(d->m_themePath));
     }
 
@@ -95,25 +95,25 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
 {
     QList<Token> tokens = tokenize(text, mode);
     QString result;
-    
-    foreach (Token token , tokens ) {
+
+    foreach(Token token , tokens) {
         switch (token.type) {
-            case Text:
+        case Text:
+            result += token.text;
+            kDebug() << "TEXT:" << token.text;
+            break;
+        case Image:
+            if (!exclude.contains(token.text)) {
+                result += token.picHTMLCode;
+                kDebug() << "IMG:" << token.picHTMLCode;
+            } else {
                 result += token.text;
-                kDebug()<<"TEXT:"<<token.text;
-                break;
-            case Image:
-                if (!exclude.contains(token.text)) {
-                    result += token.picHTMLCode;
-                    kDebug()<<"IMG:"<<token.picHTMLCode;
-                } else {
-                    result += token.text;
-                    kDebug()<<"TEXT:"<<token.text;
-                }
-                break;
-            default:
-                kWarning() << "Unknown token type. Something's broken.";
-                break;
+                kDebug() << "TEXT:" << token.text;
+            }
+            break;
+        default:
+            kWarning() << "Unknown token type. Something's broken.";
+            break;
         }
     }
     return result;
@@ -121,11 +121,11 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
 
 QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
 {
-    if (!(mode & (StrictParse|RelaxedParse))) {
+    if (!(mode & (StrictParse | RelaxedParse))) {
         //if none of theses two mode are selected, use the mode from the config
         mode |=  KEmoticons::parseMode();
     }
-    
+
     QList<Token> result;
 
     /* previous char, in the firs iteration assume that it is space since we want
@@ -145,7 +145,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     bool inHTMLLink = false;
     bool inHTMLEntity = false;
     QString needle; // search for this
-    
+
     for (pos = 0; pos < message.length(); pos++) {
         c = message[pos];
 
@@ -156,11 +156,10 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                     p = c;
                     continue;
                 }
-            }
-            else { // We are already in a HTML tag
+            } else { // We are already in a HTML tag
                 if (c == '>') { // Check if it ends
                     inHTMLTag = false;   // If so, change the state
-                    
+
                     if (p == 'a') {
                         inHTMLLink = false;
                     }
@@ -171,8 +170,8 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                 continue;
             }
 
-            if(!inHTMLEntity) { // are we
-                if(c == '&') {
+            if (!inHTMLEntity) { // are we
+                if (c == '&') {
                     inHTMLEntity = true;
                 }
             }
@@ -184,10 +183,10 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
         }
 
         if ((mode & StrictParse)  &&  !p.isSpace() && p != '>') {  // '>' may mark the end of an html tag
-            p = c; 
-            continue; 
+            p = c;
+            continue;
         } /* strict requires space before the emoticon */
-        
+
 
         bool found = false;
         for (it = d->m_emoticonsMap.constBegin(); it != d->m_emoticonsMap.constEnd(); ++it) {
@@ -202,7 +201,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                         if (message.length() > pos + needle.length()) {
                             n = message[pos + needle.length()];
                             //<br/> marks the end of a line
-                            if(n != '<' && !n.isSpace() &&  !n.isNull() && n!= '&') {
+                            if (n != '<' && !n.isSpace() &&  !n.isNull() && n != '&') {
                                 break;
                             }
                         }
@@ -220,7 +219,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                 break;
             }
         }
-        
+
         if (!found) {
             if (inHTMLEntity) {
                 // If we are in an HTML entitiy such as &gt;
@@ -255,10 +254,10 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     for (int i = 0; i < foundEmoticons.size(); ++i) {
         QPair<QString, EmoticonNode> itFound = foundEmoticons.at(i);
         needle = itFound.second.first;
-        
+
         QPixmap p(itFound.first);
         QString htmlCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(needle).arg(itFound.first).arg(p.width()).arg(p.height());
- 
+
         if ((length = (itFound.second.second - pos))) {
             result.append(Token(Text, message.mid(pos, length)));
             result.append(Token(Image, needle, itFound.first, htmlCode));

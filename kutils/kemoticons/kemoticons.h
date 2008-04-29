@@ -30,41 +30,41 @@
 
 class KEmoticonsPrivate
 {
-    public:
-        KEmoticonsPrivate();
-        void loadServiceList();
-        KEmoticonsTheme *loadThemeLibrary(const KService::Ptr &service);
+public:
+    KEmoticonsPrivate();
+    void loadServiceList();
+    KEmoticonsTheme *loadThemeLibrary(const KService::Ptr &service);
 
-        QList<KService::Ptr> m_loaded;
+    QList<KService::Ptr> m_loaded;
 };
 
 class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
     Q_OBJECT
-    public:
-        KEmoticons();
-        ~KEmoticons();
+public:
+    KEmoticons();
+    ~KEmoticons();
 
-        KEmoticonsTheme *getTheme();
-        KEmoticonsTheme *getTheme(const QString &name);
-        static QString getCurrentThemeName();
+    KEmoticonsTheme *getTheme();
+    KEmoticonsTheme *getTheme(const QString &name);
+    static QString getCurrentThemeName();
 
-        static QStringList getThemeList();
+    static QStringList getThemeList();
 
-        static void setTheme(KEmoticonsTheme *theme);
-        static void setTheme(const QString &theme);
+    static void setTheme(KEmoticonsTheme *theme);
+    static void setTheme(const QString &theme);
 
-        KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
+    KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
 
-        QList<KService::Ptr> loadedServices();
+    QList<KService::Ptr> loadedServices();
 
-        QStringList installTheme(const QString &archiveName);
-        
-        static void setParseMode(KEmoticonsTheme::ParseMode);
-        static KEmoticonsTheme::ParseMode parseMode();
+    QStringList installTheme(const QString &archiveName);
 
-    private:
-        KEmoticonsPrivate * const d;
+    static void setParseMode(KEmoticonsTheme::ParseMode);
+    static KEmoticonsTheme::ParseMode parseMode();
+
+private:
+    KEmoticonsPrivate * const d;
 
 };
 

@@ -27,20 +27,20 @@
 class KdeEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
-    public:
-        KdeEmoticons(QObject *parent, const QVariantList &args);
-        ~KdeEmoticons();
-        
-        bool loadTheme(const QString &path);
-        
-        bool removeEmoticon(const QString &emo);
-        bool addEmoticon(const QString &emo, const QString &text, bool copy);
-        void save();
-        
-        void createNew();
-    
-    private:
-        QDomDocument m_themeXml;
+public:
+    KdeEmoticons(QObject *parent, const QVariantList &args);
+    ~KdeEmoticons();
+
+    bool loadTheme(const QString &path);
+
+    bool removeEmoticon(const QString &emo);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    void save();
+
+    void createNew();
+
+private:
+    QDomDocument m_themeXml;
 };
 
 #endif /* KDE_EMOTICONS_H */

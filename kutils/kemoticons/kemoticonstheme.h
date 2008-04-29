@@ -28,85 +28,85 @@
 
 class QString;
 
-    
+
 class KEmoticonsThemePrivate
 {
-    public:
-        KEmoticonsThemePrivate();
-        QString m_themeName;
-        QString m_fileName;
-        QString m_themePath;
-        QMap<QString, QStringList> m_emoticonsMap;
-   
+public:
+    KEmoticonsThemePrivate();
+    QString m_themeName;
+    QString m_fileName;
+    QString m_themePath;
+    QMap<QString, QStringList> m_emoticonsMap;
+
 };
 
 class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
 {
     Q_OBJECT
-    public:
-        KEmoticonsTheme(QObject *parent, const QVariantList &args);
+public:
+    KEmoticonsTheme(QObject *parent, const QVariantList &args);
 
-        virtual ~KEmoticonsTheme();
-        
-        
-        /**
-        * TokenType, a token might be an image ( emoticon ) or text.
-        */
-        enum TokenType { 
-            Undefined, /** Undefined, for completeness only */
-            Image,     /** Token contains a path to an image */
-            Text       /** Token contains test */
-        };
+    virtual ~KEmoticonsTheme();
 
-        /**
-        * A token consists of a QString text which is either a regular text
-        * or a path to image depending on the type.
-        * If type is Image the text refers to an image path.
-        * If type is Text the text refers to a regular text.
-        */
-        struct Token {
-            Token() : type( Undefined ) {}
-            Token( TokenType t, const QString &m ) : type( t ), text(m) {}
-            Token( TokenType t, const QString &m, const QString &p, const QString &html )
-                : type( t ), text( m ), picPath( p ), picHTMLCode( html ) {}
-            TokenType   type;
-            QString     text;
-            QString     picPath;
-            QString     picHTMLCode;
-        };
 
-        /**
-        * The possible parse modes
-        */
-        enum ParseModeEnum {  
-            DefaultParseMode = 0x0 , /**  Use strict or relaxed according the config  */
-            StrictParse = 0x1,       /** Strict parsing requires a space between each emoticon */
-            RelaxedParse = 0x2,      /** Parse mode where all possible emoticon matches are allowed */
-            SkipHTML = 0x4           /** Skip emoticons within HTML */
-         };
+    /**
+    * TokenType, a token might be an image ( emoticon ) or text.
+    */
+    enum TokenType {
+        Undefined, /** Undefined, for completeness only */
+        Image,     /** Token contains a path to an image */
+        Text       /** Token contains test */
+    };
 
-        Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
-        
-        typedef QPair<QString, int> EmoticonNode;
-        
-        QString parseEmoticons(const QString &text, ParseMode mode = DefaultParseMode, const QStringList &exclude = QStringList());
-        QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParseMode);
-        
-        virtual bool loadTheme(const QString &path);
-        virtual bool removeEmoticon(const QString &emo);
-        virtual bool addEmoticon(const QString &emo, const QString &text, bool copy);
-        virtual void save();
+    /**
+    * A token consists of a QString text which is either a regular text
+    * or a path to image depending on the type.
+    * If type is Image the text refers to an image path.
+    * If type is Text the text refers to a regular text.
+    */
+    struct Token {
+        Token() : type(Undefined) {}
+        Token(TokenType t, const QString &m) : type(t), text(m) {}
+        Token(TokenType t, const QString &m, const QString &p, const QString &html)
+                : type(t), text(m), picPath(p), picHTMLCode(html) {}
+        TokenType   type;
+        QString     text;
+        QString     picPath;
+        QString     picHTMLCode;
+    };
 
-        QString themeName();
-        void setThemeName(const QString &name);
+    /**
+    * The possible parse modes
+    */
+    enum ParseModeEnum {
+        DefaultParseMode = 0x0 , /**  Use strict or relaxed according the config  */
+        StrictParse = 0x1,       /** Strict parsing requires a space between each emoticon */
+        RelaxedParse = 0x2,      /** Parse mode where all possible emoticon matches are allowed */
+        SkipHTML = 0x4           /** Skip emoticons within HTML */
+    };
 
-        QMap<QString, QStringList> emoticonsMap();
-        
-        virtual void createNew();
-  
-    protected:
-        KEmoticonsThemePrivate * const d;
-  
+    Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
+
+    typedef QPair<QString, int> EmoticonNode;
+
+    QString parseEmoticons(const QString &text, ParseMode mode = DefaultParseMode, const QStringList &exclude = QStringList());
+    QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParseMode);
+
+    virtual bool loadTheme(const QString &path);
+    virtual bool removeEmoticon(const QString &emo);
+    virtual bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    virtual void save();
+
+    QString themeName();
+    void setThemeName(const QString &name);
+
+    QMap<QString, QStringList> emoticonsMap();
+
+    virtual void createNew();
+
+protected:
+    KEmoticonsThemePrivate * const d;
+
 };
 
 #endif /* KEMOTICONS_THEME_H */

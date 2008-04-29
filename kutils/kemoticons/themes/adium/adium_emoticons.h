@@ -27,20 +27,20 @@
 class AdiumEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
-    public:
-        AdiumEmoticons(QObject *parent, const QVariantList &args);
-        ~AdiumEmoticons();
-        
-        bool loadTheme(const QString &path);
-        
-        bool removeEmoticon(const QString &emo);
-        bool addEmoticon(const QString &emo, const QString &text, bool copy);
-        void save();
-        
-        void createNew();
-    
-    private:
-        QDomDocument m_themeXml;
+public:
+    AdiumEmoticons(QObject *parent, const QVariantList &args);
+    ~AdiumEmoticons();
+
+    bool loadTheme(const QString &path);
+
+    bool removeEmoticon(const QString &emo);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    void save();
+
+    void createNew();
+
+private:
+    QDomDocument m_themeXml;
 };
 
 #endif /* ADIUM_EMOTICONS_H */

@@ -32,7 +32,7 @@ K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
 K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))
 
 XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
-    : KEmoticonsTheme(parent, args)
+        : KEmoticonsTheme(parent, args)
 {
 }
 
@@ -113,7 +113,7 @@ void XmppEmoticons::save()
         return;
     }
 
-    if (!fp.open( QIODevice::WriteOnly)) {
+    if (!fp.open(QIODevice::WriteOnly)) {
         kWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
@@ -128,17 +128,17 @@ bool XmppEmoticons::loadTheme(const QString &path)
     KEmoticonsTheme::loadTheme(path);
 
     QFile fp(path);
-    
+
     if (!fp.exists()) {
         kWarning() << path << "doesn't exist!";
         return false;
     }
-    
+
     if (!fp.open(QIODevice::ReadOnly)) {
         kWarning() << fp.fileName() << "can't open ReadOnly!";
         return false;
     }
-    
+
     QString error;
     int eli, eco;
     if (!m_themeXml.setContent(&fp, &error, &eli, &eco)) {
@@ -147,7 +147,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
         fp.close();
         return false;
     }
-    
+
     fp.close();
 
     QDomElement fce = m_themeXml.firstChildElement("icondef");
@@ -163,7 +163,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
 
-        if(!de.isNull() && de.tagName() == "icon") {
+        if (!de.isNull() && de.tagName() == "icon") {
             QDomNodeList snl = de.childNodes();
             QStringList sl;
             QString emo;
@@ -173,9 +173,9 @@ bool XmppEmoticons::loadTheme(const QString &path)
             for (uint k = 0; k < snl.length(); k++) {
                 QDomElement sde = snl.item(k).toElement();
 
-                if(!sde.isNull() && sde.tagName() == "text") {
+                if (!sde.isNull() && sde.tagName() == "text") {
                     sl << sde.text();
-                } else if(!sde.isNull() && sde.tagName() == "object" && mime.contains(sde.attribute("mime"))) {
+                } else if (!sde.isNull() && sde.tagName() == "object" && mime.contains(sde.attribute("mime"))) {
                     emo = sde.text();
                 }
             }
@@ -196,18 +196,18 @@ bool XmppEmoticons::loadTheme(const QString &path)
 void XmppEmoticons::createNew()
 {
     QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
-    
+
     QFile fp(path + '/' + "icondef.xml");
-    
-    if (!fp.open( QIODevice::WriteOnly)) {
+
+    if (!fp.open(QIODevice::WriteOnly)) {
         kWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
-    
+
     QDomDocument doc;
     doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
     doc.appendChild(doc.createElement("icondef"));
-    
+
     QTextStream emoStream(&fp);
     emoStream << doc.toString(4);
     fp.close();

@@ -30,7 +30,7 @@ K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
 K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))
 
 PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
-    : KEmoticonsTheme(parent, args)
+        : KEmoticonsTheme(parent, args)
 {
 }
 
@@ -41,15 +41,15 @@ PidginEmoticons::~PidginEmoticons()
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
-    
+
     bool start;
     for (int i = 0; i < m_text.size(); ++i) {
         QString line = m_text.at(i);
-        
+
         if (line.startsWith('#') || line.isEmpty()) {
             continue;
         }
-        
+
         QRegExp re("^\\[(.*)\\]$");
         int pos = re.indexIn(line.trimmed());
         if (pos > -1) {
@@ -60,11 +60,11 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
             }
             continue;
         }
-        
+
         if (!start) {
             continue;
         }
-        
+
         QStringList splitted = line.split(' ');
         QString emoName;
 
@@ -73,13 +73,13 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
         } else {
             emoName = splitted.at(0);
         }
-        
+
         if (emoName == emoticon) {
             m_text.removeAt(i);
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -89,13 +89,13 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool 
 
     QStringList splitted = text.split(" ");
     int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));
-    
+
     if (i == -1) {
         return false;
     }
-    
+
     QString emoticon = QString("%1 %2").arg(QFileInfo(emo).fileName()).arg(text);
-    m_text.insert(i+1, emoticon);
+    m_text.insert(i + 1, emoticon);
     d->m_emoticonsMap[emo] = splitted;
     return true;
 }
@@ -109,7 +109,7 @@ void PidginEmoticons::save()
         return;
     }
 
-    if (!fp.open( QIODevice::WriteOnly)) {
+    if (!fp.open(QIODevice::WriteOnly)) {
         kWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
@@ -119,9 +119,9 @@ void PidginEmoticons::save()
     if (m_text.indexOf(QRegExp("^Icon=.*", Qt::CaseInsensitive)) == -1) {
         int i = m_text.indexOf(QRegExp("^Description=.*", Qt::CaseInsensitive));
         QString file = QFileInfo(d->m_emoticonsMap.keys().value(0)).fileName();
-        m_text.insert(i+1, "Icon=" + file);
+        m_text.insert(i + 1, "Icon=" + file);
     }
-    
+
     emoStream << m_text.join("\n");
     fp.close();
 }
@@ -148,7 +148,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
     while (!str.atEnd()) {
         QString line = str.readLine();
         m_text << line;
-        
+
         if (line.startsWith('#') || line.isEmpty()) {
             continue;
         }
@@ -163,7 +163,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
             }
             continue;
         }
-        
+
         if (!start) {
             continue;
         }
@@ -196,22 +196,22 @@ bool PidginEmoticons::loadTheme(const QString &path)
 void PidginEmoticons::createNew()
 {
     QString path = KGlobal::dirs()->saveLocation("emoticons", themeName(), false);
-    
+
     QFile fp(path + '/' + "theme");
-    
-    if (!fp.open( QIODevice::WriteOnly)) {
+
+    if (!fp.open(QIODevice::WriteOnly)) {
         kWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
-    
+
     QTextStream out(&fp);
-    
+
     out << "Name=" + themeName() << endl;
     out << "Description=" + themeName() << endl;
     out << "Author=" << endl;
     out << endl;
     out << "[default]" << endl;
-    
+
     fp.close();
 }
 

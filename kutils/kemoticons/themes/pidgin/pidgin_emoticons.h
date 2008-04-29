@@ -25,20 +25,20 @@
 class PidginEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
-    public:
-        PidginEmoticons(QObject *parent, const QVariantList &args);
-        ~PidginEmoticons();
-        
-        bool loadTheme(const QString &path);
-        
-        bool removeEmoticon(const QString &emo);
-        bool addEmoticon(const QString &emo, const QString &text, bool copy);
-        void save();
-        
-        void createNew();
-    
-    private:
-        QStringList m_text;
+public:
+    PidginEmoticons(QObject *parent, const QVariantList &args);
+    ~PidginEmoticons();
+
+    bool loadTheme(const QString &path);
+
+    bool removeEmoticon(const QString &emo);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    void save();
+
+    void createNew();
+
+private:
+    QStringList m_text;
 };
 
 #endif /* PIDGIN_EMOTICONS_H */

@@ -27,20 +27,20 @@
 class XmppEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
-    public:
-        XmppEmoticons(QObject *parent, const QVariantList &args);
-        ~XmppEmoticons();
-        
-        bool loadTheme(const QString &path);
-        
-        bool removeEmoticon(const QString &emo);
-        bool addEmoticon(const QString &emo, const QString &text, bool copy);
-        void save();
-        
-        void createNew();
-    
-    private:
-        QDomDocument m_themeXml;
+public:
+    XmppEmoticons(QObject *parent, const QVariantList &args);
+    ~XmppEmoticons();
+
+    bool loadTheme(const QString &path);
+
+    bool removeEmoticon(const QString &emo);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    void save();
+
+    void createNew();
+
+private:
+    QDomDocument m_themeXml;
 };
 
 #endif /* XMPP_EMOTICONS_H */
