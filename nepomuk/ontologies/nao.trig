@@ -11,7 +11,7 @@
           a       rdf:Property ;
           rdfs:comment "Defines the default static namespace abbreviation for a graph" ;
           rdfs:domain nrl:Data ;
-          rdfs:label "hasDefaultNamespaceAbbreviation" ;
+          rdfs:label "has default namespace abbreviation" ;
           rdfs:range rdfs:Literal ;
           rdfs:subPropertyOf <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#annotation> ;
           nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
@@ -121,7 +121,8 @@
           rdfs:comment "Annotation for a resource in the form of a numeric decimal rating" ;
           rdfs:domain rdfs:Resource ;
           rdfs:label "numeric rating" ;
-          rdfs:range xsd:decimal .
+          rdfs:range xsd:decimal ;
+	    nrl:maxCardinality "1"^^xsd:nonNegativeInteger .
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao#Tag>
           a       rdfs:Class ;
@@ -243,7 +244,7 @@
 <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata> {
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata>
           a       nrl:GraphMetadata ;
-          nrl:coreGraphMetadataFor <http://www.semanticdesktop.org/ontologies/2007/08/15/nao> .
+          nrl:coreGraphMetadataFor <http://semanticdesktop.org/ontologies/2007/08/15/nao> .
 
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao>
@@ -256,3 +257,4 @@
           nrl:updatable "0" ;
           nao:version "1" .
 }
+
