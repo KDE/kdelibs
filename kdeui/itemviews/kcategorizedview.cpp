@@ -28,8 +28,6 @@
 #include <QScrollBar>
 #include <QPaintEvent>
 
-#include <kstyle.h>
-
 #include "kcategorydrawer.h"
 #include "kcategorizedsortfilterproxymodel.h"
 
@@ -268,7 +266,7 @@ QRect KCategorizedView::Private::visualCategoryRectInViewport(const QString &cat
                   listView->viewport()->width() - listView->spacing() * 2,
                   0);
 
-    if (!proxyModel->rowCount() || !categories.contains(category))
+    if (!proxyModel || !categoryDrawer || !proxyModel->isCategorizedModel() || !proxyModel->rowCount() || !categories.contains(category))
         return QRect();
 
     QModelIndex index = proxyModel->index(0, 0, QModelIndex());

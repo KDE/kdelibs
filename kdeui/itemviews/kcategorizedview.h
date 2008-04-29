@@ -30,11 +30,10 @@ class KCategoryDrawer;
 /**
   * @short Item view for listing items
   *
-  * KCategorizedView allows you to use it as it were a QListView. You can add an
-  * itemCategorizer to it, so your items became categorized depending on the
-  * KItemCategorizer inherited class rules.
+  * KCategorizedView allows you to use it as it were a QListView. 
+  * Subclass KCategorizedSortFilterProxyModel to provide category information for items.
   *
-  * @see KItemCategorizer, KSortFilterProxyModel
+  * @see KCategorizedSortFilterProxyModel
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
