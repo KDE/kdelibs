@@ -5,7 +5,7 @@ kde4_add_ui_files(kcmphonon_SRCS devicepreference.ui backendselection.ui)
 
 kde4_add_plugin(kcm_phonon ${kcmphonon_SRCS})
 target_link_libraries(kcm_phonon ${KDE4_PHONON_LIBS} ${KDE4_KUTILS_LIBS}
-	${KDE4_KAUDIODEVICELIST_LIBS})
+	${KDE4_KAUDIODEVICELIST_LIBS} ${KDE4_KIO_LIBS} )
 
 install(TARGETS kcm_phonon  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
