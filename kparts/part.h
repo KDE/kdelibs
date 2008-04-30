@@ -59,8 +59,6 @@ class GUIActivateEvent;
 class PartBasePrivate;
 
 /**
- *  Base class for all parts.
- *
  *  @short Base class for all parts.
  */
 class KPARTS_EXPORT PartBase : virtual public KXMLGUIClient
