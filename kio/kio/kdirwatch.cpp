@@ -705,8 +705,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
     QDir basedir (e->path);
     const QFileInfoList contents = basedir.entryInfoList(filters);
-    for (QFileInfoList::const_iterator iter = contents.begin();
-         iter != contents.end(); iter++)
+    for (QFileInfoList::const_iterator iter = contents.constBegin();
+         iter != contents.constEnd(); ++iter)
     {
       const QFileInfo &fileInfo = *iter;
       bool isDir = fileInfo.isDir();
