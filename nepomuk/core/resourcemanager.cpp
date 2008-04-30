@@ -32,6 +32,7 @@
 #include <Soprano/Statement>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/StatementIterator>
+#include <Soprano/QueryResultIterator>
 
 using namespace Soprano;
 
@@ -199,15 +200,14 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 QString Nepomuk::ResourceManager::generateUniqueUri()
 {
     Soprano::Model* model = mainModel();
-    QUrl s;
+    QString s;
     while( 1 ) {
         // Should we use the Nepomuk localhost whatever namespace here?
         s = "nepomuk:/" + KRandom::randomString( 20 );
-        if( !model->containsContext( s ) &&
-            !model->containsAnyStatement( Soprano::Statement( s, Soprano::Node(), Soprano::Node() ) ) &&
-            !model->containsAnyStatement( Soprano::Statement( Soprano::Node(), s, Soprano::Node() ) ) &&
-            !model->containsAnyStatement( Soprano::Statement( Soprano::Node(), Soprano::Node(), s ) ) )
-            return s.toString();
+        if ( !model->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
+                                   .arg( s ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
+            return s;
+        }
     }
 }
 
