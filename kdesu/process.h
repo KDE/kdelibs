@@ -55,6 +55,12 @@ public:
      * @return The output string.
      */
     QCString readLine(bool block=true);
+    /**
+     * Read all available output from the program's standard out.
+     * @param block If no output is in the buffer, should the function block
+     * @return The output.
+     */
+    QCString readAll(bool block=true);
 
     /**
      * Writes a line of text to the program's standard in.

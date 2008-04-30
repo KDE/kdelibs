@@ -244,6 +244,60 @@ QCString PtyProcess::readLine(bool block)
     return ret;
 }
 
+QCString PtyProcess::readAll(bool block)
+{
+    QCString ret;
+
+    if (!m_Inbuf.isEmpty()) 
+    {
+        // if there is still something in the buffer, we need not block.
+        // we should still try to read any further output, from the fd, though.
+        block = false;
+        ret = m_Inbuf;
+        m_Inbuf.resize(0);
+    }
+
+    int flags = fcntl(m_Fd, F_GETFL);
+    if (flags < 0) 
+    {
+        kdError(900) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
+        return ret;
+    }
+    int oflags = flags;
+    if (block)
+        flags &= ~O_NONBLOCK;
+    else
+        flags |= O_NONBLOCK;
+
+    if ((flags != oflags) && (fcntl(m_Fd, F_SETFL, flags) < 0))
+    {
+       // We get an error here when the child process has closed 
+       // the file descriptor already.
+       return ret;
+    }
+
+    int nbytes;
+    char buf[256];
+    while (1) 
+    {
+        nbytes = read(m_Fd, buf, 255);
+        if (nbytes == -1) 
+        {
+            if (errno == EINTR)
+                continue;
+            else break;
+        }
+        if (nbytes == 0)
+            break;        // eof
+
+        buf[nbytes] = '\000';
+        ret += buf;
+        break;
+    }
+
+    return ret;
+}
+
 
 void PtyProcess::writeLine(const QCString &line, bool addnl)
 {
@@ -452,17 +506,24 @@ int PtyProcess::waitForChild()
 
         if (ret) 
         {
-            QCString line = readLine(false);
-            while (!line.isNull()) 
+            QCString output = readAll(false);
+            while (!output.isNull()) 
             {
-                if (!m_Exit.isEmpty() && !qstrnicmp(line, m_Exit, m_Exit.length()))
-                    kill(m_Pid, SIGTERM);
+                if (!m_Exit.isEmpty())
+                {
+                    // match exit string only at line starts
+                    int pos = output.find(m_Exit);
+                    if ((pos >= 0) && ((pos == 0) || (output.at (pos - 1) == '\n')))
+                    {
+                        kill(m_Pid, SIGTERM);
+                    }
+                }
                 if (m_bTerminal) 
                 {
-                    fputs(line, stdout);
-                    fputc('\n', stdout);
+                    fputs(output, stdout);
+                    fflush(stdout);
                 }
-                line = readLine(false);
+                output = readAll(false);
             }
         }
 
