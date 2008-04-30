@@ -21,6 +21,7 @@
 #include "kmenu.h"
 #include "khbox.h"
 
+#include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
@@ -40,24 +41,8 @@
 class KMenu::KMenuPrivate
 {
 public:
-    KMenuPrivate (KMenu *_parent)
-        : parent(_parent)
-        , noMatches(false)
-        , shortcuts(false)
-        , autoExec(false)
-        , lastHitAction(0L)
-        , mouseButtons(Qt::NoButton)
-        , keyboardModifiers(Qt::NoModifier)
-        , ctxMenu(0)
-        , highlightedAction(0)
-    {
-        resetKeyboardVars();
-    }
-
-    ~KMenuPrivate ()
-    {
-        delete ctxMenu;
-    }
+    KMenuPrivate (KMenu *_parent);
+    ~KMenuPrivate ();
 
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
@@ -82,7 +67,55 @@ public:
     // support for RMB menus on menus
     QMenu* ctxMenu;
     QPointer<QAction> highlightedAction;
+
+    class EventSniffer;
+    EventSniffer *eventSniffer;
 };
+
+class KMenu::KMenuPrivate::EventSniffer
+    : public QObject
+{
+public:
+    EventSniffer(QObject *parent = 0)
+        : QObject(parent) { }
+
+    ~EventSniffer() { }
+
+    bool eventFilter(QObject *object, QEvent *event)
+    {
+        Q_UNUSED(object);
+
+        if (event->type() == QEvent::Paint ||
+            event->type() == QEvent::KeyPress ||
+            event->type() == QEvent::KeyRelease) {
+            return false;
+        }
+
+        event->accept();
+        return true;
+    }
+};
+
+KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
+    : parent(_parent)
+    , noMatches(false)
+    , shortcuts(false)
+    , autoExec(false)
+    , lastHitAction(0L)
+    , mouseButtons(Qt::NoButton)
+    , keyboardModifiers(Qt::NoModifier)
+    , ctxMenu(0)
+    , highlightedAction(0)
+    , eventSniffer(new EventSniffer)
+{
+    resetKeyboardVars();
+}
+
+KMenu::KMenuPrivate::~KMenuPrivate ()
+{
+    delete ctxMenu;
+    delete eventSniffer;
+}
 
 
 /**
@@ -143,6 +176,7 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
 
     QWidgetAction *action = new QWidgetAction(this);
     QToolButton *titleButton = new QToolButton(this);
+    titleButton->installEventFilter(d->eventSniffer);
     titleButton->setDefaultAction(buttonAction);
     titleButton->setDown(true); // prevent hover style changes in some styles
     titleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
