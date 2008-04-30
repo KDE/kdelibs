@@ -96,6 +96,7 @@ namespace Kross {
                 const QString trace = m_engine->uncaughtExceptionBacktrace().join("\n");
                 krossdebug( QString("%1, line:%2, backtrace:\n%3").arg(err).arg(linenr).arg(trace) );
                 m_script->action()->setError(err, trace, linenr);
+                m_engine->clearExceptions();
             }
 
             void addObject(QObject* object, const QString& name = QString()) {
@@ -177,7 +178,13 @@ void EcmaScript::execute()
     //krossdebug( QString("EcmaScript::execute fileName=%1 scriptCode=\n%2").arg(fileName).arg(scriptCode) );
 
     Q_ASSERT( d->m_engine );
+
+    if( d->m_engine->hasUncaughtException() ) {
+        d->m_engine->clearExceptions();
+    }
+
     d->m_engine->evaluate( scriptCode, fileName );
+
     if( d->m_engine->hasUncaughtException() ) {
         d->handleException();
         return;
@@ -194,11 +201,12 @@ QStringList EcmaScript::functionNames()
         return QStringList();
     }
     QStringList names;
-    QScriptValueIterator it( d->m_self ); //d->m_engine->globalObject()
+    QScriptValueIterator it( d->m_engine->globalObject() );
     while( it.hasNext() ) {
         it.next();
-        if( it.value().isFunction() )
+        if( it.value().isFunction() ) {
             names << it.name();
+        }
     }
     return names;
 }
@@ -210,16 +218,19 @@ QVariant EcmaScript::callFunction(const QString& name, const QVariantList& args)
         return QVariant();
     }
 
-    QScriptValue function = d->m_self.property(name);
+    QScriptValue obj = d->m_engine->globalObject();
+    QScriptValue function = obj.property(name);
     if( ! function.isFunction() ) {
-        krosswarning( QString("EcmaScript::callFunction No such function '%1'").arg(name) );
+        QString err = QString("No such function '%1'").arg(name);
+        krosswarning( QString("EcmaScript::callFunction %1").arg(err) );
+        setError(err);
         return QVariant();
     }
 
     QScriptValueList arguments;
     foreach(const QVariant &v, args)
         arguments << d->m_engine->newVariant(v);
-    QScriptValue result = function.call(d->m_self, arguments);
+    QScriptValue result = function.call(obj, arguments);
     return result.toVariant();
 }
 
