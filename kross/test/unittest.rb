@@ -307,6 +307,10 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.name() == "TestObject1" )
 		assert( TestObject2.name() == "TestObject2" )
 
+		assert( TestObject1.func_qobject_qobject(true) == nil )
+		assert( TestObject1.func_qobject_qobject("String") == nil )
+		assert( TestObject1.func_qobject_qobject(nil) == nil )
+
 		assert( TestObject1.func_bool_bool(true) == TestObject2.func_bool_bool(true) )
 		assert( TestObject2.func_bool_bool(false) == TestObject2.func_bool_bool(false) )
 		assert( TestObject1.func_int_int(82396) == TestObject2.func_int_int(82396) )

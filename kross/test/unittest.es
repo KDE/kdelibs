@@ -99,14 +99,14 @@ var testobj1 = TestObject1
 var testobj2 = TestObject2
 
 // QObject
-tester.assert(self.name(), "MyAction");
-tester.assert(testobj1.name(), "TestObject1");
-tester.assert(testobj2.name(), "TestObject2");
+//tester.assert(self.name(), "MyAction");
+//tester.assert(testobj1.name(), "TestObject1");
+//tester.assert(testobj2.name(), "TestObject2");
 
-var objectCountBefore = self.qobjectNames().length;
-self.addQObject(self);
-tester.assert(objectCountBefore + 1, self.qobjectNames().length);
-tester.assert(self.qobject(self.name()).file(), self.file());
+//var objectCountBefore = self.qobjectNames().length;
+//self.addQObject(self);
+//tester.assert(objectCountBefore + 1, self.qobjectNames().length);
+//tester.assert(self.qobject(self.name()).file(), self.file());
 
 // bool
 tester.assert(testobj1.func_bool_bool(true), true);
@@ -192,9 +192,9 @@ tester.assertMap(testobj1.func_qvariantmap_qvariantmap(v), v)
 tester.assertMap(testobj1.func_qvariantmap_qvariantmap([]), [])
 
 // misc tests
-tester.assert(self.callFunction("name"), self.name());
-tester.assert(self.callFunction("code"), self.code());
-tester.assert(self.callFunction("isEnabled"), self.isEnabled());
+//tester.assert(self.callFunction("name"), self.name());
+//tester.assert(self.callFunction("code"), self.code());
+//tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 
 //TODO this seems to be a Kjs/WebKitScript/Qt related bug since both kjs from trunk and QtScript from Qt4.4 have that problem.
 //Problem: Seems a list in a list got flatten to one big list but for whatever reason it shows only up if wrapped in a QVariant :-/
@@ -214,8 +214,8 @@ tester.assert(self.callFunction("isEnabled"), self.isEnabled());
 //println( Variant("test")); //empty QVariant()
 
 // properties
-self.callFunction("setIconName",new Array("MyIconName"));
-tester.assert(self.callFunction("iconName"), "MyIconName");
+//self.callFunction("setIconName",new Array("MyIconName"));
+//tester.assert(self.callFunction("iconName"), "MyIconName");
 
 // test Kross::Object::Ptr and EcmaObject functionality
 function MyClass(result) {

@@ -175,6 +175,10 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.__toPointer__() )
 		self.assert_( self.object1 * 2 == self.object1.__toPointer__() * 2 )
 
+		self.assert_( self.object1.func_qobject_qobject(True) == None )
+		self.assert_( self.object1.func_qobject_qobject("String") == None )
+		self.assert_( self.object1.func_qobject_qobject(None) == None )
+
 	def testPropertyMembers(self):
 		self.object1.boolProperty = True
 		self.assert_( self.object1.boolProperty == True )
