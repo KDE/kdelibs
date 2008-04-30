@@ -214,7 +214,7 @@ void FileUndoManagerTest::testCopyFiles()
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::COPY, lst, d, job );
+    FileUndoManager::self()->recordCopyJob(job);
 
     QSignalSpy spyUndoAvailable( FileUndoManager::self(), SIGNAL(undoAvailable(bool)) );
     QVERIFY( spyUndoAvailable.isValid() );
@@ -270,7 +270,7 @@ void FileUndoManagerTest::testMoveFiles()
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::MOVE, lst, d, job );
+    FileUndoManager::self()->recordCopyJob(job);
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -313,7 +313,7 @@ void FileUndoManagerTest::testCopyDirectory()
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::COPY, lst, d, job );
+    FileUndoManager::self()->recordCopyJob(job);
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -334,7 +334,7 @@ void FileUndoManagerTest::testMoveDirectory()
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::MOVE, lst, d, job );
+    FileUndoManager::self()->recordCopyJob(job);
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -356,7 +356,7 @@ void FileUndoManagerTest::testRenameFile()
     lst.append(oldUrl);
     KIO::Job* job = KIO::moveAs( oldUrl, newUrl, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::RENAME, lst, newUrl, job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Rename, lst, newUrl, job );
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -378,7 +378,7 @@ void FileUndoManagerTest::testRenameDir()
     lst.append(oldUrl);
     KIO::Job* job = KIO::moveAs( oldUrl, newUrl, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::RENAME, lst, newUrl, job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Rename, lst, newUrl, job );
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -400,7 +400,7 @@ void FileUndoManagerTest::testCreateDir()
 
     KIO::SimpleJob* job = KIO::mkdir(url);
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::MKDIR, KUrl(), url, job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, KUrl(), url, job );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
     QVERIFY( QFile::exists(path) );
@@ -431,7 +431,7 @@ void FileUndoManagerTest::testTrashFiles()
     lst.append( srcSubDir() );
     KIO::Job* job = KIO::trash( lst, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::TRASH, lst, KUrl("trash:/"), job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Trash, lst, KUrl("trash:/"), job );
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -483,7 +483,7 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::COPY, lst, d, job );
+    FileUndoManager::self()->recordCopyJob(job);
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );

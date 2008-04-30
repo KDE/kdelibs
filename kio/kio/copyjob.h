@@ -70,9 +70,15 @@ namespace KIO {
 	/**
 	 * Defines the mode of the operation
 	 */
-        enum CopyMode{ Copy, Move, Link };
+        enum CopyMode { Copy, Move, Link };
 
         virtual ~CopyJob();
+
+	/**
+	 * Returns the mode of the operation (copy, move, or link),
+	 * depending on whether KIO::copy(), KIO::move() or KIO::link() was called.
+	 */
+        CopyMode operationMode() const;
 
 	/**
 	 * Returns the list of source URLs.

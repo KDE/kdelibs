@@ -110,7 +110,7 @@ public:
         , m_processedFiles(0)
         , m_processedDirs(0)
         , m_srcList(src)
-        , m_currentStatSrc(m_srcList.begin())
+        , m_currentStatSrc(m_srcList.constBegin())
         , m_bCurrentOperationIsLink(false)
         , m_bSingleFileCopy(false)
         , m_bOnlyRenames(mode==CopyJob::Move)
@@ -151,7 +151,7 @@ public:
     QList<CopyInfo> dirs;
     KUrl::List dirsToRemove;
     KUrl::List m_srcList;
-    KUrl::List::Iterator m_currentStatSrc;
+    KUrl::List::const_iterator m_currentStatSrc;
     bool m_bCurrentSrcIsDir;
     bool m_bCurrentOperationIsLink;
     bool m_bSingleFileCopy;
@@ -485,8 +485,8 @@ void CopyJobPrivate::slotReport()
 void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
     //Q_Q(CopyJob);
-    UDSEntryList::ConstIterator it = list.begin();
-    UDSEntryList::ConstIterator end = list.end();
+    UDSEntryList::ConstIterator it = list.constBegin();
+    UDSEntryList::ConstIterator end = list.constEnd();
     for (; it != end; ++it) {
         const UDSEntry& entry = *it;
         struct CopyInfo info;
@@ -604,7 +604,7 @@ void CopyJobPrivate::statNextSrc()
 void CopyJobPrivate::statCurrentSrc()
 {
     Q_Q(CopyJob);
-    if ( m_currentStatSrc != m_srcList.end() )
+    if ( m_currentStatSrc != m_srcList.constEnd() )
     {
         m_currentSrcURL = (*m_currentStatSrc);
         m_bURLDirty = true;
@@ -766,19 +766,19 @@ bool CopyJobPrivate::shouldOverwrite( const QString& path ) const
 {
     if ( m_bOverwriteAll )
         return true;
-    QStringList::ConstIterator sit = m_overwriteList.begin();
-    for( ; sit != m_overwriteList.end(); ++sit )
-        if ( path.startsWith( *sit ) )
+    Q_FOREACH(const QString& overwritePath, m_overwriteList) {
+        if ( path.startsWith(overwritePath) )
             return true;
+    }
     return false;
 }
 
 bool CopyJobPrivate::shouldSkip( const QString& path ) const
 {
-    QStringList::ConstIterator sit = m_skipList.begin();
-    for( ; sit != m_skipList.end(); ++sit )
-        if ( path.startsWith( *sit ) )
+    Q_FOREACH(const QString& skipPath, m_skipList) {
+        if ( path.startsWith(skipPath) )
             return true;
+    }
     return false;
 }
 
@@ -1445,7 +1445,7 @@ void CopyJobPrivate::deleteNextDir()
     {
         // This step is done, move on
         state = STATE_SETTING_DIR_ATTRIBUTES;
-        m_directoriesCopiedIterator = m_directoriesCopied.begin();
+        m_directoriesCopiedIterator = m_directoriesCopied.constBegin();
         setNextDirAttribute();
     }
 }
@@ -1453,11 +1453,11 @@ void CopyJobPrivate::deleteNextDir()
 void CopyJobPrivate::setNextDirAttribute()
 {
     Q_Q(CopyJob);
-    while (m_directoriesCopiedIterator != m_directoriesCopied.end() &&
+    while (m_directoriesCopiedIterator != m_directoriesCopied.constEnd() &&
            (*m_directoriesCopiedIterator).mtime == -1) {
         ++m_directoriesCopiedIterator;
     }
-    if ( m_directoriesCopiedIterator != m_directoriesCopied.end() ) {
+    if ( m_directoriesCopiedIterator != m_directoriesCopied.constEnd() ) {
         const KUrl url = (*m_directoriesCopiedIterator).uDest;
         const time_t mtime = (*m_directoriesCopiedIterator).mtime;
         const QDateTime dt = QDateTime::fromTime_t(mtime);
@@ -1472,8 +1472,8 @@ void CopyJobPrivate::setNextDirAttribute()
         // TODO: can be removed now. Or reintroduced as a fast path for local files
         // if launching even more jobs as done above is a performance problem.
         //
-        QLinkedList<CopyInfo>::Iterator it = m_directoriesCopied.begin();
-        for ( ; it != m_directoriesCopied.end() ; ++it ) {
+        QLinkedList<CopyInfo>::const_iterator it = m_directoriesCopied.constBegin();
+        for ( ; it != m_directoriesCopied.constEnd() ; ++it ) {
             const KUrl& url = (*it).uDest;
             if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
                 const QByteArray path = QFile::encodeName( url.path() );
@@ -1829,6 +1829,11 @@ void CopyJob::slotResult( KJob *job )
 void KIO::CopyJob::setDefaultPermissions( bool b )
 {
     d_func()->m_defaultPermissions = b;
+}
+
+KIO::CopyJob::CopyMode KIO::CopyJob::operationMode() const
+{
+    return d_func()->m_mode;
 }
 
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)

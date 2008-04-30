@@ -30,6 +30,7 @@ class KDateTime;
 namespace KIO
 {
 class Job;
+class CopyJob;
 class FileUndoManagerPrivate;
 class FileUndoManagerSingleton;
 class CommandRecorder;
@@ -125,7 +126,7 @@ public:
      */
     UiInterface* uiInterface() const;
 
-    enum CommandType { COPY, MOVE, RENAME, LINK, MKDIR, TRASH };
+    enum CommandType { Copy, Move, Rename, Link, Mkdir, Trash };
 
     /**
      * Record this job while it's happening and add a command for it so that the user can undo it.
@@ -135,6 +136,11 @@ public:
      * @param job the job to record
      */
     void recordJob(CommandType op, const KUrl::List &src, const KUrl &dst, KIO::Job *job);
+
+    /**
+     * Record this CopyJob while it's happening and add a command for it so that the user can undo it.
+     */
+    void recordCopyJob(KIO::CopyJob* copyJob);
 
     /**
      * @return true if undo is possible. Usually used for enabling/disabling the undo action.

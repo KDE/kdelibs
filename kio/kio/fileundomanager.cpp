@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <kdirnotify.h>
 #include <kglobal.h>
+#include <kio/copyjob.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
@@ -135,7 +136,7 @@ CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const KUrl::Li
   connect(job, SIGNAL(result(KJob*)),
           this, SLOT(slotResult(KJob*)));
 
-  if (op != FileUndoManager::MKDIR) {
+  if (op != FileUndoManager::Mkdir) {
       connect(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)),
               this, SLOT(slotCopyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
       connect(job, SIGNAL(copyingLinkDone(KIO::Job *,KUrl,QString,KUrl)),
@@ -165,7 +166,7 @@ void CommandRecorder::slotCopyingDone(KIO::Job *job, const KUrl &from, const KUr
   op.m_dst = to;
   op.m_mtime = mtime;
 
-  if (m_cmd.m_type == FileUndoManager::TRASH)
+  if (m_cmd.m_type == FileUndoManager::Trash)
   {
       Q_ASSERT(to.protocol() == "trash");
       QMap<QString, QString> metaData = job->metaData();
@@ -242,6 +243,23 @@ void FileUndoManager::recordJob(CommandType op, const KUrl::List &src, const KUr
     (void) new CommandRecorder(op, src, dst, job);
 }
 
+void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
+{
+    CommandType commandType;
+    switch (copyJob->operationMode()) {
+    case CopyJob::Copy:
+        commandType = Copy;
+        break;
+    case CopyJob::Move:
+        commandType = Move;
+        break;
+    case CopyJob::Link:
+        commandType = Link;
+        break;
+    }
+    recordJob(commandType, copyJob->srcUrls(), copyJob->destUrl(), copyJob);
+}
+
 void FileUndoManagerPrivate::addCommand(const UndoCommand &cmd)
 {
     broadcastPush(cmd);
@@ -258,17 +276,17 @@ QString FileUndoManager::undoText() const
         return i18n("Und&o");
 
     FileUndoManager::CommandType t = d->m_commands.top().m_type;
-    if (t == FileUndoManager::COPY)
+    if (t == FileUndoManager::Copy)
         return i18n("Und&o: Copy");
-    else if (t == FileUndoManager::LINK)
+    else if (t == FileUndoManager::Link)
         return i18n("Und&o: Link");
-    else if (t == FileUndoManager::MOVE)
+    else if (t == FileUndoManager::Move)
         return i18n("Und&o: Move");
-    else if (t == FileUndoManager::RENAME)
+    else if (t == FileUndoManager::Rename)
         return i18n("Und&o: Rename");
-    else if (t == FileUndoManager::TRASH)
+    else if (t == FileUndoManager::Trash)
         return i18n("Und&o: Trash");
-    else if (t == FileUndoManager::MKDIR)
+    else if (t == FileUndoManager::Mkdir)
         return i18n("Und&o: Create Folder");
     else
         assert(false);
@@ -300,18 +318,18 @@ void FileUndoManager::undo()
     d->m_current = cmd;
 
     BasicOperation::Stack& opStack = d->m_current.m_opStack;
-    // Note that opStack is empty for simple operations like MKDIR.
+    // Note that opStack is empty for simple operations like Mkdir.
 
     // Let's first ask for confirmation if we need to delete any file (#99898)
     KUrl::List fileCleanupStack;
     QStack<BasicOperation>::Iterator it = opStack.begin();
     for (; it != opStack.end() ; ++it) {
         BasicOperation::Type type = (*it).m_type;
-        if (type == BasicOperation::File && d->m_current.m_type == FileUndoManager::COPY) {
+        if (type == BasicOperation::File && d->m_current.m_type == FileUndoManager::Copy) {
             fileCleanupStack.append((*it).m_dst);
         }
     }
-    if (d->m_current.m_type == FileUndoManager::MKDIR) {
+    if (d->m_current.m_type == FileUndoManager::Mkdir) {
         fileCleanupStack.append(d->m_current.m_dst);
     }
     if (!fileCleanupStack.isEmpty()) {
@@ -482,7 +500,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
             kDebug(1203) << "symlink" << op.m_target << op.m_src;
             m_currentJob = KIO::symlink(op.m_target, op.m_src, KIO::Overwrite | KIO::HideProgressInfo);
         }
-        else if (m_current.m_type == FileUndoManager::COPY)
+        else if (m_current.m_type == FileUndoManager::Copy)
         {
             if (m_undoState == MOVINGFILES) // dest not stat'ed yet
             {
@@ -500,7 +518,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
             }
         }
         else if (m_current.isMoveCommand()
-                  || m_current.m_type == FileUndoManager::TRASH)
+                  || m_current.m_type == FileUndoManager::Trash)
         {
             kDebug(1203) << "file_move" << op.m_dst << op.m_src;
             m_currentJob = KIO::file_move(op.m_dst, op.m_src, -1, KIO::Overwrite | KIO::HideProgressInfo);
@@ -540,7 +558,7 @@ void FileUndoManagerPrivate::stepRemovingLinks()
     {
         m_undoState = REMOVINGDIRS;
 
-        if (m_dirCleanupStack.isEmpty() && m_current.m_type == FileUndoManager::MKDIR)
+        if (m_dirCleanupStack.isEmpty() && m_current.m_type == FileUndoManager::Mkdir)
             m_dirCleanupStack << m_current.m_dst;
     }
 }
