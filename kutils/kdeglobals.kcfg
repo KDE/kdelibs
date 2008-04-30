@@ -349,13 +349,6 @@
  <group name="KDE" >
   <entry key="AutoSelectDelay" type="String" />
   <entry key="DoubleClickInterval" type="String" />
-  <entry key="EffectAnimateCombo" type="String" />
-  <entry key="EffectAnimateMenu" type="String" />
-  <entry key="EffectAnimateTooltip" type="String" />
-  <entry key="EffectFadeMenu" type="String" />
-  <entry key="EffectFadeTooltip" type="String" />
-  <entry key="EffectNoTooltip" type="String" />
-  <entry key="EffectsEnabled" type="String" />
   <entry key="InsertTearOffHandle" type="String" />
   <entry key="ShowIconsOnPushButtons" type="String" />
   <entry key="SingleClick" type="String" />
@@ -521,11 +514,6 @@
   <entry key="IconText" type="Bool">
     <label>Show text on toolbar icons </label>
     <whatsthis>Whether text should be shown in addition to icons on toolbar icons</whatsthis>
-    <default>false</default>
-  </entry>
-  <entry key="TransparentMoving" type="Bool" >
-    <label>Transparent toolbars when moved</label>
-    <whatsthis>Whether toolbars should be visible when moved</whatsthis>
     <default>false</default>
   </entry>
  </group>
