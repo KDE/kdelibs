@@ -399,7 +399,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
      else
         execpath = exec;
   }
-  fprintf(stderr,"kdeinit4: preparing to launch %s\n", execpath.constData());
   if (!args)
   {
     argc = 1;
