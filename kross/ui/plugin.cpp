@@ -28,6 +28,8 @@
 #include <kross/core/actioncollection.h>
 #include <kio/netaccess.h>
 
+#include <QPointer>
+
 using namespace Kross;
 
 /// \internal d-pointer class
@@ -35,6 +37,7 @@ class ScriptingPlugin::ScriptingPluginPrivate
 {
 public:
     QString userActionsFile;
+    QHash<QString, QPointer<QObject> > objects;
 
     QDomElement menuFromName(QString const& name, const QDomDocument& document)
     {
@@ -67,6 +70,12 @@ void ScriptingPlugin::setDOMDocument(const QDomDocument &document, bool merge)
     KXMLGUIClient::setDOMDocument(doc, merge);
 }
 
+void ScriptingPlugin::addObject(QObject* object, const QString& name)
+{
+    QString n = name.isNull() ? object->objectName() : name;
+    d->objects.insert(n, object);
+}
+
 QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
 {
     QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
@@ -95,6 +104,12 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
     QDomElement menuElement = d->menuFromName(collection->name(), document);
 
     foreach(Kross::Action* action, collection->actions()) {
+        QHashIterator<QString, QPointer<QObject> > i(d->objects);
+        while(i.hasNext()) {
+            i.next();
+            action->addObject(i.value(), i.key());
+        }
+        
         // Create and append new Menu element if doesn't exist
         if(menuElement.isNull()) {
             menuElement = document.createElement("Menu");

@@ -80,6 +80,14 @@ public:
      */
     virtual void setDOMDocument (const QDomDocument &document, bool merge = false);
 
+    /**
+     * Add a QObject to the list of children. The object will be published to the scripting code.
+     * \param object The QObject instance that should be added to the list of children.
+     * \param name The name the QObject should be known under. If not defined, the
+     * QObject's objectName is used.
+     */
+    void addObject(QObject* object, const QString& name = QString());
+
 protected Q_SLOTS:
 
     /**
