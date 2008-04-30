@@ -455,13 +455,14 @@ int PtyProcess::waitForChild()
         if (ret)
         {
             QByteArray output = readAll(false);
+            bool lineStart = true;
             while (!output.isNull())
             {
                 if (!m_Exit.isEmpty())
                 {
                     // match exit string only at line starts
                     int pos = output.indexOf(m_Exit);
-                    if ((pos >= 0) && ((pos == 0) || (output.at (pos - 1) == '\n')))
+                    if ((pos >= 0) && ((pos == 0 && lineStart) || (output.at (pos - 1) == '\n')))
                     {
                         kill(m_Pid, SIGTERM);
                     }
@@ -471,6 +472,7 @@ int PtyProcess::waitForChild()
                     fputs(output, stdout);
                     fflush(stdout);
                 }
+                lineStart = output.endsWith( '\n' );
                 output = readAll(false);
             }
         }
