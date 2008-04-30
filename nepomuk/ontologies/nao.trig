@@ -244,7 +244,7 @@
 <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata> {
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao/metadata>
           a       nrl:GraphMetadata ;
-          nrl:coreGraphMetadataFor <http://semanticdesktop.org/ontologies/2007/08/15/nao> .
+          nrl:coreGraphMetadataFor <http://www.semanticdesktop.org/ontologies/2007/08/15/nao> .
 
 
     <http://www.semanticdesktop.org/ontologies/2007/08/15/nao>
