@@ -39,6 +39,8 @@ template <typename T> class KSharedPtr;
 typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 
 /**
+ * \class KConfigGroup kconfiggroup.h <KConfigGroup>
+ * 
  * A class for one specific group in a KConfig object.
  * 
  * If you want to access the top-level entries of a KConfig

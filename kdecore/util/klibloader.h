@@ -34,6 +34,8 @@
     extern "C" { KDE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
 
 /**
+ * \class KLibLoader klibloader.h <KLibLoader>
+ * 
  * The KLibLoader allows you to load libraries dynamically at runtime.
  * Dependent libraries are loaded automatically.
  *

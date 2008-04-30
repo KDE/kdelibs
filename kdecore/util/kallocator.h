@@ -32,6 +32,8 @@ template <typename T> class QList;
 
 
 /**
+ * \class KZoneAllocator kallocator.h <KZoneAllocator>
+ * 
  * Memory allocator for large groups of small objects.
  * This should be used for large groups of objects that are created and
  * destroyed together. When used carefully for this purpose it is faster

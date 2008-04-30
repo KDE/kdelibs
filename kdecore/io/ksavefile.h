@@ -29,6 +29,8 @@
 #include <kglobal.h>
 
 /**
+ * \class KSaveFile ksavefile.h <KSaveFile>
+ *
  * @brief Class to allow for atomic file I/O, as well as utility functions.
  *
  * The KSaveFile class has been made to write out changes to an existing

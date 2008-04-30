@@ -40,6 +40,8 @@ class KUrlPrivate;
 // (DF)
 
 /**
+ * \class KUrl kurl.h <KUrl>
+ * 
  * Represents and parses a URL.
  *
  * A prototypical URL looks like:
@@ -113,6 +115,8 @@ public:
   enum MimeDataFlags { DefaultMimeDataFlags = 0, NoTextExport = 1 };
 
   /**
+   * \class List kurl.h <KUrl>
+   * 
    * KUrl::List is a QList that contains KUrls with a few
    * convenience methods.
    * @see KUrl

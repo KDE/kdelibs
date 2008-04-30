@@ -25,6 +25,8 @@ class KConfigGroup;
 class KDesktopFilePrivate;
 
 /**
+ * \class KDesktopFile kdesktopfile.h <KDesktopFile>
+ * 
  * %KDE Desktop File Management.
  * This class implements %KDE's support for the freedesktop.org
  * <em>Desktop Entry Spec</em>.

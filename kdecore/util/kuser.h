@@ -45,6 +45,8 @@ struct group;
 
 
 /**
+ * \class KUser kuser.h <KUser>
+ * 
  * @short Represents a user on your system
  *
  * This class represents a user on your system. You can either get
@@ -244,6 +246,8 @@ private:
 };
 
 /**
+ * \class KUserGroup kuser.h <KUserGroup>
+ * 
  * @short Represents a group on your system
  *
  * This class represents a group on your system. You can either get

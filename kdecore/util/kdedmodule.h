@@ -31,6 +31,8 @@ class KDEDModulePrivate;
 class Kded;
 
 /**
+ * \class KDEDModule kdedmodule.h <KDEDModule>
+ * 
  * The base class for KDED modules.
  *
  * KDED modules are realized as shared

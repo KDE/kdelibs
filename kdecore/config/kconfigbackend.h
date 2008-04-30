@@ -37,6 +37,9 @@ class QFile;
 class QByteArray;
 class QDateTime;
 
+/**
+ * \class KConfigBackend kconfigbackend.h <KConfigBackEnd>
+ */
 class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
 {
     Q_OBJECT

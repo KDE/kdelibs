@@ -166,6 +166,8 @@ protected:
 };
 
 /**
+ * \class KGenericFactory kgenericfactory.h <KGenericFactory>
+ * 
  * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
@@ -256,6 +258,8 @@ protected:
 };
 
 /**
+ * \class KGenericFactory kgenericfactory.h <KGenericFactory>
+ * 
  * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the

@@ -31,6 +31,8 @@ class QDataStream;
 class KProtocolInfoPrivate;
 
 /**
+ * \class KProtocolInfo kprotocolinfo.h <KProtocolInfo>
+ * 
  * Information about I/O (Internet, etc.) protocols supported by KDE.
 
  * This class is useful if you want to know which protocols

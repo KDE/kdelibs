@@ -156,6 +156,8 @@ KComponentData name::componentData() \
 #define K_PLUGIN_FACTORY_DEFINITION(name, pluginRegistrations) K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, KPluginFactory, pluginRegistrations)
 
 /**
+ * \class KPluginFactory kpluginfactory.h <KPluginFactory>
+ * 
  * If you develop a library that is to be loaded dynamically at runtime, then
  * you should return a pointer to a KPluginFactory.
  *

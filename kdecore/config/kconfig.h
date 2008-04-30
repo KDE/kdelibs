@@ -39,6 +39,8 @@ class KEntryMap;
 class KConfigPrivate;
 
 /**
+ * \class KConfig kconfig.h <KConfig>
+ * 
  * \brief The central class of the KDE configuration data system.
  *
  * Quickstart:

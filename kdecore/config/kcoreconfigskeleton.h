@@ -37,6 +37,8 @@
 
   class KConfigSkeletonItemPrivate;
   /**
+   * \class KConfigSkeletonItem kcoreconfigskeleton.h <KConfigSkeletonItem>
+   * 
    * @short Class for storing a preferences setting
    * @author Cornelius Schumacher
    * @see KCoreConfigSkeleton
@@ -197,6 +199,9 @@
   };
 
 
+/**
+ * \class KConfigSkeletonGenericItem kcoreconfigskeleton.h <KConfigSkeletonGenericItem>
+ */
 template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
@@ -288,6 +293,8 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
   };
 
   /**
+   * \class KCoreConfigSkeleton kcoreconfigskeleton.h <KCoreConfigSkeleton>
+   * 
    * @short Class for handling preferences settings for an application.
    * @author Cornelius Schumacher
    * @see KConfigSkeletonItem

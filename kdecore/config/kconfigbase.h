@@ -32,6 +32,9 @@ class QStringList;
 class KConfigGroup;
 class KConfigBasePrivate;
 
+/**
+ * \class KConfigBase kconfigbase.h <KConfigBase>
+ */
 class KDECORE_EXPORT KConfigBase
 {
 public:

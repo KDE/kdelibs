@@ -26,6 +26,8 @@
 #include <ksharedptr.h>
 
 /**
+ * \class KSharedConfig ksharedconfig.h <KSharedConfig>
+ * 
  * KConfig variant using shared memory
  *
  * KSharedConfig provides a reference counted, shared memory variant

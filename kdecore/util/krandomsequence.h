@@ -22,6 +22,8 @@
 #include <QtCore/QList>
 
 /**
+ * \class KRandomSequence krandomsequence.h <KRandomSequence>
+ * 
  * A class to create a pseudo-random sequence
  *
  * Given a seed number, this class will produce a sequence of

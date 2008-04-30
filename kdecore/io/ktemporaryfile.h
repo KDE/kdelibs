@@ -29,6 +29,8 @@
 class KTemporaryFilePrivate;
 
 /**
+ * \class KTemporaryFile ktemporaryfile.h <KTemporaryFile>
+ *
  * @brief A QTemporaryFile that will save in the KDE temp directory.
  *
  * This class derives from QTemporaryFile and makes sure that your temporary

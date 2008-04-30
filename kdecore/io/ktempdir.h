@@ -24,6 +24,8 @@
 #include <QtCore/QString>
 
 /**
+ * \class KTempDir ktempdir.h <KTempDir>
+ * 
  * @brief Create a unique directory for temporary use.
  *
  * The KTempDir class creates a unique directory for temporary use.

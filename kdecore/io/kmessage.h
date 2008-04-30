@@ -100,6 +100,8 @@ namespace KMessage
 }
 
 /**
+ * \class KMessageHandler kmessage.h <KMessageHandler>
+ * 
  * @brief Abstract class for KMessage handler.
  * This class define how KMessage display a message.
  *

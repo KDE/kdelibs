@@ -27,6 +27,8 @@
 class QString;
 
 /**
+ * \class KLockFile klockfile.h <KLockFile>
+ * 
  * The KLockFile class provides NFS safe lockfiles.
  *
  * @author Waldo Bastian <bastian@kde.org>

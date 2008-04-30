@@ -27,6 +27,8 @@
 #include <QtCore/QString>
 
 /**
+ * \headerfile krandom.h <KRandom>
+ * 
  * @short Helper class to create random data
  *
  * This namespace provides methods which generate random data.

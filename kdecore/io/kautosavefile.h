@@ -28,6 +28,8 @@
 
 class KAutoSaveFilePrivate;
 /**
+ * \class KAutoSaveFile kautosavefile.h <KAutoSaveFile>
+ * 
  * @brief Creates and manages an "auto-save" file.
  * Autosave files are temporary files that applications use to store
  * the unsaved data in a file they have open for

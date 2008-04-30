@@ -34,6 +34,8 @@
 typedef QSharedData KShared;
 
 /**
+ * \class KSharedPtr ksharedptr.h <KSharedPtr>
+ * 
  * Can be used to control the lifetime of an object that has derived
  * QSharedData. As long a someone holds
  * a KSharedPtr on some QSharedData object it won't become deleted but

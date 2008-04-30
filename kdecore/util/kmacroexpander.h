@@ -31,6 +31,8 @@ template <typename KT, typename VT> class QHash;
 class KMacroExpanderBasePrivate;
 
 /**
+ * \class KMacroExpanderBase kmacroexpander.h <KMacroExpanderBase>
+ * 
  * Abstract base class for the worker classes behind the KMacroExpander namespace
  * and the KCharMacroExpander and KWordMacroExpander classes.
  *
@@ -163,6 +165,8 @@ private:
 };
 
 /**
+ * \class KWordMacroExpander kmacroexpander.h <KMacroExpanderBase>
+ * 
  * Abstract base class for simple word macro substitutors. Use this instead of
  * the functions in the KMacroExpander namespace if speculatively pre-filling
  * the substitution map would be too expensive.
@@ -234,6 +238,8 @@ protected:
 };
 
 /**
+ * \class KCharMacroExpander kmacroexpander.h <KMacroExpanderBase>
+ * 
  * Abstract base class for single char macro substitutors. Use this instead of
  * the functions in the KMacroExpander namespace if speculatively pre-filling
  * the substitution map would be too expensive.

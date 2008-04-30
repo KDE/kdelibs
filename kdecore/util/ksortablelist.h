@@ -26,6 +26,8 @@
 #include <QtCore/QList>
 
 /**
+ * \class KSortableItem ksortablelist.h <KSortableItem>
+ * 
  * KSortableItem is a QPair that provides several operators
  * for sorting.
  * @see KSortableList
@@ -127,6 +129,8 @@ public:
 
 
 /**
+ * \class KSortableList ksortablelist.h <KSortableList>
+ * 
  * KSortableList is a QList which associates a key with each item in the list.
  * This key is used for sorting when calling sort().
  *

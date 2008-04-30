@@ -33,6 +33,8 @@ class KService;
 class KPluginLoaderPrivate;
 
 /**
+ * \class KPluginLoader kpluginloader.h <KPluginLoader>
+ * 
  * This class can be used to dynamically load a plugin library at runtime.
  *
  * This class makes sure that the Qt and KDE versions used to compile this library aren't newer then
