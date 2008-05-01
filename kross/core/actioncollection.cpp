@@ -29,6 +29,8 @@
 #include <QtCore/QFileInfo>
 #include <QtXml/QDomAttr>
 
+#include <kicon.h>
+
 using namespace Kross;
 
 namespace Kross {

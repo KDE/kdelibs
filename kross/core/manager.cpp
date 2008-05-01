@@ -32,6 +32,7 @@
 #include <QtCore/QCoreApplication>
 
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 extern "C"
 {

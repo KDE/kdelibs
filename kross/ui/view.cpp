@@ -48,6 +48,7 @@
 #include <kactioncollection.h>
 #include <kurlrequester.h>
 #include <kicondialog.h>
+#include <klocale.h>
 
 //#include <ktar.h>
 //#include <kio/netaccess.h>

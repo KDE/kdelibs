@@ -22,8 +22,8 @@
 
 #include <kross/core/kross_export.h>
 
-#include <klocale.h>
-#include <kicon.h>
+#include <QtCore/QString>
+#include <QtCore/QMetaType> // needed to work around weird compile-probs
 
 namespace Kross {
 

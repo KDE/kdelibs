@@ -21,12 +21,15 @@
 #define KROSS_OBJECT_H
 
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 #include <QtCore/QSharedData>
 
 #include "krossconfig.h"
 #include "errorinterface.h"
+
+#include <ksharedptr.h>
 
 namespace Kross {
 
