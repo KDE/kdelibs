@@ -72,6 +72,16 @@ public:
     EventSniffer *eventSniffer;
 };
 
+/**
+  * @internal
+  *
+  * This event sniffer is an event filter which will be installed
+  * on the title of the menu, which is a QToolButton. This will
+  * prevent clicks (what would change down and focus properties on
+  * the title) on the title of the menu.
+  *
+  * @author Rafael Fernández López <ereslibre@kde.org>
+  */
 class KMenu::KMenuPrivate::EventSniffer
     : public QObject
 {
@@ -176,7 +186,7 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
 
     QWidgetAction *action = new QWidgetAction(this);
     QToolButton *titleButton = new QToolButton(this);
-    titleButton->installEventFilter(d->eventSniffer);
+    titleButton->installEventFilter(d->eventSniffer); // prevent clicks on the title of the menu
     titleButton->setDefaultAction(buttonAction);
     titleButton->setDown(true); // prevent hover style changes in some styles
     titleButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
