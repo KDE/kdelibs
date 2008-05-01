@@ -23,7 +23,7 @@
 #include <kross/core/kross_export.h>
 
 #include <QtCore/QString>
-#include <QtCore/QMetaType> // needed to work around weird compile-probs
+#include <QtCore/QMetaType>
 
 namespace Kross {
 
