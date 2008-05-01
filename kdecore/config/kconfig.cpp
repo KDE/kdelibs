@@ -126,8 +126,8 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
     // as dirty erroneously
     bool dirtied = false;
 
-    foreach (const KEntryKey& key, entryMap.keys()) {
-        const QByteArray& group = key.mGroup;
+    for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt) {
+        const QByteArray& group = entryMapIt.key().mGroup;
 
         if (!group.startsWith(source)) // nothing to do
             continue;
@@ -136,7 +136,7 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
         if (group.length() > len && group[len] != '\x1d')
             continue;
 
-        KEntryKey newKey = key;
+        KEntryKey newKey = entryMapIt.key();
 
         if (flags & KConfigBase::Localized) {
             newKey.bLocal = true;
@@ -145,7 +145,7 @@ void KConfigPrivate::copyGroup(const QByteArray& source, const QByteArray& desti
         if (!sameName)
             newKey.mGroup.replace(0, len, destination);
 
-        KEntry entry = entryMap[key];
+        KEntry entry = entryMap[ entryMapIt.key() ];
         dirtied = entry.bDirty = flags & KConfigBase::Persistent;
 
         if (flags & KConfigBase::Global) {
@@ -215,10 +215,10 @@ QStringList KConfig::groupList() const
     Q_D(const KConfig);
     QStringList groups;
 
-    foreach (const KEntryKey& key, d->entryMap.keys())
-        if (key.mKey.isNull() && !key.mGroup.isEmpty() &&
-            key.mGroup != "<default>" && key.mGroup != "$Version")
-            groups << QString::fromUtf8(key.mGroup);
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt)
+        if (entryMapIt.key().mKey.isNull() && !entryMapIt.key().mGroup.isEmpty() &&
+            entryMapIt.key().mGroup != "<default>" && entryMapIt.key().mGroup != "$Version")
+            groups << QString::fromUtf8(entryMapIt.key().mGroup);
 
     return groups;
 }
@@ -228,10 +228,10 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
     QByteArray theGroup = group + '\x1d';
     QSet<QString> groups;
 
-    foreach (const KEntryKey& key, entryMap.keys())
-        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup))
+    for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt)
+        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup))
         {
-            QString groupname = QString::fromUtf8(key.mGroup.mid(theGroup.length()));
+            QString groupname = QString::fromUtf8(entryMapIt.key().mGroup.mid(theGroup.length()));
             groups << groupname.left(groupname.indexOf('\x1d'));
         }
 
@@ -643,9 +643,9 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
     QSet<QByteArray> groups;
     groups << aGroup;
 
-    foreach (const KEntryKey& key, d->entryMap.keys()) {
-        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
-            groups << key.mGroup;
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
+        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup)) {
+            groups << entryMapIt.key().mGroup;
         }
     }
 
