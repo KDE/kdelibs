@@ -207,7 +207,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
      *
      * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
      */
-    KDE_DEPRECATED void setHoverCloseButton( bool enable );
+    QT_MOC_COMPAT void setHoverCloseButton( bool enable );
 
     /**
      * If \a delayed is true, a close button will be shown on mouse hover
@@ -215,7 +215,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
      *
      * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
      */
-    KDE_DEPRECATED void setHoverCloseButtonDelayed( bool delayed );
+    QT_MOC_COMPAT void setHoverCloseButtonDelayed( bool delayed );
 
     /**
      * If enabled, a close button is available for each tab. The

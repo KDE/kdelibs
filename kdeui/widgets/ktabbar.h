@@ -160,9 +160,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar
 
   protected Q_SLOTS:
     /** @deprecated */
-    void closeButtonClicked();
+    QT_MOC_COMPAT void closeButtonClicked();
     /** @deprecated */
-    void enableCloseButton();
+    QT_MOC_COMPAT void enableCloseButton();
     virtual void activateDragSwitchTab();
 
   protected:
