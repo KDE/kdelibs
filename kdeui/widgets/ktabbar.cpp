@@ -356,7 +356,7 @@ QSize KTabBar::tabSizeHint( int index ) const
 {
   QSize size = QTabBar::tabSizeHint( index );
   if ( isCloseButtonEnabled() )
-      size.rwidth() += KIconLoader::SizeSmall * 2;
+      size.rwidth() += KIconLoader::SizeSmall * 3 / 2;
 
   return size;
 }
