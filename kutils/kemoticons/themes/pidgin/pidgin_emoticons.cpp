@@ -40,7 +40,7 @@ PidginEmoticons::~PidginEmoticons()
 
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
 
     bool start;
     for (int i = 0; i < m_text.size(); ++i) {
@@ -96,13 +96,13 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool 
 
     QString emoticon = QString("%1 %2").arg(QFileInfo(emo).fileName()).arg(text);
     m_text.insert(i + 1, emoticon);
-    d->m_emoticonsMap[emo] = splitted;
+    (*emoticonsMap())[emo] = splitted;
     return true;
 }
 
 void PidginEmoticons::save()
 {
-    QFile fp(d->m_themePath + '/' + d->m_fileName);
+    QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
         kWarning() << fp.fileName() << "doesn't exist!";
@@ -118,7 +118,7 @@ void PidginEmoticons::save()
 
     if (m_text.indexOf(QRegExp("^Icon=.*", Qt::CaseInsensitive)) == -1) {
         int i = m_text.indexOf(QRegExp("^Description=.*", Qt::CaseInsensitive));
-        QString file = QFileInfo(d->m_emoticonsMap.keys().value(0)).fileName();
+        QString file = QFileInfo(emoticonsMap()->keys().value(0)).fileName();
         m_text.insert(i + 1, "Icon=" + file);
     }
 
@@ -173,9 +173,9 @@ bool PidginEmoticons::loadTheme(const QString &path)
         int i = 1;
         if (splitted.at(0) == "!") {
             i = 2;
-            emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + splitted.at(1));
+            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + splitted.at(1));
         } else {
-            emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + splitted.at(0));
+            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + splitted.at(0));
         }
 
         QStringList sl;
@@ -185,7 +185,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
             }
         }
 
-        d->m_emoticonsMap[emo] = sl;
+        (*emoticonsMap())[emo] = sl;
     }
 
     fp.close();

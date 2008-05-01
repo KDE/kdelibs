@@ -42,7 +42,7 @@ XmppEmoticons::~XmppEmoticons()
 
 bool XmppEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull())
@@ -61,7 +61,7 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
 
                 if (!sde.isNull() && sde.tagName() == "object" && sde.text() == emoticon) {
                     fce.removeChild(de);
-                    d->m_emoticonsMap.remove(d->m_emoticonsMap.key(emo.split(" ")));
+                    emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
                     return true;
                 }
             }
@@ -100,13 +100,13 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, bool co
     emoElement.appendChild(txt);
     emoticon.appendChild(emoElement);
 
-    d->m_emoticonsMap[emo] = splitted;
+    (*emoticonsMap())[emo] = splitted;
     return true;
 }
 
 void XmppEmoticons::save()
 {
-    QFile fp(d->m_themePath + '/' + d->m_fileName);
+    QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
         kWarning() << fp.fileName() << "doesn't exist!";
@@ -158,7 +158,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
 
     QDomNodeList nl = fce.childNodes();
 
-    d->m_emoticonsMap.clear();
+    emoticonsMap()->clear();
 
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
@@ -180,13 +180,13 @@ bool XmppEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + emo);
+            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + emo);
 
             if (emo.isNull()) {
                 continue;
             }
 
-            d->m_emoticonsMap[emo] = sl;
+            (*emoticonsMap())[emo] = sl;
         }
     }
 

@@ -28,15 +28,7 @@
 
 #include <KDE/KServiceTypeTrader>
 
-class KEmoticonsPrivate
-{
-public:
-    KEmoticonsPrivate();
-    void loadServiceList();
-    KEmoticonsTheme *loadThemeLibrary(const KService::Ptr &service);
-
-    QList<KService::Ptr> m_loaded;
-};
+class KEmoticonsPrivate;
 
 class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
@@ -45,18 +37,16 @@ public:
     KEmoticons();
     ~KEmoticons();
 
-    KEmoticonsTheme *getTheme();
-    KEmoticonsTheme *getTheme(const QString &name);
-    static QString getCurrentThemeName();
+    KEmoticonsTheme *theme();
+    KEmoticonsTheme *theme(const QString &name);
+    static QString currentThemeName();
 
-    static QStringList getThemeList();
+    static QStringList themeList();
 
     static void setTheme(KEmoticonsTheme *theme);
     static void setTheme(const QString &theme);
 
     KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
-
-    QList<KService::Ptr> loadedServices();
 
     QStringList installTheme(const QString &archiveName);
 

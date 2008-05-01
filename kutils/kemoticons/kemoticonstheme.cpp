@@ -28,6 +28,16 @@
 #include <KStandardDirs>
 #include <KDebug>
 
+class KEmoticonsThemePrivate
+{
+public:
+    KEmoticonsThemePrivate();
+    QString m_themeName;
+    QString m_fileName;
+    QString m_themePath;
+    QMap<QString, QStringList> m_emoticonsMap;
+};
+
 KEmoticonsThemePrivate::KEmoticonsThemePrivate()
 {
 }
@@ -82,9 +92,19 @@ void KEmoticonsTheme::setThemeName(const QString &name)
     d->m_themeName = name;
 }
 
-QMap<QString, QStringList> KEmoticonsTheme::emoticonsMap()
+QString KEmoticonsTheme::themePath()
 {
-    return d->m_emoticonsMap;
+    return d->m_themePath;
+}
+
+QString KEmoticonsTheme::fileName()
+{
+    return d->m_fileName;
+}
+
+QMap<QString, QStringList> *KEmoticonsTheme::emoticonsMap()
+{
+    return &(d->m_emoticonsMap);
 }
 
 void KEmoticonsTheme::createNew()
@@ -274,5 +294,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
 
     return result;
 }
+
+
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

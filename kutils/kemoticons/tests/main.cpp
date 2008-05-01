@@ -48,18 +48,13 @@ class KEmoTest : public QWidget
 
 KEmoTest::KEmoTest()
 {
-    QStringList tl = e.getThemeList();
+    QStringList tl = KEmoticons::themeList();
     kDebug() << "ThemeList:" << tl;
     
-    QList<KService::Ptr> srv = e.loadedServices();
-    foreach (KService::Ptr service, srv) {
-        kDebug()<<"name:"<<service->name();
-    }
+    t = e.theme();
     
-    t = e.getTheme();
-    
-    cb.addItems(e.getThemeList());
-    cb.setCurrentIndex(e.getThemeList().indexOf(t->themeName()));
+    cb.addItems(e.themeList());
+    cb.setCurrentIndex(e.themeList().indexOf(t->themeName()));
     
     QVBoxLayout *vb = new QVBoxLayout;
     vb->addWidget(&kl);
@@ -81,7 +76,7 @@ void KEmoTest::changed()
 void KEmoTest::changeTheme(const QString &theme)
 {
     delete t;
-    t = e.getTheme(theme);
+    t = e.theme(theme);
     changed();
 }
 

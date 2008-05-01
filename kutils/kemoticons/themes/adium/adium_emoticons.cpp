@@ -41,7 +41,7 @@ AdiumEmoticons::~AdiumEmoticons()
 
 bool AdiumEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("plist").firstChildElement("dict").firstChildElement("dict");
 
     if (fce.isNull()) {
@@ -58,7 +58,7 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
             }
 
             fce.removeChild(de);
-            d->m_emoticonsMap.remove(d->m_emoticonsMap.key(emo.split(" ")));
+            emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
             return true;
         }
     }
@@ -106,13 +106,13 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, bool c
 
     fce.appendChild(dict);
 
-    d->m_emoticonsMap[emo] = splitted;
+    (*emoticonsMap())[emo] = splitted;
     return true;
 }
 
 void AdiumEmoticons::save()
 {
-    QFile fp(d->m_themePath + '/' + d->m_fileName);
+    QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
         kWarning() << fp.fileName() << "doesn't exist!";
@@ -164,13 +164,13 @@ bool AdiumEmoticons::loadTheme(const QString &path)
 
     QDomNodeList nl = fce.childNodes();
 
-    d->m_emoticonsMap.clear();
+    emoticonsMap()->clear();
     QString name;
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
 
         if (!de.isNull() && de.tagName() == "key") {
-            name = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + de.text());
+            name = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.text());
             continue;
         } else if (!de.isNull() && de.tagName() == "dict") {
             QDomElement arr = de.firstChildElement("array");
@@ -185,7 +185,7 @@ bool AdiumEmoticons::loadTheme(const QString &path)
                 }
             }
             if (!name.isEmpty()) {
-                d->m_emoticonsMap[name] = sl;
+                (*emoticonsMap())[name] = sl;
                 name = QString();
             }
         }

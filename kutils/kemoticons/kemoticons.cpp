@@ -31,6 +31,15 @@
 #include <KZip>
 #include <KMimeType>
 
+class KEmoticonsPrivate
+{
+public:
+    KEmoticonsPrivate();
+    void loadServiceList();
+    KEmoticonsTheme *loadThemeLibrary(const KService::Ptr &service);
+
+    QList<KService::Ptr> m_loaded;
+};
 
 KEmoticonsPrivate::KEmoticonsPrivate()
 {
@@ -69,12 +78,12 @@ KEmoticons::~KEmoticons()
     delete d;
 }
 
-KEmoticonsTheme *KEmoticons::getTheme()
+KEmoticonsTheme *KEmoticons::theme()
 {
-    return getTheme(getCurrentThemeName());
+    return theme(currentThemeName());
 }
 
-KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
+KEmoticonsTheme *KEmoticons::theme(const QString &name)
 {
     for (int i = 0; i < d->m_loaded.size(); ++i) {
         QString fName = d->m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
@@ -89,14 +98,14 @@ KEmoticonsTheme *KEmoticons::getTheme(const QString &name)
     return 0;
 }
 
-QString KEmoticons::getCurrentThemeName()
+QString KEmoticons::currentThemeName()
 {
     KConfigGroup config(KSharedConfig::openConfig("kdeglobals"), "Emoticons");
     QString name = config.readEntry("emoticonsTheme", "kde4");
     return name;
 }
 
-QStringList KEmoticons::getThemeList()
+QStringList KEmoticons::themeList()
 {
     QStringList ls;
     QStringList themeDirs = KGlobal::dirs()->findDirs("emoticons", "");
@@ -130,11 +139,6 @@ KEmoticonsTheme *KEmoticons::newTheme(const QString &name, const KService::Ptr &
     theme->createNew();
 
     return theme;
-}
-
-QList<KService::Ptr> KEmoticons::loadedServices()
-{
-    return d->m_loaded;
 }
 
 QStringList KEmoticons::installTheme(const QString &archiveName)

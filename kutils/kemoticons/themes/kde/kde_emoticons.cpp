@@ -41,7 +41,7 @@ KdeEmoticons::~KdeEmoticons()
 
 bool KdeEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(d->m_emoticonsMap.key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
 
     if (fce.isNull())
@@ -52,7 +52,7 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
             fce.removeChild(de);
-            d->m_emoticonsMap.remove(d->m_emoticonsMap.key(emo.split(" ")));
+            emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
             return true;
         }
     }
@@ -79,13 +79,13 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, bool cop
         emoText.appendChild(txt);
         emoticon.appendChild(emoText);
     }
-    d->m_emoticonsMap[emo] = splitted;
+    (*emoticonsMap())[emo] = splitted;
     return true;
 }
 
 void KdeEmoticons::save()
 {
-    QFile fp(d->m_themePath + '/' + d->m_fileName);
+    QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
         kWarning() << fp.fileName() << "doesn't exist!";
@@ -136,7 +136,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
 
     QDomNodeList nl = fce.childNodes();
 
-    d->m_emoticonsMap.clear();
+    emoticonsMap()->clear();
 
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
@@ -153,13 +153,13 @@ bool KdeEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            QString emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + de.attribute("file"));
+            QString emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.attribute("file"));
 
             if (emo.isEmpty()) {
                 QList<QByteArray> ext = QImageReader::supportedImageFormats();
 
                 for (int j = 0; j < ext.size(); ++j) {
-                    emo = KGlobal::dirs()->findResource("emoticons", d->m_themeName + '/' + de.attribute("file") + '.' + ext.at(j));
+                    emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.attribute("file") + '.' + ext.at(j));
                     if (!emo.isEmpty()) {
                         break;
                     }
@@ -170,7 +170,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            d->m_emoticonsMap[emo] = sl;
+             (*emoticonsMap())[emo] = sl;
         }
     }
 

@@ -27,18 +27,7 @@
 #include <QtCore/QPair>
 
 class QString;
-
-
-class KEmoticonsThemePrivate
-{
-public:
-    KEmoticonsThemePrivate();
-    QString m_themeName;
-    QString m_fileName;
-    QString m_themePath;
-    QMap<QString, QStringList> m_emoticonsMap;
-
-};
+class KEmoticonsThemePrivate;
 
 class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
 {
@@ -99,8 +88,11 @@ public:
 
     QString themeName();
     void setThemeName(const QString &name);
+    
+    QString themePath();
+    QString fileName();
 
-    QMap<QString, QStringList> emoticonsMap();
+    QMap<QString, QStringList> *emoticonsMap();
 
     virtual void createNew();
 
