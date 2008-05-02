@@ -110,7 +110,7 @@ void Soap::call_tree(const QDomElement& element, const QString &endpoint)
 
 int Soap::call_soap(QDomElement element, const QString &endpoint)
 {
-    kDebug() << "calling soap";
+    //kDebug() << "calling soap";
     KUrl url(endpoint);
 
     QDomDocument doc;
@@ -166,7 +166,7 @@ void Soap::slotData(KIO::Job *job, const QByteArray& data)
 
 void Soap::slotResult(KJob *job)
 {
-    kDebug() << "Result!";
+    //kDebug() << "Result!";
 
     if ((job) && (job->error())) {
         //job->showErrorDialog(this);

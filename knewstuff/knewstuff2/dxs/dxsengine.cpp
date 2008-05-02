@@ -49,7 +49,7 @@ Dxs * DxsEngine::dxsObject(const Provider * provider)
 
 void DxsEngine::loadEntries(Provider *provider)
 {
-    kDebug() << "loading entries for provider " << provider->name().representation();
+    ////kDebug() << "loading entries for provider " << provider->name().representation();
     // Ensure that the provider offers DXS at all
     // Match DXS offerings with the engine's policy
     if (provider->webService().isValid()) {
@@ -96,11 +96,8 @@ void DxsEngine::slotCategories(QList<KNS::Category*> categories)
     Dxs * dxs = qobject_cast<Dxs*>(sender());
     Provider * provider = dxs->provider();
 
-    kDebug() << "slotCategories";
-
     for (QList<KNS::Category*>::iterator it = categories.begin(); it != categories.end(); ++it) {
         Category *category = (*it);
-        kDebug() << "calling entries on category: " << category->id();
         QStringList feeds = provider->feeds();
         for (int i = 0; i < feeds.size(); ++i) {
             dxs->call_entries(category->id(), feeds.at(i));
@@ -112,8 +109,6 @@ void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed)
 {
     Dxs * dxs = qobject_cast<Dxs*>(sender());
     Provider * provider = dxs->provider();
-
-    kDebug() << "slotEntriesLoadedDXS";
 
     // FIXME: we circumvent the cache now...
     for (Entry::List::Iterator it = list.begin(); it != list.end(); ++it) {

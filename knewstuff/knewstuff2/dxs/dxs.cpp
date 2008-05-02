@@ -92,6 +92,7 @@ void Dxs::call_entries(QString category, QString feed)
 
 void Dxs::call_comments(int id)
 {
+    kDebug() << "getting comments for entry: " << id;
     QDomDocument doc;
     QDomElement comments = doc.createElement("ns:GHNSComments");
     QDomElement eid = doc.createElement("id");
@@ -151,6 +152,7 @@ void Dxs::call_subscription(int id, bool subscribe)
 
 void Dxs::call_comment(int id, QString comment)
 {
+    kDebug() << "setting comment: " << comment << " for entry: " << id;
     QDomDocument doc;
     QDomElement ecomment = doc.createElement("ns:GHNSComment");
     QDomElement eid = doc.createElement("id");
@@ -238,7 +240,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
 
             entries << entry;
             thisFeed->addEntry(entry);
-            //kDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name();
+            kDebug() << "ENTRY: " << entry->name().representation() << " location: " << entry->payload().representation();
         }
 
         emit signalEntries(entries, thisFeed);
