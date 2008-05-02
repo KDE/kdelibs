@@ -33,6 +33,7 @@ class KEmoTest : public QWidget
     Q_OBJECT
     public:
         KEmoTest();
+        ~KEmoTest();
         
     public slots:
         void changed();
@@ -64,6 +65,11 @@ KEmoTest::KEmoTest()
     
     connect(&kl, SIGNAL(textChanged(const QString&)), this, SLOT(changed()));
     connect(&cb, SIGNAL(activated(const QString&)), this, SLOT(changeTheme(const QString&)));
+}
+
+KEmoTest::~KEmoTest()
+{
+    delete t;
 }
 
 void KEmoTest::changed()

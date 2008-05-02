@@ -30,6 +30,20 @@
 
 class KEmoticonsPrivate;
 
+/**
+ * This class can be used to retrieve, install, create emoticons theme.
+ * For example if you want to get the current emoticon theme
+ * @code
+ * KEmoticons ke;
+ * KEMoticonsTheme *et = ke.theme();
+ * //do whatever you want with the theme
+ * delete et;
+ * @endcode
+ * it can also be used to set the emoticon theme and the parse mode in the config file
+ * @note Remember to the delete the KEmoticonsTheme objects that you get with theme and newTheme
+ * @author Carlo Segato (brandon.ml@gmail.com)
+ */
+
 class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
     Q_OBJECT
