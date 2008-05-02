@@ -111,7 +111,15 @@ Word Filter::nextWord() const
 
     QString foundWord;
     int start = m_currentPosition;
-    while ( currentChar.isLetter() ) {
+
+    // Loop through the chars of the word, until the current char is not a letter
+    // anymore.
+    // Include apostrophes in the word, but not when it is the first character,
+    // as it might be used as 'quotes'.
+    // This way, we'll pass contractions like "I've" to the spellchecker, and
+    // only the word inside apostrophe-quotes, without the apostrophes.
+    while ( currentChar.isLetter() ||
+            ( currentChar == '\'' && start != m_currentPosition ) ) {
         if ( currentChar.category() & QChar::Letter_Lowercase )
             allUppercase = false;
 
@@ -125,6 +133,12 @@ Word Filter::nextWord() const
         foundWord += currentChar;
         //Test if currentPosition exists, otherwise go out
         if( (m_currentPosition + 1) >= m_buffer.length()) {
+
+            // Remove apostrophes at the end of the word, it probably comes from
+            // quoting with apostrophes.
+            if ( foundWord.endsWith( '\'' ) )
+                foundWord.chop( 1 );
+
             if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) ) {
                 ++m_currentPosition;
                 return nextWord();
@@ -137,6 +151,12 @@ Word Filter::nextWord() const
         ++m_currentPosition;
         currentChar = m_buffer.at( m_currentPosition );
     }
+
+    // Remove apostrophes at the end of the word, it probably comes from
+    // quoting with apostrophes.
+    if ( foundWord.endsWith( '\'' ) )
+        foundWord.chop( 1 );
+
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
     return Word( foundWord, start );
