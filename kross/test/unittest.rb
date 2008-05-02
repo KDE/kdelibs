@@ -316,6 +316,8 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_int_int(82396) == TestObject2.func_int_int(82396) )
 		assert( TestObject1.func_int_int(-672) == TestObject2.func_int_int(-672) )
 		assert( TestObject1.func_qstringlist_qstringlist( ["s1","s2"] ) == TestObject2.func_qstringlist_qstringlist( ["s1","s2"] ) )
+		
+		assert( TestObject1.TestTimer.objectName() == "TestTimer" )
 	end
 
 	def testProperties

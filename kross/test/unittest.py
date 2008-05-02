@@ -179,6 +179,8 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qobject_qobject("String") == None )
 		self.assert_( self.object1.func_qobject_qobject(None) == None )
 
+		self.assert_( self.object1["TestTimer"].objectName == "TestTimer" )
+
 	def testPropertyMembers(self):
 		self.object1.boolProperty = True
 		self.assert_( self.object1.boolProperty == True )

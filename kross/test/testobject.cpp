@@ -22,29 +22,21 @@
 #include <QtCore/QSize>
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
-
+#include <QtCore/QDate>
+#include <QtCore/QTimer>
 #include <QtGui/QColor>
 #include <QtGui/QFont>
 #include <QtGui/QBrush>
-#include <QtCore/QDate>
 
 TestObject::TestObject(QObject* parent, const QString& name)
     : QObject(parent)
 {
     setObjectName(name);
-qRegisterMetaType<TestObject*>("TestObject");
 
-    //kDebug() << "TestObject(const QString&) objectName=" << objectName();
+    qRegisterMetaType<TestObject*>("TestObject");
 
-    //connect(this, SIGNAL(testSignal()), this, SLOT(testSignalSlot()));
-    //connect(this, SIGNAL(stdoutSignal(const QString&)), this, SLOT(stdoutSlot(const QString&)));
-    //connect(this, SIGNAL(stderrSignal(const QString&)), this, SLOT(stderrSlot(const QString&)));
-
-    //Action->addQObject(this);
-    //Action->addSignal("stdout", this, SIGNAL(stdoutSignal(const QString&)));
-    //Action->addSlot("stderr", this, SLOT(stderrSlot(const QString&)));
-    //Action->addSignal("myTestSignal", this, SIGNAL(testSignal()));
-    //Action->addSlot("myTestSlot", this, SLOT(testSlot()));
+    QTimer* timer = new QTimer(this);
+    timer->setObjectName("TestTimer");
 }
 
 TestObject::~TestObject()
