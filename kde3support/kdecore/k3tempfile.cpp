@@ -261,7 +261,7 @@ K3TempFile::sync()
 
    if (mFd >= 0)
    {
-      if( qstrcmp( getenv( "KDE_EXTRA_FSYNC" ), "1" ) == 0 )
+      if( qgetenv( "KDE_EXTRA_FSYNC" ) == "1" )
       {
          result = FDATASYNC(mFd);
          if (result)
