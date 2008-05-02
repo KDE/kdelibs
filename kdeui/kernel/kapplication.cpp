@@ -74,7 +74,7 @@
 #endif
 
 #include <fcntl.h>
-#include <stdlib.h> // getenv(), srand(), rand()
+#include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #if defined Q_WS_X11
 //#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
@@ -433,7 +433,7 @@ int KApplication::xErrhandler( Display* dpy, void* err_ )
         // add KDE specific stuff here
         d->oldXErrorHandler( dpy, err );
     }
-    const QByteArray fatalXError = getenv("KDE_FATAL_X_ERROR");
+    const QByteArray fatalXError = qgetenv("KDE_FATAL_X_ERROR");
     if (!fatalXError.isEmpty()) {
         abort();
     }
@@ -565,7 +565,7 @@ void KApplicationPrivate::init(bool GUIenabled)
   (void) KGlobal::locale();
 
   KSharedConfig::Ptr config = componentData.config();
-  QByteArray readOnly = getenv("KDE_HOME_READONLY");
+  QByteArray readOnly = qgetenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && q->applicationName() != QLatin1String("kdialog"))
   {
     if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
@@ -794,7 +794,7 @@ void KApplication::saveState( QSessionManager& sm )
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
 
-    QByteArray multiHead = getenv("KDE_MULTIHEAD");
+    QByteArray multiHead = qgetenv("KDE_MULTIHEAD");
     if (multiHead.toLower() == "true") {
         // if multihead is enabled, we save our -display argument so that
         // we are restored onto the correct head... one problem with this
@@ -802,7 +802,7 @@ void KApplication::saveState( QSessionManager& sm )
         // to a different display (ie. if we are in a university lab and try,
         // try to restore a multihead session, our apps could be started on
         // someone else's display instead of our own)
-        QByteArray displayname = getenv("DISPLAY");
+        QByteArray displayname = qgetenv("DISPLAY");
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
@@ -882,7 +882,7 @@ void KApplicationPrivate::parseCommandLine( )
         componentData.setConfigName(config);
     }
 
-    bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
+    bool nocrashhandler = (!qgetenv("KDE_DEBUG").isEmpty());
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
         // set default crash handler / set emergency save function to nothing

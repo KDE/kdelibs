@@ -603,7 +603,7 @@ void KStartupInfo::appStarted( const QByteArray& startup_id )
         return;
     if( kapp != NULL )
         KStartupInfo::sendFinish( id );
-    else if( getenv( "DISPLAY" ) != NULL ) // don't rely on QX11Info::display()
+    else if( !qgetenv( "DISPLAY" ).isEmpty() ) // don't rely on QX11Info::display()
         {
 #ifdef Q_WS_X11
         Display* disp = XOpenDisplay( NULL );
@@ -1063,8 +1063,8 @@ void KStartupInfoId::initId( const QByteArray& id_P )
 #endif
         return;
         }
-    const char* startup_env = getenv( NET_STARTUP_ENV );
-    if( startup_env != NULL && *startup_env != '\0' )
+    const QByteArray startup_env = qgetenv( NET_STARTUP_ENV );
+    if( !startup_env.isEmpty() )
         { // already has id
         d->id = startup_env;
 #ifdef KSTARTUPINFO_ALL_DEBUG
@@ -1087,9 +1087,9 @@ bool KStartupInfoId::setupStartupEnv() const
 
 KStartupInfoId KStartupInfo::currentStartupIdEnv()
     {
-    const char* startup_env = getenv( NET_STARTUP_ENV );
+    const QByteArray startup_env = qgetenv( NET_STARTUP_ENV );
     KStartupInfoId id;
-    if( startup_env != NULL && *startup_env != '\0' )
+    if( !startup_env.isEmpty() )
         id.d->id = startup_env;
     else
         id.d->id = "0";

@@ -38,8 +38,6 @@
 
 #include <kdebug.h>
 
-#include <stdlib.h> // getenv
-
 class KHistoryComboBox::Private
 {
 public:
@@ -94,7 +92,7 @@ void KHistoryComboBox::init( bool useCompletion )
     d->myPixProvider = 0L;
 
     // obey HISTCONTROL setting
-    QByteArray histControl = getenv("HISTCONTROL");
+    QByteArray histControl = qgetenv("HISTCONTROL");
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 
