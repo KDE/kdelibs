@@ -32,7 +32,7 @@ class QProgressBar;
 class QPushButton;
 
 /**
- * Embedded progress indicator for the download dialogue.
+ * Embedded progress indicator for the download dialog.
  *
  * The indicator can display various asynchronous operations at once.
  * Each operation can also individually be cancelled.
@@ -43,22 +43,22 @@ class QProgressIndicator : public QFrame
 {
 Q_OBJECT
 public:
-	QProgressIndicator(QWidget *parent);
-	void addProgress(const QString & message, int percentage);
-	void removeProgress(const QString & message);
+    QProgressIndicator(QWidget *parent);
+    void addProgress(const QString & message, int percentage);
+    void removeProgress(const QString & message);
 public Q_SLOTS:
-	void slotClicked();
+    void slotClicked();
 signals:
-	void signalJobCanceled(const QString & message);
+    void signalJobCanceled(const QString & message);
 private:
-	void calculateAverage();
+    void calculateAverage();
 
-	QHash<QString, int> m_progress;
-	QHash<QString, QProgressBar*> m_progresswidgets;
-	QWidget *m_details;
-	QVBoxLayout *m_detailsvbox;
-	QProgressBar *m_pb;
-	QPushButton *m_pbdetails;
+    QHash<QString, int> m_progress;
+    QHash<QString, QProgressBar*> m_progresswidgets;
+    QWidget *m_details;
+    QVBoxLayout *m_detailsvbox;
+    QProgressBar *m_pb;
+    QPushButton *m_pbdetails;
 };
 
 #endif
