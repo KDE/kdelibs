@@ -140,6 +140,8 @@ void KTextEdit::Private::spellCheckerFinished()
    QTextCursor cursor(parent->document());
    cursor.clearSelection();
    parent->setTextCursor(cursor);
+   if (parent->highlighter())
+       parent->highlighter()->rehighlight();
 }
 
 void KTextEdit::Private::toggleAutoSpellCheck()
