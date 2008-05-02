@@ -45,7 +45,6 @@ public:
         m_command = EnginePrivate::command_none;
         m_uploaddialog = NULL;
         m_downloaddialog = NULL;
-        setDxsPolicy(DxsEngine::DxsNever); // FIXME: until KIO/cDXS gets fixed!
         m_uploadedEntry = NULL;
         m_modal = false;
         m_parent = parent;
@@ -355,8 +354,6 @@ void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
 // BIGFIXME: make this method go away when we are using goya
 void EnginePrivate::slotEntriesFinished()
 {
-    //kDebug() << "Engine: slotEntriesFinished";
-
     m_downloaddialog->refresh();
 }
 
