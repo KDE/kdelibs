@@ -124,12 +124,13 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         xmlSchemaTypes.insert( "unsignedShort", "quint16" );
         xmlSchemaTypes.insert( "byte", "char" );
         xmlSchemaTypes.insert( "unsignedByte", "unsigned char" );
-        xmlSchemaTypes.insert( "float", "float" );
+        xmlSchemaTypes.insert( "float", "double" );
         xmlSchemaTypes.insert( "double", "double" );
         xmlSchemaTypes.insert( "boolean", "bool" );
         xmlSchemaTypes.insert( "date", "QDate" );
         xmlSchemaTypes.insert( "time", "QTime" );
         xmlSchemaTypes.insert( "dateTime", "QDateTime" );
+        xmlSchemaTypes.insert( "duration", "QDateTime" ); // FIXME
         xmlSchemaTypes.insert( "string", "QString" );
         t = xmlSchemaTypes[type.mid(type.lastIndexOf( "#" ) + 1 )];
     }
@@ -167,7 +168,7 @@ QString Property::setterDeclaration( const ResourceClass* rc, bool withNamespace
         .arg( withNamespace ? QString("Nepomuk::%1::").arg(rc->name()) : QString() )
         .arg( name()[0].toUpper() )
         .arg( name().mid(1) )
-        .arg( list ? QString("s") : QString() )
+        .arg( list ? (name().endsWith("s") ? QLatin1String("es") : QLatin1String("s") ) : QString() )
         .arg( typeString( false, withNamespace ) );
 }
 
@@ -179,7 +180,7 @@ QString Property::getterDeclaration( const ResourceClass* rc, bool withNamespace
         .arg( withNamespace ? QString("Nepomuk::%1::").arg(rc->name()) : QString() )
         .arg( name()[0].toLower() )
         .arg( name().mid(1) )
-        .arg( list ? QString("s") : QString() );
+        .arg( list ? (name().endsWith("s") ? QLatin1String("es") : QLatin1String("s") ) : QString() );
 }
 
 
@@ -417,7 +418,7 @@ QString ResourceClass::allResourcesDefinition() const
 {
     return QString( "%1\n"
                     "{\n"
-                    "    return Nepomuk::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( \"%2\" ) );\n"
+                    "    return Nepomuk::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( QUrl(\"%2\") ) );\n"
                     "}\n" )
         .arg( allResourcesDeclaration( true ) )
         .arg( uri )
