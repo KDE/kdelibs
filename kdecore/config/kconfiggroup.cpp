@@ -426,8 +426,8 @@ QString KConfigGroupPrivate::expandString(const QString& value)
                 else
 #endif
                 {
-                    const char* pEnv = getenv( aVarName.toAscii() );
-                    if( pEnv )
+                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
+                    if( !pEnv.isEmpty() )
                     // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
                     // An environment variable may contain values in 8bit
                     // locale specified encoding or UTF8 encoding

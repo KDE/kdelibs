@@ -69,7 +69,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
     }
     const QString etc_kderc =
 #ifdef Q_WS_WIN
-        QFile::decodeName( QByteArray(::getenv("WINDIR")) + "\\kde4rc" );
+        QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
 #else
         QLatin1String("/etc/kde4rc");
 #endif

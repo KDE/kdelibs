@@ -70,7 +70,7 @@ static bool hasIPv6()
   KNetwork_initSocket();
 #endif 
 #ifdef AF_INET6
-  if (getenv("KDE_NO_IPV6") != 0L)
+  if (!qgetenv("KDE_NO_IPV6").isEmpty())
     return false;
 
 # ifdef Q_WS_WIN

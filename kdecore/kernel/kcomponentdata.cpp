@@ -146,7 +146,7 @@ void KComponentDataPrivate::configInit(const KComponentData &component)
     }
 
     // Check if we are excempt from kiosk restrictions
-    if (kde_kiosk_admin && !kde_kiosk_exception && !QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty()) {
+    if (kde_kiosk_admin && !kde_kiosk_exception && !qgetenv("KDE_KIOSK_NO_RESTRICTIONS").isEmpty()) {
         kde_kiosk_exception = true;
         sharedConfig = 0;
         configInit(component); // Reread...

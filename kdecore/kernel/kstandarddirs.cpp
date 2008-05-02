@@ -1061,7 +1061,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 
     if( p.isNull() )
     {
-        p = getenv( "PATH" );
+        p = QString::fromLocal8Bit( qgetenv( "PATH" ) );
     }
 
     QString delimiters(QChar(KPATH_SEPARATOR));
@@ -1389,7 +1389,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
 static QString readEnvPath(const char *env)
 {
-    QByteArray c_path = getenv(env);
+    QByteArray c_path = qgetenv(env);
     if (c_path.isEmpty())
         return QString();
     return QDir::fromNativeSeparators(QFile::decodeName(c_path));
@@ -1720,7 +1720,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         bool readProfiles = true;
 
-        if (kde_kiosk_admin && !QByteArray(getenv("KDE_KIOSK_NO_PROFILES")).isEmpty())
+        if (kde_kiosk_admin && !qgetenv("KDE_KIOSK_NO_PROFILES").isEmpty())
             readProfiles = false;
 
         QString userMapFile = cg.readEntry("userProfileMapFile");
@@ -1782,7 +1782,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     }
 
     // Process KIOSK restrictions.
-    if (!kde_kiosk_admin || QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
+    if (!kde_kiosk_admin || qgetenv("KDE_KIOSK_NO_RESTRICTIONS").isEmpty())
     {
         KConfigGroup cg(config, "KDE Resource Restrictions");
         const QMap<QString, QString> entries = cg.entryMap();

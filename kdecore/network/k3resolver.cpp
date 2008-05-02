@@ -1015,8 +1015,8 @@ static void KResolver_initIdnDomains()
   static bool init = false;
   if (!init)
     {
-      const char *kde_use_idn = getenv("KDE_USE_IDN");
-      if (kde_use_idn)
+      QByteArray kde_use_idn = qgetenv("KDE_USE_IDN");
+      if (!kde_use_idn.isEmpty())
         KUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(':'));
       init = true;
     }
