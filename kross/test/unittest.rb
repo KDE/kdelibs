@@ -318,6 +318,8 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qstringlist_qstringlist( ["s1","s2"] ) == TestObject2.func_qstringlist_qstringlist( ["s1","s2"] ) )
 		
 		assert( TestObject1.TestTimer.objectName() == "TestTimer" )
+		assert( TestObject1.findChildren("TestTimer").objectName() == "TestTimer" )
+		assert( TestObject1.findChildren(nil,"TestTimer").objectName() == "TestTimer" )
 	end
 
 	def testProperties
