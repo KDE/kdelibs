@@ -82,6 +82,7 @@ Entry *EntryHandler::entryptr()
     entry->setRating(mEntry.rating());
     entry->setDownloads(mEntry.downloads());
     entry->setInstalledFiles(mEntry.installedFiles());
+    entry->setIdNumber(mEntry.idNumber());
     return entry;
 }
 
@@ -117,6 +118,9 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     }
     foreach(const QString &file, entry.installedFiles()) {
         (void)addElement(doc, el, "installedfile", file);
+    }
+    if (entry.idNumber() > 0) {
+        addElement(doc, el, "id", QString::number(entry.idNumber()));
     }
 
     (void)addElement(doc, el, "releasedate",
@@ -162,6 +166,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 {
     Entry entry;
     KTranslatable name, summary, preview, payload;
+    int idNumber;
     QStringList installedFiles;
 
     if (entryxml.tagName() != "stuff") return entry;
@@ -191,6 +196,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
             entry.setLicense(e.text().trimmed());
         } else if (e.tagName() == "summary") {
             QString lang = e.attribute("lang");
+            //kDebug() << "adding " << e.tagName() << " to summary as language " << lang;
             summary.addString(lang, e.text().trimmed());
         } else if (e.tagName() == "version") {
             entry.setVersion(e.text().trimmed());
@@ -221,6 +227,9 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
             entry.setChecksum(e.text());
         } else if (e.tagName() == "installedfile") {
             installedFiles << e.text();
+        } else if (e.tagName() == "id") {
+            idNumber = e.text().toInt();
+            //kDebug() << "got id number: " << idNumber;
         }
     }
 
@@ -229,6 +238,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     entry.setPreview(preview);
     entry.setPayload(payload);
     entry.setInstalledFiles(installedFiles);
+    entry.setIdNumber(idNumber);
 
     // Validation
 

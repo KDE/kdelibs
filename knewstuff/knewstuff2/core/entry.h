@@ -328,6 +328,9 @@ public:
     // FIXME KDE5 make it const
     Source source();
 
+    void setIdNumber(int number);
+    int idNumber() const;
+
 private:
     EntryPrivate * const d;
 };

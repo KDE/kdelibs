@@ -41,7 +41,7 @@ EntryLoader::EntryLoader(QObject* parent)
 
 void EntryLoader::load(const Provider *provider, Feed *feed)
 {
-    //kDebug(550) << "EntryLoader::load()";
+    //kDebug() << "EntryLoader::load()";
 
     m_provider = provider;
     m_feed = feed;
@@ -87,9 +87,9 @@ void EntryLoader::slotJobResult(KJob *job)
 
     //QString contents = QString::fromUtf8(m_jobdata);
 
-    //kDebug(550) << "--ENTRIES-START--";
-    //kDebug(550) << QString::fromUtf8(m_jobdata);
-    //kDebug(550) << "--ENTRIES-END--";
+    //kDebug() << "--ENTRIES-START--";
+    //kDebug() << QString::fromUtf8(m_jobdata);
+    //kDebug() << "--ENTRIES-END--";
 
     QDomDocument doc;
     if (!doc.setContent(m_jobdata)) {
@@ -100,7 +100,7 @@ void EntryLoader::slotJobResult(KJob *job)
     QDomElement entries = doc.documentElement();
 
     if (entries.isNull()) {
-        kWarning(550) << "No document in stuff.xml.";
+        kWarning() << "No document in stuff.xml.";
     }
 
     QDomNode n;
@@ -112,6 +112,7 @@ void EntryLoader::slotJobResult(KJob *job)
             Entry * entry = handler.entryptr();
             m_entries.append(entry);
             m_feed->addEntry(entry);
+            //kDebug() << " entry " << entry->name().representation() << " loaded from provider";
         }
     }
 
