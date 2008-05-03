@@ -18,6 +18,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+/*
+   Please set KIO_JOBREMOTETEST_REMOTETMP to test other protocols than kio_file.
+   Don't forget the trailing slash!
+*/
+
 #ifndef JOBTEST_H
 #define JOBTEST_H
 

@@ -78,13 +78,16 @@ static QString localTmpDir()
 
 static bool myExists(const QString& pathOrUrl) {
     KUrl url(pathOrUrl);
-    return KIO::NetAccess::exists(url, KIO::NetAccess::DestinationSide, 0);
+    KIO::Job* job = KIO::stat(url, KIO::StatJob::DestinationSide, 0, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    return KIO::NetAccess::synchronousRun(job, 0);
 }
 
 static bool myMkdir(const QString& pathOrUrl) {
-    
     KUrl url(pathOrUrl);
-    return KIO::NetAccess::mkdir(url, 0);   
+    KIO::Job* job = KIO::mkdir(url, -1);
+    job->setUiDelegate(0);
+    return KIO::NetAccess::synchronousRun(job, 0);    
 }
 
 void JobRemoteTest::initTestCase()
@@ -94,12 +97,12 @@ void JobRemoteTest::initTestCase()
     // Start with a clean base dir
     cleanupTestCase();
     QDir dir; // TT: why not a static method?
-    if ( !QFile::exists( remoteTmpDir() ) ) {
+    if ( !myExists( remoteTmpDir() ) ) {
         bool ok = myMkdir( remoteTmpDir() );
         if ( !ok )
             kFatal() << "Couldn't create " << remoteTmpDir();
     }
-    if ( !QFile::exists( localTmpDir() ) ) {
+    if ( !myExists( localTmpDir() ) ) {
         bool ok = myMkdir( localTmpDir() );
         if ( !ok )
             kFatal() << "Couldn't create " << localTmpDir();
