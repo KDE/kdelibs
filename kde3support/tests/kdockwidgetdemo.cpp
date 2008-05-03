@@ -510,7 +510,7 @@ void CustomFileDialog::bookmarkChosen( int i )
 void CustomFileDialog::goHome()
 {
   const QByteArray home = qgetenv( "HOME" );
-  setDir( home.isEmpty() ? QLatin1String( "/" ) : home );
+  setDir( home.isEmpty() ? QLatin1String( "/" ) : QString(home) );
 }
 
 void CustomFileDialog::done( int i )
