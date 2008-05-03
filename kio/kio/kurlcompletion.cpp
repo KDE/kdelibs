@@ -876,7 +876,7 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL &ur
 	}
 	else if ( !url.file().isEmpty() ) {
 		// $PATH
-		dirList = QString::fromLocal8Bit(::getenv("PATH")).split(
+		dirList = QString::fromLocal8Bit(qgetenv("PATH")).split(
 				KPATH_SEPARATOR,QString::SkipEmptyParts);
 
 		QStringList::Iterator it = dirList.begin();
@@ -1105,7 +1105,7 @@ QString KUrlCompletionPrivate::listDirectories(
 {
 	assert( !q->isRunning() );
 
-	if ( !::getenv("KURLCOMPLETION_LOCAL_KIO") ) {
+	if ( qgetenv("KURLCOMPLETION_LOCAL_KIO").isEmpty() ) {
 
 		//kDebug() << "Listing (listDirectories):" << dirList << "filter=" << filter << "without KIO";
 
@@ -1441,7 +1441,7 @@ static bool expandEnv( QString &text )
 				int len	= pos2 - pos;
 				QString key	= text.mid( pos+1, len-1);
 				QString value =
-					QString::fromLocal8Bit( ::getenv(key.toLocal8Bit()) );
+					QString::fromLocal8Bit( qgetenv(key.toLocal8Bit()) );
 
 				if ( !value.isEmpty() ) {
 					expanded = true;

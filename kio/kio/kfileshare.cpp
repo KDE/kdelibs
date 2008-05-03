@@ -48,7 +48,7 @@ static QString findExe( const char* exeName )
 {
    // Normally fileshareset and filesharelist are installed in kde4/libexec;
    // allow distributions to move it somewhere else in the PATH or in /usr/sbin.
-   QString path = QString::fromLocal8Bit(getenv("PATH"));
+   QString path = QString::fromLocal8Bit(qgetenv("PATH"));
 #ifndef Q_WS_WIN
    path += QLatin1String(":/usr/sbin");
 #endif

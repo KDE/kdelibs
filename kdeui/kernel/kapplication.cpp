@@ -1206,9 +1206,10 @@ void KApplicationPrivate::_k_slot_KToolInvocation_hook(QStringList& envs,QByteAr
     if (QX11Info::display()) {
         QByteArray dpystring(XDisplayString(QX11Info::display()));
         envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
-    } else if( getenv( "DISPLAY" )) {
-        QByteArray dpystring( getenv( "DISPLAY" ));
-        envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
+    } else {
+        const QByteArray dpystring( getenv( "DISPLAY" ));
+        if(!dpystring.isEmpty())
+            envs << QString::fromLatin1( QByteArray("DISPLAY=") + dpystring );
     }
 
     if(startup_id.isEmpty())

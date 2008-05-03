@@ -388,7 +388,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     // In such case we start the slave via QProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
-    static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
+    static bool bForkSlaves = !qgetenv("KDE_FORK_SLAVES").isEmpty();
 
     if (!bForkSlaves)
     {

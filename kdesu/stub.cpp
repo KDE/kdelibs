@@ -128,7 +128,7 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
-	    QByteArray path = getenv("PATH");
+	    QByteArray path = qgetenv("PATH");
             if (!path.isEmpty() && path[0] == ':')
                 path = path.mid(1);
 	    if (m_User == "root") {

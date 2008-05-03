@@ -55,7 +55,7 @@ KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
 #ifdef Q_WS_X11
-    QByteArray display(getenv("DISPLAY"));
+    QByteArray display(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
         kWarning(900) << k_lineinfo << "$DISPLAY is not set\n";

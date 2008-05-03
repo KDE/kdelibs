@@ -63,9 +63,9 @@ QByteArray KCookie::displayAuth() const
 void KCookie::getXCookie()
 {
 #ifdef Q_WS_X11
-    d->m_Display = getenv("DISPLAY");
+    d->m_Display = qgetenv("DISPLAY");
 #else
-    d->m_Display = getenv("QWS_DISPLAY");
+    d->m_Display = qgetenv("QWS_DISPLAY");
 #endif
     if (d->m_Display.isEmpty())
     {

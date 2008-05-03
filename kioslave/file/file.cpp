@@ -1550,7 +1550,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     bool fstype_empty = !_fstype || !*_fstype;
     QByteArray fstype = KShell::quoteArg(_fstype).toLatin1(); // good guess
     QByteArray readonly = _ro ? "-r" : "";
-    QString epath = QLatin1String(getenv("PATH"));
+    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if(!epath.isEmpty())
         path += QLatin1String(":") + epath;
@@ -1728,7 +1728,7 @@ void FileProtocol::unmount( const QString& _point )
 		return;
 	}
 #else
-    QString epath = getenv("PATH");
+    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
        path += ':' + epath;
@@ -1757,7 +1757,7 @@ void FileProtocol::unmount( const QString& _point )
 
 bool FileProtocol::pmount(const QString &dev)
 {
-    QString epath = getenv("PATH");
+    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
         path += ':' + epath;
@@ -1782,7 +1782,7 @@ bool FileProtocol::pumount(const QString &point)
     QString dev = mp->realDeviceName();
     if (dev.isEmpty()) return false;
 
-    QString epath = getenv("PATH");
+    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
         path += ':' + epath;

@@ -662,7 +662,7 @@ bool KGlobalSettings::isMultiHead()
 #ifdef Q_WS_WIN
     return GetSystemMetrics(SM_CMONITORS) > 1;
 #else
-    QByteArray multiHead = getenv("KDE_MULTIHEAD");
+    QByteArray multiHead = qgetenv("KDE_MULTIHEAD");
     if (!multiHead.isEmpty()) {
         return (multiHead.toLower() == "true");
     }

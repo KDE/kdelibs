@@ -39,8 +39,6 @@
 
 #include <kdebug.h>
 
-#include <stdlib.h> // getenv
-
 class KComboBox::KComboBoxPrivate
 {
 public:
