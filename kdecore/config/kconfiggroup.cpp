@@ -498,7 +498,7 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
    // since it would not recognize paths without a trailing '/'.
    // All of the 3 following functions to return the user's home directory
    // can return different paths. We have to test all them.
-   const QString homeDir0 = QFile::decodeName(getenv("HOME"));
+   const QString homeDir0 = QFile::decodeName(qgetenv("HOME"));
    const QString homeDir1 = QDir::homePath();
    const QString homeDir2 = QDir(homeDir1).canonicalPath();
    if (cleanHomeDirPath(path, homeDir0) ||

@@ -497,7 +497,7 @@ QString KSycoca::absoluteFilePath(DatabaseType type)
    if (type == GlobalDatabase)
       return KStandardDirs::locate("services", KSYCOCA_FILENAME);
 
-   QByteArray ksycoca_env = getenv("KDESYCOCA");
+   const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
    if (ksycoca_env.isEmpty())
       return KGlobal::dirs()->saveLocation("cache") + KSYCOCA_FILENAME;
    else

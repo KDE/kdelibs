@@ -30,7 +30,7 @@
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>
 #include <kstandarddirs.h>
-#include <stdlib.h> // getenv(), srand(), rand()
+#include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #include <netdb.h>
 #include <kurl.h>

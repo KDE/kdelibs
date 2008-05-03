@@ -41,7 +41,7 @@ Solid::ManagerBasePrivate::~ManagerBasePrivate()
 
 void Solid::ManagerBasePrivate::loadBackend()
 {
-    QString solidFakeXml(getenv("SOLID_FAKEHW"));
+    QString solidFakeXml(QString::fromLocal8Bit(qgetenv("SOLID_FAKEHW")));
 
     if (!solidFakeXml.isEmpty()) {
         m_backend = new Solid::Backends::Fake::FakeManager(0, solidFakeXml);

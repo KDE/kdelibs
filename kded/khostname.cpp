@@ -67,14 +67,14 @@ KHostName::KHostName()
    if (oldName == newName)
       exit(0);
 
-   home = ::getenv("HOME");
+   home = qgetenv("HOME");
    if (home.isEmpty())
    {
       fprintf(stderr, "%s", i18n("Error: HOME environment variable not set.\n").toLocal8Bit().data());
       exit(1);
    }
 
-   display = ::getenv("DISPLAY");
+   display = QString::fromLocal8Bit(qgetenv("DISPLAY"));
    // strip the screen number from the display
    display.replace(QRegExp("\\.[0-9]+$"), "");
 #if defined(Q_WS_X11) || defined(Q_WS_QWS)
@@ -197,7 +197,7 @@ void KHostName::changeStdDirs(const QByteArray &type)
 
 void KHostName::changeSessionManager()
 {
-   QString sm = qgetenv("SESSION_MANAGER");
+   QString sm = QString::fromLocal8Bit(qgetenv("SESSION_MANAGER"));
    if (sm.isEmpty())
    {
       fprintf(stderr, "Warning: No session management specified.\n");

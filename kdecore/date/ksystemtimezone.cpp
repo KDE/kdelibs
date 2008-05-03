@@ -446,7 +446,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     if (!caller->isValid()  ||  !zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)
         return 0;
     // Make this time zone the current local time zone
-    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    const QByteArray originalZone = qgetenv("TZ");   // save the original local time zone
     QByteArray tz = caller->name().toUtf8();
     tz.prepend(":");
     bool change = (tz != originalZone);
@@ -501,7 +501,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     if (change)
     {
         // Restore the original local time zone
-        if (!originalZone)
+        if (originalZone.isEmpty())
             ::unsetenv("TZ");
         else
             ::setenv("TZ", originalZone, 1);
@@ -521,7 +521,7 @@ int KSystemTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
         return 0;
 
     // Make this time zone the current local time zone
-    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    const QByteArray originalZone = qgetenv("TZ");   // save the original local time zone
     QByteArray tz = caller->name().toUtf8();
     tz.prepend(":");
     bool change = (tz != originalZone);
@@ -536,7 +536,7 @@ int KSystemTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
     if (change)
     {
         // Restore the original local time zone
-        if (!originalZone)
+        if (originalZone.isEmpty())
             ::unsetenv("TZ");
         else
             ::setenv("TZ", originalZone, 1);

@@ -22,7 +22,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <stdlib.h> // getenv
 #include <config.h>
 
 #include <kdebug.h>
@@ -771,7 +770,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
 
    QString result;
 
-   QString xdgMenuPrefix = QString::fromLocal8Bit(getenv("XDG_MENU_PREFIX"));
+   QString xdgMenuPrefix = QString::fromLocal8Bit(qgetenv("XDG_MENU_PREFIX"));
    if (!xdgMenuPrefix.isEmpty())
    {
       QFileInfo fileInfo(fileName);

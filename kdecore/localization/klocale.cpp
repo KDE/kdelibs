@@ -26,8 +26,6 @@
 
 #include <config.h>
 
-#include <stdlib.h> // getenv
-
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif

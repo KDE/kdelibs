@@ -329,7 +329,7 @@ bool KDesktopFile::tryExec() const
   {
       QString user = d->desktopGroup.readEntry("X-KDE-Username", QString());
       if (user.isEmpty())
-        user = ::getenv("ADMIN_ACCOUNT");
+        user = QString::fromLocal8Bit(qgetenv("ADMIN_ACCOUNT"));
       if (user.isEmpty())
         user = "root";
       if (!KAuthorized::authorize("user/"+user))
