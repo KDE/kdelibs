@@ -387,9 +387,9 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
              paths = QString(path).split( QRegExp( "[:\b]" ));
      }
      else
-         paths = QString( getenv("PATH") ).split( QRegExp( "[:\b]" ), QString::KeepEmptyParts );
+         paths = QString::fromLocal8Bit( qgetenv("PATH") ).split( QRegExp( "[:\b]" ), QString::KeepEmptyParts );
      QByteArray execpath = QFile::encodeName(
-         s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+         s_instance->dirs()->findExe( exec, paths.join( QLatin1String( ":" ))));
      if( avoid_loops && !execpath.isEmpty())
      {
          int pos = execpath.lastIndexOf( '/' );
@@ -823,9 +823,9 @@ static void init_kdeinit_socket()
   //struct sockaddr_un sa_old;
   kde_socklen_t socklen;
   long options;
-  const char *home_dir = getenv("HOME");
+  const QByteArray home_dir = qgetenv("HOME");
   int max_tries = 10;
-  if (!home_dir || !home_dir[0])
+  if (home_dir.isEmpty())
   {
      fprintf(stderr, "kdeinit4: Aborting. $HOME not set!");
      exit(255);
@@ -849,7 +849,7 @@ static void init_kdeinit_socket()
        }
      }
 #if 0 // obsolete in kde4. Should we check writing to another file instead?
-     path = getenv("ICEAUTHORITY");
+     path = qgetenv("ICEAUTHORITY");
      if (path.isEmpty())
      {
         path = home_dir;
@@ -1215,8 +1215,8 @@ static void handle_launcher_request(int sock = -1)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QByteArray olddisplay = getenv(DISPLAY);
-      QByteArray kdedisplay = getenv("KDE_DISPLAY");
+      QByteArray olddisplay = qgetenv(DISPLAY);
+      QByteArray kdedisplay = qgetenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
@@ -1440,13 +1440,13 @@ static void handle_requests(pid_t waitForPid)
 static void kdeinit_library_path()
 {
    QStringList ltdl_library_path =
-     QFile::decodeName(getenv("LTDL_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+     QFile::decodeName(qgetenv("LTDL_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
 #ifdef Q_OS_DARWIN
    QStringList ld_library_path =
-     QFile::decodeName(getenv("DYLD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+     QFile::decodeName(qgetenv("DYLD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
 #else
    QStringList ld_library_path =
-     QFile::decodeName(getenv("LD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+     QFile::decodeName(qgetenv("LD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
 #endif
 
    QByteArray extra_path;
@@ -1484,7 +1484,7 @@ static void kdeinit_library_path()
 //   if (!extra_path.isEmpty())
 //      lt_dlsetsearchpath(extra_path.data());
 
-   QByteArray display = getenv(DISPLAY);
+   QByteArray display = qgetenv(DISPLAY);
    if (display.isEmpty())
    {
 #if defined(Q_WS_X11) || defined(Q_WS_QWS)
@@ -1784,7 +1784,7 @@ int main(int argc, char **argv, char **envp)
       init_kdeinit_socket();
    }
 #ifdef Q_WS_X11
-   if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
+   if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty())
    {
        QString konq = KStandardDirs::locate("lib", "libkonq.so.5", *s_instance);
        // can't use KLibLoader here as it would unload the library

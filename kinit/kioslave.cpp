@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
 #ifdef Q_WS_WIN
      // enter debugger in case debugging is actived 
-     if (QString::fromLatin1( getenv("KDE_SLAVE_DEBUG_WAIT") ) == argv[2]) 
+     if (QString::fromLocal8Bit( qgetenv("KDE_SLAVE_DEBUG_WAIT") ) == argv[2])
      {
 # ifdef Q_CC_MSVC
         // msvc debugger or windbg supports jit debugging, the latter requires setting up windbg jit with windbg -i
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 # endif
      } 
 # ifdef Q_CC_MSVC
-     else if (QString::fromLatin1( getenv("KDE_SLAVE_DEBUG_POPUP") ) == argv[2]) {
+     else if (QString::fromLocal8Bit( qgetenv("KDE_SLAVE_DEBUG_POPUP") ) == argv[2]) {
         // A workaround for OSes where DebugBreak() does not work in administrative mode (actually Vista with msvc 2k5)
         // - display a native message box so developer can attach the debugger to the KIO slave process and click OK.
         MessageBoxA(NULL, 

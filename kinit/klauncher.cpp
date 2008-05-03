@@ -196,15 +196,15 @@ KLauncher::KLauncher(int _kdeinitSocket)
    lastRequest = 0;
    bProcessingQueue = false;
 
-   mSlaveDebug = getenv("KDE_SLAVE_DEBUG_WAIT");
+   mSlaveDebug = QString::fromLocal8Bit(qgetenv("KDE_SLAVE_DEBUG_WAIT"));
    if (!mSlaveDebug.isEmpty())
    {
       qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", qPrintable(mSlaveDebug));
    }
-   mSlaveValgrind = getenv("KDE_SLAVE_VALGRIND");
+   mSlaveValgrind = QString::fromLocal8Bit(qgetenv("KDE_SLAVE_VALGRIND"));
    if (!mSlaveValgrind.isEmpty())
    {
-      mSlaveValgrindSkin = getenv("KDE_SLAVE_VALGRIND_SKIN");
+      mSlaveValgrindSkin = QString::fromLocal8Bit(qgetenv("KDE_SLAVE_VALGRIND_SKIN"));
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", qPrintable(mSlaveValgrind));
    }
 #ifdef Q_WS_WIN
