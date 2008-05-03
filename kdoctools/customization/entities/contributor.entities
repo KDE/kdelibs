@@ -205,6 +205,8 @@
 <!ENTITY Stephan.Johach.mail '<email>hunsum@gmx.de</email>'>
 <!ENTITY Antonio.Larrosa.Jimenez '<personname><firstname>Antonio</firstname><othername>Larrosa</othername><surname>Jim&eacute;nez</surname></personname>'>
 <!ENTITY Antonio.Larrosa.Jimenez.mail '<email>larossa@kde.org</email>'>
+<!ENTITY David.Johnson '<personname><firstname>David</firstname><surname>Johnson</surname></personname>'>
+<!ENTITY David.Johnson.mail '<email>david@usermode.org</email>'>
 <!ENTITY Richard.Johnson '<personname><firstname>Richard</firstname><surname>Johnson</surname></personname>'>
 <!ENTITY Richard.Johnson.mail '<email>nixternal@ubuntu.com</email>'>
 <!ENTITY Matt.Johnston '<personname><firstname>Matt</firstname><surname>Johnston</surname></personname>'>
