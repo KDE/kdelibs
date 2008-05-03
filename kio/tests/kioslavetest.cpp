@@ -349,48 +349,47 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     // It's rather rare to iterate that way, usually you'd use numberValue/stringValue directly.
     // This is just to print out all that we got
 
-    /*
-    KIO::UDSEntry::ConstIterator it = entry.begin();
-    for( ; it != entry.end(); it++ ) {
-        switch ( it.key() ) {
+    const QList<uint> keys = entry.listFields();
+    QList<uint>::const_iterator it = keys.begin();
+    for( ; it != keys.end(); it++ ) {
+        switch ( *it ) {
             case KIO::UDSEntry::UDS_FILE_TYPE:
-                kDebug() << "File Type : " << (mode_t)(it.value().toNumber());
-                if ( S_ISDIR( (mode_t)(it.value().toNumber()) ) )
                 {
-                    kDebug() << "is a dir";
+                    mode_t mode = (mode_t)entry.numberValue(*it);
+                    kDebug() << "File Type : " << mode;
+                    if ( S_ISDIR( mode ) )
+                    {
+                        kDebug() << "is a dir";
+                    }
                 }
                 break;
             case KIO::UDSEntry::UDS_ACCESS:
-                kDebug() << "Access permissions : " << (mode_t)(it.value().toNumber());
+                kDebug() << "Access permissions : " << (mode_t)( entry.numberValue(*it) ) ;
                 break;
             case KIO::UDSEntry::UDS_USER:
-                kDebug() << "User : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "User : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_GROUP:
-                kDebug() << "Group : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "Group : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_NAME:
-                kDebug() << "Name : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "Name : " << ( entry.stringValue(*it) );
                 //m_strText = decodeFileName( it.value().toString() );
                 break;
             case KIO::UDSEntry::UDS_URL:
-                kDebug() << "URL : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "URL : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_MIME_TYPE:
-                kDebug() << "MimeType : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "MimeType : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_LINK_DEST:
-                kDebug() << "LinkDest : " << (it.value().toString().toAscii().constData() );
+                kDebug() << "LinkDest : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_SIZE:
-                kDebug() << "Size: " << KIO::convertSize(it.value().toNumber());
+                kDebug() << "Size: " << KIO::convertSize(entry.numberValue(*it));
                 break;
         }
     }
-    */
-    kDebug() << "this test has been turned off temporarily";
-
-    // TODO: turn it on again
 }
 
 void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
