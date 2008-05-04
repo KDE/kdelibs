@@ -202,7 +202,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
       // however if a non-empty file gets passed and we can't find it we might
       // inform the developer using some debug output
       if ( !_file.isEmpty() )
-          kWarning() << "KXMLGUIClient::setXMLFile: cannot find .rc file " << _file;
+          kWarning() << "cannot find .rc file" << _file << "in" << filter;
 
       setXML( QString(), true );
       return;
