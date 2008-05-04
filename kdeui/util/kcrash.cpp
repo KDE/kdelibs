@@ -371,10 +371,8 @@ void KCrash::startDirectly( const char* argv[], int )
     fprintf( stderr, "KCrash failed to fork(), errno = %d\n", errno );
     _exit(253);
   case 0:
-    if(!geteuid() && setgid(getgid()) < 0)
-      _exit(253);
-    if(!geteuid() && setuid(getuid()) < 0)
-      _exit(253);
+    if (setgid(getgid()) < 0 || setuid(getuid()) < 0)
+      _exit(253); // This cannot happen. Theoretically.
     if (s_flags & KeepFDs)
       closeAllFDs();
     execvp(s_drkonqiPath, const_cast< char** >( argv ));
