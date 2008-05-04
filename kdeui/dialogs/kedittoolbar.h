@@ -34,11 +34,11 @@ class KXMLGUIFactory;
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
  *
- * Typically you do not need to use it as KXmlGuiWindow::setupGUI
+ * Typically you do not need to use it directly as KXmlGuiWindow::setupGUI
  * takes care of it.
  *
  * If you use plugListAction you need to overload saveNewToolbarConfig()
- * to plug actions again
+ * to plug actions again:
  *
  * \code
  * void MyClass::saveNewToolbarConfig()
@@ -49,77 +49,31 @@ class KXMLGUIFactory;
  * }
  * \endcode
  *
- * If for some reason the default behaviour does not suit you,
- * you would include the KStandardAction::configureToolbars()
- * standard action in your application.  In your slot to this action,
- * you would have something like so:
+ * When created, KEditToolBar takes a KXMLGUIFactory object, and uses it to
+ * find all of the action collections and XML files (there is one of each for the
+ * mainwindow, but there could be more, when adding other XMLGUI clients like
+ * KParts or plugins). The editor aims to be semi-intelligent about where it
+ * assigns any modifications. In other words, it will not write out part specific
+ * changes to your application's main XML file.
  *
- * \code
- * KEditToolBar dlg(actionCollection());
- * if (dlg.exec())
- * {
- *   createGUI();
- * }
- * \endcode
- *
- * That code snippet also takes care of redrawing the menu and
- * toolbars if you have made any changes.
- *
- * If you are using KMainWindow's settings methods (either save/apply manually
- * or autoSaveSettings), you should write something like:
- * \code
- * void MyClass::slotConfigureToolBars()
- * {
- *   saveMainWindowSettings( KGlobal::config(), "MainWindow" );
- *   KEditToolBar dlg(actionCollection());
- *   connect(&dlg,SIGNAL(newToolBarConfig()),this,SLOT(slotNewToolBarConfig()));
- *   dlg.exec();
- * }
- *
- * void MyClass::slotNewToolBarConfig() // This is called when OK, Apply or Defaults is clicked
- * {
- *    createGUI();
- *    ...if you use any action list, use plugActionList on each here...
- *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
- * }
- * \endcode
- *
- * Note that the procedure is a bit different for KParts applications.
- * In this case, you need only pass along a pointer to your
- * application's KXMLGUIFactory object.  The editor will take care of
- * finding all of the action collections and XML files.  The editor
- * aims to be semi-intelligent about where it assigns any
- * modifications.  In other words, it will not write out part specific
- * changes to your shell's XML file.
- *
- * An example would be:
- *
- * \code
- * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
- * KEditToolBar dlg(factory());
- * connect(&dlg,SIGNAL(newToolBarConfig()),this,SLOT(slotNewToolBarConfig()));
- * dlg.exec();
- *
- * void MyClass::slotNewToolBarConfig() // This is called when OK, Apply or Defaults is clicked
- * {
- *    ...if you use any action list, use plugActionList on each here...
- *    // Do NOT call createGUI()!
- *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
- * }
- * \endcode
+ * KXmlGuiWindow and KParts::MainWindow take care of creating KEditToolBar correctly
+ * and connecting to its newToolBarConfig slot, but if you really really want to do it
+ * yourself, see the KXmlGuiWindow::configureToolbars() and KXmlGuiWindow::saveNewToolbarConfig() code.
  *
  * @author Kurt Granroth <granroth@kde.org>
+ * @maintainer David Faure <faure@kde.org>
  */
 class KDEUI_EXPORT KEditToolBar : public KDialog
 {
     Q_OBJECT
 public:
   /**
-   * Constructor for apps that do not use components.
+   * Old constructor for apps that do not use components.
+   * This constructor is somewhat deprecated, since it doesn't work
+   * with any KXMLGuiClient being added to the mainwindow.
+   * You really want to use the other constructor.
    *
-   * This is the
-   * only entry point to this class.  You @em must pass along your
-   * collection of actions (some of which appear in your toolbars).
+   * You @em must pass along your collection of actions (some of which appear in your toolbars).
    * The other two parameters are optional.
    *
    * @param collection The collection of actions to work on.
@@ -129,7 +83,7 @@ public:
                         QWidget* parent = 0);
 
   /**
-   * Constructor for KParts based apps.
+   * Main constructor.
    *
    * The main parameter, factory(), is a pointer to the
    * XML GUI factory object for your application.  It contains a list
@@ -139,7 +93,7 @@ public:
    * Use this like so:
    * \code
    * KEditToolBar edit(factory());
-   * if ( edit.exec() )
+   * if (edit.exec())
    * ...
    * \endcode
    *

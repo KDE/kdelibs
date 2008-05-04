@@ -394,5 +394,24 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
                  << "separator"
                  << "view_add_to_new_group");
 
+    kDebug() << "Now remove+add gui client";
 
+    // While I'm here, what happens with the action list if I remove+add the guiclient,
+    // like KXmlGuiWindow::newToolBarConfig does?
+    factory.removeClient(&client);
+    factory.addClient(&client);
+    // We need to get the container widget again, it was re-created.
+    menuW = factory.container("groups", &client);
+    QVERIFY(menuW);
+    menu = qobject_cast<QMenu *>(menuW);
+    //debugActions(menu->actions());
+    checkActions(menu->actions(), QStringList()
+                 << "separator"   // yep, it removed the actionlist thing...
+                 << "view_add_to_new_group");
+    kDebug() << "Now plugging the actionlist again";
+    client.plugActionList("view_groups_list", actionList);
+    checkActions(menu->actions(), QStringList()
+                 << "action1"
+                 << "separator"
+                 << "view_add_to_new_group");
 }

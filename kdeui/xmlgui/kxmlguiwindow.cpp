@@ -79,7 +79,7 @@ public:
 
     KDEPrivate::ToolBarHandler *toolBarHandler;
     KToggleAction *showStatusBarAction;
-    KEditToolBar* toolBarEditor;
+    QPointer<KEditToolBar> toolBarEditor;
     KXMLGUIFactory *factory;
 };
 
@@ -90,7 +90,6 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
     d->showHelpMenu = true;
     d->toolBarHandler = 0;
     d->showStatusBarAction = 0;
-    d->toolBarEditor = 0;
     d->factory = 0;
     new KMainWindowInterface(this);
 }
@@ -158,8 +157,8 @@ void KXmlGuiWindow::configureToolbars()
     KConfigGroup cg(KGlobal::config(), QString());
     saveMainWindowSettings(cg);
     if (!d->toolBarEditor) {
-      d->toolBarEditor = new KEditToolBar(actionCollection(), this);
-      d->toolBarEditor->setResourceFile( xmlFile() );
+      d->toolBarEditor = new KEditToolBar(guiFactory(), this);
+      d->toolBarEditor->setAttribute(Qt::WA_DeleteOnClose);
       connect(d->toolBarEditor, SIGNAL(newToolBarConfig()), SLOT(saveNewToolbarConfig()));
     }
     d->toolBarEditor->show();
@@ -167,7 +166,11 @@ void KXmlGuiWindow::configureToolbars()
 
 void KXmlGuiWindow::saveNewToolbarConfig()
 {
-    createGUI(xmlFile());
+    // createGUI(xmlFile()); // this loses any plugged-in guiclients, so we use remove+add instead.
+
+    guiFactory()->removeClient(this);
+    guiFactory()->addClient(this);
+
     KConfigGroup cg(KGlobal::config(), QString());
     applyMainWindowSettings(cg);
 }
@@ -282,10 +285,10 @@ void KXmlGuiWindow::setStandardToolBarMenuEnabled( bool enable )
         if ( d->toolBarHandler )
             return;
 
-    d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
+        d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
 
-    if ( factory() )
-        factory()->addClient( d->toolBarHandler );
+        if ( factory() )
+            factory()->addClient( d->toolBarHandler );
     } else {
         if ( !d->toolBarHandler )
             return;
