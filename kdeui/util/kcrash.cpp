@@ -196,8 +196,6 @@ KCrash::defaultCrashHandler (int sig)
   // exec() afterwards. exec() is supposed to clean up.
     if (crashRecursionCounter < 3)
     {
-      if (s_appName)
-      {
 #ifndef NDEBUG
         fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n",
 		crashRecursionCounter);
@@ -228,9 +226,9 @@ KCrash::defaultCrashHandler (int sig)
           argv[i++] = getenv("QWS_DISPLAY");
 #endif
 
-          // we have already tested this
           argv[i++] = "--appname";
-          argv[i++] = s_appName;
+          argv[i++] = s_appName ? s_appName : "<unknown>";
+
           if (KApplication::loadedByKdeinit)
             argv[i++] = "--kdeinit";
 
@@ -253,7 +251,6 @@ KCrash::defaultCrashHandler (int sig)
 
           const KComponentData componentData = KGlobal::mainComponent();
           const KAboutData *about = componentData.isValid() ? componentData.aboutData() : 0;
-          char sidtxt[256];
           if (about) {
             if (about->internalVersion()) {
               argv[i++] = "--appversion";
@@ -271,6 +268,7 @@ KCrash::defaultCrashHandler (int sig)
             }
           }
 
+          char sidtxt[256];
           if ( kapp && !kapp->startupId().isNull()) {
             argv[i++] = "--startupid";
             strncpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
@@ -288,10 +286,6 @@ KCrash::defaultCrashHandler (int sig)
             fprintf( stderr, "KCrash cannot reach kdeinit, launching directly.\n" );
           }
           startDirectly( argv, i );
-      }
-      else {
-        fprintf(stderr, "Unknown appname\n");
-      }
     }
 
     if (crashRecursionCounter < 4)
