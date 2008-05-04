@@ -99,8 +99,6 @@ void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& 
 
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
     q->setFixedWidth(qMin(1000, qMax(400, desktop.width() / 4)));
-    //q->setMinimumHeight( q->minimumSizeHint().height() );
-    q->mainWidget()->setMinimumHeight( q->mainWidget()->sizeHint().height() );
 }
 
 void KPasswordDialog::setPixmap(const QPixmap &pixmap)
@@ -175,13 +173,28 @@ void KPasswordDialog::addCommentLine( const QString& label,
     d->ui.gridLayout->addWidget(d->ui.passEdit, d->commentRow + 1, 1);
     d->ui.gridLayout->addWidget(d->ui.keepCheckBox, d->commentRow + 2, 1);
 
-    mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
+    // cycle through column 0 widgets and see the max width so we can set the minimum height of
+    // column 2 wordwrapable labels
+    int firstColumnWidth = 0;
+    for (int i = 0; i < d->ui.gridLayout->rowCount(); ++i) {
+        QLayoutItem *li = d->ui.gridLayout->itemAtPosition(i, 0);
+        if (li) {
+            QWidget *w = li->widget();
+            if (w) firstColumnWidth = qMax(firstColumnWidth, w->sizeHint().width());
+        }
+    }
+    for (int i = 0; i < d->ui.gridLayout->rowCount(); ++i) {
+        QLayoutItem *li = d->ui.gridLayout->itemAtPosition(i, 1);
+        if (li) {
+            QLabel *l = qobject_cast<QLabel*>(li->widget());
+            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth ) );
+        }
+    }
 }
 
 void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType type )
 {
     d->ui.errorMessage->setText( message, KTitleWidget::ErrorMessage );
-    mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
 
     QFont bold = font();
     bold.setBold( true );
@@ -216,7 +229,7 @@ void KPasswordDialog::setPrompt(const QString& prompt)
 {
     d->ui.prompt->setText( prompt );
     d->ui.prompt->setWordWrap( true );
-    mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
+    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() ) );
 }
 
 QString KPasswordDialog::prompt() const
