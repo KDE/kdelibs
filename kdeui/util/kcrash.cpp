@@ -271,7 +271,7 @@ KCrash::defaultCrashHandler (int sig)
           char sidtxt[256];
           if ( kapp && !kapp->startupId().isNull()) {
             argv[i++] = "--startupid";
-            strncpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
+            strlcpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
             argv[i++] = sidtxt;
           }
 
@@ -508,15 +508,15 @@ static int openSocket()
         return -1;
      }
      kde_home++;
-     strncpy(sock_file, home_dir, MAX_SOCK_FILE);
+     strlcpy(sock_file, home_dir, MAX_SOCK_FILE);
   }
-  strncat(sock_file, kde_home, MAX_SOCK_FILE - strlen(sock_file));
+  strlcat(sock_file, kde_home, MAX_SOCK_FILE);
 
   /** Strip trailing '/' **/
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
 
-  strncat(sock_file, "/socket-", MAX_SOCK_FILE - strlen(sock_file));
+  strlcat(sock_file, "/socket-", MAX_SOCK_FILE);
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Warning: Could not determine hostname: ");
