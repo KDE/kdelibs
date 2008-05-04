@@ -97,6 +97,7 @@ protected:
     virtual void keyPressEvent(QKeyEvent *e);
 
 Q_SIGNALS:
+    /** Emitted to indicate that character @p c is activated (such as by double-clicking it). */
     void activated(const QChar &c);
     void focusItemChanged(const QChar &c);
     void showCharRequested(const QChar& c);

@@ -266,9 +266,9 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         mainLayout->addLayout(searchLayout);
         d->searchLine = new KLineEdit(this);
         searchLayout->addWidget(d->searchLine);
-        d->searchLine->setClickMessage(i18n("Enter a search term here"));
+        d->searchLine->setClickMessage(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonShown(true);
-        d->searchLine->setToolTip(i18n("Enter a search term here"));
+        d->searchLine->setToolTip(i18n("Enter a search term or character here"));
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
 
         QPushButton* searchButton = new QPushButton(i18n("Search"), this);

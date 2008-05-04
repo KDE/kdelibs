@@ -540,6 +540,11 @@ QList<QChar> KCharSelectData::find(const QString& needle)
         return res;
     }
 
+    if(searchStrings.count() == 1 && searchStrings[0].length() == 1) {
+        res.append(searchStrings[0].at(0));
+        return res;
+    }
+
     QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
     foreach(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
