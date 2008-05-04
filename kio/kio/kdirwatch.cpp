@@ -724,7 +724,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   bool entryAdded = false;
   if (m_preferredMethod == Fam)
   {
-#if defined(HVE_FAM)
+#if defined(HAVE_FAM)
     entryAdded = useFAM(e);
 #endif
   }else if (m_preferredMethod == INotify)
