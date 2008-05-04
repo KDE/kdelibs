@@ -68,6 +68,7 @@ public:
 
     QString createLinks(QString s);
     void _k_fontSelected();
+    void _k_updateCurrentChar(const QChar &c);
     void _k_slotUpdateUnicode(const QChar &c);
     void _k_sectionSelected(int index);
     void _k_blockSelected(int index);
@@ -352,7 +353,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
 
     setCurrentFont(QFont());
 
-    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)), this, SLOT(_k_slotUpdateUnicode(const QChar &)));
+    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)), this, SLOT(_k_updateCurrentChar(const QChar &)));
     connect(d->charTable, SIGNAL(activated(const QChar &)), this, SIGNAL(charSelected(const QChar &)));
     connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)),
             this, SIGNAL(currentCharChanged(const QChar &)));
@@ -424,6 +425,23 @@ void KCharSelect::KCharSelectPrivate::_k_fontSelected()
     font.setPointSize(fontSizeSpinBox->value());
     charTable->setFont(font);
     emit q->currentFontChanged(font);
+}
+
+void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
+{
+    if(blockCombo->isEnabled() == false) {
+        //we are in search mode. make the two comboboxes show the section & block for this character.
+        //(when we are not in search mode the current character always belongs to the current section & block.)
+        int block = KCharSelectData::blockIndex(c);
+        int section = KCharSelectData::sectionIndex(block);
+        sectionCombo->setCurrentIndex(section);
+        int index = blockCombo->findData(block);
+        if (index != -1) {
+            blockCombo->setCurrentIndex(index);
+        }
+    }
+
+    _k_slotUpdateUnicode(c);
 }
 
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
@@ -589,6 +607,11 @@ void KCharSelect::KCharSelectPrivate::_k_sectionSelected(int index)
 
 void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
 {
+    if(blockCombo->isEnabled() == false) {
+        //we are in search mode, so don't fill the table with this block.
+        return;
+    }
+
     int block = blockCombo->itemData(index).toInt();
     QList<QChar> contents = KCharSelectData::blockContents(block);
     if(contents.count() <= index) {
@@ -604,7 +627,11 @@ void KCharSelect::KCharSelectPrivate::_k_searchEditChanged()
     if (searchLine->text().isEmpty()) {
         sectionCombo->setEnabled(true);
         blockCombo->setEnabled(true);
+        
+        //upon leaving search mode, keep the same character selected
+        QChar c = charTable->chr();
         _k_blockSelected(blockCombo->currentIndex());
+        q->setCurrentChar(c);
     } else {
         sectionCombo->setEnabled(false);
         blockCombo->setEnabled(false);

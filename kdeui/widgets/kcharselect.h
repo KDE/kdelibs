@@ -156,6 +156,7 @@ Q_SIGNALS:
 
 private:
     Q_PRIVATE_SLOT(d, void _k_fontSelected())
+    Q_PRIVATE_SLOT(d, void _k_updateCurrentChar(const QChar &c))
     Q_PRIVATE_SLOT(d, void _k_slotUpdateUnicode(const QChar &c))
     Q_PRIVATE_SLOT(d, void _k_sectionSelected(int index))
     Q_PRIVATE_SLOT(d, void _k_blockSelected(int index))
