@@ -85,10 +85,7 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
    * emergencySaveFunction to be called
    */
   if (s_emergencySaveFunction && !s_crashHandler)
-    s_crashHandler = defaultCrashHandler;
-
-  if (!s_drkonqiPath)
-        s_drkonqiPath = qstrdup(KStandardDirs::findExe("drkonqi").toLatin1().constData());
+    setCrashHandler(defaultCrashHandler);
 }
 
 KCrash::HandlerType
@@ -148,6 +145,9 @@ KCrash::setCrashHandler (HandlerType handler)
 #endif //Q_OS_UNIX
 
   s_crashHandler = handler;
+
+  if (!s_drkonqiPath && handler == defaultCrashHandler)
+    s_drkonqiPath = qstrdup(KStandardDirs::findExe("drkonqi").toLatin1().constData());
 }
 
 KCrash::HandlerType
