@@ -76,7 +76,7 @@ void KEmoTest::changed()
 {
     QStringList excl;
     excl << ":)" << ":-)";
-    lb.setText(t->parseEmoticons(kl.text(), KEmoticonsTheme::DefaultParseMode, excl));
+    lb.setText(t->parseEmoticons(kl.text(), KEmoticonsTheme::DefaultParse, excl));
 }
 
 void KEmoTest::changeTheme(const QString &theme)
