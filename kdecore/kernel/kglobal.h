@@ -227,7 +227,7 @@ class KCleanUpGlobalStatic
 
 /**
  * @overload
- * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed
+ * This is the same as K_GLOBAL_STATIC, but can take arguments that are passed
  * to the object's constructor
  *
  * @param TYPE The type of the global static object. Do not add a *.
@@ -262,9 +262,13 @@ static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_BASIC_ATOMIC_INITIALIZER(
 static bool _k_static_##NAME##_destroyed;                                      \
 static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 {                                                                              \
-    bool isDestroyed()                                                         \
+    inline bool isDestroyed() const                                            \
     {                                                                          \
         return _k_static_##NAME##_destroyed;                                   \
+    }                                                                          \
+    inline bool exists() const                                                 \
+    {                                                                          \
+        return _k_static_##NAME != 0;                                          \
     }                                                                          \
     inline operator TYPE*()                                                    \
     {                                                                          \
