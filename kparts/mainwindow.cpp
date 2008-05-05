@@ -45,8 +45,7 @@ public:
     MainWindowPrivate()
         : m_activePart(0),
           m_bShellGUIActivated(false),
-          m_helpMenu(0),
-          toolBarEditor(0)
+          m_helpMenu(0)
     {
     }
     ~MainWindowPrivate()
@@ -56,7 +55,6 @@ public:
     QPointer<Part> m_activePart;
     bool m_bShellGUIActivated;
     KHelpMenu *m_helpMenu;
-    QPointer<KEditToolBar> toolBarEditor;
 };
 }
 
@@ -193,21 +191,15 @@ void MainWindow::createShellGUI( bool create )
 
 void KParts::MainWindow::saveNewToolbarConfig()
 {
-    createGUI( d->m_activePart );
-    KConfigGroup cg(KGlobal::config(), "");
+    createGUI(d->m_activePart);
+    KConfigGroup cg(KGlobal::config(), QString());
     applyMainWindowSettings(cg);
 }
 
 void KParts::MainWindow::configureToolbars()
 {
-    KConfigGroup cg(KGlobal::config(), QString());
-    saveMainWindowSettings(cg);
-    if (!d->toolBarEditor) {
-      d->toolBarEditor = new KEditToolBar(guiFactory(), this);
-      d->toolBarEditor->setAttribute(Qt::WA_DeleteOnClose);
-      connect(d->toolBarEditor, SIGNAL(newToolBarConfig()), SLOT(saveNewToolbarConfig()));
-    }
-    d->toolBarEditor->show();
+    // No difference with base class anymore.
+    KXmlGuiWindow::configureToolbars();
 }
 
 #include "mainwindow.moc"
