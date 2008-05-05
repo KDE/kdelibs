@@ -307,7 +307,7 @@ install( FILES
    compression/kfilterdev.h
    config/conversion_check.h
    config/kconfig.h
-   config/kconfigbackend.h
+   #config/kconfigbackend.h re-enable post-API review and implementation (4.2?)
    config/kconfigbase.h
    config/kconfiggroup.h
    config/kdesktopfile.h
