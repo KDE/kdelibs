@@ -55,10 +55,11 @@
 #include <QtGui/QStyleOption>
 #include <kconfiggroup.h>
 
-class KLineEdit::KLineEditPrivate
+class KLineEditPrivate
 {
 public:
-    KLineEditPrivate()
+    KLineEditPrivate(KLineEdit* qq)
+        : q(qq)
     {
         completionBox = 0L;
         handleURLDrops = true;
@@ -100,6 +101,8 @@ public:
         }
     }
 
+    void doCompletion(const QString& txt);
+
     static bool initialized;
     static bool backspacePerformsCompletion; // Configuration option
 
@@ -134,6 +137,7 @@ public:
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 
     QMap<KGlobalSettings::Completion, bool> disableCompletionMap;
+    KLineEdit* q;
 };
 
 // FIXME: Go back to using StyleSheets instead of a proxy style
@@ -162,18 +166,18 @@ QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *opt
   return KdeUiProxyStyle::subElementRect(element, option, widget);
 }
 
-bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
-bool KLineEdit::KLineEditPrivate::initialized = false;
+bool KLineEditPrivate::backspacePerformsCompletion = false;
+bool KLineEditPrivate::initialized = false;
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent )
-          :QLineEdit( string, parent ), d(new KLineEditPrivate)
+    : QLineEdit( string, parent ), d(new KLineEditPrivate(this))
 {
     init();
 }
 
 KLineEdit::KLineEdit( QWidget *parent )
-          :QLineEdit( parent ), d(new KLineEditPrivate)
+    : QLineEdit( parent ), d(new KLineEditPrivate(this))
 {
     init();
 }
@@ -808,11 +812,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if (e->key() == Qt::Key_Delete )
                         d->autoSuggest=false;
 
-                    if ( emitSignals() )
-                        emit completion( txt );
-
-                    if ( handleSignals() )
-                        makeCompletion( txt );
+                    d->doCompletion(txt);
 
                     if(  (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
                         d->autoSuggest=true;
@@ -886,12 +886,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if ( d->completionBox )
                   d->completionBox->setCancelledText( txt );
 
-                if ( emitSignals() )
-                  emit completion( txt ); // emit when requested...
-
-                if ( handleSignals() ) {
-                  makeCompletion( txt );  // handle when requested...
-                }
+                d->doCompletion(txt);
 
                 if ( (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) &&
                     mode == KGlobalSettings::CompletionPopupAuto )
@@ -922,10 +917,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( cursorPosition() == len && len != 0 )
                 {
-                    if ( emitSignals() )
-                        emit completion( txt );
-                    if ( handleSignals() )
-                        makeCompletion( txt );
+                    d->doCompletion(txt);
                     return;
                 }
             }
@@ -1275,11 +1267,7 @@ bool KLineEdit::event( QEvent* ev )
                 QListWidgetItem* currentItem = d->completionBox->currentItem();
                 const QString txt = currentItem ? currentItem->text() : d->completionBox->item(0)->text();
                 setTextWorkaround(txt);
-                // The following four lines should become a helper method...
-                if ( emitSignals() )
-                    emit completion( txt );
-                if ( handleSignals() )
-                    makeCompletion( txt );
+                d->doCompletion(txt);
                 e->accept();
                 return true;
             }
@@ -1682,6 +1670,17 @@ void KLineEdit::setPasswordMode(bool b)
 bool KLineEdit::passwordMode() const
 {
     return echoMode() == NoEcho || echoMode() == Password;
+}
+
+void KLineEditPrivate::doCompletion(const QString& txt)
+{
+    if (q->emitSignals()) {
+        emit q->completion(txt); // emit when requested...
+    }
+
+    if (q->handleSignals()) {
+        q->makeCompletion(txt);  // handle when requested...
+    }
 }
 
 #include "klineedit.moc"

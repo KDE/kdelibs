@@ -38,6 +38,7 @@ class QAction;
 class QMenu;
 class KCompletionBox;
 class KUrl;
+class KLineEditPrivate;
 
 /**
  * An enhanced QLineEdit widget for inputting text.
@@ -623,7 +624,7 @@ private:
     void updateClearButton();
 
 private:
-    class KLineEditPrivate;
+    friend class KLineEditPrivate;
     KLineEditPrivate *const d;
 
     Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) )
