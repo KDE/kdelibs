@@ -21,6 +21,7 @@
 
 #include "kglobalaccel.h"
 #include "kgesturemap.h"
+#include <kcomponentdata.h>
 
 class KAction;
 
@@ -35,14 +36,23 @@ class KActionPrivate
         void slotTriggered();
 
         void init(KAction *q_ptr);
-        void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
+        void setActiveGlobalShortcutNoEnable(const KShortcut &cut)
+            { globalShortcut = cut; }
 
+        void maybeSetComponentData(const KComponentData &kcd)
+        {
+            if (neverSetGlobalShortcut) {
+                componentData = kcd;
+            }
+        }
+
+        KComponentData componentData;   //this is **way** more lightweight than it looks
         KShortcut globalShortcut, defaultGlobalShortcut;
         KShapeGesture shapeGesture, defaultShapeGesture;
         KRockerGesture rockerGesture, defaultRockerGesture;
 
         bool globalShortcutEnabled : 1;
-        bool firstTimeSetGlobalShortcut : 1;
+        bool neverSetGlobalShortcut : 1;
         KAction *q;
 };
 

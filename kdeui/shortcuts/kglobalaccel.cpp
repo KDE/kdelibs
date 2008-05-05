@@ -167,14 +167,14 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
         return;
     }
 
-    const bool isRegistered = actionToName.contains(action);
+    const bool isRegistered = actions.contains(action);
     if (isRegistered)
         return;
 
     QStringList actionId = makeActionId(action);
 
-    nameToAction.insert(actionId.at(ActionUnique), action);
-    actionToName.insert(action, actionId.at(ActionUnique));
+    nameToAction.insertMulti(actionId.at(ActionUnique), action);
+    actions.insert(action);
     iface.doRegister(actionId);
 }
 
@@ -185,14 +185,15 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
         return;
     }
 
-    const bool isRegistered = actionToName.contains(action);
+    const bool isRegistered = actions.contains(action);
     if (!isRegistered) {
         return;
     }
 
     QStringList actionId = makeActionId(action);
 
-    nameToAction.remove(actionToName.take(action));
+    nameToAction.remove(actionId.at(ActionUnique), action);
+    actions.remove(action);
     if (removal == UnRegister) {
         iface.unRegister(actionId);
     } else {
@@ -242,12 +243,12 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
 QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
 {
-    Q_ASSERT(!mainComponentName.isEmpty());
+    QStringList ret(componentUniqueForAction(action));  // Component Unique Id ( see actionIdFields )
+    Q_ASSERT(!ret.at(ComponentUnique).isEmpty());
     Q_ASSERT(!action->objectName().isEmpty());
-    QStringList ret(mainComponentName);    // Component Unique Id ( see actionIdFields )
-    ret.append(action->objectName());      // Action Unique Name
-    ret.append(mainComponentFriendlyName); // Component Friendly name
-    ret.append(action->text());            // Action Friendly Name
+    ret.append(action->objectName());                   // Action Unique Name
+    ret.append(componentFriendlyForAction(action));     // Component Friendly name
+    ret.append(action->text());                         // Action Friendly Name
     return ret;
 }
 
@@ -274,14 +275,37 @@ KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 }
 
 
+QString KGlobalAccelPrivate::componentUniqueForAction(const KAction *action)
+{
+    if (!action->d->componentData.isValid()) {
+        return mainComponentName;
+    }
+    return action->d->componentData.componentName();
+}
+
+
+QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
+{
+    if (!action->d->componentData.isValid()) {
+        return mainComponentFriendlyName;
+    }
+    return action->d->componentData.aboutData()->programName();
+}
+
+
 void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
 {
-    //TODO: can we make it so that we don't have to check the mainComponentName? (i.e. targeted signals)
-    // Well, how about making the full QStringList the key in nameToAction?
-    if (actionId.at(ComponentUnique) != mainComponentName || isUsingForeignComponentName)
+    if (isUsingForeignComponentName) {
         return;
+    }
 
-    KAction *action = nameToAction.value(actionId.at(ActionUnique));
+    KAction *action = 0;
+    QList<KAction *> candidates = nameToAction.values(actionId.at(ActionUnique));
+    foreach (KAction *const a, candidates) {
+        if (componentUniqueForAction(a) == actionId.at(ComponentUnique)) {
+            action = a;
+        }
+    }
     if (!action || !action->isEnabled())
         return;
 
@@ -330,9 +354,9 @@ void KGlobalAccelPrivate::reRegisterAll()
     //shortcut was changed but the kded side died before it got the message so
     //autoloading will now assign an old shortcut to the action. Particularly
     //picky apps might assert or misbehave.
-    QList<KAction *> allActions = actionToName.keys();
+    QSet<KAction *> allActions = actions;
     nameToAction.clear();
-    actionToName.clear();
+    actions.clear();
     foreach(KAction *const action, allActions) {
         doRegister(action);
         updateGlobalShortcut(action, KAction::Autoloading | KAction::ActiveShortcut);

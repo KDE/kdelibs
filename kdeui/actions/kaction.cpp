@@ -39,16 +39,11 @@
 // KActionPrivate
 //---------------------------------------------------------------------
 
-void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
-{
-    globalShortcut = cut;
-}
-
 void KActionPrivate::init(KAction *q_ptr)
 {
   q = q_ptr;
   globalShortcutEnabled = false;
-  firstTimeSetGlobalShortcut = true;
+  neverSetGlobalShortcut = true;
 
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
 
@@ -185,7 +180,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
     changed = true;
     if (objectName().isEmpty()) {
       kWarning(283) << "Attempt to set global shortcut for action without objectName()."
-                       "Read the setGlobalShortcut() documentation.";
+                       " Read the setGlobalShortcut() documentation.";
       return;
     }
     d->globalShortcutEnabled = true;
@@ -205,9 +200,9 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   //We want to have updateGlobalShortcuts called on a new action in any case so that
   //it will be registered properly. In the case of the first setShortcut() call getting an
   //empty shortcut parameter this would not happen...
-  if (changed || d->firstTimeSetGlobalShortcut) {
+  if (changed || d->neverSetGlobalShortcut) {
     KGlobalAccel::self()->d->updateGlobalShortcut(this, type | load);
-    d->firstTimeSetGlobalShortcut = false;
+    d->neverSetGlobalShortcut = false;
   }
 }
 
@@ -236,6 +231,7 @@ void KAction::forgetGlobalShortcut()
     d->defaultGlobalShortcut = KShortcut();
     if (d->globalShortcutEnabled) {
         d->globalShortcutEnabled = false;
+        d->neverSetGlobalShortcut = true;   //it's a fresh start :)
         KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::UnRegister);
     }
 }

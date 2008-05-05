@@ -49,10 +49,12 @@ public:
     void remove (KAction *action, Removal r);
 
     //"private" helpers
+    QString componentUniqueForAction(const KAction *action);
+    QString componentFriendlyForAction(const KAction *action);
     QStringList makeActionId(const KAction *action);
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
-    void readComponentData( const KComponentData &component );
+    void readComponentData(const KComponentData &component);
 
     //private slot implementations
     void _k_invokeAction(const QStringList&);
@@ -61,8 +63,8 @@ public:
     void reRegisterAll();
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
-    QHash<QString, KAction *> nameToAction;
-    QHash<KAction *, QString> actionToName;
+    QMultiHash<QString, KAction *> nameToAction;
+    QSet<KAction *> actions;
 
     QString mainComponentName;
     QString mainComponentFriendlyName;

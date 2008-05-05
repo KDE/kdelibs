@@ -33,6 +33,7 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "kaction.h"
+#include "kaction_p.h"
 
 #include <QtXml/QDomDocument>
 #include <QSet>
@@ -61,6 +62,9 @@ public:
 
     configGroup = "Shortcuts";
   }
+
+  void setComponentForAction(KAction *kaction)
+    { kaction->d->maybeSetComponentData(m_componentData); }
 
   static QList<KActionCollection*> s_allCollections;
 
@@ -153,12 +157,14 @@ bool KActionCollection::isEmpty() const
 
 void KActionCollection::setComponentData(const KComponentData &cData)
 {
-  if (count()>0) {
-    // The actioncollection contains actions.  Trigger which have to be
-    // registered permanently with some service ( currently only global
-    // shortcuts ) will stop to work when the action ( through it's collection
-    // ) changes the component. Prohibit that.
-    kWarning(129) << "Attempt to call setComponentData() on a KActionCollection containing actions!";
+  if (count() > 0) {
+    // Its component name is part of an action's signature in the context of
+    // global shortcuts and the semantics of changing an existing action's
+    // signature are, as it seems, impossible to get right.
+    // As of now this only matters for global shortcuts. We could
+    // thus relax the requirement and only refuse to change the component data
+    // if we have actions with global shortcuts in this collection.
+    kWarning(129) << "this does not work on a KActionCollection containing actions!";
   }
 
   if (cData.isValid()) {
@@ -249,6 +255,11 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
       widget->addAction(action);
 
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
+
+    // only our private class is a friend of KAction
+    if (KAction *kaction = dynamic_cast<KAction *>(action)) {
+      d->setComponentForAction(kaction);
+    }
 
     if (d->connectHovered)
         connect(action, SIGNAL(hovered()), SLOT(slotActionHovered()));

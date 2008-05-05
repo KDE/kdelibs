@@ -274,6 +274,10 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     partialId.append(QString());                        //ActionFriendly
 
     foreach (const actionData *const ad, cd->actions) {
+        if (ad->isFresh) {
+            // isFresh is only an intermediate state, not to be reported outside.
+            continue;
+        }
         QStringList actionId(partialId);
         actionId[ActionUnique] = ad->uniqueName;
         actionId[ActionFriendly] = ad->friendlyName;
