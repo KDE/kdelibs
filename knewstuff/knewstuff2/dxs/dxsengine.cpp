@@ -96,6 +96,8 @@ void DxsEngine::slotCategories(QList<KNS::Category*> categories)
     Dxs * dxs = qobject_cast<Dxs*>(sender());
     Provider * provider = dxs->provider();
 
+    //kDebug() << "slot categories called for provider: " << provider->name().representation();
+
     for (QList<KNS::Category*>::iterator it = categories.begin(); it != categories.end(); ++it) {
         Category *category = (*it);
         QStringList feeds = provider->feeds();
@@ -110,12 +112,7 @@ void DxsEngine::slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed)
     Dxs * dxs = qobject_cast<Dxs*>(sender());
     Provider * provider = dxs->provider();
 
-    // FIXME: we circumvent the cache now...
-    for (Entry::List::Iterator it = list.begin(); it != list.end(); ++it) {
-        Entry *entry = (*it);
-        // FIXME: the association to feed and provider is missing here
-        emit signalEntryLoaded(entry, feed, provider);
-    }
+    mergeEntries(list, feed, provider);
 }
 
 void DxsEngine::slotEntriesFailed()

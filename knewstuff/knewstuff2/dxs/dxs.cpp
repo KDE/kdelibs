@@ -74,6 +74,7 @@ void Dxs::call_categories()
 
 void Dxs::call_entries(QString category, QString feed)
 {
+    //kDebug() << "calling entries on category " << category << " and feed " << feed;
     QDomDocument doc;
     QDomElement entries = doc.createElement("ns:GHNSList");
     QDomElement ecategory = doc.createElement("category");
@@ -92,7 +93,7 @@ void Dxs::call_entries(QString category, QString feed)
 
 void Dxs::call_comments(int id)
 {
-    kDebug() << "getting comments for entry: " << id;
+    //kDebug() << "getting comments for entry: " << id;
     QDomDocument doc;
     QDomElement comments = doc.createElement("ns:GHNSComments");
     QDomElement eid = doc.createElement("id");
@@ -152,7 +153,7 @@ void Dxs::call_subscription(int id, bool subscribe)
 
 void Dxs::call_comment(int id, QString comment)
 {
-    kDebug() << "setting comment: " << comment << " for entry: " << id;
+    //kDebug() << "setting comment: " << comment << " for entry: " << id;
     QDomDocument doc;
     QDomElement ecomment = doc.createElement("ns:GHNSComment");
     QDomElement eid = doc.createElement("id");
@@ -231,7 +232,11 @@ void Dxs::slotResult(QDomNode node, int jobid)
         QList<KNS::Entry*> entries;
 
         Feed * thisFeed = m_jobfeeds.value(jobid);
-        QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
+        QDomNode entriesNode = node.firstChild();
+        // FIXME: find a way to put a real assertion in here to ensure the entriesNode is the "entries" node
+        //Q_ASSERT(entriesNode.localName() == "entries");
+
+        QList<QDomNode> entrylist = m_soap->directChildNodes(entriesNode, "entry");
         for (int i = 0; i < entrylist.count(); i++) {
             QDomElement element = entrylist.at(i).toElement();
             element.setTagName("stuff");
@@ -240,7 +245,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
 
             entries << entry;
             thisFeed->addEntry(entry);
-            kDebug() << "ENTRY: " << entry->name().representation() << " location: " << entry->payload().representation();
+            //kDebug() << "ENTRY: " << entry->name().representation() << " location: " << entry->payload().representation();
         }
 
         emit signalEntries(entries, thisFeed);
