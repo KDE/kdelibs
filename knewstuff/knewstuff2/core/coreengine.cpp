@@ -793,7 +793,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
                 }
 
                 feed->addEntry(entry);
-                kDebug() << "entry " << entry->name().representation() << " loaded from cache";
+                //kDebug() << "entry " << entry->name().representation() << " loaded from cache";
                 emit signalEntryLoaded(entry, feed, provider);
             }
 
@@ -1011,7 +1011,6 @@ bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 
 void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *provider)
 {
-    //kDebug() << "merging entries: ";
     for (Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
         // TODO: find entry in entrycache, replace if needed
         // don't forget marking as 'updateable'
@@ -1071,7 +1070,6 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
                     // FIXME: cachedentry can now be deleted, but it's still in the list!
                     // FIXME: better: assigne all values to 'e', keeps refs intact
                 }
-                kDebug() << "removing cached entry " << cachedentry->name().representation() << " from feed";
                 // take cachedentry out of the feed
                 feed->removeEntry(cachedentry);
                 //emit signalEntryRemoved(cachedentry, feed);

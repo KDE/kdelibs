@@ -267,6 +267,8 @@ Q_SIGNALS:
 
     void signalProgress(const QString & message, int percentage);
 
+protected:
+    void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
     void slotProvidersFailed();
@@ -307,7 +309,6 @@ private:
     void registerEntry(Entry *entry);
     void unregisterEntry(Entry *entry);
     void mergeProviders(Provider::List providers);
-    void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
     void shutdown();
 
     bool entryCached(Entry *entry);
