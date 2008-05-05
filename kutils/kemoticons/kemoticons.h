@@ -35,7 +35,7 @@ class KEmoticonsPrivate;
  * For example if you want to get the current emoticon theme
  * @code
  * KEmoticons ke;
- * KEMoticonsTheme *et = ke.theme();
+ * KEmoticonsTheme *et = ke.theme();
  * //do whatever you want with the theme
  * delete et;
  * @endcode
@@ -48,26 +48,91 @@ class KEMOTICONS_EXPORT KEmoticons : public QObject
 {
     Q_OBJECT
 public:
+
+    /**
+     * Default constructor
+     */
     KEmoticons();
+
+    /**
+     * Destruct the object
+     */
     ~KEmoticons();
 
+    /**
+     * Retrieve the current emoticons theme
+     * @return the current KEmoticonsTheme
+     */
     KEmoticonsTheme *theme();
+
+    /**
+    * Retrieve the theme with name @p name
+    * @param name name of the theme
+    * @return the KEmoticonsTheme @p name
+    */
     KEmoticonsTheme *theme(const QString &name);
+
+    /**
+     * Retrieve the current emoticon theme name
+     */
     static QString currentThemeName();
 
+    /**
+     * Returns a list of installed theme
+     */
     static QStringList themeList();
 
+    /**
+     * Set @p theme as the current theme
+     * @param theme a pointer to a KEmoticonsTheme object
+     */
     static void setTheme(KEmoticonsTheme *theme);
+
+    /**
+     * Set @p theme as the current theme
+     * @param theme the name of a theme
+     */
     static void setTheme(const QString &theme);
 
+    /**
+     * Create a new emoticons theme
+     * @code
+     * KEmoticonsTheme *theme;
+     * KService::List srv = KServiceTypeTrader::self()->query("KEmoticons");
+     * for (int i = 0; i < srv.size(); ++i) {
+     *     // we want to create a kde emoticons theme
+     *     if (srv.at(i)->property("X-KDE-EmoticonsFileName").toString() == "emoticons.xml") {
+     *         theme = KEmoticons().newTheme("test", srv.at(i));
+     *     }
+     * }
+     * 
+     * @endcode
+     * @param name the name of the new emoticons theme
+     * @param service the kind of emoticon theme to create
+     */
     KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
 
+    /**
+     * Install all themes inside the archive @p archiveName
+     * @param archiveName path to the archive
+     * @return a list of installed themes
+     */
     QStringList installTheme(const QString &archiveName);
 
-    static void setParseMode(KEmoticonsTheme::ParseMode);
+    /**
+     * Set the parse mode to @p mode
+     */
+    static void setParseMode(KEmoticonsTheme::ParseMode mode);
+
+    /**
+     * Returns the current parse mode
+     */
     static KEmoticonsTheme::ParseMode parseMode();
 
 private:
+    /**
+     * Private class
+     */
     KEmoticonsPrivate * const d;
 
 };

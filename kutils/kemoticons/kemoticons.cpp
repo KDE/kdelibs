@@ -48,12 +48,7 @@ KEmoticonsPrivate::KEmoticonsPrivate()
 void KEmoticonsPrivate::loadServiceList()
 {
     QString constraint("(exist Library)");
-    KService::List services = KServiceTypeTrader::self()->query("KEmoticons", constraint);
-
-    foreach(KService::Ptr service, services) {
-        kDebug() << "NAME:" << service->name();
-        m_loaded.append(service);
-    }
+    m_loaded = KServiceTypeTrader::self()->query("KEmoticons", constraint);
 }
 
 KEmoticonsTheme *KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &service)

@@ -17,30 +17,32 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
  ***************************************************************************/
 
-#ifndef PIDGIN_EMOTICONS_H
-#define PIDGIN_EMOTICONS_H
+#ifndef KDE_EMOTICONS_H
+#define KDE_EMOTICONS_H
 
 #include <kemoticonstheme.h>
 
-class PidginEmoticons : public KEmoticonsTheme
+#include <QtXml/QDomDocument>
+
+class KdeEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
 public:
-    PidginEmoticons(QObject *parent, const QVariantList &args);
-    ~PidginEmoticons();
+    KdeEmoticons(QObject *parent, const QVariantList &args);
+    ~KdeEmoticons();
 
     bool loadTheme(const QString &path);
 
     bool removeEmoticon(const QString &emo);
-    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
     void save();
 
     void createNew();
 
 private:
-    QStringList m_text;
+    QDomDocument m_themeXml;
 };
 
-#endif /* PIDGIN_EMOTICONS_H */
+#endif /* KDE_EMOTICONS_H */
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

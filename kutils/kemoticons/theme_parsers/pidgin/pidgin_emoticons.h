@@ -17,32 +17,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
  ***************************************************************************/
 
-#ifndef ADIUM_EMOTICONS_H
-#define ADIUM_EMOTICONS_H
+#ifndef PIDGIN_EMOTICONS_H
+#define PIDGIN_EMOTICONS_H
 
 #include <kemoticonstheme.h>
 
-#include <QtXml/QDomDocument>
-
-class AdiumEmoticons : public KEmoticonsTheme
+class PidginEmoticons : public KEmoticonsTheme
 {
     Q_OBJECT
 public:
-    AdiumEmoticons(QObject *parent, const QVariantList &args);
-    ~AdiumEmoticons();
+    PidginEmoticons(QObject *parent, const QVariantList &args);
+    ~PidginEmoticons();
 
     bool loadTheme(const QString &path);
 
     bool removeEmoticon(const QString &emo);
-    bool addEmoticon(const QString &emo, const QString &text, bool copy);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
     void save();
 
     void createNew();
 
 private:
-    QDomDocument m_themeXml;
+    QStringList m_text;
 };
 
-#endif /* ADIUM_EMOTICONS_H */
+#endif /* PIDGIN_EMOTICONS_H */
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
