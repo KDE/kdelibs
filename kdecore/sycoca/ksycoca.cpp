@@ -77,6 +77,7 @@ public:
           sycoca_mmap( 0 ),
           timeStamp( 0 ),
           m_database( 0 ),
+          m_dummyBuffer(0),
           updateSig( 0 ),
           lstFactories( 0 )
     {
@@ -113,6 +114,7 @@ public:
 #else
     QFile *m_database;
 #endif
+    QBuffer* m_dummyBuffer;
     QStringList changeList;
     QString language;
     quint32 updateSig;
@@ -155,6 +157,8 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
    sycoca_mmap = 0;
    QDataStream* &m_str = KSycocaPrivate::_self->m_str;
    m_str = 0;
+   delete m_dummyBuffer;
+   m_dummyBuffer = 0;
    QString path = KSycoca::absoluteFilePath();
 
    kDebug(7011) << "Trying to open ksycoca from " << path;
@@ -209,10 +213,10 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
 #ifdef HAVE_MADVISE
         (void) madvise((char*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
 #endif // HAVE_MADVISE
-        QBuffer *buffer = new QBuffer;
-        buffer->setData(QByteArray::fromRawData(sycoca_mmap, sycoca_size));
-        buffer->open(QIODevice::ReadOnly);
-        m_str = new QDataStream( buffer);
+        m_dummyBuffer = new QBuffer;
+        m_dummyBuffer->setData(QByteArray::fromRawData(sycoca_mmap, sycoca_size));
+        m_dummyBuffer->open(QIODevice::ReadOnly);
+        m_str = new QDataStream(m_dummyBuffer);
         m_str->setVersion(QDataStream::Qt_3_1);
      }
 #endif // HAVE_MMAP
@@ -232,9 +236,9 @@ bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
      {
         // We open a dummy database instead.
         //kDebug(7011) << "No database, opening a dummy one.";
-        QBuffer *buffer = new QBuffer;
-        buffer->open(QIODevice::ReadWrite);
-        m_str = new QDataStream(buffer);
+        m_dummyBuffer = new QBuffer;
+        m_dummyBuffer->open(QIODevice::ReadWrite);
+        m_str = new QDataStream(m_dummyBuffer);
         m_str->setVersion(QDataStream::Qt_3_1);
         *m_str << qint32(KSYCOCA_VERSION);
         *m_str << qint32(0);
@@ -297,6 +301,8 @@ void KSycocaPrivate::closeDatabase()
 
    delete m_str;
    m_str = 0;
+   delete m_dummyBuffer;
+   m_dummyBuffer = 0;
    delete device;
    if (m_database != device)
       delete m_database;
