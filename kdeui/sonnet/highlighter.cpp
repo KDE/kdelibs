@@ -409,4 +409,29 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
   }
   }*/
 
+void Highlighter::addWordToDictionary(const QString &word)
+{
+    d->dict->addToPersonal(word);
+}
+
+void Highlighter::ignoreWord(const QString &word)
+{
+    d->dict->addToSession(word);
+}
+
+QStringList Highlighter::suggestionsForWord(const QString &word, int max)
+{
+    QStringList suggestions = d->dict->suggest(word);
+    if ( max != -1 ) {
+        while ( suggestions.count() > max )
+            suggestions.removeLast();
+    }
+    return suggestions;
+}
+
+bool Highlighter::isWordMisspelled(const QString &word)
+{
+    return d->dict->isMisspelled(word);
+}
+
 }
