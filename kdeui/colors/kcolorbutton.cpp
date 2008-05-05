@@ -123,10 +123,13 @@ void KColorButton::setDefaultColor( const QColor &c )
 
 void KColorButton::KColorButtonPrivate::initStyleOption(QStyleOptionButton* opt) const
 {
-    opt->init(q);
+    opt->initFrom(q);
+    opt->state |= q->isDown() ? QStyle::State_Sunken : QStyle::State_Raised;
+    opt->features = QStyleOptionButton::None;
+    if (q->isDefault())
+      opt->features |= QStyleOptionButton::DefaultButton;
     opt->text.clear();
     opt->icon = QIcon();
-    opt->features = QStyleOptionButton::None;
 }
 
 void KColorButton::paintEvent( QPaintEvent* )
