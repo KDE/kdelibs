@@ -143,9 +143,9 @@ class KLineEditStyle : public KdeUiProxyStyle
 {
 public:
   KLineEditStyle(KLineEdit *parent) : KdeUiProxyStyle(parent), overlap(0) {}
- 
+
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
-  
+
   int overlap;
 };
 
@@ -206,7 +206,7 @@ void KLineEdit::init()
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
-    
+
     QStyle *lineEditStyle = new KLineEditStyle(this);
     lineEditStyle->setParent(this);
     setStyle(lineEditStyle);
@@ -402,7 +402,7 @@ void KLineEdit::makeCompletion( const QString& text )
     if ( !comp || mode == KGlobalSettings::CompletionNone )
         return;  // No completion object...
 
-    QString match = comp->makeCompletion( text );
+    const QString match = comp->makeCompletion( text );
 
     if ( mode == KGlobalSettings::CompletionPopup ||
          mode == KGlobalSettings::CompletionPopupAuto )
@@ -1071,20 +1071,20 @@ void KLineEdit::tripleClickTimeout()
 QMenu* KLineEdit::createStandardContextMenu()
 {
     QMenu *popup = QLineEdit::createStandardContextMenu();
-    
+
     if( !isReadOnly() )
     {
         QList<QAction *> actionList = popup->actions();
-        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs }; 
+        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
         QAction *separatorAction = 0L;
         int idx = actionList.indexOf( actionList[SelectAllAct] ) + 1;
         if ( idx < actionList.count() )
-            separatorAction = actionList.at( idx );         
+            separatorAction = actionList.at( idx );
         if ( separatorAction )
         {
             KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
             if ( text().isEmpty() )
-                clearAllAction->setEnabled( false );    
+                clearAllAction->setEnabled( false );
             popup->insertAction( separatorAction, clearAllAction );
         }
     }
@@ -1237,6 +1237,8 @@ bool KLineEdit::event( QEvent* ev )
     }
     else if( ev->type() == QEvent::KeyPress )
     {
+        // Hmm -- all this could be done in keyPressEvent too...
+
         QKeyEvent *e = static_cast<QKeyEvent *>( ev );
 
         if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
@@ -1266,6 +1268,21 @@ bool KLineEdit::event( QEvent* ev )
             // Eat the event if the user asked for it, or if a completionbox was visible
             if (stopEvent)
                 return true;
+        } else if (e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoButton ) {
+            // #65877: Key_Tab should complete using the first (or selected) item, and then offer completions again
+            const bool tabHandling = d->completionBox && d->completionBox->isVisible() && d->completionBox->count() > 0;
+            if (tabHandling) {
+                QListWidgetItem* currentItem = d->completionBox->currentItem();
+                const QString txt = currentItem ? currentItem->text() : d->completionBox->item(0)->text();
+                setTextWorkaround(txt);
+                // The following four lines should become a helper method...
+                if ( emitSignals() )
+                    emit completion( txt );
+                if ( handleSignals() )
+                    makeCompletion( txt );
+                e->accept();
+                return true;
+            }
         }
     }
     return QLineEdit::event( ev );

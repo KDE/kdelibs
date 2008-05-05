@@ -101,10 +101,11 @@ public Q_SLOTS:
 
     /**
      * Makes this widget (when visible) capture Tab-key events to traverse the
-     * items in the dropdown list.
+     * items in the dropdown list (Tab goes down, Shift+Tab goes up).
      *
-     * Default off, as it conflicts with the usual behavior of Tab to traverse
-     * widgets. It is useful for cases like Konqueror's Location Bar, though.
+     * On by default, but should be turned off when used in combination with KUrlCompletion.
+     * When off, KLineEdit handles Tab itself, making it select the current item from the completion box,
+     * which is particularly useful when using KUrlCompletion.
      *
      * @see isTabHandling
      */
@@ -114,7 +115,7 @@ public Q_SLOTS:
      * @returns true if this widget is handling Tab-key events to traverse the
      * items in the dropdown list, otherwise false.
      *
-     * Default is false.
+     * Default is true.
      *
      * @see setTabHandling
      */
