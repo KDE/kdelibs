@@ -288,7 +288,7 @@ void Dialog::slotMisspelling(const QString& word, int start)
 void Dialog::slotDone()
 {
     kDebug()<<"Dialog done!";
-    QString buffer(d->originalBuffer);
+    d->restart=false;
     emit done(d->checker->text());
     if (d->restart)
     {
