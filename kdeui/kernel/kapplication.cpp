@@ -733,7 +733,9 @@ commitDataRestart:
 
 static void checkRestartVersion( QSessionManager& sm )
 {
+#if defined Q_WS_X11
     Display* dpy = QX11Info::display();
+
     Atom type;
     int format;
     unsigned long nitems, after;
@@ -749,6 +751,7 @@ static void checkRestartVersion( QSessionManager& sm )
         }
         XFree( data );
     }
+#endif // defined Q_WS_X11
 #define NUM_TO_STRING2( num ) #num
 #define NUM_TO_STRING( num ) NUM_TO_STRING2( num )
     QString wrapper = KStandardDirs::findExe( "kde" NUM_TO_STRING( KDE_VERSION_MAJOR ) ); // "kde4", etc.
