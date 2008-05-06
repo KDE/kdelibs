@@ -145,6 +145,10 @@ namespace KIO {
 
         /**
          * The job is copying a file or directory.
+         *
+         * Note: This signal is used for progress dialogs, it's not emitted for
+         * every file or directory (this would be too slow), but every 200ms.
+         *
 	 * @param job the job that emitted this signal
 	 * @param src the URL of the file or directory that is currently
 	 *             being copied
@@ -153,6 +157,10 @@ namespace KIO {
         void copying( KIO::Job *job, const KUrl& src, const KUrl& dest );
         /**
          * The job is creating a symbolic link.
+         *
+         * Note: This signal is used for progress dialogs, it's not emitted for
+         * every file or directory (this would be too slow), but every 200ms.
+         *
 	 * @param job the job that emitted this signal
 	 * @param target the URL of the file or directory that is currently
 	 *             being linked
@@ -161,6 +169,10 @@ namespace KIO {
         void linking( KIO::Job *job, const QString& target, const KUrl& to );
         /**
          * The job is moving a file or directory.
+         *
+         * Note: This signal is used for progress dialogs, it's not emitted for
+         * every file or directory (this would be too slow), but every 200ms.
+         *
 	 * @param job the job that emitted this signal
 	 * @param from the URL of the file or directory that is currently
 	 *             being moved
@@ -169,12 +181,16 @@ namespace KIO {
         void moving( KIO::Job *job, const KUrl& from, const KUrl& to );
         /**
          * The job is creating the directory @p dir.
+         *
+         * This signal is emitted for every directory being created.
+         *
 	 * @param job the job that emitted this signal
 	 * @param dir the directory that is currently being created
          */
         void creatingDir( KIO::Job *job, const KUrl& dir );
         /**
          * The user chose to rename @p from to @p to.
+         *
 	 * @param job the job that emitted this signal
 	 * @param from the original name
 	 * @param to the new name
@@ -184,6 +200,7 @@ namespace KIO {
         /**
          * The job emits this signal when copying or moving a file or directory successfully finished.
          * This signal is mainly for the Undo feature.
+         * If you simply want to know when a copy job is done, use result().
 	 *
 	 * @param job the job that emitted this signal
          * @param from the source URL
@@ -247,7 +264,7 @@ namespace KIO {
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param flags: We support HideProgressInfo here 
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
     KIO_EXPORT CopyJob *copyAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
