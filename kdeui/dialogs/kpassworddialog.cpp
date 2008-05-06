@@ -233,12 +233,12 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
 
 void KPasswordDialog::setPrompt(const QString& prompt)
 {
-    int marginLeft, marginTop, maringRight, marginBottom;
-    layout()->getContentsMargins(&marginLeft, &marginTop, &maringRight, &marginBottom);
+    int marginLeft, marginTop, marginRight, marginBottom;
+    layout()->getContentsMargins(&marginLeft, &marginTop, &marginRight, &marginBottom);
 
     d->ui.prompt->setText( prompt );
     d->ui.prompt->setWordWrap( true );
-    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() - marginLeft - maringRight ) );
+    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() - marginLeft - marginRight ) );
 }
 
 QString KPasswordDialog::prompt() const
