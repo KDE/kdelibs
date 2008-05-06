@@ -2,7 +2,6 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Computer, Inc.
- *  Copyright (C) 2007 Eric Seidel <eric@webkit.org>
  *  Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -87,7 +86,7 @@ const size_t ALLOCATIONS_PER_COLLECTION = 4000;
 
 
 // A whee bit like a WTF::Vector, but perfectly POD, so can be used in global context
-// w/o worries.
+// w/o worries. 
 struct BlockList {
     CollectorBlock** m_data;
     size_t m_used;
@@ -155,7 +154,6 @@ struct CollectorHeap {
 
   size_t numLiveObjects;
   size_t numLiveObjectsAtLastCollect;
-  size_t extraCost;
 };
 
 static CollectorHeap heap;
@@ -206,7 +204,7 @@ static void freeBlock(CollectorBlock* block)
 {
     // Unregister the block first
     heap.allBlocks.remove(block);
-
+    
 #if PLATFORM(DARWIN)
     vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(block), BLOCK_SIZE);
 #elif PLATFORM(WIN_OS)
@@ -216,22 +214,6 @@ static void freeBlock(CollectorBlock* block)
 #else
     munmap(block, BLOCK_SIZE);
 #endif
-}
-
-void Collector::recordExtraCost(size_t cost)
-{
-    // Our frequency of garbage collection tries to balance memory use against speed
-    // by collecting based on the number of newly created values. However, for values
-    // that hold on to a great deal of memory that's not in the form of other JS values,
-    // that is not good enough - in some cases a lot of those objects can pile up and
-    // use crazy amounts of memory without a GC happening. So we track these extra
-    // memory costs. Only unusually large objects are noted, and we only keep track
-    // of this extra cost until the next GC. In garbage collected languages, most values
-    // are either very short lived temporaries, or have extremely long lifetimes. So
-    // if a large value survives one garbage collection, there is not much point to
-    // collecting more frequently as long as it stays alive.
-
-    heap.extraCost += cost;
 }
 
 static void* allocOversize(size_t s)
@@ -266,7 +248,7 @@ static void* allocOversize(size_t s)
 
         if (last >= CELLS_PER_BLOCK) // No way it will fit
           break;
-
+        
         ++i;
         while (i <= last && !candidate->allocd.get(i))
           ++i;
@@ -291,7 +273,7 @@ static void* allocOversize(size_t s)
   }
 
   sufficientBlock->usedCells += cellsNeeded;
-
+  
   // Set proper bits for trailers and the head
   sufficientBlock->allocd.set(startOffset);
   for (size_t t = startOffset + 1; t < startOffset + cellsNeeded; ++t) {
@@ -312,11 +294,10 @@ void* Collector::allocate(size_t s)
 
   // collect if needed
   size_t numLiveObjects = heap.numLiveObjects;
-  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;
+  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;  
   size_t numNewObjects = numLiveObjects - numLiveObjectsAtLastCollect;
-  size_t newCost = numNewObjects + heap.extraCost;
 
-  if (newCost >= ALLOCATIONS_PER_COLLECTION && newCost >= numLiveObjectsAtLastCollect) {
+  if (numNewObjects >= ALLOCATIONS_PER_COLLECTION && numNewObjects >= numLiveObjectsAtLastCollect) {
     collect();
     numLiveObjects = heap.numLiveObjects;
   }
@@ -512,9 +493,8 @@ void Collector::markCurrentThreadConservatively()
         pthread_getattr_np(thread, &sattr);
 #endif
 #endif
-        // Should work but fails on Linux (?)
-        //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
-        pthread_attr_getstackaddr(&sattr, &stackBase);
+        size_t stackSize;
+        pthread_attr_getstack(&sattr, &stackBase, &stackSize);
         assert(stackBase);
         stackThread = thread;
     }
@@ -642,7 +622,7 @@ bool Collector::collect()
   assert(JSLock::lockCount() > 0);
 
 #if USE(MULTIPLE_THREADS)
-    bool currentThreadIsMainThread = pthread_main_np();
+    bool currentThreadIsMainThread = !pthread_is_threaded_np() || pthread_main_np();
 #else
     bool currentThreadIsMainThread = true;
 #endif
@@ -686,8 +666,8 @@ bool Collector::collect()
         CollectorCell *cell = curBlock->cells + i;
         JSCell *imp = reinterpret_cast<JSCell *>(cell);
         if (!curBlock->marked.get(i) && currentThreadIsMainThread) {
-          // special case for allocated but uninitialized object
-          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.)
+          // special case for allocated but uninitialized object 
+          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.) 
           if (cell->u.freeCell.zeroIfFree == 0)
             continue;
           imp->~JSCell();
@@ -811,17 +791,13 @@ bool Collector::collect()
       }
     }
   } // each oversize block
-
+    
   bool deleted = heap.numLiveObjects != numLiveObjects;
 
   heap.numLiveObjects = numLiveObjects;
   heap.numLiveObjectsAtLastCollect = numLiveObjects;
-  heap.extraCost = 0;
 
-  bool newMemoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
-  if (newMemoryFull && newMemoryFull != memoryFull)
-    reportOutOfMemoryToAllInterpreters();
-  memoryFull = newMemoryFull;
+  memoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
 
   return deleted;
 }
@@ -898,21 +874,6 @@ HashCountedSet<const char*>* Collector::rootObjectTypeCounts()
         counts->add(typeName(it->first));
 
     return counts;
-}
-
-void Collector::reportOutOfMemoryToAllInterpreters()
-{
-    if (!Interpreter::s_hook)
-        return;
-
-    Interpreter* interpreter = Interpreter::s_hook;
-    do {
-        ExecState* exec = interpreter->execState();
-
-        exec->setException(Error::create(exec, GeneralError, "Out of memory"));
-
-        interpreter = interpreter->next;
-    } while(interpreter != Interpreter::s_hook);
 }
 
 } // namespace KJS
