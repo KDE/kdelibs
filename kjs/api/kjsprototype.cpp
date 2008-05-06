@@ -28,7 +28,7 @@
 #include "kjs/context.h"
 #include "kjs/interpreter.h"
 
-#include <qmap.h>
+#include <QMap>
 
 using namespace KJS;
 

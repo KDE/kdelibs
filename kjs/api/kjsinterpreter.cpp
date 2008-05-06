@@ -24,7 +24,7 @@
 #include "kjs/interpreter.h"
 #include "kjs/completion.h"
 #include "kjs/object.h"
-#include <qstring.h>
+#include <QString>
 #include <stdio.h>
 
 using namespace KJS;

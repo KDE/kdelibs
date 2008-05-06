@@ -23,8 +23,8 @@
 #define KJSOBJECT_H
 
 #include "kjsapi_export.h"
+#include <QString>
 
-class QString;
 class KJSContext;
 class KJSNull;
 class KJSUndefined;
