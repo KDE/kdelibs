@@ -12,19 +12,18 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 # The basis of all the tests handling statements
-#kde4_add_library(kmetadata_testbase STATIC testbase.cpp)
-#target_link_libraries(kmetadata_testbase knepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+kde4_add_library(nepomuk_testbase STATIC testbase.cpp)
+target_link_libraries(nepomuk_testbase nepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
 
 # tests
-#kde4_add_unit_test(resourcetest resourcetest.cpp)
-#target_link_libraries(resourcetest
-#  kmetadata_testbase
-#  kmetadata
-#  ${QT_QTCORE_LIBRARY}
-#  ${QT_QTDBUS_LIBRARY}
-#  ${QT_QTTEST_LIBRARY}
-#  ${QT_QTGUI_LIBRARY}
-#  ${KDE4_KDECORE_LIBRARY})
+kde4_add_unit_test(resourcetest resourcetest.cpp)
+target_link_libraries(resourcetest
+  nepomuk_testbase
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTTEST_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBRARY})
 
 #kde4_add_unit_test(varianttest varianttest.cpp)
 #target_link_libraries(varianttest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})

@@ -13,27 +13,22 @@
  */
 
 #include "testbase.h"
-#include <kmetadata/kmetadata.h>
-#include <knepomuk/knepomuk.h>
-#include <knepomuk/services/rdfrepository.h>
 
-using namespace Nepomuk;
-using namespace Nepomuk::KMetaData;
-using namespace Soprano;
+#include "../resource.h"
+#include "../resourcemanager.h"
+
+#include <Soprano/Soprano>
+
 
 void TestBase::initTestCase()
 {
-    qDebug() << "Initializing KMetaData TestBase..." << endl;
-
-    setDefaultRepository( "testRep" );
-    QVERIFY( ResourceManager::instance()->init() == 0 );
+    Soprano::Model* model = Soprano::createModel();
+    Nepomuk::ResourceManager::instance()->setOverrideMainModel( model );
 }
 
 void TestBase::init()
 {
-    // clean out all statements
-    Nepomuk::Services::RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
-    rr.removeAllStatements( "testRep", Statement() );
+    Nepomuk::ResourceManager::instance()->mainModel()->removeAllStatements();
 }
 
 
