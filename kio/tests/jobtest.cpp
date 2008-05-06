@@ -242,6 +242,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     job = KIO::copy(u, d, KIO::HideProgressInfo );
+    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,const KUrl&,const KUrl&,time_t,bool,bool)));
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -259,6 +260,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
         QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
 #endif
     }
+    QCOMPARE(spyCopyingDone.count(), 1);
 }
 
 void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int flags )
