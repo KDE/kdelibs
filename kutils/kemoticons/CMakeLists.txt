@@ -20,4 +20,4 @@ install(TARGETS kemoticons DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 
-install(FILES kemoticons.h kemoticonstheme.h DESTINATION ${INCLUDE_INSTALL_DIR})
+install(FILES kemoticons.h kemoticonstheme.h kemoticons_export.h DESTINATION ${INCLUDE_INSTALL_DIR})

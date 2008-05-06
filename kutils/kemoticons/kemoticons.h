@@ -129,6 +129,15 @@ public:
      */
     static KEmoticonsTheme::ParseMode parseMode();
 
+    /**
+     * This is a convenient function that returns a text parsed with the current emoticon theme
+     * @see KEmoticonsTheme::parseEmoticons
+     * @param text the text to parse
+     * @param mode how to parse the text
+     * @param exclude a list of emoticons to exclude from the parsing
+     * @return the text with emoticons replaced by html images
+     */
+    static QString parseEmoticons(const QString &text, KEmoticonsTheme::ParseMode mode = KEmoticonsTheme::DefaultParse, const QStringList &exclude = QStringList());
 private:
     /**
      * Private class

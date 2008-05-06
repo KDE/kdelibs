@@ -200,6 +200,8 @@ protected:
     KEmoticonsThemePrivate * const d;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KEmoticonsTheme::ParseMode)
+
 #endif /* KEMOTICONS_THEME_H */
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
