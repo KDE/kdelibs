@@ -160,6 +160,12 @@ bool KPasswordDialog::keepPassword() const
 void KPasswordDialog::addCommentLine( const QString& label,
                                       const QString& comment )
 {
+    int mainMarginLeft, mainMarginTop, mainMarginRight, mainMarginBottom;
+    int gridMarginLeft, gridMarginTop, gridMarginRight, gridMarginBottom;
+            
+    layout()->getContentsMargins(&mainMarginLeft, &mainMarginTop, &mainMarginRight, &mainMarginBottom);
+    d->ui.gridLayout->getContentsMargins(&gridMarginLeft, &gridMarginTop, &gridMarginRight, &gridMarginBottom);
+    
     QLabel* l = new QLabel(label, mainWidget());
     QLabel* c = new QLabel(comment, mainWidget());
     c->setWordWrap(true);
@@ -187,7 +193,7 @@ void KPasswordDialog::addCommentLine( const QString& label,
         QLayoutItem *li = d->ui.gridLayout->itemAtPosition(i, 1);
         if (li) {
             QLabel *l = qobject_cast<QLabel*>(li->widget());
-            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth ) );
+            if (l && l->wordWrap()) l->setMinimumHeight( l->heightForWidth( width() - firstColumnWidth - mainMarginLeft - mainMarginRight - gridMarginLeft - gridMarginRight - d->ui.gridLayout->spacing() ) );
         }
     }
 }
@@ -227,9 +233,12 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
 
 void KPasswordDialog::setPrompt(const QString& prompt)
 {
+    int marginLeft, marginTop, maringRight, marginBottom;
+    layout()->getContentsMargins(&marginLeft, &marginTop, &maringRight, &marginBottom);
+
     d->ui.prompt->setText( prompt );
     d->ui.prompt->setWordWrap( true );
-    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() ) );
+    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() - marginLeft - maringRight ) );
 }
 
 QString KPasswordDialog::prompt() const
