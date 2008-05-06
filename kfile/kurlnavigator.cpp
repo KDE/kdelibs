@@ -994,7 +994,7 @@ bool KUrlNavigator::isPlacesSelectorVisible() const
 
 void KUrlNavigator::setUrl(const KUrl& url)
 {
-    QString urlStr(url.pathOrUrl());
+    QString urlStr(KUrlCompletion::replacedPath(url.pathOrUrl(), true, true));
 
     if (urlStr.length() > 0 && urlStr.at(0) == '~') {
         // replace '~' by the home directory
