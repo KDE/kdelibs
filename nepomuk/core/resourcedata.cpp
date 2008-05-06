@@ -31,10 +31,12 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/Xesam>
+#include <Soprano/Vocabulary/NAO>
 
 #include "ontology/class.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDateTime>
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -104,8 +106,6 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
 Nepomuk::ResourceData::~ResourceData()
 {
     --s_dataCnt;
-    if( m_proxyData )
-        m_proxyData->deref();
 }
 
 
@@ -145,16 +145,16 @@ QList<QUrl> Nepomuk::ResourceData::allTypes()
 
 void Nepomuk::ResourceData::deleteData()
 {
-    if( m_proxyData )
-        if( m_proxyData->deref() )
-            m_proxyData->deleteData();
-
-    m_proxyData = 0;
-
-    if( !m_uri.isEmpty() )
-        initializedData()->remove( m_uri.toString() );
-    if( !m_kickoffUriOrId.isEmpty() )
-        kickoffData()->remove( m_kickoffUriOrId );
+    if( m_proxyData ) {
+        m_proxyData->deref();
+        m_proxyData = 0;
+    }
+    else {
+        if( !m_uri.isEmpty() )
+            initializedData()->remove( m_uri.toString() );
+        if( !m_kickoffUriOrId.isEmpty() )
+            kickoffData()->remove( m_kickoffUriOrId );
+    }
 
     deleteLater();
 }
@@ -219,7 +219,7 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
         return m_proxyData->property( uri );
 
     if ( load() ) {
-        QHash<QUrl, Variant>::iterator it = m_cache.find( uri );
+        QHash<QUrl, Variant>::const_iterator it = m_cache.find( uri );
         if ( it == m_cache.end() ) {
             return Variant();
         }
@@ -263,6 +263,9 @@ bool Nepomuk::ResourceData::store()
         // save type (There should be no need to save all the types since there is only one way
         // that m_types contains more than one element: if we loaded them)
         statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
+
+        // save the creation date
+        statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::created(), Soprano::LiteralValue( QDateTime::currentDateTime() ) ) );
 
         // save the kickoff identifier (other identifiers are stored via setProperty)
         if ( !m_kickoffIdentifier.isEmpty() ) {
@@ -569,10 +572,12 @@ bool Nepomuk::ResourceData::determineUri()
         // Move us to the final data hash now that the URI is known
         //
         if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
-            if( !initializedData()->contains( uri().toString() ) )
-                initializedData()->insert( uri().toString(), this );
+            QString s = uri().toString();
+            if( !initializedData()->contains( s ) ) {
+                initializedData()->insert( s, this );
+            }
             else {
-                m_proxyData = initializedData()->value( uri().toString() );
+                m_proxyData = initializedData()->value( s );
                 m_proxyData->ref();
             }
         }
