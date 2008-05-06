@@ -267,6 +267,10 @@ int KTabWidget::tabBarWidthForMaxChars( int maxLength )
     if ( !tabBar()->tabIcon( i ).isNull() ) {
       iw = tabBar()->tabIcon( i ).pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), QIcon::Normal ).width() + 4;
     }
+    if ( isCloseButtonEnabled() ) {
+      // FIXME: how to get the size of the close button directly from the tabBar()?
+      iw += KIconLoader::SizeSmall * 3 / 2;
+    }
     x += ( tabBar()->style()->sizeFromContents( QStyle::CT_TabBarTab, 0L,
          QSize( qMax( lw + hframe + iw, QApplication::globalStrut().width() ), 0 ),
          this ) ).width();
