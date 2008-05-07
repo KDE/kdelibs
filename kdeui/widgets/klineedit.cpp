@@ -357,9 +357,9 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
        QString input;
 
        if (type == KCompletionBase::PrevCompletionMatch)
-          comp->previousMatch();
+          input = comp->previousMatch();
        else
-          comp->nextMatch();
+          input = comp->nextMatch();
 
        // Skip rotation if previous/next match is null or the same text
        if ( input.isNull() || input == displayText() )
