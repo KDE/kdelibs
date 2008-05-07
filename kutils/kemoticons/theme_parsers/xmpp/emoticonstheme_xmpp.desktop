@@ -1,7 +1,10 @@
 [Desktop Entry]
 Type=Service
 Name=XMPP Emoticons Theme
+Name[ga]=Téama Straoiseoga XMPP
+Name[x-test]=xxXMPP Emoticons Themexx
 Comment=Library to use XMPP emoticons theme
+Comment[x-test]=xxLibrary to use XMPP emoticons themexx
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_xmpp
 X-KDE-EmoticonsFileName=icondef.xml
