@@ -423,7 +423,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // Set the meta-refresh flag...
   d->m_metaRefreshEnabled = d->m_settings->isAutoDelayedActionsEnabled ();
-  
+
   KHTMLSettings::KSmoothScrollingMode ssm = d->m_settings->smoothScrolling();
   if (ssm == KHTMLSettings::KSmoothScrollingDisabled)
       d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMDisabled);
@@ -4337,7 +4337,7 @@ void KHTMLPart::childLoadFailure( khtml::ChildFrame *child )
   child->m_bCompleted = true;
   if ( child->m_partContainerElement )
     child->m_partContainerElement->partLoadingErrorNotify();
-  
+
   checkCompleted();
 }
 
@@ -5029,7 +5029,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArgum
   khtml::ChildFrame *child = frame( sender()->parent() );
   KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()->parent()));
 
-  // TODO: handle child target correctly! currently the script are always executed fur the parent
+  // TODO: handle child target correctly! currently the script are always executed for the parent
   QString urlStr = url.url();
   if ( urlStr.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
       QString script = KUrl::fromPercentEncoding( urlStr.right( urlStr.length() - 11 ).toLatin1() );

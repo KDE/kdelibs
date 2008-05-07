@@ -518,7 +518,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
 #endif
-  
+
   // we want only limited operations on a closed window
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
     const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
@@ -1734,6 +1734,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
       return Window::retrieve(p);
     }
     args.setMimeType("text/html");
+    args.setActionRequestedByUser(false);
 
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0;

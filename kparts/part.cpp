@@ -995,12 +995,14 @@ class KParts::OpenUrlArgumentsPrivate : public QSharedData
 public:
     OpenUrlArgumentsPrivate()
         : reload(false),
+          actionRequestedByUser(true),
           xOffset(0),
           yOffset(0),
           mimeType(),
           metaData()
     {}
     bool reload;
+    bool actionRequestedByUser;
     int xOffset;
     int yOffset;
     QString mimeType;
@@ -1075,6 +1077,16 @@ QMap<QString, QString> & KParts::OpenUrlArguments::metaData()
 const QMap<QString, QString> & KParts::OpenUrlArguments::metaData() const
 {
     return d->metaData;
+}
+
+bool KParts::OpenUrlArguments::actionRequestedByUser() const
+{
+    return d->actionRequestedByUser;
+}
+
+void KParts::OpenUrlArguments::setActionRequestedByUser(bool userRequested)
+{
+    d->actionRequestedByUser = userRequested;
 }
 
 #include "part.moc"

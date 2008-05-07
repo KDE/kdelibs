@@ -443,6 +443,16 @@ public:
     void setMimeType(const QString& mime);
 
     /**
+     * True if the user requested that the URL be opened.
+     * False if the URL should be opened due to an external event, like javascript popups
+     * or automatic redirections.
+     * This is true by default
+     * @since 4.1
+     */
+    bool actionRequestedByUser() const;
+    void setActionRequestedByUser(bool userRequested);
+
+    /**
      * Meta-data to associate with the KIO operation that will be used to open the URL.
      * This method can be used to add or retrieve metadata.
      * @see KIO::TransferJob etc.
