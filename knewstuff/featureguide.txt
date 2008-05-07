@@ -91,6 +91,6 @@ Still security and privilege handling does play an important role.
   user operations and old KNewStuff compatibility file formats.
 
 * Cached data
-  Downloaded data is kept in a cache to speed up looking for entries and
+  Downloaded data can be kept in a cache to speed up looking for entries and
   for instantaneous display of the download dialog.
 
