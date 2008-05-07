@@ -113,8 +113,8 @@ void JobTest::initTestCase()
 #endif
 
     qRegisterMetaType<KIO::Job*>();
-    qRegisterMetaType<KUrl>();
-    qRegisterMetaType<time_t>();
+    qRegisterMetaType<KUrl>("KUrl");
+    qRegisterMetaType<time_t>("time_t");
 }
 
 static void delDir(const QString& pathOrUrl) {
