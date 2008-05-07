@@ -175,6 +175,6 @@ GHNS hosting tested with KNewStuff2 being offered at new.kstuff.org, a server sp
 by OSU-OSL for the advancement of collaborative data sharing. The KDE-Look server
 also provides GHNS feeds.
 
-http://data.kstuff.org/
+http://newstuff.kde.org/
 http://www.kde-look.org/help/ghns.php
 
