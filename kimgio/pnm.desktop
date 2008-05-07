@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=PNM
 Name[kk]=PBM
+Name[x-test]=xxPNMxx
 Type=Service
 X-KDE-ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=pnm
