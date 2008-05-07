@@ -102,6 +102,7 @@ public:
     KIO::filesize_t sentListEntries;
     KRemoteEncoding *remotefile;
     time_t timeout;
+    enum { Idle, InsideMethod, FinishedCalled, ErrorCalled } m_state;
     QByteArray timeoutData;
 
     // Reconstructs configGroup from configData and mIncomingMetaData
@@ -118,6 +119,19 @@ public:
         end = q->mIncomingMetaData.constEnd();
         for (MetaData::ConstIterator it = q->mIncomingMetaData.constBegin(); it != end; ++it)
             configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
+    }
+
+    void verifyState(const char* cmdName)
+    {
+        if ((m_state != FinishedCalled) && (m_state != ErrorCalled)){
+            kWarning(7019) << cmdName << "did not call finished() or error()! Please fix the KIO slave.";
+        }
+    }
+    void verifyErrorFinishedNotCalled(const char* cmdName)
+    {
+        if (m_state == FinishedCalled || m_state == ErrorCalled) {
+            kWarning(7019) << cmdName << "called finished() or error(), but it's not supposed to! Please fix the KIO slave.";
+        }
     }
 };
 
@@ -386,6 +400,15 @@ void SlaveBase::opened()
 
 void SlaveBase::error( int _errid, const QString &_text )
 {
+    if (d->m_state == d->ErrorCalled) {
+        kWarning(7019) << "error() called twice! Please fix the KIO slave.";
+        return;
+    } else if (d->m_state == d->FinishedCalled) {
+        kWarning(7019) << "error() called after finished()! Please fix the KIO slave.";
+        return;
+    }
+
+    d->m_state = d->ErrorCalled;
     mIncomingMetaData.clear(); // Clear meta data
     d->rebuildConfig();
     mOutgoingMetaData.clear();
@@ -406,6 +429,15 @@ void SlaveBase::connected()
 
 void SlaveBase::finished()
 {
+    if (d->m_state == d->FinishedCalled) {
+        kWarning(7019) << "finished() called twice! Please fix the KIO slave.";
+        return;
+    } else if (d->m_state == d->ErrorCalled) {
+        kWarning(7019) << "finished() called after error()! Please fix the KIO slave.";
+        return;
+    }
+
+    d->m_state = d->FinishedCalled;
     mIncomingMetaData.clear(); // Clear meta data
     d->rebuildConfig();
     sendMetaData();
@@ -898,7 +930,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         else
         {
-            kWarning() << "Got cmd " << cmd << " while waiting for an answer!";
+            kWarning(7019) << "Got cmd " << cmd << " while waiting for an answer!";
         }
     }
 }
@@ -938,20 +970,25 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         QString host, user;
         quint16 port;
         stream >> host >> port >> user >> passwd;
+        d->m_state = d->InsideMethod;
         setHost( host, port, user, passwd );
-    }
-    break;
-    case CMD_CONNECT:
+        d->verifyErrorFinishedNotCalled("setHost()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_CONNECT: {
         openConnection( );
-        break;
-    case CMD_DISCONNECT:
+    } break;
+    case CMD_DISCONNECT: {
         closeConnection( );
-        break;
-    case CMD_SLAVE_STATUS:
+    } break;
+    case CMD_SLAVE_STATUS: {
+        d->m_state = d->InsideMethod;
         slave_status();
-        break;
-    case CMD_SLAVE_CONNECT:
-    {
+        // TODO verify that the slave has called slaveStatus()?
+        d->verifyErrorFinishedNotCalled("slave_status()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_SLAVE_CONNECT: {
         d->onHold = false;
         QString app_socket;
         QDataStream stream( data );
@@ -961,8 +998,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         d->isConnectedToApp = true;
         connectSlave(app_socket);
     } break;
-    case CMD_SLAVE_HOLD:
-    {
+    case CMD_SLAVE_HOLD: {
         KUrl url;
         QDataStream stream( data );
         stream >> url;
@@ -973,9 +1009,12 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         // Do not close connection!
         connectSlave(d->poolSocket);
     } break;
-    case CMD_REPARSECONFIGURATION:
+    case CMD_REPARSECONFIGURATION: {
+        d->m_state = d->InsideMethod;
         reparseConfiguration();
-        break;
+        d->verifyErrorFinishedNotCalled("reparseConfiguration()");
+        d->m_state = d->Idle;
+    } break;
     case CMD_CONFIG: {
         stream >> d->configData;
         d->rebuildConfig();
@@ -984,21 +1023,22 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 #endif
         delete d->remotefile;
         d->remotefile = 0;
-        break;
-    }
-    case CMD_GET:
-    {
-        stream >> url;
-        get( url );
     } break;
-    case CMD_OPEN:
-    {
+    case CMD_GET: {
+        stream >> url;
+        d->m_state = d->InsideMethod;
+        get( url );
+        d->verifyState("get()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_OPEN: {
         stream >> url >> i;
         QIODevice::OpenMode mode = QFlag(i);
+        d->m_state = d->InsideMethod;
         open(url, mode);
+        d->m_state = d->Idle;
     } break;
-    case CMD_PUT:
-    {
+    case CMD_PUT: {
         int permissions;
         qint8 iOverwrite, iResume;
         stream >> url >> iOverwrite >> iResume >> permissions;
@@ -1011,98 +1051,135 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         //   (the resume bool is currently unused)
         d->needSendCanResume = true   /* !resume */;
 
+        d->m_state = d->InsideMethod;
         put( url, permissions, flags);
+        d->verifyState("put()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_STAT:
+    case CMD_STAT: {
         stream >> url;
+        d->m_state = d->InsideMethod;
         stat( url );
-        break;
-    case CMD_MIMETYPE:
+        d->verifyState("stat()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_MIMETYPE: {
         stream >> url;
+        d->m_state = d->InsideMethod;
         mimetype( url );
-        break;
-    case CMD_LISTDIR:
+        d->verifyState("mimetype()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_LISTDIR: {
         stream >> url;
+        d->m_state = d->InsideMethod;
         listDir( url );
-        break;
-    case CMD_MKDIR:
+        d->verifyState("listDir()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_MKDIR: {
         stream >> url >> i;
+        d->m_state = d->InsideMethod;
         mkdir( url, i );
-        break;
-    case CMD_RENAME:
-    {
+        d->verifyState("mkdir()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_RENAME: {
         qint8 iOverwrite;
         KUrl url2;
         stream >> url >> url2 >> iOverwrite;
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;
+        d->m_state = d->InsideMethod;
         rename( url, url2, flags );
+        d->verifyState("rename()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_SYMLINK:
-    {
+    case CMD_SYMLINK: {
         qint8 iOverwrite;
         QString target;
         stream >> target >> url >> iOverwrite;
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;
+        d->m_state = d->InsideMethod;
         symlink( target, url, flags );
+        d->verifyState("symlink()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_COPY:
-    {
+    case CMD_COPY: {
         int permissions;
         qint8 iOverwrite;
         KUrl url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;
+        d->m_state = d->InsideMethod;
         copy( url, url2, permissions, flags );
+        d->verifyState("copy()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_DEL:
-    {
+    case CMD_DEL: {
         qint8 isFile;
         stream >> url >> isFile;
+        d->m_state = d->InsideMethod;
         del( url, isFile != 0);
+        d->verifyState("del()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_CHMOD:
+    case CMD_CHMOD: {
         stream >> url >> i;
+        d->m_state = d->InsideMethod;
         chmod( url, i);
-        break;
-    case CMD_CHOWN:
-    {
+        d->verifyState("chmod()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_CHOWN: {
         QString owner, group;
         stream >> url >> owner >> group;
+        d->m_state = d->InsideMethod;
         chown(url, owner, group);
-        break;
-    }
-    case CMD_SETMODIFICATIONTIME:
-    {
+        d->verifyState("chown()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_SETMODIFICATIONTIME: {
         QDateTime dt;
         stream >> url >> dt;
+        d->m_state = d->InsideMethod;
         setModificationTime(url, dt);
+        d->verifyState("setModificationTime()");
+        d->m_state = d->Idle;
     } break;
-    case CMD_SPECIAL:
+    case CMD_SPECIAL: {
+        d->m_state = d->InsideMethod;
         special( data );
-        break;
+        d->verifyState("special()");
+        d->m_state = d->Idle;
+    } break;
     case CMD_META_DATA: {
         //kDebug(7019) << "(" << getpid() << ") Incoming meta-data...";
         stream >> mIncomingMetaData;
         d->rebuildConfig();
-        break;
-    }
-    case CMD_SUBURL:
+    } break;
+    case CMD_SUBURL: {
         stream >> url;
+        d->m_state = d->InsideMethod;
         setSubUrl(url);
-        break;
-    case CMD_NONE:
-        fprintf(stderr, "Got unexpected CMD_NONE!\n");
-        break;
-    case CMD_MULTI_GET:
+        d->verifyErrorFinishedNotCalled("setSubUrl()");
+        d->m_state = d->Idle;
+    } break;
+    case CMD_NONE: {
+        kWarning(7019) << "Got unexpected CMD_NONE!";
+    } break;
+    case CMD_MULTI_GET: {
+        d->m_state = d->InsideMethod;
         multiGet( data );
-        break;
-    default:
+        d->verifyState("multiGet()");
+        d->m_state = d->Idle;
+    } break;
+    default: {
         // Some command we don't understand.
         // Just ignore it, it may come from some future version of KDE.
-        break;
+    } break;
     }
 }
 
