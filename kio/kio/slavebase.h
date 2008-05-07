@@ -91,7 +91,8 @@ public:
 
     /**
      * Call to signal an error.
-     * This also finishes the job, no need to call finished.
+     * This also finishes the job, so you must not call
+     * finished() after calling this.
      *
      * If the Error code is KIO::ERR_SLAVE_DEFINED then the
      * _text should contain the complete translated text of
@@ -115,7 +116,8 @@ public:
 
     /**
      * Call to signal successful completion of any command
-     * (besides openConnection and closeConnection)
+     * besides openConnection and closeConnection. Do not
+     * call this after calling error().
      */
     void finished();
 
