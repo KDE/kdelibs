@@ -50,7 +50,8 @@ class KTabBar::Private
         mInactiveCloseIcon( 0 ),
         mActiveCloseIcon( 0 ),
         mTabReorderingEnabled( false ),
-        mTabCloseActivatePrevious( false )
+        mTabCloseActivatePrevious( false ),
+        mTabCloseButtonClicked( false )
     {
     }
 
@@ -67,6 +68,7 @@ class KTabBar::Private
 
     bool mTabReorderingEnabled : 1;
     bool mTabCloseActivatePrevious : 1;
+    bool mTabCloseButtonClicked : 1;
 
 };
 
@@ -122,6 +124,7 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
       const int tabIndex = tabAt( pos );
       if (closeButtonRect( tabIndex ).contains( pos )) {
         // the close button is clicked - prevent that the tab gets activated
+        d->mTabCloseButtonClicked = true;
         return;
       }
     }
@@ -240,7 +243,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
 
       const QPoint pos = event->pos();
       const int tabIndex = tabAt( pos );
-      if (closeButtonRect( tabIndex ).contains( pos )) {
+      if (d->mTabCloseButtonClicked && closeButtonRect( tabIndex ).contains( pos )) {
         d->mHoveredCloseIconIndex = -1;
         emit closeRequest( tabIndex );
       }
@@ -266,6 +269,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
     break;
   }
 
+  d->mTabCloseButtonClicked = false;
   QTabBar::mouseReleaseEvent( event );
 }
 
