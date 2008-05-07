@@ -264,7 +264,7 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         d->clearButton->animateVisible(false);
     }
 
-    if (!d->clearButton->pixmap().isNull()) {
+    if (!d->clearButton->pixmap().isNull() || !text.length()) {
         return;
     }
 
