@@ -495,6 +495,7 @@ void Collector::markCurrentThreadConservatively()
 #endif
         size_t stackSize;
         pthread_attr_getstack(&sattr, &stackBase, &stackSize);
+        stackBase += stackSize;         // Undo the effects of crack smoking (by the pthread guys)
         assert(stackBase);
         stackThread = thread;
     }
