@@ -1,10 +1,9 @@
 [Desktop Entry]
 Type=Service
 Name=Adium Emoticons Theme
-Name[ga]=Téama Straoiseoga Adium
-Name[x-test]=xxAdium Emoticons Themexx
+Name[sv]=Adium smilistema
 Comment=Library to use Adium emoticons theme
-Comment[x-test]=xxLibrary to use Adium emoticons themexx
+Comment[sv]=Bibliotek för att använda Adium smilistema
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_adium
 X-KDE-EmoticonsFileName=Emoticons.plist

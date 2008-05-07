@@ -1,10 +1,9 @@
 [Desktop Entry]
 Type=Service
 Name=Pidgin Emoticons Theme
-Name[ga]=Téama Straoiseoga Pidgin
-Name[x-test]=xxPidgin Emoticons Themexx
+Name[sv]=Pidgin smilistema
 Comment=Library to use Pidgin emoticons theme
-Comment[x-test]=xxLibrary to use Pidgin emoticons themexx
+Comment[sv]=Bibliotek för att använda Pidgin smilistema
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_pidgin
 X-KDE-EmoticonsFileName=theme
