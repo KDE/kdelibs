@@ -83,6 +83,8 @@ static QString realSystemPath()
 }
 #endif
 
+Q_DECLARE_METATYPE(KIO::Job*)
+
 void JobTest::initTestCase()
 {
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
@@ -109,6 +111,10 @@ void JobTest::initTestCase()
         }
     }
 #endif
+
+    qRegisterMetaType<KIO::Job*>();
+    qRegisterMetaType<KUrl>();
+    qRegisterMetaType<time_t>();
 }
 
 static void delDir(const QString& pathOrUrl) {
