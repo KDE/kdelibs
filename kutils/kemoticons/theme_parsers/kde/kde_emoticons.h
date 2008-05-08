@@ -20,11 +20,11 @@
 #ifndef KDE_EMOTICONS_H
 #define KDE_EMOTICONS_H
 
-#include <kemoticonstheme.h>
+#include <kemoticonsprovider.h>
 
 #include <QtXml/QDomDocument>
 
-class KdeEmoticons : public KEmoticonsTheme
+class KdeEmoticons : public KEmoticonsProvider
 {
     Q_OBJECT
 public:

@@ -33,14 +33,15 @@ class KEmoticonsProviderPrivate;
  * This class contains the emoticons theme
  * this is also the parent class for the theme parser plugins
  */
-class KEMOTICONS_EXPORT KEmoticonsProvider
+class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
 {
+    Q_OBJECT
 public:
 
     /**
      * Default constructor, you should never use this, instead use KEmoticons::theme()
      */
-    KEmoticonsProvider();
+    explicit KEmoticonsProvider(QObject *parent = 0);
 
     /**
      * Destructor

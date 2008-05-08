@@ -8,7 +8,7 @@ add_subdirectory(kcm)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDES})
 
-set(kemoticons_LIB_SRCS kemoticons.cpp kemoticonstheme.cpp)
+set(kemoticons_LIB_SRCS kemoticons.cpp kemoticonstheme.cpp kemoticonsprovider.cpp)
 
 kde4_add_library(kemoticons SHARED ${kemoticons_LIB_SRCS})
 
@@ -20,4 +20,4 @@ install(TARGETS kemoticons DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 
-install(FILES kemoticons.h kemoticonstheme.h kemoticons_export.h DESTINATION ${INCLUDE_INSTALL_DIR})
+install(FILES kemoticons.h kemoticonstheme.h kemoticonsprovider.h kemoticons_export.h DESTINATION ${INCLUDE_INSTALL_DIR})

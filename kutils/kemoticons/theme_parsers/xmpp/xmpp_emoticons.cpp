@@ -32,8 +32,9 @@ K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
 K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))
 
 XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
-        : KEmoticonsTheme(parent, args)
+        : KEmoticonsProvider(parent)
 {
+    Q_UNUSED(args);
 }
 
 XmppEmoticons::~XmppEmoticons()
@@ -72,7 +73,7 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
 
 bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    KEmoticonsTheme::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, copy);
 
     QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("icondef");
@@ -125,7 +126,7 @@ void XmppEmoticons::save()
 
 bool XmppEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsTheme::loadTheme(path);
+    KEmoticonsProvider::loadTheme(path);
 
     QFile fp(path);
 

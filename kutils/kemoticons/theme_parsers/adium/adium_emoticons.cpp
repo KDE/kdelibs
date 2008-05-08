@@ -31,8 +31,9 @@ K_PLUGIN_FACTORY(AdiumEmoticonsFactory, registerPlugin<AdiumEmoticons>();)
 K_EXPORT_PLUGIN(AdiumEmoticonsFactory("AdiumEmoticons"))
 
 AdiumEmoticons::AdiumEmoticons(QObject *parent, const QVariantList &args)
-        : KEmoticonsTheme(parent, args)
+        : KEmoticonsProvider(parent)
 {
+    Q_UNUSED(args)
 }
 
 AdiumEmoticons::~AdiumEmoticons()
@@ -67,7 +68,7 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
 
 bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    KEmoticonsTheme::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, copy);
 
     QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("plist").firstChildElement("dict").firstChildElement("dict");
@@ -131,7 +132,7 @@ void AdiumEmoticons::save()
 
 bool AdiumEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsTheme::loadTheme(path);
+    KEmoticonsProvider::loadTheme(path);
 
     QFile fp(path);
 

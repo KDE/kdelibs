@@ -20,11 +20,11 @@
 #ifndef XMPP_EMOTICONS_H
 #define XMPP_EMOTICONS_H
 
-#include <kemoticonstheme.h>
+#include <kemoticonsprovider.h>
 
 #include <QtXml/QDomDocument>
 
-class XmppEmoticons : public KEmoticonsTheme
+class XmppEmoticons : public KEmoticonsProvider
 {
     Q_OBJECT
 public:

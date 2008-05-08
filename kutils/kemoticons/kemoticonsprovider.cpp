@@ -42,8 +42,8 @@ KEmoticonsProviderPrivate::KEmoticonsProviderPrivate()
 {
 }
 
-KEmoticonsProvider::KEmoticonsProvider()
-        : d(new KEmoticonsProviderPrivate)
+KEmoticonsProvider::KEmoticonsProvider(QObject *parent)
+        : QObject(parent), d(new KEmoticonsProviderPrivate)
 {
 }
 

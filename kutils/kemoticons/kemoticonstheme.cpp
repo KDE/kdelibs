@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "kemoticonstheme.h"
+#include "kemoticonsprovider.h"
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
@@ -28,87 +29,113 @@
 #include <KStandardDirs>
 #include <KDebug>
 
-class KEmoticonsThemePrivate
+KEmoticonsThemeData::KEmoticonsThemeData()
 {
-public:
-    KEmoticonsThemePrivate();
-    QString m_themeName;
-    QString m_fileName;
-    QString m_themePath;
-    QMap<QString, QStringList> m_emoticonsMap;
-};
-
-KEmoticonsThemePrivate::KEmoticonsThemePrivate()
-{
+    provider = 0;
 }
 
-KEmoticonsTheme::KEmoticonsTheme(QObject *parent, const QVariantList &args)
-        : QObject(parent), d(new KEmoticonsThemePrivate)
+KEmoticonsThemeData::~KEmoticonsThemeData()
 {
-    Q_UNUSED(args);
+    delete provider;
+}
+
+KEmoticonsTheme::KEmoticonsTheme(KEmoticonsProvider *p)
+{
+    d->provider = p;
 }
 
 KEmoticonsTheme::~KEmoticonsTheme()
 {
-    delete d;
 }
 
 bool KEmoticonsTheme::loadTheme(const QString &path)
 {
-    QFileInfo info(path);
-    d->m_fileName = info.fileName();
-    d->m_themeName = info.dir().dirName();
-    d->m_themePath = info.absolutePath();
-    return true;
+    if (!d->provider) {
+        return false;
+    }
+
+    return d->provider->loadTheme(path);
 }
 
 bool KEmoticonsTheme::removeEmoticon(const QString &emo)
 {
-    Q_UNUSED(emo);
-    return false;
+    if (!d->provider) {
+        return false;
+    }
+
+    return d->provider->removeEmoticon(emo);
 }
 
 bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    if (copy) {
-        KIO::NetAccess::dircopy(KUrl(emo), KUrl(d->m_themePath));
+    if (!d->provider) {
+        return false;
     }
 
-    Q_UNUSED(text);
-    return false;
+    return d->provider->addEmoticon(emo, text, copy);
 }
 
 void KEmoticonsTheme::save()
 {
+    if (!d->provider) {
+        return;
+    }
+
+    d->provider->save();
 }
 
 QString KEmoticonsTheme::themeName()
 {
-    return d->m_themeName;
+    if (!d->provider) {
+        return QString();
+    }
+
+    return d->provider->themeName();
 }
 
 void KEmoticonsTheme::setThemeName(const QString &name)
 {
-    d->m_themeName = name;
+    if (!d->provider) {
+        return;
+    }
+
+    d->provider->setThemeName(name);
 }
 
 QString KEmoticonsTheme::themePath()
 {
-    return d->m_themePath;
+    if (!d->provider) {
+        return QString();
+    }
+
+    return d->provider->themePath();
 }
 
 QString KEmoticonsTheme::fileName()
 {
-    return d->m_fileName;
+    if (!d->provider) {
+        return QString();
+    }
+
+    return d->provider->fileName();
 }
 
 QMap<QString, QStringList> *KEmoticonsTheme::emoticonsMap()
 {
-    return &(d->m_emoticonsMap);
+    if (!d->provider) {
+        return 0;
+    }
+
+    return d->provider->emoticonsMap();
 }
 
 void KEmoticonsTheme::createNew()
 {
+    if (!d->provider) {
+        return;
+    }
+
+    d->provider->createNew();
 }
 
 QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude)
@@ -141,6 +168,10 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
 
 QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
 {
+    if (!d->provider) {
+        return QList<KEmoticonsTheme::Token>();
+    }
+
     if (!(mode & (StrictParse | RelaxedParse))) {
         //if none of theses two mode are selected, use the mode from the config
         mode |=  KEmoticons::parseMode();
@@ -209,7 +240,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
 
 
         bool found = false;
-        for (it = d->m_emoticonsMap.constBegin(); it != d->m_emoticonsMap.constEnd(); ++it) {
+        for (it = emoticonsMap()->constBegin(); it != emoticonsMap()->constEnd(); ++it) {
             // If this is an HTML, then search for the HTML form of the emoticon.
             // For instance <o) => &gt;o)
             QStringList needles = it.value();

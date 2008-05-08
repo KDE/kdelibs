@@ -20,11 +20,11 @@
 #ifndef ADIUM_EMOTICONS_H
 #define ADIUM_EMOTICONS_H
 
-#include <kemoticonstheme.h>
+#include <kemoticonsprovider.h>
 
 #include <QtXml/QDomDocument>
 
-class AdiumEmoticons : public KEmoticonsTheme
+class AdiumEmoticons : public KEmoticonsProvider
 {
     Q_OBJECT
 public:

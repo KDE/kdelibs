@@ -31,8 +31,9 @@ K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
 
 KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
-        : KEmoticonsTheme(parent, args)
+        : KEmoticonsProvider(parent)
 {
+    Q_UNUSED(args);
 }
 
 KdeEmoticons::~KdeEmoticons()
@@ -61,7 +62,7 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
 
 bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    KEmoticonsTheme::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, copy);
 
     QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
@@ -104,7 +105,7 @@ void KdeEmoticons::save()
 
 bool KdeEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsTheme::loadTheme(path);
+    KEmoticonsProvider::loadTheme(path);
 
     QFile fp(path);
 

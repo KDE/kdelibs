@@ -63,14 +63,14 @@ public:
      * Retrieve the current emoticons theme
      * @return the current KEmoticonsTheme
      */
-    KEmoticonsTheme *theme();
+    KEmoticonsTheme theme();
 
     /**
     * Retrieve the theme with name @p name
     * @param name name of the theme
     * @return the KEmoticonsTheme @p name
     */
-    KEmoticonsTheme *theme(const QString &name);
+    KEmoticonsTheme theme(const QString &name);
 
     /**
      * Retrieve the current emoticon theme name
@@ -110,7 +110,7 @@ public:
      * @param name the name of the new emoticons theme
      * @param service the kind of emoticon theme to create
      */
-    KEmoticonsTheme *newTheme(const QString &name, const KService::Ptr &service);
+    KEmoticonsTheme newTheme(const QString &name, const KService::Ptr &service);
 
     /**
      * Install all themes inside the archive @p archiveName

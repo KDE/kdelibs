@@ -25,17 +25,25 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <QtCore/QPair>
+#include <QtCore/QSharedDataPointer>
 
 class QString;
-class KEmoticonsThemePrivate;
+class KEmoticonsProvider;
+
+class KEmoticonsThemeData : public QSharedData
+{
+public:
+    KEmoticonsThemeData();
+    ~KEmoticonsThemeData();
+    KEmoticonsProvider *provider;
+};
 
 /**
  * This class contains the emoticons theme
  * this is also the parent class for the theme parser plugins
  */
-class KEMOTICONS_EXPORT KEmoticonsTheme : public QObject
+class KEMOTICONS_EXPORT KEmoticonsTheme
 {
-    Q_OBJECT
 public:
 
     /**
@@ -85,7 +93,7 @@ public:
     /**
      * Default constructor, you should never use this, instead use KEmoticons::theme()
      */
-    KEmoticonsTheme(QObject *parent, const QVariantList &args);
+    KEmoticonsTheme(KEmoticonsProvider *p);
 
     /**
      * Destructor
@@ -126,7 +134,7 @@ public:
      * Load the theme inside the directory @p path
      * @param path path to the directory
      */
-    virtual bool loadTheme(const QString &path);
+    bool loadTheme(const QString &path);
 
     /**
      * Remove the emoticon @p emo, this will not delete the image file too
@@ -137,7 +145,7 @@ public:
      * @param emo the emoticon text to remove
      * @return @c true if it can delete the emoticon
      */
-    virtual bool removeEmoticon(const QString &emo);
+    bool removeEmoticon(const QString &emo);
     
     /**
      * Add the emoticon @p emo with text @p text
@@ -150,12 +158,12 @@ public:
      * @param copy whether or not copy @p emo into the theme directory
      * @return @c true if it can add the emoticon
      */
-    virtual bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
+    bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
 
     /**
      * Save the emoticon theme
      */
-    virtual void save();
+    void save();
 
     /**
      * Returns the theme name
@@ -186,7 +194,7 @@ public:
     /**
      * Create a new theme
      */
-    virtual void createNew();
+    void createNew();
 
 protected:
     /**
@@ -197,7 +205,7 @@ protected:
     /**
      * Private class
      */
-    KEmoticonsThemePrivate * const d;
+    QSharedDataPointer<KEmoticonsThemeData> d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEmoticonsTheme::ParseMode)

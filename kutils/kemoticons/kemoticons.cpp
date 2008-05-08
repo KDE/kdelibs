@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "kemoticons.h"
+#include "kemoticonsprovider.h"
 
 #include <QFile>
 #include <QDir>
@@ -36,7 +37,7 @@ class KEmoticonsPrivate
 public:
     KEmoticonsPrivate();
     void loadServiceList();
-    KEmoticonsTheme *loadThemeLibrary(const KService::Ptr &service);
+    KEmoticonsProvider *loadProvider(const KService::Ptr &service);
 
     QList<KService::Ptr> m_loaded;
 };
@@ -51,15 +52,15 @@ void KEmoticonsPrivate::loadServiceList()
     m_loaded = KServiceTypeTrader::self()->query("KEmoticons", constraint);
 }
 
-KEmoticonsTheme *KEmoticonsPrivate::loadThemeLibrary(const KService::Ptr &service)
+KEmoticonsProvider *KEmoticonsPrivate::loadProvider(const KService::Ptr &service)
 {
     KPluginFactory *factory = KPluginLoader(service->library()).factory();
     if (!factory) {
         kWarning() << "Invalid plugin factory for" << service->library();
         return 0;
     }
-    KEmoticonsTheme *theme = factory->create<KEmoticonsTheme>(0);
-    return theme;
+    KEmoticonsProvider *provider = factory->create<KEmoticonsProvider>(0);
+    return provider;
 }
 
 KEmoticons::KEmoticons()
@@ -73,24 +74,25 @@ KEmoticons::~KEmoticons()
     delete d;
 }
 
-KEmoticonsTheme *KEmoticons::theme()
+KEmoticonsTheme KEmoticons::theme()
 {
     return theme(currentThemeName());
 }
 
-KEmoticonsTheme *KEmoticons::theme(const QString &name)
+KEmoticonsTheme KEmoticons::theme(const QString &name)
 {
     for (int i = 0; i < d->m_loaded.size(); ++i) {
         QString fName = d->m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
         QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
 
         if (QFile::exists(path)) {
-            KEmoticonsTheme *theme = d->loadThemeLibrary(d->m_loaded.at(i));
-            theme->loadTheme(path);
+            KEmoticonsProvider *provider = d->loadProvider(d->m_loaded.at(i));
+            KEmoticonsTheme theme(provider);
+            theme.loadTheme(path);
             return theme;
         }
     }
-    return 0;
+    return KEmoticonsTheme(new KEmoticonsProvider);
 }
 
 QString KEmoticons::currentThemeName()
@@ -126,12 +128,13 @@ void KEmoticons::setTheme(const QString &theme)
     config.sync();
 }
 
-KEmoticonsTheme *KEmoticons::newTheme(const QString &name, const KService::Ptr &service)
+KEmoticonsTheme KEmoticons::newTheme(const QString &name, const KService::Ptr &service)
 {
-    KEmoticonsTheme *theme = d->loadThemeLibrary(service);
-    theme->setThemeName(name);
+    KEmoticonsProvider *provider = d->loadProvider(service);
+    KEmoticonsTheme theme(provider);
+    theme.setThemeName(name);
 
-    theme->createNew();
+    theme.createNew();
 
     return theme;
 }
@@ -242,9 +245,8 @@ KEmoticonsTheme::ParseMode KEmoticons::parseMode()
 
 QString KEmoticons::parseEmoticons(const QString &text, KEmoticonsTheme::ParseMode mode, const QStringList &exclude)
 {
-    KEmoticonsTheme *t = KEmoticons().theme();
-    QString parsed = t->parseEmoticons(text, mode, exclude);
-    delete t;
+    KEmoticonsTheme t = KEmoticons().theme();
+    QString parsed = t.parseEmoticons(text, mode, exclude);
     return parsed;
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

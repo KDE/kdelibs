@@ -20,9 +20,9 @@
 #ifndef PIDGIN_EMOTICONS_H
 #define PIDGIN_EMOTICONS_H
 
-#include <kemoticonstheme.h>
+#include <kemoticonsprovider.h>
 
-class PidginEmoticons : public KEmoticonsTheme
+class PidginEmoticons : public KEmoticonsProvider
 {
     Q_OBJECT
 public:

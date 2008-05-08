@@ -30,8 +30,9 @@ K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
 K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))
 
 PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
-        : KEmoticonsTheme(parent, args)
+        : KEmoticonsProvider(parent)
 {
+    Q_UNUSED(args);
 }
 
 PidginEmoticons::~PidginEmoticons()
@@ -85,7 +86,7 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
 
 bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
 {
-    KEmoticonsTheme::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, copy);
 
     QStringList splitted = text.split(" ");
     int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));
@@ -128,7 +129,7 @@ void PidginEmoticons::save()
 
 bool PidginEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsTheme::loadTheme(path);
+    KEmoticonsProvider::loadTheme(path);
 
     QFile fp(path);
 
