@@ -211,12 +211,27 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        m_resizePending = isRedirectedWidget();
-        ref();
-        element()->ref();
-        QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
-        element()->deref();
-        deref();
+        if (isRedirectedWidget() && qobject_cast<KHTMLView*>(m_widget)) {
+             m_widget->resize( w, h);
+             if (!m_widget->isVisible()) {
+                 // Emission of Resize event is delayed.
+                 // we have to pre-call KHTMLView::resizeEvent
+                 // so that viewport size change and subsequent layout update
+                 // is effective synchronously, which is important for JS.
+                 // This only work because m_widget is a redirected view,
+                 // and thus has visibleWidth()/visibleHeight() that mirror this RenderWidget,
+                 // rather than the effective widget size. - gg.
+                 QResizeEvent e( QSize(w,h), QSize(m_widget->width(),m_widget->height()));
+                 static_cast<KHTMLView*>(m_widget)->resizeEvent( &e );
+             }
+        } else {
+            m_resizePending = isRedirectedWidget();
+            ref();
+            element()->ref();
+            QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
+            element()->deref();
+            deref();
+        }
     }
 }
 
@@ -589,25 +604,39 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     QPaintDevice *x = d;
     qreal op = p->opacity();
     QPixmap* pm = 0;
+    QPen pen = p->pen();
+    QBrush brush = p->brush();
     if (buffered) {
         if (!widget->size().isValid())
             return;
         pm = PaintBuffer::grab(widget->size());
-        QPainter pp(pm);
-        pp.setCompositionMode(QPainter::CompositionMode_Clear);
-        pp.eraseRect(r);
+        // Qt 4.4 regression #1:
+        // QPainter::CompositionMode_Source is severly broken (cf. kde #160518)
+        //
+        if (1 || !pm->hasAlphaChannel()) {
+            pm->fill(Qt::transparent);
+        } else {
+            QPainter pp(pm);
+            pp.setCompositionMode( QPainter::CompositionMode_Source );
+            pp.fillRect(r, Qt::transparent);
+        }
         d = pm;
-    } else {
-        p->end();
     }
+    // Qt 4.4 regression #2: 
+    // can't let a painter active on the view as Qt thinks it is opened on the *pixmap*
+    // and prints "paint device can only be painted by one painter at a time" warnings.
+    //
+    // Testcase: paintEvent(...) { QPainter p(this); aChildWidget->render( aPixmapTarget, ...); }
+    //
+    p->end();
 
     setInPaintEventFlag( widget, false );
 
-    widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
+    widget->render( d, (buffered ? QPoint(0,0) : thePoint) + r.topLeft(), r);
 
     setInPaintEventFlag( widget );
 
-    if (!buffered) {
+//    if (!buffered) {
         p->begin(x);
         p->setWorldTransform(t);
         p->setWindow(w);
@@ -618,7 +647,10 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setClipRegion(rg);
         if (op < 1.0f)
             p->setOpacity(op);
-    } else {
+        p->setPen(pen);
+        p->setBrush(brush);
+//    } else {
+    if (buffered) {
         // transfer results
         QPoint off(r.x(), r.y());
         p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
@@ -631,7 +663,11 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool buffered = p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
+    // Qt 4.4 regression #3: 
+    //    can't use QWidget::render to directly paint widgets on the view anymore.
+    //    Results are unreliable for subrects, leaving blank squares. (cf. kde #158607)
+    //
+    bool buffered = true; // p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
