@@ -160,6 +160,8 @@ IdleSlave::age(time_t now)
    return (int) difftime(now, mBirthDate);
 }
 
+static KLauncher* g_klauncher_self;
+
 KLauncher::KLauncher(int _kdeinitSocket)
   : QObject(0),
     kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
@@ -167,6 +169,9 @@ KLauncher::KLauncher(int _kdeinitSocket)
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
 #endif
+   Q_ASSERT( g_klauncher_self == NULL );
+   g_klauncher_self = this;
+
    mAutoTimer.setSingleShot(true);
    new KLauncherAdaptor(this);
    QDBusConnection::sessionBus().registerObject("/KLauncher", this); // same as ktoolinvocation.cpp
@@ -220,6 +225,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 KLauncher::~KLauncher()
 {
    close();
+   g_klauncher_self = NULL;
 }
 
 void KLauncher::close()
@@ -236,7 +242,8 @@ void KLauncher::close()
 void
 KLauncher::destruct()
 {
-    if (QCoreApplication::instance()) ((KLauncher*)QCoreApplication::instance())->close();
+    if (g_klauncher_self)
+        g_klauncher_self->close();
     // We don't delete the app here, that's intentional.
     ::_exit(255);
 }
