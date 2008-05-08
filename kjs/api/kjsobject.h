@@ -23,7 +23,7 @@
 #define KJSOBJECT_H
 
 #include "kjsapi_export.h"
-#include <QString>
+#include <QtCore/QString>
 
 class KJSContext;
 class KJSNull;

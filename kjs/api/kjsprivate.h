@@ -25,7 +25,7 @@
 #include "kjs/ustring.h"
 #include "kjs/identifier.h"
 #include "kjs/list.h"
-#include <qstring.h>
+#include <QtCore/QString>
 
 #define JSVALUE_HANDLE(v) reinterpret_cast<KJSObjectHandle*>(v)
 #define JSVALUE(h) reinterpret_cast<KJS::JSValue*>((h)->hnd)
