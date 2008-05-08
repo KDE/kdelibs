@@ -124,7 +124,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
 
-  QString method = config.readEntry("PreferredMethod", "Fam");
+  QString method = config.readEntry("PreferredMethod", "inotify");
   if (method == "Fam")
   {
     m_preferredMethod = Fam;
