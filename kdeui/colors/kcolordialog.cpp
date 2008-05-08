@@ -180,7 +180,7 @@ KColorCells::~KColorCells()
 
 QColor KColorCells::color(int index) const
 {
-    QTableWidgetItem * tmpItem = item(index / columnCount() + 1, index % columnCount());
+    QTableWidgetItem * tmpItem = item(index / columnCount(), index % columnCount());
 
     if (tmpItem != 0)
         return tmpItem->data(Qt::BackgroundRole).value<QColor>();
