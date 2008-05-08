@@ -1,12 +1,9 @@
 [Desktop Entry]
 Type=Service
 Name=Kde Emoticons Theme
-Name[ga]=Téama Straoiseoga KDE
 Name[sv]=KDE smilistema
-Name[x-test]=xxKde Emoticons Themexx
 Comment=Library to use KDE emoticons theme
-Comment[sv]=Bibliotek för att använda KDE smilistema
-Comment[x-test]=xxLibrary to use KDE emoticons themexx
+Comment[sv]=Bibliotek för att använda KDE:s smilistema
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_kde
 X-KDE-EmoticonsFileName=emoticons.xml
