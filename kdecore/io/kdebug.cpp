@@ -195,7 +195,7 @@ struct KDebugPrivate
             }
         }
 
-        QString name;
+        QByteArray name;
         QString logFileName[4];
         OutputMode mode[4];
     };
@@ -239,7 +239,7 @@ struct KDebugPrivate
 
         //AB: this is necessary here, otherwise all output with area 0 won't be
         //prefixed with anything, unless something with area != 0 is called before
-        areaData.name = KGlobal::mainComponent().componentName();
+        areaData.name = KGlobal::mainComponent().componentName().toUtf8();
 
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
@@ -281,7 +281,7 @@ struct KDebugPrivate
                 i++;
 
             Area areaData;
-            areaData.name = QString::fromUtf8(line.mid(i));
+            areaData.name = line.mid(i);
             cache.insert(number, areaData);
         }
         file.close();
@@ -380,7 +380,7 @@ struct KDebugPrivate
         return result;
     }
 
-    QDebug setupMessageBoxWriter(QtMsgType type, const QString &areaName)
+    QDebug setupMessageBoxWriter(QtMsgType type, const QByteArray &areaName)
     {
         QDebug result(&messageboxwriter);
         QByteArray header;
@@ -401,7 +401,7 @@ struct KDebugPrivate
             break;
         }
 
-        header += areaName.toAscii();
+        header += areaName;
         header += ')';
         result.nospace() << header.constData() << '\0';
         return result;
@@ -438,15 +438,15 @@ struct KDebugPrivate
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, const QString &areaName, const char *, int, const char *funcinfo, bool colored)
+    QDebug printHeader(QDebug s, const QByteArray &areaName, const char *, int, const char *funcinfo, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
-        QString programName = cache.value(0).name;
+        QByteArray programName = cache.value(0).name;
         if (programName.isEmpty())
-            programName = QLatin1String("<unknown program name>");
-        s.nospace() << qPrintable(programName) << "(" << unsigned(getpid()) << ")";
+            programName = "<unknown program name>";
+        s.nospace() << programName << "(" << unsigned(getpid()) << ")";
         if (areaName != programName)
-            s << "/" << qPrintable(areaName);
+            s << "/" << areaName;
 
         if (funcinfo) {
             if(colored)
@@ -514,7 +514,7 @@ struct KDebugPrivate
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
         QString file = it->logFileName[level(type)];
-        QString areaName = it->name;
+        QByteArray areaName = it->name;
 
         if (areaName.isEmpty())
             areaName = cache.value(0).name;
