@@ -2,7 +2,7 @@
 Type=ServiceType
 X-KDE-ServiceType=KConfigBackend
 
-Comment=Backend storage for KConfig
+Comment=Storage backend for KConfig
 Comment[ca]=Dorsal d'emmagatzematge per al KConfig
 Comment[csb]=Zapasowy magazyn dlô KConfig
 Comment[da]=Lagermotor til KConfig
