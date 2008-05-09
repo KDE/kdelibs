@@ -1638,8 +1638,8 @@ public:
     FileCopyJobPrivate(const KUrl& src, const KUrl& dest, int permissions,
                        bool move, JobFlags flags)
         : m_sourceSize(filesize_t(-1)), m_src(src), m_dest(dest), m_moveJob(0), m_copyJob(0), m_delJob(0),
-          m_getJob(0), m_putJob(0), m_permissions(permissions),
-          m_move(move), m_flags(flags)
+          m_chmodJob(0), m_getJob(0), m_putJob(0), m_permissions(permissions),
+          m_move(move), m_mustChmod(0), m_flags(flags)
         {
         }
     KIO::filesize_t m_sourceSize;
@@ -1650,12 +1650,14 @@ public:
     SimpleJob *m_moveJob;
     SimpleJob *m_copyJob;
     SimpleJob *m_delJob;
+    SimpleJob *m_chmodJob;
     TransferJob *m_getJob;
     TransferJob *m_putJob;
     int m_permissions;
     bool m_move:1;
     bool m_canResume:1;
     bool m_resumeAnswerSent:1;
+    bool m_mustChmod:1;
     JobFlags m_flags;
 
     void startBestCopyMethod();
@@ -1831,6 +1833,7 @@ void FileCopyJobPrivate::startCopyJob(const KUrl &slave_url)
 void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
 {
     Q_Q(FileCopyJob);
+    m_mustChmod = true;  // CMD_RENAME by itself doesn't change permissions
     KIO_ARGS << m_src << m_dest << (qint8) (m_flags & Overwrite);
     m_moveJob = SimpleJobPrivate::newJob(slave_url, CMD_RENAME, packedArgs);
     q->addSubjob( m_moveJob );
@@ -2110,6 +2113,16 @@ void FileCopyJob::slotResult( KJob *job)
       return;
    }
 
+   if (d->m_mustChmod)
+   {
+       // If d->m_permissions == -1, keep the default permissions
+       if (d->m_permissions != -1)
+       {
+           d->m_chmodJob = chmod(d->m_dest, d->m_permissions);
+       }
+       d->m_mustChmod = false;
+   }
+
    if (job == d->m_moveJob)
    {
       d->m_moveJob = 0; // Finished
@@ -2152,6 +2165,12 @@ void FileCopyJob::slotResult( KJob *job)
    {
       d->m_delJob = 0; // Finished
    }
+
+   if (job == d->m_chmodJob)
+   {
+       d->m_chmodJob = 0; // Finished
+   }
+
    removeSubjob(job);
    if ( !hasSubjobs() )
        emitResult();
