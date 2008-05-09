@@ -43,7 +43,7 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
 
-    bool start;
+    bool start = false;
     for (int i = 0; i < m_text.size(); ++i) {
         QString line = m_text.at(i);
 
