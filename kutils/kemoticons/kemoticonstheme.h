@@ -30,7 +30,7 @@
 class QString;
 class KEmoticonsProvider;
 
-class KEmoticonsThemeData : public QSharedData
+class KEMOTICONS_EXPORT KEmoticonsThemeData : public QSharedData
 {
 public:
     KEmoticonsThemeData();
@@ -93,12 +93,17 @@ public:
     /**
      * Default constructor, you should never use this, instead use KEmoticons::theme()
      */
+    KEmoticonsTheme();
+
+    /**
+     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     */
     KEmoticonsTheme(KEmoticonsProvider *p);
 
     /**
      * Destructor
      */
-    virtual ~KEmoticonsTheme();
+    ~KEmoticonsTheme();
 
     /**
      * Parse emoticons in text @p text with ParseMode @p mode and optionally excluding emoticons from @p exclude
@@ -196,6 +201,7 @@ public:
      */
     void createNew();
 
+    bool isNull();
 protected:
     /**
      * a QPair that holds an emoticon and its position inside a text

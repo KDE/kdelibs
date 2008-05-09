@@ -39,8 +39,14 @@ KEmoticonsThemeData::~KEmoticonsThemeData()
     delete provider;
 }
 
+KEmoticonsTheme::KEmoticonsTheme()
+{
+    d = new KEmoticonsThemeData;
+}
+
 KEmoticonsTheme::KEmoticonsTheme(KEmoticonsProvider *p)
 {
+    d = new KEmoticonsThemeData;
     d->provider = p;
 }
 
@@ -326,6 +332,10 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     return result;
 }
 
+bool KEmoticonsTheme::isNull()
+{
+    return d->provider ? false : true;
+}
 
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

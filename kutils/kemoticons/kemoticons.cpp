@@ -92,7 +92,7 @@ KEmoticonsTheme KEmoticons::theme(const QString &name)
             return theme;
         }
     }
-    return KEmoticonsTheme(new KEmoticonsProvider);
+    return KEmoticonsTheme();
 }
 
 QString KEmoticons::currentThemeName()

@@ -33,7 +33,6 @@ class KEmoTest : public QWidget
     Q_OBJECT
     public:
         KEmoTest();
-        ~KEmoTest();
         
     public slots:
         void changed();
@@ -43,7 +42,7 @@ class KEmoTest : public QWidget
         KLineEdit kl;
         QLabel lb;
         KEmoticons e;
-        KEmoticonsTheme *t;
+        KEmoticonsTheme t;
         KComboBox cb;
 };
 
@@ -55,7 +54,7 @@ KEmoTest::KEmoTest()
     t = e.theme();
     
     cb.addItems(e.themeList());
-    cb.setCurrentIndex(e.themeList().indexOf(t->themeName()));
+    cb.setCurrentIndex(e.themeList().indexOf(t.themeName()));
     
     QVBoxLayout *vb = new QVBoxLayout;
     vb->addWidget(&kl);
@@ -67,21 +66,15 @@ KEmoTest::KEmoTest()
     connect(&cb, SIGNAL(activated(const QString&)), this, SLOT(changeTheme(const QString&)));
 }
 
-KEmoTest::~KEmoTest()
-{
-    delete t;
-}
-
 void KEmoTest::changed()
 {
     QStringList excl;
     excl << ":)" << ":-)";
-    lb.setText(t->parseEmoticons(kl.text(), KEmoticonsTheme::DefaultParse, excl));
+    lb.setText(t.parseEmoticons(kl.text(), KEmoticonsTheme::DefaultParse, excl));
 }
 
 void KEmoTest::changeTheme(const QString &theme)
 {
-    delete t;
     t = e.theme(theme);
     changed();
 }
