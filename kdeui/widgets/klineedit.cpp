@@ -264,7 +264,7 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         d->clearButton->animateVisible(false);
     }
 
-    if (!d->clearButton->pixmap().isNull() || !text.length()) {
+    if (!d->clearButton->pixmap().isNull()) {
         return;
     }
 
@@ -273,6 +273,8 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
     } else {
         d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
     }
+
+    d->clearButton->setVisible(text.length());
 }
 
 void KLineEdit::updateClearButton()
