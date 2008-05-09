@@ -290,7 +290,7 @@ void KKeySequenceWidgetPrivate::startRecording()
 	keyButton->grabKeyboard();
 
 	if (!QWidget::keyboardGrabber()) {
-		kDebug() << "KKeySequenceButton: Failed to grab the keyboard! Most likely qt's nograb option is active";
+		kDebug() << "Failed to grab the keyboard! Most likely qt's nograb option is active";
 	}
 
 	keyButton->setDown(true);
