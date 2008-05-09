@@ -8,6 +8,7 @@
      (C) 1999 Chris Schlaeger (cs@kde.org)
      (C) 2002 Joseph Wenninger (jowenn@kde.org)
      (C) 2005-2006 Hamish Rodda (rodda@kde.org)
+     (C) 2000-2008 David Faure (faure@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -49,6 +50,7 @@ class KToolBar;
     inline const classname ## Private *k_func() const { return reinterpret_cast<classname ## Private *>(k_ptr); } \
     friend class classname ## Private;
 
+// This is mostly from KDE3. TODO KDE5: remove the constructor parameter.
 #define KDE_DEFAULT_WINDOWFLAGS 0
 
 /**
@@ -92,14 +94,12 @@ class KToolBar;
  * There are also kRestoreMainWindows convenience functions which
  * can restore all your windows on next login.
  *
- *  Note that a KMainWindow per-default is created with the
- *  WDestructiveClose flag, i.e. it is automatically destroyed when the
- *  window is closed. If you do not want this behavior, specify 0 as
- *  widget flag in the constructor.
+ * Note that KMainWindow uses KGlobal::ref() and KGlobal::deref() so that closing
+ * the last mainwindow will quit the application unless there is still something
+ * that holds a ref in KGlobal - like a KIO job, or a systray icon.
  *
  * @see KApplication
- * @author Reginald Stadlbauer (reggie@kde.org) Stephan Kulow (coolo@kde.org), Matthias Ettrich (ettrich@kde.org), Chris Schlaeger (cs@kde.org), Sven Radej (radej@kde.org). Maintained by Sven Radej (radej@kde.org)
-
+ * @author Reginald Stadlbauer (reggie@kde.org) Stephan Kulow (coolo@kde.org), Matthias Ettrich (ettrich@kde.org), Chris Schlaeger (cs@kde.org), Sven Radej (radej@kde.org). Maintained by David Faure (faure@kde.org)
  */
 
 class KDEUI_EXPORT KMainWindow : public QMainWindow
@@ -120,14 +120,12 @@ public:
      * group leader. In that case, the KMainWindow becomes sort of a
      * secondary window.
      *
-     * @param f Specify the widget flags. The default is
-     * WType_TopLevel and WDestructiveClose.  TopLevel indicates that a
-     * main window is a toplevel window, regardless of whether it has a
-     * parent or not. DestructiveClose indicates that a main window is
-     * automatically destroyed when its window is closed. Pass 0 if
-     * you do not want this behavior.
+     * @param f Specify the window flags. The default is none.
      *
-     * @see http://doc.trolltech.com/3.2/qt.html#WidgetFlags-enum
+     * Note that a KMainWindow per-default is created with the
+     * WA_DeleteOnClose attribute, i.e. it is automatically destroyed when the
+     * window is closed. If you do not want this behavior, call
+     * setAttribute(Qt::WA_DeleteOnClose, false);
      *
      * KMainWindows must be created on the heap with 'new', like:
      * \code
