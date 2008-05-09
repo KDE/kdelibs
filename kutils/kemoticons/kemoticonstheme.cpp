@@ -36,7 +36,10 @@ KEmoticonsThemeData::KEmoticonsThemeData()
 
 KEmoticonsThemeData::~KEmoticonsThemeData()
 {
-    delete provider;
+    if (provider) {
+        delete provider;
+        provider = 0;
+    }
 }
 
 KEmoticonsTheme::KEmoticonsTheme()
@@ -90,7 +93,7 @@ void KEmoticonsTheme::save()
     d->provider->save();
 }
 
-QString KEmoticonsTheme::themeName()
+QString KEmoticonsTheme::themeName() const
 {
     if (!d->provider) {
         return QString();
@@ -108,7 +111,7 @@ void KEmoticonsTheme::setThemeName(const QString &name)
     d->provider->setThemeName(name);
 }
 
-QString KEmoticonsTheme::themePath()
+QString KEmoticonsTheme::themePath() const
 {
     if (!d->provider) {
         return QString();
@@ -117,7 +120,7 @@ QString KEmoticonsTheme::themePath()
     return d->provider->themePath();
 }
 
-QString KEmoticonsTheme::fileName()
+QString KEmoticonsTheme::fileName() const
 {
     if (!d->provider) {
         return QString();
@@ -126,13 +129,13 @@ QString KEmoticonsTheme::fileName()
     return d->provider->fileName();
 }
 
-QMap<QString, QStringList> *KEmoticonsTheme::emoticonsMap()
+QMap<QString, QStringList> KEmoticonsTheme::emoticonsMap() const
 {
     if (!d->provider) {
-        return 0;
+        return QMap<QString, QStringList>();
     }
 
-    return d->provider->emoticonsMap();
+    return d->provider->constEmoticonsMap();
 }
 
 void KEmoticonsTheme::createNew()
@@ -246,7 +249,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
 
 
         bool found = false;
-        for (it = emoticonsMap()->constBegin(); it != emoticonsMap()->constEnd(); ++it) {
+        for (it = emoticonsMap().constBegin(); it != emoticonsMap().constEnd(); ++it) {
             // If this is an HTML, then search for the HTML form of the emoticon.
             // For instance <o) => &gt;o)
             QStringList needles = it.value();

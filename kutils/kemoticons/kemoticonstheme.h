@@ -173,7 +173,7 @@ public:
     /**
      * Returns the theme name
      */
-    QString themeName();
+    QString themeName() const;
 
     /**
      * Set the theme name
@@ -184,17 +184,17 @@ public:
     /**
      * Returns the theme path
      */
-    QString themePath();
+    QString themePath() const;
 
     /**
      * Returns the file name of the theme
      */
-    QString fileName();
+    QString fileName() const;
 
     /**
      * Returns a pointer to a QMap that contains the emoticons path as keys and the text as values
      */
-    QMap<QString, QStringList> *emoticonsMap();
+    QMap<QString, QStringList> emoticonsMap() const;
 
     /**
      * Create a new theme

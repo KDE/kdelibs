@@ -81,7 +81,7 @@ void KEmoticonsProvider::save()
 {
 }
 
-QString KEmoticonsProvider::themeName()
+QString KEmoticonsProvider::themeName() const
 {
     return d->m_themeName;
 }
@@ -91,12 +91,12 @@ void KEmoticonsProvider::setThemeName(const QString &name)
     d->m_themeName = name;
 }
 
-QString KEmoticonsProvider::themePath()
+QString KEmoticonsProvider::themePath() const
 {
     return d->m_themePath;
 }
 
-QString KEmoticonsProvider::fileName()
+QString KEmoticonsProvider::fileName() const
 {
     return d->m_fileName;
 }
@@ -104,6 +104,11 @@ QString KEmoticonsProvider::fileName()
 QMap<QString, QStringList> *KEmoticonsProvider::emoticonsMap()
 {
     return &(d->m_emoticonsMap);
+}
+
+QMap<QString, QStringList> KEmoticonsProvider::constEmoticonsMap() const
+{
+    return d->m_emoticonsMap;
 }
 
 void KEmoticonsProvider::createNew()
