@@ -36,10 +36,6 @@ AdiumEmoticons::AdiumEmoticons(QObject *parent, const QVariantList &args)
     Q_UNUSED(args)
 }
 
-AdiumEmoticons::~AdiumEmoticons()
-{
-}
-
 bool AdiumEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();

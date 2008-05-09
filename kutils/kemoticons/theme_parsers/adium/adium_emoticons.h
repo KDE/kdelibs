@@ -29,7 +29,6 @@ class AdiumEmoticons : public KEmoticonsProvider
     Q_OBJECT
 public:
     AdiumEmoticons(QObject *parent, const QVariantList &args);
-    ~AdiumEmoticons();
 
     bool loadTheme(const QString &path);
 

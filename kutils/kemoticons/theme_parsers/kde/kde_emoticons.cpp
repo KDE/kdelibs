@@ -36,10 +36,6 @@ KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
     Q_UNUSED(args);
 }
 
-KdeEmoticons::~KdeEmoticons()
-{
-}
-
 bool KdeEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();

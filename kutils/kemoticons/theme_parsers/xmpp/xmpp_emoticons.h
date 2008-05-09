@@ -29,7 +29,6 @@ class XmppEmoticons : public KEmoticonsProvider
     Q_OBJECT
 public:
     XmppEmoticons(QObject *parent, const QVariantList &args);
-    ~XmppEmoticons();
 
     bool loadTheme(const QString &path);
 

@@ -37,10 +37,6 @@ XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
     Q_UNUSED(args);
 }
 
-XmppEmoticons::~XmppEmoticons()
-{
-}
-
 bool XmppEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();

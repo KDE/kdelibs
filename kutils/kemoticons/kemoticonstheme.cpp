@@ -44,10 +44,7 @@ KEmoticonsTheme::KEmoticonsThemeData::KEmoticonsThemeData()
 
 KEmoticonsTheme::KEmoticonsThemeData::~KEmoticonsThemeData()
 {
-    if (provider) {
-        delete provider;
-        provider = 0;
-    }
+    delete provider;
 }
 
 KEmoticonsTheme::KEmoticonsTheme()

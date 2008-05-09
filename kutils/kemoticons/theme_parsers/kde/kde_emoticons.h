@@ -29,7 +29,6 @@ class KdeEmoticons : public KEmoticonsProvider
     Q_OBJECT
 public:
     KdeEmoticons(QObject *parent, const QVariantList &args);
-    ~KdeEmoticons();
 
     bool loadTheme(const QString &path);
 

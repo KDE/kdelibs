@@ -35,10 +35,6 @@ PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
     Q_UNUSED(args);
 }
 
-PidginEmoticons::~PidginEmoticons()
-{
-}
-
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
     QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();

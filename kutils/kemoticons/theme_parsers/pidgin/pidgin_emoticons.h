@@ -27,7 +27,6 @@ class PidginEmoticons : public KEmoticonsProvider
     Q_OBJECT
 public:
     PidginEmoticons(QObject *parent, const QVariantList &args);
-    ~PidginEmoticons();
 
     bool loadTheme(const QString &path);
 
