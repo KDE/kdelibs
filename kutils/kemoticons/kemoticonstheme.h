@@ -30,14 +30,6 @@
 class QString;
 class KEmoticonsProvider;
 
-class KEMOTICONS_EXPORT KEmoticonsThemeData : public QSharedData
-{
-public:
-    KEmoticonsThemeData();
-    ~KEmoticonsThemeData();
-    KEmoticonsProvider *provider;
-};
-
 /**
  * This class contains the emoticons theme
  * this is also the parent class for the theme parser plugins
@@ -94,6 +86,11 @@ public:
      * Default constructor, you should never use this, instead use KEmoticons::theme()
      */
     KEmoticonsTheme();
+
+    /**
+     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     */
+    KEmoticonsTheme(const KEmoticonsTheme &ket);
 
     /**
      * Default constructor, you should never use this, instead use KEmoticons::theme()
@@ -202,12 +199,15 @@ public:
     void createNew();
 
     bool isNull();
+
+    KEmoticonsTheme& operator=(const KEmoticonsTheme &ket);
 protected:
     /**
      * a QPair that holds an emoticon and its position inside a text
      */
     typedef QPair<QString, int> EmoticonNode;
 
+    class KEmoticonsThemeData;
     /**
      * Private class
      */

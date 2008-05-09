@@ -29,12 +29,20 @@
 #include <KStandardDirs>
 #include <KDebug>
 
-KEmoticonsThemeData::KEmoticonsThemeData()
+class KEmoticonsTheme::KEmoticonsThemeData : public QSharedData
+{
+public:
+    KEmoticonsThemeData();
+    ~KEmoticonsThemeData();
+    KEmoticonsProvider *provider;
+};
+
+KEmoticonsTheme::KEmoticonsThemeData::KEmoticonsThemeData()
 {
     provider = 0;
 }
 
-KEmoticonsThemeData::~KEmoticonsThemeData()
+KEmoticonsTheme::KEmoticonsThemeData::~KEmoticonsThemeData()
 {
     if (provider) {
         delete provider;
@@ -45,6 +53,11 @@ KEmoticonsThemeData::~KEmoticonsThemeData()
 KEmoticonsTheme::KEmoticonsTheme()
 {
     d = new KEmoticonsThemeData;
+}
+
+KEmoticonsTheme::KEmoticonsTheme(const KEmoticonsTheme &ket)
+{
+    d = ket.d;
 }
 
 KEmoticonsTheme::KEmoticonsTheme(KEmoticonsProvider *p)
@@ -340,5 +353,14 @@ bool KEmoticonsTheme::isNull()
     return d->provider ? false : true;
 }
 
+KEmoticonsTheme& KEmoticonsTheme::operator=(const KEmoticonsTheme &ket)
+{
+    if (d == ket.d) {
+        return *this;
+    }
+    
+    d = ket.d;
+    return *this;
+}
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
