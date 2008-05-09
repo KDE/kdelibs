@@ -31,19 +31,28 @@
 #include <KTar>
 #include <KZip>
 #include <KMimeType>
+#include <KDirWatch>
 
 class KEmoticonsPrivate
 {
 public:
     KEmoticonsPrivate();
+    ~KEmoticonsPrivate();
     void loadServiceList();
     KEmoticonsProvider *loadProvider(const KService::Ptr &service);
 
     QList<KService::Ptr> m_loaded;
+    QHash<QString, KEmoticonsTheme> m_themes;
+    KDirWatch *m_dirwatch;
 };
 
 KEmoticonsPrivate::KEmoticonsPrivate()
 {
+}
+
+KEmoticonsPrivate::~KEmoticonsPrivate()
+{
+    delete m_dirwatch;
 }
 
 void KEmoticonsPrivate::loadServiceList()
@@ -67,6 +76,8 @@ KEmoticons::KEmoticons()
         : d(new KEmoticonsPrivate)
 {
     d->loadServiceList();
+    d->m_dirwatch = new KDirWatch;
+    connect(d->m_dirwatch, SIGNAL(dirty(const QString&)), this, SLOT(themeChanged(const QString&)));
 }
 
 KEmoticons::~KEmoticons()
@@ -81,6 +92,10 @@ KEmoticonsTheme KEmoticons::theme()
 
 KEmoticonsTheme KEmoticons::theme(const QString &name)
 {
+    if (d->m_themes.contains(name)) {
+        return d->m_themes.value(name);
+    }
+
     for (int i = 0; i < d->m_loaded.size(); ++i) {
         QString fName = d->m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
         QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
@@ -89,6 +104,7 @@ KEmoticonsTheme KEmoticons::theme(const QString &name)
             KEmoticonsProvider *provider = d->loadProvider(d->m_loaded.at(i));
             KEmoticonsTheme theme(provider);
             theme.loadTheme(path);
+            d->m_themes.insert(name, theme);
             return theme;
         }
     }
@@ -248,5 +264,10 @@ QString KEmoticons::parseEmoticons(const QString &text, KEmoticonsTheme::ParseMo
     KEmoticonsTheme t = KEmoticons().theme();
     QString parsed = t.parseEmoticons(text, mode, exclude);
     return parsed;
+}
+
+void KEmoticons::themeChanged(const QString &name)
+{
+    
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

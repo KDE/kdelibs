@@ -44,7 +44,7 @@ KEmoticonsTheme::KEmoticonsThemeData::KEmoticonsThemeData()
 
 KEmoticonsTheme::KEmoticonsThemeData::~KEmoticonsThemeData()
 {
-    delete provider;
+//     delete provider;
 }
 
 KEmoticonsTheme::KEmoticonsTheme()

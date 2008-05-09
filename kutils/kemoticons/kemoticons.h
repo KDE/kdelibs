@@ -138,6 +138,10 @@ public:
      * @return the text with emoticons replaced by html images
      */
     static QString parseEmoticons(const QString &text, KEmoticonsTheme::ParseMode mode = KEmoticonsTheme::DefaultParse, const QStringList &exclude = QStringList());
+
+private slots:
+    void themeChanged(const QString &name);
+
 private:
     /**
      * Private class
