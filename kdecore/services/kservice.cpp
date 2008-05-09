@@ -229,12 +229,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     }
 
     QString dbusStartupType = desktopGroup.readEntry("X-DBUS-StartupType").toLower();
-    //Compatibility
-    if( dbusStartupType.isEmpty() && desktopGroup.hasKey("X-DCOP-ServiceType"))
-    {
-        dbusStartupType = desktopGroup.readEntry("X-DCOP-ServiceType").toLower();
-        entryMap.remove("X-DCOP-ServiceType");
-    }
     entryMap.remove("X-DBUS-StartupType");
     if (dbusStartupType == "unique")
         m_DBUSStartusType = KService::DBusUnique;
