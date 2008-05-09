@@ -288,6 +288,11 @@ void KKeySequenceWidgetPrivate::startRecording()
 	keySequence = QKeySequence();
 	isRecording = true;
 	keyButton->grabKeyboard();
+
+	if (!QWidget::keyboardGrabber()) {
+		kDebug() << "KKeySequenceButton: Failed to grab the keyboard! Most likely qt's nograb option is active";
+	}
+
 	keyButton->setDown(true);
 	updateShortcutDisplay();
 }
@@ -425,8 +430,6 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		return QPushButton::keyPressEvent(e);
 
 	e->accept();
-
-	Q_ASSERT( QWidget::keyboardGrabber() == this );
 
 	if (d->nKey == 0)
 		d->modifierKeys = newModifiers;
