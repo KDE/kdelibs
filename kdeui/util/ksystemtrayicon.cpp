@@ -114,6 +114,9 @@ KSystemTrayIcon::KSystemTrayIcon( const QIcon& icon, QWidget* parent )
 
 void KSystemTrayIcon::init( QWidget* parent )
 {
+    // Ensure that closing the last KMainWindow doesn't exit the application
+    // if a system tray icon is still present.
+    KGlobal::ref();
     d->menu = new KMenu( parent );
     d->titleAction = d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
     d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );
@@ -152,6 +155,7 @@ QWidget *KSystemTrayIcon::parentWidget() const
 KSystemTrayIcon::~KSystemTrayIcon()
 {
     delete d;
+    KGlobal::deref();
 }
 
 void KSystemTrayIcon::contextMenuAboutToShow( )
