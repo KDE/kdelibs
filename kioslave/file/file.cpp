@@ -470,17 +470,19 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 
     int flags = 0;
     if (mode & QIODevice::ReadOnly) {
-        flags |= O_RDONLY;
-    }
-    if (mode & QIODevice::WriteOnly) {
-        flags |= O_WRONLY | O_CREAT;
-    }
-    if (mode & QIODevice::Append) {
-        flags |= O_WRONLY | O_APPEND;
-    } else if (mode & QIODevice::WriteOnly) {
-        if (!(mode & QIODevice::ReadOnly) || mode & QIODevice::Truncate) {
-            flags |= O_TRUNC;
+        if (mode & QIODevice::WriteOnly) {
+            flags = O_RDWR | O_CREAT;
+        } else {
+            flags = O_RDONLY;
         }
+    } else if (mode & QIODevice::WriteOnly) {
+        flags = O_WRONLY | O_CREAT;
+    }
+
+    if (mode & QIODevice::Append) {
+        flags |= O_APPEND;
+    } else if (mode & QIODevice::Truncate) {
+        flags |= O_TRUNC;
     }
 
     int fd = KDE_open( openPath.data(), flags);
@@ -490,8 +492,12 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
-    KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
-    emit mimeType( mt->name() );
+    // If we're not opening the file ReadOnly or ReadWrite, don't attempt to
+    // read the file and send the mimetype.
+    if (mode & QIODevice::ReadOnly){
+        KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
+        emit mimeType( mt->name() );
+   }
 
     totalSize( buff.st_size );
     position( 0 );
