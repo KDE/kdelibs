@@ -54,13 +54,13 @@ QTEST_KDEMAIN( JobRemoteTest, NoGUI )
 
 QDateTime s_referenceTimeStamp;
 
-// The code comes partly from kdebase/kioslave/trash/testtrash.cpp
+// The code comes partly from jobtest.cpp
 
 static QString remoteTmpDir()
 {
-    QString customDir(getenv( "KIO_JOBREMOTETEST_REMOTETMP" ));
-    if (customDir.isNull() || customDir.isEmpty()) {
-        return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobremotetest/";
+    QString customDir(qgetenv("KIO_JOBREMOTETEST_REMOTETMP"));
+    if (customDir.isEmpty()) {
+        return QFile::decodeName(qgetenv("KDEHOME")) + "/jobremotetest/";
     } else {
         return customDir;
     }
@@ -87,7 +87,7 @@ static bool myMkdir(const QString& pathOrUrl) {
     KUrl url(pathOrUrl);
     KIO::Job* job = KIO::mkdir(url, -1);
     job->setUiDelegate(0);
-    return KIO::NetAccess::synchronousRun(job, 0);    
+    return KIO::NetAccess::synchronousRun(job, 0);
 }
 
 void JobRemoteTest::initTestCase()
@@ -96,7 +96,6 @@ void JobRemoteTest::initTestCase()
 
     // Start with a clean base dir
     cleanupTestCase();
-    QDir dir; // TT: why not a static method?
     if ( !myExists( remoteTmpDir() ) ) {
         bool ok = myMkdir( remoteTmpDir() );
         if ( !ok )
@@ -197,11 +196,11 @@ void JobRemoteTest::slotResult( KJob* job )
 void JobRemoteTest::openFileWriting()
 {
     m_rwCount = 0;
-    
+
     const QString filePath = remoteTmpDir() + "openFileWriting";
     KUrl u(filePath);
     fileJob = KIO::open(u, QIODevice::WriteOnly);
-    
+
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL( result(KJob*) ),
             this, SLOT( slotResult(KJob*) ) );
@@ -215,11 +214,11 @@ void JobRemoteTest::openFileWriting()
              this, SLOT(slotFileJobPosition (KIO::Job *, KIO::filesize_t)) );
     connect( fileJob, SIGNAL(close(KIO::Job*)),
              this, SLOT(slotFileJobClose(KIO::Job*)) );
-    m_result = -1;    
-    
+    m_result = -1;
+
     enterLoop();
     QVERIFY( m_result == 0 ); // no error
-    
+
     KIO::StoredTransferJob* getJob = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
     getJob->setUiDelegate( 0 );
     connect( getJob, SIGNAL( result( KJob* ) ),
@@ -227,8 +226,8 @@ void JobRemoteTest::openFileWriting()
     enterLoop();
     QCOMPARE( m_result, 0 ); // no error
     kDebug() << "m_data: " << m_data;
-    QCOMPARE( m_data, QByteArray("test....test....test....test....test....test....end") );    
-    
+    QCOMPARE( m_data, QByteArray("test....test....test....test....test....test....end") );
+
 }
 
 void JobRemoteTest::slotFileJobData (KIO::Job *job, const QByteArray &data)
@@ -262,7 +261,7 @@ void JobRemoteTest::slotFileJobPosition (KIO::Job *job, KIO::filesize_t offset)
 {
     const QByteArray data("test....end");
     fileJob->write (data);
-       
+
 }
 
 
@@ -275,17 +274,17 @@ void JobRemoteTest::slotFileJobClose (KIO::Job *job)
 
 void JobRemoteTest::openFileReading()
 {
-    
+
     const QString filePath = remoteTmpDir() + "openFileReading";
     KUrl u(filePath);
-    
+
     const QByteArray putData("test1test2test3test4test5");
-    
+
     KIO::StoredTransferJob * putJob = KIO::storedPut( putData,
             u,
-            0600, KIO::Overwrite | KIO::HideProgressInfo      
+            0600, KIO::Overwrite | KIO::HideProgressInfo
         );
-    
+
     QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     putJob->setModificationTime(mtime);
@@ -295,13 +294,13 @@ void JobRemoteTest::openFileReading()
     m_result = -1;
     enterLoop();
     QVERIFY( m_result == 0 ); // no error
-    
-    
+
+
     m_rwCount = 4;
     m_data = QByteArray();
-    
+
     fileJob = KIO::open(u, QIODevice::ReadOnly);
-    
+
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL( result(KJob*) ),
             this, SLOT( slotResult(KJob*) ) );
@@ -315,20 +314,20 @@ void JobRemoteTest::openFileReading()
              this, SLOT(slotFileJob2Position (KIO::Job *, KIO::filesize_t)) );
     connect( fileJob, SIGNAL(close(KIO::Job*)),
              this, SLOT(slotFileJob2Close(KIO::Job*)) );
-    m_result = -1;    
-    
+    m_result = -1;
+
     enterLoop();
     QVERIFY( m_result == 0 ); // no error
     kDebug() << "resulting m_data: " << QString(m_data);
     QCOMPARE( m_data, QByteArray("test5test4test3test2test1"));
-    
+
 }
 
 void JobRemoteTest::slotFileJob2Data (KIO::Job *job, const QByteArray &data)
 {
     kDebug() << "m_rwCount = " << m_rwCount << " data: " << data;
     m_data.append(data);
-    
+
     if (m_rwCount < 0) {
         fileJob->close();
     } else {
