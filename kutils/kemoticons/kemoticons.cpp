@@ -105,6 +105,10 @@ KEmoticonsTheme KEmoticons::theme(const QString &name)
             KEmoticonsTheme theme(provider);
             theme.loadTheme(path);
             d->m_themes.insert(name, theme);
+
+            if (!d->m_dirwatch->contains(path)) {
+                d->m_dirwatch->addFile(path);
+            }
             return theme;
         }
     }
@@ -266,8 +270,13 @@ QString KEmoticons::parseEmoticons(const QString &text, KEmoticonsTheme::ParseMo
     return parsed;
 }
 
-void KEmoticons::themeChanged(const QString &name)
+void KEmoticons::themeChanged(const QString &path)
 {
-    
+    QFileInfo info(path);
+    QString name = info.dir().dirName();
+
+    if (d->m_themes.contains(name)) {
+        theme(name);
+    }
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

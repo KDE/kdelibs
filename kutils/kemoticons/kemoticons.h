@@ -140,7 +140,7 @@ public:
     static QString parseEmoticons(const QString &text, KEmoticonsTheme::ParseMode mode = KEmoticonsTheme::DefaultParse, const QStringList &exclude = QStringList());
 
 private slots:
-    void themeChanged(const QString &name);
+    void themeChanged(const QString &path);
 
 private:
     /**
