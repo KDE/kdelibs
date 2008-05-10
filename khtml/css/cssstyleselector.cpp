@@ -339,6 +339,7 @@ CSSStyleSelector::~CSSStyleSelector()
     free(propsToApply);
     free(pseudoProps);
     delete m_rootDefaultStyle;
+    delete m_medium;
 }
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
