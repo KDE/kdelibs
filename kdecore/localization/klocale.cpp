@@ -686,19 +686,19 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
                                     QString *translation) const
 {
   if ( !msgid || !msgid[0] ) {
-    kWarning() << "KLocale: trying to look up \"\" in catalog. "
-               << "Fix the program" << endl;
+    kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
+                << "Fix the program" << endl;
     *language = QString();
     *translation = QString();
     return;
   }
   if ( msgctxt && !msgctxt[0] ) {
-    kWarning() << "KLocale: trying to use \"\" as context to message. "
-               << "Fix the program" << endl;
+    kDebug(173) << "KLocale: trying to use \"\" as context to message. "
+                << "Fix the program" << endl;
   }
   if ( msgid_plural && !msgid_plural[0] ) {
-    kWarning() << "KLocale: trying to use \"\" as plural message. "
-               << "Fix the program" << endl;
+    kDebug(173) << "KLocale: trying to use \"\" as plural message. "
+                << "Fix the program" << endl;
   }
 
   // determine the fallback string
@@ -802,8 +802,8 @@ QString KLocale::translateQt(const char *context, const char *sourceText,
   // on sourceText.
 
   if (!sourceText || !sourceText[0]) {
-    kWarning() << "KLocale: trying to look up \"\" in catalog. "
-               << "Fix the program" << endl;
+    kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
+                << "Fix the program" << endl;
     return QString();
   }
 
@@ -2014,7 +2014,7 @@ void KLocalePrivate::initEncoding()
 
   if ( ! codecForEncoding )
     {
-      kWarning(173) << " Defaulting to ISO 8859-1 encoding.";
+      kWarning() << i18n("Cannot resolve system encoding, defaulting to ISO 8859-1.");
       setEncoding(mibDefault);
     }
 
