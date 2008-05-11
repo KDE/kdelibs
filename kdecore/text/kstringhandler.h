@@ -31,26 +31,25 @@ class QString;
 class QStringList;
 
 /**
- * This class contains utility functions for handling strings.
+ * This namespace contains utility functions for handling strings.
  *
- * This class is @em not a substitute for the QString class. What
- * I tried to do with this class is provide an easy way to
+ * The functions here are intended to provide an easy way to
  * cut/slice/splice words inside sentences in whatever order desired.
- * While the main focus of this class are words (ie characters
- * separated by spaces/tabs), the two core functions here ( split()
- * and join() ) will function given any char to use as a separator.
+ * While the main focus of KStringHandler is words (ie characters
+ * separated by spaces/tabs), the two core functions here (split()
+ * and join()) will allow you to use any character as a separator
  * This will make it easy to redefine what a 'word' means in the
  * future if needed.
  *
- * I freely stole some of the function names from python. I also think
- * some of these were influenced by mIRC (yes, believe it if you will, I
- * used to write a LOT of scripts in mIRC).
+ * The function names and calling styles are based on python and mIRC's
+ * scripting support.
  *
  * The ranges are a fairly powerful way of getting/stripping words from
  * a string. These ranges function, for the large part, as they would in
- * python. See the word(const QString&, int) and remword(const QString&, int) functions for more detail.
+ * python. See the word(const QString&, int) and remword(const QString&, int)
+ * functions for more detail.
  *
- * This class contains no data members of it own. All strings are cut
+ * The methods here are completely stateless.  All strings are cut
  * on the fly and returned as new qstrings/qstringlists.
  *
  * @short Namespace for manipulating words and sentences in strings
