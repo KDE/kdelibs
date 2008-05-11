@@ -52,7 +52,11 @@ class KFilePlacesModel::Private
 {
 public:
     Private(KFilePlacesModel *self) : q(self), bookmarkManager(0), sharedBookmarks(0) {}
-    ~Private() { delete sharedBookmarks; }
+    ~Private()
+    { 
+        delete sharedBookmarks;
+        qDeleteAll(items);
+    }
 
     KFilePlacesModel *q;
 
