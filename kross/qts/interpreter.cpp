@@ -54,4 +54,3 @@ Kross::Script* EcmaInterpreter::createScript(Kross::Action* action)
     return new EcmaScript(this, action);
 }
 
-#include "interpreter.moc"
