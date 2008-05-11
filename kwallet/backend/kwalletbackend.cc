@@ -137,8 +137,8 @@ static int getRandomBlock(QByteArray& randBlock) {
 	}
 
 	// EGD method
-	char *randFilename;
-	if ((randFilename = getenv("RANDFILE"))) {
+	QString randFilename = QString::fromLocal8Bit(qgetenv("RANDFILE"));
+	if (!randFilename.isEmpty()) {
 		if (QFile::exists(randFilename)) {
 			QFile devrand(randFilename);
 			if (devrand.open(QIODevice::ReadOnly)) {

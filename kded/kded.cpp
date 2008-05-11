@@ -48,6 +48,7 @@
 #include <kstandarddirs.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
+#include <kde_file.h>
 #include "klauncher_iface.h"
 
 #ifdef Q_WS_X11
@@ -179,9 +180,10 @@ void Kded::initModules()
 {
      m_dontLoad.clear();
      KSharedConfig::Ptr config = KGlobal::config();
-     bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
+     bool kde_running = !qgetenv( "KDE_FULL_SESSION" ).isEmpty();
     // not the same user like the one running the session (most likely we're run via sudo or something)
-    if( getenv( "KDE_SESSION_UID" ) != NULL && uid_t( atoi( getenv( "KDE_SESSION_UID" ))) != getuid())
+    const QByteArray sessionUID = qgetenv( "KDE_SESSION_UID" );
+    if( !sessionUID.isEmpty() && uid_t( sessionUID.toInt() ) != getuid())
         kde_running = false;
      // Preload kded modules.
      KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
@@ -797,8 +799,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 
-     signal(SIGTERM, sighandler);
-     signal(SIGHUP, sighandler);
+     KDE_signal(SIGTERM, sighandler);
+     KDE_signal(SIGHUP, sighandler);
      KDEDApplication k;
      k.setQuitOnLastWindowClosed(false);
 
