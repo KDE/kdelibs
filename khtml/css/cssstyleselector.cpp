@@ -348,6 +348,10 @@ void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 
     setupDefaultRootStyle(sheet->doc());
 
+    delete m_medium; m_medium = 0;
+    delete authorStyle; authorStyle = 0;
+    delete implicitStyle; implicitStyle = 0;
+
     if (view)
         m_medium = new MediaQueryEvaluator(view->mediaType(), view->part(), m_rootDefaultStyle);
     else
