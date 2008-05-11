@@ -212,10 +212,6 @@ void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList) //
 void KKeySequenceWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
 {
     d->checkActionCollections = actionCollections;
-    // For now, fill in d->checkList so that the main logic can still work with only checkList.
-    foreach(KActionCollection* collection, actionCollections) {
-        d->checkList += collection->actions();
-    }
 }
 
 //slot
@@ -305,10 +301,25 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	isRecording = false;
 	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
-    //We don't check for global shortcut when the checklist is empty because we are not certain that apply will be called.
-	if (keySequence != oldKeySequence && validate && !checkList.isEmpty()) {
+
+	// We have actions both in the deprecated checkList and the
+	// checkActionCollections list. Add all the actions to a single list to
+	// be able to process them in a single loop below.
+	// Note that this can't be done in setCheckActionCollections(), because we
+	// keep pointers to the action collections, and between the call to
+	// setCheckActionCollections() and this function some actions might already be
+	// removed from the collection again.
+	QList<QAction*> allActions;
+	allActions += checkList;
+	foreach(KActionCollection* collection, checkActionCollections) {
+		allActions += collection->actions();
+	}
+
+	// We don't check for global shortcut when the allActions list is empty
+	// because we are not certain that apply will be called.
+	if (keySequence != oldKeySequence && validate && !allActions.isEmpty()) {
 		//find conflicting shortcuts with existing actions
-		foreach(QAction * qaction , checkList )
+		foreach(QAction * qaction , allActions )
 		{
 			KAction *kaction=qobject_cast<KAction*>(qaction);
 			if(kaction) {
