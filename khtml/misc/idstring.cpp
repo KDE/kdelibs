@@ -75,12 +75,15 @@ void IDTableBase::addStaticMapping(unsigned id, const DOMString& name)
     assert(id == m_mappings.size());
     assert(!m_mappingLookup.contains(name));
     m_mappings.append(Mapping(name));
+    m_mappings[m_mappings.size() - 1].refCount = 1; // Pin it.
     m_mappingLookup[name] = id;
 }
 
 void IDTableBase::addHiddenMapping(unsigned id, const DOMString& name)
 {
+    assert(id == m_mappings.size());
     m_mappings.append(Mapping(name));
+    m_mappings[m_mappings.size() - 1].refCount = 1; // Pin it.    
 }
 
 }
