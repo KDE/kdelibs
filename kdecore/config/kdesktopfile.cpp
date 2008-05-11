@@ -25,7 +25,7 @@
 
 #include <QtCore/QDir>
 
-#include "config.h"
+#include <config.h>
 #include "kconfig_p.h"
 #include "kdebug.h"
 #include "kurl.h"

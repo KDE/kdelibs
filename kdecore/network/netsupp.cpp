@@ -188,7 +188,7 @@ static int check_ipv6_stack()
 # ifndef AF_INET6
   return 2;			// how can we check?
 # else
-  if (getenv("KDE_NO_IPV6"))
+  if (!qgetenv("KDE_NO_IPV6").isEmpty())
      return 2;
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
   if (fd == -1)

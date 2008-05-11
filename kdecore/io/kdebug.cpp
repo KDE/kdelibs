@@ -46,7 +46,7 @@
 #undef kBacktrace
 #endif
 
-#include "config.h"
+#include <config.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -80,7 +80,6 @@
 #include <string.h>
 #include <kconfig.h>
 #include "kcomponentdata.h"
-#include <config.h>
 
 #ifdef HAVE_BACKTRACE
 #include <execinfo.h>

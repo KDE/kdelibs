@@ -19,13 +19,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kcoreconfigskeleton_p.h"
 #include "kcoreconfigskeleton.h"
 #include "kstandarddirs.h"
 #include "kglobal.h"
 #include "kdebug.h"
 #include "kstringhandler.h"
 
-#include "kcoreconfigskeleton_p.h"
 
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
                                          const QString & _key)

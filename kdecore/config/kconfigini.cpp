@@ -20,15 +20,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef HAVE_CONFIG_H
+#include "kconfigini_p.h"
+
 #include <config.h>
-#endif
 
 #include <fcntl.h>
 
 #include "kconfig.h"
 #include "kconfigbackend.h"
-#include "kconfigini_p.h"
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
 #include <ksavefile.h>
