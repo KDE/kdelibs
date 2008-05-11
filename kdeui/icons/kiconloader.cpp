@@ -210,6 +210,8 @@ public:
      */
     QString removeIconExtension(const QString &name) const;
 
+    KIconLoader *q;
+
     QStringList mThemesInTree;
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
@@ -229,8 +231,6 @@ public:
     bool mIconThemeInited :1;
     bool lastWasUnknown :1; // last loaded image was the unknown image
     QString appname;
-
-    KIconLoader *q;
 
     void drawOverlays(const KIconLoader *loader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays);
 };
