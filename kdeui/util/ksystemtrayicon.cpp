@@ -56,7 +56,6 @@ public:
         actionCollection = new KActionCollection( trayIcon );
         hasQuit = false;
         onAllDesktops = false;
-        menu = new KMenu;
         window = parent;
 #ifdef Q_WS_WIN
         window->installEventFilter( this );
