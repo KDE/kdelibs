@@ -2014,7 +2014,7 @@ void KLocalePrivate::initEncoding()
 
   if ( ! codecForEncoding )
     {
-      kWarning() << i18n("Cannot resolve system encoding, defaulting to ISO 8859-1.");
+      kWarning() << "Cannot resolve system encoding, defaulting to ISO 8859-1.";
       setEncoding(mibDefault);
     }
 
