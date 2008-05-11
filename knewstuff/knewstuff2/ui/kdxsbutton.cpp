@@ -47,8 +47,7 @@
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kprocess.h>
-
-#include <kio/passworddialog.h>
+#include <kpassworddialog.h>
 
 using namespace KNS;
 
@@ -560,10 +559,8 @@ bool KDXSButton::authenticate()
 {
 	if((!m_username.isEmpty()) && (!m_password.isEmpty())) return true;
 
-	return true; // FIXME: hack during development only
-
-	KIO::PasswordDialog dlg(i18n("This operation requires authentication."),
-		QString());
+	KPasswordDialog dlg(this);
+	dlg.setPrompt(i18n("This operation requires authentication."));
 	int ret = dlg.exec();
 	if(ret == QDialog::Accepted)
 	{
