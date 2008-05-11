@@ -26,6 +26,7 @@ KCompositeJobPrivate::KCompositeJobPrivate()
 
 KCompositeJobPrivate::~KCompositeJobPrivate()
 {
+    qDeleteAll(subjobs);
 }
 
 KCompositeJob::KCompositeJob( QObject *parent )
