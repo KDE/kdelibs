@@ -1099,7 +1099,10 @@ void KCategorizedView::mousePressEvent(QMouseEvent *event)
 
     QListView::mousePressEvent(event);
 
-    d->lastSelection = selectionModel()->selection();
+    if (selectionModel())
+    {
+        d->lastSelection = selectionModel()->selection();
+    }
 
     viewport()->update(d->categoryVisualRect(d->hoveredCategory));
 }
@@ -1125,7 +1128,8 @@ void KCategorizedView::mouseReleaseEvent(QMouseEvent *event)
     {
         foreach(const QString &category, d->categories)
         {
-            if (d->categoryVisualRect(category).contains(event->pos()))
+            if (d->categoryVisualRect(category).contains(event->pos()) &&
+                selectionModel())
             {
                 QItemSelection selection = selectionModel()->selection();
                 QModelIndexList indexList = d->categoriesIndexes[category];
@@ -1284,7 +1288,8 @@ QModelIndex KCategorizedView::moveCursor(CursorAction cursorAction,
     if (!elementsPerRow)
         elementsPerRow++;
 
-    QModelIndex current = selectionModel()->currentIndex();
+    QModelIndex current = selectionModel() ? selectionModel()->currentIndex()
+                                           : QModelIndex();
 
     if (!current.isValid())
     {
@@ -1300,10 +1305,6 @@ QModelIndex KCategorizedView::moveCursor(CursorAction cursorAction,
         }
 
         return current;
-    }
-    else if (!current.isValid())
-    {
-        return QModelIndex();
     }
 
     QString lastCategory = d->categories.first();
