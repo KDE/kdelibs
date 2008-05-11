@@ -19,44 +19,34 @@
 
 #include "kbugreport.h"
 
+#include <QtCore/QProcess>
+#include <QtCore/QCoreApplication>
 #include <QtGui/QPushButton>
-#include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QRadioButton>
-#include <QtCore/QRegExp>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QCloseEvent>
-#include <QTextCodec>
-#include <QProcess>
+#include <QtGui/QGroupBox>
+#include <QtGui/QCloseEvent>
 
 #include <kaboutdata.h>
-#include "ktoolinvocation.h"
-#include <QtGui/QApplication>
-#include <kconfiggroup.h>
+#include <kcombobox.h>
+#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
-#include <kstandardguiitem.h>
 #include <kcomponentdata.h>
-#include <kurl.h>
 #include <kurllabel.h>
 #include <ktextedit.h>
-
-#include "kdeversion.h"
+#include <ktitlewidget.h>
 
 #include <stdio.h>
 #include <pwd.h>
 #include <unistd.h>
-
 #include <sys/utsname.h>
 
 #include "kdepackages.h"
-#include <kcombobox.h>
-#include <config.h>
-#include <QtCore/QFile>
+#include "kdeversion.h"
 
 #include <config-compiler.h>
 
@@ -74,7 +64,7 @@ public:
     const KAboutData * m_aboutData;
     
     KTextEdit * m_lineedit;
-    QLineEdit * m_subject;
+    KLineEdit * m_subject;
     QLabel * m_from;
     QLabel * m_version;
     QString m_strVersion;
@@ -86,7 +76,6 @@ public:
     QString kde_version;
     QString appname;
     QString os;
-    QPushButton *submitBugButton;
     KUrl url;
     QList<QRadioButton*> severityButtons;
     int currentSeverity() {
@@ -94,6 +83,7 @@ public:
             if (severityButtons[i]->isChecked()) return i;
         return -1;
     }
+    bool submitBugWeb;
 };
 
 KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutData )
@@ -111,28 +101,29 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
                                   : KGlobal::mainComponent().aboutData());
   d->m_process = 0;
   QWidget * parent = new QWidget(this);
-  d->submitBugButton = 0;
+  d->submitBugWeb = false;
 
   if ( d->m_aboutData->bugAddress() == QLatin1String("submit@bugs.kde.org") )
   {
     // This is a core KDE application -> redirect to the web form
-    d->submitBugButton = new QPushButton( parent );
+    d->submitBugWeb = true;
     setButtonGuiItem( Cancel, KStandardGuiItem::close() );
   }
 
   QLabel * tmpLabel;
   QVBoxLayout * lay = new QVBoxLayout( parent);
-  lay->setMargin(0);
-  lay->setSpacing( spacingHint() );
+
+  KTitleWidget *title = new KTitleWidget( this );
+  title->setText(i18n( "Submit Bug Report" ) );
+  title->setPixmap( KIcon( "tools-report-bug" ).pixmap( 32 ) );
+  lay->addWidget( title );
 
   QGridLayout *glay = new QGridLayout();
-  lay->addItem(glay);
-  glay->addItem(new QSpacerItem(10,0),0,1);
-  glay->addItem(new QSpacerItem(10,0),0,2);
+  lay->addLayout(glay);
 
   int row = 0;
 
-  if ( !d->submitBugButton )
+  if ( !d->submitBugWeb )
   {
     // From
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
@@ -157,24 +148,24 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     glay->addWidget( tmpLabel, ++row,0 );
     tmpLabel->setWhatsThis(qwtstr );
     tmpLabel = new QLabel( d->m_aboutData->bugAddress(), parent );
+    tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     glay->addWidget( tmpLabel, row, 1 );
     tmpLabel->setWhatsThis(qwtstr );
 
     setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail-send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ,  d->m_aboutData->bugAddress() ) ) );
-
+    row++;
   }
   else
   {
     d->m_configureEmail = 0;
     d->m_from = 0;
-    showButton(Ok, false );
   }
 
   // Program name
   QString qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
   tmpLabel = new QLabel( i18n("Application: "), parent );
-  glay->addWidget( tmpLabel, ++row, 0 );
+  glay->addWidget( tmpLabel, row, 0 );
   tmpLabel->setWhatsThis(qwtstr );
   d->appcombo = new KComboBox( false, parent );
   d->appcombo->setWhatsThis(qwtstr );
@@ -211,9 +202,10 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
       d->m_strVersion = i18n("no version set (programmer error!)");
   d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
-  if ( !d->submitBugButton )
+  if ( !d->submitBugWeb )
       d->m_strVersion += ' ' + d->kde_version;
   d->m_version = new QLabel( d->m_strVersion, parent );
+  d->m_version->setTextInteractionFlags(Qt::TextBrowserInteraction);
   //glay->addWidget( d->m_version, row, 1 );
   glay->addWidget( d->m_version, row, 1, 1, 2 );
   d->m_version->setWhatsThis(qwtstr );
@@ -228,14 +220,16 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
           "release " + QString::fromLatin1( unameBuf.release );
 
   tmpLabel = new QLabel(d->os, parent);
+  tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
   glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
   tmpLabel = new QLabel(i18n("Compiler:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
   tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
+  tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
   glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
-  if ( !d->submitBugButton )
+  if ( !d->submitBugWeb )
   {
     // Severity
     d->m_bgSeverity = new QGroupBox( i18n("Se&verity"), parent );
@@ -260,6 +254,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     tmpLabel = new QLabel( i18n("S&ubject: "), parent );
     hlay->addWidget( tmpLabel );
     d->m_subject = new KLineEdit( parent );
+    d->m_subject->setClearButtonShown(true);
     d->m_subject->setFocus();
     tmpLabel->setBuddy( d->m_subject );
     hlay->addWidget( d->m_subject );
@@ -296,16 +291,12 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addSpacing(10);
 
     d->_k_updateUrl();
-    d->submitBugButton->setText( i18n("&Launch Bug Report Wizard") );
-    d->submitBugButton->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    lay->addWidget( d->submitBugButton );
-    lay->addSpacing(10);
 
-    connect( d->submitBugButton, SIGNAL(clicked()),
-             this, SLOT(accept()));
+    setButtonText(Ok, i18n("&Launch Bug Report Wizard"));
+    setButtonIcon(Ok, KIcon("tools-report-bug"));
   }
   setMainWidget(parent);
-  setMinimumSize( sizeHint() );
+  setMinimumHeight( sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
 }
 
 KBugReport::~KBugReport()
@@ -315,7 +306,7 @@ KBugReport::~KBugReport()
 
 QString KBugReport::messageBody() const
 {
-  if ( !d->submitBugButton )
+  if ( !d->submitBugWeb )
     return d->m_lineedit->toPlainText();
   else
     return QString();
@@ -323,7 +314,7 @@ QString KBugReport::messageBody() const
 
 void KBugReport::setMessageBody(const QString &messageBody)
 {
-  if ( !d->submitBugButton )
+  if ( !d->submitBugWeb )
     d->m_lineedit->setPlainText(messageBody);
 }
 
@@ -351,11 +342,11 @@ void KBugReportPrivate::_k_appChanged(int i)
     else
         m_strVersion = i18nc("unknown program name", "unknown");
 
-    if ( !submitBugButton )
+    if ( !submitBugWeb )
         m_strVersion += kde_version;
 
     m_version->setText(m_strVersion);
-    if ( submitBugButton )
+    if ( submitBugWeb )
         _k_updateUrl();
 }
 
@@ -406,8 +397,8 @@ void KBugReportPrivate::_k_slotSetFrom()
 
 void KBugReport::accept()
 {
-    if ( d->submitBugButton ) {
-            KToolInvocation::invokeBrowser( d->url.url() );
+    if ( d->submitBugWeb ) {
+        KToolInvocation::invokeBrowser( d->url.url() );
         return;
     }
 
@@ -463,7 +454,7 @@ void KBugReport::accept()
 
 void KBugReport::closeEvent( QCloseEvent * e)
 {
-  if( !d->submitBugButton && ( (d->m_lineedit->toPlainText().length()>0) || d->m_subject->isModified() ) )
+  if( !d->submitBugWeb && ( (d->m_lineedit->toPlainText().length()>0) || d->m_subject->isModified() ) )
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
