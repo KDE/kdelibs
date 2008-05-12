@@ -98,7 +98,7 @@ class IDTableBase {
         Mapping(): refCount(0)
         {}
 
-        Mapping(const DOMString& _name): name(_name), refCount(0)
+        Mapping(const DOMString& _name): refCount(0), name(_name)
         {}
     };
 protected:
