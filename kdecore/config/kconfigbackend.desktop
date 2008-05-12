@@ -3,4 +3,8 @@ Type=ServiceType
 X-KDE-ServiceType=KConfigBackend
 
 Comment=Storage backend for KConfig
+Comment[ga]=Inneall stórais KConfig
+Comment[nds]=Spieker-Hülpprogramm för KConfig
+Comment[pt]=Armazenamento da infra-estrutura do KConfig
+Comment[pt_BR]=Armazenamento da infra-estrutura do KConfig
 
