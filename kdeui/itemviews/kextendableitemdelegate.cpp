@@ -156,7 +156,7 @@ QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, cons
     else
         ret = QStyledItemDelegate::sizeHint(option, index);
 
-    bool showExtensionIndicator = index.model() ? 
+    bool showExtensionIndicator = index.model() ?
         index.model()->data(index, ShowExtensionIndicatorRole).toBool() : false;
     if (showExtensionIndicator)
         ret.rwidth() += d->extendPixmap.width();
@@ -172,10 +172,21 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     QStyleOptionViewItemV4 indicatorOption(option);
     initStyleOption(&indicatorOption, index);
-    indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+    if (index.column() == 0)
+        indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+    else if (index.column() == index.model()->columnCount() - 1)
+        indicatorOption.viewItemPosition = QStyleOptionViewItemV4::End;
+    else
+        indicatorOption.viewItemPosition = QStyleOptionViewItemV4::Middle;
+
     QStyleOptionViewItemV4 itemOption(option);
     initStyleOption(&itemOption, index);
-    itemOption.viewItemPosition = QStyleOptionViewItemV4::End;
+    if (index.column() == 0)
+        itemOption.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+    else if (index.column() == index.model()->columnCount() - 1)
+        itemOption.viewItemPosition = QStyleOptionViewItemV4::End;
+    else
+        itemOption.viewItemPosition = QStyleOptionViewItemV4::Middle;
 
     const bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
 
@@ -247,14 +258,14 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         //the downside is, of course, that an api user effectively can't hide it.
         extender->show();
     }
-    
+
     indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
     itemOption.rect.setHeight(option.rect.height() - extenderHeight);
     //tricky:make sure that the modified options' rect really has the
     //same height as the unchanged option.rect if no extender is present
     //(seems to work OK)
     QStyledItemDelegate::paint(painter, itemOption, index);
-    
+
     if (showExtensionIndicator) {
         //indicatorOption's height changed, change this too
         indicatorY = indicatorOption.rect.top() + ((indicatorOption.rect.height() - d->extendPixmap.height()) >> 1);
@@ -276,13 +287,13 @@ QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptio
     Q_ASSERT(extender);
     QRect rect(option.rect);
     rect.setTop(rect.bottom() + 1 - extender->sizeHint().height());
-    
+
     rect.setLeft(0);
     QTreeView *tv = qobject_cast<QTreeView *>(parent());
     if (tv)
         for (QModelIndex idx(index.parent()); idx.isValid(); idx = idx.parent())
             rect.translate(tv->indentation(), 0);
-    
+
     QAbstractScrollArea *container = qobject_cast<QAbstractScrollArea *>(parent());
     Q_ASSERT(container);
     rect.setRight(container->viewport()->width() - 1);
@@ -299,7 +310,7 @@ QSize KExtendableItemDelegate::Private::maybeExtendedSize(const QStyleOptionView
 
     //add extender height to maximum height of any column in our row
     int itemHeight = size.height();
-    
+
     int row = index.row();
     int thisColumn = index.column();
 
@@ -313,7 +324,7 @@ QSize KExtendableItemDelegate::Private::maybeExtendedSize(const QStyleOptionView
             break;
         itemHeight = qMax(itemHeight, q->QStyledItemDelegate::sizeHint(option, neighborIndex).height());
     }
-    
+
     //we only want to reserve vertical space, the horizontal extender layout is our private business.
     size.rheight() = itemHeight + extender->sizeHint().height();
     return size;
