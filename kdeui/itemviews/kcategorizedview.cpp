@@ -455,7 +455,7 @@ void KCategorizedView::Private::updateScrollbars()
 
 void KCategorizedView::Private::drawDraggedItems(QPainter *painter)
 {
-    QStyleOptionViewItemV3 option = listView->viewOptions();
+    QStyleOptionViewItemV4 option = listView->viewOptions();
     option.state &= ~QStyle::State_MouseOver;
     foreach (const QModelIndex &index, listView->selectionModel()->selectedIndexes())
     {
@@ -722,11 +722,11 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
         return;
     }
 
-    QStyleOptionViewItemV3 option = viewOptions();
+    QStyleOptionViewItemV4 option = viewOptions();
     option.widget = this;
     if (wordWrap())
     {
-        option.features |= QStyleOptionViewItemV2::WrapText;
+        option.features |= QStyleOptionViewItemV4::WrapText;
     }
 
     QPainter painter(viewport());
@@ -783,7 +783,7 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
     }
 
     // Redraw categories
-    QStyleOptionViewItem otherOption;
+    QStyleOptionViewItemV4 otherOption;
     bool intersectedInThePast = false;
     foreach (const QString &category, d->categories)
     {
