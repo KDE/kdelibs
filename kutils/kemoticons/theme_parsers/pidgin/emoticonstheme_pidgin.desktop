@@ -1,9 +1,24 @@
 [Desktop Entry]
 Type=Service
 Name=Pidgin Emoticons Theme
+Name[de]=Pidgin-Emoticon-Design
+Name[ga]=Téama Straoiseoga Pidgin
+Name[km]=ស្បែកសញ្ញា​អារម្មណ៍​​របស់ Pidgin
+Name[pt]=Tema de Ícones Emotivos do Pidgin
+Name[pt_BR]=Tema de Ícones Emotivos do Pidgin
 Name[sv]=Pidgin smilistema
+Name[uk]=Тема емоційок Pidgin
+Name[x-test]=xxPidgin Emoticons Themexx
+Name[zh_TW]=Pidgin 表情圖示主題
 Comment=Library to use Pidgin emoticons theme
+Comment[de]=Bibliothek zur Verwendung von Pidgin-Emoticon-Designs
+Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​​ស្បែកសញ្ញា​អារម្មណ៍ Pidgin
+Comment[pt]=Uma biblioteca para usar temas de ícones emotivos do Pidgin
+Comment[pt_BR]=Uma biblioteca para usar temas de ícones emotivos do Pidgin
 Comment[sv]=Bibliotek för att använda Pidgin smilistema
+Comment[uk]=Бібліотека для використання теми емоційок Pidgin
+Comment[x-test]=xxLibrary to use Pidgin emoticons themexx
+Comment[zh_TW]=使用 Pidgin 表情圖示主題的函式庫
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_pidgin
 X-KDE-EmoticonsFileName=theme
