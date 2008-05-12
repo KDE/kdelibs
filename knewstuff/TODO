@@ -1,9 +1,8 @@
-- make dxs engine work with registry
 - make dxs engine work with cache
 - verify all dxs methods work (comments, rating, etc.)
 - expose all information menu actions in the new interface
+- referencecount entries to save memory (and so entry state will be shared between feeds, providers, etc.)
 - Use goya and Model/View for faster showing/searching, etc.
-  - make sure icons on qtoolbuttons are working
   - make cleanup changes suggessted by Eugene
   - Zoomed thumbnail tooltip for images
 
@@ -25,9 +24,7 @@ FEATURES:
 - REST voting
 
 - Add support for multiple providersurl's to the knsrc file, 
-or at least the ability to add new providers from the gui
-
-- Install to shared location with correct permissions (ability to switch scope)
+as well as categories with different options (targetpath, uncompress, etc.)
 
 - scan for installedfiles & unregister if not found, so user can re-install
 
