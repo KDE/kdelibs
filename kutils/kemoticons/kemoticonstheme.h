@@ -42,7 +42,7 @@ public:
      * The possible parse modes
      */
     enum ParseModeEnum {
-        DefaultParse = 0x0,  /**< Use strict or relaxed according the config  */
+        DefaultParse = 0x0,      /**< Use strict or relaxed according the config  */
         StrictParse = 0x1,       /**< Strict parsing requires a space between each emoticon */
         RelaxedParse = 0x2,      /**< Parse mode where all possible emoticon matches are allowed */
         SkipHTML = 0x4           /**< Skip emoticons within HTML */

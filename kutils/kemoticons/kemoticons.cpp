@@ -263,13 +263,6 @@ KEmoticonsTheme::ParseMode KEmoticons::parseMode()
     return (KEmoticonsTheme::ParseMode) config.readEntry("parseMode", int(KEmoticonsTheme::RelaxedParse));
 }
 
-QString KEmoticons::parseEmoticons(const QString &text, KEmoticonsTheme::ParseMode mode, const QStringList &exclude)
-{
-    KEmoticonsTheme t = KEmoticons().theme();
-    QString parsed = t.parseEmoticons(text, mode, exclude);
-    return parsed;
-}
-
 void KEmoticons::themeChanged(const QString &path)
 {
     QFileInfo info(path);
