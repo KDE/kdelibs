@@ -208,7 +208,7 @@ public:
      * @internal
      */
     KEmoticonsTheme& operator=(const KEmoticonsTheme &ket);
-protected:
+private:
     /**
      * a QPair that holds an emoticon and its position inside a text
      */
