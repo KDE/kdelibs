@@ -443,9 +443,9 @@ struct KDebugPrivate
         QByteArray programName = cache.value(0).name;
         if (programName.isEmpty())
             programName = "<unknown program name>";
-        s.nospace() << programName << "(" << unsigned(getpid()) << ")";
+        s.nospace() << programName.constData() << "(" << unsigned(getpid()) << ")";
         if (areaName != programName)
-            s << "/" << areaName;
+            s << "/" << areaName.constData();
 
         if (funcinfo) {
             if(colored)
@@ -501,7 +501,7 @@ struct KDebugPrivate
 #else
         Q_UNUSED(funcinfo);
         if (!areaName.isEmpty())
-            s << qPrintable(areaName) << ':';
+            s << areaName.constData() << ':';
 #endif
         return s.space();
     }
