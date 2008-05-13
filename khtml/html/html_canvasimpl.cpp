@@ -1327,13 +1327,13 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
     if (counterClockWise && (sweepLength < 0 || sweepLength > 360))
     {
         sweepLength = 360 + std::fmod(sweepLength, float(360.0));
-        if (qFuzzyCompare(sweepLength, 0))
+        if (qFuzzyCompare(sweepLength + 1, 1))
             sweepLength = 360;
     }
     else if (!counterClockWise && (sweepLength > 0 || sweepLength < -360))
     {
         sweepLength = -(360 - std::fmod(sweepLength, float(360.0)));
-        if (qFuzzyCompare(sweepLength, 0))
+        if (qFuzzyCompare(sweepLength + 1, 1))
             sweepLength = 360;
     }
 
@@ -1451,7 +1451,7 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image, float dx, float dy, floa
         return;
     }
 
-    if (qFuzzyCompare(dw, 0) || qFuzzyCompare(dh, 0))
+    if (qFuzzyCompare(dw + 1, 1) || qFuzzyCompare(dh + 1, 1))
         return;
 
     QPainter* p = acquirePainter();
@@ -1479,8 +1479,8 @@ void CanvasContext2DImpl::drawImage(ElementImpl* image,
         return;
     }
 
-    if (qFuzzyCompare(sw, 0) || qFuzzyCompare(sh, 0) ||
-        qFuzzyCompare(dw, 0) || qFuzzyCompare(dh, 0))
+    if (qFuzzyCompare(sw + 1, 1) || qFuzzyCompare(sh + 1, 1) ||
+        qFuzzyCompare(dw + 1, 1) || qFuzzyCompare(dh + 1, 1))
         return;
 
     QPainter* p = acquirePainter();
