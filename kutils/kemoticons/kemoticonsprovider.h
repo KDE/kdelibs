@@ -30,8 +30,7 @@ class QString;
 class KEmoticonsProviderPrivate;
 
 /**
- * This class contains the emoticons theme
- * this is also the parent class for the theme parser plugins
+ * This is the base class for the emoticons provider plugins
  */
 class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
 {
@@ -39,7 +38,7 @@ class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
 public:
 
     /**
-     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     * Default constructor
      */
     explicit KEmoticonsProvider(QObject *parent = 0);
 
@@ -56,10 +55,6 @@ public:
 
     /**
      * Remove the emoticon @p emo, this will not delete the image file too
-     * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
-     * theme->removeEmoticon(":)");
-     * @endcode
      * @param emo the emoticon text to remove
      * @return @c true if it can delete the emoticon
      */
@@ -67,10 +62,6 @@ public:
     
     /**
      * Add the emoticon @p emo with text @p text
-     * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
-     * theme->addEmoticon("/path/to/smiley.png", ":) :-)");
-     * @endcode
      * @param emo path to the emoticon image
      * @param text the text of the emoticon separated by space for multiple text
      * @param copy whether or not copy @p emo into the theme directory
@@ -109,6 +100,9 @@ public:
      */
     QMap<QString, QStringList> *emoticonsMap();
 
+    /**
+    * Returns a QMap that contains the emoticons path as keys and the text as values
+    */
     QMap<QString, QStringList> constEmoticonsMap() const;
 
     /**

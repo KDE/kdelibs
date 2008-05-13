@@ -32,7 +32,6 @@ class KEmoticonsProvider;
 
 /**
  * This class contains the emoticons theme
- * this is also the parent class for the theme parser plugins
  */
 class KEMOTICONS_EXPORT KEmoticonsTheme
 {
@@ -83,17 +82,19 @@ public:
     };
 
     /**
-     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     * Default constructor, it creates a null emoticons theme
+     * you should probably never use this, instead use KEmoticons::theme()
      */
     KEmoticonsTheme();
 
     /**
-     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     * Copy constructor
      */
     KEmoticonsTheme(const KEmoticonsTheme &ket);
 
     /**
-     * Default constructor, you should never use this, instead use KEmoticons::theme()
+     * Another constructor where you set the KEmoticonsProvider @p p
+     * you should probably never use this, instead use KEmoticons::theme()
      */
     KEmoticonsTheme(KEmoticonsProvider *p);
 
@@ -105,10 +106,10 @@ public:
     /**
      * Parse emoticons in text @p text with ParseMode @p mode and optionally excluding emoticons from @p exclude
      * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
+     * KEmoticonsTheme theme = KEmoticons().theme();
      * QString text = ":D hi :)";
      * QStringList exclude(":)");
-     * QString parsed = theme->parseEmoticons(text, KEmoticonsTheme::DefaultParse, exclude);
+     * QString parsed = theme.parseEmoticons(text, KEmoticonsTheme::DefaultParse, exclude);
      * // parsed will be "<img align="center" title=":D" alt=":D" src="/path/to/:D.png" width="24" height="24" /> hi :)"
      * @endcode
      * @param text the text to parse
@@ -121,9 +122,9 @@ public:
     /**
      * Tokenize the message @p message with ParseMode @p mode
      * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
+     * KEmoticonsTheme theme = KEmoticons().theme();
      * QString text = "hi :)";
-     * QList<Token> tokens = theme->tokenize(text, KEmoticonsTheme::DefaultParse);
+     * QList<Token> tokens = theme.tokenize(text, KEmoticonsTheme::DefaultParse);
      * // tokens[0].text = "hi "
      * // tokens[1].text = ":)" 
      * // tokens[1].picPath = "/path/to/:).png"
@@ -141,19 +142,19 @@ public:
     /**
      * Remove the emoticon @p emo, this will not delete the image file too
      * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
-     * theme->removeEmoticon(":)");
+     * KEmoticonsTheme theme = KEmoticons().theme();
+     * theme.removeEmoticon(":)");
      * @endcode
      * @param emo the emoticon text to remove
      * @return @c true if it can delete the emoticon
      */
     bool removeEmoticon(const QString &emo);
-    
+
     /**
      * Add the emoticon @p emo with text @p text
      * @code
-     * KEmoticonsTheme *theme = KEmoticons().theme();
-     * theme->addEmoticon("/path/to/smiley.png", ":) :-)");
+     * KEmoticonsTheme theme = KEmoticons().theme();
+     * theme.addEmoticon("/path/to/smiley.png", ":) :-)");
      * @endcode
      * @param emo path to the emoticon image
      * @param text the text of the emoticon separated by space for multiple text
@@ -189,7 +190,7 @@ public:
     QString fileName() const;
 
     /**
-     * Returns a pointer to a QMap that contains the emoticons path as keys and the text as values
+     * Returns a QMap that contains the emoticons path as keys and the text as values
      */
     QMap<QString, QStringList> emoticonsMap() const;
 
@@ -198,8 +199,14 @@ public:
      */
     void createNew();
 
+    /**
+     * Check if the theme has a valid provider and it returns true if it can't find it
+     */
     bool isNull();
 
+    /**
+     * @internal
+     */
     KEmoticonsTheme& operator=(const KEmoticonsTheme &ket);
 protected:
     /**

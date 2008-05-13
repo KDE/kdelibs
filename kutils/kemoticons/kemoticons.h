@@ -97,7 +97,7 @@ public:
     /**
      * Create a new emoticons theme
      * @code
-     * KEmoticonsTheme *theme;
+     * KEmoticonsTheme theme;
      * KService::List srv = KServiceTypeTrader::self()->query("KEmoticons");
      * for (int i = 0; i < srv.size(); ++i) {
      *     // we want to create a kde emoticons theme
@@ -105,7 +105,6 @@ public:
      *         theme = KEmoticons().newTheme("test", srv.at(i));
      *     }
      * }
-     * 
      * @endcode
      * @param name the name of the new emoticons theme
      * @param service the kind of emoticon theme to create
