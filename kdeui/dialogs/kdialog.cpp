@@ -89,7 +89,6 @@ void KDialogPrivate::setupLayout()
     mButtonBox->setOrientation( mButtonOrientation );
     mTopLayout->addWidget( mButtonBox );
   }
-  q->setMinimumSize(q->minimumSizeHint());
 }
 
 void KDialogPrivate::setButtonFocus(QPushButton *button, bool isDefault, bool isFocus)
