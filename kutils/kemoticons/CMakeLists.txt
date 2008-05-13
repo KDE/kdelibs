@@ -2,7 +2,7 @@ project(kemoticons)
 
 find_package(KDE4 REQUIRED)
 
-add_subdirectory(theme_parsers)
+add_subdirectory(providers)
 add_subdirectory(tests)
 add_subdirectory(kcm)
 
