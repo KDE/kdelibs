@@ -120,7 +120,17 @@
 
 #cmakedefine TIME_WITH_SYS_TIME 1
 
+/* When building universal binaries, you must determine endianness at compile-time */
+#ifdef __APPLE__
+#ifdef __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#else
+#undef WORDS_BIGENDIAN
+#endif
+
+#else
 #cmakedefine WORDS_BIGENDIAN
+#endif
 
 /********* structs ******************/
 
