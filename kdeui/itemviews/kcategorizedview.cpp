@@ -720,6 +720,8 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
         return;
     }
 
+    bool alternatingRows = alternatingRowColors();
+
     QStyleOptionViewItemV4 option = viewOptions();
     option.widget = this;
     if (wordWrap())
@@ -737,8 +739,19 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
     painter.save();
 
     QModelIndexList dirtyIndexes = d->intersectionSet(area);
+    bool alternate = false;
     foreach (const QModelIndex &index, dirtyIndexes)
     {
+        if (alternatingRows && alternate)
+        {
+            option.features |= QStyleOptionViewItemV4::Alternate;
+            alternate = false;
+        }
+        else if (alternatingRows)
+        {
+            option.features &= ~QStyleOptionViewItemV4::Alternate;
+            alternate = true;
+        }
         option.state = state;
         option.rect = visualRect(index);
 
