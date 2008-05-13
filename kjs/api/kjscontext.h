@@ -25,6 +25,7 @@
 #include "kjsapi_export.h"
 
 class KJSObject;
+class KJSArray;
 class KJSInterpreter;
 class KJSContextHandle;
 class KJSCustomProperty;
@@ -38,6 +39,7 @@ class KJSCustomFunction;
 class KJSAPI_EXPORT KJSContext
 {
     friend class KJSObject;
+    friend class KJSArray;
     friend class KJSPrototype;
     friend class KJSInterpreter;
     friend class KJSCustomProperty;

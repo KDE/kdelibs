@@ -57,7 +57,13 @@ public:
      */
     void defineConstant(KJSContext* ctx,
                         const QString& name, const QString& value);
-
+    /**
+     * Add a read-only object property to this object.
+     *
+     * @overload
+     */
+    void defineConstant(KJSContext* ctx,
+                        const QString& name, const KJSObject& value);
     /**
      * Function signature for a property getter function. Describes
      * one of the defineProperty() argument types.
@@ -110,7 +116,7 @@ public:
      *
      * @todo Provide a better type than void*
      */
-    KJSObject constructObject(KJSContext* ctx, void *internalValue);
+    KJSObject constructObject(KJSContext* ctx, void *internalValue = 0);
 
 private:
     KJSPrototype(const KJSPrototype&); // undefined

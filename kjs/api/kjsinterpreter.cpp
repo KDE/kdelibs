@@ -29,6 +29,61 @@
 
 using namespace KJS;
 
+class KJSResultHandle
+{
+public:
+    KJSResultHandle() : rc(1), val(KJSUndefined()) { }
+
+    int rc;
+    KJSObject val;
+    UString errMsg;
+
+    void ref() { ++rc; }
+    void deref() { if (--rc == 0) delete this; }
+};
+
+KJSResult::KJSResult()
+    : hnd(new KJSResultHandle())
+{
+}
+
+KJSResult::KJSResult(const KJSResult& r)
+{
+    hnd = r.hnd;
+    hnd->ref();
+}
+
+KJSResult& KJSResult::operator=(const KJSResult& r)
+{
+    if (hnd != r.hnd) {
+        r.hnd->ref();
+        hnd->deref();
+        hnd = r.hnd;
+    }
+
+    return *this;
+}
+
+KJSResult::~KJSResult()
+{
+    hnd->deref();
+}
+
+bool KJSResult::isException() const
+{
+    return !hnd->errMsg.isNull();
+}
+
+QString KJSResult::errorMessage() const
+{
+    return toQString(hnd->errMsg);
+}
+
+KJSObject KJSResult::value() const
+{
+    return hnd->val;
+}
+
 KJSInterpreter::KJSInterpreter()
     : globCtx(0)
 {
@@ -99,7 +154,7 @@ KJSObject KJSInterpreter::globalObject()
     return KJSObject(JSVALUE_HANDLE(ip->globalObject()));
 }
 
-KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
+KJSResult KJSInterpreter::evaluate(const QString& sourceURL,
                                    int startingLineNumber,
                                    const QString& code,
                                    KJSObject* thisValue)
@@ -110,10 +165,11 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
     KJS::Completion c = ip->evaluate(toUString(sourceURL), startingLineNumber,
                                      toUString(code), tv);
 
+    KJSResult res;
     if (c.complType() == Throw) {
-#if 0
         ExecState* exec = ip->globalExec();
-        CString msg = c.value()->toString(exec).UTF8String();
+        UString msg = c.value()->toString(exec);
+#if 0
         JSObject* resObj = c.value()->toObject(exec);
         CString message = resObj->toString(exec).UTF8String();
         int line = resObj->toObject(exec)->get(exec, "line")->toUInt32(exec);
@@ -123,16 +179,16 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
         fprintf(stderr, "%s\n", msg.c_str());
 #endif
         fprintf(stderr, "evaluate() threw an exception\n");
-        return KJSUndefined();
+        res.hnd->errMsg = msg;
     } else {
         if (c.isValueCompletion())
-            return KJSObject(JSVALUE_HANDLE(c.value()));
-        else
-            return KJSUndefined();
+            res.hnd->val = KJSObject(JSVALUE_HANDLE(c.value()));
     }
+
+    return res;
 }
 
-KJSObject KJSInterpreter::evaluate(const QString& code,
+KJSResult KJSInterpreter::evaluate(const QString& code,
                                    KJSObject* thisValue)
 {
     return evaluate("<string>", 0, code, thisValue);

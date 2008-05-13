@@ -65,6 +65,7 @@ void KJSApiTest::objectConstruction()
     KJSNumber numObject(42.0);
     QVERIFY2(numObject.isNumber(), "Number object is not of number type");
     QCOMPARE(numObject.toNumber(ctx), 42.0);
+    QCOMPARE(numObject.toInt32(ctx), 42);
     QVERIFY2(!ctx->hasException(), "Number conversion threw exception");
 
     // String
@@ -72,6 +73,13 @@ void KJSApiTest::objectConstruction()
     QVERIFY2(stringObject.isString(), "String object is not of string type");
     QCOMPARE(stringObject.toString(ctx), QLatin1String("Trunk"));
     QVERIFY2(!ctx->hasException(), "String conversion threw exception");
+
+    // Array
+    KJSArray arrayObject(ctx, 3);
+    QVERIFY2(arrayObject.isObject(), "Array object is not of object type");
+    QCOMPARE(arrayObject.property(ctx, "length").toNumber(ctx), 3.0);
+    QCOMPARE(arrayObject.toString(ctx), QLatin1String(",,"));
+    QVERIFY2(!ctx->hasException(), "Array conversion threw exception");
 
     // copying
     KJSObject copy(stringObject);
@@ -84,16 +92,15 @@ void KJSApiTest::interpreterEvaluate()
 {
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();    
-    KJSObject res;
+    KJSResult res;
 
     // syntax error
     res = ip.evaluate(")(");
-    QVERIFY2(res.isUndefined(), "Syntax error not caught");
-    // ### real error check
+    QVERIFY2(res.isException(), "Syntax error not caught");
 
     res = ip.evaluate("11+22");
-    QVERIFY2(res.isNumber(), "Evaluation returned non-number object");
-    QCOMPARE(res.toNumber(ctx), 33.0);
+    QVERIFY2(!res.isException(), "Evaluation returned non-number object");
+    QCOMPARE(res.value().toNumber(ctx), 33.0);
 }
 
 void KJSApiTest::interpreterNormalizeCode()
@@ -246,14 +253,12 @@ void KJSApiTest::prototypeFunctions()
     KJSObject obj = proto.constructObject(ctx, &factor);
     ip.globalObject().setProperty(ctx, "obj", obj);
 
-    KJSObject res = ip.evaluate("obj.multiply(4)");
-    QCOMPARE(res.toNumber(ctx), 12.0);
+    KJSResult res = ip.evaluate("obj.multiply(4)");
+    QCOMPARE(res.value().toNumber(ctx), 12.0);
 
     // expect exception
     res = ip.evaluate("obj.multiply()");
-    QVERIFY2(!res.isNumber(), "Exception did not work");
-    //    QVERIFY2(ip.globalContext()->hasException(), "Exception did not work");
-
+    QVERIFY2(res.isException(), "Exception did not work");
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)

@@ -233,6 +233,16 @@ void KJSPrototype::defineConstant(KJSContext* ctx,
            DontEnum|DontDelete|ReadOnly);
 }
 
+void KJSPrototype::defineConstant(KJSContext* ctx,
+                                  const QString& name, const KJSObject& value)
+{
+    CustomPrototype* p = PROTOTYPE(this);
+
+    ExecState* exec = EXECSTATE(ctx);
+    p->put(exec, toIdentifier(name), JSVALUE(&value),
+           DontEnum|DontDelete|ReadOnly);
+}
+
 KJSObject KJSPrototype::constructObject(KJSContext* ctx, void *internalValue)
 {
     CustomPrototype* p = PROTOTYPE(this);

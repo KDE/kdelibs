@@ -31,7 +31,8 @@ int KJSArguments::count() const
 KJSObject KJSArguments::at(int idx) const
 {
     const KJS::List* l = LIST(this);
-    assert(idx >= 0 && idx < l->size());
+    if (idx < 0 || idx >= l->size())
+        return KJSUndefined();
     KJS::JSValue* a = l->at(idx);
     return KJSObject(JSVALUE_HANDLE(a));
 }

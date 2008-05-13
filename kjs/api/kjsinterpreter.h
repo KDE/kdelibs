@@ -27,7 +27,52 @@
 #include "kjscontext.h"
 
 class KJSPrototype;
+class KJSInterpreter;
 class KJSInterpreterHandle;
+class KJSResultHandle;
+
+/**
+ * A class representing the result of a script evaluation.
+ */
+class KJSAPI_EXPORT KJSResult
+{
+    friend class KJSInterpreter;
+public:
+    /**
+     * Constructs a default result object.
+     */
+    KJSResult();
+    /**
+     * Constructs a copy of another result object.
+     */
+    KJSResult(const KJSResult&);
+    /**
+     * Assigns the properties of another result object to this one.
+     */
+    KJSResult& operator=(const KJSResult&);
+    /**
+     * Frees resources held by this result object.
+     */
+    ~KJSResult();
+    /**
+     * Returns true if the script evaluation has caused an exception.
+     */
+    bool isException() const;
+
+    /**
+     * Returns the error message if this is an exception result.
+     */
+    QString errorMessage() const;
+    /*
+     * If the evaluation was successfull, i.e. isException() is false
+     * this function returns the value returned by the script. Can be
+     * an "undefined" (isUndefined()) value.
+     */
+    KJSObject value() const;
+
+private:
+    KJSResultHandle* hnd;
+};
 
 /**
  * A class representing a JavaScript interpreter
@@ -36,6 +81,7 @@ class KJSInterpreterHandle;
  */
 class KJSAPI_EXPORT KJSInterpreter
 {
+    friend class KJSResult;
     friend class KJSPrototype;
     friend class KJSContext;
 public:
@@ -81,13 +127,13 @@ public:
      * to provide information about the origin of a parse error or
      * runtime exception.
      */
-    KJSObject evaluate(const QString& sourceURL, int startingLineNumber,
+    KJSResult evaluate(const QString& sourceURL, int startingLineNumber,
                        const QString& code,
                        KJSObject* thisValue = 0);
     /**
      *  @overload
      */
-    KJSObject evaluate(const QString& code,
+    KJSResult evaluate(const QString& code,
                        KJSObject* thisValue = 0);
 
     /**

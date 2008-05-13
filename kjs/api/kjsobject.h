@@ -25,12 +25,15 @@
 #include "kjsapi_export.h"
 #include <QtCore/QString>
 
+class QDateTime;
 class KJSContext;
 class KJSNull;
 class KJSUndefined;
 class KJSBoolean;
 class KJSNumber;
 class KJSString;
+class KJSArray;
+class KJSDate;
 class KJSArguments;
 class KJSInterpreter;
 class KJSObjectHandle;
@@ -49,6 +52,8 @@ class KJSAPI_EXPORT KJSObject
     friend class KJSBoolean;
     friend class KJSNumber;
     friend class KJSString;
+    friend class KJSArray;
+    friend class KJSDate;
     friend class KJSPrototype;
     friend class KJSContext;
     friend class KJSArguments;
@@ -98,21 +103,24 @@ public:
     bool isObject() const;
 
     /**
-     * Returns this value converted to a boolean. If successfull *ok
-     * will be set to true; if the conversion failed it will be to
-     * false.
+     * Returns this value converted to a boolean. If the conversion
+     * fails the context will have an exception set.
      */
     bool toBoolean(KJSContext* ctx);
     /**
-     * Returns this value converted to a number. If successfull *ok
-     * will be set to true; if the conversion failed it will be to
-     * false.
+     * Returns this value converted to a number. If the conversion
+     * fails the context will have an exception set.
      */
     double toNumber(KJSContext* ctx);
     /**
-     * Returns this value converted to a string. If successfull *ok
-     * will be set to true; if the conversion failed it will be to
-     * false.
+     * Returns this value converted to a 32-bit integer number. NaN,
+     * positive and negative Infinity will be converted to 0. If the
+     * conversion fails the context will have an exception set.
+     */
+    int toInt32(KJSContext* ctx);
+    /**
+     * Returns this value converted to a string. If the conversion
+     * fails the context will have an exception set.
      */
     QString toString(KJSContext* ctx);
     /**
@@ -233,6 +241,34 @@ public:
      * @overload
      */
     KJSString(const char* s);
+};
+
+/**
+ * A class representing a JavaScript array object.
+ *
+ * @short Array object
+ */
+class KJSAPI_EXPORT KJSArray : public KJSObject
+{
+public:
+    /**
+     * Constructs an array object with the specified length.
+     */
+    KJSArray(KJSContext* ctx, int len = 0);
+};
+
+/**
+ * A class representing a JavaScript date object.
+ *
+ * @short Date object
+ */
+class KJSAPI_EXPORT KJSDate : public KJSObject
+{
+public:
+    /**
+     * Constructs a date object from the specified date and time.
+     */
+    KJSDate(KJSContext* ctx, const QDateTime& dt);
 };
 
 #endif

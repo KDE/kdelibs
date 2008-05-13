@@ -27,7 +27,8 @@
 #include "kjs/protect.h"
 #include "kjs/ExecState.h"
 
-#include <qstring.h>
+#include <kdebug.h>
+#include <qdatetime.h>
 
 using namespace KJS;
 
@@ -91,6 +92,38 @@ KJSString::KJSString(const char* s)
     gcProtect(JSVALUE(this));
 }
 
+static JSValue* constructArrayHelper(ExecState* exec, int len)
+{
+    JSObject* builtinArray = exec->lexicalInterpreter()->builtinArray();
+    JSObject* newArray = builtinArray->construct(exec, List());
+    newArray->put(exec, exec->propertyNames().length, jsNumber(len),
+                  DontDelete|ReadOnly|DontEnum);
+    return newArray;
+}
+
+KJSArray::KJSArray(KJSContext* ctx, int len)
+    : KJSObject(JSVALUE_HANDLE(constructArrayHelper(EXECSTATE(ctx), len)))
+
+{
+    gcProtect(JSVALUE(this));
+}
+
+static JSValue* constructDateHelper(KJSContext* ctx, const QDateTime& dt)
+{
+    kWarning() << "converDateTimeHelper() not implemented, yet";
+
+    // ### make call into data_object.cpp
+
+    return jsNumber(42.0);
+}
+
+
+KJSDate::KJSDate(KJSContext* ctx, const QDateTime& dt)
+    : KJSObject(JSVALUE_HANDLE(constructDateHelper(ctx, dt)))
+{
+    gcProtect(JSVALUE(this));
+}
+
 bool KJSObject::isUndefined() const
 {
     return JSVALUE(this)->isUndefined();
@@ -133,6 +166,13 @@ double KJSObject::toNumber(KJSContext* ctx)
     ExecState* exec = EXECSTATE(ctx);
     assert(exec);
     return JSVALUE(this)->toNumber(exec);
+}
+
+int KJSObject::toInt32(KJSContext* ctx)
+{
+    ExecState* exec = EXECSTATE(ctx);
+    assert(exec);
+    return JSVALUE(this)->toInt32(exec);
 }
 
 QString KJSObject::toString(KJSContext* ctx)
