@@ -25,11 +25,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include "kdedinterface.h"
-
-Q_DECLARE_METATYPE (QList<int>)
-
 #include "kcookieserverinterface.h"
+#include "kdedinterface.h"
 
 int main(int argc, char *argv[])
 {
@@ -79,5 +76,3 @@ int main(int argc, char *argv[])
 
    return 0;
 }
-
-#include "kcookieserverinterface.cpp"
