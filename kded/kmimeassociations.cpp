@@ -88,7 +88,7 @@ void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const 
             if (!pService) {
                 kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();
             } else {
-                //kDebug(7021) << "adding mime" << mime << "to service" << pService->entryPath();
+                //kDebug(7021) << "adding mime" << mime << "to service" << pService->entryPath() << "pref=" << pref;
                 m_offerHash.addServiceOffer(mime, KServiceOffer(pService, pref, 0, pService->allowAsDefault()));
                 --pref;
             }

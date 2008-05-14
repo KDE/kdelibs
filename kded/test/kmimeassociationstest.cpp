@@ -62,7 +62,8 @@ private:
 
 // Helper method for all the trader tests, comes from kmimetypetest.cpp
 static bool offerListHasService( const KService::List& offers,
-                                 const QString& entryPath )
+                                 const QString& entryPath,
+                                 bool expected /* if set, show error if not found */ )
 {
     bool found = false;
     Q_FOREACH(const KService::Ptr &serv, offers) {
@@ -74,9 +75,29 @@ static bool offerListHasService( const KService::List& offers,
             found = true;
         }
     }
+    if (!found && expected) {
+        kWarning() << "ERROR:" << entryPath << "not found in offer list. Here's the full list:";
+        Q_FOREACH(const KService::Ptr &serv, offers) {
+            kDebug() << serv->entryPath();
+        }
+    }
     return found;
 }
 
+static void writeAppDesktopFile(const QString& path, const char* mimetype)
+{
+    KDesktopFile file(path);
+    KConfigGroup group = file.desktopGroup();
+    group.writeEntry("Name", "FakeApplication");
+    group.writeEntry("Type", "Application");
+    group.writeEntry("Exec", "ls");
+    group.writeEntry("MimeType", mimetype);
+}
+
+/**
+ * This unit test verifies the parsing of mimeapps.list files, both directly
+ * and via kbuildsycoca (and making trader queries).
+ */
 class KMimeAssociationsTest : public QObject
 {
     Q_OBJECT
@@ -84,9 +105,8 @@ private Q_SLOTS:
     void initTestCase()
     {
         QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
-        // We need a place where we can hack a mimeapps.list without harm, so not ~/.local
-        ::setenv("XDG_DATA_HOME", QFile::encodeName(kdehome) + "/local", 1);
-        m_localApps = kdehome + "/local/applications/";
+        m_localApps = KStandardDirs::locateLocal("xdgdata-apps", "");
+        QVERIFY(m_localApps.startsWith(kdehome));
 
         // Create factory on the heap and don't delete it.
         // It registers to KSycoca, which deletes it at end of program execution.
@@ -102,16 +122,16 @@ private Q_SLOTS:
         }
 
         // Create fake application for some tests below.
-        fakeApplication = m_localApps + "faketextapplication.desktop";
-        const bool mustCreateFakeService = !QFile::exists(fakeApplication);
-        if (mustCreateFakeService) {
+        fakeTextApplication = m_localApps + "faketextapplication.desktop";
+        if (!QFile::exists(fakeTextApplication)) {
             mustUpdateKSycoca = true;
-            KDesktopFile file(fakeApplication);
-            KConfigGroup group = file.desktopGroup();
-            group.writeEntry("Name", "FakeApplication");
-            group.writeEntry("Type", "Application");
-            group.writeEntry("Exec", "ls");
-            group.writeEntry("MimeType", "text/plain");
+            writeAppDesktopFile(fakeTextApplication, "text/plain");
+        }
+
+        fakeJpegApplication = m_localApps + "fakejpegapplication.desktop";
+        if (!QFile::exists(fakeJpegApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeJpegApplication, "image/jpeg");
         }
 
         if ( mustUpdateKSycoca ) {
@@ -132,7 +152,7 @@ private Q_SLOTS:
         QVERIFY(fakeApplicationService);
 
         m_mimeAppsFileContents = "[Added Associations]\n"
-                               "image/jpeg=mplayer.desktop;\n"
+                               "image/jpeg=fakejpegapplication.desktop;\n"
                                // konsole.desktop is without kde4- to test fallback lookup
                                "text/plain=kde4-kate.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
                                "[Added KParts/ReadOnlyPart Associations]\n"
@@ -141,7 +161,7 @@ private Q_SLOTS:
                                "image/jpeg=firefox.desktop;\n"
                                "text/html=firefox.desktop;kde4-kwrite.desktop;\n";
         // Expected results
-        preferredApps["image/jpeg"] << "mplayer.desktop";
+        preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
         preferredApps["text/plain"] << "kde4-kate.desktop" << "kde4-kwrite.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "firefox.desktop" << "kde4-kwrite.desktop";
@@ -168,7 +188,7 @@ private Q_SLOTS:
         const QString fileName = tempFile.fileName();
         tempFile.close();
 
-        QTest::ignoreMessage(QtDebugMsg, "findServiceByDesktopPath: idontexist.desktop not found");
+        //QTest::ignoreMessage(QtDebugMsg, "findServiceByDesktopPath: idontexist.desktop not found");
         parser.parseMimeAppsList(fileName, 100);
 
         for (ExpectedResultsMap::const_iterator it = preferredApps.begin(), end = preferredApps.end() ; it != end ; ++it) {
@@ -202,9 +222,12 @@ private Q_SLOTS:
 
         // Test a trader query
         KService::List offers = KMimeTypeTrader::self()->query("image/jpeg");
-        if (KService::serviceByStorageId("mplayer.desktop")) { // if it's installed
-            QCOMPARE(offers.first()->storageId(), QString("mplayer.desktop"));
-        }
+        //kDebug() << m_mimeAppsFileContents;
+        //kDebug() << "preferred apps for jpeg: " << preferredApps.value("image/jpeg");
+        //for (int i = 0; i < offers.count(); ++i) {
+        //    kDebug() << "offers for" << "image/jpeg" << ":" << i << offers[i]->storageId();
+        //}
+        QCOMPARE(offers.first()->storageId(), QString("fakejpegapplication.desktop"));
 
         // Now the generic variant of the above test:
         // for each mimetype, check that the preferred apps are as specified
@@ -222,35 +245,45 @@ private Q_SLOTS:
         }
     }
 
+    void testMultipleInheritance()
+    {
+        // application/x-shellscript inherits from both text/plain and application/x-executable
+        KService::List offers = KMimeTypeTrader::self()->query("application/x-shellscript");
+        QVERIFY(offerListHasService(offers, fakeTextApplication, true));
+    }
+
     void testRemovedAssociation()
     {
         // I removed kate from text/plain, and it would still appear in text/x-java.
 
         // First, let's check our fake app is associated with text/plain
         KService::List offers = KMimeTypeTrader::self()->query("text/plain");
-        QVERIFY(offerListHasService(offers, fakeApplication));
+        QVERIFY(offerListHasService(offers, fakeTextApplication, true));
 
         writeToMimeApps(QByteArray("[Removed Associations]\n"
                                    "text/plain=faketextapplication.desktop;\n"));
 
         offers = KMimeTypeTrader::self()->query("text/plain");
-        QVERIFY(!offerListHasService(offers, fakeApplication));
+        QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
 
         offers = KMimeTypeTrader::self()->query("text/x-java");
-        QVERIFY(!offerListHasService(offers, fakeApplication));
-}
+        QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
+    }
 
 private:
     typedef QMap<QString /*mimetype*/, QStringList> ExpectedResultsMap;
 
     void runKBuildSycoca()
     {
+        //kDebug();
         // Wait for notifyDatabaseChanged DBus signal
         // (The real KCM code simply does the refresh in a slot, asynchronously)
         QEventLoop loop;
         QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &loop, SLOT(quit()));
         KProcess proc;
-        proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+        const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+        QVERIFY(!kbuildsycoca.isEmpty());
+        proc << kbuildsycoca;
         proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
         proc.execute();
         loop.exec();
@@ -289,7 +322,8 @@ private:
     }
     QString m_localApps;
     QByteArray m_mimeAppsFileContents;
-    QString fakeApplication;
+    QString fakeTextApplication;
+    QString fakeJpegApplication;
 
     ExpectedResultsMap preferredApps;
     ExpectedResultsMap removedApps;

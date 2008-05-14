@@ -137,6 +137,43 @@ void KBuildServiceFactory::save(QDataStream &str)
     str.device()->seek(endOfFactoryData);
 }
 
+void KBuildServiceFactory::collectInheritedServices()
+{
+    // With multiple inheritance, the "mimeTypeInheritanceLevel" isn't exactly
+    // correct (it should only be increased when going up a level, not when iterating
+    // through the multiple parents at a given level). I don't think we care,
+    // but just in case we do, this is the reason I didn't port this to mimeType->allParentMimeTypes.
+    const KMimeType::List allMimeTypes = m_mimeTypeFactory->allMimeTypes();
+    KMimeType::List::const_iterator itm = allMimeTypes.begin();
+    for( ; itm != allMimeTypes.end(); ++itm ) {
+        const KMimeType::Ptr mimeType = *itm;
+        const QString mimeTypeName = mimeType->name();
+        QStringList parents = mimeType->parentMimeTypes();
+        int mimeTypeInheritanceLevel = 0;
+        while ( !parents.isEmpty() ) {
+            const QString& parent = parents.takeFirst();
+            const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
+            if ( parentMimeType ) {
+                ++mimeTypeInheritanceLevel;
+                const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
+                QList<KServiceOffer>::const_iterator itserv = offers.begin();
+                const QList<KServiceOffer>::const_iterator endserv = offers.end();
+                for ( ; itserv != endserv; ++itserv ) {
+                    KServiceOffer offer(*itserv);
+                    offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
+                    //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
+                    m_offerHash.addServiceOffer( mimeTypeName, offer );
+                }
+                parents += parentMimeType->parentMimeTypes();
+            } else {
+                kWarning(7012) << "parent mimetype not found:" << parent;
+                break;
+            }
+        }
+    }
+    // TODO do the same for all/all and all/allfiles, if (!KServiceTypeProfile::configurationMode())
+}
+
 void KBuildServiceFactory::populateServiceTypes()
 {
     // For every service...
@@ -191,35 +228,7 @@ void KBuildServiceFactory::populateServiceTypes()
     mimeAssociations.parseAllMimeAppsList();
 
     // Now for each mimetype, collect services from parent mimetypes
-    const KMimeType::List allMimeTypes = m_mimeTypeFactory->allMimeTypes();
-    KMimeType::List::const_iterator itm = allMimeTypes.begin();
-    for( ; itm != allMimeTypes.end(); ++itm ) {
-        const KMimeType::Ptr mimeType = *itm;
-        const QString mimeTypeName = mimeType->name();
-        QString parent = mimeType->parentMimeType();
-        if ( parent.isEmpty() )
-            continue;
-        int mimeTypeInheritanceLevel = 0;
-        while ( !parent.isEmpty() ) {
-            const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
-            if ( parentMimeType ) {
-                ++mimeTypeInheritanceLevel;
-                const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
-                QList<KServiceOffer>::const_iterator itserv = offers.begin();
-                const QList<KServiceOffer>::const_iterator endserv = offers.end();
-                for ( ; itserv != endserv; ++itserv ) {
-                    KServiceOffer offer(*itserv);
-                    offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
-                    m_offerHash.addServiceOffer( mimeTypeName, offer );
-                }
-                parent = parentMimeType->parentMimeType();
-            } else {
-                kWarning(7012) << "parent mimetype not found:" << parent;
-                break;
-            }
-        }
-    }
-    // TODO do the same for all/all and all/allfiles, if (!KServiceTypeProfile::configurationMode())
+    collectInheritedServices();
 
     // Now collect the offsets into the (future) offer list
     // The loops look very much like the ones in saveOfferList obviously.
