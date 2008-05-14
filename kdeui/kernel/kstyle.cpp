@@ -957,6 +957,9 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             if (opt && (opt->features & QStyleOptionViewItemV2::Alternate))
                 painter->fillRect(option->rect, option->palette.brush(cg, QPalette::AlternateBase));
 
+            if (!hover && !(option->state & State_Selected) && !hasCustomBackground)
+                return;
+
             quint64 key = quint64(option->rect.height()) << 32 | color.rgba();
             SelectionTiles* tiles = d->selectionCache.object(key);
             if (!tiles && hasSolidBackground)
