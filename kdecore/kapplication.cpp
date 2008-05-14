@@ -1253,16 +1253,19 @@ static void checkRestartVersion( QSessionManager& sm )
     unsigned char* data;
     if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_FULL_SESSION", False ),
         0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
+        if( data != NULL )
+            XFree( data );
         if( type == XA_STRING && format == 8 ) { // session set, check if KDE_SESSION_VERSION is not set (meaning KDE3)
-            unsigned char* data;
             if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
                 0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
-                XFree( data ); // KDE4 or newer
+                if( data != NULL )
+                    XFree( data ); // KDE4 or newer
+                if( type == None )
+                    return; // we run in our native session, no need to wrap
             } else {
                 return; // we run in our native session, no need to wrap
             }
         }
-        XFree( data );
     }
     QString wrapper = KStandardDirs::findExe( "kde3" );
     QStringList restartCommand = sm.restartCommand();
