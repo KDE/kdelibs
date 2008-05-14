@@ -105,20 +105,13 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     }
 
     KMimeType::Ptr mimeInfo = KMimeType::mimeType( mimeType );
-    if ( mimeInfo )
-    {
+    if ( mimeInfo ) {
         // check mime type inheritance
-        QString parentMimeType = mimeInfo->parentMimeType();
-        while ( !parentMimeType.isEmpty() )
-        {
+        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
             provider = m_previewProviders.value( parentMimeType );
             if ( provider )
                 return provider;
-
-            KMimeType::Ptr parentMimeInfo = KMimeType::mimeType( parentMimeType );
-            if ( !parentMimeInfo ) break;
-
-            parentMimeType = parentMimeInfo->parentMimeType();
         }
     }
     // The logic in this code duplicates the logic in PreviewJob.

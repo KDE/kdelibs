@@ -204,16 +204,10 @@ void PreviewJobPrivate::startPreview()
                 // check mime type inheritance, resolve aliases
                 const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
                 if (mimeInfo) {
-                    QString parentMimeType = mimeInfo->parentMimeType();
-                    while (!parentMimeType.isEmpty())
-                    {
+                    const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+                    Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
                         plugin = mimeMap.find(parentMimeType);
                         if (plugin != mimeMap.end()) break;
-
-                        KMimeType::Ptr parentMimeInfo = KMimeType::mimeType(parentMimeType);
-                        if (!parentMimeInfo) break;
-
-                        parentMimeType = parentMimeInfo->parentMimeType();
                     }
                 }
             }
