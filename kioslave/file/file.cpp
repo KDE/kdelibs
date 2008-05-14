@@ -531,6 +531,7 @@ void FileProtocol::read(KIO::filesize_t bytes)
             }
             break;
         }
+        if (bytes <= 0) break;
     }
 }
 
