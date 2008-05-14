@@ -326,6 +326,12 @@ void AudioOutputPrivate::_k_deviceListChanged()
     }
 }
 
+static struct
+{
+    int first;
+    int second;
+} g_lastFallback = { 0, 0 };
+
 void AudioOutputPrivate::handleAutomaticDeviceChange(const AudioOutputDevice &device2, DeviceChangeType type)
 {
     Q_Q(AudioOutput);
@@ -336,9 +342,13 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(const AudioOutputDevice &de
     const AudioOutputDevice &device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
     switch (type) {
     case FallbackChange:
-        text = AudioOutput::tr("<html>The audio playback device <b>%1</b> does not work.<br/>"
-            "Falling back to <b>%2</b>.</html>").arg(device1.name()).arg(device2.name());
-        Platform::notification("AudioDeviceFallback", text);
+        if (g_lastFallback.first != device1.index() || g_lastFallback.second != device2.index()) {
+            text = AudioOutput::tr("<html>The audio playback device <b>%1</b> does not work.<br/>"
+                    "Falling back to <b>%2</b>.</html>").arg(device1.name()).arg(device2.name());
+            Platform::notification("AudioDeviceFallback", text);
+            g_lastFallback.first = device1.index();
+            g_lastFallback.second = device2.index();
+        }
         break;
     case HigherPreferenceChange:
         text = AudioOutput::tr("<html>Switching to the audio playback device <b>%1</b><br/>"
@@ -346,6 +356,8 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(const AudioOutputDevice &de
         Platform::notification("AudioDeviceFallback", text,
                 QStringList(AudioOutput::tr("Revert back to device '%1'").arg(device1.name())),
                 q, SLOT(_k_revertFallback()));
+        g_lastFallback.first = 0;
+        g_lastFallback.second = 0;
         break;
     }
 }
