@@ -1,11 +1,24 @@
 [Desktop Entry]
 Type=Service
 Name=Adium Emoticons Theme
-Name[et]=Adiumi emotikoniteema
+Name[de]=Adium-Emoticon-Design
+Name[ga]=Téama Straoiseoga Adium
+Name[km]=ស្បែក​សញ្ញា​អារម្មណ៍​របស់ Emoticons
+Name[pt]=Tema de Ícones Emotivos do Adium
+Name[pt_BR]=Tema de Ícones Emotivos do Adium
 Name[sv]=Adium smilistema
+Name[uk]=Тема емоційок Adium
+Name[x-test]=xxAdium Emoticons Themexx
+Name[zh_TW]=Adium 表情圖示主題
 Comment=Library to use Adium emoticons theme
-Comment[et]=Teek Adiumi emotikoniteema kasutamiseks
+Comment[de]=Bibliothek zur Verwendung von Adium-Emoticon-Designs
+Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​ស្បែក​សញ្ញា​អារម្មណ៍​របស់ Adium
+Comment[pt]=Uma biblioteca para usar temas de ícones emotivos do Adium
+Comment[pt_BR]=Uma biblioteca para usar temas de ícones emotivos do Adium
 Comment[sv]=Bibliotek för att använda Adium smilistema
+Comment[uk]=Бібліотека для використання теми емоційок Adium
+Comment[x-test]=xxLibrary to use Adium emoticons themexx
+Comment[zh_TW]=使用 Adium 表情圖示主題的函式庫
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_adium
 X-KDE-EmoticonsFileName=Emoticons.plist
