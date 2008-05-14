@@ -930,7 +930,8 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
             const qreal rounding = 2.5;
 
-            if (!hover && !(option->state & State_Selected) && !hasCustomBackground)
+            if (!hover && !(option->state & State_Selected) && !hasCustomBackground &&
+                !(opt->features & QStyleOptionViewItemV2::Alternate))
                 return;
 
             QPalette::ColorGroup cg;
