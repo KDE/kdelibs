@@ -45,6 +45,7 @@ public:
     Private(KIconCache* _q)
     {
         q = _q;
+        mUpdatesCheckedTime = 0;
     }
     bool themeDirsChanged()
     {
