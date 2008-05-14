@@ -740,6 +740,10 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
 
     QModelIndexList dirtyIndexes = d->intersectionSet(area);
     bool alternate = false;
+    if (dirtyIndexes.count())
+    {
+        alternate = dirtyIndexes[0].row() % 2;
+    }
     foreach (const QModelIndex &index, dirtyIndexes)
     {
         if (alternatingRows && alternate)
