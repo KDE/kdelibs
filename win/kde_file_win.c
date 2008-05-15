@@ -28,9 +28,11 @@ KDEWIN32_EXPORT int kdewin32_stat(const char *file_name, struct stat *buf)
 	char *fixed_file_name2;
 	int len, result;
 	len = strlen(file_name);
-	if (len==2 && file_name[1]==':' && isalpha(file_name[0])) {
+	if ((len==2 || len==3) && file_name[1]==':' && isalpha(file_name[0])) {
 		/* 1) */
-		strncpy(fixed_file_name, file_name, 2);
+		if (len==3)
+			return stat(file_name, buf);
+		strncpy(fixed_file_name, file_name, len);
 		fixed_file_name[2]='\\';
 		fixed_file_name[3]=0;
 		return stat(fixed_file_name, buf);
