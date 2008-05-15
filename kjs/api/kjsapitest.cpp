@@ -45,8 +45,8 @@ void KJSApiTest::objectConstruction()
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();
 
-    // Object
-    QVERIFY2(KJSObject().isObject(), "Broken default object");
+    // invalid
+    QVERIFY2(!KJSObject().isValid(), "Default object is valid");
 
     // undefined
     QVERIFY2(KJSUndefined().isUndefined(),
@@ -65,7 +65,6 @@ void KJSApiTest::objectConstruction()
     KJSNumber numObject(42.0);
     QVERIFY2(numObject.isNumber(), "Number object is not of number type");
     QCOMPARE(numObject.toNumber(ctx), 42.0);
-    QCOMPARE(numObject.toInt32(ctx), 42);
     QVERIFY2(!ctx->hasException(), "Number conversion threw exception");
 
     // String
@@ -73,13 +72,6 @@ void KJSApiTest::objectConstruction()
     QVERIFY2(stringObject.isString(), "String object is not of string type");
     QCOMPARE(stringObject.toString(ctx), QLatin1String("Trunk"));
     QVERIFY2(!ctx->hasException(), "String conversion threw exception");
-
-    // Array
-    KJSArray arrayObject(ctx, 3);
-    QVERIFY2(arrayObject.isObject(), "Array object is not of object type");
-    QCOMPARE(arrayObject.property(ctx, "length").toNumber(ctx), 3.0);
-    QCOMPARE(arrayObject.toString(ctx), QLatin1String(",,"));
-    QVERIFY2(!ctx->hasException(), "Array conversion threw exception");
 
     // copying
     KJSObject copy(stringObject);
@@ -92,15 +84,16 @@ void KJSApiTest::interpreterEvaluate()
 {
     KJSInterpreter ip;
     KJSContext* ctx = ip.globalContext();    
-    KJSResult res;
+    KJSObject res;
 
     // syntax error
     res = ip.evaluate(")(");
-    QVERIFY2(res.isException(), "Syntax error not caught");
+    QVERIFY2(!res.isValid(), "Syntax error not caught");
 
     res = ip.evaluate("11+22");
-    QVERIFY2(!res.isException(), "Evaluation returned non-number object");
-    QCOMPARE(res.value().toNumber(ctx), 33.0);
+    QVERIFY2(res.isValid(), "Evaluation returned invalid object");
+    QVERIFY2(res.isNumber(), "Evaluation returned non-number object");
+    QCOMPARE(res.toNumber(ctx), 33.0);
 }
 
 void KJSApiTest::interpreterNormalizeCode()
@@ -147,12 +140,6 @@ void KJSApiTest::objectProperties()
    v = global.property(ctx, "myprop");
    QVERIFY(v.isNumber());
    QCOMPARE(v.toNumber(ctx), 21.0);
-
-   // int
-   global.setProperty(ctx, "myprop", 22);
-   v = global.property(ctx, "myprop");
-   QVERIFY(v.isNumber());
-   QCOMPARE(v.toNumber(ctx), 22.0);
 
    // string (8-bit)
    global.setProperty(ctx, "myprop", "myvalue8");
@@ -229,7 +216,7 @@ static KJSObject multiply(KJSContext* context, void* object,
 
     // test number of arguments
     if (arguments.count() != 1)
-        return context->throwException("Missing argument");
+        return KJSNumber(-1);
 
     KJSObject a0 = arguments.at(0);
     if (!a0.isNumber())
@@ -253,12 +240,8 @@ void KJSApiTest::prototypeFunctions()
     KJSObject obj = proto.constructObject(ctx, &factor);
     ip.globalObject().setProperty(ctx, "obj", obj);
 
-    KJSResult res = ip.evaluate("obj.multiply(4)");
-    QCOMPARE(res.value().toNumber(ctx), 12.0);
-
-    // expect exception
-    res = ip.evaluate("obj.multiply()");
-    QVERIFY2(res.isException(), "Exception did not work");
+    KJSObject res = ip.evaluate("obj.multiply(4)");
+    QCOMPARE(res.toNumber(ctx), 12.0);
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)

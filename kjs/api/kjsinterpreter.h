@@ -27,52 +27,7 @@
 #include "kjscontext.h"
 
 class KJSPrototype;
-class KJSInterpreter;
 class KJSInterpreterHandle;
-class KJSResultHandle;
-
-/**
- * A class representing the result of a script evaluation.
- */
-class KJSAPI_EXPORT KJSResult
-{
-    friend class KJSInterpreter;
-public:
-    /**
-     * Constructs a default result object.
-     */
-    KJSResult();
-    /**
-     * Constructs a copy of another result object.
-     */
-    KJSResult(const KJSResult&);
-    /**
-     * Assigns the properties of another result object to this one.
-     */
-    KJSResult& operator=(const KJSResult&);
-    /**
-     * Frees resources held by this result object.
-     */
-    ~KJSResult();
-    /**
-     * Returns true if the script evaluation has caused an exception.
-     */
-    bool isException() const;
-
-    /**
-     * Returns the error message if this is an exception result.
-     */
-    QString errorMessage() const;
-    /*
-     * If the evaluation was successfull, i.e. isException() is false
-     * this function returns the value returned by the script. Can be
-     * an "undefined" (isUndefined()) value.
-     */
-    KJSObject value() const;
-
-private:
-    KJSResultHandle* hnd;
-};
 
 /**
  * A class representing a JavaScript interpreter
@@ -81,9 +36,7 @@ private:
  */
 class KJSAPI_EXPORT KJSInterpreter
 {
-    friend class KJSResult;
     friend class KJSPrototype;
-    friend class KJSContext;
 public:
     /**
      * Constructs an interpreter with a default global object.
@@ -93,14 +46,6 @@ public:
      * Constructs an interpreter with a custom global object.
      */
     KJSInterpreter(const KJSObject& global);
-    /**
-     * Creates a copy of another interpreter.
-     */
-    KJSInterpreter(const KJSInterpreter& other);
-    /**
-     * Assign another interpreter instance to this object.
-     */
-    KJSInterpreter& operator=(const KJSInterpreter& other);
     /**
      * Destructs this interpreter and frees resources it has
      * allocated. This renders any still existing objects referencing
@@ -121,19 +66,15 @@ public:
      * script execution performed by this interpreter,
      */
     KJSObject globalObject();
-    /**
-     * Evaluates a piece of code with a "this" set to (optionally set)
-     * value. The sourceURL and startingLineNumber parameters are used
-     * to provide information about the origin of a parse error or
-     * runtime exception.
-     */
-    KJSResult evaluate(const QString& sourceURL, int startingLineNumber,
+
+    KJSObject evaluate(const QString& sourceURL, int startingLineNumber,
                        const QString& code,
                        KJSObject* thisValue = 0);
+
     /**
      *  @overload
      */
-    KJSResult evaluate(const QString& code,
+    KJSObject evaluate(const QString& code,
                        KJSObject* thisValue = 0);
 
     /**
@@ -154,7 +95,9 @@ public:
     static bool normalizeCode(const QString& codeIn, QString* codeOut,
                               int* errLine = 0, QString* errMsg = 0);
 private:
-    KJSInterpreter(KJSInterpreterHandle* h);
+    KJSInterpreter(const KJSInterpreter&); // undefined
+    KJSInterpreter& operator=(const KJSInterpreter&); // undefined
+
     KJSInterpreterHandle* hnd;
     KJSContext globCtx;
 };

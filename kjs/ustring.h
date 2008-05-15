@@ -26,12 +26,14 @@
 
 #include "kjs/global.h"
 
+#include <wtf/AlwaysInline.h>
 #include <wtf/FastMalloc.h>
 #include <wtf/RefPtr.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/Vector.h>
 
 #include <assert.h>
+#include "collector.h"
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
@@ -67,7 +69,7 @@ namespace KJS {
    */
   struct KJS_EXPORT UChar {
     /**
-     * Construct a character with uninitialized value.    
+     * Construct a character with uninitialized value.
      */
     UChar();
     /**
@@ -86,11 +88,13 @@ namespace KJS {
     /**
      * @return The higher byte of the character.
      */
-    unsigned char high() const { return uc >> 8; }
+    unsigned char high() const { return static_cast<unsigned char>(uc >> 8); }
+
     /**
      * @return The lower byte of the character.
      */
-    unsigned char low() const { return (unsigned char)uc; }
+    unsigned char low() const { return static_cast<unsigned char>(uc); }
+
     /**
      * @return the 16 bit Unicode value of the character
      */
@@ -117,12 +121,8 @@ namespace KJS {
 
     ~CString();
 
-    CString& append(const char* str, int len);
-    CString& append(const char* cstr);
-    CString& append(const CString& t) { return append(t.data, t.length); }
     CString &operator=(const char *c);
     CString &operator=(const CString &);
-    CString &operator+=(const CString &c) { return append(c); }
 
     size_t size() const { return length; }
     const char *c_str() const { return data; }
@@ -143,24 +143,24 @@ namespace KJS {
      */
     struct KJS_EXPORT Rep {
 
-      static Rep& create(UChar *d, int length);
-      static Rep& createCopying(const UChar *d, int length);
-      static Rep& create(Rep* base, int offset, int length);
-      static Rep& create(const RefPtr<Rep>& base, int offset, int length)
-					{ return create(base.get(), offset, length); }
+      static PassRefPtr<Rep> create(UChar *d, int l);
+      static PassRefPtr<Rep> createCopying(const UChar *d, int l);
+      static PassRefPtr<Rep> create(PassRefPtr<Rep> base, int offset, int length);
 
       void destroy();
-      
-      UChar *data() const { return offset + (baseString ? (baseString->buf + baseString->preCapacity) : (buf + preCapacity)); }
+
+      bool baseIsSelf() const { return baseString == this; }
+      UChar* data() const { return baseString->buf + baseString->preCapacity + offset; }
       int size() const { return len; }
-      
+
       unsigned hash() const { if (_hash == 0) _hash = computeHash(data(), len); return _hash; }
+      unsigned computedHash() const { assert(_hash); return _hash; } // fast path for Identifiers
       static unsigned computeHash(const UChar *, int length);
       static unsigned computeHash(const char* s, int length);
       static unsigned computeHash(const char *);
 
-      void ref() { ++rc; }
-      void deref() { if (--rc == 0) destroy(); }
+      Rep* ref() {  ++rc; return this; }
+      ALWAYS_INLINE void deref() { if (--rc == 0) destroy(); }
 
       // unshared data
       int offset;
@@ -168,7 +168,8 @@ namespace KJS {
       int rc;
       mutable unsigned _hash;
       bool isIdentifier;
-      UString::Rep *baseString;
+      UString::Rep* baseString;
+      size_t reportedCost;
 
       // potentially shared data
       UChar *buf;
@@ -176,7 +177,7 @@ namespace KJS {
       int capacity;
       int usedPreCapacity;
       int preCapacity;
-      
+
       static Rep null;
       static Rep empty;
     };
@@ -199,7 +200,7 @@ namespace KJS {
      * Constructs a string from a classical zero determined char string.
      */
     UString(const char *c);
-    UString(const char* c, int length);
+    UString(const char* c, size_t length);
     /**
      * Constructs a string from an array of Unicode characters of the specified
      * length.
@@ -277,7 +278,6 @@ namespace KJS {
      */
     UString& append(const UString& subStr, int subPos, int subLength = -1);
     UString& append(const UString& t);
-    UString& append(const UChar* t, int tSize);
     UString& append(const char* t);
     UString& append(const char* t, int tSize);
     UString& append(unsigned short);
@@ -417,12 +417,11 @@ namespace KJS {
 
     Rep* rep() const { return m_rep.get(); }
     UString(PassRefPtr<Rep> r) : m_rep(r) { assert(m_rep); }
-
     void copyForWriting();
 
+    size_t cost() const;
   private:
-    UString(Rep& r) : m_rep(r) {}
-    static int expandedSize(int size, int otherSize);
+    size_t expandedSize(size_t size, size_t otherSize) const;
     int usedCapacity() const;
     int usedPreCapacity() const;
     void expandCapacity(int requiredLength);
@@ -454,7 +453,7 @@ namespace KJS {
   KJS_EXPORT inline UString operator+(const UString& s1, const UString& s2) {
     return UString(s1, s2);
   }
-  
+
   KJS_EXPORT int compare(const UString &, const UString &);
 
   // Given a first byte, gives the length of the UTF-8 sequence it begins.
@@ -480,6 +479,28 @@ inline unsigned UString::toArrayIndex(bool *ok) const
     if (ok && i >= 0xFFFFFFFFU)
         *ok = false;
     return i;
+}
+
+// We'd rather not do shared substring append for small strings, since
+// this runs too much risk of a tiny initial string holding down a
+// huge buffer.
+// FIXME: this should be size_t but that would cause warnings until we
+// fix UString sizes to be size_t instead of int
+static const int minShareSize = Collector::minExtraCostSize / sizeof(UChar);
+
+inline size_t UString::cost() const
+{
+   size_t capacity = (m_rep->baseString->capacity + m_rep->baseString->preCapacity) * sizeof(UChar);
+   size_t reportedCost = m_rep->baseString->reportedCost;
+   ASSERT(capacity >= reportedCost);
+
+   size_t capacityDelta = capacity - reportedCost;
+
+   if (capacityDelta < static_cast<size_t>(minShareSize))
+       return 0;
+
+   m_rep->baseString->reportedCost = capacity;
+   return capacityDelta;
 }
 
 } // namespace
