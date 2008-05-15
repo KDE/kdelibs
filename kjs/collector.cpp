@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Computer, Inc.
+ *  Copyright (C) 2007 Eric Seidel <eric@webkit.org>
  *  Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -53,6 +54,10 @@
 #include <pthread.h> //krazy:exclude=includes (yes, it's duplicate, but in a different #if branch)
 #include <unistd.h>
 
+#if PLATFORM(SOLARIS)
+#include <thread.h>
+#endif
+
 #if HAVE(PTHREAD_NP_H)
 #include <pthread_np.h>
 #endif
@@ -86,7 +91,7 @@ const size_t ALLOCATIONS_PER_COLLECTION = 4000;
 
 
 // A whee bit like a WTF::Vector, but perfectly POD, so can be used in global context
-// w/o worries. 
+// w/o worries.
 struct BlockList {
     CollectorBlock** m_data;
     size_t m_used;
@@ -154,6 +159,7 @@ struct CollectorHeap {
 
   size_t numLiveObjects;
   size_t numLiveObjectsAtLastCollect;
+  size_t extraCost;
 };
 
 static CollectorHeap heap;
@@ -204,7 +210,7 @@ static void freeBlock(CollectorBlock* block)
 {
     // Unregister the block first
     heap.allBlocks.remove(block);
-    
+
 #if PLATFORM(DARWIN)
     vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(block), BLOCK_SIZE);
 #elif PLATFORM(WIN_OS)
@@ -214,6 +220,22 @@ static void freeBlock(CollectorBlock* block)
 #else
     munmap(block, BLOCK_SIZE);
 #endif
+}
+
+void Collector::recordExtraCost(size_t cost)
+{
+    // Our frequency of garbage collection tries to balance memory use against speed
+    // by collecting based on the number of newly created values. However, for values
+    // that hold on to a great deal of memory that's not in the form of other JS values,
+    // that is not good enough - in some cases a lot of those objects can pile up and
+    // use crazy amounts of memory without a GC happening. So we track these extra
+    // memory costs. Only unusually large objects are noted, and we only keep track
+    // of this extra cost until the next GC. In garbage collected languages, most values
+    // are either very short lived temporaries, or have extremely long lifetimes. So
+    // if a large value survives one garbage collection, there is not much point to
+    // collecting more frequently as long as it stays alive.
+
+    heap.extraCost += cost;
 }
 
 static void* allocOversize(size_t s)
@@ -248,7 +270,7 @@ static void* allocOversize(size_t s)
 
         if (last >= CELLS_PER_BLOCK) // No way it will fit
           break;
-        
+
         ++i;
         while (i <= last && !candidate->allocd.get(i))
           ++i;
@@ -273,7 +295,7 @@ static void* allocOversize(size_t s)
   }
 
   sufficientBlock->usedCells += cellsNeeded;
-  
+
   // Set proper bits for trailers and the head
   sufficientBlock->allocd.set(startOffset);
   for (size_t t = startOffset + 1; t < startOffset + cellsNeeded; ++t) {
@@ -294,10 +316,11 @@ void* Collector::allocate(size_t s)
 
   // collect if needed
   size_t numLiveObjects = heap.numLiveObjects;
-  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;  
+  size_t numLiveObjectsAtLastCollect = heap.numLiveObjectsAtLastCollect;
   size_t numNewObjects = numLiveObjects - numLiveObjectsAtLastCollect;
+  size_t newCost = numNewObjects + heap.extraCost;
 
-  if (numNewObjects >= ALLOCATIONS_PER_COLLECTION && numNewObjects >= numLiveObjectsAtLastCollect) {
+  if (newCost >= ALLOCATIONS_PER_COLLECTION && newCost >= numLiveObjectsAtLastCollect) {
     collect();
     numLiveObjects = heap.numLiveObjects;
   }
@@ -449,11 +472,8 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
   } // for each pointer
 }
 
-void Collector::markCurrentThreadConservatively()
+static inline void* currentThreadStackBase()
 {
-    jmp_buf registers;
-    setjmp(registers);
-
 #if PLATFORM(DARWIN)
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
@@ -470,6 +490,10 @@ void Collector::markCurrentThreadConservatively()
 						: "=r" (pTib)
 		);
 		void *stackBase = (void *)pTib->StackBase;
+#elif PLATFORM(SOLARIS_OS)
+    stack_t s;
+    thr_stksegment(&s);
+    return s.ss_sp;
 #elif PLATFORM(UNIX)
     static void *stackBase = 0;
     static pthread_t stackThread;
@@ -484,27 +508,39 @@ void Collector::markCurrentThreadConservatively()
         pthread_attr_init(&sattr);
         pthread_attr_get_np(thread, &sattr);
 #else
-#if PLATFORM(SOLARIS_OS)
-	// Assume the default parameters were used.
-	// Solaris has no way to retrieve the values for a running thread.
-	pthread_attr_init(&sattr);
-#else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
         pthread_getattr_np(thread, &sattr);
-#endif
-#endif
-        size_t stackSize;
-        pthread_attr_getstack(&sattr, &stackBase, &stackSize);
-        stackBase = (char *)stackBase + stackSize;      // a matter of interpretation, apparently...
+#endif // picking the _np function to use --- Linux or BSD
+
+        // Should work but fails on Linux (?)
+        //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
+        pthread_attr_getstackaddr(&sattr, &stackBase);
         assert(stackBase);
         stackThread = thread;
     }
 #else
 #error Need a way to get the stack base on this platform
 #endif
+    return stackBase;
+}
 
-    void *dummy;
-    void *stackPointer = &dummy;
+
+void Collector::markCurrentThreadConservatively()
+{
+    // setjmp forces volatile registers onto the stack
+    jmp_buf registers;
+#if COMPILER(MSVC)
+#pragma warning(push)
+#pragma warning(disable: 4611)
+#endif
+    setjmp(registers);
+#if COMPILER(MSVC)
+#pragma warning(pop)
+#endif
+
+    void* dummy;
+    void* stackPointer = &dummy;
+    void* stackBase = currentThreadStackBase();
 
     markStackObjectsConservatively(stackPointer, stackBase);
 }
@@ -623,7 +659,7 @@ bool Collector::collect()
   assert(JSLock::lockCount() > 0);
 
 #if USE(MULTIPLE_THREADS)
-    bool currentThreadIsMainThread = !pthread_is_threaded_np() || pthread_main_np();
+    bool currentThreadIsMainThread = pthread_main_np();
 #else
     bool currentThreadIsMainThread = true;
 #endif
@@ -667,8 +703,8 @@ bool Collector::collect()
         CollectorCell *cell = curBlock->cells + i;
         JSCell *imp = reinterpret_cast<JSCell *>(cell);
         if (!curBlock->marked.get(i) && currentThreadIsMainThread) {
-          // special case for allocated but uninitialized object 
-          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.) 
+          // special case for allocated but uninitialized object
+          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.)
           if (cell->u.freeCell.zeroIfFree == 0)
             continue;
           imp->~JSCell();
@@ -792,13 +828,17 @@ bool Collector::collect()
       }
     }
   } // each oversize block
-    
+
   bool deleted = heap.numLiveObjects != numLiveObjects;
 
   heap.numLiveObjects = numLiveObjects;
   heap.numLiveObjectsAtLastCollect = numLiveObjects;
+  heap.extraCost = 0;
 
-  memoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
+  bool newMemoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
+  if (newMemoryFull && newMemoryFull != memoryFull)
+    reportOutOfMemoryToAllInterpreters();
+  memoryFull = newMemoryFull;
 
   return deleted;
 }
@@ -875,6 +915,21 @@ HashCountedSet<const char*>* Collector::rootObjectTypeCounts()
         counts->add(typeName(it->first));
 
     return counts;
+}
+
+void Collector::reportOutOfMemoryToAllInterpreters()
+{
+    if (!Interpreter::s_hook)
+        return;
+
+    Interpreter* interpreter = Interpreter::s_hook;
+    do {
+        ExecState* exec = interpreter->execState();
+
+        exec->setException(Error::create(exec, GeneralError, "Out of memory"));
+
+        interpreter = interpreter->next;
+    } while(interpreter != Interpreter::s_hook);
 }
 
 } // namespace KJS
