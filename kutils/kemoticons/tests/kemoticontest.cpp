@@ -18,8 +18,8 @@
 
 // QTestLib for KDE
 #include <qtest_kde.h>
-#include "kopeteemoticontest.h"
-#include "kopeteemoticontest.moc"
+#include "kemoticontest.h"
+#include "kemoticontest.moc"
 
 #include <stdlib.h>
 
@@ -31,12 +31,9 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kemoticons.h>
 
-
-#include "kopetemessage.h"
-#include "kopeteemoticons.h"
-
-QTEST_KDEMAIN( KopeteEmoticonTest, GUI )
+QTEST_KDEMAIN( KEmoticonTest, GUI )
 
 /*
   There are three sets of tests, the Kopete 0.7 baseline with tests that were
@@ -48,9 +45,9 @@ QTEST_KDEMAIN( KopeteEmoticonTest, GUI )
    the name convention is working|broken-number.input|output
 */
 
-void KopeteEmoticonTest::testEmoticonParser()
+void KEmoticonTest::testEmoticonParser()
 {
-	Kopete::Emoticons emo("kde4");
+	KEmoticonsTheme emo = KEmoticons().theme("kde4");
 	QString basePath = QString::fromLatin1( SRCDIR ) + QString::fromLatin1("/emoticon-parser-testcases");
 	QDir testCasesDir(basePath);
 	
@@ -84,7 +81,7 @@ void KopeteEmoticonTest::testEmoticonParser()
 			QString path = KGlobal::dirs()->findResource( "emoticons", "kde4/smile.png" ).replace( "smile.png", QString() );
 
 			//Kopete::Emoticons::self();
-			QString result = emo.parse( inputData, Kopete::Emoticons::RelaxedParse | Kopete::Emoticons::SkipHTML ).replace( path, QString() );
+			QString result = emo.parseEmoticons( inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML ).replace( path, QString() );
 			
 			kDebug() << "Parse result: " << result;
 

@@ -17,15 +17,15 @@
     *************************************************************************
 */
 
-#ifndef KOPETE_EMOTICON_TEST_H
-#define KOPETE_EMOTICON_TEST_H
+#ifndef KEMOTICON_TEST_H
+#define KEMOTICON_TEST_H
 
 #include <QObject>
 
 /**
  * QTestLib automatic test to test Emoticon parsing.
  */
-class KopeteEmoticonTest : public QObject
+class KEmoticonTest : public QObject
 {
 	Q_OBJECT
 private Q_SLOTS:
