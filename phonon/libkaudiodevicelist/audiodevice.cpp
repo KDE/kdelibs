@@ -137,6 +137,11 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         Solid::Device parent = audioDevice.parent();
         if (parent.isValid()) {
             d->uniqueId = d->uniqueIdentifierFromDevice(parent);
+            // newer HAL versions add one more parent in between to find the actual hardware info
+            if (d->uniqueId.isEmpty() && parent.parent().isValid()) {
+                parent = parent.parent();
+                d->uniqueId = d->uniqueIdentifierFromDevice(parent);
+            }
             if (!d->uniqueId.isEmpty()) {
                 switch (audioHw->deviceType()) {
                 case Solid::AudioInterface::AudioInput:
