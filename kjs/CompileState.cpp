@@ -98,15 +98,15 @@ void CompileState::popLabel()
 void CompileState::bindLabels(Node* node)
 {
     for (size_t l = 0; l < pendingLabels.size(); ++l)
-        labelTargets.set(pendingLabels[l], LabelInfo(node, unwindHandlerDepth()));
+        labelTargets.set(pendingLabels[l], node);
     pendingLabels.clear();
 }
 
-CompileState::LabelInfo CompileState::resolveBreakLabel(Identifier label)
+Node* CompileState::resolveBreakLabel(Identifier label)
 {
     if (label.isEmpty()) {
         if (defaultBreakTargets.isEmpty())
-            return LabelInfo();
+            return 0;
         else
             return defaultBreakTargets.last();
     } else {
@@ -114,11 +114,11 @@ CompileState::LabelInfo CompileState::resolveBreakLabel(Identifier label)
     }
 }
 
-CompileState::LabelInfo CompileState::resolveContinueLabel(Identifier label)
+Node* CompileState::resolveContinueLabel(Identifier label)
 {
     if (label.isEmpty()) {
         if (defaultContinueTargets.isEmpty())
-            return LabelInfo();
+            return 0;
         else
             return defaultContinueTargets.last();
     } else {
@@ -126,14 +126,39 @@ CompileState::LabelInfo CompileState::resolveContinueLabel(Identifier label)
     }
 }
 
+void CompileState::pushNest(NestType type, Node* node)
+{
+    if (type == Scope)
+        ++scopeDepth;
+    else if (type == TryFinally)
+        ++finallyDepth;
+
+    NestInfo inf;
+    inf.type = type;
+    inf.node = node;
+    nests.append(inf);
+
+    assert(!(type == ContBreakTarget && !node));
+}
+
+void CompileState::popNest()
+{
+    if (nests.last().type == Scope)
+        --scopeDepth;
+    else if (nests.last().type == TryFinally)
+        --finallyDepth;
+        
+    nests.removeLast();
+}
+
 void CompileState::pushDefaultBreak(Node* node)
 {
-    defaultBreakTargets.append(LabelInfo(node, unwindHandlerDepth()));
+    defaultBreakTargets.append(node);
 }
 
 void CompileState::pushDefaultContinue(Node* node)
 {
-    defaultContinueTargets.append(LabelInfo(node, unwindHandlerDepth()));
+    defaultContinueTargets.append(node);
 }
 
 void CompileState::popDefaultBreak()

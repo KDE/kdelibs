@@ -50,7 +50,7 @@ public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
         ctype(ctype), initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
-        scopeDepth(0), handlerDepth(0), neededClosures(false)
+        scopeDepth(0), finallyDepth(0), neededClosures(false)
     {}
 
     FunctionBodyNode* functionBody() {
@@ -100,39 +100,44 @@ public:
         return evalResRegister;
     }
 
-    // We need to keep track of when we're inside with, catch, and finally clauses for 2 reasons:
-    // (1) if we're, that can affect variable lookup
-    // (2) if there is a continue or break statement inside, we may have to pop
-    //     the scopes, unwinder entries, and deferred exception entries before going to the destination
-    // Since all the items in (2) add stack handler entries, we merely count those, and execute them
-    // as appropriate.
+    // To properly implement operations like continue and break, we need to keep track whether we
+    // are nested inside with, try-catch and try-finally operations.
+    // This serves two purposes:
+    // 1) if we're not jumping out of a try-finally, we have to unwind the cleanup stacks
+    // 2) if we're inside a try-finally, we have to jump to the finally and not
+    //    do the normal operation (this applies to return as well)
+    // Also, if we're inside a 'with' or a catch we cannot optimize local variable access.
+
+    enum NestType {
+        Scope,
+        OtherCleanup,
+        TryFinally,
+        ContBreakTarget
+    };
+
+    void pushNest(NestType type, Node* node = 0);
+    void popNest ();
+
+    struct NestInfo {
+        NestType type;
+        Node*    node;
+    };
 
     bool inNestedScope() {
         return scopeDepth > 0;
     }
 
-    void pushScope() {
-        ++scopeDepth;
-        ++handlerDepth;
+    bool inTryFinally() {
+        return finallyDepth > 0;
     }
 
-    void popScope() {
-        --scopeDepth;
-        --handlerDepth;
+    const WTF::Vector<NestInfo>&  nestStack() {
+        return nests;
     }
 
-    void pushUnwindHandler() {
-        ++handlerDepth;
-    }
-
-    void popUnwindHandler() {
-        --handlerDepth;
-    }
-
-    int unwindHandlerDepth() {
-        return handlerDepth;
-    }
-
+    // Some constructs can be detected at compile time to involve
+    // taking of closures. We keep track of that and avoid stack-allocation
+    // if those are present.
     bool needsClosures() {
         return neededClosures;
     }
@@ -142,17 +147,7 @@ public:
     }
 
     // Label stuff....
-    struct LabelInfo {
-        Node* handlerNode;
-        int   handlerDepth;
-
-        LabelInfo(): handlerNode(0)
-        {}
-
-        LabelInfo(Node* node, int nesting): handlerNode(node), handlerDepth(nesting)
-        {}
-    };
-
+    
     // Registers a pending label. Returns true if the label is OK, false if it's a duplicate.
     // If it fails, the label stack isn't touched!
     bool pushLabel(const Identifier& label);
@@ -162,8 +157,8 @@ public:
     void bindLabels(Node* node);
 
     // Returns destination for the label (node will be 0 if not found)
-    LabelInfo resolveContinueLabel(Identifier label);
-    LabelInfo resolveBreakLabel   (Identifier label);
+    Node* resolveContinueLabel(Identifier label);
+    Node* resolveBreakLabel   (Identifier label);
 
     // Sets the targets for break/continues w/o label name
     void pushDefaultBreak   (Node* node);
@@ -173,11 +168,13 @@ public:
 
     // Helpers for these and resolvePendingBreak
     void enterLoop(Node* node) {
+        pushNest(ContBreakTarget, node);
         pushDefaultBreak(node);
         pushDefaultContinue(node);
     }
 
     void exitLoop(Node* node, CodeBlock& block) {
+        popNest();
         popDefaultBreak();
         popDefaultContinue();
         resolvePendingBreaks(node, block, CodeGen::nextPC(block));
@@ -215,8 +212,13 @@ private:
             freeNonMarkTemps.append(desc);
     }
 
+    // Cached version of #of Scopes's from below.
     int scopeDepth;
-    int handlerDepth;
+
+    // Cached version of #of Finally's from below...
+    int finallyDepth;
+    
+    WTF::Vector<NestInfo> nests;
 
     // This is true if we see code constructs that require taking a closure
     // inside here, which means we should not stack-allocate activations.
@@ -229,11 +231,11 @@ private:
                                             // a statement yet.
 
     // Targets for continue/break w/o destination.
-    WTF::Vector<LabelInfo> defaultBreakTargets;
-    WTF::Vector<LabelInfo> defaultContinueTargets;
+    WTF::Vector<Node*> defaultBreakTargets;
+    WTF::Vector<Node*> defaultContinueTargets;
 
     // Named label targets
-    WTF::HashMap<Identifier, LabelInfo> labelTargets;
+    WTF::HashMap<Identifier, Node*> labelTargets;
 
     WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingBreaks;
     WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingContinues;

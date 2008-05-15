@@ -60,11 +60,15 @@ void ExecState::markSelf()
         }
     }
 
-    for (size_t i = 0; i < m_deferredExceptions.size(); ++i) {
-        JSValue* e = m_deferredExceptions[i];
+    for (size_t i = 0; i < m_deferredCompletions.size(); ++i) {
+        JSValue* e = m_deferredCompletions[i].value();
         if (e && !e->marked())
             e->mark();
     }
+
+    JSValue* e = m_completion.value();
+    if (e && !e->marked())
+        e->mark();
 
     scope.mark();
 
@@ -84,7 +88,6 @@ void ExecState::mark()
 
 ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_interpreter(intp),
-  m_exception(0),
   m_propertyNames(CommonIdentifiers::shared()),
   m_callingExec(0),
   m_savedExec(save),
@@ -105,11 +108,44 @@ ExecState::~ExecState()
         m_interpreter->setExecState(m_callingExec);
 }
 
+
+JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
+{
+    // First, unwind and get the old completion..
+    ASSERT(m_exceptionHandlers.last().type == RemoveDeferred);
+    popExceptionHandler();
+    Completion comp = m_deferredCompletions.last();
+    m_deferredCompletions.removeLast();
+
+    // Now, our behavior behaves on whether we're inside an another
+    // try..finally or not. If we're, we must route even
+    // continue/break/return completions via the EH machinery;
+    // if not, we execute them directly
+    if (comp.complType() == Throw || insideTryFinally) {
+        setAbruptCompletion(comp);
+    } else {
+        if (comp.complType() == ReturnValue) {
+            return comp.value();
+        } else {
+            assert(comp.complType() == Break || comp.complType() == Continue);
+            *m_pc = comp.target();
+        }
+    }
+
+    return 0;
+}
+
 void ExecState::setException(JSValue* e)
 {
-    m_exception = e;
-    if (!e)
-        return;
+    if (e)
+        setAbruptCompletion(Completion(Throw, e));
+    else
+        clearException();
+}
+
+void ExecState::setAbruptCompletion(Completion comp)
+{
+    m_completion = comp;
 
     while (!m_exceptionHandlers.isEmpty()) {
         switch (m_exceptionHandlers.last().type) {
@@ -122,7 +158,7 @@ void ExecState::setException(JSValue* e)
             m_exceptionHandlers.removeLast();
             continue; // get the next handler
         case RemoveDeferred:
-            m_deferredExceptions.removeLast();
+            m_deferredCompletions.removeLast();
             m_exceptionHandlers.removeLast();
             continue; // get the next handler
         case RemovePNA:
@@ -151,7 +187,7 @@ void ExecState::quietUnwind(int depth)
             popScope();
             break;
         case RemoveDeferred:
-            m_deferredExceptions.removeLast();
+            m_deferredCompletions.removeLast();
             break;
         case RemovePNA:
             delete m_activePropertyNameArrays.last().array;

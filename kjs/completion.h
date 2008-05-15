@@ -26,10 +26,13 @@
 #define _KJS_COMPLETION_H_
 
 #include "CommonIdentifiers.h"
-#include "value.h"
 
 namespace KJS {
+
+  typedef unsigned Addr; // ### should there be some separare types h?
+  
   class Node;
+  class JSValue;
 
   /**
    * Completion types.
@@ -48,7 +51,7 @@ namespace KJS {
    */
   class KJS_EXPORT Completion {
   public:
-    explicit Completion(ComplType c = Normal, JSValue *v = NULL, const Node* t = 0)
+    explicit Completion(ComplType c = Normal, JSValue *v = NULL, Addr t = 0 )
         : comp(c), val(v), tar(t) { }
 
     /**
@@ -62,10 +65,10 @@ namespace KJS {
      */
     JSValue *value() const { return val; }
 
-    /**
-     * Returns the node a break or a continue statement targets
+     /**
+     * Returns the address a break or a continue statement targets
      */
-    const Node* target() const { return tar; }
+    const Addr target() const { return tar; }
 
     /**
      * Returns true if this is a value completion, false otherwise.
@@ -74,7 +77,7 @@ namespace KJS {
   private:
     ComplType comp;
     JSValue *val;
-    const Node* tar;
+    Addr tar;
   };
 
 }

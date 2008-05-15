@@ -344,7 +344,17 @@ operation PushExceptionHandler {
 
 operation EnterCatch {
     impl void (ident exceptionIdent) [[
-        // Grab & clear exception from exec state, and put it in a scope w/a name to it
+        // First, check if we have a non-exception indirect continuation,
+        // if so, we re-raise it directly to the finally (and skip the rest of the catch section)
+        if (exec->abruptCompletion().complType() != Throw) {
+            // By this point, the previous handler has been popped, so we should have the
+            // 'finally' bound as the handler. Hence, set the completion again to jump to it.
+            exec->setAbruptCompletion(exec->abruptCompletion());
+            break;
+        }
+
+        // Now we have a plain, old exception. Grab & clear exception it exec state,
+        // and put it in a scope w/a name to it
         JSValue* exception = exec->exception();
         exec->clearException();
 
@@ -362,21 +372,35 @@ operation ExitCatch {
     ]]
 }
 
-operation DeferException {
+operation DeferCompletion {
     impl void() [[
-        exec->deferException();
+        exec->deferCompletion();
     ]]
 }
 
-operation ReactivateException {
-    impl void() [[
-        exec->reactivateException();
+operation ReactivateCompletion {
+    impl void(bool insideFinally) [[
+        JSValue* retVal = exec->reactivateCompletion(insideFinally);
+        if (retVal)
+            return Completion(ReturnValue, retVal);
     ]]
 }
 
 operation Throw {
     impl void throw(value exception) [[
         exec->setException(exception);
+    ]]
+}
+
+operation ContBreakInTryFinally {
+    impl void (addr dest) [[
+        exec->setAbruptCompletion(Completion(Continue /*or break, doesn't matter*/, 0, dest));
+    ]]
+}
+
+operation ReturnInTryFinally {
+    impl void(value val) [[
+        exec->setAbruptCompletion(Completion(ReturnValue, val));
     ]]
 }
 

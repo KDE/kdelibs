@@ -1216,7 +1216,10 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Fetch the property name array..
     CodeGen::emitOp(comp, block, Op_BeginForIn, &obj, &val);
-    comp->pushUnwindHandler();
+
+    // ... as the array is store on an iterator stack, this introduces a cleanup entry.
+    comp->pushNest(CompileState::OtherCleanup, this);
+    
     comp->enterLoop(this); // must do this here, since continue shouldn't pop our iterator!
 
     // We put the test first here, since the test and the fetch are combined.
@@ -1246,41 +1249,81 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Cleanup
     CodeGen::emitOp(comp, block, Op_EndForIn);
-    comp->popUnwindHandler();
 
     comp->exitLoop(this, block);
+    comp->popNest(); // Remove the cleanup entry.. Note that the breaks go to before here..
 }
 
-// Helper for continue/break -- emits stack cleanup call if needed.
-static void handleJumpOut(CompileState* comp, CodeBlock& block, int targetNest)
+// Helper for continue/break -- emits stack cleanup call if needed,
+// and a jump either to the or an ??? exception.
+static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, ComplType breakOrCont)
 {
-    int toUnwind = comp->unwindHandlerDepth() - targetNest;
-    if (toUnwind) {
-        OpValue unwind = OpValue::immInt32(toUnwind);
-        CodeGen::emitOp(comp, block, Op_UnwindStacks, 0, &unwind);
+    // We scan up the nest stack until we get to the target or
+    // a try-finally.
+    int toUnwind = 0;
+
+    const WTF::Vector<CompileState::NestInfo>& nests = comp->nestStack();
+
+    for (int pos = nests.size() - 1; pos >= 0; ++pos) {
+        switch (nests[pos].type) {
+        case CompileState::Scope:
+        case CompileState::OtherCleanup:
+            ++toUnwind;
+            break;
+        case CompileState::TryFinally: {
+            // Uh-oh. We have to handle this via exception machinery, giving it the
+            // original address
+            Addr    pc    = CodeGen::nextPC(block);
+            CodeGen::emitOp(comp, block, Op_ContBreakInTryFinally, 0, OpValue::dummyAddr());
+
+            // Queue destination for resolution
+            if (breakOrCont == Continue)
+                comp->addPendingContinue(dest, pc);
+            else
+                comp->addPendingBreak(dest, pc);
+
+            return;
+        }
+
+        case CompileState::ContBreakTarget:
+            if (nests[pos].node == dest) {
+                // Great. We found where we're going! Emit the unwind instr (if needed),
+                // and the jump.
+                if (toUnwind) {
+                    OpValue unwind = OpValue::immInt32(toUnwind);
+                    CodeGen::emitOp(comp, block, Op_UnwindStacks, 0, &unwind);
+                }
+
+                // Emit a jump...
+                Addr    pc    = CodeGen::nextPC(block);
+                CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+
+                // Queue destination for resolution
+                if (breakOrCont == Continue)
+                    comp->addPendingContinue(dest, pc);
+                else
+                    comp->addPendingBreak(dest, pc);
+
+                return;
+            } // if matching destination..
+        }
     }
+
+    assert (!"Huh? Unable to find continue/break target in the nest stack");
 }
 
 void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    CompileState::LabelInfo dest = comp->resolveContinueLabel(ident);
-    if (!dest.handlerNode) {
+    Node* dest = comp->resolveContinueLabel(ident);
+    if (!dest) {
         if (ident.isEmpty())
             emitSyntaxError(comp, block, this, "Illegal continue without target outside a loop.");
         else
             emitSyntaxError(comp, block, this, "Invalid label in continue.");
     } else {
         // Continue can only be used for a loop
-        if (dest.handlerNode->isIterationStatement()) {
-            // Make sure we pop any nested scopes, etc.
-            handleJumpOut(comp, block, dest.handlerDepth);
-
-            // Emit a jump...
-            Addr    pc    = CodeGen::nextPC(block);
-            CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
-
-            // Queue destination for resolution
-            comp->addPendingContinue(dest.handlerNode, pc);
+        if (dest->isIterationStatement()) {
+            handleJumpOut(comp, block, dest, Continue);
         } else {
             emitSyntaxError(comp, block, this, "Invalid continue target; must be a loop.");
         }
@@ -1289,22 +1332,14 @@ void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    CompileState::LabelInfo dest = comp->resolveBreakLabel(ident);
-    if (!dest.handlerNode) {
+    Node* dest = comp->resolveBreakLabel(ident);
+    if (!dest) {
         if (ident.isEmpty())
             emitSyntaxError(comp, block, this, "Illegal break without target outside a loop or switch.");
         else
             emitSyntaxError(comp, block, this, "Invalid label in break.");
     } else {
-        // Make sure we pop any nested scopes, etc.
-        handleJumpOut(comp, block, dest.handlerDepth);
-
-        // Break can be used everywhere.. Hence, emit a jump...
-        Addr    pc    = CodeGen::nextPC(block);
-        CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
-
-        // Queue destination for resolution
-        comp->addPendingBreak(dest.handlerNode, pc);
+        handleJumpOut(comp, block, dest, Break);
     }
 }
 
@@ -1323,7 +1358,7 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
     else
         arg = value->generateEvalCode(comp, block);
 
-    CodeGen::emitOp(comp, block, Op_Return, 0, &arg);
+    CodeGen::emitOp(comp, block, comp->inTryFinally() ? Op_ReturnInTryFinally : Op_Return, 0, &arg);
 }
 
 void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -1334,13 +1369,13 @@ void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     OpValue scopeObj = expr->generateEvalCode(comp, block);
 
-    comp->pushScope();
+    comp->pushNest(CompileState::Scope, this);
     CodeGen::emitOp(comp, block, Op_PushScope, 0, &scopeObj);
 
     statement->generateExecCode(comp, block);
 
     CodeGen::emitOp(comp, block, Op_PopScope, 0);
-    comp->popScope();
+    comp->popNest();
 }
 
 void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
@@ -1350,15 +1385,19 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
         return;
     }
 
-    if (!statement->isLabelNode()) // we're the last label..
+    if (!statement->isLabelNode()) { // we're the last label..
+        comp->pushNest(CompileState::ContBreakTarget, statement.get());
         comp->bindLabels(statement.get());
+    }
 
     // Generate code for stuff inside the label...
     statement->generateExecCode(comp, block);
 
     // Fix up any breaks..
-    if (!statement->isLabelNode())
+    if (!statement->isLabelNode()) {
+        comp->popNest();
         comp->resolvePendingBreaks(statement.get(), block, CodeGen::nextPC(block));
+    }
 
     comp->popLabel();
 }
@@ -1377,12 +1416,12 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Set the catch handler, run the try clause, pop the try handler..
     Addr setCatchHandler = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
-    comp->pushUnwindHandler();
+    comp->pushNest(finallyBlock ? CompileState::TryFinally : CompileState::OtherCleanup);
 
     tryBlock->generateExecCode(comp, block);
 
     CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
-    comp->popUnwindHandler();
+    comp->popNest();
 
     // Jump over the catch if try is OK
     Addr jumpOverCatch;
@@ -1396,10 +1435,11 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
     if (catchBlock) {
         // If there is a finally block, that acts as an exception handler for the catch;
         // we need to set it before entering the catch scope, so the cleanup entries for that
-        // are on top
+        // are on top. Also, that's needed because if the inside raised a non-exception
+        // continuation, EnterCatch will re-raise it.
         if (finallyBlock) {
             catchToFinallyEH = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
-            comp->pushUnwindHandler();
+            comp->pushNest(CompileState::TryFinally);
         }
 
         // Emit the catch.. Note: the unwinder has already popped the catch handler entry,
@@ -1407,17 +1447,17 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // EnterCatch would do that for us, given the name
         OpValue catchVar = OpValue::immIdent(&exceptionIdent);
         CodeGen::emitOp(comp, block, Op_EnterCatch, 0, &catchVar);
-        comp->pushScope();
+        comp->pushNest(CompileState::Scope);
 
         catchBlock->generateExecCode(comp, block);
 
         // If needed, cleanup the binding to finally, and always cleans the catch scope
         CodeGen::emitOp(comp, block, Op_ExitCatch);
-        comp->popScope();
+        comp->popNest();
 
         if (finallyBlock) {
             CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
-            comp->popUnwindHandler();
+            comp->popNest();
         }
 
         // after an OK 'try', we always go to finally, if any, which needs an op if there is a catch block
@@ -1429,13 +1469,14 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         if (catchBlock) // if a catch was using us an EH, patch that instruction to here
             CodeGen::patchJumpToNext(block, catchToFinallyEH, 0);
 
-        CodeGen::emitOp(comp, block, Op_DeferException);
-        comp->pushUnwindHandler();
+        CodeGen::emitOp(comp, block, Op_DeferCompletion);
+        comp->pushNest(CompileState::OtherCleanup);
 
         finallyBlock->generateExecCode(comp, block);
 
-        CodeGen::emitOp(comp, block, Op_ReactivateException);
-        comp->popUnwindHandler();
+        OpValue otherTryFinally = OpValue::immBool(comp->inTryFinally());
+        CodeGen::emitOp(comp, block, Op_ReactivateCompletion, 0, &otherTryFinally);
+        comp->popNest();
     }
 }
 
@@ -1488,6 +1529,7 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // the label to jump to (with the jump to the default being last),
     // then we just emit all the clauses in the row. The breaks will be
     // resolved at the end --- for that, we bind ourselves for label'less break.
+    comp->pushNest(CompileState::ContBreakTarget, this);
     comp->pushDefaultBreak(this);
 
     // What we compare with
@@ -1549,6 +1591,7 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Breaks should go after us..
     comp->popDefaultBreak();
+    comp->popNest();
     comp->resolvePendingBreaks(this, block, CodeGen::nextPC(block));
 }
 
