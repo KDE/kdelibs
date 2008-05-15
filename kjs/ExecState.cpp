@@ -121,6 +121,11 @@ JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
     // try..finally or not. If we're, we must route even
     // continue/break/return completions via the EH machinery;
     // if not, we execute them directly
+    if (comp.complType() == Normal) {
+        // We just straight fell into 'finally'. Nothing fancy to do.
+        return 0;
+    }
+    
     if (comp.complType() == Throw || insideTryFinally) {
         setAbruptCompletion(comp);
     } else {

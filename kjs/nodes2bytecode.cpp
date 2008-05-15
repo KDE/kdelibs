@@ -1264,7 +1264,7 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
 
     const WTF::Vector<CompileState::NestInfo>& nests = comp->nestStack();
 
-    for (int pos = nests.size() - 1; pos >= 0; ++pos) {
+    for (int pos = nests.size() - 1; pos >= 0; --pos) {
         switch (nests[pos].type) {
         case CompileState::Scope:
         case CompileState::OtherCleanup:
