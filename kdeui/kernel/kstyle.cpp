@@ -1360,7 +1360,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //We layout as if LTR, relying on visualRect to fix it up
             double progress    = pbOpt->progress - pbOpt->minimum;
-            int steps          = pbOpt->maximum  - pbOpt->minimum + 1;
+            int steps          = qMax(pbOpt->maximum  - pbOpt->minimum, 1);
             bool busyIndicator = (pbOpt->minimum == 0 && pbOpt->maximum == 0);
 
             //Do we have to draw anything?
@@ -1375,7 +1375,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 widthFrac = progress / steps;
 
             //And now the pixel width
-            int width = qMin(r.width(), (int)(widthFrac * r.width()));
+            int width = qMin(r.width(), (int)(widthFrac * double(r.width())));
 
             if (busyIndicator)
             {
@@ -1445,7 +1445,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     //Now, we need to figure out the geometry of the indicator.
                     QRect progressRect;
                     double progress    = pbOpt->progress - pbOpt->minimum;
-                    int steps          = pbOpt->maximum  - pbOpt->minimum + 1;
+                    int steps          = qMax(pbOpt->maximum  - pbOpt->minimum, 1);
                     bool busyIndicator = (steps <= 1);
 
                     int width;
