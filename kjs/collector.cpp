@@ -512,9 +512,9 @@ static inline void* currentThreadStackBase()
         pthread_getattr_np(thread, &sattr);
 #endif // picking the _np function to use --- Linux or BSD
 
-        // Should work but fails on Linux (?)
-        //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
-        pthread_attr_getstackaddr(&sattr, &stackBase);
+        size_t stackSize;
+        pthread_attr_getstack(&sattr, &stackBase, &stackSize);
+        stackBase = (char *)stackBase + stackSize;      // a matter of interpretation, apparently...
         assert(stackBase);
         stackThread = thread;
     }

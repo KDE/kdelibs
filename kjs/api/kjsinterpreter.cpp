@@ -24,17 +24,72 @@
 #include "kjs/interpreter.h"
 #include "kjs/completion.h"
 #include "kjs/object.h"
-#include <qstring.h>
+#include <QString>
 #include <stdio.h>
 
 using namespace KJS;
+
+class KJSResultHandle
+{
+public:
+    KJSResultHandle() : rc(1), val(KJSUndefined()) { }
+
+    int rc;
+    KJSObject val;
+    UString errMsg;
+
+    void ref() { ++rc; }
+    void deref() { if (--rc == 0) delete this; }
+};
+
+KJSResult::KJSResult()
+    : hnd(new KJSResultHandle())
+{
+}
+
+KJSResult::KJSResult(const KJSResult& r)
+{
+    hnd = r.hnd;
+    hnd->ref();
+}
+
+KJSResult& KJSResult::operator=(const KJSResult& r)
+{
+    if (hnd != r.hnd) {
+        r.hnd->ref();
+        hnd->deref();
+        hnd = r.hnd;
+    }
+
+    return *this;
+}
+
+KJSResult::~KJSResult()
+{
+    hnd->deref();
+}
+
+bool KJSResult::isException() const
+{
+    return !hnd->errMsg.isNull();
+}
+
+QString KJSResult::errorMessage() const
+{
+    return toQString(hnd->errMsg);
+}
+
+KJSObject KJSResult::value() const
+{
+    return hnd->val;
+}
 
 KJSInterpreter::KJSInterpreter()
     : globCtx(0)
 {
     Interpreter* ip = new Interpreter();
     ip->ref();
-    hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
+    hnd = INTERPRETER_HANDLE(ip);
 }
 
 KJSInterpreter::KJSInterpreter(const KJSObject& global)
@@ -45,7 +100,36 @@ KJSInterpreter::KJSInterpreter(const KJSObject& global)
     JSObject* go = static_cast<JSObject*>(gv);
     Interpreter* ip = new Interpreter(go);
     ip->ref();
-    hnd = reinterpret_cast<KJSInterpreterHandle*>(ip);
+    hnd = INTERPRETER_HANDLE(ip);
+}
+
+KJSInterpreter::KJSInterpreter(const KJSInterpreter& other)
+    : globCtx(0)
+{
+    Interpreter* ip = INTERPRETER(&other);
+    ip->ref();
+    hnd = INTERPRETER_HANDLE(ip);
+    globCtx.hnd = EXECSTATE_HANDLE(ip->globalExec());
+}
+
+KJSInterpreter& KJSInterpreter::operator=(const KJSInterpreter& other)
+{
+    Interpreter* thisIp = INTERPRETER(this);
+    Interpreter* otherIp = INTERPRETER(&other);
+    if (otherIp != thisIp) {
+        otherIp->ref();
+        thisIp->deref();
+        hnd = INTERPRETER_HANDLE(otherIp);
+        globCtx.hnd = EXECSTATE_HANDLE(otherIp->globalExec());
+    }
+    return *this;
+}
+
+KJSInterpreter::KJSInterpreter(KJSInterpreterHandle* h)
+    : hnd(h), globCtx(0)
+{
+    Interpreter* ip = INTERPRETER(this);
+    globCtx.hnd = EXECSTATE_HANDLE(ip->globalExec());
 }
 
 KJSInterpreter::~KJSInterpreter()
@@ -70,7 +154,7 @@ KJSObject KJSInterpreter::globalObject()
     return KJSObject(JSVALUE_HANDLE(ip->globalObject()));
 }
 
-KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
+KJSResult KJSInterpreter::evaluate(const QString& sourceURL,
                                    int startingLineNumber,
                                    const QString& code,
                                    KJSObject* thisValue)
@@ -81,10 +165,11 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
     KJS::Completion c = ip->evaluate(toUString(sourceURL), startingLineNumber,
                                      toUString(code), tv);
 
+    KJSResult res;
     if (c.complType() == Throw) {
-#if 0
         ExecState* exec = ip->globalExec();
-        CString msg = c.value()->toString(exec).UTF8String();
+        UString msg = c.value()->toString(exec);
+#if 0
         JSObject* resObj = c.value()->toObject(exec);
         CString message = resObj->toString(exec).UTF8String();
         int line = resObj->toObject(exec)->get(exec, "line")->toUInt32(exec);
@@ -94,16 +179,16 @@ KJSObject KJSInterpreter::evaluate(const QString& sourceURL,
         fprintf(stderr, "%s\n", msg.c_str());
 #endif
         fprintf(stderr, "evaluate() threw an exception\n");
-        return KJSObject();
+        res.hnd->errMsg = msg;
     } else {
         if (c.isValueCompletion())
-            return KJSObject(JSVALUE_HANDLE(c.value()));
-        else
-            return KJSUndefined();
+            res.hnd->val = KJSObject(JSVALUE_HANDLE(c.value()));
     }
+
+    return res;
 }
 
-KJSObject KJSInterpreter::evaluate(const QString& code,
+KJSResult KJSInterpreter::evaluate(const QString& code,
                                    KJSObject* thisValue)
 {
     return evaluate("<string>", 0, code, thisValue);
@@ -119,7 +204,8 @@ bool KJSInterpreter::normalizeCode(const QString& code, QString* normalized,
                                               errLine, &msg);
 
     *normalized = toQString(codeOut);
-    *errMsg = toQString(msg);
+    if (errMsg)
+        *errMsg = toQString(msg);
 
     return success;
 }
