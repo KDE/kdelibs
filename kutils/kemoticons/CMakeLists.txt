@@ -4,6 +4,7 @@ find_package(KDE4 REQUIRED)
 
 add_subdirectory(providers)
 add_subdirectory(tests)
+add_subdirectory(kcm)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_INCLUDES})
 
