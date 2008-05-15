@@ -48,7 +48,7 @@ void KMimeFileParser::parseGlobs(const QStringList& globFiles)
     while (globIter.hasPrevious()) { // global first, then local
         const QString fileName = globIter.previous();
         QFile globFile(fileName);
-        kDebug() << "Now parsing" << fileName;
+        kDebug(7021) << "Now parsing" << fileName;
         const QHash<QString, QStringList> thisLevelGlobs = parseGlobFile(&globFile);
         if (mimeTypeGlobs.isEmpty())
             mimeTypeGlobs = thisLevelGlobs;

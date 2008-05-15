@@ -175,7 +175,7 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << "Now parsing" << fileName;
+    kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
@@ -202,7 +202,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << "Now parsing" << fileName;
+    kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
