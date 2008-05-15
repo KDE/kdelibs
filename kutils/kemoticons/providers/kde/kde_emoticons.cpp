@@ -26,6 +26,7 @@
 #include <KPluginFactory>
 #include <KDebug>
 #include <KStandardDirs>
+#include <QTextDocument>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
@@ -50,6 +51,7 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
         if (!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
             fce.removeChild(de);
             emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
+            removeEmoticonIndex(emoticon, emo.split(" "));
             return true;
         }
     }
@@ -76,6 +78,8 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, bool cop
         emoText.appendChild(txt);
         emoticon.appendChild(emoText);
     }
+
+    addEmoticonIndex(emo, splitted);
     (*emoticonsMap())[emo] = splitted;
     return true;
 }
@@ -167,7 +171,8 @@ bool KdeEmoticons::loadTheme(const QString &path)
                 }
             }
 
-             (*emoticonsMap())[emo] = sl;
+            addEmoticonIndex(emo, sl);
+            (*emoticonsMap())[emo] = sl;
         }
     }
 

@@ -73,6 +73,7 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
 
         if (emoName == emoticon) {
             m_text.removeAt(i);
+            removeEmoticonIndex(emoticon, emo.split(" "));
             return true;
         }
     }
@@ -93,6 +94,8 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool 
 
     QString emoticon = QString("%1 %2").arg(QFileInfo(emo).fileName()).arg(text);
     m_text.insert(i + 1, emoticon);
+
+    addEmoticonIndex(emo, splitted);
     (*emoticonsMap())[emo] = splitted;
     return true;
 }
@@ -182,6 +185,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
             }
         }
 
+        addEmoticonIndex(emo, sl);
         (*emoticonsMap())[emo] = sl;
     }
 

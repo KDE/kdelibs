@@ -56,6 +56,7 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
 
             fce.removeChild(de);
             emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
+            removeEmoticonIndex(emoticon, emo.split(" "));
             return true;
         }
     }
@@ -103,6 +104,7 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, bool c
 
     fce.appendChild(dict);
 
+    addEmoticonIndex(emo, splitted);
     (*emoticonsMap())[emo] = splitted;
     return true;
 }
@@ -182,6 +184,7 @@ bool AdiumEmoticons::loadTheme(const QString &path)
                 }
             }
             if (!name.isEmpty()) {
+                addEmoticonIndex(name, sl);
                 (*emoticonsMap())[name] = sl;
                 name = QString();
             }

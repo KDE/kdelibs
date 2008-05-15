@@ -28,6 +28,7 @@
 
 class QString;
 class KEmoticonsProviderPrivate;
+struct Emoticon;
 
 /**
  * This is the base class for the emoticons provider plugins
@@ -36,6 +37,16 @@ class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
 {
     Q_OBJECT
 public:
+    struct Emoticon
+    {
+        Emoticon(){}
+        /* sort by longest to shortest matchText */
+        bool operator < (const Emoticon &e) const { return matchText.length() > e.matchText.length(); }
+        QString matchText;
+        QString matchTextEscaped;
+        QString picPath;
+        QString picHTMLCode;
+    };
 
     /**
      * Default constructor
@@ -96,14 +107,14 @@ public:
     QString fileName() const;
 
     /**
-     * Returns a pointer to a QMap that contains the emoticons path as keys and the text as values
-     */
-    QMap<QString, QStringList> *emoticonsMap();
+    * Returns a QHash that contains the emoticons path as keys and the text as values
+    */
+    QHash<QString, QStringList> constEmoticonsMap() const;
 
     /**
-    * Returns a QMap that contains the emoticons path as keys and the text as values
-    */
-    QMap<QString, QStringList> constEmoticonsMap() const;
+     * Returns a QHash that contains emoticons indexed by the first char
+     */
+    QHash<QChar, QList<Emoticon> > constEmoticonsIndex() const;
 
     /**
      * Create a new theme
@@ -111,6 +122,30 @@ public:
     virtual void createNew();
 
 protected:
+    /**
+    * Returns a pointer to a QHash that contains the emoticons path as keys and the text as values
+    */
+    QHash<QString, QStringList> *emoticonsMap();
+
+    /**
+     * Returns a pointer to a QHash that contains emoticons indexed by the first char
+     */
+    QHash<QChar, QList<Emoticon> > *emoticonsIndex();
+
+    /**
+     * Add an emoticon to the index
+     * @param path path to the emoticon
+     * @param emoList list of text associated with this emoticon
+     */
+    void addEmoticonIndex(const QString &path, const QStringList &emoList);
+
+    /**
+     * Remove an emoticon from the index
+     * @param path path to the emoticon
+     * @param emoList list of text associated with this emoticon
+     */
+    void removeEmoticonIndex(const QString &path, const QStringList &emoList);
+
     /**
      * Private class
      */

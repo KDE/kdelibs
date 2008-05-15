@@ -35,7 +35,8 @@ public:
     QString m_themeName;
     QString m_fileName;
     QString m_themePath;
-    QMap<QString, QStringList> m_emoticonsMap;
+    QHash<QString, QStringList> m_emoticonsMap;
+    QHash<QChar, QList<KEmoticonsProvider::Emoticon> > m_emoticonsIndex;
 };
 
 KEmoticonsProviderPrivate::KEmoticonsProviderPrivate()
@@ -101,12 +102,12 @@ QString KEmoticonsProvider::fileName() const
     return d->m_fileName;
 }
 
-QMap<QString, QStringList> *KEmoticonsProvider::emoticonsMap()
+QHash<QString, QStringList> *KEmoticonsProvider::emoticonsMap()
 {
     return &(d->m_emoticonsMap);
 }
 
-QMap<QString, QStringList> KEmoticonsProvider::constEmoticonsMap() const
+QHash<QString, QStringList> KEmoticonsProvider::constEmoticonsMap() const
 {
     return d->m_emoticonsMap;
 }
@@ -114,5 +115,51 @@ QMap<QString, QStringList> KEmoticonsProvider::constEmoticonsMap() const
 void KEmoticonsProvider::createNew()
 {
 }
+
+QHash<QChar, QList<KEmoticonsProvider::Emoticon> > *KEmoticonsProvider::emoticonsIndex()
+{
+    return &(d->m_emoticonsIndex);
+}
+
+QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::constEmoticonsIndex() const
+{
+    return d->m_emoticonsIndex;
+}
+
+void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList &emoList)
+{
+    foreach(const QString &s, emoList) {
+        KEmoticonsProvider::Emoticon e;
+        QPixmap p;
+
+        QString escaped = Qt::escape(s);
+        e.picPath = path;
+        p.load(path);
+
+
+        e.picHTMLCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(escaped).arg(path).arg(p.width()).arg(p.height());
+
+        e.matchTextEscaped = escaped;
+        e.matchText = s;
+
+        (*emoticonsIndex())[escaped[0]].append(e);
+    }
+}
+
+void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringList &emoList)
+{
+    foreach(const QString &s, emoList) {
+        QString escaped = Qt::escape(s);
+
+        QList<Emoticon> ls = emoticonsIndex()->value(escaped[0]);
+
+        for (int i = 0; i < ls.size(); ++i) {
+            if (ls.at(i).picPath == path) {
+                ls.removeAt(i);
+            }
+        }
+    }
+}
+
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

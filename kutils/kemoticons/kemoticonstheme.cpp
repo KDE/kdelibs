@@ -1,21 +1,24 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>             *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
- ***************************************************************************/
+/******************************************************************************
+ *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>                *
+ *   Copyright (c) 2002-2003 by Stefan Gehn            <metz@gehn.net>        *
+ *   Kopete    (c) 2002-2008 by the Kopete developers  <kopete-devel@kde.org> *
+ *   Copyright (c) 2005      by Engin AYDOGAN          <engin@bzzzt.biz>      *
+ *                                                                            *
+ *   This program is free software; you can redistribute it and/or modify     *
+ *   it under the terms of the GNU General Public License as published by     *
+ *   the Free Software Foundation; either version 2 of the License, or        *
+ *   (at your option) any later version.                                      *
+ *                                                                            *
+ *   This program is distributed in the hope that it will be useful,          *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *   GNU General Public License for more details.                             *
+ *                                                                            *
+ *   You should have received a copy of the GNU General Public License        *
+ *   along with this program; if not, write to the                            *
+ *   Free Software Foundation, Inc.,                                          *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA               *
+ ******************************************************************************/
 
 #include "kemoticonstheme.h"
 #include "kemoticonsprovider.h"
@@ -139,10 +142,10 @@ QString KEmoticonsTheme::fileName() const
     return d->provider->fileName();
 }
 
-QMap<QString, QStringList> KEmoticonsTheme::emoticonsMap() const
+QHash<QString, QStringList> KEmoticonsTheme::emoticonsMap() const
 {
     if (!d->provider) {
-        return QMap<QString, QStringList>();
+        return QHash<QString, QStringList>();
     }
 
     return d->provider->constEmoticonsMap();
@@ -205,10 +208,11 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     QChar n;
 
     /* This is the EmoticonNode container, it will represent each matched emoticon */
-    QList<QPair<QString, EmoticonNode> > foundEmoticons;
+    typedef QPair<KEmoticonsProvider::Emoticon, int> EmoticonNode;
+    QList<EmoticonNode> foundEmoticons;
     /* First-pass, store the matched emoticon locations in foundEmoticons */
-    QMap<QString, QStringList> emoticonList;
-    QMap<QString, QStringList>::const_iterator it;
+    QList<KEmoticonsProvider::Emoticon> emoticonList;
+    QList<KEmoticonsProvider::Emoticon>::const_iterator it;
     int pos;
 
     bool inHTMLTag = false;
@@ -257,14 +261,13 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
             continue;
         } /* strict requires space before the emoticon */
 
-
-        bool found = false;
-        for (it = emoticonsMap().constBegin(); it != emoticonsMap().constEnd(); ++it) {
-            // If this is an HTML, then search for the HTML form of the emoticon.
-            // For instance <o) => &gt;o)
-            QStringList needles = it.value();
-            for (int k = 0; k < needles.size(); ++k) {
-                needle = (mode & SkipHTML) ? Qt::escape(needles.at(k)) : needles.at(k);
+        if (d->provider->constEmoticonsIndex().contains(c)) {
+            emoticonList = d->provider->constEmoticonsIndex().value(c);
+            bool found = false;
+            for (it = emoticonList.constBegin(); it != emoticonList.constEnd(); ++it) {
+                // If this is an HTML, then search for the HTML form of the emoticon.
+                // For instance <o) => &gt;o)
+                needle = (mode & SkipHTML) ? (*it).matchTextEscaped : (*it).matchText;
                 if ((pos == message.indexOf(needle, pos))) {
                     if (mode & StrictParse) {
                         /* check if the character after this match is space or end of string*/
@@ -277,36 +280,36 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                         }
                     }
                     /* Perfect match */
-                    foundEmoticons.append(QPair<QString, EmoticonNode>(it.key(), EmoticonNode(needle, pos)));
+                    foundEmoticons.append(EmoticonNode((*it), pos));
                     found = true;
                     /* Skip the matched emoticon's matchText */
                     pos += needle.length() - 1;
                     break;
                 }
-            }
 
-            if (found) {
-                break;
-            }
-        }
-
-        if (!found) {
-            if (inHTMLEntity) {
-                // If we are in an HTML entitiy such as &gt;
-                int htmlEnd = message.indexOf(';', pos);
-                // Search for where it ends
-                if (htmlEnd == -1) {
-                    // Apparently this HTML entity isn't ended, something is wrong, try skip the '&'
-                    // and continue
-                    kDebug() << "Broken HTML entity, trying to recover.";
-                    inHTMLEntity = false;
-                    pos++;
-                } else {
-                    pos = htmlEnd;
-                    inHTMLEntity = false;
+                if (found) {
+                    break;
                 }
             }
-        }
+
+            if (!found) {
+                if (inHTMLEntity) {
+                    // If we are in an HTML entitiy such as &gt;
+                    int htmlEnd = message.indexOf(';', pos);
+                    // Search for where it ends
+                    if (htmlEnd == -1) {
+                        // Apparently this HTML entity isn't ended, something is wrong, try skip the '&'
+                        // and continue
+                        kDebug() << "Broken HTML entity, trying to recover.";
+                        inHTMLEntity = false;
+                        pos++;
+                    } else {
+                        pos = htmlEnd;
+                        inHTMLEntity = false;
+                    }
+                }
+            }
+        } /* else no emoticons begin with this character, so don't do anything */
         p = c;
     }
 
@@ -322,18 +325,15 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     int length;
 
     for (int i = 0; i < foundEmoticons.size(); ++i) {
-        QPair<QString, EmoticonNode> itFound = foundEmoticons.at(i);
-        needle = itFound.second.first;
+        EmoticonNode itFound = foundEmoticons.at(i);
+        needle = (mode & SkipHTML) ? itFound.first.matchTextEscaped : itFound.first.matchText;
 
-        QPixmap p(itFound.first);
-        QString htmlCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(needle).arg(itFound.first).arg(p.width()).arg(p.height());
-
-        if ((length = (itFound.second.second - pos))) {
+        if ((length = (itFound.second - pos))) {
             result.append(Token(Text, message.mid(pos, length)));
-            result.append(Token(Image, needle, itFound.first, htmlCode));
+            result.append(Token(Image, itFound.first.matchTextEscaped, itFound.first.picPath, itFound.first.picHTMLCode));
             pos += length + needle.length();
         } else {
-            result.append(Token(Image, needle, itFound.first, htmlCode));
+            result.append(Token(Image, itFound.first.matchTextEscaped, itFound.first.picPath, itFound.first.picHTMLCode));
             pos += needle.length();
         }
     }
@@ -355,7 +355,7 @@ KEmoticonsTheme& KEmoticonsTheme::operator=(const KEmoticonsTheme &ket)
     if (d == ket.d) {
         return *this;
     }
-    
+
     d = ket.d;
     return *this;
 }

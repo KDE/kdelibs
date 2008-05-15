@@ -1,21 +1,24 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>             *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
- ***************************************************************************/
+/******************************************************************************
+ *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>                *
+ *   Copyright (c) 2002-2003 by Stefan Gehn            <metz@gehn.net>        *
+ *   Kopete    (c) 2002-2008 by the Kopete developers  <kopete-devel@kde.org> *
+ *   Copyright (c) 2005      by Engin AYDOGAN          <engin@bzzzt.biz>      *
+ *                                                                            *
+ *   This program is free software; you can redistribute it and/or modify     *
+ *   it under the terms of the GNU General Public License as published by     *
+ *   the Free Software Foundation; either version 2 of the License, or        *
+ *   (at your option) any later version.                                      *
+ *                                                                            *
+ *   This program is distributed in the hope that it will be useful,          *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *   GNU General Public License for more details.                             *
+ *                                                                            *
+ *   You should have received a copy of the GNU General Public License        *
+ *   along with this program; if not, write to the                            *
+ *   Free Software Foundation, Inc.,                                          *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA               *
+ ******************************************************************************/
 
 #ifndef KEMOTICONS_THEME_H
 #define KEMOTICONS_THEME_H
@@ -190,9 +193,9 @@ public:
     QString fileName() const;
 
     /**
-     * Returns a QMap that contains the emoticons path as keys and the text as values
+     * Returns a QHash that contains the emoticons path as keys and the text as values
      */
-    QMap<QString, QStringList> emoticonsMap() const;
+    QHash<QString, QStringList> emoticonsMap() const;
 
     /**
      * Create a new theme
@@ -209,11 +212,6 @@ public:
      */
     KEmoticonsTheme& operator=(const KEmoticonsTheme &ket);
 private:
-    /**
-     * a QPair that holds an emoticon and its position inside a text
-     */
-    typedef QPair<QString, int> EmoticonNode;
-
     class KEmoticonsThemeData;
     /**
      * Private class
