@@ -993,6 +993,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0);
 
     l = new KSqueezedTextLabel( directory, d->m_frame );
+    l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
     grid->addWidget(l, curRow++, 2);
   }
 
@@ -1039,6 +1040,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0);
 
     l = new KSqueezedTextLabel(item.linkDest(), d->m_frame );
+    l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
     grid->addWidget(l, curRow++, 2);
   }
 
@@ -1089,6 +1091,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
           grid->addWidget(l, curRow, 0);
 
           l = new KSqueezedTextLabel( mp->mountPoint(), d->m_frame );
+          l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
           grid->addWidget( l, curRow++, 2 );
       }
 
