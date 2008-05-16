@@ -27,6 +27,7 @@
 
 #include <kconfiggroup.h>
 #include <kservice.h>
+#include <kaboutdata.h>
 #include <QtCore/QList>
 
 class KPluginInfoPrivate;
@@ -238,9 +239,22 @@ class KDECORE_EXPORT KPluginInfo
 
 
         /**
-         * @return The license of this plugin.
+         * @return The license keyword of this plugin.
          */
         QString license() const;
+
+        /**
+         * @return The full licence object, according to the license keyword.
+         *         It can be used to present friendlier and more detailed
+         *         license info to the user, when the license is one of the
+         *         widespread within KDE. For other licenses, the license
+         *         object will state not very useful, "custom license" info
+         *         (this can be identified by KAboutLicense::key() returning
+         *          KAboutData::License_Custom).
+         *
+         * @see KAboutLicense::byKeyword()
+         */
+        KAboutLicense fullLicense() const;
 
         /**
          * @return A list of plugins required for this plugin to be enabled. Use

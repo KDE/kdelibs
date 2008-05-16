@@ -313,6 +313,12 @@ QString KPluginInfo::license() const
     return d->license;
 }
 
+KAboutLicense KPluginInfo::fullLicense() const
+{
+    KPLUGININFO_ISVALID_ASSERTION;
+    return KAboutLicense::byKeyword(d->license);
+}
+
 QStringList KPluginInfo::dependencies() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
