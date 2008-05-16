@@ -1701,6 +1701,7 @@ public:
     static inline FileCopyJob* newJob(const KUrl& src, const KUrl& dest, int permissions, bool move,
                                       JobFlags flags)
     {
+        //kDebug(7007) << src << "->" << dest;
         FileCopyJob *job = new FileCopyJob(
             *new FileCopyJobPrivate(src, dest, permissions, move, flags));
         job->setUiDelegate(new JobUiDelegate);
@@ -1980,7 +1981,7 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         if ( job == m_putJob )
         {
             m_getJob = KIO::get( m_src, NoReload, HideProgressInfo /* no GUI */ );
-            //kDebug(7007) << "m_getJob=" << m_getJob;
+            //kDebug(7007) << "m_getJob=" << m_getJob << m_src;
             m_getJob->addMetaData( "errorPage", "false" );
             m_getJob->addMetaData( "AllowCompressedPage", "false" );
             // Set size in subjob. This helps if the slave doesn't emit totalSize.
@@ -2050,9 +2051,8 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
 {
    Q_Q(FileCopyJob);
    //kDebug(7007);
-   if (!m_resumeAnswerSent && !m_getJob)
-   {
-       // This can't happen (except as a migration bug on 12/10/2000)
+   if (!m_resumeAnswerSent && !m_getJob) {
+       // This can't happen
        q->setError( ERR_INTERNAL );
        q->setErrorText( "'Put' job didn't send canResume or 'Get' job didn't send data!" );
        m_putJob->kill( FileCopyJob::Quietly );
@@ -2140,6 +2140,7 @@ void FileCopyJob::slotResult( KJob *job)
 
    if (job == d->m_getJob)
    {
+       //kDebug(7007) << "m_getJob finished";
       d->m_getJob = 0; // No action required
       if (d->m_putJob)
           d->m_putJob->d_func()->internalResume();
@@ -2147,11 +2148,12 @@ void FileCopyJob::slotResult( KJob *job)
 
    if (job == d->m_putJob)
    {
-      //kDebug(7007) << "m_putJob finished";
+       //kDebug(7007) << "m_putJob finished";
       d->m_putJob = 0;
       if (d->m_getJob)
       {
-         kWarning(7007) << "WARNING ! Get still going on...";
+          // The get job is still running, probably after emitting data(QByteArray())
+          // and before we receive its finished().
          d->m_getJob->d_func()->internalResume();
       }
       if (d->m_move)
