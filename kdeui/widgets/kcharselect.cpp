@@ -22,7 +22,6 @@
 
 #include "kcharselect_p.h"
 
-#include <QtGui/QFontComboBox>
 #include <QtGui/QActionEvent>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QHeaderView>
@@ -36,6 +35,7 @@
 #include <klocale.h>
 #include <klineedit.h>
 #include <ktextbrowser.h>
+#include <kfontcombobox.h>
 
 class KCharSelectTablePrivate
 {
@@ -57,7 +57,7 @@ class KCharSelect::KCharSelectPrivate
 {
 public:
     KLineEdit* searchLine;
-    QFontComboBox *fontCombo;
+    KFontComboBox *fontCombo;
     QSpinBox *fontSizeSpinBox;
     QComboBox *sectionCombo;
     QComboBox *blockCombo;
@@ -288,7 +288,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     QHBoxLayout *comboLayout = new QHBoxLayout();
 
 
-    d->fontCombo = new QFontComboBox(this);
+    d->fontCombo = new KFontComboBox(this);
     comboLayout->addWidget(d->fontCombo);
     d->fontCombo->setEditable(true);
     d->fontCombo->resize(d->fontCombo->sizeHint());
