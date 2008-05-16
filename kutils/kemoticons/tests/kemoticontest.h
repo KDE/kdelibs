@@ -27,9 +27,9 @@
  */
 class KEmoticonTest : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 private Q_SLOTS:
-	void testEmoticonParser();	
+    void testEmoticonParser();
 };
 
 #endif

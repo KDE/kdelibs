@@ -33,7 +33,7 @@
 #include <kdebug.h>
 #include <kemoticons.h>
 
-QTEST_KDEMAIN( KEmoticonTest, GUI )
+QTEST_KDEMAIN(KEmoticonTest, GUI)
 
 /*
   There are three sets of tests, the Kopete 0.7 baseline with tests that were
@@ -47,67 +47,59 @@ QTEST_KDEMAIN( KEmoticonTest, GUI )
 
 void KEmoticonTest::testEmoticonParser()
 {
-	KEmoticonsTheme emo = KEmoticons().theme("kde4");
-	QString basePath = QString::fromLatin1( SRCDIR ) + QString::fromLatin1("/emoticon-parser-testcases");
-	QDir testCasesDir(basePath);
-	
-	QStringList inputFileNames = testCasesDir.entryList(QStringList(QLatin1String("*.input")));
-	for ( QStringList::ConstIterator it = inputFileNames.begin(); it != inputFileNames.end(); ++it)
-	{
-		QString fileName = *it;
-		kDebug() << "testcase: " << fileName;
-		QString outputFileName = fileName;
-		outputFileName.replace("input","output");
-		// open the input file
-		QFile inputFile(basePath + QString::fromLatin1("/") + fileName);
-		QFile expectedFile(basePath + QString::fromLatin1("/") + outputFileName);
-		// check if the expected output file exists
-		// if it doesn't, skip the testcase
-		if ( ! expectedFile.exists() )
-		{
-			QSKIP( "Warning! expected output for testcase not found. Skiping testcase", SkipSingle);
-			continue;
-		}
-		if ( inputFile.open( QIODevice::ReadOnly ) && expectedFile.open( QIODevice::ReadOnly ))
-		{
-			QString inputData;
-			QString expectedData;
-			inputData = QString( inputFile.readAll() );
-			expectedData = QString( expectedFile.readAll() );
+    KEmoticonsTheme emo = KEmoticons().theme("kde4");
+    QString basePath = QString::fromLatin1(SRCDIR) + QString::fromLatin1("/emoticon-parser-testcases");
+    QDir testCasesDir(basePath);
 
-			inputFile.close();
-			expectedFile.close();
+    QStringList inputFileNames = testCasesDir.entryList(QStringList(QLatin1String("*.input")));
+    for (QStringList::ConstIterator it = inputFileNames.begin(); it != inputFileNames.end(); ++it) {
+        QString fileName = *it;
+        kDebug() << "testcase: " << fileName;
+        QString outputFileName = fileName;
+        outputFileName.replace("input", "output");
+        // open the input file
+        QFile inputFile(basePath + QString::fromLatin1("/") + fileName);
+        QFile expectedFile(basePath + QString::fromLatin1("/") + outputFileName);
+        // check if the expected output file exists
+        // if it doesn't, skip the testcase
+        if (! expectedFile.exists()) {
+            QSKIP("Warning! expected output for testcase not found. Skiping testcase", SkipSingle);
+            continue;
+        }
+        if (inputFile.open(QIODevice::ReadOnly) && expectedFile.open(QIODevice::ReadOnly)) {
+            QString inputData;
+            QString expectedData;
+            inputData = QString(inputFile.readAll());
+            expectedData = QString(expectedFile.readAll());
 
-			QString path = KGlobal::dirs()->findResource( "emoticons", "kde4/smile.png" ).replace( "smile.png", QString() );
+            inputFile.close();
+            expectedFile.close();
 
-			QString result = emo.parseEmoticons( inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML ).replace( path, QString() );
-			
-			kDebug() << "Parse result: " << result;
+            QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").replace("smile.png", QString());
 
-			// HACK to know the test case we applied, concatenate testcase name to both
-			// input and expected string. WIll remove when I can add some sort of metadata
-			// to a CHECK so debug its origin testcase
-			//result = fileName + QString::fromLatin1(": ") + result;
-			//expectedData = fileName + QString::fromLatin1(": ") + expectedData;
-			// if the test case begins with broken, we expect it to fail, then use XFAIL
-			// otherwise use CHECK
-			if ( fileName.section("-", 0, 0) == QString::fromLatin1("broken") )
-			{
-				kDebug() << "checking known-broken testcase: " << fileName;
-				QEXPECT_FAIL("", "Checking know-broken testcase", Continue);
-				QCOMPARE(result, expectedData);
-			}
-			else
-			{
-				kDebug() << "checking known-working testcase: " << fileName;
-				QCOMPARE(result, expectedData);
-			}
-		}
-		else
-		{
-			QSKIP("Warning! can't open testcase files. Skiping testcase", SkipSingle);
-			continue;
-		}
-	}
-	
+            QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
+
+            kDebug() << "Parse result: " << result;
+
+            // HACK to know the test case we applied, concatenate testcase name to both
+            // input and expected string. WIll remove when I can add some sort of metadata
+            // to a CHECK so debug its origin testcase
+            //result = fileName + QString::fromLatin1(": ") + result;
+            //expectedData = fileName + QString::fromLatin1(": ") + expectedData;
+            // if the test case begins with broken, we expect it to fail, then use XFAIL
+            // otherwise use CHECK
+            if (fileName.section("-", 0, 0) == QString::fromLatin1("broken")) {
+                kDebug() << "checking known-broken testcase: " << fileName;
+                QEXPECT_FAIL("", "Checking know-broken testcase", Continue);
+                QCOMPARE(result, expectedData);
+            } else {
+                kDebug() << "checking known-working testcase: " << fileName;
+                QCOMPARE(result, expectedData);
+            }
+        } else {
+            QSKIP("Warning! can't open testcase files. Skiping testcase", SkipSingle);
+            continue;
+        }
+    }
+
 }
