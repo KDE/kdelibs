@@ -102,6 +102,7 @@ KDEUI_EXECUTABLE_TESTS(
   ktitlewidgettest
   kiconeffecttest
   kwallettest
+  kwidgetitemdelegatetest
 )
 
 if (Q_WS_X11)
