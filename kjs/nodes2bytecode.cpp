@@ -1092,8 +1092,8 @@ void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
     OpValue val = expr->generateEvalCode(comp, block);
 
-    // Update the result for eval..
-    if (comp->codeType() == EvalCode)
+    // Update the result for eval or global code
+    if (comp->codeType() != FunctionCode)
         CodeGen::emitOp(comp, block, Op_RegPutValue, 0, comp->evalResultReg(), &val);
 }
 
@@ -1496,7 +1496,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
     OpValue evalResReg, evalResVal;
-    if (comp->codeType() == EvalCode) {
+    if (comp->codeType() != FunctionCode) {
         comp->requestTemporary(OpType_value, evalResVal, evalResReg);
         comp->setEvalResultRegister(&evalResReg);
 
@@ -1511,7 +1511,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
     BlockNode::generateExecCode(comp, block);
 
     // Make sure we exit!
-    if (comp->codeType() == EvalCode)
+    if (comp->codeType() != FunctionCode)
         CodeGen::emitOp(comp, block, Op_ExitEval, 0, &evalResVal);
     else
         CodeGen::emitOp(comp, block, Op_Exit);

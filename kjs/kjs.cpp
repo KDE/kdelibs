@@ -131,7 +131,7 @@ JSValue* TestFunctionImp::callAsFunction(ExecState* exec,
     default:
         abort();
     }
-    return 0;
+    return jsUndefined();
 }
 
 static ExitCode evaluateString(Interpreter *interp, const char *fileName,
