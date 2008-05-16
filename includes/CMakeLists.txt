@@ -304,6 +304,8 @@ install( FILES
   KReplace
   KReplaceDialog
   KRestrictedLine
+  KRichTextEdit
+  KRichTextWidget
   KRuler
   KRun
   KShortcutsEditor

@@ -70,6 +70,7 @@ set(kdeui_LIB_SRCS
  dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
+ dialogs/klinkdialog.cpp
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
@@ -197,6 +198,8 @@ set(kdeui_LIB_SRCS
  widgets/kpixmapregionselectorwidget.cpp
  widgets/kpushbutton.cpp
  widgets/krestrictedline.cpp
+ widgets/krichtextedit.cpp
+ widgets/krichtextwidget.cpp
  widgets/kruler.cpp
  widgets/kselector.cpp
  widgets/kseparator.cpp
@@ -215,6 +218,7 @@ set(kdeui_LIB_SRCS
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
+ widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
  xmlgui/kxmlguiwindow.cpp
  xmlgui/kmainwindowiface.cpp
@@ -465,6 +469,8 @@ install( FILES
  widgets/kpixmapregionselectorwidget.h
  widgets/kpushbutton.h
  widgets/krestrictedline.h
+ widgets/krichtextedit.h
+ widgets/krichtextwidget.h
  widgets/kseparator.h
  widgets/ksqueezedtextlabel.h
  widgets/kstringvalidator.h
