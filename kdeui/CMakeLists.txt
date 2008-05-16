@@ -91,6 +91,7 @@ set(kdeui_LIB_SRCS
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
  fonts/kfontchooser.cpp
+ fonts/kfontcombobox.cpp
  fonts/kfontdialog.cpp
  fonts/kfontrequester.cpp
  icons/kiconeffect.cpp
@@ -375,6 +376,7 @@ install( FILES
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
  fonts/kfontchooser.h
+ fonts/kfontcombobox.h
  fonts/kfontdialog.h
  fonts/kfontrequester.h
  icons/kiconeffect.h

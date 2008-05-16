@@ -179,6 +179,7 @@ install( FILES
   KFolderType
   KFontAction
   KFontChooser
+  KFontComboBox
   KFontDialog
   KFontRequester
   KFontSizeAction
