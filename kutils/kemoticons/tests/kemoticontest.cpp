@@ -80,7 +80,6 @@ void KEmoticonTest::testEmoticonParser()
 
 			QString path = KGlobal::dirs()->findResource( "emoticons", "kde4/smile.png" ).replace( "smile.png", QString() );
 
-			//Kopete::Emoticons::self();
 			QString result = emo.parseEmoticons( inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML ).replace( path, QString() );
 			
 			kDebug() << "Parse result: " << result;
