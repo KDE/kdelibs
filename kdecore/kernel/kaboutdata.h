@@ -771,9 +771,11 @@ class KDECORE_EXPORT KAboutData
  * This class is used to store information about a license.
  * The license can be one of some predefined, one given as text or one
  * that can be loaded from a file. This class is used in the KAboutData class.
- * Creating a KAboutLicense object by yourself is not possible,
- * but the KAboutData method KAboutData::licenses()
- * returns a list of KAboutLicense data objects which you can examine.
+ * Explicitely creating a KAboutLicense object is not possible.
+ * If the license is wanted for a KDE component having KAboutData object,
+ * use KAboutData::licenses() to get the licenses for that component.
+ * If the license is for a non-code resource and given by a keyword
+ * (e.g. in .desktop files), try using KAboutLicense::byKeyword().
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
  * calls are used to produce KLocalizedStrings, which can delay the translation
@@ -800,8 +802,8 @@ public:
 
 
     /**
-     * Returns the license. If the licenseType argument of the constructor has been
-     * used, any text defined by setLicenseText is ignored,
+     * Returns the full license text. If the licenseType argument of the
+     * constructor has been used, any text defined by setLicenseText is ignored,
      * and the standard text for the chosen license will be returned.
      *
      * @return The license text.
@@ -814,6 +816,36 @@ public:
      * @return The license name as a string.
      */
     QString name(KAboutData::NameFormat formatName) const;
+
+    /**
+     * Returns the license key.
+     *
+     * @return The license key as element of KAboutData::LicenseKey enum.
+     */
+    KAboutData::LicenseKey key() const;
+
+    /**
+     * Fetch a known license by a keyword.
+     *
+     * Frequently the license data is provided by a terse keyword-like string,
+     * e.g. by a field in a .desktop file. Using this method, an application
+     * can get hold of a proper KAboutLicense object, providing that the
+     * license is one of the several known to KDE, and use it to present
+     * more human-readable information to the user.
+     *
+     * Keywords are matched by stripping all whitespace and lowercasing.
+     * The known keywords correspond to the KAboutData::LicenseKey enumeration,
+     * e.g. any of "LGPLV3", "LGPLv3", "LGPL v3" would match License_LGPL_V3.
+     * If there is no match for the keyword, a valid license object is still
+     * returned, with its name and text informing about a custom license,
+     * and its key equal to KAboutData::License_Custom.
+     *
+     * @param keyword The license keyword.
+     * @return The license object.
+     *
+     * @see KAboutData::LicenseKey
+     */
+    static KAboutLicense byKeyword(const QString &keyword);
 
 private:
     /**

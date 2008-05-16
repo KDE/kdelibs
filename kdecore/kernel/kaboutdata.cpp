@@ -31,6 +31,7 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QVariant>
 #include <QtCore/QList>
+#include <QHash>
 
 // -----------------------------------------------------------------------------
 // Design notes:
@@ -207,11 +208,11 @@ KAboutLicense::text() const
 
     const QString lineFeed( "\n\n" );
 
-    if (!d->_aboutData->copyrightStatement().isEmpty()) {
+    if (d->_aboutData && !d->_aboutData->copyrightStatement().isEmpty()) {
         result = d->_aboutData->copyrightStatement() + lineFeed;
     }
 
-    QString licenseName;
+    bool knownLicense = false;
     QString pathToFile;
     switch ( d->_licenseKey )
     {
@@ -219,31 +220,31 @@ KAboutLicense::text() const
         pathToFile = d->_pathToLicenseTextFile;
         break;
     case KAboutData::License_GPL_V2:
-        licenseName = "GPL v2";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/GPL_V2");
         break;
     case KAboutData::License_LGPL_V2:
-        licenseName = "LGPL v2";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/LGPL_V2");
         break;
     case KAboutData::License_BSD:
-        licenseName = "BSD License";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/BSD");
         break;
     case KAboutData::License_Artistic:
-        licenseName = "Artistic License";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/ARTISTIC");
         break;
     case KAboutData::License_QPL_V1_0:
-        licenseName = "QPL v1.0";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/QPL_V1.0");
         break;
     case KAboutData::License_GPL_V3:
-        licenseName = "GPL v3";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/GPL_V3");
         break;
     case KAboutData::License_LGPL_V3:
-        licenseName = "LGPL v3";
+        knownLicense = true;
         pathToFile = KStandardDirs::locate("data", "LICENSES/LGPL_V3");
         break;
     case KAboutData::License_Custom:
@@ -258,8 +259,8 @@ KAboutLicense::text() const
                        "licensing terms.\n");
     }
 
-    if (!licenseName.isEmpty()) {
-        result += i18n("This program is distributed under the terms of the %1.", licenseName);
+    if (knownLicense) {
+        result += i18n("This program is distributed under the terms of the %1.", name(KAboutData::ShortName));
         if (!pathToFile.isEmpty()) {
             result += lineFeed;
         }
@@ -285,31 +286,31 @@ KAboutLicense::name(KAboutData::NameFormat formatName) const
 
     switch (d->_licenseKey) {
     case KAboutData::License_GPL_V2:
-        licenseShort = "GPL v2";
+        licenseShort = i18nc("@item license (short name)","GPL v2");
         licenseFull = i18nc("@item license","GNU General Public License Version 2");
         break;
     case KAboutData::License_LGPL_V2:
-        licenseShort = "LGPL v2";
+        licenseShort = i18nc("@item license (short name)","LGPL v2");
         licenseFull = i18nc("@item license","GNU Lesser General Public License Version 2");
         break;
     case KAboutData::License_BSD:
-        licenseShort = "BSD License";
+        licenseShort = i18nc("@item license (short name)","BSD License");
         licenseFull = i18nc("@item license","BSD License");
         break;
     case KAboutData::License_Artistic:
-        licenseShort = "Artistic License";
+        licenseShort = i18nc("@item license (short name)","Artistic License");
         licenseFull = i18nc("@item license","Artistic License");
         break;
     case KAboutData::License_QPL_V1_0:
-        licenseShort = "QPL v1.0";
+        licenseShort = i18nc("@item license (short name)","QPL v1.0");
         licenseFull = i18nc("@item license","Q Public License");
         break;
     case KAboutData::License_GPL_V3:
-        licenseShort = "GPL v3";
+        licenseShort = i18nc("@item license (short name)","GPL v3");
         licenseFull = i18nc("@item license","GNU General Public License Version 3");
         break;
     case KAboutData::License_LGPL_V3:
-        licenseShort = "LGPL v3";
+        licenseShort = i18nc("@item license (short name)","LGPL v3");
         licenseFull = i18nc("@item license","GNU Lesser General Public License Version 3");
         break;
     case KAboutData::License_Custom:
@@ -334,6 +335,47 @@ KAboutLicense::operator=(const KAboutLicense& other)
 {
    d = other.d;
    return *this;
+}
+
+KAboutData::LicenseKey
+KAboutLicense::key() const
+{
+    return d->_licenseKey;
+}
+
+KAboutLicense
+KAboutLicense::byKeyword(const QString &rawKeyword)
+{
+    // Setup keyword->enum dictionary on first call.
+    // Use normalized keywords, by the algorithm below.
+    static QHash<QString, KAboutData::LicenseKey> ldict;
+    if (ldict.isEmpty()) {
+        ldict.insert("gpl", KAboutData::License_GPL);
+        ldict.insert("gplv2", KAboutData::License_GPL_V2);
+        ldict.insert("gplv2+", KAboutData::License_GPL_V2);
+        ldict.insert("lgpl", KAboutData::License_LGPL);
+        ldict.insert("lgplv2", KAboutData::License_LGPL_V2);
+        ldict.insert("lgplv2+", KAboutData::License_LGPL_V2);
+        ldict.insert("bsd", KAboutData::License_BSD);
+        ldict.insert("artistic", KAboutData::License_Artistic);
+        ldict.insert("qpl", KAboutData::License_QPL);
+        ldict.insert("qplv1", KAboutData::License_QPL_V1_0);
+        ldict.insert("qplv10", KAboutData::License_QPL_V1_0);
+        ldict.insert("gplv3", KAboutData::License_GPL_V3);
+        ldict.insert("gplv3+", KAboutData::License_GPL_V3);
+        ldict.insert("lgplv3", KAboutData::License_LGPL_V3);
+        ldict.insert("lgplv3+", KAboutData::License_LGPL_V3);
+    }
+
+    // Normalize keyword.
+    QString keyword = rawKeyword;
+    keyword = keyword.toLower();
+    keyword.remove(' ');
+    keyword.remove('.');
+
+    KAboutData::LicenseKey license = ldict.value(keyword,
+                                                 KAboutData::License_Custom);
+    return KAboutLicense(license, 0);
 }
 
 
