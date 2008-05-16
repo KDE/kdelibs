@@ -29,20 +29,13 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDialogButtonBox>
-#include <QHash>
 #include <QHBoxLayout>
 #include <QHideEvent>
-#include <QList>
 #include <QPointer>
-#include <QSignalMapper>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
-#include <kconfiggroup.h>
-#include <kglobalsettings.h>
-#include <kguiitem.h>
-#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
@@ -50,7 +43,6 @@
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
 #include <kwhatsthismanager_p.h>
-#include <kglobal.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -63,6 +55,18 @@ int KDialogPrivate::mSpacingSize = 6;
 void KDialogPrivate::setupLayout()
 {
     Q_Q(KDialog);
+    if (!dirty) {
+        QMetaObject::invokeMethod( q, "queuedLayoutUpdate", Qt::QueuedConnection );
+        dirty = true;
+    }
+}
+
+void KDialogPrivate::queuedLayoutUpdate()
+{
+  dirty = false;
+
+  Q_Q(KDialog);
+
   delete mTopLayout;
 
   if ( mButtonOrientation == Qt::Horizontal )
@@ -89,6 +93,8 @@ void KDialogPrivate::setupLayout()
     mButtonBox->setOrientation( mButtonOrientation );
     mTopLayout->addWidget( mButtonBox );
   }
+
+  q->setMinimumSize( q->minimumSizeHint() );
 }
 
 void KDialogPrivate::setButtonFocus(QPushButton *button, bool isDefault, bool isFocus)
@@ -155,6 +161,8 @@ void KDialogPrivate::init(KDialog *q)
 {
     q_ptr = q;
     KWhatsThisManager::init();
+
+    dirty = false;
 
     q->setButtons(KDialog::Ok | KDialog::Cancel);
     q->setDefaultButton(KDialog::Ok);
@@ -296,6 +304,8 @@ KDialog::ButtonCode KDialog::defaultButton() const
 void KDialog::setMainWidget( QWidget *widget )
 {
     Q_D(KDialog);
+  if ( d->mMainWidget == widget )
+    return;
   d->mMainWidget = widget;
   QLayout* layout = d->mMainWidget->layout();
   if (layout) {
@@ -336,8 +346,8 @@ QSize KDialog::minimumSizeHint() const
   if ( d->mUrlHelp )
     s2 = d->mUrlHelp->minimumSize() + zeroByS;
 
-  s1.rwidth() = qMax( s1.rwidth(), s2.rwidth() );
-  s1.rheight() += s2.rheight();
+  s1.rwidth() = qMax( s1.width(), s2.width() );
+  s1.rheight() += s2.height();
 
   //
   // User widget
@@ -351,15 +361,15 @@ QSize KDialog::minimumSizeHint() const
   } else
     s2 = QSize( 100, 100+s );
 
-  s1.rwidth()  = qMax( s1.rwidth(), s2.rwidth() );
-  s1.rheight() += s2.rheight();
+  s1.rwidth()  = qMax( s1.width(), s2.width() );
+  s1.rheight() += s2.height();
 
   if ( d->mDetailsWidget && d->mDetailsVisible ) {
     s2 = d->mDetailsWidget->sizeHint() + zeroByS;
     s2 = s2.expandedTo( d->mDetailsWidget->minimumSize() );
     s2 = s2.expandedTo( d->mDetailsWidget->minimumSizeHint() );
-    s1.rwidth()  = qMax( s1.rwidth(), s2.rwidth() );
-    s1.rheight() += s2.rheight();
+    s1.rwidth() = qMax( s1.width(), s2.width() );
+    s1.rheight() += s2.height();
   }
 
   //
@@ -374,11 +384,11 @@ QSize KDialog::minimumSizeHint() const
   if ( d->mButtonBox ) {
     s2 = d->mButtonBox->minimumSizeHint();
     if ( d->mButtonOrientation == Qt::Horizontal ) {
-      s1.rwidth()   = qMax( s1.rwidth(), s2.rwidth() );
-      s1.rheight() += s2.rheight();
+      s1.rwidth() = qMax( s1.width(), s2.width() );
+      s1.rheight() += s2.height();
     } else {
-      s1.rwidth() += s2.rwidth();
-      s1.rheight() = qMax( s1.rheight(), s2.rheight() );
+      s1.rwidth() += s2.width();
+      s1.rheight() = qMax( s1.height(), s2.height() );
     }
   }
 
@@ -631,18 +641,15 @@ bool KDialog::avoidArea( QWidget *widget, const QRect& area, int screen )
 void KDialog::showButtonSeparator( bool state )
 {
     Q_D(KDialog);
+  if ( ( d->mActionSeparator != 0 ) == state )
+    return;
   if ( state ) {
     if ( d->mActionSeparator )
       return;
 
      d->mActionSeparator = new KSeparator( this );
-     d->mActionSeparator->setFocusPolicy( Qt::NoFocus );
      d->mActionSeparator->setOrientation( d->mButtonOrientation );
-     d->mActionSeparator->show();
   } else {
-    if ( !d->mActionSeparator )
-      return;
-
     delete d->mActionSeparator;
     d->mActionSeparator = 0;
   }
@@ -815,6 +822,8 @@ void KDialog::setButtonFocus( ButtonCode id )
 void KDialog::setDetailsWidget( QWidget *detailsWidget )
 {
     Q_D(KDialog);
+  if ( d->mDetailsWidget == detailsWidget )
+    return;
   delete d->mDetailsWidget;
   d->mDetailsWidget = detailsWidget;
 
@@ -941,6 +950,8 @@ void KDialog::slotButtonClicked( int button )
 void KDialog::enableLinkedHelp( bool state )
 {
     Q_D(KDialog);
+  if ( ( d->mUrlHelp != 0 ) == state )
+    return;
   if ( state ) {
     if ( d->mUrlHelp )
       return;
@@ -955,9 +966,6 @@ void KDialog::enableLinkedHelp( bool state )
 
     d->mUrlHelp->show();
   } else {
-    if ( !d->mUrlHelp )
-      return;
-
     delete d->mUrlHelp;
     d->mUrlHelp = 0;
   }
@@ -985,7 +993,7 @@ void KDialog::setHelpLinkText( const QString &text )
 QString KDialog::helpLinkText() const
 {
     Q_D(const KDialog);
-  return ( d->mHelpLinkText.isNull() ? i18n( "Get help..." ) : d->mHelpLinkText );
+  return ( d->mHelpLinkText.isEmpty() ? i18n( "Get help..." ) : d->mHelpLinkText );
 }
 
 void KDialog::updateGeometry()

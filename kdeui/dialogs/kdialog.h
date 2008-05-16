@@ -813,6 +813,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 
     private:
         Q_DISABLE_COPY(KDialog)
+        Q_PRIVATE_SLOT(d_ptr, void queuedLayoutUpdate())
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)

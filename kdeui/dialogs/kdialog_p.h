@@ -79,8 +79,12 @@ class KDialogPrivate
         static int mMarginSize;
         static int mSpacingSize;
 
+    protected Q_SLOTS:
+        void queuedLayoutUpdate();
+
     private:
         void init(KDialog *);
+        bool dirty: 1;
 };
 
 #endif // KDEUI_KDIALOG_P_H
