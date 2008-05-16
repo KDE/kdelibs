@@ -23,8 +23,9 @@
 #define KNEWSTUFF2_UI_ITEMSVIEW_H
 
 #include <QtCore/QSet>
-#include <QtGui/QScrollArea>
+#include <QtGui/QListView>
 #include <QtGui/QLabel>
+#include <QtGui/QSortFilterProxyModel>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
@@ -42,7 +43,7 @@ namespace KNS
     class EntryView;
 
 /** GUI/CORE: HTML Widget to operate on AvailableItem::List */
-class ItemsView : public QScrollArea
+class ItemsView : public QListView
 {
     Q_OBJECT
 public:
@@ -86,6 +87,8 @@ private:
     DxsEngine *m_engine;
     QMap<Entry*, EntryView*> m_views;
     QString m_searchText;
+
+    QSortFilterProxyModel * m_filteredModel;
 };
 
 

@@ -5,25 +5,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
-    <height>439</height>
+    <width>725</width>
+    <height>487</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <property name="spacing" >
     <number>2</number>
-   </property>
-   <property name="leftMargin" >
-    <number>0</number>
-   </property>
-   <property name="topMargin" >
-    <number>0</number>
-   </property>
-   <property name="rightMargin" >
-    <number>0</number>
-   </property>
-   <property name="bottomMargin" >
-    <number>0</number>
    </property>
    <item>
     <widget class="KTitleWidget" name="m_titleWidget" />
@@ -41,13 +29,23 @@
        <item>
         <widget class="QLabel" name="label" >
          <property name="text" >
-          <string>Show:</string>
+          <string>&amp;Source:</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="buddy" >
           <cstring>m_sourceCombo</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="m_providerLinkLabel" >
+         <property name="text" >
+          <string>?</string>
+         </property>
+         <property name="openExternalLinks" >
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -71,7 +69,7 @@
        <item>
         <widget class="QLabel" name="label_2" >
          <property name="text" >
-          <string>Order by:</string>
+          <string>&amp;Order by:</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -91,33 +89,19 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" >
-       <property name="spacing" >
-        <number>2</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="label_3" >
-         <property name="text" >
-          <string>Search:</string>
-         </property>
-         <property name="alignment" >
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy" >
-          <cstring>m_searchEdit</cstring>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="KLineEdit" name="m_searchEdit" >
          <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-           <horstretch>0</horstretch>
+          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+           <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="clickMessage" >
+          <string>Enter search phrase here</string>
+         </property>
+         <property name="showClearButton" stdset="0" >
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -126,14 +110,21 @@
     </layout>
    </item>
    <item>
-    <widget class="KNS::ItemsView" native="1" name="m_list" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
-       <horstretch>0</horstretch>
-       <verstretch>1</verstretch>
-      </sizepolicy>
+    <layout class="QVBoxLayout" name="verticalLayout" >
+     <property name="spacing" >
+      <number>0</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QListView" name="m_listView" >
+       <property name="mouseTracking" >
+        <bool>true</bool>
+       </property>
+       <property name="verticalScrollMode" >
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" >
@@ -143,18 +134,47 @@
      <item>
       <widget class="QProgressIndicator" name="m_progress" >
        <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
          <horstretch>1</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="frameShape" >
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="frameShadow" >
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Plain</enum>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_collaborationButton" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>Colaborate</string>
+       </property>
+       <property name="popupMode" >
+        <enum>QToolButton::MenuButtonPopup</enum>
+       </property>
+       <property name="toolButtonStyle" >
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="m_buttonBox" >
@@ -191,12 +211,6 @@
    <class>QProgressIndicator</class>
    <extends>QFrame</extends>
    <header>ui/qprogressindicator.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>KNS::ItemsView</class>
-   <extends>QWidget</extends>
-   <header>ui/itemsview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

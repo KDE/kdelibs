@@ -25,10 +25,6 @@
 #include <kdialog.h>
 #include <ktitlewidget.h>
 
-#include <QtCore/QSet>
-#include <QtGui/QScrollArea>
-#include <QtGui/QLabel>
-
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
 
@@ -40,6 +36,7 @@ class QComboBox;
 class QHideEvent;
 class QLabel;
 class QProgressIndicator;
+class QSortFilterProxyModel;
 
 namespace KNS
 {
@@ -47,6 +44,8 @@ namespace KNS
     class DownloadDialog;
     class EntryView;
     class ItemsView;
+    class ItemsModel;
+    class ItemsViewDelegate;
 
 /**
  * KNewStuff download dialog.
@@ -66,13 +65,28 @@ namespace KNS
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT DownloadDialog : public KDialog, public Ui::DownloadDialog
+class DownloadDialog : public KDialog, public Ui::DownloadDialog
 {
     Q_OBJECT
 
 public:
     DownloadDialog( DxsEngine* engine, QWidget * parent );
     ~DownloadDialog();
+
+    enum EntryAction {
+        kViewInfo,
+        kComments,
+        kChanges,
+        kContactEmail,
+        kContactJabber,
+        kCollabTranslate,
+        kCollabRemoval,
+        kCollabSubscribe,
+        kUninstall,
+        kInstall,
+        kCollabComment,
+        kCollabRate
+    };
 
     void refresh();
 
@@ -90,13 +104,18 @@ public:
 private Q_SLOTS:
     /** slot to add an entry (connected to the engine's signalEntryAdded */
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void slotEntriesFailed();
+    void slotPayloadFailed( KNS::Entry * entry );
 
     void slotResetMessage();
     void slotNetworkTimeout();
     void slotSortingSelected( int sortType );
     void slotSearchTextChanged();
     void slotUpdateSearch();
+
+    void slotInfo(QString provider, QString server, QString version);
+    void slotComments(QStringList comments);
     // DXS
     void slotLoadProvidersListDXS();
     void slotLoadProviderDXS();
@@ -110,7 +129,12 @@ private Q_SLOTS:
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
     void slotProgress(const QString & text, int percentage);
+    void slotProvidersFailed();
 
+    void slotPerformAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
+    void slotCollabAction(DownloadDialog::EntryAction action);
+
+    void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
 protected:
     virtual void hideEvent(QHideEvent * event);
 
@@ -123,17 +147,20 @@ private:
     //Ui::DownloadDialog * m_ui;
 
     // other classes
-    QTimer * searchTimer;
+    QTimer * m_searchTimer;
     QTimer * messageTimer;
     QTimer * networkTimer;
 
     DxsEngine *m_engine;
     QMap<QString, QString> categorymap;
+    QMap<const Feed*, KNS::ItemsModel*> m_models;
+    QSortFilterProxyModel * m_filteredModel;
+    ItemsViewDelegate * mDelegate;
 
     //QList<Entry*> m_entries;
     QMap<const Feed*, Entry::List> entries;
     QMap<const Provider*, Entry::List> m_entriesByProvider;
-    QMap<Entry*, const Provider*> providers;
+    QMap<Entry*, const Provider*> m_providers;
 };
 
 }

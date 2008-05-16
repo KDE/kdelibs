@@ -93,11 +93,13 @@ static bool DownloadsSorter(const Entry* e1, const Entry* e2)
 }
 
 ItemsView::ItemsView(QWidget* _parent )
-    : QScrollArea( _parent ),
+    : QListView( _parent ),
     m_currentProvider(0), m_currentFeed(0), m_root(0), m_sorting(0), m_engine(0)
 {
+    m_root = new QWidget(this);
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
-    setWidgetResizable(true);
+    setVerticalScrollMode(ScrollPerPixel);
+    //setWidgetResizable(true);
 }
 
 ItemsView::~ItemsView()
@@ -137,21 +139,15 @@ void ItemsView::setSearchText( const QString & text )
 void ItemsView::updateItem( Entry *entry )
 {
     // FIXME: change this to call updateEntry once it is complete
-    if (m_views.contains(entry)) {
-        m_views[entry]->setEntry(entry);
-    }
+ //   if (m_views.contains(entry)) {
+//        m_views[entry]->setEntry(entry);
+  //  }
 }
 
 void ItemsView::buildContents()
 {
-    if(m_root) {
-        m_root = takeWidget();
-        delete m_root;
-    }
-
     m_views.clear();
 
-    m_root = new QWidget(this);
     m_root->setBackgroundRole(QPalette::Base);
     QVBoxLayout* _layout = new QVBoxLayout(m_root);
     _layout->setSpacing (10);
@@ -200,11 +196,11 @@ void ItemsView::buildContents()
                     f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
                     QAsyncPixmap *pix = new QAsyncPixmap(imageurl, m_root);
                     f->setFixedSize(64, 64);
-                    connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
-                            f, SLOT(setPixmap(const QPixmap&)));
+                    //connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
+                    //        f, SLOT(setPixmap(const QPixmap&)));
                     previewLayout->addWidget(f);
                 }
-                previewLayout->addWidget(dxsbutton);
+                //previewLayout->addWidget(dxsbutton);
 
                 part->setEntry(entry);
                 m_views.insert(entry, part);
@@ -213,7 +209,7 @@ void ItemsView::buildContents()
         }
     }
 
-    setWidget(m_root);
+    //setWidget(m_root);
 }
 
 EntryView::EntryView( QWidget * _parent )

@@ -274,8 +274,7 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     fw->addEntry(entry);
 
     KUrl source = KUrl(entry->preview().representation());
-    if(source.isValid())
-    {
+    if (source.isValid()) {
         m_engine->downloadPreview(entry);
     }
 

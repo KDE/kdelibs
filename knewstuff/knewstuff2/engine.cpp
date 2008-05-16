@@ -354,7 +354,7 @@ void EnginePrivate::slotEntryChanged(KNS::Entry * entry)
 // BIGFIXME: make this method go away when we are using goya
 void EnginePrivate::slotEntriesFinished()
 {
-    m_downloaddialog->refresh();
+    //m_downloaddialog->refresh();
 }
 
 void EnginePrivate::slotDownloadDialogClosed()

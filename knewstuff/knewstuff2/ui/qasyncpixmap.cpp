@@ -29,15 +29,14 @@
 #include <QtCore/QFile>
 
 QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
-    : QObject(parent), QPixmap()
+    : QObject(parent), QPixmap(), m_url(url)
 {
-    if(!url.isEmpty())
-    {
+    if (!m_url.isEmpty()) {
         // XXX ???
          //KTempFile
         m_dest = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".png";
 
-        KIO::FileCopyJob *job = KIO::file_copy(url, m_dest, -1, KIO::Overwrite | KIO::HideProgressInfo);
+        KIO::FileCopyJob *job = KIO::file_copy(m_url, m_dest, -1, KIO::Overwrite | KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
     }
 }
@@ -56,7 +55,7 @@ void QAsyncPixmap::slotDownload(KJob *job)
     //kDebug(550) << "DOWNLOADed to " << m_dest;
     //kDebug(550) << "ret = " << ret;
 
-    emit signalLoaded(*this);
+    emit signalLoaded(m_url, *this);
 }
 
 #include "qasyncpixmap.moc"
