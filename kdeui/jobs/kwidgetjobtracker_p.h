@@ -31,7 +31,7 @@
 
 class KPushButton;
 class QCheckBox;
-class KLineEdit;
+class KSqueezedTextLabel;
 class QLabel;
 class QProgressBar;
 
@@ -105,8 +105,8 @@ public:
     KUrl        location;
     QTime       startTime;
     KPushButton *pauseButton;
-    KLineEdit *sourceEdit;
-    KLineEdit *destEdit;
+    KSqueezedTextLabel *sourceEdit;
+    KSqueezedTextLabel *destEdit;
     QLabel *progressLabel;
     QLabel *sourceInvite;
     QLabel *destInvite;

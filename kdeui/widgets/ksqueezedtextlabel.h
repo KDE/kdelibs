@@ -94,15 +94,20 @@ public Q_SLOTS:
 
 protected:
   /**
-   * used when widget is resized
+   * Called when widget is resized
    */
   void resizeEvent( QResizeEvent * );
+  /**
+     * \reimp
+     */
+    void contextMenuEvent(QContextMenuEvent* );
   /**
    * does the dirty work
    */
   void squeezeTextToLabel();
 
 private:
+    Q_PRIVATE_SLOT(d, void _k_copyFullText())
   KSqueezedTextLabelPrivate * const d;
 };
 

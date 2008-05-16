@@ -32,7 +32,7 @@
 
 #include <kurl.h>
 #include <kpushbutton.h>
-#include <klineedit.h>
+#include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <kdialog.h>
@@ -426,17 +426,15 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     sourceInvite = new QLabel(i18n("Source:"), this);
     grid->addWidget(sourceInvite, 0, 0);
 
-    sourceEdit = new KLineEdit(this);
-    sourceEdit->setReadOnly(true);
-    sourceEdit->setSqueezedTextEnabled(true);
+    sourceEdit = new KSqueezedTextLabel(this);
+    sourceEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
     grid->addWidget(sourceEdit, 0, 2);
 
     destInvite = new QLabel(i18n("Destination:"), this);
     grid->addWidget(destInvite, 1, 0);
 
-    destEdit = new KLineEdit(this);
-    destEdit->setReadOnly (true);
-    destEdit->setSqueezedTextEnabled(true);
+    destEdit = new KSqueezedTextLabel(this);
+    destEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
     grid->addWidget(destEdit, 1, 2);
 
     QHBoxLayout *progressHBox = new QHBoxLayout();
