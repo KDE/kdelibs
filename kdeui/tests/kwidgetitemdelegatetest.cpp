@@ -31,10 +31,10 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QMenu>
 
-#include <KApplication>
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KMessageBox>
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+#include <kmessagebox.h>
 
 #include <kpushbutton.h>
 #include <klineedit.h>
