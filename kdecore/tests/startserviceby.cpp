@@ -30,10 +30,15 @@ main(int argc, char *argv[])
    //KCmdLineArgs::init(argc, argv, &about);
    //KApplication a;
 
+   const char* serviceId = "kwrite.desktop";
+   if (argc > 1) {
+       serviceId = argv[1];
+   }
+
    QString error;
    QString dbusService;
    int pid;
-   KToolInvocation::startServiceByDesktopPath( "kio_uiserver.desktop", QString(), &error, &dbusService, &pid );
+   KToolInvocation::startServiceByDesktopPath( serviceId, QString(), &error, &dbusService, &pid );
    kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid;
 
    return 0;
