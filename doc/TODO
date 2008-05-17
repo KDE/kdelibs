@@ -3,7 +3,7 @@ docs we need to write (handbook and manpages):
 <DONE> kde4-config
 <DONE> kconfig_compiler
 <DONE> preparetips
-makekdewidgets
+<DONE> makekdewidgets
 meinproc4
 <DONE> checkXML
 kcookiejar4
