@@ -295,8 +295,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     setButtonText(Ok, i18n("&Launch Bug Report Wizard"));
     setButtonIcon(Ok, KIcon("tools-report-bug"));
   }
+  parent->setMinimumHeight( parent->sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
   setMainWidget(parent);
-  setMinimumHeight( sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
 }
 
 KBugReport::~KBugReport()
