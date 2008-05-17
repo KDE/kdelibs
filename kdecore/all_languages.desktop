@@ -1561,6 +1561,8 @@ Name[zh_CN]=捷克语
 Name[zh_HK]=捷克語
 Name[zh_TW]=捷克語
 Name[zu]=Isi-Czech
+[csb]
+Name=Kashubian
 [cu]
 Name=Church Slavic
 Name[az]=Kilisə Slavcası
@@ -10732,6 +10734,8 @@ Name[zh_CN]=乌兹别克语
 Name[zh_HK]=烏茲別克語
 Name[zh_TW]=烏茲別克語
 Name[zu]=Isi-Uzbek
+[uz@cyrillic]
+Name=Uzbek (Cyrillic)
 [ven]
 Name=Venda
 Name[ar]=فيندا
