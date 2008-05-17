@@ -253,6 +253,7 @@ class KDECORE_EXPORT KPluginInfo
          *          KAboutData::License_Custom).
          *
          * @see KAboutLicense::byKeyword()
+         * @since 4.1
          */
         KAboutLicense fullLicense() const;
 

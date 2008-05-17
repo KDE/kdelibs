@@ -821,6 +821,7 @@ public:
      * Returns the license key.
      *
      * @return The license key as element of KAboutData::LicenseKey enum.
+     * @since 4.1
      */
     KAboutData::LicenseKey key() const;
 
@@ -844,6 +845,7 @@ public:
      * @return The license object.
      *
      * @see KAboutData::LicenseKey
+     * @since 4.1
      */
     static KAboutLicense byKeyword(const QString &keyword);
 
