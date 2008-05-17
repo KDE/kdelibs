@@ -373,7 +373,7 @@ void KdedGlobalAccel::unRegister(const QStringList &actionId)
     Q_FOREACH(int key, d->keyToAction.keys(ad)) {
         d->keyToAction.remove(key);
     }
-    delete d;
+    delete ad;
 
     scheduleWriteSettings();
 }
