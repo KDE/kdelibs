@@ -152,8 +152,8 @@ public:
     
     //Higher-level DOM stuff
     virtual bool hasAttributes() const;
-    bool hasAttribute( const DOMString& name );
-    bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName );
+    bool hasAttribute( const DOMString& name ) const;
+    bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName ) const;
     DOMString getAttribute( const DOMString &name );
     void setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode );
     void removeAttribute( const DOMString &name, int& exceptioncode );
@@ -167,8 +167,11 @@ public:
     Attr setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode );
 
     //Lower-level implementation primitives
-    DOMString getAttribute( NodeImpl::Id id, bool nsAware = 0, const DOMString& qName = DOMString() ) const;
-    DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = 0, DOMStringImpl* qName = 0 ) const;
+    DOMString getAttribute( NodeImpl::Id id, bool nsAware = false, const DOMString& qName = DOMString() ) const;
+    DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
+    bool hasAttribute( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const {
+        return getAttributeImpl( id, nsAware, qName ) != 0;
+    }
     void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
                        int &exceptioncode );
     void setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,

@@ -504,7 +504,7 @@ bool ElementImpl::hasAttributes() const
     return namedAttrMap && namedAttrMap->length() > 0;
 }
 
-bool ElementImpl::hasAttribute( const DOMString& name )
+bool ElementImpl::hasAttribute( const DOMString& name ) const
 {
     NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
     if (!id) return false;
@@ -513,7 +513,7 @@ bool ElementImpl::hasAttribute( const DOMString& name )
 }
 
 bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
-                              const DOMString &localName )
+                                  const DOMString &localName ) const
 {
     NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
 						 0/*prefix*/, localName.implementation(), true, true);
