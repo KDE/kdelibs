@@ -382,7 +382,7 @@ QString KMenu::underlineText(const QString& text, uint length)
     QString ret = text;
     for (uint i = 0; i < length; i++) {
         if (ret[2*i] != '&')
-            ret.insert(2*i, "&");
+            ret.insert(2*i, '&');
     }
     return ret;
 }
