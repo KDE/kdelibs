@@ -296,18 +296,23 @@ void DevicePreference::updateDeviceList()
     if (currentItem && currentItem->type() == 1001) {
         CategoryItem *catItem = static_cast<CategoryItem *>(currentItem);
         const Phonon::Category cat = catItem->category();
-        QString deviceString;
         if (catItem->isOutputItem) {
             deviceList->setModel(m_outputModel[cat]);
-            deviceString = i18n("Output Device");
         } else {
             deviceList->setModel(m_captureModel[cat]);
-            deviceString = i18n("Capture Device");
         }
         if (cat == Phonon::NoCategory) {
-            m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Default %1 Preference:", deviceString), Qt::DisplayRole);
+            if (catItem->isOutputItem) {
+                m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Default Output Device Preference:"), Qt::DisplayRole);
+            } else {
+                m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Default Capture Device Preference:"), Qt::DisplayRole);
+            }
         } else {
-            m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("%1 Preference for the '%2' Category:", deviceString, Phonon::categoryToString(cat)), Qt::DisplayRole);
+            if (catItem->isOutputItem) {
+                m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Output Device Preference for the '%1' Category:", Phonon::categoryToString(cat)), Qt::DisplayRole);
+            } else {
+                m_headerModel.setHeaderData(0, Qt::Horizontal, i18n("Capture Device Preference for the '%1' Category:", Phonon::categoryToString(cat)), Qt::DisplayRole);
+            }
         }
     } else {
         m_headerModel.setHeaderData(0, Qt::Horizontal, QString(), Qt::DisplayRole);
