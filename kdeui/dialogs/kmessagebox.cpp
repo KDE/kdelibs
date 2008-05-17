@@ -247,7 +247,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     dialog->setMainWidget(mainWidget);
     dialog->showButtonSeparator(true);
     if (!listWidget) {
-        dialog->layout()->setSizeConstraint(QLayout::SetFixedSize);
+        dialog->setFixedSize(dialog->sizeHint());
     }
 
     if ((options & KMessageBox::Dangerous)) {
