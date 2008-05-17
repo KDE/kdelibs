@@ -44,7 +44,6 @@ class KDEUI_EXPORT KPageDialogPrivate : public KDialogPrivate
                     q, SIGNAL(pageRemoved(KPageWidgetItem *)));
 
             q->setMainWidget(mPageWidget);
-            mPageWidget->layout()->setMargin(0);
         }
 };
 
