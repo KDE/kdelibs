@@ -100,6 +100,7 @@ public:
     QString string() const;
 
     int toInt() const;
+    int toInt(bool* ok) const;
     bool percentage(int &_percentage) const;
 
     DOMString copy() const;

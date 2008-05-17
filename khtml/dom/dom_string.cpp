@@ -213,6 +213,16 @@ int DOMString::toInt() const
     return impl->toInt();
 }
 
+int DOMString::toInt(bool* ok) const
+{
+    if (!impl) {
+        *ok = false;
+        return 0;
+    }
+
+    return impl->toInt(ok);
+}
+
 DOMString DOMString::copy() const
 {
     if(!impl) return DOMString();
