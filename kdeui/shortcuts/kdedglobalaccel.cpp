@@ -360,11 +360,21 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
 
 void KdedGlobalAccel::unRegister(const QStringList &actionId)
 {
+    Q_ASSERT(actionId.size()==4);
+
     if (actionId.size() < 4) {
         return;
     }
+
+    // Stop grabbing the key
     setInactive(actionId);
-    delete d->takeAction(actionId);
+    actionData *ad = d->takeAction(actionId);
+    // Don't let dangling pointers behind
+    Q_FOREACH(int key, d->keyToAction.keys(ad)) {
+        d->keyToAction.remove(key);
+    }
+    delete d;
+
     scheduleWriteSettings();
 }
 
