@@ -80,6 +80,9 @@
 #include <html/html_miscimpl.h>
 #include <html/html_tableimpl.h>
 #include <html/html_objectimpl.h>
+#include <html/HTMLAudioElement.h>
+#include <html/HTMLVideoElement.h>
+#include <html/HTMLSourceElement.h>
 
 #include <kapplication.h>
 #include <kio/job.h>
@@ -1001,6 +1004,17 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
     case ID_SCRIPT:
         n = new HTMLScriptElementImpl(docPtr());
+        break;
+
+// media
+    case ID_AUDIO:
+        n = new HTMLAudioElement(docPtr());
+        break;
+    case ID_VIDEO:
+        n = new HTMLVideoElement(docPtr());
+        break;
+    case ID_SOURCE:
+        n = new HTMLSourceElement(docPtr());
         break;
 
 // tables

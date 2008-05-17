@@ -5,6 +5,7 @@ accesskey
 align
 alink
 autocomplete
+autoplay
 axis
 behavior
 bgcolor
@@ -25,6 +26,7 @@ cols
 colspan
 compact
 contenteditable
+controls
 coords
 declare
 defer
@@ -32,6 +34,7 @@ dir
 direction
 disabled
 enctype
+end
 face
 frame
 frameborder
@@ -48,6 +51,8 @@ left
 leftmargin
 link
 loop
+loopend
+loopstart
 marginheight
 marginwidth
 maxlength
@@ -66,9 +71,11 @@ oversrc
 pagex
 pagey
 plain
+playcount
 pluginpage
 pluginspage
 pluginurl
+poster
 readonly
 rel
 rev

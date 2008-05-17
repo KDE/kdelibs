@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.0.1 */
+/* ANSI-C code produced by gperf version 3.0.3 */
 /* Command-line: gperf -c -a -L ANSI-C -P -G -D -E -C -o -t -k '*' -NfindAttr -Hhash_attr -Wwordlist_attr -Qspool_attr -s 2 htmlattrs.gperf  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -40,14 +40,14 @@ struct attrs {
 };
 enum
   {
-    TOTAL_KEYWORDS = 152,
+    TOTAL_KEYWORDS = 159,
     MIN_WORD_LENGTH = 2,
     MAX_WORD_LENGTH = 15,
     MIN_HASH_VALUE = 3,
-    MAX_HASH_VALUE = 576
+    MAX_HASH_VALUE = 635
   };
 
-/* maximum key range = 574, duplicates = 0 */
+/* maximum key range = 633, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -61,32 +61,32 @@ hash_attr (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577,   5,   5, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577,  30,  10,   0,
-       10,   5,  10,  15, 165,  40, 140,  80,   0,  25,
-       70,   0,   5,   5,   0,   0,  10,  55,  70, 180,
-        5,  90,  45, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577, 577, 577, 577,
-      577, 577, 577, 577, 577, 577, 577
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636,  30,   5, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636,  10,  30,   0,
+       10,   5,  10,  15,  35,  65, 130, 105,   5,  40,
+       80,   5,   0,   0,   0,   0,   5,  25, 135, 110,
+       50, 125,  15, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636, 636, 636, 636,
+      636, 636, 636, 636, 636, 636, 636
     };
   register int hval = len;
 
@@ -144,687 +144,724 @@ hash_attr (register const char *str, register unsigned int len)
 struct spool_attr_t
   {
     char spool_attr_str0[sizeof("src")];
-    char spool_attr_str1[sizeof("onscroll")];
+    char spool_attr_str1[sizeof("top")];
     char spool_attr_str2[sizeof("cols")];
-    char spool_attr_str3[sizeof("color")];
-    char spool_attr_str4[sizeof("onerror")];
-    char spool_attr_str5[sizeof("rel")];
-    char spool_attr_str6[sizeof("loop")];
-    char spool_attr_str7[sizeof("for")];
-    char spool_attr_str8[sizeof("coords")];
-    char spool_attr_str9[sizeof("top")];
-    char spool_attr_str10[sizeof("code")];
+    char spool_attr_str3[sizeof("for")];
+    char spool_attr_str4[sizeof("loop")];
+    char spool_attr_str5[sizeof("color")];
+    char spool_attr_str6[sizeof("poster")];
+    char spool_attr_str7[sizeof("rel")];
+    char spool_attr_str8[sizeof("code")];
+    char spool_attr_str9[sizeof("coords")];
+    char spool_attr_str10[sizeof("end")];
     char spool_attr_str11[sizeof("scope")];
-    char spool_attr_str12[sizeof("onreset")];
-    char spool_attr_str13[sizeof("onselect")];
-    char spool_attr_str14[sizeof("face")];
-    char spool_attr_str15[sizeof("label")];
+    char spool_attr_str12[sizeof("onerror")];
+    char spool_attr_str13[sizeof("type")];
+    char spool_attr_str14[sizeof("onreset")];
+    char spool_attr_str15[sizeof("onscroll")];
     char spool_attr_str16[sizeof("left")];
-    char spool_attr_str17[sizeof("border")];
-    char spool_attr_str18[sizeof("text")];
-    char spool_attr_str19[sizeof("defer")];
-    char spool_attr_str20[sizeof("bordercolor")];
+    char spool_attr_str17[sizeof("accept")];
+    char spool_attr_str18[sizeof("onselect")];
+    char spool_attr_str19[sizeof("loopstart")];
+    char spool_attr_str20[sizeof("defer")];
     char spool_attr_str21[sizeof("abbr")];
-    char spool_attr_str22[sizeof("pagex")];
+    char spool_attr_str22[sizeof("start")];
     char spool_attr_str23[sizeof("onload")];
-    char spool_attr_str24[sizeof("id")];
+    char spool_attr_str24[sizeof("declare")];
     char spool_attr_str25[sizeof("selected")];
-    char spool_attr_str26[sizeof("prompt")];
-    char spool_attr_str27[sizeof("target")];
-    char spool_attr_str28[sizeof("onabort")];
+    char spool_attr_str26[sizeof("face")];
+    char spool_attr_str27[sizeof("border")];
+    char spool_attr_str28[sizeof("href")];
     char spool_attr_str29[sizeof("class")];
-    char spool_attr_str30[sizeof("declare")];
-    char spool_attr_str31[sizeof("data")];
-    char spool_attr_str32[sizeof("clear")];
-    char spool_attr_str33[sizeof("accept")];
-    char spool_attr_str34[sizeof("profile")];
-    char spool_attr_str35[sizeof("alt")];
-    char spool_attr_str36[sizeof("type")];
-    char spool_attr_str37[sizeof("onblur")];
-    char spool_attr_str38[sizeof("onfocus")];
-    char spool_attr_str39[sizeof("codebase")];
-    char spool_attr_str40[sizeof("char")];
+    char spool_attr_str30[sizeof("prompt")];
+    char spool_attr_str31[sizeof("onfocus")];
+    char spool_attr_str32[sizeof("alt")];
+    char spool_attr_str33[sizeof("data")];
+    char spool_attr_str34[sizeof("clear")];
+    char spool_attr_str35[sizeof("hspace")];
+    char spool_attr_str36[sizeof("compact")];
+    char spool_attr_str37[sizeof("truespeed")];
+    char spool_attr_str38[sizeof("target")];
+    char spool_attr_str39[sizeof("onabort")];
+    char spool_attr_str40[sizeof("codebase")];
     char spool_attr_str41[sizeof("frame")];
-    char spool_attr_str42[sizeof("rules")];
-    char spool_attr_str43[sizeof("compact")];
-    char spool_attr_str44[sizeof("rev")];
-    char spool_attr_str45[sizeof("shape")];
-    char spool_attr_str46[sizeof("charset")];
-    char spool_attr_str47[sizeof("charoff")];
-    char spool_attr_str48[sizeof("lang")];
-    char spool_attr_str49[sizeof("start")];
-    char spool_attr_str50[sizeof("onresize")];
-    char spool_attr_str51[sizeof("truespeed")];
-    char spool_attr_str52[sizeof("frameborder")];
+    char spool_attr_str42[sizeof("bordercolor")];
+    char spool_attr_str43[sizeof("id")];
+    char spool_attr_str44[sizeof("text")];
+    char spool_attr_str45[sizeof("onblur")];
+    char spool_attr_str46[sizeof("headers")];
+    char spool_attr_str47[sizeof("char")];
+    char spool_attr_str48[sizeof("label")];
+    char spool_attr_str49[sizeof("shape")];
+    char spool_attr_str50[sizeof("bgcolor")];
+    char spool_attr_str51[sizeof("usemap")];
+    char spool_attr_str52[sizeof("charset")];
     char spool_attr_str53[sizeof("span")];
-    char spool_attr_str54[sizeof("classid")];
-    char spool_attr_str55[sizeof("longdesc")];
-    char spool_attr_str56[sizeof("name")];
-    char spool_attr_str57[sizeof("ismap")];
-    char spool_attr_str58[sizeof("colspan")];
-    char spool_attr_str59[sizeof("media")];
-    char spool_attr_str60[sizeof("enctype")];
-    char spool_attr_str61[sizeof("datetime")];
-    char spool_attr_str62[sizeof("vspace")];
-    char spool_attr_str63[sizeof("onclick")];
-    char spool_attr_str64[sizeof("pagey")];
-    char spool_attr_str65[sizeof("usemap")];
-    char spool_attr_str66[sizeof("codetype")];
-    char spool_attr_str67[sizeof("scrolling")];
-    char spool_attr_str68[sizeof("value")];
-    char spool_attr_str69[sizeof("checked")];
-    char spool_attr_str70[sizeof("onsubmit")];
-    char spool_attr_str71[sizeof("ondblclick")];
-    char spool_attr_str72[sizeof("dir")];
-    char spool_attr_str73[sizeof("onmouseup")];
-    char spool_attr_str74[sizeof("style")];
-    char spool_attr_str75[sizeof("scrolldelay")];
-    char spool_attr_str76[sizeof("cite")];
-    char spool_attr_str77[sizeof("onmouseout")];
-    char spool_attr_str78[sizeof("object")];
-    char spool_attr_str79[sizeof("multiple")];
-    char spool_attr_str80[sizeof("axis")];
-    char spool_attr_str81[sizeof("action")];
-    char spool_attr_str82[sizeof("tabindex")];
-    char spool_attr_str83[sizeof("title")];
-    char spool_attr_str84[sizeof("onmouseover")];
-    char spool_attr_str85[sizeof("autocomplete")];
-    char spool_attr_str86[sizeof("onunload")];
-    char spool_attr_str87[sizeof("challenge")];
-    char spool_attr_str88[sizeof("plain")];
-    char spool_attr_str89[sizeof("content")];
-    char spool_attr_str90[sizeof("noresize")];
-    char spool_attr_str91[sizeof("cellspacing")];
-    char spool_attr_str92[sizeof("bgcolor")];
-    char spool_attr_str93[sizeof("href")];
-    char spool_attr_str94[sizeof("align")];
-    char spool_attr_str95[sizeof("nosave")];
-    char spool_attr_str96[sizeof("z-index")];
-    char spool_attr_str97[sizeof("rows")];
-    char spool_attr_str98[sizeof("oversrc")];
-    char spool_attr_str99[sizeof("size")];
-    char spool_attr_str100[sizeof("onkeypress")];
-    char spool_attr_str101[sizeof("onmousemove")];
-    char spool_attr_str102[sizeof("version")];
-    char spool_attr_str103[sizeof("cellpadding")];
-    char spool_attr_str104[sizeof("language")];
-    char spool_attr_str105[sizeof("topmargin")];
-    char spool_attr_str106[sizeof("valign")];
-    char spool_attr_str107[sizeof("scrollamount")];
-    char spool_attr_str108[sizeof("disabled")];
-    char spool_attr_str109[sizeof("scheme")];
-    char spool_attr_str110[sizeof("readonly")];
-    char spool_attr_str111[sizeof("wrap")];
-    char spool_attr_str112[sizeof("leftmargin")];
-    char spool_attr_str113[sizeof("hspace")];
-    char spool_attr_str114[sizeof("method")];
-    char spool_attr_str115[sizeof("headers")];
-    char spool_attr_str116[sizeof("accesskey")];
-    char spool_attr_str117[sizeof("onkeyup")];
-    char spool_attr_str118[sizeof("summary")];
-    char spool_attr_str119[sizeof("html")];
-    char spool_attr_str120[sizeof("alink")];
-    char spool_attr_str121[sizeof("bgproperties")];
-    char spool_attr_str122[sizeof("valuetype")];
-    char spool_attr_str123[sizeof("background")];
-    char spool_attr_str124[sizeof("nohref")];
-    char spool_attr_str125[sizeof("standby")];
-    char spool_attr_str126[sizeof("pluginurl")];
-    char spool_attr_str127[sizeof("pluginpage")];
-    char spool_attr_str128[sizeof("pluginspage")];
-    char spool_attr_str129[sizeof("direction")];
-    char spool_attr_str130[sizeof("accept-charset")];
-    char spool_attr_str131[sizeof("vlink")];
-    char spool_attr_str132[sizeof("noshade")];
-    char spool_attr_str133[sizeof("onchange")];
-    char spool_attr_str134[sizeof("link")];
-    char spool_attr_str135[sizeof("contenteditable")];
-    char spool_attr_str136[sizeof("nowrap")];
-    char spool_attr_str137[sizeof("rowspan")];
-    char spool_attr_str138[sizeof("hreflang")];
-    char spool_attr_str139[sizeof("maxlength")];
-    char spool_attr_str140[sizeof("archive")];
-    char spool_attr_str141[sizeof("behavior")];
-    char spool_attr_str142[sizeof("onmousedown")];
-    char spool_attr_str143[sizeof("hidden")];
-    char spool_attr_str144[sizeof("height")];
-    char spool_attr_str145[sizeof("http-equiv")];
-    char spool_attr_str146[sizeof("onkeydown")];
-    char spool_attr_str147[sizeof("visibility")];
-    char spool_attr_str148[sizeof("unknown")];
-    char spool_attr_str149[sizeof("width")];
-    char spool_attr_str150[sizeof("marginheight")];
-    char spool_attr_str151[sizeof("marginwidth")];
+    char spool_attr_str54[sizeof("profile")];
+    char spool_attr_str55[sizeof("scheme")];
+    char spool_attr_str56[sizeof("colspan")];
+    char spool_attr_str57[sizeof("controls")];
+    char spool_attr_str58[sizeof("pagex")];
+    char spool_attr_str59[sizeof("charoff")];
+    char spool_attr_str60[sizeof("onresize")];
+    char spool_attr_str61[sizeof("html")];
+    char spool_attr_str62[sizeof("method")];
+    char spool_attr_str63[sizeof("loopend")];
+    char spool_attr_str64[sizeof("rows")];
+    char spool_attr_str65[sizeof("onmouseup")];
+    char spool_attr_str66[sizeof("longdesc")];
+    char spool_attr_str67[sizeof("wrap")];
+    char spool_attr_str68[sizeof("ismap")];
+    char spool_attr_str69[sizeof("frameborder")];
+    char spool_attr_str70[sizeof("oversrc")];
+    char spool_attr_str71[sizeof("accept-charset")];
+    char spool_attr_str72[sizeof("onmouseout")];
+    char spool_attr_str73[sizeof("classid")];
+    char spool_attr_str74[sizeof("lang")];
+    char spool_attr_str75[sizeof("nohref")];
+    char spool_attr_str76[sizeof("media")];
+    char spool_attr_str77[sizeof("dir")];
+    char spool_attr_str78[sizeof("cite")];
+    char spool_attr_str79[sizeof("noshade")];
+    char spool_attr_str80[sizeof("rev")];
+    char spool_attr_str81[sizeof("rules")];
+    char spool_attr_str82[sizeof("object")];
+    char spool_attr_str83[sizeof("enctype")];
+    char spool_attr_str84[sizeof("onunload")];
+    char spool_attr_str85[sizeof("size")];
+    char spool_attr_str86[sizeof("title")];
+    char spool_attr_str87[sizeof("codetype")];
+    char spool_attr_str88[sizeof("name")];
+    char spool_attr_str89[sizeof("vspace")];
+    char spool_attr_str90[sizeof("bgproperties")];
+    char spool_attr_str91[sizeof("onchange")];
+    char spool_attr_str92[sizeof("style")];
+    char spool_attr_str93[sizeof("hreflang")];
+    char spool_attr_str94[sizeof("height")];
+    char spool_attr_str95[sizeof("datetime")];
+    char spool_attr_str96[sizeof("noresize")];
+    char spool_attr_str97[sizeof("pagey")];
+    char spool_attr_str98[sizeof("action")];
+    char spool_attr_str99[sizeof("content")];
+    char spool_attr_str100[sizeof("onsubmit")];
+    char spool_attr_str101[sizeof("scrolldelay")];
+    char spool_attr_str102[sizeof("onclick")];
+    char spool_attr_str103[sizeof("language")];
+    char spool_attr_str104[sizeof("scrolling")];
+    char spool_attr_str105[sizeof("checked")];
+    char spool_attr_str106[sizeof("challenge")];
+    char spool_attr_str107[sizeof("plain")];
+    char spool_attr_str108[sizeof("cellspacing")];
+    char spool_attr_str109[sizeof("scrollamount")];
+    char spool_attr_str110[sizeof("axis")];
+    char spool_attr_str111[sizeof("value")];
+    char spool_attr_str112[sizeof("nowrap")];
+    char spool_attr_str113[sizeof("rowspan")];
+    char spool_attr_str114[sizeof("disabled")];
+    char spool_attr_str115[sizeof("align")];
+    char spool_attr_str116[sizeof("cellpadding")];
+    char spool_attr_str117[sizeof("topmargin")];
+    char spool_attr_str118[sizeof("autocomplete")];
+    char spool_attr_str119[sizeof("nosave")];
+    char spool_attr_str120[sizeof("z-index")];
+    char spool_attr_str121[sizeof("ondblclick")];
+    char spool_attr_str122[sizeof("onmouseover")];
+    char spool_attr_str123[sizeof("leftmargin")];
+    char spool_attr_str124[sizeof("readonly")];
+    char spool_attr_str125[sizeof("archive")];
+    char spool_attr_str126[sizeof("onkeypress")];
+    char spool_attr_str127[sizeof("pluginurl")];
+    char spool_attr_str128[sizeof("pluginpage")];
+    char spool_attr_str129[sizeof("pluginspage")];
+    char spool_attr_str130[sizeof("multiple")];
+    char spool_attr_str131[sizeof("accesskey")];
+    char spool_attr_str132[sizeof("maxlength")];
+    char spool_attr_str133[sizeof("hidden")];
+    char spool_attr_str134[sizeof("onkeyup")];
+    char spool_attr_str135[sizeof("onmousemove")];
+    char spool_attr_str136[sizeof("tabindex")];
+    char spool_attr_str137[sizeof("standby")];
+    char spool_attr_str138[sizeof("width")];
+    char spool_attr_str139[sizeof("behavior")];
+    char spool_attr_str140[sizeof("playcount")];
+    char spool_attr_str141[sizeof("onmousedown")];
+    char spool_attr_str142[sizeof("version")];
+    char spool_attr_str143[sizeof("autoplay")];
+    char spool_attr_str144[sizeof("alink")];
+    char spool_attr_str145[sizeof("direction")];
+    char spool_attr_str146[sizeof("background")];
+    char spool_attr_str147[sizeof("link")];
+    char spool_attr_str148[sizeof("contenteditable")];
+    char spool_attr_str149[sizeof("http-equiv")];
+    char spool_attr_str150[sizeof("valign")];
+    char spool_attr_str151[sizeof("valuetype")];
+    char spool_attr_str152[sizeof("summary")];
+    char spool_attr_str153[sizeof("marginheight")];
+    char spool_attr_str154[sizeof("unknown")];
+    char spool_attr_str155[sizeof("vlink")];
+    char spool_attr_str156[sizeof("onkeydown")];
+    char spool_attr_str157[sizeof("marginwidth")];
+    char spool_attr_str158[sizeof("visibility")];
   };
 static const struct spool_attr_t spool_attr_contents =
   {
     "src",
-    "onscroll",
-    "cols",
-    "color",
-    "onerror",
-    "rel",
-    "loop",
-    "for",
-    "coords",
     "top",
+    "cols",
+    "for",
+    "loop",
+    "color",
+    "poster",
+    "rel",
     "code",
+    "coords",
+    "end",
     "scope",
+    "onerror",
+    "type",
     "onreset",
-    "onselect",
-    "face",
-    "label",
+    "onscroll",
     "left",
-    "border",
-    "text",
+    "accept",
+    "onselect",
+    "loopstart",
     "defer",
-    "bordercolor",
     "abbr",
-    "pagex",
+    "start",
     "onload",
-    "id",
-    "selected",
-    "prompt",
-    "target",
-    "onabort",
-    "class",
     "declare",
+    "selected",
+    "face",
+    "border",
+    "href",
+    "class",
+    "prompt",
+    "onfocus",
+    "alt",
     "data",
     "clear",
-    "accept",
-    "profile",
-    "alt",
-    "type",
-    "onblur",
-    "onfocus",
-    "codebase",
-    "char",
-    "frame",
-    "rules",
+    "hspace",
     "compact",
-    "rev",
-    "shape",
-    "charset",
-    "charoff",
-    "lang",
-    "start",
-    "onresize",
     "truespeed",
-    "frameborder",
-    "span",
-    "classid",
-    "longdesc",
-    "name",
-    "ismap",
-    "colspan",
-    "media",
-    "enctype",
-    "datetime",
-    "vspace",
-    "onclick",
-    "pagey",
+    "target",
+    "onabort",
+    "codebase",
+    "frame",
+    "bordercolor",
+    "id",
+    "text",
+    "onblur",
+    "headers",
+    "char",
+    "label",
+    "shape",
+    "bgcolor",
     "usemap",
-    "codetype",
-    "scrolling",
-    "value",
-    "checked",
-    "onsubmit",
-    "ondblclick",
-    "dir",
+    "charset",
+    "span",
+    "profile",
+    "scheme",
+    "colspan",
+    "controls",
+    "pagex",
+    "charoff",
+    "onresize",
+    "html",
+    "method",
+    "loopend",
+    "rows",
     "onmouseup",
-    "style",
-    "scrolldelay",
-    "cite",
+    "longdesc",
+    "wrap",
+    "ismap",
+    "frameborder",
+    "oversrc",
+    "accept-charset",
     "onmouseout",
+    "classid",
+    "lang",
+    "nohref",
+    "media",
+    "dir",
+    "cite",
+    "noshade",
+    "rev",
+    "rules",
     "object",
-    "multiple",
-    "axis",
-    "action",
-    "tabindex",
-    "title",
-    "onmouseover",
-    "autocomplete",
+    "enctype",
     "onunload",
+    "size",
+    "title",
+    "codetype",
+    "name",
+    "vspace",
+    "bgproperties",
+    "onchange",
+    "style",
+    "hreflang",
+    "height",
+    "datetime",
+    "noresize",
+    "pagey",
+    "action",
+    "content",
+    "onsubmit",
+    "scrolldelay",
+    "onclick",
+    "language",
+    "scrolling",
+    "checked",
     "challenge",
     "plain",
-    "content",
-    "noresize",
     "cellspacing",
-    "bgcolor",
-    "href",
+    "scrollamount",
+    "axis",
+    "value",
+    "nowrap",
+    "rowspan",
+    "disabled",
     "align",
+    "cellpadding",
+    "topmargin",
+    "autocomplete",
     "nosave",
     "z-index",
-    "rows",
-    "oversrc",
-    "size",
-    "onkeypress",
-    "onmousemove",
-    "version",
-    "cellpadding",
-    "language",
-    "topmargin",
-    "valign",
-    "scrollamount",
-    "disabled",
-    "scheme",
-    "readonly",
-    "wrap",
+    "ondblclick",
+    "onmouseover",
     "leftmargin",
-    "hspace",
-    "method",
-    "headers",
-    "accesskey",
-    "onkeyup",
-    "summary",
-    "html",
-    "alink",
-    "bgproperties",
-    "valuetype",
-    "background",
-    "nohref",
-    "standby",
+    "readonly",
+    "archive",
+    "onkeypress",
     "pluginurl",
     "pluginpage",
     "pluginspage",
+    "multiple",
+    "accesskey",
+    "maxlength",
+    "hidden",
+    "onkeyup",
+    "onmousemove",
+    "tabindex",
+    "standby",
+    "width",
+    "behavior",
+    "playcount",
+    "onmousedown",
+    "version",
+    "autoplay",
+    "alink",
     "direction",
-    "accept-charset",
-    "vlink",
-    "noshade",
-    "onchange",
+    "background",
     "link",
     "contenteditable",
-    "nowrap",
-    "rowspan",
-    "hreflang",
-    "maxlength",
-    "archive",
-    "behavior",
-    "onmousedown",
-    "hidden",
-    "height",
     "http-equiv",
-    "onkeydown",
-    "visibility",
-    "unknown",
-    "width",
+    "valign",
+    "valuetype",
+    "summary",
     "marginheight",
-    "marginwidth"
+    "unknown",
+    "vlink",
+    "onkeydown",
+    "marginwidth",
+    "visibility"
   };
 #define spool_attr ((const char *) &spool_attr_contents)
 
 static const struct attrs wordlist_attr[] =
   {
-#line 157 "htmlattrs.gperf"
+#line 164 "htmlattrs.gperf"
     {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str0, ATTR_SRC},
-#line 151 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str1, ATTR_ONSCROLL},
-#line 33 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str2, ATTR_COLS},
-#line 32 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str3, ATTR_COLOR},
-#line 72 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str4, ATTR_ONERROR},
-#line 82 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str5, ATTR_REL},
-#line 59 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str6, ATTR_LOOP},
-#line 127 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str7, ATTR_FOR},
-#line 37 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str8, ATTR_COORDS},
-#line 100 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str9, ATTR_TOP},
-#line 122 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str10, ATTR_CODE},
-#line 87 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str11, ATTR_SCOPE},
-#line 149 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str12, ATTR_ONRESET},
-#line 150 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str13, ATTR_ONSELECT},
-#line 44 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str14, ATTR_FACE},
-#line 131 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str15, ATTR_LABEL},
-#line 56 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str16, ATTR_LEFT},
-#line 21 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str17, ATTR_BORDER},
-#line 99 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str18, ATTR_TEXT},
-#line 39 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str19, ATTR_DEFER},
-#line 22 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str20, ATTR_BORDERCOLOR},
-#line 114 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str21, ATTR_ABBR},
-#line 75 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str22, ATTR_PAGEX},
-#line 143 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str23, ATTR_ONLOAD},
-#line 130 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str24, ATTR_ID},
-#line 91 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str25, ATTR_SELECTED},
-#line 155 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str26, ATTR_PROMPT},
-#line 98 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str27, ATTR_TARGET},
-#line 71 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str28, ATTR_ONABORT},
-#line 120 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str29, ATTR_CLASS},
-#line 38 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str30, ATTR_DECLARE},
-#line 125 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str31, ATTR_DATA},
-#line 30 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str32, ATTR_CLEAR},
-#line 12 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str33, ATTR_ACCEPT},
-#line 154 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str34, ATTR_PROFILE},
-#line 116 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str35, ATTR_ALT},
-#line 103 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str36, ATTR_TYPE},
-#line 135 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str37, ATTR_ONBLUR},
-#line 139 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str38, ATTR_ONFOCUS},
-#line 123 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str39, ATTR_CODEBASE},
-#line 25 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str40, ATTR_CHAR},
-#line 45 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str41, ATTR_FRAME},
-#line 86 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str42, ATTR_RULES},
-#line 35 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str43, ATTR_COMPACT},
-#line 83 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str44, ATTR_REV},
-#line 92 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str45, ATTR_SHAPE},
-#line 28 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str46, ATTR_CHARSET},
-#line 27 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str47, ATTR_CHAROFF},
-#line 54 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str48, ATTR_LANG},
-#line 95 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str49, ATTR_START},
-#line 73 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str50, ATTR_ONRESIZE},
-#line 102 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str51, ATTR_TRUESPEED},
-#line 46 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str52, ATTR_FRAMEBORDER},
-#line 94 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str53, ATTR_SPAN},
-#line 121 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str54, ATTR_CLASSID},
-#line 132 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str55, ATTR_LONGDESC},
-#line 133 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str56, ATTR_NAME},
-#line 53 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str57, ATTR_ISMAP},
-#line 34 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str58, ATTR_COLSPAN},
-#line 63 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str59, ATTR_MEDIA},
-#line 43 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str60, ATTR_ENCTYPE},
-#line 126 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str61, ATTR_DATETIME},
-#line 110 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str62, ATTR_VSPACE},
-#line 137 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str63, ATTR_ONCLICK},
-#line 76 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str64, ATTR_PAGEY},
-#line 161 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str65, ATTR_USEMAP},
-#line 31 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str66, ATTR_CODETYPE},
-#line 90 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str67, ATTR_SCROLLING},
-#line 162 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str68, ATTR_VALUE},
-#line 29 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str69, ATTR_CHECKED},
-#line 152 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str70, ATTR_ONSUBMIT},
-#line 138 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str71, ATTR_ONDBLCLICK},
-#line 40 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str72, ATTR_DIR},
-#line 148 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str73, ATTR_ONMOUSEUP},
-#line 96 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str74, ATTR_STYLE},
-#line 89 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str75, ATTR_SCROLLDELAY},
-#line 119 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str76, ATTR_CITE},
-#line 146 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str77, ATTR_ONMOUSEOUT},
-#line 134 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str78, ATTR_OBJECT},
-#line 65 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str79, ATTR_MULTIPLE},
-#line 17 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str80, ATTR_AXIS},
-#line 115 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str81, ATTR_ACTION},
-#line 97 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str82, ATTR_TABINDEX},
-#line 160 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str83, ATTR_TITLE},
-#line 147 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str84, ATTR_ONMOUSEOVER},
-#line 16 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str85, ATTR_AUTOCOMPLETE},
-#line 153 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str86, ATTR_ONUNLOAD},
-#line 26 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str87, ATTR_CHALLENGE},
-#line 77 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str88, ATTR_PLAIN},
-#line 124 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str89, ATTR_CONTENT},
-#line 67 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str90, ATTR_NORESIZE},
-#line 24 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str91, ATTR_CELLSPACING},
-#line 19 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str92, ATTR_BGCOLOR},
-#line 129 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str93, ATTR_HREF},
-#line 14 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str94, ATTR_ALIGN},
-#line 68 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str95, ATTR_NOSAVE},
-#line 113 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str96, ATTR_Z_INDEX},
-#line 84 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str97, ATTR_ROWS},
-#line 74 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str98, ATTR_OVERSRC},
-#line 93 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str99, ATTR_SIZE},
-#line 141 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str100, ATTR_ONKEYPRESS},
-#line 145 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str101, ATTR_ONMOUSEMOVE},
 #line 107 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str102, ATTR_VERSION},
-#line 23 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str103, ATTR_CELLPADDING},
-#line 55 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str104, ATTR_LANGUAGE},
-#line 101 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str105, ATTR_TOPMARGIN},
-#line 105 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str106, ATTR_VALIGN},
-#line 88 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str107, ATTR_SCROLLAMOUNT},
-#line 42 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str108, ATTR_DISABLED},
-#line 156 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str109, ATTR_SCHEME},
-#line 81 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str110, ATTR_READONLY},
-#line 112 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str111, ATTR_WRAP},
-#line 57 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str112, ATTR_LEFTMARGIN},
-#line 50 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str113, ATTR_HSPACE},
-#line 64 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str114, ATTR_METHOD},
-#line 128 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str115, ATTR_HEADERS},
-#line 13 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str116, ATTR_ACCESSKEY},
-#line 142 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str117, ATTR_ONKEYUP},
-#line 159 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str118, ATTR_SUMMARY},
-#line 51 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str119, ATTR_HTML},
-#line 15 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str120, ATTR_ALINK},
-#line 20 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str121, ATTR_BGPROPERTIES},
-#line 106 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str122, ATTR_VALUETYPE},
-#line 118 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str123, ATTR_BACKGROUND},
-#line 66 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str124, ATTR_NOHREF},
-#line 158 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str125, ATTR_STANDBY},
-#line 80 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str126, ATTR_PLUGINURL},
-#line 78 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str127, ATTR_PLUGINPAGE},
-#line 79 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str128, ATTR_PLUGINSPAGE},
-#line 41 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str129, ATTR_DIRECTION},
-#line 11 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str130, ATTR_ACCEPT_CHARSET},
-#line 109 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str131, ATTR_VLINK},
-#line 69 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str132, ATTR_NOSHADE},
-#line 136 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str133, ATTR_ONCHANGE},
-#line 58 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str134, ATTR_LINK},
-#line 36 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str135, ATTR_CONTENTEDITABLE},
-#line 70 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str136, ATTR_NOWRAP},
-#line 85 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str137, ATTR_ROWSPAN},
-#line 49 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str138, ATTR_HREFLANG},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str1, ATTR_TOP},
+#line 34 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str2, ATTR_COLS},
+#line 134 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str3, ATTR_FOR},
 #line 62 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str139, ATTR_MAXLENGTH},
-#line 117 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str140, ATTR_ARCHIVE},
-#line 18 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str141, ATTR_BEHAVIOR},
-#line 144 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str142, ATTR_ONMOUSEDOWN},
-#line 48 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str143, ATTR_HIDDEN},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str4, ATTR_LOOP},
+#line 33 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str5, ATTR_COLOR},
+#line 87 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str6, ATTR_POSTER},
+#line 89 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str7, ATTR_REL},
+#line 129 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str8, ATTR_CODE},
+#line 39 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str9, ATTR_COORDS},
+#line 46 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str10, ATTR_END},
+#line 94 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str11, ATTR_SCOPE},
+#line 77 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str12, ATTR_ONERROR},
+#line 110 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str13, ATTR_TYPE},
+#line 156 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str14, ATTR_ONRESET},
+#line 158 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str15, ATTR_ONSCROLL},
+#line 59 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str16, ATTR_LEFT},
+#line 12 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str17, ATTR_ACCEPT},
+#line 157 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str18, ATTR_ONSELECT},
+#line 64 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str19, ATTR_LOOPSTART},
+#line 41 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str20, ATTR_DEFER},
+#line 121 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str21, ATTR_ABBR},
+#line 102 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str22, ATTR_START},
+#line 150 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str23, ATTR_ONLOAD},
+#line 40 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str24, ATTR_DECLARE},
+#line 98 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str25, ATTR_SELECTED},
 #line 47 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str144, ATTR_HEIGHT},
-#line 52 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str145, ATTR_HTTP_EQUIV},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str26, ATTR_FACE},
+#line 22 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str27, ATTR_BORDER},
+#line 136 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str28, ATTR_HREF},
+#line 127 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str29, ATTR_CLASS},
+#line 162 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str30, ATTR_PROMPT},
+#line 146 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str31, ATTR_ONFOCUS},
+#line 123 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str32, ATTR_ALT},
+#line 132 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str33, ATTR_DATA},
+#line 31 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str34, ATTR_CLEAR},
+#line 53 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str35, ATTR_HSPACE},
+#line 36 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str36, ATTR_COMPACT},
+#line 109 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str37, ATTR_TRUESPEED},
+#line 105 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str38, ATTR_TARGET},
+#line 76 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str39, ATTR_ONABORT},
+#line 130 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str40, ATTR_CODEBASE},
+#line 48 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str41, ATTR_FRAME},
+#line 23 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str42, ATTR_BORDERCOLOR},
+#line 137 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str43, ATTR_ID},
+#line 106 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str44, ATTR_TEXT},
+#line 142 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str45, ATTR_ONBLUR},
+#line 135 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str46, ATTR_HEADERS},
+#line 26 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str47, ATTR_CHAR},
+#line 138 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str48, ATTR_LABEL},
+#line 99 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str49, ATTR_SHAPE},
+#line 20 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str50, ATTR_BGCOLOR},
+#line 168 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str51, ATTR_USEMAP},
+#line 29 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str52, ATTR_CHARSET},
+#line 101 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str53, ATTR_SPAN},
+#line 161 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str54, ATTR_PROFILE},
+#line 163 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str55, ATTR_SCHEME},
+#line 35 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str56, ATTR_COLSPAN},
+#line 38 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str57, ATTR_CONTROLS},
+#line 80 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str58, ATTR_PAGEX},
+#line 28 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str59, ATTR_CHAROFF},
+#line 78 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str60, ATTR_ONRESIZE},
+#line 54 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str61, ATTR_HTML},
+#line 69 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str62, ATTR_METHOD},
+#line 63 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str63, ATTR_LOOPEND},
+#line 91 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str64, ATTR_ROWS},
+#line 155 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str65, ATTR_ONMOUSEUP},
+#line 139 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str66, ATTR_LONGDESC},
+#line 119 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str67, ATTR_WRAP},
+#line 56 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str68, ATTR_ISMAP},
+#line 49 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str69, ATTR_FRAMEBORDER},
+#line 79 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str70, ATTR_OVERSRC},
+#line 11 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str71, ATTR_ACCEPT_CHARSET},
+#line 153 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str72, ATTR_ONMOUSEOUT},
+#line 128 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str73, ATTR_CLASSID},
+#line 57 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str74, ATTR_LANG},
+#line 71 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str75, ATTR_NOHREF},
+#line 68 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str76, ATTR_MEDIA},
+#line 42 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str77, ATTR_DIR},
+#line 126 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str78, ATTR_CITE},
+#line 74 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str79, ATTR_NOSHADE},
+#line 90 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str80, ATTR_REV},
+#line 93 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str81, ATTR_RULES},
+#line 141 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str82, ATTR_OBJECT},
+#line 45 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str83, ATTR_ENCTYPE},
+#line 160 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str84, ATTR_ONUNLOAD},
+#line 100 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str85, ATTR_SIZE},
+#line 167 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str86, ATTR_TITLE},
+#line 32 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str87, ATTR_CODETYPE},
 #line 140 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str146, ATTR_ONKEYDOWN},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str88, ATTR_NAME},
+#line 117 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str89, ATTR_VSPACE},
+#line 21 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str90, ATTR_BGPROPERTIES},
+#line 143 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str91, ATTR_ONCHANGE},
+#line 103 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str92, ATTR_STYLE},
+#line 52 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str93, ATTR_HREFLANG},
+#line 50 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str94, ATTR_HEIGHT},
+#line 133 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str95, ATTR_DATETIME},
+#line 72 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str96, ATTR_NORESIZE},
+#line 81 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str97, ATTR_PAGEY},
+#line 122 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str98, ATTR_ACTION},
+#line 131 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str99, ATTR_CONTENT},
+#line 159 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str100, ATTR_ONSUBMIT},
+#line 96 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str101, ATTR_SCROLLDELAY},
+#line 144 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str102, ATTR_ONCLICK},
+#line 58 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str103, ATTR_LANGUAGE},
+#line 97 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str104, ATTR_SCROLLING},
+#line 30 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str105, ATTR_CHECKED},
+#line 27 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str106, ATTR_CHALLENGE},
+#line 82 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str107, ATTR_PLAIN},
+#line 25 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str108, ATTR_CELLSPACING},
+#line 95 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str109, ATTR_SCROLLAMOUNT},
+#line 18 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str110, ATTR_AXIS},
+#line 169 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str111, ATTR_VALUE},
+#line 75 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str112, ATTR_NOWRAP},
+#line 92 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str113, ATTR_ROWSPAN},
+#line 44 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str114, ATTR_DISABLED},
+#line 14 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str115, ATTR_ALIGN},
+#line 24 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str116, ATTR_CELLPADDING},
 #line 108 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str147, ATTR_VISIBILITY},
-#line 104 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str148, ATTR_UNKNOWN},
-#line 111 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str149, ATTR_WIDTH},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str117, ATTR_TOPMARGIN},
+#line 16 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str118, ATTR_AUTOCOMPLETE},
+#line 73 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str119, ATTR_NOSAVE},
+#line 120 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str120, ATTR_Z_INDEX},
+#line 145 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str121, ATTR_ONDBLCLICK},
+#line 154 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str122, ATTR_ONMOUSEOVER},
 #line 60 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str150, ATTR_MARGINHEIGHT},
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str123, ATTR_LEFTMARGIN},
+#line 88 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str124, ATTR_READONLY},
+#line 124 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str125, ATTR_ARCHIVE},
+#line 148 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str126, ATTR_ONKEYPRESS},
+#line 86 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str127, ATTR_PLUGINURL},
+#line 84 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str128, ATTR_PLUGINPAGE},
+#line 85 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str129, ATTR_PLUGINSPAGE},
+#line 70 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str130, ATTR_MULTIPLE},
+#line 13 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str131, ATTR_ACCESSKEY},
+#line 67 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str132, ATTR_MAXLENGTH},
+#line 51 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str133, ATTR_HIDDEN},
+#line 149 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str134, ATTR_ONKEYUP},
+#line 152 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str135, ATTR_ONMOUSEMOVE},
+#line 104 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str136, ATTR_TABINDEX},
+#line 165 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str137, ATTR_STANDBY},
+#line 118 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str138, ATTR_WIDTH},
+#line 19 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str139, ATTR_BEHAVIOR},
+#line 83 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str140, ATTR_PLAYCOUNT},
+#line 151 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str141, ATTR_ONMOUSEDOWN},
+#line 114 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str142, ATTR_VERSION},
+#line 17 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str143, ATTR_AUTOPLAY},
+#line 15 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str144, ATTR_ALINK},
+#line 43 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str145, ATTR_DIRECTION},
+#line 125 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str146, ATTR_BACKGROUND},
 #line 61 "htmlattrs.gperf"
-    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str151, ATTR_MARGINWIDTH}
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str147, ATTR_LINK},
+#line 37 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str148, ATTR_CONTENTEDITABLE},
+#line 55 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str149, ATTR_HTTP_EQUIV},
+#line 112 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str150, ATTR_VALIGN},
+#line 113 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str151, ATTR_VALUETYPE},
+#line 166 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str152, ATTR_SUMMARY},
+#line 65 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str153, ATTR_MARGINHEIGHT},
+#line 111 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str154, ATTR_UNKNOWN},
+#line 116 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str155, ATTR_VLINK},
+#line 147 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str156, ATTR_ONKEYDOWN},
+#line 66 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str157, ATTR_MARGINWIDTH},
+#line 115 "htmlattrs.gperf"
+    {(int)(long)&((struct spool_attr_t *)0)->spool_attr_str158, ATTR_VISIBILITY}
   };
 
 static const short lookup[] =
   {
      -1,  -1,  -1,   0,  -1,  -1,  -1,  -1,   1,   2,
-      3,  -1,   4,   5,   6,  -1,  -1,  -1,   7,  -1,
-     -1,   8,  -1,   9,  10,  11,  -1,  12,  13,  14,
-     15,  -1,  -1,  -1,  16,  -1,  17,  -1,  -1,  18,
-     19,  20,  -1,  -1,  21,  22,  23,  24,  25,  -1,
-     -1,  26,  -1,  -1,  -1,  -1,  27,  28,  -1,  -1,
-     29,  -1,  30,  -1,  31,  32,  33,  34,  35,  36,
-     -1,  37,  38,  39,  40,  41,  -1,  -1,  -1,  -1,
-     42,  -1,  43,  44,  -1,  45,  -1,  -1,  -1,  -1,
-     -1,  -1,  46,  -1,  -1,  -1,  -1,  47,  -1,  48,
-     49,  -1,  -1,  50,  51,  -1,  52,  -1,  -1,  53,
-     -1,  -1,  54,  55,  56,  57,  -1,  58,  -1,  -1,
-     59,  -1,  60,  61,  -1,  -1,  62,  63,  -1,  -1,
-     64,  -1,  -1,  -1,  -1,  -1,  65,  -1,  66,  -1,
-     -1,  -1,  -1,  -1,  67,  68,  -1,  69,  70,  -1,
-     71,  -1,  -1,  72,  73,  74,  75,  -1,  -1,  76,
-     77,  78,  -1,  79,  80,  -1,  81,  -1,  82,  -1,
-     83,  84,  85,  86,  87,  88,  -1,  89,  90,  -1,
-     -1,  91,  92,  -1,  93,  94,  95,  96,  -1,  97,
-     -1,  -1,  98,  -1,  99, 100, 101, 102,  -1,  -1,
-     -1, 103,  -1,  -1,  -1,  -1,  -1,  -1, 104, 105,
-     -1, 106, 107, 108,  -1,  -1, 109,  -1, 110, 111,
-    112, 113,  -1,  -1,  -1,  -1, 114, 115,  -1, 116,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1, 117,  -1,  -1,  -1,  -1, 118,  -1, 119,
-    120,  -1,  -1,  -1,  -1,  -1,  -1, 121,  -1, 122,
-    123, 124,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1, 125,  -1, 126, 127, 128,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1, 129,  -1,  -1,  -1,  -1, 130,
-    131,  -1, 132, 133, 134, 135, 136, 137,  -1,  -1,
-     -1,  -1,  -1, 138,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1, 139,  -1,  -1, 140,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1, 141,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1, 142,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1, 143,  -1,  -1,  -1,
-     -1, 144,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1, 145,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1,  -1,  -1, 146,  -1,  -1,  -1,  -1,  -1,
-    147,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1, 148,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,   3,   4,   5,   6,  -1,   7,   8,
+     -1,   9,  -1,  10,  -1,  11,  -1,  12,  -1,  13,
+     -1,  -1,  14,  15,  16,  -1,  17,  -1,  18,  19,
+     20,  -1,  -1,  -1,  21,  22,  23,  24,  25,  26,
+     -1,  27,  -1,  -1,  28,  29,  30,  31,  32,  33,
+     34,  35,  36,  -1,  37,  -1,  38,  39,  40,  -1,
+     41,  42,  43,  -1,  44,  -1,  45,  46,  -1,  47,
+     48,  -1,  -1,  -1,  -1,  49,  -1,  50,  -1,  -1,
+     -1,  51,  52,  -1,  53,  -1,  -1,  54,  -1,  -1,
+     -1,  55,  56,  57,  -1,  58,  -1,  59,  60,  61,
+     -1,  62,  63,  -1,  64,  -1,  -1,  -1,  -1,  65,
+     -1,  -1,  -1,  66,  67,  68,  69,  70,  -1,  71,
+     72,  -1,  73,  -1,  74,  -1,  75,  -1,  -1,  -1,
+     76,  -1,  -1,  77,  78,  -1,  -1,  79,  80,  -1,
+     81,  82,  83,  84,  85,  86,  -1,  -1,  87,  88,
+     -1,  89,  90,  91,  -1,  92,  -1,  -1,  93,  -1,
+     -1,  94,  -1,  95,  -1,  -1,  -1,  -1,  96,  -1,
+     97,  98,  99, 100,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1, 101, 102, 103, 104,  -1,  -1, 105,  -1, 106,
+    107, 108, 109,  -1, 110, 111, 112, 113, 114,  -1,
+     -1,  -1,  -1,  -1,  -1, 115,  -1,  -1,  -1,  -1,
+     -1, 116,  -1,  -1, 117,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1, 118,  -1,  -1,  -1, 119, 120,  -1,  -1,
+    121, 122,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+    123,  -1,  -1, 124,  -1,  -1,  -1, 125,  -1,  -1,
+    126,  -1,  -1,  -1, 127, 128, 129,  -1, 130, 131,
+     -1,  -1,  -1,  -1, 132,  -1, 133, 134,  -1,  -1,
+     -1, 135,  -1, 136,  -1,  -1,  -1, 137,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1, 138,  -1,  -1, 139, 140,
+     -1, 141, 142, 143,  -1, 144,  -1,  -1,  -1, 145,
+    146,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1, 147, 148,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1, 149, 150,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1, 151,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1, 152,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-    149,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1, 153,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1, 154,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+    155,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 156,
+     -1,  -1,  -1,  -1,  -1,  -1, 157,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-     -1,  -1, 150,  -1,  -1,  -1, 151
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+     -1,  -1,  -1,  -1,  -1, 158
   };
 
 #ifdef __GNUC__
 __inline
+#ifdef __GNUC_STDC_INLINE__
+__attribute__ ((__gnu_inline__))
+#endif
 #endif
 const struct attrs *
 findAttr (register const char *str, register unsigned int len)
@@ -848,164 +885,171 @@ findAttr (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 163 "htmlattrs.gperf"
+#line 170 "htmlattrs.gperf"
 
 
 
 static const unsigned short attrList[] = {
     65535,
-    145,
-    33,
-    116,
-    94,
-    120,
-    85,
-    80,
-    141,
-    92,
-    121,
+    149,
     17,
-    20,
-    103,
-    91,
-    40,
-    87,
-    47,
-    46,
-    69,
-    32,
-    66,
-    3,
-    2,
-    58,
-    43,
-    135,
-    8,
-    30,
-    19,
-    72,
-    129,
-    108,
-    60,
-    14,
-    41,
-    52,
+    131,
+    115,
     144,
+    118,
     143,
-    138,
-    113,
-    119,
-    145,
-    57,
-    48,
-    104,
-    16,
-    112,
-    134,
-    6,
-    150,
-    151,
-    139,
-    59,
-    114,
-    79,
-    124,
-    90,
-    95,
-    132,
-    136,
-    28,
-    4,
-    50,
-    98,
-    22,
-    64,
-    88,
-    127,
-    128,
-    126,
     110,
-    5,
-    44,
-    97,
-    137,
-    42,
-    11,
-    107,
-    75,
-    67,
-    25,
-    45,
-    99,
-    53,
-    49,
-    74,
-    82,
+    139,
+    50,
+    90,
     27,
-    18,
-    9,
+    42,
+    116,
+    108,
+    47,
+    106,
+    59,
+    52,
     105,
-    51,
+    34,
+    87,
+    5,
+    2,
+    56,
     36,
     148,
-    106,
-    122,
-    102,
-    147,
-    131,
-    62,
-    149,
-    111,
-    145,
-    21,
-    81,
-    35,
-    140,
-    123,
-    76,
-    29,
-    54,
-    10,
-    39,
-    89,
-    31,
-    61,
-    7,
-    115,
-    93,
+    57,
+    9,
     24,
-    15,
-    55,
-    56,
-    78,
-    37,
-    133,
-    63,
-    71,
-    38,
-    146,
-    100,
-    117,
-    23,
-    142,
-    101,
+    20,
     77,
-    84,
-    73,
-    12,
-    13,
-    1,
-    70,
-    86,
-    34,
-    26,
-    109,
-    0,
-    125,
-    118,
+    145,
+    114,
     83,
-    65,
+    10,
+    26,
+    41,
+    69,
+    94,
+    133,
+    93,
+    35,
+    61,
+    149,
     68,
+    74,
+    103,
+    16,
+    123,
+    147,
+    4,
+    63,
+    19,
+    153,
+    157,
+    132,
+    76,
+    62,
+    130,
+    75,
+    96,
+    119,
+    79,
+    112,
+    39,
+    12,
+    60,
+    70,
+    58,
+    97,
+    107,
+    140,
+    128,
+    129,
+    127,
+    6,
+    124,
+    7,
+    80,
+    64,
+    113,
+    81,
+    11,
+    109,
+    101,
+    104,
+    25,
+    49,
+    85,
+    53,
+    22,
+    92,
+    136,
+    38,
+    44,
+    1,
+    117,
+    37,
+    13,
+    154,
+    150,
+    151,
+    142,
+    158,
+    155,
+    89,
+    138,
+    67,
+    149,
+    21,
+    98,
+    32,
+    125,
+    146,
+    78,
+    29,
+    73,
+    8,
+    40,
+    99,
+    33,
+    95,
+    3,
+    46,
+    28,
+    43,
+    48,
+    66,
+    88,
+    82,
+    45,
+    91,
+    102,
+    121,
+    31,
+    156,
+    126,
+    134,
+    23,
+    141,
+    135,
+    72,
+    122,
+    65,
+    14,
+    18,
+    15,
+    100,
+    84,
+    54,
+    30,
+    55,
+    0,
+    137,
+    152,
+    86,
+    51,
+    111,
     65535
 };
 

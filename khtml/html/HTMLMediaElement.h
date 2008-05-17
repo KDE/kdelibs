@@ -1,0 +1,165 @@
+/*
+ * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ */
+
+#ifndef HTMLMediaElement_h
+#define HTMLMediaElement_h
+
+#include "HTMLElement.h"
+#include <wtf/OwnPtr.h>
+
+namespace khtml {
+
+class MediaError;
+class TimeRanges;
+
+// dummy
+class MediaPlayer
+{
+public:
+    float duration() const { return 0; }
+    float rate() const { return 0; }
+    void setRate(float) { }
+    void setVolume(float) { }
+    float currentTime() const { return 0; }
+    float maxTimeSeekable() {  return 0; }
+    float maxTimeBuffered() {  return 0; }
+};
+
+class HTMLMediaElement : public HTMLElement {
+public:
+    HTMLMediaElement(Document*);
+    virtual ~HTMLMediaElement();
+
+    virtual void attributeChanged(NodeImpl::Id attrId);
+
+    virtual bool isVideo() const { return false; }
+    
+    void scheduleLoad();
+
+// DOM API
+// error state
+    PassRefPtr<MediaError> error() const;
+
+// network state
+    String src() const;
+    void setSrc(const String&);
+    String currentSrc() const;
+    
+    enum NetworkState { EMPTY, LOADING, LOADED_METADATA, LOADED_FIRST_FRAME, LOADED };
+    NetworkState networkState() const;
+    float bufferingRate();
+    PassRefPtr<TimeRanges> buffered() const;
+    void load(ExceptionCode&);
+
+// ready state
+    enum ReadyState { DATA_UNAVAILABLE, CAN_SHOW_CURRENT_FRAME, CAN_PLAY, CAN_PLAY_THROUGH };
+    ReadyState readyState() const;
+    bool seeking() const;
+
+// playback state
+    float currentTime() const;
+    void setCurrentTime(float, ExceptionCode&);
+    float duration() const;
+    bool paused() const;
+    float defaultPlaybackRate() const;
+    void setDefaultPlaybackRate(float, ExceptionCode&);
+    float playbackRate() const;
+    void setPlaybackRate(float, ExceptionCode&);
+    PassRefPtr<TimeRanges> played() const;
+    PassRefPtr<TimeRanges> seekable() const;
+    bool ended() const;
+    bool autoplay() const;    
+    void setAutoplay(bool b);
+    void play(ExceptionCode&);
+    void pause(ExceptionCode&);
+    
+// looping
+    float start() const;
+    void setStart(float time);
+    float end() const;
+    void setEnd(float time);
+    float loopStart() const;
+    void setLoopStart(float time);
+    float loopEnd() const;
+    void setLoopEnd(float time);
+    unsigned playCount() const;
+    void setPlayCount(unsigned, ExceptionCode&);
+    unsigned currentLoop() const;
+    void setCurrentLoop(unsigned);
+
+// controls
+    bool controls() const;
+    void setControls(bool);
+    float volume() const;
+    void setVolume(float, ExceptionCode&);
+    bool muted() const;
+    void setMuted(bool);
+
+protected:
+    float getTimeOffsetAttribute(NodeImpl::Id name, float valueOnError) const;
+    void setTimeOffsetAttribute(NodeImpl::Id name, float value);
+
+    void checkIfSeekNeeded();
+
+    void setReadyState(ReadyState);
+
+private:
+    void updateVolume();
+    void updatePlayState();
+    bool endedPlayback() const;
+
+protected:
+    float m_defaultPlaybackRate;
+    NetworkState m_networkState;
+    ReadyState m_readyState;
+    String m_currentSrc;
+    
+    RefPtr<MediaError> m_error;
+    
+    bool m_begun;
+    bool m_loadedFirstFrame;
+    bool m_autoplaying;
+    
+    unsigned m_currentLoop;
+    float m_volume;
+    bool m_muted;
+    
+    bool m_paused;
+    bool m_seeking;
+    
+    float m_currentTimeDuringSeek;
+    
+    unsigned m_previousProgress;
+    double m_previousProgressTime;
+    bool m_sentStalledEvent;
+    
+    float m_bufferingRate;
+
+    OwnPtr<MediaPlayer> m_player;
+};
+
+} //namespace
+
+#endif

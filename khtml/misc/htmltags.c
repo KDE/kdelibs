@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.0.2 */
+/* ANSI-C code produced by gperf version 3.0.3 */
 /* Command-line: gperf -a -L ANSI-C -P -D -E -C -l -o -t -k '*' -NfindTag -Hhash_tag -Wwordlist_tag -Qspool_Tag htmltags.gperf  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -38,7 +38,7 @@ struct tags {
     int name;
     int id;
 };
-/* maximum key range = 365, duplicates = 0 */
+/* maximum key range = 295, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -52,32 +52,32 @@ hash_tag (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-       60,  55,  50,  45,  40,   5, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366,  15,  10,  35,
-       10,   5,  10,  10,  50,  40, 115,  30,   5,  15,
-       30,  55,   5,  85,  20,   0,   0,  65,  55,  35,
-       95,  70, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366, 366, 366, 366,
-      366, 366, 366, 366, 366, 366, 366
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+       40,  35,  25,  20,  15,   5, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296,  15,  10,  35,
+       10,   5,  10,  10,  75,  45, 100,  15,   5,  15,
+       30,  55,   5,  55,  20,   0,   0,  40,  85,  10,
+        5,  50, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296, 296, 296, 296,
+      296, 296, 296, 296, 296, 296, 296
     };
   register int hval = len;
 
@@ -137,94 +137,97 @@ struct spool_Tag_t
     char spool_Tag_str15[sizeof("em")];
     char spool_Tag_str16[sizeof("area")];
     char spool_Tag_str17[sizeof("label")];
-    char spool_Tag_str18[sizeof("i")];
-    char spool_Tag_str19[sizeof("th")];
-    char spool_Tag_str20[sizeof("meta")];
-    char spool_Tag_str21[sizeof("col")];
-    char spool_Tag_str22[sizeof("font")];
-    char spool_Tag_str23[sizeof("frame")];
-    char spool_Tag_str24[sizeof("hr")];
-    char spool_Tag_str25[sizeof("dfn")];
-    char spool_Tag_str26[sizeof("form")];
-    char spool_Tag_str27[sizeof("h6")];
-    char spool_Tag_str28[sizeof("frameset")];
-    char spool_Tag_str29[sizeof("code")];
-    char spool_Tag_str30[sizeof("small")];
-    char spool_Tag_str31[sizeof("select")];
-    char spool_Tag_str32[sizeof("address")];
-    char spool_Tag_str33[sizeof("sup")];
-    char spool_Tag_str34[sizeof("embed")];
-    char spool_Tag_str35[sizeof("u")];
-    char spool_Tag_str36[sizeof("tt")];
-    char spool_Tag_str37[sizeof("sub")];
-    char spool_Tag_str38[sizeof("nobr")];
-    char spool_Tag_str39[sizeof("param")];
-    char spool_Tag_str40[sizeof("ol")];
-    char spool_Tag_str41[sizeof("bdo")];
-    char spool_Tag_str42[sizeof("thead")];
-    char spool_Tag_str43[sizeof("legend")];
-    char spool_Tag_str44[sizeof("dt")];
-    char spool_Tag_str45[sizeof("kbd")];
-    char spool_Tag_str46[sizeof("script")];
-    char spool_Tag_str47[sizeof("ul")];
-    char spool_Tag_str48[sizeof("img")];
-    char spool_Tag_str49[sizeof("abbr")];
-    char spool_Tag_str50[sizeof("q")];
-    char spool_Tag_str51[sizeof("noembed")];
-    char spool_Tag_str52[sizeof("var")];
-    char spool_Tag_str53[sizeof("head")];
-    char spool_Tag_str54[sizeof("h5")];
-    char spool_Tag_str55[sizeof("wbr")];
-    char spool_Tag_str56[sizeof("h4")];
-    char spool_Tag_str57[sizeof("ins")];
-    char spool_Tag_str58[sizeof("body")];
-    char spool_Tag_str59[sizeof("h3")];
-    char spool_Tag_str60[sizeof("image")];
-    char spool_Tag_str61[sizeof("center")];
-    char spool_Tag_str62[sizeof("h2")];
-    char spool_Tag_str63[sizeof("noframes")];
-    char spool_Tag_str64[sizeof("iframe")];
-    char spool_Tag_str65[sizeof("h1")];
-    char spool_Tag_str66[sizeof("layer")];
-    char spool_Tag_str67[sizeof("applet")];
-    char spool_Tag_str68[sizeof("li")];
-    char spool_Tag_str69[sizeof("menu")];
-    char spool_Tag_str70[sizeof("tfoot")];
-    char spool_Tag_str71[sizeof("basefont")];
+    char spool_Tag_str18[sizeof("u")];
+    char spool_Tag_str19[sizeof("tt")];
+    char spool_Tag_str20[sizeof("xmp")];
+    char spool_Tag_str21[sizeof("meta")];
+    char spool_Tag_str22[sizeof("i")];
+    char spool_Tag_str23[sizeof("th")];
+    char spool_Tag_str24[sizeof("col")];
+    char spool_Tag_str25[sizeof("font")];
+    char spool_Tag_str26[sizeof("frame")];
+    char spool_Tag_str27[sizeof("dt")];
+    char spool_Tag_str28[sizeof("dfn")];
+    char spool_Tag_str29[sizeof("form")];
+    char spool_Tag_str30[sizeof("q")];
+    char spool_Tag_str31[sizeof("ul")];
+    char spool_Tag_str32[sizeof("frameset")];
+    char spool_Tag_str33[sizeof("code")];
+    char spool_Tag_str34[sizeof("small")];
+    char spool_Tag_str35[sizeof("select")];
+    char spool_Tag_str36[sizeof("address")];
+    char spool_Tag_str37[sizeof("kbd")];
+    char spool_Tag_str38[sizeof("embed")];
+    char spool_Tag_str39[sizeof("wbr")];
+    char spool_Tag_str40[sizeof("nobr")];
+    char spool_Tag_str41[sizeof("param")];
+    char spool_Tag_str42[sizeof("ol")];
+    char spool_Tag_str43[sizeof("bdo")];
+    char spool_Tag_str44[sizeof("legend")];
+    char spool_Tag_str45[sizeof("hr")];
+    char spool_Tag_str46[sizeof("textarea")];
+    char spool_Tag_str47[sizeof("body")];
+    char spool_Tag_str48[sizeof("thead")];
+    char spool_Tag_str49[sizeof("h6")];
+    char spool_Tag_str50[sizeof("abbr")];
+    char spool_Tag_str51[sizeof("script")];
+    char spool_Tag_str52[sizeof("noembed")];
+    char spool_Tag_str53[sizeof("img")];
+    char spool_Tag_str54[sizeof("applet")];
+    char spool_Tag_str55[sizeof("h5")];
+    char spool_Tag_str56[sizeof("sup")];
+    char spool_Tag_str57[sizeof("layer")];
+    char spool_Tag_str58[sizeof("h4")];
+    char spool_Tag_str59[sizeof("sub")];
+    char spool_Tag_str60[sizeof("menu")];
+    char spool_Tag_str61[sizeof("h3")];
+    char spool_Tag_str62[sizeof("ins")];
+    char spool_Tag_str63[sizeof("span")];
+    char spool_Tag_str64[sizeof("style")];
+    char spool_Tag_str65[sizeof("center")];
+    char spool_Tag_str66[sizeof("li")];
+    char spool_Tag_str67[sizeof("noframes")];
+    char spool_Tag_str68[sizeof("image")];
+    char spool_Tag_str69[sizeof("source")];
+    char spool_Tag_str70[sizeof("h2")];
+    char spool_Tag_str71[sizeof("head")];
     char spool_Tag_str72[sizeof("title")];
-    char spool_Tag_str73[sizeof("xmp")];
-    char spool_Tag_str74[sizeof("span")];
-    char spool_Tag_str75[sizeof("big")];
-    char spool_Tag_str76[sizeof("html")];
-    char spool_Tag_str77[sizeof("noscript")];
-    char spool_Tag_str78[sizeof("dir")];
-    char spool_Tag_str79[sizeof("style")];
-    char spool_Tag_str80[sizeof("canvas")];
-    char spool_Tag_str81[sizeof("button")];
-    char spool_Tag_str82[sizeof("nolayer")];
-    char spool_Tag_str83[sizeof("fieldset")];
-    char spool_Tag_str84[sizeof("cite")];
-    char spool_Tag_str85[sizeof("keygen")];
-    char spool_Tag_str86[sizeof("strike")];
-    char spool_Tag_str87[sizeof("textarea")];
-    char spool_Tag_str88[sizeof("input")];
-    char spool_Tag_str89[sizeof("ilayer")];
-    char spool_Tag_str90[sizeof("tbody")];
-    char spool_Tag_str91[sizeof("caption")];
-    char spool_Tag_str92[sizeof("div")];
-    char spool_Tag_str93[sizeof("link")];
+    char spool_Tag_str73[sizeof("iframe")];
+    char spool_Tag_str74[sizeof("h1")];
+    char spool_Tag_str75[sizeof("var")];
+    char spool_Tag_str76[sizeof("big")];
+    char spool_Tag_str77[sizeof("tfoot")];
+    char spool_Tag_str78[sizeof("keygen")];
+    char spool_Tag_str79[sizeof("basefont")];
+    char spool_Tag_str80[sizeof("plaintext")];
+    char spool_Tag_str81[sizeof("strike")];
+    char spool_Tag_str82[sizeof("dir")];
+    char spool_Tag_str83[sizeof("nolayer")];
+    char spool_Tag_str84[sizeof("html")];
+    char spool_Tag_str85[sizeof("fieldset")];
+    char spool_Tag_str86[sizeof("cite")];
+    char spool_Tag_str87[sizeof("isindex")];
+    char spool_Tag_str88[sizeof("noscript")];
+    char spool_Tag_str89[sizeof("input")];
+    char spool_Tag_str90[sizeof("link")];
+    char spool_Tag_str91[sizeof("tbody")];
+    char spool_Tag_str92[sizeof("ilayer")];
+    char spool_Tag_str93[sizeof("marquee")];
     char spool_Tag_str94[sizeof("strong")];
-    char spool_Tag_str95[sizeof("listing")];
+    char spool_Tag_str95[sizeof("canvas")];
     char spool_Tag_str96[sizeof("colgroup")];
-    char spool_Tag_str97[sizeof("marquee")];
-    char spool_Tag_str98[sizeof("plaintext")];
-    char spool_Tag_str99[sizeof("acronym")];
-    char spool_Tag_str100[sizeof("isindex")];
-    char spool_Tag_str101[sizeof("anchor")];
-    char spool_Tag_str102[sizeof("object")];
-    char spool_Tag_str103[sizeof("option")];
-    char spool_Tag_str104[sizeof("optgroup")];
-    char spool_Tag_str105[sizeof("blockquote")];
+    char spool_Tag_str97[sizeof("button")];
+    char spool_Tag_str98[sizeof("caption")];
+    char spool_Tag_str99[sizeof("listing")];
+    char spool_Tag_str100[sizeof("div")];
+    char spool_Tag_str101[sizeof("acronym")];
+    char spool_Tag_str102[sizeof("audio")];
+    char spool_Tag_str103[sizeof("object")];
+    char spool_Tag_str104[sizeof("option")];
+    char spool_Tag_str105[sizeof("optgroup")];
+    char spool_Tag_str106[sizeof("video")];
+    char spool_Tag_str107[sizeof("anchor")];
+    char spool_Tag_str108[sizeof("blockquote")];
   };
 static const struct spool_Tag_t spool_Tag_contents =
   {
@@ -246,336 +249,348 @@ static const struct spool_Tag_t spool_Tag_contents =
     "em",
     "area",
     "label",
+    "u",
+    "tt",
+    "xmp",
+    "meta",
     "i",
     "th",
-    "meta",
     "col",
     "font",
     "frame",
-    "hr",
+    "dt",
     "dfn",
     "form",
-    "h6",
+    "q",
+    "ul",
     "frameset",
     "code",
     "small",
     "select",
     "address",
-    "sup",
+    "kbd",
     "embed",
-    "u",
-    "tt",
-    "sub",
+    "wbr",
     "nobr",
     "param",
     "ol",
     "bdo",
-    "thead",
     "legend",
-    "dt",
-    "kbd",
-    "script",
-    "ul",
-    "img",
-    "abbr",
-    "q",
-    "noembed",
-    "var",
-    "head",
-    "h5",
-    "wbr",
-    "h4",
-    "ins",
+    "hr",
+    "textarea",
     "body",
+    "thead",
+    "h6",
+    "abbr",
+    "script",
+    "noembed",
+    "img",
+    "applet",
+    "h5",
+    "sup",
+    "layer",
+    "h4",
+    "sub",
+    "menu",
     "h3",
-    "image",
+    "ins",
+    "span",
+    "style",
     "center",
-    "h2",
+    "li",
     "noframes",
+    "image",
+    "source",
+    "h2",
+    "head",
+    "title",
     "iframe",
     "h1",
-    "layer",
-    "applet",
-    "li",
-    "menu",
-    "tfoot",
-    "basefont",
-    "title",
-    "xmp",
-    "span",
+    "var",
     "big",
-    "html",
-    "noscript",
+    "tfoot",
+    "keygen",
+    "basefont",
+    "plaintext",
+    "strike",
     "dir",
-    "style",
-    "canvas",
-    "button",
     "nolayer",
+    "html",
     "fieldset",
     "cite",
-    "keygen",
-    "strike",
-    "textarea",
-    "input",
-    "ilayer",
-    "tbody",
-    "caption",
-    "div",
-    "link",
-    "strong",
-    "listing",
-    "colgroup",
-    "marquee",
-    "plaintext",
-    "acronym",
     "isindex",
-    "anchor",
+    "noscript",
+    "input",
+    "link",
+    "tbody",
+    "ilayer",
+    "marquee",
+    "strong",
+    "canvas",
+    "colgroup",
+    "button",
+    "caption",
+    "listing",
+    "div",
+    "acronym",
+    "audio",
     "object",
     "option",
     "optgroup",
+    "video",
+    "anchor",
     "blockquote"
   };
 #define spool_Tag ((const char *) &spool_Tag_contents)
 #ifdef __GNUC__
 __inline
+#ifdef __GNUC_STDC_INLINE__
+__attribute__ ((__gnu_inline__))
+#endif
 #endif
 const struct tags *
 findTag (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 106,
+      TOTAL_KEYWORDS = 109,
       MIN_WORD_LENGTH = 1,
       MAX_WORD_LENGTH = 10,
       MIN_HASH_VALUE = 1,
-      MAX_HASH_VALUE = 365
+      MAX_HASH_VALUE = 295
     };
 
   static const unsigned char lengthtable[] =
     {
        1,  2,  1,  2,  1,  2,  3,  1,  2,  2,  3,  4,  3,  4,
-       5,  2,  4,  5,  1,  2,  4,  3,  4,  5,  2,  3,  4,  2,
-       8,  4,  5,  6,  7,  3,  5,  1,  2,  3,  4,  5,  2,  3,
-       5,  6,  2,  3,  6,  2,  3,  4,  1,  7,  3,  4,  2,  3,
-       2,  3,  4,  2,  5,  6,  2,  8,  6,  2,  5,  6,  2,  4,
-       5,  8,  5,  3,  4,  3,  4,  8,  3,  5,  6,  6,  7,  8,
-       4,  6,  6,  8,  5,  6,  5,  7,  3,  4,  6,  7,  8,  7,
-       9,  7,  7,  6,  6,  6,  8, 10
+       5,  2,  4,  5,  1,  2,  3,  4,  1,  2,  3,  4,  5,  2,
+       3,  4,  1,  2,  8,  4,  5,  6,  7,  3,  5,  3,  4,  5,
+       2,  3,  6,  2,  8,  4,  5,  2,  4,  6,  7,  3,  6,  2,
+       3,  5,  2,  3,  4,  2,  3,  4,  5,  6,  2,  8,  5,  6,
+       2,  4,  5,  6,  2,  3,  3,  5,  6,  8,  9,  6,  3,  7,
+       4,  8,  4,  7,  8,  5,  4,  5,  6,  7,  6,  6,  8,  6,
+       7,  7,  3,  7,  5,  6,  6,  8,  5,  6, 10
     };
   static const struct tags wordlist_tag[] =
     {
-#line 88 "htmltags.gperf"
+#line 89 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str0, ID_S},
-#line 107 "htmltags.gperf"
+#line 109 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str1, ID_TR},
-#line 83 "htmltags.gperf"
+#line 84 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str2, ID_P},
-#line 101 "htmltags.gperf"
+#line 103 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str3, ID_TD},
-#line 17 "htmltags.gperf"
+#line 18 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str4, ID_B},
-#line 24 "htmltags.gperf"
+#line 25 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str5, ID_BR},
-#line 86 "htmltags.gperf"
+#line 87 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str6, ID_PRE},
 #line 11 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str7, ID_A},
-#line 33 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str8, ID_DD},
-#line 38 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str9, ID_DL},
 #line 34 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str8, ID_DD},
+#line 39 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str9, ID_DL},
+#line 35 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str10, ID_DEL},
-#line 18 "htmltags.gperf"
+#line 19 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str11, ID_BASE},
-#line 70 "htmltags.gperf"
+#line 71 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str12, ID_MAP},
-#line 89 "htmltags.gperf"
+#line 90 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str13, ID_SAMP},
-#line 99 "htmltags.gperf"
+#line 101 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str14, ID_TABLE},
-#line 40 "htmltags.gperf"
+#line 41 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str15, ID_EM},
 #line 16 "htmltags.gperf"
       {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str16, ID_AREA},
-#line 65 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str17, ID_LABEL},
-#line 56 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str18, ID_I},
-#line 104 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str19, ID_TH},
-#line 73 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str20, ID_META},
-#line 31 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str21, ID_COL},
-#line 43 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str22, ID_FONT},
-#line 45 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str23, ID_FRAME},
-#line 54 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str24, ID_HR},
-#line 35 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str25, ID_DFN},
-#line 44 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str26, ID_FORM},
-#line 52 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str27, ID_H6},
-#line 46 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str28, ID_FRAMESET},
-#line 30 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str29, ID_CODE},
-#line 92 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str30, ID_SMALL},
-#line 91 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str31, ID_SELECT},
-#line 14 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str32, ID_ADDRESS},
-#line 98 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str33, ID_SUP},
-#line 41 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str34, ID_EMBED},
-#line 109 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str35, ID_U},
-#line 108 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str36, ID_TT},
-#line 97 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str37, ID_SUB},
-#line 74 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str38, ID_NOBR},
-#line 84 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str39, ID_PARAM},
-#line 80 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str40, ID_OL},
-#line 20 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str41, ID_BDO},
-#line 105 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str42, ID_THEAD},
-#line 67 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str43, ID_LEGEND},
-#line 39 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str44, ID_DT},
-#line 63 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str45, ID_KBD},
-#line 90 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str46, ID_SCRIPT},
-#line 110 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str47, ID_UL},
-#line 59 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str48, ID_IMG},
-#line 12 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str49, ID_ABBR},
-#line 87 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str50, ID_Q},
-#line 75 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str51, ID_NOEMBED},
-#line 111 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str52, ID_VAR},
-#line 53 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str53, ID_HEAD},
-#line 51 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str54, ID_H5},
-#line 112 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str55, ID_WBR},
-#line 50 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str56, ID_H4},
-#line 61 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str57, ID_INS},
-#line 23 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str58, ID_BODY},
-#line 49 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str59, ID_H3},
-#line 115 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str60, ID_IMG},
-#line 28 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str61, ID_CENTER},
-#line 48 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str62, ID_H2},
-#line 76 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str63, ID_NOFRAMES},
-#line 57 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str64, ID_IFRAME},
-#line 47 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str65, ID_H1},
 #line 66 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str66, ID_LAYER},
-#line 15 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str67, ID_APPLET},
-#line 68 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str68, ID_LI},
-#line 72 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str69, ID_MENU},
-#line 103 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str70, ID_TFOOT},
-#line 19 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str71, ID_BASEFONT},
-#line 106 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str72, ID_TITLE},
-#line 113 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str73, ID_XMP},
-#line 93 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str74, ID_SPAN},
-#line 21 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str75, ID_BIG},
-#line 55 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str76, ID_HTML},
-#line 77 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str77, ID_NOSCRIPT},
-#line 36 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str78, ID_DIR},
-#line 96 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str79, ID_STYLE},
-#line 26 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str80, ID_CANVAS},
-#line 25 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str81, ID_BUTTON},
-#line 78 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str82, ID_NOLAYER},
-#line 42 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str83, ID_FIELDSET},
-#line 29 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str84, ID_CITE},
-#line 64 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str85, ID_KEYGEN},
-#line 94 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str86, ID_STRIKE},
-#line 102 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str87, ID_TEXTAREA},
-#line 60 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str88, ID_INPUT},
-#line 58 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str89, ID_ILAYER},
-#line 100 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str90, ID_TBODY},
-#line 27 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str91, ID_CAPTION},
-#line 37 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str92, ID_DIV},
-#line 69 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str93, ID_LINK},
-#line 95 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str94, ID_STRONG},
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str17, ID_LABEL},
+#line 111 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str18, ID_U},
+#line 110 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str19, ID_TT},
 #line 116 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str95, ID_PRE},
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str20, ID_XMP},
+#line 74 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str21, ID_META},
+#line 57 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str22, ID_I},
+#line 106 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str23, ID_TH},
 #line 32 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str96, ID_COLGROUP},
-#line 71 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str97, ID_MARQUEE},
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str24, ID_COL},
+#line 44 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str25, ID_FONT},
+#line 46 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str26, ID_FRAME},
+#line 40 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str27, ID_DT},
+#line 36 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str28, ID_DFN},
+#line 45 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str29, ID_FORM},
+#line 88 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str30, ID_Q},
+#line 112 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str31, ID_UL},
+#line 47 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str32, ID_FRAMESET},
+#line 31 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str33, ID_CODE},
+#line 93 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str34, ID_SMALL},
+#line 92 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str35, ID_SELECT},
+#line 14 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str36, ID_ADDRESS},
+#line 64 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str37, ID_KBD},
+#line 42 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str38, ID_EMBED},
+#line 115 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str39, ID_WBR},
+#line 75 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str40, ID_NOBR},
 #line 85 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str98, ID_PLAINTEXT},
-#line 13 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str99, ID_ACRONYM},
-#line 62 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str100, ID_ISINDEX},
-#line 114 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str101, ID_A},
-#line 79 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str102, ID_OBJECT},
-#line 82 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str103, ID_OPTION},
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str41, ID_PARAM},
 #line 81 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str104, ID_OPTGROUP},
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str42, ID_OL},
+#line 21 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str43, ID_BDO},
+#line 68 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str44, ID_LEGEND},
+#line 55 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str45, ID_HR},
+#line 104 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str46, ID_TEXTAREA},
+#line 24 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str47, ID_BODY},
+#line 107 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str48, ID_THEAD},
+#line 53 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str49, ID_H6},
+#line 12 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str50, ID_ABBR},
+#line 91 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str51, ID_SCRIPT},
+#line 76 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str52, ID_NOEMBED},
+#line 60 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str53, ID_IMG},
+#line 15 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str54, ID_APPLET},
+#line 52 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str55, ID_H5},
+#line 100 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str56, ID_SUP},
+#line 67 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str57, ID_LAYER},
+#line 51 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str58, ID_H4},
+#line 99 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str59, ID_SUB},
+#line 73 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str60, ID_MENU},
+#line 50 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str61, ID_H3},
+#line 62 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str62, ID_INS},
+#line 95 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str63, ID_SPAN},
+#line 98 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str64, ID_STYLE},
+#line 29 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str65, ID_CENTER},
+#line 69 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str66, ID_LI},
+#line 77 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str67, ID_NOFRAMES},
+#line 118 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str68, ID_IMG},
+#line 94 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str69, ID_SOURCE},
+#line 49 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str70, ID_H2},
+#line 54 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str71, ID_HEAD},
+#line 108 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str72, ID_TITLE},
+#line 58 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str73, ID_IFRAME},
+#line 48 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str74, ID_H1},
+#line 113 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str75, ID_VAR},
 #line 22 "htmltags.gperf"
-      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str105, ID_BLOCKQUOTE}
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str76, ID_BIG},
+#line 105 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str77, ID_TFOOT},
+#line 65 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str78, ID_KEYGEN},
+#line 20 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str79, ID_BASEFONT},
+#line 86 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str80, ID_PLAINTEXT},
+#line 96 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str81, ID_STRIKE},
+#line 37 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str82, ID_DIR},
+#line 79 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str83, ID_NOLAYER},
+#line 56 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str84, ID_HTML},
+#line 43 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str85, ID_FIELDSET},
+#line 30 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str86, ID_CITE},
+#line 63 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str87, ID_ISINDEX},
+#line 78 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str88, ID_NOSCRIPT},
+#line 61 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str89, ID_INPUT},
+#line 70 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str90, ID_LINK},
+#line 102 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str91, ID_TBODY},
+#line 59 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str92, ID_ILAYER},
+#line 72 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str93, ID_MARQUEE},
+#line 97 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str94, ID_STRONG},
+#line 27 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str95, ID_CANVAS},
+#line 33 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str96, ID_COLGROUP},
+#line 26 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str97, ID_BUTTON},
+#line 28 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str98, ID_CAPTION},
+#line 119 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str99, ID_PRE},
+#line 38 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str100, ID_DIV},
+#line 13 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str101, ID_ACRONYM},
+#line 17 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str102, ID_AUDIO},
+#line 80 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str103, ID_OBJECT},
+#line 83 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str104, ID_OPTION},
+#line 82 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str105, ID_OPTGROUP},
+#line 114 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str106, ID_VIDEO},
+#line 117 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str107, ID_A},
+#line 23 "htmltags.gperf"
+      {(int)(long)&((struct spool_Tag_t *)0)->spool_Tag_str108, ID_BLOCKQUOTE}
     };
 
   static const signed char lookup[] =
@@ -584,39 +599,32 @@ findTag (register const char *str, register unsigned int len)
        -1,   4,   5,   6,  -1,  -1,   7,   8,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,   9,  10,  11,
        -1,  -1,  -1,  12,  13,  14,  -1,  15,  -1,  16,
-       17,  18,  19,  -1,  20,  -1,  -1,  -1,  21,  22,
-       23,  -1,  24,  25,  26,  -1,  -1,  27,  28,  29,
-       30,  31,  32,  33,  -1,  34,  35,  36,  37,  38,
-       39,  -1,  40,  41,  -1,  42,  43,  44,  45,  -1,
-       -1,  46,  47,  48,  49,  -1,  50,  51,  52,  53,
-       -1,  -1,  54,  55,  -1,  -1,  -1,  56,  57,  58,
-       -1,  -1,  59,  -1,  -1,  60,  61,  62,  63,  -1,
-       -1,  64,  65,  -1,  -1,  66,  -1,  -1,  -1,  -1,
-       -1,  67,  68,  -1,  69,  70,  -1,  -1,  71,  -1,
-       72,  -1,  -1,  73,  74,  -1,  -1,  -1,  75,  76,
-       -1,  -1,  -1,  77,  -1,  -1,  -1,  -1,  78,  -1,
-       79,  80,  -1,  -1,  -1,  -1,  81,  82,  83,  84,
-       -1,  85,  -1,  -1,  -1,  -1,  86,  -1,  87,  -1,
-       88,  89,  -1,  -1,  -1,  90,  -1,  -1,  -1,  -1,
-       -1,  -1,  91,  92,  93,  -1,  94,  -1,  -1,  -1,
+       17,  18,  19,  20,  21,  -1,  22,  23,  24,  25,
+       26,  -1,  27,  28,  29,  -1,  30,  31,  32,  33,
+       34,  35,  36,  37,  -1,  38,  -1,  -1,  39,  40,
+       41,  -1,  42,  43,  -1,  -1,  44,  45,  46,  47,
+       48,  -1,  49,  -1,  50,  -1,  51,  52,  53,  -1,
+       -1,  54,  55,  56,  -1,  57,  -1,  58,  59,  60,
+       -1,  -1,  61,  62,  63,  64,  65,  66,  67,  -1,
+       68,  69,  70,  -1,  71,  72,  73,  74,  75,  -1,
+       -1,  -1,  -1,  76,  -1,  77,  78,  -1,  79,  80,
+       -1,  81,  -1,  82,  -1,  -1,  -1,  83,  -1,  84,
+       -1,  -1,  -1,  85,  86,  -1,  -1,  87,  88,  -1,
+       89,  -1,  -1,  -1,  90,  91,  92,  93,  -1,  -1,
+       -1,  94,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  95,  96,  -1,
-       -1,  -1,  97,  -1,  98,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  99,  -1,  -1,  -1,  -1, 100,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 101,  -1,  -1,  -1,
+       -1,  95,  -1,  96,  -1,  -1,  97,  98,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  99, 100,  -1,
+       -1,  -1, 101,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 102,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 102,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 103,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 104,  -1, 105,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 103,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 104,  -1,  -1,  -1,  -1,  -1,  -1,
+      106, 107,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 105
+       -1,  -1,  -1,  -1,  -1, 108
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -641,13 +649,13 @@ findTag (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 117 "htmltags.gperf"
+#line 120 "htmltags.gperf"
 
 
 
 static const char tagStable[] = {
-   "\000/a\000/abbr\000/acronym\000/address\000/applet\000/area\000/b"
-   "\000/base\000/basefont\000/bdo\000/big\000/blockquote\000/body"
+   "\000/a\000/abbr\000/acronym\000/address\000/applet\000/area\000/audio"
+   "\000/b\000/base\000/basefont\000/bdo\000/big\000/blockquote\000/body"
    "\000/br\000/button\000/canvas\000/caption\000/center\000/cite"
    "\000/code\000/col\000/colgroup\000/dd\000/del\000/dfn\000/dir"
    "\000/div\000/dl\000/dt\000/em\000/embed\000/fieldset\000/font"
@@ -658,32 +666,33 @@ static const char tagStable[] = {
    "\000/nobr\000/noembed\000/noframes\000/noscript\000/nolayer\000/object"
    "\000/ol\000/optgroup\000/option\000/p\000/param\000/plaintext"
    "\000/pre\000/q\000/s\000/samp\000/script\000/select\000/small"
-   "\000/span\000/strike\000/strong\000/style\000/sub\000/sup\000/table"
-   "\000/tbody\000/td\000/textarea\000/tfoot\000/th\000/thead\000/title"
-   "\000/tr\000/tt\000/u\000/ul\000/var\000/wbr\000/xmp\000/text\000/comment\000"
+   "\000/source\000/span\000/strike\000/strong\000/style\000/sub\000/sup"
+   "\000/table\000/tbody\000/td\000/textarea\000/tfoot\000/th\000/thead"
+   "\000/title\000/tr\000/tt\000/u\000/ul\000/var\000/video\000/wbr"
+   "\000/xmp\000/text\000/comment\000"
 };
 
 static const unsigned short tagSList[] = {
   0,
 
-     2,   5,  11,  20,  29,  37,  43,  46,  52,  62,  67,  72,
-    84,  90,  94, 102, 110, 119, 127, 133, 139, 144, 154, 158,
-   163, 168, 173, 178, 182, 186, 190, 197, 207, 213, 219, 226,
-   236, 240, 244, 248, 252, 256, 260, 266, 270, 276, 279, 287,
-   295, 300, 307, 312, 321, 326, 334, 341, 348, 356, 360, 366,
-   371, 380, 386, 392, 398, 407, 417, 427, 436, 444, 448, 458,
-   466, 469, 476, 487, 492, 495, 498, 504, 512, 520, 527, 533,
-   541, 549, 556, 561, 566, 573, 580, 584, 594, 601, 605, 612,
-   619, 623, 627, 630, 634, 639, 644, 649, 655,   1,   4,  10,
-    19,  28,  36,  42,  45,  51,  61,  66,  71,  83,  89,  93,
-   101, 109, 118, 126, 132, 138, 143, 153, 157, 162, 167, 172,
-   177, 181, 185, 189, 196, 206, 212, 218, 225, 235, 239, 243,
-   247, 251, 255, 259, 265, 269, 275, 278, 286, 294, 299, 306,
-   311, 320, 325, 333, 340, 347, 355, 359, 365, 370, 379, 385,
-   391, 397, 406, 416, 426, 435, 443, 447, 457, 465, 468, 475,
-   486, 491, 494, 497, 503, 511, 519, 526, 532, 540, 548, 555,
-   560, 565, 572, 579, 583, 593, 600, 604, 611, 618, 622, 626,
-   629, 633, 638, 643, 648, 654,    0
+     2,   5,  11,  20,  29,  37,  43,  50,  53,  59,  69,  74,
+    79,  91,  97, 101, 109, 117, 126, 134, 140, 146, 151, 161,
+   165, 170, 175, 180, 185, 189, 193, 197, 204, 214, 220, 226,
+   233, 243, 247, 251, 255, 259, 263, 267, 273, 277, 283, 286,
+   294, 302, 307, 314, 319, 328, 333, 341, 348, 355, 363, 367,
+   373, 378, 387, 393, 399, 405, 414, 424, 434, 443, 451, 455,
+   465, 473, 476, 483, 494, 499, 502, 505, 511, 519, 527, 534,
+   542, 548, 556, 564, 571, 576, 581, 588, 595, 599, 609, 616,
+   620, 627, 634, 638, 642, 645, 649, 654, 661, 666, 671, 677,
+     1,   4,  10,  19,  28,  36,  42,  49,  52,  58,  68,  73,
+    78,  90,  96, 100, 108, 116, 125, 133, 139, 145, 150, 160,
+   164, 169, 174, 179, 184, 188, 192, 196, 203, 213, 219, 225,
+   232, 242, 246, 250, 254, 258, 262, 266, 272, 276, 282, 285,
+   293, 301, 306, 313, 318, 327, 332, 340, 347, 354, 362, 366,
+   372, 377, 386, 392, 398, 404, 413, 423, 433, 442, 450, 454,
+   464, 472, 475, 482, 493, 498, 501, 504, 510, 518, 526, 533,
+   541, 547, 555, 563, 570, 575, 580, 587, 594, 598, 608, 615,
+   619, 626, 633, 637, 641, 644, 648, 653, 660, 665, 670, 676,    0
 };
 
 const char* KDE_NO_EXPORT getTagName(unsigned short id)

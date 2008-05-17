@@ -44,6 +44,9 @@
 #include <html/html_miscimpl.h>
 #include <html/html_tableimpl.h>
 #include <html/html_objectimpl.h>
+#include <html/HTMLAudioElement.h>
+#include <html/HTMLVideoElement.h>
+#include <html/HTMLSourceElement.h>
 #include <xml/dom_textimpl.h>
 #include <xml/dom_nodeimpl.h>
 #include <misc/htmlhashes.h>
@@ -1061,6 +1064,17 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = scriptElement;
         break;
     }
+
+// media
+    case ID_AUDIO:
+        n = new HTMLAudioElement(document);
+        break;
+    case ID_VIDEO:
+        n = new HTMLVideoElement(document);
+        break;
+    case ID_SOURCE:
+        n = new HTMLSourceElement(document);
+        break;
 
 // tables
     case ID_TABLE:

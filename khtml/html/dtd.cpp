@@ -52,6 +52,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     5, // ID_ADDRESS
     1, // ID_APPLET
     0, // ID_AREA
+    1, // ID_AUDIO
     1, // ID_B
     0, // ID_BASE
     0, // ID_BASEFONT
@@ -128,6 +129,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_SCRIPT
     6, // ID_SELECT
     1, // ID_SMALL
+    1, // ID_SOURCE
     1, // ID_SPAN
     1, // ID_STRIKE
     1, // ID_STRONG
@@ -147,6 +149,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_U
     5, // ID_UL
     1, // ID_VAR
+    1, // ID_VIDEO
     0, // ID_WBR
     5, // ID_XMP
     0, // ID_TEXT
@@ -160,6 +163,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_ADDRESS
     REQUIRED,  // ID_APPLET
     FORBIDDEN, // ID_AREA
+    REQUIRED,  // ID_AUDIO
     REQUIRED,  // ID_B
     FORBIDDEN, // ID_BASE
     FORBIDDEN, // ID_BASEFONT
@@ -236,6 +240,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_SCRIPT
     REQUIRED,  // ID_SELECT
     REQUIRED,  // ID_SMALL
+    FORBIDDEN, // ID_SOURCE
     REQUIRED,  // ID_SPAN
     REQUIRED,  // ID_STRIKE
     REQUIRED,  // ID_STRONG
@@ -255,7 +260,8 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_U
     REQUIRED,  // ID_UL
     REQUIRED,  // ID_VAR
-    FORBIDDEN,  // ID_WBR
+    REQUIRED,  // ID_VIDEO
+    FORBIDDEN, // ID_WBR
     REQUIRED,  // ID_XMP
     REQUIRED   // ID_TEXT
 };
@@ -316,6 +322,8 @@ static const ushort tag_list_inline[] = {
     ID_NOBR,        // ?
     ID_WBR,         // ?
     ID_CANVAS,
+    ID_AUDIO,
+    ID_VIDEO,
     0
 };
 
@@ -543,6 +551,9 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_APPLET:
         // OBJECT: %flow | PARAM *
         return check_flow(childID, true) || childID == ID_PARAM;
+    case ID_AUDIO:
+    case ID_VIDEO:
+        return check_flow(childID, true) || childID == ID_SOURCE;
     case ID_PRE:
     case ID_XMP:
     case ID_PLAINTEXT:
