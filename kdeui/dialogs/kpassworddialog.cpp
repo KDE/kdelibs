@@ -161,9 +161,9 @@ void KPasswordDialog::addCommentLine( const QString& label,
                                       const QString& comment )
 {
     int mainMarginLeft, mainMarginTop, mainMarginRight, mainMarginBottom;
+    mainMarginLeft = mainMarginTop = mainMarginRight = mainMarginBottom = marginHint();
     int gridMarginLeft, gridMarginTop, gridMarginRight, gridMarginBottom;
-            
-    layout()->getContentsMargins(&mainMarginLeft, &mainMarginTop, &mainMarginRight, &mainMarginBottom);
+
     d->ui.gridLayout->getContentsMargins(&gridMarginLeft, &gridMarginTop, &gridMarginRight, &gridMarginBottom);
     
     QLabel* l = new QLabel(label, mainWidget());
@@ -234,7 +234,7 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
 void KPasswordDialog::setPrompt(const QString& prompt)
 {
     int marginLeft, marginTop, marginRight, marginBottom;
-    layout()->getContentsMargins(&marginLeft, &marginTop, &marginRight, &marginBottom);
+    marginLeft = marginTop = marginRight = marginBottom = marginHint();
 
     d->ui.prompt->setText( prompt );
     d->ui.prompt->setWordWrap( true );
