@@ -38,6 +38,11 @@ class KPluginSelector::Private
     Q_OBJECT
 
 public:
+    enum ExtraRoles
+    {
+        CommentRole = 0x19FC6DE2
+    };
+
     enum CheckWhatDependencies
     {
         /// If an item was checked, check all dependencies of that item

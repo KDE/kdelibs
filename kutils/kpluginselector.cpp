@@ -38,6 +38,9 @@
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
+#define ICON_SIZE 32
+#define MARGIN 5
+
 static const char *details = I18N_NOOP("Settings");
 static const char *about = I18N_NOOP("About");
 
@@ -369,10 +372,12 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
     switch (role) {
         case Qt::DisplayRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name();
+        case CommentRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.comment();
 //         case Qt::CheckStateRole:
 //             return false;
         case Qt::DecorationRole:
-            return KIcon(static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.icon());
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.icon();
         case KCategorizedSortFilterProxyModel::CategoryDisplayRole: // fall through
         case KCategorizedSortFilterProxyModel::CategorySortRole:
             return static_cast<PluginEntry*>(index.internalPointer())->category;
@@ -433,13 +438,34 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     }
 
     painter->save();
+
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
+
+    KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
+    painter->drawPixmap(QRect(MARGIN + option.rect.left(), MARGIN + option.rect.top(), ICON_SIZE, ICON_SIZE), icon.pixmap(ICON_SIZE, ICON_SIZE), QRect(0, 0, ICON_SIZE, ICON_SIZE));
+
+    QRect contentsRect(MARGIN * 2 + ICON_SIZE + option.rect.left(), MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - ICON_SIZE, option.rect.height() - MARGIN * 2);
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.highlightedText().color());
+    }
+
+    painter->save();
+    QFont font(option.font);
+    font.setBold(true);
+    painter->setFont(font);
+    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignTop, index.model()->data(index, Qt::DisplayRole).toString());
+    painter->restore();
+
+    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignBottom, index.model()->data(index, CommentRole).toString());
+
     painter->restore();
 }
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QSize(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()), option.fontMetrics.height() * 2);
+    return QSize(qMax(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()),
+                      option.fontMetrics.width(index.model()->data(index, CommentRole).toString())), ICON_SIZE + MARGIN * 2);
 }
 
 #include "kpluginselector_p.moc"
