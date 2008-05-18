@@ -51,6 +51,7 @@
 #include "khtmlview.h"
 
 #include <QList>
+#include <limits.h>
 
 using DOM::AttrImpl;
 using DOM::CSSPrimitiveValue;

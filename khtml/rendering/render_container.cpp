@@ -40,6 +40,7 @@
 
 #include <kdebug.h>
 #include <assert.h>
+#include <limits.h>
 
 using DOM::Position;
 using namespace khtml;
