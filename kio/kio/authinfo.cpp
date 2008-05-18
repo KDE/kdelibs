@@ -41,7 +41,50 @@
 
 using namespace KIO;
 
-AuthInfo::AuthInfo()
+//////
+
+class ExtraField
+{
+public:    
+    QString customTitle; // reserved for future use
+    AuthInfo::FieldFlags flags;
+    QVariant value;
+
+    ExtraField() : flags(AuthInfo::ExtraFieldNoFlags) {}
+};
+
+QDataStream& operator<< (QDataStream& s, const ExtraField& extraField)
+{
+    s << extraField.customTitle;
+    s << (int)extraField.flags;
+    s << extraField.value;
+    return s;
+}
+
+QDataStream& operator>> (QDataStream& s, ExtraField& extraField)
+{
+    s >> extraField.customTitle ;
+    int i;
+    s >> i;
+    extraField.flags = (AuthInfo::FieldFlags)i;
+    s >> extraField.value ;
+    return s;
+}
+
+
+class AuthInfoPrivate  
+{
+public:
+    AuthInfoPrivate() 
+    {}
+    
+    QMap<QString, ExtraField> extraFields;
+};
+
+
+//////
+
+AuthInfo::AuthInfo() : d(new AuthInfoPrivate())
 {
     modified = false;
     readOnly = false;
@@ -49,9 +92,14 @@ AuthInfo::AuthInfo()
     keepPassword = false;
 }
 
-AuthInfo::AuthInfo( const AuthInfo& info )
+AuthInfo::AuthInfo( const AuthInfo& info ) : d(new AuthInfoPrivate())
 {
     (*this) = info;
+}
+
+AuthInfo::~AuthInfo()
+{
+    delete d;
 }
 
 AuthInfo& AuthInfo::operator= ( const AuthInfo& info )
@@ -69,6 +117,7 @@ AuthInfo& AuthInfo::operator= ( const AuthInfo& info )
     readOnly = info.readOnly;
     keepPassword = info.keepPassword;
     modified = info.modified;
+    d->extraFields = info.d->extraFields; 
     return *this;
 }
 
@@ -82,19 +131,50 @@ void AuthInfo::setModified( bool flag )
     modified = flag;
 }
 
+/////
+
+void AuthInfo::setExtraField(const QString &fieldName, const QVariant & value)
+{
+    d->extraFields[fieldName].value = value;
+}
+ 
+void AuthInfo::setExtraFieldFlags(const QString &fieldName, const FieldFlags flags)
+{
+    d->extraFields[fieldName].flags = flags;
+}
+ 
+QVariant AuthInfo::getExtraField(const QString &fieldName) const
+{
+    if (!d->extraFields.contains(fieldName)) return QVariant();
+    return d->extraFields[fieldName].value; 
+}
+ 
+AuthInfo::FieldFlags AuthInfo::getExtraFieldFlags(const QString &fieldName) const
+{
+    if (!d->extraFields.contains(fieldName)) return AuthInfo::ExtraFieldNoFlags;
+    return d->extraFields[fieldName].flags; 
+}
+
+/////
+
 QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
 {
-    s << a.url << a.username << a.password << a.prompt << a.caption
+    s << (quint8)1
+      << a.url << a.username << a.password << a.prompt << a.caption
       << a.comment << a.commentLabel << a.realmValue << a.digestInfo
-      << a.verifyPath << a.readOnly << a.keepPassword << a.modified;
+      << a.verifyPath << a.readOnly << a.keepPassword << a.modified
+      << a.d->extraFields;
     return s;
 }
 
 QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
 {
-    s >> a.url >> a.username >> a.password >> a.prompt >> a.caption
+    quint8 version;
+    s >> version
+      >> a.url >> a.username >> a.password >> a.prompt >> a.caption
       >> a.comment >> a.commentLabel >> a.realmValue >> a.digestInfo
-      >> a.verifyPath >> a.readOnly >> a.keepPassword >> a.modified;
+      >> a.verifyPath >> a.readOnly >> a.keepPassword >> a.modified
+      >> a.d->extraFields;
     return s;
 }
 
