@@ -28,7 +28,7 @@
 // Use toByteArray() to make deep copy of the buffer fragment.
 // 
 // API is designed to subset of QByteArray methods with some changes:
-// - trim() is like QByteArray.trimmed(), but it modifies curren object
+// - trim() is like QByteArray.trimmed(), but it modifies current object
 // - truncateLeft() provides way to cut off beginning of the buffer
 // - split() works more like strtok_r than QByteArray.split()
 // - truncateLeft() and mid() require position argument to be valid

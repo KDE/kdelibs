@@ -2140,7 +2140,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
 KDateTime KDateTime::fromString(const QString &string, const QString &format,
                                 const KTimeZones *zones, bool offsetIfAmbiguous)
 {
-    int     utcOffset;    // UTC offset in seconds
+    int     utcOffset = 0;    // UTC offset in seconds
     bool    dateOnly = false;
     Status invalid = stValid;
     QString zoneName;

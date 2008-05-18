@@ -60,7 +60,7 @@ class KConfigPrivate;
  *
  * In general it is recommended to use KSharedConfig instead of
  * creating multiple instances of KConfig to avoid the overhead of
- * separate objects or concerns about syncronizing writes to disk
+ * separate objects or concerns about synchronizing writes to disk
  * even if the configuration object is updated from multiple code paths.
  * KSharedConfig provides a set of open methods as counterparts for the
  * KConfig constructors.

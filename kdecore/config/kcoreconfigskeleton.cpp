@@ -19,8 +19,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcoreconfigskeleton_p.h"
 #include "kcoreconfigskeleton.h"
+#include "kcoreconfigskeleton_p.h"
+
 #include "kstandarddirs.h"
 #include "kglobal.h"
 #include "kdebug.h"

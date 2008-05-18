@@ -291,7 +291,7 @@ public:
      * \param parent The parent of the object. If \p parent is a widget type, it will also passed
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
      * \param args Additional arguments which will be passed to the object.
-     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     * \returns A pointer to the created object is returned, or 0 if an error occurred.
      */
     template<typename T>
     T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
@@ -305,7 +305,7 @@ public:
      * \param parent The parent of the object. If \p parent is a widget type, it will also passed
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
      * \param args Additional arguments which will be passed to the object.
-     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     * \returns A pointer to the created object is returned, or 0 if an error occurred.
      */
     template<typename T>
     T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
@@ -321,7 +321,7 @@ public:
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
      * \param keyword The keyword of the object.
      * \param args Additional arguments which will be passed to the object.
-     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     * \returns A pointer to the created object is returned, or 0 if an error occurred.
      */
     template<typename T>
     T *create(QWidget *parentWidget, QObject *parent, const QString &keyword = QString(), const QVariantList &args = QVariantList());

@@ -95,7 +95,7 @@ public:
     /**
      * Returns whether the action should be suppressed in menus.
      * This is useful for having actions with a known name that the code
-     * looks for explicitely, like Setup and Root for kscreensaver actions,
+     * looks for explicitly, like Setup and Root for kscreensaver actions,
      * and which should not appear in popup menus.
      * @return true to suppress this service
      */

@@ -43,7 +43,7 @@ public:
    * @param filename the file to load into memory
    * @param parent our parent
    */
-  KMemFile ( const QString &filename, QObject *parent = 0 );
+  explicit KMemFile ( const QString &filename, QObject *parent = 0 );
   /**
    * dtor
    */
@@ -72,7 +72,7 @@ public:
    */
   virtual qint64 size () const;
   /**
-   * This static function updates the internal informations about the file
+   * This static function updates the internal information about the file
    * loaded into shared memory. The next time the file is opened, the file is
    * reread from the file system.
    */

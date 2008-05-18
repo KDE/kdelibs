@@ -640,7 +640,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     name = key;
     name.replace( " ", QString() );
   } else if ( name.contains( ' ' ) ) {
-      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can't contain spaces!"<<std::endl;
+      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can not contain spaces!"<<std::endl;
     name.remove( ' ' );
   }
 
@@ -1247,7 +1247,7 @@ int main( int argc, char **argv )
         CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
         else {
-          std::cerr << "Can't parse entry." << std::endl;
+          std::cerr << "Can not parse entry." << std::endl;
           return 1;
         }
       }
@@ -1317,7 +1317,7 @@ int main( int argc, char **argv )
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( QIODevice::WriteOnly ) ) {
-    std::cerr << "Can't open '" << baseDir  << headerFileName << "for writing." << std::endl;
+    std::cerr << "Can not open '" << baseDir  << headerFileName << "for writing." << std::endl;
     return 1;
   }
 
@@ -1681,7 +1681,7 @@ int main( int argc, char **argv )
 
   QFile implementation( baseDir + implementationFileName );
   if ( !implementation.open( QIODevice::WriteOnly ) ) {
-    std::cerr << "Can't open '" << qPrintable(implementationFileName) << "for writing."
+    std::cerr << "Can not open '" << qPrintable(implementationFileName) << "for writing."
               << std::endl;
     return 1;
   }

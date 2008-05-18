@@ -244,7 +244,7 @@ class KDECORE_EXPORT KPluginInfo
         QString license() const;
 
         /**
-         * @return The full licence object, according to the license keyword.
+         * @return The full license object, according to the license keyword.
          *         It can be used to present friendlier and more detailed
          *         license info to the user, when the license is one of the
          *         widespread within KDE. For other licenses, the license

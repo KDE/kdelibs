@@ -771,7 +771,7 @@ class KDECORE_EXPORT KAboutData
  * This class is used to store information about a license.
  * The license can be one of some predefined, one given as text or one
  * that can be loaded from a file. This class is used in the KAboutData class.
- * Explicitely creating a KAboutLicense object is not possible.
+ * Explicitly creating a KAboutLicense object is not possible.
  * If the license is wanted for a KDE component having KAboutData object,
  * use KAboutData::licenses() to get the licenses for that component.
  * If the license is for a non-code resource and given by a keyword

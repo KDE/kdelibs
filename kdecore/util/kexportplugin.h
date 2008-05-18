@@ -15,8 +15,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KDECORE_EXPORTPLUGIN_H
-#define KDECORE_EXPORTPLUGIN_H
+#ifndef KDECORE_KEXPORTPLUGIN_H
+#define KDECORE_KEXPORTPLUGIN_H
 
 #include <kglobal.h>
 #include <kdeversion.h>
@@ -26,7 +26,7 @@
 
 /**
  * \internal
- * Stores KDE version informations in a plugin library.
+ * Stores KDE version information in a plugin library.
  * \see K_PLUGIN_VERIFICATION_DATA
  */
 struct KDEPluginVerificationData
@@ -69,5 +69,5 @@ Q_EXTERN_C KDE_EXPORT const quint32 kde_plugin_version = version;
 Q_EXPORT_PLUGIN(factory) \
 K_PLUGIN_VERIFICATION_DATA
 
-#endif // KDECORE_EXPORTPLUGIN_H
+#endif // KDECORE_KEXPORTPLUGIN_H
 
