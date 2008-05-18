@@ -22,7 +22,7 @@
 #define KPLUGINSELECTOR_P_H
 
 #include <QtCore/QAbstractListModel>
-#include <QtGui/QItemDelegate>
+#include <QtGui/QAbstractItemDelegate>
 
 #include <kplugininfo.h>
 #include <kcategorizedsortfilterproxymodel.h>
@@ -159,7 +159,7 @@ private:
 
 
 class KPluginSelector::Private::PluginDelegate
-    : public QItemDelegate
+    : public QAbstractItemDelegate
 {
 public:
     PluginDelegate(QObject *parent = 0);
