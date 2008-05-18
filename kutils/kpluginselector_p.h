@@ -26,7 +26,7 @@
 
 #include <kconfiggroup.h>
 #include <kplugininfo.h>
-#include <goya/kwidgetitemdelegate.h>
+#include <kwidgetitemdelegate.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
 class QLabel;
