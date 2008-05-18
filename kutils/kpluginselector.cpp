@@ -344,6 +344,7 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
         PluginEntry pluginEntry;
         pluginEntry.category = categoryName;
         pluginEntry.pluginInfo = pluginInfo;
+        pluginEntry.checked = pluginInfo.isPluginEnabled();
 
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
@@ -387,12 +388,24 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
 //             return false;
         case Qt::DecorationRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.icon();
+        case Qt::CheckStateRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->checked;
         case KCategorizedSortFilterProxyModel::CategoryDisplayRole: // fall through
         case KCategorizedSortFilterProxyModel::CategorySortRole:
             return static_cast<PluginEntry*>(index.internalPointer())->category;
         default:
             return QVariant();
     }
+}
+
+bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (role == Qt::CheckStateRole) {
+        static_cast<PluginEntry*>(index.internalPointer())->checked = value.toBool();
+        return true;
+    }
+
+    return false;
 }
 
 int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) const
@@ -514,12 +527,22 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     QList<QWidget*> widgetList;
 
     QCheckBox *enabledCheckBox = new QCheckBox;
+    connect(enabledCheckBox, SIGNAL(stateChanged(int)), this, SLOT(slotStateChanged(int)));
 
     KPushButton *aboutPushButton = new KPushButton;
     aboutPushButton->setIcon(KIcon("dialog-information"));
 
     KPushButton *configurePushButton = new KPushButton;
     configurePushButton->setIcon(KIcon("configure"));
+
+    setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+
+    setBlockedEventTypes(aboutPushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+
+    setBlockedEventTypes(configurePushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
 
     widgetList << enabledCheckBox << configurePushButton << aboutPushButton;
 
@@ -528,7 +551,7 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
 
 void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWidget*> widgets,
                                                                  const QStyleOptionViewItem &option,
-                                                                 const QModelIndex &index) const
+                                                                 const QPersistentModelIndex &index) const
 {
     if (!index.isValid()) {
         return;
@@ -537,6 +560,7 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     QCheckBox *checkBox = static_cast<QCheckBox*>(widgets[0]);
     checkBox->resize(checkBox->sizeHint());
     checkBox->move(MARGIN, option.rect.height() / 2 - widgets[0]->sizeHint().height() / 2);
+    checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
 
     KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
     aboutPushButton->resize(aboutPushButton->sizeHint());
@@ -547,6 +571,14 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButton->sizeHint().width() - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[1]->sizeHint().height() / 2);
 
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
+}
+
+void KPluginSelector::Private::PluginDelegate::slotStateChanged(int state)
+{
+    if (!focusedIndex().isValid())
+        return;
+
+    const_cast<QAbstractItemModel*>(focusedIndex().model())->setData(focusedIndex(), state, Qt::CheckStateRole);
 }
 
 QFont KPluginSelector::Private::PluginDelegate::titleFont(const QFont &baseFont) const

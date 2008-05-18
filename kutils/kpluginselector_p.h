@@ -89,6 +89,7 @@ class KPluginSelector::Private::PluginEntry
 public:
     QString category;
     KPluginInfo pluginInfo;
+    bool checked;
 
     bool operator==(const KPluginSelector::Private::PluginEntry &pe) const
     {
@@ -146,6 +147,7 @@ public:
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 //     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
@@ -172,6 +174,8 @@ private:
 class KPluginSelector::Private::PluginDelegate
     : public KWidgetItemDelegate
 {
+    Q_OBJECT
+
 public:
     PluginDelegate(QAbstractItemView *itemView, QObject *parent = 0);
     ~PluginDelegate();
@@ -183,7 +187,10 @@ protected:
     virtual QList<QWidget*> createItemWidgets() const;
     virtual void updateItemWidgets(const QList<QWidget*> widgets,
                                    const QStyleOptionViewItem &option,
-                                   const QModelIndex &index) const;
+                                   const QPersistentModelIndex &index) const;
+
+private Q_SLOTS:
+    void slotStateChanged(int state);
 
 private:
     QFont titleFont(const QFont &baseFont) const;
