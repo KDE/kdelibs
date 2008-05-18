@@ -29,16 +29,6 @@ flag that indicates that the web page provides some P3P information.
 This is something that can be added as a plugin to kdeaddons.
 
 
-Things that do not require programming
-============================
-
-- "Friendly" error message html page.
-We currently support the sending of error messages, but this is only done if the server
-sends back nicely formatted error messages.  We do not have fall back HTML pages that
-describe these error messages in a non-technical manner!  This of course also means that
-we will certainly need to have these files translated.
-
-
 Maintainers
 Waldo Bastian <bastian@kde.org>
 Dawit Alemayehu <adawit@kde.org>
