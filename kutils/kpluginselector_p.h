@@ -24,6 +24,7 @@
 #include <QtCore/QAbstractListModel>
 #include <QtGui/QAbstractItemDelegate>
 
+#include <kconfiggroup.h>
 #include <kplugininfo.h>
 #include <goya/kwidgetitemdelegate.h>
 #include <kcategorizedsortfilterproxymodel.h>
@@ -35,7 +36,6 @@ class QAbstractItemView;
 
 class KLineEdit;
 class KCategorizedView;
-class KConfigGroup;
 class KCModuleProxy;
 
 class KPluginSelector::Private
@@ -54,7 +54,8 @@ public:
         EmailRole         = 0x02BE3775,
         WebsiteRole       = 0x13095A34,
         VersionRole       = 0x0A0CB450,
-        LicenseRole       = 0x001F308A
+        LicenseRole       = 0x001F308A,
+        DependenciesRole  = 0x04CAB650
     };
 
     enum CheckWhatDependencies
@@ -92,7 +93,7 @@ public:
     QString category;
     KPluginInfo pluginInfo;
     bool checked;
-    KConfigGroup *cfgGroup;
+    KConfigGroup cfgGroup;
     PluginLoadMethod pluginLoadMethod;
     bool manuallyAdded;
 
@@ -147,7 +148,7 @@ public:
     PluginModel(QObject *parent = 0);
     ~PluginModel();
 
-    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey, KConfigGroup *cfgGroup, PluginLoadMethod pluginLoadMethod = ReadConfigFile, bool manuallyAdded = false);
+    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey, const KConfigGroup &cfgGroup, PluginLoadMethod pluginLoadMethod = ReadConfigFile, bool manuallyAdded = false);
     QList<KService::Ptr> pluginServices(const QModelIndex &index) const;
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
