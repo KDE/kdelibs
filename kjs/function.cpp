@@ -878,6 +878,11 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         if (!progNode)
           return throwError(exec, SyntaxError, errMsg, errLine, sourceId, NULL);
 
+        // If the variable object we're working with is an activation, we better
+        // tear it off since stuff inside eval can capture it in a closure
+        if (exec->variableObject()->isActivation())
+            static_cast<ActivationImp*>(exec->variableObject())->tearOff(exec);
+
         // enter a new execution context
         EvalExecState newExec(exec->dynamicInterpreter(),
                        exec->dynamicInterpreter()->globalObject(),
