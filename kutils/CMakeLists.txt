@@ -28,7 +28,6 @@ install(FILES
     kemoticons/kemoticons.h 
     kemoticons/kemoticonstheme.h 
     kemoticons/kemoticonsprovider.h 
-    kemoticons/kemoticons_export.h 
     DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
