@@ -28,6 +28,7 @@
 
 #include "HTMLElement.h"
 #include <wtf/OwnPtr.h>
+#include <wtf/PassRefPtr.h>
 
 namespace khtml {
 
