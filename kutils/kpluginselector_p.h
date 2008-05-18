@@ -58,16 +58,10 @@ public:
         DependenciesRole  = 0x04CAB650
     };
 
-    enum DependencyType
-    {
-        /// If an item was checked, check all dependencies of that item
-        DependenciesINeed = 0,
-        /// If an item was unchecked, uncheck all items that depends on that item
-        DependenciesNeedMe
-    };
-
     Private(KPluginSelector *parent);
     ~Private();
+
+    void updateDependencies(const KPluginInfo &pluginInfo, bool added);
 
 public:
     struct PluginEntry;

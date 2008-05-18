@@ -59,6 +59,41 @@ KPluginSelector::Private::~Private()
 {
 }
 
+void KPluginSelector::Private::updateDependencies(const KPluginInfo &pluginInfo, bool added)
+{
+    if (added) {
+        QStringList dependencyList = pluginInfo.dependencies();
+
+        if (!dependencyList.count()) {
+            return;
+        }
+
+        for (int i = 0; i < pluginModel->rowCount(); i++) {
+            QModelIndex index = pluginModel->index(i, 0);
+            Private::PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
+
+            if ((pluginEntry->pluginInfo.pluginName() != pluginInfo.pluginName()) &&
+                dependencyList.contains(pluginEntry->pluginInfo.pluginName())) {
+                dependenciesWidget->addDependency(pluginEntry->pluginInfo.name(), pluginInfo.name(), added);
+                const_cast<QAbstractItemModel*>(index.model())->setData(index, added, Qt::CheckStateRole);
+                updateDependencies(pluginEntry->pluginInfo, added);
+            }
+        }
+    } else {
+        for (int i = 0; i < pluginModel->rowCount(); i++) {
+            QModelIndex index = pluginModel->index(i, 0);
+            Private::PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
+
+            if ((pluginEntry->pluginInfo.pluginName() != pluginInfo.pluginName()) &&
+                pluginEntry->pluginInfo.dependencies().contains(pluginInfo.pluginName())) {
+                dependenciesWidget->addDependency(pluginEntry->pluginInfo.name(), pluginInfo.name(), added);
+                const_cast<QAbstractItemModel*>(index.model())->setData(index, added, Qt::CheckStateRole);
+                updateDependencies(pluginEntry->pluginInfo, added);
+            }
+        }
+    }
+}
+
 KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent)
     : QWidget(parent)
     , addedByDependencies(0)
@@ -525,10 +560,13 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
 
-    const int iconSize = option.rect.height() - MARGIN * 2;
-
-    KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
-    painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
+    int iconSize = option.rect.height() - MARGIN * 2;
+    if (pluginSelector_d->showIcons) {
+        KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
+        painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
+    } else {
+        iconSize = -MARGIN;
+    }
 
     QRect contentsRect(MARGIN * 2 + iconSize + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize - xOffset, option.rect.height() - MARGIN * 2);
 
@@ -566,12 +604,16 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
         j = 2;
     }
 
+    if (!pluginSelector_d->showIcons) {
+        i--;
+    }
+
     QFont font = titleFont(option.font);
     QFontMetrics fmTitle(font);
 
     return QSize(qMax(fmTitle.width(index.model()->data(index, Qt::DisplayRole).toString()),
                       option.fontMetrics.width(index.model()->data(index, CommentRole).toString())) +
-                      ICON_SIZE + MARGIN * i + pushButton->sizeHint().width() * j,
+                      pluginSelector_d->showIcons ? ICON_SIZE : 0 + MARGIN * i + pushButton->sizeHint().width() * j,
                  qMax(ICON_SIZE + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
 }
 
@@ -634,11 +676,14 @@ void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
     if (!focusedIndex().isValid())
         return;
 
-    if (state) {
-    } else {
-    }
+    const QModelIndex index = focusedIndex();
 
-    const_cast<QAbstractItemModel*>(focusedIndex().model())->setData(focusedIndex(), state, Qt::CheckStateRole);
+    pluginSelector_d->dependenciesWidget->clearDependencies();
+
+    KPluginInfo pluginInfo = index.model()->data(index, PluginInfoRole).value<KPluginInfo>();
+    pluginSelector_d->updateDependencies(pluginInfo, state);
+
+    const_cast<QAbstractItemModel*>(index.model())->setData(index, state, Qt::CheckStateRole);
 }
 
 void KPluginSelector::Private::PluginDelegate::emitChanged()
