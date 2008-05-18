@@ -409,7 +409,7 @@ namespace KJS {
     } \
    const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
 
-// cacheGlobalObject<> is not in namepsace KJS - need to use ::cacheGlobalObject<>
+// cacheGlobalObject<> is not in namespace KJS - need to use ::cacheGlobalObject<>
 #define KJS_EMPTY_PROTOTYPE_IMP(ClassName, ClassProto, ProtoCode) \
       class ClassProto : public JSObject { \
       friend JSObject* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(ExecState *exec, const Identifier &propertyName); \
