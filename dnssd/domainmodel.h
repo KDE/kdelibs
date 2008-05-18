@@ -57,7 +57,7 @@ public:
 	Creates model for given domain browses and starts browsing for domain. The model becomes parent of the
 	browser so there is no need to delete it afterwards.
  	 */ 
-	DomainModel(DomainBrowser* browser, QObject* parent=0);
+	explicit DomainModel(DomainBrowser* browser, QObject* parent=0);
 	virtual ~DomainModel();
 	
 	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;

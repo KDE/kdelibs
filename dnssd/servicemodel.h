@@ -82,7 +82,7 @@ public:
 	Creates model for given service browses and starts browsing for services. The model becomes parent of the
 	browser so there is no need to delete it afterwards.
 	 */
-	ServiceModel(ServiceBrowser* browser, QObject* parent=0);
+	explicit ServiceModel(ServiceBrowser* browser, QObject* parent=0);
 	virtual ~ServiceModel();
 	
 	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;

@@ -50,6 +50,7 @@ DomainModel::~DomainModel()
 
 int DomainModel::columnCount(const QModelIndex& parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 int DomainModel::rowCount(const QModelIndex& parent ) const
@@ -59,6 +60,7 @@ int DomainModel::rowCount(const QModelIndex& parent ) const
 
 QModelIndex DomainModel::parent(const QModelIndex& index ) const
 {
+    Q_UNUSED(index);
     return QModelIndex();
 }
 
