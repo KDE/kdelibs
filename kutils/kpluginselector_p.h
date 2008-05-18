@@ -98,7 +98,7 @@ public:
     }
 };
 
-Q_DECLARE_METATYPE(PluginEntry*);
+Q_DECLARE_METATYPE(PluginEntry*)
 
 
 /**
