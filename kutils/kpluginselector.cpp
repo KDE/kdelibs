@@ -25,12 +25,14 @@
 #include <QtGui/QPainter>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QApplication>
+#include <QtGui/QCheckBox>
 #include <QtGui/QStyleOptionViewItemV4>
 
 #include <kdebug.h>
 #include <klineedit.h>
 #include <kurllabel.h>
 #include <kmessagebox.h>
+#include <kpushbutton.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <klocalizedstring.h>
@@ -242,7 +244,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->proxyModel->setCategorizedModel(true);
     d->proxyModel->setSourceModel(d->pluginModel);
     d->listView->setModel(d->proxyModel);
-    d->listView->setItemDelegate(new Private::PluginDelegate(this));
+    d->listView->setItemDelegate(new Private::PluginDelegate(d->listView, this));
 
     d->listView->setMouseTracking(true);
     d->listView->viewport()->setAttribute(Qt::WA_Hover);
@@ -357,6 +359,11 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
     }
 }
 
+QList<KService::Ptr> KPluginSelector::Private::PluginModel::pluginServices(const QModelIndex &index) const
+{
+    return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.kcmServices();
+}
+
 QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, const QModelIndex &parent) const
 {
     return createIndex(row, column, (row < pluginEntryList.count()) ? (void*) &pluginEntryList.at(row)
@@ -374,6 +381,8 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name();
         case CommentRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.comment();
+        case ServicesCountRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.kcmServices().count();
 //         case Qt::CheckStateRole:
 //             return false;
         case Qt::DecorationRole:
@@ -422,8 +431,10 @@ bool KPluginSelector::Private::ProxyModel::subSortLessThan(const QModelIndex &le
     return static_cast<PluginEntry*>(left.internalPointer())->pluginInfo.name().compare(static_cast<PluginEntry*>(right.internalPointer())->pluginInfo.name(), Qt::CaseInsensitive) < 0;
 }
 
-KPluginSelector::Private::PluginDelegate::PluginDelegate(QObject *parent)
-    : QAbstractItemDelegate(parent)
+KPluginSelector::Private::PluginDelegate::PluginDelegate(QAbstractItemView *itemView, QObject *parent)
+    : KWidgetItemDelegate(itemView, parent)
+    , checkBox(new QCheckBox)
+    , pushButton(new KPushButton)
 {
 }
 
@@ -437,14 +448,16 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         return;
     }
 
+    int xOffset = checkBox->sizeHint().width();
+
     painter->save();
 
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
 
     KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
-    painter->drawPixmap(QRect(MARGIN + option.rect.left(), MARGIN + option.rect.top(), ICON_SIZE, ICON_SIZE), icon.pixmap(ICON_SIZE, ICON_SIZE), QRect(0, 0, ICON_SIZE, ICON_SIZE));
+    painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), ICON_SIZE, ICON_SIZE), icon.pixmap(ICON_SIZE, ICON_SIZE), QRect(0, 0, ICON_SIZE, ICON_SIZE));
 
-    QRect contentsRect(MARGIN * 2 + ICON_SIZE + option.rect.left(), MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - ICON_SIZE, option.rect.height() - MARGIN * 2);
+    QRect contentsRect(MARGIN * 2 + ICON_SIZE + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - ICON_SIZE, option.rect.height() - MARGIN * 2);
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.highlightedText().color());
@@ -460,12 +473,54 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignBottom, index.model()->data(index, CommentRole).toString());
 
     painter->restore();
+
+    KWidgetItemDelegate::paintWidgets(painter, option, index);
 }
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(qMax(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()),
                       option.fontMetrics.width(index.model()->data(index, CommentRole).toString())), ICON_SIZE + MARGIN * 2);
+}
+
+QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() const
+{
+    QList<QWidget*> widgetList;
+
+    QCheckBox *enabledCheckBox = new QCheckBox;
+
+    KPushButton *aboutPushButton = new KPushButton;
+    aboutPushButton->setIcon(KIcon("dialog-information"));
+
+    KPushButton *configurePushButton = new KPushButton;
+    configurePushButton->setIcon(KIcon("configure"));
+
+    widgetList << enabledCheckBox << configurePushButton << aboutPushButton;
+
+    return widgetList;
+}
+
+void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWidget*> widgets,
+                                                                 const QStyleOptionViewItem &option,
+                                                                 const QModelIndex &index) const
+{
+    if (!index.isValid()) {
+        return;
+    }
+
+    QCheckBox *checkBox = static_cast<QCheckBox*>(widgets[0]);
+    checkBox->resize(checkBox->sizeHint());
+    checkBox->move(MARGIN, option.rect.height() / 2 - widgets[0]->sizeHint().height() / 2);
+
+    KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
+    aboutPushButton->resize(aboutPushButton->sizeHint());
+    aboutPushButton->move(option.rect.width() - MARGIN - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[2]->sizeHint().height() / 2);
+
+    KPushButton *configurePushButton = static_cast<KPushButton*>(widgets[1]);
+    configurePushButton->resize(configurePushButton->sizeHint());
+    configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButton->sizeHint().width() - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[1]->sizeHint().height() / 2);
+
+    configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
 }
 
 #include "kpluginselector_p.moc"
