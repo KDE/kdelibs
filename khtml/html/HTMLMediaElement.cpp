@@ -38,7 +38,7 @@ const double doubleInf = 999999999.0; // ### numeric_limits<double>::infinity()
 namespace khtml {
 
 HTMLMediaElement::HTMLMediaElement(Document* doc)
-    : HTMLElementImpl(doc)
+    : HTMLElement(doc)
     , m_defaultPlaybackRate(1.0f)
     , m_networkState(EMPTY)
     , m_readyState(DATA_UNAVAILABLE)
@@ -65,7 +65,7 @@ HTMLMediaElement::~HTMLMediaElement()
 
 void HTMLMediaElement::attributeChanged(NodeImpl::Id attrId)
 {
-    HTMLElementImpl::attributeChanged(attrId);
+    HTMLElement::attributeChanged(attrId);
 
     if (attrId == ATTR_SRC) {
         // 3.14.9.2.

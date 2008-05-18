@@ -30,7 +30,7 @@
 namespace khtml {
 
 HTMLSourceElement::HTMLSourceElement(Document* doc)
-    : HTMLElementImpl(doc)
+    : HTMLElement(doc)
 {
 }
 
