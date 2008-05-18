@@ -1,0 +1,275 @@
+// -*- c-basic-offset: 2 -*-
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2003, 2007, 2008 Apple Inc. All rights reserved.
+ *  Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
+ *
+ */
+
+#include "ExecState.h"
+#include "function.h"
+#include "scriptfunction.h"
+#include "internal.h"
+#include "nodes.h"
+
+namespace KJS {
+
+Interpreter* ExecState::lexicalInterpreter() const
+{
+    Interpreter* result = Interpreter::interpreterWithGlobalObject(scopeChain().bottom());
+
+    if (!result)
+        return dynamicInterpreter();
+
+    return result;
+}
+
+void ExecState::markSelf()
+{
+    if (m_codeType != FunctionCode && m_localStore) {
+        //### some code dupe here with JSVariableObject::mark. Not sure how to best
+        // restructure.
+
+        // Note: the m_localStore check is needed here, since for non-function code,
+        // we may create function object in declaration elaboration stage, before
+        // compilation and set up of this
+        size_t size                = m_localStoreSize;
+        LocalStorageEntry* entries = m_localStore;
+
+        for (size_t i = 0; i < size; ++i) {
+            JSValue* value = entries[i].val.valueVal;
+            if (!(entries[i].attributes & DontMark) && !value->marked())
+                value->mark();
+        }
+    }
+
+    for (size_t i = 0; i < m_deferredCompletions.size(); ++i) {
+        JSValue* e = m_deferredCompletions[i].value();
+        if (e && !e->marked())
+            e->mark();
+    }
+
+    JSValue* e = m_completion.value();
+    if (e && !e->marked())
+        e->mark();
+
+    scope.mark();
+
+    // Propagate up to other eval chains..
+    if (m_savedExec) {
+        ASSERT(m_savedExec != this);
+        ASSERT(!m_callingExec);
+        m_savedExec->mark();
+    }
+}
+
+void ExecState::mark()
+{
+    for (ExecState* exec = this; exec; exec = exec->m_callingExec)
+        exec->markSelf();
+}
+
+ExecState::ExecState(Interpreter* intp, ExecState* save) :
+  m_interpreter(intp),
+  m_propertyNames(CommonIdentifiers::shared()),
+  m_callingExec(0),
+  m_savedExec(save),
+  m_currentBody(0),
+  m_function(0),
+  m_localStore(0),
+  m_pc(0),
+  m_machineLocalStore(0)
+{
+    m_interpreter->setExecState(this);
+}
+
+ExecState::~ExecState()
+{
+    if (m_savedExec)
+        m_interpreter->setExecState(m_savedExec);
+    else
+        m_interpreter->setExecState(m_callingExec);
+}
+
+
+JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
+{
+    // First, unwind and get the old completion..
+    ASSERT(m_exceptionHandlers.last().type == RemoveDeferred);
+    popExceptionHandler();
+    Completion comp = m_deferredCompletions.last();
+    m_deferredCompletions.removeLast();
+
+    // Now, our behavior behaves on whether we're inside an another
+    // try..finally or not. If we're, we must route even
+    // continue/break/return completions via the EH machinery;
+    // if not, we execute them directly
+    if (comp.complType() == Normal) {
+        // We just straight fell into 'finally'. Nothing fancy to do.
+        return 0;
+    }
+    
+    if (comp.complType() == Throw || insideTryFinally) {
+        setAbruptCompletion(comp);
+    } else {
+        if (comp.complType() == ReturnValue) {
+            return comp.value();
+        } else {
+            assert(comp.complType() == Break || comp.complType() == Continue);
+            *m_pc = comp.target();
+        }
+    }
+
+    return 0;
+}
+
+void ExecState::setException(JSValue* e)
+{
+    if (e)
+        setAbruptCompletion(Completion(Throw, e));
+    else
+        clearException();
+}
+
+void ExecState::setAbruptCompletion(Completion comp)
+{
+    ASSERT(!hadException());
+    m_completion = comp;
+
+    while (!m_exceptionHandlers.isEmpty()) {
+        switch (m_exceptionHandlers.last().type) {
+        case JumpToCatch:
+            *m_pc = m_exceptionHandlers.last().dest;
+            m_exceptionHandlers.removeLast();
+            return; // done handling it
+        case PopScope:
+            popScope();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
+        case RemoveDeferred:
+            m_deferredCompletions.removeLast();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
+        case RemovePNA:
+            delete m_activePropertyNameArrays.last().array;
+            m_activePropertyNameArrays.removeLast();
+            m_exceptionHandlers.removeLast();
+            continue; // get the next handler
+        case Silent:
+            // Exception blocked by tracing code. nothing to do.
+            return;
+        }
+    }
+}
+
+void ExecState::quietUnwind(int depth)
+{
+    ASSERT(m_exceptionHandlers.size() >= depth);
+    for (int e = 0; e < depth; ++e) {
+        HandlerType type = m_exceptionHandlers.last().type;
+        m_exceptionHandlers.removeLast();
+
+        switch (type) {
+        case JumpToCatch:
+            break; //Nothing to do here!
+        case PopScope:
+            popScope();
+            break;
+        case RemoveDeferred:
+            m_deferredCompletions.removeLast();
+            break;
+        case RemovePNA:
+            delete m_activePropertyNameArrays.last().array;
+            m_activePropertyNameArrays.removeLast();
+            break;
+        case Silent:
+            ASSERT(0); // Should not happen in the middle of the code.
+            break;
+        }
+    }
+}
+
+GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp)
+{
+    scope.clear();
+    scope.push(glob);
+    m_codeType  = GlobalCode;
+    m_variable = glob;
+    m_thisVal  = glob;
+}
+
+InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
+                                           JSObject* thisObject, ProgramNode* body):
+  ExecState(intp, intp->execState())
+{
+    m_currentBody = body;
+    scope.clear();
+    scope.push(glob);
+    m_codeType = GlobalCode;
+    m_variable = glob;
+    // Per 10.2.1, we should use the global object here, but
+    // Interpreter::evaluate permits it to be overriden, e.g. for LiveConnect.
+    m_thisVal  = thisObject;
+}
+
+EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
+                             ProgramNode* body, ExecState* callingExecState):
+  ExecState(intp)
+{
+    m_currentBody = body;
+    m_codeType    = EvalCode;
+    m_callingExec = callingExecState;
+    if (m_callingExec) {
+        scope = m_callingExec->scopeChain();
+        m_variable = m_callingExec->variableObject();
+        m_thisVal  = m_callingExec->thisValue();
+        return;
+    }
+
+    // 10.2.2 talks about the behavior w/o a calling context here,
+    // saying it should be like global code. This can not happen
+    // in actual JS code, but it may be synthesized by e.g.
+    // the JS debugger calling 'eval' itself, from globalExec
+    m_thisVal  = glob;
+    m_variable = glob;
+    scope.clear();
+    scope.push(glob);
+}
+
+FunctionExecState::FunctionExecState(Interpreter* intp, JSObject* thisObject,
+                                     FunctionBodyNode* body, ExecState* callingExecState,
+                                     FunctionImp* function): ExecState(intp)
+{
+    m_function    = function;
+    m_currentBody = body;
+
+    m_codeType    = FunctionCode;
+    m_callingExec = callingExecState;
+    scope = function->scope();
+    m_variable = m_interpreter->getRecycledActivation();// TODO: DontDelete ? (ECMA 10.2.3)
+    if (!m_variable)
+        m_variable = new ActivationImp();
+    scope.push(m_variable);
+    m_thisVal  = thisObject;
+}
+
+} // namespace KJS
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
