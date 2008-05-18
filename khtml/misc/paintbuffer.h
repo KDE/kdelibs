@@ -120,13 +120,16 @@ public:
     }
     
     void transfer( float opacity ) {
+        QColor color;
+        color.setAlphaF(opacity);
+        m_painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        m_painter.fillRect(m_rect, color);
         m_painter.end();
         QTransform t = m_origPainter->worldTransform();
         QPoint trans(static_cast<int>(t.dx()),static_cast<int>(t.dy()));
         m_origPainter->save();
         m_origPainter->resetTransform();
         m_origPainter->setClipRegion(trans.isNull() ? m_region : m_region.translated(trans));
-        m_origPainter->setOpacity( opacity );
         m_origPainter->setWorldTransform(t);
         m_origPainter->drawPixmap(m_off-trans, *m_buf, QRect(0,0,m_rect.width(),m_rect.height()));
         m_origPainter->restore();   
