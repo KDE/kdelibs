@@ -35,6 +35,8 @@ class QAbstractItemView;
 
 class KLineEdit;
 class KCategorizedView;
+class KConfigGroup;
+class KCModuleProxy;
 
 class KPluginSelector::Private
     : public QObject
@@ -44,8 +46,15 @@ class KPluginSelector::Private
 public:
     enum ExtraRoles
     {
-        CommentRole = 0x19FC6DE2,
-        ServicesCountRole = 0x1422E2AA
+        PluginInfoRole    = 0x09386561,
+        ServicesCountRole = 0x1422E2AA,
+        NameRole          = 0x0CBBBB00,
+        CommentRole       = 0x19FC6DE2,
+        AuthorRole        = 0x30861E10,
+        EmailRole         = 0x02BE3775,
+        WebsiteRole       = 0x13095A34,
+        VersionRole       = 0x0A0CB450,
+        LicenseRole       = 0x001F308A
     };
 
     enum CheckWhatDependencies
@@ -83,6 +92,9 @@ public:
     QString category;
     KPluginInfo pluginInfo;
     bool checked;
+    KConfigGroup *cfgGroup;
+    PluginLoadMethod pluginLoadMethod;
+    bool manuallyAdded;
 
     bool operator==(const KPluginSelector::Private::PluginEntry &pe) const
     {
@@ -135,7 +147,7 @@ public:
     PluginModel(QObject *parent = 0);
     ~PluginModel();
 
-    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey);
+    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey, KConfigGroup *cfgGroup, PluginLoadMethod pluginLoadMethod = ReadConfigFile, bool manuallyAdded = false);
     QList<KService::Ptr> pluginServices(const QModelIndex &index) const;
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
@@ -177,6 +189,7 @@ public:
 
 Q_SIGNALS:
     void changed(bool hasChanged);
+    void configCommitted(const QByteArray &componentName);
 
 protected:
     virtual QList<QWidget*> createItemWidgets() const;
@@ -187,12 +200,18 @@ protected:
 private Q_SLOTS:
     void slotStateChanged(bool state);
     void emitChanged();
+    void slotAboutClicked();
+    void slotConfigureClicked();
+    void slotDefaultClicked();
 
 private:
     QFont titleFont(const QFont &baseFont) const;
 
     QCheckBox *checkBox;
     QPushButton *pushButton;
+    QList<KCModuleProxy*> moduleProxyList;
 };
+
+Q_DECLARE_METATYPE(KPluginInfo);
 
 #endif // KPLUGINSELECTOR_P_H

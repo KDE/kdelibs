@@ -30,7 +30,11 @@
 
 #include <kdebug.h>
 #include <klineedit.h>
+#include <kdialog.h>
 #include <kurllabel.h>
+#include <ktabwidget.h>
+#include <kcmoduleinfo.h>
+#include <kcmoduleproxy.h>
 #include <kmessagebox.h>
 #include <kpushbutton.h>
 #include <kiconloader.h>
@@ -245,6 +249,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
 
     connect(d->lineEdit, SIGNAL(textChanged(QString)), d->proxyModel, SLOT(invalidate()));
     connect(pluginDelegate, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
+    connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 
     layout->addWidget(d->lineEdit);
     layout->addWidget(d->listView);
@@ -278,7 +283,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
 
     d->checkIfShowIcons(pluginInfoList);
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
@@ -303,28 +308,54 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
 
     d->checkIfShowIcons(pluginInfoList);
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, true /* manually added */);
 }
 
 void KPluginSelector::load()
 {
+    for (int i = 0; i < d->pluginModel->rowCount(); i++) {
+        QModelIndex index = d->pluginModel->index(i, 0);
+        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        pluginEntry->pluginInfo.load(*pluginEntry->cfgGroup);
+        d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabled(), Qt::CheckStateRole);
+    }
+
+    emit changed(false);
 }
 
 void KPluginSelector::save()
 {
+    for (int i = 0; i < d->pluginModel->rowCount(); i++) {
+        QModelIndex index = d->pluginModel->index(i, 0);
+        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
+        pluginEntry->pluginInfo.save(*pluginEntry->cfgGroup);
+        pluginEntry->cfgGroup->sync();
+    }
+
+    emit changed(false);
 }
 
 void KPluginSelector::defaults()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
         QModelIndex index = d->pluginModel->index(i, 0);
-        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
-        d->pluginModel->setData(index, pluginInfo->isPluginEnabledByDefault(), Qt::CheckStateRole);
+        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabledByDefault(), Qt::CheckStateRole);
     }
+
+    emit changed(true);
 }
 
 void KPluginSelector::updatePluginsState()
 {
+    for (int i = 0; i < d->pluginModel->rowCount(); i++) {
+        QModelIndex index = d->pluginModel->index(i, 0);
+        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        if (pluginEntry->manuallyAdded) {
+            pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
+        }
+    }
 }
 
 KPluginSelector::Private::PluginModel::PluginModel(QObject *parent)
@@ -336,7 +367,7 @@ KPluginSelector::Private::PluginModel::~PluginModel()
 {
 }
 
-void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey)
+void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey, KConfigGroup *cfgGroup, PluginLoadMethod pluginLoadMethod, bool manuallyAdded)
 {
     QList<PluginEntry> listToAdd;
 
@@ -344,7 +375,16 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
         PluginEntry pluginEntry;
         pluginEntry.category = categoryName;
         pluginEntry.pluginInfo = pluginInfo;
+        if (pluginLoadMethod == ReadConfigFile) {
+            pluginEntry.pluginInfo.load(*cfgGroup);
+        }
         pluginEntry.checked = pluginInfo.isPluginEnabled();
+        if (cfgGroup->isValid()) {
+            pluginEntry.cfgGroup = cfgGroup;
+        } else {
+            pluginEntry.cfgGroup = &pluginInfo.config();
+        }
+        pluginEntry.manuallyAdded = manuallyAdded;
 
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
@@ -380,12 +420,27 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
     switch (role) {
         case Qt::DisplayRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name();
-        case CommentRole:
-            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.comment();
+        case PluginInfoRole: {
+            QVariant var;
+            var.setValue(static_cast<PluginEntry*>(index.internalPointer())->pluginInfo);
+            return var;
+        }
         case ServicesCountRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.kcmServices().count();
-//         case Qt::CheckStateRole:
-//             return false;
+        case NameRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name();
+        case CommentRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.comment();
+        case AuthorRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.author();
+        case EmailRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.email();
+        case WebsiteRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.website();
+        case VersionRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.version();
+        case LicenseRole:
+            return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.license();
         case Qt::DecorationRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.icon();
         case Qt::CheckStateRole:
@@ -533,9 +588,11 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
 
     KPushButton *aboutPushButton = new KPushButton;
     aboutPushButton->setIcon(KIcon("dialog-information"));
+    connect(aboutPushButton, SIGNAL(clicked(bool)), this, SLOT(slotAboutClicked()));
 
     KPushButton *configurePushButton = new KPushButton;
     configurePushButton->setIcon(KIcon("configure"));
+    connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
     setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress
                             << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
@@ -586,6 +643,129 @@ void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
 void KPluginSelector::Private::PluginDelegate::emitChanged()
 {
     emit changed(true);
+}
+
+void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
+{
+    const QModelIndex index = focusedIndex();
+    const QAbstractItemModel *model = index.model();
+
+    const QString name = model->data(index, NameRole).toString();
+    const QString comment = model->data(index, CommentRole).toString();
+    const QString author = model->data(index, AuthorRole).toString();
+    const QString email = model->data(index, EmailRole).toString();
+    const QString website = model->data(index, WebsiteRole).toString();
+    const QString version = model->data(index, VersionRole).toString();
+    const QString license = model->data(index, LicenseRole).toString();
+
+    QString message = i18n("Name:\n%1", name);
+
+    if (!comment.isEmpty()) {
+        message += i18n("\n\nComment:\n%1", comment);
+    }
+
+    if (!author.isEmpty()) {
+        message += i18n("\n\nAuthor:\n%1", author);
+    }
+
+    if (!email.isEmpty()) {
+        message += i18n("\n\nE-Mail:\n%1", email);
+    }
+
+    if (!website.isEmpty()) {
+        message += i18n("\n\nWebsite:\n%1", website);
+    }
+
+    if (!version.isEmpty()) {
+        message += i18n("\n\nVersion:\n%1", version);
+    }
+
+    if (!license.isEmpty()) {
+        message += i18n("\n\nLicense:\n%1", license);
+    }
+
+    KMessageBox::information(itemView(), message, i18n("About Plugin \"%1\"", name));
+}
+
+void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
+{
+    const QModelIndex index = focusedIndex();
+    const QAbstractItemModel *model = index.model();
+
+    KPluginInfo pluginInfo = model->data(index, PluginInfoRole).value<KPluginInfo>();
+
+    KDialog *configDialog = new KDialog(itemView());
+    configDialog->setWindowTitle(model->data(index, NameRole).toString());
+    // The number of KCModuleProxies in use determines whether to use a tabwidget
+    KTabWidget *newTabWidget = 0;
+    // Widget to use for the setting dialog's main widget,
+    // either a KTabWidget or a KCModuleProxy
+    QWidget * mainWidget = 0;
+    // Widget to use as the KCModuleProxy's parent.
+    // The first proxy is owned by the dialog itself
+    QWidget *moduleProxyParentWidget = configDialog;
+
+    foreach (const KService::Ptr &servicePtr, pluginInfo.kcmServices()) {
+        if(!servicePtr->noDisplay()) {
+            KCModuleInfo moduleInfo(servicePtr);
+            KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleInfo, moduleProxyParentWidget);
+            if (currentModuleProxy->realModule()) {
+                moduleProxyList << currentModuleProxy;
+                if (mainWidget && !newTabWidget) {
+                    // we already created one KCModuleProxy, so we need a tab widget.
+                    // Move the first proxy into the tab widget and ensure this and subsequent
+                    // proxies are in the tab widget
+                    newTabWidget = new KTabWidget(configDialog);
+                    moduleProxyParentWidget = newTabWidget;
+                    mainWidget->setParent( newTabWidget );
+                    newTabWidget->addTab(mainWidget, (qobject_cast<KCModuleProxy*>(mainWidget))->moduleInfo().moduleName());
+                    mainWidget = newTabWidget;
+                }
+
+                if (newTabWidget) {
+                    newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                } else {
+                    mainWidget = currentModuleProxy;
+                }
+            }
+        }
+    }
+
+    configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
+
+    QWidget *showWidget = new QWidget(configDialog);
+    QVBoxLayout *layout = new QVBoxLayout;
+    showWidget->setLayout(layout);
+    layout->addWidget(mainWidget);
+    layout->insertSpacing(-1, KDialog::marginHint());
+    configDialog->setMainWidget(showWidget);
+
+    connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+
+    if (configDialog->exec() == QDialog::Accepted) {
+        foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
+            QStringList parentComponents = moduleProxy->moduleInfo().service()->property("X-KDE-ParentComponents").toStringList();
+            moduleProxy->save();
+            foreach (const QString &parentComponent, parentComponents) {
+                emit configCommitted(parentComponent.toLatin1());
+            }
+        }
+    } else {
+        foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
+            moduleProxy->load();
+        }
+    }
+
+    disconnect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+
+    moduleProxyList.clear();
+}
+
+void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
+{
+    foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
+        moduleProxy->defaults();
+    }
 }
 
 QFont KPluginSelector::Private::PluginDelegate::titleFont(const QFont &baseFont) const
