@@ -2,6 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2007 Alex Merry <huntedhacker@tiscali.co.uk>
  *  Copyright (c) 2007 Thomas Zander <zander@kde.org>
+ *  Copyright (c) 2008 John Layt <john@layt.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,22 +21,21 @@
  **/
 
 #include "kdeprintdialog.h"
+#include "kcupsoptionspageswidget_p.h"
+#include "kcupsoptionsjobwidget_p.h"
+#include "kdebug.h"
 
-#include <klocale.h>
-#include <kdeversion.h>
-
-#include <QLayout>
 #include <fixx11h.h> // for enable-final
 #include <QPrintDialog>
-#include <QStyle>
-#include <QTabWidget>
 
 QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                                                const QList<QWidget*> &customTabs,
                                                QWidget *parent)
 {
-    QPrintDialog *dialog = createPrintDialog(printer, parent);
-    dialog->setOptionTabs(customTabs);
+    QPrintDialog *dialog = new QPrintDialog( printer, parent );
+    KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
+    KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
+    dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
     return dialog;
 }
 
@@ -43,6 +43,9 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
 QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
                                                QWidget *parent)
 {
-    return new QPrintDialog(printer, parent);
+    QPrintDialog *dialog = new QPrintDialog( printer, parent );
+    KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
+    KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
+    dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab );
+    return dialog;
 }
-

@@ -65,6 +65,9 @@ set(kdeui_LIB_SRCS
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
+ dialogs/kcupsoptionswidget_p.cpp
+ dialogs/kcupsoptionsjobwidget_p.cpp
+ dialogs/kcupsoptionspageswidget_p.cpp
  dialogs/kbugreport.cpp
  dialogs/kdeprintdialog.cpp
  dialogs/kdialog.cpp
@@ -263,6 +266,8 @@ add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
 endif(MINGW)
 
 set( kdeui_UI
+   dialogs/kcupsoptionspageswidget.ui
+   dialogs/kcupsoptionsjobwidget.ui
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
@@ -320,9 +325,19 @@ else (Q_WS_MAC)
    install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
-install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
+install( FILES
+ dialogs/aboutkde.png
+ dialogs/kdeprint_nup1.png
+ dialogs/kdeprint_nup2.png
+ dialogs/kdeprint_nup4.png
+ dialogs/kdeprint_nupother.png
+ dialogs/ktip-bulb.png
+ DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
+
 install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect )
+
 install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
+
 install( FILES
  kdeui_export.h
  actions/kactioncollection.h
