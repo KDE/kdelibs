@@ -289,7 +289,7 @@ namespace KNS
 
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS::Entry * entry = realmodel->entryForIndex(index);
+        KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
         emit performAction(DownloadDialog::kContactEmail, entry);
     }
 
@@ -301,7 +301,7 @@ namespace KNS
 
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-        KNS::Entry * entry = realmodel->entryForIndex(index);
+        KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
         emit performAction(DownloadDialog::EntryAction(action->data().toInt()), entry);
     }
 
@@ -314,7 +314,7 @@ namespace KNS
         {
             const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
             const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
-            KNS::Entry * entry = realmodel->entryForIndex(index);
+            KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
             if (entry->status() == Entry::Installed) {
                 emit performAction(DownloadDialog::kUninstall, entry);
             }
