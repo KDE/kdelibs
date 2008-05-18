@@ -61,13 +61,6 @@ public:
 
     void checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList);
 
-Q_SIGNALS:
-    void changed(bool hasChanged);
-    void configCommitted(const QByteArray &componentName);
-
-private Q_SLOTS:
-    void emitChanged();
-
 public:
     struct PluginEntry;
     class PluginModel;
@@ -151,7 +144,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 //     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
-private:
+public:
     QList<PluginEntry> pluginEntryList;
 };
 
@@ -183,6 +176,9 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+Q_SIGNALS:
+    void changed(bool hasChanged);
+
 protected:
     virtual QList<QWidget*> createItemWidgets() const;
     virtual void updateItemWidgets(const QList<QWidget*> widgets,
@@ -191,6 +187,7 @@ protected:
 
 private Q_SLOTS:
     void slotStateChanged(bool state);
+    void emitChanged();
 
 private:
     QFont titleFont(const QFont &baseFont) const;

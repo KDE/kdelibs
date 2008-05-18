@@ -70,15 +70,6 @@ void KPluginSelector::Private::checkIfShowIcons(const QList<KPluginInfo> &plugin
     }
 }
 
-void KPluginSelector::Private::emitChanged()
-{
-    emit changed(true);
-}
-
-
-// =============================================================
-
-
 KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent)
     : QWidget(parent)
     , addedByDependencies(0)
@@ -107,7 +98,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     link->setUseCursor(true);
     link->setHighlightedColor(palette().color(QPalette::Link));
     link->setSelectedColor(palette().color(QPalette::Link));
-    link->setText(i18n("Automatic changes have been performed due to plugin dependencies"));
+    link->setText(i18n("Automatic changes have been performed due to plugin dependencies. Click here for further information"));
     dataLayout->addWidget(link);
     dataLayout->addWidget(details);
     layout->addLayout(dataLayout);
@@ -244,12 +235,16 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->proxyModel->setCategorizedModel(true);
     d->proxyModel->setSourceModel(d->pluginModel);
     d->listView->setModel(d->proxyModel);
-    d->listView->setItemDelegate(new Private::PluginDelegate(d->listView, this));
+    d->listView->setAlternatingRowColors(true);
+
+    Private::PluginDelegate *pluginDelegate = new Private::PluginDelegate(d->listView, this);
+    d->listView->setItemDelegate(pluginDelegate);
 
     d->listView->setMouseTracking(true);
     d->listView->viewport()->setAttribute(Qt::WA_Hover);
 
     connect(d->lineEdit, SIGNAL(textChanged(QString)), d->proxyModel, SLOT(invalidate()));
+    connect(pluginDelegate, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
 
     layout->addWidget(d->lineEdit);
     layout->addWidget(d->listView);
@@ -321,6 +316,11 @@ void KPluginSelector::save()
 
 void KPluginSelector::defaults()
 {
+    for (int i = 0; i < d->pluginModel->rowCount(); i++) {
+        QModelIndex index = d->pluginModel->index(i, 0);
+        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+        d->pluginModel->setData(index, pluginInfo->isPluginEnabledByDefault(), Qt::CheckStateRole);
+    }
 }
 
 void KPluginSelector::updatePluginsState()
@@ -400,12 +400,18 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
 
 bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    bool ret = false;
+
     if (role == Qt::CheckStateRole) {
         static_cast<PluginEntry*>(index.internalPointer())->checked = value.toBool();
-        return true;
+        ret = true;
     }
 
-    return false;
+    if (ret) {
+        emit dataChanged(index, index);
+    }
+
+    return ret;
 }
 
 int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) const
@@ -528,6 +534,7 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
 
     QCheckBox *enabledCheckBox = new QCheckBox;
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotStateChanged(bool)));
+    connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(emitChanged()));
 
     KPushButton *aboutPushButton = new KPushButton;
     aboutPushButton->setIcon(KIcon("dialog-information"));
@@ -579,6 +586,11 @@ void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
         return;
 
     const_cast<QAbstractItemModel*>(focusedIndex().model())->setData(focusedIndex(), state, Qt::CheckStateRole);
+}
+
+void KPluginSelector::Private::PluginDelegate::emitChanged()
+{
+    emit changed(true);
 }
 
 QFont KPluginSelector::Private::PluginDelegate::titleFont(const QFont &baseFont) const
