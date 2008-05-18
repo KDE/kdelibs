@@ -64,7 +64,7 @@ public:
     void updateDependencies(const KPluginInfo &pluginInfo, bool added);
 
 public:
-    struct PluginEntry;
+    class PluginEntry;
     class PluginModel;
     class ProxyModel;
     class PluginDelegate;
@@ -85,9 +85,9 @@ public:
     QString category;
     KPluginInfo pluginInfo;
     bool checked;
+    bool manuallyAdded;
     KConfigGroup cfgGroup;
     PluginLoadMethod pluginLoadMethod;
-    bool manuallyAdded;
 
     bool operator==(const KPluginSelector::Private::PluginEntry &pe) const
     {

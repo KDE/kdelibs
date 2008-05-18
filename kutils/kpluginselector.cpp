@@ -396,12 +396,12 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
             pluginEntry.pluginInfo.load(cfgGroup);
         }
         pluginEntry.checked = pluginInfo.isPluginEnabled();
+        pluginEntry.manuallyAdded = manuallyAdded;
         if (cfgGroup.isValid()) {
             pluginEntry.cfgGroup = cfgGroup;
         } else {
             pluginEntry.cfgGroup = pluginInfo.config();
         }
-        pluginEntry.manuallyAdded = manuallyAdded;
 
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
@@ -445,11 +445,8 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
     switch (role) {
         case Qt::DisplayRole:
             return pluginEntry->pluginInfo.name();
-        case PluginInfoRole: {
-            QVariant var;
-            var.setValue(pluginEntry->pluginInfo);
-            return var;
-        }
+        case PluginInfoRole:
+            return QVariant::fromValue(pluginEntry->pluginInfo);
         case ServicesCountRole:
             return pluginEntry->pluginInfo.kcmServices().count();
         case NameRole:
@@ -482,6 +479,10 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
 
 bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    if (!index.isValid()) {
+        return false;
+    }
+
     bool ret = false;
 
     if (role == Qt::CheckStateRole) {
@@ -498,7 +499,9 @@ bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, co
 
 int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent)
+    if (parent.isValid()) {
+        return 0;
+    }
 
     return pluginEntryList.count();
 }
@@ -657,16 +660,18 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
 
     QCheckBox *checkBox = static_cast<QCheckBox*>(widgets[0]);
     checkBox->resize(checkBox->sizeHint());
-    checkBox->move(MARGIN, option.rect.height() / 2 - widgets[0]->sizeHint().height() / 2);
+    checkBox->move(MARGIN, option.rect.height() / 2 - checkBox->sizeHint().height() / 2);
     checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
 
     KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
-    aboutPushButton->resize(aboutPushButton->sizeHint());
-    aboutPushButton->move(option.rect.width() - MARGIN - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[2]->sizeHint().height() / 2);
+    QSize aboutPushButtonSizeHint = aboutPushButton->sizeHint();
+    aboutPushButton->resize(aboutPushButtonSizeHint);
+    aboutPushButton->move(option.rect.width() - MARGIN - aboutPushButtonSizeHint.width(), option.rect.height() / 2 - aboutPushButtonSizeHint.height() / 2);
 
     KPushButton *configurePushButton = static_cast<KPushButton*>(widgets[1]);
-    configurePushButton->resize(configurePushButton->sizeHint());
-    configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButton->sizeHint().width() - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[1]->sizeHint().height() / 2);
+    QSize configurePushButtonSizeHint = configurePushButton->sizeHint();
+    configurePushButton->resize(configurePushButtonSizeHint);
+    configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);
 
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
 }
@@ -740,8 +745,8 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
 
     KPluginInfo pluginInfo = model->data(index, PluginInfoRole).value<KPluginInfo>();
 
-    KDialog *configDialog = new KDialog(itemView());
-    configDialog->setWindowTitle(model->data(index, NameRole).toString());
+    KDialog configDialog(itemView());
+    configDialog.setWindowTitle(model->data(index, NameRole).toString());
     // The number of KCModuleProxies in use determines whether to use a tabwidget
     KTabWidget *newTabWidget = 0;
     // Widget to use for the setting dialog's main widget,
@@ -749,7 +754,7 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
     QWidget * mainWidget = 0;
     // Widget to use as the KCModuleProxy's parent.
     // The first proxy is owned by the dialog itself
-    QWidget *moduleProxyParentWidget = configDialog;
+    QWidget *moduleProxyParentWidget = &configDialog;
 
     foreach (const KService::Ptr &servicePtr, pluginInfo.kcmServices()) {
         if(!servicePtr->noDisplay()) {
@@ -761,11 +766,19 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
                     // we already created one KCModuleProxy, so we need a tab widget.
                     // Move the first proxy into the tab widget and ensure this and subsequent
                     // proxies are in the tab widget
-                    newTabWidget = new KTabWidget(configDialog);
+                    newTabWidget = new KTabWidget(&configDialog);
                     moduleProxyParentWidget = newTabWidget;
                     mainWidget->setParent( newTabWidget );
-                    newTabWidget->addTab(mainWidget, (qobject_cast<KCModuleProxy*>(mainWidget))->moduleInfo().moduleName());
-                    mainWidget = newTabWidget;
+                    KCModuleProxy *moduleProxy = qobject_cast<KCModuleProxy*>(mainWidget);
+                    if (moduleProxy) {
+                        newTabWidget->addTab(mainWidget, moduleProxy->moduleInfo().moduleName());
+                        mainWidget = newTabWidget;
+                    } else {
+                        delete newTabWidget;
+                        newTabWidget = 0;
+                        moduleProxyParentWidget = &configDialog;
+                        mainWidget->setParent(0);
+                    }
                 }
 
                 if (newTabWidget) {
@@ -781,18 +794,18 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
 
     // it could happen that we had services to show, but none of them were real modules.
     if (moduleProxyList.count()) {
-        configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
+        configDialog.setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
 
-        QWidget *showWidget = new QWidget(configDialog);
+        QWidget *showWidget = new QWidget(&configDialog);
         QVBoxLayout *layout = new QVBoxLayout;
         showWidget->setLayout(layout);
         layout->addWidget(mainWidget);
         layout->insertSpacing(-1, KDialog::marginHint());
-        configDialog->setMainWidget(showWidget);
+        configDialog.setMainWidget(showWidget);
 
-        connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+        connect(&configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
 
-        if (configDialog->exec() == QDialog::Accepted) {
+        if (configDialog.exec() == QDialog::Accepted) {
             foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
                 QStringList parentComponents = moduleProxy->moduleInfo().service()->property("X-KDE-ParentComponents").toStringList();
                 moduleProxy->save();
@@ -809,8 +822,6 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
         qDeleteAll(moduleProxyList);
         moduleProxyList.clear();
     }
-
-    delete configDialog;
 }
 
 void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
