@@ -36,7 +36,7 @@
 class KEmoticonsPrivate
 {
 public:
-    KEmoticonsPrivate();
+    KEmoticonsPrivate(KEmoticons *parent);
     ~KEmoticonsPrivate();
     void loadServiceList();
     KEmoticonsProvider *loadProvider(const KService::Ptr &service);
@@ -44,9 +44,15 @@ public:
     QList<KService::Ptr> m_loaded;
     QHash<QString, KEmoticonsTheme> m_themes;
     KDirWatch *m_dirwatch;
+    KEmoticons *q;
+
+    //private slots
+    void themeChanged(const QString &path);
+        
 };
 
-KEmoticonsPrivate::KEmoticonsPrivate()
+KEmoticonsPrivate::KEmoticonsPrivate(KEmoticons *parent)
+        : q(parent)
 {
 }
 
@@ -72,8 +78,18 @@ KEmoticonsProvider *KEmoticonsPrivate::loadProvider(const KService::Ptr &service
     return provider;
 }
 
+void KEmoticonsPrivate::themeChanged(const QString &path)
+{
+    QFileInfo info(path);
+    QString name = info.dir().dirName();
+
+    if (m_themes.contains(name)) {
+        q->theme(name);
+    }
+}
+
 KEmoticons::KEmoticons()
-        : d(new KEmoticonsPrivate)
+        : d(new KEmoticonsPrivate(this))
 {
     d->loadServiceList();
     d->m_dirwatch = new KDirWatch;
@@ -263,13 +279,6 @@ KEmoticonsTheme::ParseMode KEmoticons::parseMode()
     return (KEmoticonsTheme::ParseMode) config.readEntry("parseMode", int(KEmoticonsTheme::RelaxedParse));
 }
 
-void KEmoticons::themeChanged(const QString &path)
-{
-    QFileInfo info(path);
-    QString name = info.dir().dirName();
+#include "kemoticons.moc"
 
-    if (d->m_themes.contains(name)) {
-        theme(name);
-    }
-}
 // kate: space-indent on; indent-width 4; replace-tabs on;

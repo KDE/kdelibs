@@ -24,6 +24,8 @@
 #define KEMOTICONS_THEME_H
 
 #include "kemoticons_export.h"
+#include "kemoticonsprovider.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
@@ -31,7 +33,6 @@
 #include <QtCore/QSharedDataPointer>
 
 class QString;
-class KEmoticonsProvider;
 
 /**
  * This class contains the emoticons theme
@@ -53,8 +54,8 @@ public:
     Q_DECLARE_FLAGS(ParseMode, ParseModeEnum)
 
     /**
-    * TokenType, a token might be an image ( emoticon ) or text.
-    */
+     * TokenType, a token might be an image ( emoticon ) or text.
+     */
     enum TokenType {
         Undefined, /**< Undefined, for completeness only */
         Image,     /**< Token contains a path to an image */
@@ -164,7 +165,7 @@ public:
      * @param copy whether or not copy @p emo into the theme directory
      * @return @c true if it can add the emoticon
      */
-    bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
+    bool addEmoticon(const QString &emo, const QString &text, KEmoticonsProvider::AddEmoticonOption option = KEmoticonsProvider::DoNotCopy);
 
     /**
      * Save the emoticon theme
@@ -205,7 +206,7 @@ public:
     /**
      * Check if the theme has a valid provider and it returns true if it can't find it
      */
-    bool isNull();
+    bool isNull() const;
 
     /**
      * @internal

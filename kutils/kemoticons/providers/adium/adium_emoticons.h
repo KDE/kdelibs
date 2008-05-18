@@ -33,7 +33,7 @@ public:
     bool loadTheme(const QString &path);
 
     bool removeEmoticon(const QString &emo);
-    bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
+    bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
     void save();
 
     void createNew();

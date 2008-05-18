@@ -68,9 +68,9 @@ bool KEmoticonsProvider::removeEmoticon(const QString &emo)
     return false;
 }
 
-bool KEmoticonsProvider::addEmoticon(const QString &emo, const QString &text, bool copy)
+bool KEmoticonsProvider::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
-    if (copy) {
+    if (option == Copy) {
         KIO::NetAccess::dircopy(KUrl(emo), KUrl(d->m_themePath));
     }
 

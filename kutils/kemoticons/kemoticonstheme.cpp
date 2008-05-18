@@ -21,7 +21,6 @@
  ******************************************************************************/
 
 #include "kemoticonstheme.h"
-#include "kemoticonsprovider.h"
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
@@ -88,13 +87,13 @@ bool KEmoticonsTheme::removeEmoticon(const QString &emo)
     return d->provider->removeEmoticon(emo);
 }
 
-bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, bool copy)
+bool KEmoticonsTheme::addEmoticon(const QString &emo, const QString &text, KEmoticonsProvider::AddEmoticonOption option)
 {
     if (!d->provider) {
         return false;
     }
 
-    return d->provider->addEmoticon(emo, text, copy);
+    return d->provider->addEmoticon(emo, text, option);
 }
 
 void KEmoticonsTheme::save()
@@ -345,7 +344,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     return result;
 }
 
-bool KEmoticonsTheme::isNull()
+bool KEmoticonsTheme::isNull() const
 {
     return d->provider ? false : true;
 }

@@ -128,15 +128,13 @@ public:
      */
     static KEmoticonsTheme::ParseMode parseMode();
 
-private slots:
-    void themeChanged(const QString &path);
-
 private:
     /**
      * Private class
      */
     KEmoticonsPrivate * const d;
 
+    Q_PRIVATE_SLOT(d, void themeChanged(const QString &path))
 };
 
 #endif /* KEMOTICONS_H */

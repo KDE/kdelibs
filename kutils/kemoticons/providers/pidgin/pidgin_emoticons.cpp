@@ -81,9 +81,9 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
     return false;
 }
 
-bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
+bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
-    KEmoticonsProvider::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, option);
 
     QStringList splitted = text.split(" ");
     int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));

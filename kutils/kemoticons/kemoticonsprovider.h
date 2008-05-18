@@ -49,6 +49,14 @@ public:
     };
 
     /**
+     * Options to pass to addEmoticon
+     */
+    enum AddEmoticonOption {
+        DoNotCopy, /**<< Don't copy the emoticon file into the theme directory */
+        Copy /**<< Copy the emoticon file into the theme directory */
+    };
+
+    /**
      * Default constructor
      */
     explicit KEmoticonsProvider(QObject *parent = 0);
@@ -78,7 +86,7 @@ public:
      * @param copy whether or not copy @p emo into the theme directory
      * @return @c true if it can add the emoticon
      */
-    virtual bool addEmoticon(const QString &emo, const QString &text, bool copy=false);
+    virtual bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
 
     /**
      * Save the emoticon theme

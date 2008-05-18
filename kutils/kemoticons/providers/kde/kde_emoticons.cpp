@@ -58,9 +58,9 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
     return false;
 }
 
-bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, bool copy)
+bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
-    KEmoticonsProvider::addEmoticon(emo, text, copy);
+    KEmoticonsProvider::addEmoticon(emo, text, option);
 
     QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
