@@ -58,6 +58,7 @@ public:
         Immediate,
         Checked,
         Operation,
+        Jump,
         Costs,
         Impl,
         Overload,

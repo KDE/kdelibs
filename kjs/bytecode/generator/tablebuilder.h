@@ -67,6 +67,7 @@ struct Operation
     int          cost;
     int          codeLine;
     bool         overload;
+    bool         endsBB;
 
     string implementAs;
     vector<Type> implParams;
@@ -98,7 +99,7 @@ private:
                                   bool immediate, bool checked, bool mayThrow,
                                   const string& from, const string& to, int cost);
 
-    virtual void handleOperation(const string& name);
+    virtual void handleOperation(const string& name, bool endsBB);
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
                             int codeLine, int cost, const string& retType, StringList sig,
                             StringList paramNames);
@@ -131,6 +132,7 @@ private:
     StringList        typeNames;
 
     StringList          operationNames;
+    vector<bool>        operationEndBB;
     map<string, string> operationRetTypes; // uglily enough specified on the impl. I suck.
     vector<Operation>   operations;
     map<string, Operation> implementations;

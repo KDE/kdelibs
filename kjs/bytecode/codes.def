@@ -209,25 +209,25 @@ operation PrintInfo {
 /**
  Control flow stuff
 */
-operation Exit {
+jump Exit {
     impl void exit() [[
         return Completion(Normal);
     ]]
 }
 
-operation ExitEval {
+jump ExitEval {
     impl void(value val) [[
         return Completion(Normal, val);
     ]]
 }
 
-operation Jump {
-    impl void jump(addr dest) [[
+jump Jump {
+    impl void jmp(addr dest) [[
         pc = dest;
     ]]
 }
 
-operation IfJump {
+jump IfJump {
     impl void executeIfJump(bool condResult, addr dest) [[
         if (condResult)
             pc = dest;
@@ -236,7 +236,7 @@ operation IfJump {
     tile (value, addr) as executeIfJump;
 }
 
-operation IfNotJump {
+jump IfNotJump {
     impl void executeIfNotJump(bool condResult, addr dest) [[
         if (!condResult)
             pc = dest;
@@ -247,7 +247,7 @@ operation IfNotJump {
 
 // Fetches the propertly list, if any, and sets up the iterator stack in execState appropriately
 // Returns the object to operate on
-operation BeginForIn {
+jump BeginForIn {
     impl value (value e) [[
         exec->pushPropertyNameArray();
 

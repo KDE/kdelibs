@@ -117,7 +117,7 @@ void Parser::parse()
     }
 
     // Now we may have conversions or operations
-    while (tok.type == Lexer::Conversion || tok.type == Lexer::Operation) {
+    while (tok.type == Lexer::Conversion || tok.type == Lexer::Operation || tok.type == Lexer::Jump) {
         if (tok.type == Lexer::Conversion)
             parseConversion();
         else
@@ -243,8 +243,16 @@ void Parser::parseConversion()
 void Parser::parseOperation()
 {
     // operation identifier { ... },  where ... is a list of impl or tile statements.
-    match(Lexer::Operation);
-    handleOperation(matchIdentifier());
+
+    bool jump = false;
+    if (peekNext().type == Lexer::Operation) {
+        match(Lexer::Operation);
+    } else {
+        jump = true;
+        match(Lexer::Jump);
+    }
+
+    handleOperation(matchIdentifier(), jump);
 
     match(Lexer::LBrace);
     Lexer::Token tok = peekNext();

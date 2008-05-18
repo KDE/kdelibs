@@ -82,6 +82,10 @@ struct Op {
     // If this is true, this is an overload specializations which
     // should be matched exactly, w/o conversions
     bool matchExactly;
+
+    // If this is true, this instruction performs a jump, and hence
+    // should flush per-BB info
+    bool endsBB;
 };
 
 // The main array of Op instances, mapped by OpByteCode

@@ -44,7 +44,7 @@ private:
     virtual void handleConversion(const string& name, const string& code, int codeLine,
                                   bool immediate, bool checked, bool mayThrow,
                                   const string& from, const string& to, int cost) = 0;
-    virtual void handleOperation(const string& name) = 0;
+    virtual void handleOperation(const string& name, bool endsBB) = 0;
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
                             int codeLine, int cost, const string& retType, StringList sig,
                             StringList paramNames) = 0;

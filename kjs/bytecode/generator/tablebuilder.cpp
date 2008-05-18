@@ -367,7 +367,7 @@ void TableBuilder::handleConversion(const string& name, const string& code, int 
         rgConversions[from][to] = inf;
         rgConversionList.push_back(inf);
         // Generate a corresponding bytecode routine; the helper used is the immediate one, though
-        handleOperation(inf.name);
+        handleOperation(inf.name, false);
         StringList sig;
         sig.push_back(from);
         StringList names;
@@ -379,9 +379,10 @@ void TableBuilder::handleConversion(const string& name, const string& code, int 
     }
 }
 
-void TableBuilder::handleOperation(const string& name)
+void TableBuilder::handleOperation(const string& name, bool endsBB)
 {
     operationNames.push_back(name);
+    operationEndBB.push_back(endsBB);
 }
 
 vector<Type> TableBuilder::resolveSignature(const StringList& in)
@@ -426,6 +427,7 @@ void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol,
     op.implParams     = op.parameters;
     op.implParamNames = extParamNames;
     op.cost           = cost;
+    op.endsBB         = operationEndBB.back();
     operations.push_back(op);
     if (!fnName.empty())
         implementations[fnName] = op;
@@ -585,7 +587,10 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     *cppStream << (hasPadVariant ? "true" : "false") << ", ";
 
     // Whether this is an overload, requiring precise matching
-    *cppStream << (variant.op.overload ? "true" : "false");
+    *cppStream << (variant.op.overload ? "true" : "false") << ", ";
+
+    // Whether this ends a basic block.
+    *cppStream << (variant.op.endsBB ? "true" : "false");
 
     if (needsComma)
         *cppStream << "},\n";

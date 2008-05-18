@@ -274,6 +274,8 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         CRASH(); // Should never happen!
     }
 
+    if (cheapest->endsBB)
+        comp->localFlushAll(block);
 
     // Now that we have a candidate, actually grab a register of the proper return type.
     retType = cheapest->retType;
