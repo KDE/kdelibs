@@ -21,24 +21,15 @@
 #ifndef KPLUGINSELECTOR_P_H
 #define KPLUGINSELECTOR_P_H
 
-#include <QListView>
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QMenu>
-#include <QtGui/QItemDelegate>
-#include <QAbstractListModel>
+#include <QtCore/QAbstractListModel>
 
-#include <kservice.h>
-#include <klocale.h>
-#include <kutils_export.h>
-#include <kconfiggroup.h>
 #include <kplugininfo.h>
+#include <kcategorizedsortfilterproxymodel.h>
 
-class KCModuleProxy;
-class KIconLoader;
-class KTabWidget;
-class KDialog;
 class QLabel;
+
+class KLineEdit;
+class KCategorizedView;
 
 class KPluginSelector::Private
     : public QObject
@@ -67,20 +58,24 @@ private Q_SLOTS:
     void emitChanged();
 
 public:
+    struct PluginEntry;
     class PluginModel;
-    class PluginDelegate;
-    class QListViewSpecialized;
+    class ProxyModel;
     class DependenciesWidget;
     KPluginSelector *parent;
+    KLineEdit *lineEdit;
+    KCategorizedView *listView;
     PluginModel *pluginModel;
-    PluginDelegate *pluginDelegate;
-    QListViewSpecialized *listView;
+    ProxyModel *proxyModel;
     DependenciesWidget *dependenciesWidget;
     bool showIcons;
 };
 
-
-// =============================================================
+struct KPluginSelector::Private::PluginEntry
+{
+    QString category;
+    KPluginInfo pluginInfo;
+};
 
 
 /**
@@ -120,204 +115,36 @@ private:
 };
 
 
-// =============================================================
-
-
-/**
- * Ah, we need viewOptions() as public...
- */
-class KPluginSelector::Private::QListViewSpecialized
-    : public QListView
-{
-public:
-    QListViewSpecialized(QWidget *parent = 0);
-    ~QListViewSpecialized();
-
-    QStyleOptionViewItem viewOptions() const;
-};
-
-
-// =============================================================
-
-
 class KPluginSelector::Private::PluginModel
     : public QAbstractListModel
 {
 public:
-    enum AddMethod
-    {
-        AutomaticallyAdded = 0,
-        ManuallyAdded
-    };
-
-    struct AdditionalInfo
-    {
-        int itemChecked;
-        KConfigGroup configGroup;
-        QStringList parentComponents;
-        AddMethod addMethod; // If the plugin was added with the method
-                             // addPlugins(const QList<KPluginInfo> &pluginInfoList ...
-                             // Mainly for only updating the plugins that were manually
-                             // added when calling to updatePluginsState()
-        bool alternateColor;
-    };
-
-    PluginModel(KPluginSelector::Private *parent);
+    PluginModel(QObject *parent = 0);
     ~PluginModel();
 
-    void appendPluginList(const KPluginInfo::List &pluginInfoList,
-                          const QString &categoryName,
-                          const QString &categoryKey,
-                          const KConfigGroup &configGroup,
-                          PluginLoadMethod pluginLoadMethod = ReadConfigFile,
-                          AddMethod addMethod = AutomaticallyAdded);
+    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName);
 
-    // Reimplemented from QAbstractItemModel
-
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::CheckStateRole);
-
-    QVariant data(const QModelIndex &index, int role) const;
-
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
-    QList<KService::Ptr> services(const QModelIndex &index) const;
-
-    KConfigGroup configGroup(const QModelIndex &index) const;
-
-    void setParentComponents(const QModelIndex &index, const QStringList &parentComponents);
-
-    QStringList parentComponents(const QModelIndex &index) const;
-
-    void updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed);
-
-    // Own methods
-
-    AddMethod addMethod(const KPluginInfo &pluginInfo) const;
-
-    bool alternateColor(const KPluginInfo &pluginInfo) const;
+    virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
-    QMap<QString, KPluginInfo::List> pluginInfoByCategory;
-    QHash<KPluginInfo, KCModuleProxy *> moduleProxies;
-    QMap<QString, int> pluginCount;
-    QHash<KPluginInfo, struct AdditionalInfo> additionalInfo;
-    KPluginSelector::Private *parent;
+    QList<PluginEntry> pluginEntryList;
 };
 
-
-// =============================================================
-
-
-class KPluginSelector::Private::PluginDelegate
-    : public QItemDelegate
+class KPluginSelector::Private::ProxyModel
+    : public KCategorizedSortFilterProxyModel
 {
-    Q_OBJECT
-
 public:
-    enum Roles
-    {
-        Name = 33,
-        Comment,
-        Icon,
-        Author,
-        Email,
-        Category,
-        InternalName,
-        Version,
-        Website,
-        License,
-        Checked
-    };
-
-    PluginDelegate(KPluginSelector::Private *parent);
-    ~PluginDelegate();
-
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-    void setIconSize(int width, int height);
-
-    void setMinimumItemWidth(int minimumItemWidth);
-
-    void setLeftMargin(int leftMargin);
-
-    void setRightMargin(int rightMargin);
-
-    int getSeparatorPixels() const;
-
-    void setSeparatorPixels(int separatorPixels);
-
-    QRect aboutButtonRect(const QStyleOptionButton &option) const;
-    QRect settingsButtonRect(const QStyleOptionButton &option) const;
-
-Q_SIGNALS:
-    void configCommitted(const QByteArray &componentName);
+    ProxyModel(KPluginSelector::Private *q, QObject *parent = 0);
+    ~ProxyModel();
 
 protected:
-    virtual bool eventFilter(QObject *watched, QEvent *event);
-
-private Q_SLOTS:
-    void slotDefaultClicked();
-    void invokeMailer(const QString &url) const;
-    void invokeBrowser(const QString &url) const;
+    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    virtual bool subSortLessThan(const QModelIndex &left, const QModelIndex &right) const;
 
 private:
-    enum EventReceived
-    {
-        MouseEvent = 0,
-        KeyboardEvent
-    };
-
-    enum FocusedElement
-    {
-        CheckBoxFocused = 0,
-        SettingsButtonFocused,
-        AboutButtonFocused
-    };
-
-    QRect checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const;
-
-    void updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
-                          const QPoint &cursorPos, QListView *listView, EventReceived eventReceived);
-
-    void checkDependencies(PluginModel *model,
-                           const KPluginInfo &info,
-                           CheckWhatDependencies whatDependencies);
-
-    QString name(const QModelIndex &index) const;
-    QString comment(const QModelIndex &index) const;
-    QPixmap icon(const QModelIndex &index, int width, int height) const;
-    QString author(const QModelIndex &index) const;
-    QString email(const QModelIndex &index) const;
-    QString category(const QModelIndex &index) const;
-    QString internalName(const QModelIndex &index) const;
-    QString version(const QModelIndex &index) const;
-    QString website(const QModelIndex &index) const;
-    QString license(const QModelIndex &index) const;
-    int calculateVerticalCenter(const QRect &rect, int pixmapHeight) const;
-
-    int iconWidth;
-    int iconHeight;
-    int minimumItemWidth;
-    int leftMargin;
-    int rightMargin;
-    int separatorPixels;
-    FocusedElement focusedElement; // whether is focused the check or the link
-    bool sunkenButton;
-    KIconLoader *iconLoader;
-    QPoint relativeMousePosition;
-    QList<KCModuleProxy*> *currentModuleProxyList;
-    QHash<int /* row */, KTabWidget*> tabWidgets;
-    QHash<int /* row */, KDialog*> configDialogs;
-    QHash<int /* row */, KDialog*> aboutDialogs;
-    QHash<int /* row */, QList<KCModuleProxy*> > modulesDialogs;
-    KDialog *configDialog; // For enabling/disabling default button
-    KPluginSelector::Private *parent;
+    KPluginSelector::Private *q;
 };
 
 #endif // KPLUGINSELECTOR_P_H
