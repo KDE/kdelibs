@@ -25,9 +25,13 @@
 #include <QtGui/QAbstractItemDelegate>
 
 #include <kplugininfo.h>
+#include <goya/kwidgetitemdelegate.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
 class QLabel;
+class QCheckBox;
+class QPushButton;
+class QAbstractItemView;
 
 class KLineEdit;
 class KCategorizedView;
@@ -40,7 +44,8 @@ class KPluginSelector::Private
 public:
     enum ExtraRoles
     {
-        CommentRole = 0x19FC6DE2
+        CommentRole = 0x19FC6DE2,
+        ServicesCountRole = 0x1422E2AA
     };
 
     enum CheckWhatDependencies
@@ -137,6 +142,7 @@ public:
     ~PluginModel();
 
     void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey);
+    QList<KService::Ptr> pluginServices(const QModelIndex &index) const;
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -164,14 +170,24 @@ private:
 
 
 class KPluginSelector::Private::PluginDelegate
-    : public QAbstractItemDelegate
+    : public KWidgetItemDelegate
 {
 public:
-    PluginDelegate(QObject *parent = 0);
+    PluginDelegate(QAbstractItemView *itemView, QObject *parent = 0);
     ~PluginDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+protected:
+    virtual QList<QWidget*> createItemWidgets() const;
+    virtual void updateItemWidgets(const QList<QWidget*> widgets,
+                                   const QStyleOptionViewItem &option,
+                                   const QModelIndex &index) const;
+
+private:
+    QCheckBox *checkBox;
+    QPushButton *pushButton;
 };
 
 #endif // KPLUGINSELECTOR_P_H
