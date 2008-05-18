@@ -22,6 +22,7 @@
 #define KPLUGINSELECTOR_P_H
 
 #include <QtCore/QAbstractListModel>
+#include <QtGui/QItemDelegate>
 
 #include <kplugininfo.h>
 #include <kcategorizedsortfilterproxymodel.h>
@@ -61,20 +62,28 @@ public:
     struct PluginEntry;
     class PluginModel;
     class ProxyModel;
+    class PluginDelegate;
     class DependenciesWidget;
     KPluginSelector *parent;
     KLineEdit *lineEdit;
     KCategorizedView *listView;
     PluginModel *pluginModel;
     ProxyModel *proxyModel;
+    PluginDelegate *pluginDelegate;
     DependenciesWidget *dependenciesWidget;
     bool showIcons;
 };
 
-struct KPluginSelector::Private::PluginEntry
+class KPluginSelector::Private::PluginEntry
 {
+public:
     QString category;
     KPluginInfo pluginInfo;
+
+    bool operator==(const KPluginSelector::Private::PluginEntry &pe) const
+    {
+        return pluginInfo.entryPath() == pe.pluginInfo.entryPath();
+    }
 };
 
 
@@ -122,11 +131,12 @@ public:
     PluginModel(QObject *parent = 0);
     ~PluginModel();
 
-    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName);
+    void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey);
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+//     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
 private:
     QList<PluginEntry> pluginEntryList;
@@ -145,6 +155,18 @@ protected:
 
 private:
     KPluginSelector::Private *q;
+};
+
+
+class KPluginSelector::Private::PluginDelegate
+    : public QItemDelegate
+{
+public:
+    PluginDelegate(QObject *parent = 0);
+    ~PluginDelegate();
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 #endif // KPLUGINSELECTOR_P_H

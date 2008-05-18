@@ -18,14 +18,14 @@
   * Boston, MA 02110-1301, USA.
   */
 
-// FIXME: There exists code duplication. I have planned to fix it, but the
-//        important thing is that it is working perfectly :)
-
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
 #include <QtGui/QLabel>
+#include <QtGui/QPainter>
 #include <QtGui/QBoxLayout>
+#include <QtGui/QApplication>
+#include <QtGui/QStyleOptionViewItemV4>
 
 #include <kdebug.h>
 #include <klineedit.h>
@@ -239,6 +239,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->proxyModel->setCategorizedModel(true);
     d->proxyModel->setSourceModel(d->pluginModel);
     d->listView->setModel(d->proxyModel);
+    d->listView->setItemDelegate(new Private::PluginDelegate(this));
 
     d->listView->setMouseTracking(true);
     d->listView->viewport()->setAttribute(Qt::WA_Hover);
@@ -277,7 +278,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
 
     d->checkIfShowIcons(pluginInfoList);
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
@@ -302,7 +303,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
 
     d->checkIfShowIcons(pluginInfoList);
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey);
 }
 
 void KPluginSelector::load()
@@ -330,19 +331,27 @@ KPluginSelector::Private::PluginModel::~PluginModel()
 {
 }
 
-void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName)
+void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey)
 {
-    beginInsertRows(QModelIndex(), pluginEntryList.count(), pluginEntryList.count() + pluginList.count() - 1);
+    QList<PluginEntry> listToAdd;
 
     foreach (const KPluginInfo &pluginInfo, pluginList) {
         PluginEntry pluginEntry;
         pluginEntry.category = categoryName;
         pluginEntry.pluginInfo = pluginInfo;
 
-        pluginEntryList << pluginEntry;
+        if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
+             (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
+              !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive))) {
+            listToAdd << pluginEntry;
+        }
     }
 
-    endInsertRows();
+    if (listToAdd.count()) {
+        beginInsertRows(QModelIndex(), pluginEntryList.count(), pluginEntryList.count() + listToAdd.count() - 1);
+        pluginEntryList << listToAdd;
+        endInsertRows();
+    }
 }
 
 QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, const QModelIndex &parent) const
@@ -360,6 +369,10 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
     switch (role) {
         case Qt::DisplayRole:
             return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name();
+//         case Qt::CheckStateRole:
+//             return false;
+        case Qt::DecorationRole:
+            return KIcon(static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.icon());
         case KCategorizedSortFilterProxyModel::CategoryDisplayRole: // fall through
         case KCategorizedSortFilterProxyModel::CategorySortRole:
             return static_cast<PluginEntry*>(index.internalPointer())->category;
@@ -372,6 +385,11 @@ int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) c
 {
     return pluginEntryList.count();
 }
+
+// Qt::ItemFlags KPluginSelector::Private::PluginModel::flags(const QModelIndex &index) const
+// {
+//     return (Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+// }
 
 KPluginSelector::Private::ProxyModel::ProxyModel(KPluginSelector::Private *q, QObject *parent)
     : KCategorizedSortFilterProxyModel(parent)
@@ -397,6 +415,32 @@ bool KPluginSelector::Private::ProxyModel::filterAcceptsRow(int sourceRow, const
 bool KPluginSelector::Private::ProxyModel::subSortLessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     return static_cast<PluginEntry*>(left.internalPointer())->pluginInfo.name().compare(static_cast<PluginEntry*>(right.internalPointer())->pluginInfo.name(), Qt::CaseInsensitive) < 0;
+}
+
+KPluginSelector::Private::PluginDelegate::PluginDelegate(QObject *parent)
+    : QItemDelegate(parent)
+{
+}
+
+KPluginSelector::Private::PluginDelegate::~PluginDelegate()
+{
+}
+
+void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QItemDelegate::paint(painter, option, index);
+//     if (!index.isValid()) {
+//         return;
+//     }
+//
+//     painter->save();
+//     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
+//     painter->restore();
+}
+
+QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    return QSize(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()), option.fontMetrics.height() * 2);
 }
 
 #include "kpluginselector_p.moc"
