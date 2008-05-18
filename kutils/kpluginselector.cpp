@@ -420,7 +420,9 @@ bool KPluginSelector::Private::ProxyModel::filterAcceptsRow(int sourceRow, const
 {
     if (!q->lineEdit->text().isEmpty()) {
         const QModelIndex index = sourceModel()->index(sourceRow, 0);
-        return static_cast<PluginEntry*>(index.internalPointer())->pluginInfo.name().contains(q->lineEdit->text(), Qt::CaseInsensitive);
+        const KPluginInfo pluginInfo = static_cast<PluginEntry*>(index.internalPointer())->pluginInfo;
+        return pluginInfo.name().contains(q->lineEdit->text(), Qt::CaseInsensitive) ||
+               pluginInfo.comment().contains(q->lineEdit->text(), Qt::CaseInsensitive);
     }
 
     return true;
@@ -436,10 +438,13 @@ KPluginSelector::Private::PluginDelegate::PluginDelegate(QAbstractItemView *item
     , checkBox(new QCheckBox)
     , pushButton(new KPushButton)
 {
+    pushButton->setIcon(KIcon("configure")); // only for getting size matters
 }
 
 KPluginSelector::Private::PluginDelegate::~PluginDelegate()
 {
+    delete checkBox;
+    delete pushButton;
 }
 
 void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -454,10 +459,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
 
-    KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
-    painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), ICON_SIZE, ICON_SIZE), icon.pixmap(ICON_SIZE, ICON_SIZE), QRect(0, 0, ICON_SIZE, ICON_SIZE));
+    const int iconSize = option.rect.height() - MARGIN * 2;
 
-    QRect contentsRect(MARGIN * 2 + ICON_SIZE + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - ICON_SIZE, option.rect.height() - MARGIN * 2);
+    KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
+    painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
+
+    QRect contentsRect(MARGIN * 2 + iconSize + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize, option.rect.height() - MARGIN * 2);
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.highlightedText().color());
@@ -479,8 +486,17 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    int i = 5;
+    int j = 1;
+    if (index.model()->data(index, ServicesCountRole).toBool()) {
+        i = 6;
+        j = 2;
+    }
+
     return QSize(qMax(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()),
-                      option.fontMetrics.width(index.model()->data(index, CommentRole).toString())), ICON_SIZE + MARGIN * 2);
+                      option.fontMetrics.width(index.model()->data(index, CommentRole).toString())) +
+                      ICON_SIZE + MARGIN * i + pushButton->sizeHint().width() * j,
+                 qMax(ICON_SIZE + MARGIN * 2, option.fontMetrics.height() * 2 + MARGIN * 2));
 }
 
 QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() const
