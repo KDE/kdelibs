@@ -44,19 +44,20 @@
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
-#define ICON_SIZE 32
 #define MARGIN 5
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
     , parent(parent)
     , listView(0)
+    , categoryDrawer(new KCategoryDrawer)
     , showIcons(false)
 {
 }
 
 KPluginSelector::Private::~Private()
 {
+    delete categoryDrawer;
 }
 
 void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool added)
@@ -248,7 +249,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->lineEdit->setClearButtonShown(true);
     d->lineEdit->setClickMessage(i18n("Search Plugins"));
     d->listView = new KCategorizedView(this);
-    d->listView->setCategoryDrawer(new KCategoryDrawer);
+    d->listView->setCategoryDrawer(d->categoryDrawer);
     d->dependenciesWidget = new Private::DependenciesWidget(this);
 
     d->pluginModel = new Private::PluginModel(d, this);
@@ -613,8 +614,8 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
 
     return QSize(qMax(fmTitle.width(index.model()->data(index, Qt::DisplayRole).toString()),
                       option.fontMetrics.width(index.model()->data(index, CommentRole).toString())) +
-                      pluginSelector_d->showIcons ? ICON_SIZE : 0 + MARGIN * i + pushButton->sizeHint().width() * j,
-                 qMax(ICON_SIZE + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
+                      pluginSelector_d->showIcons ? KIconLoader::SizeMedium : 0 + MARGIN * i + pushButton->sizeHint().width() * j,
+                 qMax(KIconLoader::SizeMedium + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
 }
 
 QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() const
