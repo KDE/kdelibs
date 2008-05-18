@@ -527,7 +527,7 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     QList<QWidget*> widgetList;
 
     QCheckBox *enabledCheckBox = new QCheckBox;
-    connect(enabledCheckBox, SIGNAL(stateChanged(int)), this, SLOT(slotStateChanged(int)));
+    connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotStateChanged(bool)));
 
     KPushButton *aboutPushButton = new KPushButton;
     aboutPushButton->setIcon(KIcon("dialog-information"));
@@ -573,7 +573,7 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
 }
 
-void KPluginSelector::Private::PluginDelegate::slotStateChanged(int state)
+void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
 {
     if (!focusedIndex().isValid())
         return;

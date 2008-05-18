@@ -190,7 +190,7 @@ protected:
                                    const QPersistentModelIndex &index) const;
 
 private Q_SLOTS:
-    void slotStateChanged(int state);
+    void slotStateChanged(bool state);
 
 private:
     QFont titleFont(const QFont &baseFont) const;
