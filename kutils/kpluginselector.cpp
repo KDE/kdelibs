@@ -59,10 +59,10 @@ KPluginSelector::Private::~Private()
 {
 }
 
-void KPluginSelector::Private::updateDependencies(const KPluginInfo &pluginInfo, bool added)
+void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool added)
 {
     if (added) {
-        QStringList dependencyList = pluginInfo.dependencies();
+        QStringList dependencyList = pluginEntry->pluginInfo.dependencies();
 
         if (!dependencyList.count()) {
             return;
@@ -70,25 +70,25 @@ void KPluginSelector::Private::updateDependencies(const KPluginInfo &pluginInfo,
 
         for (int i = 0; i < pluginModel->rowCount(); i++) {
             QModelIndex index = pluginModel->index(i, 0);
-            Private::PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
+            PluginEntry *pe = static_cast<PluginEntry*>(index.internalPointer());
 
-            if ((pluginEntry->pluginInfo.pluginName() != pluginInfo.pluginName()) &&
-                dependencyList.contains(pluginEntry->pluginInfo.pluginName())) {
-                dependenciesWidget->addDependency(pluginEntry->pluginInfo.name(), pluginInfo.name(), added);
+            if ((pe->pluginInfo.pluginName() != pluginEntry->pluginInfo.pluginName()) &&
+                dependencyList.contains(pe->pluginInfo.pluginName()) && !pe->checked) {
+                dependenciesWidget->addDependency(pe->pluginInfo.name(), pluginEntry->pluginInfo.name(), added);
                 const_cast<QAbstractItemModel*>(index.model())->setData(index, added, Qt::CheckStateRole);
-                updateDependencies(pluginEntry->pluginInfo, added);
+                updateDependencies(pe, added);
             }
         }
     } else {
         for (int i = 0; i < pluginModel->rowCount(); i++) {
             QModelIndex index = pluginModel->index(i, 0);
-            Private::PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
+            PluginEntry *pe = static_cast<PluginEntry*>(index.internalPointer());
 
-            if ((pluginEntry->pluginInfo.pluginName() != pluginInfo.pluginName()) &&
-                pluginEntry->pluginInfo.dependencies().contains(pluginInfo.pluginName())) {
-                dependenciesWidget->addDependency(pluginEntry->pluginInfo.name(), pluginInfo.name(), added);
+            if ((pe->pluginInfo.pluginName() != pluginEntry->pluginInfo.pluginName()) &&
+                pe->pluginInfo.dependencies().contains(pluginEntry->pluginInfo.pluginName()) && pe->checked) {
+                dependenciesWidget->addDependency(pe->pluginInfo.name(), pluginEntry->pluginInfo.name(), added);
                 const_cast<QAbstractItemModel*>(index.model())->setData(index, added, Qt::CheckStateRole);
-                updateDependencies(pluginEntry->pluginInfo, added);
+                updateDependencies(pe, added);
             }
         }
     }
@@ -215,16 +215,13 @@ void KPluginSelector::Private::DependenciesWidget::updateDetails()
     QString message;
 
     if (addedByDependencies)
-        message += i18np("%1 plugin added", "%1 plugins added", addedByDependencies);
+        message += i18np("%1 plugin automatically added due to plugin dependencies", "%1 plugins automatically added due to plugin dependencies", addedByDependencies);
 
     if (removedByDependencies && !message.isEmpty())
         message += i18n(", ");
 
     if (removedByDependencies)
-        message += i18np("%1 plugin removed", "%1 plugins removed", removedByDependencies);
-
-    if (!message.isEmpty())
-        message += i18n(" since the last time you asked for details");
+        message += i18np("%1 plugin automatically removed due to plugin dependencies", "%1 plugins automatically removed due to plugin dependencies", removedByDependencies);
 
     if (message.isEmpty())
         details->setVisible(false);
@@ -331,7 +328,7 @@ void KPluginSelector::load()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
         QModelIndex index = d->pluginModel->index(i, 0);
-        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         pluginEntry->pluginInfo.load(pluginEntry->cfgGroup);
         d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabled(), Qt::CheckStateRole);
     }
@@ -343,7 +340,7 @@ void KPluginSelector::save()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
         QModelIndex index = d->pluginModel->index(i, 0);
-        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
         pluginEntry->pluginInfo.save(pluginEntry->cfgGroup);
         pluginEntry->cfgGroup.sync();
@@ -356,7 +353,7 @@ void KPluginSelector::defaults()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
         QModelIndex index = d->pluginModel->index(i, 0);
-        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabledByDefault(), Qt::CheckStateRole);
     }
 
@@ -367,7 +364,7 @@ void KPluginSelector::updatePluginsState()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
         QModelIndex index = d->pluginModel->index(i, 0);
-        Private::PluginEntry *pluginEntry = static_cast<Private::PluginEntry*>(index.internalPointer());
+        PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         if (pluginEntry->manuallyAdded) {
             pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
         }
@@ -445,8 +442,8 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
     switch (role) {
         case Qt::DisplayRole:
             return pluginEntry->pluginInfo.name();
-        case PluginInfoRole:
-            return QVariant::fromValue(pluginEntry->pluginInfo);
+        case PluginEntryRole:
+            return QVariant::fromValue(pluginEntry);
         case ServicesCountRole:
             return pluginEntry->pluginInfo.kcmServices().count();
         case NameRole:
@@ -685,8 +682,8 @@ void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
 
     pluginSelector_d->dependenciesWidget->clearDependencies();
 
-    KPluginInfo pluginInfo = index.model()->data(index, PluginInfoRole).value<KPluginInfo>();
-    pluginSelector_d->updateDependencies(pluginInfo, state);
+    PluginEntry *pluginEntry = index.model()->data(index, PluginEntryRole).value<PluginEntry*>();
+    pluginSelector_d->updateDependencies(pluginEntry, state);
 
     const_cast<QAbstractItemModel*>(index.model())->setData(index, state, Qt::CheckStateRole);
 }
@@ -743,7 +740,8 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
     const QModelIndex index = focusedIndex();
     const QAbstractItemModel *model = index.model();
 
-    KPluginInfo pluginInfo = model->data(index, PluginInfoRole).value<KPluginInfo>();
+    PluginEntry *pluginEntry = model->data(index, PluginEntryRole).value<PluginEntry*>();
+    KPluginInfo pluginInfo = pluginEntry->pluginInfo;
 
     KDialog configDialog(itemView());
     configDialog.setWindowTitle(model->data(index, NameRole).toString());

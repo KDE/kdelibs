@@ -38,6 +38,8 @@ class KLineEdit;
 class KCategorizedView;
 class KCModuleProxy;
 
+class PluginEntry;
+
 class KPluginSelector::Private
     : public QObject
 {
@@ -46,7 +48,7 @@ class KPluginSelector::Private
 public:
     enum ExtraRoles
     {
-        PluginInfoRole    = 0x09386561,
+        PluginEntryRole   = 0x09386561,
         ServicesCountRole = 0x1422E2AA,
         NameRole          = 0x0CBBBB00,
         CommentRole       = 0x19FC6DE2,
@@ -61,10 +63,9 @@ public:
     Private(KPluginSelector *parent);
     ~Private();
 
-    void updateDependencies(const KPluginInfo &pluginInfo, bool added);
+    void updateDependencies(PluginEntry *pluginEntry, bool added);
 
 public:
-    class PluginEntry;
     class PluginModel;
     class ProxyModel;
     class PluginDelegate;
@@ -79,7 +80,7 @@ public:
     bool showIcons;
 };
 
-class KPluginSelector::Private::PluginEntry
+class PluginEntry
 {
 public:
     QString category;
@@ -87,13 +88,15 @@ public:
     bool checked;
     bool manuallyAdded;
     KConfigGroup cfgGroup;
-    PluginLoadMethod pluginLoadMethod;
+    KPluginSelector::PluginLoadMethod pluginLoadMethod;
 
-    bool operator==(const KPluginSelector::Private::PluginEntry &pe) const
+    bool operator==(const PluginEntry &pe) const
     {
         return pluginInfo.entryPath() == pe.pluginInfo.entryPath();
     }
 };
+
+Q_DECLARE_METATYPE(PluginEntry*);
 
 
 /**
@@ -209,7 +212,5 @@ private:
 
     KPluginSelector::Private *pluginSelector_d;
 };
-
-Q_DECLARE_METATYPE(KPluginInfo);
 
 #endif // KPLUGINSELECTOR_P_H
