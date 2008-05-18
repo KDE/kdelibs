@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Name=Pidgin Emoticons Theme
+Name[et]=Pidgini emotikoniteema
+Name[sv]=Pidgin smilistema
+Comment=Library to use Pidgin emoticons theme
+Comment[et]=Teek Pidgini emotikoniteema kasutamiseks
+Comment[sv]=Bibliotek för att använda Pidgin smilistema
+X-KDE-ServiceTypes=KEmoticons
+X-KDE-Library=emoticonstheme_pidgin
+X-KDE-EmoticonsFileName=theme
+X-KDE-Priority=7

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+Name=XMPP Emoticons Theme
+Name[et]=XMPP emotikoniteema
+Name[sv]=XMPP smilistema
+Comment=Library to use XMPP emoticons theme
+Comment[et]=Teek XMPP emotikoniteema kasutamiseks
+Comment[sv]=Bibliotek för att använda XMPP smilistema
+X-KDE-ServiceTypes=KEmoticons
+X-KDE-Library=emoticonstheme_xmpp
+X-KDE-EmoticonsFileName=icondef.xml
+X-KDE-Priority=9
