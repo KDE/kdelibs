@@ -350,15 +350,15 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportChangeListStyle) {
-        d->action_list_style = new KSelectAction(KIcon("format-list-unordered"), i18nc("@action", "List Style"), actionCollection);
+        d->action_list_style = new KSelectAction(KIcon("format-list-unordered"), i18nc("@title:menu", "List Style"), actionCollection);
         QStringList listStyles;
-        listStyles      << i18nc("@action no list style", "None")
-        << i18nc("@action disc list style", "Disc")
-        << i18nc("@action circle list style", "Circle")
-        << i18nc("@action square list style", "Square")
-        << i18nc("@action numbered lists", "123")
-        << i18nc("@action lowercase abc lists", "abc")
-        << i18nc("@action lowercase abc lists", "ABC");
+        listStyles      << i18nc("@item:inmenu no list style", "None")
+        << i18nc("@item:inmenu disc list style", "Disc")
+        << i18nc("@item:inmenu circle list style", "Circle")
+        << i18nc("@item:inmenu square list style", "Square")
+        << i18nc("@item:inmenu numbered lists", "123")
+        << i18nc("@item:inmenu lowercase abc lists", "abc")
+        << i18nc("@item:inmenu uppercase abc lists", "ABC");
         d->action_list_style->setItems(listStyles);
         d->action_list_style->setCurrentItem(0);
         actionCollection->addAction("format_list_style", d->action_list_style);
