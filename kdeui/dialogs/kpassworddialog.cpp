@@ -50,9 +50,11 @@ public:
     void actuallyAccept();
     void activated( const QString& userName );
 
-    void init( const KPasswordDialogFlags& flags );
+    void updateFields();
+    void init();
 
     KPasswordDialog *q;
+    KPasswordDialogFlags m_flags;
     Ui_KPasswordDialog ui;
     QMap<QString,QString> knownLogins;
     KComboBox* userEditCombo;
@@ -69,7 +71,8 @@ KPasswordDialog::KPasswordDialog( QWidget* parent ,
     setButtons( Ok | Cancel | otherButtons );
     showButtonSeparator( true );
     setDefaultButton( Ok );
-    d->init ( flags );
+    d->m_flags = flags;
+    d->init ();
 }
 
 KPasswordDialog::~KPasswordDialog()
@@ -77,26 +80,61 @@ KPasswordDialog::~KPasswordDialog()
     delete d;
 }
 
-void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& flags )
+void KPasswordDialog::KPasswordDialogPrivate::updateFields()
+{
+    if (q->anonymousMode())
+    {
+        ui.userEdit->setEnabled( false );
+        ui.domainEdit->setEnabled( false );
+        ui.passEdit->setEnabled( false );
+    }
+    else
+    {
+        ui.userEdit->setEnabled(!( m_flags & KPasswordDialog::UsernameReadOnly ));
+        ui.domainEdit->setEnabled(!( m_flags & KPasswordDialog::DomainReadOnly ));
+        ui.passEdit->setEnabled( true );
+    }
+}
+
+void KPasswordDialog::KPasswordDialogPrivate::init()
 {
     ui.setupUi( q->mainWidget() );
     ui.errorMessage->setHidden(true);
 
     // Row 4: Username field
-    if ( flags & KPasswordDialog::ShowUsernameLine ) {
+    if ( m_flags & KPasswordDialog::ShowUsernameLine ) {
         ui.userEdit->setFocus();
         QObject::connect( ui.userEdit, SIGNAL(returnPressed()), ui.passEdit, SLOT(setFocus()) );
     } else {
         ui.userNameLabel->hide();
         ui.userEdit->hide();
+        ui.domainLabel->hide();
+        ui.domainEdit->hide();
         ui.passEdit->setFocus();
     }
 
-    if ( !( flags & KPasswordDialog::ShowKeepPassword ) )
+    if ( !( m_flags & KPasswordDialog::ShowAnonymousLoginCheckBox ) )
+    {
+        ui.anonymousCheckBox->hide();
+    }
+    else
+    {
+        QObject::connect( ui.anonymousCheckBox, SIGNAL(stateChanged (int)), q, SLOT(updateFields()) );
+    }
+    
+    if ( !( m_flags & KPasswordDialog::ShowDomainLine ) )
+    {
+        ui.domainLabel->hide();
+        ui.domainEdit->hide();
+    }    
+    
+    if ( !( m_flags & KPasswordDialog::ShowKeepPassword ) )
     {
         ui.keepCheckBox->hide();
     }
 
+    updateFields();
+    
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
     q->setFixedWidth(qMin(1000, qMax(400, desktop.width() / 4)));
     q->setPixmap(KIcon("dialog-password").pixmap(KIconLoader::SizeHuge));
@@ -148,6 +186,27 @@ QString KPasswordDialog::password() const
     return d->ui.passEdit->text();
 }
 
+void KPasswordDialog::setDomain(const QString& domain)
+{
+    d->ui.domainEdit->setText(domain);
+}
+
+QString KPasswordDialog::domain() const
+{
+    return d->ui.domainEdit->text();
+}
+
+void KPasswordDialog::setAnonymousMode(bool anonymous)
+{
+    d->ui.anonymousCheckBox->setChecked( anonymous );
+}
+
+bool KPasswordDialog::anonymousMode() const
+{
+    return d->ui.anonymousCheckBox->isChecked();
+}
+
+
 void KPasswordDialog::setKeepPassword( bool b )
 {
     d->ui.keepCheckBox->setChecked( b );
@@ -173,9 +232,12 @@ void KPasswordDialog::addCommentLine( const QString& label,
     ++d->commentRow;
     d->ui.gridLayout->addWidget(d->ui.userNameLabel, d->commentRow, 0);
     d->ui.gridLayout->addWidget(d->ui.userEdit, d->commentRow, 1);
-    d->ui.gridLayout->addWidget(d->ui.passwordLabel, d->commentRow + 1, 0);
-    d->ui.gridLayout->addWidget(d->ui.passEdit, d->commentRow + 1, 1);
-    d->ui.gridLayout->addWidget(d->ui.keepCheckBox, d->commentRow + 2, 1);
+    d->ui.gridLayout->addWidget(d->ui.anonymousCheckBox, d->commentRow + 1, 1);
+    d->ui.gridLayout->addWidget(d->ui.domainLabel, d->commentRow + 2, 0);
+    d->ui.gridLayout->addWidget(d->ui.domainEdit, d->commentRow + 2, 1);
+    d->ui.gridLayout->addWidget(d->ui.passwordLabel, d->commentRow + 3, 0);
+    d->ui.gridLayout->addWidget(d->ui.passEdit, d->commentRow + 3, 1);
+    d->ui.gridLayout->addWidget(d->ui.keepCheckBox, d->commentRow + 4, 1);
 
     // cycle through column 0 widgets and see the max width so we can set the minimum height of
     // column 2 wordwrapable labels
@@ -213,8 +275,15 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
             {
                 d->ui.userNameLabel->setFont( bold );
                 d->ui.userEdit->setFocus();
-                break;
             }
+            break;
+        case DomainError:
+            if ( d->ui.domainEdit->isVisibleTo( this ) )
+            {
+                d->ui.domainLabel->setFont( bold );
+                d->ui.domainEdit->setFocus();
+            }            
+            break;
         case FatalError:
             d->ui.userNameLabel->setEnabled( false );
             d->ui.userEdit->setEnabled( false );

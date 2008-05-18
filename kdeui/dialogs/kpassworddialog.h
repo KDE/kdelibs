@@ -73,7 +73,22 @@ public:
         /**
          * If this flag is set, the login lineedit will be in read only mode.
          */
-        UsernameReadOnly = 0x04
+        UsernameReadOnly = 0x04,
+        /**
+         * If this flag is set, the Anonymous Login checkbox will be displayed
+         * @since 4.1
+         */
+        ShowAnonymousLoginCheckBox = 0x08,
+        /**
+         * If this flag is set, there will be an additional line to let the user enter the domain.
+         * @since 4.1
+         */
+        ShowDomainLine = 0x10,
+        /**
+         * If this flag is set, the domain lineedit will be in read only mode.
+         * @since 4.1
+         */
+        DomainReadOnly = 0x20
     };
     Q_DECLARE_FLAGS(KPasswordDialogFlags, KPasswordDialogFlag)
 
@@ -85,7 +100,7 @@ public:
          * A problem with the user name as entered
          **/
         UsernameError,
-
+        
         /**
          * Incorrect password
          */
@@ -94,7 +109,13 @@ public:
         /**
          * Error preventing further attempts, will result in disabling most of the interface
          */
-        FatalError
+        FatalError,
+        
+        /**
+         * A problem with the domain as entered
+         * @since 4.1
+         **/
+        DomainError        
     };
 
     /**
@@ -171,6 +192,31 @@ public:
      */
     QString username() const;
 
+    /**
+     * set the default domain.
+     * @since 4.1
+     */
+    void setDomain(const QString&);
+
+    /**
+     * Returns the domain entered by the user.
+     * @return the domain name
+     * @since 4.1
+     */
+    QString domain() const;
+    
+    /**
+     * set anonymous mode (all other fields will be greyed out)
+     * @since 4.1
+     */
+    void setAnonymousMode(bool anonymous);
+
+    /**
+     * @return anonymous mode has been selected.
+     * @since 4.1
+     */
+    bool anonymousMode() const;    
+    
     /**
      * Determines whether supplied authorization should
      * persist even after the application has been closed.
@@ -250,6 +296,7 @@ protected:
 private:
     Q_PRIVATE_SLOT(d, void actuallyAccept())
     Q_PRIVATE_SLOT(d, void activated( const QString& userName ))
+    Q_PRIVATE_SLOT(d, void updateFields())
 
 private:
     class KPasswordDialogPrivate;
