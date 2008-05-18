@@ -18,9 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kwindowinfo_mac_p.h"
 #include "kwindowinfo.h"
 #include "kwindowsystem.h"
-#include "kwindowinfo_mac_p.h"
 
 #include <kiconloader.h>
 #include <klocale.h>

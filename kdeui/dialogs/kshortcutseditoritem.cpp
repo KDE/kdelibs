@@ -44,7 +44,7 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *act
 
 KShortcutsEditorItem::~KShortcutsEditorItem()
 {
-    // Undo not yet commited changes. That will fre the m_old* members
+    // Undo not yet committed changes. That will fre the m_old* members
     undo();
 }
 
@@ -308,7 +308,7 @@ void KShortcutsEditorItem::commit()
 {
 #ifndef NDEBUG
     if (m_oldLocalShortcut || m_oldGlobalShortcut || m_oldShapeGesture || m_oldRockerGesture ) {
-        kDebug(125) << "Commiting changes for " << data(Name, Qt::DisplayRole).toString();
+        kDebug(125) << "Committing changes for " << data(Name, Qt::DisplayRole).toString();
     }
 #endif
 

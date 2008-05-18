@@ -37,7 +37,7 @@
   * viewport of the itemview it belongs to. The @a extender is destroyed when
   * you call contractItem() for the associated index. If you fail to do that
   * and the associated item gets deleted you're in trouble. It remains as a
-  * visible artefact in your treeview. Additionaly when closing your
+  * visible artefact in your treeview. Additionally when closing your
   * application you get an assertion failure from KExtendableItemDelegate. Make
   * sure that you always call contractItem for indices before you delete them.
   *

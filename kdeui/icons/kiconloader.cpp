@@ -1576,10 +1576,10 @@ int IconSize(KIconLoader::Group group)
 QPixmap KIconLoader::unknown()
 {
     QPixmap pix;
-    if ( QPixmapCache::find("unknown", pix) )
+    if ( QPixmapCache::find("unknown", pix) ) //krazy:exclude=iconnames
             return pix;
 
-    QString path = global()->iconPath("unknown", KIconLoader::Small, true);
+    QString path = global()->iconPath("unknown", KIconLoader::Small, true); //krazy:exclude=iconnames
     if (path.isEmpty())
     {
         kDebug(264) << "Warning: Cannot find \"unknown\" icon.";
@@ -1587,7 +1587,7 @@ QPixmap KIconLoader::unknown()
     } else
     {
         pix.load(path);
-        QPixmapCache::insert("unknown", pix);
+        QPixmapCache::insert("unknown", pix); //krazy:exclude=iconnames
     }
 
     return pix;

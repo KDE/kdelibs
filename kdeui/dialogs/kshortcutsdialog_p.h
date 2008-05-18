@@ -73,7 +73,7 @@ enum ItemTypes {
  * reparents the widget to the viewport of the itemview it belongs to. The widget is destroyed when
  * the user selects another shortcut or explicitly issues a contractItem event. But when the user
  * clears the model the delegate misses that event and doesn't delete the KShortcutseditor. And
- * remains as a visible artefact in your treeview. Additionaly when closing your application you get
+ * remains as a visible artefact in your treeview. Additionally when closing your application you get
  * an assertion failure from KExtendableItemDelegate.
  *
  * @internal

@@ -25,7 +25,6 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QMimeData>
-#include <QContextMenuEvent>
 #include <kglobalsettings.h>
 
 class KSqueezedTextLabelPrivate
