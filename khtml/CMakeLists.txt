@@ -119,6 +119,12 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_views.cpp
 #  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_debugwin.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_mozilla.cpp
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.h
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.cpp
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.h
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.cpp
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.h
+#  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlhttprequest.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlserializer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/domparser.cpp
@@ -268,6 +274,7 @@ include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 add_subdirectory( kmultipart )
 add_subdirectory( java )
 
+add_definitions(-DENABLE_VIDEO)
 
 ########### libkhtml ###############
 
@@ -350,6 +357,32 @@ create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
 
+macro(create_js_binding _in_FILE)
+   get_filename_component(_in_filename ${_in_FILE} NAME_WE)
+   set(_out_h_FILE "${CMAKE_CURRENT_BINARY_DIR}/JS${_in_filename}.h")
+   set(_out_cpp_FILE "${CMAKE_CURRENT_BINARY_DIR}/JS${_in_filename}.cpp")
+   set(_scripts_dir ${CMAKE_SOURCE_DIR}/khtml/bindings/scripts)
+   add_custom_command(OUTPUT ${_out_h_FILE} ${_out_cpp_FILE}
+      COMMAND ${PERL_EXECUTABLE} -I${_scripts_dir}
+              ${_scripts_dir}/generate-bindings.pl
+              --include=${CMAKE_SOURCE_DIR}/khtml/html
+              --generator=JS
+              --outputdir=${CMAKE_CURRENT_BINARY_DIR}
+              --preprocessor=\"${QT_MOC_EXECUTABLE} -E\"
+              --defines=ENABLE_VIDEO
+              ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+      )
+   if(KDE4_ENABLE_FINAL)
+     macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/khtml_final_cpp.cpp ${_out_h_FILE} ${_out_cpp_FILE})
+   else(KDE4_ENABLE_FINAL)
+      macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${_out_h_FILE} ${_out_cpp_FILE})
+   endif(KDE4_ENABLE_FINAL)
+endmacro(create_js_binding)
+
+#create_js_binding(html/TimeRanges.idl)
+#create_js_binding(html/MediaError.idl)
+#create_js_binding(html/HTMLMediaElement.idl)
 
 install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
 
