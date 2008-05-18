@@ -2,6 +2,7 @@
 Name=PNM
 Name[kk]=PBM
 Name[ml]=പിഎന്‍എം
+Name[sr]=ПНМ
 Name[x-test]=xxPNMxx
 Type=Service
 X-KDE-ServiceTypes=QImageIOPlugins
