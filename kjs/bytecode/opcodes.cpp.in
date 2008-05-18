@@ -122,18 +122,26 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
     };
 }
 
-// ### probably worth merging with patchOpArgument --- basically the same thing..
+static inline void setArg(unsigned char* argBase, const OpValue& val)
+{
+    if (val.immediate) {
+        if (opTypeIsAlign8[val.type]) {
+            *reinterpret_cast<WideArg*>(argBase) = val.value.wide;
+        } else {
+            *reinterpret_cast<NarrowArg*>(argBase) = val.value.narrow;
+        }
+    } else {
+        reinterpret_cast<NarrowArg*>(argBase)->regVal = val.ownedReg->reg();
+    }
+}
+
 static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const OpValue& val)
 {
     ASSERT(opDescr->immediateParams[pos] == val.immediate);
     ASSERT(opDescr->paramTypes[pos] == val.type);
 
     unsigned char* argBase = basePtr + opDescr->paramOffsets[pos];
-    if (val.immediate && opTypeIsAlign8[val.type]) {
-        *reinterpret_cast<WideArg*>(argBase) = val.value.wide;
-    } else {
-        *reinterpret_cast<NarrowArg*>(argBase) = val.value.narrow;
-    }
+    setArg(argBase, val);
 }
 
 void CodeGen::emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
@@ -185,7 +193,8 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         // Add in a register argument.. For now just a dummy #;
         // will fill in w/appropriate type later
         ASSERT(!a3);
-        retReg = OpValue::immRegNum(-1);
+        retReg.immediate = true;
+        retReg.type      = OpType_reg;
         a3 = a2;
         a2 = a1;
         a1 = a0;
@@ -331,6 +340,12 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     return basePtr - block.data();
 }
 
+Addr CodeGen::nextPC(CompileState* comp, CodeBlock& block)
+{
+    comp->localFlushAll(block);
+    return block.size();
+}
+
 void CodeGen::patchOpArgument(CodeBlock& block, Addr baseAddr, int pos, OpValue& newVal)
 {
     OpByteCode* base = reinterpret_cast<OpByteCode*>(block.data() + baseAddr);
@@ -341,16 +356,13 @@ void CodeGen::patchOpArgument(CodeBlock& block, Addr baseAddr, int pos, OpValue&
     ASSERT(variant.paramTypes[pos] == newVal.type);
     ASSERT(pos < variant.numParams);
 
-    char* argBase = reinterpret_cast<char*>(base) + variant.paramOffsets[pos];
-    if (opTypeIsAlign8[variant.paramTypes[pos]])
-        *reinterpret_cast<WideArg*>(argBase) = newVal.value.wide;
-    else
-        *reinterpret_cast<NarrowArg*>(argBase) = newVal.value.narrow;
+    unsigned char* argBase = reinterpret_cast<unsigned char*>(base) + variant.paramOffsets[pos];
+    setArg(argBase, newVal);
 }
 
-void CodeGen::patchJumpToNext(CodeBlock& block, Addr op, int argNum)
+void CodeGen::patchJumpToNext(CompileState* comp, CodeBlock& block, Addr op, int argNum)
 {
-    OpValue destAddr = OpValue::immAddr(nextPC(block));
+    OpValue destAddr = OpValue::immAddr(nextPC(comp, block));
     patchOpArgument(block, op, argNum, destAddr);
 }
 

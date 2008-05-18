@@ -26,7 +26,7 @@
 namespace KJS {
 
 class Node;
-class TempDescriptor;
+class RegDescriptor;
 
 // The NarrowArg and WideArg unions correspond to the encoding of
 // 4- and 8-byte arguments in the bytecode.
@@ -56,15 +56,15 @@ union WideArg
 // This describes where result of evaluating an expression, or an argument
 // to a function, is stored. If immediate is true, it is included directly inside
 // the structure. Otherwise, it's passed by the register number specified in
-// regVal.
+// ownedReg->reg()
 // Note: there is a difference between values stored in registers, and register names.
-// The former have immediate = false, and some type such as OpType_Bool. The latter have
+// The former have immediate = false, and some type such as OpType_Bool; the latter have
 // immediate = true, and type = OpType_reg.
 struct OpValue
 {
     bool   immediate;
     OpType type;
-    RefPtr<TempDescriptor> ownedTemp; // Temporary the lifetime of which we reserve
+    RefPtr<RegDescriptor> ownedReg; // Register the lifetime of which we reserve, including the register #
     union {
         NarrowArg  narrow;
         WideArg    wide;
@@ -89,12 +89,9 @@ struct OpValue
     static OpValue immBool(bool in);
     static OpValue immString(UString* in);
     static OpValue immIdent(Identifier* in);
-    static OpValue immRegNum(Register in);
     static OpValue immNode(Node* in);
     static OpValue immCStr(const char* in);
     static OpValue immAddr(Addr in);
-
-    static OpValue reg(OpType type, Register regNum);
 };
 
 }

@@ -170,13 +170,14 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     Classification classify;
     size_t index = classifyVariable(comp, classify);
 
-    OpValue out;
+    OpValue out, outReg;
     OpValue varName = OpValue::immIdent(&ident);
     switch (classify) {
-    case Local:
-        // Register read. Easy.
-        out = OpValue::reg(OpType_value, index);
+    case Local: {
+        // Register read.
+        out = comp->localReadVal(index);
         break;
+    }
     case NonLocal:
         CodeGen::emitOp(comp, block, Op_NonLocalVarGet, &out, &varName);
         break;
@@ -203,7 +204,7 @@ OpValue VarAccessNode::valueForTypeOf(CompileState* comp, CodeBlock& block)
     switch (classify) {
     case Local:
         // Register read. Easy.
-        out = OpValue::reg(OpType_value, index);
+        out = comp->localReadVal(index);
         break;
     case Global:
         CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, comp->globalScope(), &varName);
@@ -277,7 +278,7 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
 
     if (classify == Local) {
         // Straight register put..
-        OpValue destReg = OpValue::immRegNum(index);
+        OpValue destReg = comp->localWriteRef(block, index);
         CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &destReg, &valToStore);
     } else {
         // Symbolic write to the appropriate scope..
@@ -876,7 +877,7 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block
             CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &aReg, &b);
         else
             CodeGen::emitRegStore(comp, block, &aReg, &b);
-        CodeGen::patchJumpToNext(block, jumpToShortCircuit, 1);
+        CodeGen::patchJumpToNext(comp, block, jumpToShortCircuit, 1);
         return aVal;
     } else {
         // We need to promote 'a' as well, which means we need to skip over the code jumpToShortCircuit
@@ -891,11 +892,11 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block
         Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
         // a's promotion goes here..
-        CodeGen::patchJumpToNext(block, jumpToShortCircuit, 1);
+        CodeGen::patchJumpToNext(comp, block, jumpToShortCircuit, 1);
         CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &a);
 
         // now we're after it..
-        CodeGen::patchJumpToNext(block, jumpToAfter, 0);
+        CodeGen::patchJumpToNext(comp, block, jumpToAfter, 0);
 
         return resVal;
     }
@@ -923,14 +924,14 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Jump to else goes here.
-    CodeGen::patchJumpToNext(block, jumpToElse, 1);
+    CodeGen::patchJumpToNext(comp, block, jumpToElse, 1);
 
     // : part..
     OpValue v2out = expr2->generateEvalCode(comp, block);
     CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v2out);
 
     // After everything
-    CodeGen::patchJumpToNext(block, jumpToAfter, 0);
+    CodeGen::patchJumpToNext(comp, block, jumpToAfter, 0);
 
     return resVal;
 }
@@ -1060,7 +1061,7 @@ void VarDeclNode::generateCode(CompileState* comp, CodeBlock& block)
             CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &identV, &val);
         } else {
             // Store to the local..
-            OpValue dest = OpValue::immRegNum(localID);
+            OpValue dest = comp->localWriteRef(block, localID);
             CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &dest, &val);
         }
     } // if initializer..
@@ -1114,14 +1115,14 @@ void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
         afterAllJmp = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // This is where we go if true fails --- else, or afterwards.
-    CodeGen::patchJumpToNext(block, afterTrueJmp, 1);
+    CodeGen::patchJumpToNext(comp, block, afterTrueJmp, 1);
 
     if (statement2) {
         // Body of else
         statement2->generateExecCode(comp, block);
 
         // Fix up the jump-over code
-        CodeGen::patchJumpToNext(block, afterAllJmp, 0);
+        CodeGen::patchJumpToNext(comp, block, afterAllJmp, 0);
     }
 }
 
@@ -1130,11 +1131,11 @@ void DoWhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->enterLoop(this);
 
     // Body
-    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(block));
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp, block));
     statement->generateExecCode(comp, block);
 
     // continues go to just before the test..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
 
     // test
     OpValue cond = expr->generateEvalCode(comp, block);
@@ -1151,14 +1152,14 @@ void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
     Addr  jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Body
-    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(block));
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp, block));
     statement->generateExecCode(comp, block);
 
     // continues go to just before the test..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
 
     // patch up the destination of the initial jump to test
-    CodeGen::patchJumpToNext(block, jumpToTest, 0);
+    CodeGen::patchJumpToNext(comp, block, jumpToTest, 0);
 
     // test
     OpValue cond = expr->generateEvalCode(comp, block);
@@ -1179,11 +1180,11 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
     Addr jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Generate loop body..
-    OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(block));
+    OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(comp, block));
     statement->generateExecCode(comp, block);
 
     // We're about to generate the increment... The continues should go here..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(block));
+    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
 
     // ### there is a CheckTimeout hook here in nodes.cpp...
 
@@ -1192,7 +1193,7 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
       expr3->generateEvalCode(comp, block);
 
     // The test goes here, so patch up the previous jump..
-    CodeGen::patchJumpToNext(block, jumpToTest, 0);
+    CodeGen::patchJumpToNext(comp, block, jumpToTest, 0);
 
     // Make the test itself --- if it exists..
     if (expr2) {
@@ -1245,7 +1246,7 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
     CodeGen::emitOp(comp, block, Op_Jump, 0, &backVal);
 
     // The end address is here (#2 since return val..)
-    CodeGen::patchJumpToNext(block, fetchNext, 2);
+    CodeGen::patchJumpToNext(comp, block, fetchNext, 2);
 
     // Cleanup
     CodeGen::emitOp(comp, block, Op_EndForIn);
@@ -1273,7 +1274,7 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
         case CompileState::TryFinally: {
             // Uh-oh. We have to handle this via exception machinery, giving it the
             // original address
-            Addr    pc    = CodeGen::nextPC(block);
+            Addr    pc    = CodeGen::nextPC(comp, block);
             CodeGen::emitOp(comp, block, Op_ContBreakInTryFinally, 0, OpValue::dummyAddr());
 
             // Queue destination for resolution
@@ -1295,7 +1296,7 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
                 }
 
                 // Emit a jump...
-                Addr    pc    = CodeGen::nextPC(block);
+                Addr    pc    = CodeGen::nextPC(comp, block);
                 CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
                 // Queue destination for resolution
@@ -1396,7 +1397,7 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Fix up any breaks..
     if (!statement->isLabelNode()) {
         comp->popNest();
-        comp->resolvePendingBreaks(statement.get(), block, CodeGen::nextPC(block));
+        comp->resolvePendingBreaks(statement.get(), block, CodeGen::nextPC(comp, block));
     }
 
     comp->popLabel();
@@ -1429,7 +1430,7 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         jumpOverCatch = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
 
     // Exceptions would go here --- either in a catch or a finally.
-    CodeGen::patchJumpToNext(block, setCatchHandler, 0);
+    CodeGen::patchJumpToNext(comp, block, setCatchHandler, 0);
 
     Addr catchToFinallyEH;
     if (catchBlock) {
@@ -1461,13 +1462,13 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         }
 
         // after an OK 'try', we always go to finally, if any, which needs an op if there is a catch block
-        CodeGen::patchJumpToNext(block, jumpOverCatch, 0);
+        CodeGen::patchJumpToNext(comp, block, jumpOverCatch, 0);
     }
 
 
     if (finallyBlock) {
         if (catchBlock) // if a catch was using us an EH, patch that instruction to here
-            CodeGen::patchJumpToNext(block, catchToFinallyEH, 0);
+            CodeGen::patchJumpToNext(comp, block, catchToFinallyEH, 0);
 
         CodeGen::emitOp(comp, block, Op_DeferCompletion);
         comp->pushNest(CompileState::OtherCleanup);
@@ -1517,7 +1518,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
         CodeGen::emitOp(comp, block, Op_Exit);
 
     // Unwind stuff..
-    CodeGen::patchJumpToNext(block, unwind, 0);
+    CodeGen::patchJumpToNext(comp, block, unwind, 0);
     CodeGen::emitOp(comp, block, Op_PropagateException);
 }
 
@@ -1565,21 +1566,21 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
     // Now, we can actually emit the bodies, fixing the addresses as we go
     int p = 0;
     for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
-        CodeGen::patchJumpToNext(block, list1jumps[p], 1);
+        CodeGen::patchJumpToNext(comp, block, list1jumps[p], 1);
         if (iter->clause->source)
             iter->clause->source->generateExecCode(comp, block);
         ++p;
     }
 
     if (caseBlock->def) {
-        CodeGen::patchJumpToNext(block, defJump, 0);
+        CodeGen::patchJumpToNext(comp, block, defJump, 0);
         if (caseBlock->def->source)
             caseBlock->def->source->generateExecCode(comp, block);
     }
 
     p = 0;
     for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
-        CodeGen::patchJumpToNext(block, list2jumps[p], 1);
+        CodeGen::patchJumpToNext(comp, block, list2jumps[p], 1);
         if (iter->clause->source)
             iter->clause->source->generateExecCode(comp, block);
         ++p;
@@ -1587,12 +1588,12 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // If we didn't have a default, that jump is to here..
     if (!caseBlock->def)
-        CodeGen::patchJumpToNext(block, defJump, 0);
+        CodeGen::patchJumpToNext(comp, block, defJump, 0);
 
     // Breaks should go after us..
     comp->popDefaultBreak();
     comp->popNest();
-    comp->resolvePendingBreaks(this, block, CodeGen::nextPC(block));
+    comp->resolvePendingBreaks(this, block, CodeGen::nextPC(comp, block));
 }
 
 void ImportStatement::generateExecCode(CompileState*, CodeBlock&)

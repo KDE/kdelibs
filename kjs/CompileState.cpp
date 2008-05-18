@@ -48,7 +48,7 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
     reference.type      = OpType_reg;
     reference.immediate = true;
 
-    TempDescriptor* temp = 0;
+    RegDescriptor* temp = 0;
 
     bool markable = (type == OpType_value);
 
@@ -63,15 +63,70 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
     if (!temp) {
         Register id = maxTemp;
         fbody->reserveSlot(id, markable);
-        temp = new TempDescriptor(this, id, markable);
+        temp = new RegDescriptor(this, id, markable);
         ++maxTemp;
     }
 
-    value.ownedTemp = temp;
-    value.value.narrow.regVal = temp->reg();
+    value.ownedReg = temp;
 
-    reference.ownedTemp = temp;
+    reference.ownedReg = temp;
     reference.value.narrow.regVal = temp->reg();
+}
+
+OpValue CompileState::localReadVal(Register regNum)
+{
+    OpValue val;
+    val.immediate = false;
+    val.type      = OpType_value;
+
+    RegDescriptor* desc = locals[regNum];
+    if (!desc) {
+        desc = new RegDescriptor(this, regNum, true, false /*not a temp!*/);
+        locals[regNum] = desc;
+    }
+
+    val.ownedReg = desc;
+    return val;
+}
+
+void CompileState::localFlushAll(CodeBlock& block)
+{
+    for (Register r = 0; r < initialMaxTemp; ++r) {
+        if (locals[r] && locals[r]->live())
+            flushLocal(block, r);
+    }
+}
+
+void CompileState::flushLocal(CodeBlock& block, Register regNum)
+{
+    if (locals[regNum] && locals[regNum]->live()) {
+        OpValue localVal;
+        localVal.immediate = false;
+        localVal.type      = OpType_value;
+        localVal.ownedReg  = locals[regNum];
+
+        OpValue out, outReg;
+        requestTemporary(OpType_value, out, outReg);
+
+        CodeGen::emitOp(this, block, Op_RegPutValue, 0, &outReg, &localVal);
+
+        // Now, patch up the descriptor to point to the same place as the temporary, and to
+        // take ownership of it, and remove it from local descriptors list.
+        locals[regNum]->adopt(out.ownedReg.get());
+        locals[regNum] = 0;
+    }
+}
+
+OpValue CompileState::localWriteRef(CodeBlock& block, Register regNum)
+{
+    // Detach any live value copies.
+    flushLocal(block, regNum);
+
+    OpValue rval;
+    rval.immediate = true;
+    rval.type      = OpType_reg;
+    rval.value.narrow.regVal = regNum;
+    return rval;
 }
 
 bool CompileState::pushLabel(const Identifier& label)

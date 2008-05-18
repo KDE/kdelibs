@@ -116,11 +116,11 @@ public:
     static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
 
     // Patches op at address 'op' to jump to next instr.
-    static void patchJumpToNext(CodeBlock& block, Addr op, int argNum);
+    static void patchJumpToNext(CompileState* comp, CodeBlock& block, Addr op, int argNum);
 
-    static Addr nextPC(const CodeBlock& block) {
-        return block.size();
-    }
+    // This requests the address of next instruction, for use in control flow, and
+    // designates a basic block boundary, flushing everything BB-dependent;
+    static Addr nextPC(CompileState* comp, CodeBlock& block);
 
     static void disassembleBlock(CodeBlock& block);
 

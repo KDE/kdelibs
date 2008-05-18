@@ -41,7 +41,7 @@ using WTF::Vector;
 
 namespace KJS {
 
-class TempDescriptor;
+class RegDescriptor;
 class FunctionBodyNode;
 
 class CompileState
@@ -49,9 +49,9 @@ class CompileState
 public:
     CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
-        ctype(ctype), initialMaxTemp(initialMaxTemp), maxTemp(initialMaxTemp), fbody(fbody),
-        scopeDepth(0), finallyDepth(0), neededClosures(false)
-    {}
+        ctype(ctype), locals(initialMaxTemp, 0), initialMaxTemp(initialMaxTemp),
+        maxTemp(initialMaxTemp), fbody(fbody), scopeDepth(0), finallyDepth(0), neededClosures(false)
+    { }
 
     FunctionBodyNode* functionBody() {
         return fbody;
@@ -71,6 +71,17 @@ public:
     // We distinguish two kinds of temporaries --- markable and not. They'll get
     // corresponding bits set in localStore when that's initialized.
     void requestTemporary(OpType type, OpValue& value, OpValue& reference);
+
+    // This method is used to acquire a read value of a local...
+    OpValue localReadVal(Register regNum);
+
+    // And this one returns a reference, acquiring it for (immediate) write.
+    // If there are any active read copies, we will backup the old value to
+    // a temporary, and petchup their register descriptor to point to the backup.
+    OpValue localWriteRef(CodeBlock& block, Register regNum);
+
+    // This foces all live locals to temporaries.
+    void localFlushAll(CodeBlock& block);
 
     // This sets the registers containing the local scope and
     // 'this' values... It should be the rvalue, not the regnums
@@ -177,7 +188,7 @@ public:
         popNest();
         popDefaultBreak();
         popDefaultContinue();
-        resolvePendingBreaks(node, block, CodeGen::nextPC(block));
+        resolvePendingBreaks(node, block, CodeGen::nextPC(this, block));
     }
 
     // Adds break/continue as needing relevant target for given node
@@ -197,15 +208,19 @@ private:
 
     CodeType ctype;
 
-    friend class TempDescriptor;
-    WTF::Vector<TempDescriptor*> freeMarkTemps;
-    WTF::Vector<TempDescriptor*> freeNonMarkTemps;
+    // Makes sure that any values of a local are 
+    void flushLocal(CodeBlock& block, Register reg);
+
+    friend class RegDescriptor;
+    WTF::Vector<RegDescriptor*> locals;
+    WTF::Vector<RegDescriptor*> freeMarkTemps;
+    WTF::Vector<RegDescriptor*> freeNonMarkTemps;
     Register initialMaxTemp;
     Register maxTemp;
 
     FunctionBodyNode* fbody;
 
-    void reuse(TempDescriptor* desc, bool markable) {
+    void reuse(RegDescriptor* desc, bool markable) {
         if (markable)
             freeMarkTemps.append(desc);
         else
@@ -241,17 +256,18 @@ private:
     WTF::HashMap<Node*, WTF::Vector<Addr>* > pendingContinues;
 };
 
-// Temporary descriptors are reference-counted by OpValue in order to automatically
-// manage the lifetime of temporaries.
-class TempDescriptor
+// We used register descriptors for two reasons:
+// 1) For temporaries, we ref-counted them by OpValue in order to manage their lifetime
+// 2) For locals, we use them to do COW of values...
+class RegDescriptor
 {
 public:
-    TempDescriptor(CompileState* owner, Register temp, bool markable):
-        owner(owner), temp(temp), markable(markable), refCount(0)
+    RegDescriptor(CompileState* owner, Register reg, bool markable, bool temp = true):
+        owner(owner), regNo(reg), temp(temp), markable(markable), killed(false), refCount(0)
     {}
 
     Register reg() const {
-        return temp;
+        return regNo;
     }
 
     void ref() {
@@ -260,13 +276,33 @@ public:
 
     void deref() {
         --refCount;
-        if (refCount == 0)
-            owner->reuse(this, markable);
+        if (refCount == 0) {
+            if (killed)
+                delete this;
+            else if (temp)
+                owner->reuse(this, markable);
+        }
+    }
+
+    bool live() {
+        return refCount > 0;
+    }
+
+    void adopt(RegDescriptor* other) {
+        // Make this point to the same as an another descriptor, which is about to die..
+        temp     = other->temp;
+        markable = other->markable;
+        regNo    = other->regNo;
+
+        // Mark the other descriptor as killed, as we took ownership of this.
+        other->killed = true;
     }
 private:
     CompileState* owner;
-    Register      temp;
+    Register      regNo;
+    bool temp;
     bool markable;
+    bool killed;
     int  refCount;
 };
 
@@ -312,13 +348,6 @@ inline OpValue OpValue::immIdent(Identifier* in) {
     return res;
 }
 
-inline OpValue OpValue::immRegNum(Register in) {
-    OpValue res;
-    initImm(res, OpType_reg);
-    res.value.narrow.regVal = in;
-    return res;
-}
-
 inline OpValue OpValue::immNode(KJS::Node* in) {
     OpValue res;
     initImm(res, OpType_node);
@@ -337,15 +366,6 @@ inline OpValue OpValue::immAddr(Addr in) {
     OpValue res;
     initImm(res, OpType_addr);
     res.value.narrow.addrVal = in;
-    return res;
-}
-
-inline OpValue OpValue::reg(OpType type, Register regNum)
-{
-    OpValue res;
-    res.immediate = false;
-    res.type      = type;
-    res.value.narrow.regVal = regNum;
     return res;
 }
 
