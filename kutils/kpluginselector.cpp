@@ -418,7 +418,7 @@ bool KPluginSelector::Private::ProxyModel::subSortLessThan(const QModelIndex &le
 }
 
 KPluginSelector::Private::PluginDelegate::PluginDelegate(QObject *parent)
-    : QItemDelegate(parent)
+    : QAbstractItemDelegate(parent)
 {
 }
 
@@ -428,14 +428,13 @@ KPluginSelector::Private::PluginDelegate::~PluginDelegate()
 
 void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QItemDelegate::paint(painter, option, index);
-//     if (!index.isValid()) {
-//         return;
-//     }
-//
-//     painter->save();
-//     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
-//     painter->restore();
+    if (!index.isValid()) {
+        return;
+    }
+
+    painter->save();
+    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
+    painter->restore();
 }
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
