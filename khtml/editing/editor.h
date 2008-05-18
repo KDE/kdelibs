@@ -23,7 +23,7 @@
 
 #include "editor_command.h"
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 
 #include <qobject.h>
 
