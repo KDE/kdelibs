@@ -142,7 +142,6 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-//     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
 public:
     QList<PluginEntry> pluginEntryList;

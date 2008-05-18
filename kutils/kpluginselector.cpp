@@ -419,11 +419,6 @@ int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) c
     return pluginEntryList.count();
 }
 
-// Qt::ItemFlags KPluginSelector::Private::PluginModel::flags(const QModelIndex &index) const
-// {
-//     return (Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-// }
-
 KPluginSelector::Private::ProxyModel::ProxyModel(KPluginSelector::Private *q, QObject *parent)
     : KCategorizedSortFilterProxyModel(parent)
     , q(q)
