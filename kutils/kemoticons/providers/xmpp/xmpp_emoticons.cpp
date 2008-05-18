@@ -23,10 +23,10 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QImageReader>
 
-#include <KPluginFactory>
-#include <KDebug>
-#include <KStandardDirs>
-#include <KMimeType>
+#include <kpluginfactory.h>
+#include <kdebug.h>
+#include <kstandarddirs.h>
+#include <kmimetype.h>
 
 K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
 K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))

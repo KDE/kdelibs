@@ -23,9 +23,9 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QImageReader>
 
-#include <KPluginFactory>
-#include <KDebug>
-#include <KStandardDirs>
+#include <kpluginfactory.h>
+#include <kdebug.h>
+#include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(AdiumEmoticonsFactory, registerPlugin<AdiumEmoticons>();)
 K_EXPORT_PLUGIN(AdiumEmoticonsFactory("AdiumEmoticons"))

@@ -5,7 +5,7 @@ set(kdeemoticons_SRCS kde_emoticons.cpp)
 
 kde4_add_plugin(emoticonstheme_kde ${kdeemoticons_SRCS})
 
-target_link_libraries(emoticonstheme_kde kemoticons ${KDE4_KDEUI_LIBS})
+target_link_libraries(emoticonstheme_kde kutils ${KDE4_KDEUI_LIBS})
 
 ########### install files ###############
 

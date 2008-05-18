@@ -24,14 +24,14 @@
 #include <QFile>
 #include <QDir>
 
-#include <KPluginLoader>
-#include <KDebug>
-#include <KStandardDirs>
-#include <KConfigGroup>
-#include <KTar>
-#include <KZip>
-#include <KMimeType>
-#include <KDirWatch>
+#include <kpluginloader.h>
+#include <kdebug.h>
+#include <kstandarddirs.h>
+#include <kconfiggroup.h>
+#include <ktar.h>
+#include <kzip.h>
+#include <kmimetype.h>
+#include <kdirwatch.h>
 
 class KEmoticonsPrivate
 {

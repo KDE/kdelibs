@@ -22,9 +22,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
-#include <KPluginFactory>
-#include <KDebug>
-#include <KStandardDirs>
+#include <kpluginfactory.h>
+#include <kdebug.h>
+#include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
 K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))

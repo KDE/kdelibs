@@ -21,15 +21,15 @@
  ******************************************************************************/
 
 #include "kemoticonstheme.h"
+#include "kemoticons.h"
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 #include <QtGui/QTextDocument>
 
-#include <kemoticons.h>
 #include <kio/netaccess.h>
-#include <KStandardDirs>
-#include <KDebug>
+#include <kstandarddirs.h>
+#include <kdebug.h>
 
 class KEmoticonsTheme::KEmoticonsThemeData : public QSharedData
 {

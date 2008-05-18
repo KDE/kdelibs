@@ -22,11 +22,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtGui/QImageReader>
+#include <QtGui/QTextDocument>
 
-#include <KPluginFactory>
-#include <KDebug>
-#include <KStandardDirs>
-#include <QTextDocument>
+#include <kpluginfactory.h>
+#include <kdebug.h>
+#include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))

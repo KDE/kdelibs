@@ -13,6 +13,25 @@ install( FILES
  ksettings/pluginpage.h
 DESTINATION  ${INCLUDE_INSTALL_DIR}/ksettings )
 
+########### kemoticons ################
+add_subdirectory(kemoticons)
+
+set(kemoticons_LIB_SRCS
+    kemoticons/kemoticons.cpp
+    kemoticons/kemoticonstheme.cpp
+    kemoticons/kemoticonsprovider.cpp
+)
+
+install(FILES kemoticons/kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+
+install(FILES 
+    kemoticons/kemoticons.h 
+    kemoticons/kemoticonstheme.h 
+    kemoticons/kemoticonsprovider.h 
+    kemoticons/kemoticons_export.h 
+    DESTINATION ${INCLUDE_INSTALL_DIR}
+)
+
 ########### next target ###############
 
 set(kutils_LIB_SRCS
@@ -25,6 +44,7 @@ kcmodulecontainer.cpp
 ksettingswidgetadaptor.cpp
 kprintpreview.cpp
 ${ksettings_STAT_SRCS}
+${kemoticons_LIB_SRCS}
 )
 
 
