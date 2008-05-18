@@ -58,7 +58,7 @@ public:
         DependenciesRole  = 0x04CAB650
     };
 
-    enum CheckWhatDependencies
+    enum DependencyType
     {
         /// If an item was checked, check all dependencies of that item
         DependenciesINeed = 0,
@@ -68,8 +68,6 @@ public:
 
     Private(KPluginSelector *parent);
     ~Private();
-
-    void checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList);
 
 public:
     struct PluginEntry;
@@ -145,7 +143,7 @@ class KPluginSelector::Private::PluginModel
     : public QAbstractListModel
 {
 public:
-    PluginModel(QObject *parent = 0);
+    PluginModel(KPluginSelector::Private *pluginSelector_d, QObject *parent = 0);
     ~PluginModel();
 
     void addPlugins(const QList<KPluginInfo> &pluginList, const QString &categoryName, const QString &categoryKey, const KConfigGroup &cfgGroup, PluginLoadMethod pluginLoadMethod = ReadConfigFile, bool manuallyAdded = false);
@@ -158,13 +156,16 @@ public:
 
 public:
     QList<PluginEntry> pluginEntryList;
+
+private:
+    KPluginSelector::Private *pluginSelector_d;
 };
 
 class KPluginSelector::Private::ProxyModel
     : public KCategorizedSortFilterProxyModel
 {
 public:
-    ProxyModel(KPluginSelector::Private *q, QObject *parent = 0);
+    ProxyModel(KPluginSelector::Private *pluginSelector_d, QObject *parent = 0);
     ~ProxyModel();
 
 protected:
@@ -172,7 +173,7 @@ protected:
     virtual bool subSortLessThan(const QModelIndex &left, const QModelIndex &right) const;
 
 private:
-    KPluginSelector::Private *q;
+    KPluginSelector::Private *pluginSelector_d;
 };
 
 
@@ -182,7 +183,7 @@ class KPluginSelector::Private::PluginDelegate
     Q_OBJECT
 
 public:
-    PluginDelegate(QAbstractItemView *itemView, QObject *parent = 0);
+    PluginDelegate(KPluginSelector::Private *pluginSelector_d, QObject *parent = 0);
     ~PluginDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -211,6 +212,8 @@ private:
     QCheckBox *checkBox;
     QPushButton *pushButton;
     QList<KCModuleProxy*> moduleProxyList;
+
+    KPluginSelector::Private *pluginSelector_d;
 };
 
 Q_DECLARE_METATYPE(KPluginInfo);

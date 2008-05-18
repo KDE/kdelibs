@@ -59,18 +59,6 @@ KPluginSelector::Private::~Private()
 {
 }
 
-void KPluginSelector::Private::checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList)
-{
-    foreach (const KPluginInfo &pluginInfo, pluginInfoList)
-    {
-        if (!KIconLoader::global()->iconPath(pluginInfo.icon(), KIconLoader::NoGroup, true).isNull())
-        {
-            showIcons = true;
-            return;
-        }
-    }
-}
-
 KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent)
     : QWidget(parent)
     , addedByDependencies(0)
@@ -231,14 +219,14 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->listView->setCategoryDrawer(new KCategoryDrawer);
     d->dependenciesWidget = new Private::DependenciesWidget(this);
 
-    d->pluginModel = new Private::PluginModel(this);
+    d->pluginModel = new Private::PluginModel(d, this);
     d->proxyModel = new Private::ProxyModel(d, this);
     d->proxyModel->setCategorizedModel(true);
     d->proxyModel->setSourceModel(d->pluginModel);
     d->listView->setModel(d->proxyModel);
     d->listView->setAlternatingRowColors(true);
 
-    Private::PluginDelegate *pluginDelegate = new Private::PluginDelegate(d->listView, this);
+    Private::PluginDelegate *pluginDelegate = new Private::PluginDelegate(d, this);
     d->listView->setItemDelegate(pluginDelegate);
 
     d->listView->setMouseTracking(true);
@@ -278,8 +266,6 @@ void KPluginSelector::addPlugins(const QString &componentName,
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << "cfgGroup = " << cfgGroup;
 
-    d->checkIfShowIcons(pluginInfoList);
-
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, *cfgGroup);
 }
 
@@ -302,8 +288,6 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
 
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << "cfgGroup = " << cfgGroup;
-
-    d->checkIfShowIcons(pluginInfoList);
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, *cfgGroup, pluginLoadMethod, true /* manually added */);
 }
@@ -355,8 +339,9 @@ void KPluginSelector::updatePluginsState()
     }
 }
 
-KPluginSelector::Private::PluginModel::PluginModel(QObject *parent)
+KPluginSelector::Private::PluginModel::PluginModel(KPluginSelector::Private *pluginSelector_d, QObject *parent)
     : QAbstractListModel(parent)
+    , pluginSelector_d(pluginSelector_d)
 {
 }
 
@@ -387,6 +372,10 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
               !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive))) {
             listToAdd << pluginEntry;
+
+            if (!pluginSelector_d->showIcons && !pluginInfo.icon().isEmpty()) {
+                pluginSelector_d->showIcons = true;
+            }
         }
     }
 
@@ -479,9 +468,9 @@ int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) c
     return pluginEntryList.count();
 }
 
-KPluginSelector::Private::ProxyModel::ProxyModel(KPluginSelector::Private *q, QObject *parent)
+KPluginSelector::Private::ProxyModel::ProxyModel(KPluginSelector::Private *pluginSelector_d, QObject *parent)
     : KCategorizedSortFilterProxyModel(parent)
-    , q(q)
+    , pluginSelector_d(pluginSelector_d)
 {
     sort(0);
 }
@@ -494,11 +483,11 @@ bool KPluginSelector::Private::ProxyModel::filterAcceptsRow(int sourceRow, const
 {
     Q_UNUSED(sourceParent)
 
-    if (!q->lineEdit->text().isEmpty()) {
+    if (!pluginSelector_d->lineEdit->text().isEmpty()) {
         const QModelIndex index = sourceModel()->index(sourceRow, 0);
         const KPluginInfo pluginInfo = static_cast<PluginEntry*>(index.internalPointer())->pluginInfo;
-        return pluginInfo.name().contains(q->lineEdit->text(), Qt::CaseInsensitive) ||
-               pluginInfo.comment().contains(q->lineEdit->text(), Qt::CaseInsensitive);
+        return pluginInfo.name().contains(pluginSelector_d->lineEdit->text(), Qt::CaseInsensitive) ||
+               pluginInfo.comment().contains(pluginSelector_d->lineEdit->text(), Qt::CaseInsensitive);
     }
 
     return true;
@@ -509,10 +498,11 @@ bool KPluginSelector::Private::ProxyModel::subSortLessThan(const QModelIndex &le
     return static_cast<PluginEntry*>(left.internalPointer())->pluginInfo.name().compare(static_cast<PluginEntry*>(right.internalPointer())->pluginInfo.name(), Qt::CaseInsensitive) < 0;
 }
 
-KPluginSelector::Private::PluginDelegate::PluginDelegate(QAbstractItemView *itemView, QObject *parent)
-    : KWidgetItemDelegate(itemView, parent)
+KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *pluginSelector_d, QObject *parent)
+    : KWidgetItemDelegate(pluginSelector_d->listView, parent)
     , checkBox(new QCheckBox)
     , pushButton(new KPushButton)
+    , pluginSelector_d(pluginSelector_d)
 {
     pushButton->setIcon(KIcon("configure")); // only for getting size matters
 }
@@ -643,6 +633,10 @@ void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
 {
     if (!focusedIndex().isValid())
         return;
+
+    if (state) {
+    } else {
+    }
 
     const_cast<QAbstractItemModel*>(focusedIndex().model())->setData(focusedIndex(), state, Qt::CheckStateRole);
 }
