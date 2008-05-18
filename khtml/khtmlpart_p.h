@@ -49,6 +49,8 @@
 #include "khtml_settings.h"
 #include <kencodingdetector.h>
 #include "ecma/kjs_proxy.h"
+#include "xml/dom_nodeimpl.h"
+#include "editing/editing_p.h"
 
 class KFind;
 class KFindDialog;
@@ -158,9 +160,6 @@ public:
     m_zoomFactor = 100;
     m_fontScaleFactor = 100;
     m_bDnd = true;
-    m_startOffset = m_endOffset = 0;
-    m_startBeforeEnd = true;
-    m_extendAtEnd = true;
     m_linkCursor = QCursor(Qt::PointingHandCursor);
     m_loadedObjects = 0;
     m_totalObjectCount = 0;
@@ -389,26 +388,11 @@ public:
   bool m_bRightMousePressed;
   DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
-  // simply using the selection limits for the caret position does not suffice
-  // as we need to know on which side to extend the selection
-//  DOM::Node m_caretNode;	// node containing the caret
-//  long m_caretOffset;		// offset within this node (0-based)
+  khtml::EditorContext editor_context;
 
-  // the caret uses the selection variables for its position. If m_extendAtEnd
-  // is true, m_selectionEnd and m_endOffset contain the mandatory caret
-  // position, otherwise it's m_selectionStart and m_startOffset.
-  DOM::Node m_selectionStart;
-  long m_startOffset;
-  DOM::Node m_selectionEnd;
-  long m_endOffset;
-  DOM::Node m_initialNode;	// (Node, Offset) pair on which the
-  long m_initialOffset;		// selection has been initiated
   QString m_overURL;
   QString m_overURLTarget;
 
-  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode;
-  bool m_extendAtEnd;		// true if selection is to be extended at its end
-  bool m_startBeforeEnd;
   bool m_bDnd;
   bool m_bFirstData;
   bool m_bClearing;
@@ -490,14 +474,6 @@ public:
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
-  /** returns the caret node */
-  DOM::Node &caretNode() {
-    return m_extendAtEnd ? m_selectionEnd : m_selectionStart;
-  }
-  /** returns the caret offset */
-  long &caretOffset() {
-    return m_extendAtEnd ? m_endOffset : m_startOffset;
-  }
 
   time_t m_userStyleSheetLastModified;
 

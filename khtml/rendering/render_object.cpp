@@ -40,6 +40,7 @@
 
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom_position.h"
 #include "dom/dom_doc.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
@@ -317,6 +318,141 @@ RenderObject *RenderObject::previousRenderer() const
     else {
         return 0;
     }
+}
+
+bool RenderObject::isEditable() const
+{
+    RenderText *textRenderer = 0;
+    if (isText()) {
+        textRenderer = static_cast<RenderText *>(const_cast<RenderObject *>(this));
+    }
+
+    return style()->visibility() == VISIBLE &&
+        element() && element()->isContentEditable() &&
+        ((isBlockFlow() && !firstChild()) ||
+        isReplaced() ||
+        isBR() ||
+        (textRenderer && textRenderer->firstTextBox()));
+}
+
+RenderObject *RenderObject::nextEditable() const
+{
+    RenderObject *r = const_cast<RenderObject *>(this);
+    RenderObject *n = firstChild();
+    if (n) {
+        while (n) {
+            r = n;
+            n = n->firstChild();
+        }
+        if (r->isEditable())
+            return r;
+        else
+            return r->nextEditable();
+    }
+    n = r->nextSibling();
+    if (n) {
+        r = n;
+        while (n) {
+            r = n;
+            n = n->firstChild();
+        }
+        if (r->isEditable())
+            return r;
+        else
+            return r->nextEditable();
+    }
+    n = r->parent();
+    while (n) {
+        r = n;
+        n = r->nextSibling();
+        if (n) {
+            r = n;
+            n = r->firstChild();
+            while (n) {
+                r = n;
+                n = n->firstChild();
+            }
+            if (r->isEditable())
+                return r;
+            else
+                return r->nextEditable();
+        }
+        n = r->parent();
+    }
+    return 0;
+}
+
+RenderObject *RenderObject::previousEditable() const
+{
+    RenderObject *r = const_cast<RenderObject *>(this);
+    RenderObject *n = firstChild();
+    if (n) {
+        while (n) {
+            r = n;
+            n = n->lastChild();
+        }
+        if (r->isEditable())
+            return r;
+        else
+            return r->previousEditable();
+    }
+    n = r->previousSibling();
+    if (n) {
+        r = n;
+        while (n) {
+            r = n;
+            n = n->lastChild();
+        }
+        if (r->isEditable())
+            return r;
+        else
+            return r->previousEditable();
+    }
+    n = r->parent();
+    while (n) {
+        r = n;
+        n = r->previousSibling();
+        if (n) {
+            r = n;
+            n = r->lastChild();
+            while (n) {
+                r = n;
+                n = n->lastChild();
+            }
+            if (r->isEditable())
+                return r;
+            else
+                return r->previousEditable();
+        }
+        n = r->parent();
+    }
+    return 0;
+}
+
+RenderObject *RenderObject::firstLeafChild() const
+{
+    RenderObject *r = firstChild();
+    while (r) {
+        RenderObject *n = 0;
+        n = r->firstChild();
+        if (!n)
+            break;
+        r = n;
+    }
+    return r;
+}
+
+RenderObject *RenderObject::lastLeafChild() const
+{
+    RenderObject *r = lastChild();
+    while (r) {
+        RenderObject *n = 0;
+        n = r->lastChild();
+        if (!n)
+            break;
+        r = n;
+    }
+    return r;
 }
 
 static void addLayers(RenderObject* obj, RenderLayer* parentLayer, RenderObject*& newObject,
@@ -1338,6 +1474,33 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
 }
 #endif
 
+bool RenderObject::shouldSelect() const
+{
+#if 0 // ### merge
+    const RenderObject* curr = this;
+    DOM::NodeImpl *node = 0;
+    bool forcedOn = false;
+
+    while (curr) {
+        if (curr->style()->userSelect() == SELECT_TEXT)
+            forcedOn = true;
+        if (!forcedOn && curr->style()->userSelect() == SELECT_NONE)
+            return false;
+
+        if (!node)
+            node = curr->element();
+        curr = curr->parent();
+    }
+
+    // somewhere up the render tree there must be an element!
+    assert(node);
+
+    return node->dispatchHTMLEvent(DOM::EventImpl::SELECTSTART_EVENT, true, true);
+#else
+    return true;
+#endif
+}
+
 void RenderObject::selectionStartEnd(int& spos, int& epos)
 {
     if (parent())
@@ -1781,6 +1944,20 @@ void RenderObject::arenaDelete(RenderArena *arena)
     arenaDelete(arena, dynamic_cast<void *>(this));
 }
 
+Position RenderObject::positionForCoordinates(int /*x*/, int /*y*/)
+{
+    return Position(element(), caretMinOffset());
+}
+
+bool RenderObject::isPointInsideSelection(int x, int y, const Selection &sel) const
+{
+    SelectionState selstate = selectionState();
+    if (selstate == SelectionInside) return true;
+    if (selstate == SelectionNone || !element()) return false;
+    return element()->isPointInsideSelection(x, y, sel);
+}
+
+#if 0
 FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
 {
 #if 0
@@ -1861,6 +2038,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     //kDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset;
     return SelectionPointAfter;
 }
+#endif
 
 bool RenderObject::mouseInside() const
 {
@@ -2149,6 +2327,28 @@ bool RenderObject::usesLineWidth() const
     // (b) <hr>s use lineWidth
     // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
     return (flowAroundFloats() && (style()->width().isVariable() || isHR() || (style()->htmlHacks() && !isTable())));
+}
+
+long RenderObject::caretMinOffset() const
+{
+    return 0;
+}
+
+long RenderObject::caretMaxOffset() const
+{
+    return 0;
+}
+
+unsigned long RenderObject::caretMaxRenderedOffset() const
+{
+    return 0;
+}
+
+InlineBox *RenderObject::inlineBox(long /*offset*/)
+{
+    if (isBox())
+        return static_cast<RenderBox*>(this)->placeHolderBox();
+    return 0;
 }
 
 bool RenderObject::hasCounter(const QString& counter) const

@@ -52,8 +52,11 @@ namespace DOM {
 class NodeListImpl;
 class NamedNodeMapImpl;
 class DocumentImpl;
+class ElementImpl;
 class RegisteredEventListener;
 class EventImpl;
+class Position;
+class Selection;
 
 struct RegisteredListenerList {
     RegisteredListenerList() : listeners(0)
@@ -131,6 +134,7 @@ public:
     virtual void replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual void removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
+    virtual void remove(int &exceptioncode);
     virtual bool hasChildNodes (  ) const;
     virtual NodeImpl *cloneNode ( bool deep ) = 0;
     virtual DOMString localName() const;
@@ -149,7 +153,7 @@ public:
     virtual bool isXMLElementNode() const { return false; }
     virtual bool isGenericFormElement() const { return false; }
     virtual bool containsOnlyWhitespace() const { return false; }
-    virtual bool contentEditable() const;
+    bool isBlockFlow() const;
 
     DOMString textContent() const;
     void setTextContent(const DOMString& text, int& ec);
@@ -161,6 +165,34 @@ public:
 
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
+
+    /** (Not part of the official DOM)
+     * Returns the next leaf node.
+     *
+     * Using this function delivers leaf nodes as if the whole DOM tree
+     * were a linear chain of its leaf nodes.
+     * @return next leaf node or 0 if there are no more.
+     */
+    NodeImpl *nextLeafNode() const;
+
+    /** (Not part of the official DOM)
+     * Returns the previous leaf node.
+     *
+     * Using this function delivers leaf nodes as if the whole DOM tree
+     * were a linear chain of its leaf nodes.
+     * @return previous leaf node or 0 if there are no more.
+     */
+    NodeImpl *previousLeafNode() const;
+
+    bool isEditableBlock() const;
+    ElementImpl *enclosingBlockFlowElement() const;
+    ElementImpl *rootEditableElement() const;
+
+    bool inSameRootEditableElement(NodeImpl *);
+    bool inSameContainingBlockFlowElement(NodeImpl *);
+
+    Position positionForCoordinates(int x, int y) const;
+    bool isPointInsideSelection(int x, int y, const Selection &) const;
 
     // used by the parser. Doesn't do as many error checkings as
     // appendChild(), and returns the node into which will be parsed next.
@@ -264,6 +296,7 @@ public:
 
     virtual bool isInline() const;
 
+    virtual bool isContentEditable() const;
     virtual void getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height);
     virtual QRect getRect() const;
 
@@ -333,6 +366,10 @@ public:
 
     DocumentImpl *docPtr() const { return m_document.get(); }
 
+    NodeImpl *previousEditable() const;
+    NodeImpl *nextEditable() const;
+    //bool isEditable() const;
+
     khtml::RenderObject *renderer() const { return m_render; }
     khtml::RenderObject *nextRenderer();
     khtml::RenderObject *previousRenderer();
@@ -340,7 +377,7 @@ public:
 
     void checkSetPrefix(const DOMString &_prefix, int &exceptioncode);
     void checkAddChild(NodeImpl *newChild, int &exceptioncode);
-    bool isAncestor( NodeImpl *other );
+    bool isAncestor( NodeImpl *other ) const;
     virtual bool childAllowed( NodeImpl *newChild );
 
     // Used to determine whether range offsets use characters or node indices.
@@ -349,20 +386,10 @@ public:
     // css-transform:capitalize breaking up precomposed characters and ligatures.
     virtual int maxCharacterOffset() const { return 0; }
 
-    /**
-     * Returns the minimum caret offset that is allowed for this node.
-     *
-     * This default implementation always returns 0. Textual child nodes
-     * may return other values.
-     */
-    virtual long minOffset() const;
-    /**
-     * Returns the maximum caret offset that is allowed for this node.
-     *
-     * This default implementation always returns the node count.
-     * Textual child nodes return the character count instead.
-     */
     virtual long maxOffset() const;
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
     // -----------------------------------------------------------------------------
     // Integration with rendering tree

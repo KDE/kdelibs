@@ -245,33 +245,29 @@ void CharacterDataImpl::checkCharDataOperation( const unsigned long offset, int 
     }
 }
 
-long CharacterDataImpl::minOffset() const
-{
-  RenderText *r = static_cast<RenderText *>(renderer());
-  if (!r || !r->isText()) return 0;
-
-  // take :first-letter into consideration
-#ifdef __GNUC__
-#warning FIXME
-#endif
-#if 0
-  if (r->forcedMinOffset()) {
-    RenderFlow *firstLetter = static_cast<RenderFlow *>(r->previousSibling());
-    if (firstLetter && firstLetter->isFlow() && firstLetter->isFirstLetter()) {
-      RenderText *letterText = static_cast<RenderText *>(firstLetter->firstChild());
-      return letterText->minOffset();
-    }
-  }
-#endif
-
-  return r->minOffset();
-}
-
 long CharacterDataImpl::maxOffset() const
 {
   RenderText *r = static_cast<RenderText *>(renderer());
-  if (!r || !r->isText()) return (long)length();
-  return r->maxOffset();
+  if (!r || !r->isText()) return 0;
+    return (long)length();
+}
+
+long CharacterDataImpl::caretMinOffset() const
+{
+    RenderText *r = static_cast<RenderText *>(renderer());
+    return r && r->isText() ? r->caretMinOffset() : 0;
+}
+
+long CharacterDataImpl::caretMaxOffset() const
+{
+    RenderText *r = static_cast<RenderText *>(renderer());
+    return r && r->isText() ? r->caretMaxOffset() : (long)length();
+}
+
+unsigned long CharacterDataImpl::caretMaxRenderedOffset() const
+{
+    RenderText *r = static_cast<RenderText *>(renderer());
+    return r ? r->caretMaxRenderedOffset() : length();
 }
 
 // ---------------------------------------------------------------------------
@@ -608,5 +604,26 @@ DOMString CDATASectionImpl::toString() const
     return DOMString("<![CDATA[") + nodeValue() + "]]>";
 }
 
+// ---------------------------------------------------------------------------
+ 
+EditingTextImpl::EditingTextImpl(DocumentImpl *impl, const DOMString &text)
+    : TextImpl(impl, text.implementation())
+{
+}
 
+EditingTextImpl::EditingTextImpl(DocumentImpl *impl)
+    : TextImpl(impl)
+{
+}
+
+EditingTextImpl::~EditingTextImpl()
+{
+}
+
+bool EditingTextImpl::rendererIsNeeded(RenderStyle */*style*/)
+{
+    return true;
+}
+
+  
 

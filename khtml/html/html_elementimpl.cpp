@@ -48,6 +48,7 @@
 #include <css/cssvalues.h>
 #include <xml/dom_textimpl.h>
 #include <xml/dom2_eventsimpl.h>
+#include <dom/dom_doc.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -188,6 +189,9 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_NAME:
         getDocument()->incDOMTreeVersion();
+        break;
+    case ATTR_CONTENTEDITABLE:
+        setContentEditable(attr);
         break;
     case ATTR_STYLE:
         if (inlineStyleDecls())
@@ -644,6 +648,44 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 	addCSSProperty( CSS_PROP_FLOAT, propfloat );
     if ( propvalign != -1 )
 	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
+}
+
+DOMString HTMLElementImpl::contentEditable() const
+{
+    getDocument()->updateRendering();
+
+    if (!renderer())
+        return "false";
+
+    switch (renderer()->style()->userInput()) {
+        case UI_ENABLED:
+            return "true";
+        case UI_DISABLED:
+        case UI_NONE:
+            return "false";
+        default: ;
+    }
+    return "inherit";
+}
+
+void HTMLElementImpl::setContentEditable(AttributeImpl* attr)
+{
+    const DOMString &enabled = attr->value();
+    if (enabled.isEmpty() || strcasecmp(enabled, "true") == 0)
+        addCSSProperty(CSS_PROP__KHTML_USER_INPUT, CSS_VAL_ENABLED);
+    else if (strcasecmp(enabled, "false") == 0)
+        addCSSProperty(CSS_PROP__KHTML_USER_INPUT, CSS_VAL_NONE);
+    else if (strcasecmp(enabled, "inherit") == 0)
+        addCSSProperty(CSS_PROP__KHTML_USER_INPUT, CSS_VAL_INHERIT);
+}
+
+void HTMLElementImpl::setContentEditable(const DOMString &enabled) {
+    if (enabled == "inherit") {
+        int exceptionCode;
+        removeAttribute(ATTR_CONTENTEDITABLE, exceptionCode);
+    }
+    else
+        setAttribute(ATTR_CONTENTEDITABLE, enabled.isEmpty() ? "true" : enabled);
 }
 
 DOMString HTMLElementImpl::toString() const

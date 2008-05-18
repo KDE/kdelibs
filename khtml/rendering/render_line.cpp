@@ -153,6 +153,21 @@ bool InlineBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int
     return object()->nodeAtPoint(i, x, y, tx, ty, HitTestAll, inside); // ### port hitTest
 }
 
+long InlineBox::caretMinOffset() const
+{
+    return 0;
+}
+
+long InlineBox::caretMaxOffset() const
+{
+    return 1;
+}
+
+unsigned long InlineBox::caretMaxRenderedOffset() const
+{
+    return 1;
+}
+
 RootInlineBox* InlineBox::root()
 {
     if (m_parent)
@@ -277,6 +292,54 @@ int InlineBox::placeEllipsisBox(bool /*ltr*/, int /*blockEdge*/, int /*ellipsisW
 {
     // Use -1 to mean "we didn't set the position."
     return -1;
+}
+
+bool InlineBox::nextOnLineExists() const
+{
+    if (!parent())
+        return false;
+
+    if (nextOnLine())
+        return true;
+
+    return parent()->nextOnLineExists();
+}
+
+bool InlineBox::prevOnLineExists() const
+{
+    if (!parent())
+        return false;
+
+    if (prevOnLine())
+        return true;
+
+    return parent()->prevOnLineExists();
+}
+
+InlineBox* InlineBox::firstLeafChild()
+{
+    return this;
+}
+
+InlineBox* InlineBox::lastLeafChild()
+{
+    return this;
+}
+
+InlineBox* InlineBox::closestLeafChildForXPos(int _x, int _tx)
+{
+    if (!isInlineFlowBox())
+        return this;
+
+    InlineFlowBox *flowBox = static_cast<InlineFlowBox*>(this);
+    if (!flowBox->firstChild())
+        return this;
+
+    InlineBox *box = flowBox->closestChildForXPos(_x, _tx);
+    if (!box)
+        return this;
+
+    return box->closestLeafChildForXPos(_x, _tx);
 }
 
 int InlineFlowBox::marginLeft() const
@@ -1117,3 +1180,53 @@ void RootInlineBox::setLineBreakInfo(RenderObject* obj, unsigned breakPos, const
     if (m_lineBreakContext)
         m_lineBreakContext->ref();
 }
+
+InlineBox* InlineFlowBox::firstLeafChild()
+{
+    InlineBox *box = firstChild();
+    while (box) {
+        InlineBox* next = 0;
+        if (!box->isInlineFlowBox())
+            break;
+        next = static_cast<InlineFlowBox*>(box)->firstChild();
+        if (!next)
+            break;
+        box = next;
+    }
+    return box;
+}
+
+InlineBox* InlineFlowBox::lastLeafChild()
+{
+    InlineBox *box = lastChild();
+    while (box) {
+        InlineBox* next = 0;
+        if (!box->isInlineFlowBox())
+            break;
+        next = static_cast<InlineFlowBox*>(box)->lastChild();
+        if (!next)
+            break;
+        box = next;
+    }
+    return box;
+}
+
+InlineBox* InlineFlowBox::closestChildForXPos(int _x, int _tx)
+{
+    if (_x < _tx + firstChild()->m_x)
+        // if the x coordinate is to the left of the first child
+        return firstChild();
+    else if (_x >= _tx + lastChild()->m_x + lastChild()->m_width)
+        // if the x coordinate is to the right of the last child
+        return lastChild();
+    else
+        // look for the closest child;
+        // check only the right edges, since the left edge of the first
+        // box has already been checked
+        for (InlineBox *box = firstChild(); box; box = box->nextOnLine())
+            if (_x < _tx + box->m_x + box->m_width)
+                return box;
+
+    return 0;
+}
+

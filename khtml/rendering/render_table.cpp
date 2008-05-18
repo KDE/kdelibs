@@ -2010,7 +2010,7 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
     // ### dunno why cell can be 0, maybe due to weird spans? (LS)
     if (cell) {
         SelPointState localState;
-        pos = cell->checkSelectionPoint(_x, _y, _tx, _ty, node, offset, localState);
+//        pos = cell->checkSelectionPoint(_x, _y, _tx, _ty, node, offset, localState);
     }
 
     if (pos != SelectionPointBefore) return pos;

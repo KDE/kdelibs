@@ -32,6 +32,7 @@
 #include "break_lines.h"
 #include "render_arena.h"
 #include <xml/dom_nodeimpl.h>
+#include <xml/dom_position.h>
 
 #include <misc/loader.h>
 #include <misc/helper.h>
@@ -422,7 +423,7 @@ static inline int justifyWidth(int &numSpaces, int &toAdd) {
   return a;
 }
 
-FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
+FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int & offset)
 {
 //       kDebug(6040) << "InlineTextBox::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
@@ -431,7 +432,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     if ( _y < _ty + m_y )
         return SelectionPointBefore; // above -> before
 
-    if ( _y > _ty + m_y + lineHeight ) {
+    if ( _y > _ty + m_y + m_height ) {
         // below -> after
         // Set the offset to the max
         offset = m_len;
@@ -449,6 +450,8 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 
     // consider spacing for justified text
     int toAdd = m_toAdd;
+    RenderText *text = static_cast<RenderText *>(object());
+    Q_ASSERT(text->isText());
     bool justified = text->style()->textAlign() == JUSTIFY && toAdd > 0;
     int numSpaces = 0;
     if (justified) {
@@ -462,6 +465,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     int delta = _x - (_tx + m_x);
     //kDebug(6040) << "InlineTextBox::checkSelectionPoint delta=" << delta;
     int pos = 0;
+    const Font *f = text->htmlFont(m_firstLine);
     if ( m_reversed ) {
 	delta -= m_width;
 	while(pos < m_len) {
@@ -491,6 +495,21 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 //     kDebug( 6040 ) << " Text  --> inside at position " << pos;
     offset = pos;
     return SelectionPointInside;
+}
+
+long InlineTextBox::caretMinOffset() const
+{
+    return m_start;
+}
+
+long InlineTextBox::caretMaxOffset() const
+{
+    return m_start + m_len;
+}
+
+unsigned long InlineTextBox::caretMaxRenderedOffset() const
+{
+    return m_start + m_len;
 }
 
 int InlineTextBox::offsetForPoint(int _x, int &ax) const
@@ -572,16 +591,6 @@ int InlineTextBox::widthFromStart(int pos) const
   // else use existing width function
   return f->width(t->str->s + m_start, m_len, 0, pos);
 
-}
-
-long InlineTextBox::minOffset() const
-{
-  return m_start;
-}
-
-long InlineTextBox::maxOffset() const
-{
-  return m_start + m_len;
 }
 
 void InlineTextBox::deleteLine(RenderArena* arena)
@@ -867,13 +876,23 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     for (InlineTextBox* s = firstTextBox(); s; s = s->nextTextBox())
     {
         FindSelectionResult result;
-        const Font *f = htmlFont( s == m_firstTextBox );
-        result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, this, offset, m_lineHeight);
+// #### ?
+//         result = s->checkSelectionPoint(_x, _y, _tx, _ty, offset);
+       if (_y < _ty + s->m_y) result = SelectionPointBefore;
+       else if (_y >= _ty + s->m_y + s->height()) result = SelectionPointAfterInLine;
+       else if (_x < _tx + s->m_x) result = SelectionPointBeforeInLine;
+       else if (_x >= _tx + s->m_x + s->width()) result = SelectionPointAfterInLine;
+       else {
+           int dummy;
+           result = SelectionPointInside;
+           // offsetForPoint shifts to the right: correct it
+           offset = s->offsetForPoint(_x - _tx, dummy) - 1;
+       }
 
 //         kDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset;
         if ( result == SelectionPointInside ) // x,y is inside the textrun
         {
-            offset += s->m_start; // add the offset from the previous lines
+//            offset += s->m_start; // add the offset from the previous lines
 //             kDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset;
             node = element();
             return SelectionPointInside;
@@ -913,6 +932,51 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     return SelectionPointAfter;
 }
 
+ 
+Position RenderText::positionForCoordinates(int _x, int _y)
+{
+    if (!firstTextBox() || stringLength() == 0)
+        return Position(element(), 0);
+
+    int absx, absy;
+    containingBlock()->absolutePosition(absx, absy);
+
+    if (_y < absy + firstTextBox()->root()->bottomOverflow() && _x < absx + firstTextBox()->m_x) {
+        // at the y coordinate of the first line or above
+        // and the x coordinate is to the left than the first text box left edge
+        return Position(element(), firstTextBox()->m_start);
+    }
+
+    if (_y >= absy + lastTextBox()->root()->topOverflow() && _x >= absx + lastTextBox()->m_x + lastTextBox()->m_width) {
+        // at the y coordinate of the last line or below
+        // and the x coordinate is to the right than the last text box right edge
+        return Position(element(), lastTextBox()->m_start + lastTextBox()->m_len);
+    }
+
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
+        if (_y >= absy + box->root()->topOverflow() && _y < absy + box->root()->bottomOverflow()) {
+            if (_x < absx + box->m_x + box->m_width) {
+                // and the x coordinate is to the left of the right edge of this box
+                // check to see if position goes in this box
+                int offset;
+                box->checkSelectionPoint(_x, _y, absx, absy, offset);
+                if (offset != -1) {
+                    return Position(element(), offset + box->m_start);
+                }
+            }
+            else if (!box->prevOnLine() && _x < absx + box->m_x)
+                // box is first on line
+                // and the x coordinate is to the left than the first text box left edge
+                return Position(element(), box->m_start);
+            else if (!box->nextOnLine() && _x >= absx + box->m_x + box->m_width)
+                // box is last on line
+                // and the x coordinate is to the right than the last text box right edge
+                return Position(element(), box->m_start + box->m_len);
+        }
+    }
+    return Position(element(), 0);
+}
+
 void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
 {
   if (!m_firstTextBox) {
@@ -933,7 +997,7 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
   _y = s->m_y + s->baseline() - fm.ascent();
   width = 1;
   if (flags & CFOverride) {
-    width = offset < maxOffset() ? fm.width(str->s[offset]) : 1;
+    width = offset < caretMaxOffset() ? fm.width(str->s[offset]) : 1;
   }/*end if*/
 #if 0
   kDebug(6040) << "_x="<<_x << " s->m_x="<<s->m_x
@@ -955,7 +1019,7 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
   }
 }
 
-long RenderText::minOffset() const
+long RenderText::caretMinOffset() const
 {
   if (!m_firstTextBox) return 0;
   // FIXME: it is *not* guaranteed that the first run contains the lowest offset
@@ -966,7 +1030,7 @@ long RenderText::minOffset() const
   return m_firstTextBox->m_start;
 }
 
-long RenderText::maxOffset() const
+long RenderText::caretMaxOffset() const
 {
     InlineTextBox* box = m_lastTextBox;
     if (!box)
@@ -976,6 +1040,34 @@ long RenderText::maxOffset() const
     for (box = box->prevTextBox(); box; box = box->prevTextBox())
         maxOffset = qMax(maxOffset, box->m_start + box->m_len);
     return maxOffset;
+}
+
+unsigned long RenderText::caretMaxRenderedOffset() const
+{
+    int l = 0;
+    // ### no guarantee that the order is ascending
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
+        l += box->m_len;
+    }
+    return l;
+}
+
+InlineBox *RenderText::inlineBox(long offset)
+{
+    // ### make educated guess about most likely position
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
+        if (offset >= box->m_start && offset <= box->m_start + box->m_len) {
+            return box;
+        }
+        else if (offset < box->m_start) {
+            // The offset we're looking for is before this node
+            // this means the offset must be in content that is
+            // not rendered.
+            return box->prevTextBox() ? box->prevTextBox() : firstTextBox();
+        }
+    }
+
+    return 0;
 }
 
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool) const
@@ -1436,7 +1528,31 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
         }
     }
 }
+ 
+bool RenderText::isPointInsideSelection(int x, int y, const Selection &) const
+{
+    RenderText *rt = const_cast<RenderText *>(this);
+    SelectionState selstate = selectionState();
+    if (selstate == SelectionInside) return true;
+    if (selstate == SelectionNone) return false;
+    if (!firstTextBox()) return false;
 
+    int absx, absy;
+    if (!rt->absolutePosition(absx, absy)) return false;
+
+    int startPos, endPos, offset;
+    rt->selectionStartEnd(startPos, endPos);
+
+    if (selstate == SelectionEnd) startPos = 0;
+    if (selstate == SelectionStart) endPos = str->l;
+
+    SelPointState sps;
+    DOM::NodeImpl *node;
+    /*FindSelectionResult res = */rt->checkSelectionPoint(x, y, absx, absy, node, offset, sps);
+
+    return offset >= startPos && offset < endPos;
+}
+ 
 #ifdef ENABLE_DUMP
 
 static QString quoteAndEscapeNonPrintables(const QString &s)

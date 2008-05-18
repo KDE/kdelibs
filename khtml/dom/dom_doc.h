@@ -948,6 +948,18 @@ public:
     /**
      * not part of the DOM
      *
+     * javascript editing command support
+     */
+    bool execCommand(const DOMString &command, bool userInterface, const DOMString &value);
+    bool queryCommandEnabled(const DOMString &command);
+    bool queryCommandIndeterm(const DOMString &command);
+    bool queryCommandState(const DOMString &command);
+    bool queryCommandSupported(const DOMString &command);
+    DOMString queryCommandValue(const DOMString &command);
+    
+    /**
+     * not part of the DOM
+     *
      * Updates the rendered display after one or more changes to
      * the DOM structure
      */

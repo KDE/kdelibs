@@ -47,6 +47,7 @@
 #include <css/cssstyleselector.h>
 #include <css/cssvalues.h>
 #include <css/cssproperties.h>
+#include <khtml_part.h>
 
 #include <QtCore/QTextIStream>
 #include <QTextDocument>
@@ -364,6 +365,16 @@ ElementImpl::~ElementImpl()
 
     if (m_prefix)
         m_prefix->deref();
+}
+
+void ElementImpl::removeAttribute( NodeImpl::Id id, int &exceptioncode )
+{
+    if (namedAttrMap) {
+        namedAttrMap->removeNamedItem(id, false, 0, exceptioncode);
+        if (exceptioncode == DOMException::NOT_FOUND_ERR) {
+            exceptioncode = 0;
+        }
+    }
 }
 
 unsigned short ElementImpl::nodeType() const
@@ -864,7 +875,43 @@ bool ElementImpl::isFocusable() const
     // Only make editable elements selectable if its parent element
     // is not editable. FIXME: this is not 100% right as non-editable elements
     // within editable elements are focusable too.
-    return contentEditable() && !(parentNode() && parentNode()->contentEditable());
+    return isContentEditable() && !(parentNode() && parentNode()->isContentEditable());
+}
+
+bool ElementImpl::isContentEditable() const
+{
+    if (getDocument()->part() && getDocument()->part()->isEditable())
+        return true;
+
+    getDocument()->updateRendering();
+
+    if (!renderer()) {
+        if (parentNode())
+            return parentNode()->isContentEditable();
+        else
+            return false;
+    }
+
+    return renderer()->style()->userInput() == UI_ENABLED;
+}
+
+void ElementImpl::setContentEditable(bool enabled) {
+    // FIXME: the approach is flawed, better use an enum instead of bool
+    int value;
+    if (enabled)
+        value = CSS_VAL_ENABLED;
+    else {
+        // Intelligently use "none" or "disabled", depending on the type of
+        // element
+        // FIXME: intelligence not impl'd yet
+        value = CSS_VAL_NONE;
+
+        // FIXME: reset caret if it is in this node or a child
+    }/*end if*/
+    // FIXME: use addCSSProperty when I get permission to move it here
+//    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value << endl;
+    getInlineStyleDecls()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false);
+    setChanged();
 }
 
 // DOM Section 1.1.1
@@ -1096,37 +1143,6 @@ DOMString ElementImpl::toString() const
     }
 
     return result;
-}
-
-bool ElementImpl::contentEditable() const {
-#if 0
-    DOM::CSSPrimitiveValueImpl *val = static_cast<DOM::CSSPrimitiveValueImpl *>
-    		(const_cast<ElementImpl *>(this)->getInlineStyleDecls()
-		->getPropertyCSSValue(CSS_PROP__KONQ_USER_INPUT));
-//    kDebug() << "val" << val;
-    return val ? val->getIdent() == CSS_VAL_ENABLED : false;
-#endif
-    return NodeImpl::contentEditable();
-}
-
-void ElementImpl::setContentEditable(bool enabled) {
-    // FIXME: the approach is flawed, better use an enum instead of bool
-    int value;
-    if (enabled)
-        value = CSS_VAL_ENABLED;
-    else {
-        // Intelligently use "none" or "disabled", depending on the type of
-        // element
-	// FIXME: intelligence not impl'd yet
-	value = CSS_VAL_NONE;
-
-        // FIXME: reset caret if it is in this node or a child
-    }/*end if*/
-    // FIXME: use addCSSProperty when I get permission to move it here
-//    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value;
-    getInlineStyleDecls()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false);
-    setChanged();
-
 }
 
 // -------------------------------------------------------------------------

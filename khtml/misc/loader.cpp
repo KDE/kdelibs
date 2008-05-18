@@ -1127,9 +1127,9 @@ void DocLoader::clearPreloads()
     QSet<CachedObject*>::iterator end = m_preloads.end();
     for (QSet<CachedObject*>::iterator it = m_preloads.begin(); it != end; ++it) {
         CachedObject* res = *it;
+        res->decreasePreloadCount();
         if (res->preloadResult() == CachedObject::PreloadNotReferenced || res->hadError())
             Cache::removeCacheEntry(res);
-        res->decreasePreloadCount();
     }
     m_preloads.clear();
 }

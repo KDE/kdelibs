@@ -30,6 +30,10 @@
 
 #include "render_flow.h"
 
+namespace DOM {
+    class Position;
+}
+
 namespace khtml {
 
 class RenderBlock : public RenderFlow
@@ -181,6 +185,8 @@ public:
 
     bool isPointInScrollbar(int x, int y, int tx, int ty);
 
+    virtual DOM::Position positionForCoordinates(int x, int y);
+
     virtual void calcMinMaxWidth();
     void calcInlineMinMaxWidth();
     void calcBlockMinMaxWidth();
@@ -188,10 +194,11 @@ public:
     virtual void close();
 
     virtual int getBaselineOfFirstLineBox();
-    virtual InlineFlowBox* getFirstLineBox();
 
     RootInlineBox* firstRootBox() { return static_cast<RootInlineBox*>(m_firstLineBox); }
     RootInlineBox* lastRootBox() { return static_cast<RootInlineBox*>(m_lastLineBox); }
+
+    virtual InlineFlowBox* getFirstLineBox();
 
     bool inRootBlockContext() const;
 
@@ -202,6 +209,10 @@ public:
 
 protected:
     void newLine();
+
+private:
+    DOM::Position positionForBox(InlineBox *box, bool start=true) const;
+    DOM::Position positionForRenderer(RenderObject *renderer, bool start=true) const;
 
 protected:
     struct FloatingObject {

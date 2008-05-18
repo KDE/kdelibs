@@ -87,17 +87,6 @@ struct CaretViewContext {
     {}
 };
 
-/** contextual information about the editing state.
- * An object of this class is only instantiated when it is needed.
- */
-struct EditorContext {
-    bool override;		// true if typed characters should override
-    				// the existing ones.
-
-    EditorContext() : override(false)
-    {}
-};
-
 class LinearDocument;
 
 /**

@@ -199,6 +199,36 @@ public:
      */
     HTMLCollection all() const;
 
+    /**
+     * Returns whether this element is editable.
+     *
+     * This function is not part of the DOM specifications as defined by the w3c.
+     */
+    bool isContentEditable() const;
+
+    /**
+     * Returns the kind of editability that applies to this element.
+     *
+     * The returned string is one of:
+     * \li true: This element has been set to be editable.
+     * \li false: This element has been set not to be editable.
+     * \li inherit: This element inherits its editability from the parent.
+     *
+     * This function is not part of the DOM specifications as defined by the w3c.
+     */
+    DOMString contentEditable() const;
+
+    /**
+     * Sets the editability of this element.
+     *
+     * This function is not part of the DOM specifications as defined by the w3c.
+     * @param enabled may be one of:
+     * \li true: make element editable
+     * \li false: make element not editable
+     * \li inherit: make element inherit editability from parent.
+     */
+    void setContentEditable(const DOMString &enabled);
+
     /*
      * @internal
      */

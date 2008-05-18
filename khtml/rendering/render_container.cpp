@@ -35,11 +35,13 @@
 #include "rendering/render_inline.h"
 #include "rendering/render_layer.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom_position.h"
 #include "css/css_valueimpl.h"
 
 #include <kdebug.h>
 #include <assert.h>
 
+using DOM::Position;
 using namespace khtml;
 
 RenderContainer::RenderContainer(DOM::NodeImpl* node)
@@ -656,4 +658,32 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 	parent()->removeLeftoverAnonymousBoxes();
 }
 
+Position RenderContainer::positionForCoordinates(int _x, int _y)
+{
+    // no children...return this render object's element, if there is one, and offset 0
+    if (!firstChild())
+        return Position(element(), 0);
+  
+    // look for the geometrically-closest child and pass off to that child
+    int min = INT_MAX;
+    RenderObject *closestRenderer = firstChild();
+    for (RenderObject *renderer = firstChild(); renderer; renderer = renderer->nextSibling()) {
+        int absx, absy;
+        renderer->absolutePosition(absx, absy);
+            
+        int top = absy + borderTop() + paddingTop();
+        int bottom = top + renderer->contentHeight();
+        int left = absx + borderLeft() + paddingLeft();
+        int right = left + renderer->contentWidth();
+            
+        int cmp;
+        cmp = abs(_y - top);    if (cmp < min) { closestRenderer = renderer; min = cmp; }
+        cmp = abs(_y - bottom); if (cmp < min) { closestRenderer = renderer; min = cmp; }
+        cmp = abs(_x - left);   if (cmp < min) { closestRenderer = renderer; min = cmp; }
+        cmp = abs(_x - right);  if (cmp < min) { closestRenderer = renderer; min = cmp; }
+    }
+
+    return closestRenderer->positionForCoordinates(_x, _y);
+}
+    
 #undef DEBUG_LAYOUT

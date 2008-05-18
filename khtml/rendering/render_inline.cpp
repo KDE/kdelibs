@@ -29,10 +29,11 @@
 #include "render_block.h"
 
 #include <xml/dom_docimpl.h>
+#include <xml/dom_position.h>
 
 #include <kglobal.h>
 
-
+using DOM::Position;
 using namespace khtml;
 
 void RenderInline::setStyle(RenderStyle* _style)
@@ -537,7 +538,9 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
 static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
 {
     uint index = 0;
-    assert(pointArray.size() >= 3);
+    // ### BUG: outlines with zero width aren't treated correctly
+    // this is not the right fix
+    if (pointArray.size() < 3) return pointArray.begin();
 
     // if first and last points match, ignore the last one.
     bool linkup = false; QPoint linkupPnt;
@@ -857,6 +860,16 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
     }
 
     return inside;
+}
+
+Position RenderInline::positionForCoordinates(int x, int y)
+{
+    for (RenderObject *c = continuation(); c; c = c->continuation()) {
+        if (c->isInline() || c->firstChild())
+            return c->positionForCoordinates(x, y);
+    }
+
+    return RenderFlow::positionForCoordinates(x, y);
 }
 
 void RenderInline::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)

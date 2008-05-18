@@ -39,6 +39,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
 #include "html/html_formimpl.h"
+#include "editing/editor.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_canvas.h"
 #include "rendering/render_frames.h"
@@ -61,11 +62,6 @@
 #include "khtml_printsettings.h"
 
 #include "khtmlpart_p.h"
-
-#ifndef KHTML_NO_CARET
-#include "khtml_caret_p.h"
-#include "xml/dom2_rangeimpl.h"
-#endif
 
 #include <kcursor.h>
 #include <kdebug.h>
@@ -157,10 +153,6 @@ public:
     KHTMLViewPrivate()
         : underMouse( 0 ), underMouseNonShared( 0 ), oldUnderMouse( 0 )
     {
-#ifndef KHTML_NO_CARET
-	m_caretViewContext = 0;
-	m_editorContext = 0;
-#endif // KHTML_NO_CARET
         postponed_autorepeat = NULL;
         scrollingFromWheelTimerId = 0;
         smoothScrollMode = KHTMLView::SSMWhenEfficient;
@@ -189,10 +181,6 @@ public:
         if (oldUnderMouse)
             oldUnderMouse->deref();
 
-#ifndef KHTML_NO_CARET
-	delete m_caretViewContext;
-	delete m_editorContext;
-#endif // KHTML_NO_CARET
         delete cursor_icon_widget;
         delete m_mouseScrollTimer;
         delete m_mouseScrollIndicator;
@@ -265,12 +253,6 @@ public:
         scheduledLayoutCounter = 0;
         updateRegion = QRegion();
         m_dialogsAllowed = true;
-#ifndef KHTML_NO_CARET
-        if (m_caretViewContext) {
-          m_caretViewContext->caretMoved = false;
-	  m_caretViewContext->keyReleasePending = false;
-        }/*end if*/
-#endif // KHTML_NO_CARET
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
         typeAheadActivated = false;
 #endif // KHTML_NO_TYPE_AHEAD_FIND
@@ -324,23 +306,6 @@ public:
     }
 
     bool haveZoom() const { return zoomLevel != 100; }
-
-#ifndef KHTML_NO_CARET
-    /** this function returns an instance of the caret view context. If none
-     * exists, it will be instantiated.
-     */
-    CaretViewContext *caretViewContext() {
-      if (!m_caretViewContext) m_caretViewContext = new CaretViewContext();
-      return m_caretViewContext;
-    }
-    /** this function returns an instance of the editor context. If none
-     * exists, it will be instantiated.
-     */
-    EditorContext *editorContext() {
-      if (!m_editorContext) m_editorContext = new EditorContext();
-      return m_editorContext;
-    }
-#endif // KHTML_NO_CARET
 
     void startScrolling()
     {
@@ -426,10 +391,6 @@ public:
     QRegion updateRegion;
     QTimer smoothScrollTimer;
     QHash<void*, QWidget*> visibleWidgets;
-#ifndef KHTML_NO_CARET
-    CaretViewContext *m_caretViewContext;
-    EditorContext *m_editorContext;
-#endif // KHTML_NO_CARET
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     QString findString;
     QTimer timer;
@@ -626,9 +587,6 @@ void KHTMLView::delayedInit()
 // called by KHTMLPart::clear()
 void KHTMLView::clear()
 {
-#ifndef KHTML_NO_CARET
-    if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
-#endif
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     if( d->typeAheadActivated )
         findTimeout();
@@ -863,13 +821,6 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 
     if (d->layoutSchedulingEnabled)
         layout();
-#ifndef KHTML_NO_CARET
-    else {
-        hideCaret();
-        recalcAndStoreCaretPos();
-        showCaret();
-    }/*end if*/
-#endif
 
     QApplication::sendPostedEvents(viewport(), QEvent::Paint);
 
@@ -924,22 +875,6 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     d->painting = true;
 
     m_part->xmlDocImpl()->renderer()->layer()->paint(&p, r);
-
-#ifndef KHTML_NO_CARET
-    if (d->m_caretViewContext && d->m_caretViewContext->visible) {
-        QRect pos(d->m_caretViewContext->x, d->m_caretViewContext->y,
-		d->m_caretViewContext->width, d->m_caretViewContext->height);
-        if (pos.intersects(QRect(ex, ey, ew, eh))) {
-            p.setCompositionMode(QPainter::CompositionMode_Xor);
-	    p.setPen(Qt::white);
-	    if (pos.width() == 1)
-              p.drawLine(pos.topLeft(), pos.bottomRight());
-	    else {
-	      p.fillRect(pos, Qt::white);
-	    }
-	}
-    }
-#endif // KHTML_NO_CARET
 
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
@@ -1027,17 +962,7 @@ void KHTMLView::layout()
             horizontalScrollBar()->setEnabled( true );
         }
         d->layoutCounter++;
-#ifndef KHTML_NO_CARET
-        hideCaret();
-        if ((m_part->isCaretMode() || m_part->isEditable())
-        	&& !d->complete && d->m_caretViewContext
-                && !d->m_caretViewContext->caretMoved) {
-            initCaret();
-        } else {
-	    recalcAndStoreCaretPos();
-	    showCaret();
-        }/*end if*/
-#endif
+
         if (d->accessKeysEnabled && d->accessKeysActivated) {
             emit hideAccessKeys();
             displayAccessKeys();
@@ -1242,9 +1167,14 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
             d->m_mouseScrollIndicator->hide();
     }
 
-    d->clickCount = 1;
-    d->clickX = xm;
-    d->clickY = ym;
+    if (d->clickCount > 0 &&
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
+        d->clickCount++;
+    else {
+        d->clickCount = 1;
+        d->clickX = xm;
+        d->clickY = ym;
+    }
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
@@ -1388,7 +1318,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     LinkCursor linkCursor = LINK_NORMAL;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
-        if ( r && r->isText() )
+        if ( r && r->isText() && !r->isPointInsideSelection(xm, ym, m_part->caret()) )
             c = QCursor(Qt::IBeamCursor);
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
@@ -1736,15 +1666,15 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	}
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
-#ifndef KHTML_NO_CARET
-    if (m_part->isEditable() || m_part->isCaretMode()
-        || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
-	    && m_part->xmlDocImpl()->focusNode()->contentEditable())) {
-      d->caretViewContext()->keyReleasePending = true;
-      caretKeyPressEvent(_ke);
-      return;
+
+    bool is_editable = m_part->isEditable() || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
+        && m_part->xmlDocImpl()->focusNode()->isContentEditable());
+    if (is_editable || m_part->isCaretMode()) {
+        m_part->d->editor_context.m_keyReleasePending = true;
+        if (caretKeyPressEvent(_ke)) return;
+        if (is_editable && m_part->editor()->handleKeyEvent(_ke))
+            return;
     }
-#endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
     if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && !(_ke->modifiers() & ~Qt::ControlModifier) && !d->accessKeysActivated)
@@ -1977,9 +1907,9 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         return;
     }
 #endif
-    if (d->m_caretViewContext && d->m_caretViewContext->keyReleasePending) {
+    if (m_part->d->editor_context.m_keyReleasePending) {
         //caretKeyReleaseEvent(_ke);
-	d->m_caretViewContext->keyReleasePending = false;
+	m_part->d->editor_context.m_keyReleasePending = false;
 	return;
     }
 
@@ -2066,11 +1996,9 @@ void KHTMLView::doAutoScroll()
             innerNode = renderInfo.innerNode();
 	}/*end if*/
 
-        if (innerNode.handle() && innerNode.handle()->renderer()) {
-            int absX, absY;
-            innerNode.handle()->renderer()->absolutePosition(absX, absY);
-
-            m_part->extendSelectionTo(xm, ym, absX, absY, innerNode);
+        if (innerNode.handle() && innerNode.handle()->renderer()
+             && innerNode.handle()->renderer()->shouldSelect()) {
+            m_part->extendSelectionTo(xm, ym, innerNode);
         }/*end if*/
 #endif // KHTML_NO_SELECTION
     }
@@ -2190,7 +2118,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	QKeyEvent* ke = (QKeyEvent*) e;
 	if (m_part->isEditable() || m_part->isCaretMode()
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
-		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
+		&& m_part->xmlDocImpl()->focusNode()->isContentEditable())) {
 	    if ( (ke->modifiers() & Qt::ControlModifier) || (ke->modifiers() & Qt::ShiftModifier) ) {
 		switch ( ke->key() ) {
 		case Qt::Key_Left:
@@ -2577,16 +2505,17 @@ bool KHTMLView::focusNextPrevNode(bool next)
     }
     else
     {
-#ifndef KHTML_NO_CARET
         // if it's an editable element, activate the caret
-        if (!m_part->isCaretMode() && !m_part->isEditable()
-		&& newFocusNode->contentEditable()) {
-	    d->caretViewContext();
-	    moveCaretTo(newFocusNode, 0L, true);
+        if (!m_part->isCaretMode() && newFocusNode->isContentEditable()) {
+            kDebug(6200) << "show caret! fn: " << newFocusNode->nodeName().string() << endl;
+            m_part->clearCaretRectIfNeeded();
+            m_part->d->editor_context.m_selection.moveTo(Position(newFocusNode, 0L));
+            m_part->setCaretVisible(true);
         } else {
-	    caretOff();
+           m_part->setCaretVisible(false);
+           kDebug(6200) << "hide caret! fn: " << newFocusNode->nodeName().string() << endl;
 	}
-#endif // KHTML_NO_CARET
+        m_part->notifySelectionChanged();
 
 	targetVisible = scrollTo(newFocusNode->getRect());
     }
@@ -2757,16 +2686,6 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
     }
 
     // Scroll the view as necessary to ensure that the new focus node is visible
-#ifndef KHTML_NO_CARET
-    // if it's an editable element, activate the caret
-    if (!m_part->isCaretMode() && !m_part->isEditable()
-	&& node->contentEditable()) {
-        d->caretViewContext();
-        moveCaretTo(node, 0L, true);
-    } else {
-        caretOff();
-    }
-#endif // KHTML_NO_CARET
 
     QRect r = node->getRect();
     ensureVisible( r.right(), r.bottom());
@@ -3825,23 +3744,7 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
         (e->reason() != Qt::MouseFocusReason) &&
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget())
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget()->setFocus();
-#ifndef KHTML_NO_CARET
-    // Restart blink frequency timer if it has been killed, but only on
-    // editable nodes
-    if (d->m_caretViewContext &&
-        d->m_caretViewContext->freqTimerId == -1 &&
-        fn) {
-        if (m_part->isCaretMode()
-		|| m_part->isEditable()
-     		|| (fn && fn->renderer()
-			&& fn->renderer()->style()->userInput()
-				== UI_ENABLED)) {
-            d->m_caretViewContext->freqTimerId = startTimer(500);
-	    d->m_caretViewContext->visible = true;
-        }/*end if*/
-    }/*end if*/
-    showCaret();
-#endif // KHTML_NO_CARET
+    m_part->setSelectionVisible();
     QScrollArea::focusInEvent( e );
 }
 
@@ -3857,33 +3760,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
     m_part->enableFindAheadActions( false );
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
-#ifndef KHTML_NO_CARET
-    if (d->m_caretViewContext) {
-        switch (d->m_caretViewContext->displayNonFocused) {
-	case KHTMLPart::CaretInvisible:
-            hideCaret();
-	    break;
-	case KHTMLPart::CaretVisible: {
-	    if (d->m_caretViewContext->freqTimerId != -1)
-	        killTimer(d->m_caretViewContext->freqTimerId);
-	    d->m_caretViewContext->freqTimerId = -1;
-            NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
-	    if (!d->m_caretViewContext->visible && (m_part->isCaretMode()
-		|| m_part->isEditable()
-     		|| (caretNode && caretNode->renderer()
-			&& caretNode->renderer()->style()->userInput()
-				== UI_ENABLED))) {
-	        d->m_caretViewContext->visible = true;
-	        showCaret(true);
-	    }/*end if*/
-	    break;
-	}
-	case KHTMLPart::CaretBlink:
-	    // simply leave as is
-	    break;
-	}/*end switch*/
-    }/*end if*/
-#endif // KHTML_NO_CARET
+    m_part->setSelectionVisible(false);
 
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
@@ -4129,20 +4006,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             horizontalScrollBar()->setEnabled( true );
         }
     }
-#ifndef KHTML_NO_CARET
-    else if (d->m_caretViewContext
-    	     && e->timerId() == d->m_caretViewContext->freqTimerId) {
-        d->m_caretViewContext->visible = !d->m_caretViewContext->visible;
-	if (d->m_caretViewContext->displayed) {
-	    updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-			d->m_caretViewContext->width,
-			d->m_caretViewContext->height);
-	}/*end if*/
-//	if (d->m_caretViewContext->visible) cout << "|" << flush;
-//	else cout << "" << flush;
-	return;
-    }
-#endif
 
     d->contentsMoving = false;
     if( m_part->xmlDocImpl() ) {
@@ -4355,842 +4218,104 @@ void KHTMLView::slotMouseScrollTimer()
      verticalScrollBar()->setValue( verticalScrollBar()->value() +d->m_mouseScroll_byY);
 }
 
-#ifndef KHTML_NO_CARET
-
-// ### the dependencies on static functions are a nightmare. just be
-// hacky and include the implementation here. Clean me up, please.
-
-#include "khtml_caret.cpp"
-
-void KHTMLView::initCaret(bool keepSelection)
+ 
+static DOM::Position positionOfLineBoundary(const DOM::Position &pos, bool toEnd)
 {
-#if DEBUG_CARETMODE > 0
-  kDebug(6200) << "begin initCaret";
-#endif
-  // save caretMoved state as moveCaretTo changes it
-  if (m_part->xmlDocImpl()) {
-#if 0
-    ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
-    if (listitem) dumpLineBoxes(static_cast<RenderFlow *>(listitem->renderer()));
-#endif
-    d->caretViewContext();
-    bool cmoved = d->m_caretViewContext->caretMoved;
-    if (m_part->d->caretNode().isNull()) {
-      // set to document, position will be sanitized anyway
-      m_part->d->caretNode() = m_part->document();
-      m_part->d->caretOffset() = 0L;
-      // This sanity check is necessary for the not so unlikely case that
-      // setEditable or setCaretMode is called before any render objects have
-      // been created.
-      if (!m_part->d->caretNode().handle()->renderer()) return;
-    }/*end if*/
-//    kDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
-//    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
-    // ### does not repaint the selection on keepSelection!=false
-    moveCaretTo(m_part->d->caretNode().handle(), m_part->d->caretOffset(), !keepSelection);
-//    kDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
-//    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
-    d->m_caretViewContext->caretMoved = cmoved;
-  }/*end if*/
-#if DEBUG_CARETMODE > 0
-  kDebug(6200) << "end initCaret";
-#endif
+    Selection sel = pos;
+    sel.expandUsingGranularity(Selection::LINE);
+    return toEnd ? sel.end() : sel.start();
 }
 
-bool KHTMLView::caretOverrides() const
+inline static DOM::Position positionOfLineBegin(const DOM::Position &pos)
 {
-    bool cm = m_part->isCaretMode();
-    bool dm = m_part->isEditable();
-    return cm && !dm ? false
-    	: (dm || m_part->d->caretNode().handle()->contentEditable())
-	  && d->editorContext()->override;
+    return positionOfLineBoundary(pos, false);
 }
 
-void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
+inline static DOM::Position positionOfLineEnd(const DOM::Position &pos)
 {
-  if (m_part->isCaretMode() || m_part->isEditable()) return;
-  if (node->focused()) return;
-
-  // Find first ancestor whose "user-input" is "enabled"
-  NodeImpl *firstAncestor = 0;
-  while (node) {
-    if (node->renderer()
-       && node->renderer()->style()->userInput() != UI_ENABLED)
-      break;
-    firstAncestor = node;
-    node = node->parentNode();
-  }/*wend*/
-
-  if (!node) firstAncestor = 0;
-
-  DocumentImpl *doc = m_part->xmlDocImpl();
-  // ensure that embedded widgets don't lose their focus
-  if (!firstAncestor && doc->focusNode() && doc->focusNode()->renderer()
-  	&& doc->focusNode()->renderer()->isWidget())
-    return;
-
-  // Set focus node on the document
-#if DEBUG_CARETMODE > 1
-  kDebug(6200) << "firstAncestor " << firstAncestor << ": "
-  	<< (firstAncestor ? firstAncestor->nodeName().string() : QString()) << endl;
-#endif
-  doc->setFocusNode(firstAncestor);
-  emit m_part->nodeActivated(Node(firstAncestor));
+    return positionOfLineBoundary(pos, true);
 }
 
-void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
+bool KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 {
-    if (!m_part || m_part->d->caretNode().isNull()) return;
-    d->caretViewContext();
-    NodeImpl *caretNode = m_part->d->caretNode().handle();
-#if DEBUG_CARETMODE > 0
-  kDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString()) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, qMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString());
-#endif
-    caretNode->getCaret(m_part->d->caretOffset(), caretOverrides(),
-    		d->m_caretViewContext->x, d->m_caretViewContext->y,
-		d->m_caretViewContext->width,
-		d->m_caretViewContext->height);
-
-    if (hintBox && d->m_caretViewContext->x == -1) {
-#if DEBUG_CARETMODE > 1
-        kDebug(6200) << "using hint inline box coordinates";
-#endif
-	RenderObject *r = caretNode->renderer();
-	const QFontMetrics &fm = r->style()->fontMetrics();
-        int absx, absy;
-	r->containingBlock()->absolutePosition(absx, absy,
-						false);	// ### what about fixed?
-	d->m_caretViewContext->x = absx + hintBox->xPos();
-	d->m_caretViewContext->y = absy + hintBox->yPos();
-// 				+ hintBox->baseline() - fm.ascent();
-	d->m_caretViewContext->width = 1;
-	// ### firstline not regarded. But I think it can be safely neglected
-	// as hint boxes are only used for empty lines.
-	d->m_caretViewContext->height = fm.height();
-    }/*end if*/
-
-#if DEBUG_CARETMODE > 4
-//    kDebug(6200) << "freqTimerId: "<<d->m_caretViewContext->freqTimerId;
-#endif
-#if DEBUG_CARETMODE > 0
-    kDebug(6200) << "caret: ofs="<<m_part->d->caretOffset()<<" "
-    	<<" x="<<d->m_caretViewContext->x<<" y="<<d->m_caretViewContext->y
-	<<" h="<<d->m_caretViewContext->height<<endl;
-#endif
-}
-
-void KHTMLView::caretOn()
-{
-    if (d->m_caretViewContext) {
-        if (d->m_caretViewContext->freqTimerId != -1)
-            killTimer(d->m_caretViewContext->freqTimerId);
-
-	if (hasFocus() || d->m_caretViewContext->displayNonFocused
-			== KHTMLPart::CaretBlink) {
-            d->m_caretViewContext->freqTimerId = startTimer(500);
-	} else {
-	    d->m_caretViewContext->freqTimerId = -1;
-	}/*end if*/
-
-        d->m_caretViewContext->visible = true;
-        if ((d->m_caretViewContext->displayed = (hasFocus()
-		|| d->m_caretViewContext->displayNonFocused
-			!= KHTMLPart::CaretInvisible))) {
-	    updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-	    		d->m_caretViewContext->width,
-			d->m_caretViewContext->height);
-	}/*end if*/
-//        kDebug(6200) << "caret on";
-    }/*end if*/
-}
-
-void KHTMLView::caretOff()
-{
-    if (d->m_caretViewContext) {
-        if (d->m_caretViewContext->freqTimerId != -1)
-	    killTimer(d->m_caretViewContext->freqTimerId);
-	d->m_caretViewContext->freqTimerId = -1;
-        d->m_caretViewContext->displayed = false;
-        if (d->m_caretViewContext->visible) {
-            d->m_caretViewContext->visible = false;
-	    updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-	    		d->m_caretViewContext->width,
-	    		d->m_caretViewContext->height);
-	}/*end if*/
-//        kDebug(6200) << "caret off";
-    }/*end if*/
-}
-
-void KHTMLView::showCaret(bool forceRepaint)
-{
-    if (d->m_caretViewContext) {
-        d->m_caretViewContext->displayed = true;
-        if (d->m_caretViewContext->visible) {
-	    if (!forceRepaint) {
-	    	updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-	    		d->m_caretViewContext->width,
-			d->m_caretViewContext->height);
-            } else {
-	    	repaintContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-	    		d->m_caretViewContext->width,
-	    		d->m_caretViewContext->height);
-	    }/*end if*/
-   	}/*end if*/
-//        kDebug(6200) << "caret shown";
-    }/*end if*/
-}
-
-bool KHTMLView::foldSelectionToCaret(NodeImpl *startNode, long startOffset,
-    				NodeImpl *endNode, long endOffset)
-{
-  m_part->d->m_selectionStart = m_part->d->m_selectionEnd = m_part->d->caretNode();
-  m_part->d->m_startOffset = m_part->d->m_endOffset = m_part->d->caretOffset();
-  m_part->d->m_extendAtEnd = true;
-
-  bool folded = startNode != endNode || startOffset != endOffset;
-
-  // Only clear the selection if there has been one.
-  if (folded) {
-    m_part->xmlDocImpl()->clearSelection();
-  }/*end if*/
-
-  return folded;
-}
-
-void KHTMLView::hideCaret()
-{
-    if (d->m_caretViewContext) {
-        if (d->m_caretViewContext->visible) {
-//            kDebug(6200) << "redraw caret hidden";
-	    d->m_caretViewContext->visible = false;
-	    // force repaint, otherwise the event won't be handled
-	    // before the focus leaves the window
-	    repaintContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
-	    		d->m_caretViewContext->width,
-	    		d->m_caretViewContext->height);
-	    d->m_caretViewContext->visible = true;
-	}/*end if*/
-        d->m_caretViewContext->displayed = false;
-//        kDebug(6200) << "caret hidden";
-    }/*end if*/
-}
-
-int KHTMLView::caretDisplayPolicyNonFocused() const
-{
-  if (d->m_caretViewContext)
-    return d->m_caretViewContext->displayNonFocused;
-  else
-    return KHTMLPart::CaretInvisible;
-}
-
-void KHTMLView::setCaretDisplayPolicyNonFocused(int policy)
-{
-  d->caretViewContext();
-//  int old = d->m_caretViewContext->displayNonFocused;
-  d->m_caretViewContext->displayNonFocused = (KHTMLPart::CaretDisplayPolicy)policy;
-
-  // make change immediately take effect if not focused
-  if (!hasFocus()) {
-    switch (d->m_caretViewContext->displayNonFocused) {
-      case KHTMLPart::CaretInvisible:
-        hideCaret();
-	break;
-      case KHTMLPart::CaretBlink:
-	if (d->m_caretViewContext->freqTimerId != -1) break;
-	d->m_caretViewContext->freqTimerId = startTimer(500);
-	// fall through
-      case KHTMLPart::CaretVisible:
-        d->m_caretViewContext->displayed = true;
-        showCaret();
-	break;
-    }/*end switch*/
-  }/*end if*/
-}
-
-bool KHTMLView::placeCaret(CaretBox *hintBox)
-{
-  CaretViewContext *cv = d->caretViewContext();
-  caretOff();
-  NodeImpl *caretNode = m_part->d->caretNode().handle();
-  // ### why is it sometimes null?
-  if (!caretNode || !caretNode->renderer()) return false;
-  ensureNodeHasFocus(caretNode);
-  if (m_part->isCaretMode() || m_part->isEditable()
-     || caretNode->renderer()->style()->userInput() == UI_ENABLED) {
-    recalcAndStoreCaretPos(hintBox);
-
-    cv->origX = cv->x;
-
-    caretOn();
-    return true;
-  }/*end if*/
-  return false;
-}
-
-void KHTMLView::ensureCaretVisible()
-{
-  CaretViewContext *cv = d->m_caretViewContext;
-  if (!cv) return;
-  ensureVisible(cv->x, cv->y, cv->width, cv->height);
-  d->scrollBarMoved = false;
-}
-
-bool KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
-				NodeImpl *oldEndSel, long oldEndOfs)
-{
-  bool changed = false;
-  if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
-      && m_part->d->m_startOffset == m_part->d->m_endOffset) {
-    changed = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
-    m_part->d->m_extendAtEnd = true;
-  } else do {
-    changed = m_part->d->m_selectionStart.handle() != oldStartSel
-    		|| m_part->d->m_startOffset != oldStartOfs
-		|| m_part->d->m_selectionEnd.handle() != oldEndSel
-		|| m_part->d->m_endOffset != oldEndOfs;
-    if (!changed) break;
-
-    // determine start position -- caret position is always at end.
-    NodeImpl *startNode;
-    long startOffset;
-    if (m_part->d->m_extendAtEnd) {
-      startNode = m_part->d->m_selectionStart.handle();
-      startOffset = m_part->d->m_startOffset;
-    } else {
-      startNode = m_part->d->m_selectionEnd.handle();
-      startOffset = m_part->d->m_endOffset;
-      m_part->d->m_selectionEnd = m_part->d->m_selectionStart;
-      m_part->d->m_endOffset = m_part->d->m_startOffset;
-      m_part->d->m_extendAtEnd = true;
-    }/*end if*/
-
-    bool swapNeeded = false;
-    if (!m_part->d->m_selectionEnd.isNull() && startNode) {
-      swapNeeded = RangeImpl::compareBoundaryPoints(startNode, startOffset,
-      			m_part->d->m_selectionEnd.handle(),
-			m_part->d->m_endOffset) >= 0;
-    }/*end if*/
-
-    m_part->d->m_selectionStart = startNode;
-    m_part->d->m_startOffset = startOffset;
-
-    if (swapNeeded) {
-      m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionEnd.handle(),
-		m_part->d->m_endOffset, m_part->d->m_selectionStart.handle(),
-		m_part->d->m_startOffset);
-    } else {
-      m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
-		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
-		m_part->d->m_endOffset);
-    }/*end if*/
-  } while(false);/*end if*/
-  return changed;
-}
-
-void KHTMLView::updateSelection(NodeImpl *oldStartSel, long oldStartOfs,
-				NodeImpl *oldEndSel, long oldEndOfs)
-{
-  if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
-      && m_part->d->m_startOffset == m_part->d->m_endOffset) {
-    if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs)) {
-      m_part->emitSelectionChanged();
-    }/*end if*/
-    m_part->d->m_extendAtEnd = true;
-  } else {
-    // check if the extending end has passed the immobile end
-    if (!m_part->d->m_selectionEnd.isNull() && !m_part->d->m_selectionEnd.isNull()) {
-      bool swapNeeded = RangeImpl::compareBoundaryPoints(
-      			m_part->d->m_selectionStart.handle(), m_part->d->m_startOffset,
-			m_part->d->m_selectionEnd.handle(), m_part->d->m_endOffset) >= 0;
-      if (swapNeeded) {
-        DOM::Node tmpNode = m_part->d->m_selectionStart;
-        long tmpOffset = m_part->d->m_startOffset;
-        m_part->d->m_selectionStart = m_part->d->m_selectionEnd;
-        m_part->d->m_startOffset = m_part->d->m_endOffset;
-        m_part->d->m_selectionEnd = tmpNode;
-        m_part->d->m_endOffset = tmpOffset;
-        m_part->d->m_startBeforeEnd = true;
-        m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
-      }/*end if*/
-    }/*end if*/
-
-    m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
-		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
-		m_part->d->m_endOffset);
-    m_part->emitSelectionChanged();
-  }/*end if*/
-}
-
-void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
-{
-  NodeImpl *oldStartSel = m_part->d->m_selectionStart.handle();
-  long oldStartOfs = m_part->d->m_startOffset;
-  NodeImpl *oldEndSel = m_part->d->m_selectionEnd.handle();
-  long oldEndOfs = m_part->d->m_endOffset;
-
-  NodeImpl *oldCaretNode = m_part->d->caretNode().handle();
-  long oldOffset = m_part->d->caretOffset();
+  EditorContext *ec = &m_part->d->editor_context;
+  Selection &caret = ec->m_selection;
+  Position old_pos = caret.caretPos();
+  Position pos = old_pos;
+  bool recalcXPos = true;
+  bool handled = true;
 
   bool ctrl = _ke->modifiers() & Qt::ControlModifier;
+  bool shift = _ke->modifiers() & Qt::ShiftModifier;
+  
+  switch(_ke->key()) {
 
-// FIXME: this is that widely indented because I will write ifs around it.
-      switch(_ke->key()) {
-        case Qt::Key_Space:
-          break;
+    // -- Navigational keys
+    case Qt::Key_Down:
+      pos = old_pos.nextLinePosition(caret.xPosForVerticalArrowNavigation(Selection::EXTENT));
+      recalcXPos = false;
+      break;
 
-        case Qt::Key_Down:
-	  moveCaretNextLine(1);
-          break;
+    case Qt::Key_Up:
+      pos = old_pos.previousLinePosition(caret.xPosForVerticalArrowNavigation(Selection::EXTENT));
+      recalcXPos = false;
+      break;
 
-        case Qt::Key_Up:
-	  moveCaretPrevLine(1);
-          break;
+    case Qt::Key_Left:
+      pos = ctrl ? old_pos.previousWordPosition() : old_pos.previousCharacterPosition();
+      break;
 
-        case Qt::Key_Left:
-	  moveCaretBy(false, ctrl ? CaretByWord : CaretByCharacter, 1);
-          break;
+    case Qt::Key_Right:
+      pos = ctrl ? old_pos.nextWordPosition() : old_pos.nextCharacterPosition();
+      break;
 
-        case Qt::Key_Right:
-	  moveCaretBy(true, ctrl ? CaretByWord : CaretByCharacter, 1);
-          break;
+    case Qt::Key_PageDown:
+//       moveCaretNextPage(); ###
+      break;
 
-        case Qt::Key_PageDown:
-	  moveCaretNextPage();
-          break;
+    case Qt::Key_PageUp:
+//       moveCaretPrevPage(); ###
+      break;
 
-        case Qt::Key_PageUp:
-	  moveCaretPrevPage();
-          break;
+    case Qt::Key_Home:
+      if (ctrl)
+        /*moveCaretToDocumentBoundary(false)*/; // ###
+      else
+        pos = positionOfLineBegin(old_pos);
+      break;
 
-        case Qt::Key_Home:
-	  if (ctrl)
-	    moveCaretToDocumentBoundary(false);
-	  else
-	    moveCaretToLineBegin();
-          break;
+    case Qt::Key_End:
+      if (ctrl)
+        /*moveCaretToDocumentBoundary(true)*/; // ###
+      else
+        pos = positionOfLineEnd(old_pos);
+      break;
 
-        case Qt::Key_End:
-	  if (ctrl)
-	    moveCaretToDocumentBoundary(true);
-	  else
-	    moveCaretToLineEnd();
-          break;
+    default:
+      handled = false;
 
-      }/*end switch*/
+  }/*end switch*/
 
-  if ((m_part->d->caretNode().handle() != oldCaretNode
-  	|| m_part->d->caretOffset() != oldOffset)
-	// node should never be null, but faulty conditions may cause it to be
-	&& !m_part->d->caretNode().isNull()) {
+  if (pos != old_pos) {
+    m_part->clearCaretRectIfNeeded();
 
-    d->m_caretViewContext->caretMoved = true;
+    caret.moveTo(shift ? caret.nonCaretPos() : pos, pos);
+    int old_x = caret.xPosForVerticalArrowNavigation(Selection::CARETPOS);
 
-    if (_ke->modifiers() & Qt::ShiftModifier) {	// extend selection
-      updateSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
-    } else {			// clear any selection
-      if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs))
-        m_part->emitSelectionChanged();
-    }/*end if*/
+    m_part->selectionLayoutChanged();
 
-    m_part->emitCaretPositionChanged(m_part->d->caretNode(), m_part->d->caretOffset());
-  }/*end if*/
+    // restore old x-position to prevent recalculation
+    if (!recalcXPos)
+      m_part->d->editor_context.m_xPosForVerticalArrowNavigation = old_x;
 
-  _ke->accept();
-}
+    m_part->emitCaretPositionChanged(pos);
+    // ### check when to emit it
+    m_part->notifySelectionChanged();
 
-bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
-{
-  if (!node) return false;
-  ElementImpl *baseElem = determineBaseElement(node);
-  RenderFlow *base = static_cast<RenderFlow *>(baseElem ? baseElem->renderer() : 0);
-  if (!node) return false;
-
-  // need to find out the node's inline box. If there is none, this function
-  // will snap to the next node that has one. This is necessary to make the
-  // caret visible in any case.
-  CaretBoxLineDeleter cblDeleter;
-//   RenderBlock *cb;
-  long r_ofs;
-  CaretBoxIterator cbit;
-  CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, base, r_ofs, cbit);
-  if(!cbl) {
-      kWarning() << "KHTMLView::moveCaretTo - findCaretBoxLine() returns NULL";
-      return false;
   }
 
-#if DEBUG_CARETMODE > 3
-  if (cbl) kDebug(6200) << cbl->information();
-#endif
-  CaretBox *box = *cbit;
-  if (cbit != cbl->end() && box->object() != node->renderer()) {
-    if (box->object()->element()) {
-      mapRenderPosToDOMPos(box->object(), r_ofs, box->isOutside(),
-      			box->isOutsideEnd(), node, offset);
-      //if (!outside) offset = node->minOffset();
-#if DEBUG_CARETMODE > 1
-      kDebug(6200) << "set new node " << node->nodeName().string() << "@" << node;
-#endif
-    } else {	// box has no associated element -> do not use
-      // this case should actually never happen.
-      box = 0;
-      kError(6200) << "Box contains no node! Crash imminent" << endl;
-    }/*end if*/
-  }
-
-  NodeImpl *oldStartSel = m_part->d->m_selectionStart.handle();
-  long oldStartOfs = m_part->d->m_startOffset;
-  NodeImpl *oldEndSel = m_part->d->m_selectionEnd.handle();
-  long oldEndOfs = m_part->d->m_endOffset;
-
-  // test for position change
-  bool posChanged = m_part->d->caretNode().handle() != node
-  		|| m_part->d->caretOffset() != offset;
-  bool selChanged = false;
-
-  m_part->d->caretNode() = node;
-  m_part->d->caretOffset() = offset;
-  if (clearSel || !oldStartSel || !oldEndSel) {
-    selChanged = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
-  } else {
-    //kDebug(6200) << "moveToCaret: extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd;
-    //kDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")";
-    selChanged = extendSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
-    //kDebug(6200) << "after extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd;
-    //kDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")";
-  }/*end if*/
-
-  d->caretViewContext()->caretMoved = true;
-
-  bool visible_caret = placeCaret(box);
-
-  // FIXME: if the old position was !visible_caret, and the new position is
-  // also, then two caretPositionChanged signals with a null Node are
-  // emitted in series.
-  if (posChanged) {
-    m_part->emitCaretPositionChanged(visible_caret ? node : 0, offset);
-  }/*end if*/
-
-  return selChanged;
+  if (handled) _ke->accept();
+  return handled;
 }
-
-void KHTMLView::moveCaretByLine(bool next, int count)
-{
-  Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
-
-  NodeImpl *caretNode = caretNodeRef.handle();
-//  kDebug(6200) << ": caretNode=" << caretNode;
-  long offset = m_part->d->caretOffset();
-
-  CaretViewContext *cv = d->caretViewContext();
-
-  ElementImpl *baseElem = determineBaseElement(caretNode);
-  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
-
-  ErgonomicEditableLineIterator it(ld.current(), cv->origX);
-
-  // move count lines vertically
-  while (count > 0 && it != ld.end() && it != ld.preBegin()) {
-    count--;
-    if (next) ++it; else --it;
-  }/*wend*/
-
-  // Nothing? Then leave everything as is.
-  if (it == ld.end() || it == ld.preBegin()) return;
-
-  int x, absx, absy;
-  CaretBox *caretBox = nearestCaretBox(it, d->m_caretViewContext, x, absx, absy);
-
-  placeCaretOnLine(caretBox, x, absx, absy);
-}
-
-void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
-{
-  // paranoia sanity check
-  if (!caretBox) return;
-
-  RenderObject *caretRender = caretBox->object();
-
-#if DEBUG_CARETMODE > 0
-  kDebug(6200) << "got valid caretBox " << caretBox;
-  kDebug(6200) << "xPos: " << caretBox->xPos() << " yPos: " << caretBox->yPos()
-  		<< " width: " << caretBox->width() << " height: " << caretBox->height() << endl;
-  InlineTextBox *tb = static_cast<InlineTextBox *>(caretBox->inlineBox());
-  if (caretBox->isInlineTextBox()) { kDebug(6200) << "contains \"" << QString(static_cast<RenderText *>(tb->object())->str->s + tb->m_start, tb->m_len) << "\"";}
-#endif
-  // inquire height of caret
-  int caretHeight = caretBox->height();
-  bool isText = caretBox->isInlineTextBox();
-  int yOfs = 0;		// y-offset for text nodes
-  if (isText) {
-    // text boxes need extrawurst
-    RenderText *t = static_cast<RenderText *>(caretRender);
-    const QFontMetrics &fm = t->metrics(caretBox->inlineBox()->m_firstLine);
-    caretHeight = fm.height();
-    yOfs = caretBox->inlineBox()->baseline() - fm.ascent();
-  }/*end if*/
-
-  caretOff();
-
-  // set new caret node
-  NodeImpl *caretNode;
-  long &offset = m_part->d->caretOffset();
-  mapRenderPosToDOMPos(caretRender, offset, caretBox->isOutside(),
-  		caretBox->isOutsideEnd(), caretNode, offset);
-
-  // set all variables not needing special treatment
-  d->m_caretViewContext->y = caretBox->yPos() + yOfs;
-  d->m_caretViewContext->height = caretHeight;
-  d->m_caretViewContext->width = 1; // FIXME: regard override
-
-  int xPos = caretBox->xPos();
-  int caretBoxWidth = caretBox->width();
-  d->m_caretViewContext->x = xPos;
-
-  if (!caretBox->isOutside()) {
-    // before or at beginning of inline box -> place at beginning
-    long r_ofs = 0;
-    if (x <= xPos) {
-      r_ofs = caretBox->minOffset();
-  // somewhere within this block
-    } else if (x > xPos && x <= xPos + caretBoxWidth) {
-      if (isText) { // find out where exactly
-        r_ofs = static_cast<InlineTextBox *>(caretBox->inlineBox())
-      		->offsetForPoint(x, d->m_caretViewContext->x);
-#if DEBUG_CARETMODE > 2
-        kDebug(6200) << "deviation from origX " << d->m_caretViewContext->x - x;
-#endif
-#if 0
-      } else {	// snap to nearest end
-        if (xPos + caretBoxWidth - x < x - xPos) {
-          d->m_caretViewContext->x = xPos + caretBoxWidth;
-          r_ofs = caretNode ? caretNode->maxOffset() : 1;
-        } else {
-          d->m_caretViewContext->x = xPos;
-          r_ofs = caretNode ? caretNode->minOffset() : 0;
-        }/*end if*/
-#endif
-      }/*end if*/
-    } else {		// after the inline box -> place at end
-      d->m_caretViewContext->x = xPos + caretBoxWidth;
-      r_ofs = caretBox->maxOffset();
-    }/*end if*/
-    offset = r_ofs;
-  }/*end if*/
-#if DEBUG_CARETMODE > 0
-      kDebug(6200) << "new offset: " << offset;
-#endif
-
-  m_part->d->caretNode() = caretNode;
-  m_part->d->caretOffset() = offset;
-
-  d->m_caretViewContext->x += absx;
-  d->m_caretViewContext->y += absy;
-
-#if DEBUG_CARETMODE > 1
-	kDebug(6200) << "new caret position: x " << d->m_caretViewContext->x << " y " << d->m_caretViewContext->y << " w " << d->m_caretViewContext->width << " h " << d->m_caretViewContext->height << " absx " << absx << " absy " << absy;
-#endif
-
-  ensureVisible(d->m_caretViewContext->x, d->m_caretViewContext->y,
-  	d->m_caretViewContext->width, d->m_caretViewContext->height);
-  d->scrollBarMoved = false;
-
-  ensureNodeHasFocus(caretNode);
-  caretOn();
-}
-
-void KHTMLView::moveCaretToLineBoundary(bool end)
-{
-  Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
-
-  NodeImpl *caretNode = caretNodeRef.handle();
-//  kDebug(6200) << ": caretNode=" << caretNode;
-  long offset = m_part->d->caretOffset();
-
-  ElementImpl *baseElem = determineBaseElement(caretNode);
-  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
-
-  EditableLineIterator it = ld.current();
-  if (it == ld.end()) return;	// should not happen, but who knows
-
-  EditableCaretBoxIterator fbit(it, end);
-  Q_ASSERT(fbit != (*it)->end() && fbit != (*it)->preBegin());
-  CaretBox *b = *fbit;
-
-  RenderObject *cb = b->containingBlock();
-  int absx, absy;
-
-  if (cb) cb->absolutePosition(absx,absy);
-  else absx = absy = 0;
-
-  int x = b->xPos() + (end && !b->isOutside() ? b->width() : 0);
-  d->m_caretViewContext->origX = absx + x;
-  placeCaretOnLine(b, x, absx, absy);
-}
-
-void KHTMLView::moveCaretToDocumentBoundary(bool end)
-{
-  Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
-
-  NodeImpl *caretNode = caretNodeRef.handle();
-//  kDebug(6200) << ": caretNode=" << caretNode;
-  long offset = m_part->d->caretOffset();
-
-  ElementImpl *baseElem = determineBaseElement(caretNode);
-  LinearDocument ld(m_part, caretNode, offset, IndicatedFlows, baseElem);
-
-  EditableLineIterator it(end ? ld.preEnd() : ld.begin(), end);
-  if (it == ld.end() || it == ld.preBegin()) return;	// should not happen, but who knows
-
-  EditableCaretBoxIterator fbit = it;
-  Q_ASSERT(fbit != (*it)->end() && fbit != (*it)->preBegin());
-  CaretBox *b = *fbit;
-
-  RenderObject *cb = (*it)->containingBlock();
-  int absx, absy;
-
-  if (cb) cb->absolutePosition(absx, absy);
-  else absx = absy = 0;
-
-  int x = b->xPos()/* + (end ? b->width() : 0) reactivate for rtl*/;
-  d->m_caretViewContext->origX = absx + x;
-  placeCaretOnLine(b, x, absx, absy);
-}
-
-void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
-{
-  if (!m_part) return;
-  Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
-
-  NodeImpl *caretNode = caretNodeRef.handle();
-//  kDebug(6200) << ": caretNode=" << caretNode;
-  long &offset = m_part->d->caretOffset();
-
-  ElementImpl *baseElem = determineBaseElement(caretNode);
-  CaretAdvancePolicy advpol = cmv != CaretByWord ? IndicatedFlows : LeafsOnly;
-  LinearDocument ld(m_part, caretNode, offset, advpol, baseElem);
-
-  EditableCharacterIterator it(&ld);
-  while (!it.isEnd() && count > 0) {
-    count--;
-    if (cmv == CaretByCharacter) {
-      if (next) ++it;
-      else --it;
-    } else if (cmv == CaretByWord) {
-      if (next) moveItToNextWord(it);
-      else moveItToPrevWord(it);
-    }/*end if*/
-//kDebug(6200) << "movecaret";
-  }/*wend*/
-  CaretBox *hintBox = 0;	// make gcc uninit warning disappear
-  if (!it.isEnd()) {
-    NodeImpl *node = caretNodeRef.handle();
-    hintBox = it.caretBox();
-//kDebug(6200) << "hintBox = " << hintBox;
-//kDebug(6200) << " outside " << hintBox->isOutside() << " outsideEnd " << hintBox->isOutsideEnd() << " r " << it.renderer() << " ofs " << it.offset() << " cb " << hintBox->containingBlock();
-    mapRenderPosToDOMPos(it.renderer(), it.offset(), hintBox->isOutside(),
-    		hintBox->isOutsideEnd(), node, offset);
-//kDebug(6200) << "mapRTD";
-    caretNodeRef = node;
-#if DEBUG_CARETMODE > 2
-    kDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString()) << " offset: " << offset;
-#endif
-  } else {
-    offset = next ? caretNode->maxOffset() : caretNode->minOffset();
-#if DEBUG_CARETMODE > 0
-    kDebug(6200) << "set by INvalid node. offset: " << offset;
-#endif
-  }/*end if*/
-  placeCaretOnChar(hintBox);
-}
-
-void KHTMLView::placeCaretOnChar(CaretBox *hintBox)
-{
-  caretOff();
-  recalcAndStoreCaretPos(hintBox);
-  ensureVisible(d->m_caretViewContext->x, d->m_caretViewContext->y,
-  	d->m_caretViewContext->width, d->m_caretViewContext->height);
-  d->m_caretViewContext->origX = d->m_caretViewContext->x;
-  d->scrollBarMoved = false;
-#if DEBUG_CARETMODE > 3
-  //if (caretNode->isTextNode())  kDebug(6200) << "text[0] = " << (int)*((TextImpl *)caretNode)->data().unicode() << " text :\"" << ((TextImpl *)caretNode)->data().string() << "\"";
-#endif
-  ensureNodeHasFocus(m_part->d->caretNode().handle());
-  caretOn();
-}
-
-void KHTMLView::moveCaretByPage(bool next)
-{
-  Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
-
-  NodeImpl *caretNode = caretNodeRef.handle();
-//  kDebug(6200) << ": caretNode=" << caretNode;
-  long offset = m_part->d->caretOffset();
-
-  int offs = (viewport()->height() < 30) ? viewport()->height() : 30;
-  // Minimum distance the caret must be moved
-  int mindist = viewport()->height() - offs;
-
-  CaretViewContext *cv = d->caretViewContext();
-//  int y = cv->y;		// we always measure the top border
-
-  ElementImpl *baseElem = determineBaseElement(caretNode);
-  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
-
-  ErgonomicEditableLineIterator it(ld.current(), cv->origX);
-
-  moveIteratorByPage(ld, it, mindist, next);
-
-  int x, absx, absy;
-  CaretBox *caretBox = nearestCaretBox(it, d->m_caretViewContext, x, absx, absy);
-
-  placeCaretOnLine(caretBox, x, absx, absy);
-}
-
-void KHTMLView::moveCaretPrevWord()
-{
-  moveCaretBy(false, CaretByWord, 1);
-}
-
-void KHTMLView::moveCaretNextWord()
-{
-  moveCaretBy(true, CaretByWord, 1);
-}
-
-void KHTMLView::moveCaretPrevLine(int n)
-{
-  moveCaretByLine(false, n);
-}
-
-void KHTMLView::moveCaretNextLine(int n)
-{
-  moveCaretByLine(true, n);
-}
-
-void KHTMLView::moveCaretPrevPage()
-{
-  moveCaretByPage(false);
-}
-
-void KHTMLView::moveCaretNextPage()
-{
-  moveCaretByPage(true);
-}
-
-void KHTMLView::moveCaretToLineBegin()
-{
-  moveCaretToLineBoundary(false);
-}
-
-void KHTMLView::moveCaretToLineEnd()
-{
-  moveCaretToLineBoundary(true);
-}
-
-#endif // KHTML_NO_CARET
 
 #undef DEBUG_CARETMODE

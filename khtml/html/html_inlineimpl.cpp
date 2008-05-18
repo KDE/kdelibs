@@ -149,9 +149,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlModifier;
 	    }
 
-	    // ### also check if focused node is editable if not in designmode,
-	    // and prevent link loading then (LS)
-	    if (getDocument()->view() && !getDocument()->designMode()) {
+	    if (getDocument()->view() && !isContentEditable()) {
 	      if (k) 
 		click();
 	      else

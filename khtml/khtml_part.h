@@ -51,6 +51,7 @@ namespace DOM
   class HTMLDocument;
   class HTMLDocumentImpl;
   class DocumentImpl;
+  class Document;
   class HTMLTitleElementImpl;
   class HTMLFrameElementImpl;
   class HTMLIFrameElementImpl;
@@ -63,7 +64,11 @@ namespace DOM
   class HTMLEventListener;
   class EventListener;
   class HTMLPartContainerElementImpl;
-  class HTMLObjectBaseElementImpl;  
+  class HTMLObjectBaseElementImpl;
+  class Position;
+  class Selection;
+  class Range;
+  class Editor;
 }
 
 namespace KJS
@@ -84,9 +89,13 @@ namespace khtml
   class DrawContentsEvent;
   class CachedObject;
   class RenderWidget;
+  class RenderBlock;
   class CSSStyleSelector;
   class HTMLTokenizer;
   class XMLTokenizer;
+  struct EditorContext;
+  class EditCommandImpl;
+  class KHTMLPartAccessor;
 }
 
 namespace KJS {
@@ -212,11 +221,16 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartBrowserExtension;
   friend class DOM::DocumentImpl;
   friend class DOM::HTMLDocumentImpl;
+  friend class DOM::Selection;
+  friend class DOM::Editor;
   friend class KHTMLPartBrowserHostExtension;
   friend class khtml::HTMLTokenizer;
   friend class khtml::XMLTokenizer;
   friend class khtml::RenderWidget;
+  friend class khtml::RenderBlock;
   friend class khtml::CSSStyleSelector;
+  friend class khtml::EditCommandImpl;
+  friend class khtml::KHTMLPartAccessor;
   friend class KHTMLPartIface;
   friend class KHTMLPartFunction;
   friend class KHTMLPopupGUIClient;
@@ -805,6 +819,12 @@ public:
   bool hasSelection() const;
 
   /**
+   * Returns the instance of the attached html editor interface.
+   *
+   */
+  DOM::Editor *editor() const;
+
+  /**
    * Marks all text in the document as selected.
    */
   void selectAll();
@@ -977,6 +997,13 @@ public:
    * Loads a script into the script cache.
    */
   void preloadScript( const QString &url, const QString &script );
+
+  /**
+   * Returns whether the given point is inside the current selection.
+   *
+   * The coordinates are content-coordinates.
+   */
+   bool isPointInsideSelection(int x, int y);
 
   /**
    * @internal
@@ -1172,6 +1199,11 @@ protected:
    * Implements the streaming API of KParts::ReadOnlyPart.
    */
   virtual bool doCloseStream();
+
+  /**
+   * @internal
+   */
+  virtual void timerEvent(QTimerEvent *);
 
 public Q_SLOTS:
 
@@ -1539,6 +1571,10 @@ private:
   void setStatusBarText( const QString& text, StatusBarPriority p);
 
   bool restoreURL( const KUrl &url );
+  void clearCaretRectIfNeeded();
+  void setFocusNodeIfNeeded(const DOM::Selection &);
+  void selectionLayoutChanged();
+  void notifySelectionChanged(bool closeTyping=true);  
   void resetFromScript();
   void emitSelectionChanged();
   void onFirstData(const QString& firstData);
@@ -1632,7 +1668,6 @@ private:
 
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
 
-  void extendSelection( DOM::NodeImpl* node, int offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   /** extends the current selection to the given content-coordinates @p x, @p y
    * @param x content x-coordinate
    * @param y content y-coordinate
@@ -1642,7 +1677,7 @@ private:
    *	caller has to ensure that the node has a renderer.
    * @internal
    */
-  void extendSelectionTo(int x, int y, int absX, int absY, const DOM::Node &innerNode);
+  void extendSelectionTo(int x, int y, const DOM::Node &innerNode);
   /** checks whether a selection is extended.
    * @return @p true if a selection is extended by the mouse.
    */
@@ -1666,11 +1701,72 @@ private:
 
   void decFontSize(const int stepping[], int count);
 
-  void emitCaretPositionChanged(const DOM::Node &node, long offset);
+  void emitCaretPositionChanged(const DOM::Position &pos);
 
   void setDebugScript( bool enable );
 
   void runAdFilter();
+ 
+  khtml::EditorContext *editorContext() const;
+
+  /**
+   * initialises the caret if it hasn't been used yet.
+   * @internal
+   */
+  void initCaret();
+
+  /**
+   * Returns the selected part of the HTML.
+   */
+  const DOM::Selection &caret() const;
+
+  /**
+   * Returns the drag caret of the HTML.
+   */
+  const DOM::Selection &dragCaret() const;
+
+  /**
+   * Sets the current caret to the given selection.
+   */
+  void setCaret(const DOM::Selection &, bool closeTyping=true);
+
+  /**
+   * Sets the current drag caret.
+   */
+  void setDragCaret(const DOM::Selection &);
+
+  /**
+   * Clears the current selection.
+   */
+  void clearSelection();
+
+  /**
+   * Invalidates the current selection.
+   */
+  void invalidateSelection();
+
+  /**
+   * Controls the visibility of the selection.
+   */
+  void setSelectionVisible(bool flag=true);
+
+  /**
+   * Paints the caret.
+   */
+  void paintCaret(QPainter *p, const QRect &rect) const;
+
+  /**
+   * Paints the drag caret.
+   */
+  void paintDragCaret(QPainter *p, const QRect &rect) const;
+
+  bool handleMouseMoveEventDrag(khtml::MouseMoveEvent *event);
+  bool handleMouseMoveEventOver(khtml::MouseMoveEvent *event);
+  void handleMouseMoveEventSelection(khtml::MouseMoveEvent *event);
+
+  void handleMousePressEventSingleClick(khtml::MousePressEvent *event);
+  void handleMousePressEventDoubleClick(khtml::MouseDoubleClickEvent *event);
+  void handleMousePressEventTripleClick(khtml::MouseDoubleClickEvent *event);
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

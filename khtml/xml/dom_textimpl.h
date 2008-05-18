@@ -70,8 +70,10 @@ public:
     virtual bool offsetInCharacters() const { return true; }
     virtual int maxCharacterOffset() const { return static_cast<int>(length()); }
 
-    virtual long minOffset() const;
     virtual long maxOffset() const;
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
 protected:
     // note: since DOMStrings are shared, str should always be copied when making
@@ -175,7 +177,17 @@ protected:
     virtual TextImpl *createNew(DOMStringImpl *_str);
 };
 
+// ----------------------------------------------------------------------------
 
+class EditingTextImpl : public TextImpl
+{
+public:
+    EditingTextImpl(DocumentImpl *impl, const DOMString &text);
+    EditingTextImpl(DocumentImpl *impl);
+    virtual ~EditingTextImpl();
+
+    virtual bool rendererIsNeeded(khtml::RenderStyle *);
+};
 
 } //namespace
 #endif

@@ -109,6 +109,8 @@ namespace DOM {
     class DocumentImpl;
     class ElementImpl;
     class EventImpl;
+    class Position;
+    class Selection;
 }
 
 namespace khtml {
@@ -149,6 +151,12 @@ public:
 
     RenderObject *nextRenderer() const; 
     RenderObject *previousRenderer() const; 
+
+    RenderObject *nextEditable() const;
+    RenderObject *previousEditable() const;
+
+    RenderObject *firstLeafChild() const;
+    RenderObject *lastLeafChild() const;
 
     virtual bool childAllowed() const { return false; }
     virtual int borderTopExtra() const { return 0; }
@@ -280,6 +288,8 @@ public:
     virtual bool isFrameSet() const { return false; }
     virtual bool isApplet() const { return false; }
 
+    virtual bool isEditable() const;
+
     bool isHTMLMarquee() const;
     bool isWordBreak() const;
 
@@ -296,6 +306,7 @@ public:
     bool isCompact() const { return style()->display() == COMPACT; } // compact
     bool isRunIn() const { return style()->display() == RUN_IN; } // run-in object
     bool mouseInside() const;
+    bool isDragging() const;
     bool isReplaced() const { return m_replaced; }
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
@@ -365,6 +376,7 @@ public:
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
     virtual void removeInlineBox(InlineBox* /*box*/) {}
 
+    virtual InlineBox *inlineBox(long offset=0);
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;
     virtual short baselinePosition( bool firstLine ) const;
@@ -538,11 +550,15 @@ public:
 	{}
     };
 
+#if 0
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
+#endif
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction, bool inside = false);
     void setInnerNode(NodeInfo& info);
+
+    virtual DOM::Position positionForCoordinates(int x, int y);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
@@ -720,6 +736,10 @@ public:
 
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
+    bool shouldSelect() const;
+    virtual bool isPointInsideSelection(int x, int y, const DOM::Selection &) const;
+
+    DOM::NodeImpl* draggableNode(bool dhtmlOK, bool uaOK, bool& dhtmlWillDrag) const;
 
     /**
      * Flags which influence the appearance and position
@@ -780,14 +800,15 @@ public:
      *
      * Returns 0 by default.
      */
-    virtual long minOffset() const { return 0; }
+    virtual long caretMinOffset() const;
     /** returns the highest possible value the caret offset may have to
      * still point to a valid position.
      *
      * Returns 0 by default, as generic elements are considered to have no
      * width.
      */
-    virtual long maxOffset() const { return 0; }
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
     virtual void updatePixmap(const QRect&, CachedImage *);
 

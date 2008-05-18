@@ -184,3 +184,20 @@ void HTMLElement::assignOther( const Node &other, int elementId )
 	Node::operator = (other);
     }
 }
+
+bool HTMLElement::isContentEditable() const
+{
+    if(!impl) return false;
+    return static_cast<HTMLElementImpl *>(impl)->isContentEditable();
+}
+
+DOMString HTMLElement::contentEditable() const {
+    if(!impl) return "inherit";
+    return static_cast<HTMLElementImpl *>(impl)->contentEditable();
+}
+
+void HTMLElement::setContentEditable(const DOMString &enabled) {
+    if(!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+    static_cast<HTMLElementImpl *>(impl)->setContentEditable(enabled);
+}

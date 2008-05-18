@@ -80,11 +80,20 @@ public:
 
     void setFirstLineStyleBit(bool f) { m_firstLine = f; }
 
-    InlineBox* nextOnLine() { return m_next; }
-    InlineBox* prevOnLine() { return m_prev; }
+    InlineBox* nextOnLine() const { return m_next; }
+    InlineBox* prevOnLine() const { return m_prev; }
+    void setNextOnLine(InlineBox* next) { m_next = next; }
+    void setPrevOnLine(InlineBox* prev) { m_prev = prev; }
+    bool nextOnLineExists() const;
+    bool prevOnLineExists() const;
+
+    virtual InlineBox* firstLeafChild();
+    virtual InlineBox* lastLeafChild();
+    InlineBox* closestLeafChildForXPos(int _x, int _tx);
+
     RenderObject* object() const { return m_object; }
 
-    InlineFlowBox* parent() { return m_parent; }
+    InlineFlowBox* parent() const { return m_parent; }
     void setParent(InlineFlowBox* par) { m_parent = par; }
 
     RootInlineBox* root();
@@ -110,8 +119,9 @@ public:
     virtual int topOverflow() const { return yPos(); }
     virtual int bottomOverflow() const { return yPos()+height(); }
 
-    virtual long minOffset() const { return 0; }
-    virtual long maxOffset() const { return 0; }
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
 
     bool isDirty() const { return m_dirty; }
@@ -206,6 +216,10 @@ public:
 
     InlineBox* firstChild() const  { return m_firstChild; }
     InlineBox* lastChild() const { return m_lastChild; }
+
+    virtual InlineBox* firstLeafChild();
+    virtual InlineBox* lastLeafChild();
+    InlineBox* closestChildForXPos(int _x, int _tx);
 
     virtual void setConstructed() {
         InlineBox::setConstructed();

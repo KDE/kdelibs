@@ -83,6 +83,8 @@
 #include <html/HTMLAudioElement.h>
 #include <html/HTMLVideoElement.h>
 #include <html/HTMLSourceElement.h>
+#include <editing/htmlediting.h>
+#include <editing/jsediting.h>
 
 #include <kapplication.h>
 #include <kio/job.h>
@@ -398,6 +400,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_loadingXMLDoc = 0;
     m_documentElement = 0;
     m_cssTarget = 0;
+    m_jsEditor = 0;
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
     m_stateRestorePos = 0;
 }
@@ -483,6 +486,7 @@ DocumentImpl::~DocumentImpl()
     delete m_attrMap;
     delete m_namespaceMap;
     delete m_dynamicDomRestyler;
+    delete m_jsEditor;
     m_defaultView->deref();
     m_styleSheets->deref();
     if (m_addedStyleSheets)
@@ -591,6 +595,11 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
 {
     return new EntityReferenceImpl(docPtr(), name.implementation());
+}
+
+EditingTextImpl *DocumentImpl::createEditingTextNode(const DOMString &text)
+{
+    return new EditingTextImpl(docPtr(), text);
 }
 
 NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &exceptioncode)
@@ -1385,6 +1394,23 @@ void DocumentImpl::clearSelection()
 {
     if ( m_render )
         static_cast<RenderCanvas*>(m_render)->clearSelection();
+}
+
+void DocumentImpl::updateSelection()
+{
+    if (!m_render)
+        return;
+
+    RenderCanvas *canvas = static_cast<RenderCanvas*>(m_render);
+    Selection s = part()->caret();
+    if (s.isEmpty() || s.state() == Selection::CARET) {
+        canvas->clearSelection();
+    }
+    else {
+        RenderObject *startRenderer = s.start().node() ? s.start().node()->renderer() : 0;
+        RenderObject *endRenderer = s.end().node() ? s.end().node()->renderer() : 0;
+        static_cast<RenderCanvas*>(m_render)->setSelection(startRenderer, s.start().offset(), endRenderer, s.end().offset());
+    }
 }
 
 khtml::Tokenizer *DocumentImpl::createTokenizer()
@@ -2870,6 +2896,46 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
 void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
 {
     entry->deref();
+}
+
+// ----------------------------------------------------------------------------
+// Support for Javascript execCommand, and related methods
+ 
+JSEditor *DocumentImpl::jsEditor()
+{
+    if (!m_jsEditor)
+        m_jsEditor = new JSEditor(this);
+    return m_jsEditor;
+}
+
+bool DocumentImpl::execCommand(const DOMString &command, bool userInterface, const DOMString &value)
+{
+    return jsEditor()->execCommand(jsEditor()->commandImp(command), userInterface, value);
+}
+
+bool DocumentImpl::queryCommandEnabled(const DOMString &command)
+{
+    return jsEditor()->queryCommandEnabled(jsEditor()->commandImp(command));
+}
+
+bool DocumentImpl::queryCommandIndeterm(const DOMString &command)
+{
+    return jsEditor()->queryCommandIndeterm(jsEditor()->commandImp(command));
+}
+
+bool DocumentImpl::queryCommandState(const DOMString &command)
+{
+    return jsEditor()->queryCommandState(jsEditor()->commandImp(command));
+}
+
+bool DocumentImpl::queryCommandSupported(const DOMString &command)
+{
+    return jsEditor()->queryCommandSupported(jsEditor()->commandImp(command));
+}
+
+DOMString DocumentImpl::queryCommandValue(const DOMString &command)
+{
+    return jsEditor()->queryCommandValue(jsEditor()->commandImp(command));
 }
 
 // ----------------------------------------------------------------------------

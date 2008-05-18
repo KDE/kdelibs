@@ -73,6 +73,7 @@ public:
     virtual void clearSelection(bool doRepaint=true);
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
     virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
+    bool hasSelection() const { return m_selectionStart && m_selectionEnd; }
 
     void setPrintImages(bool enable) { m_printImages = enable; }
     bool printImages() const { return m_printImages; }

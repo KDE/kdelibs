@@ -48,6 +48,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom_position.h"
 #include "misc/helper.h"
 #include "misc/paintbuffer.h"
 #include "css/cssvalues.h"
@@ -132,6 +133,52 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
 
     offset = _x > _tx + xPos() + width()/2;
     return SelectionPointInside;
+}
+
+long RenderReplaced::caretMinOffset() const 
+{
+    return 0;
+}
+
+// Returns 1 since a replaced element can have the caret positioned 
+// at its beginning (0), or at its end (1).
+long RenderReplaced::caretMaxOffset() const 
+{
+    return 1;
+}
+
+unsigned long RenderReplaced::caretMaxRenderedOffset() const
+{
+    return 1;
+}
+
+Position RenderReplaced::positionForCoordinates(int _x, int _y)
+{
+    InlineBox *box = placeHolderBox();
+    if (!box)
+        return Position(element(), 0);
+  
+    RootInlineBox *root = box->root();
+  
+    int absx, absy;
+    containingBlock()->absolutePosition(absx, absy);
+  
+    int top = absy + root->topOverflow();
+    int bottom = root->nextRootBox() ? absy + root->nextRootBox()->topOverflow() : absy + root->bottomOverflow();
+  
+    if (_y < top)
+        return Position(element(), caretMinOffset()); // coordinates are above
+        
+    if (_y >= bottom)
+        return Position(element(), caretMaxOffset()); // coordinates are below
+        
+    if (element()) {
+        if (_x <= absx + xPos() + (width() / 2))
+            return Position(element(), 0);
+        return Position(element(), 1);
+    }
+  
+    return RenderBox::positionForCoordinates(_x, _y);
 }
 
 // -----------------------------------------------------------------------------

@@ -68,6 +68,14 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/idstring.cpp
 )
 
+set(khtmlediting_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/editing/jsediting.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/editing/editing.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/editing/editor.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/editing/htmlediting.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/editing/htmlediting_impl.cpp
+)
+
 # khtml/html/Makefile.am: khtmlhtml
 
 set(khtmlhtml_STAT_SRCS
@@ -195,6 +203,9 @@ set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_restyler.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNames.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNodeList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_position.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_positioniterator.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_selection.cpp
 )
 
 # khtml/imload/Makefile.am: khtmlimload
@@ -278,6 +289,7 @@ set(khtml_LIB_SRCS
    ${khtmlrender_STAT_SRCS}
    ${khtmlcss_STAT_SRCS}
    ${khtmlmisc_STAT_SRCS}
+   ${khtmlediting_STAT_SRCS}
    ${kjs_html_STAT_SRCS}
    ${khtmldom_STAT_SRCS}
    ${khtmlimload_STAT_SRCS}

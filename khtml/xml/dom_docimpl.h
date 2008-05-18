@@ -55,6 +55,7 @@ namespace khtml {
     class CSSStyleSelector;
     class DocLoader;
     class RenderArena;
+    class EditCommand;
     class RenderObject;
     class CounterNode;
     class CachedObject;
@@ -73,6 +74,7 @@ namespace DOM {
     class DocumentImpl;
     class DocumentType;
     class DocumentTypeImpl;
+    class EditingTextImpl;
     class ElementImpl;
     class EntityReferenceImpl;
     class EventImpl;
@@ -80,6 +82,7 @@ namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
     class HTMLImageElementImpl;
+    class JSEditor;
     class NodeFilter;
     class NodeFilterImpl;
     class NodeIteratorImpl;
@@ -200,6 +203,8 @@ public:
     TextImpl *createTextNode ( DOMStringImpl* data ) { return new TextImpl( docPtr(), data); }
     TextImpl *createTextNode ( const QString& data )
         { return createTextNode(new DOMStringImpl(data.unicode(), data.length())); }
+    TextImpl *createTextNode ( const DOMString &data ) { return createTextNode(data.implementation()); }
+    TextImpl *createTextNode ( const char *latin1 ) { return createTextNode(DOMString(latin1)); }
     CommentImpl *createComment ( DOMStringImpl* data );
     CDATASectionImpl *createCDATASection ( DOMStringImpl* data );
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
@@ -294,6 +299,8 @@ public:
     TreeWalkerImpl *createTreeWalker(NodeImpl *root, unsigned long whatToShow, NodeFilterImpl *filter,
                             bool entityReferenceExpansion, int &exceptioncode);
 
+    EditingTextImpl *createEditingTextNode(const DOMString &text);
+
     virtual void recalcStyle( StyleChange = NoChange );
     virtual void updateRendering();
     void updateLayout();
@@ -310,8 +317,10 @@ public:
     // to get URL decoding right
     //void setDecoderCodec(const QTextCodec *codec);
 
+    // ### elide the two after designMode merge
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
+    void updateSelection();
 
     void open ( bool clearEventListeners = true );
     virtual void close (  );
@@ -526,9 +535,18 @@ public:
     HTMLElementImpl* body() const;
 
     DOMString toString() const;
+ 
+    bool execCommand(const DOMString &command, bool userInterface, const DOMString &value);
+    bool queryCommandEnabled(const DOMString &command);
+    bool queryCommandIndeterm(const DOMString &command);
+    bool queryCommandState(const DOMString &command);
+    bool queryCommandSupported(const DOMString &command);
+    DOMString queryCommandValue(const DOMString &command);
 
     void incDOMTreeVersion() { ++m_domtree_version; }
     unsigned int domTreeVersion() const { return m_domtree_version; }
+
+    JSEditor *jsEditor();
 
     QHash<QString,khtml::CounterNode*>* counters(const khtml::RenderObject* o) { return m_counterDict.value(o); }
     void setCounters(const khtml::RenderObject* o, QHash<QString,khtml::CounterNode*> *dict) { m_counterDict.insert(o, dict);}
@@ -678,6 +696,7 @@ protected:
 
     SharedPtr<khtml::RenderArena> m_renderArena;
 private:
+    JSEditor *m_jsEditor;
     mutable DOMString m_domain;
     int m_selfOnlyRefCount;
 public:

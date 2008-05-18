@@ -43,6 +43,8 @@ namespace khtml
     QRgb qRgbaFromHsla(double h, double s, double l, double a);
     QColor colorForCSSValue( int css_value );
 
+    void findWordBoundary(QChar *chars, int len, int position, int *start, int *end);
+
     //enumerator for findSelectionNode
     enum FindSelectionResult { SelectionPointBefore,
 			       SelectionPointAfter,

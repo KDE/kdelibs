@@ -37,12 +37,46 @@ using namespace DOM;
 using namespace khtml;
 
 namespace khtml {
-  QPainter *printpainter;
-}
 
-void khtml::setPrintPainter( QPainter *printer )
+QPainter *printpainter;
+
+void setPrintPainter( QPainter *printer )
 {
     printpainter = printer;
+}
+
+void findWordBoundary(QChar *chars, int len, int position, int *start, int *end)
+{
+    if (chars[position].isSpace()) {
+        int pos = position;
+        while (chars[pos].isSpace() && pos >= 0)
+            pos--;
+        *start = pos+1;
+        pos = position;
+        while (chars[pos].isSpace() && pos < (int)len)
+            pos++;
+        *end = pos;
+    } else if (chars[position].isPunct()) {
+        int pos = position;
+        while (chars[pos].isPunct() && pos >= 0)
+            pos--;
+        *start = pos+1;
+        pos = position;
+        while (chars[pos].isPunct() && pos < (int)len)
+            pos++;
+        *end = pos;
+    } else {
+        int pos = position;
+        while (!chars[pos].isSpace() && !chars[pos].isPunct() && pos >= 0)
+            pos--;
+        *start = pos+1;
+        pos = position;
+        while (!chars[pos].isSpace() && !chars[pos].isPunct() && pos < (int)len)
+            pos++;
+        *end = pos;
+    }
+}
+
 }
 
 // color mapping code

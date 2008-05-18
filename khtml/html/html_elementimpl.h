@@ -62,6 +62,10 @@ public:
     void setInnerHTML( const DOMString &html, int& exceptioncode );
     void setInnerText( const DOMString &text, int& exceptioncode );
 
+    virtual DOMString contentEditable() const;
+    virtual void setContentEditable(AttributeImpl* attr);
+    virtual void setContentEditable(const DOMString &enabled);
+
     virtual DOMString toString() const;
 
 protected:

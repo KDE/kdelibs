@@ -32,6 +32,8 @@
 #include "dom_textimpl.h"
 #include "dom2_eventsimpl.h"
 #include "dom_docimpl.h"
+#include "xml/dom_position.h"
+#include "xml/dom_selection.h"
 #include "dom_restyler.h"
 #include "ClassNodeList.h"
 
@@ -50,11 +52,13 @@
 #include <QKeyEvent>
 #include <QEvent>
 
+#if 0
 // from khtml_caret_p.h
 namespace khtml {
 void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(DOM::NodeImpl *node, long offset,
 		khtml::RenderObject *&r, long &r_ofs, bool &outside, bool &outsideEnd);
 }
+#endif
 
 using namespace DOM;
 using namespace khtml;
@@ -153,6 +157,17 @@ NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
 {
   exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
   return 0;
+}
+
+void NodeImpl::remove(int &exceptioncode)
+{
+    exceptioncode = 0;
+    if (!parentNode()) {
+        exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+        return;
+    }
+
+    parentNode()->removeChild(this, exceptioncode);
 }
 
 bool NodeImpl::hasChildNodes(  ) const
@@ -308,7 +323,8 @@ void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width,
 #if 0
 kDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " offset: " << offset;
 #endif
-        mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
+//         mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
+	outside = false;
 #if 0
 kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd;
 #endif
@@ -319,6 +335,11 @@ kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << "
 	} else
 	    _x = _y = height = -1, width = 1;
     } else _x = _y = height = -1, width = 1;
+}
+
+bool NodeImpl::isContentEditable() const
+{
+    return m_parent ? m_parent->isContentEditable() : false;
 }
 
 QRect NodeImpl::getRect() const
@@ -854,10 +875,10 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
     }
 }
 
-bool NodeImpl::isAncestor( NodeImpl *other )
+bool NodeImpl::isAncestor( NodeImpl *other ) const
 {
     // Return true if other is the same as this node or an ancestor of it, otherwise false
-    NodeImpl *n;
+    const NodeImpl *n;
     for (n = this; n; n = n->parentNode()) {
         if (n == other)
             return true;
@@ -1010,6 +1031,28 @@ bool NodeImpl::isReadOnly()
     return false;
 }
 
+NodeImpl *NodeImpl::previousEditable() const
+{
+    NodeImpl *node = previousLeafNode();
+    while (node) {
+        if (node->getDocument()->part()->isCaretMode() || node->isContentEditable())
+            return node;
+        node = node->previousLeafNode();
+    }
+    return 0;
+}
+
+NodeImpl *NodeImpl::nextEditable() const
+{
+    NodeImpl *node = nextLeafNode();
+    while (node) {
+        if (node->getDocument()->part()->isCaretMode() || node->isContentEditable())
+            return node;
+        node = node->nextLeafNode();
+    }
+    return 0;
+}
+
 RenderObject * NodeImpl::previousRenderer()
 {
     for (NodeImpl *n = previousSibling(); n; n = n->previousSibling()) {
@@ -1069,24 +1112,138 @@ RenderObject *NodeImpl::createRenderer(RenderArena* /*arena*/, RenderStyle* /*st
     return 0;
 }
 
-bool NodeImpl::contentEditable() const
+NodeImpl *NodeImpl::previousLeafNode() const
 {
-    RenderObject *r = renderer();
-    if (!r || !r->style()) return false;
-    return r->style()->userInput() == UI_ENABLED;
+    NodeImpl *node = traversePreviousNode();
+    while (node) {
+        if (!node->hasChildNodes())
+            return node;
+        node = node->traversePreviousNode();
+    }
+    return 0;
 }
 
-long NodeImpl::minOffset() const
+NodeImpl *NodeImpl::nextLeafNode() const
 {
-  // Arrgh! You'd think *every* offset starts at zero, but loo,
-  // therefore we need this method
-  return renderer() ? renderer()->minOffset() : 0;
+    NodeImpl *node = traverseNextNode();
+    while (node) {
+        if (!node->hasChildNodes())
+            return node;
+        node = node->traverseNextNode();
+    }
+    return 0;
 }
 
 long NodeImpl::maxOffset() const
 {
-  return const_cast<NodeImpl *>(this)->childNodeCount();
-//  return renderer() ? renderer()->maxOffset() : 1;
+    return 1;
+}
+
+long NodeImpl::caretMinOffset() const
+{
+    return renderer() ? renderer()->caretMinOffset() : 0;
+}
+ 
+long NodeImpl::caretMaxOffset() const
+{
+    return renderer() ? renderer()->caretMaxOffset() : 1;
+}
+
+unsigned long NodeImpl::caretMaxRenderedOffset() const
+{
+    return renderer() ? renderer()->caretMaxRenderedOffset() : 1;
+}
+
+bool NodeImpl::isBlockFlow() const
+{
+    return renderer() && renderer()->isBlockFlow();
+}
+
+bool NodeImpl::isEditableBlock() const
+{
+    return isContentEditable() && isBlockFlow();
+}
+
+ElementImpl *NodeImpl::enclosingBlockFlowElement() const
+{
+    NodeImpl *n = const_cast<NodeImpl *>(this);
+    if (isBlockFlow())
+        return static_cast<ElementImpl *>(n);
+
+    while (1) {
+        n = n->parentNode();
+        if (!n)
+            break;
+        if (n->isBlockFlow() || n->id() == ID_BODY)
+            return static_cast<ElementImpl *>(n);
+    }
+    return 0;
+}
+
+ElementImpl *NodeImpl::rootEditableElement() const
+{
+  if (!isContentEditable())
+        return 0;
+
+    NodeImpl *n = const_cast<NodeImpl *>(this);
+    NodeImpl *result = n->isEditableBlock() ? n : 0;
+    while (1) {
+        n = n->parentNode();
+        if (!n || !n->isContentEditable())
+            break;
+        if (n->id() == ID_BODY) {
+            result = n;
+            break;
+        }
+        if (n->isBlockFlow())
+            result = n;
+    }
+    return static_cast<ElementImpl *>(result);
+}
+
+bool NodeImpl::inSameRootEditableElement(NodeImpl *n)
+{
+    return n ? rootEditableElement() == n->rootEditableElement() : false;
+}
+
+bool NodeImpl::inSameContainingBlockFlowElement(NodeImpl *n)
+{
+    return n ? enclosingBlockFlowElement() == n->enclosingBlockFlowElement() : false;
+}
+
+Position NodeImpl::positionForCoordinates(int x, int y) const
+{
+    if (renderer())
+        return renderer()->positionForCoordinates(x, y);
+
+    return Position(const_cast<NodeImpl *>(this), 0);
+}
+
+bool NodeImpl::isPointInsideSelection(int x, int y, const Selection &sel) const
+{
+    if (sel.state() != Selection::RANGE)
+        return false;
+
+    Position pos(positionForCoordinates(x, y));
+    if (pos.isEmpty())
+        return false;
+
+    NodeImpl *n = sel.start().node();
+    while (n) {
+        if (n == pos.node()) {
+            if ((n == sel.start().node() && pos.offset() < sel.start().offset()) ||
+                (n == sel.end().node() && pos.offset() > sel.end().offset())) {
+                return false;
+            }
+            return true;
+        }
+        if (n == sel.end().node())
+            break;
+        n = n->traverseNextNode();
+    }
+
+    return false;
+
 }
 
 NodeListImpl* NodeImpl::getElementsByTagName( const DOMString &tagName )

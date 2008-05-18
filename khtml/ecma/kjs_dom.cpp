@@ -892,6 +892,12 @@ AttrImpl *toAttr(JSValue *val)
   abort              DOMDocument::Abort                        DontDelete|Function 0
   load               DOMDocument::Load                         DontDelete|Function 1
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
+  execCommand        DOMDocument::ExecCommand                  DontDelete|Function 3
+  queryCommandEnabled DOMDocument::QueryCommandEnabled         DontDelete|Function 1
+  queryCommandIndeterm DOMDocument::QueryCommandIndeterm       DontDelete|Function 1
+  queryCommandState DOMDocument::QueryCommandState             DontDelete|Function 1
+  queryCommandSupported DOMDocument::QueryCommandSupported     DontDelete|Function 1
+  queryCommandValue DOMDocument::QueryCommandValue             DontDelete|Function 1
   getElementsByClassName DOMDocument::GetElementsByClassName   DontDelete|Function 1
 @end
 */
@@ -1110,6 +1116,31 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::LoadXML:
     doc.loadXML(s);
     break;
+  case DOMDocument::ExecCommand: {
+    return jsBoolean(doc.execCommand(args[0]->toString(exec).domString(), args[1]->toBoolean(exec), args[2]->toString(exec).domString()));
+  }
+  case DOMDocument::QueryCommandEnabled: {
+    return jsBoolean(doc.queryCommandEnabled(args[0]->toString(exec).domString()));
+  }
+  case DOMDocument::QueryCommandIndeterm: {
+    return jsBoolean(doc.queryCommandIndeterm(args[0]->toString(exec).domString()));
+  }
+  case DOMDocument::QueryCommandState: {
+    return jsBoolean(doc.queryCommandState(args[0]->toString(exec).domString()));
+  }
+  case DOMDocument::QueryCommandSupported: {
+    return jsBoolean(doc.queryCommandSupported(args[0]->toString(exec).domString()));
+  }
+  case DOMDocument::QueryCommandValue: {
+    DOM::DOMString commandValue(doc.queryCommandValue(args[0]->toString(exec).domString()));
+    // Method returns null DOMString to signal command is unsupported.
+    // Microsoft documentation for this method says:
+    // "If not supported [for a command identifier], this method returns a Boolean set to false."
+    if (commandValue.isNull())
+      return jsBoolean(false);
+    else
+      return jsString(commandValue);
+  }
   case DOMDocument::GetElementsByClassName:
     return getDOMNodeList(exec, doc.getElementsByClassName(s));
   default:

@@ -28,6 +28,10 @@
 
 #include "render_flow.h"
 
+namespace DOM {
+    class Position;
+}
+
 namespace khtml {
 
 class RenderInline : public RenderFlow
@@ -75,6 +79,8 @@ public:
     // the remaining width on a given line (and the height of a single line).
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
+
+    virtual DOM::Position positionForCoordinates(int x, int y);
 
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
     void paintOutlines(QPainter *p, int tx, int ty);    

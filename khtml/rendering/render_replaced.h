@@ -31,6 +31,11 @@
 class KHTMLView;
 class QWidget;
 
+namespace DOM
+{
+    class Position;
+}
+
 namespace khtml {
 
 class RenderReplaced : public RenderBox
@@ -59,18 +64,10 @@ public:
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
 
-    /** returns the lowest possible value the caret offset may have to
-     * still point to a valid position.
-     *
-     * Returns 0.
-     */
-    virtual long minOffset() const { return 0; }
-    /** returns the highest possible value the caret offset may have to
-     * still point to a valid position.
-     *
-     * Returns 0.
-     */
-    virtual long maxOffset() const { return 0; }
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
+    virtual DOM::Position positionForCoordinates(int x, int y);
 
 protected:
     short m_intrinsicWidth;

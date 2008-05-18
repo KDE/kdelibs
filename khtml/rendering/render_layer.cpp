@@ -1071,7 +1071,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
                 paintInfo.phase = PaintActionOutline;
                 renderer()->paint(paintInfo, tx, ty);
             }
-            if (rc->selectionStart() && rc->selectionEnd()) {
+            if (renderer()->canvas()->hasSelection()) {
                 paintInfo.phase = PaintActionSelection;
                 renderer()->paint(paintInfo, tx, ty);
             }

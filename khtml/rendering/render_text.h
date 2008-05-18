@@ -42,6 +42,10 @@ class QFontMetrics;
 const int cNoTruncation = -1;
 const int cFullTruncation = -2;
 
+namespace DOM {
+    class Position;
+}
+
 namespace khtml
 {
     class RenderText;
@@ -56,6 +60,10 @@ public:
     	m_start(0), m_len(0), m_truncation(cNoTruncation), m_reversed(false), m_toAdd(0)
     {
     }
+ 
+    uint start() const { return m_start; }
+    uint end() const { return m_len ? m_start+m_len-1 : m_start; }
+    uint len() const { return m_len; }
 
     void detach(RenderArena* renderArena, bool noRemove=false);
 
@@ -91,7 +99,7 @@ public:
     RenderObject::SelectionState selectionState();
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, int & offset);
 
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
@@ -115,14 +123,9 @@ public:
      */
     int widthFromStart(int pos) const;
 
-    /** returns the lowest possible value the caret offset may have to
-     * still point to a valid position.
-     */
-    virtual long minOffset() const;
-    /** returns the highest possible value the caret offset may have to
-     * still point to a valid position.
-     */
-    virtual long maxOffset() const;
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
     /** returns the associated render text
      */
@@ -176,6 +179,8 @@ public:
     virtual void layout() {assert(false);}
 
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inBox);
+
+    virtual DOM::Position positionForCoordinates(int _x, int _y);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
@@ -233,6 +238,7 @@ public:
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false) const;
     bool posOfChar(int ch, int &x, int &y);
+    virtual bool isPointInsideSelection(int x, int y, const DOM::Selection &) const;
 
     virtual short marginLeft() const { return style()->marginLeft().minWidth(0); }
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
@@ -249,15 +255,7 @@ public:
     DOM::TextImpl *element() const
     { return static_cast<DOM::TextImpl*>(RenderObject::element()); }
 
-    /** returns the lowest possible value the caret offset may have to
-     * still point to a valid position.
-     */
-    virtual long minOffset() const;
-
-    /** returns the highest possible value the caret offset may have to
-     * still point to a valid position.
-     */
-    virtual long maxOffset() const;
+    virtual InlineBox *inlineBox(long offset);
 
     void removeTextBox(InlineTextBox* box);
     void attachTextBox(InlineTextBox* box);
@@ -266,6 +264,10 @@ public:
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
+
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
 
     /** Find the text box that includes the character at @p offset
      * and return pos, which is the position of the char in the run.

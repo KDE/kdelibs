@@ -157,6 +157,7 @@ public:
     DOMString getAttribute( const DOMString &name );
     void setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode );
     void removeAttribute( const DOMString &name, int& exceptioncode );
+    void removeAttribute( NodeImpl::Id id, int &exceptioncode );
     AttrImpl* getAttributeNode( const DOMString &name );
     Attr setAttributeNode( AttrImpl* newAttr, int& exceptioncode );
     Attr removeAttributeNode( AttrImpl* oldAttr, int& exceptioncode );
@@ -230,7 +231,7 @@ public:
     virtual void recalcStyle( StyleChange = NoChange );
 
     virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {}
-    virtual bool isFocusable() const;
+
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
     DOM::CSSStyleDeclarationImpl *inlineStyleDecls() const { return m_hasCombinedStyle ? m_style.combinedDecls->inlineDecls : m_style.inlineDecls; }
@@ -242,8 +243,9 @@ public:
 
     virtual DOMString toString() const;
     virtual DOMString selectionToString(NodeImpl *selectionStart, NodeImpl *selectionEnd, int startOffset, int endOffset, bool &found) const;
-	    
-    virtual bool contentEditable() const;
+
+    virtual bool isFocusable() const;	    
+    virtual bool isContentEditable() const;
     void setContentEditable(bool enabled);
 
     void scrollIntoView(bool alignToTop);

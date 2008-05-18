@@ -24,6 +24,10 @@
 
 #include "render_text.h"
 
+namespace DOM {
+    class Position;
+}
+
 /*
  * The whole class here is a hack to get <br> working, as long as we don't have support for
  * CSS2 :before and :after pseudo elements
@@ -56,21 +60,18 @@ public:
 						     SelPointState & );
 
     virtual bool isBR() const { return true; }
+    
+    virtual long caretMinOffset() const;
+    virtual long caretMaxOffset() const;
+    virtual unsigned long caretMaxRenderedOffset() const;
+    
+    virtual DOM::Position positionForCoordinates(int _x, int _y);
 #if 0
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 #endif
-    /** returns the lowest possible value the caret offset may have to
-     * still point to a valid position.
-     *
-     * Returns 0.
-     */
-    virtual long minOffset() const { return 0; }
-    /** returns the highest possible value the caret offset may have to
-     * still point to a valid position.
-     *
-     * Returns also 0, as BRs have no width.
-     */
-    virtual long maxOffset() const { return 0; }
+
+    virtual InlineBox *inlineBox(long offset);
+    
 };
 
 }

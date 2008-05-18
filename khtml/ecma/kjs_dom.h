@@ -130,7 +130,9 @@ namespace KJS {
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
            CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async,
-           GetElementsByClassName, Title };
+           GetElementsByClassName, Title, ExecCommand, QueryCommandEnabled,
+           QueryCommandIndeterm, QueryCommandState, QueryCommandSupported,
+           QueryCommandValue };
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
   

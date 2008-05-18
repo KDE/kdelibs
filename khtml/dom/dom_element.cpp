@@ -324,18 +324,6 @@ CSSStyleDeclaration Element::style()
     return 0;
 }
 
-bool Element::contentEditable() const {
-    if(!impl) return false;
-    return static_cast<ElementImpl *>(impl)->contentEditable();
-}
-
-void Element::setContentEditable(bool enabled) {
-    if(!impl)
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-
-    static_cast<ElementImpl *>(impl)->setContentEditable(enabled);
-}
-
 bool Element::khtmlValidAttrName(const DOMString &name)
 {
     // Check if name is valid

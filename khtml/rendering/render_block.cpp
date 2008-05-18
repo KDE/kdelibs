@@ -42,10 +42,13 @@
 
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
+#include <xml/dom_position.h>
+#include <xml/dom_selection.h>
 #include <html/html_formimpl.h>
 #include <misc/htmltags.h>
 
 #include <khtmlview.h>
+#include <khtml_part.h>
 
 using namespace DOM;
 
@@ -1735,6 +1738,24 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
         style()->outlineWidth() && style()->visibility() == VISIBLE)
         paintOutline(pI.p, _tx, _ty, width(), height(), style());
 
+    // 5. paint caret.
+    /*
+        If the caret's node's render object's containing block is this block,
+        and the paint action is PaintActionForeground,
+        then paint the caret.
+    */
+    if (!canvas()->hasSelection() && pI.phase == PaintActionForeground
+         || pI.phase == PaintActionSelection) {
+        KHTMLPart *part = document()->part();
+        const Selection &s = part->caret();
+        NodeImpl *baseNode = s.extent().node();
+        RenderObject *renderer = baseNode ? baseNode->renderer() : 0;
+        if (renderer && renderer->containingBlock() == this && (part->isCaretMode() || baseNode->isContentEditable())) {
+            part->paintCaret(pI.p, pI.r);
+            part->paintDragCaret(pI.p, pI.r);
+        }
+    }
+
 #ifdef BOX_DEBUG
     if ( style() && style()->visibility() == VISIBLE ) {
         if(isAnonymous())
@@ -2645,6 +2666,111 @@ bool RenderBlock::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
 
     inBox |= RenderFlow::nodeAtPoint(info, _x, _y, _tx, _ty, hitTestAction, inBox);
     return inBox;
+}
+
+Position RenderBlock::positionForBox(InlineBox *box, bool start) const
+{
+    if (!box)
+        return Position();
+
+    if (!box->object()->element())
+        return Position(element(), start ? caretMinOffset() : caretMaxOffset());
+
+    if (!box->isInlineTextBox())
+        return Position(box->object()->element(), start ? box->object()->caretMinOffset() : box->object()->caretMaxOffset());
+
+    InlineTextBox *textBox = static_cast<InlineTextBox *>(box);
+    return Position(box->object()->element(), start ? textBox->start() : textBox->start() + textBox->len());
+}
+
+Position RenderBlock::positionForRenderer(RenderObject *renderer, bool start) const
+{
+    if (!renderer)
+        return Position(element(), 0);
+
+    NodeImpl *node = renderer->element() ? renderer->element() : element();
+    if (!node)
+        return Position();
+
+    long offset = start ? node->caretMinOffset() : node->caretMaxOffset();
+    return Position(node, offset);
+}
+
+Position RenderBlock::positionForCoordinates(int _x, int _y)
+{
+    if (isTable())
+        return RenderFlow::positionForCoordinates(_x, _y);
+
+    int absx, absy;
+    absolutePosition(absx, absy);
+
+    int top = absy + borderTop() + paddingTop();
+    int bottom = top + contentHeight();
+
+    if (_y < top)
+        // y coordinate is above block
+        return positionForRenderer(firstLeafChild(), true);
+
+    if (_y >= bottom)
+        // y coordinate is below block
+        return positionForRenderer(lastLeafChild(), false);
+
+    if (childrenInline()) {
+        if (!firstRootBox())
+            return Position(element(), 0);
+
+        if (_y >= top && _y < absy + firstRootBox()->topOverflow())
+            // y coordinate is above first root line box
+            return positionForBox(firstRootBox()->firstLeafChild(), true);
+
+        // look for the closest line box in the root box which is at the passed-in y coordinate
+        for (RootInlineBox *root = firstRootBox(); root; root = root->nextRootBox()) {
+            top = absy + root->topOverflow();
+            // set the bottom based on whether there is a next root box
+            if (root->nextRootBox())
+                bottom = absy + root->nextRootBox()->topOverflow();
+            else
+                bottom = absy + root->bottomOverflow();
+            // check if this root line box is located at this y coordinate
+            if (_y >= top && _y < bottom && root->firstChild()) {
+                InlineBox *closestBox = root->closestLeafChildForXPos(_x, absx);
+                if (closestBox) {
+                    // pass the box a y position that is inside it
+                    return closestBox->object()->positionForCoordinates(_x, absy + closestBox->m_y);
+                }
+            }
+        }
+
+        if (lastRootBox())
+            // y coordinate is below last root line box
+            return positionForBox(lastRootBox()->lastLeafChild(), false);
+
+        return Position(element(), 0);
+    }
+
+    // see if any child blocks exist at this y coordinate
+    for (RenderObject *renderer = firstChild(); renderer; renderer = renderer->nextSibling()) {
+        if (renderer->isFloatingOrPositioned())
+            continue;
+        renderer->absolutePosition(absx, top);
+        RenderObject *next = renderer->nextSibling();
+        while (next && next->isFloatingOrPositioned())
+            next = next->nextSibling();
+        if (next)
+            next->absolutePosition(absx, bottom);
+        else
+            bottom = top + contentHeight();
+        if (_y >= top && _y < bottom) {
+            return renderer->positionForCoordinates(_x, _y);
+        }
+    }
+
+    // pass along to the first child
+    if (firstChild())
+        return firstChild()->positionForCoordinates(_x, _y);
+
+    // still no luck...return this render object's element and offset 0
+    return Position(element(), 0);
 }
 
 void RenderBlock::calcMinMaxWidth()

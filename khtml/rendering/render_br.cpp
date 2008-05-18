@@ -21,8 +21,10 @@
  */
 #include "render_br.h"
 
-using namespace khtml;
+#include "xml/dom_position.h"
 
+using namespace khtml;
+using DOM::Position;
 
 RenderBR::RenderBR(DOM::NodeImpl* node)
     : RenderText(node, new DOM::DOMStringImpl(QChar('\n')))
@@ -32,6 +34,26 @@ RenderBR::RenderBR(DOM::NodeImpl* node)
 
 RenderBR::~RenderBR()
 {
+}
+
+long RenderBR::caretMinOffset() const 
+{
+    return 0;
+}
+
+long RenderBR::caretMaxOffset() const 
+{
+    return 1;
+}
+
+unsigned long RenderBR::caretMaxRenderedOffset() const
+{
+    return 1;
+}
+
+Position RenderBR::positionForCoordinates(int _x, int _y)
+{
+    return Position(element(), 0);
 }
 
 #if 0
@@ -76,4 +98,9 @@ FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _
 
   //kDebug(6040) << "delegated to " << prev->renderName() << "@" << prev;
   return prev->RenderText::checkSelectionPoint(_x, _y, _tx, _ty, node, offset, state);
+}
+
+InlineBox *RenderBR::inlineBox(long offset)
+{
+    return firstTextBox();
 }

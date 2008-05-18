@@ -700,6 +700,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
   all           KJS::HTMLElement::ElementAll       DontDelete|ReadOnly
+  contentEditable   KJS::HTMLElement::ElementContentEditable  DontDelete
+  isContentEditable KJS::HTMLElement::ElementIsContentEditable  DontDelete|ReadOnly
 @end
 @begin HTMLElementProtoTable 1
   scrollIntoView KJS::HTMLElement::ElementScrollIntoView DontDelete|Function 0
@@ -1972,6 +1974,10 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     else // Enabled but hidden by default
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL), true);
   // ### what about style? or is this used instead for DOM2 stylesheets?
+  case ElementContentEditable:
+      return jsString(element.contentEditable());
+  case ElementIsContentEditable:
+      return jsBoolean(element.isContentEditable());
   }
   kError() << "HTMLElement::getValueProperty unhandled token " << token << endl;
   return jsUndefined();
@@ -2595,6 +2601,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
     return;
   case ElementInnerText:
     element.setInnerText(str, exception);
+    return;
+  case ElementContentEditable:
+    element.setContentEditable(str);
     return;
   default:
     kDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string();
