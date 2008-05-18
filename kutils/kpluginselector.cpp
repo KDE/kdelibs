@@ -95,6 +95,15 @@ void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool
     }
 }
 
+int KPluginSelector::Private::dependantLayoutValue(int value, int width, int totalWidth) const
+{
+    if (listView->layoutDirection() == Qt::LeftToRight) {
+        return value;
+    }
+
+    return totalWidth - width - value;
+}
+
 KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent)
     : QWidget(parent)
     , addedByDependencies(0)
@@ -564,12 +573,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     int iconSize = option.rect.height() - MARGIN * 2;
     if (pluginSelector_d->showIcons) {
         KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
-        painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
+        painter->drawPixmap(QRect(pluginSelector_d->dependantLayoutValue(MARGIN + option.rect.left() + xOffset, iconSize, option.rect.width()), MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
     } else {
         iconSize = -MARGIN;
     }
 
-    QRect contentsRect(MARGIN * 2 + iconSize + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize - xOffset, option.rect.height() - MARGIN * 2);
+    QRect contentsRect(pluginSelector_d->dependantLayoutValue(MARGIN * 2 + iconSize + option.rect.left() + xOffset, option.rect.width() - MARGIN * 3 - iconSize - xOffset, option.rect.width()), MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize - xOffset, option.rect.height() - MARGIN * 2);
 
     int lessHorizontalSpace = MARGIN * 2 + pushButton->sizeHint().width();
     if (index.model()->data(index, ServicesCountRole).toBool()) {
@@ -580,6 +589,10 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.highlightedText().color());
+    }
+
+    if (pluginSelector_d->listView->layoutDirection() == Qt::RightToLeft) {
+        contentsRect.translate(lessHorizontalSpace, 0);
     }
 
     painter->save();
@@ -658,18 +671,18 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
 
     QCheckBox *checkBox = static_cast<QCheckBox*>(widgets[0]);
     checkBox->resize(checkBox->sizeHint());
-    checkBox->move(MARGIN, option.rect.height() / 2 - checkBox->sizeHint().height() / 2);
+    checkBox->move(pluginSelector_d->dependantLayoutValue(MARGIN, checkBox->sizeHint().width(), option.rect.width()), option.rect.height() / 2 - checkBox->sizeHint().height() / 2);
     checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
 
     KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
     QSize aboutPushButtonSizeHint = aboutPushButton->sizeHint();
     aboutPushButton->resize(aboutPushButtonSizeHint);
-    aboutPushButton->move(option.rect.width() - MARGIN - aboutPushButtonSizeHint.width(), option.rect.height() / 2 - aboutPushButtonSizeHint.height() / 2);
+    aboutPushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN - aboutPushButtonSizeHint.width(), aboutPushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - aboutPushButtonSizeHint.height() / 2);
 
     KPushButton *configurePushButton = static_cast<KPushButton*>(widgets[1]);
     QSize configurePushButtonSizeHint = configurePushButton->sizeHint();
     configurePushButton->resize(configurePushButtonSizeHint);
-    configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);
+    configurePushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), configurePushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);
 
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
 }

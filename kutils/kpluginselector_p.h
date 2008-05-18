@@ -65,6 +65,7 @@ public:
     ~Private();
 
     void updateDependencies(PluginEntry *pluginEntry, bool added);
+    int dependantLayoutValue(int value, int width, int totalWidth) const;
 
 public:
     class PluginModel;
