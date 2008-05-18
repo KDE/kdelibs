@@ -150,6 +150,7 @@ void ExecState::setException(JSValue* e)
 
 void ExecState::setAbruptCompletion(Completion comp)
 {
+    ASSERT(!hadException());
     m_completion = comp;
 
     while (!m_exceptionHandlers.isEmpty()) {

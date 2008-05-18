@@ -199,6 +199,9 @@ int relation(ExecState *exec, JSValue *v1, JSValue *v2)
     JSValue* p1;
     JSValue* p2;
     bool wasNotString1 = v1->getPrimitiveNumber(exec, n1, p1);
+    if (exec->hadException())
+        return -1;
+
     bool wasNotString2 = v2->getPrimitiveNumber(exec, n2, p2);
 
     if (wasNotString1 || wasNotString2) {
