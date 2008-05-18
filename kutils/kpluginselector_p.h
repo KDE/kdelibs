@@ -186,6 +186,8 @@ protected:
                                    const QModelIndex &index) const;
 
 private:
+    QFont titleFont(const QFont &baseFont) const;
+
     QCheckBox *checkBox;
     QPushButton *pushButton;
 };

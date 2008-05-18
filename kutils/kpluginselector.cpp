@@ -464,20 +464,27 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
     painter->drawPixmap(QRect(MARGIN + option.rect.left() + xOffset, MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
 
-    QRect contentsRect(MARGIN * 2 + iconSize + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize, option.rect.height() - MARGIN * 2);
+    QRect contentsRect(MARGIN * 2 + iconSize + option.rect.left() + xOffset, MARGIN + option.rect.top(), option.rect.width() - MARGIN * 3 - iconSize - xOffset, option.rect.height() - MARGIN * 2);
+
+    int lessHorizontalSpace = MARGIN * 2 + pushButton->sizeHint().width();
+    if (index.model()->data(index, ServicesCountRole).toBool()) {
+        lessHorizontalSpace += MARGIN + pushButton->sizeHint().width();
+    }
+
+    contentsRect.setWidth(contentsRect.width() - lessHorizontalSpace);
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.highlightedText().color());
     }
 
     painter->save();
-    QFont font(option.font);
-    font.setBold(true);
+    QFont font = titleFont(option.font);
+    QFontMetrics fmTitle(font);
     painter->setFont(font);
-    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignTop, index.model()->data(index, Qt::DisplayRole).toString());
+    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignTop, fmTitle.elidedText(index.model()->data(index, Qt::DisplayRole).toString(), Qt::ElideRight, contentsRect.width()));
     painter->restore();
 
-    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignBottom, index.model()->data(index, CommentRole).toString());
+    painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignBottom, option.fontMetrics.elidedText(index.model()->data(index, CommentRole).toString(), Qt::ElideRight, contentsRect.width()));
 
     painter->restore();
 
@@ -493,10 +500,13 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
         j = 2;
     }
 
-    return QSize(qMax(option.fontMetrics.width(index.model()->data(index, Qt::DisplayRole).toString()),
+    QFont font = titleFont(option.font);
+    QFontMetrics fmTitle(font);
+
+    return QSize(qMax(fmTitle.width(index.model()->data(index, Qt::DisplayRole).toString()),
                       option.fontMetrics.width(index.model()->data(index, CommentRole).toString())) +
                       ICON_SIZE + MARGIN * i + pushButton->sizeHint().width() * j,
-                 qMax(ICON_SIZE + MARGIN * 2, option.fontMetrics.height() * 2 + MARGIN * 2));
+                 qMax(ICON_SIZE + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
 }
 
 QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() const
@@ -537,6 +547,14 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     configurePushButton->move(option.rect.width() - MARGIN * 2 - configurePushButton->sizeHint().width() - aboutPushButton->sizeHint().width(), option.rect.height() / 2 - widgets[1]->sizeHint().height() / 2);
 
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
+}
+
+QFont KPluginSelector::Private::PluginDelegate::titleFont(const QFont &baseFont) const
+{
+    QFont retFont(baseFont);
+    retFont.setBold(true);
+
+    return retFont;
 }
 
 #include "kpluginselector_p.moc"
