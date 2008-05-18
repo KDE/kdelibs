@@ -23,13 +23,8 @@
 #ifndef KEMOTICONS_THEME_H
 #define KEMOTICONS_THEME_H
 
-#include "kemoticons_export.h"
 #include "kemoticonsprovider.h"
 
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-#include <QtCore/QStringList>
-#include <QtCore/QPair>
 #include <QtCore/QSharedDataPointer>
 
 class QString;
@@ -37,7 +32,7 @@ class QString;
 /**
  * This class contains the emoticons theme
  */
-class KEMOTICONS_EXPORT KEmoticonsTheme
+class KUTILS_EXPORT KEmoticonsTheme
 {
 public:
 

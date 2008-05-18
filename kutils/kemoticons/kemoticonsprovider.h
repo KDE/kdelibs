@@ -20,7 +20,7 @@
 #ifndef KEMOTICONS_PROVIDER_H
 #define KEMOTICONS_PROVIDER_H
 
-#include "kemoticons_export.h"
+#include "kutils_export.h"
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
@@ -33,7 +33,7 @@ struct Emoticon;
 /**
  * This is the base class for the emoticons provider plugins
  */
-class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
+class KUTILS_EXPORT KEmoticonsProvider : public QObject
 {
     Q_OBJECT
 public:
