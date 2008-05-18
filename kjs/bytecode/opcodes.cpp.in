@@ -203,16 +203,12 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
         ASSERT(!retOut);
     }
 
+    OpValue* args[4] = {a0, a1, a2, a3};
+    
     int numArgs = 0;
-    if (a0)
-        numArgs = 1;
-    if (a1)
-        numArgs = 2;
-    if (a2)
-        numArgs = 3;
-    if (a3)
-        numArgs = 4;
-
+    while (numArgs < 4 && args[numArgs])
+        ++numArgs;
+        
     // First, scan through, and determine the cheapest non-align variant.
     // We can't select whether to align or not, since we may have to emit
     // cast ops, which could change where we are.
@@ -226,27 +222,16 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
 
         bool exact = cand->matchExactly;
 
-        int    cost0 = 0, cost1 = 0, cost2 = 0, cost3 = 0;
+        int    costs[4];
         ConvOp convOps[4];
 
-        switch (numArgs) {
-        case 4:
-            convOps[3] = computeCast(a3, cand->paramTypes[3], cand->immediateParams[3], cost3, exact);
-            // Fallthrough
-        case 3:
-            convOps[2] = computeCast(a2, cand->paramTypes[2], cand->immediateParams[2], cost2, exact);
-            // Fallthrough
-        case 2:
-            convOps[1] = computeCast(a1, cand->paramTypes[1], cand->immediateParams[1], cost1, exact);
-            // Fallthrough
-        case 1:
-            convOps[0] = computeCast(a0, cand->paramTypes[0], cand->immediateParams[0], cost0, exact);
-            // Fallthrough
-        case 0:
-            break;
-        }
+        int totalCost = cand->cost;
+        for (int i = 0; i < numArgs; ++i) {
+            convOps[i] = computeCast(args[i], cand->paramTypes[i],
+                                     cand->immediateParams[i], costs[i], exact);
 
-        int totalCost = cand->cost + cost0 + cost1 + cost2 + cost3;
+            totalCost += costs[i];
+        }
 
         if (totalCost < 0) // Cost_NoConversion in the sum...
             continue;
@@ -287,24 +272,10 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
             *retOut = retVal;
     }
 
-    OpValue c0, c1, c2, c3; // Converted versions, if needed.
+    OpValue c[4]; // converted version
 
-    switch (numArgs) {
-    case 4:
-        emitConversion(comp, block, cheapest->immediateParams[3], cheapestConvOps[3], a3, c3);
-        // Fallthrough
-    case 3:
-        emitConversion(comp, block, cheapest->immediateParams[2], cheapestConvOps[2], a2, c2);
-        // Fallthrough
-    case 2:
-        emitConversion(comp, block, cheapest->immediateParams[1], cheapestConvOps[1], a1, c1);
-        // Fallthrough
-    case 1:
-        emitConversion(comp, block, cheapest->immediateParams[0], cheapestConvOps[0], a0, c0);
-        // Fallthrough
-    case 0:
-        break;
-    }
+    for (int i = 0; i < numArgs; ++i)
+        emitConversion(comp, block, cheapest->immediateParams[i], cheapestConvOps[i], args[i], c[i]);
 
     // Now figure out if we need to do align.. We need it if the PC is 8-aligned, since
     // the instr will mess that up, and the instruction need it..
@@ -322,21 +293,8 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     *reinterpret_cast<OpByteCode*>(basePtr) = cheapest->opCode;
 
     // ... and the args, as needed.
-    switch (numArgs) {
-    case 4:
-        emitArg(basePtr, cheapest, 3, c3);
-        // Fallthrough
-    case 3:
-        emitArg(basePtr, cheapest, 2, c2);
-        // Fallthrough
-    case 2:
-        emitArg(basePtr, cheapest, 1, c1);
-        // Fallthrough
-    case 1:
-        emitArg(basePtr, cheapest, 0, c0);
-        // Fallthrough
-    case 0:
-        break;
+    for (int i = 0; i < numArgs; ++i) {
+        emitArg(basePtr, cheapest, i, c[i]);
     }
 
     return basePtr - block.data();
