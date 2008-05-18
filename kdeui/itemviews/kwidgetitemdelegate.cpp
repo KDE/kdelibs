@@ -383,9 +383,13 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                 // at this point. If it is a key event, send it to the focused widget (if any), and in other
                 // case, forward it to the hovered widget (if any).
                 if (dynamic_cast<QKeyEvent*>(event) && focusedWidget) {
-                    eventReply = QCoreApplication::sendEvent(focusedWidget, event);
+                    QCoreApplication::sendEvent(focusedWidget, event);
+                    QList<QEvent::Type> blocked = q->blockedEventTypes(focusedWidget);
+                    filterEvent = blocked.contains(event->type());
                 } else if (hoveredWidget) {
-                    eventReply = QCoreApplication::sendEvent(hoveredWidget, event);
+                    QCoreApplication::sendEvent(hoveredWidget, event);
+                    QList<QEvent::Type> blocked = q->blockedEventTypes(hoveredWidget);
+                    filterEvent = blocked.contains(event->type());
                 }
             }
             itemView->viewport()->update();
