@@ -112,7 +112,7 @@ Position::Position(NodeImpl *node, long offset)
         m_node = node;
         m_node->ref();
     }
-};
+}
 
 Position::Position(const Position &o)
     : m_node(0), m_offset(o.offset())

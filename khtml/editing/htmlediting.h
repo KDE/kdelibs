@@ -40,7 +40,7 @@ namespace DOM {
     class Position;
     class Selection;
     class TextImpl;
-};
+}
 
 namespace khtml {
 

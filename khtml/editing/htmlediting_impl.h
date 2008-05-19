@@ -50,7 +50,7 @@ namespace DOM {
     class Selection;
     class TextImpl;
     class TreeWalkerImpl;
-};
+}
 
 namespace khtml {
 

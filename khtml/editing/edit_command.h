@@ -59,7 +59,7 @@ enum ECommandID {
     RemoveNodePreservingChildrenCommandID,
     SetNodeAttributeCommandID,
     SplitTextNodeCommandID,
-    TypingCommandID,
+    TypingCommandID
 };
 
 //------------------------------------------------------------------------------------------
