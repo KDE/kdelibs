@@ -22,6 +22,8 @@
 
 #include "kwindowinfo.h"
 #include <Carbon/Carbon.h>
+#include <QtCore/QString>
+#include <QtCore/QList>
 
 #include <QList>
 #include <QString>
