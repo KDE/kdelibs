@@ -87,7 +87,7 @@ set(icemaker_SRCS
     bytecode/generator/lexer.cpp
     bytecode/generator/parser.cpp
    )
-KDE4_ADD_EXECUTABLE(icemaker RUN_UNINSTALLED ${icemaker_SRCS})
+KDE4_ADD_EXECUTABLE(icemaker NOGUI RUN_UNINSTALLED ${icemaker_SRCS})
 
 
 # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
