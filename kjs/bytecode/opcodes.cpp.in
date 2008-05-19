@@ -23,6 +23,10 @@
 #include "CompileState.h"
 #include <cstdio>
 
+#if PLATFORM(SOLARIS_OS)
+using std::printf;
+#endif
+
 namespace KJS {
 
 const int Cost_NoConversion = -100000; // small enough so that adding actual costs doesn't
