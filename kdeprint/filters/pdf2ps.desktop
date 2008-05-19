@@ -32,6 +32,7 @@ Comment[tg]=Конвертори PDF ба PostScript
 Comment[th]=ตัวแปลง PDF ไปเป็นแฟ้มโพสต์สคริปต์
 Comment[uk]=Конвертер документів з формату PDF в PostScript
 Comment[uz]=PDF'ni PostScrip'ga aylantiradigan dastur
+Comment[uz@cyrillic]=PDF'ни PostScrip'га айлантирадиган дастур
 Comment[zh_TW]=PDF 至 PostScript 轉換器
 MimeTypeIn=application/pdf
 MimeTypeOut=application/postscript
