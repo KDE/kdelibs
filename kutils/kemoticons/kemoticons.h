@@ -83,7 +83,7 @@ public:
      * Set @p theme as the current theme
      * @param theme a pointer to a KEmoticonsTheme object
      */
-    static void setTheme(KEmoticonsTheme theme);
+    static void setTheme(const KEmoticonsTheme &theme);
 
     /**
      * Set @p theme as the current theme

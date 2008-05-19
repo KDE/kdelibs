@@ -150,7 +150,7 @@ QStringList KEmoticons::themeList()
     return ls;
 }
 
-void KEmoticons::setTheme(KEmoticonsTheme theme)
+void KEmoticons::setTheme(const KEmoticonsTheme &theme)
 {
     setTheme(theme.themeName());
 }
