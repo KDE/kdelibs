@@ -588,7 +588,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
     headerFormat.setProperty(QTextFormat::FontSizeAdjustment, 3);
     headerFormat.setFontWeight(QFont::Bold);
     cursor.insertText(i18nc("header for an applications shortcut list","Shortcuts for %1",
-                            KGlobal::mainComponent().aboutData()->shortDescription()),
+                            KGlobal::mainComponent().aboutData()->programName()),
                       headerFormat);
     QTextCharFormat componentFormat;
     componentFormat.setProperty(QTextFormat::FontSizeAdjustment, 2);
