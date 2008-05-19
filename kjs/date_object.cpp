@@ -113,7 +113,7 @@ public:
 
     virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
-    enum { Parse, UTC };
+    enum { Parse, UTC, Now };
 
 private:
     int id;
@@ -728,10 +728,12 @@ DateObjectImp::DateObjectImp(ExecState *exec,
   // ECMA 15.9.4.1 Date.prototype
   static const Identifier* parsePropertyName = new Identifier("parse");
   static const Identifier* UTCPropertyName = new Identifier("UTC");
+  static const Identifier* nowPropertyName = new Identifier("now");
 
   putDirect(exec->propertyNames().prototype, dateProto, DontEnum|DontDelete|ReadOnly);
   putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::Parse, 1, *parsePropertyName), DontEnum);
   putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::UTC, 7, *UTCPropertyName), DontEnum);
+  putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::Now, 0, *nowPropertyName), DontEnum);
 
   // no. of arguments for constructor
   putDirect(exec->propertyNames().length, 7, ReadOnly|DontDelete|DontEnum);
@@ -742,13 +744,8 @@ bool DateObjectImp::implementsConstruct() const
     return true;
 }
 
-// ECMA 15.9.3
-JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
+static double getCurrentUTCTime()
 {
-  int numArgs = args.size();
-  double value;
-
-  if (numArgs == 0) { // new Date() ECMA 15.9.3.3
 #if PLATFORM(WIN_OS)
 #if COMPILER(BORLAND)
     struct timeb timebuffer;
@@ -763,7 +760,17 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
     gettimeofday(&tv, 0);
     double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / 1000);
 #endif
-    value = utc;
+    return utc;
+}
+
+// ECMA 15.9.3
+JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
+{
+  int numArgs = args.size();
+  double value;
+
+  if (numArgs == 0) { // new Date() ECMA 15.9.3.3
+    value = getCurrentUTCTime();
   } else if (numArgs == 1) {
     JSValue* arg0 = args[0];
     if (arg0->isObject(&DateInstance::info))
@@ -827,8 +834,9 @@ JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const Lis
 {
   if (id == Parse) {
     return jsNumber(parseDate(args[0]->toString(exec)));
-  }
-  else { // UTC
+  } else if (id == Now) {
+    return jsNumber(getCurrentUTCTime());
+  } else { // UTC
     int n = args.size();
     if (isNaN(args[0]->toNumber(exec))
         || isNaN(args[1]->toNumber(exec))
