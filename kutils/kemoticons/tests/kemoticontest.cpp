@@ -17,12 +17,11 @@
 */
 
 // QTestLib for KDE
-#include <qtest_kde.h>
 #include "kemoticontest.h"
 #include "kemoticontest.moc"
+#include <qtest_kde.h>
 
 #include <stdlib.h>
-
 
 #include <QDir>
 #include <QFile>
