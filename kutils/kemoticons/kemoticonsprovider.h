@@ -78,7 +78,7 @@ public:
      * @return @c true if it can delete the emoticon
      */
     virtual bool removeEmoticon(const QString &emo);
-    
+
     /**
      * Add the emoticon @p emo with text @p text
      * @param emo path to the emoticon image

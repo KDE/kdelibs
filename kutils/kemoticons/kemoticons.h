@@ -35,12 +35,10 @@ class KEmoticonsPrivate;
  * For example if you want to get the current emoticon theme
  * @code
  * KEmoticons ke;
- * KEmoticonsTheme *et = ke.theme();
+ * KEmoticonsTheme et = ke.theme();
  * //do whatever you want with the theme
- * delete et;
  * @endcode
  * it can also be used to set the emoticon theme and the parse mode in the config file
- * @note Remember to the delete the KEmoticonsTheme objects that you get with theme and newTheme
  * @author Carlo Segato (brandon.ml@gmail.com)
  */
 
@@ -86,7 +84,7 @@ public:
      * Set @p theme as the current theme
      * @param theme a pointer to a KEmoticonsTheme object
      */
-    static void setTheme(KEmoticonsTheme *theme);
+    static void setTheme(KEmoticonsTheme theme);
 
     /**
      * Set @p theme as the current theme
