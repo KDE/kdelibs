@@ -83,7 +83,10 @@ namespace WTF {
     template<> struct DefaultHash<KJS::Identifier> { typedef IdentHash Hash; };
 
     template<> struct HashTraits<KJS::Identifier> : GenericHashTraits<KJS::Identifier> {
-        static const KJS::Identifier& deletedValue() { return KJS::CommonIdentifiers::shared()->nullIdentifier; }
+        static const bool emptyValueIsZero = false;
+        static const bool needsDestruction = true;
+        static void constructDeletedValue(KJS::Identifier* slot) { *slot = KJS::CommonIdentifiers::shared()->nullIdentifier; }
+        static bool isDeletedValue(const KJS::Identifier& value) { return value == KJS::CommonIdentifiers::shared()->nullIdentifier; }
     };
 
 } // namespace WTF

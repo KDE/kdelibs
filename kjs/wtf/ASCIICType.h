@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Apple Inc. All rights reserved.
+ * Copyright (C) 2007, 2008 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,6 +30,7 @@
 #define WTF_ASCIICType_h
 
 #include <wtf/Platform.h>
+#include <wtf/Assertions.h>
 
 // The behavior of many of the functions in the <ctype.h> header is dependent
 // on the current locale. But in the WebKit project, all uses of those functions
@@ -85,12 +86,25 @@ namespace WTF {
 #endif
     inline bool isASCIIUpper(int c) { return c >= 'A' && c <= 'Z'; }
 
-    inline bool isASCIISpace(char c) { return c == '\t' || c == '\n' || c == '\v' || c =='\f' || c == '\r' || c == ' '; }
-    inline bool isASCIISpace(unsigned short c) { return c == '\t' || c == '\n' || c == '\v' || c =='\f' || c == '\r' || c == ' '; }
+    /*
+        Statistics from a run of Apple's page load test for callers of isASCIISpace:
+
+            character          count
+            ---------          -----
+            non-spaces         689383
+        20  space              294720
+        0A  \n                 89059
+        09  \t                 28320
+        0D  \r                 0
+        0C  \f                 0
+        0B  \v                 0
+    */
+    inline bool isASCIISpace(char c) { return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9)); }
+    inline bool isASCIISpace(unsigned short c) { return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9)); }
 #if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
-    inline bool isASCIISpace(wchar_t c) { return c == '\t' || c == '\n' || c == '\v' || c =='\f' || c == '\r' || c == ' '; }
+    inline bool isASCIISpace(wchar_t c) { return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9)); }
 #endif
-    inline bool isASCIISpace(int c) { return c == '\t' || c == '\n' || c == '\v' || c =='\f' || c == '\r' || c == ' '; }
+    inline bool isASCIISpace(int c) { return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9)); }
 
     inline char toASCIILower(char c) { return c | ((c >= 'A' && c <= 'Z') << 5); }
     inline unsigned short toASCIILower(unsigned short c) { return c | ((c >= 'A' && c <= 'Z') << 5); }
@@ -105,6 +119,13 @@ namespace WTF {
     inline wchar_t toASCIIUpper(wchar_t c) { return static_cast<wchar_t>(c & ~((c >= 'a' && c <= 'z') << 5)); }
 #endif
     inline int toASCIIUpper(int c) { return static_cast<int>(c & ~((c >= 'a' && c <= 'z') << 5)); }
+
+    inline int toASCIIHexValue(char c) { ASSERT(isASCIIHexDigit(c)); return c < 'A' ? c - '0' : (c - 'A' + 10) & 0xF; }
+    inline int toASCIIHexValue(unsigned short c) { ASSERT(isASCIIHexDigit(c)); return c < 'A' ? c - '0' : (c - 'A' + 10) & 0xF; }
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    inline int toASCIIHexValue(wchar_t c) { ASSERT(isASCIIHexDigit(c)); return c < 'A' ? c - '0' : (c - 'A' + 10) & 0xF; }
+#endif
+    inline int toASCIIHexValue(int c) { ASSERT(isASCIIHexDigit(c)); return c < 'A' ? c - '0' : (c - 'A' + 10) & 0xF; }
 
 }
 

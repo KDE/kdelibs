@@ -35,8 +35,6 @@
 
 namespace KJS {
 
-UString::Rep* IdentifierRepHashTraits::nullRepPtr = &UString::Rep::null; // Didn't want to make a whole source file for just this.
-
 bool JSVariableObject::deleteProperty(ExecState* exec, const Identifier& propertyName)
 {
     if (symbolTable->contains(propertyName.ustring().rep()))

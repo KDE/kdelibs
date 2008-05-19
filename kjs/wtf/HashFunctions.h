@@ -1,7 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4 -*-
 /*
- * This file is part of the KDE libraries
- * Copyright (C) 2005, 2006 Apple Computer, Inc.
+ * Copyright (C) 2005, 2006, 2008 Apple Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,11 +22,11 @@
 #ifndef WTF_HashFunctions_h
 #define WTF_HashFunctions_h
 
+#include "RefPtr.h"
 #include <kjs/global.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
-#include "RefPtr.h"
 
 namespace WTF {
 
@@ -40,8 +39,9 @@ namespace WTF {
     // integer hash function
 
     // Thomas Wang's 32 Bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
-    inline unsigned intHash(uint32_t key)
+    inline unsigned intHash(uint8_t key8)
     {
+        unsigned key = key8;
         key += ~(key << 15);
         key ^= (key >> 10);
         key += (key << 3);
@@ -51,6 +51,31 @@ namespace WTF {
         return key;
     }
 
+    // Thomas Wang's 32 Bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
+    inline unsigned intHash(uint16_t key16)
+    {
+        unsigned key = key16;
+        key += ~(key << 15);
+        key ^= (key >> 10);
+        key += (key << 3);
+        key ^= (key >> 6);
+        key += ~(key << 11);
+        key ^= (key >> 16);
+        return key;
+    }
+
+    // Thomas Wang's 32 Bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
+    inline unsigned intHash(uint32_t key) 
+    {
+        key += ~(key << 15);
+        key ^= (key >> 10);
+        key += (key << 3);
+        key ^= (key >> 6);
+        key += ~(key << 11);
+        key ^= (key >> 16);
+        return key;
+    }
+    
     // Thomas Wang's 64 bit Mix Function: http://www.cris.com/~Ttwang/tech/inthash.htm
     inline unsigned intHash(uint64_t key)
     {
@@ -94,24 +119,46 @@ namespace WTF {
         static bool equal(T a, T b) { return a == b; }
         static const bool safeToCompareToEmptyOrDeleted = true;
     };
-    template<typename P> struct PtrHash<RefPtr<P> > {
-        static unsigned hash(const RefPtr<P>& key) { return PtrHash<P*>::hash(key.get()); }
+    template<typename P> struct PtrHash<RefPtr<P> > : PtrHash<P*> {
+        using PtrHash<P*>::hash;
+        static unsigned hash(const RefPtr<P>& key) { return hash(key.get()); }
+        using PtrHash<P*>::equal;
         static bool equal(const RefPtr<P>& a, const RefPtr<P>& b) { return a == b; }
-        static const bool safeToCompareToEmptyOrDeleted = true;
+        static bool equal(P* a, const RefPtr<P>& b) { return a == b; }
+        static bool equal(const RefPtr<P>& a, P* b) { return a == b; }
     };
 
     // default hash function for each type
 
     template<typename T> struct DefaultHash;
 
+    template<typename T, typename U> struct PairHash {
+        static unsigned hash(const std::pair<T, U>& p)
+        {
+            return intHash((static_cast<uint64_t>(DefaultHash<T>::Hash::hash(p.first)) << 32 | DefaultHash<U>::Hash::hash(p.second)));
+        }
+        static bool equal(const std::pair<T, U>& a, const std::pair<T, U>& b)
+        {
+            return DefaultHash<T>::Hash::equal(a.first, b.first) && DefaultHash<U>::Hash::equal(a.second, b.second);
+        }
+        static const bool safeToCompareToEmptyOrDeleted = DefaultHash<T>::Hash::safeToCompareToEmptyOrDeleted 
+                                                            && DefaultHash<U>::Hash::safeToCompareToEmptyOrDeleted;
+    };
+
     // make IntHash the default hash function for many integer types
 
+    template<> struct DefaultHash<short> { typedef IntHash<unsigned> Hash; };
+    template<> struct DefaultHash<unsigned short> { typedef IntHash<unsigned> Hash; };
     template<> struct DefaultHash<int> { typedef IntHash<unsigned> Hash; };
     template<> struct DefaultHash<unsigned> { typedef IntHash<unsigned> Hash; };
     template<> struct DefaultHash<long> { typedef IntHash<unsigned long> Hash; };
     template<> struct DefaultHash<unsigned long> { typedef IntHash<unsigned long> Hash; };
     template<> struct DefaultHash<long long> { typedef IntHash<unsigned long long> Hash; };
     template<> struct DefaultHash<unsigned long long> { typedef IntHash<unsigned long long> Hash; };
+
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    template<> struct DefaultHash<wchar_t> { typedef IntHash<wchar_t> Hash; };
+#endif
 
     template<> struct DefaultHash<float> { typedef FloatHash<float> Hash; };
     template<> struct DefaultHash<double> { typedef FloatHash<double> Hash; };
@@ -120,6 +167,8 @@ namespace WTF {
 
     template<typename P> struct DefaultHash<P*> { typedef PtrHash<P*> Hash; };
     template<typename P> struct DefaultHash<RefPtr<P> > { typedef PtrHash<RefPtr<P> > Hash; };
+
+    template<typename T, typename U> struct DefaultHash<std::pair<T, U> > { typedef PairHash<T, U> Hash; };
 
 } // namespace WTF
 
