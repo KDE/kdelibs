@@ -196,8 +196,8 @@ KJS_EXPORT JSCell* jsString(const char* s, int len);
 // DOM object that contains a UString
 JSCell *jsOwnedString(const UString&);
 
-extern const double NaN;
-extern const double Inf;
+KJS_EXPORT extern const double NaN;
+KJS_EXPORT extern const double Inf;
 
 inline JSValue* jsUndefined()
 {
