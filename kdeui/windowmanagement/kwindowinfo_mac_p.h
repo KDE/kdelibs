@@ -25,9 +25,6 @@
 #include <QtCore/QString>
 #include <QtCore/QList>
 
-#include <QList>
-#include <QString>
-
 // bah, why do header files invade my namespace and define such normal words as check...
 #ifdef check
 #undef check
