@@ -1,11 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Kde Emoticons Theme
-Name[et]=KDE emotikoniteema
-Name[sv]=KDE smilistema
 Comment=Library to use KDE emoticons theme
-Comment[et]=Teek KDE emotikoniteema kasutamiseks
-Comment[sv]=Bibliotek för att använda KDE:s smilistema
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_kde
 X-KDE-EmoticonsFileName=emoticons.xml
