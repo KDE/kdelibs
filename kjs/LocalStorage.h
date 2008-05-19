@@ -25,6 +25,7 @@
 #ifndef KJS_LOCAL_STORAGE_H
 #define KJS_LOCAL_STORAGE_H
 
+#include <stdint.h>   // int32_t
 #include <wtf/Vector.h>
 #include <wtf/VectorTraits.h>
 

@@ -50,8 +50,8 @@ namespace KJS {
           NumVarObjectSlots = 2
         };
 
-        int& lengthSlot() { return localStorage[LengthSlot].val.int32Val; }
-        const int& lengthSlot() const { return localStorage[LengthSlot].val.int32Val; }
+        int32_t& lengthSlot() { return localStorage[LengthSlot].val.int32Val; }
+        const int32_t& lengthSlot() const { return localStorage[LengthSlot].val.int32Val; }
 
         bool& onStackSlot() { return localStorage[OnStackSlot].val.boolVal; }
     protected:
