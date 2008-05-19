@@ -39,7 +39,7 @@ XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
 
 bool XmppEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull())
@@ -58,7 +58,7 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
 
                 if (!sde.isNull() && sde.tagName() == "object" && sde.text() == emoticon) {
                     fce.removeChild(de);
-                    emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
+                    removeEmoticonsMap(emoticonsMap().key(emo.split(" ")));
                     removeEmoticonIndex(emoticon, emo.split(" "));
                     return true;
                 }
@@ -99,7 +99,7 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
     emoticon.appendChild(emoElement);
 
     addEmoticonIndex(emo, splitted);
-    (*emoticonsMap())[emo] = splitted;
+    addEmoticonsMap(emo, splitted);
     return true;
 }
 
@@ -157,7 +157,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
 
     QDomNodeList nl = fce.childNodes();
 
-    emoticonsMap()->clear();
+    clearEmoticonsMap();
 
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
@@ -186,7 +186,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
             }
 
             addEmoticonIndex(emo, sl);
-            (*emoticonsMap())[emo] = sl;
+            addEmoticonsMap(emo, sl);
         }
     }
 

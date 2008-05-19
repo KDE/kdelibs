@@ -147,7 +147,7 @@ QHash<QString, QStringList> KEmoticonsTheme::emoticonsMap() const
         return QHash<QString, QStringList>();
     }
 
-    return d->provider->constEmoticonsMap();
+    return d->provider->emoticonsMap();
 }
 
 void KEmoticonsTheme::createNew()
@@ -260,8 +260,8 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
             continue;
         } /* strict requires space before the emoticon */
 
-        if (d->provider->constEmoticonsIndex().contains(c)) {
-            emoticonList = d->provider->constEmoticonsIndex().value(c);
+        if (d->provider->emoticonsIndex().contains(c)) {
+            emoticonList = d->provider->emoticonsIndex().value(c);
             bool found = false;
             for (it = emoticonList.constBegin(); it != emoticonList.constEnd(); ++it) {
                 // If this is an HTML, then search for the HTML form of the emoticon.

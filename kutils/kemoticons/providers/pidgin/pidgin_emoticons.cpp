@@ -37,7 +37,7 @@ PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
 
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
 
     bool start = false;
     for (int i = 0; i < m_text.size(); ++i) {
@@ -96,7 +96,7 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, AddEm
     m_text.insert(i + 1, emoticon);
 
     addEmoticonIndex(emo, splitted);
-    (*emoticonsMap())[emo] = splitted;
+    addEmoticonsMap(emo, splitted);
     return true;
 }
 
@@ -118,7 +118,7 @@ void PidginEmoticons::save()
 
     if (m_text.indexOf(QRegExp("^Icon=.*", Qt::CaseInsensitive)) == -1) {
         int i = m_text.indexOf(QRegExp("^Description=.*", Qt::CaseInsensitive));
-        QString file = QFileInfo(emoticonsMap()->keys().value(0)).fileName();
+        QString file = QFileInfo(emoticonsMap().keys().value(0)).fileName();
         m_text.insert(i + 1, "Icon=" + file);
     }
 
@@ -186,7 +186,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
         }
 
         addEmoticonIndex(emo, sl);
-        (*emoticonsMap())[emo] = sl;
+        addEmoticonsMap(emo, sl);
     }
 
     fp.close();

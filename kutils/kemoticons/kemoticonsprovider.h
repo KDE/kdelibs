@@ -117,12 +117,12 @@ public:
     /**
     * Returns a QHash that contains the emoticons path as keys and the text as values
     */
-    QHash<QString, QStringList> constEmoticonsMap() const;
+    QHash<QString, QStringList> emoticonsMap() const;
 
     /**
      * Returns a QHash that contains emoticons indexed by the first char
      */
-    QHash<QChar, QList<Emoticon> > constEmoticonsIndex() const;
+    QHash<QChar, QList<Emoticon> > emoticonsIndex() const;
 
     /**
      * Create a new theme
@@ -131,14 +131,19 @@ public:
 
 protected:
     /**
-    * Returns a pointer to a QHash that contains the emoticons path as keys and the text as values
-    */
-    QHash<QString, QStringList> *emoticonsMap();
+     * Clears the emoticons map
+     */
+    void clearEmoticonsMap();
 
     /**
-     * Returns a pointer to a QHash that contains emoticons indexed by the first char
+     * Insert a new item in the emoticons map
      */
-    QHash<QChar, QList<Emoticon> > *emoticonsIndex();
+    void addEmoticonsMap(QString key, QStringList value);
+
+    /**
+     * Remove an item from the emoticons map
+     */
+    void removeEmoticonsMap(QString key);
 
     /**
      * Add an emoticon to the index

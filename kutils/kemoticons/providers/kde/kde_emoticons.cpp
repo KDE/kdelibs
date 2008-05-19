@@ -39,7 +39,7 @@ KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
 
 bool KdeEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap()->key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
 
     if (fce.isNull())
@@ -50,7 +50,7 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
             fce.removeChild(de);
-            emoticonsMap()->remove(emoticonsMap()->key(emo.split(" ")));
+            removeEmoticonsMap(emoticonsMap().key(emo.split(" ")));
             removeEmoticonIndex(emoticon, emo.split(" "));
             return true;
         }
@@ -80,7 +80,7 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoti
     }
 
     addEmoticonIndex(emo, splitted);
-    (*emoticonsMap())[emo] = splitted;
+    addEmoticonsMap(emo, splitted);
     return true;
 }
 
@@ -137,7 +137,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
 
     QDomNodeList nl = fce.childNodes();
 
-    emoticonsMap()->clear();
+    clearEmoticonsMap();
 
     for (uint i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
@@ -172,7 +172,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
             }
 
             addEmoticonIndex(emo, sl);
-            (*emoticonsMap())[emo] = sl;
+            addEmoticonsMap(emo, sl);
         }
     }
 

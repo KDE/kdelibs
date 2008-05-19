@@ -48,7 +48,6 @@ public:
 
     //private slots
     void themeChanged(const QString &path);
-        
 };
 
 KEmoticonsPrivate::KEmoticonsPrivate(KEmoticons *parent)

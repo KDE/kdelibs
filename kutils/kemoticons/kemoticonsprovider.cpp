@@ -102,12 +102,22 @@ QString KEmoticonsProvider::fileName() const
     return d->m_fileName;
 }
 
-QHash<QString, QStringList> *KEmoticonsProvider::emoticonsMap()
+void KEmoticonsProvider::clearEmoticonsMap()
 {
-    return &(d->m_emoticonsMap);
+    d->m_emoticonsMap.clear();
 }
 
-QHash<QString, QStringList> KEmoticonsProvider::constEmoticonsMap() const
+void KEmoticonsProvider::addEmoticonsMap(QString key, QStringList value)
+{
+    d->m_emoticonsMap.insert(key, value);
+}
+
+void KEmoticonsProvider::removeEmoticonsMap(QString key)
+{
+    d->m_emoticonsMap.remove(key);
+}
+
+QHash<QString, QStringList> KEmoticonsProvider::emoticonsMap() const
 {
     return d->m_emoticonsMap;
 }
@@ -116,12 +126,7 @@ void KEmoticonsProvider::createNew()
 {
 }
 
-QHash<QChar, QList<KEmoticonsProvider::Emoticon> > *KEmoticonsProvider::emoticonsIndex()
-{
-    return &(d->m_emoticonsIndex);
-}
-
-QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::constEmoticonsIndex() const
+QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::emoticonsIndex() const
 {
     return d->m_emoticonsIndex;
 }
@@ -136,14 +141,13 @@ void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList
         e.picPath = path;
         p.load(path);
 
-
         e.picHTMLCode = QString("<img align=\"center\" title=\"%1\" alt=\"%1\" src=\"%2\" width=\"%3\" height=\"%4\" />").arg(escaped).arg(path).arg(p.width()).arg(p.height());
 
         e.matchTextEscaped = escaped;
         e.matchText = s;
 
-        (*emoticonsIndex())[escaped[0]].append(e);
-        (*emoticonsIndex())[s[0]].append(e);
+        d->m_emoticonsIndex[escaped[0]].append(e);
+        d->m_emoticonsIndex[s[0]].append(e);
     }
 }
 
@@ -152,7 +156,7 @@ void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringL
     foreach(const QString &s, emoList) {
         QString escaped = Qt::escape(s);
 
-        QList<Emoticon> ls = emoticonsIndex()->value(escaped[0]);
+        QList<Emoticon> ls = d->m_emoticonsIndex.value(escaped[0]);
 
         for (int i = 0; i < ls.size(); ++i) {
             if (ls.at(i).picPath == path) {
@@ -160,7 +164,7 @@ void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringL
             }
         }
 
-        ls = emoticonsIndex()->value(s[0]);
+        ls = d->m_emoticonsIndex.value(s[0]);
 
         for (int i = 0; i < ls.size(); ++i) {
             if (ls.at(i).picPath == path) {
