@@ -72,7 +72,7 @@ QDataStream& operator>> (QDataStream& s, ExtraField& extraField)
 }
 
 
-class AuthInfoPrivate  
+class KIO::AuthInfoPrivate  
 {
 public:
     AuthInfoPrivate() 

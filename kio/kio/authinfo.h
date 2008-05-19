@@ -28,9 +28,9 @@
 #include <QtCore/QStringList>
 #include <kurl.h>
 
-class AuthInfoPrivate;
-
 namespace KIO {
+
+class AuthInfoPrivate;
 
 /**
  * This class is intended to make it easier to prompt for, cache
@@ -274,7 +274,7 @@ public:
 protected:
     bool modified;
 private:
-    friend class AuthInfoPrivate;
+    friend class ::KIO::AuthInfoPrivate;
     AuthInfoPrivate * const d;
 };
 
