@@ -230,7 +230,7 @@ void KLineEdit::setClearButtonShown(bool show)
 
         d->clearButton = new KLineEditButton(this);
         d->clearButton->setCursor( Qt::ArrowCursor );
-        d->clearButton->setToolTip( i18n( "Clear text" ) );
+        d->clearButton->setToolTip( i18nc( "@action:button Clear current text in the line edit", "Clear text" ) );
 
         updateClearButtonIcon(text());
         updateClearButton();
@@ -1090,19 +1090,19 @@ QMenu* KLineEdit::createStandardContextMenu()
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = popup->addMenu( KIcon("text-completion"), i18n("Text Completion") );
+        QMenu *subMenu = popup->addMenu( KIcon("text-completion"), i18nc("@title:menu", "Text Completion") );
         connect( subMenu, SIGNAL( triggered ( QAction* ) ),
                  this, SLOT( completionMenuActivated( QAction* ) ) );
 
         popup->addSeparator();
 
         QActionGroup* ag = new QActionGroup( this );
-        d->noCompletionAction = ag->addAction( i18n("None"));
-        d->shellCompletionAction = ag->addAction( i18n("Manual") );
-        d->autoCompletionAction = ag->addAction( i18n("Automatic") );
-        d->popupCompletionAction = ag->addAction( i18n("Dropdown List") );
-        d->shortAutoCompletionAction = ag->addAction( i18n("Short Automatic") );
-        d->popupAutoCompletionAction = ag->addAction( i18n("Dropdown List && Automatic"));
+        d->noCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "None"));
+        d->shellCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Manual") );
+        d->autoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Automatic") );
+        d->popupCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Dropdown List") );
+        d->shortAutoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Short Automatic") );
+        d->popupAutoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Dropdown List && Automatic"));
         subMenu->addActions( ag->actions() );
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
@@ -1124,7 +1124,7 @@ QMenu* KLineEdit::createStandardContextMenu()
         if ( mode != KGlobalSettings::completionMode() )
         {
             subMenu->addSeparator();
-            d->defaultAction = subMenu->addAction( i18n("Default") );
+            d->defaultAction = subMenu->addAction( i18nc("@item:inmenu Text Completion", "Default") );
         }
     }
 

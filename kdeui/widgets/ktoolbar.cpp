@@ -275,7 +275,7 @@ KMenu *KToolBar::Private::contextMenu()
     contextSize = new KMenu( i18n( "Icon Size" ), context );
     context->addMenu( contextSize );
 
-    contextIconSizes.insert( contextSize->addAction( i18n( "Default" ), parent, SLOT( slotContextIconSize() ) ), IconSizeDefault );
+    contextIconSizes.insert( contextSize->addAction( i18nc("@item:inmenu Icon size", "Default" ), parent, SLOT( slotContextIconSize() ) ), IconSizeDefault );
 
     // Query the current theme for available sizes
     KIconTheme *theme = KIconLoader::global()->theme();

@@ -88,7 +88,7 @@ KCodecAction::~KCodecAction()
 void KCodecAction::Private::init(bool showAutoOptions)
 {
     q->setToolBarMode(MenuMode);
-    defaultAction = q->addAction(i18n("Default"));
+    defaultAction = q->addAction(i18nc("Encodings menu", "Default"));
 
     int i;
     foreach(const QStringList &encodingsForScript, KGlobal::charsets()->encodingsByScript())
