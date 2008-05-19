@@ -131,7 +131,7 @@ public:
 
     int lineNumber() const { return lineNum; }
 private:
-    friend class Token;
+    friend struct Token;
     Token lexComment();
 
     char peekNext();

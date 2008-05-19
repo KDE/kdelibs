@@ -24,7 +24,9 @@
 #include "lexer.h"
 #include <cctype>
 
+#ifndef _WIN32
 using std::isspace;
+#endif
 
 #include <wtf/ASCIICType.h>
 using namespace WTF;
