@@ -27,6 +27,7 @@
 
 class KJSInterpreter;
 class KJSArguments;
+class KJSGlobalObject;
 class KJSPrototypeHandle;
 
 /**
@@ -49,21 +50,19 @@ public:
     /**
      * Add a read-only numerical property to this object.
      */
-    void defineConstant(KJSContext* ctx, const QString& name, double value);
+    void defineConstant(const QString& name, double value);
     /**
      * Add a read-only string property to this object.
      *
      * @overload
      */
-    void defineConstant(KJSContext* ctx,
-                        const QString& name, const QString& value);
+    void defineConstant(const QString& name, const QString& value);
     /**
      * Add a read-only object property to this object.
      *
      * @overload
      */
-    void defineConstant(KJSContext* ctx,
-                        const QString& name, const KJSObject& value);
+    void defineConstant(const QString& name, const KJSObject& value);
     /**
      * Function signature for a property getter function. Describes
      * one of the defineProperty() argument types.
@@ -117,6 +116,12 @@ public:
      * @todo Provide a better type than void*
      */
     KJSObject constructObject(KJSContext* ctx, void *internalValue = 0);
+
+    /**
+     * Similar to constructObject() but specialized on the
+     * construction of global objects.
+     */
+    KJSGlobalObject constructGlobalObject(void *internalValue = 0);
 
 private:
     KJSPrototype(const KJSPrototype&); // undefined

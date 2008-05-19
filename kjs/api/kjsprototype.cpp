@@ -213,34 +213,28 @@ KJSPrototype::~KJSPrototype()
     gcUnprotect(PROTOTYPE(this));
 }
 
-void KJSPrototype::defineConstant(KJSContext* ctx,
-                                  const QString& name, double value)
+void KJSPrototype::defineConstant(const QString& name, double value)
 {
     CustomPrototype* p = PROTOTYPE(this);
 
-    ExecState* exec = EXECSTATE(ctx);
-    p->put(exec, toIdentifier(name), jsNumber(value),
-           DontEnum|DontDelete|ReadOnly);
+    p->putDirect(toIdentifier(name), jsNumber(value),
+                 DontEnum|DontDelete|ReadOnly);
 }
 
-void KJSPrototype::defineConstant(KJSContext* ctx,
-                                  const QString& name, const QString& value)
+void KJSPrototype::defineConstant(const QString& name, const QString& value)
 {
     CustomPrototype* p = PROTOTYPE(this);
 
-    ExecState* exec = EXECSTATE(ctx);
-    p->put(exec, toIdentifier(name), jsString(toUString(value)),
-           DontEnum|DontDelete|ReadOnly);
+    p->putDirect(toIdentifier(name), jsString(toUString(value)),
+                 DontEnum|DontDelete|ReadOnly);
 }
 
-void KJSPrototype::defineConstant(KJSContext* ctx,
-                                  const QString& name, const KJSObject& value)
+void KJSPrototype::defineConstant(const QString& name, const KJSObject& value)
 {
     CustomPrototype* p = PROTOTYPE(this);
 
-    ExecState* exec = EXECSTATE(ctx);
-    p->put(exec, toIdentifier(name), JSVALUE(&value),
-           DontEnum|DontDelete|ReadOnly);
+    p->putDirect(toIdentifier(name), JSVALUE(&value),
+                 DontEnum|DontDelete|ReadOnly);
 }
 
 KJSObject KJSPrototype::constructObject(KJSContext* ctx, void *internalValue)
@@ -256,6 +250,14 @@ KJSObject KJSPrototype::constructObject(KJSContext* ctx, void *internalValue)
 
     CustomObject* newObj = new CustomObject(p, internalValue);
     return KJSObject(JSVALUE_HANDLE(newObj));
+}
+
+KJSGlobalObject KJSPrototype::constructGlobalObject(void *internalValue)
+{
+    CustomPrototype* p = PROTOTYPE(this);
+
+    CustomObject* newObj = new CustomObject(p, internalValue);
+    return KJSGlobalObject(JSVALUE_HANDLE(newObj));
 }
 
 void KJSPrototype::defineProperty(KJSContext* ctx,

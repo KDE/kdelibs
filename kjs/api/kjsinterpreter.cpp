@@ -92,7 +92,7 @@ KJSInterpreter::KJSInterpreter()
     hnd = INTERPRETER_HANDLE(ip);
 }
 
-KJSInterpreter::KJSInterpreter(const KJSObject& global)
+KJSInterpreter::KJSInterpreter(const KJSGlobalObject& global)
     : globCtx(0)
 {
     JSValue* gv = JSVALUE(&global);
@@ -100,6 +100,10 @@ KJSInterpreter::KJSInterpreter(const KJSObject& global)
     JSObject* go = static_cast<JSObject*>(gv);
     Interpreter* ip = new Interpreter(go);
     ip->ref();
+    assert(go->prototype()->isObject());
+    JSObject* p =  static_cast<JSObject*>(go->prototype());
+    JSObject* objectProto = ip->builtinObjectPrototype();
+    p->setPrototype(objectProto);
     hnd = INTERPRETER_HANDLE(ip);
 }
 

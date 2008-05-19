@@ -240,3 +240,6 @@ void KJSObject::setProperty(KJSContext* ctx, const QString& name,
     setProperty(ctx, name, KJSString(value));
 }
 
+KJSGlobalObject::KJSGlobalObject()
+{
+}

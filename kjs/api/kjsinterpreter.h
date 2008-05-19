@@ -92,7 +92,7 @@ public:
     /**
      * Constructs an interpreter with a custom global object.
      */
-    KJSInterpreter(const KJSObject& global);
+    KJSInterpreter(const KJSGlobalObject& global);
     /**
      * Creates a copy of another interpreter.
      */

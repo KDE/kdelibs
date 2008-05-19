@@ -54,6 +54,7 @@ class KJSAPI_EXPORT KJSObject
     friend class KJSString;
     friend class KJSArray;
     friend class KJSDate;
+    friend class KJSGlobalObject;
     friend class KJSPrototype;
     friend class KJSContext;
     friend class KJSArguments;
@@ -269,6 +270,25 @@ public:
      * Constructs a date object from the specified date and time.
      */
     KJSDate(KJSContext* ctx, const QDateTime& dt);
+};
+
+/**
+ * A class representing a global object of an execution environment.
+ *
+ * @short Global object
+ */
+class KJSAPI_EXPORT KJSGlobalObject : public KJSObject
+{
+    friend class KJSPrototype;
+public:
+    /**
+     * Constructs an empty global object. Usually done through
+     * KJSPrototype::constructGlobalObject().
+     */
+    KJSGlobalObject();
+
+private:
+    KJSGlobalObject(KJSObjectHandle* h) : KJSObject(h) { }
 };
 
 #endif

@@ -38,6 +38,7 @@ private Q_SLOTS:
     void prototypeConstants();
     void prototypeProperties();
     void prototypeFunctions();
+    void globalObject();
 };
 
 void KJSApiTest::objectConstruction()
@@ -174,8 +175,8 @@ void KJSApiTest::prototypeConstants()
 
     KJSPrototype proto;
 
-    proto.defineConstant(ctx, "d0", 44.4);
-    proto.defineConstant(ctx, "s0", QLatin1String("XYZ"));
+    proto.defineConstant("d0", 44.4);
+    proto.defineConstant("s0", QLatin1String("XYZ"));
 
     KJSObject obj = proto.constructObject(ctx, 0);
 
@@ -259,6 +260,18 @@ void KJSApiTest::prototypeFunctions()
     // expect exception
     res = ip.evaluate("obj.multiply()");
     QVERIFY2(res.isException(), "Exception did not work");
+}
+
+void KJSApiTest::globalObject()
+{
+    KJSPrototype proto;
+    proto.defineConstant("g0", 55.5);
+
+    KJSGlobalObject glob = proto.constructGlobalObject(0);
+
+    KJSInterpreter ip(glob);
+    KJSResult res = ip.evaluate("2 * g0");
+    QCOMPARE(res.value().toNumber(ip.globalContext()), 111.0);
 }
 
 QTEST_KDEMAIN_CORE(KJSApiTest)
