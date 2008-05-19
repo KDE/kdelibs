@@ -168,15 +168,12 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
         switch (token.type) {
         case Text:
             result += token.text;
-            kDebug() << "TEXT:" << token.text;
             break;
         case Image:
             if (!exclude.contains(token.text)) {
                 result += token.picHTMLCode;
-                kDebug() << "IMG:" << token.picHTMLCode;
             } else {
                 result += token.text;
-                kDebug() << "TEXT:" << token.text;
             }
             break;
         default:
