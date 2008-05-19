@@ -1073,7 +1073,7 @@ namespace KJS {
   class FuncExprNode : public Node {
   public:
     FuncExprNode(const Identifier &i, FunctionBodyNode *b, ParameterNode *p = 0)
-      : ident(i), param(p ? p->next.release() : 0), body(b) { if (p) { Parser::removeNodeCycle(param.get()); } addParams(); }
+      : ident(i), param(p ? p->next.release() : PassRefPtr<ParameterNode>(0)), body(b) { if (p) { Parser::removeNodeCycle(param.get()); } addParams(); }
 
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
     virtual void streamTo(SourceStream&) const;
