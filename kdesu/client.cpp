@@ -63,10 +63,22 @@ KDEsuClient::KDEsuClient()
     }
 
     // strip the screen number from the display
-    while (QChar::fromLatin1(display.at(display.count() - 1)).isDigit())
-        display.chop(1);
-    if (display.endsWith('.'))
-        display.chop(1);
+    int cut = display.lastIndexOf( '.' );
+    if( cut > 0 )
+    {
+        for( int i = cut;
+             i < display.count();
+             ++i )
+        {
+            if( display.at( i ) < '0' || display.at( i ) > '9' )
+            {
+                cut = -1;
+                break;
+            }
+        }
+    }
+    if( cut > 0 )
+        display.truncate( cut );
 #elif defined(Q_WS_QWS)
     QByteArray display("QWS");
 #else
