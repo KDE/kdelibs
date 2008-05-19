@@ -188,7 +188,7 @@ private:
   friend class ::KHTMLPart;
   friend class ::KHTMLView;
   friend class ::KHTMLEditorPart;
-  friend class khtml::EditorContext;
+  friend struct khtml::EditorContext;
 };
 
 }/*namespace DOM*/

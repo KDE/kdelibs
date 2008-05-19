@@ -98,7 +98,7 @@ extern const Op* const* const opSpecializations[];
 // Describes whether the type is align8 or not.
 extern const bool opTypeIsAlign8[];
 
-class OpValue;
+struct OpValue;
 
 typedef Vector<unsigned char> CodeBlock;
 

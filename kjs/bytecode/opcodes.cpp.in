@@ -38,7 +38,7 @@ const int Cost_Checked      = -2;
 // Note: costOut will be negative if no conversion is possible
 ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& costOut, bool exact)
 {
-    bool   inImmediate = in->immediate;
+    bool   inImmediate = (in->immediate != 0);
     OpType inType      = in->type;
 
     if (exact) {

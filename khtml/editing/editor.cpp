@@ -43,7 +43,7 @@
 #  define assert(x) Q_ASSERT(x)
 #endif
 
-#define PREPARE_JSEDITOR_CALL(command, retval...) \
+#define PREPARE_JSEDITOR_CALL(command, retval) \
 	JSEditor *js = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->jsEditor() : 0; \
         if (!js) return retval; \
         const CommandImp *imp = js->commandImp(command)
