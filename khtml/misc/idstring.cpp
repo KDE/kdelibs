@@ -54,6 +54,7 @@ unsigned short IDTableBase::grabId(const DOMString& name)
         // Grab from freelist..
         newId = m_idFreeList.last();
         m_idFreeList.removeLast();
+        m_mappings[newId].name = name;
     } else {
         // Make a new one --- if we can (we keep one spot for "last resort" mapping)
         if (m_mappings.size() < 0xFFFE) {
