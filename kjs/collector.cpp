@@ -54,8 +54,10 @@
 #include <pthread.h> //krazy:exclude=includes (yes, it's duplicate, but in a different #if branch)
 #include <unistd.h>
 
-#if PLATFORM(SOLARIS)
+#if PLATFORM(SOLARIS_OS)
 #include <thread.h>
+#include <signal.h>
+using std::memset;
 #endif
 
 #if HAVE(PTHREAD_NP_H)
@@ -494,6 +496,8 @@ static inline void* currentThreadStackBase()
     stack_t s;
     thr_stksegment(&s);
     return s.ss_sp;
+    // NOTREACHED
+    void *stackBase = 0;
 #elif PLATFORM(UNIX)
     static void *stackBase = 0;
     static pthread_t stackThread;
