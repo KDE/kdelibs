@@ -102,6 +102,7 @@ public:
         delete q; q = 0;
         qDeleteAll( protInfoDict );
         qDeleteAll( slaveList );
+        delete sessionData;
     }
     Scheduler *q;
 
