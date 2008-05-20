@@ -160,7 +160,7 @@ void KEmoticonsTheme::createNew()
 
 QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude)
 {
-    QList<Token> tokens = tokenize(text, mode);
+    QList<Token> tokens = tokenize(text, mode | SkipHTML);
     QString result;
 
     foreach(const Token &token , tokens) {

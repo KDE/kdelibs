@@ -114,6 +114,7 @@ public:
      * @param mode how to parse the text
      * @param exclude a list of emoticons to exclude from the parsing
      * @return the text with emoticons replaced by html images
+     * @note SkipHTML is forced when using this function
      */
     QString parseEmoticons(const QString &text, ParseMode mode = DefaultParse, const QStringList &exclude = QStringList());
 
