@@ -254,6 +254,7 @@ void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
         commandType = Move;
         break;
     case CopyJob::Link:
+    default: // prevent "wrong" compiler warning because of possibly uninitialized variable
         commandType = Link;
         break;
     }
