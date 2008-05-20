@@ -228,8 +228,8 @@ KdedGlobalAccel::~KdedGlobalAccel()
 
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
-    Q_FOREACH (QStringList component, allComponents()) {
-        Q_FOREACH (QStringList actionId, allActionsForComponent(component)) {
+    Q_FOREACH (const QStringList &component, allComponents()) {
+        Q_FOREACH (const QStringList &actionId, allActionsForComponent(component)) {
             setInactive(actionId);
         }
     }

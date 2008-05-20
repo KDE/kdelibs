@@ -118,8 +118,8 @@ void ServiceBrowser::virtual_hook(int, void*)
 
 RemoteService::Ptr ServiceBrowserPrivate::find(RemoteService::Ptr s) const
 {
-    Q_FOREACH (RemoteService::Ptr i, m_services) if (*s==*i) return i;
-    Q_FOREACH (RemoteService::Ptr i, m_duringResolve) if (*s==*i) return i;
+    Q_FOREACH (const RemoteService::Ptr& i, m_services) if (*s==*i) return i;
+    Q_FOREACH (const RemoteService::Ptr& i, m_duringResolve) if (*s==*i) return i;
     return s;
 }
 

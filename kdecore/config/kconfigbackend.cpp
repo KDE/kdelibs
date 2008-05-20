@@ -73,7 +73,7 @@ BackendPtr KConfigBackend::create(const KComponentData& componentData, const QSt
         KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend", constraint);
 
         //qDebug() << "found" << offers.count() << "offers for KConfigBackend plugins with name" << system;
-        foreach (const KService::Ptr offer, offers) {
+        foreach (const KService::Ptr& offer, offers) {
             backend = offer->createInstance<KConfigBackend>(0);
             if (backend) {
                 //qDebug() << "successfully created a backend for" << system;
