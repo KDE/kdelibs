@@ -428,9 +428,9 @@ public:
    int PEM_write_bio_X509(BIO *bp, X509 *x);
 
    /*
-    *   ASN1_i2d_fp - used for netscape output
+    *   ASN1_item_i2d_fp - used for netscape output
     */
-   int ASN1_i2d_fp(FILE *out, unsigned char *x);
+   int ASN1_item_i2d_fp(FILE *out, unsigned char *x);
 
 
    /*

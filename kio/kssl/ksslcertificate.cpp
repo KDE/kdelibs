@@ -1195,6 +1195,15 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
 #define NETSCAPE_CERT_HDR     "certificate"
 
+#if OPENSSL_VERSION_NUMBER < 0x00909000L
+
+typedef struct NETSCAPE_X509_st
+{
+    ASN1_OCTET_STRING *header;
+    X509 *cert;
+} NETSCAPE_X509;
+#endif
+
 // what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
     QByteArray qba;
@@ -1210,7 +1219,7 @@ QByteArray KSSLCertificate::toNetscape() {
     nx.header = &hdr;
     nx.cert = getCert();
 
-    d->kossl->ASN1_i2d_fp(ktf_fs,(unsigned char *)&nx);
+    d->kossl->ASN1_item_i2d_fp(ktf_fs,(unsigned char *)&nx);
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());

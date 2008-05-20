@@ -995,9 +995,9 @@ int KOpenSSLProxy::PEM_write_bio_X509(BIO *bp, X509 *x) {
    else return -1;
 }
 
-int KOpenSSLProxy::ASN1_i2d_fp(FILE *out,unsigned char *x) {
+int KOpenSSLProxy::ASN1_item_i2d_fp(FILE *out,unsigned char *x) {
    if (K_ASN1_item_i2d_fp && K_NETSCAPE_X509_it)
-        return (K_ASN1_i2d_fp)((int (*)())K_NETSCAPE_X509_it, out, x);
+        return (K_ASN1_item_i2d_fp)(K_NETSCAPE_X509_it, out, x);
    else return -1;
 }
 
