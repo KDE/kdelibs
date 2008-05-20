@@ -55,7 +55,7 @@ KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
 #ifdef Q_WS_X11
-    QByteArray display(getenv("DISPLAY"));
+    QString display = QString::fromAscii(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
         kWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
@@ -63,22 +63,7 @@ KDEsuClient::KDEsuClient()
     }
 
     // strip the screen number from the display
-    int cut = display.lastIndexOf( '.' );
-    if( cut > 0 )
-    {
-        for( int i = cut;
-             i < display.count();
-             ++i )
-        {
-            if( display.at( i ) < '0' || display.at( i ) > '9' )
-            {
-                cut = -1;
-                break;
-            }
-        }
-    }
-    if( cut > 0 )
-        display.truncate( cut );
+    display.replace(QRegExp("\\.[0-9]+$"), "");
 #elif defined(Q_WS_QWS)
     QByteArray display("QWS");
 #else
