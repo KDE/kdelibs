@@ -8,7 +8,7 @@
 
 int main (int argc, char **argv)
 {
-	KComponentData ins("kmfitest");
+	KComponentData ins(QByteArray("kmfitest"));
 
 	if (argc < 2) {
 		printf("usage: %s <file>\n", argv[0]);

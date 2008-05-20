@@ -28,8 +28,7 @@
 #include <assert.h>
 
 int main(int argc, char **argv) {
-    KAboutData aboutData("kprotocolinfotest", 0, ki18n("KProtocolinfo Test"),
-                        "1.0");
+    KAboutData aboutData(QByteArray("kprotocolinfotest"), QByteArray(), ki18n("KProtocolinfo Test"), QByteArray("1.0"));
 
     KComponentData componentData(&aboutData);
     QCoreApplication app(argc,argv); // needed by QEventLoop in ksycoca.cpp

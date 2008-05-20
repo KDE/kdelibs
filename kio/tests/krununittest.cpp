@@ -65,10 +65,10 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
     QFile out( "kruntest.desktop" );
     if ( !out.open( QIODevice::WriteOnly ) )
         abort();
-    QByteArray str = "[Desktop Entry]\n"
+    QByteArray str ( "[Desktop Entry]\n"
                      "Type=Application\n"
                      "Name=just_a_test\n"
-                     "Icon=~/icon.png\n";
+                     "Icon=~/icon.png\n");
     str += QByteArray(exec) + '\n';
     str += QByteArray(term) + '\n';
     str += QByteArray(sus) + '\n';

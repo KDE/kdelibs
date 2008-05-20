@@ -108,7 +108,7 @@ void KFileItemTest::testBasic()
     QVERIFY(file.open());
     QFile fileObj(file.fileName());
     QVERIFY(fileObj.open(QIODevice::WriteOnly));
-    fileObj.write("Hello");
+    fileObj.write(QByteArray("Hello"));
     fileObj.close();
 
     KUrl url(file.fileName());
@@ -158,7 +158,7 @@ void KFileItemTest::testMimeTypeOnDemand()
         QVERIFY(file.open());
         // Check whether mime-magic is used.
         // No known extension, so it should be used by determineMimeType.
-        file.write("%PDF-");
+        file.write(QByteArray("%PDF-"));
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();
@@ -175,7 +175,7 @@ void KFileItemTest::testMimeTypeOnDemand()
         QVERIFY(file.open());
         // Check whether mime-magic is used.
         // Known extension, so it should NOT be used.
-        file.write("<smil");
+        file.write(QByteArray("<smil"));
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();

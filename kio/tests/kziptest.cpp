@@ -97,7 +97,7 @@ int main( int argc, char** argv )
  " ./kziptest transfer file.zip newfile.zip         complete transfer.\n" );
     return 1;
   }
-  KComponentData componentData("kziptest");
+  KComponentData componentData(QByteArray("kziptest"));
   QString command = argv[1];
   if ( command == "list" )
   {

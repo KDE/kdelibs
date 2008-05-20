@@ -49,7 +49,7 @@ int main( int argc, char** argv )
                " ./ktartest /path/to/existing_file.tar.gz       tests listing an existing tar.gz\n" );
         return 1;
     }
-    KComponentData componentData("ktartest");
+    KComponentData componentData(QByteArray("ktartest"));
     KTar tar( argv[1] );
 
     if ( !tar.open( QIODevice::ReadOnly ) )

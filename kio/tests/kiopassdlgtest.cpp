@@ -8,7 +8,7 @@
 
 int main ( int argc, char** argv )
 {
-    KAboutData aboutData("kiopassdlgtest", 0, ki18n("KIO Password Dialog Test"), "1.0");
+    KAboutData aboutData(QByteArray("kiopassdlgtest"), QByteArray(), ki18n("KIO Password Dialog Test"), QByteArray("1.0"));
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 

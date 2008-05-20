@@ -5,7 +5,7 @@
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );
 
-    KComponentData data("ksslkeygentest");
+    KComponentData data(QByteArray("ksslkeygentest"));
 
     KSSLKeyGen wizard(0);
     wizard.setKeySize(0);

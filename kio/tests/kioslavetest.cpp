@@ -469,13 +469,14 @@ int main(int argc, char **argv) {
 
   KCmdLineOptions options;
   options.add("s");
-  options.add("src <src>", ki18n("Source URL"), "");
+  options.add("src <src>", ki18n("Source URL"), QByteArray());
   options.add("d");
-  options.add("dest <dest>", ki18n("Destination URL"), "");
+  options.add("dest <dest>", ki18n("Destination URL"), QByteArray());
   options.add("o");
-  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"), "copy");
+  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"), QByteArray("copy"));
   options.add("p");
-  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"), "default");
+  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"),
+          QByteArray("default"));
 
   const char version[] = "v0.0.0 0000";   // :-)
   KLocalizedString description = ki18n("Test for kioslaves");
@@ -513,7 +514,7 @@ int main(int argc, char **argv) {
     op = KioslaveTest::Delete;
   } else if ( tmps == "mkdir") {
     op = KioslaveTest::Mkdir;
-  } else KCmdLineArgs::usage("unknown operation");
+  } else KCmdLineArgs::usage(QByteArray("unknown operation"));
 
   tmps = args->getOption("progress");
   if ( tmps == "none") {
@@ -522,7 +523,7 @@ int main(int argc, char **argv) {
     pr = KioslaveTest::ProgressDefault;
   } else if ( tmps == "status") {
     pr = KioslaveTest::ProgressStatus;
-  } else KCmdLineArgs::usage("unknown progress mode");
+  } else KCmdLineArgs::usage(QByteArray("unknown progress mode"));
 
   args->clear(); // Free up memory
 

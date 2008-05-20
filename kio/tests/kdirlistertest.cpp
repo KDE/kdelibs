@@ -160,7 +160,7 @@ void KDirListerTest::testNewItems()
     kDebug() << "Creating new file";
     QFile file(path+"toplevelfile_new");
     QVERIFY(file.open(QIODevice::WriteOnly));
-    file.write("foo");
+    file.write(QByteArray("foo"));
     file.close();
 
     int numTries = 0;
@@ -204,7 +204,7 @@ void KDirListerTest::testRefreshItems()
 
     QFile file(fileName);
     QVERIFY(file.open(QIODevice::Append));
-    file.write("<html>");
+    file.write(QByteArray("<html>"));
     file.close();
     QCOMPARE(QFileInfo(fileName).size(), 11LL /*Hello world*/ + 6 /*<html>*/);
 
