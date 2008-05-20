@@ -434,6 +434,9 @@ install( FILES
   KCategorizedView
   KCategoryDrawer
   KCategorizedSortFilterProxyModel
+  KEmoticons
+  KEmoticonsProvider
+  KEmoticonsTheme
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 if (UNIX)
