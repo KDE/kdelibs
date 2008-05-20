@@ -92,7 +92,7 @@
       <item row="0" column="0" >
        <widget class="QLabel" name="startBannerLabel" >
         <property name="text" >
-         <string>Start</string>
+         <string comment="Banner page at start">Start</string>
         </property>
        </widget>
       </item>
@@ -102,7 +102,7 @@
       <item row="1" column="0" >
        <widget class="QLabel" name="endBannerLabel" >
         <property name="text" >
-         <string>End</string>
+         <string comment="Banner page at end">End</string>
         </property>
        </widget>
       </item>
