@@ -91,7 +91,7 @@ int DOM::getValueID(const char *tagStr, int len)
 #define YYLTYPE_IS_TRIVIAL 1
 %}
 
-%expect 33
+%expect 34
 
 %pure_parser
 
@@ -144,7 +144,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %destructor { delete $$; $$ = 0; } expr;
 %destructor { delete $$; $$ = 0; } maybe_media_list media_list;
-%destructor { delete $$; $$ = 0; } maybe_media_query_exp_list media_query_exp_list;
+%destructor { delete $$; $$ = 0; } maybe_and_media_query_exp_list media_query_exp_list;
 %destructor { if ($$) qDeleteAll(*$$); delete $$; $$ = 0; } selector_list;
 %destructor { delete $$; $$ = 0; } ruleset_list;
 %destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector simple_css3_selector selector class attrib pseudo;
@@ -250,7 +250,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <valueList> maybe_media_value
 %type <mediaQueryExp> media_query_exp
 %type <mediaQueryExpList> media_query_exp_list
-%type <mediaQueryExpList> maybe_media_query_exp_list
+%type <mediaQueryExpList> maybe_and_media_query_exp_list
 
 %type <ruleList> ruleset_list
 
@@ -477,8 +477,8 @@ maybe_media_value:
     ;
 
 media_query_exp:
-    MEDIA_AND maybe_space '(' maybe_space media_feature maybe_space maybe_media_value ')' maybe_space {
-        $$ = new khtml::MediaQueryExp(domString($5).lower(), $7);
+    '(' maybe_space media_feature maybe_space maybe_media_value ')' maybe_space {
+        $$ = new khtml::MediaQueryExp(domString($3).lower(), $5);
     }
     ;
 
@@ -487,17 +487,19 @@ media_query_exp_list:
       $$ =  new QList<khtml::MediaQueryExp*>;
       $$->append($1);
     }
-    | media_query_exp_list media_query_exp {
+    | media_query_exp_list maybe_space MEDIA_AND maybe_space media_query_exp {
       $$ = $1;
-      $$->append($2);
+      $$->append($5);
     }
     ;
 
-maybe_media_query_exp_list:
+maybe_and_media_query_exp_list:
     /*empty*/ {
         $$ = new QList<khtml::MediaQueryExp*>;
     }
-    | media_query_exp_list
+    | MEDIA_AND maybe_space media_query_exp_list {
+        $$ = $3;
+    }
     ;
 
 maybe_media_restrictor:
@@ -513,7 +515,10 @@ maybe_media_restrictor:
     ;
 
 media_query:
-    maybe_media_restrictor maybe_space medium maybe_media_query_exp_list {
+    media_query_exp_list {
+        $$ = new khtml::MediaQuery(khtml::MediaQuery::None, "all", $1);
+    }                    
+    | maybe_media_restrictor maybe_space medium maybe_and_media_query_exp_list {
         $$ = new khtml::MediaQuery($1, domString($3).lower(), $4);
     }
     ;

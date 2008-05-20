@@ -407,7 +407,7 @@ static bool monochromeMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLP
             depth = QApplication::desktop()->screen(sn)->depth();
     }
     float number;
-    if (value && depth)
+    if (value)
         return numberValue(value, number) && compareValue(depth, static_cast<int>(number), op);
     return depth;
 }
