@@ -150,7 +150,7 @@ public:
         CSActionPending
     };
 
-    KHTMLViewPrivate()
+    KHTMLViewPrivate(KHTMLView* v)
         : underMouse( 0 ), underMouseNonShared( 0 ), oldUnderMouse( 0 )
     {
         postponed_autorepeat = NULL;
@@ -169,6 +169,7 @@ public:
         m_mouseScrollIndicator = 0;
         contentsX = 0;
         contentsY = 0;
+        view = v;
     }
     ~KHTMLViewPrivate()
     {
@@ -318,10 +319,17 @@ public:
     {
         smoothScrollTimer.stop();
         dx = dy = 0;
+        updateContentsXY();
         smoothScrolling = false;
         shouldSmoothScroll = false;
     }
 
+    void updateContentsXY()
+    {
+        contentsX = QApplication::isRightToLeft() ?
+                        view->horizontalScrollBar()->maximum()-view->horizontalScrollBar()->value() : view->horizontalScrollBar()->value();
+        contentsY = view->verticalScrollBar()->value();
+    }
 
 #ifdef DEBUG_PIXEL
     QTime timer;
@@ -413,6 +421,7 @@ public:
     QWidget *m_mouseScrollIndicator;
     QPointer<QWidget> m_mouseEventsTarget;
     QStack<QRegion>* m_clipHolder;
+    KHTMLView* view;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -518,7 +527,7 @@ bool KHTMLView::event( QEvent* e )
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
-    : QScrollArea( parent ), d( new KHTMLViewPrivate )
+    : QScrollArea( parent ), d( new KHTMLViewPrivate( this ) )
 {
     m_medium = "screen";
 
@@ -584,6 +593,7 @@ void KHTMLView::delayedInit()
     resizeContents(s.width(), s.height());
 }
 
+
 // called by KHTMLPart::clear()
 void KHTMLView::clear()
 {
@@ -596,6 +606,8 @@ void KHTMLView::clear()
     viewport()->unsetCursor();
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
+    if (d->smoothScrolling)
+        d->stopScrolling();
     d->reset();
     QAbstractEventDispatcher::instance()->unregisterTimers(this);
     emit cleared();
@@ -3799,9 +3811,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
     if (!d->smoothScrolling) {
-        d->contentsX = QApplication::isRightToLeft() ?
-                     horizontalScrollBar()->maximum()-horizontalScrollBar()->value() : horizontalScrollBar()->value();
-        d->contentsY = verticalScrollBar()->value();
+        d->updateContentsXY();
     } else {
         d->contentsX -= dx;
         d->contentsY -= dy;
