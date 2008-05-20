@@ -1199,19 +1199,18 @@ const char *footer = "-----END CERTIFICATE-----\n";
 QByteArray KSSLCertificate::toNetscape() {
     QByteArray qba;
 #ifdef KSSL_HAVE_SSL
-    ASN1_HEADER ah;
-    ASN1_OCTET_STRING os;
+    NETSCAPE_X509 nx;
+    ASN1_OCTET_STRING hdr;
     KTemporaryFile ktf;
     ktf.open();
     FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
 
-    os.data = (unsigned char *)NETSCAPE_CERT_HDR;
-    os.length = strlen(NETSCAPE_CERT_HDR);
-    ah.header = &os;
-    ah.data = (char *)getCert();
-    ah.meth = d->kossl->X509_asn1_meth();
+    hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
+    hdr.length = strlen(NETSCAPE_CERT_HDR);
+    nx.header = &hdr;
+    nx.cert = getCert();
 
-    d->kossl->ASN1_i2d_fp(ktf_fs,(unsigned char *)&ah);
+    d->kossl->ASN1_i2d_fp(ktf_fs,(unsigned char *)&nx);
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());

@@ -97,9 +97,8 @@ static int  (*K_BIO_write) (BIO *b, const void *data, int len) = 0L;
 static int (*K_PEM_ASN1_write_bio) (int (*)(),const char *,BIO *,char *,
                                    const EVP_CIPHER *,unsigned char *,int ,
                                             pem_password_cb *, void *) = 0L;
-static ASN1_METHOD* (*K_X509_asn1_meth) (void) = 0L;
-static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = 0L;
-static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = 0L;
+static int (*K_ASN1_item_i2d_fp)(ASN1_ITEM *,FILE *,unsigned char *) = 0L;
+static ASN1_ITEM *K_NETSCAPE_X509_it = 0L;
 static int (*K_X509_print_fp)  (FILE *, X509*) = 0L;
 static int (*K_i2d_PKCS12)  (PKCS12*, unsigned char**) = 0L;
 static int (*K_i2d_PKCS12_fp)  (FILE *, PKCS12*) = 0L;
@@ -441,9 +440,9 @@ KOpenSSLProxy::KOpenSSLProxy()
       K_BIO_ctrl = (long (*) (BIO *,int,long,void *)) d->cryptoLib->resolveFunction("BIO_ctrl");
       K_BIO_write = (int (*) (BIO *b, const void *data, int len)) d->cryptoLib->resolveFunction("BIO_write");
       K_PEM_ASN1_write_bio = (int (*)(int (*)(), const char *,BIO*, char*, const EVP_CIPHER *, unsigned char *, int, pem_password_cb *, void *)) d->cryptoLib->resolveFunction("PEM_ASN1_write_bio");
-      K_X509_asn1_meth = (ASN1_METHOD* (*)(void)) d->cryptoLib->resolveFunction("X509_asn1_meth");
-      K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) d->cryptoLib->resolveFunction("ASN1_i2d_fp");
-      K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) d->cryptoLib->resolveFunction("i2d_ASN1_HEADER");
+      K_ASN1_item_i2d_fp = (int (*)(ASN1_ITEM *, FILE*, unsigned char *))
+          d->cryptoLib->resolveFunction("ASN1_item_i2d_fp");
+      K_NETSCAPE_X509_it = (ASN1_ITEM *) d->cryptoLib->resolveFunction("NETSCAPE_X509_it");
       K_X509_print_fp = (int (*)(FILE*, X509*)) d->cryptoLib->resolveFunction("X509_print_fp");
       K_i2d_PKCS12 = (int (*)(PKCS12*, unsigned char**)) d->cryptoLib->resolveFunction("i2d_PKCS12");
       K_i2d_PKCS12_fp = (int (*)(FILE *, PKCS12*)) d->cryptoLib->resolveFunction("i2d_PKCS12_fp");
@@ -996,16 +995,9 @@ int KOpenSSLProxy::PEM_write_bio_X509(BIO *bp, X509 *x) {
    else return -1;
 }
 
-
-ASN1_METHOD *KOpenSSLProxy::X509_asn1_meth(void) {
-   if (K_X509_asn1_meth) return (K_X509_asn1_meth)();
-   else return 0L;
-}
-
-
 int KOpenSSLProxy::ASN1_i2d_fp(FILE *out,unsigned char *x) {
-   if (K_ASN1_i2d_fp && K_i2d_ASN1_HEADER)
-        return (K_ASN1_i2d_fp)((int (*)())K_i2d_ASN1_HEADER, out, x);
+   if (K_ASN1_item_i2d_fp && K_NETSCAPE_X509_it)
+        return (K_ASN1_i2d_fp)((int (*)())K_NETSCAPE_X509_it, out, x);
    else return -1;
 }
 

@@ -427,13 +427,6 @@ public:
     */
    int PEM_write_bio_X509(BIO *bp, X509 *x);
 
-
-   /*
-    *   X509_asn1_meth - used for netscape output
-    */
-   ASN1_METHOD *X509_asn1_meth();
-
-
    /*
     *   ASN1_i2d_fp - used for netscape output
     */
