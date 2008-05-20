@@ -572,8 +572,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     int iconSize = option.rect.height() - MARGIN * 2;
     if (pluginSelector_d->showIcons) {
-        KIcon icon(index.model()->data(index, Qt::DecorationRole).toString());
-        painter->drawPixmap(QRect(pluginSelector_d->dependantLayoutValue(MARGIN + option.rect.left() + xOffset, iconSize, option.rect.width()), MARGIN + option.rect.top(), iconSize, iconSize), icon.pixmap(iconSize, iconSize), QRect(0, 0, iconSize, iconSize));
+        int state = index.model()->data(index, Qt::CheckStateRole).toBool() ? KIconLoader::DefaultState
+                                                                            : KIconLoader::DisabledState;
+        QPixmap pixmap = KIconLoader::global()->loadIcon(index.model()->data(index, Qt::DecorationRole).toString(),
+                                                         KIconLoader::Desktop, iconSize, state);
+
+        painter->drawPixmap(QRect(pluginSelector_d->dependantLayoutValue(MARGIN + option.rect.left() + xOffset, iconSize, option.rect.width()), MARGIN + option.rect.top(), iconSize, iconSize), pixmap, QRect(0, 0, iconSize, iconSize));
     } else {
         iconSize = -MARGIN;
     }
@@ -685,6 +689,7 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     configurePushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), configurePushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);
 
     configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
+    configurePushButton->setEnabled(index.model()->data(index, Qt::CheckStateRole).toBool());
 }
 
 void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
