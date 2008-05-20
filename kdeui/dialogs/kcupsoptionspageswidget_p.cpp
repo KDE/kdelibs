@@ -188,7 +188,7 @@ KCupsOptionsPagesWidget::PagesPerSheetLayout KCupsOptionsPagesWidget::pagesPerSh
 
 void KCupsOptionsPagesWidget::initPageBorder()
 {
-    ui.pageBorderCombo->addItem( i18n("None"),              NoBorder );
+    ui.pageBorderCombo->addItem( i18nc("No border line", "None"), NoBorder );
     ui.pageBorderCombo->addItem( i18n("Single Line"),       SingleLine );
     ui.pageBorderCombo->addItem( i18n("Single Thick Line"), SingleThickLine );
     ui.pageBorderCombo->addItem( i18n("Double Line"),       DoubleLine );
@@ -209,13 +209,13 @@ KCupsOptionsPagesWidget::PageBorder KCupsOptionsPagesWidget::pageBorder() const
 
 void KCupsOptionsPagesWidget::initStartBannerPage()
 {
-    ui.startBannerPageCombo->addItem( i18n("None"),         NoBanner );
-    ui.startBannerPageCombo->addItem( i18n("Standard"),     Standard );
-    ui.startBannerPageCombo->addItem( i18n("Unclassified"), Unclassified );
-    ui.startBannerPageCombo->addItem( i18n("Confidential"), Confidential );
-    ui.startBannerPageCombo->addItem( i18n("Classified"),   Classified );
-    ui.startBannerPageCombo->addItem( i18n("Secret"),       Secret );
-    ui.startBannerPageCombo->addItem( i18n("Top Secret"),   TopSecret );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "None"),         NoBanner );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Standard"),     Standard );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Unclassified"), Unclassified );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Confidential"), Confidential );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Classified"),   Classified );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Secret"),       Secret );
+    ui.startBannerPageCombo->addItem( i18nc("Banner page", "Top Secret"),   TopSecret );
 
     setStartBannerPage( NoBanner );
 }
@@ -232,13 +232,13 @@ KCupsOptionsPagesWidget::BannerPage KCupsOptionsPagesWidget::startBannerPage() c
 
 void KCupsOptionsPagesWidget::initEndBannerPage()
 {
-    ui.endBannerPageCombo->addItem( i18n("None"),         NoBanner );
-    ui.endBannerPageCombo->addItem( i18n("Standard"),     Standard );
-    ui.endBannerPageCombo->addItem( i18n("Unclassified"), Unclassified );
-    ui.endBannerPageCombo->addItem( i18n("Confidential"), Confidential );
-    ui.endBannerPageCombo->addItem( i18n("Classified"),   Classified );
-    ui.endBannerPageCombo->addItem( i18n("Secret"),       Secret );
-    ui.endBannerPageCombo->addItem( i18n("Top Secret"),   TopSecret );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "None"),         NoBanner );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Standard"),     Standard );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Unclassified"), Unclassified );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Confidential"), Confidential );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Classified"),   Classified );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Secret"),       Secret );
+    ui.endBannerPageCombo->addItem( i18nc("Banner page", "Top Secret"),   TopSecret );
 
     setEndBannerPage( NoBanner );
 }
