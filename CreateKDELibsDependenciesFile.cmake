@@ -115,5 +115,48 @@ endif (NOT QT_INSTALL_DIR)
 #        file (APPEND ${CMAKE_BINARY_DIR}/KDELibsDependencies.cmake "${__deps}")
 endif(WIN32)
 
-export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
+
+# by exporting this into a separate file and including this file then, we can control where
+# in the generated file this code appears (export_library_dependencies() always writes at the end
+# of the file, since it is one of the few commands which does the work in ::FinalPass(), Alex
+export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependenciesInternal.cmake)
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "
+# include KDELibsDependenciesInternal.cmake, which is the file created by export_library_dependencies()
+get_filename_component( _kdelibsdeps_dir  \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
+include(\"\${_kdelibsdeps_dir}/KDELibsDependenciesInternal.cmake\")\n\n")
+
+
+if(UNIX  AND NOT  APPLE)
+   option(KDE4_ENABLE_EXPERIMENTAL_LIB_EXPORT "Enable the experimental reduced library exports" FALSE)
+endif(UNIX  AND NOT  APPLE)
+
+if(KDE4_ENABLE_EXPERIMENTAL_LIB_EXPORT  AND  UNIX  AND NOT APPLE)
+
+   # get all cmake variables which end in _LIB_DEPENDS
+   # then parse the target name out of them
+   # use the target name to get the LINK_INTERFACE_LIBRARIES target property 
+   # This way for targets where INTERFACE_LINK_LIBRARIES has been set, the value set from 
+   # export_library_dependencies() will be overridden, while for those where it hasn't been set
+   # the full list is preserved.
+   # (this is cmake 2.6 compatible, where we'll use the EXPORT() feature
+   # Alex
+
+   file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "# The following variables have been created by kdelibs/CreateKDELibsDependenciesFile.cmake, included by kdelibs/CMakeLists.txt
+# The contents have been determined from the LINK_INTERFACE_LIBRARIES target property of the respective libraries.
+# The option KDE4_ENABLE_EXPERIMENTAL_LIB_EXPORT has been enabled to create the file this way.
+# You can modify KDE4_ENABLE_EXPERIMENTAL_LIB_EXPORT using \"make edit_cache\"\n\n")
+   get_cmake_property(allVars VARIABLES)
+   set(allLibs "")
+   foreach(currentVar ${allVars})
+      string(REGEX REPLACE "^(.+)_LIB_DEPENDS$" "\\1" target "${currentVar}")
+      if(NOT "${target}" STREQUAL "${currentVar}")
+         get_target_property(interfaceLibs ${target} LINK_INTERFACE_LIBRARIES)
+         if(NOT "${interfaceLibs}" MATCHES "NOTFOUND")
+            file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "SET(\"${currentVar}\" \"${interfaceLibs}\")\n")
+         endif(NOT "${interfaceLibs}" MATCHES "NOTFOUND")
+      endif(NOT "${target}" STREQUAL "${currentVar}")
+   endforeach(currentVar ${allVars})
+
+endif(KDE4_ENABLE_EXPERIMENTAL_LIB_EXPORT  AND  UNIX  AND NOT APPLE)
 
