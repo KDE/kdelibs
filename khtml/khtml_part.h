@@ -1025,7 +1025,7 @@ public:
    *
    */
    // ### KDE5 remove - fix write( const QString &str ) instead
-  bool setAlwaysHonourDoctype( bool b = true );
+  void setAlwaysHonourDoctype( bool b = true );
 
   // ### KDE5 remove me
   enum FormNotification { NoNotification = 0, Before, Only, Unused=255 };

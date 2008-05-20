@@ -1942,7 +1942,7 @@ void KHTMLPart::write( const char *data, int len )
 }
 
 // ### KDE5: remove
-bool KHTMLPart::setAlwaysHonourDoctype( bool b )
+void KHTMLPart::setAlwaysHonourDoctype( bool b )
 {
     d->m_bStrictModeQuirk = !b;
 }
