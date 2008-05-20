@@ -63,6 +63,9 @@
 using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-', QChar::Null };
+static const char doctypeStart [] = "<!doctype";
+static const char publicStart [] = "public";
+static const char systemStart [] = "system";
 
 static const char scriptEnd [] = "</script";
 static const char xmpEnd [] = "</xmp";
@@ -181,6 +184,7 @@ void HTMLTokenizer::reset()
     }
 
     currToken.reset();
+    doctypeToken.reset();
 }
 
 void HTMLTokenizer::begin()
@@ -205,12 +209,17 @@ void HTMLTokenizer::begin()
     skipLF = false;
     select = false;
     comment = false;
+    doctype = false;
+    doctypeComment = NoDoctypeComment;
+    doctypeAllowComment = false;
     server = false;
     textarea = false;
     title = false;
     startTag = false;
     tquote = NoQuote;
     searchCount = 0;
+    doctypeSearchCount = 0;
+    doctypeSecondarySearchCount = 0;
     Entity = NoEntity;
     noMoreData = false;
     brokenComments = false;
@@ -528,6 +537,280 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
     }
 }
 
+void HTMLTokenizer::parseDoctypeComment(TokenizerString &src)
+{
+    while (!src.isEmpty()) {
+        QChar c = *src;
+        switch (doctypeComment) {
+            case DoctypeCommentHalfBegin: {
+                if (c != '-') {
+                    // Ooops, it's not comment
+                    doctypeComment = DoctypeCommentBogus;
+                    return;
+                } else {
+                    // Doctype comment begins
+                    doctypeComment = DoctypeComment;
+                    ++src;
+                }
+                break;
+            }
+            case DoctypeComment: {
+                if (c == '-') {
+                    // Perhaps this is end of comment
+                    doctypeComment = DoctypeCommentHalfEnd;
+                    ++src;
+                } else {
+                    // Keep scanning for '--'
+                    ++src;
+                }
+                break;
+            }
+            case DoctypeCommentHalfEnd: {
+                if (c == '-') {
+                    // Doctype comment ends
+                    doctypeComment = DoctypeCommentEnd;
+                    return;
+                } else {
+                    // It's not '--'
+                    ++src;
+                    doctypeComment = DoctypeComment;
+                }
+                break;
+            }
+            default: {
+                assert(!"Undefined doctype comment state");
+                break;
+            }
+        }
+    }
+}
+
+void HTMLTokenizer::parseDoctype(TokenizerString &src)
+{
+    while (!src.isEmpty() && doctype) {
+        QChar c;
+        bool isWhitespace = false;
+        int dontAdvance = 0;
+        if (doctypeComment == DoctypeCommentEnd) {
+            doctypeComment = NoDoctypeComment;
+            isWhitespace = true;
+        } else if (doctypeComment == DoctypeCommentBogus) {
+            doctypeComment = NoDoctypeComment;
+            c = '-';
+            dontAdvance++;
+        } else {
+            c = *src;
+            if (doctypeAllowComment) {
+                if (!doctypeComment && c == '-') {
+                    doctypeComment = DoctypeCommentHalfBegin;
+                    ++src;
+                }
+                if (doctypeComment) {
+                    parseDoctypeComment(src);
+                    continue;
+                }
+                isWhitespace = c == '\r' || c == '\n' || c == '\t' || c == ' ';
+            }
+        }
+        
+        switch (doctypeToken.state) {
+            case DoctypeBegin: {
+                doctypeToken.state = DoctypeBeforeName;
+                if (isWhitespace) {
+                    // nothing
+                }
+                break;
+            }
+            case DoctypeBeforeName: {
+                if (c == '>') {
+                    // Malformed. Just exit.
+                    doctype = false;
+                } else if (isWhitespace) {
+                    // nothing
+                } else {
+                    dontAdvance++;
+                    doctypeToken.state = DoctypeName;
+                }
+                break;
+            }
+            case DoctypeName: {
+                if (c == '>') {
+                    // Valid doctype. Emit it.
+                    doctype = false;
+                    processDoctypeToken();
+                } else if (isWhitespace) {
+                    doctypeSearchCount = 0; // Used now to scan for PUBLIC
+                    doctypeSecondarySearchCount = 0; // Used now to scan for SYSTEM
+                    doctypeToken.state = DoctypeAfterName;
+                } else {
+                    doctypeToken.name.append(c);
+                }
+                break;
+            }
+            case DoctypeAfterName: {
+                if (c == '>') {
+                    // Valid doctype. Emit it.
+                    doctype = false;
+                    processDoctypeToken();
+                } else if (c == '[') {
+                    if(doctypeSearchCount > 0 || doctypeSecondarySearchCount > 0) { // is there any public/system indicator before?
+                        doctypeSearchCount = doctypeSecondarySearchCount = 0;
+                        doctypeToken.state = DoctypeBogus;
+                    }
+                    // Found internal subset
+                    doctypeToken.state = DoctypeInternalSubset;
+                    doctypeAllowComment = false;
+                } else if (!isWhitespace) {
+                    if (c.toLower() == publicStart[doctypeSearchCount]) {
+                        doctypeSearchCount++;
+                        if(doctypeSearchCount == 6)
+                            // Found 'PUBLIC' sequence
+                            doctypeToken.state = DoctypeBeforePublicID;
+                    } else if (doctypeSearchCount > 0) {
+                        doctypeSearchCount = 0;
+                        doctypeToken.state = DoctypeBogus;
+                    } else if (c.toLower() == systemStart[doctypeSecondarySearchCount]) {
+                        doctypeSecondarySearchCount++;
+                        if(doctypeSecondarySearchCount == 6)
+                            // Found 'SYSTEM' sequence
+                            doctypeToken.state = DoctypeBeforeSystemID;
+                    } else {
+                        doctypeSecondarySearchCount = 0;
+                        doctypeToken.state = DoctypeBogus;
+                    }
+                } else {
+                    // Whitespace keeps us in the after name state
+                }
+                break;
+            }
+            case DoctypeBeforePublicID: {
+                if (c == '\"' || c == '\'') {
+                    tquote = c == '\"' ? DoubleQuote : SingleQuote;
+                    doctypeToken.state = DoctypePublicID;
+                    doctypeAllowComment = false;
+                } else if (c == '>') {
+                    // Considered bogus. Don't process the doctype.
+                    doctype = false;
+                } else if (isWhitespace) {
+                    // nothing
+                } else
+                    doctypeToken.state = DoctypeBogus;
+                break;
+            }
+            case DoctypePublicID: {
+                if ((c == '\"' && tquote == DoubleQuote) || (c == '\'' && tquote == SingleQuote)) {
+                    doctypeToken.state = DoctypeAfterPublicID;
+                    doctypeAllowComment = true;
+                } else if (c == '>') {
+                    // Considered bogus. Don't process the doctype.
+                    doctype = false;
+                } else {
+                    doctypeToken.publicID.append(c);
+                }
+                break;
+            }
+            case DoctypeAfterPublicID: {
+                if (c == '\"' || c == '\'') {
+                    tquote = c == '\"' ? DoubleQuote : SingleQuote;
+                    doctypeToken.state = DoctypeSystemID;
+                } else if (c == '>') {
+                    // Valid doctype. Emit it now.
+                    doctype = false;
+                    processDoctypeToken();
+                } else if (isWhitespace) {
+                    // nothing
+                } else if (c == '[') {
+                    // Found internal subset
+                    doctypeToken.state = DoctypeInternalSubset;
+                    doctypeAllowComment = false;
+                } else
+                    doctypeToken.state = DoctypeBogus;
+                break;
+            }
+            case DoctypeBeforeSystemID: {
+                if (c == '\"' || c == '\'') {
+                    tquote = c == '\"' ? DoubleQuote : SingleQuote;
+                    doctypeToken.state = DoctypeSystemID;
+                    doctypeAllowComment = false;
+                } else if (c == '>') {
+                    // Considered bogus. Don't process the doctype.
+                    doctype = false;
+                } else if (isWhitespace) {
+                    // nothing
+                } else
+                    doctypeToken.state = DoctypeBogus;
+                break;
+            }
+            case DoctypeSystemID: {
+                if ((c == '\"' && tquote == DoubleQuote) || (c == '\'' && tquote == SingleQuote)) {
+                    doctypeToken.state = DoctypeAfterSystemID;
+                    doctypeAllowComment = true;
+                } else if (c == '>') {
+                    // Considered bogus. Don't process the doctype.
+                    doctype = false;
+                } else {
+                    doctypeToken.systemID.append(c);
+                }
+                break;
+            }
+            case DoctypeAfterSystemID: {
+                if (c == '>') {
+                    // Valid doctype. Emit it now.
+                    doctype = false;
+                    processDoctypeToken();
+                } else if (isWhitespace) {
+                    // nothing
+                } else if (c == '[') {
+                    // Found internal subset
+                    doctypeToken.state = DoctypeInternalSubset;
+                    doctypeAllowComment = false;
+                } else {
+                    doctypeToken.state = DoctypeBogus;
+                }
+                break;
+            }
+            case DoctypeInternalSubset: {
+                if(c == ']') {
+                    // Done
+                    doctypeToken.state = DoctypeAfterInternalSubset;
+                    doctypeAllowComment = true;
+                } else {
+                    doctypeToken.internalSubset.append(c);
+                }
+                break;
+            }
+            case DoctypeAfterInternalSubset: {
+                if (c == '>') {
+                    // Valid doctype. Emit it now.
+                    doctype = false;
+                    processDoctypeToken();
+                } else if (isWhitespace) {
+                    // nothing
+                } else
+                    doctypeToken.state = DoctypeBogus;
+                break;
+            }
+            case DoctypeBogus: {
+                if (c == '>') {
+                    // Done with the bogus doctype.
+                    doctype = false;
+                } else {
+                    // Just keep scanning for '>'
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        if (!dontAdvance)
+            ++src;
+        else if (dontAdvance == 1)
+            continue;
+        else // double dontAdvance++, do workaround
+            doctypeComment = DoctypeCommentBogus;
+    }
+}
+
 void HTMLTokenizer::parseServer(TokenizerString &src)
 {
     checkScriptBuffer(src.length());
@@ -793,6 +1076,11 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 if (*src == commentStart[searchCount])
                 {
                     searchCount++;
+                    if (searchCount == 2)
+                        doctypeSearchCount++; // A '!' is also part of doctype, so we are moving through that still as well
+                    else
+                        doctypeSearchCount = 0;
+                    
                     if (searchCount == 4)
                     {
 #ifdef TOKEN_DEBUG
@@ -814,6 +1102,27 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 }
                 else
                     searchCount = 0; // Stop looking for '<!--' sequence
+            }
+            
+            if (doctypeSearchCount > 0) {
+                if((*src).toLower() == doctypeStart[doctypeSearchCount]) {
+                    doctypeSearchCount++;
+                    cBuffer[cBufferPos++] = src->cell();
+                    ++src;
+                    if(doctypeSearchCount == 9) {
+                        // Found '<!DOCTYPE' sequence
+                        tag = NoTag;
+                        doctypeAllowComment = true;
+                        doctypeComment = NoDoctypeComment;
+                        doctypeToken.reset();
+                        doctype = true;
+                        
+                        parseDoctype(src);
+                        return;
+                    }
+                    break;
+                } else
+                    doctypeSearchCount = 0; // Stop looking for '<!DOCTYPE' sequence
             }
 
             bool finish = false;
@@ -1395,6 +1704,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             parseSpecial(src);
         else if (comment)
             parseComment(src);
+        else if (doctypeComment && doctypeComment != DoctypeCommentEnd && doctypeComment != DoctypeCommentBogus)
+            parseDoctypeComment(src);
+        else if (doctype)
+            parseDoctype(src);
         else if (server)
             parseServer(src);
         else if (processingInstruction)
@@ -1412,9 +1725,9 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 break;
             case '!':
             {
-                // <!-- comment -->
-                searchCount = 1; // Look for '<!--' sequence to start comment
-
+                // <!-- comment --> or <!DOCTYPE ...>
+                searchCount = 1; // Look for '<!--' sequence to start comment...
+                doctypeSearchCount = 1; // ... or for '<!DOCTYPE' sequence to start doctype
                 break;
             }
             case '?':
@@ -1725,6 +2038,14 @@ void HTMLTokenizer::processToken()
     currToken.reset();
     if (jsProxy)
         jsProxy->setEventHandlerLineno(1);
+}
+
+void HTMLTokenizer::processDoctypeToken()
+{
+    // kDebug( 6036 ) << "Process DoctypeToken (name: " << doctypeToken.name << ", publicID: " << doctypeToken.publicID << ", systemID: " << doctypeToken.systemID;
+    doctypeToken.publicID = doctypeToken.publicID.simplified();
+    doctypeToken.systemID = doctypeToken.systemID.simplified();
+    parser->parseDoctypeToken(&doctypeToken);
 }
 
 

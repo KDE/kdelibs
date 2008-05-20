@@ -59,6 +59,7 @@ namespace DOM {
 namespace khtml {
 
 class Token;
+class DoctypeToken;
 
 /**
  * The parser for html. It receives a stream of tokens from the HTMLTokenizer, and
@@ -75,6 +76,11 @@ public:
      * parses one token delivered by the tokenizer
      */
     void parseToken(Token *_t);
+    
+    /**
+     * parses a doctype token delivered by the tokenizer
+     */
+    void parseDoctypeToken(DoctypeToken *_t);
 
     /**
      * resets the parser

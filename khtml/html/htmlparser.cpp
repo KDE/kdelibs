@@ -63,6 +63,12 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+// Turn off inlining to avoid warning with newer gcc.
+#undef __inline
+#define __inline
+#include "doctypes.cpp"
+#undef __inline
+
 using namespace DOM;
 using namespace khtml;
 
@@ -304,6 +310,76 @@ void KHTMLParser::parseToken(Token *t)
             form = 0;
         }
         delete n;
+    }
+}
+
+void KHTMLParser::parseDoctypeToken(DoctypeToken* t)
+{
+    // Ignore any doctype after the first. TODO It should be also ignored when processing DocumentFragment
+    if (current != document || document->doctype())
+        return;
+
+    DocumentTypeImpl* doctype = new DocumentTypeImpl(document->implementation(), document, t->name, t->publicID, t->systemID);
+    if (!t->internalSubset.isEmpty())
+        doctype->setInternalSubset(t->internalSubset);
+    document->addChild(doctype);
+
+    // Determine parse mode here
+    // This code more or less mimics Mozilla's implementation.
+    //
+    // There are three possible parse modes:
+    // COMPAT - quirks mode emulates WinIE
+    // and NS4.  CSS parsing is also relaxed in this mode, e.g., unit types can
+    // be omitted from numbers.
+    // ALMOST STRICT - This mode is identical to strict mode
+    // except for its treatment of line-height in the inline box model.  For
+    // now (until the inline box model is re-written), this mode is identical
+    // to STANDARDS mode.
+    // STRICT - no quirks apply.  Web pages will obey the specifications to
+    // the letter.
+
+    if (!document->isHTMLDocument()) // FIXME Could document be non-HTML?
+        return;
+    DOM::HTMLDocumentImpl* htmldoc = static_cast<DOM::HTMLDocumentImpl*> (document);
+    if (t->name.toLower() == "html") {
+        document->setDocType(doctype);
+        if (!t->internalSubset.isEmpty() || t->publicID.isEmpty()) {
+            // Internal subsets always denote full standards, as does
+            // a doctype without a public ID.
+            htmldoc->changeModes(DOM::DocumentImpl::Strict, DOM::DocumentImpl::Html4);
+        } else {
+            // We have to check a list of public IDs to see what we
+            // should do.
+            QString lowerPubID = t->publicID.toLower();
+            QByteArray pubIDStr = lowerPubID.toLocal8Bit();
+
+            // Look up the entry in our gperf-generated table.
+            const PubIDInfo* doctypeEntry = findDoctypeEntry(pubIDStr.constData(), t->publicID.length());
+            if (!doctypeEntry) {
+                // The DOCTYPE is not in the list.  Assume strict mode.
+                // ### Doesn't make any sense, but it's what Mozilla does.
+                htmldoc->changeModes(DOM::DocumentImpl::Strict, DOM::DocumentImpl::Html4);
+            } else {
+                switch ((!t->systemID.isEmpty()) ?
+                            doctypeEntry->mode_if_sysid :
+                            doctypeEntry->mode_if_no_sysid) {
+                    case PubIDInfo::eQuirks3:
+                        htmldoc->changeModes(DOM::DocumentImpl::Compat, DOM::DocumentImpl::Html3);
+                        break;
+                    case PubIDInfo::eQuirks:
+                        htmldoc->changeModes(DOM::DocumentImpl::Compat, DOM::DocumentImpl::Html4);
+                        break;
+                    case PubIDInfo::eAlmostStandards:
+                        htmldoc->changeModes(DOM::DocumentImpl::Transitional, DOM::DocumentImpl::Html4);
+                        break;
+                    default:
+                        assert(!"Unknown parse mode");
+                }
+            }
+        }
+    } else {
+        // Malformed doctype implies quirks mode.
+        htmldoc->changeModes(DOM::DocumentImpl::Compat, DOM::DocumentImpl::Html3);
     }
 }
 

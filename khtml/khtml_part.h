@@ -597,7 +597,12 @@ public:
    * You may call
    * this function many times in sequence. But remember: The fewer calls
    * you make, the faster the widget will be.
+   *
+   * For historic and backward compatibility reasons, this method will force
+   * the use of strict mode for the document, unless setAlwaysHonourDoctype()
+   * has been called previously.
    */
+   // FIXME KDE5: always honour doctype, remove setAlwaysHonourDoctype()
   virtual void write( const QString &str );
 
   /**
@@ -1010,19 +1015,31 @@ public:
    */
   bool restored() const;
 
-  // ### KDE4 remove me
+  /**
+   * Sets whether the document's Doctype should always be used
+   * to determine the parsing mode for the document.
+   *
+   * Without this, parsing will be forced to
+   * strict mode when using the write( const QString &str )
+   * method for backward compatibility reasons.
+   *
+   */
+   // ### KDE5 remove - fix write( const QString &str ) instead
+  bool setAlwaysHonourDoctype( bool b = true );
+
+  // ### KDE5 remove me
   enum FormNotification { NoNotification = 0, Before, Only, Unused=255 };
   /**
    * Determine if signal should be emitted before, instead or never when a
    * submitForm() happens.
-   * ### KDE4 remove me
+   * ### KDE5 remove me
    */
   void setFormNotification(FormNotification fn);
 
   /**
    * Determine if signal should be emitted before, instead or never when a
    * submitForm() happens.
-   * ### KDE4 remove me
+   * ### KDE5 remove me
    */
   FormNotification formNotification() const;
 
@@ -1577,7 +1594,7 @@ private:
   void notifySelectionChanged(bool closeTyping=true);  
   void resetFromScript();
   void emitSelectionChanged();
-  void onFirstData(const QString& firstData);
+  void onFirstData();
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);
   bool openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);

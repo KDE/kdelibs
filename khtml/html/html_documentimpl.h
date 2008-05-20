@@ -75,7 +75,7 @@ public:
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
 
-    virtual void determineParseMode( const QString &str );
+    virtual void determineParseMode();
     virtual void close();
     virtual void contentLoaded();
 
@@ -85,6 +85,9 @@ public:
     // This is independent of the actual doctype, of course. (#86446)
     void setHTMLRequested( bool html ) { m_htmlRequested = html; }
 
+    // Change parse and html modes
+    void changeModes(ParseMode newPMode, HTMLMode newHMode);
+
 protected:
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
@@ -92,6 +95,7 @@ protected:
     QMap<QString,HTMLMapElementImpl*> mapMap;
     bool m_doAutoFill;
     bool m_htmlRequested;
+    bool m_determineParseMode;
 
 protected Q_SLOTS:
     /**

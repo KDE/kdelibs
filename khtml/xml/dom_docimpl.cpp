@@ -181,14 +181,9 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 
     // ### this is completely broken.. without a view it will not work (Dirk)
     DocumentImpl *doc = new DocumentImpl(this, 0);
+
     if (dtype) {
         doc->setDocType(dtype);
-    } else {
-        // ### this should be created during parsing a <!DOCTYPE>
-        doc->setDocType(new DocumentTypeImpl(this, doc,
-                                             DOMString() /* qualifiedName */,
-                                             DOMString() /* publicId */,
-                                             DOMString() /* systemId */));
     }
 
     // the document must be created empty if all parameters are null
@@ -219,22 +214,14 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* /*t
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 {
     DocumentImpl* doc = new DocumentImpl(this, v);
-    // ### this should be created during parsing a <!DOCTYPE>
-    doc->setDocType(new DocumentTypeImpl(doc->implementation(), doc,
-                                         DOMString() /* qualifiedName */,
-                                         DOMString() /* publicId */,
-                                         DOMString() /* systemId */));
+
     return doc;
 }
 
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
     HTMLDocumentImpl* doc = new HTMLDocumentImpl(this, v);
-    // ### this should be created during parsing a <!DOCTYPE>
-    doc->setDocType(new DocumentTypeImpl(doc->implementation(), doc,
-                                         DOMString() /* qualifiedName */,
-                                         DOMString() /* publicId */,
-                                         DOMString() /* systemId */));
+
     return doc;
 }
 
@@ -1537,7 +1524,7 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
     return m_elemSheet;
 }
 
-void DocumentImpl::determineParseMode( const QString &/*str*/ )
+void DocumentImpl::determineParseMode()
 {
     // For XML documents, use strict parse mode
     pMode = Strict;
@@ -3026,7 +3013,7 @@ DocumentTypeImpl::~DocumentTypeImpl()
 
 DOMString DocumentTypeImpl::toString() const
 {
-    DOMString result = "<!DOCTYPE";
+    DOMString result = "<!DOCTYPE ";
     result += m_qualifiedName;
     if (!m_publicId.isEmpty()) {
 	result += " PUBLIC \"";

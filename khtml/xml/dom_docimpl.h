@@ -367,7 +367,7 @@ public:
         Transitional,
         Strict
     };
-    virtual void determineParseMode( const QString &str );
+    virtual void determineParseMode();
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
 
@@ -762,6 +762,7 @@ public:
     void setName(const DOMString& n) { m_qualifiedName = n; }
     void setPublicId(const DOMString& publicId) { m_publicId = publicId; }
     void setSystemId(const DOMString& systemId) { m_systemId = systemId; }
+    void setInternalSubset(const DOMString& subset) { m_subset = subset; }
     DOMImplementationImpl *implementation() const { return m_implementation; }
 
     virtual DOMString toString() const;

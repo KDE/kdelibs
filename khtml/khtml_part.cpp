@@ -1297,8 +1297,8 @@ static int s_DOMTreeIndentLevel = 0;
 
 void KHTMLPart::slotDebugDOMTree()
 {
-  if ( d->m_doc && d->m_doc->firstChild() )
-    qDebug("%s", d->m_doc->firstChild()->toString().string().toLatin1().constData());
+  if ( d->m_doc )
+    qDebug("%s", d->m_doc->toString().string().toLatin1().constData());
 
   // Now print the contents of the frames that contain HTML
 
@@ -1934,11 +1934,17 @@ void KHTMLPart::write( const char *data, int len )
       return;
 
   if(d->m_bFirstData)
-      onFirstData( decoded );
+      onFirstData();
 
   khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( decoded, true );
+}
+
+// ### KDE5: remove
+bool KHTMLPart::setAlwaysHonourDoctype( bool b )
+{
+    d->m_bStrictModeQuirk = !b;
 }
 
 void KHTMLPart::write( const QString &str )
@@ -1947,9 +1953,13 @@ void KHTMLPart::write( const QString &str )
         return;
 
     if(d->m_bFirstData) {
-        // determine the parse mode
-        d->m_doc->setParseMode( DocumentImpl::Strict );
-        d->m_bFirstData = false;
+            // determine the parse mode
+        if (d->m_bStrictModeQuirk) {
+            d->m_doc->setParseMode( DocumentImpl::Strict );
+            d->m_bFirstData = false;
+        } else {
+            onFirstData();
+        }
     }
     khtml::Tokenizer* t = d->m_doc->tokenizer();
     if(t)
@@ -1963,7 +1973,7 @@ void KHTMLPart::end()
         {
             QString decoded=d->m_decoder->flush();
             if (d->m_bFirstData)
-                onFirstData( decoded );
+                onFirstData();
             if (!decoded.isEmpty())
                 write(decoded);
         }
@@ -1971,12 +1981,12 @@ void KHTMLPart::end()
     }
 }
 
-void KHTMLPart::onFirstData( const QString& firstData )
+void KHTMLPart::onFirstData()
 {
       assert( d->m_bFirstData );
 
       // determine the parse mode
-      d->m_doc->determineParseMode( firstData );
+      d->m_doc->determineParseMode();
       d->m_bFirstData = false;
 
       // ### this is still quite hacky, but should work a lot better than the old solution

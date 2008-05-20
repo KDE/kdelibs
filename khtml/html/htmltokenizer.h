@@ -113,6 +113,43 @@ namespace khtml {
         ushort tid;
         bool flat;
     };
+    
+    enum DoctypeState {
+        DoctypeBegin,
+        DoctypeBeforeName,
+        DoctypeName,
+        DoctypeAfterName,
+        DoctypeBeforePublicID,
+        DoctypePublicID,
+        DoctypeAfterPublicID,
+        DoctypeBeforeSystemID,
+        DoctypeSystemID,
+        DoctypeAfterSystemID,
+        DoctypeInternalSubset,
+        DoctypeAfterInternalSubset,
+        DoctypeBogus
+    };
+    
+    class DoctypeToken
+    {
+    public:
+        DoctypeToken() {}
+        
+        void reset()
+        {
+            name.clear();
+            publicID.clear();
+            systemID.clear();
+            internalSubset.clear();
+            state = DoctypeBegin;
+        }
+        
+        DoctypeState state;
+        QString name;
+        QString publicID;
+        QString systemID;
+        QString internalSubset;
+    };
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
@@ -142,9 +179,12 @@ protected:
     void reset();
     void addPending();
     void processToken();
+    void processDoctypeToken();
     void processListing(khtml::TokenizerString list);
 
     void parseComment(khtml::TokenizerString &str);
+    void parseDoctype(khtml::TokenizerString &str);
+    void parseDoctypeComment(khtml::TokenizerString &str);
     void parseServer(khtml::TokenizerString &str);
     void parseText(khtml::TokenizerString &str);
     void parseListing(khtml::TokenizerString &str);
@@ -287,6 +327,24 @@ protected:
     bool brokenServer;
 
     bool brokenScript;
+
+    // doctype parsing from WebCore + internal subset checker and comments in doctype
+    // are we in <!DOCTYPE ...> block?
+    bool doctype;
+    DoctypeToken doctypeToken;
+    int doctypeSearchCount;
+    int doctypeSecondarySearchCount;
+    bool doctypeAllowComment; // is comment allowed in current doctype state?
+
+    // are we in <!DOCTYPE -- ... --> block?
+    enum {
+        NoDoctypeComment = 0,
+        DoctypeCommentHalfBegin,
+        DoctypeComment,
+        DoctypeCommentHalfEnd,
+        DoctypeCommentEnd,
+        DoctypeCommentBogus
+    } doctypeComment;
 
     // name of an unknown attribute
     QString attrName;

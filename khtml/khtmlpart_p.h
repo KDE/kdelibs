@@ -196,6 +196,7 @@ public:
     m_statusMessagesEnabled = true;
 
     m_bFirstData = true;
+    m_bStrictModeQuirk = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
     m_autoDetectLanguage = KEncodingDetector::SemiautomaticDetection;
@@ -395,6 +396,7 @@ public:
 
   bool m_bDnd;
   bool m_bFirstData;
+  bool m_bStrictModeQuirk;
   bool m_bClearing;
   bool m_bCleared;
   bool m_focusNodeRestored;
