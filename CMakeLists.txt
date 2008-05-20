@@ -27,6 +27,14 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
+if(UNIX AND Q_WS_X11)
+  #X11 Session Management (SM) is required
+  #X11_SM_FOUND is set in FindX11, which is required by KDE4Internal
+  if(NOT X11_SM_FOUND)
+    message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
+  endif(NOT X11_SM_FOUND)
+endif(UNIX AND Q_WS_X11)
+
 #required features
 find_package(ZLIB REQUIRED)
 find_package(Strigi REQUIRED)
