@@ -28,7 +28,7 @@ endif(WIN32)
 
 # Needed for the kdatetime test in release mode
 if(KDE4_BUILD_TESTS)
-    add_definitions(-DCOMPILING_TESTS)
+   add_definitions(-DCOMPILING_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 # compile bzip2 support if available
@@ -236,14 +236,17 @@ set(kdecore_LIB_SRCS
 
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
-add_definitions(-DNO_DISPLAY)
+   add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
-set_target_properties(kdecore PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+set_target_properties(kdecore PROPERTIES 
+                              VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
+                              SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
+
 install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
@@ -291,9 +294,9 @@ target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
 
 
 if(KDE4_ENABLE_FINAL)
-	macro_add_file_dependencies(                                                                                                    ${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp                                                                        ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+   macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
 else(KDE4_ENABLE_FINAL)
-	macro_add_file_dependencies(                                                                                                    ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp                                                                     ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+   macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
 endif(KDE4_ENABLE_FINAL)
 
 install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
