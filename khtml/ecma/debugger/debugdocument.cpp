@@ -207,7 +207,7 @@ KTextEditor::Editor* DebugDocument::kate()
 
     if (!s_kate)
     {
-        KMessageBox::error(DebugWindow::window(), i18n("A KDE text-editor component could not be found;\n"
+        KMessageBox::error(DebugWindow::window(), i18n("Unable to find the Kate editor component;\n"
                                       "please check your KDE installation."));
         kapp->exit(1);
     }
@@ -322,9 +322,9 @@ void DebugDocument::setupViewerDocument()
     imark->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
     connect(m_kteDoc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
                 DebugWindow::window(), SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
-    // ### KDE4.1: fix this hack used to avoid new string
+
     imark->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive,
-                                          i18n("Breakpoints"));
+                                          i18n("Breakpoint"));
     imark->setMarkPixmap(KTextEditor::MarkInterface::BreakpointActive,
                                      SmallIcon("flag-red"));
     imark->setMarkPixmap(KTextEditor::MarkInterface::Execution,

@@ -171,9 +171,6 @@ private:
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
 
-    // Text editing stuff
-    KTextEditor::Editor *m_editor;
-
 //     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
     ScriptsDock *m_scripts;

@@ -122,14 +122,6 @@ DebugWindow::DebugWindow(QWidget *parent)
     setObjectName(QLatin1String("DebugWindow"));
     setCaption(i18n("JavaScript Debugger"));
 
-    m_editor = KTextEditor::EditorChooser::editor();
-    if ( !m_editor )
-    {
-        KMessageBox::error(this, i18n("A KDE text-editor component could not be found;\n"
-                                      "please check your KDE installation."));
-        kapp->exit(1);
-    }
-
 //     m_watches = new WatchesDock;
     m_localVariables = new LocalVariablesDock;
     m_scripts = new ScriptsDock;
@@ -175,55 +167,49 @@ DebugWindow::DebugWindow(QWidget *parent)
 void DebugWindow::createActions()
 {
     // Flow control actions
-    m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), this );
-    actionCollection()->addAction( "continue", m_continueAct );
-    m_continueAct->setStatusTip(i18n("Continue script execution"));
-    m_continueAct->setToolTip(i18n("Continue script execution"));
-    m_continueAct->setEnabled(false);
-    connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
-
     m_stopAct = new KToggleAction(KIcon(":/images/stop.png"), i18n("&Break at Next Statement"), this );
-    m_stopAct->setIconText(i18n("Stop"));
+    m_stopAct->setIconText(i18n("Break at Next"));
     actionCollection()->addAction( "stop", m_stopAct );
     m_stopAct->setEnabled(true);
-    // ### Actually we use this for stop-at-next
     connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopAtNext()));
+
+    m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), this );
+    actionCollection()->addAction( "continue", m_continueAct );
+    m_continueAct->setShortcut(Qt::Key_F9);
+    m_continueAct->setEnabled(false);
+    connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));    
+
+
+    m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), this );
+    actionCollection()->addAction( "stepOver", m_stepOverAct );
+    m_stepOverAct->setShortcut(Qt::Key_F10);
+    m_stepOverAct->setEnabled(false);
+    connect(m_stepOverAct, SIGNAL(triggered(bool)), this, SLOT(stepOver()) );
+    
 
     m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), this );
     actionCollection()->addAction( "stepInto", m_stepIntoAct );
-    m_stepIntoAct->setStatusTip(i18n("Step Into"));
-    m_stepIntoAct->setToolTip(i18n("Step Into"));
+    m_stepIntoAct->setShortcut(Qt::Key_F11);
     m_stepIntoAct->setEnabled(false);
+
     connect(m_stepIntoAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
 
     m_stepOutAct = new KAction(KIcon(":/images/step-out.png"), i18n("Step Out"), this );
     actionCollection()->addAction( "stepOut", m_stepOutAct );
-    m_stepOutAct->setStatusTip(i18n("Step Out"));
-    m_stepOutAct->setToolTip(i18n("Step Out"));
+    m_stepOutAct->setShortcut(Qt::Key_F12);
     m_stepOutAct->setEnabled(false);
     connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
-
-    m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), this );
-    actionCollection()->addAction( "stepOver", m_stepOverAct );
-    m_stepOverAct->setStatusTip(i18n("Step Over"));
-    m_stepOverAct->setToolTip(i18n("Step Over"));
-    m_stepOverAct->setEnabled(false);
-    connect(m_stepOverAct, SIGNAL(triggered(bool)), this, SLOT(stepOver()) );
 }
 
 void DebugWindow::createMenus()
 {
-/*
-    KMenu *debugMenu = new KMenu(this);
-    debugMenu->addAction(m_nextAction);
-    debugMenu->addAction(m_stepAction);
-    debugMenu->addAction(m_continueAction);
-    debugMenu->addAction(m_breakAction);
-
-    menuBar()->insertItem("&Debug", debugMenu);
-*/
-    // ### KDE4.1: proper debug menu. Don't want to 
-    // add strings right now.
+    KMenu *debugMenu = new KMenu(i18n("&Debug"), menuBar());
+    debugMenu->addAction(m_stopAct);
+    debugMenu->addAction(m_continueAct);
+    debugMenu->addAction(m_stepOverAct);
+    debugMenu->addAction(m_stepIntoAct);
+    debugMenu->addAction(m_stepOutAct);
+    menuBar()->addMenu(debugMenu);
 }
 
 void DebugWindow::createToolBars()
@@ -231,9 +217,9 @@ void DebugWindow::createToolBars()
     toolBar()->addAction(m_stopAct);
     toolBar()->addSeparator();
     toolBar()->addAction(m_continueAct);
+    toolBar()->addAction(m_stepOverAct);    
     toolBar()->addAction(m_stepIntoAct);
     toolBar()->addAction(m_stepOutAct);
-    toolBar()->addAction(m_stepOverAct);
 }
 
 void DebugWindow::createTabWidget()
@@ -548,7 +534,7 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 
     // Since we purposefully bypass toString, we need to figure out
     // string serialization ourselves.
-    //### might be easier to export class info for ErrorInstance --- 
+    //### might be easier to export class info for ErrorInstance ---
 
     JSObject* valueObj = exceptionObj->getObject();
     JSValue*  protoObj = valueObj ? valueObj->prototype() : 0;
@@ -806,7 +792,8 @@ void DebugWindow::doEval(const QString& qcode)
         int idx = m_tabWidget->currentIndex();
         if (idx < 0)
         {
-            m_console->reportResult(qcode, "????"); //### KDE4.1: proper error message
+            m_console->reportResult(qcode,
+                i18n("Don't know where to evaluate the expression. Please pause a script or open a source file."));
             return;
         }
         DebugDocument* document = m_openDocuments[idx];
@@ -842,7 +829,7 @@ void DebugWindow::doEval(const QString& qcode)
     {
         JSValue *exc = exec->exception();
         exec->clearException();
-        msg = "Exception: " + exceptionToString(exec, exc);
+        msg = i18n("Evaluation threw an exception %1", exceptionToString(exec, exc));
     }
     else
     {
