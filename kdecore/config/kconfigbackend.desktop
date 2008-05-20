@@ -4,6 +4,7 @@ X-KDE-ServiceType=KConfigBackend
 
 Comment=Storage backend for KConfig
 Comment[es]=Motor de almacenamiento para KConfig
+Comment[et]=KConfigi salvestamise taustaprogramm
 Comment[ga]=Inneall stórais KConfig
 Comment[km]=កម្មវិធី​ខាងក្រោយ​ការ​ផ្ទុក​សម្រាប់ KConfig
 Comment[nds]=Spieker-Hülpprogramm för KConfig
@@ -13,5 +14,6 @@ Comment[sr]=Складишна позадина за К‑конфиг
 Comment[sr@latin]=Skladišna pozadina za KConfig
 Comment[sv]=Lagringsgränssnitt för KConfig
 Comment[uk]=Засіб збереження для KConfig
+Comment[zh_CN]=KConfig 存储后端
 Comment[zh_TW]=KConfig 儲存後端介面
 

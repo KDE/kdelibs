@@ -1,7 +1,19 @@
 [Desktop Entry]
 Type=Service
 Name=Kde Emoticons Theme
+Name[et]=KDE emotikoniteema
+Name[ga]=Téama Straoiseoga KDE
+Name[pt]=Tema de Ícones Emotivos do KDE
+Name[pt_BR]=Tema de Ícones Emotivos do KDE
+Name[uk]=Тема емоційок Kde
+Name[zh_TW]=KDE 表情圖示主題
 Comment=Library to use KDE emoticons theme
+Comment[et]=Teek KDE emotikoniteema kasutamiseks
+Comment[ga]=Leabharlann le húsáid téama straoiseog KDE
+Comment[pt]=Uma biblioteca para usar os temas de ícones emotivos do KDE
+Comment[pt_BR]=Uma biblioteca para usar os temas de ícones emotivos do KDE
+Comment[uk]=Бібліотека для використання теми емоційок KDE
+Comment[zh_TW]=使用 KDE 表情圖示主題的函式庫
 X-KDE-ServiceTypes=KEmoticons
 X-KDE-Library=emoticonstheme_kde
 X-KDE-EmoticonsFileName=emoticons.xml
