@@ -462,6 +462,7 @@ void KRichTextWidget::setActionsEnabled(bool enabled)
     {
         action->setEnabled(enabled);
     }
+    d->richTextEnabled = enabled;
 }
 
 void KRichTextWidget::Private::_k_setListStyle(int index)
@@ -524,12 +525,20 @@ void KRichTextWidget::Private::_k_updateMiscActions()
     }
 
 
-    if (richTextSupport & SupportIndentLists) {
-        action_list_indent->setEnabled(q->canIndentList());
+    if ( richTextSupport & SupportIndentLists ) {
+        if ( richTextEnabled ) {
+            action_list_indent->setEnabled( q->canIndentList() );
+        } else {
+            action_list_indent->setEnabled( false );
+        }
     }
 
-    if (richTextSupport & SupportDedentLists) {
-        action_list_dedent->setEnabled(q->canDedentList());
+    if ( richTextSupport & SupportDedentLists ) {
+        if ( richTextEnabled ) {
+            action_list_dedent->setEnabled( q->canDedentList() );   
+        } else {
+            action_list_dedent->setEnabled( false );
+        }
     }
 
 }
