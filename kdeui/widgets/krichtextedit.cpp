@@ -165,24 +165,28 @@ void KRichTextEdit::insertHorizontalRule()
 void KRichTextEdit::alignLeft()
 {
     setAlignment(Qt::AlignLeft);
+    setFocus();
     d->activateRichText();
 }
 
 void KRichTextEdit::alignCenter()
 {
     setAlignment(Qt::AlignHCenter);
+    setFocus();
     d->activateRichText();
 }
 
 void KRichTextEdit::alignRight()
 {
     setAlignment(Qt::AlignRight);
+    setFocus();
     d->activateRichText();
 }
 
 void KRichTextEdit::alignJustify()
 {
     setAlignment(Qt::AlignJustify);
+    setFocus();
     d->activateRichText();
 }
 
@@ -191,6 +195,7 @@ void KRichTextEdit::setTextBold(bool bold)
     QTextCharFormat fmt;
     fmt.setFontWeight(bold ? QFont::Bold : QFont::Normal);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
@@ -199,6 +204,7 @@ void KRichTextEdit::setTextItalic(bool italic)
     QTextCharFormat fmt;
     fmt.setFontItalic(italic);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
@@ -207,6 +213,7 @@ void KRichTextEdit::setTextUnderline(bool underline)
     QTextCharFormat fmt;
     fmt.setFontUnderline(underline);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
@@ -215,6 +222,7 @@ void KRichTextEdit::setTextStrikeOut(bool strikeOut)
     QTextCharFormat fmt;
     fmt.setFontStrikeOut(strikeOut);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
@@ -223,6 +231,7 @@ void KRichTextEdit::setTextForegroundColor(const QColor &color)
     QTextCharFormat fmt;
     fmt.setForeground(color);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
@@ -231,6 +240,7 @@ void KRichTextEdit::setTextBackgroundColor(const QColor &color)
     QTextCharFormat fmt;
     fmt.setBackground(color);
     d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
     d->activateRichText();
 }
 
