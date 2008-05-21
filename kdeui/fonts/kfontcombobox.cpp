@@ -19,6 +19,7 @@
 */
 
 #include "kfontcombobox.h"
+#include "fonthelpers_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -46,12 +47,6 @@ static QString alphabetSample ()
     // (the font selection combo box), so keep it under the length equivalent
     // to 60 or so proportional Latin characters.
                  "The Quick Brown Fox Jumps Over The Lazy Dog");
-}
-
-static QString localizedFontFamily (const QString &fontFamily)
-{
-    // FIXME: Font family translation should be shared with KFontChooser.
-    return i18nc("@item Font name", "%1", fontFamily);
 }
 
 class KFontFamilyDelegate : public QAbstractItemDelegate
@@ -240,11 +235,6 @@ KFontComboBoxPrivate::KFontComboBoxPrivate (KFontComboBox *parent)
     signalsAllowed = true;
 }
 
-static bool localeLessThan (const QString &a, const QString &b)
-{
-    return QString::localeAwareCompare(a, b) < 0;
-}
-
 void KFontComboBoxPrivate::updateDatabase ()
 {
     QStringList fontFamilies;
@@ -253,15 +243,8 @@ void KFontComboBoxPrivate::updateDatabase ()
 
     // Translate font families for the list model.
     delegate->fontFamilyTrMap.clear();
-    QStringList trFontFamilies;
-    foreach (const QString &fontFamily, fontFamilies) {
-        QString trFontFamily = localizedFontFamily(fontFamily);
-        delegate->fontFamilyTrMap.insert(trFontFamily, fontFamily);
-        trFontFamilies.append(trFontFamily);
-    }
-
-    // Sort font families alphabetically.
-    qSort(trFontFamilies.begin(), trFontFamilies.end(), localeLessThan);
+    QStringList trFontFamilies =
+        translateFontNameList(fontFamilies, &(delegate->fontFamilyTrMap));
 
     // Add families to the list model and completion.
     model->setStringList(trFontFamilies);
@@ -276,7 +259,7 @@ void KFontComboBoxPrivate::updateIndexToFont ()
 {
     // QFontInfo necessary to return the family with proper casing.
     QString selectedFontFamily = QFontInfo(currentFont).family();
-    QString trSelectedFontFamily = localizedFontFamily(selectedFontFamily);
+    QString trSelectedFontFamily = translateFontName(selectedFontFamily);
     QStringList trFontFamilies = model->stringList();
     if (!trFontFamilies.count()) {
         return;

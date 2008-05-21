@@ -20,6 +20,7 @@ Boston, MA 02110-1301, USA.
 */
 
 #include "kfontchooser.h"
+#include "fonthelpers_p.h"
 #include "sampleedit_p.h"
 
 #include <QtGui/QCheckBox>
@@ -69,26 +70,6 @@ static int minimumListHeight( const QListWidget *list, int numVisibleEntry )
     if( w < 0 ) { w = 10; }
     if( numVisibleEntry <= 0 ) { numVisibleEntry = 4; }
     return ( w * numVisibleEntry + 2 * list->frameWidth() );
-}
-
-static bool localeLessThan (const QString &a, const QString &b)
-{
-    return QString::localeAwareCompare(a, b) < 0;
-}
-
-static void splitFontString (const QString &font, QString *family, QString *foundry = NULL)
-{
-    int p1 = font.indexOf('[');
-    if (p1 < 0) {
-        if (family) *family = font.trimmed();
-        if (foundry) foundry->clear();
-    }
-    else {
-        int p2 = font.indexOf(']', p1);
-        p2 = p2 > p1 ? p2 : font.length();
-        if (family) *family = font.left(p1).trimmed();
-        if (foundry) *foundry = font.mid(p1 + 1, p2 - p1 - 1).trimmed();
-    }
 }
 
 class KFontChooser::Private
@@ -1032,26 +1013,7 @@ void KFontChooser::Private::setFamilyBoxItems(const QStringList &fonts)
 {
     signalsAllowed = false;
 
-    QStringList trfonts;
-    qtFamilies.clear();
-    foreach (const QString &font, fonts) {
-        // Try to split into name and foundry.
-        QString family, foundry;
-        splitFontString(font, &family, &foundry);
-        QString trfont;
-        if (foundry.isEmpty()) {
-            // i18n: Filtering message, so that translators can translate the
-            // font names on their own should they want. May be replaced in
-            // the future with conventional messages in a PO file.
-            trfont = i18nc("@item Font name", "%1", family);
-        }
-        else {
-            trfont = i18nc("@item Font name [foundry]", "%1 [%2]", family, foundry);
-        }
-        trfonts.append(trfont);
-        qtFamilies.insert(trfont, font);
-    }
-    qSort(trfonts.begin(), trfonts.end(), localeLessThan);
+    QStringList trfonts = translateFontNameList(fonts, &qtFamilies);
     familyListBox->clear();
     familyListBox->addItems(trfonts);
 
@@ -1076,7 +1038,6 @@ void KFontChooser::Private::_k_showXLFDArea(bool show)
         xlfdEdit->parentWidget()->hide();
     }
 }
-
 
 #include "kfontchooser.moc"
 #include "sampleedit_p.moc"

@@ -93,6 +93,7 @@ set(kdeui_LIB_SRCS
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
+ fonts/fonthelpers.cpp
  fonts/kfontchooser.cpp
  fonts/kfontcombobox.cpp
  fonts/kfontdialog.cpp
