@@ -301,6 +301,17 @@ public:
      */
     void updateActionStates();
 
+public slots:
+
+    /**
+     * Disables or enables all of the actions created by
+     * createActions().
+     * This may be useful in cases where rich text mode may be set on or off.
+     *
+     * @param enabled Whether to enable or disable the actions.
+     */
+    void setActionsEnabled(bool enabled);
+
 private:
     //@cond PRIVATE
     class Private;

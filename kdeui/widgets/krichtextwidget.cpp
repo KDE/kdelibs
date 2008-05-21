@@ -78,6 +78,8 @@ public:
     QTextCharFormat painterFormat;
     bool painterActive;
 
+    KActionCollection* actionCollection;
+
     KToggleAction *enableRichText;
 
     KAction *action_text_foreground_color;
@@ -447,8 +449,19 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     connect(this, SIGNAL(cursorPositionChanged()),
             this, SLOT(_k_updateMiscActions()));
 
+    d->actionCollection = actionCollection;
+
     d->_k_updateMiscActions();
     d->_k_updateCharFormatActions(currentCharFormat());
+}
+
+
+void KRichTextWidget::setActionsEnabled(bool enabled)
+{
+    foreach(QAction* action, d->actionCollection->actions())
+    {
+        action->setEnabled(enabled);
+    }
 }
 
 void KRichTextWidget::Private::_k_setListStyle(int index)
