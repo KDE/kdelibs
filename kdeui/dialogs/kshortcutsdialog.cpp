@@ -59,6 +59,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
     setCaption(i18n("Configure Shortcuts"));
     setButtons(Default|Ok|Cancel|KDialog::User1);
     setButtonText(KDialog::User1, i18n("Print"));
+    setButtonIcon(KDialog::User1, KIcon("file_prit"));
     setModal(true);
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
     setMainWidget( d->m_keyChooser );
