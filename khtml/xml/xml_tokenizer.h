@@ -23,10 +23,10 @@
 #ifndef _XML_Tokenizer_h_
 #define _XML_Tokenizer_h_
 
-#include <Qt/qxml.h>
+#include <QtXml/qxml.h>
 #include <QtCore/QStack>
 #include <QtCore/QLinkedList>
-#include <QMap>
+#include <QtCore/QMap>
 #include <QtCore/QObject>
 #include "misc/loader_client.h"
 #include "misc/stringit.h"
