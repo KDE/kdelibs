@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Adium Emoticons Theme
+Name[es]=Tema de emoticonos Adium
 Name[et]=Adiumi emotikoniteema
 Name[ga]=Téama Straoiseoga Adium
 Name[ja]=Adium 感情アイコンテーマ
@@ -12,6 +13,7 @@ Name[sr@latin]=Adiumova tema emotikona
 Name[uk]=Тема емоційок Adium
 Name[zh_TW]=Adium 表情圖示主題
 Comment=Library to use Adium emoticons theme
+Comment[es]=Biblioteca para usar el tema de emoticonos Audium
 Comment[et]=Teek Adiumi emotikoniteema kasutamiseks
 Comment[ga]=Leabharlann le húsáid téama straoiseog Adium
 Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​ស្បែក​សញ្ញា​អារម្មណ៍ Adium

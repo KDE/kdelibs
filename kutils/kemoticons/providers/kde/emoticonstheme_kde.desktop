@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Kde Emoticons Theme
+Name[es]=Tema de emoticonos de KDE
 Name[et]=KDE emotikoniteema
 Name[ga]=Téama Straoiseoga KDE
 Name[ja]=KDE 感情アイコンテーマ
@@ -12,6 +13,7 @@ Name[sr@latin]=KDE‑ova tema emotikona
 Name[uk]=Тема емоційок Kde
 Name[zh_TW]=KDE 表情圖示主題
 Comment=Library to use KDE emoticons theme
+Comment[es]=Biblioteca para usar el tema de emoticonos de KDE
 Comment[et]=Teek KDE emotikoniteema kasutamiseks
 Comment[ga]=Leabharlann le húsáid téama straoiseog KDE
 Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​ស្បែក​សញ្ញា​អារម្មណ៍​របស់ KDE

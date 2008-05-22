@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Pidgin Emoticons Theme
+Name[es]=Tema de emoticonos Pidgin
 Name[et]=Pidgini emotikoniteema
 Name[ga]=Téama Straoiseoga Pidgin
 Name[ja]=Pidgin 感情アイコンテーマ
@@ -12,6 +13,7 @@ Name[sr@latin]=Pidginova tema emotikona
 Name[uk]=Тема емоційок Pidgin
 Name[zh_TW]=Pidgin 表情圖示主題
 Comment=Library to use Pidgin emoticons theme
+Comment[es]=Biblioteca para usar el tema de emoticonos Pidgin
 Comment[et]=Teek Pidgini emotikoniteema kasutamiseks
 Comment[ga]=Leabharlann le húsáid téama straoiseog Pidgin
 Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​ស្បែក​សញ្ញា​អារម្មណ៍​របស់ Pidgin
