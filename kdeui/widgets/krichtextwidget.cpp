@@ -78,7 +78,7 @@ public:
     QTextCharFormat painterFormat;
     bool painterActive;
 
-    KActionCollection* actionCollection;
+    QList<KAction*> richTextActionList;
 
     KToggleAction *enableRichText;
 
@@ -215,10 +215,15 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     // - depending on the action, some slot that changes the toggle state when
     //   appropriate, such as _k_updateCharFormatActions or _k_updateMiscActions.
 
+    // The list of actions currently supported is also stored internally.
+    // This is used to disable all actions at once in setActionsEnabled.
+    d->richTextActionList.clear();
+
     if (d->richTextSupport & SupportTextForegroundColor) {
         //Foreground Color
         d->action_text_foreground_color = new KAction(KIcon("format-stroke-color"), i18nc("@action", "Text &Color..."), actionCollection);
         d->action_text_foreground_color->setIconText(i18nc("@label stroke color", "Color"));
+        d->richTextActionList.append((d->action_text_foreground_color));
         actionCollection->addAction("format_text_foreground_color", d->action_text_foreground_color);
         connect(d->action_text_foreground_color, SIGNAL(triggered()), this, SLOT(_k_setTextForegroundColor()));
     } else {
@@ -229,6 +234,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     if (d->richTextSupport & SupportTextBackgroundColor) {
         //Background Color
         d->action_text_background_color = new KAction(KIcon("format-fill-color"), i18nc("@action", "Text &Highlight..."), actionCollection);
+        d->richTextActionList.append((d->action_text_background_color));
         actionCollection->addAction("format_text_background_color", d->action_text_background_color);
         connect(d->action_text_background_color, SIGNAL(triggered()), this, SLOT(_k_setTextBackgroundColor()));
     } else {
@@ -239,6 +245,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     if (d->richTextSupport & SupportFontFamily) {
         //Font Family
         d->action_font_family = new KFontAction(i18nc("@action", "&Font"), actionCollection);
+        d->richTextActionList.append((d->action_font_family));
         actionCollection->addAction("format_font_family", d->action_font_family);
         connect(d->action_font_family, SIGNAL(triggered(QString)), this, SLOT(setFontFamily(QString)));
     } else {
@@ -249,6 +256,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     if (d->richTextSupport & SupportFontSize) {
         //Font Size
         d->action_font_size = new KFontSizeAction(i18nc("@action", "Font &Size"), actionCollection);
+        d->richTextActionList.append((d->action_font_size));
         actionCollection->addAction("format_font_size", d->action_font_size);
         connect(d->action_font_size, SIGNAL(fontSizeChanged(int)), this, SLOT(setFontSize(int)));
     } else {
@@ -261,6 +269,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         QFont bold;
         bold.setBold(true);
         d->action_text_bold->setFont(bold);
+        d->richTextActionList.append((d->action_text_bold));
         actionCollection->addAction("format_text_bold", d->action_text_bold);
         d->action_text_bold->setShortcut(KShortcut(Qt::CTRL + Qt::Key_B));
         connect(d->action_text_bold, SIGNAL(triggered(bool)), this, SLOT(setTextBold(bool)));
@@ -274,6 +283,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         QFont italic;
         italic.setItalic(true);
         d->action_text_italic->setFont(italic);
+        d->richTextActionList.append((d->action_text_italic));
         actionCollection->addAction("format_text_italic", d->action_text_italic);
         d->action_text_italic->setShortcut(KShortcut(Qt::CTRL + Qt::Key_I));
         connect(d->action_text_italic, SIGNAL(triggered(bool)),
@@ -288,6 +298,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         QFont underline;
         underline.setUnderline(true);
         d->action_text_underline->setFont(underline);
+        d->richTextActionList.append((d->action_text_underline));
         actionCollection->addAction("format_text_underline", d->action_text_underline);
         d->action_text_underline->setShortcut(KShortcut(Qt::CTRL + Qt::Key_U));
         connect(d->action_text_underline, SIGNAL(triggered(bool)),
@@ -299,6 +310,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportStrikeOut) {
         d->action_text_strikeout = new KToggleAction(KIcon("format-text-strikethrough"), i18nc("@action", "&Strike Out"), actionCollection);
+        d->richTextActionList.append((d->action_text_strikeout));
         actionCollection->addAction("format_text_strikeout", d->action_text_strikeout);
         d->action_text_strikeout->setShortcut(KShortcut(Qt::CTRL + Qt::Key_L));
         connect(d->action_text_strikeout, SIGNAL(triggered(bool)),
@@ -312,24 +324,28 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         //Alignment
         d->action_align_left = new KToggleAction(KIcon("format-justify-left"), i18nc("@action", "Align &Left"), actionCollection);
         d->action_align_left->setIconText(i18nc("@label left justify", "Left"));
+        d->richTextActionList.append((d->action_align_left));
         actionCollection->addAction("format_align_left", d->action_align_left);
         connect(d->action_align_left, SIGNAL(triggered()),
                 this, SLOT(alignLeft()));
 
         d->action_align_center = new KToggleAction(KIcon("format-justify-center"), i18nc("@action", "Align &Center"), actionCollection);
         d->action_align_center->setIconText(i18nc("@label center justify", "Center"));
+        d->richTextActionList.append((d->action_align_center));
         actionCollection->addAction("format_align_center", d->action_align_center);
         connect(d->action_align_center, SIGNAL(triggered()),
                 this, SLOT(alignCenter()));
 
         d->action_align_right = new KToggleAction(KIcon("format-justify-right"), i18nc("@action", "Align &Right"), actionCollection);
         d->action_align_right->setIconText(i18nc("@label right justify", "Right"));
+        d->richTextActionList.append((d->action_align_right));
         actionCollection->addAction("format_align_right", d->action_align_right);
         connect(d->action_align_right, SIGNAL(triggered()),
                 this, SLOT(alignRight()));
 
         d->action_align_justify = new KToggleAction(KIcon("format-justify-fill"), i18nc("@action", "&Justify"), actionCollection);
         d->action_align_justify->setIconText(i18nc("@label justify fill", "Justify"));
+        d->richTextActionList.append((d->action_align_justify));
         actionCollection->addAction("format_align_justify", d->action_align_justify);
         connect(d->action_align_justify, SIGNAL(triggered()),
                 this, SLOT(alignJustify()));
@@ -340,6 +356,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         alignmentGroup->addAction(d->action_align_right);
         alignmentGroup->addAction(d->action_align_justify);
     } else {
+
         actionCollection->removeAction(d->action_align_left);
         actionCollection->removeAction(d->action_align_center);
         actionCollection->removeAction(d->action_align_right);
@@ -363,6 +380,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         << i18nc("@item:inmenu uppercase abc lists", "ABC");
         d->action_list_style->setItems(listStyles);
         d->action_list_style->setCurrentItem(0);
+        d->richTextActionList.append((d->action_list_style));
         actionCollection->addAction("format_list_style", d->action_list_style);
         connect(d->action_list_style, SIGNAL(triggered(int)),
                 this, SLOT(_k_setListStyle(int)));
@@ -376,6 +394,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportIndentLists) {
         d->action_list_indent = new KAction(KIcon("format-indent-more"), i18nc("@action", "Increase Indent"), actionCollection);
+        d->richTextActionList.append((d->action_list_indent));
         actionCollection->addAction("format_list_indent_more", d->action_list_indent);
         connect(d->action_list_indent, SIGNAL(triggered()),
                 this, SLOT(indentListMore()));
@@ -388,6 +407,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportDedentLists) {
         d->action_list_dedent = new KAction(KIcon("format-indent-less"), i18nc("@action", "Decrease Indent"), actionCollection);
+        d->richTextActionList.append((d->action_list_dedent));
         actionCollection->addAction("format_list_indent_less", d->action_list_dedent);
         connect(d->action_list_dedent, SIGNAL(triggered()),
                 this, SLOT(indentListLess()));
@@ -400,6 +420,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportRuleLine) {
         d->action_insert_horizontal_rule = new KAction(KIcon("insert-horizontal-rule"), i18nc("@action", "Insert Rule Line"), actionCollection);
+        d->richTextActionList.append((d->action_insert_horizontal_rule));
         actionCollection->addAction("insert_horizontal_rule", d->action_insert_horizontal_rule);
         connect(d->action_insert_horizontal_rule, SIGNAL(triggered()),
                 this, SLOT(insertHorizontalRule()));
@@ -410,6 +431,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportHyperlinks) {
         d->action_manage_link = new KAction(KIcon("insert-link"), i18nc("@action", "Link"), actionCollection);
+        d->richTextActionList.append((d->action_manage_link));
         actionCollection->addAction("manage_link", d->action_manage_link);
         connect(d->action_manage_link, SIGNAL(triggered()),
                 this, SLOT(_k_manageLink()));
@@ -420,6 +442,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportFormatPainting) {
         d->action_format_painter = new KToggleAction(KIcon("draw-brush"), i18nc("@action", "Format Painter"), actionCollection);
+        d->richTextActionList.append((d->action_format_painter));
         actionCollection->addAction("format_painter", d->action_format_painter);
         connect(d->action_format_painter, SIGNAL(toggled(bool)),
                 this, SLOT(_k_formatPainter(bool)));
@@ -430,6 +453,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportToPlainText) {
         d->action_to_plain_text = new KToggleAction(i18nc("@action", "To Plain Text"), actionCollection);
+        d->richTextActionList.append((d->action_to_plain_text));
         actionCollection->addAction("action_to_plain_text", d->action_to_plain_text);
         connect(d->action_to_plain_text, SIGNAL(triggered()),
                 this, SLOT(switchToPlainText()));
@@ -449,8 +473,6 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     connect(this, SIGNAL(cursorPositionChanged()),
             this, SLOT(_k_updateMiscActions()));
 
-    d->actionCollection = actionCollection;
-
     d->_k_updateMiscActions();
     d->_k_updateCharFormatActions(currentCharFormat());
 }
@@ -458,7 +480,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
 void KRichTextWidget::setActionsEnabled(bool enabled)
 {
-    foreach(QAction* action, d->actionCollection->actions())
+    foreach(QAction* action, d->richTextActionList)
     {
         action->setEnabled(enabled);
     }
