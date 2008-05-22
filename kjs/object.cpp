@@ -97,6 +97,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #endif
 
   JSValue *ret = callAsFunction(exec,thisObj,args);
+  assert(ret);
 
 #if KJS_MAX_STACK > 0
   --depth;

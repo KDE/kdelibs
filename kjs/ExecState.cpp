@@ -73,9 +73,8 @@ void ExecState::markSelf()
     scope.mark();
 
     // Propagate up to other eval chains..
-    if (m_savedExec) {
+    if (m_savedExec && m_savedExec != m_callingExec) {
         ASSERT(m_savedExec != this);
-        ASSERT(!m_callingExec);
         m_savedExec->mark();
     }
 }
@@ -90,24 +89,30 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_interpreter(intp),
   m_propertyNames(CommonIdentifiers::shared()),
   m_callingExec(0),
-  m_savedExec(save),
+  m_savedExec(save),  
   m_currentBody(0),
   m_function(0),
   m_localStore(0),
   m_pc(0),
   m_machineLocalStore(0)
 {
+    /**
+     The reason we need m_savedExec and can't just be content with m_callingExec is two-fold.
+     First of all, in many cases KHTML (and ktranscript) invoke functions such as event handlers
+     on globalExec. When that happens, we still need to be able to mark the previous call-chain.
+     Also, it is possible for the client to call Interpreter::evaluate again; and we still
+     need to mark things from the outside when that happens
+   */
+     
+    if (m_callingExec && m_savedExec && m_callingExec != m_savedExec)
+        assert(m_callingExec == intp->globalExec());
     m_interpreter->setExecState(this);
 }
 
 ExecState::~ExecState()
 {
-    if (m_savedExec)
-        m_interpreter->setExecState(m_savedExec);
-    else
-        m_interpreter->setExecState(m_callingExec);
+    m_interpreter->setExecState(m_savedExec);
 }
-
 
 JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
 {
@@ -206,7 +211,7 @@ void ExecState::quietUnwind(int depth)
     }
 }
 
-GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp)
+GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp, 0 /* nothing else constructed yet*/)
 {
     scope.clear();
     scope.push(glob);
@@ -231,7 +236,7 @@ InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
 
 EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
                              ProgramNode* body, ExecState* callingExecState):
-  ExecState(intp)
+  ExecState(intp, intp->execState())
 {
     m_currentBody = body;
     m_codeType    = EvalCode;
@@ -255,7 +260,7 @@ EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
 
 FunctionExecState::FunctionExecState(Interpreter* intp, JSObject* thisObject,
                                      FunctionBodyNode* body, ExecState* callingExecState,
-                                     FunctionImp* function): ExecState(intp)
+                                     FunctionImp* function): ExecState(intp, intp->execState())
 {
     m_function    = function;
     m_currentBody = body;

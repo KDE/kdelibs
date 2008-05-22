@@ -268,7 +268,7 @@ namespace KJS {
     ExecState* context() { return this; }
     ExecState* callingContext() { return callingExecState(); }
   protected:
-    ExecState(Interpreter* intp, ExecState* save = 0);
+    ExecState(Interpreter* intp, ExecState* save);
     ~ExecState();
     void markSelf();
 

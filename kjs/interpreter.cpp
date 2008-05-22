@@ -320,10 +320,7 @@ unsigned char* Interpreter::extendStack(size_t needed)
             }
         }
 
-        if (e->callingExecState())
-            e = e->callingExecState();
-        else
-            e = e->savedExecState();
+	e = e->savedExecState();
     }
 
     std::free(oldBase);
