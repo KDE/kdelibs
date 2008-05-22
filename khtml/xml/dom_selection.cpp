@@ -493,6 +493,9 @@ void Selection::needsCaretRepaint()
     if (isEmpty())
         return;
 
+    if (!start().node())
+        return;
+
     if (!start().node()->getDocument())
         return;
 
