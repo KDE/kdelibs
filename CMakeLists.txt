@@ -190,7 +190,6 @@ add_subdirectory( kparts     )
 add_subdirectory( kutils     )
 add_subdirectory( licenses   )
 add_subdirectory( mimetypes  )
-add_subdirectory( doc  )
 add_subdirectory( kinit  )
 add_subdirectory( threadweaver )
 add_subdirectory( sonnet  )
@@ -209,6 +208,7 @@ if(Soprano_FOUND)
   add_subdirectory(nepomuk)
 endif(Soprano_FOUND)
 
+macro_optional_add_subdirectory( doc  )
 
 ######## write dependency file which will be installed #########
 
