@@ -190,7 +190,7 @@ add_subdirectory( kparts     )
 add_subdirectory( kutils     )
 add_subdirectory( licenses   )
 add_subdirectory( mimetypes  )
-macro_optional_add_subdirectory( doc  )
+add_subdirectory( doc  )
 add_subdirectory( kinit  )
 add_subdirectory( threadweaver )
 add_subdirectory( sonnet  )
@@ -206,7 +206,7 @@ add_subdirectory( security )
 add_subdirectory( includes )
 
 if(Soprano_FOUND)
-  macro_optional_add_subdirectory(nepomuk)
+  add_subdirectory(nepomuk)
 endif(Soprano_FOUND)
 
 
