@@ -447,11 +447,10 @@ namespace KPAC
         if (!findObj || !findObj->implementsCall())
             throw Error( "No such function FindProxyForURL" );
     
-        JSObject *thisObj = 0;
         List args;
         args.append(jsString(url.url()));
         args.append(jsString(url.host()));
-        JSValue *retval = findObj->call( exec, thisObj, args );
+        JSValue *retval = findObj->call( exec, m_interpreter->globalObject(), args );
         
         if ( exec->hadException() ) {
             JSValue *ex = exec->exception();
