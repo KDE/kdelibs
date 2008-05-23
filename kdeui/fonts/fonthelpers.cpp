@@ -24,6 +24,21 @@
 
 #include "klocale.h"
 
+#ifdef NEVERDEFINE // never true
+// Font names up for translation, listed for extraction.
+
+// i18n: Generic sans serif font presented in font choosers. When selected,
+// the system will choose a real font, mandated by distro settings.
+I18N_NOOP2("@item Font name", "Sans Serif")
+// i18n: Generic serif font presented in font choosers. When selected,
+// the system will choose a real font, mandated by distro settings.
+I18N_NOOP2("@item Font name", "Serif")
+// i18n: Generic monospace font presented in font choosers. When selected,
+// the system will choose a real font, mandated by distro settings.
+I18N_NOOP2("@item Font name", "Monospace")
+
+#endif
+
 void splitFontString (const QString &name, QString *family, QString *foundry)
 {
     int p1 = name.indexOf('[');
@@ -50,14 +65,25 @@ QString translateFontName (const QString &name)
 {
     QString family, foundry;
     splitFontString(name, &family, &foundry);
+
+    // Obtain any regular translations for the family and foundry.
+    QString trFamily = i18nc("@item Font name", family.toUtf8());
+    QString trFoundry = foundry;
+    if (!foundry.isEmpty()) {
+        trFoundry = i18nc("@item Font foundry", foundry.toUtf8());
+    }
+
+    // Assemble full translation.
     QString trfont;
     if (foundry.isEmpty()) {
-        // i18n: Filtering message, so that translators can translate the
-        // font names on their own should they want. May be replaced in
-        // the future with conventional messages in a PO file.
-        trfont = i18nc("@item Font name", "%1", family);
+        // i18n: Filter by which the translators can translate, or otherwise
+        // operate on the font names not put up for regular translation.
+        trfont = i18nc("@item Font name", "%1", trFamily);
     } else {
-        trfont = i18nc("@item Font name [foundry]", "%1 [%2]", family, foundry);
+        // i18n: Filter by which the translators can translate, or otherwise
+        // operate on the font names not put up for regular translation.
+        trfont = i18nc("@item Font name [foundry]", "%1 [%2]",
+                       trFamily, trFoundry);
     }
     return trfont;
 }
@@ -70,17 +96,36 @@ static bool localeLessThan (const QString &a, const QString &b)
 QStringList translateFontNameList (const QStringList &names,
                                    QHash<QString, QString> *trToRawNames)
 {
-    QStringList trnames;
-    QHash<QString, QString> trmap;
+    // Generic fonts, in the inverse of desired order.
+    QStringList genericNames;
+    genericNames.append("Monospace");
+    genericNames.append("Serif");
+    genericNames.append("Sans Serif");
+
+    // Translate fonts, but do not add generics to the list right away.
+    QStringList trNames;
+    QHash<QString, QString> trMap;
     foreach (const QString &name, names) {
-        QString trname = translateFontName(name);
-        trnames.append(trname);
-        trmap.insert(trname, name);
+        QString trName = translateFontName(name);
+        if (!genericNames.contains(name)) {
+            trNames.append(trName);
+        }
+        trMap.insert(trName, name);
     }
-    qSort(trnames.begin(), trnames.end(), localeLessThan);
+
+    // Sort real fonts alphabetically.
+    qSort(trNames.begin(), trNames.end(), localeLessThan);
+
+    // Prepend generic fonts, in the predefined order.
+    foreach (const QString &genericName, genericNames) {
+        QString trGenericName = translateFontName(genericName);
+        if (trMap.contains(trGenericName)) {
+            trNames.prepend(trGenericName);
+        }
+    }
 
     if (trToRawNames) {
-        *trToRawNames = trmap;
+        *trToRawNames = trMap;
     }
-    return trnames;
+    return trNames;
 }
