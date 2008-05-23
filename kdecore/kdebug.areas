@@ -347,8 +347,8 @@
 # kdevelop
 9000        kdevelop
 9001        kdevelop (grep view)
-#9002        kdevelop (doc tree view)
-#9003        kdevelop (class view)
+9002        kdevelop (valgrind)
+9003        kdevelop (xtest)
 9004        kdevelop (output views)
 #9005        kdevelop (class store)
 #9006        kdevelop (cvs interface)
@@ -401,6 +401,20 @@
 9509        kdevplatform (vcs)
 9510        kdevplatform (subversion)
 9511        kdevplatform (projectmanagerview)
+9512        kdevplatform (classbrowser)
+9513        kdevplatform (cvs)
+9514        kdevplatform (duchainviewer)
+9515        kdevplatform (execute)
+9516        kdevplatform (filemanager)
+9517        kdevplatform (genericprojectmanager)
+9518        kdevplatform (konsole)
+9519        kdevplatform (problemreporter)
+9520        kdevplatform (quickopen)
+9521        kdevplatform (snippet)
+9522        kdevplatform (standardoutputview)
+9523        kdevplatform (subversion)
+9524        kdevplatform (teamwork)
+9525        kdevplatform (usehighlight)
 
 # toys and games
 10000        amor
