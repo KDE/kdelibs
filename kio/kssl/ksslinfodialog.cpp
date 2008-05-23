@@ -202,8 +202,8 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
 
     QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
     if (cipherInfo.size() >= 4) {
-        d->ui.encryption->setText(QString("%1, using %2 bits of a %3 bit key")
-                                         .arg(cipherInfo[0], QString::number(usedBits),
+        d->ui.encryption->setText(i18n("%1, using %2 bits of a %3 bit key",
+                                         cipherInfo[0], QString::number(usedBits),
                                               QString::number(bits)));
         d->ui.details->setText(QString("Auth = %1, Kx = %2, MAC = %3")
                                       .arg(cipherInfo[1], cipherInfo[2],
