@@ -412,9 +412,8 @@
 9520        kdevplatform (quickopen)
 9521        kdevplatform (snippet)
 9522        kdevplatform (standardoutputview)
-9523        kdevplatform (subversion)
-9524        kdevplatform (teamwork)
-9525        kdevplatform (usehighlight)
+9523        kdevplatform (teamwork)
+9524        kdevplatform (usehighlight)
 
 # toys and games
 10000        amor
