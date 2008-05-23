@@ -72,6 +72,8 @@ FunctionImp::~FunctionImp()
 
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
+  assert(thisObj);
+
   // enter a new execution context
   FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(), exec, this);
   if (exec->hadException())
