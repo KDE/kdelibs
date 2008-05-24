@@ -510,13 +510,16 @@ void KConfigPrivate::parseConfigFiles()
             if (allowExecutableValues)
                 parseOpts |= KConfigBackend::ParseExpansions;
             if (file == mBackend->filePath()) {
-                KConfigBackend::ParseInfo info = mBackend->parseConfig(utf8Locale, entryMap, parseOpts);
-                if (info == KConfigBackend::ParseImmutable)
+                switch (mBackend->parseConfig(utf8Locale, entryMap, parseOpts)) {
+                case KConfigBackend::ParseOk:
+                    break;
+                case KConfigBackend::ParseImmutable:
                     bFileImmutable = true;
-                else if (info == KConfigBackend::ParseOpenError)
+                    break;
+                case KConfigBackend::ParseOpenError:
                     configState = KConfigBase::NoAccess;
-                else // some other error occurred
-                    ; // FIXME what to do here?
+                    break;
+                }
             } else {
                 parseOpts |= KConfigBackend::ParseDefaults;
                 KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);

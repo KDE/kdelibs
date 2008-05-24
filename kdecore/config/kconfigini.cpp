@@ -71,7 +71,7 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                                ParseOptions options, bool merging)
 {
     if (filePath().isEmpty() || !QFile::exists(filePath()))
-        return ParseInfo();
+        return ParseOk;
 
     bool bDefault = options&ParseDefaults;
     bool allowExecutableValues = options&ParseExpansions;
@@ -261,7 +261,7 @@ next_line:
         entryMap.setEntry(group, QByteArray(), QByteArray(), KEntryMap::EntryImmutable);
     }
 
-    return (fileOptionImmutable? ParseImmutable: ParseInfo());
+    return fileOptionImmutable ? ParseImmutable : ParseOk;
 }
 
 void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
@@ -375,7 +375,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
         if (bGlobal)
             opts |= ParseGlobal;
         ParseInfo info = parseConfig(locale, writeMap, opts, true);
-        if (info) // either there was an error or the file became immutable
+        if (info != ParseOk) // either there was an error or the file became immutable
             return false;
     }
     const KEntryMapIterator end = entryMap.end();

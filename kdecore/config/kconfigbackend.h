@@ -81,11 +81,11 @@ public:
     /// @typedef typedef QFlags<WriteOption> WriteOptions
     Q_DECLARE_FLAGS(WriteOptions, WriteOption)
 
-    /** */
+    /** Return value from parseConfig. */
     enum ParseInfo {
-        ParseImmutable=1, /// object is @em immutable
-        ParseOpenError, /// there was an error opening object
-        ParseError /// there was an error parsing object
+        ParseOk, /// object opened read/write
+        ParseImmutable, /// object is @em immutable
+        ParseOpenError /// there was an error opening object
     };
 
     /**
