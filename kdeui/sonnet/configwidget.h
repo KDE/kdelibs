@@ -48,7 +48,7 @@ namespace Sonnet
         void setLanguage( const QString &language );
 
         /**
-         * @return the language currently selected int he language combobox
+         * @return the language currently selected in the language combobox
          * @since 4.1
          */
         QString language() const;
