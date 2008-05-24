@@ -105,7 +105,8 @@ public:
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                  DocumentTypeImpl* dtype, int &exceptioncode );
+                                  DocumentTypeImpl* dtype,
+                                  KHTMLView* v, int &exceptioncode );
 
     DOMImplementationImpl* getInterface(const DOMString& feature) const;
 

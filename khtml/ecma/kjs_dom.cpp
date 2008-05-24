@@ -1378,9 +1378,13 @@ JSValue* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, JSObject
 
       DOM::DocumentTypeImpl* docType = static_cast<DOM::DocumentTypeImpl*>(supposedDocType);
 
+      // ### no real leak but lifetime of part is not tied to document
+      KHTMLPart* newPart = new KHTMLPart(part->view(), part);
       DOM::DocumentImpl* doc = implementation.createDocument(valueToStringWithNullCheck(exec, args[0]),
                                                              valueToStringWithNullCheck(exec, args[1]),
-                                                             docType, exception);
+                                                             docType,
+                                                             newPart->view(),
+                                                             exception);
       if (!doc)
         return jsNull();
       KUrl url = static_cast<DocumentImpl*>(part->document().handle())->URL();

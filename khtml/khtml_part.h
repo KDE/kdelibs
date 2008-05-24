@@ -258,7 +258,7 @@ public:
    *
    * KHTML basically consists of two objects: The KHTMLPart itself,
    * holding the document data (DOM document), and the KHTMLView,
-   * derived from QScrollView, in which the document content is
+   * derived from QScrollArea, in which the document content is
    * rendered in. You can specify two different parent objects for a
    * KHTMLPart, one parent for the KHTMLPart document and one parent
    * for the KHTMLView. If the second @p parent argument is 0L, then

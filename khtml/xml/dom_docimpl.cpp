@@ -164,7 +164,9 @@ DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*fe
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                                                     DocumentTypeImpl* dtype, int &exceptioncode )
+                                                     DocumentTypeImpl* dtype,
+                                                     KHTMLView* v,
+                                                     int &exceptioncode )
 {
     exceptioncode = 0;
 
@@ -179,8 +181,12 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
         return 0;
     }
 
-    // ### this is completely broken.. without a view it will not work (Dirk)
-    DocumentImpl *doc = new DocumentImpl(this, 0);
+    // ### view can be 0 which can cause problems
+    DocumentImpl* doc;
+    if (namespaceURI == XHTML_NAMESPACE)
+        doc = new HTMLDocumentImpl(this, v);
+    else
+        doc = new DocumentImpl(this, v);
 
     if (dtype) {
         doc->setDocType(dtype);
@@ -1916,7 +1922,8 @@ NodeImpl *DocumentImpl::cloneNode ( bool deep )
     int exceptioncode;
     DocumentImpl *clone = m_implementation->createDocument("",
 							   "",
-							   0, exceptioncode);
+                                                           0, 0,
+                                                           exceptioncode);
     assert( exceptioncode == 0 );
 
     // ### attributes, styles, ...

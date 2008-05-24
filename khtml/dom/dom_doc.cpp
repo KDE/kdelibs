@@ -99,7 +99,8 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
 
     int exceptioncode = 0;
     DocumentImpl *r = impl->createDocument(namespaceURI, qualifiedName,
-            (DocumentTypeImpl*)doctype.handle(), exceptioncode );
+                                           (DocumentTypeImpl*)doctype.handle(),
+                                           0, exceptioncode );
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return r;
