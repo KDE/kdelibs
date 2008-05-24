@@ -183,9 +183,8 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
     if ( srcdir.isEmpty() ) {
         catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         catalogs += ' ';
-		catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
-        catalogs += ' ';
-        catalogs += ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
+        ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
         catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         catalogs += ' ';
