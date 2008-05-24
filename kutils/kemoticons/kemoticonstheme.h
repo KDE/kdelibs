@@ -116,7 +116,7 @@ public:
      * @return the text with emoticons replaced by html images
      * @note SkipHTML is forced when using this function
      */
-    QString parseEmoticons(const QString &text, ParseMode mode = DefaultParse, const QStringList &exclude = QStringList());
+    QString parseEmoticons(const QString &text, ParseMode mode = DefaultParse, const QStringList &exclude = QStringList()) const;
 
     /**
      * Tokenize the message @p message with ParseMode @p mode
@@ -130,7 +130,7 @@ public:
      * // tokens[1].picHTMLCode = "<img align="center" title=":)" alt=":)" src="/path/to/:).png" width="24" height="24" />"
      * @endcode
      */
-    QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParse);
+    QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParse) const;
 
     /**
      * Load the theme inside the directory @p path

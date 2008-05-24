@@ -158,7 +158,7 @@ void KEmoticonsTheme::createNew()
     d->provider->createNew();
 }
 
-QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude)
+QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude) const
 {
     QList<Token> tokens = tokenize(text, mode | SkipHTML);
     QString result;
@@ -183,7 +183,7 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
     return result;
 }
 
-QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode)
+QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode) const
 {
     if (!d->provider) {
         return QList<KEmoticonsTheme::Token>();
