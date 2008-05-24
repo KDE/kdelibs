@@ -85,7 +85,7 @@ void KEditListBoxPrivate::init( bool checkAtEntering, KEditListBox::Buttons newB
 
     listView->setModel(model);
 
-    mainLayout->addWidget(listView, 2, 0, 4, 1);
+    mainLayout->addWidget(listView, 2, 0, 5, 1);
 
     setEditor( lineEdit, representationWidget );
 
