@@ -104,8 +104,6 @@ private:
     void parseConfigFiles();
     void initCustomized(KConfig*);
     bool lockLocal();
-
-    void setDirty(bool b);
 };
 
 #endif // KCONFIG_P_H

@@ -649,19 +649,14 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
         }
     }
 
-    bool dirty = false;
     foreach (const QByteArray& group, groups) {
         const QStringList keys = keyList(QString::fromUtf8(group));
         foreach (const QString& key, keys) {
             if (d->canWriteEntry(group, key.toUtf8().constData())) {
                 d->entryMap.setEntry(group, key.toUtf8(), QByteArray(), options);
-                dirty = true;
+                d->bDirty = true;
             }
         }
-    }
-
-    if (dirty) {
-        d->setDirty(true);
     }
 }
 
@@ -690,11 +685,6 @@ bool KConfig::isConfigWritable(bool warnUser)
     return allWritable;
 }
 
-void KConfigPrivate::setDirty(bool b)
-{
-    bDirty = b;
-}
-
 bool KConfig::hasGroupImpl(const QByteArray& aGroup) const
 {
     Q_D(const KConfig);
@@ -712,14 +702,6 @@ bool KConfigPrivate::canWriteEntry(const QByteArray& group, const char* key, boo
 void KConfigPrivate::putData( const QByteArray& group, const char* key,
                       const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
 {
-    // the KConfig object is dirty now
-    // set this before any IO takes place so that if any derivative
-    // classes do caching, they won't try and flush the cache out
-    // from under us before we read. A race condition is still
-    // possible but minimized.
-    if( flags &  KConfigBase::Persistent )
-        setDirty(true);
-
     KEntryMap::EntryOptions options = convertToOptions(flags);
     if (bForceGlobal)
         options |= KEntryMap::EntryGlobal;
@@ -730,6 +712,9 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
         options |= KEntryMap::EntryDeleted;
 
     entryMap.setEntry(group, key, value, options);
+
+    if (flags & KConfigBase::Persistent)
+        bDirty = true;
 }
 
 QByteArray KConfigPrivate::lookupData(const QByteArray& group, const char* key,
