@@ -832,20 +832,6 @@ QString KLocale::translateQt(const char *context, const char *sourceText,
   }
 
   if (language != defaultLanguage()) {
-    // Ignore any script that may be present; no arguments for placeholders
-    // supplied through tr().
-    // FIXME: Transcript fence literal duplicated here and in
-    // klocalizedstring.cpp.
-    int p = translation.indexOf("|/|");
-    if (p >= 0) {
-        translation = translation.left(p);
-    }
-    // Although placeholders are not expanded yet, resolve semantic tags
-    // for what is there.
-    // FIXME: Actually do this. Would need a new public method in
-    // KLocalizedString that just does semantic resolution. Probably good
-    // idea to have it, anyway.
-
     return translation;
   }
 
