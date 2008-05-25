@@ -70,7 +70,7 @@ enum actionIdFields
 };
 
 
-KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
+KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
      : isUsingForeignComponentName(false),
        enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
@@ -80,11 +80,11 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel* q)
     if (!bus->isServiceRegistered("org.kde.kded")) {
         KToolInvocation::klauncher(); // this calls startKdeinit
     }
-    QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-            q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
+    QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
+                     q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
 }
 
-void KGlobalAccelPrivate::readComponentData( const KComponentData &componentData )
+void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
 {
     Q_ASSERT(!componentData.componentName().isEmpty());
 
@@ -127,7 +127,7 @@ bool KGlobalAccel::isEnabled() const
 }
 
 
-void KGlobalAccel::setEnabled( bool enabled )
+void KGlobalAccel::setEnabled(bool enabled)
 {
     d->enabled = enabled;
 
@@ -149,12 +149,12 @@ void KGlobalAccel::setEnabled( bool enabled )
 
 void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
 {
-    d->readComponentData( kcd );
+    d->readComponentData(kcd);
     d->isUsingForeignComponentName = true;
 }
 
 
-KGlobalAccel *KGlobalAccel::self( )
+KGlobalAccel *KGlobalAccel::self()
 {
     K_GLOBAL_STATIC(KGlobalAccel, s_instance)
     return s_instance;
@@ -334,7 +334,8 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
     action->d->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
 }
 
-void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner)
+void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QString &oldOwner,
+                                                 const QString &newOwner)
 {
     Q_UNUSED(oldOwner);
     if (name == QLatin1String("org.kde.kded") && !newOwner.isEmpty()) {
@@ -384,7 +385,8 @@ QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 
 
 //static
-bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq)
+bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier,
+                                                 const QKeySequence &seq)
 {
     if (actionIdentifier.size() < 4) {
         return false;
