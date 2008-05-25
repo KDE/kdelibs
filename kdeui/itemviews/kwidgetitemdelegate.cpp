@@ -65,6 +65,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
 
 KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 {
+    delete widgetPool;
 }
 
 // When receiving move events on the viewport we need to check if we should
