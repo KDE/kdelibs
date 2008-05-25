@@ -48,6 +48,9 @@ using namespace KJS;
 class KTranscriptImp;
 class Scriptface;
 
+typedef QHash<QString, QString> TsConfigGroup;
+typedef QHash<QString, TsConfigGroup> TsConfig;
+
 // Transcript implementation (used as singleton).
 class KTranscriptImp : public KTranscript
 {
@@ -79,6 +82,8 @@ class KTranscriptImp : public KTranscript
     void loadModules (const QList<QStringList> &mods, QString &error);
     void setupInterpreter (const QString &lang);
 
+    TsConfig config;
+
     QHash<QString, Scriptface*> m_sface;
 };
 
@@ -86,7 +91,7 @@ class KTranscriptImp : public KTranscript
 class Scriptface : public JSObject
 {
     public:
-    Scriptface (ExecState *exec);
+    Scriptface (ExecState *exec, const TsConfigGroup &config);
     ~Scriptface ();
 
     // Interface functions.
@@ -113,6 +118,9 @@ class Scriptface : public JSObject
     JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
     JSValue *setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, JSValue *value);
     JSValue *toUpperFirstf (ExecState *exec, JSValue *str, JSValue *nalt);
+    JSValue *getConfStringf (ExecState *exec, JSValue *key, JSValue *dval);
+    JSValue *getConfBoolf (ExecState *exec, JSValue *key, JSValue *dval);
+    JSValue *getConfNumberf (ExecState *exec, JSValue *key, JSValue *dval);
 
     enum {
         Load,
@@ -135,7 +143,10 @@ class Scriptface : public JSObject
         LoadProps,
         GetProp,
         SetProp,
-        ToUpperFirst
+        ToUpperFirst,
+        GetConfString,
+        GetConfBool,
+        GetConfNumber
     };
 
     // Helper methods to interface functions.
@@ -179,6 +190,9 @@ class Scriptface : public JSObject
     // Not QStrings, in order to avoid conversion from UTF-8 when
     // loading compiled maps (less latency on startup).
     QHash<QByteArray, QHash<QByteArray, QByteArray> > phraseProps;
+
+    // User config.
+    TsConfigGroup config;
 };
 
 // ----------------------------------------------------------------------
@@ -208,7 +222,7 @@ void dbgout (const QString &str, const T1 &a1, const T2 &a2) {
     #endif
 }
 template <typename T1, typename T2, typename T3>
-void dbgout (const QString &str, const T1 &a1, const T2 &a2, const T2 &a3) {
+void dbgout (const QString &str, const T1 &a1, const T2 &a2, const T3 &a3) {
     #ifndef NDEBUG
     fprintf(stderr, DBGP"%s\n", str.arg(a1).arg(a2).arg(a3).toLocal8Bit().data());
     #else
@@ -342,6 +356,68 @@ JSValue *variantToJsValue (const QVariant &val)
 }
 
 // ----------------------------------------------------------------------
+// Parse ini-style config file,
+// returning content as hash of hashes by group and key.
+// Parsing is not fussy, it will read what it can.
+TsConfig readConfig (const QString &fname)
+{
+    TsConfig config;
+    // Add empty group.
+    TsConfig::iterator configGroup;
+    configGroup = config.insert(QString(), TsConfigGroup());
+
+    QFile file(fname);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return config;
+    }
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    while (!stream.atEnd()) {
+        QString line = stream.readLine();
+        int p1, p2;
+
+        // Remove comment from the line.
+        p1 = line.indexOf('#');
+        if (p1 >= 0) {
+            line = line.left(p1);
+        }
+        line = line.trimmed();
+        if (line.isEmpty()) {
+            continue;
+        }
+
+        if (line[0] == '[') {
+            // Group switch.
+            p1 = 0;
+            p2 = line.indexOf(']', p1 + 1);
+            if (p2 < 0) {
+                continue;
+            }
+            QString group = line.mid(p1 + 1, p2 - p1 - 1).trimmed();
+            configGroup = config.find(group);
+            if (configGroup == config.end()) {
+                // Add new group.
+                configGroup = config.insert(group, TsConfigGroup());
+            }
+        } else {
+            // Field.
+            p1 = line.indexOf('=');
+            if (p1 < 0) {
+                continue;
+            }
+            QString field = line.left(p1).trimmed();
+            QString value = line.mid(p1 + 1).trimmed();
+            if (!field.isEmpty()) {
+                (*configGroup)[field] = value;
+            }
+        }
+    }
+    file.close();
+
+    return config;
+}
+
+// ----------------------------------------------------------------------
 // Dynamic loading.
 K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
@@ -356,7 +432,13 @@ extern "C"
 // KTranscript definitions.
 
 KTranscriptImp::KTranscriptImp ()
-{}
+{
+    // Load user configuration.
+    QString homeDir = qgetenv("HOME");
+    QString tsConfigFile = ".transcriptrc";
+    QString tsConfigPath = homeDir + '/' + tsConfigFile;
+    config = readConfig(tsConfigPath);
+}
 
 KTranscriptImp::~KTranscriptImp ()
 {
@@ -573,7 +655,9 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     jsi->ref();
 
     // Add scripting interface into the interpreter.
-    Scriptface *sface = new Scriptface(jsi->globalExec());
+    // NOTE: Config may not contain an entry for the language, in which case
+    // it is automatically constructed as an empty hash. This is intended.
+    Scriptface *sface = new Scriptface(jsi->globalExec(), config[lang]);
     jsi->globalObject()->put(jsi->globalExec(), SFNAME, sface,
                              DontDelete|ReadOnly);
 
@@ -611,6 +695,9 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     getProp         Scriptface::GetProp         DontDelete|ReadOnly|Function 2
     setProp         Scriptface::SetProp         DontDelete|ReadOnly|Function 3
     toUpperFirst    Scriptface::ToUpperFirst    DontDelete|ReadOnly|Function 2
+    getConfString   Scriptface::GetConfString   DontDelete|ReadOnly|Function 2
+    getConfBool     Scriptface::GetConfBool     DontDelete|ReadOnly|Function 2
+    getConfNumber   Scriptface::GetConfNumber   DontDelete|ReadOnly|Function 2
 @end
 */
 /* Source for ScriptfaceTable.
@@ -624,8 +711,8 @@ KJS_IMPLEMENT_PROTOTYPE("Scriptface", ScriptfaceProto, ScriptfaceProtoFunc)
 
 const ClassInfo Scriptface::info = {"Scriptface", 0, &ScriptfaceTable, 0};
 
-Scriptface::Scriptface (ExecState *exec)
-: JSObject(ScriptfaceProto::self(exec)), fallback(NULL)
+Scriptface::Scriptface (ExecState *exec, const TsConfigGroup &config_)
+: JSObject(ScriptfaceProto::self(exec)), fallback(NULL), config(config_)
 {}
 
 Scriptface::~Scriptface ()
@@ -708,6 +795,12 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->setPropf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
         case Scriptface::ToUpperFirst:
             return obj->toUpperFirstf(exec, CALLARG(0), CALLARG(1));
+        case Scriptface::GetConfString:
+            return obj->getConfStringf(exec, CALLARG(0), CALLARG(1));
+        case Scriptface::GetConfBool:
+            return obj->getConfBoolf(exec, CALLARG(0), CALLARG(1));
+        case Scriptface::GetConfNumber:
+            return obj->getConfNumberf(exec, CALLARG(0), CALLARG(1));
         default:
             return jsUndefined();
     }
@@ -1155,6 +1248,97 @@ JSValue *Scriptface::toUpperFirstf (ExecState *exec,
     }
 
     return jsString(qstruc);
+}
+
+JSValue *Scriptface::getConfStringf (ExecState *exec,
+                                     JSValue *key, JSValue *dval)
+{
+    if (!key->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfString: expected string "
+                          "as first argument");
+    }
+    if (!(dval->isString() || dval->isNull())) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfString: expected string "
+                          "as second argument (when given)");
+    }
+
+    if (dval->isNull()) {
+        dval = jsUndefined();
+    }
+
+    QString qkey = key->getString().qstring();
+    if (config.contains(qkey)) {
+        return jsString(config.value(qkey));
+    }
+
+    return dval;
+}
+
+JSValue *Scriptface::getConfBoolf (ExecState *exec,
+                                   JSValue *key, JSValue *dval)
+{
+    if (!key->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfBool: expected string as "
+                          "first argument");
+    }
+    if (!(dval->isBoolean() || dval->isNull())) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfBool: expected boolean "
+                          "as second argument (when given)");
+    }
+
+    static QStringList falsities;
+    if (falsities.isEmpty()) {
+        falsities.append(QString('0'));
+        falsities.append(QString("no"));
+        falsities.append(QString("false"));
+    }
+
+    if (dval->isNull()) {
+        dval = jsUndefined();
+    }
+
+    QString qkey = key->getString().qstring();
+    if (config.contains(qkey)) {
+        QString qval = config.value(qkey).toLower();
+        return jsBoolean(!falsities.contains(qval));
+    }
+
+    return dval;
+}
+
+JSValue *Scriptface::getConfNumberf (ExecState *exec,
+                                     JSValue *key, JSValue *dval)
+{
+    if (!key->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfNumber: expected string "
+                          "as first argument");
+    }
+    if (!(dval->isNumber() || dval->isNull())) {
+        return throwError(exec, TypeError,
+                          SPREF"getConfNumber: expected number "
+                          "as second argument (when given)");
+    }
+
+    if (dval->isNull()) {
+        dval = jsUndefined();
+    }
+
+    QString qkey = key->getString().qstring();
+    if (config.contains(qkey)) {
+        QString qval = config.value(qkey);
+        bool convOk;
+        double qnum = qval.toDouble(&convOk);
+        if (convOk) {
+            return jsNumber(qnum);
+        }
+    }
+
+    return dval;
 }
 
 // ----------------------------------------------------------------------
