@@ -206,7 +206,7 @@ public:
     QString domain() const;
     
     /**
-     * set anonymous mode (all other fields will be greyed out)
+     * set anonymous mode (all other fields will be grayed out)
      * @since 4.1
      */
     void setAnonymousMode(bool anonymous);

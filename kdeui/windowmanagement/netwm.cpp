@@ -928,7 +928,7 @@ void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport) {
 
 
 void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
-    // allow setting desktop names even for non-existant desktops, see the spec, sect.3.7.
+    // allow setting desktop names even for non-existent desktops, see the spec, sect.3.7.
     if (desktop < 1) return;
 
     delete [] p->desktop_names[desktop - 1];

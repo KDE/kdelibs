@@ -733,7 +733,7 @@ KCompTreeNode::~KCompTreeNode()
 }
 
 
-// Adds a child-node "ch" to this node. If such a node is already existant,
+// Adds a child-node "ch" to this node. If such a node is already existent,
 // it will not be created. Returns the new/existing node.
 KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 {

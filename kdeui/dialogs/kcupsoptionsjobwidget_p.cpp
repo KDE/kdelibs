@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "kcupsoptionsjobwidget_p.h"
+
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
@@ -32,8 +34,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kdebug.h>
-
-#include "kcupsoptionsjobwidget_p.h"
 
 /** @internal */
 KCupsOptionsJobWidget::KCupsOptionsJobWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
@@ -66,7 +66,7 @@ void KCupsOptionsJobWidget::setupCupsOptions( QStringList &cupsOptions )
         case SpecificTime : setCupsOption( cupsOptions, "job-hold-until", jobHoldTime().toString("HH:mm") ); break;
     }
 
-    if ( jobBilling() != "" ) {
+    if ( !jobBilling().isEmpty() ) {
         setCupsOption( cupsOptions, "job-billing", jobBilling() );
     }
 
@@ -162,7 +162,7 @@ void KCupsOptionsJobWidget::initJobOptions()
 void KCupsOptionsJobWidget::setJobOptions( QStringList jobOptions  )
 {
     for ( int x = 1; x <= ui.jobOptionsTable->rowCount() && jobOptions.size() <= x*2; x++ ) {
-        if ( ui.jobOptionsTable->item( x, 1 )->text() != "" ) {
+        if ( !ui.jobOptionsTable->item( x, 1 )->text().isEmpty() ) {
             ui.jobOptionsTable->item( x, 1 )->setText( jobOptions.at( (x*2)-1 ) );
             ui.jobOptionsTable->item( x, 2 )->setText( jobOptions.at( (x*2) ) );
         }
@@ -175,7 +175,7 @@ QStringList KCupsOptionsJobWidget::jobOptions() const
 
     for ( int x = 1; x <= ui.jobOptionsTable->rowCount(); x++ ) {
                                            //TODO this cause a crash in text
-        if ( ui.jobOptionsTable->item(x,1)->text() != "" ) {
+        if ( !ui.jobOptionsTable->item(x,1)->text().isEmpty() ) {
             optionList << ui.jobOptionsTable->item(x,1)->text() << ui.jobOptionsTable->item(x,2)->text();
         }
     }

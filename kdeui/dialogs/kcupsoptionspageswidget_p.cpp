@@ -113,11 +113,11 @@ void KCupsOptionsPagesWidget::setupCupsOptions( QStringList &cupsOptions )
             case TopSecret    : endBanner = "topsecret";    break;
         }
 
-        setCupsOption( cupsOptions, "job-sheets", startBanner + "," + endBanner );
+        setCupsOption( cupsOptions, "job-sheets", startBanner + ',' + endBanner );
 
     }
 
-    if ( pageLabel() != "" ) {
+    if ( !pageLabel().isEmpty() ) {
         setCupsOption( cupsOptions, "page-label", pageLabel() );
     }
 
