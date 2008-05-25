@@ -247,9 +247,6 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     : QWidget(parent)
     , d(new Private(this))
 {
-    QObject::connect(d, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
-    QObject::connect(d, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);
     setLayout(layout);
