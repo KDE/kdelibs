@@ -54,6 +54,7 @@ FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
 
 FakeManager::~FakeManager()
 {
+    qDeleteAll(d->loadedDevices);
     delete d;
 }
 

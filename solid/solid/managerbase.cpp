@@ -37,6 +37,7 @@ Solid::ManagerBasePrivate::ManagerBasePrivate()
 
 Solid::ManagerBasePrivate::~ManagerBasePrivate()
 {
+    delete m_backend;
 }
 
 void Solid::ManagerBasePrivate::loadBackend()
