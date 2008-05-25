@@ -18,6 +18,7 @@
 */
 
 #include "kfontrequester.h"
+#include "fonthelpers_p.h"
 
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
@@ -196,8 +197,7 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
     size = m_selFont.pixelSize();
 
   if ( m_sampleText.isEmpty() ) {
-    // See the comment to the same message in kfontchooser.cpp.
-    QString family = i18nc("@item Font name", "%1", m_selFont.family());
+    QString family = translateFontName(m_selFont.family());
     m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( size ) );
   }
   else {
