@@ -421,7 +421,7 @@ bool DOMStyleSheetList::getOwnPropertySlot(ExecState *exec, const Identifier& pr
 #ifdef KJS_VERBOSE
   kDebug(6070) << "DOMStyleSheetList::getOwnPropertySlot " << propertyName.qstring();
 #endif
-  if (getStaticOwnPropertySlot<DOMStyleSheetListFunc, DOMStyleSheetList>(&DOMStyleSheetTable, this, propertyName, slot))
+  if (getStaticOwnPropertySlot<DOMStyleSheetListFunc, DOMStyleSheetList>(&DOMStyleSheetListTable, this, propertyName, slot))
     return true;
 
   StyleSheetListImpl &styleSheetList = *m_impl;
