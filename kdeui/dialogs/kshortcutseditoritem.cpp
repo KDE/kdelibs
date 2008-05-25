@@ -44,8 +44,10 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *act
 
 KShortcutsEditorItem::~KShortcutsEditorItem()
 {
-    // Undo not yet committed changes. That will fre the m_old* members
-    undo();
+    delete m_oldLocalShortcut;
+    delete m_oldGlobalShortcut;
+    delete m_oldShapeGesture;
+    delete m_oldRockerGesture;
 }
 
 
@@ -238,7 +240,7 @@ void KShortcutsEditorItem::updateModified()
         m_oldShapeGesture = 0;
     }
     if (m_oldRockerGesture && *m_oldRockerGesture == m_action->rockerGesture()) {
-        delete m_oldShapeGesture;
+        delete m_oldRockerGesture;
         m_oldRockerGesture = 0;
     }
 }
