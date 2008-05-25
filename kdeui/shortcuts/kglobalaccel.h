@@ -79,7 +79,7 @@ public:
      * @param componentData a KComponentData about the application for which you want to
      *                      manipulate shortcuts.
      */
-    void overrideMainComponentData(const KComponentData &componentData);
+    KDE_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
 
 //TODO export the enum defining an actionId !
     /**
