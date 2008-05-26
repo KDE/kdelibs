@@ -62,7 +62,6 @@ using namespace DOM;
 
 #include "khtmlview.h"
 #include <kparts/partmanager.h>
-#include <kparts/factory.h>
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_window.h"
 #include "khtml_settings.h"
@@ -4731,22 +4730,19 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
     KPluginLoader loader( *service, KHTMLGlobal::componentData() );
     KPluginFactory* const factory = loader.factory();
     if ( factory ) {
-      KParts::ReadOnlyPart *res = 0L;
+      // Turn params into a QVariantList as expected by KPluginFactory
+      QVariantList variantlist;
+      Q_FOREACH(const QString& str, params)
+          variantlist << QVariant(str);
 
-      const char *className = "KParts::ReadOnlyPart";
       if ( service->serviceTypes().contains( "Browser/View" ) )
-        className = "Browser/View";
+        variantlist << QString("Browser/View");
 
-      KParts::Factory *partsFact = qobject_cast<KParts::Factory*>( factory );
-      if ( partsFact )
-        res = static_cast<KParts::ReadOnlyPart *>(partsFact->createPart( parentWidget, parent, className, params ));
-      else
-        res = factory->create<KParts::ReadOnlyPart>( parentWidget );
-
-      if ( res ) {
+      KParts::ReadOnlyPart* part = factory->create<KParts::ReadOnlyPart>(parentWidget, parent, QString(), variantlist);
+      if ( part ) {
         serviceTypes = service->serviceTypes();
         serviceName = service->name();
-        return res;
+        return part;
       }
     } else {
       // TODO KMessageBox::error and i18n, like in KonqFactory::createView?
