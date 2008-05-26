@@ -26,6 +26,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QListWidget>
 #include <QtGui/QScrollArea>
+#include <QtGui/QTextDocumentFragment>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -152,6 +153,15 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                       ask, checkboxReturn, options, details, icon);
 }
 
+static int longest_line( const QFontMetrics & fm, const QString & text ) {
+    const QStringList lines = QTextDocumentFragment::fromHtml( text ).toPlainText().split( QLatin1String( "\n" ) );
+    qDebug( "text:\n%s\n  V\n%s", qPrintable( text ), qPrintable( lines.join( "\n" ) ) );
+    int len = 0;
+    Q_FOREACH( const QString & line, lines )
+        len = qMax( len, fm.width( line ) );
+    return len;
+}
+
 int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn, Options options,
@@ -190,7 +200,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     messageLabel->setPalette(messagePal);
 
     QRect desktop = KGlobalSettings::desktopGeometry(dialog);
-    if (desktop.width() / 3 < messageLabel->fontMetrics().width(text)) {
+    if (desktop.width() / 3 < longest_line(messageLabel->fontMetrics(), text)) {
         // do only enable automatic wrapping of messages which are longer than one third of the current screen
         messageLabel->setWordWrap(true);
     }
