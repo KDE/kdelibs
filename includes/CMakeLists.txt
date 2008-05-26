@@ -834,52 +834,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 
 install( FILES
-  Phonon/AbstractAudioOutput
-  Phonon/AbstractMediaStream
-  Phonon/AbstractVideoOutput
-  Phonon/AddonInterface
-  Phonon/AudioDevice
-  Phonon/AudioDeviceEnumerator
-  Phonon/AudioOutput
-  Phonon/AudioOutputDevice
-  Phonon/AudioOutputDeviceModel
-  Phonon/AudioOutputInterface
-  Phonon/BackendCapabilities
-  Phonon/BackendInterface
-  Phonon/Effect
-  Phonon/EffectDescription
-  Phonon/EffectDescriptionModel
-  Phonon/EffectInterface
-  Phonon/EffectParameter
-  Phonon/EffectWidget
-  Phonon/Global
-  Phonon/MediaController
-  Phonon/MediaNode
-  Phonon/MediaObject
-  Phonon/MediaObjectInterface
-  Phonon/MediaSource
-  Phonon/ObjectDescription
-  Phonon/ObjectDescriptionModel
-  Phonon/Path
-  Phonon/SeekSlider
-  Phonon/StreamInterface
-  Phonon/VideoPlayer
-  Phonon/VideoWidget
-  Phonon/VideoWidgetInterface
-  Phonon/VolumeFaderEffect
-  Phonon/VolumeFaderInterface
-  Phonon/VolumeSlider
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon)
-
-install(FILES
-  Phonon/Experimental/AudioDataOutput
-  Phonon/Experimental/VideoDataOutput
-  Phonon/Experimental/VideoFrame
-  Phonon/Experimental/Visualization
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon/Experimental)
-
-
-install( FILES
   Solid/AcAdapter
   Solid/AudioInterface
   Solid/Battery
