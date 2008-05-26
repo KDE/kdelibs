@@ -155,7 +155,6 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
 
 static int longest_line( const QFontMetrics & fm, const QString & text ) {
     const QStringList lines = QTextDocumentFragment::fromHtml( text ).toPlainText().split( QLatin1String( "\n" ) );
-    qDebug( "text:\n%s\n  V\n%s", qPrintable( text ), qPrintable( lines.join( "\n" ) ) );
     int len = 0;
     Q_FOREACH( const QString & line, lines )
         len = qMax( len, fm.width( line ) );
