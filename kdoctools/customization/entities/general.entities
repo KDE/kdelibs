@@ -306,6 +306,7 @@
 <!ENTITY krfb	"<application>Desktop Sharing</application>">
 <!ENTITY krita	"<application>Krita</application>">
 <!ENTITY kruler	"<application>KDE Screen Ruler</application>">
+<!ENTITY krunner "<application>KRunner</application>">
 <!ENTITY ksame	"<application>SameGame</application>">
 <!ENTITY kscd	"<application>KsCD</application>">
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
