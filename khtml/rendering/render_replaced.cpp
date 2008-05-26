@@ -791,7 +791,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         filtered       = true; //We already delivered it!
 
         //kDebug(6000) << "RenderWidget::eventFilter captures FocusIn";
-        element()->getDocument()->setFocusNode(element());
+        document()->setFocusNode(element());
 //         if ( isEditable() ) {
 //             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
 //             if ( ext )  ext->editableWidgetFocused( m_widget );
