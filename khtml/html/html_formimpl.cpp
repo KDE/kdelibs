@@ -2608,21 +2608,17 @@ NodeImpl::Id HTMLOptionElementImpl::id() const
 
 DOMString HTMLOptionElementImpl::text() const
 {
-    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
-	if (firstChild()->nextSibling()) {
-	    DOMString ret = "";
-	    NodeImpl *n = firstChild();
-	    for (; n; n = n->nextSibling()) {
-		if (n->nodeType() == Node::TEXT_NODE ||
-		    n->nodeType() == Node::CDATA_SECTION_NODE)
-		    ret += n->nodeValue();
-	    }
-	    return ret;
-	}
-	else
-	    return firstChild()->nodeValue();
+    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE && !firstChild()->nextSibling())
+        return firstChild()->nodeValue();
+
+    DOMString ret = "";
+    NodeImpl *n = firstChild();
+    for (; n; n = n->nextSibling()) {
+        if (n->nodeType() == Node::TEXT_NODE ||
+            n->nodeType() == Node::CDATA_SECTION_NODE)
+            ret += n->nodeValue();
     }
-    return "";
+    return ret;
 }
 
 long HTMLOptionElementImpl::index() const
