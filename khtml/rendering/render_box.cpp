@@ -2364,7 +2364,7 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
 
         QWheelEvent we(p, -me.detail()*40, buttons, state, orient);
         KHTMLAssert(layer());
-        KHTMLView* v = element()->getDocument()->view();
+        KHTMLView* v = document()->view();
         if ( ((orient == Qt::Vertical && (v->contentsHeight() > v->visibleHeight()))  ||
               (orient == Qt::Horizontal && (v->contentsWidth() > v->visibleWidth()))) &&
                v->isScrollingFromMouseWheel() ) {

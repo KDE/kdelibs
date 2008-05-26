@@ -368,7 +368,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         bool needUpdate = false;
         KHTMLView* sa = 0;
         if (count) {
-            sa = m_object->element()->getDocument()->view();
+            sa = m_object->document()->view();
             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
@@ -390,7 +390,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                     found |= sc->m_negZOrderList->at(i)->zIndex() > zx;
                     if (found) {
                         if (!sa) { 
-                            sa = m_object->element()->getDocument()->view();
+                            sa = m_object->document()->view();
                             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
                         }
                         m_region -= sc->m_negZOrderList->at(i)->paintedRegion(rootLayer);
@@ -403,7 +403,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                     found |= sc->m_posZOrderList->at(i)->zIndex() > zx;
                     if (found) {
                         if (!sa) { 
-                            sa = m_object->element()->getDocument()->view();
+                            sa = m_object->document()->view();
                             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
                         }
                         m_region -= sc->m_posZOrderList->at(i)->paintedRegion(rootLayer);
@@ -757,7 +757,7 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
     ScrollBarWidget *sb = (o == Qt::Horizontal) ? m_hBar : m_vBar;
 
     if (show && !sb) {
-        KHTMLView* view = m_object->element()->getDocument()->view();
+        KHTMLView* view = m_object->document()->view();
         sb = new ScrollBarWidget(o, view->widget());
         sb->move(0, -50000);
         sb->setAttribute(Qt::WA_NoSystemBackground);
@@ -977,7 +977,7 @@ void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QR
 {
     if (paintDirtyRect == clipRect)
         return;
-    KHTMLView* v = m_object->element()->getDocument()->view();
+    KHTMLView* v = m_object->document()->view();
     if (v->clipHolder() && !v->clipHolder()->isEmpty())
         p->setClipRegion( v->clipHolder()->pop() );
     else
