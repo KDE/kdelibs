@@ -37,9 +37,10 @@ KHTMLFactory::~KHTMLFactory()
 
 KParts::Part * KHTMLFactory::createPartObject( QWidget *parentWidget, QObject *parent, const char *className, const QStringList &args )
 {
-    Q_UNUSED(args);
     KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
-    if ( strcmp( className, "Browser/View" ) == 0 )
+    if ( strcmp(className, "Browser/View") == 0 ) // old hack
+        prof = KHTMLPart::BrowserViewGUI;
+    if (args.contains("Browser/View"))
         prof = KHTMLPart::BrowserViewGUI;
 
     return new KHTMLPart( parentWidget, parent, prof );

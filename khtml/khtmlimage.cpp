@@ -55,11 +55,13 @@ KHTMLImageFactory::~KHTMLImageFactory()
 
 KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget,
                                                    QObject *parent,
-                                                   const char *className, const QStringList & )
+                                                   const char *className, const QStringList &args )
 {
   KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
-  if ( strcmp( className, "Browser/View" ) == 0 )
-    prof = KHTMLPart::BrowserViewGUI;
+    if ( strcmp( className, "Browser/View" ) == 0 ) // old hack
+        prof = KHTMLPart::BrowserViewGUI;
+    if (args.contains("Browser/View"))
+        prof = KHTMLPart::BrowserViewGUI;
   return new KHTMLImage( parentWidget, parent, prof );
 }
 
