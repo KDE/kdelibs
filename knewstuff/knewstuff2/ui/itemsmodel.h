@@ -64,6 +64,8 @@ namespace KNS
                 kPreview,
                 /** the preview pixmap */
                 kPreviewPixmap,
+                /** the preview image unscaled */
+                kLargePreviewPixmap,
                 /** the rating of the entry */
                 kRating,
                 /** the number of downloads for the entry */
@@ -93,6 +95,7 @@ namespace KNS
             // the list of entries
             QList<Entry *> m_entries;
             QMap<QString, QImage> m_previewImages;
+            QMap<QString, QImage> m_largePreviewImages;
             QMap<QString, QModelIndex> m_imageIndexes;
             bool m_hasPreviewImages;
             bool m_hasWebService;

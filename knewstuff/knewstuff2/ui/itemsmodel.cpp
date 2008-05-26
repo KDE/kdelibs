@@ -87,6 +87,11 @@ namespace KNS
                     return m_previewImages[entry->preview().representation()];
                 }
                 break;
+            case kLargePreviewPixmap:
+                if (m_largePreviewImages.contains(entry->preview().representation())) {
+                    return m_largePreviewImages[entry->preview().representation()];
+                }
+                break;
             case kRating:
                 return entry->rating();
                 break;
@@ -107,8 +112,12 @@ namespace KNS
 
     void ItemsModel::addEntry(Entry * entry)
     {
-        kDebug(551) << "adding entry " << entry->name().representation() << " to the model";
+        //kDebug(551) << "adding entry " << entry->name().representation() << " to the model";
+        int start = m_entries.count();
+        int end = start + 1;
+        beginInsertRows(QModelIndex(), start, end);
         m_entries.append(entry);
+        endInsertRows();
 
         QString preview = entry->preview().representation();
         if (!preview.isEmpty()) {
@@ -132,6 +141,7 @@ namespace KNS
     void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QPixmap & pix)
     {
         QImage image = pix.toImage();
+        m_largePreviewImages.insert(url, image);
         m_previewImages.insert(url, image.scaled(64, 64, Qt::KeepAspectRatio));
 
         QModelIndex thisIndex = m_imageIndexes[url];
