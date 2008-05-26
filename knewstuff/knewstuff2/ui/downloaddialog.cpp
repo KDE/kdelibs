@@ -418,7 +418,14 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
         }
     }
 
-    m_models.value(feed)->addEntry(entry);
+    KNS::ItemsModel* thisModel = m_models.value(feed);
+
+    if (thisModel != NULL) {
+        thisModel->addEntry(entry);
+    }
+    else {
+        kDebug(551) << "no model for feed: " << feed;
+    }
 }
 
 void DownloadDialog::slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed)
