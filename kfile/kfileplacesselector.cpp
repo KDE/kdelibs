@@ -51,6 +51,8 @@ KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel
             this, SLOT(updateMenu()));
     connect(m_placesModel, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
             this, SLOT(updateMenu()));
+    connect(m_placesModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+            this, SLOT(updateMenu()));
     connect(m_placesMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(activatePlace(QAction*)));
 
