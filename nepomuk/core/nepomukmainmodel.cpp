@@ -87,6 +87,7 @@ public:
         // to connect every time the model is requested
         if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
             delete localSocketModel;
+            localSocketModel = 0;
             QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
             if ( localSocketClient.connect( socketName ) ) {
                 localSocketModel = localSocketClient.createModel( "main" );
