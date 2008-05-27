@@ -226,7 +226,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
 
   protected:
     /**
-     * Reimplemented to catch "delete word" key events.
+     * Reimplemented to catch "delete word" shortcut events.
+     */
+    virtual bool event(QEvent*);
+
+    /**
+     * Reimplemented for internal reasons
      */
     virtual void keyPressEvent( QKeyEvent* );
 
