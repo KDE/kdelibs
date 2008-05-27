@@ -301,7 +301,7 @@ public:
      */
     void updateActionStates();
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Disables or enables all of the actions created by
