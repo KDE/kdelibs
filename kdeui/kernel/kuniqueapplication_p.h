@@ -67,8 +67,7 @@ public Q_SLOTS:
       parent()->setStartupId(asn_id);
 
     if (!args.isEmpty()) {
-      QByteArray saved_args = args;
-      QDataStream ds(&saved_args, QIODevice::ReadOnly);
+      QDataStream ds(args);
       KCmdLineArgs::loadAppArgs(ds);
     }
 
