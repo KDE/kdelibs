@@ -172,7 +172,7 @@ void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
 
 bool KTextEdit::event(QEvent* ev)
 {
-    if (ev->type() == QEvent::KeyPress /*ShortcutOverride*/) {
+    if (ev->type() == QEvent::ShortcutOverride) {
         QKeyEvent *e = static_cast<QKeyEvent *>( ev );
         if (d->overrideShortcut(e)) {
             e->accept();
