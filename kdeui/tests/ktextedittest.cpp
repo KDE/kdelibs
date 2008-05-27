@@ -21,7 +21,8 @@
 #include <kcmdlineargs.h>
 #include <ktextedit.h>
 
-#include <QtCore/QFile>
+#include <QFile>
+#include <QAction>
 
 int main( int argc, char **argv )
 {
@@ -29,7 +30,12 @@ int main( int argc, char **argv )
     KApplication app;
     KTextEdit *edit = new KTextEdit();
 
-    QFile file( "ktextedittest.cpp" );
+    //QAction* action = new QAction("Select All", edit);
+    //action->setShortcut( Qt::CTRL | Qt::Key_Underscore );
+    //edit->addAction(action);
+    //QObject::connect(action, SIGNAL(triggered()), edit, SLOT(selectAll()));
+
+    QFile file(KDESRCDIR "/ktextedittest.cpp");
     if ( file.open( QIODevice::ReadOnly ) )
     {
         edit->setPlainText( file.readAll() );
