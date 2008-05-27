@@ -32,6 +32,7 @@
 #include "kuser.h"
 #include "kde_file.h"
 #include "kkernel_win.h"
+#include "kkernel_mac.h"
 #include "klocale.h"
 
 #include <config.h>
@@ -58,10 +59,6 @@
 #include <QtCore/QSettings>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
-#ifdef Q_WS_MACX
-// used to find the application bundle on Mac OS X
-#include <QtCore/QCoreApplication>
-#endif
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -1492,7 +1489,7 @@ void KStandardDirs::addKDEDefaults()
 #ifdef Q_WS_MACX
     // Adds the "Contents" directory of the current application bundle to
     // the search path. This way bundled resources can be found.
-    QDir bundleDir(QCoreApplication::applicationDirPath());
+    QDir bundleDir(mac_app_filename());
     if (bundleDir.dirName() == "MacOS") { // just to be sure we're in a bundle
         bundleDir.cdUp();
         // now dirName should be "Contents". In there we can find our normal

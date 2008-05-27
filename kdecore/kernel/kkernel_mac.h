@@ -22,6 +22,8 @@
 #ifdef Q_OS_MACX
 
 #include <kdecore_export.h>
+#include <QtCore/QString>
+#include <CoreFoundation/CFString.h>
 
 /**
  * @short Mac-specific functions needed in kdecore
@@ -29,18 +31,23 @@
  *
  * This file provides some Mac-specific functions which
  * are needed to work around OS issues.
-*/
+  */
 
 
 /**
- Fork and reexec to work around CoreFoundation issues.
-*/
+ * Fork and reexec to work around CoreFoundation issues.
+  */
 KDECORE_EXPORT void mac_fork_and_reexec_self();
 
 /**
-  Initialize D-Bus Mac-specific stuff if necessary.
-*/
+  * Initialize D-Bus Mac-specific stuff if necessary.
+  */
 KDECORE_EXPORT void mac_initialize_dbus();
+
+/**
+  * Get the application name.
+  */
+KDECORE_EXPORT QString mac_app_filename();
 
 #endif  // Q_OS_MACX
 #endif  // KKERNEL_MAC_H

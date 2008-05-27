@@ -17,10 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kkernel_mac.h"
-
 #include <config.h>
 #include <QtCore/qglobal.h>
+
+#include "kkernel_mac.h"
 
 #ifdef Q_OS_MACX
 
@@ -32,15 +32,36 @@
 #include <crt_externs.h>
 #include <mach-o/dyld.h>
 
+#include <CoreFoundation/CFBundle.h>
+#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CFURL.h>
 #include <QtCore/QFile>
 #include <QtCore/QProcess>
 #include <QtCore/QStringList>
+#include <QtCore/qvarlengtharray.h>
 #include <kstandarddirs.h>
 #include <ksharedconfig.h>
 #include <kconfig.h>
 #include <kdebug.h>
 
+int timeout = 3000; // msec
+
 bool dbus_initialized = false;
+
+/**
+  qAppFileName() is not public in qt4/mac, so we need to redo it here
+*/
+
+static QString convert_CFString_to_QString(CFStringRef str) {
+	CFIndex length = CFStringGetLength(str);
+	const UniChar *chars = CFStringGetCharactersPtr(str);
+	if (chars)
+		return QString(reinterpret_cast<const QChar *>(chars), length);
+
+	QVarLengthArray<UniChar> buffer(length);
+	CFStringGetCharacters(str, CFRangeMake(0, length), buffer.data());
+	return QString(reinterpret_cast<const QChar *>(buffer.constData()), length);
+}
 
 /**
  Calling CoreFoundation APIs (which is unavoidable in Qt/Mac) has always had issues
@@ -101,7 +122,7 @@ bool mac_set_dbus_address(QString value)
 	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
 		value = "unix:path=" + value;
 		::setenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit(), 1);
-		kDebug() << "set session bus address to " << value;
+		kDebug() << "set session bus address to" << value;
 		return true;
 	}
 	return false;
@@ -142,23 +163,24 @@ void mac_initialize_dbus()
 
 	QString line;
 	QProcess qp;
-	qp.setProcessChannelMode(QProcess::MergedChannels);
 	qp.setTextModeEnabled(true);
 
 	if (!externalProc.isEmpty()) {
 		qp.start(externalProc, QStringList() << "getenv" << "DBUS_LAUNCHD_SESSION_BUS_SOCKET");
-		if (!qp.waitForStarted(3000)) {
-			kDebug() << externalProc << " never started";
+		if (!qp.waitForStarted(timeout)) {
+			kDebug() << externalProc << "never started";
 		} else {
-			while (qp.waitForReadyRead(-1)) {
-				while (qp.canReadLine()) {
+			if (!qp.waitForReadyRead(timeout)) {
+				kDebug() << externalProc << "never wrote anything";
+			} else {
+				while (qp.atEnd() == false) {
 					line = qp.readLine().trimmed();
 					if (mac_set_dbus_address(line)) {
 						dbus_initialized = true;
 					}
 				}
 			}
-			qp.waitForFinished(-1);
+			qp.waitForFinished(timeout);
 		}
 	}
 
@@ -166,6 +188,31 @@ void mac_initialize_dbus()
 		kDebug() << "warning: unable to initialize D-Bus environment!";
 	}
 
+}
+
+QString mac_app_filename() {
+	static QString appFileName;
+	if (appFileName.isEmpty()) {
+		CFURLRef bundleURL = NULL;
+		CFBundleRef bundle = NULL;
+		CFStringRef bundlePath = NULL;
+
+		bundle = CFBundleGetMainBundle();
+		if (bundle) {
+			bundleURL = CFBundleCopyBundleURL(bundle);
+			bundlePath = CFURLCopyFileSystemPath(bundleURL, kCFURLPOSIXPathStyle);
+
+			if (bundleURL) {
+				CFRelease(bundleURL);
+			}
+
+			if (bundlePath) {
+				appFileName = convert_CFString_to_QString(bundlePath);
+				CFRelease(bundlePath);
+			}
+		}
+	}
+	return appFileName;
 }
 
 #endif
