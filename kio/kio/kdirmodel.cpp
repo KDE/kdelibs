@@ -186,7 +186,7 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
                 return qMakePair(row, *it);
             }
             // This used to be urlStr.startsWith(u.url()+'/'), but KUrl::url() is a slow operation.
-            if ( pathStr.startsWith(u.path()+'/') ) {
+            if ( (url.protocol() == u.protocol()) && (pathStr.startsWith(u.path()+'/')) ) {
                 //kDebug(7008) << "going into " << node->item().url();
                 Q_ASSERT( isDir(*it) );
                 dirNode = static_cast<KDirModelDirNode *>( *it );
