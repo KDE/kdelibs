@@ -495,7 +495,10 @@ void KCategorizedView::Private::layoutChanged(bool forceItemReload)
         }
     }
 
-    updateScrollbars();
+    if (proxyModel && categoryDrawer && proxyModel->isCategorizedModel())
+    {
+        updateScrollbars();
+    }
 }
 
 void KCategorizedView::Private::drawDraggedItems()
