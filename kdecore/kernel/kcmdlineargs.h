@@ -579,6 +579,13 @@ public:
   static void loadAppArgs( QDataStream &);
 
   /**
+   * @internal for KUniqueApplication only:
+   *
+   * Save all but the Qt and KDE arguments to a stream.
+   */
+  static void saveAppArgs( QDataStream &);
+
+  /**
    * Add standard option --tempfile
    */
   static void addTempFileOption();
@@ -630,13 +637,6 @@ protected:
   ~KCmdLineArgs();
 
 private:
-
-  /**
-   * @internal for KUniqueApplication only:
-   *
-   * Save all but the Qt and KDE arguments to a stream.
-   */
-  static void saveAppArgs( QDataStream &);
 
   /**
    * @internal for KApplication only
