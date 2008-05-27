@@ -55,6 +55,12 @@ class KTextEdit::Private
       delete highlighter;
     }
 
+    /**
+     * Checks whether we should/should not consume a key used as
+     * an accelerator.
+     */
+    bool overrideShortcut (const QKeyEvent* e);
+
     void slotSpellCheckDone( const QString &s );
 
     void spellCheckerMisspelling( const QString &text, int pos );
@@ -164,109 +170,103 @@ void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
     d->spellChechingConfigFileName = _fileName;
 }
 
-void KTextEdit::keyPressEvent( QKeyEvent *event )
+bool KTextEdit::event(QEvent* ev)
 {
-  int key = event->key() | event->modifiers();
+    if (ev->type() == QEvent::KeyPress /*ShortcutOverride*/) {
+        QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+        if (d->overrideShortcut(e)) {
+            e->accept();
+            return true;
+        }
+    }
+    return QTextEdit::event(ev);
+}
+
+bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
+{
+  const int key = event->key() | event->modifiers();
 
   if ( KStandardShortcut::copy().contains( key ) ) {
-    copy();
-    event->accept();
-    return;
+    parent->copy();
+    return true;
   } else if ( KStandardShortcut::paste().contains( key ) ) {
-    paste();
-    event->accept();
-    return;
+    parent->paste();
+    return true;
   } else if ( KStandardShortcut::cut().contains( key ) ) {
-    cut();
-    event->accept();
-    return;
+    parent->cut();
+    return true;
   } else if ( KStandardShortcut::undo().contains( key ) ) {
-    document()->undo();
-    event->accept();
-    return;
+    parent->document()->undo();
+    return true;
   } else if ( KStandardShortcut::redo().contains( key ) ) {
-    document()->redo();
-    event->accept();
-    return;
+    parent->document()->redo();
+    return true;
   } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
-    deleteWordBack();
-    event->accept();
-    return;
+    parent->deleteWordBack();
+    return true;
   } else if ( KStandardShortcut::deleteWordForward().contains( key ) ) {
-    deleteWordForward();
-    event->accept();
-    return;
+    parent->deleteWordForward();
+    return true;
   } else if ( KStandardShortcut::backwardWord().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::PreviousWord );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::forwardWord().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::NextWord );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::next().contains( key ) ) {
-    QTextCursor cursor = textCursor();
-    int targetY = verticalScrollBar()->value() + viewport()->height();
+    QTextCursor cursor = parent->textCursor();
+    int targetY = parent->verticalScrollBar()->value() + parent->viewport()->height();
     bool moved = false;
     do {
       moved = cursor.movePosition( QTextCursor::Down );
-      setTextCursor( cursor );
-    } while ( moved && verticalScrollBar()->value() < targetY );
-    event->accept();
-    return;
+      parent->setTextCursor( cursor );
+    } while ( moved && parent->verticalScrollBar()->value() < targetY );
+    return true;
   } else if ( KStandardShortcut::prior().contains( key ) ) {
-    QTextCursor cursor = textCursor();
-    int targetY = verticalScrollBar()->value() - viewport()->height();
+    QTextCursor cursor = parent->textCursor();
+    int targetY = parent->verticalScrollBar()->value() - parent->viewport()->height();
     bool moved = false;
     do {
       moved = cursor.movePosition( QTextCursor::Up );
-      setTextCursor( cursor );
-    } while ( moved && verticalScrollBar()->value() > targetY );
-    event->accept();
-    return;
+      parent->setTextCursor( cursor );
+    } while ( moved && parent->verticalScrollBar()->value() > targetY );
+    return true;
   } else if ( KStandardShortcut::begin().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::Start );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::end().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::End );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::beginningOfLine().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::StartOfLine );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::endOfLine().contains( key ) ) {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = parent->textCursor();
     cursor.movePosition( QTextCursor::EndOfLine );
-    setTextCursor( cursor );
-    event->accept();
-    return;
+    parent->setTextCursor( cursor );
+    return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     QString text = QApplication::clipboard()->text( QClipboard::Selection );
     if ( !text.isEmpty() )
-      insertPlainText( text );  // TODO: check if this is html? (MiB)
-    event->accept();
-    return;
+      parent->insertPlainText( text );  // TODO: check if this is html? (MiB)
+    return true;
   } else if ( event->modifiers() == Qt::ControlModifier &&
             (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
-              qobject_cast<KDialog*>( topLevelWidget() ) ) {
+              qobject_cast<KDialog*>( parent->topLevelWidget() ) ) {
     // ignore Ctrl-Return so that KDialogs can close the dialog
-    event->ignore();
-    return;
+    return true;
   }
-
-  QTextEdit::keyPressEvent( event );
+  return false;
 }
 
 void KTextEdit::deleteWordBack()
@@ -455,6 +455,11 @@ void KTextEdit::highlightWord( int length, int pos )
   cursor.setPosition(pos);
   cursor.setPosition(pos+length,QTextCursor::KeepAnchor);
   setTextCursor (cursor);
+}
+
+void KTextEdit::keyPressEvent( QKeyEvent *event )
+{
+    QTextEdit::keyPressEvent(event);
 }
 
 #include "ktextedit.moc"
