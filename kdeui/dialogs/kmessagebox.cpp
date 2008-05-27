@@ -256,6 +256,10 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     dialog->setMainWidget(mainWidget);
     dialog->showButtonSeparator(true);
     if (!listWidget) {
+        int hfw = messageLabel->heightForWidth(messageScrollArea->sizeHint().width() - 2);
+        if (hfw != messageScrollArea->sizeHint().height()) {
+            messageScrollArea->setMinimumHeight(hfw);
+        }
         dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
     }
 
