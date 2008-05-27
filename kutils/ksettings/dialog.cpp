@@ -224,7 +224,7 @@ void DialogPrivate::parseGroupFile( const QString & filename )
 
         KVBox *page = new KVBox();
         const QString iconName = conf.readEntry("Icon");
-        QCheckBox *checkBox = new QCheckBox(i18n("component enabled:"), page);
+        QCheckBox *checkBox = new QCheckBox(i18n("Component enabled"), page);
         QLabel *iconLabel = new QLabel(page);
         QLabel *comment = new QLabel(conf.readEntry("Comment"), page);
         comment->setTextFormat(Qt::RichText);
