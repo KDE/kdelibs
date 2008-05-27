@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
-#include <kicon.h>
+#include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
@@ -222,12 +222,19 @@ void DialogPrivate::parseGroupFile( const QString & filename )
         }
         KConfigGroup conf(&file, group);
 
-        KVBox *page = new KVBox();
+        QWidget * page = new QWidget( q );
+
         const QString iconName = conf.readEntry("Icon");
-        QCheckBox *checkBox = new QCheckBox(i18n("Component enabled"), page);
+        QCheckBox *checkBox = new QCheckBox(i18n("Enable component"), page);
         QLabel *iconLabel = new QLabel(page);
         QLabel *comment = new QLabel(conf.readEntry("Comment"), page);
         comment->setTextFormat(Qt::RichText);
+        QVBoxLayout * layout = new QVBoxLayout(page);
+        layout->addWidget(checkBox);
+        layout->addWidget(iconLabel);
+        layout->addWidget(comment);
+        layout->addStretch();
+        page->setLayout(layout);
 
         KPageWidgetItem *item = new KPageWidgetItem(page, conf.readEntry("Name"));
         item->setIcon(KIcon(iconName));
