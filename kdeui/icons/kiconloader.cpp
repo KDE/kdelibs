@@ -525,12 +525,19 @@ void KIconLoaderPrivate::addAppThemes(const QString& appname)
         def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     }
     KIconThemeNode* node = new KIconThemeNode(def);
+    bool addedToLinks = false;
 
     if (!mThemesInTree.contains(node->theme->internalName())) {
         mThemesInTree.append(node->theme->internalName());
         links.append(node);
+        addedToLinks = true;
     }
     addBaseThemes(node, appname);
+
+    if (!addedToLinks) {
+        // Nodes in links are being deleted later - this one needs manual care.
+        delete node;
+    }
 }
 
 void KIconLoaderPrivate::addBaseThemes(KIconThemeNode *node, const QString &appname)
