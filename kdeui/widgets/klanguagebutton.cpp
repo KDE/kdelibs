@@ -98,6 +98,9 @@ KLanguageButtonPrivate::KLanguageButtonPrivate( KLanguageButton *parent )
   layout->setSpacing(0);
   layout->addWidget( button );
 
+  parent->setFocusProxy( button );
+  parent->setFocusPolicy( button->focusPolicy() );
+
   button->setMenu( popup );
 
   QObject::connect( popup, SIGNAL(triggered(QAction*)), parent, SLOT(slotTriggered(QAction*)) );
