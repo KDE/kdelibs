@@ -342,7 +342,7 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 }
 
 void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
-                                  const QString &)
+                                  const QString &newOwner)
 {
 #if 0 // see kdedmodule.cpp (KDED_OBJECTS)
   foreach( KDEDModule* module, m_modules )
@@ -350,7 +350,7 @@ void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
      module->removeAll(appId);
   }
 #endif
-  if (oldOwner.isEmpty())
+  if (oldOwner.isEmpty() || !newOwner.isEmpty())
      return;
 
   const QList<qlonglong> windowIds = m_windowIdList.value(name);
