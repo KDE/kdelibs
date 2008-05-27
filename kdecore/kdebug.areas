@@ -162,7 +162,7 @@
 4714        okular (TIFF)
 4715        okular (OooGenerator)
 
-# kdenetwork
+# kdenetwork, kdepim
 5001        kget
 5002        kppp
 5003        knode
@@ -178,8 +178,10 @@
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
 5120        kmail (storage internals)
+5121        kmail (test)
 
 # kdepim
+5149        kdepim
 5150        libkleo
 5151        kleopatra
 5152          kleopatra (kcm)
@@ -202,6 +204,7 @@
 5263        akonadiserializer (calendar)
 5264        akonadiserializer (mail)
 5265        akonadiconsole
+5295        kode
 5300        libkdepim
 5310        kprefs
 5320        kdepimlibs (kmime)
