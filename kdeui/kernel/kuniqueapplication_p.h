@@ -66,10 +66,13 @@ public Q_SLOTS:
     if (!asn_id.isEmpty())
       parent()->setStartupId(asn_id);
 
-    if (!args.isEmpty()) {
-      QDataStream ds(args);
-      KCmdLineArgs::loadAppArgs(ds);
-    }
+    // This hook allows the application to set up KCmdLineArgs using addCmdLineOptions
+    // before we load the app args. Normally not necessary, but needed by kontact
+    // since it switches to other sets of options when called as e.g. kmail or korganizer
+    QMetaObject::invokeMethod(parent(), "loadCommandLineOptionsForNewInstance");
+
+    QDataStream ds(args);
+    KCmdLineArgs::loadAppArgs(ds);
 
     int ret = parent()->newInstance();
     // Must be done out of the newInstance code, in case it is overloaded
