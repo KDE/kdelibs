@@ -93,6 +93,21 @@ mac_fork_and_reexec_self()
 }
 
 /**
+ Set the D-Bus environment based on session bus socket
+*/
+
+bool mac_set_dbus_address(QString value)
+{
+	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
+		value = "unix:path=" + value;
+		::setenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit(), 1);
+		kDebug() << "set session bus address to " << value;
+		return true;
+	}
+	return false;
+}
+
+/**
  Make sure D-Bus is initialized, by any means necessary.
 */
 
@@ -108,50 +123,38 @@ void mac_initialize_dbus()
 	}
 
 	dbusVar = QFile::decodeName(getenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
-	if (!dbusVar.isEmpty() && QFile::exists(dbusVar) && (QFile::permissions(dbusVar) & QFile::WriteUser)) {
-		dbusVar = "unix:path=" + dbusVar;
-		::setenv("DBUS_SESSION_BUS_ADDRESS", dbusVar.toLocal8Bit(), 1);
+	if (mac_set_dbus_address(dbusVar)) {
 		dbus_initialized = true;
 		return;
 	}
 
-	/* temporary until we implement autolaunch for dbus on Mac OS X */
-	QString dbusSession;
+	QString externalProc;
 	QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
-	path << QFile::decodeName(getenv("PATH")).split(':') << "/opt/kde4-deps/bin" << "/sw/bin" << "/usr/local/bin";
+	path << QFile::decodeName(getenv("PATH")).split(':') << "/usr/local/bin";
+
 	for (int i = 0; i < path.size(); ++i) {
-		// QString testSession = QString(newPath.at(i)).append("/start-session-bus.sh");
-		QString testSession = QString(path.at(i)).append("/start-session-bus.sh");
-		kDebug() << "trying " << testSession;
-		if (QFile(testSession).exists()) {
-			kDebug() << "found " << testSession;
-			dbusSession = testSession;
+		QString testLaunchctl = QString(path.at(i)).append("/launchctl");
+		if (QFile(testLaunchctl).exists()) {
+			externalProc = testLaunchctl;
 			break;
 		}
 	}
 
-	if (!dbusSession.isEmpty()) {
-		kDebug() << "running " << dbusSession << " --kde-mac";
-		QString key, value, line;
-		QStringList keyvals;
-		QProcess qp;
-		qp.setProcessChannelMode(QProcess::MergedChannels);
-		qp.setTextModeEnabled(true);
-		qp.start(dbusSession, QStringList() << "--kde-mac");
+	QString line;
+	QProcess qp;
+	qp.setProcessChannelMode(QProcess::MergedChannels);
+	qp.setTextModeEnabled(true);
+
+	if (!externalProc.isEmpty()) {
+		qp.start(externalProc, QStringList() << "getenv" << "DBUS_LAUNCHD_SESSION_BUS_SOCKET");
 		if (!qp.waitForStarted(3000)) {
-			kDebug() << dbusSession << " never started";
+			kDebug() << externalProc << " never started";
 		} else {
 			while (qp.waitForReadyRead(-1)) {
 				while (qp.canReadLine()) {
 					line = qp.readLine().trimmed();
-					kDebug() << "line = " << line;
-					keyvals = line.split('=');
-					key = keyvals.takeFirst();
-					value = keyvals.join("=");
-					kDebug() << "key = " << key << ", value = " << value;
-					if (!key.isEmpty() && !value.isEmpty()) {
-						::setenv(key.toLocal8Bit(), value.toLocal8Bit(), 1);
-						kDebug() << "setenv(" << key << "," << value << ",1)";
+					if (mac_set_dbus_address(line)) {
+						dbus_initialized = true;
 					}
 				}
 			}
@@ -159,7 +162,10 @@ void mac_initialize_dbus()
 		}
 	}
 
-	dbus_initialized = true;
+	if (dbus_initialized == false) {
+		kDebug() << "warning: unable to initialize D-Bus environment!";
+	}
+
 }
 
 #endif
