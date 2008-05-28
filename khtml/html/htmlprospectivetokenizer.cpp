@@ -41,7 +41,6 @@
 #include <xml/dom_docimpl.h>
 #include <css/csshelper.h>
 #include <ecma/kjs_proxy.h>
-#include <kcharsets.h>
 #include <kglobal.h>
 #include <ctype.h>
 #include <assert.h>

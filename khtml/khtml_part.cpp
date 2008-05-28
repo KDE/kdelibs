@@ -87,7 +87,6 @@ using namespace DOM;
 #include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kcharsets.h>
 #include <kmessagebox.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>

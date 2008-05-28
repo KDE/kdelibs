@@ -26,7 +26,6 @@
 #include <QtGui/QPaintDevice>
 #include <QtGui/QFontDatabase>
 
-#include <kcharsets.h>
 #include <kglobal.h>
 #include <kdebug.h>
 
