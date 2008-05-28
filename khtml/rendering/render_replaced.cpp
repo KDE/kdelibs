@@ -584,6 +584,14 @@ static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
       }
 }
 
+static bool qtVersionDetected = false;
+static bool qt43;
+
+static void detectQtVersion() {
+    qtVersionDetected = true;
+    qt43 = QString::fromLatin1(qVersion()).startsWith("4.3");
+}
+
 static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty, bool buffered = false)
 {
     if (r.isNull() || r.isEmpty() )
@@ -628,15 +636,16 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     //
     // Testcase: paintEvent(...) { QPainter p(this); aChildWidget->render( aPixmapTarget, ...); }
     //
-    p->end();
+    if (!qt43 || !buffered)
+        p->end();
 
     setInPaintEventFlag( widget, false );
 
-    widget->render( d, (buffered ? QPoint(0,0) : thePoint) + r.topLeft(), r);
+    widget->render( d, (buffered ? QPoint(0,0) : thePoint) + (qt43 ? QPoint(0,0) : r.topLeft()), r);
 
     setInPaintEventFlag( widget );
 
-//    if (!buffered) {
+    if (!qt43 || !buffered) {
         p->begin(x);
         p->setWorldTransform(t);
         p->setWindow(w);
@@ -649,7 +658,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->setOpacity(op);
         p->setPen(pen);
         p->setBrush(brush);
-//    } else {
+    }
     if (buffered) {
         // transfer results
         QPoint off(r.x(), r.y());
@@ -667,7 +676,9 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     //    can't use QWidget::render to directly paint widgets on the view anymore.
     //    Results are unreliable for subrects, leaving blank squares. (cf. kde #158607)
     //
-    bool buffered = true; // p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
+    if (!qtVersionDetected)
+        detectQtVersion();
+    bool buffered = !qt43 || p->combinedMatrix().m22() != 1.0 || (p->device()->devType() == QInternal::Printer);
 
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
