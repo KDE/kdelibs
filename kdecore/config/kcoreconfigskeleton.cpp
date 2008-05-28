@@ -905,9 +905,7 @@ QVariant KCoreConfigSkeleton::ItemUrlList::property() const
     return qVariantFromValue<KUrl::List>(mReference);
 }
 
-#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE( QList<int> )
-#endif
 
 KCoreConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,
