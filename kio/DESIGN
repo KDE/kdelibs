@@ -3,7 +3,7 @@ DESIGN:
 
 libkio uses kioslaves (separate processes) that handle a given protocol.
 Launching those slaves is taken care of by the kdeinit/klauncher tandem,
-which are notified by DCOP.
+which are notified by DBus.
 
 Connection is the most low-level class, the one that encapsulates the pipe.
 
@@ -157,7 +157,7 @@ move: moves a file or directory, recursively if the latter
 
 del: deletes a file or directory, recursively if the latter
 
-PROGRESS DISPLAYING :
+PROGRESS DISPLAYING : [this is outdated, and describes the kde3 situation]
 =====================
 Taj brought up the idea of delegating all progress informations to an extern
 GUI daemon which could be provided in several implementations - examples
@@ -205,7 +205,7 @@ C. GUI Progress Server
  This is a special progress server.
  - createProgress() will either create a DefaultProgress dialog or add new entry
     in a ListProgress ( an all-jobs-in-one progress dialog )
- - after receiving signals from the JobObserver via DCOP it will call
+ - after receiving signals from the JobObserver via DBus it will call
     appropriate method of progress dialog ( either in DefaultProgress or ListProgress )
  - ListProgres can be a Caitoo style dialog, kicker applet or both in one.
 
@@ -219,7 +219,7 @@ D. Some notes
     approach ( see A.2 above )
 
 
-Streaming 
+Streaming [didn't work well, has been removed]
 ---------
 
  1. We currently support a streaming "GET": e.g. file:/tmp/test.gz#gzip:/
