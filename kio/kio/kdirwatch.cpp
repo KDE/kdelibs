@@ -419,7 +419,7 @@ int KDirWatchPrivate::Entry::clients()
 KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
 {
 // we only support absolute paths
-  if (QDir::isRelativePath(_path)) {
+  if (_path.isEmpty() || QDir::isRelativePath(_path)) {
     return 0;
   }
 
@@ -596,7 +596,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
                 Entry* sub_entry, bool isDir, KDirWatch::WatchModes watchModes)
 {
   QString path (_path);
-  if (path.startsWith("/dev/") || (path == "/dev"))
+  if (path.isEmpty()
+#ifndef Q_WS_WIN
+    || path.startsWith("/dev/") || (path == "/dev")
+#endif
+  )
     return; // Don't even go there.
 
   if ( path.length() > 1 && path.endsWith( QLatin1Char( '/' ) ) )
