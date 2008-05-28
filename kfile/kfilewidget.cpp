@@ -805,7 +805,7 @@ void KFileWidget::slotOk()
     d->filenames = KShell::tildeExpand( locationEditCurrentText );
 
     if ( (mode() & KFile::Files) == KFile::Files &&
-         !d->locationEditCurrentText().contains( '/' ) ) {
+         !locationEditCurrentText.contains( '/' ) ) {
         kDebug(kfile_area) << "Files\n";
         KUrl::List list = d->parseSelectedUrls();
         for ( KUrl::List::ConstIterator it = list.begin();
