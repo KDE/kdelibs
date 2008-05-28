@@ -18,6 +18,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#ifndef KDEUIWIDGETSPROXYSTYLE_P_H
+#define KDEUIWIDGETSPROXYSTYLE_P_H
 
 #include <kdeui_export.h>
 
@@ -62,3 +64,4 @@ protected:
     QWidget *parent;
 };
 
+#endif
