@@ -91,7 +91,7 @@ static void writeAppDesktopFile(const QString& path, const char* mimetype)
     group.writeEntry("Name", "FakeApplication");
     group.writeEntry("Type", "Application");
     group.writeEntry("Exec", "ls");
-    group.writeEntry("MimeType", mimetype);
+    group.writeEntry("MimeType", QString(mimetype) + ';');
 }
 
 /**
