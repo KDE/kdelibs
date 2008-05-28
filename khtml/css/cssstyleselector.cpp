@@ -62,11 +62,15 @@ using namespace DOM;
 #include <kconfig.h>
 #include <QtCore/QFile>
 #include <QtCore/QString>
+#include <QtCore/QFileInfo>
 
 #include <kdebug.h>
 #include <kurl.h>
 #include <assert.h>
 #include <stdlib.h>
+
+// keep in sync with html4.css'
+#define KHTML_STYLE_VERSION 1
 
 #undef RELATIVE
 #undef ABSOLUTE
@@ -386,6 +390,14 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	    file[readbytes] = '\0';
 
 	QString style = QLatin1String( file.data() );
+	
+	QRegExp checkVersion( "KHTML_STYLE_VERSION:\\s*(\\d+)" );
+	checkVersion.setMinimal( true );
+	if (checkVersion.indexIn( style ) == -1 || checkVersion.cap(1).toInt() != KHTML_STYLE_VERSION) {
+	    qFatal( "!!!!!!! ERROR !!!!!!! - KHTML default stylesheet version mismatch. Aborting. Check your installation. File used was: %s. Expected STYLE_VERSION %d\n", 
+	        QFileInfo( f ).absoluteFilePath().toLatin1().data(), KHTML_STYLE_VERSION );
+        }
+	
 	if(s)
 	    style += s->settingsToCSS();
 	DOMString str(style);

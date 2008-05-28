@@ -5,6 +5,8 @@
  * Konqueror/khtml relies on the existence of this style sheet for
  * rendering. Do not remove or modify this file unless you know
  * what you are doing.
+ *
+ * KHTML_STYLE_VERSION: 1
  */
 
 @namespace "http://www.w3.org/1999/xhtml";
