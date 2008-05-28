@@ -71,7 +71,6 @@ public:
 using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
-#define KIO_FILESIZE_T(x) qulonglong(x)
 
 FileJob::FileJob(FileJobPrivate &dd)
     : SimpleJob(dd)
@@ -105,7 +104,7 @@ void FileJob::seek(KIO::filesize_t offset)
     Q_D(FileJob);
     if (!d->m_open) return;
 
-    KIO_ARGS << KIO_FILESIZE_T(offset);
+    KIO_ARGS << KIO::filesize_t(offset);
     d->m_slave->send( CMD_SEEK, packedArgs) ;
 }
 
