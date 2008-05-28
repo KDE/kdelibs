@@ -209,7 +209,7 @@ static bool execForeColor(KHTMLPart *part, bool /*userInterface*/, const DOMStri
     return execStyleChange(part, CSS_PROP_COLOR, value);
 }
 
-static bool execIndent(KHTMLPart */*part*/, bool /*userInterface*/, const DOMString &/*value*/)
+static bool execIndent(KHTMLPart * /*part*/, bool /*userInterface*/, const DOMString &/*value*/)
 {
     // FIXME: Implement.
     return false;
@@ -221,7 +221,7 @@ static bool execInsertNewline(KHTMLPart *part, bool /*userInterface*/, const DOM
     return true;
 }
 
-static bool execInsertParagraph(KHTMLPart */*part*/, bool /*userInterface*/, const DOMString &/*value*/)
+static bool execInsertParagraph(KHTMLPart * /*part*/, bool /*userInterface*/, const DOMString &/*value*/)
 {
     // FIXME: Implement.
     return false;
@@ -259,7 +259,7 @@ static bool execJustifyRight(KHTMLPart *part, bool /*userInterface*/, const DOMS
     return execStyleChange(part, CSS_PROP_TEXT_ALIGN, "right");
 }
 
-static bool execOutdent(KHTMLPart */*part*/, bool /*userInterface*/, const DOMString &/*value*/)
+static bool execOutdent(KHTMLPart * /*part*/, bool /*userInterface*/, const DOMString &/*value*/)
 {
     // FIXME: Implement.
     return false;
@@ -325,7 +325,7 @@ static bool execUnselect(KHTMLPart *part, bool /*userInterface*/, const DOMStrin
 //     Supported = The command is supported by this object.
 //     Enabled =   The command is available and enabled.
 
-static bool enabled(KHTMLPart */*part*/)
+static bool enabled(KHTMLPart * /*part*/)
 {
     return true;
 }
@@ -376,7 +376,7 @@ static bool enabledUndo(KHTMLPart *part)
 // Then, queryCommandIndeterm should return "no" in the case where
 // all the text is either all bold or not-bold and and "yes" for partially-bold text.
 
-static Editor::TriState stateNone(KHTMLPart */*part*/)
+static Editor::TriState stateNone(KHTMLPart * /*part*/)
 {
     return Editor::FalseTriState;
 }
@@ -406,7 +406,7 @@ static Editor::TriState stateSuperscript(KHTMLPart *part)
 // queryCommandValue implementations
 //
 
-static DOMString valueNull(KHTMLPart */*part*/)
+static DOMString valueNull(KHTMLPart * /*part*/)
 {
     return DOMString();
 }
