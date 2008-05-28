@@ -64,9 +64,9 @@ public:
 	virtual ~EditCommandImpl();
 
     virtual int commandID() const;
-    bool isCompositeStep() const { return parent().notNull(); }
-    EditCommand parent() const;
-    void setParent(const EditCommand &);
+    bool isCompositeStep() const { return parent(); }
+    EditCommandImpl* parent() const;
+    void setParent(EditCommandImpl *);
 
     enum ECommandState { NotApplied, Applied };
     
@@ -94,7 +94,7 @@ private:
     ECommandState m_state;
     DOM::Selection m_startingSelection;
     DOM::Selection m_endingSelection;
-    EditCommand m_parent;
+    EditCommandImpl* m_parent;
 };
 
 //------------------------------------------------------------------------------------------

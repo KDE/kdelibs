@@ -36,6 +36,8 @@
 #include "khtml_ext.h"
 #include "khtmlpart_p.h"
 
+#include <QStack>
+
 #ifndef APPLE_CHANGES
 #  ifdef assert
 #    undef assert
@@ -52,9 +54,25 @@
 
 namespace DOM {
 
+static const int sMaxUndoSteps = 1000;
+
 class EditorPrivate {
   public:
+    void registerUndo( const khtml::EditCommand& cmd, bool clearRedoStack = true ) {
+        if (m_undo.count()>= sMaxUndoSteps)
+            m_undo.pop_front();
+        if (clearRedoStack)
+            m_redo.clear();
+        m_undo.push( cmd );
+    }
+    void registerRedo( const khtml::EditCommand& cmd ) {
+        if (m_redo.count()>= sMaxUndoSteps)
+            m_redo.pop_front();
+        m_redo.push( cmd );
+    }
     khtml::EditCommand m_lastEditCommand;
+    QStack<khtml::EditCommand> m_undo;
+    QStack<khtml::EditCommand> m_redo;
 };
 
 }
@@ -171,7 +189,6 @@ void Editor::paste()
 
 void Editor::print()
 {
-    // ###
     static_cast<KHTMLPartBrowserExtension*>(m_part->browserExtension())->print();
 }
 
@@ -183,24 +200,28 @@ bool Editor::canPaste() const
 
 void Editor::redo()
 {
-    // ###
+    if (d->m_redo.isEmpty())
+        return;
+    EditCommand e = d->m_redo.pop();
+    e.reapply();
 }
 
 void Editor::undo()
 {
-   // ###
+    if (d->m_undo.isEmpty())
+        return;
+    EditCommand e = d->m_undo.pop();
+    e.unapply();
 }
 
 bool Editor::canRedo() const
 {
-    // ###
-  return true;
+    return !d->m_redo.isEmpty();
 }
 
 bool Editor::canUndo() const
 {
-    // ###
-  return true;
+    return !d->m_undo.isEmpty();
 }
 
 void Editor::applyStyle(CSSStyleDeclarationImpl *style)
@@ -382,11 +403,9 @@ void Editor::appliedEditing(EditCommand &cmd)
     assert(cmd.commandID() == khtml::TypingCommandID);
   }
   else {
-#ifdef APPLE_CHANGES
         // Only register a new undo command if the command passed in is
         // different from the last command
-        KWQ(this)->registerCommandForUndo(cmd);
-#endif
+        d->registerUndo( cmd );
         d->m_lastEditCommand = cmd;
   }
     m_part->selectionLayoutChanged();
@@ -397,8 +416,8 @@ void Editor::appliedEditing(EditCommand &cmd)
 void Editor::unappliedEditing(EditCommand &cmd)
 {
   m_part->setCaret(cmd.startingSelection());
+  d->registerRedo( cmd );
 #ifdef APPLE_CHANGES
-  KWQ(this)->registerCommandForRedo(cmd);
   KWQ(this)->respondToChangedContents();
 #else
   m_part->selectionLayoutChanged();
@@ -411,8 +430,8 @@ void Editor::unappliedEditing(EditCommand &cmd)
 void Editor::reappliedEditing(EditCommand &cmd)
 {
   m_part->setCaret(cmd.endingSelection());
+  d->registerUndo( cmd, false /*clearRedoStack*/ );
 #ifdef APPLE_CHANGES
-  KWQ(this)->registerCommandForUndo(cmd);
   KWQ(this)->respondToChangedContents();
 #else
   m_part->selectionLayoutChanged();

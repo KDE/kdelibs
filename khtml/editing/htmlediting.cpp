@@ -152,12 +152,6 @@ EditCommand EditCommand::parent() const
     return get()->parent();
 }
 
-void EditCommand::setParent(const EditCommand &cmd)
-{
-    IF_IMPL_NULL_RETURN;
-    get()->setParent(cmd);
-}
-
 EditCommandImpl *EditCommand::handle() const
 {
     return static_cast<EditCommandImpl *>(get());

@@ -298,10 +298,10 @@ void EditCommandImpl::doReapply()
 void EditCommandImpl::setStartingSelection(const Selection &s)
 {
     m_startingSelection = s;
-    EditCommand cmd = parent();
+    EditCommand cmd( parent() );
     while (cmd.notNull()) {
         cmd.handle()->m_startingSelection = s;
-        cmd = cmd.parent();
+        cmd = cmd.handle()->parent();
     }
 }
 
@@ -311,16 +311,16 @@ void EditCommandImpl::setEndingSelection(const Selection &s)
     EditCommand cmd = parent();
     while (cmd.notNull()) {
         cmd.handle()->m_endingSelection = s;
-        cmd = cmd.parent();
+        cmd = cmd.handle()->parent();
     }
 }
 
-EditCommand EditCommandImpl::parent() const
+EditCommandImpl* EditCommandImpl::parent() const
 {
     return m_parent;
 }
 
-void EditCommandImpl::setParent(const EditCommand &cmd)
+void EditCommandImpl::setParent(EditCommandImpl* cmd)
 {
     m_parent = cmd;
 }
@@ -373,11 +373,9 @@ void CompositeEditCommandImpl::applyCommandToComposite(EditCommand &cmd)
 {
     cmd.setStartingSelection(endingSelection());//###?
     cmd.setEndingSelection(endingSelection());
-    cmd.setParent(this);
+    cmd.handle()->setParent(this);
     cmd.apply();
-    // #### FIXME: ref counting of Composite (compressed) commands is majorly broken.
-    // uncomment the line below to reenable.
-    // m_cmds.append(cmd);
+    m_cmds.append(cmd);
 }
 
 void CompositeEditCommandImpl::insertNodeBefore(NodeImpl *insertChild, NodeImpl *refChild)
