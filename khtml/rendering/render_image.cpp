@@ -29,8 +29,8 @@
 
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
+#include <QtGui/QApplication>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
@@ -256,7 +256,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
             if ( !berrorPic ) {
                 //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
                 qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
-                                 KApplication::palette(), true, 1 );
+                                 QApplication::palette(), true, 1 );
             }
 
             QPixmap pix = *Cache::brokenPixmap;

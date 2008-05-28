@@ -37,7 +37,6 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <kapplication.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
 #include <klocale.h>
@@ -45,8 +44,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QPainter>
 #include <QtGui/QCursor>
-
-#include <assert.h>
+#include <QtGui/QApplication>
 
 using namespace khtml;
 using namespace DOM;
@@ -508,7 +506,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
   if(!m_resizing && evt->id() == EventImpl::MOUSEDOWN_EVENT)
   {
       setResizing(true);
-      KApplication::setOverrideCursor(QCursor(m_cursor));
+      QApplication::setOverrideCursor(QCursor(m_cursor));
       m_vSplitPos = _x;
       m_hSplitPos = _y;
       m_oldpos = -1;
@@ -518,7 +516,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
   if(m_resizing && evt->id() == EventImpl::MOUSEUP_EVENT)
   {
     setResizing(false);
-    KApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 
     if(m_vSplit != -1 )
     {

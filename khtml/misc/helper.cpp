@@ -27,8 +27,8 @@
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
-#include <kapplication.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <QtGui/QToolTip>
 #include "css/cssvalues.h"

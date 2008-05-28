@@ -44,7 +44,6 @@
 #include <kglobalsettings.h>
 #include <kshortcut.h>
 #include <kconfig.h>
-#include <kapplication.h>
 #include <kstringhandler.h>
 #include <kstandardaction.h>
 #include <kxmlguifactory.h>

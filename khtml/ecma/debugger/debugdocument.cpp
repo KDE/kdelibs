@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QVector>
 #include <QStringList>
+#include <QApplication>
 
 #include "kjs_binding.h"
 #include "khtml_part.h"
@@ -13,7 +14,6 @@
 #include <ktexteditor/editor.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
-#include <kapplication.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 
@@ -209,7 +209,7 @@ KTextEditor::Editor* DebugDocument::kate()
     {
         KMessageBox::error(DebugWindow::window(), i18n("Unable to find the Kate editor component;\n"
                                       "please check your KDE installation."));
-        kapp->exit(1);
+        qApp->exit(1);
     }
 
     return s_kate;
@@ -250,7 +250,7 @@ void DebugDocument::rebuildViewerDocument(int firstLine, int lastLine)
 
             // We have to be a bit careful here, since
             // in an ultra-stupid HTML documents, there may be more than
-            // one script tag on a line. So we try to append things. 
+            // one script tag on a line. So we try to append things.
             if (scanLine == 0 && !getLine(lines, outLine).isEmpty())
                 setLine(lines, outLine, getLine(lines, outLine) + "  " + sourceLines[0]);
             else if (scanLine == sourceLines.size() - 1 && !getLine(lines, outLine).isEmpty())

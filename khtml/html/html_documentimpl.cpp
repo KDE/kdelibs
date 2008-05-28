@@ -43,13 +43,8 @@
 #include "rendering/render_object.h"
 #include "dom/dom_exception.h"
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kurl.h>
-#include <kglobal.h>
-#include <kcharsets.h>
-#include <kglobalsettings.h>
-#include <ktoolinvocation.h>
 #include <QtDBus/QtDBus>
 #include <kcookiejar_interface.h>
 
@@ -57,9 +52,6 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <QtCore/QStack>
-
-template class QStack<DOM::NodeImpl*>;
 
 using namespace DOM;
 using namespace khtml;

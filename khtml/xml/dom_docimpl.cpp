@@ -91,6 +91,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
+template class QStack<DOM::NodeImpl*>;
+
 using namespace DOM;
 using namespace khtml;
 

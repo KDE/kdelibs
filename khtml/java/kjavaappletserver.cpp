@@ -32,7 +32,6 @@
 #include <kconfiggroup.h>
 #include <klocale.h>
 #include <kparts/browserextension.h>
-#include <kapplication.h>
 #include <kstandarddirs.h>
 
 #include <kio/job.h>
