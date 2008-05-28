@@ -6320,7 +6320,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
   DOM::Node innerNode = event->innerNode();
   d->m_mousePressNode = innerNode;
 
-  d->m_dragStartPos = _mouse->pos();
+  d->m_dragStartPos = QPoint(event->x(), event->y());
 
   if ( !event->url().isNull() ) {
     d->m_strSelectedURL = event->url().string();
@@ -6427,7 +6427,7 @@ bool KHTMLPart::handleMouseMoveEventDrag(khtml::MouseMoveEvent *event)
   if( (d->m_bMousePressed &&
        ( (!d->m_strSelectedURL.isEmpty() && !isEditable())
         || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) )
-        && ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() ) {
+        && ( d->m_dragStartPos - QPoint(event->x(), event->y()) ).manhattanLength() > KGlobalSettings::dndEventDelay() ) {
 
     DOM::DOMString url = event->url();
 
@@ -6505,11 +6505,9 @@ bool KHTMLPart::handleMouseMoveEventOver(khtml::MouseMoveEvent *event)
         khtml::RenderObject *r = i->renderer();
         if(r)
         {
-          int absx, absy, vx, vy;
+          int absx, absy;
           r->absolutePosition(absx, absy);
-          view()->contentsToViewport( absx, absy, vx, vy );
-
-          int x(_mouse->x() - vx), y(_mouse->y() - vy);
+          int x(event->x() - absx), y(event->y() - absy);
 
           d->m_overURL = url.string() + QString("?%1,%2").arg(x).arg(y);
           d->m_overURLTarget = target.string();
@@ -6621,8 +6619,8 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     // We do this so when clicking on the selection, the selection goes away.
     // However, if we are editing, place the caret.
     if (!d->editor_context.m_beganSelectingText
-            && d->m_dragStartPos.x() == event->qmouseEvent()->x()
-            && d->m_dragStartPos.y() == event->qmouseEvent()->y()
+            && d->m_dragStartPos.x() == event->x()
+            && d->m_dragStartPos.y() == event->y()
             && d->editor_context.m_selection.state() == Selection::RANGE) {
       Selection selection;
 #ifdef APPLE_CHANGES

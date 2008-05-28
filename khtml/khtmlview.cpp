@@ -1987,10 +1987,12 @@ bool KHTMLView::focusNextPrevChild( bool next )
 void KHTMLView::doAutoScroll()
 {
     QPoint pos = QCursor::pos();
-    pos = viewport()->mapFromGlobal( pos );
-
+    QPoint off;
+    KHTMLView* v = m_kwp->isRedirected() ? m_kwp->rootViewPos(off) : this;
+    pos = v->viewport()->mapFromGlobal( pos );
+    pos -= off;
     int xm, ym;
-    viewportToContents(pos.x(), pos.y(), xm, ym);
+    viewportToContents(pos.x(), pos.y(), xm, ym); // ###
 
     pos = QPoint(pos.x() - viewport()->x(), pos.y() - viewport()->y());
     if ( (pos.y() < 0) || (pos.y() > visibleHeight()) ||
