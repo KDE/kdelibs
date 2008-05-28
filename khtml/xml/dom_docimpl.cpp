@@ -86,7 +86,6 @@
 #include <editing/htmlediting.h>
 #include <editing/jsediting.h>
 
-#include <kapplication.h>
 #include <kio/job.h>
 
 #include <stdlib.h>
@@ -2503,7 +2502,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
         return false;
 
     // do we allow this suburl ?
-    if ( !kapp || (newURL.protocol() != "javascript" && !KAuthorized::authorizeUrlAction("redirect", thisPart->url(), newURL)) )
+    if (newURL.protocol() != "javascript" && !KAuthorized::authorizeUrlAction("redirect", thisPart->url(), newURL))
         return false;
 
     // We allow one level of self-reference because some sites depend on that.
@@ -2894,7 +2893,7 @@ void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
 
 // ----------------------------------------------------------------------------
 // Support for Javascript execCommand, and related methods
- 
+
 JSEditor *DocumentImpl::jsEditor()
 {
     if (!m_jsEditor)
