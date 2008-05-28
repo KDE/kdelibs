@@ -225,7 +225,7 @@ public:
         scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
-	dx = dy = ddx = ddy = rdx = rdy = 0;
+	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = rddx = rddy = 0;
         paged = false;
 	clickX = -1;
 	clickY = -1;
@@ -341,7 +341,7 @@ public:
     NodeImpl *underMouseNonShared;
     NodeImpl *oldUnderMouse;
 
-    // Do not adjust bitfield enums sizes. 
+    // Do not adjust bitfield enums sizes.
     // They are oversized because they are signed on some platforms.
     bool tabMovePending:1;
     bool lastTabbingDirection:1;
@@ -360,7 +360,7 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
-    int dx, dy, ddx, ddy, rdx, rdy;
+    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy, rddy, rddx;
     KConfig *formCompletions;
 
     int clickX, clickY, clickCount;
@@ -927,7 +927,7 @@ void KHTMLView::layout()
         // the reference object for the overflow property on canvas
         RenderObject * ref = 0;
         RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
-        
+
         if (document->isHTMLDocument()) {
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
@@ -3368,7 +3368,7 @@ void KHTMLView::setHasStaticBackground(bool partial)
     if (d->staticWidget == KHTMLViewPrivate::SBFull && m_kwp->isRedirected())
         return;
 
-    d->staticWidget = partial ?  
+    d->staticWidget = partial ?
                           KHTMLViewPrivate::SBPartial : KHTMLViewPrivate::SBFull;
 }
 
@@ -3796,9 +3796,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         }
     }
 
-    if ( d->smoothScrollMode != SSMDisabled && 
+    if ( d->smoothScrollMode != SSMDisabled &&
           (!d->staticWidget||d->smoothScrollMode == SSMEnabled) && d->shouldSmoothScroll ) {
-        setupSmoothScrolling(dx, dy);        
+        setupSmoothScrolling(dx, dy);
         return;
     }
 
@@ -3839,8 +3839,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         // disappeared after dx/dy scroll delta is effective
         if (!d->visibleWidgets.isEmpty())
             checkExternalWidgetsPosition();
-            
-        if ( d->staticWidget == KHTMLViewPrivate::SBPartial 
+
+        if ( d->staticWidget == KHTMLViewPrivate::SBPartial
                                 && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() ) {
             // static objects might be selectively repainted, like stones in flowing water
             QRegion r = static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->staticRegion();
@@ -3878,30 +3878,46 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
 {
-    
-    // scrolling destination
-    int full_dx = d->dx + dx;
-    int full_dy = d->dy + dy;
+    // full scroll is remaining scroll plus new scroll
+    d->dx = d->dx + dx;
+    d->dy = d->dy + dy;
 
-    // scrolling speed
-    int ddx = 0;
-    int ddy = 0;
+    if (d->dx == 0 && d->dy == 0) return;
 
     int steps = sSmoothScrollTime/sSmoothScrollTick;
 
-    ddx = (full_dx*16)/steps;
-    ddy = (full_dy*16)/steps;
+    // average step size (stored in 1/16 px/step)
+    d->ddx = (d->dx*16)/steps;
+    d->ddy = (d->dy*16)/steps;
 
-    // don't go under 1px/step
-    if (ddx > 0 && ddx < 16) ddx = 16;
-    if (ddy > 0 && ddy < 16) ddy = 16;
-    if (ddx < 0 && ddx > -16) ddx = -16;
-    if (ddy < 0 && ddy > -16) ddy = -16;
+    if (abs(d->ddx) < 64 && abs(d->ddy) < 64) {
+	// Don't move slower than average 4px/step in minimum one direction
+	if (d->ddx > 0) d->ddx = qMax(d->ddx, 64);
+	if (d->ddy > 0) d->ddy = qMax(d->ddy, 64);
+	if (d->ddx < 0) d->ddx = qMin(d->ddx, -64);
+	if (d->ddy < 0) d->ddy = qMin(d->ddy, -64);
+	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
+	d->ddx = (d->dx*16)/steps;
+	d->ddy = (d->dy*16)/steps;
+    }
 
-    d->dx = full_dx;
-    d->dy = full_dy;
-    d->ddx = ddx;
-    d->ddy = ddy;
+    int ph = qMin(visibleHeight(), 480);
+    if (abs(d->ddx) > ph*(16/4)) {
+	// Never move faster than ½page/step (1/4 average)
+	if (d->ddx > 0) d->ddx = qMin(d->ddx, ph);
+	if (d->ddx < 0) d->ddx = qMax(d->ddx, -ph);
+	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
+	d->ddx = (d->dx*16)/steps;
+	d->ddy = (d->dy*16)/steps;
+    }
+
+    // step size starts at double average speed and ends at 0
+    d->ddx *= 2;
+    d->ddy *= 2;
+
+    // deacceleration speed
+    d->dddx = (d->ddx*16)/steps;
+    d->dddy = (d->ddy*16)/steps;
 
     if (!d->smoothScrolling) {
         d->startScrolling();
@@ -3915,36 +3931,40 @@ void KHTMLView::scrollTick() {
         return;
     }
 
+    // step size + remaining partial step
     int tddx = d->ddx + d->rdx;
     int tddy = d->ddy + d->rdy;
 
+    // don't go under 1px/step
+    if (tddx > 0 && tddx < 16) tddx = 16;
+    if (tddy > 0 && tddy < 16) tddy = 16;
+    if (tddx < 0 && tddx > -16) tddx = -16;
+    if (tddy < 0 && tddy > -16) tddy = -16;
+
+    // full pixel steps to scroll in this step
     int ddx = tddx / 16;
     int ddy = tddy / 16;
+    // remaining partial step (this is especially needed for 1.x sized steps)
     d->rdx = tddx % 16;
     d->rdy = tddy % 16;
 
+    // limit step to requested scrolling distance
     if (d->dx > 0 && ddx > d->dx) ddx = d->dx;
-    else
     if (d->dx < 0 && ddx < d->dx) ddx = d->dx;
-
     if (d->dy > 0 && ddy > d->dy) ddy = d->dy;
-    else
     if (d->dy < 0 && ddy < d->dy) ddy = d->dy;
 
-    // progressive slow down, in bisected steps
-    if (qAbs(d->dx-ddx) < 2 && qAbs(ddx)>2) {
-        ddx /= 2;
-        if (qAbs(ddx) < qAbs(d->dx-ddx))
-            ddx = d->dx-ddx;        
-    }
-    if (qAbs(d->dy-ddy) < 2 && qAbs(ddy)>2) {
-        ddy /= 2;
-        if (qAbs(ddy) < qAbs(d->dy-ddy))
-            ddy = d->dy-ddy;
-    }
-
+    // update remaining scroll
     d->dx -= ddx;
     d->dy -= ddy;
+
+    int tdddx = d->dddx + d->rddx;
+    int tdddy = d->dddy + d->rddy;
+    // update scrolling speed
+    d->ddx = d->ddx - (tdddx/16);
+    d->ddy = d->ddy - (tdddx/16);
+    d->rddx = tdddx % 16;
+    d->rddy = tdddy % 16;
 
     d->shouldSmoothScroll = false;
     scrollContentsBy(ddx, ddy);
@@ -4002,7 +4022,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         killTimer( d->scrollingFromWheelTimerId );
         d->scrollingFromWheelTimerId = 0;
     } else if ( e->timerId() == d->layoutTimerId ) {
-        if (d->firstLayoutPending && d->layoutAttemptCounter < 4 
+        if (d->firstLayoutPending && d->layoutAttemptCounter < 4
                            && (!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->readyForLayout())) {
             d->layoutAttemptCounter++;
             killTimer(d->layoutTimerId);
@@ -4108,8 +4128,8 @@ void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)
     if (d->firstLayoutPending) {
         // Any repaint happening while we have no content blanks the viewport ("white flash").
         // Hence the need to delay the first layout as much as we can.
-        // Only if the document gets stuck for too long in incomplete state will we allow the blanking. 
-        time = d->layoutAttemptCounter ? 
+        // Only if the document gets stuck for too long in incomplete state will we allow the blanking.
+        time = d->layoutAttemptCounter ?
                sLayoutAttemptDelay + sLayoutAttemptIncrement*d->layoutAttemptCounter : sFirstLayoutDelay;
     } else if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->parsing()) {
         // Delay between successive layouts in parsing mode.
@@ -4230,7 +4250,7 @@ void KHTMLView::slotMouseScrollTimer()
      verticalScrollBar()->setValue( verticalScrollBar()->value() +d->m_mouseScroll_byY);
 }
 
- 
+
 static DOM::Position positionOfLineBoundary(const DOM::Position &pos, bool toEnd)
 {
     Selection sel = pos;
@@ -4259,7 +4279,7 @@ bool KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 
   bool ctrl = _ke->modifiers() & Qt::ControlModifier;
   bool shift = _ke->modifiers() & Qt::ShiftModifier;
-  
+
   switch(_ke->key()) {
 
     // -- Navigational keys
