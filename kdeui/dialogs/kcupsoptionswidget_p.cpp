@@ -20,6 +20,7 @@
 
 #include "kcupsoptionswidget_p.h"
 
+#include <fixx11h.h>
 #include <QPrinter>
 #include <QPrintEngine>
 #include <QPrintDialog>

@@ -81,6 +81,7 @@
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include <fixx11h.h>
 #endif
 
 using KDEPrivate::KColorTable;

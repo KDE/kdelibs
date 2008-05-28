@@ -31,6 +31,9 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef KIO_IMAGEFILTER_P_H
+#define KIO_IMAGEFILTER_P_H
+
 namespace KIO {
 
 
@@ -43,4 +46,6 @@ public:
 };
 
 }
+
+#endif
 
