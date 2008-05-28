@@ -126,7 +126,7 @@ static const int sLayoutAttemptIncrement = 20;
 static const int sParsingLayoutsIncrement = 60;
 
 static const int sSmoothScrollTime = 120;
-static const int sSmoothScrollTick = 12;
+static const int sSmoothScrollTick = 15;
 
 class KHTMLViewPrivate {
     friend class KHTMLView;
