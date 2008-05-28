@@ -367,7 +367,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         uint count = m_posZOrderList ? m_posZOrderList->count() : 0;
         bool needUpdate = false;
         KHTMLView* sa = 0;
-        if (count) {
+        if ( count > 0 ) {
             sa = m_object->document()->view();
             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
             for (uint i = 0; i < count; i++) {
@@ -376,8 +376,8 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                     continue; // we don't know the widget's exact stacking position within flow
                 m_region -= child->paintedRegion(rootLayer);
             }
+            needUpdate = true;
         }
-        needUpdate |= count;
         RenderLayer* sc = this;
         int zx = zIndex();
         while ((sc = sc->stackingContext())) {
@@ -385,9 +385,9 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
             bool found = false;
             if (zx < 0) {
                 count = sc->m_negZOrderList ? sc->m_negZOrderList->count() : 0;
-                needUpdate |= count;
+                needUpdate = needUpdate || count > 0;
                 for (uint i = 0; i < count; i++) {
-                    found |= sc->m_negZOrderList->at(i)->zIndex() > zx;
+                    found = found || sc->m_negZOrderList->at(i)->zIndex() > zx;
                     if (found) {
                         if (!sa) { 
                             sa = m_object->document()->view();
@@ -398,10 +398,10 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                 }
             }
             count = sc->m_negZOrderList ? sc->m_negZOrderList->count() : 0;
-            if ( count ) {
+            if ( count > 0 ) {
                 needUpdate = true;
                 for (uint i = 0; i < count; i++) {
-                    found |= sc->m_posZOrderList->at(i)->zIndex() > zx;
+                    found = found || sc->m_posZOrderList->at(i)->zIndex() > zx;
                     if (found) {
                         if (!sa) { 
                             sa = m_object->document()->view();
@@ -414,7 +414,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
             zx = sc->zIndex();
         }
         if (!needUpdate) {
-            needUpdate |= !m_region.isEmpty();
+            needUpdate = needUpdate || !m_region.isEmpty();
             m_region = QRegion();
         }
         if (needUpdate)
