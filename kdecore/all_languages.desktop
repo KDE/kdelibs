@@ -1604,6 +1604,7 @@ Name[zh_TW]=捷克語
 Name[zu]=Isi-Czech
 [csb]
 Name=Kashubian
+Name[de]=Kaschubisch
 Name[es]=Casubio
 Name[et]=Kašuubi
 Name[nds]=Kaschuubsch
@@ -11028,6 +11029,8 @@ Name[zh_TW]=烏茲別克語
 Name[zu]=Isi-Uzbek
 [uz@cyrillic]
 Name=Uzbek (Cyrillic)
+Name[de]=Usbekisch (Kyrillisch)
+Name[el]=Ουζμπεκικά (Κυριλικά)
 Name[es]=Uzbeko (Cirílico)
 Name[et]=Usbeki (kirillitsa)
 Name[nds]=Usbeeksch (kyrillsch)
