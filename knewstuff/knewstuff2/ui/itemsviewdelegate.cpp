@@ -295,7 +295,6 @@ namespace KNS
 
     void ItemsViewDelegate::slotActionTriggered(QAction *action)
     {
-        //kDebug(551) << "action triggered";
         QModelIndex index = focusedIndex();
         Q_ASSERT(index.isValid());
 
@@ -307,7 +306,6 @@ namespace KNS
 
     void ItemsViewDelegate::slotInstallClicked()
     {
-        //kDebug(551) << "install button clicked";
         QModelIndex index = focusedIndex();
 
         if (index.isValid())

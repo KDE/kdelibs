@@ -22,6 +22,8 @@
 #ifndef KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 
+#include <QMutex>
+
 #include <kdialog.h>
 #include <ktitlewidget.h>
 
@@ -161,6 +163,8 @@ private:
     QMap<const Feed*, Entry::List> entries;
     QMap<const Provider*, Entry::List> m_entriesByProvider;
     QMap<Entry*, const Provider*> m_providers;
+
+    QMutex mMutex;
 };
 
 }

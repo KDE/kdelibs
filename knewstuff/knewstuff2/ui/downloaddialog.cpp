@@ -408,24 +408,23 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
     // FIXME: what if entry belongs to more than one provider at once?
     m_providers[entry] = provider;
 
+    mMutex.lock();
+
     if (!m_models.contains(feed)) {
         // new feed
-        kDebug(551) << "making a new model for this feed";
+        kDebug(551) << "making a new model for this feed" << feed;
         m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
         if (provider->name().representation() == m_sourceCombo->currentText()) {
             // this provider is selected, so refresh the feed combobox
             populateSortCombo(provider);
         }
     }
+    mMutex.unlock();
 
     KNS::ItemsModel* thisModel = m_models.value(feed);
 
-    if (thisModel != NULL) {
-        thisModel->addEntry(entry);
-    }
-    else {
-        kDebug(551) << "no model for feed: " << feed;
-    }
+    Q_ASSERT(thisModel != NULL);
+    thisModel->addEntry(entry);
 }
 
 void DownloadDialog::slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed)
