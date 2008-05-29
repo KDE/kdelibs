@@ -96,11 +96,13 @@ void KHistoryComboBox::init( bool useCompletion )
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 
-    connect( this, SIGNAL(aboutToShowContextMenu(QMenu*)),
-             SLOT(addContextMenuItems(QMenu*)) );
-    connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
-    connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
-    connect( this, SIGNAL( returnPressed(const QString&) ), SLOT( slotSimulateActivated(const QString&) ) );
+    connect(this, SIGNAL(aboutToShowContextMenu(QMenu*)), SLOT(addContextMenuItems(QMenu*)));
+    connect(this, SIGNAL(activated(int)), SLOT(slotReset()));
+    connect(this, SIGNAL(returnPressed(QString)), SLOT(slotReset()));
+    // We want slotSimulateActivated to be called _after_ QComboBoxPrivate::_q_returnPressed
+    // otherwise there's a risk of emitting activated twice (slotSimulateActivated will find
+    // the item, after some app's slotActivated inserted the item into the combo).
+    connect(this, SIGNAL(returnPressed(QString)), SLOT(slotSimulateActivated(QString)), Qt::QueuedConnection);
 }
 
 KHistoryComboBox::~KHistoryComboBox()
@@ -312,7 +314,7 @@ void KHistoryComboBox::rotateDown()
         }
         else { // bottom of history
             if ( d->myIterateIndex == -2 ) {
-                KNotification::event( KNotification::Notification , 
+                KNotification::event( KNotification::Notification ,
                                       i18n("No further item in the history."),
                                        QPixmap() , this);
             }
@@ -415,13 +417,18 @@ void KHistoryComboBox::slotSimulateActivated( const QString& text )
     /* With the insertion policy NoInsert, which we use by default,
        Qt doesn't emit activated on typed text if the item is not already there,
        which is perhaps reasonable. Generate the signal ourselves if that's the case.
+    */
+    if ((insertPolicy() == NoInsert && findText(text, Qt::MatchFixedString|Qt::MatchCaseSensitive) == -1)) {
+        emit activated(text);
+    }
 
-       Qt also doesn't emit it if the box is full, and policy is not 
+    /*
+       Qt also doesn't emit it if the box is full, and policy is not
        InsertAtCurrent
     */
-    if ((insertPolicy() == NoInsert && findText(text) == -1) ||
-        (insertPolicy() != InsertAtCurrent && count() >= maxCount()))
+    else if (insertPolicy() != InsertAtCurrent && count() >= maxCount()) {
         emit activated(text);
+    }
 }
 
 KPixmapProvider *KHistoryComboBox::pixmapProvider() const

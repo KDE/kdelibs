@@ -21,6 +21,7 @@
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <klineedit.h>
 
 class KComboBox_UnitTest : public QObject
@@ -60,6 +61,26 @@ private Q_SLOTS:
         testComboReturnPressed(false);
         testComboReturnPressed(true);
     }
+
+    void testHistoryComboReturnPressed()
+    {
+        KHistoryComboBox w;
+        QVERIFY(qobject_cast<KLineEdit*>(w.lineEdit()));
+        connect(&w, SIGNAL(activated(QString)),
+                &w, SLOT(addToHistory(QString)));
+        QSignalSpy comboReturnPressedSpy(&w, SIGNAL(returnPressed()));
+        QSignalSpy comboReturnPressedStringSpy(&w, SIGNAL(returnPressed(QString)));
+        QSignalSpy comboActivatedSpy(&w, SIGNAL(activated(QString)));
+        QTest::keyClicks(&w, "Hello world");
+        QTest::keyClick(&w, Qt::Key_Return);
+        qApp->processEvents(); // QueuedConnection in KHistoryComboBox
+        QCOMPARE(comboReturnPressedSpy.count(), 1);
+        QCOMPARE(comboReturnPressedStringSpy.count(), 1);
+        QCOMPARE(comboReturnPressedStringSpy[0][0].toString(), QString("Hello world"));
+        QCOMPARE(comboActivatedSpy.count(), 1);
+        QCOMPARE(comboActivatedSpy[0][0].toString(), QString("Hello world"));
+    }
+
 };
 
 QTEST_KDEMAIN(KComboBox_UnitTest, GUI)
