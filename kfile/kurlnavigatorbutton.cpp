@@ -254,6 +254,8 @@ void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
 void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
 {
     if (isAboveArrow(event->x()) && (event->button() == Qt::LeftButton)) {
+        urlNavigator()->requestActivation();
+
         // the mouse is pressed above the arrow, hence show all directories
         const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
         const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;

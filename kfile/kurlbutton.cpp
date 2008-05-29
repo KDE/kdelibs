@@ -81,6 +81,8 @@ void KUrlButton::leaveEvent(QEvent* event)
 void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
 {
     Q_UNUSED(event);
+    m_urlNavigator->requestActivation();
+
     KMenu popup(this);
 
     // provide 'Copy' action, which copies the current URL of
