@@ -341,7 +341,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( d->m_paUseStylesheet, SIGNAL( triggered( int ) ), this, SLOT( slotUseStylesheet() ) );
 
   if ( prof == BrowserViewGUI ) {
-      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "zoom-in", i18n( "Enlarge Font" ), this );
+      d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "format-font-size-more", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncFontSizeFast() ));
@@ -349,7 +349,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
 
-      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "zoom-out", i18n( "Shrink Font" ), this );
+      d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "format-font-size-less", i18n( "Shrink Font" ), this );
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecFontSizeFast() ));
