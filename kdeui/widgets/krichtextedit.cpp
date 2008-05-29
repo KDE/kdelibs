@@ -304,6 +304,9 @@ void KRichTextEdit::setTextOrHtml(const QString &text)
 {
     // might be rich text
     if (Qt::mightBeRichText(text)) {
+	if (d->mMode == KRichTextEdit::Plain) {
+		d->activateRichText();
+	}
         setHtml(text);
     } else {
         setPlainText(text);
