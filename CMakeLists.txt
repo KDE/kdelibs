@@ -3,9 +3,9 @@ project(kdelibs)
 # set version
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 0u)
-set (KDE_VERSION_RELEASE 4)
+set (KDE_VERSION_RELEASE 5)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.0.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.0.4 >= 20080505)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.0.5)")
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
