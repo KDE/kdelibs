@@ -125,8 +125,8 @@ static const int sLayoutAttemptDelay = 340;
 static const int sLayoutAttemptIncrement = 20;
 static const int sParsingLayoutsIncrement = 60;
 
-static const int sSmoothScrollTime = 120;
-static const int sSmoothScrollTick = 15;
+static const int sSmoothScrollTime = 140;
+static const int sSmoothScrollTick = 14;
 
 class KHTMLViewPrivate {
     friend class KHTMLView;
@@ -1763,6 +1763,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
         case Qt::Key_Space:
         case Qt::Key_PageDown:
+	    d->shouldSmoothScroll = true;
             verticalScrollBar()->setValue( verticalScrollBar()->value() +viewport()->height() - offs );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
@@ -1777,6 +1778,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             break;
 
         case Qt::Key_PageUp:
+	    d->shouldSmoothScroll = true;
             verticalScrollBar()->setValue( verticalScrollBar()->value() -viewport()->height() + offs );
             if(d->scrollSuspended)
                 d->newScrollTimer(this, 0);
@@ -3887,8 +3889,8 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
     int steps = sSmoothScrollTime/sSmoothScrollTick;
 
     // average step size (stored in 1/16 px/step)
-    d->ddx = (d->dx*16)/steps;
-    d->ddy = (d->dy*16)/steps;
+    d->ddx = (d->dx*16)/(steps+1);
+    d->ddy = (d->dy*16)/(steps+1);
 
     if (abs(d->ddx) < 64 && abs(d->ddy) < 64) {
 	// Don't move slower than average 4px/step in minimum one direction
@@ -3896,19 +3898,10 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
 	if (d->ddy > 0) d->ddy = qMax(d->ddy, 64);
 	if (d->ddx < 0) d->ddx = qMin(d->ddx, -64);
 	if (d->ddy < 0) d->ddy = qMin(d->ddy, -64);
+	// This means fewer than normal steps
 	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
-	d->ddx = (d->dx*16)/steps;
-	d->ddy = (d->dy*16)/steps;
-    }
-
-    int ph = qMin(visibleHeight(), 480);
-    if (abs(d->ddx) > ph*(16/4)) {
-	// Never move faster than ½page/step (1/4 average)
-	if (d->ddx > 0) d->ddx = qMin(d->ddx, ph);
-	if (d->ddx < 0) d->ddx = qMax(d->ddx, -ph);
-	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
-	d->ddx = (d->dx*16)/steps;
-	d->ddy = (d->dy*16)/steps;
+	d->ddx = (d->dx*16)/(steps+1);
+	d->ddy = (d->dy*16)/(steps+1);
     }
 
     // step size starts at double average speed and ends at 0
