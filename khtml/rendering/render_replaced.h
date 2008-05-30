@@ -27,6 +27,7 @@
 #include <QtCore/QObject>
 #include <QAbstractScrollArea>
 #include <QScrollBar>
+#include <QPointer>
 
 class KHTMLView;
 class QWidget;
@@ -144,7 +145,7 @@ protected:
 
     QWidget *m_widget;
     KHTMLView* m_view;
-    QWidget *m_underMouse;
+    QPointer<QWidget> m_underMouse;
 
     //Because we mess with normal detach due to ref/deref,
     //we need to keep track of the arena ourselves

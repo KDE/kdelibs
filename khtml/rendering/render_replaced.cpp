@@ -1092,7 +1092,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 	break;
     }
     case EventImpl::MOUSEOUT_EVENT: {
-        QWidget* target = m_underMouse ? m_underMouse : m_widget;
+        QWidget* target = m_underMouse ? (QWidget*) m_underMouse : m_widget;
 	QEvent moe( QEvent::Leave );
 	QApplication::sendEvent(target, &moe);
 //        qDebug() << "received MOUSEOUT, forwarding to" << target ;
