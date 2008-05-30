@@ -1312,6 +1312,11 @@ protected:
 
     /**
      * @brief Describes widgets like QToolButton (usually inside a QToolBar).
+     * The drawing of ToolButton's is much like that of PushButtons; however, in some cases the widget is configured
+     * to not have a separate arrow area, but to incorporate the area inside the button itself. To handle this mode,
+     * set InlineMenuIndicatorSize to the size of the arrow,
+     * and the InlineMenuIndicatorXOff, and InlineMenuIndicatorYOff to offset from the bottom-right corner to place that
+     * rectangle. If InlineMenuIndicatorSize isn't set, the arrow won't be drawn.
      *
      * @sa WT_ToolButton
      */
@@ -1327,9 +1332,17 @@ protected:
             FocusMargin            = ContentsMargin + MarginInc,
                              /**< (\b 3) Where the focus rect will be drawn, measured
                               * from the widget sides */
-            MenuIndicatorSize, /** < (\b 11) Size for the separate menu arrows on tool buttons
+            MenuIndicatorSize, /**< (\b 11) Size for the separate menu arrows on tool buttons
                                  * [sets QStyle::PM_MenuButtonIndicator wheen a toolbutton option is passed in] */
-            DummyProp      = FocusMargin + MarginInc
+            InlineMenuIndicatorSize = FocusMargin + MarginInc, /**< (\b 0) Size of arrow when it's incorporated into
+                                                                * the button directly. If it's 0, it will not be drawn
+                                                                * @since 4.1 */
+            InlineMenuIndicatorXOff,  /**< Horizontal offset off the bottom-right corner to place the arrow
+                                       * if it's incorporated directly, and not in a separate area
+                                       * @since 4.1 */
+            InlineMenuIndicatorYOff   /**< Vertical offset off the bottom-right corner to place the arrow
+                                       * if it's incorporated directly, and not in a separate area
+                                       * @since 4.1 */
         };
 
         /**

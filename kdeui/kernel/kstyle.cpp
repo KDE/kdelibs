@@ -2987,6 +2987,21 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     tOpt.rect = menuRect;
                     tOpt.state = mflags;
                     drawPrimitive(PE_IndicatorButtonDropDown, &tOpt, p, w);
+                } else if (tool->features & QStyleOptionToolButton::HasMenu) {
+                    // This is requesting KDE3-style arrow indicator, per Qt 4.4 behavior. Qt 4.3 prefers to hide
+                    // the fact of the menu's existence. Whee! Since we don't know how to paint this right,
+                    // though, we have to have some metrics set for it to look nice.
+                    int size = widgetLayoutProp(WT_ToolButton, ToolButton::InlineMenuIndicatorSize, opt, w);
+
+                    if (size) {
+                        int xOff = widgetLayoutProp(WT_ToolButton, ToolButton::InlineMenuIndicatorXOff, opt, w);
+                        int yOff = widgetLayoutProp(WT_ToolButton, ToolButton::InlineMenuIndicatorYOff, opt, w);
+
+                        QRect r = QRect(buttonRect.right() + xOff, buttonRect.bottom() + yOff, size, size);
+                        tOpt.rect  = r;
+                        tOpt.state = bflags;
+                        drawPrimitive(PE_IndicatorButtonDropDown, &tOpt, p, w);
+                    }
                 }
 
                 if (flags & State_HasFocus) {
@@ -3649,6 +3664,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             if (const QStyleOptionToolButton* tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(option)) {
                 if (tbOpt->features & QStyleOptionToolButton::MenuButtonPopup)
                     menuAreaWidth = pixelMetric(QStyle::PM_MenuButtonIndicator, option, widget);
+                else if (tbOpt->features & QStyleOptionToolButton::HasMenu)
+                    size.setWidth(size.width() + widgetLayoutProp(WT_ToolButton, ToolButton::InlineMenuIndicatorSize, tbOpt, widget));
             }
             
             size.setWidth(size.width() - menuAreaWidth);
