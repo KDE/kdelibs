@@ -64,6 +64,12 @@ void StatementNode::generateExecCode(CompileState*, CodeBlock&)
     ASSERT(0);
 }
 
+void StatementNode::generateDebugInfo(CompileState* comp, CodeBlock& block)
+{
+    OpValue me = OpValue::immNode(this);
+    CodeGen::emitOp(comp, block, Op_AtStatement, 0, &me);
+}
+
 // ------------------------------ Basic literals -----------------------------------------
 
 OpValue NullNode::generateEvalCode(CompileState*, CodeBlock&)
@@ -1077,13 +1083,16 @@ OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
 void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     next->generateEvalCode(comp, block);
 }
 
 void BlockNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
-    if (source)
+    if (source) {
+        generateDebugInfoIfNeeded(comp, block);
         source->generateExecCode(comp, block);
+    }
 }
 
 void EmptyStatementNode::generateExecCode(CompileState*, CodeBlock&)
@@ -1091,6 +1100,7 @@ void EmptyStatementNode::generateExecCode(CompileState*, CodeBlock&)
 
 void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     OpValue val = expr->generateEvalCode(comp, block);
 
     // Update the result for eval or global code
@@ -1100,6 +1110,8 @@ void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
+    
     // eval the condition
     OpValue cond = expr->generateEvalCode(comp, block);
 
@@ -1128,6 +1140,7 @@ void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void DoWhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     comp->enterLoop(this);
 
     // Body
@@ -1146,6 +1159,7 @@ void DoWhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     comp->enterLoop(this);
 
     // Jump to test.
@@ -1170,6 +1184,7 @@ void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     comp->enterLoop(this);
 
     // Initializer, if any..
@@ -1209,6 +1224,7 @@ void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     if (varDecl)
         varDecl->generateCode(comp, block);
 
@@ -1315,6 +1331,7 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
 
 void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     Node* dest = comp->resolveContinueLabel(ident);
     if (!dest) {
         if (ident.isEmpty())
@@ -1333,6 +1350,7 @@ void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     Node* dest = comp->resolveBreakLabel(ident);
     if (!dest) {
         if (ident.isEmpty())
@@ -1346,6 +1364,7 @@ void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     OpValue arg;
 
     // Return is invalid in non-function..
@@ -1364,6 +1383,7 @@ void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     // ### this may be too conservative --- it only applies if there is
     // a function call within
     comp->setNeedsClosures();
@@ -1405,12 +1425,14 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void ThrowNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     OpValue projectile = expr->generateEvalCode(comp, block);
     CodeGen::emitOp(comp, block, Op_Throw, 0, &projectile);
 }
 
 void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     // ### this may be too conservative --- it only applies if there is
     // a function call within the catch
     comp->setNeedsClosures();
@@ -1524,6 +1546,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
 void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
 {
+    generateDebugInfoIfNeeded(comp, block);
     CaseBlockNode* caseBlock = this->block.get();
 
     // The code we produce has 2 stages: first, we emit all the conditionals, and pick

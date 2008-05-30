@@ -207,6 +207,15 @@ operation PrintInfo {
 }
 
 /**
+ Actual debugger support...
+*/
+operation AtStatement {
+    impl void(node in) [[
+        static_cast<StatementNode*>(in)->hitStatement(exec);
+    ]]
+}
+
+/**
  Control flow stuff
 */
 jump Exit {

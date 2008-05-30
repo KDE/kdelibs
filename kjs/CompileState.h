@@ -44,12 +44,19 @@ namespace KJS {
 class RegDescriptor;
 class FunctionBodyNode;
 
+enum CompileType
+{
+    NotCompiled,
+    Release,
+    Debug
+};
+
 class CompileState
 {
 public:
-    CompileState(CodeType ctype, FunctionBodyNode* fbody, Register initialMaxTemp):
+    CompileState(CodeType ctype, CompileType compType, FunctionBodyNode* fbody, Register initialMaxTemp):
         localScopeVal(0), thisVal(0), globalScopeVal(0), evalResRegister(0),
-        ctype(ctype), locals(initialMaxTemp, 0), initialMaxTemp(initialMaxTemp),
+        ctype(ctype), compType(compType), locals(initialMaxTemp, 0), initialMaxTemp(initialMaxTemp),
         maxTemp(initialMaxTemp), fbody(fbody), scopeDepth(0), finallyDepth(0), neededClosures(false)
     { }
 
@@ -59,6 +66,10 @@ public:
 
     CodeType codeType() {
         return ctype;
+    }
+
+    CompileType compileType() {
+        return compType;
     }
 
     ~CompileState();
@@ -206,7 +217,8 @@ private:
     OpValue* globalScopeVal;
     OpValue* evalResRegister;
 
-    CodeType ctype;
+    CodeType    ctype;
+    CompileType compType;
 
     // Makes sure that any values of a local are 
     void flushLocal(CodeBlock& block, Register reg);

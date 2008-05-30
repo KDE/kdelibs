@@ -882,7 +882,7 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     : BlockNode(s)
     , m_sourceURL(lexer().sourceURL())
     , m_sourceId(parser().sourceId())
-    , m_compiled(false)
+    , m_compType(NotCompiled)
 {
 
   setLoc(-1, -1);
@@ -961,8 +961,9 @@ void FunctionBodyNode::addParam(const Identifier& ident)
 
 Completion FunctionBodyNode::execute(ExecState *exec)
 {
-  CodeType ctype = exec->codeType();
-  compileIfNeeded(ctype);
+  CodeType    ctype   = exec->codeType();
+  CompileType cmpType = exec->dynamicInterpreter()->debugger() ? Debug : Release;
+  compileIfNeeded(ctype, cmpType);
 
   LocalStorage*      store = 0;
   LocalStorageEntry* regs;
@@ -995,11 +996,11 @@ Completion FunctionBodyNode::execute(ExecState *exec)
   return result;
 }
 
-void FunctionBodyNode::compile(CodeType ctype)
+void FunctionBodyNode::compile(CodeType ctype, CompileType compType)
 {
-  m_compiled = true;
+  m_compType = compType;
 
-  CompileState comp(ctype, this, m_symbolList.size());
+  CompileState comp(ctype, compType, this, m_symbolList.size());
   generateExecCode(&comp, m_compiledCode);
   m_stackAllocateActivation = !comp.needsClosures();
 

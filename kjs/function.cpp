@@ -85,7 +85,8 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // and compile the body. (note that parameters have been collected
   // during the AST build)
   if (!body->isCompiled()) {
-    // Reserve various slots needed for the activation object
+    // Reserve various slots needed for the activation object. We do it only once,
+    // --- isCompiled() would return true even if debugging state changed
     body->reserveSlot(ActivationImp::LengthSlot, false);
     body->reserveSlot(ActivationImp::OnStackSlot, false);
     body->reserveSlot(ActivationImp::FunctionSlot, true);
@@ -98,7 +99,10 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
       body->addSymbolOverwriteID(i + ActivationImp::NumReservedSlots, body->paramName(i), DontDelete);
 
     body->processDecls(&newExec);
-    body->compile(FunctionCode);
+
+    // We must compile it here, and not wait until ->exec since we need to know
+    // whether to stack-allocate the locals/registers array
+    body->compile(FunctionCode, exec->dynamicInterpreter()->debugger() ? Debug : Release);
   }
 
   size_t stackSize              = 0;

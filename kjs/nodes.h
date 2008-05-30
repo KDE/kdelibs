@@ -28,6 +28,7 @@
 
 #include "Parser.h"
 #include "internal.h"
+#include "CompileState.h"
 #include "operations.h"
 #include "SymbolTable.h"
 #include "opcodes.h"
@@ -202,10 +203,19 @@ namespace KJS {
     int lastLine() const { return m_lastLine; }
     bool hitStatement(ExecState*);
 
+    void generateDebugInfoIfNeeded(CompileState* comp, CodeBlock& block);
+
     virtual void generateExecCode(CompileState*, CodeBlock& block);
   private:
+    void generateDebugInfo(CompileState* comp, CodeBlock& block);
     int m_lastLine;
   };
+
+  inline void StatementNode::generateDebugInfoIfNeeded(CompileState* comp, CodeBlock& block)
+  {
+    if (comp->compileType() == Debug)
+      generateDebugInfo(comp, block);
+  }
 
   class NullNode : public Node {
   public:
@@ -1011,10 +1021,10 @@ namespace KJS {
     FunctionBodyNode(SourceElementsNode *);
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
-
-    void compile(CodeType ctype);
-    void compileIfNeeded(CodeType ctype) { if (!m_compiled) compile(ctype); }
-    bool isCompiled() const { return m_compiled; }
+    
+    bool isCompiled() const { return m_compType != NotCompiled; }
+    void compileIfNeeded(CodeType ctype, CompileType compType);
+    void compile(CodeType ctype, CompileType compType);
 
     virtual void generateExecCode(CompileState*, CodeBlock& block);
 
@@ -1051,9 +1061,9 @@ namespace KJS {
   private:
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
-    int m_sourceId : 30;
-    bool m_compiled : 1;
+    int m_sourceId : 31;
     bool m_stackAllocateActivation : 1;
+    CompileType m_compType; 
 
     // This maps id -> attributes and function decl info
     WTF::Vector<SymbolInfo> m_symbolList;
@@ -1069,6 +1079,11 @@ namespace KJS {
 
     CodeBlock m_compiledCode;
   };
+
+  inline void FunctionBodyNode::compileIfNeeded(CodeType ctype, CompileType compType) {
+    if (m_compType != compType)
+        compile(ctype, compType);
+  }
 
   class FuncExprNode : public Node {
   public:
