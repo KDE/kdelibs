@@ -40,6 +40,20 @@ DOM::NodeImpl::Id HTMLVideoElement::id() const
     return ID_VIDEO;
 }
 
+int HTMLVideoElement::videoWidth() const
+{
+    if (!m_player)
+        return 0;
+    return m_player->naturalSize().width();
+}
+
+int HTMLVideoElement::videoHeight() const
+{
+    if (!m_player)
+        return 0;
+    return m_player->naturalSize().height();
+}
+
 int HTMLVideoElement::width() const
 {
     bool ok;

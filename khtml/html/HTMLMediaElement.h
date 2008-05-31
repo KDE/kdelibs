@@ -39,6 +39,7 @@ class TimeRanges;
 class MediaPlayer
 {
 public:
+    QRect naturalSize() const { return QRect(); }
     float duration() const { return 0; }
     float rate() const { return 0; }
     void setRate(float) { }
