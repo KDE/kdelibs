@@ -324,11 +324,9 @@ QFont KGlobalSettings::generalFont()
 
 #ifdef Q_WS_MAC
     _generalFont = new QFont("Lucida Grande", 13);
-    _generalFont->setPointSize(13);
 #else
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _generalFont = new QFont("Sans Serif", 10);
-    _generalFont->setPointSize(10);
 #endif
     _generalFont->setStyleHint(QFont::SansSerif);
 
@@ -345,11 +343,9 @@ QFont KGlobalSettings::fixedFont()
 
 #ifdef Q_WS_MAC
     _fixedFont = new QFont("Monaco", 10);
-    _fixedFont->setPointSize(10);
 #else
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _fixedFont = new QFont("Monospace", 10);
-    _fixedFont->setPointSize(10);
 #endif
     _fixedFont->setStyleHint(QFont::TypeWriter);
 
@@ -366,11 +362,9 @@ QFont KGlobalSettings::toolBarFont()
 
 #ifdef Q_WS_MAC
     _toolBarFont = new QFont("Lucida Grande", 11);
-    _toolBarFont->setPointSize(11);
 #else
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _toolBarFont = new QFont("Sans Serif", 8);
-    _toolBarFont->setPointSize(8);
 #endif
     _toolBarFont->setStyleHint(QFont::SansSerif);
 
@@ -387,11 +381,9 @@ QFont KGlobalSettings::menuFont()
 
 #ifdef Q_WS_MAC
     _menuFont = new QFont("Lucida Grande", 13);
-    _menuFont->setPointSize(13);
 #else
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _menuFont = new QFont("Sans Serif", 10);
-    _menuFont->setPointSize(10);
 #endif
     _menuFont->setStyleHint(QFont::SansSerif);
 
@@ -406,9 +398,8 @@ QFont KGlobalSettings::windowTitleFont()
     if(_windowTitleFont)
         return *_windowTitleFont;
 
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _windowTitleFont = new QFont("Sans Serif", 9, QFont::Bold);
-    _windowTitleFont->setPointSize(10);
     _windowTitleFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "WM" );
@@ -422,9 +413,8 @@ QFont KGlobalSettings::taskbarFont()
     if(_taskbarFont)
         return *_taskbarFont;
 
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _taskbarFont = new QFont("Sans Serif", 10);
-    _taskbarFont->setPointSize(10);
     _taskbarFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
@@ -497,9 +487,8 @@ QFont KGlobalSettings::smallestReadableFont()
     if(_smallestReadableFont)
         return *_smallestReadableFont;
 
-    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
     _smallestReadableFont = new QFont("Sans Serif", 8);
-    _smallestReadableFont->setPointSize(8);
     _smallestReadableFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
