@@ -358,12 +358,13 @@ UString RegExp::match(const UString &s, bool *error, int i, int *pos, int **ovec
   if (stackGlutton) {
     limits.flags = PCRE_EXTRA_MATCH_LIMIT_RECURSION;
     // libPCRE docs claim that it munches about 500 bytes per recursion.
-    // My measurements suggest it's actually 800
-    // So the usual 8MiB rlimit on Linux produces about 10485 frames.
-    // We go somewhat conservative, and use about 2/3rds of that,
+    // The crash in #160792 actually showed pcre 7.4 using about 1300 bytes
+    // (and I've measured 800 in an another instance)
+    // So the usual 8MiB rlimit on Linux produces about 6452 frames.
+    // We go somewhat conservative, and use about 2/3rds of that, for 4300
     // especially since we're not exactly light on the stack, either
     // ### TODO: get some build system help to use getrlimit.
-    limits.match_limit_recursion = 7000;
+    limits.match_limit_recursion = 4300;
   }
   
   const int numMatches = pcre_exec(_regex, stackGlutton ? &limits : 0, _buffer, _bufferSize, startPos, baseFlags, offsetVector, offsetVectorSize);
