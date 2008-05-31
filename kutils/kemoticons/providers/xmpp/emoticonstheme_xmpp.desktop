@@ -1,10 +1,13 @@
 [Desktop Entry]
 Type=Service
 Name=XMPP Emoticons Theme
+Name[bg]=Тема с емоции XMPP
 Name[ca]=Tema d'emoticones XMPP
+Name[da]=XMPP emotikon-tema
 Name[es]=Tema de emoticonos XMPP
 Name[et]=XMPP emotikoniteema
 Name[ga]=Téama Straoiseoga XMPP
+Name[gl]=Tema de emotícones de XMPP
 Name[hu]=XMPP emotikon-téma
 Name[ja]=XMPP 感情アイコンテーマ
 Name[km]=ស្បែក​សញ្ញា​អារម្មណ៍​របស់ XMPP
@@ -20,10 +23,13 @@ Name[uk]=Тема емоційок XMPP
 Name[zh_CN]=XMPP 表情主题
 Name[zh_TW]=XMPP 表情圖示主題
 Comment=Library to use XMPP emoticons theme
+Comment[bg]=Библиотека за темата с емоции XMPP
 Comment[ca]=Biblioteca per a usar el tema d'emoticones XMPP
+Comment[da]=Bibliotek til at bruge XMPP emotikon-temaer
 Comment[es]=Biblioteca para usar el tema de emoticonos XMPP
 Comment[et]=Teek XMPP emotikoniteema kasutamiseks
 Comment[ga]=Leabharlann le húsáid téama straoiseog XMPP
+Comment[gl]=Unha biblioteca para empregar temas de emotícones de XMPP
 Comment[hu]=Programkönyvtár az XMPP emotikon-témához
 Comment[km]=បណ្ណាល័យ​ត្រូវ​ប្រើ​ស្បែក​សញ្ញា​អារម្មណ៍​របស់ XMPP
 Comment[lv]=XMPP emocijzīmju izmantošanas bibliotēka
