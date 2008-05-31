@@ -2155,6 +2155,8 @@ NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
 
 void RegisteredListenerList::addEventListener(EventName id, EventListener *listener, const bool useCapture)
 {
+    if (!listener)
+	return;
     RegisteredEventListener rl(id,listener,useCapture);
     if (!listeners)
         listeners = new QList<RegisteredEventListener>;
