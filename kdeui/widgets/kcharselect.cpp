@@ -447,7 +447,10 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
     QString html;
-    if (c.isPrint()) {
+    // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
+    // They should be seen as non-printable characters, as trying to display them leads
+    //  to a crash caused by a Qt "noBlockInString" assertion.
+    if (c.isPrint() && c.unicode() != 0xFDD0 && c.unicode() != 0xFDD1) {
         html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">&#" + QString::number(c.unicode()) + ";</font> " + KCharSelectData::formatCode(c.unicode())  + "<br>";
     } else {
         html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + KCharSelectData::formatCode(c.unicode())  + "<br>";
