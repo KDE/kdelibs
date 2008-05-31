@@ -68,7 +68,7 @@ protected:
     KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
            const char* resource);
 
-    ~KConfigPrivate()
+    virtual ~KConfigPrivate()
     {
     }
 
