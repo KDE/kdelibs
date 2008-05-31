@@ -351,9 +351,9 @@ sub GenerateHeader
 
     # Getters
     if ($hasSetter) {
-        push(@headerContent, "    virtual void put(KJS::ExecState*, const KJS::Identifier& propertyName, KJS::JSValue*);\n");
-        push(@headerContent, "    virtual void put(KJS::ExecState*, unsigned propertyName, KJS::JSValue*);\n") if $dataNode->extendedAttributes->{"HasCustomIndexSetter"};
-        push(@headerContent, "    void putValueProperty(KJS::ExecState*, int, KJS::JSValue*);\n") if $hasReadWriteProperties;
+        push(@headerContent, "    virtual void put(KJS::ExecState*, const KJS::Identifier& propertyName, KJS::JSValue*, int attr = KJS::None);\n");
+        push(@headerContent, "    virtual void put(KJS::ExecState*, unsigned propertyName, KJS::JSValue*, int attr = KJS::None);\n") if $dataNode->extendedAttributes->{"HasCustomIndexSetter"};
+        push(@headerContent, "    void putValueProperty(KJS::ExecState*, int, KJS::JSValue*, int attr = KJS::None);\n") if $hasReadWriteProperties;
         push(@headerContent, "    bool customPut(KJS::ExecState*, const KJS::Identifier&, KJS::JSValue*);\n") if $dataNode->extendedAttributes->{"CustomPutFunction"};
     }
 
@@ -753,7 +753,8 @@ sub GenerateImplementation
         } elsif ($numFunctions eq 0) {
             push(@implContent, "    return getStaticValueSlot<${className}Prototype, JSObject>(exec, &${className}PrototypeTable, this, propertyName, slot);\n");
         } else {
-            push(@implContent, "    return getStaticPropertySlot<${className}Prototype, JSObject>(exec, &${className}PrototypeTable, this, propertyName, slot);\n");
+            # TODO use getStaticPropertySlot
+            push(@implContent, "    return getStaticValueSlot<${className}Prototype, JSObject>(exec, &${className}PrototypeTable, this, propertyName, slot);\n");
         }
         push(@implContent, "}\n\n");
     }
@@ -972,7 +973,7 @@ sub GenerateImplementation
                         }
                     }
                 } else {
-                    push(@implContent, "        DOM::DOMException::ExceptionCode ec = (DOM::DOMException::ExceptionCode)0;\n");
+                    push(@implContent, "        int ec = 0;\n");
 
                     if ($podType) {
                         push(@implContent, "        $podType imp(*impl());\n");
@@ -1009,7 +1010,7 @@ sub GenerateImplementation
                      || $dataNode->extendedAttributes->{"HasCustomIndexSetter"};
 
         if ($hasSetter) {
-            push(@implContent, "void ${className}::put(ExecState* exec, const Identifier& propertyName, JSValue* value)\n");
+            push(@implContent, "void ${className}::put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attr)\n");
             push(@implContent, "{\n");
             if ($dataNode->extendedAttributes->{"HasCustomIndexSetter"}) {
                 push(@implContent, "    bool ok;\n");
@@ -1025,9 +1026,9 @@ sub GenerateImplementation
             }
 
             if ($hasReadWriteProperties) {
-                push(@implContent, "    lookupPut<$className, Base>(exec, propertyName, value, &${className}Table, this);\n");
+                push(@implContent, "    lookupPut<$className, Base>(exec, propertyName, value, attr, &${className}Table, this);\n");
             } else {
-                push(@implContent, "    Base::put(exec, propertyName, value);\n");
+                push(@implContent, "    Base::put(exec, propertyName, value, attr);\n");
             }
             push(@implContent, "}\n\n");
 
@@ -1040,7 +1041,7 @@ sub GenerateImplementation
             }
 
             if ($hasReadWriteProperties) {
-                push(@implContent, "void ${className}::putValueProperty(ExecState* exec, int token, JSValue* value)\n");
+                push(@implContent, "void ${className}::putValueProperty(ExecState* exec, int token, JSValue* value, int attr)\n");
                 push(@implContent, "{\n");
 
                 push(@implContent, "    switch (token) {\n");
@@ -1084,7 +1085,7 @@ sub GenerateImplementation
                                 push(@implContent, "        m_impl->commitChange(imp, context());\n");
                             } else {
                                 push(@implContent, "        $implClassName* imp = static_cast<$implClassName*>(impl());\n");
-                                push(@implContent, "        DOM::DOMException::ExceptionCode ec = (DOM::DOMException::ExceptionCode)0;\n") if @{$attribute->setterExceptions};
+                                push(@implContent, "        int ec = 0;\n") if @{$attribute->setterExceptions};
                                 push(@implContent, "        imp->set$setterFunctionName(" . JSValueToNative($attribute->signature, "value"));
                                 push(@implContent, ", ec") if @{$attribute->setterExceptions};
                                 push(@implContent, ");\n");
@@ -1174,7 +1175,7 @@ sub GenerateImplementation
                 }
 
                 if (@{$function->raisesExceptions}) {
-                    push(@implContent, "    DOM::DOMException::ExceptionCode ec = (DOM::DOMException::ExceptionCode)0;\n");
+                    push(@implContent, "    int ec = 0;\n");
                 }
 
                 if ($function->signature->extendedAttributes->{"SVGCheckSecurityDocument"}) {
@@ -1458,7 +1459,7 @@ sub JSValueToNative
     if ($type eq "DOMString") {
         return "valueToStringWithNullCheck(exec, $value)" if $signature->extendedAttributes->{"ConvertNullToNullString"};
         return "valueToStringWithUndefinedOrNullCheck(exec, $value)" if $signature->extendedAttributes->{"ConvertUndefinedOrNullToNullString"};
-        return "$value->toString(exec)";
+        return "$value->toString(exec).domString()";
     }
 
     if ($type eq "EventTarget") {
