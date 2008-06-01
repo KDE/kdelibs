@@ -24,6 +24,8 @@
 #include "kcupsoptionspageswidget_p.h"
 #include "kcupsoptionsjobwidget_p.h"
 #include "kdebug.h"
+#include "kdialog.h"
+#include "klocale.h"
 
 #include <fixx11h.h> // for enable-final
 #include <QPrintDialog>
@@ -36,6 +38,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
     KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
     dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
+    dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
     return dialog;
 }
 
@@ -47,5 +50,6 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
     KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
     dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab );
+    dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
     return dialog;
 }
