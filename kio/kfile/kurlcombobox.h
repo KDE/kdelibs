@@ -178,6 +178,10 @@ Q_SIGNALS:
      */
     void urlActivated( const KUrl& url );
 
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+
 private:
     class KUrlComboBoxPrivate;
     KUrlComboBoxPrivate* const d;

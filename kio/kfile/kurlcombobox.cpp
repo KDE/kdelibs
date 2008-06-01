@@ -19,12 +19,15 @@
 #include "kurlcombobox.h"
 
 #include <QtCore/QDir>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QDrag>
 
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmimetype.h>
+#include <kiconloader.h>
 
 class KUrlComboBox::KUrlComboBoxPrivate
 {
@@ -59,7 +62,7 @@ public:
     int myMaximum;
     Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
                  // to specify if we want a trailing slash or not
-                 //
+    QPoint m_dragPoint;
 
     QList<const KUrlComboItem*> itemList;
     QList<const KUrlComboItem*> defaultList;
@@ -391,6 +394,39 @@ void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
     blockSignals( blocked );
 }
 
+void KUrlComboBox::mousePressEvent(QMouseEvent *event)
+{
+    QStyleOptionComboBox comboOpt;
+    comboOpt.initFrom(this);
+    const int x0 = QStyle::visualRect(layoutDirection(), rect(),
+                                      style()->subControlRect(QStyle::CC_ComboBox, &comboOpt, QStyle::SC_ComboBoxEditField, this)).x();
+    const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &comboOpt, this);
+
+    if (event->x() < (x0 + KIconLoader::SizeSmall + frameWidth)) {
+        d->m_dragPoint = event->pos();
+    } else {
+        d->m_dragPoint = QPoint();
+    }
+
+    KComboBox::mousePressEvent(event);
+}
+
+void KUrlComboBox::mouseMoveEvent(QMouseEvent *event)
+{
+    const int index = currentIndex();
+
+    if (!itemIcon(index).isNull() && !d->m_dragPoint.isNull() && event->buttons() & Qt::LeftButton &&
+        (event->pos() - d->m_dragPoint).manhattanLength() > KGlobalSettings::dndEventDelay()) {
+        QDrag *drag = new QDrag(this);
+        QMimeData *mime = new QMimeData();
+        mime->setUrls(QList<QUrl>() << KUrl(itemText(index)));
+        drag->setPixmap(itemIcon(index).pixmap(KIconLoader::SizeMedium));
+        drag->setMimeData(mime);
+        drag->start();
+    }
+
+    KComboBox::mouseMoveEvent(event);
+}
 
 QIcon KUrlComboBox::KUrlComboBoxPrivate::getIcon( const KUrl& url ) const
 {
