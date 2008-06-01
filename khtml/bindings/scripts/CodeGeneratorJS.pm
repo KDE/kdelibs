@@ -1092,7 +1092,7 @@ sub GenerateImplementation
     # Functions
     if ($numFunctions ne 0) {
         push(@implContent, "JSValue* ${className}PrototypeFunction::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)\n{\n");
-        push(@implContent, "    if (!thisObj->inherits(&${className}::info))\n");
+        push(@implContent, "    if (!thisObj->inherits(&${className}::s_info))\n");
         push(@implContent, "      return throwError(exec, TypeError);\n\n");
 
         push(@implContent, "    $className* castedThisObj = static_cast<$className*>(thisObj);\n");
