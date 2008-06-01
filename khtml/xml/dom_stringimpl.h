@@ -84,6 +84,7 @@ public:
 
     // ignores trailing garbage, unlike QString
     int toInt(bool* ok = 0) const;
+    float toFloat(bool* ok = 0) const;
 
     khtml::Length* toLengthArray(int& len) const;
     khtml::Length* toCoordsArray(int& len) const;
@@ -97,8 +98,13 @@ public:
     uint length() const { return l; }
     QString string() const;
 
+    bool endsWith(DOMStringImpl* str) const;
+
     // Note: this actually computes the hash, so shouldn't be used lightly
     unsigned hash() const;
+
+    // for WebCore API compatibility;
+    static unsigned computeHash(const QChar* str, unsigned int length) { return DOMStringImpl(str, length).hash(); }
 
     unsigned int l;
     QChar *s;

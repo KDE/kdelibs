@@ -97,16 +97,23 @@ public:
     DOMString upper() const;
 
     QChar *unicode() const;
+    // for WebCore API compatibility
+    inline QChar *characters() const { return unicode(); }
     QString string() const;
 
     int toInt() const;
     int toInt(bool* ok) const;
+    float toFloat(bool* ok = 0) const;
     bool percentage(int &_percentage) const;
+
+    static DOMString number(float f);
 
     DOMString copy() const;
 
     bool isNull()  const { return (impl == 0); }
     bool isEmpty()  const;
+
+    bool endsWith(const DOMString& str) const;
 
     /**
      * @internal get a handle to the imlementation of the DOMString

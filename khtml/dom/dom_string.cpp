@@ -223,10 +223,31 @@ int DOMString::toInt(bool* ok) const
     return impl->toInt(ok);
 }
 
+float DOMString::toFloat(bool* ok) const
+{
+    if (!impl) {
+	if (ok)
+	    *ok = false;
+        return 0;
+    }
+    return impl->toInt(ok);
+}
+
+DOMString DOMString::number(float f)
+{
+    return DOMString(QString::number(f));
+}
+
 DOMString DOMString::copy() const
 {
     if(!impl) return DOMString();
     return impl->copy();
+}
+
+bool DOMString::endsWith(const DOMString& str) const 
+{
+    if (str.length() > length()) return false;
+    return impl->endsWith(str.implementation());
 }
 
 // ------------------------------------------------------------------------

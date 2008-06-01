@@ -416,6 +416,25 @@ int DOMStringImpl::toInt(bool* ok) const
     return QString::fromRawData(s, i).toInt(ok);
 }
 
+float DOMStringImpl::toFloat(bool* ok) const
+{
+    return QString::fromRawData(s, l).toFloat(ok);
+}
+
+bool DOMStringImpl::endsWith(DOMStringImpl* str) const
+{
+    if (l < str->l) return false;
+    const QChar *a = s + l - 1; 
+    const QChar *b = str->s + str->l - 1; 
+    int i = str->l;
+    while (i--) {
+        if (*a != *b) return false;
+        a--, b--;
+    }
+    return true;
+}
+
+
 static const unsigned short amp[] = {'&', 'a', 'm', 'p', ';'};
 static const unsigned short lt[] =  {'&', 'l', 't', ';'};
 static const unsigned short gt[] =  {'&', 'g', 't', ';'};
