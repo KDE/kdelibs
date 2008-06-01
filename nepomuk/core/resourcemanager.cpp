@@ -106,6 +106,12 @@ Nepomuk::Resource Nepomuk::ResourceManager::createResourceFromUri( const QString
     return Resource( uri, QUrl() );
 }
 
+void Nepomuk::ResourceManager::removeResource( const QString& uri )
+{
+    Resource res( uri );
+    res.remove();
+}
+
 void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 {
     kDebug(300004) << "(Nepomuk::ResourceManager) error: " << uri << " " << errorCode;
