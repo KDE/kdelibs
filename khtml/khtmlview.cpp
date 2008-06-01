@@ -3900,6 +3900,7 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
 	if (d->ddy < 0) d->ddy = qMin(d->ddy, -64);
 	// This means fewer than normal steps
 	steps = qMax(d->ddx ? (d->dx*16)/d->ddx : 0, d->ddy ? (d->dy*16)/d->ddy : 0);
+	if (steps < 1) steps = 1;
 	d->ddx = (d->dx*16)/(steps+1);
 	d->ddy = (d->dy*16)/(steps+1);
     }
