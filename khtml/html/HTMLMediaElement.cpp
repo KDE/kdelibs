@@ -134,7 +134,7 @@ PassRefPtr<MediaError> HTMLMediaElement::error() const
 
 String HTMLMediaElement::src() const
 {
-    return getDocument()->completeURL(getAttribute(ATTR_SRC).string());
+    return document()->completeURL(getAttribute(ATTR_SRC).string());
 }
 
 void HTMLMediaElement::setSrc(const String& url)

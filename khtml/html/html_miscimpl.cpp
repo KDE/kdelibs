@@ -287,7 +287,7 @@ QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
 
     //We use a work-conserving design for the name cache presently -- only
     //remember stuff about elements we were asked for.
-    m_cache->updateNodeListInfo(m_refNode->getDocument());
+    m_cache->updateNodeListInfo(m_refNode->document());
     CollectionCache* cache = static_cast<CollectionCache*>(m_cache);
     if (QList<NodeImpl*>* info = cache->nameCache.value(key)) {
         return *info;
@@ -314,7 +314,7 @@ HTMLFormCollectionImpl::HTMLFormCollectionImpl(NodeImpl* _base)
 
 NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
 {
-    m_cache->updateNodeListInfo(m_refNode->getDocument());
+    m_cache->updateNodeListInfo(m_refNode->document());
 
     unsigned int dist = index;
     unsigned int strt = 0;

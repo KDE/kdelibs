@@ -77,7 +77,7 @@ KUrl StyleBaseImpl::baseURL()
 
     if(!sheet->ownerNode()) return KUrl();
 
-    return sheet->ownerNode()->getDocument()->baseURL();
+    return sheet->ownerNode()->document()->baseURL();
 }
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,

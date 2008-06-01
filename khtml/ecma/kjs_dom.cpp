@@ -331,7 +331,7 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
     // Retrieves the ordinal position of the object, in source order, as the object
     // appears in the document's all collection
     // i.e. document.all[n.sourceIndex] == n
-    DOM::DocumentImpl* doc = node.getDocument();
+    DOM::DocumentImpl* doc = node.document();
     if (doc->isHTMLDocument()) {
       HTMLCollectionImpl all(doc, HTMLCollectionImpl::DOC_ALL);
       unsigned long i = 0;
@@ -347,7 +347,7 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
     // no DOM standard, found in IE only
 
     // Make sure our layout is up to date before we allow a query on these attributes.
-    DOM::DocumentImpl* docimpl = node.getDocument();
+    DOM::DocumentImpl* docimpl = node.document();
     if (docimpl) {
       docimpl->updateLayout();
     }
@@ -386,14 +386,14 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
     case ScrollLeft:
       if (rend && rend->layer()) {
           if (rend->isRoot() && !rend->style()->hidesOverflow())
-              return jsNumber( node.getDocument()->view() ? node.getDocument()->view()->contentsX() : 0);
+              return jsNumber( node.document()->view() ? node.document()->view()->contentsX() : 0);
           return jsNumber( rend->layer()->scrollXOffset() );
       }
       return jsNumber( 0 );
     case ScrollTop:
       if (rend && rend->layer()) {
           if (rend->isRoot() && !rend->style()->hidesOverflow())
-              return jsNumber( node.getDocument()->view() ? node.getDocument()->view()->contentsY() : 0);
+              return jsNumber( node.document()->view() ? node.document()->view()->contentsY() : 0);
           return jsNumber( rend->layer()->scrollYOffset() );
       }
       return jsNumber( 0 );
@@ -501,7 +501,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
     break;
   default:
     // Make sure our layout is up to date
-    DOM::DocumentImpl* docimpl = node.getDocument();
+    DOM::DocumentImpl* docimpl = node.document();
     if (docimpl)
       docimpl->updateLayout();
 
@@ -516,7 +516,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
           if (rend->style()->hidesOverflow())
             rend->layer()->scrollToXOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
-            KHTMLView* sview = node.getDocument()->view();
+            KHTMLView* sview = node.document()->view();
             if (sview)
               sview->setContentsPos(value->toInt32(exec), sview->contentsY());
           }
@@ -527,7 +527,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
           if (rend->style()->hidesOverflow())
             rend->layer()->scrollToYOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
-            KHTMLView* sview = node.getDocument()->view();
+            KHTMLView* sview = node.document()->view();
             if (sview)
               sview->setContentsPos(sview->contentsX(), value->toInt32(exec));
           }
@@ -637,7 +637,7 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
     {
       // see http://www.faqts.com/knowledge_base/view.phtml/aid/5756
       // and http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/insertAdjacentHTML.asp
-      SharedPtr<DOM::RangeImpl> range = node.getDocument()->createRange();
+      SharedPtr<DOM::RangeImpl> range = node.document()->createRange();
 
       range->setStartBefore(&node, exception);
       if (exception.triggered()) return jsUndefined();
@@ -1662,7 +1662,7 @@ bool KJS::checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n)
   // Check to see if the currently executing interpreter is allowed to access the specified node
   if (!n)
     return true;
-  KHTMLView *view = n->getDocument()->view();
+  KHTMLView *view = n->document()->view();
   Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
   if ( !win || !win->isSafeScript(exec) )
     return false;

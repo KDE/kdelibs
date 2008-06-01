@@ -242,11 +242,11 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        //kDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0);
+        //kDebug() << "dispatching LOAD_EVENT on document " << document() << " " << (view()?view()->part()->name():0);
 
         //Make sure to flush any pending image events now, as we want them out before the document's load event
         dispatchImageLoadEventsNow();
-        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||

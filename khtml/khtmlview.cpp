@@ -439,8 +439,8 @@ static bool findImageMapRect(HTMLImageElementImpl *img, const QPoint &scrollOfs,
 			const QPoint &p, QRect &r, QString &s)
 {
     HTMLMapElementImpl* map;
-    if (img && img->getDocument()->isHTMLDocument() &&
-        (map = static_cast<HTMLDocumentImpl*>(img->getDocument())->getMap(img->imageMap()))) {
+    if (img && img->document()->isHTMLDocument() &&
+        (map = static_cast<HTMLDocumentImpl*>(img->document())->getMap(img->imageMap()))) {
         RenderObject::NodeInfo info(true, false);
         RenderObject *rend = img->renderer();
         int ax, ay;
@@ -3561,7 +3561,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 
     // mouseout/mouseover
     if (setUnder && d->oldUnderMouse != targetNode) {
-        if (d->oldUnderMouse && d->oldUnderMouse->getDocument() != m_part->xmlDocImpl()) {
+        if (d->oldUnderMouse && d->oldUnderMouse->document() != m_part->xmlDocImpl()) {
             d->oldUnderMouse->deref();
             d->oldUnderMouse = 0;
         }

@@ -213,7 +213,7 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
        // ### to fully support dynamic changes to :contains selector
        // backwardsStructureChanged should be called for all changes
     }
-    if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
+    if (!document()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
         return;
 
     DOMStringImpl *newValue = str->copy();
@@ -284,7 +284,7 @@ unsigned short CommentImpl::nodeType() const
 
 NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
 {
-    return getDocument()->createComment( str );
+    return document()->createComment( str );
 }
 
 NodeImpl::Id CommentImpl::id() const
@@ -450,7 +450,7 @@ unsigned short TextImpl::nodeType() const
 
 NodeImpl *TextImpl::cloneNode(bool /*deep*/)
 {
-    return getDocument()->createTextNode(str);
+    return document()->createTextNode(str);
 }
 
 bool TextImpl::rendererIsNeeded(RenderStyle *style)
@@ -584,7 +584,7 @@ unsigned short CDATASectionImpl::nodeType() const
 
 NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
 {
-    return getDocument()->createCDATASection(str);
+    return document()->createCDATASection(str);
 }
 
 // DOM Section 1.1.1

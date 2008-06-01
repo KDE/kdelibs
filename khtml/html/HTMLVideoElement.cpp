@@ -80,7 +80,7 @@ void HTMLVideoElement::setHeight(int value)
 
 DOMString HTMLVideoElement::poster() const
 {
-    return getDocument()->completeURL(getAttribute(ATTR_POSTER).string());
+    return document()->completeURL(getAttribute(ATTR_POSTER).string());
 }
 
 void HTMLVideoElement::setPoster(const DOMString& value)

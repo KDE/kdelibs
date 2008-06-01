@@ -169,8 +169,8 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
             break;
         case ATTR_NAME:
             if (inDocument() && m_name != attr->value()) {
-                getDocument()->underDocNamedCache().remove(m_name.string(),        this);
-                getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+                document()->underDocNamedCache().remove(m_name.string(),        this);
+                document()->underDocNamedCache().add   (attr->value().string(), this);
             }
             m_name = attr->value();
             //fallthrough
@@ -210,25 +210,25 @@ void HTMLObjectBaseElementImpl::defaultEventHandler(EventImpl *e)
 
 void HTMLObjectBaseElementImpl::removedFromDocument()
 {
-    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    document()->underDocNamedCache().remove(m_name.string(), this);
     HTMLElementImpl::removedFromDocument();
 }
 
 void HTMLObjectBaseElementImpl::insertedIntoDocument()
 {
-    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    document()->underDocNamedCache().add(m_name.string(), this);
     HTMLElementImpl::insertedIntoDocument();
 }
 
 void HTMLObjectBaseElementImpl::removeId(const QString& id)
 {
-    getDocument()->underDocNamedCache().remove(id, this);
+    document()->underDocNamedCache().remove(id, this);
     HTMLElementImpl::removeId(id);
 }
 
 void HTMLObjectBaseElementImpl::addId   (const QString& id)
 {
-    getDocument()->underDocNamedCache().add(id, this);
+    document()->underDocNamedCache().add(id, this);
     HTMLElementImpl::addId(id);
 }
 
@@ -272,19 +272,19 @@ void HTMLObjectBaseElementImpl::attach() {
         return;
     }
 
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
 
     if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
         _style->display() != NONE)
     {
         if (m_imageLike) {
-            m_render = new (getDocument()->renderArena()) RenderImage(this);
+            m_render = new (document()->renderArena()) RenderImage(this);
             // make sure we don't attach the inner contents
             addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
         }
         else {
-            m_render = new (getDocument()->renderArena()) RenderPartObject(this);
+            m_render = new (document()->renderArena()) RenderPartObject(this);
             // If we already have a widget, set it.
             if (childWidget())
                 static_cast<RenderFrame*>(m_render)->setWidget(childWidget());
@@ -378,13 +378,13 @@ void HTMLObjectBaseElementImpl::computeContent()
             for (unsigned long i = 0; i < a->length(); ++i) {
                 NodeImpl::Id id = a->idAt(i);
                 DOMString value = a->valueAt(i);
-                params.append(getDocument()->getName(NodeImpl::AttributeId, id).string() + "=\"" + value.string() + "\"");
+                params.append(document()->getName(NodeImpl::AttributeId, id).string() + "=\"" + value.string() + "\"");
             }
         }
     }
 
     params.append( QLatin1String("__KHTML__PLUGINEMBED=\"YES\"") );
-    params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(getDocument()->baseURL().url()));
+    params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(document()->baseURL().url()));
 
     // Non-embed elements parse a bunch of attributes and inherit things off <embed>, if any
     HTMLEmbedElementImpl* embed = relevantEmbed();
@@ -469,12 +469,12 @@ void HTMLObjectBaseElementImpl::computeContent()
     bool newRenderAlternative = false;
 
     // If we aren't permitted to load this by security policy, render alternative content instead.
-    if (!getDocument()->isURLAllowed(effectiveURL))
+    if (!document()->isURLAllowed(effectiveURL))
         newRenderAlternative = true;
 
     // If Java is off, render alternative as well...
     if (effectiveServiceType == "application/x-java-applet") {
-        KHTMLView* w = getDocument()->view();
+        KHTMLView* w = document()->view();
         if (!w || !w->part()->javaEnabled())
             newRenderAlternative = true;
     }
@@ -492,7 +492,7 @@ void HTMLObjectBaseElementImpl::computeContent()
     if (m_renderAlternative)
         return;
 
-    KHTMLPart* part = getDocument()->part();
+    KHTMLPart* part = document()->part();
     clearChildWidget();
 
     kDebug(6031) << effectiveURL << effectiveServiceType << params;
@@ -550,7 +550,7 @@ void HTMLObjectBaseElementImpl::slotPartLoadingErrorNotify()
 
     serviceType = embed->serviceType;
 
-    KHTMLPart* part = getDocument()->part();
+    KHTMLPart* part = document()->part();
     KParts::BrowserExtension *ext = part->browserExtension();
 
     if(!embed->pluginPage.isEmpty() && ext) {
@@ -708,7 +708,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLEmbedElementImpl::attach()
 {
-    KHTMLView* w = getDocument()->view();
+    KHTMLView* w = document()->view();
 
     if (!w || !w->part()->pluginsEnabled())
         m_renderAlternative = true;
@@ -760,11 +760,11 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onunload", this));
         break;
      case ATTR_VSPACE:
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
@@ -797,7 +797,7 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 
 void HTMLObjectElementImpl::attach()
 {
-    KHTMLView* w = getDocument()->view();
+    KHTMLView* w = document()->view();
 
     if (!w || !w->part()->pluginsEnabled())
         m_renderAlternative = true;
@@ -820,7 +820,7 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
         m_value = attr->value().string();
         break;
     case ATTR_ID:
-        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        if (document()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
         m_name = attr->value().string();

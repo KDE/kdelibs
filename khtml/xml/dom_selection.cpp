@@ -328,7 +328,7 @@ int Selection::xPosForVerticalArrowNavigation(EPositionType type, bool recalc) c
             break;
     }
 
-    KHTMLPart *part = pos.node()->getDocument()->part();
+    KHTMLPart *part = pos.node()->document()->part();
     if (!part)
         return x;
 
@@ -410,7 +410,7 @@ void Selection::getRange(NodeImpl *&st, long &so, NodeImpl *&en, long &eo) const
     // in the course of running edit commands which modify the DOM.
     // Failing to call this can result in equivalentXXXPosition calls returning
     // incorrect results.
-    start().node()->getDocument()->updateLayout();
+    start().node()->document()->updateLayout();
 
     Position s, e;
     if (state() == CARET) {
@@ -496,10 +496,10 @@ void Selection::needsCaretRepaint()
     if (!start().node())
         return;
 
-    if (!start().node()->getDocument())
+    if (!start().node()->document())
         return;
 
-    KHTMLView *v = caretPos().node()->getDocument()->view();
+    KHTMLView *v = caretPos().node()->document()->view();
     if (!v)
         return;
 

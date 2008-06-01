@@ -370,7 +370,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return 0;
 
     // Make sure our layout is up to date before we allow a query on these attributes.
-    DocumentImpl* docimpl = node->getDocument();
+    DocumentImpl* docimpl = node->document();
     if (docimpl) {
         docimpl->updateLayout();
     }

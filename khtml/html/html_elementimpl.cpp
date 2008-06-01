@@ -124,7 +124,7 @@ DOMString HTMLElementImpl::localName() const
         NodeImpl::Id _id = id();
         DOMString tn;
         if ( _id >= ID_LAST_TAG )
-            tn = getDocument()->getName(ElementId, _id);
+            tn = document()->getName(ElementId, _id);
         else // HTML tag
             tn = getTagName( _id );
 	return tn; // lowercase already
@@ -139,7 +139,7 @@ DOMString HTMLElementImpl::tagName() const
     DOMString tn;
     NodeImpl::Id _id = id();
     if ( _id >= ID_LAST_TAG )
-        tn = getDocument()->getName(ElementId, _id);
+        tn = document()->getName(ElementId, _id);
     else // HTML tag
         tn = getTagName( _id );
 
@@ -171,7 +171,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ID:
         // unique id
         setHasID();
-        getDocument()->incDOMTreeVersion();
+        document()->incDOMTreeVersion();
         break;
     case ATTR_CLASS:
         if (attr->val()) {
@@ -188,7 +188,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         }
         break;
     case ATTR_NAME:
-        getDocument()->incDOMTreeVersion();
+        document()->incDOMTreeVersion();
         break;
     case ATTR_CONTENTEDITABLE:
         setContentEditable(attr);
@@ -215,55 +215,55 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 // standard events
     case ATTR_ONCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onclick", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onclick", this));
         break;
     case ATTR_ONDBLCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "ondblclick", this));
+	    document()->createHTMLEventListener(attr->value().string(), "ondblclick", this));
         break;
     case ATTR_ONMOUSEDOWN:
         setHTMLEventListener(EventImpl::MOUSEDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onmousedown", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onmousedown", this));
         break;
     case ATTR_ONMOUSEMOVE:
         setHTMLEventListener(EventImpl::MOUSEMOVE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onmousemove", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onmousemove", this));
         break;
     case ATTR_ONMOUSEOUT:
         setHTMLEventListener(EventImpl::MOUSEOUT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseout", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onmouseout", this));
         break;
     case ATTR_ONMOUSEOVER:
         setHTMLEventListener(EventImpl::MOUSEOVER_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseover", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onmouseover", this));
         break;
     case ATTR_ONMOUSEUP:
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onmouseup", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onmouseup", this));
         break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KEYDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeydown", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onkeydown", this));
 	break;
     case ATTR_ONKEYPRESS:
         setHTMLEventListener(EventImpl::KEYPRESS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onkeypress", this));
 	break;
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KEYUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeyup", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onkeyup", this));
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onfocus", this));
+            document()->createHTMLEventListener(attr->value().string(), "onfocus", this));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onblur", this));
+            document()->createHTMLEventListener(attr->value().string(), "onblur", this));
         break;
     case ATTR_ONSCROLL:
         setHTMLEventListener(EventImpl::SCROLL_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onscroll", this));
+            document()->createHTMLEventListener(attr->value().string(), "onscroll", this));
         break;
 // other misc attributes
     default:
@@ -449,7 +449,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
 {
     if (!m_hasCombinedStyle)
         return;
-    nonCSSStyleDecls()->setParent(getDocument()->elementSheet());
+    nonCSSStyleDecls()->setParent(document()->elementSheet());
     nonCSSStyleDecls()->removeProperty(id);
     setChanged();
 }
@@ -518,7 +518,7 @@ DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &htm
         default:
             break;
     }
-    if ( !getDocument()->isHTMLDocument() )
+    if ( !document()->isHTMLDocument() )
         return DocumentFragment();
 
     DocumentFragmentImpl* fragment = new DocumentFragmentImpl( docPtr() );
@@ -652,7 +652,7 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 
 DOMString HTMLElementImpl::contentEditable() const
 {
-    getDocument()->updateRendering();
+    document()->updateRendering();
 
     if (!renderer())
         return "false";

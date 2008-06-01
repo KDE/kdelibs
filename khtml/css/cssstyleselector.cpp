@@ -556,7 +556,7 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
-    if (!e->getDocument()->haveStylesheetsLoaded() || !e->getDocument()->view()) {
+    if (!e->document()->haveStylesheetsLoaded() || !e->document()->view()) {
         if (!styleNotYetAvailable) {
             styleNotYetAvailable = new RenderStyle();
             styleNotYetAvailable->setDisplay(NONE);
@@ -571,13 +571,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     element = e;
     parentNode = e->parentNode();
     parentStyle = ( parentNode && parentNode->renderer()) ? parentNode->renderer()->style() : 0;
-    view = element->getDocument()->view();
+    view = element->document()->view();
     part = view->part();
     settings = part->settings();
-    logicalDpiY = element->getDocument()->logicalDpiY();
+    logicalDpiY = element->document()->logicalDpiY();
 
     // reset dynamic DOM dependencies
-    e->getDocument()->dynamicDomRestyler().resetDependencies(e);
+    e->document()->dynamicDomRestyler().resetDependencies(e);
 
     style = new RenderStyle();
     if( parentStyle )
@@ -761,7 +761,7 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
         // positions.  We also force inline-level roots to be block-level.
         if (style->display() != BLOCK && style->display() != TABLE /*&& style->display() != BOX*/ &&
             (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE ||
-             (e && e->getDocument()->documentElement() == e))) {
+             (e && e->document()->documentElement() == e))) {
              if (style->display() == INLINE_TABLE)
                  style->setDisplay(TABLE);
 //             else if (style->display() == INLINE_BOX)
@@ -1181,7 +1181,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
 
 void CSSStyleSelector::addDependency(StructuralDependencyType dependencyType, ElementImpl* dependency)
 {
-    element->getDocument()->dynamicDomRestyler().addDependency(element, dependency, dependencyType);
+    element->document()->dynamicDomRestyler().addDependency(element, dependency, dependencyType);
 }
 
 bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
@@ -1221,7 +1221,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         // attributes are sometimes case-sensitive in HTML
         // we only treat id and class selectors as case-sensitive in HTML strict
         // for compatibility reasons
-        bool caseSensitive = e->getDocument()->htmlMode() == DocumentImpl::XHtml;
+        bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
         bool caseSensitive_alt = strictParsing || caseSensitive;
         caseSensitive |= (sel->attr > ATTR_LAST_CI_ATTR);
 
@@ -1519,11 +1519,11 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             break;
         }
         case CSSSelector::PseudoTarget:
-            if (e == e->getDocument()->getCSSTarget())
+            if (e == e->document()->getCSSTarget())
                 return true;
             break;
         case CSSSelector::PseudoRoot:
-            if (e == e->getDocument()->documentElement())
+            if (e == e->document()->documentElement())
                 return true;
             break;
 	case CSSSelector::PseudoLink:
@@ -1575,13 +1575,13 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::PseudoLang: {
             // Set dynamic attribute dependency
             if (e == element) {
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
+                e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
+                e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             }
             else if (isAncestor)
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
+                e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             else
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
+                e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -2737,7 +2737,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    int ident = primitiveValue->getIdent();
 	    if ( ident ) {
 		if ( ident == CSS_VAL__KHTML_TEXT )
-		    col = element->getDocument()->textColor();
+		    col = element->document()->textColor();
 		else
 		    col = colorForCSSValue( ident );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {
@@ -3383,7 +3383,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
                 // TODO: setup dynamic attribute dependencies
-                int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
+                int attrID = element->document()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
                 if (attrID)
                     style->addContent(element->getAttribute(attrID).implementation());
                 else

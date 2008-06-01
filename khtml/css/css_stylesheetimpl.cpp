@@ -108,7 +108,7 @@ void StyleSheetImpl::setDisabled( bool disabled )
     bool updateStyle = isCSSStyleSheet() && m_parentNode && disabled != m_disabled;
     m_disabled = disabled;
     if (updateStyle)
-        m_parentNode->getDocument()->updateStyleSelector();
+        m_parentNode->document()->updateStyleSelector();
 }
 
 // -----------------------------------------------------------------------
@@ -129,7 +129,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QList<StyleBaseImpl*>;
-    m_doc = parentNode->getDocument();
+    m_doc = parentNode->document();
     m_implicit = _implicit;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
@@ -159,7 +159,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
-    m_doc = parentNode->getDocument();
+    m_doc = parentNode->document();
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;

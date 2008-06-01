@@ -177,7 +177,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
-    if (dtype && (dtype->getDocument() || dtype->implementation() != this)) {
+    if (dtype && (dtype->document() || dtype->implementation() != this)) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -332,7 +332,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     : NodeBaseImpl( 0 ), m_domtree_version(0), m_counterDict(),
       m_imageLoadEventTimer(0)
 {
-    m_document.resetSkippingRef(this); //Make getDocument return us..
+    m_document.resetSkippingRef(this); //Make document return us..
     m_selfOnlyRefCount = 0;
 
     m_paintDevice = 0;
@@ -550,7 +550,7 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pException
     if ( pExceptioncode && *pExceptioncode )
         return 0;
 
-    XMLElementImpl* e = new XMLElementImpl( getDocument(), id );
+    XMLElementImpl* e = new XMLElementImpl( document(), id );
     e->setHTMLCompat( htmlMode() != XHtml ); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
     return e;
 }
@@ -561,7 +561,7 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExcepti
                   false /* allocate */, isHTMLDocument(), pExceptioncode);
     if ( pExceptioncode && *pExceptioncode )
         return 0;
-    AttrImpl* attr = new AttrImpl( 0, getDocument(), id, DOMString("").implementation());
+    AttrImpl* attr = new AttrImpl( 0, document(), id, DOMString("").implementation());
     attr->setHTMLCompat( htmlMode() != XHtml );
     return attr;
 }
@@ -713,7 +713,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     if (!e) {
         Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
                       localName.implementation(), false, false /*HTML already looked up*/);
-        e = new XMLElementImpl( getDocument(), id, prefix.implementation() );
+        e = new XMLElementImpl( document(), id, prefix.implementation() );
     }
 
     return e;
@@ -732,7 +732,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
     Id id = getId(NodeImpl::AttributeId, _namespaceURI.implementation(), prefix.implementation(),
                   localName.implementation(), false, true /*lookupHTML*/);
-    AttrImpl* attr = new AttrImpl(0, getDocument(), id, DOMString("").implementation(),
+    AttrImpl* attr = new AttrImpl(0, document(), id, DOMString("").implementation(),
                          prefix.implementation());
     attr->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
     return attr;
@@ -1305,7 +1305,7 @@ void DocumentImpl::updateDocumentsRendering()
 void DocumentImpl::updateLayout()
 {
     if (ElementImpl* oe = ownerElement())
-        oe->getDocument()->updateLayout();
+        oe->document()->updateLayout();
 
     bool oldIgnore = m_ignorePendingStylesheets;
 
@@ -1751,7 +1751,7 @@ ElementImpl* DocumentImpl::findAccessKeyElement(QChar c)
 
 int DocumentImpl::nodeAbsIndex(NodeImpl *node)
 {
-    assert(node->getDocument() == this);
+    assert(node->document() == this);
 
     int absIndex = 0;
     for (NodeImpl *n = node; n && n != this; n = n->traversePreviousNode())
@@ -1772,7 +1772,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
 {
     assert(!equiv.isNull() && !content.isNull());
 
-    KHTMLView *v = getDocument()->view();
+    KHTMLView *v = document()->view();
 
     if(strcasecmp(equiv, "refresh") == 0 && v && v->part()->metaRefreshEnabled())
     {
@@ -1802,9 +1802,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                   (str[str.length()-1] == ';' || str[str.length()-1] == ','))
                 str.resize(str.length()-1);
             str = parseURL( DOMString(str) ).string();
-            QString newURL = getDocument()->completeURL( str );
+            QString newURL = document()->completeURL( str );
             if ( ok )
-                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL().url());
+                v->part()->scheduleRedirection(delay, document()->completeURL( str ),  delay < 2 || newURL == URL().url());
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)
@@ -2398,7 +2398,7 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
     if( !m_render ) return;
 
     // Make sure newFocusNode is actually in this document
-    if (newFocusNode && (newFocusNode->getDocument() != this))
+    if (newFocusNode && (newFocusNode->document() != this))
         return;
 
     if (m_focusNode != newFocusNode) {

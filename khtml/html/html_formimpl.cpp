@@ -90,8 +90,8 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc, bool implicit)
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
-    if (getDocument() && getDocument()->view() && getDocument()->view()->part()) {
-        getDocument()->view()->part()->dequeueWallet(this);
+    if (document() && document()->view() && document()->view()->part()) {
+        document()->view()->part()->dequeueWallet(this);
     }
     QListIterator<HTMLGenericFormElementImpl*> it(formElements);
     while (it.hasNext())
@@ -239,7 +239,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     for(unsigned int i=0; i < strLength; ++i) if(str[i].toLatin1() == ',') str[i] = space;
     const QStringList charsets = str.split(' ');
     QTextCodec* codec = 0;
-    KHTMLView *view = getDocument()->view();
+    KHTMLView *view = document()->view();
     {
         QStringList::ConstIterator it = charsets.begin();
         const QStringList::ConstIterator itEnd = charsets.end();
@@ -424,7 +424,7 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
 
 static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
 {
-    KUrl k(e.getDocument()->URL());
+    KUrl k(e.document()->URL());
     k.setRef(QString());
     k.setQuery(QString());
     // ensure that we have the user / password inside the url
@@ -447,7 +447,7 @@ void HTMLFormElementImpl::doAutoFill()
         return;
 
     // assert(view())
-    getDocument()->view()->part()->openWallet(this);
+    document()->view()->part()->openWallet(this);
 #endif // KHTML_NO_WALLET
 }
 
@@ -472,7 +472,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
                     current->inputType() == HTMLInputElementImpl::TEXT) &&
                     !current->readOnly() &&
                     map.contains(current->name().string())) {
-                getDocument()->setFocusNode(current);
+                document()->setFocusNode(current);
                 current->setValue(map[current->name().string()]);
             }
         }
@@ -521,12 +521,12 @@ void HTMLFormElementImpl::submitFromKeyboard()
 void HTMLFormElementImpl::gatherWalletData()
 {
 #ifndef KHTML_NO_WALLET
-    KHTMLView* const view = getDocument()->view();
+    KHTMLView* const view = document()->view();
     // check if we have any password input's
     m_walletMap.clear();
     m_havePassword = false;
     m_haveTextarea = false;
-    const KUrl formUrl(getDocument()->URL());
+    const KUrl formUrl(document()->URL());
     if (view && !view->nonPasswordStorableSite(formUrl.host())) {
         for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
             HTMLGenericFormElementImpl* const cur = it.next();
@@ -551,7 +551,7 @@ void HTMLFormElementImpl::gatherWalletData()
 
 bool HTMLFormElementImpl::prepareSubmit()
 {
-    KHTMLView* const view = getDocument()->view();
+    KHTMLView* const view = document()->view();
     if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
         return m_insubmit;
 
@@ -585,9 +585,9 @@ void HTMLFormElementImpl::submit(  )
 #endif
 
     bool ok;
-    KHTMLView* const view = getDocument()->view();
+    KHTMLView* const view = document()->view();
     const QByteArray form_data = formData(ok);
-    const KUrl formUrl(getDocument()->URL());
+    const KUrl formUrl(document()->URL());
 
     if (ok && view) {
         if (m_walletMap.isEmpty()) {
@@ -684,7 +684,7 @@ void HTMLFormElementImpl::submit(  )
 
 void HTMLFormElementImpl::reset(  )
 {
-    KHTMLView* const view = getDocument()->view();
+    KHTMLView* const view = document()->view();
     if(m_inreset || !view || !view->part()) return;
 
     m_inreset = true;
@@ -734,16 +734,16 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSUBMIT:
         setHTMLEventListener(EventImpl::SUBMIT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onsubmit", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onsubmit", this));
         break;
     case ATTR_ONRESET:
         setHTMLEventListener(EventImpl::RESET_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onreset", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onreset", this));
         break;
     case ATTR_NAME:
         if (inDocument() && m_name != attr->value()) {
-            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
-            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+            document()->underDocNamedCache().remove(m_name.string(),        this);
+            document()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
         //Fallthrough intentional
@@ -754,25 +754,25 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLFormElementImpl::removedFromDocument()
 {
-    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    document()->underDocNamedCache().remove(m_name.string(), this);
     HTMLElementImpl::removedFromDocument();
 }
 
 void HTMLFormElementImpl::insertedIntoDocument()
 {
-    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    document()->underDocNamedCache().add(m_name.string(), this);
     HTMLElementImpl::insertedIntoDocument();
 }
 
 void HTMLFormElementImpl::removeId(const QString& id)
 {
-    getDocument()->underDocNamedCache().remove(id, this);
+    document()->underDocNamedCache().remove(id, this);
     HTMLElementImpl::removeId(id);
 }
 
 void HTMLFormElementImpl::addId   (const QString& id)
 {
-    getDocument()->underDocNamedCache().add(id, this);
+    document()->underDocNamedCache().add(id, this);
     HTMLElementImpl::addId(id);
 }
 
@@ -935,7 +935,7 @@ DOMString HTMLGenericFormElementImpl::name() const
     if (m_name) return m_name;
 
 // ###
-//     DOMString n = getDocument()->htmlMode() != DocumentImpl::XHtml ?
+//     DOMString n = document()->htmlMode() != DocumentImpl::XHtml ?
 //                   getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
     const DOMString n = getAttribute(ATTR_NAME);
     if (n.isNull())
@@ -969,7 +969,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         // Trigger dynamic restyles
-        getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+        document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
         // We need to update rendering under all circumstances
         if (!changed() && m_render) {
             m_render->updateFromElement();
@@ -1030,7 +1030,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
     if (evt->target()==this && !m_disabled)
     {
         // Report focus in/out changes to the browser extension (editable widgets only)
-        KHTMLView* const view = getDocument()->view();
+        KHTMLView* const view = document()->view();
         if (view && evt->id() == EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render && m_render->isWidget()) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
             QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
@@ -1128,13 +1128,13 @@ DOMString HTMLButtonElementImpl::type() const
 
 void HTMLButtonElementImpl::blur()
 {
-    if(getDocument()->focusNode() == this)
-        getDocument()->setFocusNode(0);
+    if(document()->focusNode() == this)
+        document()->setFocusNode(0);
 }
 
 void HTMLButtonElementImpl::focus()
 {
-    getDocument()->setFocusNode(this);
+    document()->setFocusNode(this);
 }
 
 void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
@@ -1237,10 +1237,10 @@ void HTMLFieldSetElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* const _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderFieldset(this);
+        m_render = new (document()->renderArena()) RenderFieldset(this);
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -1281,7 +1281,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
-    if (getDocument()) getDocument()->deregisterMaintainsState(this);
+    if (document()) document()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLInputElementImpl::id() const
@@ -1371,8 +1371,8 @@ QString HTMLInputElementImpl::state( )
     case RADIO:
         return QLatin1String(checked() ? "on" : "off");
     case TEXT:
-        if (autoComplete() && value() != getAttribute(ATTR_VALUE) && getDocument()->view())
-            getDocument()->view()->addFormCompletionItem(name().string(), value().string());
+        if (autoComplete() && value() != getAttribute(ATTR_VALUE) && document()->view())
+            document()->view()->addFormCompletionItem(name().string(), value().string());
         /* nobreak */
     default:
         return value().string() + (m_unsubmittedFormChange ? 'M' : '.');
@@ -1479,11 +1479,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onselect", this));
+            document()->createHTMLEventListener(attr->value().string(), "onselect", this));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
+            document()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1529,8 +1529,8 @@ void HTMLInputElementImpl::attach()
 
     switch( m_type ) {
     case PASSWORD:
-        if (getDocument()->isHTMLDocument())
-            static_cast<HTMLDocumentImpl*>(getDocument())->setAutoFill();
+        if (document()->isHTMLDocument())
+            static_cast<HTMLDocumentImpl*>(document())->setAutoFill();
         break;
     case HIDDEN:
     case IMAGE:
@@ -1542,21 +1542,21 @@ void HTMLInputElementImpl::attach()
         break;
     };
 
-    RenderStyle* const _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
         switch(m_type)
         {
         case TEXT:
         case PASSWORD:
-        case ISINDEX:      m_render = new (getDocument()->renderArena()) RenderLineEdit(this);   break;
-        case CHECKBOX:  m_render = new (getDocument()->renderArena()) RenderCheckBox(this); break;
-        case RADIO:        m_render = new (getDocument()->renderArena()) RenderRadioButton(this); break;
-        case SUBMIT:      m_render = new (getDocument()->renderArena()) RenderSubmitButton(this); break;
-        case IMAGE:       m_render =  new (getDocument()->renderArena()) RenderImageButton(this); break;
-        case RESET:      m_render = new (getDocument()->renderArena()) RenderResetButton(this);   break;
-        case FILE:         m_render =  new (getDocument()->renderArena()) RenderFileButton(this);    break;
-        case BUTTON:  m_render = new (getDocument()->renderArena()) RenderPushButton(this);
+        case ISINDEX:      m_render = new (document()->renderArena()) RenderLineEdit(this);   break;
+        case CHECKBOX:  m_render = new (document()->renderArena()) RenderCheckBox(this); break;
+        case RADIO:        m_render = new (document()->renderArena()) RenderRadioButton(this); break;
+        case SUBMIT:      m_render = new (document()->renderArena()) RenderSubmitButton(this); break;
+        case IMAGE:       m_render =  new (document()->renderArena()) RenderImageButton(this); break;
+        case RESET:      m_render = new (document()->renderArena()) RenderResetButton(this);   break;
+        case FILE:         m_render =  new (document()->renderArena()) RenderFileButton(this);    break;
+        case BUTTON:  m_render = new (document()->renderArena()) RenderPushButton(this);
         case HIDDEN:   break;
         }
     }
@@ -1739,7 +1739,7 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 //     setIndeterminate(false);
 
     // Trigger dynamic restyles
-    getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+    document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
     // We need to update rendering under all circumstances
     if (!changed() && m_render) {
         m_render->updateFromElement();
@@ -1755,7 +1755,7 @@ void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
     m_indeterminate = _indeterminate;
 
     // Trigger dynamic restyles
-//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+//     document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
     // We need to update rendering under all circumstances
     if (!changed() && m_render) {
         m_render->updateFromElement();
@@ -1801,13 +1801,13 @@ void HTMLInputElementImpl::setValue(DOMString val)
 
 void HTMLInputElementImpl::blur()
 {
-    if(getDocument()->focusNode() == this)
-	getDocument()->setFocusNode(0);
+    if(document()->focusNode() == this)
+	document()->setFocusNode(0);
 }
 
 void HTMLInputElementImpl::focus()
 {
-    getDocument()->setFocusNode(this);
+    document()->setFocusNode(this);
 }
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
@@ -1828,7 +1828,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		m_render->absolutePosition(offsetX,offsetY);
 		xPos = me->clientX()-offsetX;
 		yPos = me->clientY()-offsetY;
-                KHTMLView* v = getDocument()->view();
+                KHTMLView* v = document()->view();
                 if ( v ) {
                     xPos += v->contentsX();
                     yPos += v->contentsY();
@@ -1954,7 +1954,7 @@ NodeImpl* HTMLLabelElementImpl::getFormElement()
 	    const DOMString formElementId = getAttribute(ATTR_FOR);
 	    NodeImpl *newNode=0L;
     	    if (!formElementId.isEmpty())
-	        newNode=getDocument()->getElementById(formElementId);
+	        newNode=document()->getElementById(formElementId);
     	    if (!newNode){
     		const uint children=childNodeCount();
     		if (children>1)
@@ -1986,7 +1986,7 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	if (act) {
 	    NodeImpl* const formNode=getFormElement();
 	    if (formNode && evt->target() != formNode) {
-		getDocument()->setFocusNode(formNode);
+		document()->setFocusNode(formNode);
 		if (formNode->id()==ID_INPUT)
 		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
 		evt->setDefaultHandled();
@@ -2017,10 +2017,10 @@ void HTMLLegendElementImpl::attach()
     assert(!attached());
     assert(!m_render);
     assert(parentNode());
-    RenderStyle* const _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderLegend(this);
+        m_render = new (document()->renderArena()) RenderLegend(this);
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -2053,7 +2053,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementI
 
 HTMLSelectElementImpl::~HTMLSelectElementImpl()
 {
-    if (getDocument()) getDocument()->deregisterMaintainsState(this);
+    if (document()) document()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLSelectElementImpl::id() const
@@ -2165,13 +2165,13 @@ void HTMLSelectElementImpl::remove( long index )
 
 void HTMLSelectElementImpl::blur()
 {
-    if(getDocument()->focusNode() == this)
-	getDocument()->setFocusNode(0);
+    if(document()->focusNode() == this)
+	document()->setFocusNode(0);
 }
 
 void HTMLSelectElementImpl::focus()
 {
-    getDocument()->setFocusNode(this);
+    document()->setFocusNode(this);
 }
 
 DOMString HTMLInputElementImpl::valueWithDefault() const
@@ -2334,7 +2334,7 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
+            document()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2347,10 +2347,10 @@ void HTMLSelectElementImpl::attach()
     assert(parentNode());
     assert(!renderer());
 
-    RenderStyle* const _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderSelect(this);
+        m_render = new (document()->renderArena()) RenderSelect(this);
         m_render->setStyle(_style);
     }
 
@@ -2723,7 +2723,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
 {
-    if (getDocument()) getDocument()->deregisterMaintainsState(this);
+    if (document()) document()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLTextAreaElementImpl::id() const
@@ -2797,11 +2797,11 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onselect", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onselect", this));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onchange", this));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -2814,10 +2814,10 @@ void HTMLTextAreaElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* const _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderTextArea(this);
+        m_render = new (document()->renderArena()) RenderTextArea(this);
         m_render->setStyle(_style);
     }
 
@@ -2942,19 +2942,19 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     while (it.hasNext()) {
         removeChild(it.next(), exceptioncode);
     }
-    insertBefore(getDocument()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
+    insertBefore(document()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 
 void HTMLTextAreaElementImpl::blur()
 {
-    if(getDocument()->focusNode() == this)
-	getDocument()->setFocusNode(0);
+    if(document()->focusNode() == this)
+	document()->setFocusNode(0);
 }
 
 void HTMLTextAreaElementImpl::focus()
 {
-    getDocument()->setFocusNode(this);
+    document()->setFocusNode(this);
 }
 
 bool HTMLTextAreaElementImpl::isEditable()

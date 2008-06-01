@@ -74,7 +74,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     {
         QString url = khtml::parseURL( attr->value() ).string();
         if (!url.isEmpty()) {
-            url = getDocument()->completeURL( url );
+            url = document()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, DOMString("url('"+url+"')") );
             m_bgSet = true;
         }
@@ -85,7 +85,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     }
     case ATTR_MARGINWIDTH: {
-	KHTMLView* w = getDocument()->view();
+	KHTMLView* w = document()->view();
 	if (w)
 	    w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
@@ -95,7 +95,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
         break;
     case ATTR_MARGINHEIGHT: {
-	KHTMLView* w = getDocument()->view();
+	KHTMLView* w = document()->view();
 	if (w)
 	    w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
@@ -134,44 +134,44 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
 	aStr += " { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr, false);
         if (attached())
-            getDocument()->updateStyleSelector();
+            document()->updateStyleSelector();
         break;
     }
     case ATTR_ONLOAD:
-        getDocument()->setHTMLWindowEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::LOAD_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onload", NULL));
         break;
     case ATTR_ONUNLOAD:
-        getDocument()->setHTMLWindowEventListener(EventImpl::UNLOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::UNLOAD_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onunload", NULL));
         break;
     case ATTR_ONBLUR:
-        getDocument()->setHTMLWindowEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onblur", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::BLUR_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onblur", NULL));
         break;
     case ATTR_ONFOCUS:
-        getDocument()->setHTMLWindowEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onfocus", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::FOCUS_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onfocus", NULL));
         break;
     case ATTR_ONRESIZE:
-        getDocument()->setHTMLWindowEventListener(EventImpl::RESIZE_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onresize", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::RESIZE_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onresize", NULL));
         break;
     case ATTR_ONKEYUP:
-        getDocument()->setHTMLWindowEventListener(EventImpl::KEYUP_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeyup", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::KEYUP_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onkeyup", NULL));
         break;
     case ATTR_ONKEYDOWN:
-        getDocument()->setHTMLWindowEventListener(EventImpl::KEYDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeydown", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::KEYDOWN_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onkeydown", NULL));
         break;
     case ATTR_ONKEYPRESS:
-        getDocument()->setHTMLWindowEventListener(EventImpl::KEYPRESS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::KEYPRESS_EVENT,
+	    document()->createHTMLEventListener(attr->value().string(), "onkeypress", NULL));
         break;
     case ATTR_ONSCROLL:
-        getDocument()->setHTMLWindowEventListener(EventImpl::SCROLL_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onscroll", NULL));
+        document()->setHTMLWindowEventListener(EventImpl::SCROLL_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onscroll", NULL));
         break;
     case ATTR_NOSAVE:
 	break;
@@ -184,7 +184,7 @@ void HTMLBodyElementImpl::insertedIntoDocument()
 {
     HTMLElementImpl::insertedIntoDocument();
 
-    KHTMLView* w = getDocument()->view();
+    KHTMLView* w = document()->view();
     if(w && w->marginWidth() != -1) {
         QString s;
         s.sprintf( "%d", w->marginWidth() );
@@ -202,7 +202,7 @@ void HTMLBodyElementImpl::insertedIntoDocument()
         addCSSProperty(CSS_PROP_COLOR, CSS_VAL_BLACK);
 
     if (m_styleSheet)
-        getDocument()->updateStyleSelector();
+        document()->updateStyleSelector();
 }
 
 void HTMLBodyElementImpl::removedFromDocument()
@@ -210,7 +210,7 @@ void HTMLBodyElementImpl::removedFromDocument()
     HTMLElementImpl::removedFromDocument();
 
     if (m_styleSheet)
-        getDocument()->updateStyleSelector();
+        document()->updateStyleSelector();
 }
 
 void HTMLBodyElementImpl::attach()
@@ -218,12 +218,12 @@ void HTMLBodyElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* style = document()->styleSelector()->styleForElement(this);
     style->ref();
     if (parentNode()->renderer() && style->display() != NONE) {
         if (style->display() == BLOCK)
             // only use the quirky class for block display
-            m_render = new (getDocument()->renderArena()) RenderBody(this);
+            m_render = new (document()->renderArena()) RenderBody(this);
         else
             m_render = RenderObject::createObject(this, style);
         m_render->setStyle(style);
@@ -267,7 +267,7 @@ void HTMLFrameElementImpl::ensureUniqueName()
     }
 
     // Ensure uniqueness...
-    KHTMLPart* parentPart = getDocument()->part();
+    KHTMLPart* parentPart = document()->part();
     if (parentPart) {
         // we need a unique name for every frame in the frameset. Hope that's unique enough.
         if (name.isEmpty() || parentPart->frameExists( name.string() ) )
@@ -312,11 +312,11 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+            document()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
+            document()->createHTMLEventListener(attr->value().string(), "onunload", this));
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -350,11 +350,11 @@ void HTMLFrameElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    if (parentNode()->renderer() && getDocument()->isURLAllowed(url.string()))  {
-        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    if (parentNode()->renderer() && document()->isURLAllowed(url.string()))  {
+        RenderStyle* _style = document()->styleSelector()->styleForElement(this);
         _style->ref();
         if ( _style->display() != NONE ) {
-            m_render = new (getDocument()->renderArena()) RenderFrame(this);
+            m_render = new (document()->renderArena()) RenderFrame(this);
             m_render->setStyle(_style);
             parentNode()->renderer()->addChild(m_render, nextRenderer());
         }
@@ -376,7 +376,7 @@ void HTMLFrameElementImpl::setWidgetNotify(QWidget* widget)
 
 void HTMLFrameElementImpl::computeContent()
 {
-    KHTMLPart* parentPart = getDocument()->part();
+    KHTMLPart* parentPart = document()->part();
 
     if (!parentPart)
         return;
@@ -384,7 +384,7 @@ void HTMLFrameElementImpl::computeContent()
     ensureUniqueName();
 
     // Bail out on any disallowed URLs
-    if( !getDocument()->isURLAllowed(url.string()) )
+    if( !document()->isURLAllowed(url.string()) )
         return;
 
     // If we have a part already, make sure it's in the right spot...
@@ -405,13 +405,13 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
     url = str;
 
-    if( !getDocument()->isURLAllowed(url.string()) )
+    if( !document()->isURLAllowed(url.string()) )
         return;
 
     // if we already have a child part, ask it to go there..
     KHTMLPart* childPart = contentPart();
     if ( childPart )
-        childPart->openUrl( KUrl( getDocument()->completeURL( url.string() ) ) );
+        childPart->openUrl( KUrl( document()->completeURL( url.string() ) ) );
     else
         setNeedComputeContent(); // otherwise, request it.. 
 }
@@ -530,12 +530,12 @@ HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
     //### this is likely not quite right since we may be effectively "overriding" some old value,
     //which needs to be recomputed, but this is better than crashing...
-    if (getDocument()) {
-        if (m_onLoad && getDocument()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
-            getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
+    if (document()) {
+        if (m_onLoad && document()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
+            document()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
 
-        if (m_onUnLoad && getDocument()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
-            getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
+        if (m_onUnLoad && document()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
+            document()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
     }
 
     delete [] m_rows;
@@ -580,12 +580,12 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
-        m_onLoad = getDocument()->createHTMLEventListener(attr->value().string(), "onload", this);
-        getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, m_onLoad);
+        m_onLoad = document()->createHTMLEventListener(attr->value().string(), "onload", this);
+        document()->setHTMLEventListener(EventImpl::LOAD_EVENT, m_onLoad);
         break;
     case ATTR_ONUNLOAD:
-        m_onUnLoad = getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this);
-        getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, m_onUnLoad);
+        m_onUnLoad = document()->createHTMLEventListener(attr->value().string(), "onunload", this);
+        document()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, m_onUnLoad);
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -613,8 +613,8 @@ void HTMLFrameSetElementImpl::attach()
 
     // ignore display: none
     if ( parentNode()->renderer() ) {
-        m_render = new (getDocument()->renderArena()) RenderFrameSet(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        m_render = new (document()->renderArena()) RenderFrameSet(this);
+        m_render->setStyle(document()->styleSelector()->styleForElement(this));
        parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
 
@@ -634,7 +634,7 @@ void HTMLFrameSetElementImpl::detach()
 {
     if(attached())
         // ### send the event when we actually get removed from the doc instead of here
-        getDocument()->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+        document()->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     HTMLElementImpl::detach();
 }
@@ -770,11 +770,11 @@ void HTMLIFrameElementImpl::attach()
 
     updateFrame();
 
-    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* style = document()->styleSelector()->styleForElement(this);
     style->ref();
-    if (getDocument()->isURLAllowed(url.string()) &&
+    if (document()->isURLAllowed(url.string()) &&
         parentNode()->renderer() && style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderPartObject(this);
+        m_render = new (document()->renderArena()) RenderPartObject(this);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
@@ -788,12 +788,12 @@ void HTMLIFrameElementImpl::attach()
 
 void HTMLIFrameElementImpl::computeContent()
 {
-    KHTMLPart* parentPart = getDocument()->part();
+    KHTMLPart* parentPart = document()->part();
 
     if (!parentPart)
         return;
 
-    if (!getDocument()->isURLAllowed(url.string()))
+    if (!document()->isURLAllowed(url.string()))
         return;
 
     ensureUniqueName();

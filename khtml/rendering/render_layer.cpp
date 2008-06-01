@@ -1349,7 +1349,7 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
         return;
 
     DOM::NodeImpl *e = m_object->element();
-    DOM::DocumentImpl *doc = e ? e->getDocument() : 0;
+    DOM::DocumentImpl *doc = e ? e->document() : 0;
     if (!doc) return;
 
     // Check to see if the hovered node has changed.  If not, then we don't need to

@@ -99,7 +99,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
                 if(r && e)
                 {
-                    KHTMLView* v = getDocument()->view();
+                    KHTMLView* v = document()->view();
                     int x = e->clientX();
                     int y = e->clientY();
                     int absx = 0;
@@ -149,11 +149,11 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlModifier;
 	    }
 
-	    if (getDocument()->view() && !isContentEditable()) {
+	    if (document()->view() && !isContentEditable()) {
 	      if (k) 
 		click();
 	      else
-		getDocument()->view()->part()->
+		document()->view()->part()->
 		    urlSelected( url, button, state, utarget );
 	    }
         }
@@ -165,13 +165,13 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
 void HTMLAnchorElementImpl::blur(  )
 {
-    if(getDocument()->focusNode()==this)
-        getDocument()->setFocusNode(0);
+    if(document()->focusNode()==this)
+        document()->setFocusNode(0);
 }
 
 void HTMLAnchorElementImpl::focus(  )
 {
-    getDocument()->setFocusNode(this);
+    document()->setFocusNode(this);
 }
 
 
@@ -189,7 +189,7 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     {
         bool hadAnchor = m_hasAnchor;
         m_hasAnchor = attr->val() != 0;
-        getDocument()->incDOMTreeVersion();
+        document()->incDOMTreeVersion();
         if (hadAnchor != m_hasAnchor)
             setChanged();
     }
@@ -238,10 +238,10 @@ void HTMLBRElementImpl::attach()
     assert(parentNode());
 
     if (parentNode()->renderer()) {
-        RenderStyle* style = getDocument()->styleSelector()->styleForElement( this );
+        RenderStyle* style = document()->styleSelector()->styleForElement( this );
         style->ref();
         if( style->display() != NONE ) {
-          m_render = new (getDocument()->renderArena()) RenderBR(this);
+          m_render = new (document()->renderArena()) RenderBR(this);
           m_render->setStyle(style);
           parentNode()->renderer()->addChild(m_render, nextRenderer());
         }
@@ -264,10 +264,10 @@ void HTMLWBRElementImpl::attach()
     assert(parentNode());
 
     if (parentNode()->renderer()) {
-        RenderStyle* style = getDocument()->styleSelector()->styleForElement( this );
+        RenderStyle* style = document()->styleSelector()->styleForElement( this );
         style->ref();
         if( style->display() != NONE ) {
-          m_render = new (getDocument()->renderArena()) RenderInline(this);
+          m_render = new (document()->renderArena()) RenderInline(this);
           m_render->setStyle(style);
           parentNode()->renderer()->addChild(m_render, nextRenderer());
         }

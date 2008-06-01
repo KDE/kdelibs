@@ -60,8 +60,8 @@ HTMLImageElementImpl::HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImp
 
 HTMLImageElementImpl::~HTMLImageElementImpl()
 {
-    if (getDocument())
-        getDocument()->removeImage(this);
+    if (document())
+        document()->removeImage(this);
 
     if (m_image)
         m_image->deref(this);
@@ -89,7 +89,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         DOMString url = attr->value();
         if (!url.isEmpty()) { //### why do we not hide or something when setting this?
             DOMString parsedURL = khtml::parseURL(url);
-            CachedImage* newImage = getDocument()->docLoader()->requestImage(parsedURL);
+            CachedImage* newImage = document()->docLoader()->requestImage(parsedURL);
             if (newImage && newImage != m_image) {
                 CachedImage* oldImage = m_image;
                 loadEventSent = false;
@@ -99,8 +99,8 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
                     oldImage->deref(this);
             }
 
-            KUrl fullURL = getDocument()->completeURL(parsedURL.string());
-            if (getDocument()->URL().host() != fullURL.host() || getDocument()->URL().port() != fullURL.port())
+            KUrl fullURL = document()->completeURL(parsedURL.string());
+            if (document()->URL().host() != fullURL.host() || document()->URL().port() != fullURL.port())
                 unsafe = true;
         }
     }
@@ -151,7 +151,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         if ( attr->value()[0] == '#' )
             usemap = attr->value().lower();
         else {
-            QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
+            QString url = document()->completeURL( khtml::parseURL( attr->value() ).string() );
             // ### we remove the part before the anchor and hope
             // the map is on the same html page....
             usemap = url;
@@ -162,22 +162,22 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ONABORT: // ### add support for this
         setHTMLEventListener(EventImpl::ABORT_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onabort", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onabort", this));
         break;
     case ATTR_ONERROR:
         setHTMLEventListener(EventImpl::ERROR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onerror", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onerror", this));
         break;
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+	    document()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
     case ATTR_NOSAVE:
 	break;
     case ATTR_NAME:
         if (inDocument() && m_name != attr->value()) {
-            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
-            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+            document()->underDocNamedCache().remove(m_name.string(),        this);
+            document()->underDocNamedCache().add   (attr->value().string(), this);
         }
         m_name = attr->value();
         //fallthrough
@@ -189,7 +189,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
 void HTMLImageElementImpl::notifyFinished(CachedObject *finishedObj)
 {
     if (m_image == finishedObj) {
-        getDocument()->dispatchImageLoadEventSoon(this);
+        document()->dispatchImageLoadEventSoon(this);
     }
 }
 
@@ -216,7 +216,7 @@ DOMString HTMLImageElementImpl::altText() const
         alt = getAttribute( ATTR_TITLE );
 #if 0
     if ( alt.isNull() ) {
-        QString p = KUrl( getDocument()->completeURL( getAttribute(ATTR_SRC).string() ) ).prettyUrl();
+        QString p = KUrl( document()->completeURL( getAttribute(ATTR_SRC).string() ) ).prettyUrl();
         int pos;
         if ( ( pos = p.lastIndexOf( '.' ) ) > 0 )
             p.truncate( pos );
@@ -233,12 +233,12 @@ void HTMLImageElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
         _style->display() != NONE)
     {
-        m_render = new (getDocument()->renderArena()) RenderImage(this);
+        m_render = new (document()->renderArena()) RenderImage(this);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
@@ -251,25 +251,25 @@ void HTMLImageElementImpl::attach()
 
 void HTMLImageElementImpl::removedFromDocument()
 {
-    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    document()->underDocNamedCache().remove(m_name.string(), this);
     HTMLElementImpl::removedFromDocument();
 }
 
 void HTMLImageElementImpl::insertedIntoDocument()
 {
-    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    document()->underDocNamedCache().add(m_name.string(), this);
     HTMLElementImpl::insertedIntoDocument();
 }
 
 void HTMLImageElementImpl::removeId(const QString& id)
 {
-    getDocument()->underDocNamedCache().remove(id, this);
+    document()->underDocNamedCache().remove(id, this);
     HTMLElementImpl::removeId(id);
 }
 
 void HTMLImageElementImpl::addId   (const QString& id)
 {
-    getDocument()->underDocNamedCache().add(id, this);
+    document()->underDocNamedCache().add(id, this);
     HTMLElementImpl::addId(id);
 }
 
@@ -286,7 +286,7 @@ long HTMLImageElementImpl::width() const
             return 0;
     }
 
-    getDocument()->updateRendering();
+    document()->updateRendering();
 
     return m_render ? m_render->contentWidth() :
                       getAttribute(ATTR_WIDTH).toInt();
@@ -304,7 +304,7 @@ long HTMLImageElementImpl::height() const
             return 0;
     }
 
-    getDocument()->updateRendering();
+    document()->updateRendering();
 
     return m_render ? m_render->contentHeight() :
                       getAttribute(ATTR_HEIGHT).toInt();
@@ -377,8 +377,8 @@ HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc)
 
 HTMLMapElementImpl::~HTMLMapElementImpl()
 {
-    if(getDocument() && getDocument()->isHTMLDocument())
-        static_cast<HTMLDocumentImpl*>(getDocument())->mapMap.remove(name);
+    if(document() && document()->isHTMLDocument())
+        static_cast<HTMLDocumentImpl*>(document())->mapMap.remove(name);
 }
 
 NodeImpl::Id HTMLMapElementImpl::id() const
@@ -431,15 +431,15 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_ID:
-        if (getDocument()->htmlMode() != DocumentImpl::XHtml) {
+        if (document()->htmlMode() != DocumentImpl::XHtml) {
             HTMLElementImpl::parseAttribute(attr);
             break;
         }
         else {
             // add name with full url:
-            QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
-            if(getDocument()->isHTMLDocument())
-                static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[url] = this;
+            QString url = document()->completeURL( khtml::parseURL( attr->value() ).string() );
+            if(document()->isHTMLDocument())
+                static_cast<HTMLDocumentImpl*>(document())->mapMap[url] = this;
         }
         // fall through
     case ATTR_NAME:
@@ -450,8 +450,8 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
         else
             name = s.string().toLower();
 	// ### make this work for XML documents, e.g. in case of <html:map...>
-        if(getDocument()->isHTMLDocument())
-            static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[name] = this;
+        if(document()->isHTMLDocument())
+            static_cast<HTMLDocumentImpl*>(document())->mapMap[name] = this;
 
         //fallthrough
     }

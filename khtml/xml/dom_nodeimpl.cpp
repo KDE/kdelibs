@@ -284,7 +284,7 @@ void NodeImpl::setTextContent(const DOMString& text, int& ec)
             container->removeChildren();
 
             if (!text.isEmpty())
-                appendChild(getDocument()->createTextNode(text.implementation()), ec);
+                appendChild(document()->createTextNode(text.implementation()), ec);
             break;
         }
         case Node::DOCUMENT_NODE:
@@ -364,7 +364,7 @@ void NodeImpl::setChanged(bool b)
 	    p->setHasChangedChild( true );
 	    p = p->parentNode();
 	}
-        getDocument()->setDocumentChanged();
+        document()->setDocumentChanged();
     }
 }
 
@@ -388,25 +388,25 @@ void NodeImpl::addEventListener(EventName id, EventListener *listener, const boo
 {
     switch (id.id()) {
 	case EventImpl::DOMSUBTREEMODIFIED_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER);
 	    break;
 	case EventImpl::DOMNODEINSERTED_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER);
 	    break;
 	case EventImpl::DOMNODEREMOVED_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER);
 	    break;
         case EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
 	    break;
         case EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
 	    break;
         case EventImpl::DOMATTRMODIFIED_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER);
 	    break;
         case EventImpl::DOMCHARACTERDATAMODIFIED_EVENT:
-	    getDocument()->addListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER);
+	    document()->addListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER);
 	    break;
 	default:
 	    break;
@@ -445,7 +445,7 @@ void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
     evt->setTarget(this);
 
     // Since event handling code could cause this object to be deleted, grab a reference to the view now
-    KHTMLView *view = getDocument()->view();
+    KHTMLView *view = document()->view();
 
     dispatchGenericEvent( evt, exceptioncode );
 
@@ -558,7 +558,7 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
-    DocumentImpl *doc = getDocument();
+    DocumentImpl *doc = document();
     doc->ref();
     dispatchGenericEvent( evt, exceptioncode );
     if (!evt->defaultPrevented())
@@ -570,8 +570,8 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
         // the DOM.  You send the event only to the enclosing frame.  It does not
         // bubble through the parent document.
         DOM::ElementImpl* elt = doc->ownerElement();
-        if (elt && (elt->getDocument()->domain().isNull() ||
-                    elt->getDocument()->domain() == doc->domain())) {
+        if (elt && (elt->document()->domain().isNull() ||
+                    elt->document()->domain() == doc->domain())) {
             // We also do a security check, since we don't want to allow the enclosing
             // iframe to see loads of child documents in other domains.
             evt->setCurrentTarget(elt);
@@ -621,12 +621,12 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     int exceptioncode = 0;
     int pageX = _mouse->x();
     int pageY = _mouse->y();
-    if ( getDocument()->view() )
-        getDocument()->view()->revertTransforms( pageX, pageY );
+    if ( document()->view() )
+        document()->view()->revertTransforms( pageX, pageY );
     int clientX = pageX;
     int clientY = pageY;
-    if ( getDocument()->view() )
-        getDocument()->view()->contentsToViewport( pageX, pageY, pageX, pageY );
+    if ( document()->view() )
+        document()->view()->contentsToViewport( pageX, pageY, pageX, pageY );
 
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
@@ -650,7 +650,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     bool shiftKey = (_mouse->modifiers() & Qt::ShiftModifier);
     bool metaKey = (_mouse->modifiers() & Qt::MetaModifier);
 
-    EventImpl* const evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
+    EventImpl* const evt = new MouseEventImpl(evtId, true, cancelable, document()->defaultView(),
                    detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
@@ -670,7 +670,7 @@ void NodeImpl::dispatchUIEvent(int _id, int detail)
 
     int exceptioncode = 0;
     UIEventImpl* const evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
-                                       cancelable,getDocument()->defaultView(),detail);
+                                       cancelable, document()->defaultView(), detail);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
     evt->deref();
@@ -679,8 +679,8 @@ void NodeImpl::dispatchUIEvent(int _id, int detail)
 void NodeImpl::dispatchSubtreeModifiedEvent()
 {
     childrenChanged();
-    getDocument()->incDOMTreeVersion();
-    if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
+    document()->incDOMTreeVersion();
+    if (!document()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
         return;
     int exceptioncode = 0;
     MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,true,
@@ -696,9 +696,9 @@ bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
     //kDebug(6010) << "DOM::NodeImpl: dispatching keyboard event";
     EventImpl* keyEventImpl;
     if (keypress)
-        keyEventImpl = new TextEventImpl(key, getDocument()->defaultView());
+        keyEventImpl = new TextEventImpl(key, document()->defaultView());
     else
-        keyEventImpl = new KeyboardEventImpl(key, getDocument()->defaultView());
+        keyEventImpl = new KeyboardEventImpl(key, document()->defaultView());
     keyEventImpl->ref();
     dispatchEvent(keyEventImpl,exceptioncode,true);
     bool r = keyEventImpl->defaultHandled() || keyEventImpl->defaultPrevented();
@@ -841,7 +841,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
     // created this node.
     // We assume that if newChild is a DocumentFragment, all children are created from the same document
     // as the fragment itself (otherwise they could not have been added as children)
-    if (newChild->getDocument() != getDocument()) {
+    if (newChild->document() != document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -972,7 +972,7 @@ void NodeImpl::attach()
         if (closed()) m_render->close();
         if (hovered()) m_render->setMouseInside();
     }
-    getDocument()->incDOMTreeVersion();
+    document()->incDOMTreeVersion();
     m_attached = true;
 }
 
@@ -984,7 +984,7 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
-    getDocument()->incDOMTreeVersion();
+    document()->incDOMTreeVersion();
     m_attached = false;
 }
 
@@ -1035,7 +1035,7 @@ NodeImpl *NodeImpl::previousEditable() const
 {
     NodeImpl *node = previousLeafNode();
     while (node) {
-        if (node->getDocument()->part()->isCaretMode() || node->isContentEditable())
+        if (node->document()->part()->isCaretMode() || node->isContentEditable())
             return node;
         node = node->previousLeafNode();
     }
@@ -1046,7 +1046,7 @@ NodeImpl *NodeImpl::nextEditable() const
 {
     NodeImpl *node = nextLeafNode();
     while (node) {
-        if (node->getDocument()->part()->isCaretMode() || node->isContentEditable())
+        if (node->document()->part()->isCaretMode() || node->isContentEditable())
             return node;
         node = node->nextLeafNode();
     }
@@ -1074,7 +1074,7 @@ RenderObject * NodeImpl::nextRenderer()
 void NodeImpl::createRendererIfNeeded()
 {
 #ifdef APPLE_CHANGES
-    if (!getDocument()->shouldCreateRenderers())
+    if (!document()->shouldCreateRenderers())
         return;
 #endif
 
@@ -1088,7 +1088,7 @@ void NodeImpl::createRendererIfNeeded()
         RenderStyle *style = styleForRenderer(parentRenderer);
         style->ref();
         if (rendererIsNeeded(style)) {
-            m_render = createRenderer(getDocument()->renderArena(), style);
+            m_render = createRenderer(document()->renderArena(), style);
             m_render->setStyle(style);
             parentRenderer->addChild(m_render, nextRenderer());
         }
@@ -1103,7 +1103,7 @@ RenderStyle *NodeImpl::styleForRenderer(RenderObject *parent)
 
 bool NodeImpl::rendererIsNeeded(RenderStyle *style)
 {
-    return (getDocument()->documentElement() == this) || (style->display() != NONE);
+    return (document()->documentElement() == this) || (style->display() != NONE);
 }
 
 RenderObject *NodeImpl::createRenderer(RenderArena* /*arena*/, RenderStyle* /*style*/)
@@ -1252,7 +1252,7 @@ NodeListImpl* NodeImpl::getElementsByTagName( const DOMString &tagName )
     if ( tagName == "*" )
         id = 0;
     else
-        id = getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
+        id = document()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
     return new TagNodeListImpl( this, id );
 }
 
@@ -1280,9 +1280,9 @@ DocumentImpl* NodeImpl::ownerDocument() const
 {
     // braindead DOM spec says that ownerDocument
     // should return null if called on the document node
-    // we thus have our nicer getDocument, and hack it here
+    // we thus have our nicer document, and hack it here
     // for DOMy clients in one central place
-    DocumentImpl* doc = getDocument();
+    DocumentImpl* doc = document();
     if (doc == this)
         return 0;
     else
@@ -1664,10 +1664,10 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
 {
     exceptioncode = 0;
-    DocumentImpl *ownerDocThis = getDocument();
-    DocumentImpl *ownerDocNew = newChild->getDocument();
+    DocumentImpl *ownerDocThis = document();
+    DocumentImpl *ownerDocNew = newChild->document();
     if(ownerDocThis != ownerDocNew) {
-        kDebug(6010)<< "not same document, newChild = " << newChild << "document = " << getDocument();
+        kDebug(6010)<< "not same document, newChild = " << newChild << "document = " << document();
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return true;
     }
@@ -1689,7 +1689,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // do not add applyChanges here! This function is only used during parsing
 
     // short check for consistency with DTD
-    if(getDocument()->isHTMLDocument() && !childAllowed(newChild))
+    if(document()->isHTMLDocument() && !childAllowed(newChild))
     {
         //kDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id();
         return 0;
@@ -1847,7 +1847,7 @@ void NodeBaseImpl::setFocus(bool received)
     // note that we need to recalc the style
         setChanged(); // *:focus is a default style, so we just assume personal dependency
     if (isElementNode()) {
-        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
+        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
     }
 }
 
@@ -1859,7 +1859,7 @@ void NodeBaseImpl::setActive(bool down)
 
     // note that we need to recalc the style
     if (isElementNode())
-        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
+        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
 }
 
 void NodeBaseImpl::setHovered(bool hover)
@@ -1870,7 +1870,7 @@ void NodeBaseImpl::setHovered(bool hover)
 
     // note that we need to recalc the style
     if (isElementNode())
-        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), HoverDependency);
+        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), HoverDependency);
 }
 
 unsigned long NodeBaseImpl::childNodeCount()
@@ -1893,7 +1893,7 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 
 void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
 {
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
+    if (document()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
         MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
         evt->ref();
         child->dispatchEvent(evt,exceptioncode,true);
@@ -1903,7 +1903,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
     }
 
     // dispatch the DOMNodeInsertedIntoDocument event to all descendants
-    bool hasInsertedListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
+    bool hasInsertedListeners = document()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
     NodeImpl *p = this;
     while (p->parentNode())
         p = p->parentNode();
@@ -1926,8 +1926,8 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptioncode )
 {
     // Dispatch pre-removal mutation events
-    getDocument()->notifyBeforeNodeRemoval(child); // ### use events instead
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
+    document()->notifyBeforeNodeRemoval(child); // ### use events instead
+    if (document()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
         MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
         evt->ref();
         child->dispatchEvent(evt,exceptioncode,true);
@@ -1936,7 +1936,7 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
             return;
     }
 
-    bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
+    bool hasRemovalListeners = document()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
 
     // dispatch the DOMNodeRemovedFromDocument event to all descendants
     NodeImpl *p = this;
@@ -1961,7 +1961,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
 {
     unsigned long requestIndex = index;
 
-    m_cache->updateNodeListInfo(m_refNode->getDocument());
+    m_cache->updateNodeListInfo(m_refNode->document());
 
     NodeImpl* n;
     bool usedCache = false;
@@ -1993,7 +1993,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
 
 unsigned long NodeListImpl::length() const
 {
-    m_cache->updateNodeListInfo(m_refNode->getDocument());
+    m_cache->updateNodeListInfo(m_refNode->document());
     if (!m_cache->hasLength) {
         m_cache->length    = calcLength( m_refNode );
         m_cache->hasLength = true;
@@ -2020,14 +2020,14 @@ NodeListImpl::NodeListImpl( NodeImpl *n, int type, CacheFactory* factory )
     m_refNode = n;
     m_refNode->ref();
 
-    m_cache = m_refNode->getDocument()->acquireCachedNodeListInfo(
+    m_cache = m_refNode->document()->acquireCachedNodeListInfo(
                   factory ? factory : Cache::make,
                   n, type );
 }
 
 NodeListImpl::~NodeListImpl()
 {
-    m_refNode->getDocument()->releaseCachedNodeListInfo(m_cache);
+    m_refNode->document()->releaseCachedNodeListInfo(m_cache);
     m_refNode->deref();
 }
 

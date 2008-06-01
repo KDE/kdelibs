@@ -190,7 +190,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_underMouse = 0;
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
-    m_view  = node->getDocument()->view();
+    m_view  = node->document()->view();
     m_arena.reset(renderArena());
     m_resizePending = false;
     m_discardResizes = false;

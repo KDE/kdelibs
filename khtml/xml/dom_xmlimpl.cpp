@@ -415,9 +415,9 @@ void ProcessingInstructionImpl::checkStyleSheet()
                 // ### some validation on the URL?
                 // ### FIXME charset
                 if (m_cachedSheet) m_cachedSheet->deref(this);
-                m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString());
+                m_cachedSheet = document()->docLoader()->requestStyleSheet(document()->completeURL(href.string()), QString());
                 if (m_cachedSheet) {
-                    getDocument()->addPendingSheet(); //before ref, because during the ref it might load!
+                    document()->addPendingSheet(); //before ref, because during the ref it might load!
                     m_cachedSheet->ref( this );
                 }
             }
@@ -435,7 +435,7 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
 {
     if (m_sheet)
 	m_sheet->deref();
-    m_sheet = new CSSStyleSheetImpl(getDocument(), url);
+    m_sheet = new CSSStyleSheetImpl(document(), url);
     m_sheet->ref();
     m_sheet->setCharset(charset);
     m_sheet->parseString(khtml::isAcceptableCSSMimetype(mimetype) ? sheet : "");
@@ -443,7 +443,7 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;
 
-    getDocument()->styleSheetLoaded();
+    document()->styleSheetLoaded();
 }
 
 void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)

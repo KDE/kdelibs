@@ -97,7 +97,7 @@ DOMString HTMLAnchorElement::href() const
 {
     if(!impl) return DOMString();
     DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->getDocument()->completeURL(href.string()) : href;
+    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
 }
 
 void HTMLAnchorElement::setHref( const DOMString &value )

@@ -162,7 +162,7 @@ void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -200,7 +200,7 @@ void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -262,7 +262,7 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *source
     if (exceptioncode)
         return 0;
 
-    if (thisCont->getDocument() != sourceCont->getDocument()) {
+    if (thisCont->document() != sourceCont->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -744,7 +744,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 
     // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
     // not created from the same document.
-    if (newNode->getDocument() != m_startContainer->getDocument()) {
+    if (newNode->document() != m_startContainer->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1297,7 +1297,7 @@ void RangeImpl::setStartAfter( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1321,7 +1321,7 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1345,7 +1345,7 @@ void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1480,7 +1480,7 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
 
     // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
     // not created from the same document.
-    if (newParent->getDocument() != m_startContainer->getDocument()) {
+    if (newParent->document() != m_startContainer->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -1580,7 +1580,7 @@ void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if (refNode->document() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }

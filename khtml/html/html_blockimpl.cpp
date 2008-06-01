@@ -321,8 +321,8 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
             break;
         case ATTR_NAME:
             if (id() == ID_LAYER && inDocument() && m_name != attr->value()) {
-                getDocument()->underDocNamedCache().remove(m_name.string(),        this);
-                getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+                document()->underDocNamedCache().remove(m_name.string(),        this);
+                document()->underDocNamedCache().add   (attr->value().string(), this);
             }
             //fallthrough
         default:
@@ -333,26 +333,26 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
 void HTMLLayerElementImpl::removedFromDocument()
 {
     if (id() == ID_LAYER)
-      getDocument()->underDocNamedCache().remove(m_name.string(), this);
+      document()->underDocNamedCache().remove(m_name.string(), this);
     HTMLDivElementImpl::removedFromDocument();
 }
 
 void HTMLLayerElementImpl::insertedIntoDocument()
 {
     if (id() == ID_LAYER)
-      getDocument()->underDocNamedCache().add(m_name.string(), this);
+      document()->underDocNamedCache().add(m_name.string(), this);
     HTMLDivElementImpl::insertedIntoDocument();
 }
 
 void HTMLLayerElementImpl::removeId(const QString& id)
 {
-    getDocument()->underDocNamedCache().remove(id, this);
+    document()->underDocNamedCache().remove(id, this);
     HTMLDivElementImpl::removeId(id);
 }
 
 void HTMLLayerElementImpl::addId   (const QString& id)
 {
-    getDocument()->underDocNamedCache().add(id, this);
+    document()->underDocNamedCache().add(id, this);
     HTMLDivElementImpl::addId(id);
 }
 

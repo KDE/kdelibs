@@ -125,14 +125,14 @@ DOMString AttrImpl::namespaceURI() const
 {
     if (m_htmlCompat)
         return DOMString();
-    return getDocument()->getName(NamespaceId, m_attrId >> 16);
+    return document()->getName(NamespaceId, m_attrId >> 16);
 }
 
 DOMString AttrImpl::localName() const
 {
     if (m_htmlCompat)
        return DOMString();
-    return getDocument()->getName(AttributeId, m_attrId);
+    return document()->getName(AttributeId, m_attrId);
 }
 
 DOMString AttrImpl::nodeValue() const
@@ -142,7 +142,7 @@ DOMString AttrImpl::nodeValue() const
 
 DOMString AttrImpl::name() const
 {
-    DOMString n = getDocument()->getName(AttributeId, m_attrId);
+    DOMString n = document()->getName(AttributeId, m_attrId);
 
     // compat mode always return attribute names in lowercase.
     // that's not formally in the specification, but common
@@ -430,7 +430,7 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
         return;
     DOMString prefix, localName;
     splitPrefixLocalName(qualifiedName.implementation(), prefix, localName, colonPos);
-    NodeImpl::Id id = getDocument()->getId(AttributeId, namespaceURI.implementation(),
+    NodeImpl::Id id = document()->getId(AttributeId, namespaceURI.implementation(),
                             prefix.implementation(), localName.implementation(), false, true /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
                            true /*nsAware*/, !namespaceURI.isNull() /*hasNS*/);
@@ -476,9 +476,9 @@ NodeImpl *ElementImpl::cloneNode(bool deep)
 {
     ElementImpl *clone;
     if ( !localName().isNull() )
-        clone = getDocument()->createElementNS( namespaceURI(), nodeName() );
+        clone = document()->createElementNS( namespaceURI(), nodeName() );
     else
-        clone = getDocument()->createElement( nodeName() );
+        clone = document()->createElement( nodeName() );
     if (!clone) return 0;
     finishCloneNode( clone, deep );
     return clone;
@@ -517,7 +517,7 @@ bool ElementImpl::hasAttributes() const
 
 bool ElementImpl::hasAttribute( const DOMString& name ) const
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
     if (!id) return false;
     if (!namedAttrMap) return false;
     return namedAttrMap->getValue(id, false, name.implementation()) != 0;
@@ -526,7 +526,7 @@ bool ElementImpl::hasAttribute( const DOMString& name ) const
 bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
                                   const DOMString &localName ) const
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
 						 0/*prefix*/, localName.implementation(), true, true);
     if (!id) return false;
     if (!namedAttrMap) return false;
@@ -535,7 +535,7 @@ bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
 
 DOMString ElementImpl::getAttribute( const DOMString &name )
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId,name.implementation(),true,true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId,name.implementation(),true,true);
     if (!id) return DOMString();
 
     return getAttribute(id, false, name);
@@ -543,7 +543,7 @@ DOMString ElementImpl::getAttribute( const DOMString &name )
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, int& exceptioncode )
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), false /* allocate */,
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, name.implementation(), false /* allocate */,
                                                  true, &exceptioncode);
 
     setAttribute(id, value, name, exceptioncode);
@@ -551,7 +551,7 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, i
 
 void ElementImpl::removeAttribute( const DOMString &name, int& exceptioncode )
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
     if (!id) return;
 
     attributes(false)->removeNamedItem(id, false, name.implementation(), exceptioncode);
@@ -562,7 +562,7 @@ void ElementImpl::removeAttribute( const DOMString &name, int& exceptioncode )
 
 AttrImpl* ElementImpl::getAttributeNode( const DOMString &name )
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, name.implementation(), true, true);
     if (!id) return 0;
     if (!namedAttrMap) return 0;
 
@@ -612,7 +612,7 @@ DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI,
       return DOMString();
     }
 
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), true, true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), true, true);
     return getAttribute(id, true);
 }
 
@@ -620,7 +620,7 @@ void ElementImpl::removeAttributeNS( const DOMString &namespaceURI,
                                  const DOMString &localName,
                                  int& exceptioncode)
 {
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), false, true);
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), false, true);
     attributes(false)->removeNamedItem(id, true, 0, exceptioncode);
 }
 
@@ -633,7 +633,7 @@ AttrImpl* ElementImpl::getAttributeNodeNS( const DOMString &namespaceURI,
       return 0;
     }
 
-    NodeImpl::Id id = getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(),
+    NodeImpl::Id id = document()->getId(NodeImpl::AttributeId, namespaceURI.implementation(),
 						0/*prefix*/, localName.implementation(), true, true);
     if (!attributes(true)) return 0;
 
@@ -663,7 +663,7 @@ DOMString ElementImpl::namespaceURI() const
 {
    if (m_htmlCompat)
         return DOMString();
-   return getDocument()->getName(NamespaceId, id() >> 16);
+   return document()->getName(NamespaceId, id() >> 16);
 }
 
 DOMString ElementImpl::prefix() const
@@ -719,12 +719,12 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
 
 RenderStyle *ElementImpl::styleForRenderer(RenderObject * /*parentRenderer*/)
 {
-    return getDocument()->styleSelector()->styleForElement(this);
+    return document()->styleSelector()->styleForElement(this);
 }
 
 RenderObject *ElementImpl::createRenderer(RenderArena *arena, RenderStyle *style)
 {
-    if (getDocument()->documentElement() == this && style->display() == NONE) {
+    if (document()->documentElement() == this && style->display() == NONE) {
         // Ignore display: none on root elements.  Force a display of block in that case.
         RenderBlock* result = new (arena) RenderBlock(this);
         if (result) result->setStyle(style);
@@ -757,7 +757,7 @@ void ElementImpl::close()
 
 void ElementImpl::detach()
 {
-    getDocument()->dynamicDomRestyler().resetDependencies(this);
+    document()->dynamicDomRestyler().resetDependencies(this);
 
     NodeBaseImpl::detach();
 }
@@ -766,39 +766,39 @@ void ElementImpl::structureChanged()
 {
     NodeBaseImpl::structureChanged();
 
-    if (!getDocument()->renderer())
+    if (!document()->renderer())
         return; // the document is about to be destroyed
 
-    getDocument()->dynamicDomRestyler().restyleDepedent(this, StructuralDependency);
+    document()->dynamicDomRestyler().restyleDepedent(this, StructuralDependency);
     // In theory BackwardsStructurualDependencies are indifferent to prepend,
     // but it's too rare to optimize.
-    getDocument()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+    document()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
 }
 
 void ElementImpl::backwardsStructureChanged()
 {
     NodeBaseImpl::backwardsStructureChanged();
 
-    if (!getDocument()->renderer())
+    if (!document()->renderer())
         return; // the document is about to be destroyed
 
     // Most selectors are not affected by append. Fire the few that are.
-    getDocument()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+    document()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
 }
 
 void ElementImpl::attributeChanged(NodeImpl::Id id)
 {
-    if (!getDocument()->renderer())
+    if (!document()->renderer())
         return; // the document is about to be destroyed
 
 #if 0 // one-one dependencies for attributes disabled
-    getDocument()->dynamicDomRestyler().restyleDepedent(this, AttributeDependency);
+    document()->dynamicDomRestyler().restyleDepedent(this, AttributeDependency);
 #endif
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
+    if (document()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
         setChanged(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, AncestorDependency))
+    if (document()->dynamicDomRestyler().checkDependency(id, AncestorDependency))
         setChangedAscendentAttribute(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, PredecessorDependency) && parent())
+    if (document()->dynamicDomRestyler().checkDependency(id, PredecessorDependency) && parent())
         // Any element that dependt on a predecessors attribute, also depend structurally on parent
         parent()->structureChanged();
 }
@@ -824,7 +824,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().toLatin1().constData());
 #endif
     if ( hasParentRenderer && (change >= Inherit || changed() || (change==NoInherit && affectedByNoInherit())) ) {
-        RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
+        RenderStyle *newStyle = document()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
         if (ch == Detach) {
@@ -880,10 +880,10 @@ bool ElementImpl::isFocusable() const
 
 bool ElementImpl::isContentEditable() const
 {
-    if (getDocument()->part() && getDocument()->part()->isEditable())
+    if (document()->part() && document()->part()->isEditable())
         return true;
 
-    getDocument()->updateRendering();
+    document()->updateRendering();
 
     if (!renderer()) {
         if (parentNode())
@@ -927,7 +927,7 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
     if (isXMLElementNode() || newChild->isXMLElementNode())
 	return true;
     else
-	return checkChild(id(), newChild->id(), getDocument()->inStrictMode());
+	return checkChild(id(), newChild->id(), document()->inStrictMode());
 }
 
 bool ElementImpl::childTypeAllowed( unsigned short type )
@@ -961,7 +961,7 @@ void ElementImpl::createNonCSSDecl()
     CSSStyleDeclarationImpl *ncd = new CSSStyleDeclarationImpl(0);
     m_style.combinedDecls->nonCSSDecls = ncd;
     ncd->ref();
-    ncd->setParent(getDocument()->elementSheet());
+    ncd->setParent(document()->elementSheet());
     ncd->setNode(this);
     ncd->setStrictParsing( false );
     m_hasCombinedStyle = true;
@@ -979,7 +979,7 @@ void ElementImpl::createInlineDecl( )
 
     CSSStyleDeclarationImpl *dcl = new CSSStyleDeclarationImpl(0);
     dcl->ref();
-    dcl->setParent(getDocument()->elementSheet());
+    dcl->setParent(document()->elementSheet());
     dcl->setNode(this);
     dcl->setStrictParsing( false );
     if (m_hasCombinedStyle)
@@ -991,21 +991,21 @@ void ElementImpl::createInlineDecl( )
 void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl * /*value*/)
 {
     // ### enable this stuff again
-    if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
+    if (!document()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
     //int exceptioncode = 0;
     //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-    //attr->value(), getDocument()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
+    //attr->value(), document()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
 }
 
 void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl * /*value*/)
 {
     // ### enable this stuff again
-    if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
+    if (!document()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
    //int exceptioncode = 0;
    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-   //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
+   //attr->value(),document()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
 void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
@@ -1022,12 +1022,12 @@ void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
 
 void ElementImpl::removeId(const QString& id)
 {
-  getDocument()->getElementByIdCache().remove(id, this);
+  document()->getElementByIdCache().remove(id, this);
 }
 
 void ElementImpl::addId(const QString& id)
 {
-  getDocument()->getElementByIdCache().add(id, this);
+  document()->getElementByIdCache().add(id, this);
 }
 
 void ElementImpl::insertedIntoDocument()
@@ -1069,21 +1069,21 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
 	    if (attr) {
 		result += attr->toString();
 	    } else {
-		result += getDocument()->getName( NodeImpl::AttributeId, attribute->id());
+		result += document()->getName( NodeImpl::AttributeId, attribute->id());
 		if (!attribute->value().isNull()) {
 		    result += "=\"";
 		    // FIXME: substitute entities for any instances of " or '
 		    // Expand out all urls, i.e. the src and href attributes
 		    if(expandurls && ( attribute->id() == ATTR_SRC || attribute->id() == ATTR_HREF))
-			if(getDocument()) {
+			if(document()) {
                             //We need to sanitize the urls - strip out the passwords.
 			    //FIXME:   are src=  and href=  the only places that might have a password and need to be sanitized?
-			    KUrl safeURL(getDocument()->completeURL(attribute->value().string()));
+			    KUrl safeURL(document()->completeURL(attribute->value().string()));
 			    safeURL.setPass(QString());
 			    result += Qt::escape(safeURL.prettyUrl());
 			}
 		        else {
-		 	    kWarning() << "getDocument() returned false";
+		 	    kWarning() << "document() returned false";
 			    result += attribute->value();
 			}
 		    else
@@ -1173,12 +1173,12 @@ DOMString XMLElementImpl::localName() const
 {
     if ( m_htmlCompat )
        return DOMString(); // was created with non-namespace-aware createElement()
-    return getDocument()->getName(ElementId, m_id);
+    return document()->getName(ElementId, m_id);
 }
 
 DOMString XMLElementImpl::tagName() const
 {
-    DOMString tn = getDocument()->getName(ElementId, id());
+    DOMString tn = document()->getName(ElementId, id());
     if (m_htmlCompat)
         tn = tn.upper();
 
@@ -1286,7 +1286,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     }
 
     // WRONG_DOCUMENT_ERR: Raised if arg was created from a different document than the one that created this map.
-    if (arg->getDocument() != m_element->getDocument()) {
+    if (arg->document() != m_element->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -1448,7 +1448,7 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
 	m_attrs[m_attrCount-1].m_attrId = 0; /* "has implementation" flag */
 	m_attrs[m_attrCount-1].m_data.attr->ref();
         m_attrs[m_attrCount-1].m_data.attr->setHTMLCompat( !hasNS &&
-                                                 m_element->getDocument()->htmlMode() != DocumentImpl::XHtml );
+                                                 m_element->document()->htmlMode() != DocumentImpl::XHtml );
     }
     if (m_element) {
 	if (id == ATTR_ID)
@@ -1487,7 +1487,7 @@ NodeImpl::Id NamedAttrMapImpl::mapId(DOMStringImpl* namespaceURI,
     if (!m_element)
 	return 0;
 
-    return m_element->getDocument()->getId(NodeImpl::AttributeId, namespaceURI, 0, localName, readonly,
+    return m_element->document()->getId(NodeImpl::AttributeId, namespaceURI, 0, localName, readonly,
                                            true /*lookupHTML*/);
 }
 

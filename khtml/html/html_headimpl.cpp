@@ -81,8 +81,8 @@ void HTMLBaseElementImpl::removedFromDocument()
 
     // Since the document doesn't have a base element...
     // (This will break in the case of multiple base elements, but that's not valid anyway (?))
-    getDocument()->setBaseURL( KUrl() );
-    getDocument()->setBaseTarget( QString() );
+    document()->setBaseURL( KUrl() );
+    document()->setBaseTarget( QString() );
 }
 
 void HTMLBaseElementImpl::process()
@@ -90,11 +90,11 @@ void HTMLBaseElementImpl::process()
     if (!inDocument())
 	return;
 
-    if(!m_href.isEmpty() && getDocument()->view())
-	getDocument()->setBaseURL( KUrl( getDocument()->view()->part()->url(), m_href.string() ) );
+    if(!m_href.isEmpty() && document()->view())
+	document()->setBaseURL( KUrl( document()->view()->part()->url(), m_href.string() ) );
 
     if(!m_target.isEmpty())
-	getDocument()->setBaseTarget( m_target.string() );
+	document()->setBaseTarget( m_target.string() );
 
     // ### should changing a document's base URL dynamically automatically update all images, stylesheets etc?
 }
@@ -118,7 +118,7 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_HREF:
-        m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
+        m_url = document()->completeURL( khtml::parseURL(attr->value()).string() );
 	process();
         break;
     case ATTR_REL:
@@ -139,9 +139,9 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
         if (m_oldisDisabled != m_isDisabled) {
             if (isLoading()) {
                 if (m_oldisDisabled)
-                    getDocument()->addPendingSheet();
+                    document()->addPendingSheet();
                 else if (!m_alternate)
-                    getDocument()->styleSheetLoaded();
+                    document()->styleSheetLoaded();
             }
             if (m_oldisDisabled) {
                 // enabling: if it's an alternate sheet, pretend it's not.
@@ -157,10 +157,10 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
             if (!m_sheet && !m_isDisabled) {
                 process();
                 if (isLoading() && m_alternate)
-                    getDocument()->addPendingSheet();
+                    document()->addPendingSheet();
                 m_alternate = false;
             } else
-                getDocument()->updateStyleSelector(); // Update the style selector.
+                document()->updateStyleSelector(); // Update the style selector.
         }
         break;
     }
@@ -177,7 +177,7 @@ void HTMLLinkElementImpl::process()
     QString type = getAttribute(ATTR_TYPE).string().toLower();
     QString rel = getAttribute(ATTR_REL).string().toLower();
 
-    KHTMLPart* part = getDocument()->view() ? getDocument()->view()->part() : 0;
+    KHTMLPart* part = document()->view() ? document()->view()->part() : 0;
 
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
@@ -198,7 +198,7 @@ void HTMLLinkElementImpl::process()
             // stylesheet.  Alternate stylesheets don't hold up render tree construction.
             m_alternate = rel.contains("alternate");
             if (!isAlternate())
-                getDocument()->addPendingSheet();
+                document()->addPendingSheet();
 
             QString chset = getAttribute( ATTR_CHARSET ).string();
             // set chset to charset of referring document when attribute CHARSET is absent.
@@ -206,11 +206,11 @@ void HTMLLinkElementImpl::process()
             if (chset.isEmpty() && part) chset = part->encoding();
             if (m_cachedSheet) {
                 if (m_loading)
-                    getDocument()->styleSheetLoaded();
+                    document()->styleSheetLoaded();
 		m_cachedSheet->deref(this);
             }
             m_loading = true;
-            m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(m_url, chset);
+            m_cachedSheet = document()->docLoader()->requestStyleSheet(m_url, chset);
             if (m_cachedSheet) {
                 m_isCSSSheet = true;
 		m_cachedSheet->ref(this);
@@ -218,7 +218,7 @@ void HTMLLinkElementImpl::process()
             else if (!isAlternate()) {
                 // Error requesting sheet; decrement pending sheet count
                 m_loading = false;
-                getDocument()->styleSheetLoaded();
+                document()->styleSheetLoaded();
             }
         }
         media->deref();
@@ -228,7 +228,7 @@ void HTMLLinkElementImpl::process()
 	m_sheet->deref();
 	m_sheet = 0;
         m_isCSSSheet = false;
-	getDocument()->updateStyleSelector();
+	document()->updateStyleSelector();
     }
 }
 
@@ -241,14 +241,14 @@ void HTMLLinkElementImpl::insertedIntoDocument()
 void HTMLLinkElementImpl::removedFromDocument()
 {
     HTMLElementImpl::removedFromDocument();
-    getDocument()->updateStyleSelector();
+    document()->updateStyleSelector();
 }
 
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset, const DOM::DOMString &mimetype)
 {
     if (m_sheet)
         m_sheet->deref();
-    bool strict = !getDocument()->inCompatMode();
+    bool strict = !document()->inCompatMode();
     DOMString sheet = sheetStr;
     if (strict && !khtml::isAcceptableCSSMimetype(mimetype))
          sheet = "";
@@ -269,13 +269,13 @@ void HTMLLinkElementImpl::finished()
 
     // Tell the doc about the sheet.
     if (!isLoading() && !isDisabled() && !isAlternate())
-        getDocument()->styleSheetLoaded();
+        document()->styleSheetLoaded();
 
     // ### major inefficiency, but currently necessary for proper
     // alternate styles support. don't recalc the styleselector
     // when nothing actually changed!
     if ( isAlternate() && m_sheet && !isDisabled())
-        getDocument()->updateStyleSelector();
+        document()->updateStyleSelector();
 }
 
 void HTMLLinkElementImpl::error( int, const QString& )
@@ -295,7 +295,7 @@ bool HTMLLinkElementImpl::isLoading() const
 bool HTMLLinkElementImpl::checkAddPendingSheet()
 {
     if (!isLoading() && !isDisabled() && !isAlternate()) {
-        getDocument()->addPendingSheet();
+        document()->addPendingSheet();
         return true;
     }
     return false;
@@ -304,7 +304,7 @@ bool HTMLLinkElementImpl::checkAddPendingSheet()
 bool HTMLLinkElementImpl::checkRemovePendingSheet()
 {
     if (!isLoading() && !isDisabled() && !isAlternate()) {
-        getDocument()->styleSheetLoaded();
+        document()->styleSheetLoaded();
 	return true;
     }
     return false;
@@ -345,7 +345,7 @@ void HTMLMetaElementImpl::process()
     // Get the document to process the tag, but only if we're actually part of DOM tree (changing a meta tag while
     // it's not in the tree shouldn't have any effect on the document)
     if (inDocument() && !m_equiv.isNull() && !m_content.isNull())
-	getDocument()->processHttpEquiv(m_equiv,m_content);
+	document()->processHttpEquiv(m_equiv,m_content);
 }
 
 // -------------------------------------------------------------------------
@@ -372,7 +372,7 @@ void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ONLOAD:
         setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
+            document()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
     case ATTR_SRC: {
         // We want to evaluate scripts on src attr change when a fresh script element
@@ -402,13 +402,13 @@ void HTMLScriptElementImpl::childrenChanged()
     // and the script element has been inserted in the document
     // we evaluate the script.
     if (!m_createdByParser && inDocument() && firstChild())
-        evaluateScript(getDocument()->URL().url(), text());
+        evaluateScript(document()->URL().url(), text());
 }
 
 void HTMLScriptElementImpl::loadFromUrl(const DOMString &url)
 {
     QString charset = getAttribute(ATTR_CHARSET).string();
-    m_cachedScript = getDocument()->docLoader()->requestScript(url, charset);
+    m_cachedScript = document()->docLoader()->requestScript(url, charset);
     if (m_cachedScript)
         m_cachedScript->ref(this);    
 }
@@ -433,7 +433,7 @@ void HTMLScriptElementImpl::insertedIntoDocument()
     // it should be evaluated, and evaluateScript only evaluates a script once.
     DOMString scriptString = text();
     if (!scriptString.isEmpty())
-        evaluateScript(getDocument()->URL().url(), scriptString);
+        evaluateScript(document()->URL().url(), scriptString);
 }
 
 void HTMLScriptElementImpl::removedFromDocument()
@@ -470,7 +470,7 @@ void HTMLScriptElementImpl::evaluateScript(const QString &URL, const DOMString &
     if (m_evaluated)
         return;
 
-    KHTMLPart *part = getDocument()->part();
+    KHTMLPart *part = document()->part();
     if (part) {
         KJSProxy *proxy = KJSProxy::proxy(part);
         if (proxy) {
@@ -507,7 +507,7 @@ void HTMLScriptElementImpl::setText(const DOMString &value)
         removeChildren();
     }
 
-    appendChild(getDocument()->createTextNode(value.implementation()), exceptioncode);
+    appendChild(document()->createTextNode(value.implementation()), exceptioncode);
 }
 
 DOMString HTMLScriptElementImpl::htmlFor() const
@@ -554,7 +554,7 @@ void HTMLScriptElementImpl::setDefer(bool defer)
 
 DOMString HTMLScriptElementImpl::src() const
 {
-    return getDocument()->completeURL(getAttribute(ATTR_SRC).string());
+    return document()->completeURL(getAttribute(ATTR_SRC).string());
 }
 
 void HTMLScriptElementImpl::setSrc(const DOMString &value)
@@ -604,14 +604,14 @@ void HTMLStyleElementImpl::insertedIntoDocument()
 {
     HTMLElementImpl::insertedIntoDocument();
     if (m_sheet)
-        getDocument()->updateStyleSelector();
+        document()->updateStyleSelector();
 }
 
 void HTMLStyleElementImpl::removedFromDocument()
 {
     HTMLElementImpl::removedFromDocument();
     if (m_sheet)
-        getDocument()->updateStyleSelector();
+        document()->updateStyleSelector();
 }
 
 void HTMLStyleElementImpl::childrenChanged()
@@ -640,11 +640,11 @@ void HTMLStyleElementImpl::childrenChanged()
         khtml::MediaQueryEvaluator screenEval("screen", true);
         khtml::MediaQueryEvaluator printEval("print", true);
         if (screenEval.eval(media) || printEval.eval(media)) {
-            getDocument()->addPendingSheet();
+            document()->addPendingSheet();
             m_loading = true;
             m_sheet = new CSSStyleSheetImpl(this);
             m_sheet->ref();
-            m_sheet->parseString( text, !getDocument()->inCompatMode() );
+            m_sheet->parseString( text, !document()->inCompatMode() );
             m_sheet->setMedia( media );
             m_loading = false;
         }
@@ -652,7 +652,7 @@ void HTMLStyleElementImpl::childrenChanged()
     }
 
     if (!isLoading() && m_sheet)
-        getDocument()->styleSheetLoaded();
+        document()->styleSheetLoaded();
 }
 
 bool HTMLStyleElementImpl::isLoading() const
@@ -665,7 +665,7 @@ bool HTMLStyleElementImpl::isLoading() const
 bool HTMLStyleElementImpl::checkRemovePendingSheet()
 {
     if (!isLoading()) {
-        getDocument()->styleSheetLoaded();
+        document()->styleSheetLoaded();
         return true;
     }
     return false;
@@ -674,7 +674,7 @@ bool HTMLStyleElementImpl::checkRemovePendingSheet()
 bool HTMLStyleElementImpl::checkAddPendingSheet()
 {
     if (!isLoading()) {
-        getDocument()->addPendingSheet();
+        document()->addPendingSheet();
         return true;
     }
     return false;
@@ -697,7 +697,7 @@ void HTMLTitleElementImpl::childrenChanged()
 	    m_title += c->nodeValue();
     }
     if ( !m_title.isEmpty() && inDocument())
-        getDocument()->setTitle(m_title);
+        document()->setTitle(m_title);
 }
 
 DOMString HTMLTitleElementImpl::text()
@@ -724,6 +724,6 @@ void HTMLTitleElementImpl::setText( const DOMString& str )
         delete nl;
     }
     // No child text node found, creating one
-    DOM::TextImpl* t = getDocument()->createTextNode(str.implementation());
+    DOM::TextImpl* t = document()->createTextNode(str.implementation());
     appendChild(t, exceptioncode);
 }

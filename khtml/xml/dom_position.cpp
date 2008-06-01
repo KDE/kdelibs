@@ -89,7 +89,7 @@ static NodeImpl *previousRenderedEditable(NodeImpl *node)
 
 static NodeImpl *rootNavigableElement(NodeImpl *node)
 {
-    DocumentImpl *doc = node->getDocument();
+    DocumentImpl *doc = node->document();
     if (doc && doc->part()->isCaretMode()) {
         if (doc->isHTMLDocument())
             return static_cast<HTMLDocumentImpl *>(doc)->body();
@@ -207,7 +207,7 @@ Position Position::previousRenderedEditablePosition() const
     if (isEmpty())
         return Position();
 
-    if ((node()->getDocument()->part()->isCaretMode() || node()->isContentEditable()) && node()->hasChildNodes() == false && inRenderedContent())
+    if ((node()->document()->part()->isCaretMode() || node()->isContentEditable()) && node()->hasChildNodes() == false && inRenderedContent())
         return *this;
 
     NodeImpl *n = node();
@@ -227,7 +227,7 @@ Position Position::nextRenderedEditablePosition() const
     if (isEmpty())
         return Position();
 
-    if ((node()->getDocument()->part()->isCaretMode() || node()->isContentEditable()) && node()->hasChildNodes() == false && inRenderedContent())
+    if ((node()->document()->part()->isCaretMode() || node()->isContentEditable()) && node()->hasChildNodes() == false && inRenderedContent())
         return *this;
 
     NodeImpl *n = node();
@@ -590,7 +590,7 @@ bool Position::inRenderedContent() const
         return false;
 
     RenderObject *renderer = node()->renderer();
-    if (!renderer || !(node()->getDocument()->part()->isCaretMode() || renderer->isEditable()))
+    if (!renderer || !(node()->document()->part()->isCaretMode() || renderer->isEditable()))
         return false;
 
     if (renderer->style()->visibility() != khtml::VISIBLE)

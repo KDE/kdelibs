@@ -58,8 +58,8 @@ Range::Range(const Node startContainer, const long startOffset, const Node endCo
         throw DOMException(DOMException::NOT_FOUND_ERR);
     }
 
-    if (!startContainer.handle()->getDocument() ||
-        startContainer.handle()->getDocument() != endContainer.handle()->getDocument()) {
+    if (!startContainer.handle()->document() ||
+        startContainer.handle()->document() != endContainer.handle()->document()) {
         throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
     }
 

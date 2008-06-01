@@ -7107,7 +7107,7 @@ void KHTMLPart::openWallet(DOM::HTMLFormElementImpl *form)
     connect(d->m_wq, SIGNAL(walletOpened(KWallet::Wallet*)), this, SLOT(walletOpened(KWallet::Wallet*)));
   }
   assert(form);
-  d->m_wq->callers.append(KHTMLWalletQueue::Caller(form, form->getDocument()));
+  d->m_wq->callers.append(KHTMLWalletQueue::Caller(form, form->document()));
 #endif // KHTML_NO_WALLET
 }
 
@@ -7166,7 +7166,7 @@ void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
   }
 
   if (d->m_wq) {
-    d->m_wq->callers.removeAll(KHTMLWalletQueue::Caller(form, form->getDocument()));
+    d->m_wq->callers.removeAll(KHTMLWalletQueue::Caller(form, form->document()));
   }
 #endif // KHTML_NO_WALLET
 }

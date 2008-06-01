@@ -613,7 +613,7 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     DOM::Node node = event.target();
     khtml::RenderObject *rend = 0;
     if (node.handle()) {
-        node.handle()->getDocument()->updateRendering();
+        node.handle()->document()->updateRendering();
         rend = node.handle()->renderer();
     }
     int x = event.clientX();

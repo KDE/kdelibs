@@ -97,7 +97,7 @@ DOMString HTMLAreaElement::href() const
 {
     if(!impl) return DOMString();
     DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->getDocument()->completeURL(href.string()) : href;
+    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
 }
 
 void HTMLAreaElement::setHref( const DOMString &value )
@@ -300,7 +300,7 @@ DOMString HTMLImageElement::src() const
 {
     if(!impl) return DOMString();
     DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
-    return !s.isNull() ? impl->getDocument()->completeURL( s.string() ) : s;
+    return !s.isNull() ? impl->document()->completeURL( s.string() ) : s;
 }
 
 void HTMLImageElement::setSrc( const DOMString &value )

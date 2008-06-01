@@ -37,7 +37,7 @@ namespace DOM {
 ClassNodeList::ClassNodeList(NodeImpl* rootNode, const DOMString& classNames)
     : NodeListImpl(rootNode, UNCACHEABLE)
 {
-    m_classNames.parseClassAttribute(classNames.string(), m_refNode->getDocument()->inCompatMode());
+    m_classNames.parseClassAttribute(classNames.string(), m_refNode->document()->inCompatMode());
 }
 
 bool ClassNodeList::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
@@ -56,7 +56,7 @@ bool ClassNodeList::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
     ClassNames classes;
     ElementImpl* el = static_cast<ElementImpl*>(testNode);
     const DOMString cn = el->getAttribute(ATTR_CLASS);
-    bool const compat = el->getDocument()->inCompatMode();
+    bool const compat = el->document()->inCompatMode();
     classes.parseClassAttribute(cn, compat);
     for (size_t i = 0; i < m_classNames.size(); ++i) {
         if (!classes.contains(m_classNames[i]))

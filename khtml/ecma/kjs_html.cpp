@@ -1206,7 +1206,7 @@ KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 
 KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HTMLElementImpl &element)
 {
-  DOM::DocumentImpl* doc = element.getDocument();
+  DOM::DocumentImpl* doc = element.document();
   KHTMLView *view = doc->view();
   if (view)
     return view->part()->liveConnectExtension(&element);
@@ -1574,7 +1574,7 @@ QHash<int, const HTMLElement::BoundPropInfo*>* HTMLElement::boundPropInfo()
 QString KJS::HTMLElement::getURLArg(unsigned id) const
 {
   DOMString rel = khtml::parseURL(impl()->getAttribute(id));
-  return !rel.isNull() ? impl()->getDocument()->completeURL(rel.string()) : QString();
+  return !rel.isNull() ? impl()->document()->completeURL(rel.string()) : QString();
 }
 
 DOM::HTMLElementImpl *toHTMLElement(JSValue *val) {
@@ -1668,7 +1668,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_BODY: {
     switch (token) {
     case BodyOnLoad: {
-        DOM::DocumentImpl *doc = impl()->getDocument();
+        DOM::DocumentImpl *doc = impl()->document();
         if (!doc || !checkNodeSecurity(exec, impl()))
           return jsUndefined();
         DOMNode* kjsDocNode = new DOMNode(exec, doc);
@@ -1929,7 +1929,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameWidth:
     case FrameHeight:
       {
-          frameElement.getDocument()->updateLayout();
+          frameElement.document()->updateLayout();
           khtml::RenderObject* r = frameElement.renderer();
           return jsNumber( r ? (token == FrameWidth ? r->width() : r->height()) : 0 );
       }
@@ -2034,7 +2034,7 @@ void KJS::HTMLElement::pushEventHandlerScope(ExecState *exec, ScopeChain &scope)
   DOM::HTMLElementImpl& element = *impl();
 
   // The document is put on first, fall back to searching it only after the element and form.
-  scope.push(static_cast<JSObject *>(getDOMNode(exec, element.getDocument())));
+  scope.push(static_cast<JSObject *>(getDOMNode(exec, element.document())));
 
   // The form is next, searched before the document, but after the element itself.
   DOM::HTMLFormElementImpl* formElt;
@@ -2073,7 +2073,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       DOM::HTMLFormElementImpl& form = static_cast<DOM::HTMLFormElementImpl&>(element);
       if (id == KJS::HTMLElement::FormSubmit) {
 
-        KHTMLView *view = element.getDocument()->view();
+        KHTMLView *view = element.document()->view();
         KHTMLSettings::KJSWindowOpenPolicy policy = KHTMLSettings::KJSWindowOpenAllow;
         if (view)
             policy = view->part()->settings()->windowOpenPolicy(view->part()->url().host());
@@ -2445,7 +2445,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
       switch (token) {
       case BodyOnLoad:
-        DOM::DocumentImpl *doc = element.getDocument();
+        DOM::DocumentImpl *doc = element.document();
         if (doc && checkNodeSecurity(exec, impl()))
         {
           DOMNode* kjsDocNode = new DOMNode(exec, doc);
@@ -2489,7 +2489,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
                                         }
                                   }
                                   // No child text node found, creating one
-                                  DOM::TextImpl* t = option.getDocument()->createTextNode(str.implementation());
+                                  DOM::TextImpl* t = option.document()->createTextNode(str.implementation());
                                   int dummyexception;
                                   option.appendChild(t, dummyexception); // #### exec->setException ?
                                   return;
@@ -3224,7 +3224,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
 
     if (diff < 0) { // add dummy elements
       do {
-        ElementImpl *option = element->getDocument()->createElement("option", exception);
+        ElementImpl *option = element->document()->createElement("option", exception);
         if (exception.triggered()) return;
         element->add(static_cast<HTMLElementImpl *>(option), 0, exception);
         if (exception.triggered()) return;
@@ -3254,7 +3254,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
     return;
 
   DOM::HTMLOptionElementImpl* option = static_cast<DOM::HTMLOptionElementImpl*>(node);
-  if ( option->getDocument() != element->getDocument() )
+  if ( option->document() != element->document() )
     option = static_cast<DOM::HTMLOptionElementImpl*>(element->ownerDocument()->importNode(option, true, exception));
   if (exception.triggered()) return;
 
@@ -3264,7 +3264,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
   if (diff > 0) {
     while (diff--) {
       element->add(
-        static_cast<DOM::HTMLElementImpl*>(element->getDocument()->createElement("OPTION")),
+        static_cast<DOM::HTMLElementImpl*>(element->document()->createElement("OPTION")),
         before, exception);
       if (exception.triggered()) return;
     }

@@ -279,7 +279,7 @@ Attr Document::createAttribute( const DOMString &name )
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (name.isNull()) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    AttrImpl* a = impl->getDocument()->createAttribute(name, &exceptioncode);
+    AttrImpl* a = impl->document()->createAttribute(name, &exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return a;
@@ -290,7 +290,7 @@ Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (qualifiedName.isNull()) throw DOMException(DOMException::NAMESPACE_ERR);
     int exceptioncode = 0;
-    AttrImpl* a = impl->getDocument()->createAttributeNS(namespaceURI, qualifiedName, &exceptioncode);
+    AttrImpl* a = impl->document()->createAttributeNS(namespaceURI, qualifiedName, &exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return a;

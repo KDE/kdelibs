@@ -46,7 +46,7 @@ NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,
     m_referenceNode = _root;
     m_position = ITER_BEFORE_REF;
 
-    m_doc = m_root->getDocument();
+    m_doc = m_root->document();
     m_doc->attachNodeIterator(this);
     m_doc->ref();
 
@@ -277,7 +277,7 @@ TreeWalkerImpl::TreeWalkerImpl(NodeImpl *n, long _whatToShow, NodeFilterImpl *f,
   if ( m_filter )
       m_filter->ref();
   m_expandEntityReferences = entityReferenceExpansion;
-  m_doc = m_rootNode->getDocument();
+  m_doc = m_rootNode->document();
   m_doc->ref();
 }
 

@@ -108,7 +108,7 @@ void RenderObject::operator delete(void* ptr, size_t sz)
 RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* style)
 {
     RenderObject *o = 0;
-    khtml::RenderArena* arena = node->getDocument()->renderArena();
+    khtml::RenderArena* arena = node->document()->renderArena();
     switch(style->display())
     {
     case NONE:
@@ -196,7 +196,7 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_doNotDelete(false)
 {
   assert( node );
-  if (node->getDocument()->documentElement() == node) setIsRoot(true);
+  if (node->document()->documentElement() == node) setIsRoot(true);
 }
 
 RenderObject::~RenderObject()
@@ -246,7 +246,7 @@ RenderObject* RenderObject::objectAbove() const
 bool RenderObject::isRoot() const
 {
     return !isAnonymous() &&
-        element()->getDocument()->documentElement() == element();
+        element()->document()->documentElement() == element();
 }*/
 
 bool RenderObject::isHR() const
@@ -1417,7 +1417,7 @@ static QTextStream &operator<<(QTextStream &ts, const QRect &r)
 
 //A bit like getTagName, but handles XML, too.
 static QString lookupTagName(NodeImpl* node) {
-    return node->getDocument()->getName(NodeImpl::ElementId, node->id()).string();
+    return node->document()->getName(NodeImpl::ElementId, node->id()).string();
 }
 
 void RenderObject::dump(QTextStream &ts, const QString &ind) const
@@ -1874,7 +1874,7 @@ RenderObject *RenderObject::container() const
 
 DOM::DocumentImpl* RenderObject::document() const
 {
-    return m_node->getDocument();
+    return m_node->document();
 }
 
 void RenderObject::removeFromObjectLists()
@@ -1906,7 +1906,7 @@ void RenderObject::removeFromObjectLists()
 
 RenderArena* RenderObject::renderArena() const
 {
-    return m_node->getDocument()->renderArena();
+    return m_node->document()->renderArena();
 }
 
 void RenderObject::detach()

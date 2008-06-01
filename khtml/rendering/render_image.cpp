@@ -67,7 +67,7 @@ RenderImage::RenderImage(NodeImpl *_element)
     m_selectionState = SelectionNone;
     berrorPic = false;
 
-    const KHTMLSettings *settings = _element->getDocument()->view()->part()->settings();
+    const KHTMLSettings *settings = _element->document()->view()->part()->settings();
     bUnfinishedImageFrame = settings->unfinishedImageFrame();
 
     setIntrinsicWidth( 0 );
@@ -364,8 +364,8 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
 
         HTMLImageElementImpl* i = element()->id() == ID_IMG ? static_cast<HTMLImageElementImpl*>(element()) : 0;
         HTMLMapElementImpl* map;
-        if (i && i->getDocument()->isHTMLDocument() &&
-            (map = static_cast<HTMLDocumentImpl*>(i->getDocument())->getMap(i->imageMap()))) {
+        if (i && i->document()->isHTMLDocument() &&
+            (map = static_cast<HTMLDocumentImpl*>(i->document())->getMap(i->imageMap()))) {
             // we're a client side image map
             inside = map->mapMouseEvent(_x - tx, _y - ty, contentWidth(), contentHeight(), info);
             info.setInnerNonSharedNode(element());
@@ -410,7 +410,7 @@ void RenderImage::updateFromElement()
 
     if (!u.isEmpty() &&
         ( !m_cachedImage || m_cachedImage->url() != u ) ) {
-        CachedImage *new_image = element()->getDocument()->docLoader()->
+        CachedImage *new_image = element()->document()->docLoader()->
                                  requestImage(khtml::parseURL(u));
 
         if(new_image && new_image != m_cachedImage)

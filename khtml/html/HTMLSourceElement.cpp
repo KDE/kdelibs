@@ -45,7 +45,7 @@ DOM::NodeImpl::Id HTMLSourceElement::id() const
 
 DOMString HTMLSourceElement::src() const
 {
-    return getDocument()->completeURL(getAttribute(ATTR_SRC).string());
+    return document()->completeURL(getAttribute(ATTR_SRC).string());
 }
 
 void HTMLSourceElement::setSrc(const DOMString& url)

@@ -148,12 +148,12 @@ void HTMLCanvasElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
         _style->display() != NONE)
     {
-        m_render = new (getDocument()->renderArena()) RenderCanvasImage(this);
+        m_render = new (document()->renderArena()) RenderCanvasImage(this);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }

@@ -60,7 +60,7 @@ DOMString HTMLBaseElement::href() const
 {
     if(!impl) return DOMString();
     DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->getDocument()->completeURL(href.string()) : href;
+    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
 }
 
 void HTMLBaseElement::setHref( const DOMString &value )
@@ -136,7 +136,7 @@ DOMString HTMLLinkElement::href() const
 {
     if(!impl) return DOMString();
     DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->getDocument()->completeURL(href.string()) : href;
+    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
 }
 
 void HTMLLinkElement::setHref( const DOMString &value )
@@ -381,7 +381,7 @@ DOMString HTMLScriptElement::src() const
 {
     if(!impl) return DOMString();
     DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
-    return !s.isNull() ? impl->getDocument()->completeURL(s.string()) : s;
+    return !s.isNull() ? impl->document()->completeURL(s.string()) : s;
 }
 
 void HTMLScriptElement::setSrc( const DOMString &value )
