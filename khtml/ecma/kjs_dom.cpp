@@ -33,6 +33,10 @@
 #include <html/html_baseimpl.h>
 #include <html/html_documentimpl.h>
 #include <html/html_miscimpl.h>
+#include "HTMLAudioElement.h"
+#include "HTMLVideoElement.h"
+#include "JSHTMLAudioElement.h"
+#include "JSHTMLVideoElement.h"
 #include <kdebug.h>
 #include <khtml_part.h>
 #include <QtCore/QList>
@@ -50,6 +54,7 @@
 #include <khtmlpart_p.h>
 
 using namespace KJS;
+using namespace khtml;
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeConstantsTable.
@@ -1664,6 +1669,16 @@ bool KJS::checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n)
   return true;
 }
 
+// adopted from binding/JSHTMLElementFactory.cpp
+#define CREATE_WRAPPER_FUNCTION(name) \
+static DOMObject* create##name##Wrapper(ExecState* exec, DOM::NodeImpl* n) \
+{ \
+    return new JSHTML##name##Element(exec, static_cast<HTML##name##Element*>(n)); \
+}
+
+CREATE_WRAPPER_FUNCTION(Audio)
+CREATE_WRAPPER_FUNCTION(Video)
+
 JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
 {
   DOMObject *ret = 0;
@@ -1675,10 +1690,20 @@ JSValue* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
 
   switch (n->nodeType()) {
     case DOM::Node::ELEMENT_NODE:
-      if (static_cast<DOM::ElementImpl*>(n)->isHTMLElement())
-        ret = new HTMLElement(exec, static_cast<DOM::HTMLElementImpl*>(n));
-      else
-        ret = new DOMElement(exec, static_cast<DOM::ElementImpl*>(n));
+      switch (n->id()) {
+      case ID_AUDIO:
+	ret = createAudioWrapper(exec, n);
+	break;
+      case ID_VIDEO:
+	ret = createVideoWrapper(exec, n);
+	break;
+      default:
+	if (static_cast<DOM::ElementImpl*>(n)->isHTMLElement())
+	  ret = new HTMLElement(exec, static_cast<DOM::HTMLElementImpl*>(n));
+	else
+	  ret = new DOMElement(exec, static_cast<DOM::ElementImpl*>(n));
+	break;
+      }
       break;
     case DOM::Node::ATTRIBUTE_NODE:
       ret = new DOMAttr(exec, static_cast<DOM::AttrImpl*>(n));

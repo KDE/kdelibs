@@ -119,12 +119,17 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_views.cpp
 #  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_debugwin.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_mozilla.cpp
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.h
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.cpp
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.h
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.cpp
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.h
-#  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.h
+  ${CMAKE_CURRENT_BINARY_DIR}/JSTimeRanges.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.h
+  ${CMAKE_CURRENT_BINARY_DIR}/JSMediaError.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/JSHTMLElement.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.h
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLMediaElement.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLAudioElement.h
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLAudioElement.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLVideoElement.h
+  ${CMAKE_CURRENT_BINARY_DIR}/JSHTMLVideoElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlhttprequest.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlserializer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/domparser.cpp
@@ -380,9 +385,11 @@ macro(create_js_binding _in_FILE)
    endif(KDE4_ENABLE_FINAL)
 endmacro(create_js_binding)
 
-#create_js_binding(html/TimeRanges.idl)
-#create_js_binding(html/MediaError.idl)
-#create_js_binding(html/HTMLMediaElement.idl)
+create_js_binding(html/TimeRanges.idl)
+create_js_binding(html/MediaError.idl)
+create_js_binding(html/HTMLMediaElement.idl)
+create_js_binding(html/HTMLAudioElement.idl)
+create_js_binding(html/HTMLVideoElement.idl)
 
 install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
 

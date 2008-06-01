@@ -38,8 +38,8 @@ namespace khtml {
   class JSHTMLElement : public KJS::DOMElement
   {
   public:
-      JSHTMLElement(JSObject* prototype, DOM::HTMLElementImpl* impl)
-	  : KJS::DOMElement(prototype, impl) { }
+      JSHTMLElement(KJS::ExecState* exec, DOM::HTMLElementImpl* impl)
+         : KJS::DOMElement(KJS::DOMElementProto::self(exec), impl) { }
 
       virtual ~JSHTMLElement() { }
 
