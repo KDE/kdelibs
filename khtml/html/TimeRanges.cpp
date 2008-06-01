@@ -34,7 +34,7 @@ TimeRanges::TimeRanges(float start, float end)
     add(start, end);
 }
 
-float TimeRanges::start(unsigned index, DOMException::ExceptionCode& ec) const 
+float TimeRanges::start(unsigned index, ExceptionCode& ec) const 
 { 
     if (index >= length()) {
         ec = DOMException::INDEX_SIZE_ERR;
@@ -43,7 +43,7 @@ float TimeRanges::start(unsigned index, DOMException::ExceptionCode& ec) const
     return m_ranges[index].m_start;
 }
 
-float TimeRanges::end(unsigned index, DOMException::ExceptionCode& ec) const 
+float TimeRanges::end(unsigned index, ExceptionCode& ec) const 
 { 
     if (index >= length()) {
         ec = DOMException::INDEX_SIZE_ERR;
@@ -60,7 +60,7 @@ void TimeRanges::add(float start, float end)
 
 bool TimeRanges::contain(float time) const
 { 
-    DOMException::ExceptionCode unused;
+    ExceptionCode unused;
     for (unsigned n = 0; n < length(); n++) {
         if (time >= start(n, unused) && time <= end(n, unused))
             return true;

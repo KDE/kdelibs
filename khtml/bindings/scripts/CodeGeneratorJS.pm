@@ -1162,7 +1162,7 @@ sub GenerateImplementation
                     push(@implContent, "        " . GetNativeTypeFromSignature($parameter) . " $name = " . JSValueToNative($parameter, "args[$paramIndex]", TypeCanFailConversion($parameter) ? "${name}Ok" : undef) . ";\n");
                     if (TypeCanFailConversion($parameter)) {
                         push(@implContent, "        if (!${name}Ok) {\n");
-                        push(@implContent, "            setDOMException(exec, TYPE_MISMATCH_ERR);\n");
+                        push(@implContent, "            setDOMException(exec, DOM::DOMException::TYPE_MISMATCH_ERR);\n");
                         push(@implContent, "            return jsUndefined();\n        }\n");
                     }
 
@@ -1171,7 +1171,7 @@ sub GenerateImplementation
                     if ($parameter->extendedAttributes->{"IsIndex"}) {
                         $implIncludes{"ExceptionCode.h"} = 1;
                         push(@implContent, "        if ($name < 0) {\n");
-                        push(@implContent, "            setDOMException(exec, INDEX_SIZE_ERR);\n");
+                        push(@implContent, "            setDOMException(exec, DOM::DOMException::INDEX_SIZE_ERR);\n");
                         push(@implContent, "            return jsUndefined();\n        }\n");
                     }
                 }

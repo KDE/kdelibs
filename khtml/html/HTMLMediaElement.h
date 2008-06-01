@@ -27,6 +27,7 @@
 #define HTMLMediaElement_h
 
 #include "HTMLElement.h"
+#include "ExceptionCode.h"
 #include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
 

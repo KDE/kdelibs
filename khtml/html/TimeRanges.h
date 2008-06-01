@@ -26,7 +26,7 @@
 #ifndef TimeRanges_h
 #define TimeRanges_h
 
-#include <dom/dom_exception.h>
+#include "ExceptionCode.h"
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 
@@ -38,8 +38,8 @@ public:
     TimeRanges(float start, float end);
     
     unsigned length() const { return m_ranges.size(); }
-    float start(unsigned index, DOM::DOMException::ExceptionCode&) const;
-    float end(unsigned index, DOM::DOMException::ExceptionCode&) const;
+    float start(unsigned index, ExceptionCode&) const;
+    float end(unsigned index, ExceptionCode&) const;
     
     void add(float start, float end);
     

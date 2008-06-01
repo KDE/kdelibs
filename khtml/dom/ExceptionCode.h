@@ -1,8 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ * Copyright 2008 Harri Porten (porten@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,18 +18,23 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
+ * This file includes excerpts from the Document Object Model (DOM)
+ * Level 1 Specification (Recommendation)
+ * http://www.w3.org/TR/REC-DOM-Level-1/
+ * Copyright © World Wide Web Consortium , (Massachusetts Institute of
+ * Technology , Institut National de Recherche en Informatique et en
+ * Automatique , Keio University ). All Rights Reserved.
+ *
  */
 
-#ifndef HTMLElement_h
-#define HTMLElement_h
+#ifndef ExceptionCode_h
+#define ExceptionCode_h
 
-#include "html_elementimpl.h"
+#include <dom/dom_exception.h>
 
 namespace khtml
 {
-    typedef DOM::DOMString String;
-    typedef DOM::HTMLElementImpl HTMLElement;
-    typedef DOM::DocumentImpl Document;
+    typedef unsigned short ExceptionCode;
 }
 
 #endif
