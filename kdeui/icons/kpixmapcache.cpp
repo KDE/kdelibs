@@ -53,7 +53,8 @@
 
 //#define DISABLE_PIXMAPCACHE
 #if defined HAVE_MMAP && !defined Q_WS_WIN
-#define USE_MMAP
+// Disabled due to bug 160284 while awaiting proper handling of SIGBUS.
+//#define USE_MMAP
 #endif
 
 #define KPIXMAPCACHE_VERSION 0x000206
