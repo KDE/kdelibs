@@ -105,8 +105,8 @@ public:
     bool sortCategoriesByNaturalComparison() const;
 
     /**
-      * Does a natural comparing of the strings. -1 is returned if \a a
-      * is smaller than \a b. +1 is returned if \a a is greater than \a b. 0
+      * Does a natural comparing of the strings. A negative value is returned if \a a
+      * is smaller than \a b. A positive value is returned if \a a is greater than \a b. 0
       * is returned if both values are equal.
       * @deprecated
       * Use KStringHandler::naturalCompare() instead.
