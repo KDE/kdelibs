@@ -275,3 +275,9 @@ IncludeFile=kplotwidget.h
 ToolTip=A plot widget
 WhatsThis=A widget for easily making 2-dimensional plots
 Group=Plot (KDE)
+
+[KFontComboBox]
+IncludeFile=kfontcombobox.h
+ToolTip=Font Combo Box (KDE)
+WhatsThis=A combo box for font selection with language-specific previews
+Group=Input (KDE)
