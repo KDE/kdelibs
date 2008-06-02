@@ -129,6 +129,7 @@
 <!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
 <!ENTITY digikam	"<application>digiKam</application>">
+<!ENTITY dolphin "<application>Dolphin</application>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
@@ -228,6 +229,7 @@
 <!ENTITY khelpcenter	"<application>KHelpCenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
+<!ENTITY kickoff "<application>Kickoff</application>">
 <!ENTITY kiconedit	"<application>KIconEdit</application>">
 <!ENTITY kig	"<application>Kig</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
@@ -266,6 +268,7 @@
 <!ENTITY knetattach     "<application>KNetAttach</application>">
 <!ENTITY knetwalk       "<application>KNetWalk</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
+<!ENTITY knewstuff "<application>KNewStuff</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodometer	"<application>KOdometer</application>">
@@ -387,6 +390,9 @@
 <!ENTITY parley	"<application>Parley</application>">
 <!ENTITY phonon "<application>Phonon</application>">
 <!ENTITY plasma "<application>Plasma</application>">
+<!ENTITY plasmagik "<application>Plasmagik</application>">
+<!ENTITY plasmoid "<application>Plasmoid</application>">
+<!ENTITY plasmoids "<application>Plasmoids</application>">
 <!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
@@ -421,6 +427,7 @@
 <!ENTITY XHTML	"<acronym>XHTML</acronym>">
 <!ENTITY XML	"<acronym>XML</acronym>">
 <!ENTITY XSL	"<acronym>XSL</acronym>">
+<!ENTITY zui "<application>Zooming User Interface</application>">
 
 <!-- Defaults, do NOT add anything to this without checking with the docbook
      team.  -->
