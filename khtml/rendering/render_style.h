@@ -452,9 +452,9 @@ public:
     Length backgroundXPosition() const { return m_xPosition; }
     Length backgroundYPosition() const { return m_yPosition; }
     bool backgroundAttachment() const { return m_bgAttachment; }
-    EBackgroundBox backgroundClip() const { return m_bgClip; }
-    EBackgroundBox backgroundOrigin() const { return m_bgOrigin; }
-    EBackgroundRepeat backgroundRepeat() const { return m_bgRepeat; }
+    EBackgroundBox backgroundClip() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgClip); }
+    EBackgroundBox backgroundOrigin() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgOrigin); }
+    EBackgroundRepeat backgroundRepeat() const { return KDE_CAST_BF_ENUM(EBackgroundRepeat, m_bgRepeat); }
     LengthSize backgroundSize() const { return m_backgroundSize; }
 
     BackgroundLayer* next() const { return m_next; }
@@ -519,9 +519,9 @@ public:
     Length m_yPosition;
 
     bool m_bgAttachment : 1;
-    EBackgroundBox m_bgClip : 2;
-    EBackgroundBox m_bgOrigin : 2;
-    EBackgroundRepeat m_bgRepeat : 2;
+    KDE_BF_ENUM(EBackgroundBox) m_bgClip : 2;
+    KDE_BF_ENUM(EBackgroundBox) m_bgOrigin : 2;
+    KDE_BF_ENUM(EBackgroundRepeat) m_bgRepeat : 2;
 
     LengthSize m_backgroundSize;
 
@@ -1153,7 +1153,7 @@ public:
 
     const QColor & backgroundColor() const { return background->m_color; }
     CachedImage *backgroundImage() const { return background->m_background.m_image; }
-    EBackgroundRepeat backgroundRepeat() const { return background->m_background.m_bgRepeat; }
+    EBackgroundRepeat backgroundRepeat() const { return static_cast<EBackgroundRepeat>(background->m_background.m_bgRepeat); }
     bool backgroundAttachment() const { return background->m_background.m_bgAttachment; }
     Length backgroundXPosition() const { return background->m_background.m_xPosition; }
     Length backgroundYPosition() const { return background->m_background.m_yPosition; }
@@ -1520,4 +1520,5 @@ protected:
 } // namespace
 
 #endif
+
 
