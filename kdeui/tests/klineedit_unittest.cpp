@@ -18,52 +18,53 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <QClipboard>
+#include <qtest_kde.h>
 #include <qtestevent.h>
-#include "klineedit_unittest.h"
-#include <kcombobox.h>
-#include "klineedit_unittest.moc"
 #include <klineedit.h>
+
+class KLineEdit_UnitTest : public QObject
+{
+    Q_OBJECT
+
+private Q_SLOTS:
+    void testPassword()
+    {
+        KLineEdit w;
+        w.setPasswordMode(true);
+        QTest::keyClick(&w, Qt::Key_1);
+        QTest::keyClick(&w, Qt::Key_2);
+        QTest::keyClick(&w, Qt::Key_3);
+        QCOMPARE(w.text(), QString("123"));
+    }
+
+    void testReturnPressed()
+    {
+        KLineEdit w;
+        w.setText("Hello world");
+        QSignalSpy qReturnPressedSpy(&w, SIGNAL(returnPressed()));
+        QSignalSpy kReturnPressedSpy(&w, SIGNAL(returnPressed(QString)));
+        QTest::keyClick(&w, Qt::Key_Return);
+        QCOMPARE(qReturnPressedSpy.count(), 1);
+        QCOMPARE(kReturnPressedSpy.count(), 1);
+        QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
+    }
+
+    void testPaste()
+    {
+        const QString origText = QApplication::clipboard()->text();
+        const QString pastedText = "Test paste from klineedit_unittest";
+        QApplication::clipboard()->setText(pastedText);
+        KLineEdit w;
+        w.setText("Hello world");
+        w.selectAll();
+        QTest::keyClick(&w, Qt::Key_V, Qt::ControlModifier);
+        QCOMPARE(w.text(), pastedText);
+        QApplication::clipboard()->setText(origText);
+    }
+
+};
 
 QTEST_KDEMAIN(KLineEdit_UnitTest, GUI)
 
-void KLineEdit_UnitTest::testReturnPressed()
-{
-    KLineEdit w;
-    w.setText("Hello world");
-    QSignalSpy qReturnPressedSpy(&w, SIGNAL(returnPressed()));
-    QSignalSpy kReturnPressedSpy(&w, SIGNAL(returnPressed(QString)));
-    QTest::keyClick(&w, Qt::Key_Return);
-    QCOMPARE(qReturnPressedSpy.count(), 1);
-    QCOMPARE(kReturnPressedSpy.count(), 1);
-    QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
-}
-
-void KLineEdit_UnitTest::testComboReturnPressed(bool ctorArg)
-{
-    KComboBox w(ctorArg /*initial value for editable*/);
-    w.setEditable(true);
-    w.setCompletionMode( KGlobalSettings::CompletionPopup );
-    w.addItem("Hello world");
-    QVERIFY(w.lineEdit());
-    QVERIFY(qobject_cast<KLineEdit*>(w.lineEdit()));
-    // KLineEdit signals
-    QSignalSpy qReturnPressedSpy(w.lineEdit(), SIGNAL(returnPressed()));
-    QSignalSpy kReturnPressedSpy(w.lineEdit(), SIGNAL(returnPressed(QString)));
-    // KComboBox signals
-    QSignalSpy comboReturnPressedSpy(&w, SIGNAL(returnPressed()));
-    QSignalSpy comboReturnPressedStringSpy(&w, SIGNAL(returnPressed(QString)));
-    QTest::keyClick(&w, Qt::Key_Return);
-    QCOMPARE(qReturnPressedSpy.count(), 1);
-    QCOMPARE(kReturnPressedSpy.count(), 1);
-    QCOMPARE(kReturnPressedSpy[0][0].toString(), QString("Hello world"));
-    QCOMPARE(comboReturnPressedSpy.count(), 1);
-    QCOMPARE(comboReturnPressedStringSpy.count(), 1);
-    QCOMPARE(comboReturnPressedStringSpy[0][0].toString(), QString("Hello world"));
-}
-
-void KLineEdit_UnitTest::testComboReturnPressed()
-{
-    testComboReturnPressed(false);
-    testComboReturnPressed(true);
-}
+#include "klineedit_unittest.moc"

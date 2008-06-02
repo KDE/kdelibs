@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2007 David Faure <faure@kde.org>
+
+    Copyright (c) 2008 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,21 +18,33 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLINEEDIT_UNITTEST_H
-#define KLINEEDIT_UNITTEST_H
+#include <QClipboard>
+#include <qtest_kde.h>
+#include <qtestevent.h>
+#include <ktextedit.h>
 
-#include <QtCore/QObject>
-
-class KLineEdit_UnitTest : public QObject
+class KTextEdit_UnitTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void testReturnPressed();
-    void testComboReturnPressed();
+    void testPaste()
+    {
+        const QString origText = QApplication::clipboard()->text();
+        const QString pastedText = "Test paste from ktextedit_unittest";
+        QApplication::clipboard()->setText(pastedText);
+        KTextEdit w;
+        w.setPlainText("Hello world");
+        w.selectAll();
+        QTest::keyClick(&w, Qt::Key_V, Qt::ControlModifier);
+        QCOMPARE(w.toPlainText(), pastedText);
+        QApplication::clipboard()->setText(origText);
+    }
 
-private:
-    void testComboReturnPressed(bool ctorArg);
 };
 
-#endif
+QTEST_KDEMAIN(KTextEdit_UnitTest, GUI)
+
+#include "ktextedit_unittest.moc"
+
+
