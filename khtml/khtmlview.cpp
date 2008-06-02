@@ -3955,8 +3955,8 @@ void KHTMLView::scrollTick() {
     int tdddx = d->dddx + d->rddx;
     int tdddy = d->dddy + d->rddy;
     // update scrolling speed
-    d->ddx = d->ddx - (tdddx/16);
-    d->ddy = d->ddy - (tdddx/16);
+    d->ddx = d->ddx - tdddx/16;
+    d->ddy = d->ddy - tdddy/16;
     d->rddx = tdddx % 16;
     d->rddy = tdddy % 16;
 
