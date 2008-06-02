@@ -127,7 +127,7 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     quint32 version;
     stream >> version;
     if (version != KDE_ICONCACHE_VERSION) {
-        kDebug(264) << "Obsolete iconcache version, will recreate";
+        kDebug(264) << "Obsolete iconcache version" << version << "will recreate";
         return false;
     }
 

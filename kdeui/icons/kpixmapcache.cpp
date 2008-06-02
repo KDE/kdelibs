@@ -34,6 +34,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QList>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -46,6 +47,8 @@
 
 #include <time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <cstring> // memcpy
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -56,7 +59,7 @@
 #define USE_MMAP
 #endif
 
-#define KPIXMAPCACHE_VERSION 0x000206
+#define KPIXMAPCACHE_VERSION 0x000208
 
 namespace {
 
@@ -103,6 +106,52 @@ private:
     KLockFile* mLockFile;
 };
 
+// Contained in the header so we will know if we created this or not.  Older
+// versions of kdelibs had the version on the byte right after "CACHE ".
+// "DEUX" will be read as a quint32 by such versions, and will always be
+// greater than the last such version (0x000207), whether a big-endian or
+// little-endian system is used.  Therefore older systems will correctly
+// recognize that this is from a newer kdelibs.  (This is an issue since old
+// and new kdelibs do not read the version from the exact same spot.)
+static const char KPC_MAGIC[] = "KDE PIXMAP CACHE DEUX";
+struct KPixmapCacheDataHeader
+{
+    KPixmapCacheDataHeader() :
+        cacheVersion(0),
+        size(sizeof(*this))
+    {
+        magic[0] = '\0'; // In case of inadvertent strcpy or something.
+    }
+
+    // -1 from sizeof so we don't write out the trailing null.  If you change
+    // the list of members change them in the KPixmapCacheIndexHeader as well!
+    char    magic[sizeof(KPC_MAGIC) - 1];
+    quint32 cacheVersion;
+    quint32 size;
+};
+
+struct KPixmapCacheIndexHeader
+{
+    KPixmapCacheIndexHeader() :
+        cacheVersion(0),
+        size(sizeof(*this)),
+        cacheId(0),
+        timestamp(0)
+    {
+        magic[0] = '\0'; // In case of inadvertent strcpy or something.
+    }
+
+    // -1 from sizeof so we don't write out the trailing null.
+    // The follow are also in KPixmapCacheDataHeader
+    char    magic[sizeof(KPC_MAGIC) - 1];
+    quint32 cacheVersion;
+    quint32 size;
+
+    // These belong only to this header type.
+    quint32 cacheId;
+    time_t  timestamp;
+};
+
 class KPCMemoryDevice : public QIODevice
 {
 public:
@@ -113,52 +162,31 @@ public:
     void setSize(quint32 s)  { *mSize = s; }
     virtual bool seek(qint64 pos);
 
-    static void setSizeEntryOffset(int o)  { mSizeEntryOffset = o; }
-
 protected:
     virtual qint64 readData(char* data, qint64 maxSize);
     virtual qint64 writeData(const char* data, qint64 maxSize);
 
 private:
     char* mMemory;
+    KPixmapCacheIndexHeader *mHeader; // alias of mMemory
     quint32* mSize;
     quint32 mInitialSize;
     qint64 mAvailable;
     quint32 mPos;
-
-    static int mSizeEntryOffset;  // Offset of file size entry
 };
-int KPCMemoryDevice::mSizeEntryOffset = 0;
 
 KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) : QIODevice()
 {
     mMemory = start;
+    mHeader = reinterpret_cast<KPixmapCacheIndexHeader *>(start);
     mSize = size;
     mAvailable = available;
     mPos = 0;
 
     open(QIODevice::ReadWrite);
 
-    // Load size
-#if 0
-    // Can anyone tell why this isn't working?
-    seek(mSizeEntryOffset);
-    QDataStream stream(this);
-    stream >> *mSize;
-#else
     // Load up-to-date size from the memory
-    if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
-        char buf[4];
-        uchar* p = (uchar*)mSize;
-        memcpy(buf, mMemory + mSizeEntryOffset, 4);
-        *p++ = buf[3];
-        *p++ = buf[2];
-        *p++ = buf[1];
-        *p   = buf[0];
-    } else {
-        *mSize = *((quint32*)(mMemory + mSizeEntryOffset));
-    }
-#endif
+    *mSize = mHeader->size;
 
     mInitialSize = *mSize;
 }
@@ -167,9 +195,7 @@ KPCMemoryDevice::~KPCMemoryDevice()
 {
     if (*mSize != mInitialSize) {
         // Update file size
-        seek(mSizeEntryOffset);
-        QDataStream stream(this);
-        stream << *mSize;
+        mHeader->size = *mSize;
     }
 }
 
@@ -188,7 +214,7 @@ qint64 KPCMemoryDevice::readData(char* data, qint64 len)
     if (len <= 0) {
         return 0;
     }
-    memcpy(data, mMemory + mPos, len);
+    std::memcpy(data, mMemory + mPos, len);
     mPos += len;
     return len;
 }
@@ -199,7 +225,7 @@ qint64 KPCMemoryDevice::writeData(const char* data, qint64 len)
         kError() << "Overflow of" << mPos+len - mAvailable;
         return -1;
     }
-    memcpy(mMemory + mPos, (uchar*)data, len);
+    std::memcpy(mMemory + mPos, (uchar*)data, len);
     mPos += len;
     *mSize = qMax(*mSize, mPos);
     return len;
@@ -208,11 +234,11 @@ qint64 KPCMemoryDevice::writeData(const char* data, qint64 len)
 
 } // namespace
 
-
 class KPixmapCache::Private
 {
 public:
     Private(KPixmapCache* q);
+    ~Private();
 
     // Return device used to read from index or data file. The device is either
     //  QFile or KPCMemoryDevice (if mmap is used)
@@ -226,6 +252,9 @@ public:
     // Marks the shared mmapped files as invalid so that all processes will
     //  reload the files
     void invalidateMmapFiles();
+
+    // List of all KPixmapCache::Private instances in this process.
+    static QList<KPixmapCache::Private *> mCaches;
 
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
@@ -251,9 +280,6 @@ public:
 
     KPixmapCache* q;
 
-    static const char* kpc_magic;
-    static const int kpc_magic_len;
-    static const int kpc_header_len;
     quint32 mHeaderSize;  // full size of the index header, including custom (subclass') header data
     quint32 mIndexRootOffset;  // offset of the first entry in index file
 
@@ -278,7 +304,14 @@ public:
     {
         MmapInfo()  { file = 0; memory = 0; }
         QFile* file;  // If this is not null, then the file is mmapped
-        char* memory;
+
+        // Convenience aliases.  This probably breaks some C++ aliasing rule or something. :-/
+        union {
+            char* memory;
+            KPixmapCacheIndexHeader *indexHeader;
+            KPixmapCacheDataHeader *dataHeader;
+        };
+
         quint32 size;  // Number of currently used bytes
         quint32 available;  // Number of available bytes (including those reserved for mmap)
     };
@@ -367,19 +400,19 @@ public:
     RemovalThread* mRemovalThread;
 };
 
-// Magic in the cache files
-const char* KPixmapCache::Private::kpc_magic = "KDE PIXMAP CACHE ";
-const int KPixmapCache::Private::kpc_magic_len = qstrlen(KPixmapCache::Private::kpc_magic);
-// Whole header is magic + version (4 bytes)
-const int KPixmapCache::Private::kpc_header_len = KPixmapCache::Private::kpc_magic_len + 4;
-
+// List of KPixmapCache::Private instances.
+QList<KPixmapCache::Private *> KPixmapCache::Private::mCaches;
 
 KPixmapCache::Private::Private(KPixmapCache* _q)
 {
     q = _q;
+    mCaches.append(this);
     mRemovalThread = 0;
+}
 
-    KPCMemoryDevice::setSizeEntryOffset(kpc_header_len);  // ugly
+KPixmapCache::Private::~Private()
+{
+    mCaches.removeAll(this);
 }
 
 bool KPixmapCache::Private::mmapFiles()
@@ -419,11 +452,8 @@ void KPixmapCache::Private::invalidateMmapFiles()
 #ifdef USE_MMAP
     // Set cache id to 0, this will force a reload the next time the files are used
     if (mIndexMmapInfo.file) {
-        KPCMemoryDevice dev(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
-        QDataStream stream(&dev);
         kDebug(264) << "Invalidating cache";
-        dev.seek(kpc_header_len + sizeof(quint32));
-        stream << (quint32)0;
+        mIndexMmapInfo.indexHeader->cacheId = 0;
     }
 #endif
 }
@@ -443,7 +473,10 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
         info->size = info->file->size();
     }
     info->available = newsize;
-    if (!info->file->resize(info->available)) {
+
+    // Only resize if greater than current file size, otherwise we may cause SIGBUS
+    // errors from mmap().
+    if (info->file->size() < newsize && ftruncate(info->file->handle(), info->available) < 0) {
         kError(264) << "Couldn't resize" << filename << "to" << newsize;
         delete info->file;
         info->file = 0;
@@ -462,14 +495,15 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     madvise(info->memory, info->size, MADV_WILLNEED);
 #endif
 
-    // Update our stored file size
-    int size = info->size;
-    KPCMemoryDevice dev(info->memory, &info->size, info->available);
-    if (!info->size) {
-        // Null size was read from the file. This means that we're the first to
-        //  mmap it and so we have to write the correct size to the file.
-        dev.setSize(size);
-        // New size will be written to file in KPCMemoryDevice dtor
+    info->file->close();
+
+    // Update our stored file size.  Other objects that have this mmaped will have to
+    // invalidate their map if size is different.
+    if(0 == info->indexHeader->size) {
+        // This size includes index header and and custom headers tacked on
+        // by subclasses.
+        info->indexHeader->size = mHeaderSize;
+        info->size = info->indexHeader->size;
     }
 
     return true;
@@ -483,51 +517,72 @@ void KPixmapCache::Private::unmmapFile(MmapInfo* info)
 #ifdef USE_MMAP
     if (info->file) {
         munmap(info->memory, info->available);
+        info->memory = 0;
+        info->available = 0;
+        info->size = 0;
+
         delete info->file;
         info->file = 0;
     }
 #endif
 }
 
+
 QIODevice* KPixmapCache::Private::indexDevice()
 {
     QIODevice* device = 0;
+
 #ifdef USE_MMAP
     if (mIndexMmapInfo.file) {
         // Make sure the file still exists
         QFileInfo fi(mIndexFile);
-        if (!fi.exists() || fi.size() != mIndexMmapInfo.available) {
-            kDebug(264) << "File size has changed, re-initing";
-            q->recreateCacheFiles();  // Also tries to re-init mmap
-            if (!q->isValid()) {
-                return 0;
-            } else {
-                return indexDevice();
-            }
+
+        if(!fi.exists() || fi.size() != mIndexMmapInfo.available) {
+            kDebug(264) << "File size has changed, re-initializing.";
+            q->recreateCacheFiles(); // Recreates memory maps as well.
         }
 
-        // Create the device
-        device = new KPCMemoryDevice(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
+        fi.refresh();
+        if(fi.exists() && fi.size() == mIndexMmapInfo.available) {
+            // Create the device
+            device = new KPCMemoryDevice(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
+        }
+
+        // Is it possible to have a valid cache with no file?  If not it would be easier
+        // to do return 0 in the else portion of the prior test.
+        if(!q->isValid()) {
+            delete device;
+            return 0;
+        }
     }
 #endif
+
     if (!device) {
         QFile* file = new QFile(mIndexFile);
-        if (!file->exists() || file->size() < kpc_header_len) {
+        if (!file->exists() || (size_t) file->size() < sizeof(KPixmapCacheIndexHeader)) {
             q->recreateCacheFiles();
         }
-        if (!file->open(QIODevice::ReadWrite)) {
+
+        if (!q->isValid() || !file->open(QIODevice::ReadWrite)) {
             kDebug(264) << "Couldn't open index file" << mIndexFile;
             delete file;
             return 0;
         }
+
         device = file;
     }
+
     // Make sure the device is up-to-date
-    QDataStream stream(device);
-    device->seek(kpc_header_len + sizeof(quint32));
-    quint32 cacheid;
-    stream >> cacheid;
-    if (cacheid != mCacheId) {
+    KPixmapCacheIndexHeader indexHeader;
+
+    int numRead = device->read(reinterpret_cast<char *>(&indexHeader), sizeof indexHeader);
+    if (sizeof indexHeader != numRead) {
+        kError(264) << "Unable to read header from pixmap cache index.";
+        delete device;
+        return 0;
+    }
+
+    if (indexHeader.cacheId != mCacheId) {
         kDebug(264) << "Cache has changed, reloading";
         delete device;
 
@@ -535,7 +590,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
         if (!q->isValid()) {
             return 0;
         } else {
-            return indexDevice();
+            return indexDevice(); // Careful, this is a recursive call.
         }
     }
 
@@ -546,13 +601,30 @@ QIODevice* KPixmapCache::Private::dataDevice()
 {
 #ifdef USE_MMAP
     if (mDataMmapInfo.file) {
-        // TODO: make sure the mmapped memory is up-to-date
-        KPCMemoryDevice* device = new KPCMemoryDevice(mDataMmapInfo.memory, &mDataMmapInfo.size, mDataMmapInfo.available);
-        return device;
+        // Make sure the file still exists
+        QFileInfo fi(mDataFile);
+
+        if(!fi.exists() || fi.size() != mDataMmapInfo.available) {
+            kDebug(264) << "File size has changed, re-initializing.";
+            q->recreateCacheFiles(); // Recreates memory maps as well.
+
+            // Index file has also been recreated so we cannot continue with
+            //  modifying the data file because it would make things inconsistent.
+            return 0;
+        }
+
+        fi.refresh();
+        if(fi.exists() && fi.size() == mDataMmapInfo.available) {
+            // Create the device
+            return new KPCMemoryDevice(mDataMmapInfo.memory, &mDataMmapInfo.size, mDataMmapInfo.available);
+        }
+        else
+            return 0;
     }
 #endif
+
     QFile* file = new QFile(mDataFile);
-    if (!file->exists() || file->size() < kpc_header_len) {
+    if (!file->exists() || (size_t) file->size() < sizeof(KPixmapCacheDataHeader)) {
         q->recreateCacheFiles();
         // Index file has also been recreated so we cannot continue with
         //  modifying the data file because it would make things inconsistent.
@@ -656,27 +728,30 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
             return false;
         }
 
-        QDataStream stream(&f);
+        // The index header is the same as the beginning of the data header (on purpose),
+        // so use index header for either one.
+        KPixmapCacheIndexHeader indexHeader;
 
-        // Check header and version
-        char buf[100];
-        quint32 version;
-        stream.readRawData(buf, kpc_magic_len);
-        stream >> version;
-        if (qstrncmp(buf, kpc_magic, kpc_magic_len) == 0) {
-            if (version == KPIXMAPCACHE_VERSION) {
-                return true;
-            } else if (version < KPIXMAPCACHE_VERSION) {
-                kDebug(264) << "File" << filename << "is outdated, will recreate...";
-            } else {
-                // Don't recreate the cache if it has newer version to avoid
-                //  problems when upgrading kdelibs.
-                kDebug(264) << "File" << filename << "has newer version, disabling cache";
-                return false;
-            }
-        } else {
-            kDebug(264) << "File" << filename << "is not KPixmapCache file, will recreate...";
+        // Ensure we have a valid cache.
+        if(sizeof indexHeader != f.read(reinterpret_cast<char*>(&indexHeader), sizeof indexHeader) ||
+           qstrncmp(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic)) != 0)
+        {
+            kDebug(264) << "File" << filename << "is not KPixmapCache file, or is";
+            kDebug(264) << "version <= 0x000207, will recreate...";
+            return q->recreateCacheFiles();
         }
+
+        if(indexHeader.cacheVersion == KPIXMAPCACHE_VERSION)
+            return true;
+
+        // Don't recreate the cache if it has newer version to avoid
+        //  problems when upgrading kdelibs.
+        if(indexHeader.cacheVersion > KPIXMAPCACHE_VERSION) {
+            kDebug(264) << "File" << filename << "has newer version, disabling cache";
+            return false;
+        }
+
+        kDebug(264) << "File" << filename << "is outdated, will recreate...";
     }
 
     return q->recreateCacheFiles();
@@ -689,11 +764,14 @@ bool KPixmapCache::Private::loadDataHeader()
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    file.seek(kpc_header_len);
 
-    QDataStream stream(&file);
-    stream >> mDataMmapInfo.size;
+    KPixmapCacheDataHeader dataHeader;
+    if(sizeof dataHeader != file.read(reinterpret_cast<char*>(&dataHeader), sizeof dataHeader)) {
+        kDebug(264) << "Unable to read from data file" << mDataFile;
+        return false;
+    }
 
+    mDataMmapInfo.size = dataHeader.size;
     return true;
 }
 
@@ -704,30 +782,27 @@ bool KPixmapCache::Private::loadIndexHeader()
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    file.seek(kpc_header_len);
 
-    QDataStream stream(&file);
-    // Load file size
-    stream >> mIndexMmapInfo.size;
-    // Load cache id
-    stream >> mCacheId;
-    // Load timestamp
-    stream >> mTimestamp;
-
-    if (stream.status() != QDataStream::Ok) {
-        kWarning() << "Failed to read index file's header";
+    KPixmapCacheIndexHeader indexHeader;
+    if(sizeof indexHeader != file.read(reinterpret_cast<char*>(&indexHeader), sizeof indexHeader)) {
+        kWarning(264) << "Failed to read index file's header";
         q->recreateCacheFiles();
         return false;
     }
+
+    mCacheId = indexHeader.cacheId;
+    mTimestamp = indexHeader.timestamp;
+    mIndexMmapInfo.size = indexHeader.size;
+
+    QDataStream stream(&file);
 
     // Give custom implementations chance to load their headers
     if (!q->loadCustomIndexHeader(stream)) {
         return false;
     }
-    mHeaderSize = stream.device()->pos();
 
-    // Load root node pos.
-    stream >> mIndexRootOffset;
+    mHeaderSize = file.pos();
+    mIndexRootOffset = file.pos();
 
     return true;
 }
@@ -839,11 +914,14 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         delete [] header;
         return false;
     }
+
+    // Set file size to 0 for mmap stuff
+    reinterpret_cast<KPixmapCacheIndexHeader *>(header)->size = 0;
     newistream.writeRawData(header, mHeaderSize);
-    // Write root index node offset
-    newistream << (quint32)(mHeaderSize + sizeof(quint32));
+
     // Copy data file header
-    int dataheaderlen = kpc_header_len + sizeof(quint32);
+    int dataheaderlen = sizeof(KPixmapCacheDataHeader);
+
     // mHeaderSize is always bigger than dataheaderlen, so we needn't create
     //  new buffer
     if (dstream.readRawData(header, dataheaderlen) != dataheaderlen) {
@@ -851,9 +929,11 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         delete [] header;
         return false;
     }
+
+    // Set file size to 0 for mmap stuff
+    reinterpret_cast<KPixmapCacheDataHeader *>(header)->size = 0;
     newdstream.writeRawData(header, dataheaderlen);
     delete [] header;
-
 
     // Load all entries
     QList<KPixmapCacheEntry> entries;
@@ -877,7 +957,6 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         }
     }
 
-
     // Sort the entries according to RemoveStrategy. This moves the best
     //  entries to the beginning of the list
     if (q->removeEntryStrategy() == RemoveOldest) {
@@ -887,7 +966,6 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     } else {
         qSort(entries.begin(), entries.end(), compareEntriesByLastUsed);
     }
-
 
     // Write some entries to the new files
     int entrieswritten = 0;
@@ -926,12 +1004,6 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         // Finally, add the index entry
         writeIndexEntry(newistream, entry.key, newdataoffset);
     }
-
-    // Set file size to 0 for mmap stuff
-    newindexfile.seek(kpc_header_len);
-    newistream << (quint32)0;
-    newdatafile.seek(kpc_header_len);
-    newdstream << (quint32)0;
 
     // Remove old files and rename the new ones
     indexfile.remove();
@@ -1052,13 +1124,22 @@ void KPixmapCache::setTimestamp(unsigned int ts)
         // FIXME: now what?
         return;
     }
+
     QIODevice* device = d->indexDevice();
     if (!device) {
         return;
     }
-    device->seek(d->kpc_header_len + 2*sizeof(quint32));
-    QDataStream stream(device);
-    stream << d->mTimestamp;
+
+    KPixmapCacheIndexHeader header;
+    device->seek(0);
+    if(sizeof header != device->read(reinterpret_cast<char*>(&header), sizeof header)) {
+        delete device;
+        return;
+    }
+
+    header.timestamp = ts;
+    device->seek(0);
+    device->write(reinterpret_cast<char *>(&header), sizeof header);
 
     delete device;
 }
@@ -1112,26 +1193,34 @@ bool KPixmapCache::recreateCacheFiles()
     }
 
     d->invalidateMmapFiles();
+    d->unmmapFiles();
 
     d->mEnabled = false;
+
+    KPCLockFile lock(d->mLockFileName);
+    // Hope we got the lock...
+
     // Create index file
     QFile indexfile(d->mIndexFile);
     if (!indexfile.open(QIODevice::WriteOnly)) {
         kError() << "Couldn't create index file" << d->mIndexFile;
         return false;
     }
-    QDataStream istream(&indexfile);
-    istream.writeRawData(d->kpc_magic, d->kpc_magic_len);
-    istream << (quint32)KPIXMAPCACHE_VERSION;
-    // Write invalid file size, valid one will be written later by mmap code
-    d->mIndexMmapInfo.size = 0;
-    istream << d->mIndexMmapInfo.size;
-    // Write cache id
+
+    KPixmapCacheIndexHeader indexHeader;
     d->mCacheId = ::time(0);
-    istream << d->mCacheId;
-    // Write default timestamp
     d->mTimestamp = ::time(0);
-    istream << d->mTimestamp;
+
+    std::memcpy(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic));
+    indexHeader.cacheVersion = KPIXMAPCACHE_VERSION;
+    indexHeader.timestamp = d->mTimestamp;
+    indexHeader.cacheId = d->mCacheId;
+
+    // We can't know the full size until custom headers written.
+    // mmapFiles() will take care of correcting the size.
+    indexHeader.size = 0;
+
+    indexfile.write(reinterpret_cast<char*>(&indexHeader), sizeof indexHeader);
 
     // Create data file
     QFile datafile(d->mDataFile);
@@ -1139,18 +1228,21 @@ bool KPixmapCache::recreateCacheFiles()
         kError() << "Couldn't create data file" << d->mDataFile;
         return false;
     }
-    QDataStream dstream(&datafile);
-    dstream.writeRawData(d->kpc_magic, d->kpc_magic_len);
-    dstream << (quint32)KPIXMAPCACHE_VERSION;
-    d->mDataMmapInfo.size = 0;
-    dstream << d->mDataMmapInfo.size;
+
+    KPixmapCacheDataHeader dataHeader;
+    std::memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
+    dataHeader.cacheVersion = KPIXMAPCACHE_VERSION;
+    // dataHeader knows its own size, we'll start it off at that.
+
+    datafile.write(reinterpret_cast<char*>(&dataHeader), sizeof dataHeader);
 
     setValid(true);
+
+    QDataStream istream(&indexfile);
     writeCustomIndexHeader(istream);
     d->mHeaderSize = indexfile.pos();
 
-    d->mIndexRootOffset = d->mHeaderSize + sizeof(quint32);
-    istream << d->mIndexRootOffset;
+    d->mIndexRootOffset = d->mHeaderSize;
 
     // Close the files and mmap them (if mmapping is used)
     indexfile.close();
@@ -1162,26 +1254,30 @@ bool KPixmapCache::recreateCacheFiles()
 
 void KPixmapCache::deleteCache(const QString& name)
 {
-    QString indexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + name + ".index");
-    QString dataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + name + ".data");
-    if (QFile::exists(indexFile)) {
-        QFile::remove(indexFile);
+    foreach (KPixmapCache::Private *d, Private::mCaches) {
+        if (d->mName == name && d->mInited) {
+            d->q->discard();
+        }
     }
-    if (QFile::exists(dataFile)) {
-        QFile::remove(dataFile);
-    }
-    // No need to remove the lockfile
 }
 
 void KPixmapCache::discard()
 {
-    deleteCache(d->mName);
+    d->invalidateMmapFiles();
+    d->unmmapFiles();
+    d->mInited = false;
+
     if (d->mUseQPixmapCache) {
         QPixmapCache::clear();
     }
-    d->invalidateMmapFiles();
 
-    d->mInited = false;
+    QString indexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".index");
+    QString dataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".data");
+
+    QFile::remove(indexFile);
+    QFile::remove(dataFile);
+
+    // No need to remove the lockfile
     d->init();
 }
 
