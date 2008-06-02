@@ -103,6 +103,13 @@ public:
 
     void doCompletion(const QString& txt);
 
+    /**
+     * Checks whether we should/should not consume a key used as a shortcut.
+     * This makes it possible to handle shortcuts in the focused widget before any
+     * window-global QAction is triggered.
+     */
+    bool overrideShortcut(const QKeyEvent* e);
+
     static bool initialized;
     static bool backspacePerformsCompletion; // Configuration option
 
@@ -631,7 +638,7 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    int key = e->key() | e->modifiers();
+    const int key = e->key() | e->modifiers();
 
     if ( KStandardShortcut::copy().contains( key ) )
     {
@@ -716,7 +723,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
-        KeyBindingMap keys = getKeyBindings();
+        const KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
         bool noModifier = (e->modifiers() == Qt::NoButton ||
                            e->modifiers() == Qt::ShiftModifier ||
@@ -1224,8 +1231,7 @@ bool KLineEdit::event( QEvent* ev )
     if ( ev->type() == QEvent::ShortcutOverride )
     {
         QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-        if (overrideAccel (e))
-        {
+        if (d->overrideShortcut(e)) {
             ev->accept();
         }
     }
@@ -1346,33 +1352,33 @@ void KLineEdit::userCancelled(const QString & cancelText)
     }
 }
 
-bool KLineEdit::overrideAccel (const QKeyEvent* e)
+bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
 {
     KShortcut scKey;
 
     int key = e->key() | e->modifiers();
-    KeyBindingMap keys = getKeyBindings();
+    const KLineEdit::KeyBindingMap keys = q->getKeyBindings();
 
-    if (keys[TextCompletion].isEmpty())
+    if (keys[KLineEdit::TextCompletion].isEmpty())
         scKey = KStandardShortcut::shortcut(KStandardShortcut::TextCompletion);
     else
-        scKey = keys[TextCompletion];
+        scKey = keys[KLineEdit::TextCompletion];
 
     if (scKey.contains( key ))
         return true;
 
-    if (keys[NextCompletionMatch].isEmpty())
+    if (keys[KLineEdit::NextCompletionMatch].isEmpty())
         scKey = KStandardShortcut::shortcut(KStandardShortcut::NextCompletion);
     else
-        scKey = keys[NextCompletionMatch];
+        scKey = keys[KLineEdit::NextCompletionMatch];
 
     if (scKey.contains( key ))
         return true;
 
-    if (keys[PrevCompletionMatch].isEmpty())
+    if (keys[KLineEdit::PrevCompletionMatch].isEmpty())
         scKey = KStandardShortcut::shortcut(KStandardShortcut::PrevCompletion);
     else
-        scKey = keys[PrevCompletionMatch];
+        scKey = keys[KLineEdit::PrevCompletionMatch];
 
     if (scKey.contains( key ))
         return true;
@@ -1401,9 +1407,9 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     else if (KStandardShortcut::endOfLine().contains( key ))
         return true;
 
-    if (d->completionBox && d->completionBox->isVisible ())
+    if (completionBox && completionBox->isVisible ())
     {
-        int key = e->key();
+        const int key = e->key();
         Qt::KeyboardModifiers modifiers = e->modifiers();
         if ((key == Qt::Key_Backtab || key == Qt::Key_Tab) &&
             (modifiers == Qt::NoModifier || (modifiers & Qt::ShiftModifier)))

@@ -607,12 +607,6 @@ private:
     bool copySqueezedText( bool clipboard ) const;
 
     /**
-     * Checks whether we should/should not consume a key used as
-     * an accelerator.
-     */
-    bool overrideAccel (const QKeyEvent* e);
-
-    /**
      * Properly sets the squeezed text whenever the widget is
      * created or resized.
      */

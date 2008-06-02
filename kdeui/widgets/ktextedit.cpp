@@ -66,10 +66,15 @@ class KTextEdit::Private
     }
 
     /**
-     * Checks whether we should/should not consume a key used as
-     * an accelerator.
+     * Checks whether we should/should not consume a key used as a shortcut.
+     * This makes it possible to handle shortcuts in the focused widget before any
+     * window-global QAction is triggered.
      */
-    bool overrideShortcut (const QKeyEvent* e);
+    bool overrideShortcut(const QKeyEvent* e);
+    /**
+     * Actually handle a shortcut event.
+     */
+    bool handleShortcut(const QKeyEvent* e);
 
     void slotSpellCheckDone( const QString &s );
 
@@ -236,7 +241,7 @@ bool KTextEdit::event(QEvent* ev)
     return QTextEdit::event(ev);
 }
 
-bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
+bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
 {
   const int key = event->key() | event->modifiers();
 
@@ -314,9 +319,9 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
     if ( !text.isEmpty() )
       parent->insertPlainText( text );  // TODO: check if this is html? (MiB)
     return true;
-  } else if ( event->modifiers() == Qt::ControlModifier &&
+  } else if (event->modifiers() == Qt::ControlModifier &&
             (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
-              qobject_cast<KDialog*>( parent->topLevelWidget() ) ) {
+              qobject_cast<KDialog*>(parent->window()) ) {
     // ignore Ctrl-Return so that KDialogs can close the dialog
     return true;
   }
@@ -700,9 +705,58 @@ void KTextEdit::enableFindReplace( bool enabled )
     d->findReplaceEnabled = enabled;
 }
 
+bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
+{
+  const int key = event->key() | event->modifiers();
+
+  if ( KStandardShortcut::copy().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::paste().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::cut().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::undo().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::redo().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::deleteWordForward().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::backwardWord().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::forwardWord().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::next().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::prior().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::begin().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::end().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::beginningOfLine().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::endOfLine().contains( key ) ) {
+    return true;
+  } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
+    return true;
+  } else if (event->modifiers() == Qt::ControlModifier &&
+            (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
+              qobject_cast<KDialog*>(parent->window()) ) {
+    // ignore Ctrl-Return so that KDialogs can close the dialog
+    return true;
+  }
+  return false;
+}
+
 void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
-    QTextEdit::keyPressEvent(event);
+    if (d->handleShortcut(event)) {
+        event->accept();
+    } else {
+        QTextEdit::keyPressEvent(event);
+    }
 }
 
 #include "ktextedit.moc"
