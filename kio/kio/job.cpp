@@ -2096,14 +2096,20 @@ void FileCopyJob::slotResult( KJob *job)
       else if (job == d->m_getJob)
       {
         d->m_getJob = 0L;
-        if (d->m_putJob)
+        if (d->m_putJob) 
+        {
           d->m_putJob->kill( Quietly );
+          removeSubjob( d->m_putJob );
+        }  
       }
       else if (job == d->m_putJob)
       {
         d->m_putJob = 0L;
-        if (d->m_getJob)
+        if (d->m_getJob) 
+        {
           d->m_getJob->kill( Quietly );
+          removeSubjob( d->m_getJob );
+        }
       }
       setError( job->error() );
       setErrorText( job->errorText() );
