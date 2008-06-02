@@ -108,7 +108,7 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
         } else if ( item->isHidden() ){
         	item->setHidden( false );
         }
-        
+
         index++;
     }
 
@@ -122,11 +122,10 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
 void KListWidgetSearchLine::clear()
 {
     // Show items back to QListWidget
-    QListWidgetItem *item = 0;
     if ( d->listWidget != 0 ) {
-	    for (int i = 0 ; i < d->listWidget->count(); ++i) {
+        for (int i = 0 ; i < d->listWidget->count(); ++i) {
             d->listWidget->item( i )->setHidden( false );
-	    }
+        }
     }
 
     d->search = "";
