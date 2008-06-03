@@ -3800,6 +3800,11 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                                 widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
                     }
 
+                    #ifdef __GNUC__
+                    #warning Extra M-width needed to avoid menu items being stuck together with their shortcuts, \
+                             possibly due to wrongly reported text metrics
+                    #endif
+                    textW += fm.width('M');
 
                     int h = qMax(contentsSize.height(), widgetLayoutProp(WT_MenuItem, MenuItem::MinHeight, option, widget));
                     insideSize = QSize(leftColW + textW + rightColW, h);
