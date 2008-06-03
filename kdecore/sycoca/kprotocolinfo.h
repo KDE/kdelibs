@@ -32,7 +32,7 @@ class KProtocolInfoPrivate;
 
 /**
  * \class KProtocolInfo kprotocolinfo.h <KProtocolInfo>
- * 
+ *
  * Information about I/O (Internet, etc.) protocols supported by KDE.
 
  * This class is useful if you want to know which protocols
@@ -97,10 +97,14 @@ public:
 
   /**
    * Describes the type of a protocol.
+   * For instance ftp:// appears as a filesystem with folders and files,
+   * while bzip2:// appears as a single file (a stream of data),
+   * and telnet:// doesn't output anything.
+   * @see outputType
    */
-  enum Type { T_STREAM, ///< protocol returns a stream
-	      T_FILESYSTEM, ///<protocol describes location in a file system
-	      T_NONE,   ///< no information about the tyope available
+  enum Type { T_STREAM, ///< stream of data (e.g. single file)
+	      T_FILESYSTEM, ///< structured directory
+	      T_NONE,   ///< no information about the type available
 	      T_ERROR   ///< used to signal an error
   };
 

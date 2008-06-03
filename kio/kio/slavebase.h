@@ -593,7 +593,7 @@ public:
     virtual void dispatchOpenCommand( int command, const QByteArray &data );
 
     /**
-     * Read data send by the job, after a dataReq
+     * Read data sent by the job, after a dataReq
      *
      * @param buffer buffer where data is stored
      * @return 0 on end of data,
