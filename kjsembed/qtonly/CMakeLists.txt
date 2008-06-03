@@ -70,12 +70,7 @@ set(QJS_BIN_INSTALL_DIR     \"${QJS_BIN_INSTALL_DIR}\")
 set(QJS_DATA_INSTALL_DIR    \"${QJS_DATA_INSTALL_DIR}\")
 ")
 
-
 find_package(ZLIB REQUIRED)
-
-if (APPLE)
-   find_package(Carbon REQUIRED)
-endif (APPLE)
 
 # set some default settings
 include(KDE4Defaults)
