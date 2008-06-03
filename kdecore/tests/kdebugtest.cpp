@@ -1,8 +1,32 @@
+/* This file is part of the KDE project
+
+   Copyright 1999-2008 David Faure <faure@kde.org>
+   Copyright 2000-2005 Stephan Kulow <coolo@kde.org>
+   Copyright 2007      Thiago Macieira <thiago@kde.org>
+
+   This library is free software; you can redistribute it and/or modify
+   it under the terms of the GNU Library General Public License as published
+   by the Free Software Foundation; either version 2 of the License or
+   ( at your option ) version 3 or, at the discretion of KDE e.V.
+   ( which shall act as a proxy as in section 14 of the GPLv3 ), any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
 
 // to test debug messages, kdebug should be enabled regardless of build mode
 
+#include <QCoreApplication>
+#include <kcmdlineargs.h>
 #include <QtCore/QDebug>
-#undef QT_NO_DEBUG 
+#undef QT_NO_DEBUG
 
 #include "kdebug.h"
 #include <QtGui/QWidget>
@@ -156,7 +180,7 @@ namespace
         kDebug();
         return TestClass5();
     }
-} // namespace 
+} // namespace
 
 namespace N
 {
@@ -175,7 +199,7 @@ namespace
         kDebug();
         return TestClass6();
     }
-} // namespace 
+} // namespace
 } // namespace N
 
 void testKDebug()
@@ -254,9 +278,51 @@ void testKDebug()
     }
 }
 
-int main(int, char** )
+// Concurrency testing, based on code from bug 133026
+// Copyright 2006 Marcel Wiesweg <marcel.wiesweg@gmx.de>
+
+//#define THREAD_TEST 1
+
+#ifdef THREAD_TEST
+#include <QThread>
+class DebugKDebug : public QThread
+{
+public:
+    DebugKDebug(int num) : m_num(num) {}
+protected:
+    virtual void run()
+    {
+        int count = 1000;
+        while (--count) {
+            kDebug() << "Test" << m_num;
+            //usleep(1);
+        }
+    }
+private:
+    int m_num;
+};
+
+static void startThreads()
+{
+    QVector<DebugKDebug*> threads;
+    threads.resize(100);
+    for (int i=0; i<threads.size(); i++) {
+        threads[i] = new DebugKDebug(i);
+        threads[i]->start();
+    }
+    for (int i=0; i<threads.size(); i++) {
+        threads[i]->wait();
+    }
+}
+#endif
+
+int main(int argc, char** argv)
 {
     testKDebug();
+#ifdef THREAD_TEST
+    QCoreApplication app(argc, argv);
+    startThreads();
+#endif
     return 0;
 }
 
