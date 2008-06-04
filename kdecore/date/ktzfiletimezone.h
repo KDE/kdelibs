@@ -174,6 +174,7 @@ private:
 
 
 /**
+ * @internal
  * The parsed data returned by KTzfileTimeZoneSource.
  *
  * @short Parsed data from tzfile(5) time zone definition files

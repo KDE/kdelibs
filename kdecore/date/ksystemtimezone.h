@@ -393,6 +393,7 @@ private:
 
 
 /**
+ * @internal
  * The parsed system time zone data returned by KSystemTimeZoneSource.
  *
  * @short Parsed system time zone data
