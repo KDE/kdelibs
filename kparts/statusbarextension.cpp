@@ -167,7 +167,6 @@ void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool p
   d->m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
   StatusBarItem& it = d->m_statusBarItems.last();
   KStatusBar * sb = statusBar();
-  Q_ASSERT(sb);
   if (sb)
     it.ensureItemShown( sb );
 }
