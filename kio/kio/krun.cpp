@@ -131,11 +131,9 @@ bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
   if ( !url.isLocalFile() )
      return false;
   QFileInfo file( url.path() );
-  if ( file.isExecutable() )  // Got a prospective file to run
-  {
-    KMimeType::Ptr mimeType = KMimeType::mimeType( mimetype );
-
-    if ( mimeType->is("application/x-executable") || mimeType->is("application/x-executable-script") )
+  if ( file.isExecutable() ) {  // Got a prospective file to run
+    KMimeType::Ptr mimeType = KMimeType::mimeType(mimetype, KMimeType::ResolveAliases);
+    if ( mimeType && (mimeType->is("application/x-executable") || mimeType->is("application/x-executable-script")) )
       return true;
   }
   return false;
@@ -1219,7 +1217,7 @@ void KRun::foundMimeType( const QString& type )
 
   Q_ASSERT( !d->m_bFinished );
 
-  KMimeType::Ptr mime = KMimeType::mimeType( type );
+  KMimeType::Ptr mime = KMimeType::mimeType(type, KMimeType::ResolveAliases);
   if ( !mime )
       kWarning(7010) << "Unknown mimetype " << type;
 
