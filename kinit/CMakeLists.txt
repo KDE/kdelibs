@@ -123,10 +123,11 @@ set(klauncher_KDEINIT_SRCS
    klauncher_main.cpp
    klauncher_adaptor.cpp
    autostart.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KLauncher.xml # just so that it gets generated
    )
 
-# The adaptor is manually edited to add QDBusMessage arguments
-#qt4_add_dbus_adaptor(klauncher_KDEINIT_SRCS org.kde.KLauncher.xml klauncher.h KLauncher)
+# The adaptor is manually edited, generate the xml from it.
+qt4_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
@@ -141,5 +142,5 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 
