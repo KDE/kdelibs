@@ -3879,7 +3879,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     setStatusBarText(Qt::escape(u.prettyUrl()) + extra, BarHoverText);
   }
 }
- 
+
 //
 // This executes in the active part on a click or other url selection action in
 // that active part.
@@ -5411,13 +5411,13 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
   return 0L;
 }
 
-#ifndef NDEBUG
+#ifdef DEBUG_SAVESTATE
 static int s_saveStateIndentLevel = 0;
 #endif
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-#ifndef NDEBUG
+#ifdef DEBUG_SAVESTATE
   QString indent= QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
   kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url().url();
@@ -5498,7 +5498,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   // Save frame data
   stream << (quint32) frameNameLst.count();
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst << frameTypeLst;
-#ifndef NDEBUG
+#ifdef DEBUG_SAVESTATE
   s_saveStateIndentLevel = indentLevel;
 #endif
 }
@@ -6221,7 +6221,7 @@ static bool lastRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&endNode
         n = n->previousSibling();
     }
 }
- 
+
 void KHTMLPart::handleMousePressEventDoubleClick(khtml::MouseDoubleClickEvent *event)
 {
     QMouseEvent *mouse = event->qmouseEvent();
@@ -6574,7 +6574,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     handleMouseMoveEventSelection(event);
 }
- 
+
 void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 {
   DOM::Node innerNode = event->innerNode();
