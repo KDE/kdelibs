@@ -405,7 +405,8 @@ QString KCompletion::nextMatch()
 
     if ( d->matches.isEmpty() ) {
         findAllCompletions( d->myLastString, &d->matches, d->myHasMultipleMatches );
-        completion = d->matches.first();
+        if ( !d->matches.isEmpty() )
+	    completion = d->matches.first();
         d->myCurrentMatch = completion;
         d->myRotationIndex = 0;
         postProcessMatch( &completion );
@@ -442,7 +443,8 @@ QString KCompletion::previousMatch()
 
     if ( d->matches.isEmpty() ) {
         findAllCompletions( d->myLastString, &d->matches, d->myHasMultipleMatches );
-        completion = d->matches.last();
+        if ( !d->matches.isEmpty() )
+            completion = d->matches.last();
         d->myCurrentMatch = completion;
         d->myRotationIndex = 0;
         postProcessMatch( &completion );
