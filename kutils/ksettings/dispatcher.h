@@ -34,7 +34,7 @@ namespace KSettings
  * Since your program does not have direct control over the KCMs that get loaded
  * into KSettings::Dialog you need a way to get notified. This is what you do:
  * \code
- * Dispatcher::registerComponent(componentData(), this, SLOT(loadSettings()));
+ * Dispatcher::registerComponent(componentData(), this, "loadSettings");
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
@@ -51,7 +51,7 @@ namespace Dispatcher
      *
      * @param componentData     The KComponentData object
      * @param recv         The object that should receive the signal
-     * @param slot         The slot to be called: SLOT( slotName() )
+     * @param slot         The slot to be called: "slotName"
      */
     KUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
 
