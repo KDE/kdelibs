@@ -172,6 +172,14 @@
 <!ENTITY Linux-miejscownik    'Linuksie'>
 <!ENTITY Linux    '&Linux-mianownik;'>
 
+<!ENTITY okular-mianownik    '<application>Okular</application>'>
+<!ENTITY okular-dopelniacz    '<application>Okulara</application>'>
+<!ENTITY okular-celownik    '<application>Okularowi</application>'>
+<!ENTITY okular-biernik    '<application>Okulara</application>'>
+<!ENTITY okular-narzednik    '<application>Okularem</application>'>
+<!ENTITY okular-miejscownik    '<application>Okularze</application>'>
+<!ENTITY okular    '&okular-mianownik;'>
+
 <!ENTITY Sendmail-mianownik    '<application>Sendmail</application>'>
 <!ENTITY Sendmail-dopelniacz    '<application>Sendmail-a</application>'>
 <!ENTITY Sendmail-celownik    '<application>Sendmail-owi</application>'>
