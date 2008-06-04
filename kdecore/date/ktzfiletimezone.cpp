@@ -150,6 +150,11 @@ KTzfileTimeZoneSource::~KTzfileTimeZoneSource()
     delete d;
 }
 
+QString KTzfileTimeZoneSource::location()
+{
+	return d->location;
+}
+
 KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
 {
     quint32 abbrCharCount;     // the number of characters of time zone abbreviation strings
