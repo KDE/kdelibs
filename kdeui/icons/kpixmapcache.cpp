@@ -116,13 +116,6 @@ private:
 static const char KPC_MAGIC[] = "KDE PIXMAP CACHE DEUX";
 struct KPixmapCacheDataHeader
 {
-    KPixmapCacheDataHeader() :
-        cacheVersion(0),
-        size(sizeof(*this))
-    {
-        magic[0] = '\0'; // In case of inadvertent strcpy or something.
-    }
-
     // -1 from sizeof so we don't write out the trailing null.  If you change
     // the list of members change them in the KPixmapCacheIndexHeader as well!
     char    magic[sizeof(KPC_MAGIC) - 1];
@@ -132,15 +125,6 @@ struct KPixmapCacheDataHeader
 
 struct KPixmapCacheIndexHeader
 {
-    KPixmapCacheIndexHeader() :
-        cacheVersion(0),
-        size(sizeof(*this)),
-        cacheId(0),
-        timestamp(0)
-    {
-        magic[0] = '\0'; // In case of inadvertent strcpy or something.
-    }
-
     // -1 from sizeof so we don't write out the trailing null.
     // The follow are also in KPixmapCacheDataHeader
     char    magic[sizeof(KPC_MAGIC) - 1];
@@ -1232,7 +1216,7 @@ bool KPixmapCache::recreateCacheFiles()
     KPixmapCacheDataHeader dataHeader;
     std::memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
     dataHeader.cacheVersion = KPIXMAPCACHE_VERSION;
-    // dataHeader knows its own size, we'll start it off at that.
+    dataHeader.size = sizeof dataHeader;
 
     datafile.write(reinterpret_cast<char*>(&dataHeader), sizeof dataHeader);
 
