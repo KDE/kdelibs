@@ -134,7 +134,7 @@ public Q_SLOTS:
    */
   static void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
-                    const QString &messageFile = QString(), 
+                    const QString &messageFile = QString(),
                     const QStringList &attachURLs = QStringList(),
                     const QByteArray& startup_id = QByteArray() );
 
@@ -154,13 +154,16 @@ public Q_SLOTS:
   /**
    * Invokes the standard terminal application.
    *
-   * @param command the command to execute
+   * @param command the command to execute, can be empty.
+   * @param workdir the initial working directory, can be empty.
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    *
    * @since 4.1
    */
-  static void invokeTerminal(const QString &command, const QByteArray &startup_id = "");
+  static void invokeTerminal(const QString &command,
+                             const QString& workdir = QString(),
+                             const QByteArray &startup_id = "");
 
 public:
   /**
@@ -214,7 +217,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QString *serviceName=0, int *pid=0, 
+                QString *error=0, QString *serviceName=0, int *pid=0,
                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**
@@ -261,7 +264,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QString *serviceName=0, int *pid = 0, 
+                QString *error=0, QString *serviceName=0, int *pid = 0,
                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 
   /**

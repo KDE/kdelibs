@@ -269,7 +269,9 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     }
 }
 
-void KToolInvocation::invokeTerminal(const QString &command, const QByteArray &startup_id)
+void KToolInvocation::invokeTerminal(const QString &command,
+                                     const QString &workdir,
+                                     const QByteArray &startup_id)
 {
     if (!isMainThreadActive()) {
         return;
@@ -278,18 +280,23 @@ void KToolInvocation::invokeTerminal(const QString &command, const QByteArray &s
     KConfigGroup confGroup( KGlobal::config(), "General" );
     QString exec = confGroup.readPathEntry("TerminalApplication", "konsole");
 
-    if (exec == "konsole") {
-        exec += " --noclose";
-    } else if (exec == "xterm") {
-        exec += " -hold";
-    }
-
     if (!command.isEmpty()) {
+        if (exec == "konsole") {
+            exec += " --noclose";
+        } else if (exec == "xterm") {
+            exec += " -hold";
+        }
+
         exec += " -e " + command;
     }
 
     QStringList cmdTokens = KShell::splitArgs(exec);
     QString cmd = cmdTokens.takeFirst();
+
+    if (exec == "konsole" && !workdir.isEmpty()) {
+        cmdTokens << "--workdir";
+        cmdTokens << workdir;
+    }
 
     QString error;
     if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
