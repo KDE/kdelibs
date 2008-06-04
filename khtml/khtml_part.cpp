@@ -1995,7 +1995,7 @@ void KHTMLPart::onFirstData()
 
 bool KHTMLPart::doOpenStream( const QString& mimeType )
 {
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
     if ( mime && ( mime->is( "text/html" ) || mime->is( "text/xml" ) ) )
     {
         begin( url() );

@@ -105,9 +105,9 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
     QStringList formatLabels;
     for ( int i = 0; i < formats.size(); ++i ) {
         const QString& fmt = formats[i];
-        KMimeType::Ptr mime = KMimeType::mimeType( fmt );
-        if ( mime != KMimeType::defaultMimeTypePtr() )
-            formatLabels.append( i18n( "%1 (%2)" ,  mime->comment() ,  fmt ) );
+        KMimeType::Ptr mime = KMimeType::mimeType(fmt, KMimeType::ResolveAliases);
+        if (mime)
+            formatLabels.append( i18n("%1 (%2)", mime->comment(), fmt) );
         else
             formatLabels.append( fmt );
     }

@@ -185,7 +185,7 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
 
     KMimeType::Ptr mimeType;
     if ( !m_mimeType.isEmpty() )
-        mimeType = KMimeType::mimeType( m_mimeType );
+        mimeType = KMimeType::mimeType(m_mimeType, KMimeType::ResolveAliases);
 
     if ( mimeType ) {
         if (m_image && !m_image->suggestedTitle().isEmpty()) {
@@ -266,7 +266,7 @@ void KHTMLImage::updateWindowCaption()
 
     KMimeType::Ptr mimeType;
     if ( !m_mimeType.isEmpty() )
-        mimeType = KMimeType::mimeType( m_mimeType );
+        mimeType = KMimeType::mimeType( m_mimeType, KMimeType::ResolveAliases );
 
     if ( mimeType )
         caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )

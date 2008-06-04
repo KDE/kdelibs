@@ -3046,7 +3046,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   for(QStringList::ConstIterator it = mimeTypes.begin();
       it != mimeTypes.end(); )
   {
-    KMimeType::Ptr p = KMimeType::mimeType(*it);
+    KMimeType::Ptr p = KMimeType::mimeType(*it, KMimeType::ResolveAliases);
     ++it;
     QString preference;
     if (it != mimeTypes.end())
@@ -3059,7 +3059,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
          ++it;
        }
     }
-    if (p && (p != defaultMimetype))
+    if (p)
     {
       QTreeWidgetItem *item = new QTreeWidgetItem();
       item->setText(0, p->name());

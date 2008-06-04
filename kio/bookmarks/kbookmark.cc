@@ -69,7 +69,7 @@ static QDomText get_or_create_text(QDomNode node)
 static QDomNode findMetadata(const QString & forOwner, QDomNode& parent, bool create)
 {
     bool forOwnerIsKDE = forOwner == METADATA_KDE_OWNER;
-  
+
     QDomElement metadataElement;
     for ( QDomNode _node = parent.firstChild(); !_node.isNull(); _node = _node.nextSibling() ) {
         QDomElement elem = _node.toElement();
@@ -85,11 +85,11 @@ static QDomNode findMetadata(const QString & forOwner, QDomNode& parent, bool cr
         metadataElement = parent.ownerDocument().createElement( "metadata" );
         parent.appendChild(metadataElement);
         metadataElement.setAttribute( "owner", forOwner );
-        
+
     } else if (!metadataElement.isNull() && forOwnerIsKDE) {
         // i'm not sure if this is good, we shouln't take over foreign metatdata
         metadataElement.setAttribute( "owner", METADATA_KDE_OWNER );
-    }    
+    }
     return metadataElement;
 }
 
@@ -214,7 +214,7 @@ KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
 KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
     QDomDocument doc = element.ownerDocument();
-    QDomElement elem = doc.createElement( "bookmark" );    
+    QDomElement elem = doc.createElement( "bookmark" );
     elem.setAttribute( "href", url.url() ); // gives us utf8
 
     QDomElement textElem = doc.createElement( "title" );
@@ -223,7 +223,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
 
     KBookmark newBookmark =  addBookmark( KBookmark( elem ) );
 
-    // as icons are moved to metadata, we have to use the KBookmark API for this   
+    // as icons are moved to metadata, we have to use the KBookmark API for this
     newBookmark.setIcon(icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
     return newBookmark;
 }
@@ -350,14 +350,14 @@ QString KBookmark::icon() const
 {
     QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, false);
     QDomElement iconElement = cd(metaDataNode, "bookmark:icon", false).toElement();
-    
+
     QString icon = iconElement.attribute("name");
-    
+
     // migration code
     if (icon.isEmpty())
       icon = element.attribute("icon");
     // end migration code
-    
+
     if (icon == "bookmark_folder") {
         return "folder-bookmarks";
     }
@@ -374,7 +374,7 @@ QString KBookmark::icon() const
                 // get icon from mimeType
                 QString _mimeType = mimeType();
                 if (!_mimeType.isEmpty()) {
-                    KMimeType::Ptr mime = KMimeType::mimeType (_mimeType);
+                    KMimeType::Ptr mime = KMimeType::mimeType(_mimeType, KMimeType::ResolveAliases);
                     if (mime) {
                         return mime->iconName();
                     }
@@ -392,7 +392,7 @@ void KBookmark::setIcon(const QString &icon)
     QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, true);
     QDomElement iconElement = cd_or_create(metaDataNode, "bookmark:icon").toElement();
     iconElement.setAttribute ( "name", icon );
-    
+
     // migration code
     if(!element.attribute("icon").isEmpty())
         element.removeAttribute("icon");
@@ -551,13 +551,13 @@ QDomNode KBookmark::metaData(const QString &owner, bool create) const
 {
     QDomNode infoNode = cd( internalElement(), "info", create);
     if (infoNode.isNull()) return QDomNode();
-    return findMetadata(owner, infoNode , create);  
+    return findMetadata(owner, infoNode , create);
 }
 
 QString KBookmark::metaDataItem( const QString &key ) const
 {
     QDomNode metaDataNode = metaData(METADATA_KDE_OWNER, false);
-    for ( QDomElement e = metaDataNode.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) 
+    for ( QDomElement e = metaDataNode.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() )
     {
         if ( e.tagName() == key ) {
             return e.text();
