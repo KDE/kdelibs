@@ -211,14 +211,20 @@ QObject* TestObject::func_qobject_qobject(QObject* obj)
     return obj;
 }
 
-void TestObject::func_void_testobject(TestObject*)
+QWidget* TestObject::func_qwidget_qwidget(QWidget* widget)
 {
-    //kDebug() << "TestObject::func_void_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    kDebug() << "TestObject::func_qwidget_qwidget " << (widget ? QString("objectName=%1 className=%2").arg(widget->objectName()).arg(widget->metaObject()->className()) : "NULL");
+    return widget;
+}
+
+void TestObject::func_void_testobject(TestObject* obj)
+{
+    kDebug() << "TestObject::func_void_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
 }
 
 TestObject* TestObject::func_testobject_testobject(TestObject* obj)
 {
-    //kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
 }
 

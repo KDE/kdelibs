@@ -1,4 +1,4 @@
-#!/usr/bin/env kross
+#!/usr/bin/env krosstest
 
 require 'test/unit'
 

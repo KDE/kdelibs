@@ -169,6 +169,9 @@ class TestObject : public QObject
         void func_void_qobject(QObject*);
         QObject* func_qobject_qobject(QObject*);
 
+        // QWidget
+        QWidget* func_qwidget_qwidget(QWidget*);
+
         // TestObject
         void func_void_testobject(TestObject*);
         TestObject* func_testobject_testobject(TestObject*);
