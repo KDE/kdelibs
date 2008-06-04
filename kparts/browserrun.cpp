@@ -365,7 +365,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
     // - multipart/* ("server push", see kmultipart)
     // - other strange 'internal' mimetypes like print/manager...
     // KEEP IN SYNC!!!
-    if (flags != (int)AttachmentDisposition && (
+    if (flags != (int)AttachmentDisposition && mime && (
          mime->is( "text/html" ) ||
          mime->is( "application/xml" ) ||
          mime->is( "inode/directory" ) ||
