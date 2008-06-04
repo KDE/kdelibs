@@ -209,8 +209,12 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
     const QVariant value = index.data(KDirModel::ChildCountRole);
     const int count = value.type() == QVariant::Int ? value.toInt() : KDirModel::ChildCountUnknown;
 
-    if (count == KDirModel::ChildCountUnknown)
-        return i18nc("Items in a folder", "? items");
+    if (count == KDirModel::ChildCountUnknown) {
+        // was: i18nc("Items in a folder", "? items");
+        // but this just looks useless in a remote directory listing,
+        // better not show anything.
+        return QString();
+    }
 
     return i18ncp("Items in a folder", "1 item", "%1 items", count);
 }
