@@ -1530,7 +1530,7 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
     urlNavigator->setUrlEditable( !configGroup.readEntry(BreadcrumbNavigation, true) );
 
     int w1 = q->minimumSize().width();
-    int w2 = toolbar->sizeHint().width() + 10;
+    int w2 = toolbar->sizeHint().width();
     if (w1 < w2)
         q->setMinimumWidth(w2);
 }
