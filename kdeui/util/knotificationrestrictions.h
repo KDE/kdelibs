@@ -31,7 +31,7 @@
  *
  * Using KNotificationRestrictions is quite straightforward: create an instance
  * of KNotificationRestrictions, passing in the set of or'd flags representing
- * the services that should be prevented from interupting the user. When done
+ * the services that should be prevented from interrupting the user. When done
  * (for instance when the presentation is complete) simply delete the
  * KNotificationRestrictions object.
  *
@@ -55,11 +55,11 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
          *        automatically turning on
          * @value MessagingPopups (NOT IMPLEMENTED YET) causes instant messaging
          *        and email notifications to not appear
-         * @value Notificiations (NOT IMPLEMENTED YET) causes non-critical
+         * @value Notifications (NOT IMPLEMENTED YET) causes non-critical
          *        desktop messages to be suppressed
          * @value CriticalNotifications (NOT IMPLEMENTED YET) causes all desktop
          *        notifications, including critical ones such as battery low
-         *        warnings to be surpressed
+         *        warnings to be suppressed
          */
         enum Service
         {

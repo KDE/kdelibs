@@ -126,12 +126,12 @@ void KNotification::setText(const QString &text)
 	if(d->id > 0)
 		d->updateTimer.start();
 }
-	
+
 QPixmap KNotification::pixmap() const
 {
 	return d->pixmap;
 }
-	
+
 void KNotification::setPixmap(const QPixmap &pix)
 {
 	d->pixmap=pix;
@@ -155,7 +155,7 @@ KNotification::ContextList KNotification::contexts() const
 {
 	return d->contexts;
 }
-	
+
 void KNotification::setContexts( const KNotification::ContextList &contexts)
 {
 	d->contexts=contexts;
@@ -267,7 +267,7 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 	notify->setComponentData(componentData);
 
 	QTimer::singleShot(0,notify,SLOT(sendEvent()));
-	
+
 	return notify;
 }
 
@@ -316,7 +316,7 @@ void KNotification::sendEvent()
 	if(d->id<=0)
 	{
 		QString appname;
-		
+
 		if(d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
 		else if(d->componentData.isValid()) {
@@ -340,7 +340,7 @@ void KNotification::sendEvent()
 
 void KNotification::slotReceivedId(int id)
 {
-	if(d->id == -2) //we are elready closed 
+	if(d->id == -2) //we are elready closed
 	{
 		KNotificationManager::self()->close( id, /*force=*/ true );
 		deleteLater();
@@ -362,7 +362,7 @@ void KNotification::slotReceivedId(int id)
 
 void KNotification::slotReceivedIdError(const QDBusError& error)
 {
-	if(d->id == -2) //we are elready closed 
+	if(d->id == -2) //we are elready closed
 	{
 		deleteLater();
 		return;
