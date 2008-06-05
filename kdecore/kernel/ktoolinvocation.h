@@ -371,7 +371,8 @@ private:
   int startServiceInternal(const char *_function,
                            const QString& _name, const QStringList &URLs,
                            QString *error, QString *serviceName, int *pid,
-                           const QByteArray& startup_id, bool noWait);
+                           const QByteArray& startup_id, bool noWait,
+                           const QString& workdir = QString());
   static bool isMainThreadActive(QString* error = 0);
 
   KToolInvocationPrivate * const d;

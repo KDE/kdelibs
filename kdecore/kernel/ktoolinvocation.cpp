@@ -86,7 +86,8 @@ bool KToolInvocation::isMainThreadActive(QString* error)
 int KToolInvocation::startServiceInternal(const char *_function,
                                           const QString& _name, const QStringList &URLs,
                                           QString *error, QString *serviceName, int *pid,
-                                          const QByteArray& startup_id, bool noWait )
+                                          const QByteArray& startup_id, bool noWait,
+                                          const QString& workdir)
 {
     QString function = QLatin1String(_function);
     org::kde::KLauncher *launcher = KToolInvocation::klauncher();
@@ -95,6 +96,8 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                                 launcher->interface(),
                                                 function);
     msg << _name << URLs;
+    if (function == QLatin1String("kdeinit_exec_with_workdir"))
+        msg << workdir;
 #ifdef Q_WS_X11
     // make sure there is id, so that user timestamp exists
     QStringList envs;

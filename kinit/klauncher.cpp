@@ -871,7 +871,8 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& 
 
 bool
 KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
-   const QStringList &envs, const QString &startup_id, bool wait, const QDBusMessage &msg)
+                        const QString& workdir, const QStringList &envs,
+                        const QString &startup_id, bool wait, const QDBusMessage &msg)
 {
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
@@ -895,6 +896,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->startup_id = startup_id;
 #endif
    request->envs = envs;
+   request->cwd = workdir;
    if( !app.endsWith("kbuildsycoca4") ) // avoid stupid loop
    {
        // Find service, if any - strip path if needed
@@ -1186,10 +1188,10 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 {
     KProcess *p = static_cast<KProcess *>(sender());
     kDebug(7016) << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
-    
+
     foreach (KLaunchRequest *request, requestList)
     {
-        if (request->process == p) 
+        if (request->process == p)
         {
             kDebug() << "found process setting to done";
             if (exitCode == 0  && exitStatus == QProcess::NormalExit)

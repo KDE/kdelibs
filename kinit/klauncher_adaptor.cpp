@@ -71,14 +71,21 @@ void KLauncherAdaptor::exec_blind(const QString &name, const QStringList &arg_li
 int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &, QString &, int &)
 {
     // handle method call org.kde.KLauncher.kdeinit_exec
-    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, env, startup_id, msg);
+    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, QString(), env, startup_id, false, msg);
     return 0;                   // delayed reply
 }
 
 int KLauncherAdaptor::kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &, QString &, int &)
 {
     // handle method call org.kde.KLauncher.kdeinit_exec_wait
-    static_cast<KLauncher *>(parent())->kdeinit_exec_wait(app, args, env, startup_id, msg);
+    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, QString(), env, startup_id, true, msg);
+    return 0;                   // delayed reply
+}
+
+int KLauncherAdaptor::kdeinit_exec_with_workdir(const QString &app, const QStringList &args, const QString& workdir, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &, QString &, int &)
+{
+    // handle method call org.kde.KLauncher.kdeinit_exec_with_workdir
+    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, workdir, env, startup_id, false, msg);
     return 0;                   // delayed reply
 }
 
@@ -144,6 +151,5 @@ void KLauncherAdaptor::waitForSlave(int pid, const QDBusMessage &msg)
     // handle method call org.kde.KLauncher.waitForSlave
     static_cast<KLauncher *>(parent())->waitForSlave(pid, msg);
 }
-
 
 #include "klauncher_adaptor.moc"

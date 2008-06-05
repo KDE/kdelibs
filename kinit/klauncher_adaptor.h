@@ -48,6 +48,7 @@ public Q_SLOTS: // METHODS
     void exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id);
     int kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);
     int kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);
+    int kdeinit_exec_with_workdir(const QString &app, const QStringList &args, const QString& workdir, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);
     void reparseConfiguration();
     int requestHoldSlave(const QString &url, const QString &app_socket);
     int requestSlave(const QString &protocol, const QString &host, const QString &app_socket, QString &error);

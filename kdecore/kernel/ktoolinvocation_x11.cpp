@@ -296,11 +296,13 @@ void KToolInvocation::invokeTerminal(const QString &command,
     if (exec == "konsole" && !workdir.isEmpty()) {
         cmdTokens << "--workdir";
         cmdTokens << workdir;
+        // For other terminals like xterm, we'll simply change the working
+        // directory before launching them, see below.
     }
 
     QString error;
-    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
-    {
+    if (self()->startServiceInternal("kdeinit_exec_with_workdir",
+                                    cmd, cmdTokens, &error, 0, NULL, startup_id, false, workdir)) {
       KMessage::message(KMessage::Error,
                       i18n("Could not launch the terminal client:\n\n%1", error),
                       i18n("Could not Launch Terminal Client"));
