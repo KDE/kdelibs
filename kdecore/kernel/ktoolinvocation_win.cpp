@@ -57,7 +57,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);
 }
 
-void KToolInvocation::invokeTerminal(const QString &command, const QByteArray &startup_id)
+void KToolInvocation::invokeTerminal(const QString &command, const QString &workdir, const QByteArray &startup_id)
 {
     //TODO
 }
