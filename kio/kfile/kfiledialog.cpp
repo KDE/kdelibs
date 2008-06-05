@@ -90,6 +90,8 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
 {
     setButtons( KDialog::None );
+    restoreDialogSize(d->cfgGroup); // call this before the fileQWidget is set as the main widget.
+                                    // otherwise the sizes for the components are not obeyed (ereslibre)
 
     // Dlopen the file widget from libkfilemodule
     QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
@@ -122,8 +124,6 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
     if (customWidget)
      d->w->setCustomWidget(customWidget);
-
-    restoreDialogSize(d->cfgGroup);
 }
 
 
