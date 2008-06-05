@@ -29,7 +29,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : globalShortcutEnabled(false), q(0)
+            : componentData(KGlobal::mainComponent()), globalShortcutEnabled(false), q(0)
         {
         }
 

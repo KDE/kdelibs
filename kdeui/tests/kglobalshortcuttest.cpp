@@ -180,6 +180,41 @@ void KGlobalShortcutTest::testListActions()
     QVERIFY(actions.contains(actionIdB));
 }
 
+void KGlobalShortcutTest::testComponentAssignment()
+{
+    KComponentData otherComponent("test_component1");
+    KActionCollection coll((QObject*)NULL);
+    coll.setComponentData(otherComponent);
+    KShortcut cutB;
+    /************************************************************
+     * Ensure that the actions get a correct component assigned *
+     ************************************************************/
+    // Action without action collection get the global component
+    {
+        KAction action("Text For Action A", NULL);
+        action.setObjectName("Action C");
+
+        QVERIFY(action.d->componentData == KGlobal::mainComponent());
+        action.setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+        QVERIFY(action.d->componentData == KGlobal::mainComponent());
+        // cleanup
+        action.forgetGlobalShortcut();
+    }
+
+    // Action with action collection get the component of the collection
+    {
+        KAction *action = coll.addAction("Text For Action A");
+        action->setObjectName("Action C");
+
+        QVERIFY(action->d->componentData == otherComponent);
+        action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+        QVERIFY(action->d->componentData == otherComponent);
+        // cleanup
+        action->forgetGlobalShortcut();
+        delete action;
+    }
+}
+
 void KGlobalShortcutTest::testOverrideMainComponentData()
 {
     KComponentData otherComponent("test_component1");
@@ -189,11 +224,10 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
     // Action without action collection
     KAction *action = new KAction("Text For Action A", this);
-    // That's the current state, but i'm not sure it should stay this way.
-    QVERIFY(!action->d->componentData.isValid());
+    QVERIFY(action->d->componentData == KGlobal::mainComponent());
     action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QVERIFY(!action->d->componentData.isValid());
+    QVERIFY(action->d->componentData == KGlobal::mainComponent());
 
     // Action with action collection
     delete action;
@@ -213,14 +247,15 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     KComponentData globalComponent("test_component2");
     KGlobalAccel::self()->overrideMainComponentData(globalComponent);
 
-    // Action without action collection
+    // Action with action collection gets the global component
     action = new KAction("Text For Action A", this);
-    QVERIFY(!action->d->componentData.isValid());
+    QVERIFY(action->d->componentData == KGlobal::mainComponent());
     action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QVERIFY(!action->d->componentData.isValid());
+    QVERIFY(action->d->componentData == globalComponent);
 
-    // Action with action collection
+    // Action with action collection get the component of the collection until
+    // a global shortcut is set when overrideMainComponentData is active
     delete action;
     action = coll.addAction("Text For Action A");
     QVERIFY(action->d->componentData == otherComponent);

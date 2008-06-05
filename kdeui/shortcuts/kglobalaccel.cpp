@@ -88,12 +88,9 @@ void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
 {
     Q_ASSERT(!componentData.componentName().isEmpty());
 
-    mainComponentName = componentData.componentName();
-    if (!componentData.aboutData()->programName().isEmpty()) {
-        mainComponentFriendlyName = componentData.aboutData()->programName();
-    } else {
+    mainComponent = componentData;
+    if (componentData.aboutData()->programName().isEmpty()) {
         kDebug(123) << componentData.componentName() << " has empty programName()";
-        mainComponentFriendlyName = componentData.componentName();
     }
 }
 
@@ -171,6 +168,11 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
     if (isRegistered)
         return;
 
+    // Under configuration mode - deprecated - we ignore the component given
+    // from the action and use our own.
+    if (isUsingForeignComponentName) {
+        action->d->componentData = mainComponent;
+    }
     QStringList actionId = makeActionId(action);
 
     nameToAction.insertMulti(actionId.at(ActionUnique), action);
@@ -277,18 +279,14 @@ KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 
 QString KGlobalAccelPrivate::componentUniqueForAction(const KAction *action)
 {
-    if (!action->d->componentData.isValid()) {
-        return mainComponentName;
-    }
+    Q_ASSERT(action->d->componentData.isValid());
     return action->d->componentData.componentName();
 }
 
 
 QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 {
-    if (!action->d->componentData.isValid()) {
-        return mainComponentFriendlyName;
-    }
+    Q_ASSERT(action->d->componentData.isValid());
     return action->d->componentData.aboutData()->programName();
 }
 
