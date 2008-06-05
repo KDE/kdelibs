@@ -221,8 +221,6 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     setDropIndicatorShown(true);
     setFrameStyle(QFrame::NoFrame);
 
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
     setResizeMode(Adjust);
     setItemDelegate(new KFilePlacesViewDelegate(this));
 
