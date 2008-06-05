@@ -1914,8 +1914,8 @@ void KFileWidgetPrivate::updateSplitterSize()
         KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
         const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) );
         const int availableWidth = q->width();
-        sizes[0] = speedbarWidth;
-        sizes[1] = availableWidth - speedbarWidth;
+        sizes[0] = speedbarWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
+        sizes[1] = availableWidth - speedbarWidth - 1;
         placesViewSplitter->setSizes( sizes );
     }
 }
