@@ -37,6 +37,9 @@ private Q_SLOTS:
     void testStealShortcut();
     void testSaveRestore();
     void testListActions();
+    // This has to be the last before forgetGlobalShortcut
+    void testOverrideMainComponentData();
+    void testForgetGlobalShortcut();
     void cleanupTestCase();
 private:
     KAction *m_actionA;

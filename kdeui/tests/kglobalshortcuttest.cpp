@@ -24,6 +24,9 @@
 #include <qdbusinterface.h>
 #include <qtest_kde.h>
 #include <kaction.h>
+#include <kaction_p.h>
+#include <kactioncollection.h>
+#include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kdebug.h>
 
@@ -33,10 +36,16 @@ const QKeySequence sequenceA = QKeySequence(Qt::SHIFT + Qt::META + Qt::CTRL + Qt
 const QKeySequence sequenceB = QKeySequence(Qt::Key_F29);
 const QKeySequence sequenceC = QKeySequence(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::Key_F28 );
 const QKeySequence sequenceD = QKeySequence(Qt::META + Qt::ALT + Qt::Key_F30);
+const QKeySequence sequenceE = QKeySequence(Qt::META + Qt::Key_F29);
 
 /* These tests could be better. They don't include actually triggering actions,
    and we just choose very improbable shortcuts to avoid conflicts with real
    applications' shortcuts. */
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   The order here i very important. An test expects the shortcuts to have
+   certain values. Be careful when changing. */
 
 //we need a KComponentData and a GUI so that the implementation can grab keys
 QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
@@ -52,17 +61,13 @@ void KGlobalShortcutTest::initTestCase()
 
 void KGlobalShortcutTest::testSetShortcut()
 {
-    // We have to set the global shortcut with NoAutoloading to be independent from previous runs of the test.
-    // There is no way of making kdedglobalaccel "completely forget" a global shortcut currently, this would need new API.
-
-    //possible modifiers are SHIFT META CTRL ALT
-    KShortcut cutA(sequenceA);
-    //kDebug() << cutA.toString();
+    // Create a global shortcut
+    KShortcut cutA(sequenceA, sequenceB);
     m_actionA->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
-    //kDebug() << m_actionA->globalShortcut().toString();
     QCOMPARE(m_actionA->globalShortcut(), cutA);
     QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA);
 
+    // Set the global shortcut to empty shortcuts
     m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().isEmpty());
     QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty());
@@ -70,6 +75,7 @@ void KGlobalShortcutTest::testSetShortcut()
     // Check that action B, which has no shortcut set, does appear when listing the actions
     // (important for the kcontrol module)
     testListActions();
+
 }
 
 
@@ -85,35 +91,44 @@ void KGlobalShortcutTest::testFindActionByKey()
 
 void KGlobalShortcutTest::testChangeShortcut()
 {
-    KShortcut newCutA(sequenceC); // same without the ALT
+    // Change the shortcut
+    KShortcut newCutA(sequenceC);
     m_actionA->setGlobalShortcut(newCutA, KAction::ActiveShortcut, KAction::NoAutoloading);
+    // Ensure that the change is active
     QCOMPARE(m_actionA->globalShortcut(), newCutA);
-    KShortcut cutA(sequenceA);
-    QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA); // unchanged
+    // We haven't changed the default shortcut, ensure it is unchanged
+    KShortcut cutA(sequenceA, sequenceB);
+    QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA);
 
 
-    KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(sequenceB));
-    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
-                                 KAction::NoAutoloading);
+    // Try to set a already take shortcut
+    KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(sequenceE));
+    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    // Ensure that no change was made to the primary active shortcut
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
-    QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(sequenceB));
+    // Ensure that the change to the secondary active shortcut was made
+    QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(sequenceE));
+    // Ensure that the default shortcut is still empty
     QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty()); // unchanged
 
+    // Only change the active shortcut
     cutB.setPrimary(sequenceD);
-    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
-                                 KAction::NoAutoloading);
+    m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    // Check that the change went through
     QCOMPARE(m_actionB->globalShortcut(), cutB);
+    // Check that the default shortcut is not active
     QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty()); // unchanged
 }
 
 
 void KGlobalShortcutTest::testStealShortcut()
 {
-    QVERIFY(!m_actionB->globalShortcut().primary().isEmpty());
+
+    QVERIFY(!m_actionB->globalShortcut(KAction::ActiveShortcut).primary().isEmpty());
     KGlobalAccel::stealShortcutSystemwide(sequenceD);
     //let DBus do its thing in case it happens asynchronously
     QTest::qWait(200);
-    QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
+    QVERIFY(m_actionB->globalShortcut(KAction::ActiveShortcut).primary().isEmpty());
 }
 
 
@@ -134,6 +149,7 @@ void KGlobalShortcutTest::testSaveRestore()
     m_actionA->setObjectName("Action A");
     m_actionA->setGlobalShortcut(KShortcut(QKeySequence(), cutA.primary()));
     QCOMPARE(m_actionA->globalShortcut(), cutA);
+
 }
 
 // Duplicated again!
@@ -164,8 +180,85 @@ void KGlobalShortcutTest::testListActions()
     QVERIFY(actions.contains(actionIdB));
 }
 
+void KGlobalShortcutTest::testOverrideMainComponentData()
+{
+    KComponentData otherComponent("test_component1");
+    KActionCollection coll((QObject*)NULL);
+    coll.setComponentData(otherComponent);
+    KShortcut cutB;
+
+    // Action without action collection
+    KAction *action = new KAction("Text For Action A", this);
+    // That's the current state, but i'm not sure it should stay this way.
+    QVERIFY(!action->d->componentData.isValid());
+    action->setObjectName("Action A");
+    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QVERIFY(!action->d->componentData.isValid());
+
+    // Action with action collection
+    delete action;
+    action = coll.addAction("Text For Action A");
+    QVERIFY(action->d->componentData == otherComponent);
+    action->setObjectName("Action A");
+    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QVERIFY(action->d->componentData == otherComponent);
+
+    // cleanup
+    action->forgetGlobalShortcut();
+    delete coll.takeAction(action);
+
+    // activate overrideMainComponentData, it's not revokable currently!
+    // overrideMainComponentData only overrides the component if the action
+    // gets a real global shortcut!
+    KComponentData globalComponent("test_component2");
+    KGlobalAccel::self()->overrideMainComponentData(globalComponent);
+
+    // Action without action collection
+    action = new KAction("Text For Action A", this);
+    QVERIFY(!action->d->componentData.isValid());
+    action->setObjectName("Action A");
+    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QVERIFY(!action->d->componentData.isValid());
+
+    // Action with action collection
+    delete action;
+    action = coll.addAction("Text For Action A");
+    QVERIFY(action->d->componentData == otherComponent);
+    action->setObjectName("Action A");
+    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
+    QVERIFY(action->d->componentData == globalComponent);
+
+    // forget the global shortcut
+    action->forgetGlobalShortcut();
+    // Actions that were created by the KActionCollection::addAction have the
+    // collections as parent. Ensure action is not deleted.
+}
+
+void KGlobalShortcutTest::testForgetGlobalShortcut()
+{
+    // Ensure that forgetGlobalShortcut can be called on any action.
+    KAction a("Test", NULL);
+    a.forgetGlobalShortcut();
+
+    // We forget these two shortcuts and check that the component is gone
+    // after that. If not it can mean the forgetGlobalShortcut() call is
+    // broken OR someone messed up these tests to leave an additional global
+    // shortcut behind.
+    m_actionB->forgetGlobalShortcut();
+    m_actionA->forgetGlobalShortcut();
+
+    KGlobalAccel *kga = KGlobalAccel::self();
+    QList<QStringList> components = kga->allMainComponents();
+    QStringList componentId;
+    componentId << "qttest" << QString() << "KDE Test Program" << QString();
+    QVERIFY(!components.contains(componentId));
+}
+
+
 void KGlobalShortcutTest::cleanupTestCase()
 {
+    delete m_actionA;
+    delete m_actionB;
 }
 
 #include "kglobalshortcuttest.moc"

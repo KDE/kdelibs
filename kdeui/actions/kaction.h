@@ -455,6 +455,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotTriggered())
     class KActionPrivate* const d;
     friend class KActionPrivate;
+    friend class KGlobalShortcutTest;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KAction::ShortcutTypes)
