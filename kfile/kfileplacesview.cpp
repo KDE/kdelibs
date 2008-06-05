@@ -283,6 +283,9 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     d->itemDisappearTimeline.setDuration(500);
     d->itemDisappearTimeline.setUpdateInterval(5);
     d->itemDisappearTimeline.setCurveShape(QTimeLine::EaseInOutCurve);
+
+    connect(model(), SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+            this, SLOT(adaptItemSize()));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -634,6 +637,8 @@ void KFilePlacesView::setModel(QAbstractItemModel *model)
 {
     QListView::setModel(model);
     d->updateHiddenRows();
+    connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+            this, SLOT(adaptItemSize()));
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
