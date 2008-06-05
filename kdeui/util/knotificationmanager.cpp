@@ -83,7 +83,7 @@ void KNotificationManager::notificationActivated( int id, int action )
     {
         kDebug(299) << id << " " << action;
         KNotification *n = d->notifications[id];
-        //d->notifications.remove(id);
+        d->notifications.remove(id);
         n->activate( action );
     }
 }
