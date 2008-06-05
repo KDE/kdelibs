@@ -396,6 +396,7 @@ public Q_SLOTS:
     virtual void slotCancel();
 
 protected:
+    virtual void resizeEvent(QResizeEvent* event);
     virtual void showEvent(QShowEvent* event);
 
 Q_SIGNALS:

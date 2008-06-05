@@ -130,7 +130,6 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 KFileDialog::~KFileDialog()
 {
     saveDialogSize(d->cfgGroup, KConfigBase::Persistent);
-    hide();
     delete d;
 }
 

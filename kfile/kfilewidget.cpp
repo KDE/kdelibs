@@ -84,6 +84,7 @@ public:
     void appendExtension(KUrl &url);
     void updateLocationEditExtension(const QString &);
     void updateFilter();
+    void updateSplitterSize();
     KUrl::List& parseSelectedUrls();
     /**
      * Parses the string "line" for files. If line doesn't contain any ", the
@@ -1448,6 +1449,13 @@ KUrl KFileWidget::baseUrl() const
     return d->ops->url();
 }
 
+void KFileWidget::resizeEvent(QResizeEvent* event)
+{
+    d->updateSplitterSize();
+
+    QWidget::resizeEvent(event);
+}
+
 void KFileWidget::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
@@ -1457,16 +1465,7 @@ void KFileWidget::showEvent(QShowEvent* event)
     }
     d->ops->clearHistory();
 
-    QList<int> sizes = d->placesViewSplitter->sizes();
-    if (sizes.count() == 2) {
-        // restore width of speedbar
-        KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
-        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, d->placesView->sizeHintForColumn(0) );
-        const int availableWidth = width();
-        sizes[0] = speedbarWidth;
-        sizes[1] = availableWidth - speedbarWidth;
-        d->placesViewSplitter->setSizes( sizes );
-    }
+    d->updateSplitterSize();
 
     QWidget::showEvent(event);
 }
@@ -1900,6 +1899,24 @@ void KFileWidgetPrivate::updateFilter()
                 filterWidget->filters().indexOf(mime->name()) != -1)
                 filterWidget->setCurrentFilter(mime->name());
         }
+    }
+}
+
+// Updates the splitter size. This is necessary since we call to this method when the widget is
+// shown as well as when it is resized. This is also very important, because this will be
+// contained in other widget, which can try to resize this one, and make the places view be
+// wider than what the user wanted.
+void KFileWidgetPrivate::updateSplitterSize()
+{
+    QList<int> sizes = placesViewSplitter->sizes();
+    if (sizes.count() == 2) {
+        // restore width of speedbar
+        KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
+        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) );
+        const int availableWidth = q->width();
+        sizes[0] = speedbarWidth;
+        sizes[1] = availableWidth - speedbarWidth;
+        placesViewSplitter->setSizes( sizes );
     }
 }
 
