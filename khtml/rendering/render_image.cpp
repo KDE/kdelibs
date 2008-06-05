@@ -235,7 +235,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                     (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);
 	paintInfo.p->setPen(QPen(fg, 1));
 	paintInfo.p->setBrush( Qt::NoBrush );
-	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
+	paintInfo.p->drawRect(_tx, _ty, m_width - 1, m_height - 1);
         if (!(m_width <= 5 || m_height <= 5)) {
             if (!loadingIcon) {
                 loadingIcon = new QPixmap();
