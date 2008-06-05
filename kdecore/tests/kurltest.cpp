@@ -676,6 +676,11 @@ void KUrlTest::testIsRelative()
   // arguable, but necessary for KUrl( baseURL, "//www1.foo.bar" );
   QVERIFY( KUrl::isRelativeUrl("/path") );
   QVERIFY( KUrl::isRelativeUrl("something") );
+
+  KUrl something("something");
+  QCOMPARE(something.url(), QString("something"));
+  QCOMPARE(something.protocol(), QString());
+  QVERIFY(!something.isLocalFile());
 }
 
 void KUrlTest::testRelativePath()
