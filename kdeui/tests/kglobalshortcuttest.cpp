@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (c) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (c) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +29,10 @@
 
 #include <QtDBus/QDBusConnectionInterface>
 
+const QKeySequence sequenceA = QKeySequence(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28 );
+const QKeySequence sequenceB = QKeySequence(Qt::Key_F29);
+const QKeySequence sequenceC = QKeySequence(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::Key_F28 );
+const QKeySequence sequenceD = QKeySequence(Qt::META + Qt::ALT + Qt::Key_F30);
 
 /* These tests could be better. They don't include actually triggering actions,
    and we just choose very improbable shortcuts to avoid conflicts with real
@@ -51,7 +56,7 @@ void KGlobalShortcutTest::testSetShortcut()
     // There is no way of making kdedglobalaccel "completely forget" a global shortcut currently, this would need new API.
 
     //possible modifiers are SHIFT META CTRL ALT
-    KShortcut cutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28, Qt::Key_F29);
+    KShortcut cutA(sequenceA);
     //kDebug() << cutA.toString();
     m_actionA->setGlobalShortcut(cutA, KAction::ActiveShortcut|KAction::DefaultShortcut, KAction::NoAutoloading);
     //kDebug() << m_actionA->globalShortcut().toString();
@@ -70,32 +75,31 @@ void KGlobalShortcutTest::testSetShortcut()
 
 void KGlobalShortcutTest::testFindActionByKey()
 {
-    QStringList actionId = KGlobalAccel::self()->findActionNameSystemwide(Qt::Key_F29);
+    QStringList actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceB);
     QStringList actionIdA; actionIdA << "qttest" << "Action A" << "KDE Test Program" << "Text For Action A";
     QCOMPARE(actionId, actionIdA);
-    actionId = KGlobalAccel::self()->findActionNameSystemwide(Qt::SHIFT + Qt::META + Qt::CTRL
-                                                                 + Qt::ALT + Qt::Key_F28);
+    actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceA);
     QCOMPARE(actionId, actionIdA);
 }
 
 
 void KGlobalShortcutTest::testChangeShortcut()
 {
-    KShortcut newCutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::Key_F28, Qt::Key_F29); // same without the ALT
+    KShortcut newCutA(sequenceC); // same without the ALT
     m_actionA->setGlobalShortcut(newCutA, KAction::ActiveShortcut, KAction::NoAutoloading);
     QCOMPARE(m_actionA->globalShortcut(), newCutA);
-    KShortcut cutA(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28, Qt::Key_F29);
+    KShortcut cutA(sequenceA);
     QCOMPARE(m_actionA->globalShortcut(KAction::DefaultShortcut), cutA); // unchanged
 
 
-    KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(Qt::META + Qt::Key_F29));
+    KShortcut cutB(m_actionA->globalShortcut().primary(), QKeySequence(sequenceB));
     m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
-    QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(Qt::META + Qt::Key_F29));
+    QCOMPARE(m_actionB->globalShortcut().alternate(), QKeySequence(sequenceB));
     QVERIFY(m_actionB->globalShortcut(KAction::DefaultShortcut).isEmpty()); // unchanged
 
-    cutB.setPrimary(Qt::META + Qt::ALT + Qt::Key_F30);
+    cutB.setPrimary(sequenceD);
     m_actionB->setGlobalShortcut(cutB, KAction::ActiveShortcut,
                                  KAction::NoAutoloading);
     QCOMPARE(m_actionB->globalShortcut(), cutB);
@@ -106,7 +110,7 @@ void KGlobalShortcutTest::testChangeShortcut()
 void KGlobalShortcutTest::testStealShortcut()
 {
     QVERIFY(!m_actionB->globalShortcut().primary().isEmpty());
-    KGlobalAccel::stealShortcutSystemwide(Qt::META + Qt::ALT + Qt::Key_F30);
+    KGlobalAccel::stealShortcutSystemwide(sequenceD);
     //let DBus do its thing in case it happens asynchronously
     QTest::qWait(200);
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
