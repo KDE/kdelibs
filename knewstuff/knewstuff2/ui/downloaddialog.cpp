@@ -313,7 +313,7 @@ void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 
         const Provider * currentProvider = m_entriesByProvider.keys()[m_sourceCombo->currentIndex()];
         Feed * selectedFeed = currentProvider->downloadUrlFeed(feedType);
-        m_filteredModel->setSourceModel(m_models[selectedFeed]);
+        m_filteredModel->setSourceModel(m_models.value(selectedFeed));
         m_collaborationButton->setEnabled(false);
     }
 }
@@ -336,7 +336,7 @@ void DownloadDialog::slotLoadProviderDXS()
             populateSortCombo(providers[i]);
 
             Feed * selectedFeed = providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString());
-            m_filteredModel->setSourceModel(m_models[selectedFeed]);
+            m_filteredModel->setSourceModel(m_models.value(selectedFeed));
             //m_list->setProvider(providers[i], 
             //    providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString()));
             break;
@@ -410,7 +410,7 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
 
     mMutex.lock();
 
-    if (!m_models.contains(feed)) {
+    if (!m_models.value(feed)) {
         // new feed
         kDebug(551) << "making a new model for this feed" << feed;
         m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
