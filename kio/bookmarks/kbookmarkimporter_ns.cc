@@ -32,6 +32,7 @@
 
 #include <qtextcodec.h>
 #include <qtextdocument.h> // Qt::escape
+#include <QtGui/QApplication>
 
 
 
@@ -109,10 +110,12 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     {
        if ( forSaving )
            return KFileDialog::getSaveFileName( QDir::homePath() + "/.mozilla",
-                                                i18n("*.html|HTML Files (*.html)") );
+                                                i18n("*.html|HTML Files (*.html)"),
+                                                QApplication::activeWindow() );
        else
            return KFileDialog::getOpenFileName( QDir::homePath() + "/.mozilla",
-                                                i18n("*.html|HTML Files (*.html)") );
+                                                i18n("*.html|HTML Files (*.html)"),
+                                                QApplication::activeWindow() );
     }
     else
     {

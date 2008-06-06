@@ -26,6 +26,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qtextcodec.h>
+#include <QtGui/QApplication>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -109,10 +110,12 @@ QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 {
    return saving ? KFileDialog::getSaveFileName(
                        QDir::homePath() + "/.opera",
-                       i18n("*.adr|Opera Bookmark Files (*.adr)") )
+                       i18n("*.adr|Opera Bookmark Files (*.adr)"),
+                       QApplication::activeWindow() )
                  : KFileDialog::getOpenFileName(
                        QDir::homePath() + "/.opera",
-                       i18n("*.adr|Opera Bookmark Files (*.adr)") );
+                       i18n("*.adr|Opera Bookmark Files (*.adr)"),
+                       QApplication::activeWindow() );
 }
 
 /////////////////////////////////////////////////

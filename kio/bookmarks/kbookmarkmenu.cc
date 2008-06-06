@@ -286,7 +286,7 @@ void KBookmarkContextMenu::slotProperties()
 {
   //kDebug(7043) << "KBookmarkMenu::slotProperties" << m_highlightedAddress;
 
-    KBookmarkDialog *  dlg = m_pOwner->bookmarkDialog(m_pManager, parentWidget());
+    KBookmarkDialog *  dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow());
     dlg->editBookmark(bm);
     delete dlg;
 }
@@ -298,7 +298,7 @@ void KBookmarkContextMenu::slotInsert()
   QString url = m_pOwner->currentUrl();
   if (url.isEmpty())
   {
-    KMessageBox::error( 0L, i18n("Cannot add bookmark with empty URL."));
+    KMessageBox::error( QApplication::activeWindow(), i18n("Cannot add bookmark with empty URL."));
     return;
   }
   QString title = m_pOwner->currentTitle();
@@ -329,7 +329,7 @@ void KBookmarkContextMenu::slotRemove()
   bool folder = bm.isGroup();
 
   if (KMessageBox::warningContinueCancel(
-          0,
+          QApplication::activeWindow(),
           folder ? i18n("Are you sure you wish to remove the bookmark folder\n\"%1\"?", bm.text())
                  : i18n("Are you sure you wish to remove the bookmark\n\"%1\"?", bm.text()),
           folder ? i18n("Bookmark Folder Deletion")
@@ -556,7 +556,7 @@ void KBookmarkMenu::slotAddBookmarksList()
 
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
 
-  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu());
+  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow());
   dlg->addBookmarks(m_pOwner->currentBookmarkList(), "", parentBookmark);
   delete dlg;
 }
@@ -569,7 +569,7 @@ void KBookmarkMenu::slotAddBookmark()
 
   if(KBookmarkSettings::self()->m_advancedaddbookmark)
   {
-      KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu() );
+      KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow() );
       dlg->addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()), parentBookmark );
       delete dlg;
   }
@@ -591,7 +591,7 @@ void KBookmarkMenu::slotNewFolder()
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
   Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu());
+  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow());
   dlg->createNewFolder("", parentBookmark);
   delete dlg;
 }

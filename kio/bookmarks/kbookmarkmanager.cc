@@ -414,7 +414,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
                              "which is most likely a full hard drive.",
                          filename, file.errorString());
         if (qApp->type() != QApplication::Tty)
-            KMessageBox::error( 0L, error );
+            KMessageBox::error( QApplication::activeWindow(), error );
         else
             kError() << error << endl;
     }
