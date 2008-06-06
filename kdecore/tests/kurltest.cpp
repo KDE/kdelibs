@@ -1438,8 +1438,12 @@ void KUrlTest::testSmb()
 
 void KUrlTest::testOtherProtocols()
 {
-  KUrl about("about:konqueror");
-  QCOMPARE(about.path(),QString("konqueror") );
+  KUrl about("about:");
+  QCOMPARE(about.path(), QString());
+  QCOMPARE(about.protocol(), QString("about"));
+
+  KUrl aboutKonqueror("about:konqueror");
+  QCOMPARE(aboutKonqueror.path(), QString("konqueror"));
 
 
   KUrl leo( "data:text/html,http://www.invalid/" );
