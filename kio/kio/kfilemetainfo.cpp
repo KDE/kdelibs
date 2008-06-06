@@ -56,7 +56,7 @@ private:
     QIODevice& in;
     int32_t fillBuffer(char* start, int32_t space);
 public:
-    QIODeviceInputStream(QIODevice& i) :in(i) {}
+    QIODeviceInputStream(QIODevice& i);
 };
 int32_t
 QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
@@ -74,6 +74,16 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     }
     return nwritten;
 }
+
+QIODeviceInputStream::QIODeviceInputStream(QIODevice &i) :in(i)
+{
+    // determine if we have a character device, which will likely never eof and thereby
+    // potentially cause an infinite loop.
+    if(i.isSequential()) {
+        in.close(); // cause fillBuffer to return -1
+    }
+}
+
 /**
  * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and 
  * store it in a KFileMetaInfo.
