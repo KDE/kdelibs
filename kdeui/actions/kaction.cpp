@@ -77,19 +77,10 @@ KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
-    // When deleting actions in the configuration module, we don't want to
-    // deactivate the global shortcut
-    if (property("isConfigurationAction").toBool() == false) {
-        if (d->globalShortcutEnabled) {
-            // - remove the action from KGlobalAccel
-            // - mark the action as inactive in the KDED module
-            d->globalShortcutEnabled = false;
-            KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
-        }
-    } else {
-        // we leak memory in KGlobalAccel for this action's data set.
-        // HOWEVER this is a limited leak because if/when this action is
-        // created again there will be no additional memory consumption.
+    if (d->globalShortcutEnabled) {
+        // - remove the action from KGlobalAccel
+        d->globalShortcutEnabled = false;
+        KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
     }
 
     KGestureMap::self()->removeGesture(d->shapeGesture, this);

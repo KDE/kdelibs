@@ -196,10 +196,17 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
 
     nameToAction.remove(actionId.at(ActionUnique), action);
     actions.remove(action);
+
     if (removal == UnRegister) {
+        // Complete removal of the shortcut is requested
+        // (forgetGlobalShortcut)
         iface.unRegister(actionId);
     } else {
-        iface.setInactive(actionId);
+        // If the action is a configurationAction wen only remove it from our
+        // internal registry. That happened above.
+        if (!action->property("isConfigurationAction").toBool()) {
+            iface.setInactive(actionId);
+        }
     }
 }
 
