@@ -30,7 +30,6 @@ class KGlobalShortcutTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    void initTestCase();
     void testSetShortcut();
     void testFindActionByKey();
     void testChangeShortcut();
@@ -38,11 +37,19 @@ private Q_SLOTS:
     void testSaveRestore();
     void testListActions();
     void testComponentAssignment();
+    void testConfigurationActions();
     // This has to be the last before forgetGlobalShortcut
     void testOverrideMainComponentData();
     void testForgetGlobalShortcut();
-    void cleanupTestCase();
+
+public:
+
+    KGlobalShortcutTest() : m_actionA(0) ,m_actionB(0)
+        {}
+
 private:
+    void setupTest();
+
     KAction *m_actionA;
     KAction *m_actionB;
 };
