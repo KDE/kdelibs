@@ -213,6 +213,8 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
 
 void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 {
+    // No action or no objectname -> Do nothing
+    // KAction::setGlobalShortcut informs the user
     if (!action || action->objectName().isEmpty()) {
         return;
     }
@@ -230,16 +232,32 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
         bool isConfigurationAction = isUsingForeignComponentName
             || action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
+
+        // setPresent tells kdedglobalaccel that the shortcut is active
         if (!isConfigurationAction) {
             activeSetterFlags |= KdedGlobalAccel::SetPresent;
         }
 
-        const QList<int> result = iface.setShortcut(actionId,
-                                                    intListFromShortcut(activeShortcut),
-                                                    activeSetterFlags);
+        // Sets the shortcut, returns the active/real keys
+        const QList<int> result = iface.setShortcut(
+                actionId,
+                intListFromShortcut(activeShortcut),
+                activeSetterFlags);
+        // Create a shortcut from the result
         const KShortcut scResult(shortcutFromIntList(result));
-        if (isConfigurationAction) {
+
+        // If this is a configuration action and we have set the shortcut,
+        // inform the real owner of the change. Question is why we do this
+        // after calling setShortcut and not instead of because
+        // setForeignShortcut calls setShortcut. But now it's to late to
+        // change that (setForeignShortcut returns void). I have the
+        // suspicion that the yourShortcutGotChanged signal is never emitted
+        // because of this. Will give it a try ...
+        if (isConfigurationAction && (flags & KAction::NoAutoloading)) {
+            // kDebug() << "Calling setForeignShortcut()";
             iface.setForeignShortcut(actionId, result);
+        // If kdedglobalaccel returned a shortcut that differs from the one we
+        // sent, use that one.
         } else if (scResult != activeShortcut) {
             action->d->setActiveGlobalShortcutNoEnable(scResult);
         }
