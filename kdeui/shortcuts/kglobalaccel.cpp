@@ -293,7 +293,9 @@ QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 
 void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
 {
-    if (isUsingForeignComponentName) {
+    // If overrideMainComponentData() is active the app can only have
+    // configuration actions.
+    if (isUsingForeignComponentName ) {
         return;
     }
 
@@ -304,8 +306,15 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
             action = a;
         }
     }
-    if (!action || !action->isEnabled())
+
+    // We do not trigger if 
+    // - there is no action
+    // - the action is not enabled
+    // - the action is an configuration action
+    if (!action || !action->isEnabled()
+            || action->property("isConfigurationAction").toBool()) {
         return;
+    }
 
 #ifdef Q_WS_X11
     // Update this application's X timestamp if needed.
