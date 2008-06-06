@@ -220,8 +220,10 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
     }
 
     if (flags & KAction::ActiveShortcut) {
+        bool isConfigurationAction = isUsingForeignComponentName
+            || action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
-        if (!isUsingForeignComponentName) {
+        if (!isConfigurationAction) {
             activeSetterFlags |= KdedGlobalAccel::SetPresent;
         }
 
@@ -229,7 +231,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
                                                     intListFromShortcut(activeShortcut),
                                                     activeSetterFlags);
         const KShortcut scResult(shortcutFromIntList(result));
-        if (isUsingForeignComponentName) {
+        if (isConfigurationAction) {
             iface.setForeignShortcut(actionId, result);
         } else if (scResult != activeShortcut) {
             action->d->setActiveGlobalShortcutNoEnable(scResult);
