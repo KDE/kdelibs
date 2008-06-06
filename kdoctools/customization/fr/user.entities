@@ -20,6 +20,9 @@
 <!ENTITY traducteurJeromeBlanc        '<othercredit role="translator"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurJeromeBlanc         '<othercredit role="reviewer"><firstname>Jérôme</firstname><surname>Blanc</surname><affiliation><address><email>01246774@brookes.ac.uk</email></address> </affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurCyrilleBieuzent        '<othercredit role="translator"><firstname>Cyrille</firstname><surname>Bieuzent</surname><affiliation><address><email>bieuzent@gmail.com</email></address> </affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurCyrilleBieuzent         '<othercredit role="reviewer"><firstname>Cyrille</firstname><surname>Bieuzent</surname><affiliation><address><email>bieuzent@gmail.com</email></address> </affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurAdrienBoillot        '<othercredit role="translator"><firstname>Adrien</firstname><surname>Boillot</surname><affiliation><address><email>bec.bunsen@laposte.net</email></address> </affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurAdrienBoillot         '<othercredit role="reviewer"><firstname>Adrien</firstname><surname>Boillot</surname><affiliation><address><email>bec.bunsen@laposte.net</email></address> </affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -224,6 +227,7 @@
 <!ENTITY PierreAuckenthaler 'Pierre Auckenthaler <email>pierre.auckenthaler@polytechnique.org</email>'>
 <!ENTITY EricBischoff      'Éric Bischoff <email>e.bischoff@noos.fr</email>'>
 <!ENTITY JeromeBlanc       'Jérôme Blanc <email>01246774@brookes.ac.uk</email>'>
+<!ENTITY CyrilleBieuzent    'Cyrille Bieuzent <email>bieuzent@gmail.com</email>'>
 <!ENTITY YvesBrenner       'Yves Brenner <email>ybrenner@chez.com</email>'>
 <!ENTITY AdrienBoillot     'Adrien Boillot <email>bec.bunsen@laposte.net</email>'>
 <!ENTITY DanielBourrion    'DanielBourrion <email>daniel.bourrion@free.fr</email>'>
