@@ -48,6 +48,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfo& ) {
 QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&) {
     return s;
 }
+
 /**
  * @brief Wrap a QIODevice in a Strigi stream.
  **/
@@ -56,8 +57,9 @@ private:
     QIODevice& in;
     int32_t fillBuffer(char* start, int32_t space);
 public:
-    QIODeviceInputStream(QIODevice& i) :in(i) {}
+    QIODeviceInputStream(QIODevice& i);
 };
+
 int32_t
 QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     if (!in.isOpen() || !in.isReadable()) return -1;
@@ -74,6 +76,16 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     }
     return nwritten;
 }
+
+QIODeviceInputStream::QIODeviceInputStream(QIODevice &i) :in(i)
+{
+    // determine if we have a character device, which will likely never eof and thereby
+    // potentially cause an infinite loop.
+    if(i.isSequential()) {
+        in.close(); // cause fillBuffer to return -1
+    }
+}
+
 /**
  * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and
  * store it in a KFileMetaInfo.
