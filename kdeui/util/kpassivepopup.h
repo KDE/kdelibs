@@ -178,7 +178,7 @@ public:
      * Enables / disables auto-deletion of this widget when the timeout
      * occurs.
      * The default is false. If you use the class-methods message(),
-     * auto-delection is turned on by default.
+     * auto-deletion is turned on by default.
      */
     virtual void setAutoDelete( bool autoDelete );
 
@@ -209,9 +209,9 @@ public:
      */
     void setAnchor( const QPoint& anchor );
 
-    // TODO KDE4: give all the statics method a const QPoint p = QPoint() that in
+    // TODO KDE4: give all the static methods a const QPoint p = QPoint() that in
     // case the point is not null calls the show(const QPoint &p) method instead
-    // the show() one.
+    // of the show() one.
     /**
      * Convenience method that displays popup with the specified  message  beside the
      * icon of the specified widget.
@@ -401,7 +401,7 @@ protected:
     /**
      * Calculates the position to place the popup near the specified rectangle.
      */
-    QPoint calculateNearbyPoint( const QRect &target);  
+    QPoint calculateNearbyPoint( const QRect &target);
 
     /**
      * Reimplemented to detect mouse clicks.
