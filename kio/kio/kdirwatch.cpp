@@ -473,6 +473,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
       if (res<0) {
 	e->m_mode = UnknownMode;
 	use_fam=false;
+        delete sn; sn = 0;
 	return false;
       }
       kDebug(7001).nospace() << " Setup FAM (Req " << FAMREQUEST_GETREQNUM(&(e->fr))
@@ -490,6 +491,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
       if (res<0) {
 	e->m_mode = UnknownMode;
 	use_fam=false;
+        delete sn; sn = 0;
 	return false;
       }
 
