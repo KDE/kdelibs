@@ -46,6 +46,8 @@
 #include "kstringhandler.h"
 #include "kurl.h"
 
+#include "kuitsemantics_p.h" // for escaping arguments in i18n
+
 // -----------------------------------------------------------------------------
 // Design notes:
 //
@@ -945,7 +947,7 @@ KCmdLineArgsStatic::parseAllArgs()
             if (s->ignoreUnknown)
                continue;
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", s->decodeInput(s->argv[i])));
+            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", KuitSemantics::escape(s->decodeInput(s->argv[i]))));
          }
          else
          {
@@ -1112,7 +1114,7 @@ KCmdLineArgs::usage(const QByteArray &id)
      }
    }
 
-   s->printQ(i18n("Usage: %1 %2\n", s->argv[0], usage));
+   s->printQ(i18n("Usage: %1 %2\n", s->argv[0], KuitSemantics::escape(usage)));
    s->printQ('\n'+s->about->shortDescription()+'\n');
 
    s->printQ(i18n("\nGeneric options:\n"));
