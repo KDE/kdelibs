@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include <kparts/part.h>
-#include <Qt3Support/Q3ListView>
+#include <QtGui/QTreeWidget>
 #include <QtCore/QVariantList>
 
 class KSslCertificateBox;
@@ -41,21 +41,20 @@ class QGridLayout;
 class QPushButton;
 
 
-class KX509Item : public Q3ListViewItem {
+class KX509Item : public QTreeWidgetItem {
 	public:
-		KX509Item(Q3ListViewItem *parent, KSSLCertificate *x);
-		KX509Item(Q3ListView *parent, KSSLCertificate *x);
+		KX509Item(QTreeWidgetItem *parent, KSSLCertificate *x);
+		KX509Item(QTreeWidget *parent, KSSLCertificate *x);
 		void setup(KSSLCertificate *x);
 		~KX509Item();
-		virtual int rtti() const { return 1; }
 	KSSLCertificate *cert;
 	QString _prettyName;
 };
 
 
-class KPKCS12Item : public Q3ListViewItem {
+class KPKCS12Item : public QTreeWidgetItem {
 	public:
-		KPKCS12Item(Q3ListViewItem *parent, KSSLPKCS12 *x);
+		KPKCS12Item(QTreeWidgetItem *parent, KSSLPKCS12 *x);
 		~KPKCS12Item();
 	KSSLPKCS12 *cert;
 	QString _prettyName;
@@ -80,7 +79,7 @@ protected Q_SLOTS:
   void slotSave();
   void slotDone();
   void slotLaunch();
-  void slotSelectionChanged(Q3ListViewItem *x);
+  void slotSelectionChanged();
   void slotImportAll();
 
 protected:
@@ -91,8 +90,8 @@ protected:
   void displayPKCS12Cert(KSSLCertificate *c);
   void displayCACert(KSSLCertificate *c);
 
-  Q3ListView *_sideList;
-  Q3ListViewItem *_parentCA, *_parentP12;
+  QTreeWidget *_sideList;
+  QTreeWidgetItem *_parentCA, *_parentP12;
   QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
 
   // for the PKCS12 widget

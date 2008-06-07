@@ -25,8 +25,6 @@
 #endif
 
 #include <QPushButton>
-//Added by qt3to4:
-#include <QGridLayout>
 #include <klineedit.h>
 #include <kfiledialog.h>
 #include <QRadioButton>
@@ -53,7 +51,7 @@ KCertExport::KCertExport(QWidget *parent)
    setCaption(i18n("X509 Certificate Export"));
 
    QGroupBox *bg = new QGroupBox(i18n("Format"), this);
-   QVBoxLayout *lay = new QVBoxLayout;
+   QVBoxLayout *lay = new QVBoxLayout(bg);
    _pem = new QRadioButton(i18n("&PEM"), bg);
    lay->addWidget(_pem);
    _netscape = new QRadioButton(i18n("&Netscape"), bg);
@@ -64,7 +62,6 @@ KCertExport::KCertExport(QWidget *parent)
    lay->addWidget(_text);
    grid->addWidget(bg, 0, 0, 5, 4 );
    _pem->setChecked(true);
-   bg->setLayout(lay);
 
    grid->addWidget(new QLabel(i18n("Filename:"), this), 5, 0, 1, 4 );
 
@@ -73,7 +70,7 @@ KCertExport::KCertExport(QWidget *parent)
    connect(_filename, SIGNAL(textChanged(const QString &)), this, SLOT(slotTextChanged(const QString &)));
    connect(_filename, SIGNAL(returnPressed()), this, SLOT(slotExport()));
 
-   _choose = new QPushButton("...", this);
+   _choose = new QPushButton(KIcon("document-open"), QString(), this); // TODO: port to KUrlRequester
    grid->addWidget(_choose, 6, 5);
    connect(_choose, SIGNAL(clicked()), this, SLOT(slotChoose()));
 

@@ -1,7 +1,5 @@
 project(kcert)
 
-add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
-
 include_directories( ${OPENSSL_INCLUDE_DIR} )
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
@@ -12,8 +10,7 @@ set(kcertpart_PART_SRCS kcertpart.cc )
 
 kde4_add_plugin(kcertpart ${kcertpart_PART_SRCS})
 
-# Needs Qt3Support for Q3ListViewItem
-target_link_libraries(kcertpart  ${KDE4_KPARTS_LIBS} ${QT_QT3SUPPORT_LIBRARY} )
+target_link_libraries(kcertpart ${KDE4_KPARTS_LIBS})
 
 install(TARGETS kcertpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 install( FILES kcertpart.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )

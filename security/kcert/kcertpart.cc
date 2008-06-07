@@ -40,7 +40,7 @@
 #include <QtCore/Q_PID>
 #include <QtGui/QTabWidget>
 #include <kseparator.h>
-#include <Qt3Support/Q3ListView>
+#include <QtGui/QTreeWidget>
 #include <QtGui/QTextEdit>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
@@ -52,14 +52,14 @@ K_PLUGIN_FACTORY( KCertPartFactory, registerPlugin<KCertPart>(); )
 K_EXPORT_PLUGIN( KCertPartFactory("KCertPart") )
 
 
-KX509Item::KX509Item(Q3ListViewItem *parent, KSSLCertificate *x) :
-	Q3ListViewItem(parent, 0L)
+KX509Item::KX509Item(QTreeWidgetItem *parent, KSSLCertificate *x) :
+	QTreeWidgetItem(parent, 1001)
 {
 	setup(x);
 }
 
-KX509Item::KX509Item(Q3ListView *parent, KSSLCertificate *x) :
-	Q3ListViewItem(parent)
+KX509Item::KX509Item(QTreeWidget *parent, KSSLCertificate *x) :
+	QTreeWidgetItem(parent)
 {
 	setup(x);
 }
@@ -98,8 +98,8 @@ KX509Item::~KX509Item()
 }
 
 
-KPKCS12Item::KPKCS12Item(Q3ListViewItem *parent, KSSLPKCS12 *x) :
-	Q3ListViewItem(parent, 0L)
+KPKCS12Item::KPKCS12Item(QTreeWidgetItem *parent, KSSLPKCS12 *x) :
+	QTreeWidgetItem(parent)
 {
 	cert = x;
 	if (x) {
@@ -156,15 +156,15 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_baseGrid->setMargin(KDialog::marginHint());
 	_baseGrid->setSpacing(KDialog::spacingHint());
 
-	_sideList = new Q3ListView(_frame);
+	_sideList = new QTreeWidget(_frame);
 	_sideList->setRootIsDecorated(true);
-	_sideList->addColumn(i18n("Certificates"));
-	_parentCA = new Q3ListViewItem(_sideList, i18n("Signers"));
-	_parentCA->setExpandable(true);
-	_sideList->setOpen(_parentCA, true);
-	_parentP12 = new Q3ListViewItem(_sideList, i18n("Client"));
-	_parentP12->setExpandable(true);
-	_sideList->setOpen(_parentP12, true);
+	_sideList->setHeaderLabels(QStringList() << i18n("Certificates"));
+	_parentCA = new QTreeWidgetItem(_sideList, QStringList() << i18n("Signers"));
+	_parentCA->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+	_parentCA->setExpanded(true);
+	_parentP12 = new QTreeWidgetItem(_sideList, QStringList() << i18n("Client"));
+	_parentP12->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+	_parentP12->setExpanded(true);
 
 	_baseGrid->addWidget(_sideList, 0, 0, 14, 2);
 
@@ -396,8 +396,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_baseGrid->addWidget(_x509Frame, 0, 2, 13, 7);
 	_baseGrid->addWidget(_blankFrame, 0, 2, 13, 7);
 
-	connect(_sideList, SIGNAL(selectionChanged(Q3ListViewItem*)),
-			this, SLOT(slotSelectionChanged(Q3ListViewItem*)));
+	connect(_sideList, SIGNAL(itemSelectionChanged()),
+			this, SLOT(slotSelectionChanged()));
 	setReadWrite(true);
 }
 
@@ -789,7 +789,9 @@ void KCertPart::slotLaunch() {
 }
 
 
-void KCertPart::slotSelectionChanged(Q3ListViewItem *x) {
+void KCertPart::slotSelectionChanged() {
+	// we assume that there is only one item selected...
+	QTreeWidgetItem *x = _sideList->selectedItems().at(0);
 	KX509Item *x5i = dynamic_cast<KX509Item*>(x);
 	KPKCS12Item *p12i = dynamic_cast<KPKCS12Item*>(x);
 	_p12 = NULL;
@@ -807,7 +809,7 @@ void KCertPart::slotSelectionChanged(Q3ListViewItem *x) {
 		_save->setEnabled(true);
 		_curName = x5i->_prettyName;
 		displayCACert(_ca);
-	} else if (x && x->parent() == NULL && x->rtti() == 1) {
+	} else if (x && x->parent() == NULL && x->type() == 1001) {
 		if (!x5i) {
 			return;
 		}
@@ -853,25 +855,21 @@ void KCertPart::slotImportAll() {
 	_ca = NULL;
 	_silentImport = true;
 
-	for (KPKCS12Item *t = dynamic_cast<KPKCS12Item*>(_parentP12->firstChild());
-		 t;
-		 t = dynamic_cast<KPKCS12Item*>(t->nextSibling())) {
-	if (t) {
-			_p12 = t->cert;
-			_curName = t->_prettyName;
-	}
-	slotImport();
+	QTreeWidgetItemIterator it(_parentP12);
+	while (*it) {
+			dynamic_cast<KPKCS12Item*>(*it)->cert;
+			dynamic_cast<KPKCS12Item*>(*it)->_prettyName;
+			slotImport();
+			it++;
 	}
 	_p12 = NULL;
 
-	for (KX509Item *t = dynamic_cast<KX509Item*>(_parentCA->firstChild());
-		 t;
-		 t = dynamic_cast<KX509Item*>(t->nextSibling())) {
-	if (t) {
-			_ca = t->cert;
-			_curName = t->_prettyName;
-	}
-	slotImport();
+	it = QTreeWidgetItemIterator(_parentCA);
+	while (*it) {
+			dynamic_cast<KX509Item*>(*it)->cert;
+			dynamic_cast<KX509Item*>(*it)->_prettyName;
+			slotImport();
+			it++;
 	}
 	_ca = NULL;
 

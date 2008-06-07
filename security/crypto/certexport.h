@@ -18,8 +18,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef _CERTEXPORT_H
-#define _CERTEXPORT_H
+#ifndef CERTEXPORT_H
+#define CERTEXPORT_H
 
 #include <kdialog.h>
 
