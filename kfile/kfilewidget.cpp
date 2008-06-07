@@ -419,6 +419,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), this);
     d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true, this);
+    // Properly let the dialog be resized (to smaller). Otherwise we could have
+    // huge dialogs that can't be resized to smaller (it would be as big as the longest
+    // item in this combo box). (ereslibre)
+    d->locationEdit->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
     connect( d->locationEdit, SIGNAL( editTextChanged( const QString& ) ),
              SLOT( _k_slotLocationChanged( const QString& )) );
 
@@ -449,6 +453,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->filterLabel = new QLabel(i18n("&Filter:"), this);
     d->filterLabel->setWhatsThis(whatsThisText);
     d->filterWidget = new KFileFilterCombo(this);
+    // Properly let the dialog be resized (to smaller). Otherwise we could have
+    // huge dialogs that can't be resized to smaller (it would be as big as the longest
+    // item in this combo box). (ereslibre)
+    d->filterWidget->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
     d->filterWidget->setWhatsThis(whatsThisText);
     d->filterLabel->setBuddy(d->filterWidget);
     connect(d->filterWidget, SIGNAL(filterChanged()), SLOT(_k_slotFilterChanged()));
@@ -1106,12 +1114,6 @@ void KFileWidgetPrivate::initGUI()
     vbox->addSpacing(KDialog::spacingHint());
 
     lafBox = new QGridLayout();
-
-    // The default minimum width of the location editor and the filter widget
-    // is so huge, that it is no possible for the user to adjust the width
-    // of the speedbar, hence it will be reduced.
-    locationEdit->setMinimumWidth(40);
-    filterWidget->setMinimumWidth(40);
 
     lafBox->setSpacing(KDialog::spacingHint());
     lafBox->addWidget(locationLabel, 0, 0, Qt::AlignVCenter);
