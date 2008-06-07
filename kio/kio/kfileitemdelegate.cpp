@@ -1347,7 +1347,12 @@ void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
 
-    const QRect r = d->labelRectangle(opt);
+    QRect r = d->labelRectangle(opt);
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    Q_ASSERT(textedit != 0);
+    const int frame = textedit->frameWidth();
+    r.adjust(-frame, -frame, frame, frame);
+
     editor->setGeometry(r);
 }
 
