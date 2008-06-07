@@ -29,11 +29,13 @@
 #include <kdebug.h>
 
 #include <kcomponentdata.h>
+#include <kdirnotify.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <knotification.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kjob.h>
 #include <solid/storageaccess.h>
 #include <solid/storagedrive.h>
@@ -227,6 +229,7 @@ public:
     void _k_itemAppearUpdate(qreal value);
     void _k_itemDisappearUpdate(qreal value);
     void _k_enableSmoothItemResizing();
+    void _k_trashUpdated(KJob *job);
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
@@ -459,8 +462,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             QByteArray packedArgs;
             QDataStream stream(&packedArgs, QIODevice::WriteOnly);
             stream << int(1);
-            KIO::special(KUrl("trash:/"), packedArgs);
+            KIO::Job *job = KIO::special(KUrl("trash:/"), packedArgs);
             KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
+            job->ui()->setWindow(parentWidget());
+            connect(job, SIGNAL(result(KJob*)), SLOT(_k_trashUpdated(KJob*)));
         }
     } else if (edit != 0 && result == edit) {
         KBookmark bookmark = placesModel->bookmarkForIndex(index);
@@ -893,6 +898,14 @@ void KFilePlacesView::Private::_k_itemDisappearUpdate(qreal value)
 void KFilePlacesView::Private::_k_enableSmoothItemResizing()
 {
     smoothItemResizing = true;
+}
+
+void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
+{
+    if (job->error()) {
+        static_cast<KIO::Job*>(job)->ui()->showErrorMessage();
+    }
+    org::kde::KDirNotify::emitFilesAdded("trash:/");
 }
 
 void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
