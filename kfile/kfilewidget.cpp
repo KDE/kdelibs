@@ -1566,8 +1566,7 @@ void KFileWidgetPrivate::readRecentFiles( KConfig *kc )
                                              DefaultRecentURLsNumber ) );
     locationEdit->setUrls( cg.readPathEntry( RecentFiles, QStringList() ),
                            KUrlComboBox::RemoveBottom );
-    locationEdit->insertItem(0, QString()); // dummy item without pixmap
-    locationEdit->setCurrentIndex( 0 );
+    locationEdit->setCurrentIndex( -1 );
 }
 
 void KFileWidgetPrivate::saveRecentFiles( KConfig *kc )
