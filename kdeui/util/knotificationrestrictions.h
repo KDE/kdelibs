@@ -27,7 +27,7 @@
 /**
  * KNotificationRestrictions provides a simple mechanism to avoid disruptions
  * during full screen presentations or other use cases where the screensaver or
- * desktop notifcations are innapropriate.
+ * desktop notifcations are inappropriate.
  *
  * Using KNotificationRestrictions is quite straightforward: create an instance
  * of KNotificationRestrictions, passing in the set of or'd flags representing
