@@ -45,6 +45,8 @@ QSize KUrlDropDownButton::sizeHint() const
 
 void KUrlDropDownButton::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     drawHoverBackground(&painter);
 

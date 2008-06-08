@@ -114,6 +114,8 @@ void KUrlNavigatorButton::updateMinimumWidth()
 
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     const int buttonWidth  = width();
     const int buttonHeight = height();
