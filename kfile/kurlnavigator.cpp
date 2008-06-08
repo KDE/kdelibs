@@ -28,6 +28,7 @@
 #include "kurltogglebutton_p.h"
 
 #include <kfileitem.h>
+#include <kfileplacesmodel.h>
 #include <kglobalsettings.h>
 #include <kicon.h>
 #include <klineedit.h>
@@ -327,6 +328,13 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
         m_placesSelector = new KFilePlacesSelector(q, placesModel);
         connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
                 q, SLOT(setUrl(const KUrl&)));
+
+        connect(placesModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
+                q, SLOT(updateContent()));
+        connect(placesModel, SIGNAL(rowsRemoved(QModelIndex, int, int)),
+                q, SLOT(updateContent()));
+        connect(placesModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)),
+                q, SLOT(updateContent()));
     }
 
     m_dropDownButton = new KUrlDropDownButton(q);
