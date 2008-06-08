@@ -391,6 +391,7 @@
 9040        kdevelop (cpp parser)
 9041        kdevelop (cpp duchain)
 9042        kdevelop (cmake support debug)
+9043        kdevelop (php support)
 
 #kdevplatform
 9500        kdevplatform
