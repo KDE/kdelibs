@@ -312,6 +312,14 @@ public Q_SLOTS:
      */
     void setActionsEnabled(bool enabled);
 
+protected:
+    /**
+     * Reimplemented.
+     * Catches mouse release events. Used to know when a selection has been completed.
+     */
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+
+
 private:
     //@cond PRIVATE
     class Private;
@@ -324,7 +332,6 @@ private:
     Q_PRIVATE_SLOT(d, void _k_updateCharFormatActions(const QTextCharFormat &))
     Q_PRIVATE_SLOT(d, void _k_updateMiscActions())
     Q_PRIVATE_SLOT(d, void _k_setListStyle(int))
-    Q_PRIVATE_SLOT(d, void _k_onSelectionFinished())
     //@endcond
 };
 

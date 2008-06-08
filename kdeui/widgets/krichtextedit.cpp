@@ -424,12 +424,6 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
     cursor.endEditBlock();
 }
 
-void KRichTextEdit::mouseReleaseEvent(QMouseEvent *event)
-{
-    emit selectionFinished();
-    event->ignore();
-}
-
 void KRichTextEdit::keyPressEvent(QKeyEvent *event)
 {
     bool handled = false;

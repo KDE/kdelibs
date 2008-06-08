@@ -158,10 +158,6 @@ public:
      */
     void _k_setListStyle(int index);
 
-    /**
-     * Set the QTextCharFormat of the selection to that stored in the format painter.
-     */
-    void _k_onSelectionFinished();
 };
 //@endcond
 
@@ -462,12 +458,10 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_to_plain_text = 0;
     }
 
-    disconnect(this, SIGNAL(selectionFinished()), this, SLOT(_k_onSelectionFinished()));
     disconnect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
                this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
     disconnect(this, SIGNAL(cursorPositionChanged()),
                this, SLOT(_k_updateMiscActions()));
-    connect(this, SIGNAL(selectionFinished()), this, SLOT(_k_onSelectionFinished()));
     connect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
             this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
     connect(this, SIGNAL(cursorPositionChanged()),
@@ -609,14 +603,18 @@ void KRichTextWidget::Private::_k_manageLink()
 
 }
 
-void KRichTextWidget::Private::_k_onSelectionFinished()
+void KRichTextWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (!painterActive) {
-        return;
+    if (d->painterActive) {
+        // If the painter is active, paint the selection with the
+        // correct format.
+        if (textCursor().hasSelection()) {
+            textCursor().setCharFormat(d->painterFormat);
+        }
+        d->painterActive = false;
+        d->action_format_painter->setChecked(false);
     }
-    q->setCurrentCharFormat(painterFormat);
-    painterActive = false;
-    action_format_painter->setChecked(false);
+    KRichTextEdit::mouseReleaseEvent(event);
 }
 
 void KRichTextWidget::Private::_k_formatPainter(bool active)
@@ -628,7 +626,7 @@ void KRichTextWidget::Private::_k_formatPainter(bool active)
     } else {
         painterFormat = QTextCharFormat();
         painterActive = false;
-        q->viewport()->unsetCursor();
+        q->viewport()->setCursor(Qt::IBeamCursor);
     }
 }
 

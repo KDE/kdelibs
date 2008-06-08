@@ -321,12 +321,6 @@ protected:
 
     /**
      * Reimplemented.
-     * Catches mouse release events. Used to know when a selection has been completed.
-     */
-    virtual void mouseReleaseEvent(QMouseEvent *event);
-
-    /**
-     * Reimplemented.
      * Catches key press events. Used to handle some key presses on lists.
      */
     virtual void keyPressEvent(QKeyEvent *event);
