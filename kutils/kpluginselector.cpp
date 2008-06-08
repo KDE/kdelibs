@@ -43,6 +43,7 @@
 #include <kcategorydrawer.h>
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
+#include <kaboutapplicationdialog.h>
 
 #define MARGIN 5
 
@@ -714,6 +715,25 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     const QModelIndex index = focusedIndex();
     const QAbstractItemModel *model = index.model();
 
+    // Try to retrieve the plugin information from the KComponentData object of the plugin.
+    // If there is no valid information, go and fetch it from the service itself (the .desktop
+    // file).
+
+    PluginEntry *entry = index.model()->data(index, PluginEntryRole).value<PluginEntry*>();
+    KService::Ptr entryService = entry->pluginInfo.service();
+    if (entryService) {
+        KPluginLoader loader(*entryService);
+        KPluginFactory *factory = loader.factory();
+        if (factory) {
+            const KAboutData *aboutData = factory->componentData().aboutData();
+            if (!aboutData->programName().isEmpty()) { // Be sure the about data is not completely empty
+                KAboutApplicationDialog aboutPlugin(aboutData, itemView());
+                aboutPlugin.exec();
+                return;
+            }
+        }
+    }
+
     const QString name = model->data(index, NameRole).toString();
     const QString comment = model->data(index, CommentRole).toString();
     const QString author = model->data(index, AuthorRole).toString();
@@ -722,33 +742,21 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     const QString version = model->data(index, VersionRole).toString();
     const QString license = model->data(index, LicenseRole).toString();
 
-    QString message = i18n("Name:\n%1", name);
-
-    if (!comment.isEmpty()) {
-        message += i18n("\n\nComment:\n%1", comment);
+    KAboutData aboutData(name.toUtf8(), name.toUtf8(), ki18n(name.toUtf8()), version.toUtf8(), ki18n(comment.toUtf8()), KAboutLicense::byKeyword(license).key(), ki18n(QByteArray()), ki18n(QByteArray()), website.toLatin1());
+    aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
+    QStringList authors = author.split(',');
+    QStringList emails = email.split(',');
+    int i = 0;
+    if (authors.count() == emails.count()) {
+        foreach (const QString &author, authors) {
+            if (!author.isEmpty()) {
+                aboutData.addAuthor(ki18n(author.toUtf8()), ki18n(QByteArray()), emails[i].toUtf8(), 0);
+            }
+            i++;
+        }
     }
-
-    if (!author.isEmpty()) {
-        message += i18n("\n\nAuthor:\n%1", author);
-    }
-
-    if (!email.isEmpty()) {
-        message += i18n("\n\nE-Mail:\n%1", email);
-    }
-
-    if (!website.isEmpty()) {
-        message += i18n("\n\nWebsite:\n%1", website);
-    }
-
-    if (!version.isEmpty()) {
-        message += i18n("\n\nVersion:\n%1", version);
-    }
-
-    if (!license.isEmpty()) {
-        message += i18n("\n\nLicense:\n%1", license);
-    }
-
-    KMessageBox::information(itemView(), message, i18n("About Plugin \"%1\"", name));
+    KAboutApplicationDialog aboutPlugin(&aboutData, itemView());
+    aboutPlugin.exec();
 }
 
 void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
