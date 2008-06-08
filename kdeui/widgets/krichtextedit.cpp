@@ -393,6 +393,10 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
     } else {
         _linkText = linkUrl;
     }
+    // Can't simply insertHtml("<a href=\"%1\">%2</a>").arg(linkUrl).arg(_linkText);
+    // That would remove all existing text formatting on the selection (bold etc).
+    // The href information is stored in the QTextCharFormat, but qt bugs must
+    // still be worked around below.
     cursor.insertText(_linkText, format);
 
 
@@ -404,7 +408,21 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
         cursor.setPosition(lowPos);
         cursor.setPosition(lowPos + _linkText.length(), QTextCursor::KeepAnchor);
 
-        cursor.insertHtml(cursor.selection().toHtml());
+        if (!cursor.currentList()) {
+            cursor.insertHtml(cursor.selection().toHtml());
+        } else {
+            // Workaround for qt bug:
+            // If the cursor is currently on a list, inserting html will create a new block.
+            // This seems to be because toHtml() does not create a <!-- StartFragment --> tag in
+            // this case and text style information is stored in the list item rather than a span tag.
+            // -- Stephen Kelly, 8th June 2008
+
+            QString selectionHtml = cursor.selection().toHtml();
+            QString style = selectionHtml.split("<li style=\"").takeAt(1).split("\"").first();
+            QString linkTag = "<a" + selectionHtml.split("<a").takeAt(1).split(">").first() + ">"
+                + "<span style=\"" + style + "\">" + _linkText + "</span></a>";
+            cursor.insertHtml(linkTag);
+        }
 
         // Insert a space after the link if at the end of the block so that
         // typing some text after the link does not carry link formatting

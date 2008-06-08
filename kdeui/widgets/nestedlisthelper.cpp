@@ -66,13 +66,16 @@ bool NestedListHelper::handleBeforeKeyPressEvent(QKeyEvent *event)
             && event->key() == Qt::Key_Backspace
             && cursor.atBlockStart()) {
 
+        // Workaround for qt bug 211460:
         // If there is a list with selection like this:
         //
         //   * one
         //   * <cursor>t<anchor>wo
         //
         // and backspace is pressed, the bullet is removed, but not
-        // the 't'. Submitted qt-bugs, but no reply yet.
+        // the 't'.
+        // Fixed scheduled for qt4.5
+        // -- Stephen Kelly, 8th June 2008
 
         cursor.removeSelectedText();
         handled = true;
@@ -348,6 +351,8 @@ void NestedListHelper::reformatBoundingItemSpacing(QTextBlock block)
 {
     // This is a workaround for qt bug 201228. Spacing between items is not kept
     // consistent.
+    // Fixed scheduled for qt4.5
+    // -- Stephen Kelly, 8th June 2008
 
     int nextBlockTopMargin = listNoMargin;
     int previousBlockBottomMargin = listNoMargin;
