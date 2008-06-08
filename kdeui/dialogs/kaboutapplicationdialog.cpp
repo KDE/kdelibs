@@ -77,7 +77,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
 
-    titleWidget->setPixmap(qApp->windowIcon().pixmap(64, 64), KTitleWidget::ImageLeft);
+    QIcon windowIcon = qApp->windowIcon();
+    if (!aboutData->programIconName().isEmpty()) {
+        windowIcon = KIcon(aboutData->programIconName());
+    }
+    titleWidget->setPixmap(windowIcon.pixmap(64, 64), KTitleWidget::ImageLeft);
     if (aboutData->programLogo().canConvert<QPixmap>())
         titleWidget->setPixmap(aboutData->programLogo().value<QPixmap>(), KTitleWidget::ImageLeft);
     else if (aboutData->programLogo().canConvert<QImage>())
