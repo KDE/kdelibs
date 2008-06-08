@@ -101,6 +101,11 @@ public Q_SLOTS:
 protected:
     virtual void accept();
 
+    /**
+     * Reimplemented for saving the dialog geometry.
+     */
+    virtual void hideEvent( QHideEvent *event );
+
 private:
     class Private;
     Private* const d;

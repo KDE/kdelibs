@@ -734,6 +734,11 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent *e );
 
+    /**
+     * Reimplemented for saving the dialog geometry.
+     */
+    virtual void hideEvent( QHideEvent *event );
+
 protected Q_SLOTS:
     virtual void slotOk();
     virtual void accept();
