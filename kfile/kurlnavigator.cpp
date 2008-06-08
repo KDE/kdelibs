@@ -169,6 +169,7 @@ HostLineEdit::~HostLineEdit()
 void HostLineEdit::setOptimizeWidth(bool optimize)
 {
     m_optimizeWidth = optimize;
+    setClearButtonShown(!optimize);
 }
 
 QSize HostLineEdit::sizeHint() const
