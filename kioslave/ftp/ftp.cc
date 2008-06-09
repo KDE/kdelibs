@@ -1259,10 +1259,21 @@ void Ftp::rename( const KURL& src, const KURL& dst, bool overwrite )
     error( ERR_CANNOT_RENAME, src.path() );
 }
 
-bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite */ )
+bool Ftp::ftpRename( const QString & src, const QString & dst, bool overwrite )
 {
-  // TODO honor overwrite
   assert( m_bLoggedOn );
+
+    // Must check if dst already exists, RNFR+RNTO overwrites by default (#127793).
+    if (!overwrite) {
+        if (ftpSize(dst, 'I')) {
+            error(ERR_FILE_ALREADY_EXIST, dst);
+            return false;
+        }
+    }
+    if (ftpFolder(dst, false)) {
+        error(ERR_DIR_ALREADY_EXIST, dst);
+        return false;
+    }
 
   int pos = src.findRev("/");
   if( !ftpFolder(src.left(pos+1), false) )
