@@ -51,6 +51,7 @@
 #include <QtGui/QFont>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
+#include <kglobalsettings.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klibloader.h>
@@ -509,6 +510,11 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
      if (cwd && *cwd)
         chdir(cwd);
+     else {
+         KComponentData componentData("klauncher"); // needed for KConfig usage
+         const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
+         chdir(docPath.constData());
+     }
 
      if( reset_env ) // KWRAPPER/SHELL
      {
