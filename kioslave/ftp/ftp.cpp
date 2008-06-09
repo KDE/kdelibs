@@ -1041,12 +1041,23 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
     error( ERR_CANNOT_RENAME, src.path() );
 }
 
-bool Ftp::ftpRename( const QString & src, const QString & dst, KIO::JobFlags )
+bool Ftp::ftpRename( const QString & src, const QString & dst, KIO::JobFlags jobFlags)
 {
-  // TODO honor overwrite
-  assert( m_bLoggedOn );
+    assert( m_bLoggedOn );
 
-  int pos = src.lastIndexOf("/");
+    // Must check if dst already exists, RNFR+RNTO overwrites by default (#127793).
+    if (!(jobFlags & KIO::Overwrite)) {
+        if (ftpSize(dst, 'I')) {
+            error(ERR_FILE_ALREADY_EXIST, dst);
+            return false;
+        }
+    }
+    if (ftpFolder(dst, false)) {
+        error(ERR_DIR_ALREADY_EXIST, dst);
+        return false;
+    }
+
+  int pos = src.lastIndexOf('/');
   if( !ftpFolder(src.left(pos+1), false) )
       return false;
 
