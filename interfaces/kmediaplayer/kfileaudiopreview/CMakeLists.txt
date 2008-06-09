@@ -1,6 +1,5 @@
 
-include_directories( ${CMAKE_SOURCE_DIR} )
-include_directories(${KDE4_KIO_INCLUDES} ${KDE4_PHONON_INCLUDES})
+include_directories(${PHONON_INCLUDES} ${KDE4_KIO_INCLUDES})
 
 
 ########### next target ###############
