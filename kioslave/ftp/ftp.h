@@ -165,6 +165,12 @@ private:
   bool ftpSize( const QString & path, char mode );
 
   /**
+   * Returns true if the file exists.
+   * Implemented using the SIZE command.
+   */
+  bool ftpFileExists(const QString& path);
+
+  /**
    * Set the current working directory, but only if not yet current
    */
   bool ftpFolder(const QString& path, bool bReportError);

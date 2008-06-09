@@ -172,13 +172,12 @@ Ftp::Ftp( const QByteArray &pool, const QByteArray &app )
 
   // init other members
   m_port = 0;
-  kDebug(7102) << "Ftp::Ftp()";
 }
 
 
 Ftp::~Ftp()
 {
-  kDebug(7102) << "Ftp::~Ftp()";
+  kDebug(7102);
   closeConnection();
 }
 
@@ -264,18 +263,18 @@ const char* Ftp::ftpResponse(int iOffset)
 void Ftp::closeConnection()
 {
   if(m_control != NULL || m_data != NULL)
-    kDebug(7102) << "Ftp::closeConnection m_bLoggedOn=" << m_bLoggedOn << " m_bBusy=" << m_bBusy;
+    kDebug(7102) << "m_bLoggedOn=" << m_bLoggedOn << " m_bBusy=" << m_bBusy;
 
   if(m_bBusy)              // ftpCloseCommand not called
   {
-    kWarning(7102) << "Ftp::closeConnection Abandoned data stream";
+    kWarning(7102) << "Abandoned data stream";
     ftpCloseDataConnection();
   }
 
   if(m_bLoggedOn)           // send quit
   {
     if( !ftpSendCmd( "quit", 0 ) || (m_iRespType != 2) )
-      kWarning(7102) << "Ftp::closeConnection QUIT returned error: " << m_iRespCode;
+      kWarning(7102) << "QUIT returned error: " << m_iRespCode;
   }
 
   // close the data and control connections ...
@@ -286,7 +285,7 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, quint16 _port, const QString& _user,
                    const QString& _pass )
 {
-  kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << " port=" << _port;
+  kDebug(7102) << _host << "port=" << _port;
 
   m_proxyURL = metaData("UseProxy");
   m_bUseProxy = (m_proxyURL.isValid() && m_proxyURL.protocol() == "ftp");
@@ -1041,12 +1040,13 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
     error( ERR_CANNOT_RENAME, src.path() );
 }
 
-bool Ftp::ftpRename( const QString & src, const QString & dst, KIO::JobFlags )
+bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags)
 {
-  // TODO honor overwrite
-  assert( m_bLoggedOn );
+    // TODO honor overwrite
+    assert(m_bLoggedOn);
 
-  int pos = src.lastIndexOf("/");
+  // CD into parent folder
+  int pos = src.lastIndexOf('/');
   if( !ftpFolder(src.left(pos+1), false) )
       return false;
 
@@ -1174,7 +1174,7 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
     // When e.g. uploading a file, we still need stat() to return "not found"
     // when the file doesn't exist.
     QString statSide = metaData("statSide");
-    kDebug(7102) << "Ftp::stat statSide=" << statSide;
+    kDebug(7102) << "statSide=" << statSide;
     if ( statSide == "source" )
     {
         kDebug(7102) << "Not found, but assuming found, because some servers don't allow listing";
@@ -1191,14 +1191,14 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
     error( ERR_DOES_NOT_EXIST, path );
 }
 
-void Ftp::stat( const KUrl &url)
+void Ftp::stat(const KUrl &url)
 {
-  kDebug(7102) << "Ftp::stat : path='" << url.path() << "'";
+  kDebug(7102) << "path=" << url.path();
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
   QString path = QDir::cleanPath( url.path() );
-  kDebug(7102) << "Ftp::stat : cleaned path='" << path << "'";
+  kDebug(7102) << "cleaned path=" << path;
 
   // We can't stat root, but we know it's a dir.
   if( path.isEmpty() || path == "/" )
@@ -1232,10 +1232,10 @@ void Ftp::stat( const KUrl &url)
   // if we're only interested in "file or directory", we should stop here
   QString sDetails = metaData("details");
   int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-  kDebug(7102) << "Ftp::stat details=" << details;
+  kDebug(7102) << "details=" << details;
   if ( details == 0 )
   {
-     if ( !isDir && !ftpSize( path, 'I' ) ) // ok, not a dir -> is it a file ?
+     if ( !isDir && !ftpFileExists(path) ) // ok, not a dir -> is it a file ?
      {  // no -> it doesn't exist at all
         ftpStatAnswerNotFound( path, filename );
         return;
@@ -1265,18 +1265,6 @@ void Ftp::stat( const KUrl &url)
     statEntry(entry);
     finished();
     return;
-
-    // --- Old implementation:
-#if 0
-    // It's a dir, remember that
-    // Reason: it could be a symlink to a dir, in which case ftpReadDir
-    // in the parent dir will have no idea about that. But we know better.
-    isDir = true;
-    // If the dir starts with '.', we'll need '-a' to see it in the listing.
-    if ( search[0] == '.' )
-       listarg = "-a";
-    parentDir = "..";
-#endif
   }
 
   // Now cwd the parent dir, to prepare for listing
@@ -1299,8 +1287,7 @@ void Ftp::stat( const KUrl &url)
   {
     // We look for search or filename, since some servers (e.g. ftp.tuwien.ac.at)
     // return only the filename when doing "dir /full/path/to/file"
-    if ( !bFound )
-    {
+    if (!bFound) {
         if ( ( search == ftpEnt.name || filename == ftpEnt.name ) ) {
             if ( !filename.isEmpty() ) {
               bFound = true;
@@ -1309,32 +1296,6 @@ void Ftp::stat( const KUrl &url)
               statEntry( entry );
             }
         }
-#if 0 // goes with the "old implementation" above
-        else if ( isDir && ( ftpEnt.name == listarg || ftpEnt.name+'/' == listarg ) ) {
-            // Damn, the dir we're trying to list is in fact a symlink
-            // Follow it and try again
-            if ( ftpEnt.link.isEmpty() )
-                kWarning(7102) << "Got " << listarg << " as answer, but empty link!";
-            else
-            {
-                linkURL = url;
-                kDebug(7102) << "ftpEnt.link=" << ftpEnt.link;
-                if ( ftpEnt.link[0] == '/' )
-                    linkURL.setPath( ftpEnt.link ); // Absolute link
-                else
-                {
-                    // Relative link (stat will take care of cleaning ../.. etc.)
-                    linkURL.setPath( listarg ); // this is what we were listing (the link)
-                    linkURL.setPath( linkURL.directory() ); // go up one dir
-                    linkURL.addPath( ftpEnt.link ); // replace link by its destination
-                    kDebug(7102) << "linkURL now " << linkURL.prettyUrl();
-                }
-                // Re-add the filename we're looking for
-                linkURL.addPath( filename );
-            }
-            bFound = true;
-        }
-#endif
     }
 
     // kDebug(7102) << ftpEnt.name;
@@ -1366,7 +1327,7 @@ void Ftp::stat( const KUrl &url)
 
 void Ftp::listDir( const KUrl &url )
 {
-  kDebug(7102) << "Ftp::listDir " << url.prettyUrl();
+    kDebug(7102) << url;
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
@@ -1393,20 +1354,18 @@ void Ftp::listDir( const KUrl &url )
     return;
   }
 
-  kDebug(7102) << "hunting for path '" << path << "'";
+    kDebug(7102) << "hunting for path" << path;
 
-  if (!ftpOpenDir( path ) )
-  {
-    if ( ftpSize( path, 'I' ) ) // is it a file ?
-    {
-      error( ERR_IS_FILE, path );
-      return;
+    if (!ftpOpenDir(path)) {
+        if (ftpFileExists(path)) {
+            error(ERR_IS_FILE, path);
+        } else {
+            // not sure which to emit
+            //error( ERR_DOES_NOT_EXIST, path );
+            error( ERR_CANNOT_ENTER_DIRECTORY, path );
+        }
+        return;
     }
-    // not sure which to emit
-    //error( ERR_DOES_NOT_EXIST, path );
-    error( ERR_CANNOT_ENTER_DIRECTORY, path );
-    return;
-  }
 
   UDSEntry entry;
   FtpEntry  ftpEnt;
@@ -1679,7 +1638,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 //===============================================================================
 void Ftp::get( const KUrl & url )
 {
-  kDebug(7102) << "Ftp::get " << url.url();
+    kDebug(7102) << url;
   int iError = 0;
   ftpGet(iError, -1, url, 0);               // iError gets status
   if(iError)                                // can have only server side errs
@@ -1885,7 +1844,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
 //===============================================================================
 void Ftp::put(const KUrl& url, int permissions, KIO::JobFlags flags)
 {
-  kDebug(7102) << "Ftp::put " << url.url();
+    kDebug(7102) << url;
   int iError = 0;                           // iError gets status
   ftpPut(iError, -1, url, permissions, flags);
   if(iError)                                // can have only server side errs
@@ -2106,6 +2065,19 @@ bool Ftp::ftpSize( const QString & path, char mode )
   return true;
 }
 
+bool Ftp::ftpFileExists(const QString& path)
+{
+  QByteArray buf;
+  buf = "SIZE ";
+  buf += remoteEncoding()->encode(path);
+  if( !ftpSendCmd( buf ) || (m_iRespType != 2) )
+    return false;
+
+  // skip leading "213 " (response code)
+  const char* psz = ftpResponse(4);
+  return psz != 0;
+}
+
 // Today the differences between ASCII and BINARY are limited to
 // CR or CR/LF line terminators. Many servers ignore ASCII (like
 // win2003 -or- vsftp with default config). In the early days of
@@ -2119,7 +2091,7 @@ bool Ftp::ftpDataMode(char cMode)
   else if(cMode == 'a') cMode = 'A';
   else if(cMode != 'A') cMode = 'I';
 
-  kDebug(7102) << "ftpDataMode: want '" << cMode << "' has '" << m_cDataMode << "'";
+  kDebug(7102) << "want" << cMode << "has" << m_cDataMode;
   if(m_cDataMode == cMode)
     return true;
 
@@ -2138,7 +2110,7 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
   int iLen = newPath.length();
   if(iLen > 1 && newPath[iLen-1] == '/') newPath.truncate(iLen-1);
 
-  //kDebug(7102) << "ftpFolder: want '" << newPath << "' has '" << m_currentPath << "'";
+  //kDebug(7102) << "want" << newPath << "has" << m_currentPath;
   if(m_currentPath == newPath)
     return true;
 
@@ -2174,14 +2146,14 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, KIO::JobFlag
   if(bSrcLocal && !bDestLocal)                    // File -> Ftp
   {
     sCopyFile = src.toLocalFile();
-    kDebug(7102) << "Ftp::copy local file '" << sCopyFile << "' -> ftp '" << dest.path() << "'";
+    kDebug(7102) << "local file" << sCopyFile << "-> ftp" << dest.path();
     cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, flags);
     if( cs == statusServerError) sCopyFile = dest.url();
   }
   else if(!bSrcLocal && bDestLocal)               // Ftp -> File
   {
     sCopyFile = dest.toLocalFile();
-    kDebug(7102) << "Ftp::copy ftp '" << src.path() << "' -> local file '" << sCopyFile << "'";
+    kDebug(7102) << "ftp" << src.path() << "-> local file" << sCopyFile;
     cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, flags);
     if( cs == statusServerError ) sCopyFile = src.url();
   }
