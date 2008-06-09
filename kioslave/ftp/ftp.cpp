@@ -1040,27 +1040,40 @@ void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
     error( ERR_CANNOT_RENAME, src.path() );
 }
 
-bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags)
+bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobFlags)
 {
-    // TODO honor overwrite
     assert(m_bLoggedOn);
 
-  // CD into parent folder
-  int pos = src.lastIndexOf('/');
-  if( !ftpFolder(src.left(pos+1), false) )
-      return false;
+    // Must check if dst already exists, RNFR+RNTO overwrites by default (#127793).
+    if (!(jobFlags & KIO::Overwrite)) {
+        if (ftpFileExists(dst)) {
+            error(ERR_FILE_ALREADY_EXIST, dst);
+            return false;
+        }
+    }
+    if (ftpFolder(dst, false)) {
+        error(ERR_DIR_ALREADY_EXIST, dst);
+        return false;
+    }
 
-  QByteArray from_cmd = "RNFR ";
-  from_cmd += remoteEncoding()->encode(src.mid(pos+1));
-  if( !ftpSendCmd( from_cmd ) || (m_iRespType != 3) )
-      return false;
+    // CD into parent folder
+    const int pos = src.lastIndexOf('/');
+    if (pos > 0) {
+        if(!ftpFolder(src.left(pos+1), false))
+            return false;
+    }
 
-  QByteArray to_cmd = "RNTO ";
-  to_cmd += remoteEncoding()->encode(dst);
-  if( !ftpSendCmd( to_cmd ) || (m_iRespType != 2) )
-      return false;
+    QByteArray from_cmd = "RNFR ";
+    from_cmd += remoteEncoding()->encode(src.mid(pos+1));
+    if (!ftpSendCmd(from_cmd) || (m_iRespType != 3))
+        return false;
 
-  return true;
+    QByteArray to_cmd = "RNTO ";
+    to_cmd += remoteEncoding()->encode(dst);
+    if (!ftpSendCmd(to_cmd) || (m_iRespType != 2))
+        return false;
+
+    return true;
 }
 
 void Ftp::del( const KUrl& url, bool isfile )
