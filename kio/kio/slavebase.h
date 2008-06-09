@@ -441,6 +441,12 @@ public:
      * Rename @p oldname into @p newname.
      * If the slave returns an error ERR_UNSUPPORTED_ACTION, the job will
      * ask for copy + del instead.
+     *
+     * Important: the slave must implement the logic "if the destination already
+     * exists, error ERR_DIR_ALREADY_EXIST or ERR_FILE_ALREADY_EXIST".
+     * For performance reasons no stat is done in the destination before hand,
+     * the slave must do it.
+     *
      * @param src where to move the file from
      * @param dest where to move the file to
      * @param flags: We support Overwrite here
