@@ -343,7 +343,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // initialize the path box of the traditional view
     m_pathBox = new KUrlComboBox(KUrlComboBox::Both, true, q);
-    m_pathBox->setMinimumWidth(50);
+    m_pathBox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
 
     KUrlCompletion* kurlCompletion = new KUrlCompletion(KUrlCompletion::DirCompletion);
     m_pathBox->setCompletionObject(kurlCompletion);
