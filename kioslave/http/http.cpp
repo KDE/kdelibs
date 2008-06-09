@@ -1937,9 +1937,6 @@ void HTTPProtocol::httpCheckConnection()
 
 bool HTTPProtocol::httpOpenConnection()
 {
-  int errCode;
-  QString errMsg;
-
   kDebug(7113);
 
   setBlocking( true );
@@ -2250,7 +2247,7 @@ bool HTTPProtocol::httpOpen()
         header += "\r\n";
     }
 
-    if ( m_request.offset >= 0 && m_request.endoffset > m_request.offset )
+    if ( m_request.endoffset > m_request.offset )
     {
         header += QString("Range: bytes=%1-%2\r\n").arg(KIO::number(m_request.offset)).arg(KIO::number(m_request.endoffset));
         kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) << " - "  << KIO::number(m_request.endoffset);
@@ -3601,12 +3598,12 @@ try_again:
 
 static void skipLWS(const QString &str, int &pos)
 {
-    
+
     while (pos < str.length() && (str[pos] == ' ' || str[pos] == '\t'))
         ++pos;
 }
 
-// Extracts token-like input until terminator char or EOL.. Also skips over the terminator. 
+// Extracts token-like input until terminator char or EOL.. Also skips over the terminator.
 // We don't try to be strict or anything..
 static QString extractUntil(const QString &str, unsigned char term, int &pos)
 {
@@ -3616,14 +3613,14 @@ static QString extractUntil(const QString &str, unsigned char term, int &pos)
         out += str[pos];
         ++pos;
     }
-    
+
     if (pos < str.length()) // Stopped due to finding term
         ++pos;
-    
+
     // Remove trailing linear whitespace...
     while (out.endsWith(' ') || out.endsWith('\t'))
         out.chop(1);
-        
+
     return out;
 }
 
@@ -3631,14 +3628,14 @@ static QString extractUntil(const QString &str, unsigned char term, int &pos)
 static QString extractMaybeQuotedUntil(const QString &str, unsigned char term, int &pos)
 {
     skipLWS(str, pos);
-    
+
     // Are we quoted?
     if (pos < str.length() && str[pos] == '"') {
         QString out;
-        
+
         // Skip the quote...
         ++pos;
-        
+
         // Parse until trailing quote...
         while (pos < str.length()) {
             if (str[pos] == '\\' && pos + 1 < str.length()) {
@@ -3653,10 +3650,10 @@ static QString extractMaybeQuotedUntil(const QString &str, unsigned char term, i
                 ++pos;
             }
         }
-        
+
         // Skip until term..
         while (pos < str.length() && (str[pos] != term))
-            ++pos;    
+            ++pos;
 
         if (pos < str.length()) // Stopped due to finding term
             ++pos;
@@ -3674,16 +3671,16 @@ void HTTPProtocol::parseContentDisposition(const QString &disposition)
     QString strFilename;
 
     int pos = 0;
-    
+
     strDisposition = extractUntil(disposition, ';', pos);
-    
+
     while (pos < disposition.length()) {
         QString key = extractUntil(disposition, '=', pos);
         QString val = extractMaybeQuotedUntil(disposition, ';', pos);
         if (key == "filename")
             strFilename = val;
     }
-    
+
     // Content-Dispostion is not allowed to dictate directory
     // path, thus we extract the filename only.
     if ( !strFilename.isEmpty() )
