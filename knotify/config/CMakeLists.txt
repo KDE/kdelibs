@@ -1,5 +1,5 @@
 
-include_directories(${KDE4_PHONON_INCLUDES})
+include_directories(BEFORE ${KDE4_PHONON_INCLUDES})
 
 ########### next target ###############
 

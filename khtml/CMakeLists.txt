@@ -247,9 +247,9 @@ add_subdirectory( css )
 add_subdirectory( pics )
 add_subdirectory( ecma )
 
-include_directories( ${KDE4_KPARTS_INCLUDES} )
+include_directories( ${KDE4_PHONON_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${KDE4_PHONON_INCLUDES})
+include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/misc
