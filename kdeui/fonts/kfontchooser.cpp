@@ -180,7 +180,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         gridLayout = new QGridLayout( page );
         gridLayout->setMargin( KDialog::marginHint() );
         gridLayout->setSpacing( KDialog::spacingHint() );
-        gridLayout->addItem( new QSpacerItem(0,fontMetrics().lineSpacing()), 0, 0 );
         row = 1;
     }
     else
