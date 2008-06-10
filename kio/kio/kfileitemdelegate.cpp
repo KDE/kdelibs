@@ -110,23 +110,6 @@ class KFileItemDelegate::Private
         void initStyleOption(QStyleOptionViewItemV4 *option, const QModelIndex &index) const;
         void drawFocusRect(QPainter *painter, const QStyleOptionViewItemV4 &option, const QRect &rect) const;
 
-        /**
-         * Returns the extension string for a filename, which contains all
-         * file extensions. Version numbers like in "cmake-2.4.5" don't count
-         * as file extension. If the version numbers follow after a valid extension, they
-         * are part of the extension string.
-         *
-         * Examples (name -> extension string):
-         * "Image.gif" -> ".gif"
-         * "package.tar.gz" -> ".tar.gz"
-         * "cmake-2.4.5" -> ""
-         * "Image.1.12.gif" -> ".gif"
-         * "Image.tar.1.12.gz" -> ".tar.1.12.gz"
-         */
-        // TODO: has been copied from kdebase/apps/dolphin/src/renamedialog.*. Provide
-        // a public interface for KDE 4.2 and port the corresponding unit test from Dolphin.
-        QString extensionString(const QString &fileName);
-
     public:
         KFileItemDelegate::InformationList informationList;
         QColor shadowColor;
@@ -1115,38 +1098,6 @@ void KFileItemDelegate::Private::drawFocusRect(QPainter *painter, const QStyleOp
 }
 
 
-QString KFileItemDelegate::Private::extensionString(const QString &fileName)
-{
-    QString extension;
-
-    const QStringList strings = fileName.split('.');
-    const int size = strings.size();
-    for (int i = size - 1; i >= 0; --i)
-    {
-        const QString &str = strings.at(i);
-
-        // Sub strings like "9", "12", "99", ... which contain only
-        // numbers don't count as extension. Usually they are version
-        // numbers like in "cmake-2.4.5".
-        bool isNumeric = false;
-        str.toInt(&isNumeric);
-        if (isNumeric)
-            break;
-
-        // Extensions may not contain a space and the maximum length
-        // should not exceed 4 characters. This prevents that strings like
-        // "Open office.org writer documentation.pdf" get ".org writer documentation.pdf"
-        // as extension.
-        if (str.contains(' ') || (str.length() > 4))
-            break;
-
-        extension.insert(0, '.' + str);
-    }
-
-    return extension;
-}
-
-
 void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                               const QModelIndex &index) const
 {
@@ -1319,11 +1270,11 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
     textedit->insertPlainText(text);
     textedit->selectAll();
 
-    const QString extension = d->extensionString(text);
+    const QString extension = KMimeType::extractKnownExtension(text);
     if (!extension.isEmpty()) {
         // The filename contains an extension. Assure that only the filename
         // gets selected.
-        const int selectionLength = text.length() - extension.length();
+        const int selectionLength = text.length() - extension.length() - 1;
         QTextCursor cursor = textedit->textCursor();
         cursor.movePosition(QTextCursor::StartOfBlock);
         cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selectionLength);
