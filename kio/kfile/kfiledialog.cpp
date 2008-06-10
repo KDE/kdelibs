@@ -27,9 +27,7 @@
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QKeyEvent>
-#ifdef Q_WS_WIN
-# include <QtGui/QFileDialog>
-#endif
+#include <QtGui/QFileDialog>
 
 #include <kimageio.h>
 #include <klocale.h>
@@ -538,5 +536,180 @@ KAbstractFileWidget* KFileDialog::fileWidget()
 {
     return d->w;
 }
+
+#ifndef Q_WS_WIN
+typedef QString (*_qt_filedialog_existing_directory_hook)(QWidget *parent, const QString &caption,
+                                                          const QString &dir,
+                                                          QFileDialog::Options options);
+extern _qt_filedialog_existing_directory_hook qt_filedialog_existing_directory_hook;
+#endif
+
+typedef QString (*_qt_filedialog_open_filename_hook)(QWidget * parent, const QString &caption,
+                                                     const QString &dir, const QString &filter,
+                                                     QString *selectedFilter,
+                                                     QFileDialog::Options options);
+extern _qt_filedialog_open_filename_hook qt_filedialog_open_filename_hook;
+
+typedef QStringList (*_qt_filedialog_open_filenames_hook)(QWidget * parent, const QString &caption,
+                                                          const QString &dir, const QString &filter,
+                                                          QString *selectedFilter,
+                                                          QFileDialog::Options options);
+extern _qt_filedialog_open_filenames_hook qt_filedialog_open_filenames_hook;
+
+typedef QString (*_qt_filedialog_save_filename_hook)(QWidget * parent, const QString &caption,
+                                                     const QString &dir, const QString &filter,
+                                                     QString *selectedFilter,
+                                                     QFileDialog::Options options);
+extern _qt_filedialog_save_filename_hook qt_filedialog_save_filename_hook;
+
+/*
+ * This class is used to override Qt's QFileDialog calls with KFileDialog ones.
+ * This is necessary because QPrintDialog calls QFileDialog::getSaveFileName() for
+ * the print to file function.
+ */
+
+struct KFileDialogQtOverride
+{
+    KFileDialogQtOverride()
+    {
+#ifndef Q_WS_WIN
+        if(!qt_filedialog_existing_directory_hook)
+            qt_filedialog_existing_directory_hook=&getExistingDirectory;
+#endif
+        if(!qt_filedialog_open_filename_hook)
+            qt_filedialog_open_filename_hook=&getOpenFileName;
+        if(!qt_filedialog_open_filenames_hook)
+            qt_filedialog_open_filenames_hook=&getOpenFileNames;
+        if(!qt_filedialog_save_filename_hook)
+            qt_filedialog_save_filename_hook=&getSaveFileName;
+    }
+
+    /*
+     * Map a Qt filter string into a KDE one.
+     */
+    static QString qt2KdeFilter(const QString &f)
+    {
+        QString               filter;
+        QTextStream           str(&filter, QIODevice::WriteOnly);
+        QStringList           list(f.split(";;"));
+        QStringList::Iterator it(list.begin()),
+                              end(list.end());
+        bool                  first=true;
+
+        for(; it!=end; ++it)
+        {
+            int ob=(*it).lastIndexOf('('),
+                cb=(*it).lastIndexOf(')');
+
+            if(-1!=cb && ob<cb)
+            {
+                if(first)
+                    first=false;
+                else
+                    str << '\n';
+                str << (*it).mid(ob+1, (cb-ob)-1) << '|' << (*it).mid(0, ob);
+            }
+        }
+
+        return filter;
+    }
+
+    /*
+     * Map a KDE filter string into a Qt one.
+     */
+    static void kde2QtFilter(const QString &orig, const QString &kde, QString *sel)
+    {
+        if(sel)
+        {
+            QStringList           list(orig.split(";;"));
+            QStringList::Iterator it(list.begin()),
+                                  end(list.end());
+            int                   pos;
+
+            for(; it!=end; ++it)
+                if(-1!=(pos=(*it).indexOf(kde)) && pos>0 &&
+                   ('('==(*it)[pos-1] || ' '==(*it)[pos-1]) &&
+                   (*it).length()>=kde.length()+pos &&
+                   (')'==(*it)[pos+kde.length()] || ' '==(*it)[pos+kde.length()]))
+                {
+                    *sel=*it;
+                    return;
+                }
+        }
+    }
+
+#ifndef Q_WS_WIN
+    static QString getExistingDirectory(QWidget *parent, const QString &caption, const QString &dir,
+                                        QFileDialog::Options)
+    {
+        KUrl url(KFileDialog::getExistingDirectory(KUrl(dir), parent, caption));
+
+        if(url.isLocalFile())
+            return url.pathOrUrl();
+        else
+            return QString();
+    }
+#endif
+
+    static QString getOpenFileName(QWidget *parent, const QString &caption, const QString &dir,
+                                   const QString &filter, QString *selectedFilter,
+                                   QFileDialog::Options)
+    {
+        KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
+
+        dlg.setOperationMode(KFileDialog::Opening);
+        dlg.setMode(KFile::File|KFile::LocalOnly);
+        dlg.setCaption(caption);
+        dlg.exec();
+
+        QString rv(dlg.selectedFile());
+
+        if(!rv.isEmpty())
+            kde2QtFilter(filter, dlg.currentFilter(), selectedFilter);
+
+        return rv;
+    }
+
+    static QStringList getOpenFileNames(QWidget *parent, const QString &caption, const QString &dir,
+                                        const QString &filter, QString *selectedFilter,
+                                        QFileDialog::Options)
+    {
+        KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
+
+        dlg.setOperationMode(KFileDialog::Opening);
+        dlg.setMode(KFile::Files|KFile::LocalOnly);
+        dlg.setCaption(caption);
+        dlg.exec();
+
+        QStringList rv(dlg.selectedFiles());
+
+        if(rv.count())
+            kde2QtFilter(filter, dlg.currentFilter(), selectedFilter);
+
+        return rv;
+    }
+
+    static QString getSaveFileName(QWidget *parent, const QString &caption, const QString &dir,
+                                   const QString &filter, QString *selectedFilter,
+                                   QFileDialog::Options)
+    {
+        KFileDialog dlg(KUrl(dir), qt2KdeFilter(filter), parent);
+
+        dlg.setOperationMode(KFileDialog::Saving);
+        dlg.setMode(KFile::File|KFile::LocalOnly);
+        dlg.setCaption(caption);
+        dlg.exec();
+
+        QString rv(dlg.selectedFile());
+
+        if(!rv.isEmpty())
+            kde2QtFilter(filter, dlg.currentFilter(), selectedFilter);
+
+        return rv;
+    }
+
+};
+
+static KFileDialogQtOverride qtOverride;
 
 #include "kfiledialog.moc"
