@@ -25,6 +25,8 @@
 #ifndef KJS_LOCAL_STORAGE_H
 #define KJS_LOCAL_STORAGE_H
 
+#include "kjs/global.h"
+
 #ifdef HAVE_STDINT_H
 #include <stdint.h>   // int32_t
 #endif
