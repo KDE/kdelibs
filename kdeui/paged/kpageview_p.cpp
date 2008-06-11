@@ -124,6 +124,9 @@ void KPageListView::setModel( QAbstractItemModel *model )
 //  QListView::setModel( proxy );
   QListView::setModel( model );
 
+  // Set our own selection model, which won't allow our current selection to be cleared
+  setSelectionModel( new KDEPrivate::SelectionModel( model, this ) );
+
   updateWidth();
 }
 
@@ -157,6 +160,9 @@ void KPageTreeView::setModel( QAbstractItemModel *model )
   connect( model, SIGNAL( layoutChanged() ), this, SLOT( updateWidth() ) );
 
   QTreeView::setModel( model );
+
+  // Set our own selection model, which won't allow our current selection to be cleared
+  setSelectionModel( new KDEPrivate::SelectionModel( model, this ) );
 
   updateWidth();
 }
@@ -548,6 +554,34 @@ void KPageListViewProxy::addMapEntry( const QModelIndex &index )
     for ( int i = 0; i < count; ++i )
       addMapEntry( sourceModel()->index( i, 0, index ) );
   }
+}
+
+SelectionModel::SelectionModel( QAbstractItemModel *model, QObject *parent )
+  : QItemSelectionModel( model, parent )
+{
+}
+
+void SelectionModel::clear()
+{
+  // Don't allow the current selection to be cleared
+}
+
+void SelectionModel::select( const QModelIndex &index, QItemSelectionModel::SelectionFlags command )
+{
+  // Don't allow the current selection to be cleared
+  if ( !index.isValid() && ( command & QItemSelectionModel::Clear ) ) {
+    return;
+  }
+  QItemSelectionModel::select( index, command );
+}
+
+void SelectionModel::select( const QItemSelection &selection, QItemSelectionModel::SelectionFlags command )
+{
+  // Don't allow the current selection to be cleared
+  if ( !selection.count() && ( command & QItemSelectionModel::Clear ) ) {
+    return;
+  }
+  QItemSelectionModel::select( selection, command );
 }
 
 #include "kpageview_p.moc"

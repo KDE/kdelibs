@@ -220,6 +220,19 @@ class KPageListViewProxy : public QAbstractProxyModel
     QList<QModelIndex> mList;
 };
 
+class SelectionModel : public QItemSelectionModel
+{
+  Q_OBJECT
+
+  public:
+    SelectionModel( QAbstractItemModel *model, QObject *parent );
+
+  public Q_SLOTS:
+    virtual void clear();
+    virtual void select( const QModelIndex &index, QItemSelectionModel::SelectionFlags command );
+    virtual void select( const QItemSelection &selection, QItemSelectionModel::SelectionFlags command );
+};
+
 }
 
 #endif
