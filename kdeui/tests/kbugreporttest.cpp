@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
    KAboutData about1("kbugreporttest", 0, ki18n("kbugreporttest"), "version",
                      ki18n("description"), KAboutData::License_Unknown,
                      ki18n("copyright"), ki18n("bug report tool"),
-                     "test@bugs.kde.org");
+                     QByteArray(), "test@bugs.kde.org");
    KBugReport rep1(0,true,&about1);
    rep1.exec();
    return 0;
