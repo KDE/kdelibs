@@ -1403,7 +1403,10 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
     }
     // Replace XML entities if not rich text.
     else {
-        static QRegExp entRx("&([a-z]+);");
+        static QRegExp staticEntRx("&([a-z]+);");
+	// We have to have a local copy here, otherwise this function will not be
+	// thread safe because QRegExp is not thread safe.
+	QRegExp entRx = staticEntRx;
         QString plain;
         int p = entRx.indexIn(text);
         while (p >= 0) {
