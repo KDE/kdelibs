@@ -159,7 +159,6 @@ QVariantList TestObject::func_qobject2qvariantlist(QObject* obj)
 
 QObject* TestObject::func_qvariantlist2qobject(QVariantList list)
 {
-    QVariant v = list[0];
     return list.count() > 0 ? list[0].value<QObject*>() : 0;
 }
 
