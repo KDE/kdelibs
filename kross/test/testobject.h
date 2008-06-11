@@ -104,6 +104,8 @@ class TestObject : public QObject
 
     public Q_SLOTS:
 
+        QObject* self() { return this; }
+
         // return a TestThread instance.
         QObject* createThread(int steps, int msecs, bool start = false);
 
@@ -132,6 +134,9 @@ class TestObject : public QObject
         QStringList func_qstringlist_qstringlist(QStringList);
         QVariantList func_qvariantlist_qvariantlist(QVariantList);
         QVariantMap func_qvariantmap_qvariantmap(QVariantMap);
+
+        QVariantList func_qobject2qvariantlist(QObject* obj);
+        QObject* func_qvariantlist2qobject(QVariantList list);
 
         QSize func_qsize_qsize(const QSize&);
         QSizeF func_qsizef_qsizef(const QSizeF&);

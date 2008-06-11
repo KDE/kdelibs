@@ -149,6 +149,20 @@ QVariantMap TestObject::func_qvariantmap_qvariantmap(QVariantMap vm)
     return vm;
 }
 
+QVariantList TestObject::func_qobject2qvariantlist(QObject* obj)
+{
+    //kDebug()<<"TestObject::func_qobject2qvariantlist obj="<<(obj ? obj->objectName() : "NULL");
+    QVariant v;
+    v.setValue(obj);
+    return QVariantList() << v;
+}
+
+QObject* TestObject::func_qvariantlist2qobject(QVariantList list)
+{
+    QVariant v = list[0];
+    return list.count() > 0 ? list[0].value<QObject*>() : 0;
+}
+
 QSize TestObject::func_qsize_qsize(const QSize& s) { return s; }
 QSizeF TestObject::func_qsizef_qsizef(const QSizeF& s) { return s; }
 QPoint TestObject::func_qpoint_qpoint(const QPoint& p) { return p; }

@@ -256,6 +256,10 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qvariantlist_qvariantlist( [] ) == [] )
 		assert( TestObject1.func_qvariantlist_qvariantlist( [[[[]],[]]] ) == [[[[]],[]]] )
 		assert( TestObject1.func_qvariantlist_qvariantlist( ["A string",[17539,-8591],[5.32,-842.775]] ) == ["A string",[17539,-8591],[5.32,-842.775]] )
+
+		l = TestObject1.func_qobject2qvariantlist(TestObject2)
+		assert( l[0].objectName == TestObject2.objectName )
+		assert( TestObject1.func_qvariantlist2qobject(l).objectName == TestObject2.objectName )
 	end
  
 	def testVariantMap

@@ -76,6 +76,10 @@ class TestKross(unittest.TestCase):
 		self.assert_( self.object1.func_qvariantlist_qvariantlist( [[True,[],False,"Other String"],"test"] ) == [[True,[],False,"Other String"],"test"] )
 		self.assert_( self.object1.func_qvariantlist_qvariantlist( [[17,52],[],{},[84.21,936.821]] ) == [[17,52],[],{},[84.21,936.821]] )
 
+		l = TestObject1.func_qobject2qvariantlist(TestObject2)
+		self.assert_( l[0] == TestObject2 )
+		self.assert_( TestObject1.func_qvariantlist2qobject(l) == TestObject2 )
+
 	def testVariantMap(self):
 
 		def doTestVariantMap(vmap):
