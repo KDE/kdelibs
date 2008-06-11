@@ -30,9 +30,12 @@
 #include <QtCore/QBitRef>
 #include <QtCore/QByteRef>
 #include <QtCore/QDebug>
+#include <QtCore/QObject>
+#include <QtGui/QWidget>
 
 #include "kjseglobal.h"
 #include "static_binding.h"
+#include "qobject_binding.h"
 
 using namespace KJSEmbed;
 
@@ -404,9 +407,19 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         }
         default:
         {
-            returnValue = createVariant(exec, value.typeName(), value );
-            if( returnValue->isNull() )
-                returnValue = KJS::jsString( value.value<QString>() );
+            if( qVariantCanConvert< QWidget* >(value) ) {
+                QWidget* widget = qvariant_cast< QWidget* >(value);
+                returnValue = createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned);
+            }
+            else if( qVariantCanConvert< QObject* >(value) ) {
+                QObject* object = qvariant_cast< QObject* >(value);
+                returnValue = createQObject(exec, object, KJSEmbed::ObjectBinding::CPPOwned);
+            }
+            else {
+                returnValue = createVariant(exec, value.typeName(), value );
+                if( returnValue->isNull() )
+                    returnValue = KJS::jsString( value.value<QString>() );
+            }
             break;
         }
     }
