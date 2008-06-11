@@ -236,8 +236,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
 
     if (!details.isEmpty()) {
-        QGroupBox *detailsGroup = new QGroupBox(i18n("Details"), mainWidget);
-        QVBoxLayout *detailsLayout = new QVBoxLayout;
+        QGroupBox *detailsGroup = new QGroupBox(i18n("Details"));
+        QVBoxLayout *detailsLayout = new QVBoxLayout(detailsGroup);
         if (details.length() < 512) {
             QLabel *detailsLabel = new QLabel(details);
             detailsLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
@@ -245,12 +245,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
             detailsLabel->setWordWrap(true);
             detailsLayout->addWidget(detailsLabel);
         } else {
-            KTextEdit *detailTextEdit = new KTextEdit(mainWidget);
+            KTextEdit *detailTextEdit = new KTextEdit(details);
             detailTextEdit->setReadOnly(true);
             detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);
             detailsLayout->addWidget(detailTextEdit);
         }
-        detailsGroup->setLayout(detailsLayout);
         dialog->setDetailsWidget(detailsGroup);
     }
 
@@ -261,7 +260,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         if (hfw != messageScrollArea->sizeHint().height() && hfw < desktop.height() / 2) {
             messageScrollArea->setMinimumHeight(hfw);
         }
-        dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
+        if (details.isEmpty())
+            dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
     }
 
     if ((options & KMessageBox::Dangerous)) {
