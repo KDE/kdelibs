@@ -537,30 +537,36 @@ KAbstractFileWidget* KFileDialog::fileWidget()
     return d->w;
 }
 
+#ifdef Q_WS_WIN
+#define KF_EXTERN extern __declspec(dllimport)
+#else
+#define KF_EXTERN extern
+#endif
+
 #ifndef Q_WS_WIN
 typedef QString (*_qt_filedialog_existing_directory_hook)(QWidget *parent, const QString &caption,
                                                           const QString &dir,
                                                           QFileDialog::Options options);
-extern _qt_filedialog_existing_directory_hook qt_filedialog_existing_directory_hook;
+KF_EXTERN _qt_filedialog_existing_directory_hook qt_filedialog_existing_directory_hook;
 #endif
 
 typedef QString (*_qt_filedialog_open_filename_hook)(QWidget * parent, const QString &caption,
                                                      const QString &dir, const QString &filter,
                                                      QString *selectedFilter,
                                                      QFileDialog::Options options);
-extern _qt_filedialog_open_filename_hook qt_filedialog_open_filename_hook;
+KF_EXTERN _qt_filedialog_open_filename_hook qt_filedialog_open_filename_hook;
 
 typedef QStringList (*_qt_filedialog_open_filenames_hook)(QWidget * parent, const QString &caption,
                                                           const QString &dir, const QString &filter,
                                                           QString *selectedFilter,
                                                           QFileDialog::Options options);
-extern _qt_filedialog_open_filenames_hook qt_filedialog_open_filenames_hook;
+KF_EXTERN _qt_filedialog_open_filenames_hook qt_filedialog_open_filenames_hook;
 
 typedef QString (*_qt_filedialog_save_filename_hook)(QWidget * parent, const QString &caption,
                                                      const QString &dir, const QString &filter,
                                                      QString *selectedFilter,
                                                      QFileDialog::Options options);
-extern _qt_filedialog_save_filename_hook qt_filedialog_save_filename_hook;
+KF_EXTERN _qt_filedialog_save_filename_hook qt_filedialog_save_filename_hook;
 
 /*
  * This class is used to override Qt's QFileDialog calls with KFileDialog ones.
