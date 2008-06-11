@@ -635,7 +635,11 @@ void KUrl::setFileName( const QString& _txt )
   //QString path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   QString path = this->path();
   if ( path.isEmpty() )
+#ifdef Q_OS_WIN
+    path = isLocalFile() ? QDir::rootPath() : QLatin1String("/");
+#else
     path = QDir::rootPath();
+#endif
   else
   {
     int lastSlash = path.lastIndexOf( QLatin1Char('/') );
