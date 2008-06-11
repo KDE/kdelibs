@@ -187,6 +187,13 @@ void KStandarddirsTest::testFindExe()
 #endif
 
 #ifdef Q_OS_UNIX
+    QFile home( m_kdehome );
+    const QString target = m_kdehome + "/linktodir";
+    home.link( target );
+    QVERIFY( KGlobal::dirs()->findExe( target ).isEmpty() );
+#endif 
+
+#ifdef Q_OS_UNIX
     // findExe for a binary not part of KDE
     const QString ls = KGlobal::dirs()->findExe( "ls" );
     QVERIFY( !ls.isEmpty() );

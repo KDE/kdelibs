@@ -1116,11 +1116,15 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
     }
 #endif
     QFileInfo info( path );
-    if( info.exists() && ( ignoreExecBit || info.isExecutable() )
-        && ( info.isFile() || info.isSymLink() ) ) {
-        //kDebug(180) << "checkExecutable(): returning " << path;
-        info.makeAbsolute();
-        return info.filePath();
+    QFileInfo orig = info;
+    if( info.exists() && info.isSymLink() ) 
+        info = QFileInfo( info.canonicalFilePath() );
+    if( info.exists() && ( ignoreExecBit || info.isExecutable() ) && info.isFile() ) {
+        // return absolute path, but without symlinks resolved in order to prevent
+        // problems with executables that work differently depending on name they are
+        // run as (for example gunzip)
+        orig.makeAbsolute();
+        return orig.filePath();
     }
     //kDebug(180) << "checkExecutable(): failed, returning empty string";
     return QString();
