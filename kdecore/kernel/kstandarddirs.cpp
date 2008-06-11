@@ -37,6 +37,7 @@
 
 #include <config.h>
 #include <config-prefix.h>
+#include <config-kstandarddirs.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -1476,7 +1477,7 @@ void KStandardDirs::addKDEDefaults()
 #ifdef Q_WS_MACX
         localKdeDir =  QDir::homePath() + "/Library/Preferences/KDE/";
 #else
-        localKdeDir =  QDir::homePath() + "/.kde/";
+        localKdeDir =  QDir::homePath() + "/" + KDE_DEFAULT_HOME + "/";
 #endif
     }
 

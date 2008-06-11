@@ -1,4 +1,7 @@
 project(kdecore)
+# Generate config-kstandarddirs.h
+configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
+
 # Generate kdefakes.h
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 

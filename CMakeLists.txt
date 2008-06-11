@@ -7,6 +7,10 @@ set (KDE_VERSION_RELEASE 82)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.0.82 >= 20080610)")
 
+# set default kde home directory
+if (NOT KDE_DEFAULT_HOME)
+    set (KDE_DEFAULT_HOME ".kde")
+endif (NOT KDE_DEFAULT_HOME)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
