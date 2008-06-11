@@ -955,6 +955,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         QStringList dirs;
         dirs = d->relatives.value(type);
+        QString installdir = installPath( type );
+        QString installprefix = installPath("kdedir");
 
         if (!dirs.isEmpty())
         {
@@ -993,24 +995,33 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                  pit != prefixList->end();
                  ++pit)
             {
-                for (QStringList::ConstIterator it = dirs.begin();
-                     it != dirs.end(); ++it)
-                {
-                    if ( (*it).startsWith('%'))
-                        continue;
-                    QString path = realPath( *pit + *it );
-                    testdir.setPath(path);
-                    if (local && restrictionActive)
-                        continue;
-                    if ((local || testdir.exists()) && !candidates.contains(path))
-                        candidates.append(path);
+	        if((*pit)!=installprefix||installdir.isEmpty())
+	        {
+                    for (QStringList::ConstIterator it = dirs.begin();
+                         it != dirs.end(); ++it)
+                    {
+                        if ( (*it).startsWith('%'))
+                            continue;
+                        QString path = realPath( *pit + *it );
+                        testdir.setPath(path);
+                        if (local && restrictionActive)
+                            continue;
+                        if ((local || testdir.exists()) && !candidates.contains(path))
+                            candidates.append(path);
+                    }
+                    local = false;
                 }
-                local = false;
-            }
+	        else
+	        {
+                    // we have a custom install path, so use this instead of <installprefix>/<relative dir>
+	            testdir.setPath(installdir);
+                    if(testdir.exists() && ! candidates.contains(installdir))
+                        candidates.append(installdir);
+	        }
+	    }
         }
 
         // make sure we find the path where it's installed
-        QString installdir = installPath( type );
         if (!installdir.isEmpty()) {
             bool ok = true;
             foreach (const QString &s, candidates) {
