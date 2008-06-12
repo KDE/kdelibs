@@ -305,6 +305,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     // Parent
     if (m_Pid)
     {
+        d->m_pPTY->closeSlave();
         return 0;
     }
 
@@ -519,7 +520,8 @@ int PtyProcess::setupTTY()
     dup2(slave, 0); dup2(slave, 1); dup2(slave, 2);
 
     // Close all file handles
-    // XXX this caused problems in KProcess - not sure why anymore.
+    // XXX this caused problems in KProcess - not sure why anymore. -- ???
+    // Because it will close the start notification pipe. -- ossi
     struct rlimit rlp;
     getrlimit(RLIMIT_NOFILE, &rlp);
     for (int i = 3; i < (int)rlp.rlim_cur; i++)
