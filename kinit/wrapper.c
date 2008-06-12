@@ -143,7 +143,7 @@ static int openSocket()
 
   if (!kde_home || !kde_home[0])
   {
-     kde_home = "~/" + KDE_DEFAULT_HOME + "/";
+     kde_home = "~/" KDE_DEFAULT_HOME "/";
   }
 
   if (kde_home[0] == '~')

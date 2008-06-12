@@ -128,7 +128,7 @@ int build_link(const char* tmp, const char *tmp_prefix, const char *kde_prefix)
 
   if (!kde_home || !kde_home[0])
   {
-     kde_home = "~/" + KDE_DEFAULT_HOME +"/";
+     kde_home = "~/" KDE_DEFAULT_HOME "/";
   }
 
   if (kde_home[0] == '~')
