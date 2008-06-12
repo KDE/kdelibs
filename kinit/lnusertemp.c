@@ -18,6 +18,7 @@
 */
 
 #include "config.h"
+#include <config-kstandarddirs.h>
 
 #include <sys/types.h>
 #include <sys/param.h>

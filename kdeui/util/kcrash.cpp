@@ -27,6 +27,7 @@
 
 #include "kcrash.h"
 #include <kstandarddirs.h>
+#include <config-kstandarddirs.h>
 
 #include <config.h>
 

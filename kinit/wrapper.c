@@ -20,6 +20,7 @@
 */
 
 #include <config.h>
+#include <config-kstandarddirs.h>
 
 #include "klauncher_cmds.h"
 
