@@ -411,7 +411,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
         if (!cursor.currentList()) {
             cursor.insertHtml(cursor.selection().toHtml());
         } else {
-            // Workaround for qt bug:
+            // Workaround for qt bug 215576:
             // If the cursor is currently on a list, inserting html will create a new block.
             // This seems to be because toHtml() does not create a <!-- StartFragment --> tag in
             // this case and text style information is stored in the list item rather than a span tag.
@@ -433,7 +433,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
 
         d->activateRichText();
     } else {
-        // Remove link formatting. This is a workaround for the same qt bug.
+        // Remove link formatting. This is a workaround for the same qt bug (203510).
         // Just remove all formatting from the link text.
         QTextCharFormat charFormat;
         cursor.setCharFormat(charFormat);
