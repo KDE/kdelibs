@@ -610,7 +610,7 @@ void KPty::logout()
         ut->ut_type = DEAD_PROCESS;
 #  endif
 #  ifdef HAVE_UTMPX
-        gettimeofday(ut->ut_tv, 0);
+        gettimeofday(&(ut->ut_tv), 0);
         pututxline(ut);
     }
     endutxent();
