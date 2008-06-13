@@ -8,6 +8,7 @@ set(kded_kwalletd_PART_SRCS
    kwalletd.cpp
    kwalletwizard.cpp
    ktimeout.cpp
+   kwalletsynctimer.cpp
 )
 
 

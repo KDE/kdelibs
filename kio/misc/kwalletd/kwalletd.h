@@ -38,6 +38,7 @@ class KTimeout;
 
 // @Private
 class KWalletTransaction;
+class KWalletSyncTimer;
 
 class KWalletD : public KDEDModule {
 	Q_OBJECT
@@ -164,6 +165,7 @@ class KWalletD : public KDEDModule {
 		void timedOut(int);
 		void notifyFailures();
 		void processTransactions();
+		void doTransactionSync(const QString& wallet);
 
 	private:
 		int internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal);
@@ -185,6 +187,7 @@ class KWalletD : public KDEDModule {
 
 		void doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId);
 		int doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal);
+		void initiateSync(const QString& wallet);
 
 		void setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal );
 		void checkActiveDialog();
@@ -205,6 +208,7 @@ class KWalletD : public KDEDModule {
 		KTimeout *_timeouts;
 
 		QList<KWalletTransaction*> _transactions;
+		QMap<QString,KWalletSyncTimer*> _synctimers;
 		QPointer< QWidget > activeDialog;
 #ifdef Q_WS_X11
 		QDBusInterface *screensaver;

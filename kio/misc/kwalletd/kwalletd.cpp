@@ -52,6 +52,7 @@
 #include <assert.h>
 
 #include "kwalletdadaptor.h"
+#include "kwalletsynctimer.h"
 
 K_PLUGIN_FACTORY(KWalletDFactory,
                  registerPlugin<KWalletD>();
@@ -111,6 +112,7 @@ KWalletD::~KWalletD() {
 	screensaver = 0;
 #endif
 	closeAllWallets();
+	qDeleteAll(_synctimers);
 	qDeleteAll(_transactions);
 }
 
@@ -465,6 +467,8 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 			_passwords[wallet] = password.toUtf8();
 		}
 		_handles[appid].append(rc);
+		_synctimers[wallet] = new KWalletSyncTimer(this, wallet);
+		connect(_synctimers[wallet], SIGNAL(timeoutSync(const QString&)), this, SLOT(doTransactionSync(const QString&)));
 
 		if (brandNew) {
 			createFolder(rc, KWallet::Wallet::PasswordFolder(), appid);
@@ -581,6 +585,11 @@ void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QStrin
 	checkActiveDialog();
 }
 
+void KWalletD::initiateSync(const QString& wallet) {
+	assert(_synctimers.contains(wallet));
+	// start or restart the timer.
+	_synctimers[wallet]->start();
+}
 
 void KWalletD::doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId) {
 
@@ -646,12 +655,14 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 	if (w) {
 		const QString& wallet = w->walletName();
 		assert(_passwords.contains(wallet));
+		assert(_synctimers.contains(wallet));
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
 			if (_closeIdle && _timeouts) {
 				_timeouts->removeTimer(handle);
 			}
 			_wallets.remove(handle);
+			delete _synctimers.take(wallet);
 			if (_passwords.contains(wallet)) {
 				w->close(QByteArray(_passwords[wallet].data(), _passwords[wallet].length()));
 				_passwords[wallet].fill(0);
@@ -690,6 +701,9 @@ int KWalletD::close(int handle, bool force, const QString& appid) {
 				_timeouts->removeTimer(handle);
 			}
 			_wallets.remove(handle);
+			if (_synctimers.contains(w->walletName())) {
+				delete _synctimers.take(w->walletName());
+			}
 			if (force) {
 				invalidateHandle(handle);
 			}
@@ -763,6 +777,19 @@ void KWalletD::sync(int handle, const QString& appid) {
 	}
 }
 
+void KWalletD::doTransactionSync(const QString& wallet) {
+	if (_synctimers.contains(wallet)) {
+		_synctimers[wallet]->stop();
+	}
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	
+	if (walletInfo.second) {
+		QByteArray p = QByteArray(_passwords[wallet].data(), _passwords[wallet].length());
+		walletInfo.second->sync(p);
+		p.fill(0);
+	}
+}
+
 
 QStringList KWalletD::folderList(int handle, const QString& appid) {
 	KWallet::Backend *b;
@@ -791,6 +818,7 @@ bool KWalletD::removeFolder(int handle, const QString& f, const QString& appid) 
 
 	if ((b = getWallet(appid, handle))) {
 		bool rc = b->removeFolder(f);
+		initiateSync(b->walletName());
 		emit folderListUpdated(b->walletName());
 		return rc;
 	}
@@ -804,6 +832,7 @@ bool KWalletD::createFolder(int handle, const QString& f, const QString& appid) 
 
 	if ((b = getWallet(appid, handle))) {
 		bool rc = b->createFolder(f);
+		initiateSync(b->walletName());
 		emit folderListUpdated(b->walletName());
 		return rc;
 	}
@@ -931,6 +960,7 @@ int KWalletD::writeMap(int handle, const QString& folder, const QString& key, co
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Map);
 		b->writeEntry(&e);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
@@ -949,6 +979,7 @@ int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, 
 		e.setValue(value);
 		e.setType(KWallet::Wallet::EntryType(entryType));
 		b->writeEntry(&e);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
@@ -967,6 +998,7 @@ int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, 
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Stream);
 		b->writeEntry(&e);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
@@ -985,6 +1017,7 @@ int KWalletD::writePassword(int handle, const QString& folder, const QString& ke
 		e.setValue(value);
 		e.setType(KWallet::Wallet::Password);
 		b->writeEntry(&e);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return 0;
 	}
@@ -1034,6 +1067,7 @@ int KWalletD::removeEntry(int handle, const QString& folder, const QString& key,
 		}
 		b->setFolder(folder);
 		bool rc = b->removeEntry(key);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return rc ? 0 : -3;
 	}
@@ -1119,6 +1153,7 @@ int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldN
 	if ((b = getWallet(appid, handle))) {
 		b->setFolder(folder);
 		int rc = b->renameEntry(oldName, newName);
+		initiateSync(b->walletName());
 		emitFolderUpdated(b->walletName(), folder);
 		return rc;
 	}
