@@ -49,6 +49,10 @@ public:
                                     const QString &label,
                                     const KUrl &url,
                                     const QString &iconName);
+    static KBookmark createSystemBookmark(KBookmarkManager *manager,
+                                    const QString &label,
+                                    const KUrl &url,
+                                    const QString &iconName);
     static KBookmark createDeviceBookmark(KBookmarkManager *manager,
                                           const QString &udi);
 

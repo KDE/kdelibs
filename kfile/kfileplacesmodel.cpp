@@ -90,19 +90,19 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18nc("Home Directory", "Home"), KUrl(KUser().homeDir()), "user-home");
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Network"), KUrl("remote:/"), "network-workgroup");
 #ifdef Q_OS_WIN
 	//C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Root"), KUrl("C:/"), "folder-red");
 #else
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Root"), KUrl("/"), "folder-red");
 #endif
-        KFilePlacesItem::createBookmark(d->bookmarkManager,
+        KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
