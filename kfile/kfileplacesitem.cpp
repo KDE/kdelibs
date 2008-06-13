@@ -185,17 +185,6 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
     return bookmark;
 }
 
-KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
-                                          const QString &label,
-                                          const KUrl &url,
-                                          const QString &iconName)
-{
-    KBookmark bookmark = createBookmark(manager, label, url, iconName);
-    bookmark.setMetaDataItem("isSystemItem", "true");
-    return bookmark;
-}
-
-
 KBookmark KFilePlacesItem::createDeviceBookmark(KBookmarkManager *manager,
                                                 const QString &udi)
 {
