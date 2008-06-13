@@ -651,56 +651,64 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     QList<QByteArray> types = metaMember.parameterTypes();
 
     QVariant::Type returnTypeId = QVariant::nameToType( metaMember.typeName() );
-    QVariant returnValue( returnTypeId );
+    int tp = QMetaType::type( metaMember.typeName() );
+    PointerBase *qtRet = new Value<void*>(0);
+    QVariant returnValue(returnTypeId);
     QGenericReturnArgument returnArgument(metaMember.typeName(), &returnValue);
-    param[0] = returnArgument.data();
+    param[0] = returnTypeId == QVariant::UserType ? qtRet->voidStar() : returnArgument.data();
+
     QString errorText;
     for( int idx = 0; idx < 10; ++idx)
     {
         qtArgs[idx] = getArg(exec, types, args, idx, errorText);
-        if (!qtArgs[0])
+        if (!qtArgs[idx]) {
+            for( int i = 0; i < idx; ++i)
+                delete qtArgs[i];
+            delete qtRet;
             return KJS::throwError(exec, KJS::GeneralError, i18n("Call to method '%1' failed, unable to get argument %2: %3",  m_memberName.constData(), idx, errorText));
+        }
         param[idx+1] = qtArgs[idx]->voidStar();
     }
 
-    //qDebug("param ptr %0x", *(void**)param[1]);
     success = object->qt_metacall(QMetaObject::InvokeMetaMethod, offset, param) < 0;
-    //qDebug("after param ptr %0x", *(void**)param[1]);
 
-    for( int idx = 0; idx < 10; ++idx)
-    {
-        delete qtArgs[idx];
+    KJS::JSValue *jsReturnValue = 0;
+    if( success ) {
+        switch( returnTypeId ) {
+            case QVariant::Invalid: // fall through
+            case QVariant::UserType: {
+                switch( tp ) {
+                    case QMetaType::QWidgetStar: {
+                        QVariant v(tp, param[0]);
+                        QWidget* widget = v.value< QWidget* >();
+                        if( widget )
+                            jsReturnValue = KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned);
+                    } break;
+                    case QMetaType::QObjectStar: {
+                        QVariant v(tp,param[0]);
+                        QObject* obj = v.value< QObject* >();
+                        if( obj )
+                            jsReturnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                    } break;
+                    default:
+                        break;
+                }
+            } // fall through
+            default:
+                break;
+        }
+        if(! jsReturnValue)
+            jsReturnValue = KJSEmbed::convertToValue(exec, returnValue);
     }
 
     if( !success )
-    {
         return KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
-        //return KJSEmbed::throwError(exec, i18n("Call to '%1' failed.").arg(m_memberName.constData()));
-    }
 
-    switch( returnTypeId ) {
-        case QVariant::Invalid: // fall through
-        case QVariant::UserType: {
-            int tp = QMetaType::type( metaMember.typeName() );
-            switch( tp ) {
-                case QMetaType::QWidgetStar: {
-                    QVariant v(tp, param[0]);
-                    QWidget* widget = v.value< QWidget* >();
-                    if( widget )
-                        return KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned);
-                } // fall through
-                case QMetaType::QObjectStar: {
-                    QVariant v(tp, param[0]);
-                    QObject* obj = v.value< QObject* >();
-                    if( obj )
-                        return KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
-                } break;
-                default: break;
-            }
-        } // fall through
-        default:
-            return KJSEmbed::convertToValue(exec, returnValue);
-    }
+    for( int idx = 0; idx < 10; ++idx)
+        delete qtArgs[idx];
+    delete qtRet;
+
+    return jsReturnValue;
 }
 
 SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )

@@ -139,15 +139,19 @@ JavaScriptArrayType checkArray( KJS::ExecState *exec, KJS::JSValue *val )
     KJS::JSObject *obj = val->toObject( exec );
     if ( toQString(obj->className()) == "Array" )
     {
-        KJS::JSValue *len = obj->get(exec, KJS::Identifier("length"));
-        QByteArray buff;
-        buff.setNum(int(len->toNumber(exec))-1);
-        if( !obj->hasProperty(exec, KJS::Identifier("length")) )
+        if( !obj->hasProperty(exec, KJS::Identifier("length")) ) {
             return Map;
-        else if( !obj->hasProperty(exec, KJS::Identifier( buff.data() ) ) )
-            return Map;
-        else
-            return List;
+        }
+        KJS::JSValue *jslen = obj->get(exec, KJS::Identifier("length"));
+        const int len = jslen->toNumber(exec);
+        if ( len > 0 ) {
+            QByteArray buff;
+            buff.setNum(len-1);
+            if( !obj->hasProperty(exec, KJS::Identifier( buff.data() ) ) ) {
+                return Map;
+            }
+        }
+        return List;
     }
     else
         return None;
@@ -263,8 +267,7 @@ QDateTime convertDateToDateTime( KJS::ExecState *exec, KJS::JSValue *value )
 
 QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
 {
-    //qDebug() << "Cast " << value.type();
-
+    //qDebug()<<"KJSEmbed::convertToVariant";
     QVariant returnValue;
     switch( value->type() )
     {
@@ -287,13 +290,15 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
         case KJS::ObjectType:
         {
             KJS::JSObject *obj = value->toObject(exec);
-            //qDebug() << "Object type: " << toQString(obj.className());
+            //qDebug() << "Object type: " << toQString(obj->className());
             if ( toQString(obj->className()) == "Array" )
             {
-                if ( checkArray( exec, value ) == List )
+                if ( checkArray( exec, value ) == List ) {
                     returnValue = convertArrayToList( exec, value );
-                else
+                }
+                else {
                     returnValue = convertArrayToMap(exec, value);
+                }
             }
             else if ( toQString(obj->className()) == "Date" )
             {
@@ -307,7 +312,7 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
             {
                 returnValue = toQString(value->toString(exec));
             }
-        }
+        } break;
         default:
             returnValue = extractVariant(exec,value);
             if( returnValue.isNull() )
@@ -409,10 +414,12 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             if( qVariantCanConvert< QWidget* >(value) ) {
                 QWidget* widget = qvariant_cast< QWidget* >(value);
+                Q_ASSERT(widget);
                 returnValue = createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned);
             }
             else if( qVariantCanConvert< QObject* >(value) ) {
                 QObject* object = qvariant_cast< QObject* >(value);
+                Q_ASSERT(object);
                 returnValue = createQObject(exec, object, KJSEmbed::ObjectBinding::CPPOwned);
             }
             else {
@@ -428,6 +435,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
 
 QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
 {
+    //qDebug()<<"KJSEmbed::extractVariant";
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  value );
     if( imp )
         return imp->variant();
@@ -439,8 +447,15 @@ QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
         return QVariant(value->toBoolean(exec));
 
     KJS::JSObject *obj = value->toObject( exec );
-    if ( obj && toQString(obj->className()) == "Array" )
-        return convertArrayToList( exec, value );
+    if ( obj ) {
+        if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, value)) {
+            QVariant v;
+            v.setValue( (QObject*) objImp->qobject<QObject>() );
+            return v;
+        }
+        if( toQString(obj->className()) == "Array" )
+            return convertArrayToList( exec, value );
+    }
 
     return QVariant();
 }
