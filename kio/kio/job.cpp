@@ -458,6 +458,7 @@ void SimpleJobPrivate::slaveDone()
 {
     Q_Q(SimpleJob);
     if (!m_slave) return;
+    if (m_command == CMD_OPEN) m_slave->send(CMD_CLOSE);
     q->disconnect(m_slave); // Remove all signals between slave and job
     Scheduler::jobFinished( q, m_slave );
     m_slave = 0;
