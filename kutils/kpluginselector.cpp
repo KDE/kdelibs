@@ -667,14 +667,9 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
                                                                  const QStyleOptionViewItem &option,
                                                                  const QPersistentModelIndex &index) const
 {
-    if (!index.isValid()) {
-        return;
-    }
-
     QCheckBox *checkBox = static_cast<QCheckBox*>(widgets[0]);
     checkBox->resize(checkBox->sizeHint());
     checkBox->move(pluginSelector_d->dependantLayoutValue(MARGIN, checkBox->sizeHint().width(), option.rect.width()), option.rect.height() / 2 - checkBox->sizeHint().height() / 2);
-    checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
 
     KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
     QSize aboutPushButtonSizeHint = aboutPushButton->sizeHint();
@@ -686,8 +681,15 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     configurePushButton->resize(configurePushButtonSizeHint);
     configurePushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), configurePushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);
 
-    configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
-    configurePushButton->setEnabled(index.model()->data(index, Qt::CheckStateRole).toBool());
+    if (!index.isValid() || !index.internalPointer()) {
+        checkBox->setVisible(false);
+        aboutPushButton->setVisible(false);
+        configurePushButton->setVisible(false);
+    } else {
+        checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
+        configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
+        configurePushButton->setEnabled(index.model()->data(index, Qt::CheckStateRole).toBool());
+    }
 }
 
 void KPluginSelector::Private::PluginDelegate::slotStateChanged(bool state)
