@@ -348,7 +348,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                     QCoreApplication::sendEvent(focusedWidget, &focusEvent);
                 }
 
-                if (hoveredWidget) {
+                if (hoveredWidget && hoveredWidget->isVisible()) {
                     QPoint eventPos = mappedPointForWidget(hoveredWidget,
                                                            hoveredIndex,
                                                            mouseEvent->pos());
