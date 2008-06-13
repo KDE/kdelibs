@@ -306,6 +306,10 @@ var testobj2 = TestObject2
     tester.assertArray(testobj1.func_qvariantlist_qvariantlist(new Array("s1","s2",17,-95)), new Array("s1","s2",17,-95));
     tester.assertArray(testobj1.func_qvariantlist_qvariantlist([]), []);
     tester.assertArray(testobj1.func_qvariantlist_qvariantlist(["abc","def",426,-842,96.23,-275.637]), ["abc","def",426,-842,96.23,-275.637]);
+
+    obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2) )
+    tester.assertArray(obj, TestObject2);
+    tester.assertArray(obj.name(), TestObject2.name());
 }
 
 // variantmap
@@ -378,6 +382,7 @@ var testobj2 = TestObject2
     tester.assert(self.callFunction("myValueFunction", [8529.54]), 8529.54);
     tester.assert(self.callFunction("myValueFunction", ["Some String Again"]), "Some String Again");
 
+    tester.assertArray(self.callFunction("myValueFunction", [ new Array() ]), new Array());
     tester.assertArray(self.callFunction("myValueFunction", [ [] ]), []);
     tester.assertArray(self.callFunction("myValueFunction", [ ["One","Two"] ]), ["One","Two"]);
 }
