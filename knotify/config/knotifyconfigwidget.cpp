@@ -24,6 +24,8 @@
 #include <kapplication.h>
 #include <kdialog.h>
 #include <QVBoxLayout>
+#include <QDBusInterface>
+#include <QDBusConnectionInterface>
 
 struct KNotifyConfigWidget::Private
 {
@@ -91,6 +93,13 @@ void KNotifyConfigWidget::save( )
 
 	d->eventList->save();
 	emit changed(false);
+	
+	//ask the notify deamon to reload the config
+	if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.knotify")) 
+	{
+		QDBusInterface( QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
+						QLatin1String("org.kde.KNotify")).call( "reconfigure" );
+	}
 }
 
 KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QString & appname )
