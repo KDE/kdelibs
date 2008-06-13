@@ -52,27 +52,27 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   d->encoding->clear ();
   QString sEncoding = encoding;
   QString systemEncoding = QLatin1String(KGlobal::locale()->encoding());
-  if (sEncoding.isEmpty())
+  if (sEncoding.isEmpty() || sEncoding == "System")
      sEncoding = systemEncoding;
 
   const QStringList encodings (KGlobal::charsets()->availableEncodingNames());
   int insert = 0, system = 0;
   bool foundRequested=false;
-  for (int i=0; i < encodings.count(); i++)
+  foreach (const QString& encoding, encodings)
   {
     bool found = false;
-    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);
+    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encoding, found);
 
     if (found)
     {
-      d->encoding->addItem (encodings[i]);
-      if ( (codecForEnc->name() == sEncoding) || (encodings[i] == sEncoding) )
+      d->encoding->addItem (encoding);
+      if ( (codecForEnc->name() == sEncoding) || (encoding == sEncoding) )
       {
         d->encoding->setCurrentIndex(insert);
         foundRequested=true;
       }
 
-      if ( (codecForEnc->name() == systemEncoding) || (encodings[i] == systemEncoding) )
+      if ( (codecForEnc->name() == systemEncoding) || (encoding == systemEncoding) )
         system=insert;
       insert++;
     }
@@ -207,15 +207,14 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveUrlAndEncoding(const QS
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
-    dlg.exec();
-
-    KUrl url = dlg.selectedUrl();
-    if (url.isValid())
-        KRecentDocument::add( url );
-
     Result res;
-    res.URLs<<url;
-    res.encoding=dlg.selectedEncoding();
+    if (dlg.exec() == QDialog::Accepted) {
+      KUrl url = dlg.selectedUrl();
+      if (url.isValid())
+          KRecentDocument::add( url );
+      res.URLs<<url;
+      res.encoding=dlg.selectedEncoding();
+    }
     return res;
 }
 
