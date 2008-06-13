@@ -1235,8 +1235,8 @@ void KToolBar::mouseReleaseEvent( QMouseEvent *event )
 
 bool KToolBar::eventFilter( QObject * watched, QEvent * event )
 {
-  // Generate context menu events for disabled buttons too...
-  if ( event->type() == QEvent::MouseButtonPress ) {
+    // Generate context menu events for disabled buttons too...
+    if ( event->type() == QEvent::MouseButtonPress ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( event );
     if ( me->buttons() & Qt::RightButton )
       if ( QWidget* ww = qobject_cast<QWidget*>( watched ) )
@@ -1244,22 +1244,22 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
           if ( !ww->isEnabled() )
             QCoreApplication::postEvent( this, new QContextMenuEvent( QContextMenuEvent::Mouse, me->pos(), me->globalPos() ) );
 
-  } else if ( event->type() == QEvent::ParentChange ) {
-    // Make sure we're not leaving stale event filters around
-    if ( QWidget* ww = qobject_cast<QWidget*>( watched ) ) {
-      while ( ww ) {
-        if ( ww == this )
-          goto found;
-      }
-      // New parent is not a subwidget - remove event filter
-      ww->removeEventFilter( this );
-      foreach ( QWidget* child, ww->findChildren<QWidget*>() )
-        child->removeEventFilter( this );
-    }
+    } else if ( event->type() == QEvent::ParentChange ) {
+        // Make sure we're not leaving stale event filters around,
+        // when a child is reparented somewhere else
+        if ( QWidget* ww = qobject_cast<QWidget*>( watched ) ) {
+            if (!this->isAncestorOf(ww)) {
+                // New parent is not a subwidget - remove event filter
+                ww->removeEventFilter( this );
+                foreach ( QWidget* child, ww->findChildren<QWidget*>() )
+                    child->removeEventFilter( this );
+            }
+        }
   }
 
   QToolButton* tb;
   if ( (tb = qobject_cast<QToolButton*>(watched)) && !tb->actions().isEmpty() ) {
+        // Handle MMB on toolbar buttons
     QAction* act = tb->actions().first();
     if ( event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease ) {
       QMouseEvent* me = static_cast<QMouseEvent*>( event );
@@ -1290,8 +1290,6 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
       }
     }
   }
-
-  found:
 
   // Redirect mouse events to the toolbar when drag + drop editing is enabled
   if ( toolBarsEditable() ) {
@@ -1386,4 +1384,3 @@ bool KToolBar::toolBarsLocked()
 }
 
 #include "ktoolbar.moc"
-
