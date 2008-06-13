@@ -308,8 +308,7 @@ var testobj2 = TestObject2
     tester.assertArray(testobj1.func_qvariantlist_qvariantlist(["abc","def",426,-842,96.23,-275.637]), ["abc","def",426,-842,96.23,-275.637]);
 
     obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2) )
-    tester.assertArray(obj, TestObject2);
-    tester.assertArray(obj.name(), TestObject2.name());
+    tester.assert(obj.name(), TestObject2.name());
 }
 
 // variantmap
