@@ -46,8 +46,6 @@ set(kjsembed_LIB_SRCS
    application.cpp
    color.cpp dom.cpp font.cpp image.cpp pen.cpp
    pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
-   bind_qlcdnumber.cpp 
-   bind_qtimer.cpp
    brush.cpp
    QBrush_bind.cpp
    quiloader_binding.cpp

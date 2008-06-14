@@ -50,8 +50,6 @@
 #include "font.h"
 #include "dom.h"
 #include "url.h"
-#include "bind_qlcdnumber.h"
-#include "bind_qtimer.h"
 #include "application.h"
 
 #include "builtins.h"
@@ -118,7 +116,6 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticBinding::publish( exec, parent, IoFactory::methods() ); // Global methods
     StaticBinding::publish( exec, parent, FileDialog::methods() ); // Global methods
     StaticBinding::publish( exec, parent, BuiltinsFactory::methods() ); // Global methods
-    StaticConstructor::add( exec, parent, Timer::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, FileIO::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, DomNode::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, DomDocument::constructor() ); // Ctor
@@ -158,7 +155,6 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
         StaticConstructor::add( exec, parent, Painter::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, SvgRenderer::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor
-        StaticConstructor::add( exec, parent, LCDNumber::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, ApplicationBinding::constructor() );
     }
 }
