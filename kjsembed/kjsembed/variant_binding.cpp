@@ -3,6 +3,7 @@
     Copyright (C) 2005, 2006 Matt Broadstone <mbroadst@gmail.com>
     Copyright (C) 2005, 2006 Richard J. Moore <rich@kde.org>
     Copyright (C) 2005, 2006 Erik L. Bunce <kde@bunce.us>
+    Copyright (C) 2007, 2008 Sebastian Sauer <mail@dipe.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -77,21 +78,14 @@ QGenericArgument VariantBinding::arg(const char *type) const
     const void *p = m_value.constData();
     //qDebug("Ptr %0x", p );
     //qDebug() << p;
-
     return QGenericArgument( type, p );
 }
 
 KJS::JSValue *callName( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
     Q_UNUSED( args );
-
-    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self );
-    if( imp )
-    {
-        QVariant val = imp->variant();
-        return KJS::jsString( val.typeName() );
-    }
-    return KJS::jsNull();
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self);
+    return imp ? KJS::jsString( imp->variant().typeName() ) : KJS::jsNull();
 }
 
 KJS::JSValue *callCast( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
@@ -111,11 +105,10 @@ KJS::JSValue *callCast( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *callToString( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
     Q_UNUSED( args );
-
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self );
     if( imp )
     {
-//        qDebug("Call value to string");
+        //qDebug("Call value to string");
         QVariant val = imp->variant();
         QString stringVal = val.toString();
         if( !stringVal.isEmpty() )
@@ -139,17 +132,15 @@ JavaScriptArrayType checkArray( KJS::ExecState *exec, KJS::JSValue *val )
     KJS::JSObject *obj = val->toObject( exec );
     if ( toQString(obj->className()) == "Array" )
     {
-        if( !obj->hasProperty(exec, KJS::Identifier("length")) ) {
+        if( !obj->hasProperty(exec, KJS::Identifier("length")) )
             return Map;
-        }
         KJS::JSValue *jslen = obj->get(exec, KJS::Identifier("length"));
         const int len = jslen->toNumber(exec);
         if ( len > 0 ) {
             QByteArray buff;
             buff.setNum(len-1);
-            if( !obj->hasProperty(exec, KJS::Identifier( buff.data() ) ) ) {
+            if( !obj->hasProperty(exec, KJS::Identifier( buff.data() ) ) )
                 return Map;
-            }
         }
         return List;
     }
@@ -238,22 +229,14 @@ QDateTime convertDateToDateTime( KJS::ExecState *exec, KJS::JSValue *value )
     KJS::List args;
     QDateTime returnDateTime;
     KJS::JSObject *obj = value->toObject( exec );
-
     if ( toQString(obj->className()) == "Date" )
     {
-        int seconds = int( obj->get( exec, KJS::Identifier( "getSeconds" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-        int minutes = int( obj->get( exec, KJS::Identifier( "getMinutes" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-        int hours = int( obj->get( exec, KJS::Identifier( "getHours" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-        int month = int( obj->get( exec, KJS::Identifier( "getMonth" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-        int day = int( obj->get( exec, KJS::Identifier( "getDate" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-        int year = int( obj->get( exec, KJS::Identifier( "getFullYear" ) )
-              ->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
-
+        int seconds = int( obj->get( exec, KJS::Identifier( "getSeconds" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
+        int minutes = int( obj->get( exec, KJS::Identifier( "getMinutes" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
+        int hours = int( obj->get( exec, KJS::Identifier( "getHours" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
+        int month = int( obj->get( exec, KJS::Identifier( "getMonth" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
+        int day = int( obj->get( exec, KJS::Identifier( "getDate" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
+        int year = int( obj->get( exec, KJS::Identifier( "getFullYear" ) )->toObject( exec )->call( exec, obj, args )->toInteger( exec ) );
         returnDateTime.setDate( QDate( year, month + 1, day ) );
         returnDateTime.setTime( QTime( hours, minutes, seconds ) );
     }
@@ -274,54 +257,36 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
         case KJS::UndefinedType:
         case KJS::NullType:
             break;
-
         case KJS::StringType:
             returnValue = toQString(value->toString(exec));
             break;
-
         case KJS::NumberType:
             returnValue = value->toNumber(exec);
             break;
-
         case KJS::BooleanType:
             returnValue = value->toBoolean(exec);
             break;
-
         case KJS::ObjectType:
         {
             KJS::JSObject *obj = value->toObject(exec);
             //qDebug() << "Object type: " << toQString(obj->className());
-            if ( toQString(obj->className()) == "Array" )
-            {
-                if ( checkArray( exec, value ) == List ) {
-                    returnValue = convertArrayToList( exec, value );
-                }
-                else {
+            if ( toQString(obj->className()) == "Array" ) {
+                if (checkArray(exec, value) == List)
+                    returnValue = convertArrayToList(exec, value);
+                else
                     returnValue = convertArrayToMap(exec, value);
-                }
             }
             else if ( toQString(obj->className()) == "Date" )
-            {
                 returnValue = convertDateToDateTime( exec, value );
-            }
             else
-            {
                 returnValue = extractVariant(exec,value);
-            }
-            if( returnValue.isNull() )
-            {
-                returnValue = toQString(value->toString(exec));
-            }
+            //if( returnValue.isNull() ) returnValue = toQString(value->toString(exec));
         } break;
         default:
             returnValue = extractVariant(exec,value);
-            if( returnValue.isNull() )
-            {
-                returnValue = toQString(value->toString(exec));
-            }
+            //if( returnValue.isNull() ) returnValue = toQString(value->toString(exec));
             break;
     }
-
     return returnValue;
 }
 
@@ -334,33 +299,37 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         case QVariant::Invalid:
             returnValue = KJS::jsNull();
             break;
-        case QVariant::Bool:
-            returnValue = KJS::jsBoolean( value.value<bool>() );
-            break;
         case QVariant::Int:
             returnValue = KJS::jsNumber( value.value<int>() );
-            break;
-        case QVariant::Double:
-            returnValue = KJS::jsNumber( value.value<double>() );
             break;
         case QVariant::UInt:
             returnValue = KJS::jsNumber( value.value<unsigned int>() );
             break;
-        case QVariant::String:
+        case QVariant::LongLong:
+            returnValue = KJS::jsNumber( value.value<qlonglong>() );
+            break;
+        case QVariant::ULongLong:
+            returnValue = KJS::jsNumber( value.value<qulonglong>() );
+            break;
+        case QVariant::Double:
+            returnValue = KJS::jsNumber( value.value<double>() );
+            break;
+        case QVariant::Bool:
+            returnValue = KJS::jsBoolean( value.value<bool>() );
+            break;
         case QVariant::ByteArray:
-        {
+            returnValue = KJS::jsString( QString(value.value<QByteArray>()) );
+            break;
+        case QVariant::String:
             returnValue = KJS::jsString( value.value<QString>() );
             break;
-        }
         case QVariant::StringList:
         {
             KJS::List items;
             QStringList lst = value.value<QStringList>();
             QStringList::Iterator idx = lst.begin();
             for ( ; idx != lst.end(); ++idx )
-            {
                 items.append( KJS::jsString( ( *idx ) ) );
-            }
             returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
             break;
         }
@@ -369,9 +338,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             KJS::List items;
             QList<QVariant> lst = value.toList();
             foreach( const QVariant &item, lst)
-            {
                 items.append( convertToValue( exec, item ) );
-            }
             returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
             break;
         }
@@ -381,14 +348,12 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             QMap<QString,QVariant>::Iterator idx = map.begin();
             KJS::JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct( exec, KJS::List() );
             for ( ; idx != map.end(); ++idx )
-            {
                 obj->put(exec, KJS::Identifier( toUString(idx.key()) ), convertToValue( exec,  idx.value() ) );
-            }
             returnValue =  obj;
             break;
         }
-        case QVariant::Date:
-        case QVariant::DateTime:
+        case QVariant::Date: // fall through
+        case QVariant::DateTime: // fall through
         case QVariant::Time:
         {
             QDateTime dt = QDateTime::currentDateTime();
@@ -414,13 +379,11 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             if( qVariantCanConvert< QWidget* >(value) ) {
                 QWidget* widget = qvariant_cast< QWidget* >(value);
-                Q_ASSERT(widget);
-                returnValue = createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned);
+                returnValue = widget ? createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned) : KJS::jsNull();
             }
             else if( qVariantCanConvert< QObject* >(value) ) {
                 QObject* object = qvariant_cast< QObject* >(value);
-                Q_ASSERT(object);
-                returnValue = createQObject(exec, object, KJSEmbed::ObjectBinding::CPPOwned);
+                returnValue = object ? createQObject(exec, object, KJSEmbed::ObjectBinding::CPPOwned) : KJS::jsNull();
             }
             else {
                 returnValue = createVariant(exec, value.typeName(), value );
@@ -450,13 +413,13 @@ QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
     if ( obj ) {
         if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, value)) {
             QVariant v;
-            v.setValue( (QObject*) objImp->qobject<QObject>() );
+            if( QObject* qobj = objImp->qobject<QObject>() )
+                v.setValue(qobj);
             return v;
         }
         if( toQString(obj->className()) == "Array" )
             return convertArrayToList( exec, value );
     }
-
     return QVariant();
 }
 

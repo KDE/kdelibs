@@ -236,24 +236,20 @@ var testobj2 = TestObject2
 
 // longlong
 {
-    //TODO Failure to cast to qlonglong value from Type jsNumber
-    //tester.assert(testobj1.func_qlonglong_qlonglong(0), 0);
-    //tester.assert(testobj1.func_qlonglong_qlonglong(7379), 7379);
-    //tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
-    //tester.assert(testobj1.func_qlonglong_qlonglong(678324787843223472165), 678324787843223472165);
+    tester.assert(testobj1.func_qlonglong_qlonglong(0), 0);
+    tester.assert(testobj1.func_qlonglong_qlonglong(7379), 7379);
+    tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
 }
 
 // ulonglong
 {
-    //TODO Failure to cast to qulonglong value from Type jsNumber
-    //tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
-    //tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
+    tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
+    tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
 }
 
 // bytearray
 {
-    //TODO Failure to cast to QByteArray value from Type jsString
-    //tester.assert(testobj1.func_qbytearray_qbytearray("  Some String as ByteArray  "), "  Some String as ByteArray  ");
+    tester.assert(testobj1.func_qbytearray_qbytearray("  Some String as ByteArray  "), "  Some String as ByteArray  ");
     //tester.assert(testobj1.func_qbytearray_qbytearray(" \0\n\r\t\s\0 test "), " \0\n\r\t\s\0 test ");
 }
 

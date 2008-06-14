@@ -3,6 +3,7 @@
     Copyright (C) 2005, 2006 Matt Broadstone <mbroadst@gmail.com>
     Copyright (C) 2005, 2006 Richard J. Moore <rich@kde.org>
     Copyright (C) 2005, 2006 Erik L. Bunce <kde@bunce.us>
+    Copyright (C) 2007, 2008 Sebastian Sauer <mail@dipe.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -423,6 +424,14 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::NumberType )
                 return new Value<uint>( uint( args[idx]->toInteger(exec) ) );
             break;
+        case QVariant::LongLong:
+            if( args[idx]->type() == KJS::NumberType )
+                return new Value<qlonglong>( qlonglong( args[idx]->toInteger(exec) ) );
+            break;
+        case QVariant::ULongLong:
+            if( args[idx]->type() == KJS::NumberType )
+                return new Value<qulonglong>( qulonglong( args[idx]->toInteger(exec) ) );
+            break;
         case QVariant::Double:
             if( args[idx]->type() == KJS::NumberType )
                 return new Value<double>( args[idx]->toNumber(exec) );
@@ -433,9 +442,13 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::BooleanType )
                 return new Value<bool>( args[idx]->toBoolean(exec) );
             break;
+        case QVariant::ByteArray:
+            if( args[idx]->type() == KJS::StringType )
+                return new Value<QByteArray>( toQString(args[idx]->toString(exec)).toUtf8() );
+            break;
         case QVariant::String:
             if( args[idx]->type() == KJS::StringType )
-                return new Value<QString>( toQString(args[idx]->toString(exec) ));
+                return new Value<QString>( toQString(args[idx]->toString(exec)) );
             break;
         case QVariant::StringList:
             if( args[idx]->type() == KJS::ObjectType )
@@ -449,7 +462,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QVariantMap>( convertArrayToMap(exec, args[idx]) );
             break;
-        case QVariant::UserType:
+        case QVariant::UserType: // fall through
         default:
             if ( args[idx]->type() == KJS::StringType )
             {
