@@ -84,6 +84,7 @@ public:
         clearButton = 0;
         clickInClear = false;
         wideEnoughForClear = true;
+        overlap = 0;
     }
 
     ~KLineEditPrivate()
@@ -141,6 +142,8 @@ public:
 
     KCompletionBox *completionBox;
 
+    int overlap;
+
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 
     QMap<KGlobalSettings::Completion, bool> disableCompletionMap;
@@ -153,11 +156,12 @@ public:
 class KLineEditStyle : public KdeUiProxyStyle
 {
 public:
-  KLineEditStyle(KLineEdit *parent) : KdeUiProxyStyle(parent), overlap(0) {}
+  KLineEditStyle(KLineEdit *parent, KLineEditPrivate *lineEditPrivate)
+    : KdeUiProxyStyle(parent), lineEditPrivate(lineEditPrivate) {}
 
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
 
-  int overlap;
+  KLineEditPrivate* lineEditPrivate;
 };
 
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
@@ -166,6 +170,7 @@ QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *opt
   {
     QRect rect = style()->subElementRect(SE_LineEditContents, option, widget);
 
+    int overlap = lineEditPrivate->overlap;
     if (option->direction == Qt::LeftToRight) return rect.adjusted(0, 0, -overlap, 0);
     else return rect.adjusted(overlap, 0, 0, 0);
   }
@@ -218,7 +223,7 @@ void KLineEdit::init()
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
 
-    QStyle *lineEditStyle = new KLineEditStyle(this);
+    QStyle *lineEditStyle = new KLineEditStyle(this, d);
     lineEditStyle->setParent(this);
     setStyle(lineEditStyle);
 }
@@ -247,8 +252,7 @@ void KLineEdit::setClearButtonShown(bool show)
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
-        KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
-        if (lestyle) lestyle->overlap = 0;
+        d->overlap = 0;
     }
 }
 
@@ -303,11 +307,7 @@ void KLineEdit::updateClearButton()
 
     if (newButtonSize != d->clearButton->size()) {
         d->clearButton->resize(newButtonSize);
-
-        KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
-        if (lestyle) {
-            lestyle->overlap = wideEnough ? buttonWidth + frameWidth : 0;
-        }
+        d->overlap = wideEnough ? buttonWidth + frameWidth : 0;
     }
 
     if (qApp->isLeftToRight()) {
@@ -466,8 +466,7 @@ void KLineEdit::setReadOnly(bool readOnly)
 
         if (d->clearButton) {
             d->clearButton->animateVisible(false);
-            KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
-            if (lestyle) lestyle->overlap = 0;
+            d->overlap = 0;
         }
     }
     else
@@ -482,8 +481,7 @@ void KLineEdit::setReadOnly(bool readOnly)
         if (d->clearButton && !text().isEmpty()) {
             int buttonWidth = d->clearButton->sizeHint().width();
             d->clearButton->animateVisible(true);
-            KLineEditStyle *lestyle = dynamic_cast<KLineEditStyle *>(style());
-            if (lestyle) lestyle->overlap = buttonWidth;
+            d->overlap = buttonWidth;
         }
     }
 }
