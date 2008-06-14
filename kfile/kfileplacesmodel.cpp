@@ -23,6 +23,7 @@
 
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
+#include <QtCore/QFile>
 #include <QtGui/QColor>
 #include <QtGui/QAction>
 
@@ -85,11 +86,17 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 {
     const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
     d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
-    d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
-    
-    // Let's put some places in there if it's empty
+
+    // Let's put some places in there if it's empty. We have a corner case here:
+    // Given you have bookmarked some folders (which have been saved on
+    // ~/.local/share/user-places.xbel (according to freedesktop bookmarks spec), and
+    // deleted the home directory ~/.kde, the call managerForFile() will return the
+    // bookmark manager for the fallback "kfilePlaces", making root.first().isNull() being
+    // false (you have your own items bookmarked), resulting on only being added your own
+    // bookmarks, and not the default ones too. So, we also check if kfileplaces/bookmarks.xml
+    // file exists, and if it doesn't, we also add the default places. (ereslibre)
     KBookmarkGroup root = d->bookmarkManager->root();
-    if (root.first().isNull()) {
+    if (root.first().isNull() || !QFile::exists(file)) {
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18nc("Home Directory", "Home"), KUrl(KUser().homeDir()), "user-home");
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
@@ -105,6 +112,9 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
+
+    // create after, so if we have own places, they are added afterwards, in case of equal priorities
+    d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
 
     d->predicate = Solid::Predicate::fromString(
         "[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"

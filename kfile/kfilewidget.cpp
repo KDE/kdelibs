@@ -201,6 +201,8 @@ public:
     KDirOperator *ops;
     KFileFilterCombo *filterWidget;
     KFileWidget* q;
+
+    KFilePlacesModel *model;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -259,8 +261,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->setObjectName("KFileWidget::toolbar");
     d->toolbar->setMovable(false);
 
-    KFilePlacesModel *model = new KFilePlacesModel(this);
-    d->urlNavigator = new KUrlNavigator(model, d->directoryUrl(startDir), d->toolbar);
+    d->model = new KFilePlacesModel(this);
+    d->urlNavigator = new KUrlNavigator(d->model, d->directoryUrl(startDir), d->toolbar);
     d->urlNavigator->setPlacesSelectorVisible(false);
 
     KUrl u;
@@ -1074,7 +1076,7 @@ void KFileWidgetPrivate::updateLocationWhatsThis()
 void KFileWidgetPrivate::initSpeedbar()
 {
     placesView = new KFilePlacesView( q );
-    placesView->setModel(new KFilePlacesModel(placesView));
+    placesView->setModel(model);
     placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
