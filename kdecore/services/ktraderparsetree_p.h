@@ -242,7 +242,7 @@ protected:
 class ParseTreeEXIST : public ParseTreeBase
 {
 public:
-  explicit ParseTreeEXIST( const char *_id ) { m_id = QString::fromLatin1(_id); }
+  explicit ParseTreeEXIST( const char *_id ) { m_id = QString::fromUtf8(_id); }
 
   bool eval( ParseContext *_context ) const;
 
@@ -256,7 +256,7 @@ protected:
 class ParseTreeID : public ParseTreeBase
 {
 public:
-  explicit ParseTreeID( const char *arg ) { m_str = QString::fromLatin1(arg); }
+  explicit ParseTreeID( const char *arg ) { m_str = QString::fromUtf8(arg); }
 
   bool eval( ParseContext *_context ) const;
 
@@ -270,7 +270,7 @@ protected:
 class ParseTreeSTRING : public ParseTreeBase
 {
 public:
-  explicit ParseTreeSTRING( const char *arg ) { m_str = QString::fromLatin1(arg); }
+  explicit ParseTreeSTRING( const char *arg ) { m_str = QString::fromUtf8(arg); }
 
   bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_STRING;
                                               _context->str = m_str;
@@ -328,7 +328,7 @@ protected:
 class ParseTreeMAX2 : public ParseTreeBase
 {
 public:
-  explicit ParseTreeMAX2( const char *_id ) { m_strId = QString::fromLatin1(_id); }
+  explicit ParseTreeMAX2( const char *_id ) { m_strId = QString::fromUtf8(_id); }
 
   bool eval( ParseContext *_context ) const;
 
@@ -342,7 +342,7 @@ protected:
 class ParseTreeMIN2 : public ParseTreeBase
 {
 public:
-  explicit ParseTreeMIN2( const char *_id ) { m_strId = QString::fromLatin1(_id); }
+  explicit ParseTreeMIN2( const char *_id ) { m_strId = QString::fromUtf8(_id); }
 
   bool eval( ParseContext *_context ) const;
 
