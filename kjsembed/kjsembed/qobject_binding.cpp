@@ -471,11 +471,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 return new Value<QPointF>( valImp->variant().value<QPointF>() );
             break;
         case QVariant::Rect:
-qDebug()<<"!!!!!!! QVariant::Rect 111";
-            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) ) {
-                qDebug()<<"!!!!!!! QVariant::Rect 222"<<valImp->variant().value<QRect>();
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
                 return new Value<QRect>( valImp->variant().value<QRect>() );
-            }
             break;
         case QVariant::RectF:
             if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
