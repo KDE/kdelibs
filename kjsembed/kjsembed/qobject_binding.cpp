@@ -512,39 +512,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, args[idx]))
                 {
                     //qDebug("\tQObjectBinding");
-                    QObject* qObj = objImp->qobject<QObject>();
-                    if (qObj)
-                    {
-                        QByteArray typeName = types[idx].constData();
-                        typeName.replace("*", "");
-
-                        // try the basic QObject inheritance check
-                        if (qObj->inherits(typeName))
-                            return new Value<void*>(qObj);
-
-                        // ok, we'll have to check the hard way, and we'll 
-                        // have to play fast and loose with namespace checking
-                        // since the QMetaMethod parameterTypes doesn't 
-                        // include implicit namespace information.
-
-                        //qDebug() << "\tMaking sure " << qObj << " inherits from " << typeName << " inherits(typeName)=" << qObj->inherits(typeName);
-                        for(const QMetaObject* meta = qObj->metaObject(); meta; meta = meta->superClass())
-                        {
-                            //qDebug() << "1: Checking if " << typeName << " matches " << meta->className();
-                            if( typeName == meta->className() )
-                                return new Value<void*>(qObj);
-
-                            // try with all leading namespacing stripped
-                            QByteArray className = meta->className();
-                            int pos = className.lastIndexOf("::");
-                            if( pos != -1 )
-                                className.remove(0, pos + 2);
-
-                            //qDebug() << "2: Checking if " << typeName << " matches " << className;
-                            if( typeName == className )
-                                return new Value<void*>(qObj);
-                        }
-                    }
+                    if( QObject* qObj = objImp->qobject<QObject>() )
+                        return new Value<void*>(qObj);
                 }
                 else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
                 {
