@@ -111,6 +111,13 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 #endif
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                         i18n("Trash"), KUrl("trash:/"), "user-trash");
+
+        // Force bookmarks to be saved. If on open/save dialog and the bookmarks are not saved, QFile::exists
+        // will always return false, which opening/closing all the time the open/save dialog would case the
+        // bookmarks to be added once each time, having lots of times each bookmark. This forces the defaults
+        // to be saved on the bookmarks.xml file. Of course, the complete list of bookmarks (those that come from
+        // user-places.xbel will be filled later). (ereslibre)
+        d->bookmarkManager->saveAs(file);
     }
 
     // create after, so if we have own places, they are added afterwards, in case of equal priorities
