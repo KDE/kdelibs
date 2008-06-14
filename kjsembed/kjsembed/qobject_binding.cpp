@@ -747,12 +747,12 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
             jsReturnValue = KJSEmbed::convertToValue(exec, returnValue);
     }
 
-    if( !success )
-        return KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
-
     for( int idx = 0; idx < 10; ++idx)
         delete qtArgs[idx];
     delete qtRet;
+
+    if( !success )
+        return KJS::throwError(exec, KJS::GeneralError, i18n("Call to '%1' failed.",  m_memberName.constData()));
 
     return jsReturnValue;
 }
