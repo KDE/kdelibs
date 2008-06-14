@@ -29,6 +29,7 @@ class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
 {
 public:
     KdeUiProxyStyle(QWidget *parent);
+    ~KdeUiProxyStyle();
     QStyle *style() const;
     void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter,
                             const QWidget *widget) const;
@@ -62,6 +63,9 @@ public:
 
 protected:
     QWidget *parent;
+
+private:
+    mutable QStyle *lastResortStyle;
 };
 
 #endif
