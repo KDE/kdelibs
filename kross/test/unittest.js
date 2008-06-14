@@ -28,7 +28,9 @@ function UnitTest()
     }
 
     this.assert = function(actual, expected) {
-        if(actual == expected)
+        if(actual instanceof Array)
+            this.assertArray(actual, expected);
+        else if(actual == expected)
             this.passed();
         else
             this.failed(actual, expected);
@@ -207,6 +209,19 @@ var testobj2 = TestObject2
     } catch(error) { tester.passed(); }
 }
 
+// longlong
+{
+    tester.assert(testobj1.func_qlonglong_qlonglong(0), 0);
+    tester.assert(testobj1.func_qlonglong_qlonglong(7379), 7379);
+    tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
+}
+
+// ulonglong
+{
+    tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
+    tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
+}
+
 // double
 {
     tester.assert(testobj1.func_double_double(0.0), 0.0);
@@ -232,19 +247,6 @@ var testobj2 = TestObject2
         testobj1.func_double_double([])
         tester.missingException("testobj1.func_double_double([])");
     } catch(error) { tester.passed(); }
-}
-
-// longlong
-{
-    tester.assert(testobj1.func_qlonglong_qlonglong(0), 0);
-    tester.assert(testobj1.func_qlonglong_qlonglong(7379), 7379);
-    tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
-}
-
-// ulonglong
-{
-    tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
-    tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
 }
 
 // bytearray
@@ -282,10 +284,11 @@ var testobj2 = TestObject2
 
 // color
 {
-    //TODO following crashes in kjsembed;
-    //var c = new QColor("#0066ff");
-    //println("Color: " + c);
-    //tester.assert(testobj1.func_qcolor_qcolor(c), c);
+    tester.assert(testobj1.func_qcolor_qcolor("#0066ff"), "#0066ff");
+
+    var c = new QColor();
+    c.setNamedColor("#caffee");
+    tester.assert(testobj1.func_qcolor_qcolor(c), "#caffee");
 }
 
 // stringlist
@@ -305,6 +308,8 @@ var testobj2 = TestObject2
 
     obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2) )
     tester.assert(obj.name(), TestObject2.name());
+    obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2.self()) )
+    tester.assert(obj.name(), TestObject2.self().name());
 }
 
 // variantmap
@@ -330,9 +335,8 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_qvariant_qvariant(1892), 1892);
     tester.assert(testobj1.func_qvariant_qvariant(8529.54), 8529.54);
     tester.assert(testobj1.func_qvariant_qvariant(" String "), " String ");
-
-    //same prob as described bellow
-    //tester.assert(testobj1.func_qvariant_qvariant(["One","Two"]), ["One","Two"]);
+    tester.assert(testobj1.func_qvariant_qvariant(["One","Two"]), ["One","Two"]);
+    //tester.assert(testobj1.func_qvariant_qvariant(null), null);
 }
 
 // url
@@ -400,8 +404,8 @@ var testobj2 = TestObject2
 tester.printResult();
 
 /*
-    f = Kross.module('forms');
-    d = f.createDialog('TestGuiFormDialog');
-    d.setButtons('Ok|Cancel');
-    d.exec_loop();
+f = Kross.module('forms');
+d = f.createDialog('TestGuiFormDialog');
+d.setButtons('Ok|Cancel');
+d.exec_loop();
 */

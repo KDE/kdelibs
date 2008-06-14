@@ -454,6 +454,12 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
             break;
+        case QVariant::Color:
+            if( args[idx]->type() == KJS::StringType )
+                return new Value<QColor>( QColor(toQString(args[idx]->toString(exec))) );
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QColor>( valImp->variant().value<QColor>() );
+            break;
         case QVariant::List:
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
@@ -464,18 +470,14 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case QVariant::UserType: // fall through
         default:
+            if( args[idx]->type() == KJS::NullType )
+                return new NullPtr();
             if ( args[idx]->type() == KJS::StringType )
             {
-                if ( varianttype == QVariant::Url || strcmp(types[idx].constData(),"KUrl") == 0 ) {
+                if ( varianttype == QVariant::Url || strcmp(types[idx].constData(),"KUrl") == 0 )
                     return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
-                }
             }
-
-            if( args[idx]->type() == KJS::NullType )
-            {
-                return new NullPtr();
-            }
-            if( args[idx]->type() == KJS::ObjectType ) 
+            if( args[idx]->type() == KJS::ObjectType )
             {
                 if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, args[idx]))
                 {
@@ -497,7 +499,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
 
                         QByteArray className;
                         int pos;
-                        
+
                         //qDebug() << "\tMaking sure " << qObj << " inherits from " << typeName << " inherits(typeName)=" << qObj->inherits(typeName);
                         const QMetaObject* meta = qObj->metaObject();
                         do 
@@ -508,24 +510,23 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                                 //qDebug("Yeah! we found a winnder!");
                                 return new Value<void*>(qObj);
                             }
-                            
+
                             // try with all leading namespacing stripped
                             className = meta->className();
                             if ((pos = className.lastIndexOf("::")) != -1)
                                 className.remove(0, pos + 2);
-                            
+
                             //qDebug() << "2: Checking if " << typeName << " matches " << className;
                             if (typeName == className)
                             {
                                 //qDebug() << "Yeah! we found a winnder!" << typeName << " ~= " << className << "(" << meta->className() << ")";
                                 return new Value<void*>(qObj);
                             }
-                            
+
                             meta = meta->superClass();
-                            
+
                         }
                         while (meta);
-                       
                     }
                 }
                 else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
@@ -537,7 +538,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 {
                     //qDebug() << "\tVariantBinding typeName="  << valImp->variant().typeName() << "type="  << valImp->variant().type() << "userType="  << valImp->variant().userType() << " variant=" << valImp->variant();
                     QVariant var = valImp->variant();
-                    
+
                     // if the variant is the appropriate type, return its data
                     if ((var.type() == varianttype) ||
                         ((var.type() == QVariant::UserType) &&
@@ -556,8 +557,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                         QObject* qObj = var.value<QObject*>();
                         if (!qObj)
                             qObj = reinterpret_cast<QObject*>(var.value<QWidget*>());
-                        if (qObj)
-                        {
+                        if (qObj) {
                             QByteArray typeName = types[idx].constData();
                             typeName.replace("*", "");
                             if (qObj->inherits(typeName))
@@ -568,9 +568,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             }
 
             QVariant v = KJSEmbed::extractVariant(exec, args[idx]);
-            if (! v.isNull()) {
+            if (! v.isNull())
                 return new Value<QVariant>(v);
-            }
 
             break;
     }
@@ -666,9 +665,12 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     QVariant::Type returnTypeId = QVariant::nameToType( metaMember.typeName() );
     int tp = QMetaType::type( metaMember.typeName() );
     PointerBase *qtRet = new Value<void*>(0);
-    QVariant returnValue(returnTypeId);
+
+    bool returnIsMetaType = ( returnTypeId == QVariant::UserType ||
+                              returnTypeId == QVariant::Color );
+    QVariant returnValue = returnIsMetaType ? QVariant(tp, (void*)0) : QVariant(returnTypeId);
     QGenericReturnArgument returnArgument(metaMember.typeName(), &returnValue);
-    param[0] = returnTypeId == QVariant::UserType ? qtRet->voidStar() : returnArgument.data();
+    param[0] = returnIsMetaType ? qtRet->voidStar() : returnArgument.data();
 
     QString errorText;
     for( int idx = 0; idx < 10; ++idx)
@@ -706,8 +708,10 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                     default:
                         break;
                 }
-            } // fall through
+            } break;
             default:
+                if( returnIsMetaType )
+                    returnValue = QVariant(tp, param[0]);
                 break;
         }
         if(! jsReturnValue)
@@ -747,7 +751,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
     do
     {
         clazz = meta->className();
-        
+
 #ifdef CREATEQOBJ_DIAG
         qDebug() << "clazz=" << clazz;
 #endif
@@ -784,7 +788,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
                 }
                 else
                 {
-                  KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
+                    KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
                     return new KJS::JSObject();
                 }
             }

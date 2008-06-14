@@ -134,10 +134,10 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticConstructor::add( exec, parent, Point::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Size::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Rect::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, Color::constructor() ); // Ctor
 
     // check if this is a GUI application
-    QApplication* app = 
-        ::qobject_cast<QApplication*>(QCoreApplication::instance());
+    QApplication* app = ::qobject_cast<QApplication*>(QCoreApplication::instance());
     if (app && (app->type() != QApplication::Tty))
     {
         //qDebug("Loading GUI Bindings");
@@ -155,7 +155,6 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
         StaticConstructor::add( exec, parent, Brush::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, Image::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, Pixmap::constructor() ); // Ctor
-        StaticConstructor::add( exec, parent, Color::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, Painter::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, SvgRenderer::constructor() ); // Ctor
         StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor

@@ -3,6 +3,7 @@
     Copyright (C) 2005, 2006 Matt Broadstone <mbroadst@gmail.com>
     Copyright (C) 2005, 2006 Richard J. Moore <rich@kde.org>
     Copyright (C) 2005, 2006 Erik L. Bunce <kde@bunce.us>
+    Copyright (C) 2007, 2008 Sebastian Sauer <mail@dipe.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

@@ -333,25 +333,6 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
             break;
         }
-        case QVariant::List:
-        {
-            KJS::List items;
-            QList<QVariant> lst = value.toList();
-            foreach( const QVariant &item, lst)
-                items.append( convertToValue( exec, item ) );
-            returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
-            break;
-        }
-        case QVariant::Map:
-        {
-            QMap<QString,QVariant> map = value.toMap();
-            QMap<QString,QVariant>::Iterator idx = map.begin();
-            KJS::JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct( exec, KJS::List() );
-            for ( ; idx != map.end(); ++idx )
-                obj->put(exec, KJS::Identifier( toUString(idx.key()) ), convertToValue( exec,  idx.value() ) );
-            returnValue =  obj;
-            break;
-        }
         case QVariant::Date: // fall through
         case QVariant::DateTime: // fall through
         case QVariant::Time:
@@ -373,6 +354,25 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             items.append( KJS::jsNumber( dt.time().second() ) );
             items.append( KJS::jsNumber( dt.time().msec() ) );
             returnValue = exec->lexicalInterpreter()->builtinDate()->construct( exec, items );
+            break;
+        }
+        case QVariant::List:
+        {
+            KJS::List items;
+            QList<QVariant> lst = value.toList();
+            foreach( const QVariant &item, lst)
+                items.append( convertToValue( exec, item ) );
+            returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
+            break;
+        }
+        case QVariant::Map:
+        {
+            QMap<QString,QVariant> map = value.toMap();
+            QMap<QString,QVariant>::Iterator idx = map.begin();
+            KJS::JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct( exec, KJS::List() );
+            for ( ; idx != map.end(); ++idx )
+                obj->put(exec, KJS::Identifier( toUString(idx.key()) ), convertToValue( exec,  idx.value() ) );
+            returnValue =  obj;
             break;
         }
         default:
