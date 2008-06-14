@@ -282,6 +282,14 @@ var testobj2 = TestObject2
     } catch(error) { tester.passed(); }
 }
 
+// stringlist
+{
+    tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array()), new Array());
+    tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array("s1","s2")), new Array("s1","s2"));
+    tester.assertArray(testobj1.func_qstringlist_qstringlist([]), []);
+    tester.assertArray(testobj1.func_qstringlist_qstringlist(["abc","def"]), ["abc","def"]);
+}
+
 // color
 {
     tester.assert(testobj1.func_qcolor_qcolor("#0066ff"), "#0066ff");
@@ -291,12 +299,25 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_qcolor_qcolor(c), "#caffee");
 }
 
-// stringlist
+// size
 {
-    tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array()), new Array());
-    tester.assertArray(testobj1.func_qstringlist_qstringlist(new Array("s1","s2")), new Array("s1","s2"));
-    tester.assertArray(testobj1.func_qstringlist_qstringlist([]), []);
-    tester.assertArray(testobj1.func_qstringlist_qstringlist(["abc","def"]), ["abc","def"]);
+    var s = new QSize(11,22);
+    t = testobj1.func_qsize_qsize(s);
+    tester.assert(t.width()+":"+t.height(), s.width()+":"+s.height());
+}
+
+// point
+{
+    var p = new QPoint(11,22);
+    q = testobj1.func_qpoint_qpoint(p);
+    tester.assert(q.x()+":"+q.y(), p.x()+":"+p.y());
+}
+
+// rect
+{
+    var r = new QRect(11,22,33,44);
+    s = testobj1.func_qrect_qrect(r);
+    tester.assert(r.left()+":"+r.top()+":"+r.right()+":"+r.bottom(), s.left()+":"+s.top()+":"+s.right()+":"+s.bottom());
 }
 
 // variantlist

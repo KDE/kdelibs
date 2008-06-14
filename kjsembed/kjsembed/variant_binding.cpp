@@ -38,6 +38,8 @@
 #include "static_binding.h"
 #include "qobject_binding.h"
 
+//#define KJSEMBED_VARIANT_DEBUG
+
 using namespace KJSEmbed;
 
 const KJS::ClassInfo VariantBinding::info = { "VariantBinding", 0, 0, 0 };
@@ -250,7 +252,10 @@ QDateTime convertDateToDateTime( KJS::ExecState *exec, KJS::JSValue *value )
 
 QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
 {
-    //qDebug()<<"KJSEmbed::convertToVariant";
+#ifdef KJSEMBED_VARIANT_DEBUG
+    qDebug()<<"KJSEmbed::convertToVariant";
+#endif
+
     QVariant returnValue;
     switch( value->type() )
     {
@@ -292,7 +297,10 @@ QVariant KJSEmbed::convertToVariant( KJS::ExecState *exec, KJS::JSValue *value )
 
 KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &value )
 {
-    //qDebug()<<"KJSEmbed::convertToValue typeid="<<value.type()<<"typename="<<value.typeName()<<"toString="<<value.toString();
+#ifdef KJSEMBED_VARIANT_DEBUG
+    qDebug()<<"KJSEmbed::convertToValue typeid="<<value.type()<<"typename="<<value.typeName()<<"toString="<<value.toString();
+#endif
+
     KJS::JSValue *returnValue;
     switch( value.type() )
     {
@@ -398,7 +406,10 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
 
 QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
 {
-    //qDebug()<<"KJSEmbed::extractVariant";
+#ifdef KJSEMBED_VARIANT_DEBUG
+    qDebug()<<"KJSEmbed::extractVariant";
+#endif
+
     KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  value );
     if( imp )
         return imp->variant();

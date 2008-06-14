@@ -454,6 +454,33 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QStringList>( convertArrayToStringList(exec, args[idx]) );
             break;
+        case QVariant::Size:
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QSize>( valImp->variant().value<QSize>() );
+            break;
+        case QVariant::SizeF:
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QSizeF>( valImp->variant().value<QSizeF>() );
+            break;
+        case QVariant::Point:
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QPoint>( valImp->variant().value<QPoint>() );
+            break;
+        case QVariant::PointF:
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QPointF>( valImp->variant().value<QPointF>() );
+            break;
+        case QVariant::Rect:
+qDebug()<<"!!!!!!! QVariant::Rect 111";
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) ) {
+                qDebug()<<"!!!!!!! QVariant::Rect 222"<<valImp->variant().value<QRect>();
+                return new Value<QRect>( valImp->variant().value<QRect>() );
+            }
+            break;
+        case QVariant::RectF:
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QRectF>( valImp->variant().value<QRectF>() );
+            break;
         case QVariant::Color:
             if( args[idx]->type() == KJS::StringType )
                 return new Value<QColor>( QColor(toQString(args[idx]->toString(exec))) );
@@ -666,8 +693,13 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     int tp = QMetaType::type( metaMember.typeName() );
     PointerBase *qtRet = new Value<void*>(0);
 
-    bool returnIsMetaType = ( returnTypeId == QVariant::UserType ||
-                              returnTypeId == QVariant::Color );
+    bool returnIsMetaType = (
+        returnTypeId == QVariant::UserType ||
+        returnTypeId == QVariant::Size     || returnTypeId == QVariant::SizeF  ||
+        returnTypeId == QVariant::Point    || returnTypeId == QVariant::PointF ||
+        returnTypeId == QVariant::Rect     || returnTypeId == QVariant::RectF  ||
+        returnTypeId == QVariant::Color
+    );
     QVariant returnValue = returnIsMetaType ? QVariant(tp, (void*)0) : QVariant(returnTypeId);
     QGenericReturnArgument returnArgument(metaMember.typeName(), &returnValue);
     param[0] = returnIsMetaType ? qtRet->voidStar() : returnArgument.data();
