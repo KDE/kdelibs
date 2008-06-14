@@ -484,6 +484,12 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
                 return new Value<QColor>( valImp->variant().value<QColor>() );
             break;
+        case QVariant::Url:
+            if( args[idx]->type() == KJS::StringType )
+                return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
+            if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
+                return new Value<QUrl>( valImp->variant().value<QUrl>() );
+            break;
         case QVariant::List:
             if( args[idx]->type() == KJS::ObjectType )
                 return new Value<QVariantList>( convertArrayToList(exec, args[idx]) );
@@ -496,9 +502,9 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         default:
             if( args[idx]->type() == KJS::NullType )
                 return new NullPtr();
-            if ( args[idx]->type() == KJS::StringType )
+            if( args[idx]->type() == KJS::StringType )
             {
-                if ( varianttype == QVariant::Url || strcmp(types[idx].constData(),"KUrl") == 0 )
+                if( strcmp(types[idx].constData(),"KUrl") == 0 ) //downcast to QUrl
                     return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
             }
             if( args[idx]->type() == KJS::ObjectType )
@@ -521,36 +527,23 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                         // since the QMetaMethod parameterTypes doesn't 
                         // include implicit namespace information.
 
-                        QByteArray className;
-                        int pos;
-
                         //qDebug() << "\tMaking sure " << qObj << " inherits from " << typeName << " inherits(typeName)=" << qObj->inherits(typeName);
-                        const QMetaObject* meta = qObj->metaObject();
-                        do 
+                        for(const QMetaObject* meta = qObj->metaObject(); meta; meta = meta->superClass())
                         {
                             //qDebug() << "1: Checking if " << typeName << " matches " << meta->className();
-                            //if (typeName == meta->className())
-                            {
-                                //qDebug("Yeah! we found a winnder!");
+                            if( typeName == meta->className() )
                                 return new Value<void*>(qObj);
-                            }
 
                             // try with all leading namespacing stripped
-                            className = meta->className();
-                            if ((pos = className.lastIndexOf("::")) != -1)
+                            QByteArray className = meta->className();
+                            int pos = className.lastIndexOf("::");
+                            if( pos != -1 )
                                 className.remove(0, pos + 2);
 
                             //qDebug() << "2: Checking if " << typeName << " matches " << className;
-                            if (typeName == className)
-                            {
-                                //qDebug() << "Yeah! we found a winnder!" << typeName << " ~= " << className << "(" << meta->className() << ")";
+                            if( typeName == className )
                                 return new Value<void*>(qObj);
-                            }
-
-                            meta = meta->superClass();
-
                         }
-                        while (meta);
                     }
                 }
                 else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
