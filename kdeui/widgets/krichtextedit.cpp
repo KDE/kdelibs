@@ -295,7 +295,7 @@ KRichTextEdit::Mode KRichTextEdit::textMode() const
 QString KRichTextEdit::textOrHtml() const
 {
     if (textMode() == Rich)
-        return toHtml();
+        return toCleanHtml();
     else
         return toPlainText();
 }
@@ -304,9 +304,9 @@ void KRichTextEdit::setTextOrHtml(const QString &text)
 {
     // might be rich text
     if (Qt::mightBeRichText(text)) {
-	if (d->mMode == KRichTextEdit::Plain) {
-		d->activateRichText();
-	}
+        if (d->mMode == KRichTextEdit::Plain) {
+            d->activateRichText();
+        }
         setHtml(text);
     } else {
         setPlainText(text);
@@ -483,6 +483,29 @@ bool KRichTextEdit::canIndentList() const
 bool KRichTextEdit::canDedentList() const
 {
     return d->nestedListHelper->canDedent();
+}
+
+QString KRichTextEdit::toCleanHtml() const
+{
+    static QString evilline = "<p style=\" margin-top:0px; margin-bottom:0px; "
+                      "margin-left:0px; margin-right:0px; -qt-block-indent:0; "
+                      "text-indent:0px; -qt-user-state:0;\">";
+        
+    QString result;
+    QStringList lines = toHtml().split("\n");
+    foreach(QString tempLine, lines ) {
+        if (tempLine.startsWith(evilline)) { 
+            tempLine.remove(evilline);
+            if (tempLine.endsWith("</p>")) {
+                tempLine.remove(QRegExp("</p>$"));
+                tempLine.append("<br>");
+            }
+            result += tempLine;
+        } else {
+            result += tempLine;
+        }
+    }
+    return result;
 }
 
 #include "krichtextedit.moc"

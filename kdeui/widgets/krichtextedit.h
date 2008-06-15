@@ -303,6 +303,13 @@ public Q_SLOTS:
      */
     void switchToPlainText();
 
+    /**
+     * This will clean some of the bad html produced by the underlying QTextEdit
+     * It walks over all lines and cleans up a bit. Should be improved to produce
+     * our own Html.
+     */
+    QString toCleanHtml() const;
+
 Q_SIGNALS:
 
     /**
