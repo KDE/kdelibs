@@ -823,7 +823,7 @@ KStandardDirs::realPath(const QString &dirname)
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
     /* If the path contains symlinks, get the real name */
-    if (realpath( QFile::encodeName(dirname).data(), realpath_buffer) != 0) {
+    if (realpath( QFile::encodeName(dirname).constData(), realpath_buffer) != 0) {
         // success, use result from realpath
         int len = strlen(realpath_buffer);
         realpath_buffer[len] = '/';
@@ -846,7 +846,7 @@ KStandardDirs::realFilePath(const QString &filename)
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
     /* If the path contains symlinks, get the real name */
-    if (realpath( QFile::encodeName(filename).data(), realpath_buffer) != 0) {
+    if (realpath( QFile::encodeName(filename).constData(), realpath_buffer) != 0) {
         // success, use result from realpath
         return QFile::decodeName(realpath_buffer);
     }
@@ -863,7 +863,7 @@ void KStandardDirs::createSpecialResource(const char *type)
     QString dir = QString("%1%2-%3").arg(localkdedir()).arg(type).arg(hostname);
     char link[1024];
     link[1023] = 0;
-    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
+    int result = readlink(QFile::encodeName(dir).constData(), link, 1023);
     bool relink = (result == -1) && (errno == ENOENT);
     if (result > 0)
     {
@@ -905,7 +905,7 @@ void KStandardDirs::createSpecialResource(const char *type)
         if (!srv.isEmpty())
         {
             system(QFile::encodeName(srv)+' '+type);
-            result = readlink(QFile::encodeName(dir).data(), link, 1023);
+            result = readlink(QFile::encodeName(dir).constData(), link, 1023);
         }
     }
     if (result > 0)
@@ -1392,7 +1392,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
             if (KDE_mkdir(baseEncoded, static_cast<mode_t>(mode)) != 0) {
                 baseEncoded.prepend( "trying to create local folder " );
-                perror(baseEncoded.data());
+                perror(baseEncoded.constData());
                 return false; // Couldn't create it :-(
             }
         }
@@ -1652,9 +1652,9 @@ static QStringList lookupProfiles(const QString &mapFile)
 
     KConfig mapCfgFile(mapFile);
     KConfigGroup mapCfg(&mapCfgFile, "Users");
-    if (mapCfg.hasKey(user.data()))
+    if (mapCfg.hasKey(user.constData()))
     {
-        profiles = mapCfg.readEntry(user.data(), QStringList());
+        profiles = mapCfg.readEntry(user.constData(), QStringList());
         return profiles;
     }
 
