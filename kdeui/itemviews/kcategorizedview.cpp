@@ -330,25 +330,26 @@ QRect KCategorizedView::Private::visualCategoryRectInViewport(const QString &cat
 const QRect &KCategorizedView::Private::cacheIndex(const QModelIndex &index)
 {
     QRect rect = visualRectInViewport(index);
-    elementsPosition[index.row()] = rect;
+    QHash<int, QRect>::iterator it = elementsPosition.insert(index.row(), rect);
 
-    return elementsPosition[index.row()];
+    return *it;
 }
 
 // We're sure categoriesPosition doesn't contain category
 const QRect &KCategorizedView::Private::cacheCategory(const QString &category)
 {
     QRect rect = visualCategoryRectInViewport(category);
-    categoriesPosition[category] = rect;
+    QHash<QString, QRect>::iterator it = categoriesPosition.insert(category, rect);
 
-    return categoriesPosition[category];
+    return *it;
 }
 
 const QRect &KCategorizedView::Private::cachedRectIndex(const QModelIndex &index)
 {
-    if (elementsPosition.contains(index.row())) // If we have it cached
+    QHash<int, QRect>::const_iterator it = elementsPosition.constFind(index.row());
+    if (it != elementsPosition.constEnd()) // If we have it cached
     {                                        // return it
-        return elementsPosition[index.row()];
+        return *it;
     }
     else                                     // Otherwise, cache it
     {                                        // and return it
@@ -358,9 +359,10 @@ const QRect &KCategorizedView::Private::cachedRectIndex(const QModelIndex &index
 
 const QRect &KCategorizedView::Private::cachedRectCategory(const QString &category)
 {
-    if (categoriesPosition.contains(category)) // If we have it cached
+    QHash<QString, QRect>::const_iterator it = categoriesPosition.constFind(category);
+    if (it != categoriesPosition.constEnd()) // If we have it cached
     {                                                // return it
-        return categoriesPosition[category];
+        return *it;
     }
     else                                            // Otherwise, cache it and
     {                                               // return it
