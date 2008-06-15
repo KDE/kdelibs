@@ -28,7 +28,7 @@
 #include "kjs/ExecState.h"
 
 #include <kdebug.h>
-#include <qdatetime.h>
+#include <QDateTime>
 
 using namespace KJS;
 
