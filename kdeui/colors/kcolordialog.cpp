@@ -81,6 +81,8 @@
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <QX11Info>
 #include <fixx11h.h>
 #endif
 
@@ -1730,10 +1732,27 @@ KColorDialog::mouseReleaseEvent(QMouseEvent *e)
 QColor
 KColorDialog::grabColor(const QPoint &p)
 {
+#ifdef Q_WS_X11
+    // we use the X11 API directly in this case as we are not getting back a valid
+    // return from QPixmap::grabWindow in the case where the application is using
+    // an argb visual
+    Window root = RootWindow(QX11Info::display(), QX11Info::appScreen());
+    XImage *ximg = XGetImage(QX11Info::display(), root, p.x(), p.y(), 1, 1, -1, ZPixmap);
+    unsigned long xpixel = XGetPixel(ximg, 0, 0);
+    XDestroyImage(ximg);
+    XColor xcol;
+    xcol.pixel = xpixel;
+    xcol.flags = DoRed | DoGreen | DoBlue;
+    XQueryColor(QX11Info::display(),
+                DefaultColormap(QX11Info::display(), QX11Info::appScreen()),
+                &xcol);
+    return QColor::fromRgbF(xcol.red / 65535.0, xcol.green / 65535.0, xcol.blue / 65535.0);
+#else
     QWidget *desktop = QApplication::desktop();
     QPixmap pm = QPixmap::grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
     QImage i = pm.toImage();
     return i.pixel(0, 0);
+#endif
 }
 
 void
