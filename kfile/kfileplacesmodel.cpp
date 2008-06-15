@@ -222,7 +222,7 @@ QModelIndex KFilePlacesModel::index(int row, int column, const QModelIndex &pare
     if (parent.isValid())
         return QModelIndex();
 
-    return createIndex(row, column, d->items[row]);
+    return createIndex(row, column, d->items.at(row));
 }
 
 QModelIndex KFilePlacesModel::parent(const QModelIndex &child) const
