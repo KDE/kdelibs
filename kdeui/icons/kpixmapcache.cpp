@@ -793,7 +793,7 @@ bool KPixmapCache::Private::loadIndexHeader()
 
 QString KPixmapCache::Private::indexKey(const QString& key)
 {
-    QByteArray latin1 = key.toLatin1();
+    const QByteArray latin1 = key.toLatin1();
     return QString("%1%2").arg((ushort)qChecksum(latin1.data(), latin1.size()), 4, 16, QLatin1Char('0')).arg(key);
 }
 
