@@ -225,7 +225,7 @@ bool EXRHandler::canRead(QIODevice *device)
 
     qint64 oldPos = device->pos();
 
-    QByteArray head = device->readLine(4);
+    const QByteArray head = device->readLine(4);
     int readBytes = head.size();
     if (device->isSequential()) {
         while (readBytes > 0)
