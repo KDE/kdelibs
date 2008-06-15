@@ -242,7 +242,7 @@ KZoneAllocator::deallocate(void *ptr)
     initHash();
 
   unsigned long key = (((unsigned long)ptr) >> d->log2) & (d->hashSize - 1);
-  QList<MemBlock *> *list = d->hashList[key];
+  const QList<MemBlock *> *list = d->hashList[key];
   if (!list) {
     /* Can happen with certain usage pattern of intermixed free_since()
        and deallocate().  */
