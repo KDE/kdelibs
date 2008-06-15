@@ -26,7 +26,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QMap>
+#include <QtCore/QHash>
 #include "kwalletentry.h"
 
 
@@ -148,12 +148,10 @@ class KDE_EXPORT Backend {
 		bool _open;
 		QString _folder;
 		int _ref;
-		// Map Folder->Entries
-		typedef QMap< QString, Entry* > EntryMap;
-		typedef QMap< QString, EntryMap > FolderMap;
-		FolderMap _entries;
-		typedef QMap<MD5Digest, QList<MD5Digest> > HashMap;
-		HashMap _hashes;
+		// Hash Folder->Entries
+		typedef QHash< QString, Entry* > EntryHash;
+		typedef QHash< QString, EntryHash > FolderHash;
+		FolderHash _entries;
 };
 
 }
