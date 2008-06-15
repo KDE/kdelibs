@@ -210,8 +210,6 @@ QVariant KFilePlacesModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    QVariant returnData;
-
     KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
     return item->data(role);
 }
