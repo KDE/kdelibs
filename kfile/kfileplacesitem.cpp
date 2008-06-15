@@ -92,7 +92,7 @@ QVariant KFilePlacesItem::data(int role) const
 {
     QVariant returnData;
 
-    if (isDevice() && role!=KFilePlacesModel::HiddenRole && role!=Qt::BackgroundRole) {
+    if (role!=KFilePlacesModel::HiddenRole && role!=Qt::BackgroundRole && isDevice()) {
         returnData = deviceData(role);
     } else {
         returnData = bookmarkData(role);
