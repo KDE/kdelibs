@@ -20,7 +20,7 @@
 
 #include "khtmladaptorpart.h"
 #include <kjs/object.h>
-#include <qlabel.h>
+#include <QLabel>
 
 AdaptorView::AdaptorView(QWidget* wparent, QObject* parent,
                          const QStringList& /*args*/)

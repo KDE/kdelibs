@@ -35,7 +35,7 @@
 #define SPEED_DEBUG 0
 
 #ifdef SPEED_DEBUG
-#include <qdatetime.h>
+#include <QDateTime>
 #endif
 
 

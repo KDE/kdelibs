@@ -25,7 +25,7 @@
 
 #include <khtml_export.h>
 
-#include <qobject.h>
+#include <QObject>
 
 class QKeyEvent;
 
