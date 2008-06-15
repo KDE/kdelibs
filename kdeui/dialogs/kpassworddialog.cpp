@@ -68,6 +68,7 @@ KPasswordDialog::KPasswordDialog( QWidget* parent ,
    : KDialog( parent ), d(new KPasswordDialogPrivate(this))
 {
     setCaption( i18n("Password") );
+    setWindowIcon(KIcon("dialog-password"));
     setButtons( Ok | Cancel | otherButtons );
     showButtonSeparator( true );
     setDefaultButton( Ok );
