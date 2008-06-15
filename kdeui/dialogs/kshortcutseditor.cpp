@@ -492,7 +492,7 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
     QString title = i18n("Key Conflict");
     QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
                            "Do you want to reassign it from that action to the current one?",
-                           seq.toString(QKeySequence::NativeText), item->m_action->text());
+                           seq.toString(QKeySequence::NativeText), item->m_action->text().remove('&'));
 
     if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign")))
         != KMessageBox::Continue)
