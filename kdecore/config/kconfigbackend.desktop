@@ -25,6 +25,7 @@ Comment[sr@latin]=Skladišna pozadina za KConfig
 Comment[sv]=Lagringsgränssnitt för KConfig
 Comment[tr]=KConfig için Depolama Arka Ucu
 Comment[uk]=Засіб збереження для KConfig
+Comment[x-test]=xxStorage backend for KConfigxx
 Comment[zh_CN]=KConfig 存储后端
 Comment[zh_TW]=KConfig 儲存後端介面
 
