@@ -201,7 +201,7 @@ void KFileItemPrivate::init()
              * This is the reason for the -1
              */
             KDE_struct_stat buf;
-            QByteArray path = QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash ));
+            const QByteArray path = QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash ));
             if ( KDE_lstat( path.data(), &buf ) == 0 )
             {
                 mode = buf.st_mode;
