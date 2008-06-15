@@ -338,11 +338,11 @@ void KWindowSystem::connectNotify( const char* signal )
         what = INFO_WINDOWS;
     else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).data())
+    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).constData())
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,unsigned int))).data())
+    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,unsigned int))).constData())
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).data())
+    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
         what = INFO_WINDOWS;
 
     init( what );
@@ -861,12 +861,12 @@ void KWindowSystem::setDesktopName( int desktop, const QString& name )
         desktop = currentDesktop();
 
     if( s_d ) {
-        s_d->setDesktopName( desktop, name.toUtf8().data() );
+        s_d->setDesktopName( desktop, name.toUtf8().constData() );
         return;
     }
 
     NETRootInfo info( QX11Info::display(), 0 );
-    info.setDesktopName( desktop, name.toUtf8().data() );
+    info.setDesktopName( desktop, name.toUtf8().constData() );
 }
 
 bool KWindowSystem::showingDesktop()
