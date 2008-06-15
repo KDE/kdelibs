@@ -272,7 +272,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
     if ( !w->isVisibleTo( widget ) || (w->isTopLevel() && qobject_cast<QMenu*>(w) == NULL) )
         continue;
 
-    if ( KAcceleratorManagerPrivate::ignored_widgets.find( w ) != KAcceleratorManagerPrivate::ignored_widgets.end() )
+    if ( KAcceleratorManagerPrivate::ignored_widgets.contains( w ) )
         continue;
 
     manageWidget(w, item);
