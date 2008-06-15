@@ -922,11 +922,11 @@ void KStandardDirs::createSpecialResource(const char *type)
 
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
-    QMap<QByteArray, QStringList>::const_iterator dirCacheIt = d->dircache.find(type);
+    QMap<QByteArray, QStringList>::const_iterator dirCacheIt = d->dircache.constFind(type);
 
     QStringList candidates;
 
-    if (dirCacheIt != d->dircache.end())
+    if (dirCacheIt != d->dircache.constEnd())
     {
         candidates = *dirCacheIt;
     }
