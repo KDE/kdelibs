@@ -1183,7 +1183,7 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     }
 
     bool blocked = locationEdit->blockSignals( true );
-    locationEdit->setCurrentIndex( 0 );
+    locationEdit->setCurrentIndex( -1 );
     if ( keepLocation )
         locationEdit->setEditText( filename );
 
