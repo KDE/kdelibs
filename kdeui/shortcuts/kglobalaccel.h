@@ -131,7 +131,7 @@ private:
 
     class KGlobalAccelPrivate *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_invokeAction(const QStringList&))
+    Q_PRIVATE_SLOT(d, void _k_invokeAction(const QStringList&,qlonglong))
     Q_PRIVATE_SLOT(d, void _k_shortcutGotChanged(const QStringList&, const QList<int>&))
     Q_PRIVATE_SLOT(d, void _k_serviceOwnerChanged(const QString&, const QString&, const QString&))
 };

@@ -136,7 +136,7 @@ public Q_SLOTS: // METHODS
 //The signals part seems to work by pure black magic, i.e. clever hacks
 //with the Qt meta-object / signals & slots system. Maybe.
 Q_SIGNALS: // SIGNALS
-    void invokeAction(const QStringList &actionId);
+    void invokeAction(const QStringList &actionId, qlonglong timestamp);
     void yourShortcutGotChanged(const QStringList &actionId,
                                 const QList<int> &keys);
 };

@@ -87,7 +87,8 @@ public:
     bool keyPressed(int keyQt);
 
 Q_SIGNALS:
-    void invokeAction(const QStringList &actionId);
+    // this is qlonglong because manually written adaptor is used and just long doesn't work
+    void invokeAction(const QStringList &actionId, qlonglong timestamp);
     void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
 
 private Q_SLOTS:

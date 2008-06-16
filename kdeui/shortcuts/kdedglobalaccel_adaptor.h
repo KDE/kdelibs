@@ -42,8 +42,8 @@ public:
         Q_ASSERT(parent);
         qDBusRegisterMetaType<QList<int> >();
         qDBusRegisterMetaType<QList<QStringList> >();
-        connect(parent, SIGNAL(invokeAction(const QStringList &)),
-                SIGNAL(invokeAction(const QStringList &)));
+        connect(parent, SIGNAL(invokeAction(const QStringList &, qlonglong)),
+                SIGNAL(invokeAction(const QStringList &, qlonglong)));
         connect(parent, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
                 SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)));
     }
@@ -88,7 +88,7 @@ public Q_SLOTS:
         { return p()->unRegister(actionId); }
 
 Q_SIGNALS:
-    void invokeAction(const QStringList &actionId);
+    void invokeAction(const QStringList &actionId, qlonglong timestamp);
     void yourShortcutGotChanged(const QStringList &action, const QList<int> &newShortcut);
 };
 

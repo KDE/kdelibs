@@ -100,8 +100,8 @@ KGlobalAccel::KGlobalAccel()
 {
     qDBusRegisterMetaType<QList<int> >();
 
-    connect(&d->iface, SIGNAL(invokeAction(const QStringList &)),
-            SLOT(_k_invokeAction(const QStringList &)));
+    connect(&d->iface, SIGNAL(invokeAction(const QStringList &, qlonglong)),
+            SLOT(_k_invokeAction(const QStringList &, qlonglong)));
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
             SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
 
@@ -318,7 +318,7 @@ QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 }
 
 
-void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
+void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong timestamp)
 {
     // If overrideMainComponentData() is active the app can only have
     // configuration actions.
@@ -348,11 +348,12 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
     // TODO The 100%-correct solution should probably be handling this action
     // in the proper place in relation to the X events queue in order to avoid
     // the possibility of wrong ordering of user events.
-    Time timestamp = actionId.at(4).toULong();
     if( NET::timestampCompare(timestamp, QX11Info::appTime()) > 0)
         QX11Info::setAppTime(timestamp);
     if( NET::timestampCompare(timestamp, QX11Info::appUserTime()) > 0)
         QX11Info::setAppUserTime(timestamp);
+#else
+    Q_UNUSED(timestamp);
 #endif
 
     action->trigger();

@@ -630,9 +630,11 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
     data.append(ad->friendlyName);
 #ifdef Q_WS_X11
     // pass X11 timestamp
-    data.append(QString::number(QX11Info::appTime()));
+    long timestamp = QX11Info::appTime();
+#else
+    long timestamp = 0;
 #endif
-    emit invokeAction(data);
+    emit invokeAction(data, timestamp);
     return true;
 }
 

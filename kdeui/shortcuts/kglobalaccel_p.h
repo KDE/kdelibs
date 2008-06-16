@@ -58,7 +58,7 @@ public:
     void readComponentData(const KComponentData &component);
 
     //private slot implementations
-    void _k_invokeAction(const QStringList&);
+    void _k_invokeAction(const QStringList&,qlonglong);
     void _k_shortcutGotChanged(const QStringList&, const QList<int>&);
     void _k_serviceOwnerChanged(const QString& name, const QString& oldOwner, const QString& newOwner);
     void reRegisterAll();
