@@ -56,6 +56,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , hoveredWidget(0)
     , focusedIndex(QPersistentModelIndex())
     , focusedWidget(0)
+    , buttonPressedWidget(0)
     , currentIndex(QPersistentModelIndex())
     , selectionModel(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
@@ -311,36 +312,57 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                 lastHoveredIndex = hoveredIndex;
                 hoveredIndex = itemView->indexAt(itemView->viewport()->mapFromGlobal(QCursor::pos()));
 
-                // Consider moving this block into analyzeInternalMouseEvents
-                if (hoveredWidget && lastHoveredIndex.isValid() && (hoveredIndex != lastHoveredIndex)) {
-                    QEvent leaveEvent(QEvent::Leave);
-                    QCoreApplication::sendEvent(hoveredWidget, &leaveEvent);
-                }
+                // If a widget has been pressed and not released, mouse move events will be forwarded to the
+                // initially pressed widget (until the button mouse is released).
+                if (buttonPressedWidget) {
+                    if (event->type() == QEvent::MouseMove) {
+                        hoveredWidget = buttonPressedWidget;
 
-                if (event->type() == QEvent::Leave) {
-                    QStyleOptionViewItem option;
-                    option.rect = itemView->visualRect(hoveredIndex);
-                    analyzeInternalMouseEvents(option, 0);
+                        QMouseEvent mouseEventCpy(mouseEvent->type(), mappedPointForWidget(hoveredWidget, buttonPressedIndex, mouseEvent->pos()),
+                                                  mouseEvent->globalPos(), mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
+                        
+                        QCoreApplication::sendEvent(hoveredWidget, &mouseEventCpy);
+                    }
                 } else {
-                    QStyleOptionViewItem option;
-                    option.rect = itemView->visualRect(hoveredIndex);
-                    analyzeInternalMouseEvents(option, mouseEvent);
+                    // Consider moving this block into analyzeInternalMouseEvents
+                    if (hoveredWidget && lastHoveredIndex.isValid() && (hoveredIndex != lastHoveredIndex)) {
+                        QEvent leaveEvent(QEvent::Leave);
+                        QCoreApplication::sendEvent(hoveredWidget, &leaveEvent);
+                    }
+
+                    if (event->type() == QEvent::Leave && !buttonPressedWidget) {
+                        QStyleOptionViewItem option;
+                        option.rect = itemView->visualRect(hoveredIndex);
+                        analyzeInternalMouseEvents(option, 0);
+                    } else {
+                        QStyleOptionViewItem option;
+                        option.rect = itemView->visualRect(hoveredIndex);
+                        analyzeInternalMouseEvents(option, mouseEvent);
+                    }
+                }
+
+                itemView->viewport()->update();
+
+                if (hoveredWidget) {
+                    itemView->setCursor(hoveredWidget->cursor());
+                } else {
+                    itemView->setCursor(Qt::ArrowCursor);
                 }
             }
-            itemView->viewport()->update();
-
-            if (hoveredWidget) {
-                itemView->setCursor(hoveredWidget->cursor());
-            } else {
-                itemView->setCursor(Qt::ArrowCursor);
-            }
-
             break;
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonRelease: {
                 focusedIndex = hoveredIndex;
 
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+                if (event->type() == QEvent::MouseButtonPress) {
+                    buttonPressedWidget = hoveredWidget;
+                    buttonPressedIndex = hoveredIndex;
+                } else {
+                    buttonPressedWidget = 0;
+                    buttonPressedIndex = QModelIndex();
+                }
 
                 if (focusedWidget && (focusedWidget != hoveredWidget)) {
 
