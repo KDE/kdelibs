@@ -162,6 +162,19 @@ extern "C" KParts::Plugin* _kinit_init_kparts() { return new KParts::Plugin(); }
 extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
 
 /*
+ * Clean up the file descriptor table by closing all file descriptors
+ * that are still open.
+ *
+ * This function is called very early in the main() function, so that
+ * we don't leak anything that was leaked to us.
+ */
+static void cleanup_fds()
+{
+    for (int fd = 3; fd < FD_SETSIZE; ++fd)
+       close(fd);
+}
+
+/*
  * Close fd's which are only useful for the parent process.
  * Restore default signal handlers.
  */
@@ -1744,6 +1757,8 @@ int main(int argc, char **argv, char **envp)
         exit(0);
       }
    }
+
+   cleanup_fds();
 
    if (do_fork) {
 #ifdef Q_WS_MACX
