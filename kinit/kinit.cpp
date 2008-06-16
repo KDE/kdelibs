@@ -121,6 +121,7 @@ static struct {
   int initpipe[2];
   int wrapper; /* socket for wrapper communication */
   int wrapper_old; /* old socket for wrapper communication */
+  int accepted_fd; /* socket accepted and that must be closed in the child process */
   char result;
   int exit_status;
   pid_t fork;
@@ -195,15 +196,20 @@ static void close_fds()
       close(d.launcher[0]);
       d.launcher_pid = 0;
    }
-   if (d.wrapper)
+   if (d.wrapper != -1)
    {
       close(d.wrapper);
-      d.wrapper = 0;
+      d.wrapper = -1;
    }
-   if (d.wrapper_old)
+   if (d.wrapper_old != -1)
    {
       close(d.wrapper_old);
-      d.wrapper_old = 0;
+      d.wrapper_old = -1;
+   }
+   if (d.accepted_fd != -1)
+   {
+      close(d.accepted_fd);
+      d.accepted_fd = -1;
    }
 #ifdef Q_WS_X11
    if (X11fd >= 0)
@@ -464,8 +470,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
      d.result = 3;
      d.errorMsg = i18n("Unable to start new process.\n"
                        "The system may have reached the maximum number of open files possible or the maximum number of open files that you are allowed to use has been reached.").toUtf8();
-     close(d.fd[0]);
-     close(d.fd[1]);
      d.fork = 0;
      return d.fork;
   }
@@ -931,6 +935,13 @@ static void init_kdeinit_socket()
      exit(255);
   }
 
+  if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
+  {
+     perror("kdeinit4: Aborting. Can't make socket close-on-execute: ");
+     close(d.wrapper);
+     exit(255);
+  }
+
   while (1) {
       /** bind it **/
       socklen = sizeof(sa);
@@ -982,7 +993,7 @@ static void init_kdeinit_socket()
   {
      // perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
      close(d.wrapper_old);
-     d.wrapper_old = 0;
+     d.wrapper_old = -1;
      return;
   }
 
@@ -990,7 +1001,15 @@ static void init_kdeinit_socket()
   {
      // perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
      close(d.wrapper_old);
-     d.wrapper_old = 0;
+     d.wrapper_old = -1;
+     return;
+  }
+
+  if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
+  {
+     //perror("kdeinit4: Aborting. Can't make socket close-on-execute: ");
+     close(d.wrapper);
+     d.wrapper_old = -1;
      return;
   }
 
@@ -1007,7 +1026,7 @@ static void init_kdeinit_socket()
 	      // perror("kdeinit4: Aborting. bind() failed: ");
 	      fprintf(stderr, "Could not bind to socket '%s'\n", sock_file_old);
 	      close(d.wrapper_old);
-	      d.wrapper_old = 0;
+	      d.wrapper_old = -1;
 	      return;
 	  }
 	  max_tries--;
@@ -1021,7 +1040,7 @@ static void init_kdeinit_socket()
      fprintf(stderr, "Wrong permissions of socket '%s'\n", sock_file);
      unlink(sock_file_old);
      close(d.wrapper_old);
-     d.wrapper_old = 0;
+     d.wrapper_old = -1;
      return;
   }
 
@@ -1030,7 +1049,7 @@ static void init_kdeinit_socket()
      // perror("kdeinit4: Aborting. listen() failed: ");
      unlink(sock_file_old);
      close(d.wrapper_old);
-     d.wrapper_old = 0;
+     d.wrapper_old = -1;
   }
 #endif
 }
@@ -1098,6 +1117,10 @@ static void handle_launcher_request(int sock = -1)
    {
        sock = d.launcher[0];
        launcher = true;
+   }
+   else
+   {
+       d.accepted_fd = sock;
    }
 
    klauncher_header request_header;
@@ -1374,6 +1397,9 @@ static void handle_requests(pid_t waitForPid)
       }
       while( exit_pid > 0);
 
+      /* Set up the next loop */
+      d.accepted_fd = -1;
+
       FD_ZERO(&rd_set);
       FD_ZERO(&wr_set);
       FD_ZERO(&e_set);
@@ -1383,7 +1409,7 @@ static void handle_requests(pid_t waitForPid)
          FD_SET(d.launcher[0], &rd_set);
       }
       FD_SET(d.wrapper, &rd_set);
-      if (d.wrapper_old)
+      if (d.wrapper_old != -1)
       {
          FD_SET(d.wrapper_old, &rd_set);
       }
@@ -1406,7 +1432,7 @@ static void handle_requests(pid_t waitForPid)
             close(sock);
          }
       }
-      if ((result > 0) && (FD_ISSET(d.wrapper_old, &rd_set)))
+      if ((result > 0) && d.wrapper_old != -1 && (FD_ISSET(d.wrapper_old, &rd_set)))
       {
          struct sockaddr_un client;
          kde_socklen_t sClient = sizeof(client);
@@ -1723,29 +1749,34 @@ int main(int argc, char **argv, char **envp)
 #ifdef Q_WS_MACX
       mac_fork_and_reexec_self();
 #else
-   pipe(d.initpipe);
+      pipe(d.initpipe);
 
-   // Fork here and let parent process exit.
-   // Parent process may only exit after all required services have been
-   // launched. (dcopserver/klauncher and services which start with '+')
-   signal( SIGCHLD, secondary_child_handler);
-   if (fork() > 0) // Go into background
-   {
-      close(d.initpipe[1]);
-      d.initpipe[1] = -1;
-      // wait till init is complete
-      char c;
-      while( read(d.initpipe[0], &c, 1) < 0)
-          ;
-      // then exit;
+      // Fork here and let parent process exit.
+      // Parent process may only exit after all required services have been
+      // launched. (dcopserver/klauncher and services which start with '+')
+      signal( SIGCHLD, secondary_child_handler);
+      if (fork() > 0) // Go into background
+      {
+         close(d.initpipe[1]);
+         d.initpipe[1] = -1;
+         // wait till init is complete
+         char c;
+         while( read(d.initpipe[0], &c, 1) < 0)
+            ;
+         // then exit;
+         close(d.initpipe[0]);
+         d.initpipe[0] = -1;
+         return 0;
+      }
       close(d.initpipe[0]);
       d.initpipe[0] = -1;
-      return 0;
-   }
-   close(d.initpipe[0]);
-   d.initpipe[0] = -1;
 #endif
    }
+
+   /** We start a few processes (including klauncher and kded) before
+    * we close our pipe, so make sure it doesn't leak */
+   if (d.initpipe[1] != -1)
+      fcntl(d.initpipe[1], F_SETFD, FD_CLOEXEC);
 
    d.my_pid = getpid();
 
@@ -1771,8 +1802,9 @@ int main(int argc, char **argv, char **envp)
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
    d.kded_pid = 0;
-   d.wrapper = 0;
-   d.wrapper_old = 0;
+   d.wrapper = -1;
+   d.wrapper_old = -1;
+   d.accepted_fd = -1;
    d.debug_wait = false;
    d.launcher_ok = false;
    children = NULL;
@@ -1874,10 +1906,13 @@ int main(int argc, char **argv, char **envp)
    if (!keep_running)
       return 0;
 
-   char c = 0;
-   write(d.initpipe[1], &c, 1); // Kdeinit is started.
-   close(d.initpipe[1]);
-   d.initpipe[1] = -1;
+   if (d.initpipe[1] != -1)
+   {
+      char c = 0;
+      write(d.initpipe[1], &c, 1); // Kdeinit is started.
+      close(d.initpipe[1]);
+      d.initpipe[1] = -1;
+   }
 
    handle_requests(0);
 
