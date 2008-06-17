@@ -34,8 +34,6 @@ set(kdesu_stub_SRCS kdesu_stub.c )
 
 kde4_add_executable(kdesu_stub NOGUI ${kdesu_stub_SRCS})
 
-target_link_libraries(kdesu_stub  ${KDE4_KDECORE_LIBS} )
-
 install(TARGETS kdesu_stub DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
