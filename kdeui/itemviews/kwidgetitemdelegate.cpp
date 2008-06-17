@@ -125,12 +125,22 @@ void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionVi
     foreach (QWidget *widget, widgetList) {
         if (!widget->isVisibleTo(widget->parentWidget())) continue;
 
-        if (widget != hoveredWidget) {
+        QWidget *childWidget = widget;
+        if (mouseEvent) {
+            QPoint eventPos = mappedPointForWidget(widget, hoveredIndex, mouseEvent->pos());
+            childWidget = widget->childAt(eventPos);
+
+            if (!childWidget) {
+                childWidget = widget;
+            }
+        }
+
+        if (widget != hoveredWidget || hoveredWidget != childWidget) {
             QRect mappedRect = QRect(itemView->viewport()->mapToGlobal(widgetRect(widget, option, hoveredIndex).topLeft()),
                                      itemView->viewport()->mapToGlobal(widgetRect(widget, option, hoveredIndex).bottomRight()));
 
             if (mappedRect.contains(pos)) {
-                hoveredWidget = widget;
+                hoveredWidget = childWidget;
 
                 QEvent enterEvent(QEvent::Enter);
                 QCoreApplication::sendEvent(hoveredWidget, &enterEvent);
@@ -144,7 +154,7 @@ void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionVi
                 break;
             }
         } else if (mouseEvent) { // we are moving the mouse over a previously hovered widget, generate MouseMove events
-            QPoint eventPos = mappedPointForWidget(widget, hoveredIndex, mouseEvent->pos());
+            QPoint eventPos = mappedPointForWidget(childWidget, hoveredIndex, mouseEvent->pos());
             QMouseEvent genMouseEvent(QEvent::MouseMove, eventPos, pos, mouseEvent->button(),
                                       mouseEvent->buttons(), mouseEvent->modifiers());
             QCoreApplication::sendEvent(hoveredWidget, &genMouseEvent);
