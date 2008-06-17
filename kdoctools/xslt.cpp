@@ -177,7 +177,8 @@ QString splitOut(const QString &parsed, int index)
     return filedata;
 }
 
-void fillInstance(KComponentData &ins, const QString &srcdir) {
+void fillInstance(KComponentData &ins, const QString &srcdir)
+{
     QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
@@ -222,7 +223,8 @@ bool saveToCache( const QString &contents, const QString &filename )
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kDebug( 7119 ) << "verifyCache " << filename << " " << cache;
+    kDebug( 7119 ) << filename << " " << cache;
+    KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     if ( !compareTimeStamps( filename, cache ) )
         return false;
     if ( !compareTimeStamps( KStandardDirs::locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
@@ -276,10 +278,10 @@ QString lookForCache( const QString &filename )
         return output;
 #ifdef Q_WS_WIN
     QFileInfo fi(filename);
-    // make sure filenames do not contain the base path, otherwise 
-    // accessing user data from another location invalids cached files. 
-    // Accessing user data under a different path is possible 
-    // when using usb sticks - this may affect unix/mac systems also 
+    // make sure filenames do not contain the base path, otherwise
+    // accessing user data from another location invalids cached files.
+    // Accessing user data under a different path is possible
+    // when using usb sticks - this may affect unix/mac systems also
     cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #endif
     if ( readCache( filename,
