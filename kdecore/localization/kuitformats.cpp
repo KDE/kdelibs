@@ -130,7 +130,7 @@ QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
 QString KuitFormats::toInterfacePath (const QString &inpstr,
                                       const QString &delim)
 {
-    static QRegExp delRx("/|\\||->");
+    static QRegExp delRx("\\||->");
 
     int p = delRx.indexIn(inpstr); // find delimiter
     if (p < 0) { // single-element path, no delimiter found
