@@ -58,7 +58,11 @@ endif (WIN32)
 
 kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
 
-target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
+if (WIN32)
+  target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
+else (WIN32)
+  target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY})
+endif (WIN32)
 
 install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -68,7 +72,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
 
-  target_link_libraries(kdeinit4_wrapper  ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
+  target_link_libraries(kdeinit4_wrapper  ${KINIT_SOCKET_LIBRARY})
 
   if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
     add_definitions(-DNO_DISPLAY)
@@ -80,7 +84,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kshell4 NOGUI shell.c)
 
-  target_link_libraries(kshell4 ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
+  target_link_libraries(kshell4 ${KINIT_SOCKET_LIBRARY})
 
   install(TARGETS kshell4 DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -88,7 +92,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kdeinit4_shutdown NOGUI wrapper.c)
 
-  target_link_libraries(kdeinit4_shutdown  ${KDE4_KDECORE_LIBS} ${KINIT_SOCKET_LIBRARY})
+  target_link_libraries(kdeinit4_shutdown  ${KINIT_SOCKET_LIBRARY})
 
   install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -97,8 +101,6 @@ if (NOT WIN32)
   set(lnusertemp_SRCS lnusertemp.c )
 
   kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
-
-  target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
   install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
