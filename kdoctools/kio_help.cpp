@@ -115,11 +115,9 @@ QString HelpProtocol::lookupFile(const QString &fname,
 {
     redirect = false;
 
-    QString path, result;
+    const QString path = fname;
 
-    path = fname;
-
-    result = langLookup(path);
+    QString result = langLookup(path);
     if (result.isEmpty())
     {
         result = langLookup(path+"/index.html");
@@ -135,7 +133,6 @@ QString HelpProtocol::lookupFile(const QString &fname,
         else
 	{
 	    unicodeError( i18n("There is no documentation available for %1." , Qt::escape(path)) );
-	    finished();
             return QString();
 	}
     } else
