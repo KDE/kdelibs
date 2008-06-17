@@ -84,8 +84,8 @@ Backend::~Backend() {
 
 
 int Backend::close() {
-	for (FolderHash::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
-		for (EntryHash::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		for (EntryMap::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
 			delete j.value();
 		}
 	}
@@ -338,7 +338,8 @@ int Backend::open(const QByteArray& password) {
 		return -42;	   // unknown hash
 	}
 
-	// Skip the hashes
+	_hashes.clear();
+	// Read in the hashes
 	QDataStream hds(&db);
 	quint32 n;
 	hds >> n;
@@ -347,11 +348,20 @@ int Backend::open(const QByteArray& password) {
 	}
 
 	for (size_t i = 0; i < n; ++i) {
+		KMD5::Digest d, d2; // judgment day
+		MD5Digest ba;
+		QMap<MD5Digest,QList<MD5Digest> >::iterator it;
 		quint32 fsz;
 		if (hds.atEnd()) return -43;
 		hds.readRawData(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
-		hds.skipRawData(fsz*16);
+		ba = MD5Digest(reinterpret_cast<char *>(d));
+		it = _hashes.insert(ba, QList<MD5Digest>());
+		for (size_t j = 0; j < fsz; ++j) {
+			hds.readRawData(reinterpret_cast<char *>(d2), 16);
+			ba = MD5Digest(reinterpret_cast<char *>(d2));
+			(*it).append(ba);
+		}
 	}
 
 	// Read in the rest of the file.
@@ -515,7 +525,7 @@ int Backend::sync(const QByteArray& password) {
 
 	// populate decrypted
 	QDataStream dStream(&decrypted, QIODevice::WriteOnly);
-	for (FolderHash::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
 		dStream << i.key();
 		dStream << static_cast<quint32>(i.value().count());
 
@@ -524,7 +534,7 @@ int Backend::sync(const QByteArray& password) {
 		hashStream.writeRawData(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		hashStream << static_cast<quint32>(i.value().count());
 
-		for (EntryHash::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
+		for (EntryMap::ConstIterator j = i.value().begin(); j != i.value().end(); ++j) {
 			dStream << j.key();
 			dStream << static_cast<qint32>(j.value()->type());
 			dStream << j.value()->value();
@@ -674,8 +684,8 @@ QList<Entry*> Backend::readEntryList(const QString& key) {
 
 	QRegExp re(key, Qt::CaseSensitive, QRegExp::Wildcard);
 
-	const EntryHash& map = _entries[_folder];
-	for (EntryHash::ConstIterator i = map.begin(); i != map.end(); ++i) {
+	const EntryMap& map = _entries[_folder];
+	for (EntryMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
 		if (re.exactMatch(i.key())) {
 			rc.append(i.value());
 		}
@@ -689,22 +699,37 @@ bool Backend::createFolder(const QString& f) {
 		return false;
 	}
 
-	_entries.insert(f, EntryHash());
+	_entries.insert(f, EntryMap());
+
+	KMD5 folderMd5;
+	folderMd5.update(f.toUtf8());
+	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QList<MD5Digest>());
 
 	return true;
 }
 
 
 int Backend::renameEntry(const QString& oldName, const QString& newName) {
-	EntryHash& emap = _entries[_folder];
-	EntryHash::Iterator oi = emap.find(oldName);
-	EntryHash::Iterator ni = emap.find(newName);
+	EntryMap& emap = _entries[_folder];
+	EntryMap::Iterator oi = emap.find(oldName);
+	EntryMap::Iterator ni = emap.find(newName);
 
 	if (oi != emap.end() && ni == emap.end()) {
 		Entry *e = oi.value();
 		emap.erase(oi);
 		emap[newName] = e;
 
+		KMD5 folderMd5;
+		folderMd5.update(_folder.toUtf8());
+
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 oldMd5, newMd5;
+			oldMd5.update(oldName.toUtf8());
+			newMd5.update(newName.toUtf8());
+			i.value().removeAll(MD5Digest(oldMd5.rawDigest()));
+			i.value().append(MD5Digest(newMd5.rawDigest()));
+		}
 		return 0;
 	}
 
@@ -720,6 +745,16 @@ void Backend::writeEntry(Entry *e) {
 		_entries[_folder][e->key()] = new Entry;
 	}
 	_entries[_folder][e->key()]->copy(e);
+
+	KMD5 folderMd5;
+	folderMd5.update(_folder.toUtf8());
+
+	HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+	if (i != _hashes.end()) {
+		KMD5 md5;
+		md5.update(e->key().toUtf8());
+		i.value().append(MD5Digest(md5.rawDigest()));
+	}
 }
 
 
@@ -733,13 +768,21 @@ bool Backend::removeEntry(const QString& key) {
 		return false;
 	}
 
-	FolderHash::Iterator fi = _entries.find(_folder);
-	EntryHash::Iterator ei = fi.value().find(key);
-	
+	FolderMap::Iterator fi = _entries.find(_folder);
+	EntryMap::Iterator ei = fi.value().find(key);
+
 	if (fi != _entries.end() && ei != fi.value().end()) {
 		delete ei.value();
 		fi.value().erase(ei);
+		KMD5 folderMd5;
+		folderMd5.update(_folder.toUtf8());
 
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 md5;
+			md5.update(key.toUtf8());
+			i.value().removeAll(MD5Digest(md5.rawDigest()));
+		}
 		return true;
 	}
 
@@ -752,19 +795,22 @@ bool Backend::removeFolder(const QString& f) {
 		return false;
 	}
 
-	FolderHash::Iterator fi = _entries.find(f);
+	FolderMap::Iterator fi = _entries.find(f);
 
 	if (fi != _entries.end()) {
 		if (_folder == f) {
 			_folder.clear();
 		}
 
-		for (EntryHash::Iterator ei = fi.value().begin(); ei != fi.value().end(); ++ei) {
+		for (EntryMap::Iterator ei = fi.value().begin(); ei != fi.value().end(); ++ei) {
 			delete ei.value();
 		}
 
 		_entries.erase(fi);
 
+		KMD5 folderMd5;
+		folderMd5.update(f.toUtf8());
+		_hashes.remove(MD5Digest(folderMd5.rawDigest()));
 		return true;
 	}
 
@@ -773,15 +819,20 @@ bool Backend::removeFolder(const QString& f) {
 
 
 bool Backend::folderDoesNotExist(const QString& folder) const {
-	return !_entries.contains(folder);
+	KMD5 md5;
+	md5.update(folder.toUtf8());
+	return !_hashes.contains(MD5Digest(md5.rawDigest()));
 }
 
 
 bool Backend::entryDoesNotExist(const QString& folder, const QString& entry) const {
-	
-	FolderHash::ConstIterator fi = _entries.find(folder);
-	if (fi != _entries.end()) {
-		return !fi.value().contains(entry);
+	KMD5 md5;
+	md5.update(folder.toUtf8());
+	HashMap::const_iterator i = _hashes.find(MD5Digest(md5.rawDigest()));
+	if (i != _hashes.end()) {
+		md5.reset();
+		md5.update(entry.toUtf8());
+		return !i.value().contains(MD5Digest(md5.rawDigest()));
 	}
 	return true;
 }
