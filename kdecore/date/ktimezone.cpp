@@ -37,6 +37,7 @@
 
 #include <QtCore/QSet>
 #include <QtCore/QSharedData>
+#include <QtCore/QCoreApplication>
 
 #include <kdebug.h>
 
@@ -315,6 +316,7 @@ public:
     ~KTimeZonePrivate()  { delete data; }
     KTimeZonePrivate &operator=(const KTimeZonePrivate &);
     static KTimeZoneSource *utcSource();
+    static void cleanup();
 
     KTimeZoneSource *source;
     QString name;
@@ -329,7 +331,7 @@ private:
     static KTimeZoneSource *mUtcSource;
 };
 
-KTimeZoneSource *KTimeZonePrivate::mUtcSource;
+KTimeZoneSource *KTimeZonePrivate::mUtcSource = 0;
 
 
 KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
@@ -384,8 +386,16 @@ KTimeZonePrivate &KTimeZonePrivate::operator=(const KTimeZonePrivate &rhs)
 KTimeZoneSource *KTimeZonePrivate::utcSource()
 {
     if (!mUtcSource)
+    {
         mUtcSource = new KTimeZoneSource;
+        qAddPostRoutine(KTimeZonePrivate::cleanup);
+    }
     return mUtcSource;
+}
+
+void KTimeZonePrivate::cleanup()
+{
+    delete mUtcSource;
 }
 
 
