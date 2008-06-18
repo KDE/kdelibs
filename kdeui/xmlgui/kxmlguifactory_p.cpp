@@ -48,8 +48,10 @@ void ActionList::plug( QWidget *container, int index ) const
 
 void ActionList::unplug( QWidget *container ) const
 {
-    foreach (QAction* action, *this)
-        container->removeAction( action );
+    foreach (QAction* action, *this) {
+        if (container->actions().contains(action))
+            container->removeAction( action );
+    }
 }
 
 ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
