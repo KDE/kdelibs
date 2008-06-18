@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -156,7 +156,7 @@ public:
      *
      * @return path to time zone definition files
      */
-    QString location();
+    QString location() const;
 
     /**
      * Parses a tzfile file to extract detailed information for one time zone.

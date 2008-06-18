@@ -150,9 +150,9 @@ KTzfileTimeZoneSource::~KTzfileTimeZoneSource()
     delete d;
 }
 
-QString KTzfileTimeZoneSource::location()
+QString KTzfileTimeZoneSource::location() const
 {
-	return d->location;
+    return d->location;
 }
 
 KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
