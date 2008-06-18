@@ -362,7 +362,7 @@
 9010        kdevelop (appwizard)
 9011        kdevelop (python support)
 9012        kdevelop (debugger)
-#9013        kdevelop (java support)
+9013        kdevelop (java support)
 #9014        kdevelop (python support)
 #9015        kdevelop (script project)
 #9016        kdevelop (perl support)
@@ -392,6 +392,7 @@
 9041        kdevelop (cpp duchain)
 9042        kdevelop (cmake support debug)
 9043        kdevelop (php support)
+9044        kdevelop (csharp support)
 
 #kdevplatform
 9500        kdevplatform
