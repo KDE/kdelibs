@@ -81,6 +81,8 @@ void KWidgetJobTracker::registerJob(KJob *job)
         return;
     }
 
+    job->setAutoDelete(true);
+
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
     d->progressWidget.insert(job, vi);
     d->progressWidgetsToBeShown.enqueue(job);
@@ -179,6 +181,8 @@ void KWidgetJobTracker::slotClean(KJob *job)
     if (!pWidget) {
         return;
     }
+
+    d->progressWidget.remove(job);
 
     pWidget->slotClean();
 }
@@ -395,11 +399,6 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 
     if (tracker->stopOnClose(job) && !finishedProperty) {
         tracker->slotStop(job);
-    } else if (tracker->autoDelete(job)) {
-        // Using deleteLater() on the widget wont help us to be sure that the
-        // widget will actually become deleted before the job. Solution: delete
-        // the widget right now. (ereslibre)
-        delete this;
     }
 }
 
@@ -567,6 +566,7 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
 void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
 {
     keepOpenChecked = keepOpen;
+    job->setAutoDelete(!keepOpen);
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
