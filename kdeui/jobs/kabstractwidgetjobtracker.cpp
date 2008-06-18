@@ -117,12 +117,7 @@ void KAbstractWidgetJobTracker::finished(KJob *job)
         return;
     }
 
-    // clean or delete dialog
-    if (d->moreOptions[job].autoDelete) {
-        widget(job)->deleteLater();
-    } else {
-        slotClean(job);
-    }
+    slotClean(job);
 }
 
 void KAbstractWidgetJobTracker::slotStop(KJob *job)

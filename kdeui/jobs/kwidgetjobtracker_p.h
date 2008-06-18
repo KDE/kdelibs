@@ -45,7 +45,8 @@ public:
     {
     }
 
-    ~Private() {
+    ~Private()
+    {
     }
 
     void _k_slotShowProgressWidget();
@@ -80,7 +81,6 @@ public:
     ~ProgressWidget()
     {
         beingDeleted = true;    // keep the tracker from trying to delete us
-        tracker->unregisterJob(job);
     }
 
     KWidgetJobTracker *const tracker;
@@ -116,6 +116,7 @@ public:
     QProgressBar *progressBar;
 
     bool suspendedProperty;
+    bool finishedProperty;
 
     void init();
     void showTotals();

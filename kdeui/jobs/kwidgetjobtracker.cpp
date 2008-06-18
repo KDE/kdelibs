@@ -97,10 +97,6 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
         return;
     }
 
-    if (!pWidget->keepOpenChecked && !pWidget->beingDeleted) {
-        delete pWidget;
-    }
-
     d->progressWidget.remove(job);
 }
 
@@ -360,7 +356,9 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
 {
     if (!keepOpenChecked) {
         hide();
+        QTimer::singleShot(500, this, SLOT(deleteLater()));
     } else {
+        finishedProperty = true;
         percent(100);
         cancelClose->setGuiItem(KStandardGuiItem::close());
         openFile->setEnabled(true);
@@ -368,6 +366,7 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
             totalSize = processedSize;
         processedAmount(KJob::Bytes, totalSize);
         keepOpenCheck->setEnabled(false);
+        pauseButton->setEnabled(false);
         if (!startTime.isNull()) {
             int s = startTime.elapsed();
             if (!s)
@@ -375,7 +374,6 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
             speedLabel->setText(i18n("%1/s (done)",
                                         KGlobal::locale()->formatByteSize(1000 * totalSize / s)));
         }
-        tracker->setAutoDelete(job, true);
     }
 }
 
@@ -393,18 +391,16 @@ void KWidgetJobTracker::Private::ProgressWidget::resumed()
 
 void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 {
-    if (tracker->stopOnClose(job)) {
+    QWidget::closeEvent(event);
+
+    if (tracker->stopOnClose(job) && !finishedProperty) {
         tracker->slotStop(job);
     } else if (tracker->autoDelete(job)) {
         // Using deleteLater() on the widget wont help us to be sure that the
         // widget will actually become deleted before the job. Solution: delete
         // the widget right now. (ereslibre)
         delete this;
-    } else {
-        tracker->slotClean(job);
     }
-
-    QWidget::closeEvent(event);
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::init()
@@ -445,6 +441,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     progressHBox->addWidget(progressBar);
 
     suspendedProperty = false;
+    finishedProperty = false;
     pauseButton = new KPushButton(i18n("Pause"), this);
     QObject::connect(pauseButton, SIGNAL(clicked()),
                      this, SLOT(_k_pauseResumeClicked()));
@@ -594,11 +591,11 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
-    tracker->slotStop(job);
-    // Using deleteLater() on the widget wont help us to be sure that the
-    // widget will actually become deleted before the job. Solution: delete
-    // the widget right now. (ereslibre)
-    delete tracker->widget(job);
+    if (!finishedProperty) {
+        tracker->slotStop(job);
+    } else {
+        delete this;
+    }
 }
 
 #include "kwidgetjobtracker.moc"
