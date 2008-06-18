@@ -437,8 +437,6 @@ class KDateTimePrivate : public QSharedData
     /* Because some applications create thousands of instances of KDateTime, this
      * data structure is designed to minimize memory usage. Ensure that all small
      * members are kept together at the end!
-     *
-     * N.B. This class does not own any KTimeZone instances pointed to by data members.
      */
 private:
     QDateTime             mDt;
