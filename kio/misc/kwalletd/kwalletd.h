@@ -40,12 +40,13 @@ class KTimeout;
 class KWalletTransaction;
 class KWalletSyncTimer;
 
-class KWalletD : public KDEDModule {
+class KWalletD : public QObject {
 	Q_OBJECT
+	
 	public:
-		KWalletD(QObject* parent, const QList<QVariant>&);
+		KWalletD();
 		virtual ~KWalletD();
-
+	
 	public Q_SLOTS:
 		// Is the wallet enabled?  If not, all open() calls fail.
 		bool isEnabled() const;

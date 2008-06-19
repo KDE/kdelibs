@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Service
-X-KDE-ServiceTypes=KDEDModule
-X-KDE-Library=kwalletd
-X-KDE-DBus-ModuleName=kwalletd
-X-KDE-Kded-autoload=false
-X-KDE-Kded-load-on-demand=true
+Exec=kwalletd
+X-KDE-ServiceTypes=
+# It is a server
+X-DBUS-StartupType=Unique
+X-KDE-StartupNotify=false
 Name=KWallet Daemon Module
 Name[af]=KBeursie bedienermodule
 Name[ar]=وحدة رقيب KWallet

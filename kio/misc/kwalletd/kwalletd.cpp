@@ -27,7 +27,7 @@
 #include "kwalletwizard.h"
 #include "ktimeout.h"
 
-#include <kapplication.h>
+#include <kuniqueapplication.h>
 #include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -54,11 +54,6 @@
 #include "kwalletdadaptor.h"
 #include "kwalletsynctimer.h"
 
-K_PLUGIN_FACTORY(KWalletDFactory,
-                 registerPlugin<KWalletD>();
-    )
-K_EXPORT_PLUGIN(KWalletDFactory("kwalletd"))
-
 class KWalletTransaction {
 	public:
 		KWalletTransaction() {
@@ -77,8 +72,8 @@ class KWalletTransaction {
 		bool modal;
 };
 
-KWalletD::KWalletD(QObject* parent, const QList<QVariant>&)
-	: KDEDModule(parent), _failed(0) {
+KWalletD::KWalletD()
+	: QObject(0), _failed(0) {
 	srand(time(0));
 	_showingFailureNotify = false;
 	_timeouts = new KTimeout();
@@ -87,11 +82,14 @@ KWalletD::KWalletD(QObject* parent, const QList<QVariant>&)
 	connect(_timeouts, SIGNAL(timedOut(int)), this, SLOT(timedOut(int)));
 
 	(void)new KWalletDAdaptor(this);
-	// register another name
-	QDBusConnection::sessionBus().registerService("org.kde.kwalletd");
+	// register services
+	QDBusConnection::sessionBus().registerService(QLatin1String("org.kde.kwalletd"));
+	QDBusConnection::sessionBus().registerObject(QLatin1String("/modules/kwalletd"), this);
+	
 #ifdef Q_WS_X11
 	screensaver = new QDBusInterface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver");
 #endif
+
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", 0, "share/apps/kwallet");
 		connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
@@ -1280,6 +1278,7 @@ void KWalletD::reconfigure() {
 			Wallets::const_iterator it = _wallets.begin();
 			closeWallet(it.value(), it.key(), true);
 		}
+		KUniqueApplication::exit(0);
 	}
 }
 

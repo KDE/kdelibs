@@ -19,19 +19,21 @@
  */
 
 #include "kwallet.h"
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 #include <QtDBus/QtDBus>
-#include "kwallet_interface.h"
+#include <ktoolinvocation.h>
 
 #include <assert.h>
 #include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
+
+#include "kwallet_interface.h"
 
 using namespace KWallet;
 
@@ -67,8 +69,7 @@ static void registerTypes()
 }
 
 const QString Wallet::LocalWallet() {
-    KConfig kwalletrc("kwalletrc");
-    KConfigGroup cfg(&kwalletrc, "Wallet");
+    KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
     if (!cfg.readEntry("Use One Wallet", true)) {
         QString tmp = cfg.readEntry("Local Wallet", "localwallet");
         if (tmp.isEmpty()) {
@@ -85,8 +86,7 @@ const QString Wallet::LocalWallet() {
 }
 
 const QString Wallet::NetworkWallet() {
-    KConfig kwalletrc("kwalletrc");
-    KConfigGroup cfg(&kwalletrc, "Wallet");
+    KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
 
     QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
     if (tmp.isEmpty()) {
@@ -112,29 +112,37 @@ public:
     QString name;
     QString folder;
     int handle;
-    OrgKdeKWalletInterface* wallet;
 };
 
+class KWalletDLauncher
+{
+public:
+    KWalletDLauncher();
+    ~KWalletDLauncher();
+    org::kde::KWallet &getInterface();
+private:
+    org::kde::KWallet m_wallet;
+    KConfigGroup m_cgroup;
+};
+
+K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
 Wallet::Wallet(int handle, const QString& name)
     : QObject(0L), d(new WalletPrivate(handle, name)) {
-
-    d->wallet = new org::kde::KWallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    d->wallet->setParent(this);
 
     connect(QDBusConnection::sessionBus().interface(),
             SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             this,
             SLOT(slotServiceOwnerChanged(QString,QString,QString)));
 
-    connect(d->wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
-    connect(d->wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
-    connect(d->wallet, SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
-    connect(d->wallet, SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
+    connect(&walletLauncher->getInterface(), SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
+    connect(&walletLauncher->getInterface(), SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
+    connect(&walletLauncher->getInterface(), SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
+    connect(&walletLauncher->getInterface(), SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
 
     // Verify that the wallet is still open
     if (d->handle != -1) {
-        QDBusReply<bool> r = d->wallet->isOpen(d->handle);
+        QDBusReply<bool> r = walletLauncher->getInterface().isOpen(d->handle);
         if (r.isValid() && !r) {
             d->handle = -1;
             d->name.clear();
@@ -145,7 +153,7 @@ Wallet::Wallet(int handle, const QString& name)
 
 Wallet::~Wallet() {
     if (d->handle != -1) {
-        d->wallet->close(d->handle, false, appid());
+        walletLauncher->getInterface().close(d->handle, false, appid());
         d->handle = -1;
         d->folder.clear();
         d->name.clear();
@@ -155,41 +163,35 @@ Wallet::~Wallet() {
 
 
 QStringList Wallet::walletList() {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    return wallet.wallets();
+    return walletLauncher->getInterface().wallets();
 }
 
 
 void Wallet::changePassword(const QString& name, WId w) {
     if( w == 0 )
         kWarning() << "Pass a valid window to KWallet::Wallet::changePassword().";
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    wallet.changePassword(name, (qlonglong)w, appid());
+    walletLauncher->getInterface().changePassword(name, (qlonglong)w, appid());
 }
 
 
 bool Wallet::isEnabled() {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    return wallet.isEnabled(); // default is false
+    return walletLauncher->getInterface().isEnabled();
 }
 
 
 bool Wallet::isOpen(const QString& name) {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    return wallet.isOpen(name); // default is false
+    return walletLauncher->getInterface().isOpen(name); // default is false
 }
 
 
 int Wallet::closeWallet(const QString& name, bool force) {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<int> r = wallet.close(name, force);
+    QDBusReply<int> r = walletLauncher->getInterface().close(name, force);
     return r.isValid() ? r : -1;
 }
 
 
 int Wallet::deleteWallet(const QString& name) {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<int> r = wallet.deleteWallet(name);
+    QDBusReply<int> r = walletLauncher->getInterface().deleteWallet(name);
     return r.isValid() ? r : -1;
 }
 
@@ -203,7 +205,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // place an asynchronous call
         QVariantList args;
         args << name << qlonglong(w) << appid();
-        wallet->d->wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)));
+        walletLauncher->getInterface().callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)));
 
         return wallet;
     }
@@ -213,8 +215,9 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         widget->close();
 
     bool isPath = ot == Path;
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<int> r = isPath ? wallet.openPath(name, (qlonglong)w, appid()) : wallet.open(name, (qlonglong)w, appid());
+    QDBusReply<int> r = isPath ?
+        walletLauncher->getInterface().openPath(name, (qlonglong)w, appid()) :
+        walletLauncher->getInterface().open(name, (qlonglong)w, appid());
     if (r.isValid()) {
         int drc = r;
         if (drc != -1) {
@@ -227,14 +230,12 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
 
 bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
-    org::kde::KWallet w("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    return w.disconnectApplication(wallet, app); // default is false
+    return walletLauncher->getInterface().disconnectApplication(wallet, app); // default is false
 }
 
 
 QStringList Wallet::users(const QString& name) {
-    org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    return wallet.users(name); // default is QStringList()
+    return walletLauncher->getInterface().users(name); // default is QStringList()
 }
 
 
@@ -243,7 +244,7 @@ int Wallet::sync() {
         return -1;
     }
 
-    d->wallet->sync(d->handle, appid());
+    walletLauncher->getInterface().sync(d->handle, appid());
     return 0;
 }
 
@@ -253,7 +254,7 @@ int Wallet::lockWallet() {
         return -1;
     }
 
-    QDBusReply<int> r = d->wallet->close(d->handle, true, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().close(d->handle, true, appid());
     d->handle = -1;
     d->folder.clear();
     d->name.clear();
@@ -281,7 +282,7 @@ void Wallet::requestChangePassword(WId w) {
         return;
     }
 
-    d->wallet->changePassword(d->name, (qlonglong)w, appid());
+    walletLauncher->getInterface().changePassword(d->name, (qlonglong)w, appid());
 }
 
 
@@ -300,7 +301,7 @@ QStringList Wallet::folderList() {
         return QStringList();
     }
 
-    QDBusReply<QStringList> r = d->wallet->folderList(d->handle, appid());
+    QDBusReply<QStringList> r = walletLauncher->getInterface().folderList(d->handle, appid());
     return r;
 }
 
@@ -310,7 +311,7 @@ QStringList Wallet::entryList() {
         return QStringList();
     }
 
-    QDBusReply<QStringList> r = d->wallet->entryList(d->handle, d->folder, appid());
+    QDBusReply<QStringList> r = walletLauncher->getInterface().entryList(d->handle, d->folder, appid());
     return r;
 }
 
@@ -320,7 +321,7 @@ bool Wallet::hasFolder(const QString& f) {
         return false;
     }
 
-    QDBusReply<bool> r = d->wallet->hasFolder(d->handle, f, appid());
+    QDBusReply<bool> r = walletLauncher->getInterface().hasFolder(d->handle, f, appid());
     return r; // default is false
 }
 
@@ -331,7 +332,7 @@ bool Wallet::createFolder(const QString& f) {
     }
 
     if (!hasFolder(f)) {
-        QDBusReply<bool> r = d->wallet->createFolder(d->handle, f, appid());
+        QDBusReply<bool> r = walletLauncher->getInterface().createFolder(d->handle, f, appid());
         return r;
     }
 
@@ -367,7 +368,7 @@ bool Wallet::removeFolder(const QString& f) {
         return false;
     }
 
-    QDBusReply<bool> r = d->wallet->removeFolder(d->handle, f, appid());
+    QDBusReply<bool> r = walletLauncher->getInterface().removeFolder(d->handle, f, appid());
     if (d->folder == f) {
         setFolder(QString());
     }
@@ -388,7 +389,7 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
         return rc;
     }
 
-    QDBusReply<QByteArray> r = d->wallet->readEntry(d->handle, d->folder, key, appid());
+    QDBusReply<QByteArray> r = walletLauncher->getInterface().readEntry(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         value = r;
         rc = 0;
@@ -407,7 +408,7 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
         return rc;
     }
 
-    QDBusReply<QVariantMap> r = d->wallet->readEntryList(d->handle, d->folder, key, appid());
+    QDBusReply<QVariantMap> r = walletLauncher->getInterface().readEntryList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         // convert <QString, QVariant> to <QString, QByteArray>
@@ -428,7 +429,7 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
         return rc;
     }
 
-    QDBusReply<int> r = d->wallet->renameEntry(d->handle, d->folder, oldName, newName, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().renameEntry(d->handle, d->folder, oldName, newName, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -446,7 +447,7 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
         return rc;
     }
 
-    QDBusReply<QByteArray> r = d->wallet->readMap(d->handle, d->folder, key, appid());
+    QDBusReply<QByteArray> r = walletLauncher->getInterface().readMap(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         QByteArray v = r;
@@ -470,7 +471,7 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
     }
 
     QDBusReply<QVariantMap> r =
-        d->wallet->readMapList(d->handle, d->folder, key, appid());
+        walletLauncher->getInterface().readMapList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         const QVariantMap val = r.value();
@@ -496,7 +497,7 @@ int Wallet::readPassword(const QString& key, QString& value) {
         return rc;
     }
 
-    QDBusReply<QString> r = d->wallet->readPassword(d->handle, d->folder, key, appid());
+    QDBusReply<QString> r = walletLauncher->getInterface().readPassword(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         value = r;
         rc = 0;
@@ -515,7 +516,7 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
         return rc;
     }
 
-    QDBusReply<QVariantMap> r = d->wallet->readPasswordList(d->handle, d->folder, key, appid());
+    QDBusReply<QVariantMap> r = walletLauncher->getInterface().readPasswordList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         const QVariantMap val = r.value();
@@ -535,7 +536,7 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType en
         return rc;
     }
 
-    QDBusReply<int> r = d->wallet->writeEntry(d->handle, d->folder, key, value, int(entryType), appid());
+    QDBusReply<int> r = walletLauncher->getInterface().writeEntry(d->handle, d->folder, key, value, int(entryType), appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -551,7 +552,7 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value) {
         return rc;
     }
 
-    QDBusReply<int> r = d->wallet->writeEntry(d->handle, d->folder, key, value, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().writeEntry(d->handle, d->folder, key, value, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -572,7 +573,7 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
     QByteArray mapData;
     QDataStream ds(&mapData, QIODevice::WriteOnly);
     ds << value;
-    QDBusReply<int> r = d->wallet->writeMap(d->handle, d->folder, key, mapData, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().writeMap(d->handle, d->folder, key, mapData, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -588,7 +589,7 @@ int Wallet::writePassword(const QString& key, const QString& value) {
         return rc;
     }
 
-    QDBusReply<int> r = d->wallet->writePassword(d->handle, d->folder, key, value, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().writePassword(d->handle, d->folder, key, value, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -602,7 +603,7 @@ bool Wallet::hasEntry(const QString& key) {
         return false;
     }
 
-    QDBusReply<bool> r = d->wallet->hasEntry(d->handle, d->folder, key, appid());
+    QDBusReply<bool> r = walletLauncher->getInterface().hasEntry(d->handle, d->folder, key, appid());
     return r;					// default is false
 }
 
@@ -614,7 +615,7 @@ int Wallet::removeEntry(const QString& key) {
         return rc;
     }
 
-    QDBusReply<int> r = d->wallet->removeEntry(d->handle, d->folder, key, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().removeEntry(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -630,7 +631,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
         return Wallet::Unknown;
     }
 
-    QDBusReply<int> r = d->wallet->entryType(d->handle, d->folder, key, appid());
+    QDBusReply<int> r = walletLauncher->getInterface().entryType(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -693,21 +694,58 @@ void Wallet::walletOpenError(const QDBusError& error)
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
 {
-    org::kde::KWallet w("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<bool> r = w.folderDoesNotExist(wallet, folder);
+    QDBusReply<bool> r = walletLauncher->getInterface().folderDoesNotExist(wallet, folder);
     return r;
 }
 
 
 bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
 {
-    org::kde::KWallet w("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    QDBusReply<bool> r = w.keyDoesNotExist(wallet, folder, key);
+    QDBusReply<bool> r = walletLauncher->getInterface().keyDoesNotExist(wallet, folder, key);
     return r;
 }
 
 void Wallet::virtual_hook(int, void*) {
     //BASE::virtual_hook( id, data );
+}
+
+KWalletDLauncher::KWalletDLauncher()
+    : m_wallet("org.kde.kwalletd", "/modules/kwalletd", QDBusConnection::sessionBus()),
+      m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
+{
+}
+
+KWalletDLauncher::~KWalletDLauncher()
+{
+}
+
+org::kde::KWallet &KWalletDLauncher::getInterface()
+{
+    // check if kwalletd is already running
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd"))
+    {
+        // not running! check if it is enabled.
+        bool walletEnabled = m_cgroup.readEntry("Enabled", true);
+        if (walletEnabled) {
+            // wallet is enabled! try launching it
+            QString error;
+            int ret = KToolInvocation::startServiceByDesktopName("kwalletd", QStringList(), &error);
+            if (ret > 0)
+            {
+                kError() << "Couldn't start kwalletd: " << error << endl;
+            }
+            
+            if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd")) {
+                kDebug() << "The kwalletd service is still not registered";
+            } else {
+                kDebug() << "The kwalletd service has been registered";
+            }
+        } else {
+            kError() << "The kwalletd service has been disabled";
+        }
+    }
+    
+    return m_wallet;
 }
 
 #include "kwallet.moc"
