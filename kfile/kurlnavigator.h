@@ -230,7 +230,7 @@ public Q_SLOTS:
 
     /**
      * Activates the URL navigator (KUrlNavigator::isActive() will return true)
-     * and emits the signal KUrlNavigator::activationChanged().
+     * and emits the signal KUrlNavigator::activated().
      */
     void requestActivation();
 
