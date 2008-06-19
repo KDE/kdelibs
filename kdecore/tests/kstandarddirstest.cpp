@@ -237,6 +237,9 @@ void KStandarddirsTest::testAddResourceType()
     KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     ret = KStandardDirs::locate( "dtd", "customization/catalog.xml" );
     QVERIFY(!ret.isEmpty());
+
+    ret = KStandardDirs::locate("dtd", "customization/kde-chunk.xsl");
+    QVERIFY(!ret.isEmpty());
 }
 
 void KStandarddirsTest::testAddResourceDir()

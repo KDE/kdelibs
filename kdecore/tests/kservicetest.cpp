@@ -82,21 +82,21 @@ void KServiceTest::testByName()
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
 
-    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kwalletd.desktop");
-    QCOMPARE( kdeprintd->name(), QString::fromLatin1("KWallet Daemon Module"));
+    KService::Ptr khtml = KService::serviceByDesktopPath("khtml.desktop");
+    QCOMPARE( khtml->name(), QString::fromLatin1("KHTML"));
 }
 
 void KServiceTest::testProperty()
 {
-    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kwalletd.desktop");
-    QVERIFY(kdeprintd);
-    QCOMPARE(kdeprintd->entryPath(), QString("kded/kwalletd.desktop"));
+    KService::Ptr kdedglobalaccel = KService::serviceByDesktopPath("kded/kdedglobalaccel.desktop");
+    QVERIFY(kdedglobalaccel);
+    QCOMPARE(kdedglobalaccel->entryPath(), QString("kded/kdedglobalaccel.desktop"));
 
-    QCOMPARE(kdeprintd->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
-    QCOMPARE(kdeprintd->property("X-KDE-Kded-autoload").toBool(), false);
-    QCOMPARE(kdeprintd->property("X-KDE-Kded-load-on-demand").toBool(), true);
-    QVERIFY(!kdeprintd->property("Name").toString().isEmpty());
-    QVERIFY(!kdeprintd->property("Name[fr]", QVariant::String).isValid());
+    QCOMPARE(kdedglobalaccel->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
+    QCOMPARE(kdedglobalaccel->property("X-KDE-Kded-autoload").toBool(), false);
+    QCOMPARE(kdedglobalaccel->property("X-KDE-Kded-load-on-demand").toBool(), true);
+    QVERIFY(!kdedglobalaccel->property("Name").toString().isEmpty());
+    QVERIFY(!kdedglobalaccel->property("Name[fr]", QVariant::String).isValid());
 
     KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
     QVERIFY(kjavaappletviewer);
