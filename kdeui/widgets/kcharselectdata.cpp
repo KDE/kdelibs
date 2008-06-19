@@ -22,6 +22,7 @@
 
 #include <QStringList>
 #include <QFile>
+#include <qendian.h>
 
 #include <string.h>
 #include <klocalizedstring.h>
@@ -75,9 +76,11 @@ bool KCharSelectData::openDataFile()
 
 quint32 KCharSelectData::getDetailIndex(const QChar& c) const
 {
-    const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+12);
-    const quint32 offsetEnd = * (quint32*) (data+16);
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    // Convert from little-endian, so that this code works on PPC too.
+    // http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=482286
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+12);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+16);
 
     int min = 0;
     int mid;
@@ -96,7 +99,7 @@ quint32 KCharSelectData::getDetailIndex(const QChar& c) const
 
     while (max >= min) {
         mid = (min + max) / 2;
-        const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*27);
+        const quint16 midUnicode = qFromLittleEndian<quint16>(data + offsetBegin + mid*27);
         if (unicode > midUnicode)
             min = mid + 1;
         else if (unicode < midUnicode)
@@ -127,9 +130,9 @@ QList<QChar> KCharSelectData::blockContents(int block)
         return QList<QChar>();
     }
 
-    const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+20);
-    const quint32 offsetEnd = * (quint32*) (data+24);
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+20);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+24);
 
     int max = ((offsetEnd - offsetBegin) / 4) - 1;
 
@@ -138,8 +141,8 @@ QList<QChar> KCharSelectData::blockContents(int block)
     if(block > max)
         return res;
 
-    quint16 unicodeBegin = * (quint16*) (data + offsetBegin + block*4);
-    quint16 unicodeEnd = * (quint16*) (data + offsetBegin + block*4 + 2);
+    quint16 unicodeBegin = qFromLittleEndian<quint16>(data + offsetBegin + block*4);
+    quint16 unicodeEnd = qFromLittleEndian<quint16>(data + offsetBegin + block*4 + 2);
 
     while(unicodeBegin < unicodeEnd) {
         res.append(unicodeBegin);
@@ -156,9 +159,9 @@ QList<int> KCharSelectData::sectionContents(int section)
         return QList<int>();
     }
 
-    const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+28);
-    const quint32 offsetEnd = * (quint32*) (data+32);
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+28);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+32);
 
     int max = ((offsetEnd - offsetBegin) / 4) - 1;
 
@@ -168,9 +171,9 @@ QList<int> KCharSelectData::sectionContents(int section)
         return res;
 
     for(int i = 0; i <= max; i++) {
-        const quint16 currSection = * (quint16*) (data + offsetBegin + i*4);
+        const quint16 currSection = qFromLittleEndian<quint16>(data + offsetBegin + i*4);
         if(currSection == section) {
-            res.append( * (quint16*) (data + offsetBegin + i*4 + 2) );
+            res.append( qFromLittleEndian<quint16>(data + offsetBegin + i*4 + 2) );
         }
     }
 
@@ -183,10 +186,11 @@ QStringList KCharSelectData::sectionList()
         return QStringList();
     }
 
-    const char* data = dataFile.constData();
-    const quint32 stringBegin = * (quint32*) (data+24);
-    const quint32 stringEnd = * (quint32*) (data+28);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 stringBegin = qFromLittleEndian<quint32>(udata+24);
+    const quint32 stringEnd = qFromLittleEndian<quint32>(udata+28);
 
+    const char* data = dataFile.constData();
     QStringList list;
     quint32 i = stringBegin;
     while(i < stringEnd) {
@@ -239,9 +243,9 @@ QString KCharSelectData::name(const QChar& c)
 //  else if (unicode >= 0x100000 && unicode <= 0x10FFFD)
 //   return i18n("<Plane 16 Private Use>");
     else {
-        const char* data = dataFile.constData();
-        const quint32 offsetBegin = * (quint32*) (data+4);
-        const quint32 offsetEnd = * (quint32*) (data+8);
+        const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+        const quint32 offsetBegin = qFromLittleEndian<quint32>(data+4);
+        const quint32 offsetEnd = qFromLittleEndian<quint32>(data+8);
 
         int min = 0;
         int mid;
@@ -250,14 +254,14 @@ QString KCharSelectData::name(const QChar& c)
 
         while (max >= min) {
             mid = (min + max) / 2;
-            const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*6);
+            const quint16 midUnicode = qFromLittleEndian<quint16>(data + offsetBegin + mid*6);
             if (unicode > midUnicode)
                 min = mid + 1;
             else if (unicode < midUnicode)
                 max = mid - 1;
             else {
-                quint32 offset = * (quint32*) (data + offsetBegin + mid*6 + 2);
-                s = data + offset;
+                quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
+                s = QString(dataFile.constData() + offset);
                 break;
             }
         }
@@ -276,16 +280,16 @@ int KCharSelectData::blockIndex(const QChar& c)
         return 0;
     }
 
-    const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+20);
-    const quint32 offsetEnd = * (quint32*) (data+24);
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+20);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+24);
     const quint16 unicode = c.unicode();
 
     int max = ((offsetEnd - offsetBegin) / 4) - 1;
 
     int i = 0;
 
-    while (unicode > * (quint16*) (data + offsetBegin + i*4 + 2) && i < max) {
+    while (unicode > qFromLittleEndian<quint16>(data + offsetBegin + i*4 + 2) && i < max) {
         i++;
     }
 
@@ -298,15 +302,15 @@ int KCharSelectData::sectionIndex(int block)
         return 0;
     }
 
-    const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+28);
-    const quint32 offsetEnd = * (quint32*) (data+32);
+    const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(data+28);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(data+32);
 
     int max = ((offsetEnd - offsetBegin) / 4) - 1;
 
     for(int i = 0; i <= max; i++) {
-        if( * (quint16*) (data + offsetBegin + i*4 + 2) == block) {
-            return * (quint16*) (data + offsetBegin + i*4);
+        if( qFromLittleEndian<quint16>(data + offsetBegin + i*4 + 2) == block) {
+            return qFromLittleEndian<quint16>(data + offsetBegin + i*4);
         }
     }
 
@@ -319,13 +323,14 @@ QString KCharSelectData::blockName(int index)
         return QString();
     }
 
-    const char* data = dataFile.constData();
-    const quint32 stringBegin = * (quint32*) (data+16);
-    const quint32 stringEnd = * (quint32*) (data+20);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 stringBegin = qFromLittleEndian<quint32>(udata+16);
+    const quint32 stringEnd = qFromLittleEndian<quint32>(udata+20);
 
     quint32 i = stringBegin;
     int currIndex = 0;
 
+    const char* data = dataFile.constData();
     while(i < stringEnd && currIndex < index) {
         i += strlen(data + i) + 1;
         currIndex++;
@@ -339,17 +344,18 @@ QStringList KCharSelectData::aliases(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile.constData();
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
     }
 
-    const quint8 count = * (const quint8 *) (data + detailIndex + 6);
-    quint32 offset = * (const quint32 *) (data + detailIndex + 2);
+    const quint8 count = * (quint8 *)(udata + detailIndex + 6);
+    quint32 offset = qFromLittleEndian<quint32>(udata + detailIndex + 2);
 
     QStringList aliases;
 
+    const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
         aliases.append(QString::fromUtf8(data + offset));
         offset += strlen(data + offset) + 1;
@@ -362,17 +368,18 @@ QStringList KCharSelectData::notes(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
     }
 
-    const quint8 count = * (const quint8 *) (data + detailIndex + 11);
-    quint32 offset = * (const quint32 *) (data + detailIndex + 7);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint8 count = * (quint8 *)(udata + detailIndex + 11);
+    quint32 offset = qFromLittleEndian<quint32>(udata + detailIndex + 7);
 
     QStringList notes;
 
+    const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
         notes.append(QString::fromLatin1(data + offset));
         offset += strlen(data + offset) + 1;
@@ -386,19 +393,19 @@ QList<QChar> KCharSelectData::seeAlso(const QChar& c)
     if(!openDataFile()) {
         return QList<QChar>();
     }
-    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QList<QChar>();
     }
 
-    const quint8 count = * (const quint8 *) (data + detailIndex + 26);
-    quint32 offset = * (const quint32 *) (data + detailIndex + 22);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint8 count = * (quint8 *)(udata + detailIndex + 26);
+    quint32 offset = qFromLittleEndian<quint32>(udata + detailIndex + 22);
 
     QList<QChar> seeAlso;
 
     for (int i = 0;  i < count;  i++) {
-        seeAlso.append(* (const quint16 *) (data + offset));
+        seeAlso.append(qFromLittleEndian<quint16> (udata + offset));
         offset += 2;
     }
 
@@ -410,17 +417,18 @@ QStringList KCharSelectData::equivalents(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
     }
 
-    const quint8 count = * (const quint8 *) (data + detailIndex + 21);
-    quint32 offset = * (const quint32 *) (data + detailIndex + 17);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint8 count = * (quint8 *)(udata + detailIndex + 21);
+    quint32 offset = qFromLittleEndian<quint32>(udata + detailIndex + 17);
 
     QStringList equivalents;
 
+    const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
         equivalents.append(QString::fromUtf8(data + offset));
         offset += strlen(data + offset) + 1;
@@ -434,17 +442,18 @@ QStringList KCharSelectData::approximateEquivalents(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
     }
 
-    const quint8 count = * (const quint8 *) (data + detailIndex + 16);
-    quint32 offset = * (const quint32 *) (data + detailIndex + 12);
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint8 count = * (quint8 *)(udata + detailIndex + 16);
+    quint32 offset = qFromLittleEndian<quint32>(udata + detailIndex + 12);
 
     QStringList approxEquivalents;
 
+    const char* data = dataFile.constData();
     for (int i = 0;  i < count;  i++) {
         approxEquivalents.append(QString::fromUtf8(data + offset));
         offset += strlen(data + offset) + 1;
@@ -460,7 +469,8 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
     }
 
     const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+36);
+    const uchar* udata = reinterpret_cast<const uchar*>(data);
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(udata+36);
     const quint32 offsetEnd = dataFile.size();
 
     int min = 0;
@@ -470,7 +480,7 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
 
     while (max >= min) {
         mid = (min + max) / 2;
-        const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*30);
+        const quint16 midUnicode = qFromLittleEndian<quint16>(udata + offsetBegin + mid*30);
         if (unicode > midUnicode)
             min = mid + 1;
         else if (unicode < midUnicode)
@@ -478,7 +488,7 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
         else {
             QStringList res;
             for(int i = 0; i < 7; i++) {
-                quint32 offset = * (quint32*) (data + offsetBegin + mid*30 + 2 + i*4);
+                quint32 offset = qFromLittleEndian<quint32>(udata + offsetBegin + mid*30 + 2 + i*4);
                 if(offset != 0) {
                     res.append(data + offset);
                 } else {
@@ -553,14 +563,15 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     QString firstString = searchStrings.takeFirst();
 
     const char* data = dataFile.constData();
-    const quint32 offsetBegin = * (quint32*) (data+4);
-    const quint32 offsetEnd = * (quint32*) (data+8);
+    const uchar* udata = reinterpret_cast<const uchar*>(data);
+    const quint32 offsetBegin = qFromLittleEndian<quint32>(udata+4);
+    const quint32 offsetEnd = qFromLittleEndian<quint32>(udata+8);
 
     int max = ((offsetEnd - offsetBegin) / 6) - 1;
 
     for (int i = 0; i <= max; i++) {
-        quint32 offset = * (quint32*) (data + offsetBegin + i*6 + 2);
-        QString name = data + offset;
+        quint32 offset = qFromLittleEndian<quint32>(udata + offsetBegin + i*6 + 2);
+        QString name(data + offset);
         if (name.contains(firstString, Qt::CaseInsensitive)) {
             bool valid = true;
             foreach(const QString &s, searchStrings) {
@@ -570,7 +581,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
                 }
             }
             if (valid) {
-                res.append(* (quint16*) (data + offsetBegin + i*6));
+                res.append(qFromLittleEndian<quint16>(udata + offsetBegin + i*6));
             }
         }
     }
