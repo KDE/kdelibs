@@ -154,46 +154,7 @@ public:
         }
         return (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     }
-    QVariant data(const QModelIndex &index, int role) const
-    {
-        int pos = m_columns * (index.row()) + index.column();
-        if (pos >= m_chars.size() || index.row() < 0 || index.column() < 0) {
-            if (role == Qt::BackgroundColorRole) {
-                return QVariant(qApp->palette().color(QPalette::Button));
-            }
-            return QVariant();
-        }
-
-        QChar c = m_chars[pos];
-        if (!index.isValid())
-            return QVariant();
-        else if (role == Qt::ToolTipRole) {
-            QString s;
-            if (c.isPrint())
-                s = "&#" + QString::number(c.unicode()) + ';';
-            else
-                s = i18n("Non-printable");
-            QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br />%3<br />Unicode code point: %4<br />(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(KCharSelectData::name(c)), KCharSelectData::formatCode(c.unicode()) ,  c.unicode());
-            return QVariant(result);
-        } else if (role == Qt::TextAlignmentRole)
-            return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);
-        else if (role == Qt::DisplayRole) {
-            if (c.isPrint())
-                return QVariant(c);
-            return QVariant();
-        } else if (role == Qt::BackgroundColorRole) {
-            QFontMetrics fm = QFontMetrics(m_font);
-            if (fm.inFont(c) && c.isPrint())
-                return QVariant(qApp->palette().color(QPalette::Base));
-            else
-                return QVariant(qApp->palette().color(QPalette::Button));
-        } else if (role == Qt::FontRole)
-            return QVariant(m_font);
-        else if (role == CharacterRole) {
-            return QVariant(c);
-        }
-        return QVariant();
-    }
+    QVariant data(const QModelIndex &index, int role) const;
     QMimeData *mimeData(const QModelIndexList & indexes) const
     {
         if (indexes.size() != 1) {

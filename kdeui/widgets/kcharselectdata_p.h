@@ -31,32 +31,38 @@
 class KCharSelectData
 {
 public:
-    static QString formatCode(ushort code, int length = 4, const QString& prefix = "U+", int base = 16);
+    QString formatCode(ushort code, int length = 4, const QString& prefix = "U+", int base = 16);
 
-    static QList<QChar> blockContents(int block);
-    static QList<int> sectionContents(int section);
+    QList<QChar> blockContents(int block);
+    QList<int> sectionContents(int section);
 
-    static QStringList sectionList();
+    QStringList sectionList();
 
-    static QString block(const QChar& c);
-    static QString name(const QChar& c);
+    QString block(const QChar& c);
+    QString name(const QChar& c);
 
-    static int blockIndex(const QChar& c);
-    static int sectionIndex(int block);
+    int blockIndex(const QChar& c);
+    int sectionIndex(int block);
 
-    static QString blockName(int index);
+    QString blockName(int index);
 
-    static QStringList aliases(const QChar& c);
-    static QStringList notes(const QChar& c);
-    static QList<QChar> seeAlso(const QChar& c);
-    static QStringList equivalents(const QChar& c);
-    static QStringList approximateEquivalents(const QChar& c);
+    QStringList aliases(const QChar& c);
+    QStringList notes(const QChar& c);
+    QList<QChar> seeAlso(const QChar& c);
+    QStringList equivalents(const QChar& c);
+    QStringList approximateEquivalents(const QChar& c);
 
-    static QStringList unihanInfo(const QChar& c);
+    QStringList unihanInfo(const QChar& c);
 
-    static QString categoryText(QChar::Category category);
+    QString categoryText(QChar::Category category);
 
-    static QList<QChar> find(const QString& s);
+    QList<QChar> find(const QString& s);
+
+private:
+    bool openDataFile();
+    quint32 getDetailIndex(const QChar& c) const;
+
+    QByteArray dataFile;
 };
 
 #endif  /* #ifndef KCHARSELECTDATA_H */

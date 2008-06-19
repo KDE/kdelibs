@@ -38,8 +38,6 @@
 #define NCount (VCount * TCount)
 #define SCount (LCount * NCount)
 
-static QByteArray *dataFile = 0;
-
 static const char JAMO_L_TABLE[][4] =
     {
         "G", "GG", "N", "D", "DD", "R", "M", "B", "BB",
@@ -60,24 +58,24 @@ static const char JAMO_T_TABLE[][4] =
         "S", "SS", "NG", "J", "C", "K", "T", "P", "H"
     };
 
-static bool openDataFile()
+bool KCharSelectData::openDataFile()
 {
-    if(dataFile != 0) {
+    if(!dataFile.isEmpty()) {
         return true;
     } else {
         QFile file(KStandardDirs::locate("data", "kcharselect/kcharselect-data"));
         if (!file.open(QIODevice::ReadOnly)) {
             return false;
         }
-        dataFile = new QByteArray(file.readAll());
+        dataFile = file.readAll();
         file.close();
         return true;
     }
 }
 
-static const quint32 getDetailIndex(const QChar& c)
+quint32 KCharSelectData::getDetailIndex(const QChar& c) const
 {
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+12);
     const quint32 offsetEnd = * (quint32*) (data+16);
 
@@ -129,7 +127,7 @@ QList<QChar> KCharSelectData::blockContents(int block)
         return QList<QChar>();
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+20);
     const quint32 offsetEnd = * (quint32*) (data+24);
 
@@ -158,7 +156,7 @@ QList<int> KCharSelectData::sectionContents(int section)
         return QList<int>();
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+28);
     const quint32 offsetEnd = * (quint32*) (data+32);
 
@@ -185,7 +183,7 @@ QStringList KCharSelectData::sectionList()
         return QStringList();
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 stringBegin = * (quint32*) (data+24);
     const quint32 stringEnd = * (quint32*) (data+28);
 
@@ -241,7 +239,7 @@ QString KCharSelectData::name(const QChar& c)
 //  else if (unicode >= 0x100000 && unicode <= 0x10FFFD)
 //   return i18n("<Plane 16 Private Use>");
     else {
-        const char* data = dataFile->constData();
+        const char* data = dataFile.constData();
         const quint32 offsetBegin = * (quint32*) (data+4);
         const quint32 offsetEnd = * (quint32*) (data+8);
 
@@ -278,7 +276,7 @@ int KCharSelectData::blockIndex(const QChar& c)
         return 0;
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+20);
     const quint32 offsetEnd = * (quint32*) (data+24);
     const quint16 unicode = c.unicode();
@@ -300,7 +298,7 @@ int KCharSelectData::sectionIndex(int block)
         return 0;
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+28);
     const quint32 offsetEnd = * (quint32*) (data+32);
 
@@ -321,7 +319,7 @@ QString KCharSelectData::blockName(int index)
         return QString();
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 stringBegin = * (quint32*) (data+16);
     const quint32 stringEnd = * (quint32*) (data+20);
 
@@ -341,7 +339,7 @@ QStringList KCharSelectData::aliases(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
@@ -364,7 +362,7 @@ QStringList KCharSelectData::notes(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
@@ -388,7 +386,7 @@ QList<QChar> KCharSelectData::seeAlso(const QChar& c)
     if(!openDataFile()) {
         return QList<QChar>();
     }
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QList<QChar>();
@@ -412,7 +410,7 @@ QStringList KCharSelectData::equivalents(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
@@ -436,7 +434,7 @@ QStringList KCharSelectData::approximateEquivalents(const QChar& c)
     if(!openDataFile()) {
         return QStringList();
     }
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const int detailIndex = getDetailIndex(c);
     if(detailIndex == 0) {
         return QStringList();
@@ -461,9 +459,9 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
         return QStringList();
     }
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+36);
-    const quint32 offsetEnd = dataFile->size();
+    const quint32 offsetEnd = dataFile.size();
 
     int min = 0;
     int mid;
@@ -554,7 +552,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
 
     QString firstString = searchStrings.takeFirst();
 
-    const char* data = dataFile->constData();
+    const char* data = dataFile.constData();
     const quint32 offsetBegin = * (quint32*) (data+4);
     const quint32 offsetEnd = * (quint32*) (data+8);
 

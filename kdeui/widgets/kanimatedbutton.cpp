@@ -1,5 +1,3 @@
-// -*- c-basic-offset: 2 -*-
-
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
    Copyright (C) 2006 Hamish Rodda <rodda@kde.org>

@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 4 -*-
 /* This file is part of the KDE libraries
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
@@ -68,23 +67,23 @@ public:
             below->d->m_next = q;
             if(m_next)
                 m_next->d->m_prev = q;
-        }          
+        }
     }
 
     static KNumInputPrivate *get(const KNumInput *i)
     {
         return i->d;
     }
-  
+
     KNumInput *q;
     KNumInput* m_prev, *m_next;
     int m_colw1, m_colw2;
-    
+
     QLabel*  m_label;
     QSlider* m_slider;
     QSize    m_sizeSlider, m_sizeLabel;
-    
-    Qt::Alignment m_alignment;  
+
+    Qt::Alignment m_alignment;
 };
 
 
@@ -109,7 +108,7 @@ KNumInput::~KNumInput()
 
     if(d->m_next)
         d->m_next->d->m_prev = d->m_prev;
-    
+
     delete d;
 }
 
@@ -228,7 +227,7 @@ class KIntSpinBox::KIntSpinBoxPrivate
 {
 public:
     KIntSpinBoxPrivate(KIntSpinBox *q, int val_base = 10): q(q), val_base(val_base) {}
-  
+
     KIntSpinBox *q;
     int val_base;
 };
@@ -292,12 +291,12 @@ void KIntSpinBox::setEditFocus(bool mark)
 
 class KIntNumInput::KIntNumInputPrivate {
 public:
-    KIntNumInput *q; 
+    KIntNumInput *q;
     int referencePoint;
     short blockRelative;
     KIntSpinBox* m_spin;
     QSize        m_sizeSpin;
-    
+
     KIntNumInputPrivate( KIntNumInput *q, int r )
         : q(q),
           referencePoint( r ),
@@ -365,7 +364,7 @@ int KIntNumInput::referencePoint() const {
 void KIntNumInput::spinValueChanged(int val)
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     if(priv->m_slider)
         priv->m_slider->setValue(val);
 
@@ -505,7 +504,7 @@ QSize KIntNumInput::minimumSizeHint() const
 void KIntNumInput::doLayout()
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     d->m_sizeSpin = d->m_spin->sizeHint();
     priv->m_colw2 = d->m_sizeSpin.width();
 
@@ -516,7 +515,7 @@ void KIntNumInput::doLayout()
 void KIntNumInput::resizeEvent(QResizeEvent* e)
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     int w = priv->m_colw1;
     int h = 0;
 
@@ -592,7 +591,7 @@ QString KIntNumInput::specialValueText() const
 void KIntNumInput::setLabel(const QString & label, Qt::Alignment a)
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     KNumInput::setLabel(label, a);
 
     if(priv->m_label)
@@ -680,7 +679,7 @@ void KDoubleNumInput::updateLegacyMembers() {
 double KDoubleNumInput::mapSliderToSpin( int val ) const
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     // map [slidemin,slidemax] to [spinmin,spinmax]
     double spinmin = d->spin->minimum();
     double spinmax = d->spin->maximum();
@@ -722,7 +721,7 @@ void KDoubleNumInput::slotEmitRelativeValueChanged( double value )
 QSize KDoubleNumInput::minimumSizeHint() const
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     ensurePolished();
 
     int w;
@@ -790,7 +789,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 void KDoubleNumInput::doLayout()
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     d->m_sizeEdit = d->spin->sizeHint();
     priv->m_colw2 = d->m_sizeEdit.width();
 }
@@ -952,7 +951,7 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
 void KDoubleNumInput::setLabel(const QString & label, Qt::Alignment a)
 {
     K_USING_KNUMINPUT_P(priv);
-  
+
     KNumInput::setLabel(label, a);
 
     if(priv->m_label)

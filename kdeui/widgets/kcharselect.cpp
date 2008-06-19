@@ -37,6 +37,8 @@
 #include <ktextbrowser.h>
 #include <kfontcombobox.h>
 
+K_GLOBAL_STATIC(KCharSelectData, s_data)
+
 class KCharSelectTablePrivate
 {
 public:
@@ -312,7 +314,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
     d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     comboLayout->addWidget(d->blockCombo, 1);
-    d->sectionCombo->addItems(KCharSelectData::sectionList());
+    d->sectionCombo->addItems(s_data->sectionList());
     d->blockCombo->setMinimumWidth(QFontMetrics(QWidget::font()).averageCharWidth() * 25);
 
     connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
@@ -409,8 +411,8 @@ QList<QChar> KCharSelect::displayedChars() const
 
 void KCharSelect::setCurrentChar(const QChar &c)
 {
-    int block = KCharSelectData::blockIndex(c);
-    int section = KCharSelectData::sectionIndex(block);
+    int block = s_data->blockIndex(c);
+    int section = s_data->sectionIndex(block);
     d->sectionCombo->setCurrentIndex(section);
     int index = d->blockCombo->findData(block);
     if (index != -1) {
@@ -432,8 +434,8 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
     if(blockCombo->isEnabled() == false) {
         //we are in search mode. make the two comboboxes show the section & block for this character.
         //(when we are not in search mode the current character always belongs to the current section & block.)
-        int block = KCharSelectData::blockIndex(c);
-        int section = KCharSelectData::sectionIndex(block);
+        int block = s_data->blockIndex(c);
+        int section = s_data->sectionIndex(block);
         sectionCombo->setCurrentIndex(section);
         int index = blockCombo->findData(block);
         if (index != -1) {
@@ -451,19 +453,19 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     // They should be seen as non-printable characters, as trying to display them leads
     //  to a crash caused by a Qt "noBlockInString" assertion.
     if (c.isPrint() && c.unicode() != 0xFDD0 && c.unicode() != 0xFDD1) {
-        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">&#" + QString::number(c.unicode()) + ";</font> " + KCharSelectData::formatCode(c.unicode())  + "<br>";
+        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">&#" + QString::number(c.unicode()) + ";</font> " + s_data->formatCode(c.unicode())  + "<br>";
     } else {
-        html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + KCharSelectData::formatCode(c.unicode())  + "<br>";
+        html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + s_data->formatCode(c.unicode())  + "<br>";
     }
-    QString name = KCharSelectData::name(c);
+    QString name = s_data->name(c);
     if (!name.isEmpty()) {
         html += i18n("Name: ") + Qt::escape(name) + "</p>";
     }
-    QStringList aliases = KCharSelectData::aliases(c);
-    QStringList notes = KCharSelectData::notes(c);
-    QList<QChar> seeAlso = KCharSelectData::seeAlso(c);
-    QStringList equivalents = KCharSelectData::equivalents(c);
-    QStringList approxEquivalents = KCharSelectData::approximateEquivalents(c);
+    QStringList aliases = s_data->aliases(c);
+    QStringList notes = s_data->notes(c);
+    QList<QChar> seeAlso = s_data->seeAlso(c);
+    QStringList equivalents = s_data->equivalents(c);
+    QStringList approxEquivalents = s_data->approximateEquivalents(c);
     if (!(aliases.isEmpty() && notes.isEmpty() && seeAlso.isEmpty() && equivalents.isEmpty() && approxEquivalents.isEmpty())) {
         html += "<p><b>" + i18n("Annotations and Cross References") + "</b></p>";
     }
@@ -491,7 +493,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
             if (c2.isPrint()) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
             }
-            html += KCharSelectData::formatCode(c2.unicode()) + ' ' + Qt::escape(KCharSelectData::name(c2)) + "</a></li>";
+            html += s_data->formatCode(c2.unicode()) + ' ' + Qt::escape(s_data->name(c2)) + "</a></li>";
         }
         html += "</ul>";
     }
@@ -512,7 +514,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
         html += "</ul>";
     }
 
-    QStringList unihan = KCharSelectData::unihanInfo(c);
+    QStringList unihan = s_data->unihanInfo(c);
     if (unihan.count() == 7) {
         html += "<p><b>" + i18n("CJK Ideograph Information") + "</b></p><p>";
         bool newline = true;
@@ -554,19 +556,19 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     }
 
     html += "<p><b>" + i18n("General Character Properties") + "</b><br>";
-    html += i18n("Block: ") + KCharSelectData::block(c) + "<br>";
-    html += i18n("Unicode category: ") + KCharSelectData::categoryText(c.category()) + "</p>";
+    html += i18n("Block: ") + s_data->block(c) + "<br>";
+    html += i18n("Unicode category: ") + s_data->categoryText(c.category()) + "</p>";
 
     QByteArray utf8 = QString(c).toUtf8();
 
     html += "<p><b>" + i18n("Various Useful Representations") + "</b><br>";
     html += i18n("UTF-8:");
     foreach(unsigned char c, utf8)
-    html += ' ' + KCharSelectData::formatCode(c, 2, "0x");
-    html += "<br>" + i18n("UTF-16: ") + KCharSelectData::formatCode(c.unicode(), 4, "0x") + "<br>";
+    html += ' ' + s_data->formatCode(c, 2, "0x");
+    html += "<br>" + i18n("UTF-16: ") + s_data->formatCode(c.unicode(), 4, "0x") + "<br>";
     html += i18n("C octal escaped UTF-8: ");
     foreach(unsigned char c, utf8)
-    html += KCharSelectData::formatCode(c, 3, "\\", 8);
+    html += s_data->formatCode(c, 3, "\\", 8);
     html += "<br>" + i18n("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
 
     detailBrowser->setHtml(html);
@@ -592,7 +594,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
             link += "&#" + QString::number(unicode) + ";&nbsp;";
         }
         link += "U+" + c + ' ';
-        link += Qt::escape(KCharSelectData::name(QChar(unicode))) + "</a>";
+        link += Qt::escape(s_data->name(QChar(unicode))) + "</a>";
         s.replace(c, link);
     }
     return s;
@@ -601,9 +603,9 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
 void KCharSelect::KCharSelectPrivate::_k_sectionSelected(int index)
 {
     blockCombo->clear();
-    QList<int> blocks = KCharSelectData::sectionContents(index);
+    QList<int> blocks = s_data->sectionContents(index);
     foreach(int block, blocks) {
-        blockCombo->addItem(KCharSelectData::blockName(block), QVariant(block));
+        blockCombo->addItem(s_data->blockName(block), QVariant(block));
     }
     blockCombo->setCurrentIndex(0);
 }
@@ -616,7 +618,7 @@ void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
     }
 
     int block = blockCombo->itemData(index).toInt();
-    QList<QChar> contents = KCharSelectData::blockContents(block);
+    QList<QChar> contents = s_data->blockContents(block);
     if(contents.count() <= index) {
         return;
     }
@@ -630,7 +632,7 @@ void KCharSelect::KCharSelectPrivate::_k_searchEditChanged()
     if (searchLine->text().isEmpty()) {
         sectionCombo->setEnabled(true);
         blockCombo->setEnabled(true);
-        
+
         //upon leaving search mode, keep the same character selected
         QChar c = charTable->chr();
         _k_blockSelected(blockCombo->currentIndex());
@@ -646,7 +648,7 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     if (searchLine->text().isEmpty()) {
         return;
     }
-    charTable->setContents(KCharSelectData::find(searchLine->text()));
+    charTable->setContents(s_data->find(searchLine->text()));
     emit q->displayedCharsChanged();
 }
 
@@ -658,6 +660,49 @@ void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
     }
     int unicode = hex.toInt(0, 16);
     q->setCurrentChar(QChar(unicode));
+}
+
+////
+
+QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
+{
+    int pos = m_columns * (index.row()) + index.column();
+    if (pos >= m_chars.size() || index.row() < 0 || index.column() < 0) {
+        if (role == Qt::BackgroundColorRole) {
+            return QVariant(qApp->palette().color(QPalette::Button));
+        }
+        return QVariant();
+    }
+
+    QChar c = m_chars[pos];
+    if (!index.isValid())
+        return QVariant();
+    else if (role == Qt::ToolTipRole) {
+        QString s;
+        if (c.isPrint())
+            s = "&#" + QString::number(c.unicode()) + ';';
+        else
+            s = i18n("Non-printable");
+        QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br />%3<br />Unicode code point: %4<br />(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(s_data->name(c)), s_data->formatCode(c.unicode()) ,  c.unicode());
+        return QVariant(result);
+    } else if (role == Qt::TextAlignmentRole)
+        return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);
+    else if (role == Qt::DisplayRole) {
+        if (c.isPrint())
+            return QVariant(c);
+        return QVariant();
+    } else if (role == Qt::BackgroundColorRole) {
+        QFontMetrics fm = QFontMetrics(m_font);
+        if (fm.inFont(c) && c.isPrint())
+            return QVariant(qApp->palette().color(QPalette::Base));
+        else
+            return QVariant(qApp->palette().color(QPalette::Button));
+    } else if (role == Qt::FontRole)
+        return QVariant(m_font);
+    else if (role == CharacterRole) {
+        return QVariant(c);
+    }
+    return QVariant();
 }
 
 #include "kcharselect.moc"
