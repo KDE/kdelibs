@@ -108,6 +108,10 @@ bool Job::addSubjob(KJob *jobBase)
     bool ok = KCompositeJob::addSubjob( jobBase );
     KIO::Job *job = dynamic_cast<KIO::Job*>( jobBase );
     if (ok && job) {
+        // Copy metadata into subjob (e.g. window-id, user-timestamp etc.)
+        Q_D(Job);
+        job->mergeMetaData(d->m_outgoingMetaData);
+
         // Forward information from that subjob.
         connect( job, SIGNAL(speed( KJob*, unsigned long )),
                  SLOT(slotSpeed(KJob*, unsigned long)) );
