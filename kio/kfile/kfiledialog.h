@@ -691,6 +691,11 @@ public:
      */
     static void setStartDir( const KUrl& directory );
 
+#ifdef Q_WS_WIN
+public Q_SLOTS:
+    int exec();
+#endif
+
 Q_SIGNALS:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
