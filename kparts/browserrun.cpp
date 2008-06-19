@@ -473,12 +473,13 @@ void BrowserRun::handleError( KJob * job )
     }
 
     KIO::TransferJob *tjob = qobject_cast<KIO::TransferJob *>(job);
-    if (tjob && tjob->isErrorPage()) {
+    if (tjob && tjob->isErrorPage() && !job->error()) {
         // The default handling of error pages is to show them like normal pages
         // But this is done here in handleError so that KHTMLRun can reimplement it
         tjob->putOnHold();
         setJob(0);
-        mimeTypeDetermined(d->m_mimeType);
+        if (!d->m_mimeType.isEmpty())
+            mimeTypeDetermined(d->m_mimeType);
         return;
     }
 
