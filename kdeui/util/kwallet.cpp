@@ -642,7 +642,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
 void Wallet::slotServiceOwnerChanged(const QString& name,const QString& oldOwner,const QString& newOwner) {
     Q_UNUSED(oldOwner);
-    if (d->handle >= 0 && newOwner.isEmpty() && name == "org.kde.kded") {
+    if (d->handle >= 0 && newOwner.isEmpty() && name == "org.kde.kwalletd") {
         slotWalletClosed(d->handle);
     }
 }
