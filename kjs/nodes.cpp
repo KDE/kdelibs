@@ -52,33 +52,6 @@
 
 namespace KJS {
 
-#define KJS_BREAKPOINT \
-  if (Debugger::debuggersPresent > 0 && !hitStatement(exec)) \
-    return Completion(Normal);
-
-#define KJS_CHECKEXCEPTION \
-  if (exec->hadException()) \
-    return rethrowException(exec);
-
-#define KJS_CHECKEXCEPTIONVALUE \
-  if (exec->hadException()) { \
-    handleException(exec); \
-    return jsUndefined(); \
-  }
-
-#define KJS_CHECKEXCEPTIONREFERENCE \
-  if (exec->hadException()) { \
-    handleException(exec); \
-    ref.found = true; \
-    return ref; \
-  }
-
-#define KJS_CHECKEXCEPTIONLIST \
-  if (exec->hadException()) { \
-    handleException(exec); \
-    return List(); \
-  }
-
 // ------------------------------ Node -----------------------------------------
 
 
@@ -218,30 +191,6 @@ JSValue* Node::throwUndefinedVariableError(ExecState* exec, const Identifier& id
     return throwError(exec, ReferenceError, "Cannot find variable: %s", ident);
 }
 
-
-void Node::handleException(ExecState *exec)
-{
-    handleException(exec, exec->exception());
-}
-
-void Node::handleException(ExecState* exec, JSValue* exceptionValue)
-{
-    Debugger* dbg = exec->dynamicInterpreter()->debugger();
-    if (dbg && !dbg->hasHandledException(exec, exceptionValue)) {
-        bool cont = dbg->exception(exec, currentSourceId(exec), m_line, exceptionValue);
-        if (!cont)
-            dbg->imp()->abort();
-    }
-}
-
-Completion Node::rethrowException(ExecState* exec)
-{
-    JSValue* exception = exec->exception();
-    exec->clearException();
-    handleException(exec, exception);
-    return Completion(Throw, exception);
-}
-
 Node *Node::nodeInsideAllParens()
 {
     return this;
@@ -316,14 +265,10 @@ void StatementNode::setLoc(int firstLine, int lastLine)
     m_lastLine = lastLine;
 }
 
-// return true if the debugger wants us to stop at this point
-bool StatementNode::hitStatement(ExecState* exec)
+void StatementNode::hitStatement(ExecState* exec)
 {
-  Debugger *dbg = exec->dynamicInterpreter()->debugger();
-  if (dbg)
-    return dbg->atStatement(exec, currentSourceId(exec), firstLine(), lastLine());
-  else
-    return true; // continue
+  // The debugger is always non-zero here, since otherwise this won't be involved
+  exec->dynamicInterpreter()->debugger()->reportAtStatement(exec, currentSourceId(exec), firstLine(), lastLine());
 }
 
 // ------------------------------ GroupNode ------------------------------------

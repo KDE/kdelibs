@@ -206,10 +206,14 @@ namespace KJS {
     virtual bool exitContext(ExecState *exec, int sourceId, int lineno,
                              JSObject *function);
 
+    // The two methods below call the events but also keep track/use of line # information
+    // so we can associate it with exceptions
+    void reportAtStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
+    void reportException  (ExecState *exec, JSValue *exception);
   private:
     DebuggerImp *rep;
     HashMap<Interpreter*, ProtectedPtr<JSValue> > latestExceptions;
-
+    int lastLineRan;
   public:
     static int debuggersPresent;
   };

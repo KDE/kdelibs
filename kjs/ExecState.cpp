@@ -28,6 +28,7 @@
 #include "scriptfunction.h"
 #include "internal.h"
 #include "nodes.h"
+#include "debugger.h"
 
 namespace KJS {
 
@@ -153,9 +154,27 @@ void ExecState::setException(JSValue* e)
         clearException();
 }
 
+
 void ExecState::setAbruptCompletion(Completion comp)
 {
-    ASSERT(!hadException());
+    // If we already had an exception, merely update the object, to permit
+    // users to refine the exception, being careful not to double-unwind.
+    // However, warn about it in debug builds.
+    if (hadException()) {
+#ifndef NDEBUG
+        printInfo(this, "warning: overriding already set exception ", m_completion.value());
+        printInfo(this, "with ", comp.value());
+#endif
+
+        m_completion = comp;
+        return;
+    }
+
+    // Trace to debugger if needed.
+    Debugger* dbg = dynamicInterpreter()->debugger();
+    if (dbg && comp.complType() == Throw)
+        dbg->reportException(this, comp.value());
+    
     m_completion = comp;
 
     while (!m_exceptionHandlers.isEmpty()) {

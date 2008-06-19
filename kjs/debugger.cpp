@@ -21,6 +21,7 @@
  */
 
 #include "debugger.h"
+#include "nodes.h"
 #include <config.h>
 #include "ustring.h"
 
@@ -45,6 +46,7 @@ int Debugger::debuggersPresent = 0;
 
 Debugger::Debugger()
 {
+  lastLineRan = 0;
   rep = new DebuggerImp();
 }
 
@@ -111,6 +113,18 @@ bool Debugger::atStatement(ExecState * /*exec*/, int /*sourceId*/, int /*firstLi
                            int /*lastLine*/)
 {
   return true;
+}
+
+void Debugger::reportAtStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
+{
+  lastLineRan = firstLine;
+  atStatement(exec, sourceId, firstLine, lastLine);
+}
+
+void Debugger::reportException(ExecState *exec, JSValue *exceptionVal)
+{
+  if (!hasHandledException(exec, exceptionVal))
+      exception(exec, exec->currentBody()->sourceId(), lastLineRan, exceptionVal);
 }
 
 bool Debugger::enterContext(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,

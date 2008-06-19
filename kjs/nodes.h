@@ -150,10 +150,6 @@ namespace KJS {
     JSValue* throwError(ExecState*, ErrorType, const UString& msg, const Identifier&);
     JSValue* throwUndefinedVariableError(ExecState*, const Identifier&);
 
-    void handleException(ExecState*);
-    void handleException(ExecState*, JSValue*);
-    Completion rethrowException(ExecState*);
-
     virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
   protected:
     int m_line;
@@ -201,7 +197,7 @@ namespace KJS {
     void setLoc(int line0, int line1);
     int firstLine() const { return lineNo(); }
     int lastLine() const { return m_lastLine; }
-    bool hitStatement(ExecState*);
+    void hitStatement(ExecState*);
 
     void generateDebugInfoIfNeeded(CompileState* comp, CodeBlock& block);
 
