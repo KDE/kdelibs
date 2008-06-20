@@ -73,6 +73,17 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
 }
 
+static void errorFunction(void *ctx, const char *fmt, ...)
+{
+    bool *success = (bool*)ctx;
+    *success = false;
+    
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+}
+
 int main(int argc, char **argv) {
 
     // xsltSetGenericDebugFunc(stderr, NULL);
@@ -131,6 +142,9 @@ int main(int argc, char **argv) {
         kError() << "File '" << checkFilename << "' is not readable." << endl;
         return ( 2 );
     }
+    
+    bool success = true;
+    xsltSetGenericErrorFunc(&success, errorFunction);
 
     if ( args->isSet( "check" ) ) {
         QString pwd_buffer = QDir::currentPath();
@@ -313,6 +327,7 @@ int main(int argc, char **argv) {
  end:
     xmlCleanupParser();
     xmlMemoryDump();
-    return(0);
+    if (success) return(0);
+    else return(1);
 }
 
