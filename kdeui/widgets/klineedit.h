@@ -340,6 +340,12 @@ public:
      * @return whether or not the clear button is shown
      **/
     bool isClearButtonShown() const;
+    
+    /**
+     * @return the size used by the clear button
+     * @since KDE 4.1
+     **/
+    QSize clearButtonUsedSize() const;
 
 Q_SIGNALS:
 

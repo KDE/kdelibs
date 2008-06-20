@@ -255,6 +255,22 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
     QComboBox::wheelEvent( ev );
 }
 
+QSize KComboBox::minimumSizeHint() const
+{
+    QSize size = QComboBox::minimumSizeHint();
+    if (isEditable() && d->klineEdit) {
+        // if it's a KLineEdit and it's editable add the clear button size
+        // to the minimum size hint, otherwise looks ugly because the
+        // clear button will cover the last 2/3 letters of the biggest entry
+        QSize bs = d->klineEdit->clearButtonUsedSize();
+        if (bs.isValid()) {
+            size.rwidth() += bs.width();
+            size.rheight() = qMax(size.height(), bs.height());
+        }
+    }
+    return size;
+}
+
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
     if ( !isEditable() && edit &&

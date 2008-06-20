@@ -261,6 +261,17 @@ bool KLineEdit::isClearButtonShown() const
     return d->clearButton != 0;
 }
 
+QSize KLineEdit::clearButtonUsedSize() const
+{
+    QSize s;
+    if (d->clearButton) {
+        const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, this);
+        s = d->clearButton->sizeHint();
+        s.rwidth() += frameWidth;
+    }
+    return s;
+}
+
 void KLineEdit::updateClearButtonIcon(const QString& text)
 {
     if (!d->clearButton || isReadOnly()) {

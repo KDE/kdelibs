@@ -505,6 +505,8 @@ protected:
                          bool destroyOldWindow = true );
 
     virtual void wheelEvent( QWheelEvent *ev );
+    
+    virtual QSize minimumSizeHint() const;
 
 private Q_SLOTS:
     void lineEditDeleted();
