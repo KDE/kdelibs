@@ -498,7 +498,7 @@ QString KRichTextEdit::toCleanHtml() const
             tempLine.remove(evilline);
             if (tempLine.endsWith("</p>")) {
                 tempLine.remove(QRegExp("</p>$"));
-                tempLine.append("<br>");
+                tempLine.append("<br>\n");
             }
             result += tempLine;
         } else {
