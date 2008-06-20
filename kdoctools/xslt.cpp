@@ -46,22 +46,10 @@ int closeQString(void * context) {
     return 0;
 }
 
-void errorFunction(void *ctx, const char *fmt, ...)
-{
-    bool *success = (bool*)ctx;
-    *success = false;
-    
-    va_list ap;
-    va_start(ap, fmt);
-    vprintf(fmt, ap);
-    va_end(ap);
-}
-
 QString transform( const QString &pat, const QString& tss,
                    const QVector<const char *> &params )
 {
     QString parsed;
-    bool success = true;
 
     INFO(i18n("Parsing stylesheet"));
 
@@ -88,7 +76,6 @@ QString transform( const QString &pat, const QString& tss,
     INFO(i18n("Applying stylesheet"));
     QVector<const char *> p = params;
     p.append( NULL );
-    xsltSetGenericErrorFunc(&success, errorFunction);
     xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, const_cast<const char **>(&p[0]));
     xmlFreeDoc(doc);
     if (res != NULL) {
@@ -103,10 +90,6 @@ QString transform( const QString &pat, const QString& tss,
 
     if (parsed.isEmpty())
 	parsed = " "; // avoid error message
-
-    if (!success)
-	parsed = QString();
-
     return parsed;
 }
 
