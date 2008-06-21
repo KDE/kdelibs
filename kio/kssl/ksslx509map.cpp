@@ -48,7 +48,8 @@ QString KSSLX509Map::getValue(const QString& key) const {
 static QStringList tokenizeBy(const QString& str, const QRegExp& tok, bool keepEmpties = false) {
 QStringList tokens;
 unsigned int head, tail;
-const char *chstr = str.toAscii().constData();
+QByteArray bastr = str.toAscii();
+const char *chstr = bastr.constData();
 unsigned int length = str.length();
  
 	if (length < 1) {
