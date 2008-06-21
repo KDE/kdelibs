@@ -52,6 +52,13 @@ class KDialogPrivate
         void appendButton( KDialog::ButtonCode code , const KGuiItem &item );
         KPushButton *button( KDialog::ButtonCode code ) const;
 
+        enum calculateMinimumSizeHintMode{ NormalMode, ReallyMinimumMode };
+        QSize widgetSizeHint(QWidget *widget,
+                             calculateMinimumSizeHintMode hMode,
+                             calculateMinimumSizeHintMode vMode,
+                             const QSize &zeroByS) const;
+        QSize calculateMinimumSizeHint(calculateMinimumSizeHintMode hMode,
+                                       calculateMinimumSizeHintMode vMode) const;
 
         bool mDetailsVisible : 1;
         bool mSettingDetails : 1;
