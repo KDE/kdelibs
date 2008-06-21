@@ -230,12 +230,8 @@ public:
 
 class OutlineValue : public BorderValue
 {
-    public:
-        OutlineValue()
-        {
-            _offset = 0;
-            _auto = false;
-        }
+public:
+    OutlineValue() : _offset(0), _auto(false) {}
 
     bool operator==(const OutlineValue& o) const
     {
