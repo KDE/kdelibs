@@ -31,5 +31,6 @@ struct KCatalogName
     bool operator==(const KCatalogName &right) { return name == right.name; }
 };
 
+QDebug operator<<(QDebug debug, const KCatalogName &cn);
 
 #endif

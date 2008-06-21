@@ -202,9 +202,12 @@ public:
   QString translateStrict( const char * msgctxt, const char * msgid,
                            const char * msgid_plural, unsigned long n ) const;
 
+  friend QDebug operator<<(QDebug debug, const KCatalog &c);
+
 private:
   KCatalogPrivate* const d;
 };
 
+QDebug operator<<(QDebug debug, const KCatalog &c);
 
 #endif

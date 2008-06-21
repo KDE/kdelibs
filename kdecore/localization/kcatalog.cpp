@@ -52,6 +52,11 @@ public:
   void changeBindings () const;
 };
 
+QDebug operator<<(QDebug debug, const KCatalog &c)
+{
+  return debug << c.d->language << " " << c.d->name << " " << c.d->localeDir;
+}
+
 int KCatalogPrivate::localeSet = 0;
 QByteArray KCatalogPrivate::currentLanguage;
 

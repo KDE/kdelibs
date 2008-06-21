@@ -62,6 +62,11 @@
 
 static const char *maincatalog = 0;
 
+QDebug operator<<(QDebug debug, const KCatalogName &cn)
+{
+    return debug << cn.name << cn.loadCount;
+}
+
 class KLocalePrivate
 {
 public:
