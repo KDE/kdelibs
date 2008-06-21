@@ -1607,9 +1607,12 @@ Name=Kashubian
 Name[de]=Kaschubisch
 Name[es]=Casubio
 Name[et]=Kašuubi
+Name[is]=Kashubíska
 Name[km]=តាហិតង់
 Name[nds]=Kaschuubsch
 Name[sk]=kašubčtina
+Name[sr]=Кашубиански
+Name[sr@Latn]=Кашубиански
 Name[sv]=Kasjubiska
 [cu]
 Name=Church Slavic
@@ -11035,9 +11038,12 @@ Name[de]=Usbekisch (Kyrillisch)
 Name[el]=Ουζμπεκικά (Κυριλικά)
 Name[es]=Uzbeko (Cirílico)
 Name[et]=Usbeki (kirillitsa)
+Name[is]=Uzbek (Kyrilísk)
 Name[km]=អ៊ូហ្សបេគីស្តង់ (ស៊ីរីលីក)
 Name[nds]=Usbeeksch (kyrillsch)
 Name[sk]=uzbečtina (cyrilika)
+Name[sr]=Узбечки ћирилични
+Name[sr@Latn]=Узбечки ћирилични
 Name[sv]=Kyrillisk Uzbekiska
 Name[zh_TW]=烏茲別克語（斯拉夫語系）
 [ven]
