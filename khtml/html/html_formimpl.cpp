@@ -305,7 +305,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 else
                 {
                     QByteArray hstr("--");
-                    hstr += m_boundary.toLatin1().constData();
+                    hstr += m_boundary.toLatin1();
                     hstr += "\r\n";
                     hstr += "Content-Disposition: form-data; name=\"";
                     hstr += (*it).data();
