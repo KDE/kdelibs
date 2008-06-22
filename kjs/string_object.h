@@ -41,16 +41,21 @@ namespace KJS {
     virtual bool deleteProperty(ExecState* exec, const Identifier& propertyName);
     virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
+    virtual UString toString(ExecState *exec) const;
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
 
     StringImp* internalValue() const { return static_cast<StringImp*>(JSWrapperObject::internalValue());}
 
+    bool conversionsCustomized() const { return m_conversionsCustomized; }
   private:
     bool inlineGetOwnPropertySlot(ExecState*, unsigned, PropertySlot&);
 
     static JSValue* lengthGetter(ExecState*, JSObject *, const Identifier&, const PropertySlot&);
     static JSValue* indexGetter(ExecState*, JSObject *, const Identifier&, const PropertySlot&);
+  
+    bool m_conversionsCustomized;    
   };
 
   /**

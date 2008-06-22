@@ -299,7 +299,7 @@ namespace KJS {
     // missingSymbolMarker(), along with the variable's classification
     enum Classification {
         Local,      // local variable accessed by register #
-        NonLocal,   // one scope above, unless local injected
+        NonLocal,    // one scope above, unless local injected
         Dynamic,    // need to do a full lookup
         Global      // in the global object, if anywhere.
     };
@@ -1017,10 +1017,12 @@ namespace KJS {
     FunctionBodyNode(SourceElementsNode *);
     int sourceId() { return m_sourceId; }
     const UString& sourceURL() { return m_sourceURL; }
-    
+
     bool isCompiled() const { return m_compType != NotCompiled; }
     void compileIfNeeded(CodeType ctype, CompileType compType);
     void compile(CodeType ctype, CompileType compType);
+    CompileType compileState() const { return m_compType; }
+    
 
     virtual void generateExecCode(CompileState*, CodeBlock& block);
 
@@ -1049,17 +1051,18 @@ namespace KJS {
     // Adds a new symbol, killing any previous ID.
     void addSymbolOverwriteID(size_t id, const Identifier& ident, int attr);
 
-    // Runs the code, compiling if needed. If any locals, etc.,
-    // need to be created, that must be done before this is run.
+    // Runs the code, compiling if needed. This should only be used for non-function ExecStates
     Completion execute(ExecState *exec);
 
-    bool stackAllocateActivation() const { return m_stackAllocateActivation; }
+    bool tearOffAtEnd() const { return m_tearOffAtEnd; }
+
+    const CodeBlock& code() const { return m_compiledCode; }
   private:
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
     int m_sourceId : 31;
-    bool m_stackAllocateActivation : 1;
-    CompileType m_compType; 
+    bool m_tearOffAtEnd : 1;        
+    CompileType m_compType;
 
     // This maps id -> attributes and function decl info
     WTF::Vector<SymbolInfo> m_symbolList;

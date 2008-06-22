@@ -30,6 +30,15 @@
 
 typedef std::vector<string> StringList;
 
+enum Hints {
+    NoHint = 0,
+    NoImm = 1,
+    NoReg = 2,
+    Limit = 0xFFFF
+};
+
+typedef std::vector<Hints> HintList;
+
 class Parser
 {
 public:
@@ -47,7 +56,7 @@ private:
     virtual void handleOperation(const string& name, bool endsBB) = 0;
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
                             int codeLine, int cost, const string& retType, StringList sig,
-                            StringList paramNames) = 0;
+                            StringList paramNames, HintList hints) = 0;
     virtual void handleTile(const string& fnName, StringList sig) = 0;
 
     string matchIdentifier();

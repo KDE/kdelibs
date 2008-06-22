@@ -217,8 +217,7 @@ JSValue* JSValue::getByIndex(ExecState* exec, unsigned propertyName) const
     case StringType: {
         UString s = static_cast<const StringImp*>(asCell())->value();
         if (propertyName < s.size()) {
-            UChar c = s[propertyName];
-            return jsString(UString(&c, 1));
+            return jsString(s.substr(propertyName, 1));
         }
         // fall through
     }

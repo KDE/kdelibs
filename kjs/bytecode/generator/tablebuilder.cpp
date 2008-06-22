@@ -40,11 +40,9 @@ public:
     {
         *hStream << "enum " << name << " {\n";
         for (unsigned p = 0; p < values.size(); ++p) {
-            *hStream << "    " << prefix << values[p];
-            if (p != (values.size() - 1))
-                *hStream << ",";
-            *hStream << "\n";
+            *hStream << "    " << prefix << values[p] << ",\n";
         }
+        *hStream << "    " << prefix << "NumValues\n";
         *hStream << "};\n";
         *hStream << "extern const char* const " << name << "Vals[];\n\n";
     }
@@ -147,7 +145,7 @@ void TableBuilder::generateCode()
     for (unsigned c = 0; c < imConversionList.size(); ++c)
         printConversionRoutine(imConversionList[c]);
 
-    *cppStream << "static void emitImmediateConversion(ConvOp convType, OpValue* original, OpValue& out)\n{\n";
+    *cppStream << "static bool emitImmediateConversion(ConvOp convType, OpValue* original, OpValue& out)\n{\n";
     *cppStream << "    out.immediate = true;\n";
     *cppStream << "    switch(convType) {\n";
     *cppStream << "    case Conv_NoOp:\n";
@@ -167,9 +165,9 @@ void TableBuilder::generateCode()
     }
 
     *cppStream << "    default:\n";
-    *cppStream << "        printf(\"Unable to handle in-place conversion:%s\\n\", ConvOpVals[convType]);\n";
-    *cppStream << "        CRASH();\n";
+    *cppStream << "        return false;\n";
     *cppStream << "    }\n";
+    *cppStream << "    return true;\n";    
     *cppStream << "}\n\n";
 
     // Similar helper for simple register conversions..
@@ -250,7 +248,7 @@ void TableBuilder::generateCode()
     *cppStream << "};\n\n";
 
     // Now, generate the VM loop.
-    mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(block.data() + pc);\n";
+    mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(pc);\n";
     mInd(8) << "switch (op) {\n";
     for (unsigned c = 0; c < variants.size(); ++c) {
         const OperationVariant& var = variants[c];
@@ -324,7 +322,7 @@ void TableBuilder::printConversionInfo(map<string, map<string, ConversionInfo> >
 
 void TableBuilder::printConversionRoutine(const ConversionInfo& conversion)
 {
-    *hStream << "inline " << conversion.to.nativeName << " convert" << conversion.name
+    *hStream << "ALWAYS_INLINE " << conversion.to.nativeName << " convert" << conversion.name
          << "(ExecState* exec, " << conversion.from.nativeName << " in)\n";
     *hStream << "{\n";
     *hStream << "    (void)exec;\n";
@@ -372,10 +370,12 @@ void TableBuilder::handleConversion(const string& name, const string& code, int 
         sig.push_back(from);
         StringList names;
         names.push_back("in");
+        HintList hints;
+        hints.push_back(NoHint);
 
         string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
         code += "$$ = out;\n";
-        handleImpl("", code, false, codeLine, 0, to, sig, names);
+        handleImpl("", code, false, codeLine, 0, to, sig, names, hints);
     }
 }
 
@@ -399,33 +399,37 @@ vector<Type> TableBuilder::resolveSignature(const StringList& in)
 }
 
 void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol, int codeLine, int cost,
-                              const string& retType, StringList sig, StringList paramNames)
+                              const string& retType, StringList sig, StringList paramNames, HintList hints)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
     // emitOp will convert things as needed
     StringList extSig;
     StringList extParamNames;
+    HintList   extHints;
     if (retType != "void") {
         extSig.push_back("reg");
         extParamNames.push_back("fbDestReg");
+        extHints.push_back(NoHint);
     }
 
-    for (unsigned c = 0; c < sig.size(); ++c)
+    for (unsigned c = 0; c < sig.size(); ++c) {
         extSig.push_back(sig[c]);
-
-    for (unsigned c = 0; c < paramNames.size(); ++c)
         extParamNames.push_back(paramNames[c]);
+        extHints.push_back(hints[c]);
+    }
 
     Operation op;
     op.name           = operationNames.back();
     op.retType        = retType;
     op.overload       = ol;
     operationRetTypes[op.name] = retType;
+    op.isTile         = false;
     op.implementAs    = code;
     op.codeLine       = codeLine;
     op.parameters     = resolveSignature(extSig);
     op.implParams     = op.parameters;
     op.implParamNames = extParamNames;
+    op.implHints      = extHints;
     op.cost           = cost;
     op.endsBB         = operationEndBB.back();
     operations.push_back(op);
@@ -449,6 +453,7 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
 
     Operation op;
     op.name        = operationNames.back();
+    op.isTile      = true;
     op.implementAs = impl.implementAs;
     op.codeLine    = impl.codeLine;
     op.retType     = impl.retType;
@@ -456,6 +461,10 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
     op.parameters  = resolveSignature(extSig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
+    // ### not sure we want this here
+    op.implHints     = impl.implHints;
+    op.endsBB        = impl.endsBB;
+    
     op.cost           = impl.cost;
     // Now also include the cost of inline conversions.
     for (unsigned p = 0; p < op.parameters.size(); ++p)
@@ -468,13 +477,31 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 {
     int numParams = op.parameters.size();
     if (paramIsIm.size() < numParams) {
-        if (op.parameters[paramIsIm.size()].im) {
+        int paramPos = paramIsIm.size();
+        bool hasIm  = op.parameters[paramPos].im;
+        bool hasReg = op.parameters[paramPos].reg;
+
+        bool genIm  = hasIm;
+        bool genReg = hasReg;
+
+        // Don't generate non-register variants for tiles when possible.
+        if (op.isTile && hasReg)
+            genIm = false;
+
+        // There may be hints saying not to generate some version
+        if (op.implHints[paramPos] & NoImm)
+            genIm = false;
+
+        if (op.implHints[paramPos] & NoReg)
+            genReg = false;
+        
+        if (genIm) {
             paramIsIm.push_back(true);
             expandOperationVariants(op, paramIsIm);
             paramIsIm.pop_back();
         }
 
-        if (op.parameters[paramIsIm.size()].reg) {
+        if (genReg) {
             paramIsIm.push_back(false);
             expandOperationVariants(op, paramIsIm);
             paramIsIm.pop_back();
@@ -674,7 +701,7 @@ void TableBuilder::printCode(ostream* out, int baseIdent, const string& code, in
 void TableBuilder::generateVariantImpl(const OperationVariant& variant)
 {
     mInd(16) << "pc += " << variant.size << ";\n";
-    mInd(16) << "Addr localPC = pc;\n";
+    mInd(16) << "const unsigned char* localPC = pc;\n";
     int numParams = variant.paramIsIm.size();
     for (int p = 0; p < numParams; ++p) {
         const Type& type  = variant.op.parameters[p];
@@ -688,12 +715,13 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
 
         string accessString = "reinterpret_cast<const ";
         accessString += wideArg ? "WideArg" : "NarrowArg";
-        accessString += "*>(&block[localPC + ";
+        accessString += "*>(localPC ";
         accessString += negPosStr;
-        accessString += "])->";
+        accessString += ")->";
         accessString += inReg ? string("regVal") : type.name + "Val";
-        if (inReg) // Need to indirect..
-            accessString = "localStore[" + accessString + "].val." + type.name + "Val";
+        if (inReg) { // Need to indirect... The register value is actually an offset, so a bit of casting, too.
+            accessString = "reinterpret_cast<const LocalStorageEntry*>(reinterpret_cast<const unsigned char*>(localStore) + " + accessString + ")->val." + type.name + "Val";
+        }
 
         mInd(16) << variant.op.implParams[p].nativeName << " " << variant.op.implParamNames[p]
                      << " = ";

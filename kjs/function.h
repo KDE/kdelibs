@@ -115,7 +115,10 @@ namespace KJS {
 
     void setup(ExecState* exec, FunctionImp *function, const List* arguments,
                LocalStorageEntry* stackSpace);
-    void tearOff(ExecState* myExec);
+
+    // Request that this activation be torn off when the code using it stops running
+    void requestTearOff();
+    void performTearOff();
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);

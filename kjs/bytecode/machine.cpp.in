@@ -32,7 +32,28 @@
 #include "internal.h" // for printInfo
 #include "ustring.h"
 
+#include <stdio.h>
+
 namespace KJS {
+
+// #define COUNT_INSTRS
+
+// A little profiling aid -- counts the # of dynamic instances of each instruction.
+#ifdef COUNT_INSTRS
+
+static unsigned instrCounts[OpByteCode_NumValues];
+
+struct InstrCountPrinter
+{
+    ~InstrCountPrinter() {
+        for (int c = 0; c < OpByteCode_NumValues; ++c) {
+            printf("%9d %s\n", instrCounts[c], OpByteCodeVals[c]);
+        }
+    }
+};
+
+static InstrCountPrinter dumpCounts;
+#endif
 
 // ### Need to consolidate this w/things remaining in nodes.cpp somehow.
 static void substitute(UString &string, const UString &substring)
@@ -80,7 +101,7 @@ static JSValue* typeStringForValue(JSValue* v)
 }
 
 template<bool errorOut, bool trySkipOne, bool replaceActivations>
-inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& scopeOut, JSValue*& valOut)
+ALWAYS_INLINE void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& scopeOut, JSValue*& valOut)
 {
     const ScopeChain& chain = exec->scopeChain();
     ScopeChainIterator iter = chain.begin();
@@ -125,14 +146,21 @@ inline void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSValue*& 
 
 
 
-Completion Machine::runBlock(ExecState* exec, const CodeBlock& block) {
+ALWAYS_INLINE_INTO JSValue*
+Machine::runBlock(ExecState* exec, const CodeBlock& codeBlock, ExecState* parentExec) {
 
-    Addr pc = 0; //Use local...
+    const unsigned char* base = codeBlock.data();
+    const unsigned char* pc   = base;
     List workList;
     LocalStorageEntry* localStore = exec->localStorage();
-    exec->setMachineRegisters(&pc, &localStore);
+    exec->setMachineRegisters(base, &pc, &localStore);
+    JSObject* globalObject = exec->dynamicInterpreter()->globalObject();
 
     while (true) {
+#ifdef COUNT_INSTRS
+        OpByteCode opCodeLog = *reinterpret_cast<const OpByteCode*>(pc);
+        ++instrCounts[opCodeLog];
+#endif
         @generate
     }
 }

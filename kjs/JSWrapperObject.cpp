@@ -29,6 +29,8 @@ void JSWrapperObject::mark()
     JSObject::mark();
     if (m_internalValue && !m_internalValue->marked())
         m_internalValue->mark();
+    if (!m_originalProto->marked())
+	m_originalProto->mark();
 }
 
 } // namespace KJS

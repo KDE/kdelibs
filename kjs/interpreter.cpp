@@ -313,7 +313,7 @@ unsigned char* Interpreter::extendStack(size_t needed)
     while (e) {
         if (e->codeType() == FunctionCode) {
             ActivationImp* act = static_cast<ActivationImp*>(e->activationObject());
-            if (act->localStorage && act->onStackSlot()) {
+            if (act->localStorage) {
                 act->localStorage = (LocalStorageEntry*)
                                       (stackBase + ((unsigned char*)act->localStorage - oldBase));
                 e->updateLocalStorage(act->localStorage);

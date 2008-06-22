@@ -90,6 +90,7 @@ namespace KJS {
    * equal". -1 if the result is undefined.
    */
   int relation(ExecState *exec, JSValue *v1, JSValue *v2);
+  int relation(ExecState *exec, JSValue *v1, double n2);
   int maxInt(int d1, int d2);
   int minInt(int d1, int d2);
 

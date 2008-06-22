@@ -44,6 +44,7 @@ namespace KJS {
 class RegDescriptor;
 class FunctionBodyNode;
 
+
 enum CompileType
 {
     NotCompiled,
@@ -217,7 +218,7 @@ private:
     OpValue* globalScopeVal;
     OpValue* evalResRegister;
 
-    CodeType    ctype;
+    CodeType ctype;
     CompileType compType;
 
     // Makes sure that any values of a local are 

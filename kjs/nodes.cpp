@@ -909,34 +909,32 @@ Completion FunctionBodyNode::execute(ExecState *exec)
   CodeType    ctype   = exec->codeType();
   CompileType cmpType = exec->dynamicInterpreter()->debugger() ? Debug : Release;
   compileIfNeeded(ctype, cmpType);
+  ASSERT(ctype != FunctionCode);
 
-  LocalStorage*      store = 0;
+  LocalStorage*      store = new LocalStorage();
   LocalStorageEntry* regs;
 
-  if (ctype == FunctionCode) {
-    // FunctionImp::callAsFunction already did  most of the setup when making the activation.
-    ActivationImp* act = static_cast<ActivationImp*>(exec->activationObject());
-    regs = act->localStorage;
-  } else {
-    store = new LocalStorage();
-
-    // Allocate enough space, and make sure to initialize things so we don't mark garbage
-    store->resize(m_symbolList.size());
-    regs = store->data();
-    for (size_t c = 0; c < m_symbolList.size(); ++c) {
-      regs[c].val.valueVal = jsUndefined();
-      regs[c].attributes   = m_symbolList[c].attr;
-    }
+  // Allocate enough space, and make sure to initialize things so we don't mark garbage
+  store->resize(m_symbolList.size());
+  regs = store->data();
+  for (size_t c = 0; c < m_symbolList.size(); ++c) {
+    regs[c].val.valueVal = jsUndefined();
+    regs[c].attributes   = m_symbolList[c].attr;
   }
-
+  
   exec->initLocalStorage(regs, m_symbolList.size());
 
-  Completion result = Machine::runBlock(exec, m_compiledCode);
+  JSValue* val = Machine::runBlock(exec, m_compiledCode);
 
-  if (ctype != FunctionCode) {
-    exec->initLocalStorage(0, 0);
-    delete store;
-  }
+  Completion result;
+  if (exec->hadException())
+    result = Completion(Throw, exec->exception());
+  else
+    result = Completion(Normal, val);
+
+  exec->initLocalStorage(0, 0);
+  delete store;
+  exec->clearException();
 
   return result;
 }
@@ -947,7 +945,7 @@ void FunctionBodyNode::compile(CodeType ctype, CompileType compType)
 
   CompileState comp(ctype, compType, this, m_symbolList.size());
   generateExecCode(&comp, m_compiledCode);
-  m_stackAllocateActivation = !comp.needsClosures();
+  m_tearOffAtEnd = comp.needsClosures();
 
 #if 0
   printf("\n\n");

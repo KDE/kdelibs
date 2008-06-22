@@ -31,6 +31,15 @@
 #endif
 #endif
 
+#ifndef ALWAYS_INLINE_INTO
+#if COMPILER(GCC) && defined(NDEBUG) &&  ((__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || __GNUC__ > 4)
+#define ALWAYS_INLINE_INTO __attribute__ ((__flatten__))
+#else
+#define ALWAYS_INLINE_INTO
+#endif
+#endif
+
+
 #ifndef NEVER_INLINE
 #if COMPILER(GCC) &&  __GNUC__ > 3
 #define NEVER_INLINE __attribute__ ((__noinline__))

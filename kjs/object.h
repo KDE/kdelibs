@@ -592,29 +592,6 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
     }
 }
 
-// It may seem crazy to inline a function this large, especially a virtual function,
-// but it makes a big difference to property lookup that derived classes can inline their
-// base class call to this.
-ALWAYS_INLINE bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
-{
-    if (JSValue **location = getDirectLocation(propertyName)) {
-        if (_prop.hasGetterSetterProperties() && location[0]->type() == GetterSetterType)
-            fillGetterPropertySlot(slot, location);
-        else
-            slot.setValueSlot(this, location);
-        return true;
-    }
-
-    // non-standard Netscape extension
-    if (propertyName == exec->propertyNames().underscoreProto) {
-        slot.setValueSlot(this, &_proto);
-        return true;
-    }
-
-    return false;
-}
-
-
 // FIXME: Put this function in a separate file named something like scope_chain_mark.h -- can't put it in scope_chain.h since it depends on JSObject.
 
 inline void ScopeChain::mark()

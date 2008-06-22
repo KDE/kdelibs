@@ -43,6 +43,7 @@
 #include <string.h>
 #include "wtf/DisallowCType.h"
 #include "wtf/ASCIICType.h"
+#include "bytecode/machine.h"
 
 using namespace WTF;
 
@@ -70,9 +71,32 @@ FunctionImp::~FunctionImp()
 {
 }
 
+void FunctionImp::initialCompile(ExecState* newExec)
+{
+    FunctionBodyNode* body = this->body.get();
+
+    // Reserve various slots needed for the activation object. We do it only once,
+    // --- isCompiled() would return true even if debugging state changed
+    body->reserveSlot(ActivationImp::LengthSlot, false);
+    body->reserveSlot(ActivationImp::TearOffNeeded, false);
+    body->reserveSlot(ActivationImp::FunctionSlot, true);
+    body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
+
+    // Create declarations for parameters, and allocate the symbols.
+    // We always just give them sequential positions, to make passInParameters
+    // simple (though perhaps wasting memory in the trivial case)
+    for (size_t i = 0; i < body->numParams(); ++i)
+      body->addSymbolOverwriteID(i + ActivationImp::NumReservedSlots, body->paramName(i), DontDelete);
+
+    body->processDecls(newExec);
+    body->compile(FunctionCode, newExec->dynamicInterpreter()->debugger() ? Debug : Release);
+}
+
 JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
   assert(thisObj);
+
+  Debugger* dbg = exec->dynamicInterpreter()->debugger();  
 
   // enter a new execution context
   FunctionExecState newExec(exec->dynamicInterpreter(), thisObj, body.get(), exec, this);
@@ -84,38 +108,28 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   // The first time we're called, compute the set of local variables,
   // and compile the body. (note that parameters have been collected
   // during the AST build)
-  if (!body->isCompiled()) {
-    // Reserve various slots needed for the activation object. We do it only once,
-    // --- isCompiled() would return true even if debugging state changed
-    body->reserveSlot(ActivationImp::LengthSlot, false);
-    body->reserveSlot(ActivationImp::OnStackSlot, false);
-    body->reserveSlot(ActivationImp::FunctionSlot, true);
-    body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
-
-    // Create declarations for parameters, and allocate the symbols.
-    // We always just give them sequential positions, to make passInParameters
-    // simple (though perhaps wasting memory in the trivial case)
-    for (size_t i = 0; i < body->numParams(); ++i)
-      body->addSymbolOverwriteID(i + ActivationImp::NumReservedSlots, body->paramName(i), DontDelete);
-
-    body->processDecls(&newExec);
-
-    // We must compile it here, and not wait until ->exec since we need to know
-    // whether to stack-allocate the locals/registers array
-    body->compile(FunctionCode, exec->dynamicInterpreter()->debugger() ? Debug : Release);
+  CompileType currentState = body->compileState();
+  if (currentState == NotCompiled) {
+    initialCompile(&newExec);
+  } else {
+    // Otherwise, we may still need to recompile due to debug...
+    CompileType desiredState = dbg ? Debug : Release;
+    if (desiredState != currentState)
+        body->compile(FunctionCode, desiredState);
   }
 
   size_t stackSize              = 0;
   LocalStorageEntry* stackSpace = 0;
-  if (body->stackAllocateActivation()) {
-    stackSize  = sizeof(LocalStorageEntry) * body->numLocalsAndRegisters();
-    stackSpace = (LocalStorageEntry*)exec->dynamicInterpreter()->stackAlloc(stackSize);
-  }
+
+  // We always allocate on stack initially, and tearoff only after we're done.
+  int regs   = body->numLocalsAndRegisters();
+  stackSize  = sizeof(LocalStorageEntry) * regs;
+  stackSpace = (LocalStorageEntry*)exec->dynamicInterpreter()->stackAlloc(stackSize);
 
   ActivationImp* activation = static_cast<ActivationImp*>(newExec.activationObject());
   activation->setup(&newExec, this, &args, stackSpace);
+  activation->tearOffNeededSlot() = body->tearOffAtEnd();
 
-  Debugger* dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
     bool cont = dbg->enterContext(&newExec, body->sourceId(), body->firstLine(), this, args);
     if (!cont) {
@@ -124,34 +138,29 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     }
   }
 
-  Completion comp = body->execute(&newExec);
+  newExec.initLocalStorage(stackSpace, regs);
 
-  // Make sure to clear a stack activation, since it points to outside stuff,
-  // and a conservative GC may try marking it, making it access out-of-date
-  // data
-  if (activation->onStackSlot()) {
+  JSValue* result = Machine::runBlock(&newExec, body->code(), exec);
+
+  // If we need to tear off now --- either due to static flag above, or
+  // if execution requested it dynamically --- do so now.
+  if (activation->tearOffNeededSlot()) {
+    activation->performTearOff();
+  } else {
+    // Otherwise, we recycle the activation object; we must clear its
+    // data pointer, though, since that may become dead.
     activation->localStorage = 0;
-
-    // Recycle it for reuse
     exec->dynamicInterpreter()->recycleActivation(activation);
   }
 
-   // Also free the stack space. This should be done if we originally
-   // allocated on the stack, even if it got torn off
-  if (body->stackAllocateActivation())
-    exec->dynamicInterpreter()->stackFree(stackSize);
-
-  // if an exception occurred, propagate it back to the previous execution object
-  if (newExec.hadException())
-    comp = Completion(Throw, newExec.exception());
+  // Now free the stack space..
+  exec->dynamicInterpreter()->stackFree(stackSize);
 
 #ifdef KJS_VERBOSE
-  if (comp.complType() == Throw)
-    printInfo(exec,"throwing", comp.value());
-  else if (comp.complType() == ReturnValue)
-    printInfo(exec,"returning", comp.value());
+  if (exec->exception())
+    printInfo(exec,"throwing", exec->exception());
   else
-    fprintf(stderr, "returning: undefined\n");
+    printInfo(exec,"returning", result);
 #endif
 
   // The debugger may have been deallocated by now if the WebFrame
@@ -160,9 +169,6 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   dbg = exec->dynamicInterpreter()->debugger();
 
   if (dbg) {
-    if (comp.complType() == Throw)
-        newExec.setException(comp.value());
-
     int cont = dbg->exitContext(&newExec, body->sourceId(), body->lastLine(), this);
     if (!cont) {
       dbg->imp()->abort();
@@ -170,14 +176,7 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     }
   }
 
-  if (comp.complType() == Throw) {
-    exec->setException(comp.value());
-    return comp.value();
-  }
-  else if (comp.complType() == ReturnValue)
-    return comp.value();
-  else
-    return jsUndefined();
+  return result;
 }
 
 JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
@@ -444,24 +443,13 @@ const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
 void ActivationImp::setup(ExecState* exec, FunctionImp *function,
-                          const List* arguments, LocalStorageEntry* stackSpace)
+                          const List* arguments, LocalStorageEntry* entries)
 {
     FunctionBodyNode* body = function->body.get();
 
-    // Allocate space..
     size_t total = body->numLocalsAndRegisters();
-
-    if (body->stackAllocateActivation()) {
-        localStorage  = stackSpace;
-        onStackSlot() = true;
-    } else {
-        localStorage  = new LocalStorageEntry[total];
-        onStackSlot() = false;
-    }
-    lengthSlot() = total;
-
-    // Cache in locals..
-    LocalStorageEntry* entries = localStorage;
+    localStorage  = entries;
+    lengthSlot()  = total;
 
     const FunctionBodyNode::SymbolInfo* symInfo = body->getLocalInfo();
 
@@ -508,22 +496,18 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
     }
 }
 
-void ActivationImp::tearOff(ExecState* myExec)
+void ActivationImp::performTearOff()
 {
-    ASSERT(myExec->variableObject() == this);
-    if (!onStackSlot())
-      return;
     // Create a new local array, copy stuff over
     size_t total = lengthSlot();
     LocalStorageEntry* entries = new LocalStorageEntry[total];
     std::memcpy(entries, localStorage, total*sizeof(LocalStorageEntry));
     localStorage  = entries;
+}
 
-    // Our data is no longer on the stack
-    onStackSlot() = false;
-
-    // Update the ExecState and the interpreter
-    myExec->updateLocalStorage(localStorage);
+void ActivationImp::requestTearOff()
+{
+    tearOffNeededSlot() = true;
 }
 
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
@@ -589,16 +573,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
 
 void ActivationImp::createArgumentsObject(ExecState *exec)
 {
-    if (onStackSlot()) {
-        // Find our execState, and make a non-stack copy
-        for (ExecState* e = exec; e; e = e->callingExecState()) {
-            if (e->variableObject() == this) {
-                tearOff(e);
-                break;
-            }
-        }
-    }
-
+    requestTearOff();
     argumentsObjectSlot() = new Arguments(exec, static_cast<FunctionImp*>(functionSlot()),
                                           *arguments, const_cast<ActivationImp*>(this));
 }
@@ -887,7 +862,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         // If the variable object we're working with is an activation, we better
         // tear it off since stuff inside eval can capture it in a closure
         if (exec->variableObject()->isActivation())
-            static_cast<ActivationImp*>(exec->variableObject())->tearOff(exec);
+            static_cast<ActivationImp*>(exec->variableObject())->requestTearOff();
 
         // enter a new execution context
         EvalExecState newExec(exec->dynamicInterpreter(),

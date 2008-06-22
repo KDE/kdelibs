@@ -216,6 +216,22 @@ int relation(ExecState *exec, JSValue *v1, JSValue *v2)
     return static_cast<const StringImp*>(p1)->value() < static_cast<const StringImp*>(p2)->value() ? 1 : 0;
 }
 
+int relation(ExecState *exec, JSValue *v1, double n2)
+{
+    double n1;
+    JSValue* p1;
+
+    v1->getPrimitiveNumber(exec, n1, p1);
+    if (exec->hadException())
+        return -1;
+
+    if (n1 < n2)
+	return 1;
+    if (n1 >= n2)
+	return 0;
+    return -1; // must be NaN, so undefined
+}
+
 int maxInt(int d1, int d2)
 {
     return (d1 > d2) ? d1 : d2;

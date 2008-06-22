@@ -55,16 +55,22 @@ namespace KJS {
          * @param v The new internal value
          */
         void setInternalValue(JSValue* v);
-        
+
         virtual void mark();
-        
+
+        /**
+         * Returns the prototype this object had during construction
+         */
+        JSValue* originalProto() const;
     private:
         JSValue* m_internalValue;
+        JSValue* m_originalProto;
     };
     
     inline JSWrapperObject::JSWrapperObject(JSValue* proto)
         : JSObject(proto)
         , m_internalValue(0)
+        , m_originalProto(proto)
     {
     }
     
@@ -72,6 +78,11 @@ namespace KJS {
     {
         return m_internalValue;
     }
+
+    inline JSValue* JSWrapperObject::originalProto() const
+    {
+        return m_originalProto;
+    }    
     
     inline void JSWrapperObject::setInternalValue(JSValue* v)
     {
@@ -82,3 +93,4 @@ namespace KJS {
 } // namespace KJS
 
 #endif // KJS_JSWrapperObject_h
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

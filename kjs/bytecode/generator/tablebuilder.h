@@ -68,10 +68,12 @@ struct Operation
     int          codeLine;
     bool         overload;
     bool         endsBB;
+    bool         isTile;
 
     string implementAs;
     vector<Type> implParams;
     StringList   implParamNames;
+    HintList     implHints;
 };
 
 struct OperationVariant
@@ -102,7 +104,7 @@ private:
     virtual void handleOperation(const string& name, bool endsBB);
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
                             int codeLine, int cost, const string& retType, StringList sig,
-                            StringList paramNames);
+                            StringList paramNames, HintList hints);
     virtual void handleTile(const string& fnName, StringList sig);
 
     void printConversionInfo(map<string, map<string, ConversionInfo> >& table, bool last);

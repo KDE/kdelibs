@@ -66,7 +66,8 @@ public:
         As,
         Align8,
         Runtime,
-        MayThrow
+        MayThrow,
+        NoImm
     };
 
     struct Token {

@@ -120,7 +120,8 @@ namespace KJS {
     // Cleanup depth entries from the stack, w/o running jumps
     void quietUnwind(int depth);
 
-    void setMachineRegisters(Addr* pcLoc, LocalStorageEntry** machineLocalStoreLoc) {
+    void setMachineRegisters(const unsigned char* pcBase, const unsigned char** pcLoc, LocalStorageEntry** machineLocalStoreLoc) {
+        m_pcBase            = pcBase;
         m_pc                = pcLoc;
         m_machineLocalStore = machineLocalStoreLoc;
     }
@@ -299,7 +300,8 @@ namespace KJS {
         Addr        dest;
     };
 
-    Addr*               m_pc; // The programm counter of the machine running this.
+    const unsigned char*  m_pcBase;  // The address of pc = 0
+    const unsigned char** m_pc;      // Where the current fetch address is stored
     LocalStorageEntry** m_machineLocalStore; // Machine's copy of m_localStore
     WTF::Vector<ExceptionHandler, 4> m_exceptionHandlers;
     WTF::Vector<Completion, 4>       m_deferredCompletions;

@@ -94,6 +94,7 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_currentBody(0),
   m_function(0),
   m_localStore(0),
+  m_pcBase(0),
   m_pc(0),
   m_machineLocalStore(0)
 {
@@ -139,7 +140,7 @@ JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
             return comp.value();
         } else {
             assert(comp.complType() == Break || comp.complType() == Continue);
-            *m_pc = comp.target();
+            *m_pc = m_pcBase + comp.target();
         }
     }
 
@@ -180,7 +181,7 @@ void ExecState::setAbruptCompletion(Completion comp)
     while (!m_exceptionHandlers.isEmpty()) {
         switch (m_exceptionHandlers.last().type) {
         case JumpToCatch:
-            *m_pc = m_exceptionHandlers.last().dest;
+            *m_pc = m_pcBase + m_exceptionHandlers.last().dest;
             m_exceptionHandlers.removeLast();
             return; // done handling it
         case PopScope:

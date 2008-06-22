@@ -191,6 +191,22 @@ conversion number => int32 {
     register RNumber_Int32 costs 20;
 }
 
+/*
+ These are specializes versions for when we have an immediate # and are trying for
+ an immediate value --- avoids extra check
+*/
+operation RInt32_Value_NonImm {
+    impl value(int32 val) [[
+        $$ = jsNumberCell(val);
+    ]]
+}
+
+operation RNum_Value_NonImm {
+    impl value(number val) [[
+        $$ = jsNumberCell(val);
+    ]]
+}
+
 /***************************************************************************
  WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
  $$/localStore should never be set on the same call that can tearoff
@@ -220,26 +236,26 @@ operation AtStatement {
 */
 jump Exit {
     impl void exit() [[
-        return Completion(Normal);
+        return jsUndefined();
     ]]
 }
 
 jump ExitEval {
     impl void(value val) [[
-        return Completion(Normal, val);
+        return val;
     ]]
 }
 
 jump Jump {
     impl void jmp(addr dest) [[
-        pc = dest;
+        pc = base + dest;
     ]]
 }
 
 jump IfJump {
     impl void executeIfJump(bool condResult, addr dest) [[
         if (condResult)
-            pc = dest;
+            pc = base + dest;
     ]]
 
     tile (value, addr) as executeIfJump;
@@ -248,7 +264,7 @@ jump IfJump {
 jump IfNotJump {
     impl void executeIfNotJump(bool condResult, addr dest) [[
         if (!condResult)
-            pc = dest;
+            pc = base +dest;
     ]]
 
     tile (value, addr) as executeIfNotJump;
@@ -304,7 +320,7 @@ operation NextForInEntry {
         }
 
         if ($$ == jsUndefined()) // Nothing found. Jump to end of the loop
-            pc = jumpToIfDone;
+            pc = base + jumpToIfDone;
     ]]
 }
 
@@ -391,7 +407,7 @@ operation ReactivateCompletion {
     impl void(bool insideFinally) [[
         JSValue* retVal = exec->reactivateCompletion(insideFinally);
         if (retVal)
-            return Completion(ReturnValue, retVal);
+            return retVal;
     ]]
 }
 
@@ -416,14 +432,15 @@ operation ReturnInTryFinally {
 operation PropagateException {
     impl void() [[
         JSValue* e = exec->exception();
-        exec->clearException(); // be extra-careful for GlobalExec
-        return Completion(Throw, e);
+        if (parentExec)
+            parentExec->setException(e);
+        return e;
     ]]
 }
 
 operation Return {
     impl void return (value retVal) [[
-        return Completion(ReturnValue, retVal);
+        return retVal;
     ]]
 }
 
@@ -449,7 +466,7 @@ operation GetVariableObject {
 
 operation GetGlobalObject {
     impl value() [[
-        $$ = exec->dynamicInterpreter()->globalObject();
+        $$ = globalObject;
     ]]
 }
 
@@ -645,7 +662,7 @@ operation ToObject {
 
 // Put for an object..
 operation SymPutKnownObject {
-    impl void symPutKnownObject(value scope, ident varName, value val) [[
+    impl void symPutKnownObject(value noimm scope, ident varName, value val) [[
         ASSERT(scope->isObject());
         static_cast<JSObject*>(scope)->put(exec, *varName, val);
     ]]
@@ -676,7 +693,7 @@ operation SymGetKnownObject {
 
 // As above, but also stores the object
 operation SymGetAndBind {
-    impl value (reg objDest, value base, ident varName) [[
+    impl value (reg objDest, value noimm base, ident varName) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
@@ -688,7 +705,7 @@ operation SymGetAndBind {
 }
 
 operation BracketGet {
-    impl value (value v1, value v2) costs 50 [[
+    impl value (value noimm v1, value v2) costs 50 [[
         uint32_t i;
 
         if (v2->getUInt32(i)) {
@@ -706,14 +723,14 @@ operation BracketGet {
         $$ = val;
     ]]
 
-    overload value (value base, int32 prop) [[
+    overload value (value noimm base, int32 prop) [[
         $$ = base->getByIndex(exec, prop);
     ]]
 }
 
 // Also computes the base object
 operation BracketGetAndBind {
-    impl value (reg objDest, value v1, value v2) costs 50 [[
+    impl value (reg objDest, value noimm v1, value v2) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
@@ -730,7 +747,7 @@ operation BracketGetAndBind {
         $$ = val;
     ]]
 
-    overload value (reg objDest, value base, int32 prop) [[
+    overload value (reg objDest, value noimm base, int32 prop) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
@@ -741,7 +758,7 @@ operation BracketGetAndBind {
 
 
 operation BracketPutKnownObject {
-    impl void (value v1, value v2, value v3) costs 50 [[
+    impl void (value noimm v1, value v2, value v3) costs 50 [[
         ASSERT(v1->isObject());
         uint32_t i;
         JSObject *o = static_cast<JSObject*>(v1);
@@ -752,15 +769,15 @@ operation BracketPutKnownObject {
             o->put(exec, Identifier(v2->toString(exec)), v3);
     ]]
 
-    overload void (value base, int32 prop, value val) [[
+    overload void (value noimm base, int32 prop, value val) [[
         ASSERT(base->isObject());
         static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
     ]]
 }
 
-operation VariableObjectGet {
+operation GlobalObjectGet {
     impl value(ident varName) [[
-        JSObject* scopeObj = exec->variableObject();
+        JSObject* scopeObj = globalObject;
         PropertySlot slot;
         if (scopeObj->getPropertySlot(exec, *varName, slot)) {
             JSValue* val = slot.getValue(exec, scopeObj, *varName);;
@@ -787,7 +804,7 @@ operation SymDelete {
 }
 
 operation BracketDelete {
-    impl bool(value v1, value v2) costs 50 [[
+    impl bool(value noimm v1, value v2) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
@@ -842,7 +859,7 @@ operation NewRegExp {
 }
 
 operation DefineGetter {
-    impl void(value base, ident name, value getter) [[
+    impl void(value noimm base, ident name, value getter) [[
         ASSERT(base->isObject());
         ASSERT(getter->isObject());
         static_cast<JSObject*>(base)->defineGetter(exec, *name, static_cast<JSObject*>(getter));
@@ -850,7 +867,7 @@ operation DefineGetter {
 }
 
 operation DefineSetter {
-    impl void(value base, ident name, value setter) [[
+    impl void(value noimm base, ident name, value setter) [[
         ASSERT(base->isObject());
         ASSERT(setter->isObject());
         static_cast<JSObject*>(base)->defineSetter(exec, *name, static_cast<JSObject*>(setter));
@@ -960,12 +977,22 @@ operation URShift {
 operation Less {
     // ### ??? TODO: conversion-less overloads here, when core supports them ???
 
-    impl bool(value v1, value v2) [[
+    impl bool(value v1, value v2) costs 40 [[
         // operator <
         // -1: NaN, undefined => false
         //  0: v1 >= v2       => false
         //  1: v1 <  v2       => true;
         $$ = (relation(exec, v1, v2) == 1);
+    ]]
+
+    overload bool(value v1, number n2) [[
+        // As above..
+        $$ = (relation(exec, v1, n2) == 1);
+    ]]
+
+    overload bool(value v1, int32 n2) [[
+        // As above... 
+        $$ = (relation(exec, v1, n2) == 1);
     ]]
 }
 
@@ -1000,16 +1027,32 @@ operation LessEq {
 }
 
 operation EqEq {
-    impl bool(value v1, value v2) [[
+    impl bool(value v1, value v2) costs 30  [[
         // operator ==
-        $$ = equal(exec,v1, v2);
+        $$ = equal(exec, v1, v2);
+    ]]
+
+    overload bool(value v1, int32 n2) [[
+        double n1;
+        if (v1->getNumber(n1))
+            $$ = (n1 == n2);
+        else
+            $$ = equal(exec, v1, jsNumber(n2));
     ]]
 }
 
 operation NotEq {
-    impl bool(value v1, value v2) [[
+    impl bool(value v1, value v2) costs 30 [[
         // operator !=
         $$ = !equal(exec,v1, v2);
+    ]]
+
+    overload bool(value v1, int32 n2) [[
+        double n1;
+        if (v1->getNumber(n1))
+            $$ = (n1 != n2);
+        else
+            $$ = !equal(exec, v1, jsNumber(n2));
     ]]
 }
 

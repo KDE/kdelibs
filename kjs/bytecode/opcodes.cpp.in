@@ -41,15 +41,32 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
     bool   inImmediate = (in->immediate != 0);
     OpType inType      = in->type;
 
+    // Obviously, we can't make a register result into an an immediate value
+    if (outImmediate && !inImmediate) {
+        costOut = Cost_NoConversion;
+        return Conv_NoConversion;
+    }
+
     if (exact) {
-        if (inImmediate == outImmediate && inType == outType) {
+        if (inType == outType) {
             costOut = 0;
+            // We want to prefer these even if they require a spill,
+            // (since the implementation is more immediate),
+            // but we do want a slight cost to the spill so we don't do it for no good reason
+            if (!outImmediate && inImmediate)
+                costOut = 1;
             return Conv_NoOp;
         }
 
         costOut = Cost_NoConversion;
         return Conv_NoConversion;
     }
+
+    // In general, if we're converting immediate to register, we first try to
+    // convert the immediate value to the right type. That will either produce
+    // a fresh immediate value that be spilled directly, or may even emit the
+    // conversion for us. If it produces the value --- and hence the basic conversion ---
+    // all we have to do is spill it.
 
     // Look up in the table..
     const ConvInfo* inf = getConversionInfo(inImmediate, inType, outType);
@@ -74,11 +91,11 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
                 costOut = Cost_NoConversion;
             return inf->routine;
         } else {
-            // immediate -> register;
-            if (inlineOK) {
-                costOut = Cost_NoConversion;
-                // No point of doing this, can just do in place..
-            } else {
+            // immediate -> register.
+
+            // If we know inline op OK, we follow the normal path below which adds in a spill cost.
+            // Otherwise we emit the op directly.
+            if (!inlineOK) {
                 // cost about the same as register int32-> number conversion
                 costOut = getConversionInfo(false, OpType_int32, OpType_value)->costCode;
                 return inType == OpType_int32 ? Conv_I_R_Int32_Value :
@@ -87,24 +104,27 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
         }
     }
 
-    // Obviously, we can't make a register result into an an immediate value,
-    // and we generally don't want to convert immediate values to registers,
-    // since we can nearly always just do a perfect immediate conversion in-place.
-    // But that fails only in case of checked conversions, which are handled above.
-    if (outImmediate != inImmediate) {
-        costOut = Cost_NoConversion;
-        return Conv_NoConversion;
-    }
-
     costOut = inf->costCode;
+    // Add some cost for a spill...
+    if (inImmediate && !outImmediate)
+        costOut += 25;
+
     return inf->routine;
 }
 
 void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
                     ConvOp convType, OpValue* original, OpValue& out)
 {
-    if (outImm) {
-        emitImmediateConversion(convType, original, out);
+    if (emitImmediateConversion(convType, original, out)) {
+        // Emit a spill if needed, after the value gets converted..
+        if (!outImm && original->immediate) {  // Need both checks since NoOp might get here..
+            OpValue spillVal, spillRef;
+
+            comp->requestTemporary(out.type, spillVal, spillRef);
+            CodeGen::emitRegStore(comp, block, &spillRef, &out);
+            out = spillVal;
+        }
+
         return;
     }
 
@@ -113,15 +133,16 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
 
     switch (convType) {
     case Conv_I_R_Int32_Value:
-        CodeGen::emitOp(comp, block, Op_RInt32_Value, &out, original);
+        CodeGen::emitOp(comp, block, Op_RInt32_Value_NonImm, &out, original);
         break;
 
     case Conv_I_R_Number_Value:
-        CodeGen::emitOp(comp, block, Op_RNumber_Value, &out, original);
+        CodeGen::emitOp(comp, block, Op_RNum_Value_NonImm, &out, original);
         break;
 
     default:
-        printf("Unable to handle register conversion:%s\n", ConvOpVals[convType]);
+        printf("Unable to emit conversion:%s, in:%c, out:%c\n", ConvOpVals[convType],
+               original->immediate ? 'I' : 'R', outImm ? 'I' : 'R');
         CRASH();
     };
 }
@@ -135,7 +156,8 @@ static inline void setArg(unsigned char* argBase, const OpValue& val)
             *reinterpret_cast<NarrowArg*>(argBase) = val.value.narrow;
         }
     } else {
-        reinterpret_cast<NarrowArg*>(argBase)->regVal = val.ownedReg->reg();
+        // For arguments, we actually output the byte offset.
+        reinterpret_cast<NarrowArg*>(argBase)->regVal = val.ownedReg->reg() * sizeof(LocalStorageEntry);
     }
 }
 
@@ -330,7 +352,7 @@ void CodeGen::patchJumpToNext(CompileState* comp, CodeBlock& block, Addr op, int
     patchOpArgument(block, op, argNum, destAddr);
 }
 
-static void dumpParam(CodeBlock& block, size_t offset, OpType type)
+static void dumpParam(CodeBlock& block, size_t offset, OpType type, bool wasImm)
 {
     switch (type) {
     case OpType_bool:
@@ -359,7 +381,7 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type)
         std::printf("A%08x", reinterpret_cast<NarrowArg*>(block.data() + offset)->addrVal);
         break;
     case OpType_reg:
-        std::printf("r%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal);
+        std::printf("r%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal / (wasImm ? 1 : sizeof(LocalStorageEntry)));
         break;
     case OpType_node:
         std::printf("N%p", reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal);
@@ -383,7 +405,7 @@ void CodeGen::disassembleBlock(CodeBlock& block)
         std::printf("%08x %s ", pc, OpNameVals[opDescr.baseInstr]);
         for (int p = 0; p < opDescr.numParams; ++p) {
             dumpParam(block, pc + opDescr.paramOffsets[p],
-                      opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg);
+                      opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg, opDescr.immediateParams[p]);
         }
 
         std::printf("\t\t// %s\n", OpByteCodeVals[opCode]);

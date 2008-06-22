@@ -44,19 +44,19 @@ namespace KJS {
 const ClassInfo StringInstance::info = {"String", 0, 0, 0};
 
 StringInstance::StringInstance(JSObject *proto)
-  : JSWrapperObject(proto)
+  : JSWrapperObject(proto), m_conversionsCustomized(false)
 {
   setInternalValue(jsString(""));
 }
 
 StringInstance::StringInstance(JSObject *proto, StringImp* string)
-  : JSWrapperObject(proto)
+  : JSWrapperObject(proto), m_conversionsCustomized(false)
 {
   setInternalValue(string);
 }
 
 StringInstance::StringInstance(JSObject *proto, const UString &string)
-  : JSWrapperObject(proto)
+  : JSWrapperObject(proto), m_conversionsCustomized(false)
 {
   setInternalValue(jsString(string));
 }
@@ -105,6 +105,10 @@ void StringInstance::put(ExecState *exec, const Identifier &propertyName, JSValu
 {
   if (propertyName == exec->propertyNames().length)
     return;
+
+  if (propertyName == exec->propertyNames().valueOf || propertyName == exec->propertyNames().toString)
+    m_conversionsCustomized = true;
+
   JSObject::put(exec, propertyName, value, attr);
 }
 
@@ -121,6 +125,15 @@ void StringInstance::getPropertyNames(ExecState* exec, PropertyNameArray& proper
   for (int i = 0; i < size; i++)
     propertyNames.add(Identifier(UString::from(i)));
   return JSObject::getPropertyNames(exec, propertyNames);
+}
+
+UString StringInstance::toString(ExecState *exec) const
+{
+  if (prototype() == originalProto() && !conversionsCustomized() &&
+      !static_cast<StringPrototype*>(prototype())->conversionsCustomized())
+    return internalValue()->value();
+  else
+    return JSObject::toString(exec);
 }
 
 // ------------------------------ StringPrototype ---------------------------

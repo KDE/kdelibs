@@ -284,9 +284,20 @@ void Parser::parseImpl()
     // Parse parameter types and names, if any..
     StringList paramSigs;
     StringList paramNames;
+    HintList   paramHints;
     while (peekNext().type != Lexer::RParen) {
         paramSigs.push_back (matchIdentifier());
+
+        if (peekNext().type == Lexer::NoImm) {
+            getNext();
+            paramHints.push_back(NoImm);
+        } else {
+            paramHints.push_back(NoHint);
+        }
+        
         paramNames.push_back(matchIdentifier());
+
+        
         if (peekNext().type != Lexer::Comma)
             break;
         getNext(); // Eat the comma..
@@ -305,7 +316,7 @@ void Parser::parseImpl()
     int codeLine;
     string code = matchCode(codeLine);
 
-    handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames);
+    handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames, paramHints);
 }
 
 void Parser::parseTile()

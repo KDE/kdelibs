@@ -200,6 +200,29 @@ bool JSObject::getOwnPropertySlot(ExecState *exec, unsigned propertyName, Proper
   return getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
 }
 
+// Ideally, we would like to inline this, since it's ultra-hot, but with the large VM
+// loop, it seems like the code side gets the g++-4.3.x inliner in the paranoid mode, so not only
+// does it not inline this, but it also doesn't inline setValueSlot() and hasGetterSetterProperties() (!!!).
+bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+    if (JSValue **location = getDirectLocation(propertyName)) {
+        if (_prop.hasGetterSetterProperties() && location[0]->type() == GetterSetterType)
+            fillGetterPropertySlot(slot, location);
+        else
+            slot.setValueSlot(this, location);
+        return true;
+    }
+
+    // non-standard Netscape extension
+    if (propertyName == exec->propertyNames().underscoreProto) {
+        slot.setValueSlot(this, &_proto);
+        return true;
+    }
+
+    return false;
+}
+
+
 static void throwSetterError(ExecState *exec)
 {
   throwError(exec, TypeError, "setting a property that has only a getter");
@@ -225,16 +248,21 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
     return;
   }
 
-  /* TODO: check for write permissions directly w/o this call */
-  /* Doesn't look very easy with the PropertyMap API - David */
   // putValue() is used for JS assignemnts. It passes no attribute.
   // Assume that a C++ implementation knows what it is doing
-  // and let it override the canPut() check.
-  if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName)) {
+  // and don't spend time doing a read-only check for it.
+  bool checkRO = (attr == None || attr == DontDelete);
+
+  if (checkRO) {
+    // Check for static properties that are ReadOnly; the property map will check the dynamic properties.
+    // We don't have to worry about setters being read-only as they can't be added with such an attribute.
+    const HashEntry* entry = findPropertyHashEntry(propertyName);
+    if (entry && entry->attr & ReadOnly) {
 #ifdef KJS_VERBOSE
-    fprintf( stderr, "WARNING: canPut %s said NO\n", propertyName.ascii() );
+      fprintf( stderr, "WARNING: static property %s is ReadOnly\n", propertyName.ascii() );
 #endif
-    return;
+      return;
+    }
   }
 
   // Check if there are any setters or getters in the prototype chain
@@ -284,7 +312,7 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
     }
   }
 
-  _prop.put(propertyName,value,attr);
+  _prop.put(propertyName,value,attr,checkRO);
 }
 
 void JSObject::put(ExecState *exec, unsigned propertyName,

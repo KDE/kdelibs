@@ -33,7 +33,7 @@ namespace KJS {
 
 class Machine {
 public:
-    static Completion runBlock(ExecState* exec, const CodeBlock& block);
+    static JSValue* runBlock(ExecState* exec, const CodeBlock& block, ExecState* parentExec = 0);
 };
 
 }

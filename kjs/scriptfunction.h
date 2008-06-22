@@ -93,6 +93,8 @@ namespace KJS {
 
     virtual void mark();
   private:
+    void initialCompile(ExecState* newExec);
+  
     ScopeChain _scope;
 
     static JSValue *argumentsGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);

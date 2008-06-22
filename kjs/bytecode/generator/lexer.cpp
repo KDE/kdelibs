@@ -50,6 +50,7 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["align8"]      = Align8;
     keywords["runtime"]     = Runtime;
     keywords["mayThrow"]    = MayThrow;
+    keywords["noimm"]       = NoImm;
     lineNum = 1;
 }
 

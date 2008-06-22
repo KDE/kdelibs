@@ -188,7 +188,7 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         CodeGen::emitOp(comp, block, Op_NonLocalVarGet, &out, &varName);
         break;
     case Global:
-        CodeGen::emitOp(comp, block, Op_VariableObjectGet, &out, &varName);
+        CodeGen::emitOp(comp, block, Op_GlobalObjectGet, &out, &varName);
         break;
     case Dynamic:
         CodeGen::emitOp(comp, block, Op_VarGet, &out, &varName);

@@ -46,17 +46,19 @@ namespace KJS {
 
         enum {
           LengthSlot,
-          OnStackSlot, // whether the storage is on stack
+          TearOffNeeded, // Set when a tearoff is requested;
+                         // the actual tearoff will only happen once the function
+                         // stops running, though
           NumVarObjectSlots = 2
         };
 
         int32_t& lengthSlot() { return localStorage[LengthSlot].val.int32Val; }
         const int32_t& lengthSlot() const { return localStorage[LengthSlot].val.int32Val; }
 
-        bool& onStackSlot() { return localStorage[OnStackSlot].val.boolVal; }
+        bool& tearOffNeededSlot() { return localStorage[TearOffNeeded].val.boolVal; }
     protected:
         JSVariableObject(): localStorage(0), symbolTable(0) { }
-        ~JSVariableObject() { if (localStorage && !onStackSlot()) delete[] localStorage; }
+        ~JSVariableObject() { if (localStorage && tearOffNeededSlot()) delete[] localStorage; }
 
         bool symbolTableGet(const Identifier&, PropertySlot&);
         bool symbolTablePut(const Identifier&, JSValue*, bool checkReadOnly);
