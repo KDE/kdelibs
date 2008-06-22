@@ -61,15 +61,19 @@ class KConfigGroupPrivate : public QSharedData
     }
 
     KConfigGroupPrivate(KConfigGroup* parent, bool isImmutable, bool isConst, const QByteArray& name)
-        : sOwner(parent->d->sOwner), mOwner(parent->d->mOwner), mParent(parent->d), mName(name),
+        : sOwner(parent->d->sOwner), mOwner(parent->d->mOwner), mName(name),
           bImmutable(isImmutable), bConst(isConst)
     {
+        if (!parent->d->mName.isEmpty())
+            mParent = parent->d;
     }
 
     KConfigGroupPrivate(const KConfigGroupPrivate* other, bool isImmutable, const QByteArray &name)
-        : sOwner(other->sOwner), mOwner(other->mOwner), mParent(other->mParent), mName(name),
+        : sOwner(other->sOwner), mOwner(other->mOwner), mName(name),
           bImmutable(isImmutable), bConst(other->bConst)
     {
+        if (!other->mName.isEmpty())
+            mParent = const_cast<KConfigGroupPrivate *>(other);
     }
 
     KSharedConfig::Ptr sOwner;
@@ -98,6 +102,8 @@ class KConfigGroupPrivate : public QSharedData
 
     QByteArray fullName(const QByteArray& aGroup) const
     {
+        if (mName.isEmpty())
+            return aGroup;
         return fullName() + '\x1d' + aGroup;
     }
 
@@ -589,7 +595,6 @@ KConfigGroup::~KConfigGroup()
 KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup)
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::groupImpl", "accessing an invalid group");
-    Q_ASSERT_X(!d->mName.isEmpty(), "KConfigGroup::groupImpl", "the default group is not allowed to have children");
     Q_ASSERT_X(!aGroup.isEmpty(), "KConfigGroup::groupImpl", "can not have an unnamed child group");
 
     KConfigGroup newGroup;
@@ -602,7 +607,6 @@ KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup)
 const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::groupImpl", "accessing an invalid group");
-    Q_ASSERT_X(!d->mName.isEmpty(), "KConfigGroup::groupImpl", "the default group is not allowed to have children");
     Q_ASSERT_X(!aGroup.isEmpty(), "KConfigGroup::groupImpl", "can not have an unnamed child group");
 
     KConfigGroup newGroup;
@@ -619,7 +623,10 @@ KConfigGroup KConfigGroup::parent() const
 
     KConfigGroup parentGroup;
 
-    parentGroup.d = d->mParent;
+    if (d->mParent)
+        parentGroup.d = d->mParent;
+    else
+        parentGroup.d = new KConfigGroupPrivate(d->mOwner, d->mOwner->isImmutable(), d->bConst, "");
 
     return parentGroup;
 }
@@ -641,9 +648,10 @@ void KConfigGroup::changeGroup( const char *group )
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
 
+    KConfigGroup pnt(parent());
     // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
     // ### temporary solution until QExplicitlySharedDataPointer has detach()
-    d = new KConfigGroupPrivate(d.data(), config()->isGroupImmutable(group), group);
+    d = new KConfigGroupPrivate(&pnt, pnt.isGroupImmutable(group), d->bConst, group);
 }
 
 QString KConfigGroup::name() const

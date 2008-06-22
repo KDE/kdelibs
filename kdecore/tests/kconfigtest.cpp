@@ -574,6 +574,14 @@ void KConfigTest::testChangeGroup()
     newGroup.changeGroup("FooBar"); // deprecated!
     QCOMPARE(newGroup.name(), QString("FooBar"));
     QCOMPARE(sc3.name(), QString("Hello")); // unchanged
+    KConfigGroup rootGroup(sc.group(""));
+    QCOMPARE(rootGroup.name(), QString("<default>"));
+    KConfigGroup sc32(rootGroup.group("Hello"));
+    QCOMPARE(sc32.name(), QString("Hello"));
+    KConfigGroup newGroup2(sc32);
+    newGroup2.changeGroup("FooBar"); // deprecated!
+    QCOMPARE(newGroup2.name(), QString("FooBar"));
+    QCOMPARE(sc32.name(), QString("Hello")); // unchanged
 }
 
 void KConfigTest::testDelete()
@@ -769,6 +777,8 @@ void KConfigTest::testImmutable()
     QVERIFY(cg.isEntryImmutable("entry1"));
     KConfigGroup cg1 = config.group("group");
     QVERIFY(cg1.isImmutable());
+    KConfigGroup cg1a = cg.group("group");
+    QVERIFY(cg1a.isImmutable());
     KConfigGroup cg2 = cg1.group("subgroup");
     QVERIFY(cg2.isImmutable());
 }
@@ -832,6 +842,9 @@ void KConfigTest::testSubGroup()
     KConfigGroup subcg3( &cg, "SubGroup/3");
     QCOMPARE(subcg3.readEntry( "sub3string", ""), QString("somevalue") );
     QCOMPARE(subcg3.name(), QString("SubGroup/3"));
+    KConfigGroup rcg( &sc, "" );
+    KConfigGroup srcg( &rcg, "ParentGroup" );
+    QCOMPARE(srcg.readEntry( "parentgrpstring", ""), QString("somevalue") );
 
     QCOMPARE(cg.groupList(), SUBGROUPLIST );
 
