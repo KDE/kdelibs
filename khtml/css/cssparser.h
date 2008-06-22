@@ -152,8 +152,6 @@ namespace DOM {
         CSSPrimitiveValueImpl *parseColorFromValue(Value* val);
         CSSValueImpl* parseCounterContent(ValueList *args, bool counters);
 
-        static bool parseColor(const QString &name, QRgb& rgb);
-
         // CSS3 Parsing Routines (for properties specific to CSS3)
         bool parseShadow(int propId, bool important);
 
