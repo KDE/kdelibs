@@ -60,6 +60,12 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QStyleOption>
 
+#include <kcomponentdata.h>
+#include <kglobal.h>
+#include <kconfiggroup.h>
+
+#include "kglobalsettings.h"
+
 //### FIXME: Who to credit these to?
 static const qint32 u_arrow[]={-1,-3, 0,-3, -2,-2, 1,-2, -3,-1, 2,-1, -4,0, 3,0, -4,1, 3,1};
 static const qint32 d_arrow[]={-4,-2, 3,-2, -4,-1, 3,-1, -3,0, 2,0, -2,1, 1,1, -1,2, 0,2};
@@ -94,10 +100,26 @@ class KStylePrivate
 public:
     KStylePrivate();
     QCache<quint64, SelectionTiles> selectionCache;
+    KComponentData m_componentData;
 };
 
-KStylePrivate::KStylePrivate()
+KStylePrivate::KStylePrivate() : m_componentData( "", "", KComponentData::SkipMainComponentRegistration )
 {
+    if(KGlobal::hasMainComponent())
+    {
+        m_componentData = KGlobal::mainComponent();
+    } else 
+    {
+        QString name(QApplication::applicationName());
+
+        if(name.isEmpty())
+            name=qAppName();
+
+        if(name.isEmpty())
+            name="KStyle";
+
+        m_componentData = KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
+    }
     selectionCache.setMaxCost(10);
 }
 
@@ -2200,6 +2222,9 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         // Don't draw the branch as selected in tree views
         case SH_ItemView_ShowDecorationSelected:
             return false;
+
+        case SH_ItemView_ActivateItemOnSingleClick:
+            return d->m_componentData.config()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
 
         default:
             break;
