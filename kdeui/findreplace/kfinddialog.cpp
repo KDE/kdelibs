@@ -87,7 +87,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     topLayout->setSpacing( KDialog::spacingHint() );
     topLayout->setMargin( 0 );
 
-    findGrp = new QGroupBox(i18n("Find"), page);
+    findGrp = new QGroupBox(i18nc("@title:group", "Find"), page);
     findLayout = new QGridLayout(findGrp);
     findLayout->setSpacing( KDialog::spacingHint() );
 
