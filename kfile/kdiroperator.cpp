@@ -2119,9 +2119,8 @@ void KDirOperator::Private::_k_assureVisibleSelection()
 
     QItemSelectionModel* selModel = itemView->selectionModel();
     if (selModel->hasSelection()) {
-        const QModelIndexList list = selModel->selection().indexes();
-        const QModelIndex index = list.first();
-        itemView->scrollTo(index);
+        const QModelIndex index = selModel->currentIndex();
+        itemView->scrollTo(index, QAbstractItemView::PositionAtCenter);
         _k_triggerPreview(index);
     }
 }

@@ -1287,7 +1287,7 @@ void KFileWidget::setSelection(const QString& url)
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
 {
-    if ( !selection.isNull() )
+    if ( !selection.isEmpty() )
         ops->setCurrentItem( selection );
 }
 
