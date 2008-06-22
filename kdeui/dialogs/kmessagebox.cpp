@@ -193,8 +193,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     hLayout->addSpacing(KDialog::spacingHint());
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
-    messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
-    messageLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink );
+    Qt::TextInteractionFlags flags = Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard;
+    if ( options & KMessageBox::AllowLink )
+        flags |= Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard;;
+    messageLabel->setTextInteractionFlags(flags);
     QPalette messagePal(messageLabel->palette());
     messagePal.setColor(QPalette::Window, Qt::transparent);
     messageLabel->setPalette(messagePal);
@@ -241,7 +244,10 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         if (details.length() < 512) {
             QLabel *detailsLabel = new QLabel(details);
             detailsLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
-            detailsLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+            Qt::TextInteractionFlags flags = Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard;
+            if ( options & KMessageBox::AllowLink )
+                flags |= Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard;;
+            detailsLabel->setTextInteractionFlags(flags);
             detailsLabel->setWordWrap(true);
             detailsLayout->addWidget(detailsLabel);
         } else {
