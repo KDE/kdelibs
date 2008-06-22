@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData, KCmdLineArgs::CmdLineArgKDE);
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KComponentData ins("meinproc4");
+    KComponentData ins("kio_help4");
     KGlobal::locale();
 
 
