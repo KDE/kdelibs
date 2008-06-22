@@ -2115,12 +2115,6 @@ static bool parseColor(int unit, const QString &name, QRgb& rgb)
     return false;
 }
 
-//Needed by the Canvas stuff --- it needs way of using rgba(), etc., parsing as well
-bool CSSParser::parseColor(const QString &name, QRgb& rgb)
-{
-    return ::parseColor(CSSPrimitiveValue::CSS_IDENT, name, rgb);
-}
-
 CSSPrimitiveValueImpl *CSSParser::parseColor()
 {
     return parseColorFromValue(valueList->current());
