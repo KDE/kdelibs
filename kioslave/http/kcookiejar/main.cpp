@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
    KCmdLineArgs::addCmdLineOptions( options );
 
-   KComponentData a("kcookiejar");
+   KComponentData a("kio4");
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
