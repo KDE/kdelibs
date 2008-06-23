@@ -6,6 +6,7 @@
                   1999,2000,2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2003 Clarence Dang <dang@kde.org>
                   2007 David Faure <faure@kde.org>
+                  2008 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -118,6 +119,17 @@ public:
      * Returns the absolute version of the URL specified in locationEdit.
      */
     KUrl getCompleteUrl(const QString&) const;
+
+    /**
+     * Sets the dummy entry on the history combo box. If the dummy entry
+     * already exists, it is overriden with this information.
+     */
+    void setDummyHistoryEntry(const QString& text, const QPixmap& icon = QPixmap());
+
+    /**
+     * Removes the dummy entry of the history combo box.
+     */
+    void removeDummyHistoryEntry();
 
     // private slots
     void _k_slotLocationChanged( const QString& );
@@ -963,7 +975,8 @@ void KFileWidget::accept()
 
 void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
 {
-    if (!i.isNull() && i.isDir())
+    if ( ( !i.isNull() && i.isDir() ) ||
+         ( locationEdit->hasFocus() && !locationEdit->currentText().isEmpty() ) ) // don't disturb
         return;
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
@@ -975,7 +988,7 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
         url = i.url();
 
         if ( !locationEdit->hasFocus() ) { // don't disturb while editing
-            setLocationText( i.url() );
+            setLocationText( url );
         }
         emit q->fileHighlighted(url.url());
     }
@@ -992,8 +1005,10 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
         return;
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( i.isNull() )
+        if ( i.isNull() ) {
+            setLocationText( KUrl() );
             return;
+        }
 
         setLocationText( i.url() );
     }
@@ -1009,11 +1024,17 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
 // (d->ops->selectedItems()), but what can we do?
 void KFileWidgetPrivate::multiSelectionChanged()
 {
-    if ( locationEdit->hasFocus() ) // don't disturb
+    if ( locationEdit->hasFocus() && !locationEdit->currentText().isEmpty() ) // don't disturb
         return;
 
-    locationEdit->lineEdit()->setModified( false );
     const KFileItemList list = ops->selectedItems();
+
+    if ( list.isEmpty() ) {
+        setLocationText( KUrl() );
+        return;
+    }
+
+    locationEdit->lineEdit()->setModified( false );
     if ( list.isEmpty() ) {
         setLocationText( KUrl() );
         return;
@@ -1037,24 +1058,68 @@ KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
     return item.isDir() ? url : url.upUrl();
 }
 
-void KFileWidgetPrivate::setLocationText( const KUrl& url )
+void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon )
 {
-    if ( url.isEmpty() && dummyAdded ) {
-        locationEdit->removeItem( 0 );
-        locationEdit->setCurrentIndex( - 1 );
-        dummyAdded = false;
+    // setCurrentItem() will cause textChanged() being emitted,
+    // so slotLocationChanged() will be called. Make sure we don't clear
+    // the KDirOperator's view-selection in there
+    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
+                        q, SLOT( _k_slotLocationChanged( const QString& ) ) );
 
-        return;
-    }
+    bool dummyExists = dummyAdded;
 
     if ( dummyAdded ) {
-        locationEdit->changeUrl( 0, KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small ), url.fileName() );
+        if ( !icon.isNull() ) {
+            locationEdit->changeUrl( 0, icon, text );
+        } else {
+            locationEdit->changeUrl( 0, text );
+        }
     } else {
-        locationEdit->insertUrl( 0, KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small ), url.fileName() );
-        dummyAdded = true;
+        if ( !text.isEmpty() ) {
+            if ( !icon.isNull() ) {
+                locationEdit->insertUrl( 0, icon, text );
+            } else {
+                locationEdit->insertUrl( 0, text );
+            }
+            dummyAdded = true;
+            dummyExists = true;
+        }
     }
 
-    locationEdit->setCurrentIndex( 0 );
+    if ( dummyExists && !text.isEmpty() ) {
+        locationEdit->setCurrentIndex( 0 );
+    }
+
+    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
+                    q, SLOT( _k_slotLocationChanged( const QString& )) );
+}
+
+void KFileWidgetPrivate::removeDummyHistoryEntry()
+{
+    // setCurrentItem() will cause textChanged() being emitted,
+    // so slotLocationChanged() will be called. Make sure we don't clear
+    // the KDirOperator's view-selection in there
+    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
+                        q, SLOT( _k_slotLocationChanged( const QString& ) ) );
+
+    if ( dummyAdded ) {
+        locationEdit->removeItem( 0 );
+        locationEdit->setCurrentIndex( -1 );
+        dummyAdded = false;
+    }
+
+    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
+                    q, SLOT( _k_slotLocationChanged( const QString& )) );
+}
+
+void KFileWidgetPrivate::setLocationText( const KUrl& url )
+{
+    if ( !url.isEmpty() ) {
+        QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
+        setDummyHistoryEntry( url.fileName(), mimeTypeIcon );
+    } else {
+        removeDummyHistoryEntry();
+    }
 
     // don't change selection when user has clicked on an item
     if ( operationMode == KFileWidget::Saving && !locationEdit->isVisible())
@@ -1066,24 +1131,19 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
     QPixmap mimeTypeIcon = urlList.count() == 1 ? KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ), KIconLoader::Small )
                                                 : QPixmap();
 
-    QString urls;
     if ( urlList.count() > 1 ) {
+        QString urls;
         foreach (const KUrl &url, urlList) {
             urls += '\"' + url.fileName() + "\" ";
         }
         urls = urls.left( urls.size() - 1 );
+
+        setDummyHistoryEntry( urls, mimeTypeIcon );
     } else if ( urlList.count() ) {
-        urls = urlList[0].fileName();
-    }
-
-    if ( dummyAdded ) {
-        locationEdit->changeUrl( 0, mimeTypeIcon, urls );
+        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon );
     } else {
-        locationEdit->insertUrl( 0, mimeTypeIcon, urls );
-        dummyAdded = true;
+        removeDummyHistoryEntry();
     }
-
-    locationEdit->setCurrentIndex( 0 );
 
     // don't change selection when user has clicked on an item
     if ( operationMode == KFileWidget::Saving && !locationEdit->isVisible())
@@ -1334,10 +1394,11 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
 
 void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 {
-    if ( match.isEmpty() && ops->view() )
+    if ( match.isEmpty() && ops->view() ) {
         ops->view()->clearSelection();
-    else {
+    } else {
         ops->setCurrentItem( match );
+        setDummyHistoryEntry( locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small ) );
     }
 }
 
@@ -1347,6 +1408,12 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
 
     if ( text.isEmpty() && ops->view() )
         ops->view()->clearSelection();
+
+    if ( text.isEmpty() ) {
+        removeDummyHistoryEntry();
+    } else {
+        setDummyHistoryEntry( text );
+    }
 
     updateFilter();
 }
