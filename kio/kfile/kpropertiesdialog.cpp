@@ -2546,39 +2546,44 @@ public:
 KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   : KPropertiesDialogPlugin( _props ),d(new KUrlPropsPluginPrivate)
 {
-  d->m_frame = new QFrame();
-  properties->addPage(d->m_frame, i18n("U&RL"));
-  QVBoxLayout *layout = new QVBoxLayout(d->m_frame);
-  layout->setMargin(0);
-  layout->setSpacing(KDialog::spacingHint());
+    d->m_frame = new QFrame();
+    properties->addPage(d->m_frame, i18n("U&RL"));
+    QVBoxLayout *layout = new QVBoxLayout(d->m_frame);
+    layout->setMargin(0);
+    layout->setSpacing(KDialog::spacingHint());
 
-  QLabel *l;
-  l = new QLabel( d->m_frame );
-  l->setObjectName( QLatin1String( "Label_1" ) );
-  l->setText( i18n("URL:") );
-  layout->addWidget(l);
+    QLabel *l;
+    l = new QLabel( d->m_frame );
+    l->setObjectName( QLatin1String( "Label_1" ) );
+    l->setText( i18n("URL:") );
+    layout->addWidget(l);
 
-  d->URLEdit = new KUrlRequester( d->m_frame );
-  layout->addWidget(d->URLEdit);
+    d->URLEdit = new KUrlRequester( d->m_frame );
+    layout->addWidget(d->URLEdit);
 
-  QString path = properties->kurl().path();
+    KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
+    if (url.isLocalFile()) {
+        QString path = url.path();
 
-  QFile f( path );
-  if ( !f.open( QIODevice::ReadOnly ) )
-    return;
-  f.close();
+        QFile f( path );
+        if ( !f.open( QIODevice::ReadOnly ) ) {
+            return;
+        }
+        f.close();
 
-  KDesktopFile config( path );
-  const KConfigGroup dg = config.desktopGroup();
-  d->URLStr = dg.readPathEntry( "URL", QString() );
+        KDesktopFile config( path );
+        const KConfigGroup dg = config.desktopGroup();
+        d->URLStr = dg.readPathEntry( "URL", QString() );
 
-  if ( !d->URLStr.isEmpty() )
-    d->URLEdit->setUrl( KUrl(d->URLStr) );
+        if (!d->URLStr.isEmpty()) {
+            d->URLEdit->setUrl( KUrl(d->URLStr) );
+        }
+    }
 
-  connect( d->URLEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
+    connect( d->URLEdit, SIGNAL( textChanged( const QString & ) ),
+            this, SIGNAL( changed() ) );
 
-  layout->addStretch (1);
+    layout->addStretch (1);
 }
 
 KUrlPropsPlugin::~KUrlPropsPlugin()
@@ -2607,7 +2612,13 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 
 void KUrlPropsPlugin::applyChanges()
 {
-  QString path = properties->kurl().path();
+  KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
+  if (!url.isLocalFile()) {
+    //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
+    return;
+  }
+
+  QString path = url.path();
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) ) {
@@ -2763,7 +2774,11 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
   layout->setRowStretch(8, 1);
 
-  QString path( _props->kurl().path() );
+  KUrl url = KIO::NetAccess::mostLocalUrl( _props->kurl(), _props );
+  if (!url.isLocalFile()) {
+    return;
+  }
+  QString path = url.path();
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadOnly ) )
@@ -2900,7 +2915,11 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
 
 void KDevicePropsPlugin::applyChanges()
 {
-  QString path = properties->kurl().path();
+  KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
+  if ( !url.isLocalFile() )
+    return;
+  QString path = url.path();
+
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) )
   {
@@ -2988,7 +3007,13 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   connect( d->w->advancedButton, SIGNAL( clicked() ), this, SLOT( slotAdvanced() ) );
 
   // now populate the page
-  QString path = _props->kurl().path();
+
+  KUrl url = KIO::NetAccess::mostLocalUrl( _props->kurl(), _props );
+  if (!url.isLocalFile()) {
+    return;
+  }
+  QString path = url.path();
+
   QFile f( path );
   if ( !f.open( QIODevice::ReadOnly ) )
     return;
@@ -3136,7 +3161,13 @@ void KDesktopPropsPlugin::checkCommandChanged()
 void KDesktopPropsPlugin::applyChanges()
 {
   kDebug(250) << "KDesktopPropsPlugin::applyChanges";
-  QString path = properties->kurl().path();
+
+  KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
+  if (!url.isLocalFile()) {
+    //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
+    return;
+  }
+  QString path = url.path();
 
   QFile f( path );
 
@@ -3343,15 +3374,28 @@ void KDesktopPropsPlugin::slotAdvanced()
 
 bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 {
-  if ( _items.count() != 1 )
-    return false;
-  const KFileItem item = _items.first();
-  // check if desktop file
-  if (!item.isDesktopFile())
-    return false;
-  // open file and check type
-  KDesktopFile config( item.url().path() );
-  return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
+    if ( _items.count() != 1 ) {
+        return false;
+    }
+
+    const KFileItem item = _items.first();
+
+    // check if desktop file
+    if (!item.isDesktopFile()) {
+        return false;
+    }
+
+    // open file and check type
+    bool isLocal;
+    KUrl url = item.mostLocalUrl( isLocal );
+    if (!isLocal) {
+        return false;
+    }
+
+    KDesktopFile config( url.path() );
+    return config.hasApplicationType() &&
+           KAuthorized::authorize("run_desktop_files") &&
+           KAuthorized::authorize("shell_access");
 }
 
 #include "kpropertiesdialog.moc"
