@@ -196,6 +196,8 @@ public:
      * Returns the DBUS Path
      */
 	QString dbusPath() const;
+	
+	QSize minimumSizeHint() const;
 
 public Q_SLOTS:
 
