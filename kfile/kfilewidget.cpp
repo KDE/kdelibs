@@ -70,6 +70,7 @@ public:
           labeledCustomWidget(0),
           bottomCustomWidget(0),
           inAccept(false),
+          dummyAdded(false),
           q(q)
     {
     }
@@ -80,7 +81,8 @@ public:
     void readConfig(const KConfigGroup &configGroup);
     void writeConfig(KConfigGroup &configGroup);
     void setNonExtSelection();
-    void setLocationText(const QString&);
+    void setLocationText(const KUrl&);
+    void setLocationText(const KUrl::List&);
     void appendExtension(KUrl &url);
     void updateLocationEditExtension(const QString &);
     void updateFilter();
@@ -185,6 +187,8 @@ public:
     bool hasDefaultFilter; // necessary for the operationMode
     bool autoDirectoryFollowing;
     bool inAccept; // true between beginning and end of accept()
+    bool dummyAdded; // if the dummy item has been added. This prevents the combo from having a
+                     // blank item added when loaded
 
     KFileWidget::OperationMode operationMode;
 
@@ -626,7 +630,8 @@ void KFileWidget::slotOk()
             // highlighted files
             bool multi = (mode() & KFile::Files) != 0;
             QString endQuote = QLatin1String("\" ");
-            QString name, files;
+            QString name;
+            KUrl::List urlList;
             foreach (const KFileItem &fileItem, items) {
                 name = fileItem.name();
                 if ( multi ) {
@@ -634,9 +639,9 @@ void KFileWidget::slotOk()
                     name.append( endQuote );
                 }
 
-                files.append( name );
+                urlList << fileItem.url();
             }
-            d->setLocationText( files );
+            d->setLocationText( urlList );
             return;
         }
     }
@@ -962,13 +967,15 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
         return;
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( i.isNull() )
+        if ( i.isNull() ) {
+            setLocationText( KUrl() );
             return;
+        }
 
         url = i.url();
 
         if ( !locationEdit->hasFocus() ) { // don't disturb while editing
-            setLocationText( i.name() );
+            setLocationText( i.url() );
         }
         emit q->fileHighlighted(url.url());
     }
@@ -988,8 +995,7 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
         if ( i.isNull() )
             return;
 
-        url = i.url();
-        setLocationText( i.name() );
+        setLocationText( i.url() );
     }
     else {
         multiSelectionChanged();
@@ -1009,17 +1015,17 @@ void KFileWidgetPrivate::multiSelectionChanged()
     locationEdit->lineEdit()->setModified( false );
     const KFileItemList list = ops->selectedItems();
     if ( list.isEmpty() ) {
-        locationEdit->clearEditText();
+        setLocationText( KUrl() );
         return;
     }
 
     static const QString &begin = KGlobal::staticQString(" \"");
-    QString text;
+    KUrl::List urlList;
     foreach (const KFileItem &fileItem, list) {
-        text.append( begin ).append( fileItem.name() ).append( QLatin1Char( '"' ) );
+        urlList << fileItem.url();
     }
 
-    setLocationText( text.trimmed() );
+    setLocationText( urlList );
 }
 
 KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
@@ -1031,17 +1037,53 @@ KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
     return item.isDir() ? url : url.upUrl();
 }
 
-void KFileWidgetPrivate::setLocationText( const QString& text )
+void KFileWidgetPrivate::setLocationText( const KUrl& url )
 {
-    // setCurrentItem() will cause textChanged() being emitted,
-    // so slotLocationChanged() will be called. Make sure we don't clear
-    // the KDirOperator's view-selection in there
-    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
-                         q, SLOT( _k_slotLocationChanged( const QString& ) ) );
+    if ( url.isEmpty() && dummyAdded ) {
+        locationEdit->removeItem( 0 );
+        locationEdit->setCurrentIndex( - 1 );
+        dummyAdded = false;
+
+        return;
+    }
+
+    if ( dummyAdded ) {
+        locationEdit->changeUrl( 0, KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small ), url.fileName() );
+    } else {
+        locationEdit->insertUrl( 0, KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small ), url.fileName() );
+        dummyAdded = true;
+    }
+
     locationEdit->setCurrentIndex( 0 );
-    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
-                      q, SLOT( _k_slotLocationChanged( const QString& )) );
-    locationEdit->setEditText( text );
+
+    // don't change selection when user has clicked on an item
+    if ( operationMode == KFileWidget::Saving && !locationEdit->isVisible())
+       setNonExtSelection();
+}
+
+void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
+{
+    QPixmap mimeTypeIcon = urlList.count() == 1 ? KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ), KIconLoader::Small )
+                                                : QPixmap();
+
+    QString urls;
+    if ( urlList.count() > 1 ) {
+        foreach (const KUrl &url, urlList) {
+            urls += '\"' + url.fileName() + "\" ";
+        }
+        urls = urls.left( urls.size() - 1 );
+    } else if ( urlList.count() ) {
+        urls = urlList[0].fileName();
+    }
+
+    if ( dummyAdded ) {
+        locationEdit->changeUrl( 0, mimeTypeIcon, urls );
+    } else {
+        locationEdit->insertUrl( 0, mimeTypeIcon, urls );
+        dummyAdded = true;
+    }
+
+    locationEdit->setCurrentIndex( 0 );
 
     // don't change selection when user has clicked on an item
     if ( operationMode == KFileWidget::Saving && !locationEdit->isVisible())
@@ -1183,9 +1225,8 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     }
 
     bool blocked = locationEdit->blockSignals( true );
-    locationEdit->setCurrentIndex( -1 );
     if ( keepLocation )
-        locationEdit->setEditText( filename );
+        locationEdit->changeUrl( 0, KIcon( filename ), filename );
 
     locationEdit->blockSignals( blocked );
 
@@ -1268,7 +1309,7 @@ void KFileWidget::setSelection(const QString& url)
             filename = u.fileName();
             kDebug(kfile_area) << "filename " << filename;
             d->selection = filename;
-            d->setLocationText( filename );
+            d->setLocationText( u );
 
             // tell the line edit that it has been edited
             // otherwise we won't know this was set by the user
@@ -1295,8 +1336,9 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 {
     if ( match.isEmpty() && ops->view() )
         ops->view()->clearSelection();
-    else
+    else {
         ops->setCurrentItem( match );
+    }
 }
 
 void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
