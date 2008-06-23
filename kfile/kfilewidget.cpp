@@ -701,7 +701,6 @@ void KFileWidget::slotOk()
         return;
     }
 
-
     KUrl selectedUrl;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
@@ -1068,6 +1067,8 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
 
     bool dummyExists = dummyAdded;
 
+    int cursorPosition = locationEdit->lineEdit()->cursorPosition();
+
     if ( dummyAdded ) {
         if ( !icon.isNull() ) {
             locationEdit->changeUrl( 0, icon, text );
@@ -1089,6 +1090,8 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
     if ( dummyExists && !text.isEmpty() ) {
         locationEdit->setCurrentIndex( 0 );
     }
+
+    locationEdit->lineEdit()->setCursorPosition( cursorPosition );
 
     QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
                     q, SLOT( _k_slotLocationChanged( const QString& )) );
