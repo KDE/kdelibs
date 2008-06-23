@@ -207,6 +207,7 @@ public:
     void _k_slotSelectionChanged();
     void _k_openContextMenu(const QPoint&);
     void _k_triggerPreview(const QModelIndex&);
+    void _k_slotItemSelectionChanged(const QItemSelection&);
     void _k_showPreview();
     void _k_slotSplitterMoved(int, int);
     void _k_assureVisibleSelection();
@@ -1383,6 +1384,8 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_openContextMenu(const QPoint&)));
     connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
+    connect(d->itemView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+            this, SLOT(_k_slotItemSelectionChanged(const QItemSelection&)));
     // assure that the sorting state d->sorting matches with the current action
     const bool descending = d->actionCollection->action("descending")->isChecked();
     if (!descending && d->sorting & QDir::Reversed) {
@@ -2092,6 +2095,18 @@ void KDirOperator::Private::_k_triggerPreview(const QModelIndex& index)
         } else {
             preview->clearPreview();
         }
+    }
+}
+
+void KDirOperator::Private::_k_slotItemSelectionChanged(const QItemSelection& selected)
+{
+    const QModelIndexList indexList = selected.indexes();
+
+    // On single selection itemviews, if you click on the blank part of the viewport
+    // and drag to an item (which becomes selected), since it appears as selected,
+    // KDirOperator should act as if it had been activated.
+    if (indexList.count() == 1) {
+        _k_slotActivated(indexList[0]);
     }
 }
 
