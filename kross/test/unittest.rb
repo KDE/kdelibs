@@ -230,6 +230,7 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.func_qurl_qurl("file:///home/myuser/myfile.txt") == "file:///home/myuser/myfile.txt" )
 		assert( TestObject1.func_qurl_qurl("http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456") == "http://myname:mypass@kross.dipe.org?404.cgi?test=123&test2=456" )
 		assert( TestObject1.func_kurl_kurl("http://www.kde.org/whatiskde/") == "http://www.kde.org/whatiskde/" )
+		assert( ! TestObject1.func_kurl_qstring("http://www.kde.org/whatiskde/") )
 	end
 
 	def testStringList

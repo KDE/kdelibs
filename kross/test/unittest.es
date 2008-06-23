@@ -175,6 +175,7 @@ tester.assertArray(testobj1.func_qrectf_qrectf([12.34,34.56,56.78,78.9]), [12.34
 tester.assert(testobj1.func_qurl_qurl("http://nowhere.anywhere"), "http://nowhere.anywhere");
 tester.assert(testobj1.func_kurl_kurl("/home/otheruser/"), "/home/otheruser/");
 tester.assert(testobj1.func_kurl_kurl("http://www.kde.org/whatiskde/test?123"), "http://www.kde.org/whatiskde/test?123");
+tester.assert(testobj1.func_kurl_qstring("http://www.kde.org/whatiskde/test?123"), undefined);
 
 // QVariantMap
 var v = new Array;
