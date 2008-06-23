@@ -124,7 +124,8 @@ public:
      * Sets the dummy entry on the history combo box. If the dummy entry
      * already exists, it is overriden with this information.
      */
-    void setDummyHistoryEntry(const QString& text, const QPixmap& icon = QPixmap());
+    void setDummyHistoryEntry(const QString& text, const QPixmap& icon = QPixmap(),
+                              bool usePreviousPixmapIfNull = false);
 
     /**
      * Removes the dummy entry of the history combo box.
@@ -1057,7 +1058,8 @@ KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
     return item.isDir() ? url : url.upUrl();
 }
 
-void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon )
+void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon,
+                                               bool usePreviousPixmapIfNull )
 {
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
@@ -1073,14 +1075,22 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
         if ( !icon.isNull() ) {
             locationEdit->changeUrl( 0, icon, text );
         } else {
-            locationEdit->changeUrl( 0, text );
+            if ( !usePreviousPixmapIfNull ) {
+                locationEdit->changeUrl( 0, QPixmap(), text );
+            } else {
+                locationEdit->changeUrl( 0, text );
+            }
         }
     } else {
         if ( !text.isEmpty() ) {
             if ( !icon.isNull() ) {
                 locationEdit->insertUrl( 0, icon, text );
             } else {
-                locationEdit->insertUrl( 0, text );
+                if ( !usePreviousPixmapIfNull ) {
+                    locationEdit->insertUrl( 0, QPixmap(), text );
+                } else {
+                    locationEdit->insertUrl( 0, text );
+                }
             }
             dummyAdded = true;
             dummyExists = true;
@@ -1143,7 +1153,7 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
 
         setDummyHistoryEntry( urls, mimeTypeIcon );
     } else if ( urlList.count() ) {
-        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon );
+        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon, true /* usePreviousPixmapIfNull */ );
     } else {
         removeDummyHistoryEntry();
     }
