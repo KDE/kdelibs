@@ -96,14 +96,14 @@ void* loadLibrary(const char* libname, const char* functionname)
         */
 
         if( ! lib.isLoaded() ) {
-            //#ifdef KROSS_INTERPRETER_DEBUG
-            if( strcmp(functionname, "krossinterpreter") == 0 )
-                krossdebug( QString("Kross Interpreter '%1' not available: %2").arg(libname).arg(err) );
-            else if( strcmp(functionname, "krossmodule") == 0 )
-                krossdebug( QString("Kross Module '%1' not available: %2").arg(libname).arg(err) );
-            else
-                krosswarning( QString("Failed to load unknown type of '%1' library: %2").arg(libname).arg(err) );
-            //#endif
+            #ifdef KROSS_INTERPRETER_DEBUG
+                if( strcmp(functionname, "krossinterpreter") == 0 )
+                    krossdebug( QString("Kross Interpreter '%1' not available: %2").arg(libname).arg(err) );
+                else if( strcmp(functionname, "krossmodule") == 0 )
+                    krossdebug( QString("Kross Module '%1' not available: %2").arg(libname).arg(err) );
+                else
+                    krosswarning( QString("Failed to load unknown type of '%1' library: %2").arg(libname).arg(err) );
+            #endif
             return 0;
         }
     }
