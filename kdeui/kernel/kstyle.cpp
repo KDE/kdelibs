@@ -102,14 +102,14 @@ class KStylePrivate
 public:
     KStylePrivate();
     QCache<quint64, SelectionTiles> selectionCache;
-    const KComponentData* m_componentData;
+    KComponentData m_componentData;
 };
 
-KStylePrivate::KStylePrivate() : m_componentData( 0 )
+KStylePrivate::KStylePrivate() : m_componentData()
 {
     if(KGlobal::hasMainComponent())
     {
-        m_componentData = &KGlobal::mainComponent();
+        m_componentData = KGlobal::mainComponent();
     } else 
     {
         QString name(QApplication::applicationName());
@@ -120,7 +120,7 @@ KStylePrivate::KStylePrivate() : m_componentData( 0 )
         if(name.isEmpty())
             name="KStyle";
 
-        m_componentData = new KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
+        m_componentData = KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
     }
     selectionCache.setMaxCost(10);
 }
@@ -2226,7 +2226,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
             return false;
 
         case SH_ItemView_ActivateItemOnSingleClick:
-            return d->m_componentData->config()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
+            return d->m_componentData.config()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
 
         default:
             break;
