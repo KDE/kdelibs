@@ -148,6 +148,11 @@ class TestObject : public QObject
         QUrl func_qurl_kurl(const KUrl&);
         KUrl func_kurl_kurl(const KUrl&);
 
+        // following is returned by reference which is a big nono
+        // cause it may lead to crashes. So, the backends should
+        // set such things to None/nil/NULL/etc.
+        const KUrl& func_kurl_qstring(const QString&);
+
         QColor func_qcolor_qcolor(const QColor&);
         QFont func_qfont_qfont(const QFont&);
         QBrush func_qbrush_qbrush(const QBrush&);
