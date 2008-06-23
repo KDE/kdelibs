@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     int result = ERROR_OK;
 
     KAboutData about("kross",
-                     0,
+                     "kdelibs4",
                      ki18n("Kross"),
                      "0.1",
                      ki18n("KDE application to run Kross scripts."),
