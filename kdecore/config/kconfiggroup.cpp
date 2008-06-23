@@ -623,10 +623,13 @@ KConfigGroup KConfigGroup::parent() const
 
     KConfigGroup parentGroup;
 
-    if (d->mParent)
+    if (d->mParent) {
         parentGroup.d = d->mParent;
-    else
+    } else {
         parentGroup.d = new KConfigGroupPrivate(d->mOwner, d->mOwner->isImmutable(), d->bConst, "");
+        // make sure we keep the refcount up on the KConfig object
+        parentGroup.d->sOwner = d->sOwner;
+    }
 
     return parentGroup;
 }
