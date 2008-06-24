@@ -1412,6 +1412,7 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
     } else {
         ops->setCurrentItem( match );
         setDummyHistoryEntry( locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small ) );
+        locationEdit->setCompletedText( match );
     }
 }
 
