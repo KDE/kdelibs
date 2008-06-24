@@ -1042,9 +1042,9 @@ QString KStartupInfoId::Private::to_text() const
 
 KStartupInfoId::KStartupInfoId( const QString& txt_P ) : d(new Private)
     {
-    QStringList items = get_fields( txt_P );
+    const QStringList items = get_fields( txt_P );
     const QString id_str = QLatin1String( "ID=" );
-    for( QStringList::Iterator it = items.begin();
+    for( QStringList::ConstIterator it = items.begin();
          it != items.end();
          ++it )
         {
@@ -1220,7 +1220,7 @@ QString KStartupInfoData::Private::to_text() const
 
 KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
     {
-    QStringList items = get_fields( txt_P );
+    const QStringList items = get_fields( txt_P );
     const QString bin_str = QString::fromLatin1( "BIN=" );
     const QString name_str = QString::fromLatin1( "NAME=" );
     const QString description_str = QString::fromLatin1( "DESCRIPTION=" );
@@ -1234,7 +1234,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
     const QString screen_str = QString::fromLatin1( "SCREEN=" );
     const QString xinerama_str = QString::fromLatin1( "XINERAMA=" );
     const QString launched_by_str = QString::fromLatin1( "LAUNCHED_BY=" );
-    for( QStringList::Iterator it = items.begin();
+    for( QStringList::ConstIterator it = items.begin();
          it != items.end();
          ++it )
         {

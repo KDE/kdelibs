@@ -256,7 +256,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
         m_listBox->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
         for (QStringList::ConstIterator it = select.begin(); it != select.end(); ++it) {
-            QList<QListWidgetItem*> matches = m_listBox->findItems(*it, Qt::MatchCaseSensitive|Qt::MatchExactly);
+            const QList<QListWidgetItem*> matches = m_listBox->findItems(*it, Qt::MatchCaseSensitive|Qt::MatchExactly);
             if (!matches.isEmpty())
                 m_listBox->setCurrentItem(matches.first());
         }
@@ -266,7 +266,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
         if (!select.isEmpty()) {
             QString text = select.first();
 
-            QList<QListWidgetItem*> matches = m_listBox->findItems(text, Qt::MatchCaseSensitive|Qt::MatchExactly);
+            const QList<QListWidgetItem*> matches = m_listBox->findItems(text, Qt::MatchCaseSensitive|Qt::MatchExactly);
             if (!matches.isEmpty())
                 m_listBox->setCurrentItem(matches.first());
         }

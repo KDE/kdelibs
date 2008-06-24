@@ -688,7 +688,7 @@ QModelIndex KCategorizedView::indexAt(const QPoint &point) const
 
     QModelIndex index;
 
-    QModelIndexList item = d->intersectionSet(QRect(point, point));
+    const QModelIndexList item = d->intersectionSet(QRect(point, point));
 
     if (item.count() == 1)
     {
@@ -1038,7 +1038,7 @@ void KCategorizedView::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    QModelIndexList item = d->intersectionSet(QRect(event->pos(), event->pos()));
+    const QModelIndexList item = d->intersectionSet(QRect(event->pos(), event->pos()));
 
     if (item.count() == 1)
     {

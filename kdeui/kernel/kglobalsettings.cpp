@@ -231,7 +231,7 @@ int KGlobalSettings::contextMenuKey ()
         return QKeySequence()[0];
     }
 
-    QStringList shortCuts = s.split(';');
+    const QStringList shortCuts = s.split(';');
 
     if (shortCuts.count() < 1) {
         return QKeySequence()[0];

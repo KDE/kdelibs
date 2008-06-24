@@ -618,7 +618,7 @@ void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
     }
 
     int block = blockCombo->itemData(index).toInt();
-    QList<QChar> contents = s_data->blockContents(block);
+    const QList<QChar> contents = s_data->blockContents(block);
     if(contents.count() <= index) {
         return;
     }

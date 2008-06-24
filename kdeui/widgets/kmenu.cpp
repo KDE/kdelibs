@@ -484,7 +484,7 @@ void KMenu::KMenuPrivate::actionHovered(QAction* /*action*/)
 }
 
 static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contextedAction) {
-    QList<QAction*> actions=menu->actions();
+    const QList<QAction*> actions=menu->actions();
     QVariant v;
     v.setValue(KMenuContext(contextedMenu,contextedAction));
     for(int i=0;i<actions.count();i++) {

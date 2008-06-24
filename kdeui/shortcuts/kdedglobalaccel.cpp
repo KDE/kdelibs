@@ -567,7 +567,7 @@ void KdedGlobalAccel::loadSettings()
         lActionId[ComponentFriendly] = friendlyGroup.readEntry("Friendly Name");
 
         foreach (const QString &confKey, configGroup.keyList()) {
-            QStringList entry = configGroup.readEntry(confKey, QStringList());
+            const QStringList entry = configGroup.readEntry(confKey, QStringList());
             if (entry.size() != 3) {
                 continue;
             }

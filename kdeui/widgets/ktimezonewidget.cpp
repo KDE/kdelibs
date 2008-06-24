@@ -68,7 +68,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   QHash<QString, KTimeZone> zonesByCity;
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
     KTimeZone zone = it.value();
-    QStringList continentCity = displayName( zone ).split( '/' );
+    const QStringList continentCity = displayName( zone ).split( '/' );
     QString city = continentCity[ continentCity.count() - 1 ];
     cities.append( city );
     zonesByCity.insert( city, zone );

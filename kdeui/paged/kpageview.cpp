@@ -115,7 +115,7 @@ void KPageViewPrivate::cleanupPages()
    * Remove all orphan pages from the stacked widget.
    */
 
-  QList<QWidget*> widgets = collectPages();
+  const QList<QWidget*> widgets = collectPages();
 
   for ( int i = 0; i < stack->count(); ++i ) {
     QWidget *page = stack->widget( i );
@@ -197,7 +197,7 @@ void KPageViewPrivate::_k_modelChanged()
    * Set the stack to the minimum size of the largest widget.
    */
   QSize size = stack->size();
-  QList<QWidget*> widgets = collectPages();
+  const QList<QWidget*> widgets = collectPages();
   for ( int i = 0; i < widgets.count(); ++i ) {
     const QWidget *widget = widgets[ i ];
     if ( widget )

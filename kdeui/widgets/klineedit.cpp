@@ -1465,7 +1465,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
             d->completionBox->setItems( items );
 
-            QList<QListWidgetItem*> matchedItems = d->completionBox->findItems( currentSelection , Qt::MatchExactly);
+            const QList<QListWidgetItem*> matchedItems = d->completionBox->findItems( currentSelection , Qt::MatchExactly);
             QListWidgetItem* matchedItem = matchedItems.isEmpty() ? 0 : matchedItems.first();
 
             // If no item is selected, that means the listbox hasn't been manipulated by the user yet,

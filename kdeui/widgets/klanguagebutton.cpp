@@ -36,7 +36,7 @@ static void checkInsertPos( QMenu *popup, const QString &str, int &index )
     return;
 
   int a = 0;
-  QList<QAction*> actions = popup->actions();
+  const QList<QAction*> actions = popup->actions();
   int b = actions.count();
 
   while ( a < b )

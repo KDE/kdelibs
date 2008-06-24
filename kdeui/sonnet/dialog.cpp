@@ -188,7 +188,7 @@ void Dialog::updateDialog( const QString& word )
 {
     d->ui.m_unknownWord->setText( word );
     d->ui.m_contextLabel->setText( d->checker->currentContext() );
-    QStringList suggs = d->checker->suggest( word );
+    const QStringList suggs = d->checker->suggest( word );
 
     if (suggs.isEmpty())
         d->ui.m_replacement->clear();

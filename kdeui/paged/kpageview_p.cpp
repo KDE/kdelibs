@@ -203,7 +203,7 @@ KPageTabbedView::KPageTabbedView( QWidget *parent )
   : QAbstractItemView( parent )
 {
   // hide the viewport of the QAbstractScrollArea
-  QList<QWidget*> list = findChildren<QWidget*>();
+  const QList<QWidget*> list = findChildren<QWidget*>();
   for ( int i = 0; i < list.count(); ++i )
     list[ i ]->hide();
 

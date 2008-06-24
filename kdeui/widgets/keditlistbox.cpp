@@ -164,7 +164,7 @@ void KEditListBoxPrivate::updateButtonState()
 QModelIndex KEditListBoxPrivate::selectedIndex()
 {
     QItemSelectionModel *selection = listView->selectionModel();
-    QModelIndexList selectedIndexes = selection->selectedIndexes();
+    const QModelIndexList selectedIndexes = selection->selectedIndexes();
     if ( !selectedIndexes.isEmpty() && selectedIndexes[0].isValid() )
         return selectedIndexes[0];
     else
@@ -624,7 +624,7 @@ void KEditListBox::insertItem(const QString& text, int index)
 
 QString KEditListBox::text(int index) const
 {
-  QStringList list = d->model->stringList();
+  const QStringList list = d->model->stringList();
 
   return list[ index ];
 }

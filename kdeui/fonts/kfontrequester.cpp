@@ -40,7 +40,7 @@ static QFont nearestExistingFont (const QFont &font)
     int size = font.pointSize();
 
     // Check if the family exists.
-    QStringList families = dbase.families();
+    const QStringList families = dbase.families();
     if (!families.contains(family)) {
         // Chose another family.
         family = families.count() ? families[0] : "fixed";

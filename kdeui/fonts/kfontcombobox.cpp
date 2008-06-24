@@ -260,7 +260,7 @@ void KFontComboBoxPrivate::updateIndexToFont ()
     // QFontInfo necessary to return the family with proper casing.
     QString selectedFontFamily = QFontInfo(currentFont).family();
     QString trSelectedFontFamily = translateFontName(selectedFontFamily);
-    QStringList trFontFamilies = model->stringList();
+    const QStringList trFontFamilies = model->stringList();
     if (!trFontFamilies.count()) {
         return;
     }

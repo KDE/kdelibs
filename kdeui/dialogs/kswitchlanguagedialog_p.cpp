@@ -115,7 +115,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     languageHorizontalLayout->addLayout(d->languagesLayout);
     languageHorizontalLayout->addStretch();
 
-    QStringList defaultLanguages = d->applicationLanguageList();
+    const QStringList defaultLanguages = d->applicationLanguageList();
 
     int count = defaultLanguages.count();
     for (int i = 0; i < count; ++i)
@@ -248,7 +248,7 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
     KLocale *locale = KGlobal::locale();
-    QStringList allLanguages = locale->allLanguagesList();
+    const QStringList allLanguages = locale->allLanguagesList();
     for ( int i = 0, count = allLanguages.count(); i < count; ++i )
     {
         QString languageCode = allLanguages[i];

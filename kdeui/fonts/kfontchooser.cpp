@@ -871,7 +871,7 @@ int KFontChooser::Private::setupSizeListBox (const QString& family, const QStrin
     int bestFitSize = fillSizeList(sizes);
 
     // Set the best fit size as current in the listbox if available.
-    QList<QListWidgetItem*> selectedSizeList =
+    const QList<QListWidgetItem*> selectedSizeList =
         sizeListBox->findItems( QString::number(bestFitSize),
                                 Qt::MatchExactly );
     if ( !selectedSizeList.isEmpty() ) {
