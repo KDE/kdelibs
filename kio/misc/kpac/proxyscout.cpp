@@ -161,7 +161,7 @@ namespace KPAC
         try
         {
             QString result = m_script->evaluate( url );
-            QStringList proxies = result.split( ';', QString::SkipEmptyParts );
+            const QStringList proxies = result.split( ';', QString::SkipEmptyParts );
             for ( QStringList::ConstIterator it = proxies.begin();
                   it != proxies.end(); ++it )
             {

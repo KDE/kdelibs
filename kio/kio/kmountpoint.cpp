@@ -242,7 +242,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
           continue;
 
       // not empty or commented out by '#'
-      QStringList item = s.split( ' ');
+      const QStringList item = s.split( ' ');
 
 #ifdef _OS_SOLARIS_
       if (item.count() < 5)

@@ -241,8 +241,8 @@ KEMailSettings::KEMailSettings()
 
 	p->m_pConfig = new KConfig("emaildefaults");
 
-	QStringList groups = p->m_pConfig->groupList();
-	for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it) {
+	const QStringList groups = p->m_pConfig->groupList();
+	for (QStringList::ConstIterator it = groups.begin(); it != groups.end(); ++it) {
 		if ( (*it).startsWith( QLatin1String( "PROFILE_" ) ) )
 			p->profiles+= (*it).mid(8, (*it).length());
 	}

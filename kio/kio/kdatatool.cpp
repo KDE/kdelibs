@@ -117,7 +117,7 @@ QPixmap KDataToolInfo::icon() const
         return QPixmap();
 
     QPixmap pix;
-    QStringList lst = KGlobal::dirs()->resourceDirs("icon");
+    const QStringList lst = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it = lst.begin();
     while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
         it++;
@@ -131,7 +131,7 @@ QPixmap KDataToolInfo::miniIcon() const
         return QPixmap();
 
     QPixmap pix;
-    QStringList lst = KGlobal::dirs()->resourceDirs("mini");
+    const QStringList lst = KGlobal::dirs()->resourceDirs("mini");
     QStringList::ConstIterator it = lst.begin();
     while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
         it++;

@@ -67,7 +67,7 @@ QStringList KRecentDirs::list(const QString &fileClass)
 
 QString KRecentDirs::dir(const QString &fileClass)
 {
-   QStringList result = list(fileClass);
+   const QStringList result = list(fileClass);
    return result[0];
 }
 

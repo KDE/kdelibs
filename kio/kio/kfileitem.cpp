@@ -986,10 +986,10 @@ QString KFileItem::getToolTipText(int maxcount) const
     if (info.isValid())
     {
         tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
-        QStringList keys = info.preferredKeys();
+        const QStringList keys = info.preferredKeys();
 
         // now the rest
-        QStringList::Iterator it = keys.begin();
+        QStringList::ConstIterator it = keys.begin();
         for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
         {
             KFileMetaInfoItem item = info.item( *it );

@@ -200,7 +200,7 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
     d->ui.address->setText(url);
     d->ui.sslVersion->setText(sslProtocol);
 
-    QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
+    const QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
     if (cipherInfo.size() >= 4) {
         d->ui.encryption->setText(i18n("%1, using %2 bits of a %3 bit key",
                                          cipherInfo[0], QString::number(usedBits),
