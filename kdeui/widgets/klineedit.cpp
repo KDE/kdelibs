@@ -1084,10 +1084,13 @@ QMenu* KLineEdit::createStandardContextMenu()
 
     if( !isReadOnly() )
     {
+        // FIXME: This code depends on Qt's action ordering.
         QList<QAction *> actionList = popup->actions();
-        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+        enum { UndoAct, RedoAct, Separator1, CutAct, CopyAct, PasteAct, DeleteAct, ClearAct,
+               Separator2, SelectAllAct, NCountActs };
         QAction *separatorAction = 0L;
-        int idx = actionList.indexOf( actionList[SelectAllAct] ) + 1;
+        // separator we want is right after Delete right now.
+        int idx = actionList.indexOf( actionList[DeleteAct] ) + 1;
         if ( idx < actionList.count() )
             separatorAction = actionList.at( idx );
         if ( separatorAction )

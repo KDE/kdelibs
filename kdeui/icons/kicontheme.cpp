@@ -582,8 +582,10 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                                            QList<QAction*> actions )
 {
     switch (type) {
+        // FIXME: This code depends on Qt's action ordering.
         case TextEditor:
-            enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+            enum { UndoAct, RedoAct, Separator1, CutAct, CopyAct, PasteAct, DeleteAct, ClearAct,
+                   Separator2, SelectAllAct, NCountActs };
 
             if ( actions.count() < NCountActs ) {
                 return;
@@ -595,6 +597,8 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
             actions[CopyAct]->setIcon( KIcon("edit-copy") );
             actions[PasteAct]->setIcon( KIcon("edit-paste") );
             actions[ClearAct]->setIcon( KIcon("edit-clear") );
+            actions[DeleteAct]->setIcon( KIcon("edit-delete") );
+            actions[SelectAllAct]->setIcon( KIcon("edit-select-all") );
             break;
 
         case ReadOnlyText:
