@@ -81,7 +81,7 @@ QVariant DomainModel::data(const QModelIndex& index, int role  ) const
 {
     if (!index.isValid()) return QVariant();
     if (!hasIndex(index.row(), index.column(), index.parent())) return QVariant();
-    QStringList domains=d->m_browser->domains();
+    const QStringList domains=d->m_browser->domains();
     if (role==Qt::DisplayRole) return domains[index.row()];
     return QVariant();
 }
