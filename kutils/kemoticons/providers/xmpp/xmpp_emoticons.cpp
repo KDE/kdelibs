@@ -71,7 +71,7 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
 {
     KEmoticonsProvider::addEmoticon(emo, text, option);
 
-    QStringList splitted = text.split(" ");
+    const QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull()) {

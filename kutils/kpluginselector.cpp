@@ -744,8 +744,8 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
 
     KAboutData aboutData(name.toUtf8(), name.toUtf8(), ki18n(name.toUtf8()), version.toUtf8(), ki18n(comment.toUtf8()), KAboutLicense::byKeyword(license).key(), ki18n(QByteArray()), ki18n(QByteArray()), website.toLatin1());
     aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
-    QStringList authors = author.split(',');
-    QStringList emails = email.split(',');
+    const QStringList authors = author.split(',');
+    const QStringList emails = email.split(',');
     int i = 0;
     if (authors.count() == emails.count()) {
         foreach (const QString &author, authors) {

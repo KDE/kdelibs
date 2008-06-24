@@ -184,7 +184,7 @@ bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPlugi
 	bool enabled = true;
     //kDebug(700) << "check whether the '" << moduleinfo->moduleName() << "' KCM should be shown";
 	// for all parent components
-	QStringList parentComponents = moduleinfo->service()->property(
+	const QStringList parentComponents = moduleinfo->service()->property(
 			"X-KDE-ParentComponents" ).toStringList();
 	for( QStringList::ConstIterator pcit = parentComponents.begin();
 			pcit != parentComponents.end(); ++pcit )
@@ -290,7 +290,7 @@ void DialogPrivate::createDialogFromServices()
 	// read .setdlg files
 	QString setdlgpath = KStandardDirs::locate( "appdata",
                                                     KGlobal::mainComponent().componentName() + ".setdlg" );
-	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
+	const QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
 			"ksettingsdialog/*.setdlg" );
     if (!setdlgpath.isNull()) {
         parseGroupFile(setdlgpath);

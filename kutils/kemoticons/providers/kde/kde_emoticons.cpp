@@ -61,7 +61,7 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoti
 {
     KEmoticonsProvider::addEmoticon(emo, text, option);
 
-    QStringList splitted = text.split(" ");
+    const QStringList splitted = text.split(" ");
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
 
     if (fce.isNull())

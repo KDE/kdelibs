@@ -139,7 +139,7 @@ QString KEmoticons::currentThemeName()
 QStringList KEmoticons::themeList()
 {
     QStringList ls;
-    QStringList themeDirs = KGlobal::dirs()->findDirs("emoticons", "");
+    const QStringList themeDirs = KGlobal::dirs()->findDirs("emoticons", "");
 
     for (int i = 0; i < themeDirs.count(); ++i) {
         QDir themeQDir(themeDirs[i]);
@@ -213,8 +213,8 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
     const KArchiveDirectory* rootDir = archive->directory();
 
     // iterate all the dirs looking for an emoticons.xml file
-    QStringList entries = rootDir->entries();
-    for (QStringList::Iterator it = entries.begin(); it != entries.end(); ++it) {
+    const QStringList entries = rootDir->entries();
+    for (QStringList::ConstIterator it = entries.begin(); it != entries.end(); ++it) {
         currentEntry = const_cast<KArchiveEntry*>(rootDir->entry(*it));
 
         if (currentEntry->isDirectory()) {
