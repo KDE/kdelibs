@@ -672,7 +672,7 @@ KEncodingDetector::EncodingChoiceSource KEncodingDetector::encodingChoiceSource(
 const char* KEncodingDetector::encoding() const
 {
     d->m_storeDecoderName = d->m_codec->name();
-    return d->m_storeDecoderName.data();
+    return d->m_storeDecoderName.constData();
 }
 
 bool KEncodingDetector::visuallyOrdered() const
