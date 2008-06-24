@@ -125,7 +125,7 @@ public:
      * already exists, it is overriden with this information.
      */
     void setDummyHistoryEntry(const QString& text, const QPixmap& icon = QPixmap(),
-                              bool usePreviousPixmapIfNull = false);
+                              bool usePreviousPixmapIfNull = true);
 
     /**
      * Removes the dummy entry of the history combo box.
@@ -1151,9 +1151,9 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
         }
         urls = urls.left( urls.size() - 1 );
 
-        setDummyHistoryEntry( urls, mimeTypeIcon );
+        setDummyHistoryEntry( urls, mimeTypeIcon, false );
     } else if ( urlList.count() ) {
-        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon, true /* usePreviousPixmapIfNull */ );
+        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
     }
@@ -1411,7 +1411,7 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
         ops->view()->clearSelection();
     } else {
         ops->setCurrentItem( match );
-        setDummyHistoryEntry( locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small ) );
+        setDummyHistoryEntry( locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small ), !locationEdit->currentText().isEmpty() );
         locationEdit->setCompletedText( match );
     }
 }
