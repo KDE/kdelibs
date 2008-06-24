@@ -786,7 +786,6 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
     Q_PRIVATE_SLOT( d, void _k_openContextMenu(const QPoint&) )
     Q_PRIVATE_SLOT( d, void _k_triggerPreview(const QModelIndex&) )
-    Q_PRIVATE_SLOT( d, void _k_slotItemSelectionChanged(const QItemSelection&) )
     Q_PRIVATE_SLOT( d, void _k_showPreview() )
     Q_PRIVATE_SLOT( d, void _k_slotSplitterMoved(int, int) )
     Q_PRIVATE_SLOT( d, void _k_assureVisibleSelection() )
