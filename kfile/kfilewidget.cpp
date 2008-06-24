@@ -1141,18 +1141,16 @@ void KFileWidgetPrivate::setLocationText( const KUrl& url )
 
 void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
 {
-    QPixmap mimeTypeIcon = urlList.count() == 1 ? KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ), KIconLoader::Small )
-                                                : QPixmap();
-
     if ( urlList.count() > 1 ) {
         QString urls;
         foreach (const KUrl &url, urlList) {
-            urls += '\"' + url.fileName() + "\" ";
+            urls += KUrl::toPercentEncoding( QString("\"%1\"").arg( url.fileName() ) ) + ' ';
         }
         urls = urls.left( urls.size() - 1 );
 
-        setDummyHistoryEntry( urls, mimeTypeIcon, false );
+        setDummyHistoryEntry( urls, QPixmap(), false );
     } else if ( urlList.count() ) {
+        const QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ),  KIconLoader::Small );
         setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
