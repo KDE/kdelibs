@@ -412,6 +412,11 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             itemView->viewport()->update();
             break;
         default: {
+                if (event->type() == QEvent::FocusOut) {
+                    buttonPressedWidget = 0;
+                    buttonPressedIndex = QModelIndex();
+                }
+
                 // We don't need to do special stuff with this events. Just forward them the best we can
                 // at this point. If it is a key event, send it to the focused widget (if any), and in other
                 // case, forward it to the hovered widget (if any).
