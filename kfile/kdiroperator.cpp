@@ -664,7 +664,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     bool exists = false;
     KUrl url(d->currUrl);
 
-    QStringList dirs = directory.split(QDir::separator(), QString::SkipEmptyParts);
+    const QStringList dirs = directory.split(QDir::separator(), QString::SkipEmptyParts);
     QStringList::ConstIterator it = dirs.begin();
 
     for (; it != dirs.end(); ++it) {
@@ -1198,13 +1198,13 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
 
 bool KDirOperator::Private::checkPreviewInternal() const
 {
-    QStringList supported = KIO::PreviewJob::supportedMimeTypes();
+    const QStringList supported = KIO::PreviewJob::supportedMimeTypes();
     // no preview support for directories?
     if (parent->dirOnlyMode() && supported.indexOf("inode/directory") == -1)
         return false;
 
     QStringList mimeTypes = dirLister->mimeFilters();
-    QStringList nameFilter = dirLister->nameFilter().split(" ", QString::SkipEmptyParts);
+    const QStringList nameFilter = dirLister->nameFilter().split(" ", QString::SkipEmptyParts);
 
     if (mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty())
         return true;
@@ -1213,7 +1213,7 @@ bool KDirOperator::Private::checkPreviewInternal() const
         r.setPatternSyntax(QRegExp::Wildcard);   // the "mimetype" can be "image/*"
 
         if (!mimeTypes.isEmpty()) {
-            QStringList::Iterator it = supported.begin();
+            QStringList::ConstIterator it = supported.begin();
 
             for (; it != supported.end(); ++it) {
                 r.setPattern(*it);
@@ -1240,7 +1240,7 @@ bool KDirOperator::Private::checkPreviewInternal() const
 
                 // the "mimetypes" we get from the PreviewJob can be "image/*"
                 // so we need to check in wildcard mode
-                QStringList::Iterator it2 = supported.begin();
+                QStringList::ConstIterator it2 = supported.begin();
                 for (; it2 != supported.end(); ++it2) {
                     r.setPattern(*it2);
                     if (r.indexIn(mime) != -1) {

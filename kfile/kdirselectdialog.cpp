@@ -127,7 +127,7 @@ void KDirSelectDialog::Private::slotMkdir()
     bool exists = false;
     KUrl folderurl( m_parent->url() );
 
-    QStringList dirs = directory.split( QDir::separator(), QString::SkipEmptyParts );
+    const QStringList dirs = directory.split( QDir::separator(), QString::SkipEmptyParts );
     QStringList::ConstIterator it = dirs.begin();
 
     for ( ; it != dirs.end(); ++it )

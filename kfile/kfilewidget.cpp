@@ -1668,7 +1668,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     const bool showSpeedbar = placesView && !placesView->isHidden();
     configGroup.writeEntry( ShowSpeedbar, showSpeedbar );
     if (showSpeedbar) {
-        QList<int> sizes = placesViewSplitter->sizes();
+        const QList<int> sizes = placesViewSplitter->sizes();
         Q_ASSERT( sizes.count() > 0 );
         configGroup.writeEntry( SpeedbarWidth, sizes[0] );
     }
@@ -2108,7 +2108,7 @@ void KFileWidgetPrivate::addToRecentDocuments()
     //don't add more than we need. KRecentDocument::add() is pretty slow
 
     if ( m & KFile::LocalOnly ) {
-        QStringList files = q->selectedFiles();
+        const QStringList files = q->selectedFiles();
         QStringList::ConstIterator it = files.begin();
         for ( ; it != files.end() && atmost > 0; ++it ) {
             KRecentDocument::add( *it );
