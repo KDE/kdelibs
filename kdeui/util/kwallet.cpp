@@ -729,7 +729,7 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
         if (walletEnabled) {
             // wallet is enabled! try launching it
             QString error;
-            int ret = KToolInvocation::startServiceByDesktopName("kwalletd", QStringList(), &error);
+            int ret = KToolInvocation::startServiceByDesktopPath("kwalletd.desktop", QStringList(), &error);
             if (ret > 0)
             {
                 kError() << "Couldn't start kwalletd: " << error << endl;
