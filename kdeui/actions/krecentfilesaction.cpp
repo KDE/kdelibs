@@ -221,7 +221,6 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     QString     nameKey;
     QString     nameValue;
     QString      title;
-    QStringList lst;
     KUrl        url;
 
     KConfigGroup cg = _config;
