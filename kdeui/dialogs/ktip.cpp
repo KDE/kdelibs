@@ -81,7 +81,7 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
   }
 
   QByteArray data = file.readAll();
-  QString content = QString::fromUtf8( data.data(), data.size() );
+  QString content = QString::fromUtf8( data.constData(), data.size() );
   const QRegExp rx( "\\n+" );
 
   int pos = -1;
