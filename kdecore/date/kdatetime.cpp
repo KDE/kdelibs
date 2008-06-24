@@ -1935,7 +1935,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                     }
                 }
             }
-            QStringList parts = rx.capturedTexts();
+            const QStringList parts = rx.capturedTexts();
             bool ok, ok1;
             QDate d;
             int hour   = 0;

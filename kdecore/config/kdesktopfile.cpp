@@ -285,9 +285,9 @@ bool KDesktopFile::tryExec() const
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale specified
       // encoding (Like a filenames).
-      QStringList dirs = QFile::decodeName(qgetenv("PATH"))
+      const QStringList dirs = QFile::decodeName(qgetenv("PATH"))
         .split(KPATH_SEPARATOR,QString::SkipEmptyParts);
-      QStringList::Iterator it(dirs.begin());
+      QStringList::ConstIterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
         QString fName = *it + KDIR_SEPARATOR + te;
@@ -311,7 +311,7 @@ bool KDesktopFile::tryExec() const
         return false;
     }
   }
-  QStringList list = d->desktopGroup.readEntry("X-KDE-AuthorizeAction", QStringList());
+  const QStringList list = d->desktopGroup.readEntry("X-KDE-AuthorizeAction", QStringList());
   if (!list.isEmpty())
   {
      for(QStringList::ConstIterator it = list.begin();

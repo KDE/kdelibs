@@ -1114,7 +1114,7 @@ QList<QByteArray> KTimeZoneData::abbreviations() const
     {
         for (int i = 0, end = d->phases.count();  i < end;  ++i)
         {
-            QList<QByteArray> abbrevs = d->phases[i].abbreviations();
+            const QList<QByteArray> abbrevs = d->phases[i].abbreviations();
             for (int j = 0, jend = abbrevs.count();  j < jend;  ++j)
                 if (!d->abbreviations.contains(abbrevs[j]))
                     d->abbreviations.append(abbrevs[j]);
@@ -1132,7 +1132,7 @@ QByteArray KTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
     const KTimeZone::Transition *tr = transition(utcDateTime);
     if (!tr)
         return QByteArray();
-    QList<QByteArray> abbrevs = tr->phase().abbreviations();
+    const QList<QByteArray> abbrevs = tr->phase().abbreviations();
     if (abbrevs.isEmpty())
         return QByteArray();
     return abbrevs[0];
