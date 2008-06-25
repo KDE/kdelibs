@@ -229,20 +229,14 @@ void KWidgetJobTracker::Private::ProgressWidget::deref()
 
 bool KWidgetJobTracker::Private::ProgressWidget::eventFilter(QObject *watched, QEvent *event)
 {
-    bool shouldDeref = false;
-
     if ((watched == sourceEdit || watched == destEdit) && event->type() == QEvent::ContextMenu) {
         ref();
-        shouldDeref = true;
-    }
-
-    bool res = watched->event(event);
-
-    if (shouldDeref) {
+        watched->event(event);
         deref();
+        return true;
     }
 
-    return res;
+    return QWidget::eventFilter(watched, event);
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::infoMessage(const QString &plain, const QString &/*rich*/)
@@ -604,14 +598,14 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpe
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 {
-    QProcess::startDetached("konqueror", QStringList() << location.prettyUrl());
+    QProcess::startDetached("kde-open", QStringList() << location.prettyUrl());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 {
     KUrl dirLocation(location);
     dirLocation.setFileName(QString());
-    QProcess::startDetached("dolphin", QStringList() << dirLocation.prettyUrl());
+    QProcess::startDetached("kde-open", QStringList() << dirLocation.prettyUrl());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
