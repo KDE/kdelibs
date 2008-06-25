@@ -229,6 +229,8 @@ void KWidgetJobTracker::Private::ProgressWidget::deref()
 
 bool KWidgetJobTracker::Private::ProgressWidget::eventFilter(QObject *watched, QEvent *event)
 {
+    // Handle context menu events for the source/dest labels here, so that we are ref()ed while the
+    // menu is exec()ed, to avoid a crash if the job finishes meanwhile. #159621.
     if ((watched == sourceEdit || watched == destEdit) && event->type() == QEvent::ContextMenu) {
         ref();
         watched->event(event);
