@@ -581,7 +581,9 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
         int y0 = m_coords[1].minWidth(height_);
         int x1 = m_coords[2].minWidth(width_);
         int y1 = m_coords[3].minWidth(height_);
-        region = QRegion(x0,y0,x1-x0,y1-y0);
+        // use qMin () and qAbs () to make sure that this works for any pair
+        // of opposite corners (x0,y0) and (x1,y1)
+        region = QRegion(qMin(x0,x1),qMin(y0,y1),qAbs(x1-x0),qAbs(y1-y0));
     }
     else if (shape==Default)
         region = QRegion(0,0,width_,height_);
