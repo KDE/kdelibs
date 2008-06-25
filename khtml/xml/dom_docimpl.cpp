@@ -1092,6 +1092,9 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_NOBR:
     case ID_BDO:
     case ID_NOFRAMES:
+    case ID_NOSCRIPT:
+    case ID_NOEMBED:
+    case ID_NOLAYER:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
