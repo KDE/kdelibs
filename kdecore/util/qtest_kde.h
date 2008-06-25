@@ -24,6 +24,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
+#include <kurl.h>
 #include <QtGui/QApplication>
 #include <QtCore/QEventLoop>
 #include <QtTest/QSignalSpy>
