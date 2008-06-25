@@ -1878,12 +1878,12 @@ void KHTMLView::findAhead(bool increase)
 		                 KHTMLPart::FindLinksOnly, this);
 		if(m_part->findTextNext())
 		{
-			status = i18n("Link found: \"%1\".", text);
+			status = i18n("Link found: \"%1\".", Qt::escape(text));
 		}
 		else
 		{
 			if(increase) KNotification::beep();
-			status = i18n("Link not found: \"%1\".", text);
+			status = i18n("Link not found: \"%1\".", Qt::escape(text));
 		}
 	}
 	else
@@ -1891,16 +1891,17 @@ void KHTMLView::findAhead(bool increase)
 		m_part->findText(d->findString, KHTMLPart::FindNoPopups, this);
 		if(m_part->findTextNext())
 		{
-			status = i18n("Text found: \"%1\".", text);
+			status = i18n("Text found: \"%1\".", Qt::escape(text));
 		}
 		else
 		{
 			if(increase) KNotification::beep();
-			status = i18n("Text not found: \"%1\".", text);
+			status = i18n("Text not found: \"%1\".", Qt::escape(text));
 		}
 	}
 
-	m_part->setStatusBarText(status, KHTMLPart::BarDefaultText);
+	// Note: we need to escape -twice-: the above just escape for i18n, now we need to do it for Qt, too.
+	m_part->setStatusBarText(Qt::escape(status), KHTMLPart::BarDefaultText);
 }
 
 void KHTMLView::updateFindAheadTimeout()
