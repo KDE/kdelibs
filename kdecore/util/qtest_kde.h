@@ -86,6 +86,8 @@ int main(int argc, char *argv[]) \
     KComponentData cData(&aboutData); \
     QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
     app.setApplicationName( "qttest" ); \
+    qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
+    qRegisterMetaType<KUrl::List>(); \
     TestObject tc; \
     return QTest::qExec( &tc, argc, argv ); \
 }
@@ -129,6 +131,8 @@ int main(int argc, char *argv[]) \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
     app.setApplicationName( "qttest" ); \
+    qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
+    qRegisterMetaType<KUrl::List>(); \
     TestObject tc; \
     return QTest::qExec( &tc, argc, argv ); \
 }
