@@ -29,6 +29,8 @@
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <QGridLayout>
+#include <QMenu>
+#include <QEvent>
 
 #include <kurl.h>
 #include <kpushbutton.h>
@@ -111,7 +113,6 @@ bool KWidgetJobTracker::keepOpen(KJob *job) const
 
     return pWidget->keepOpen();
 }
-
 
 void KWidgetJobTracker::infoMessage(KJob *job, const QString &plain, const QString &rich)
 {
@@ -212,6 +213,37 @@ bool KWidgetJobTracker::Private::ProgressWidget::keepOpen() const
     return keepOpenChecked;
 }
 
+void KWidgetJobTracker::Private::ProgressWidget::ref()
+{
+    refCount++;
+}
+
+void KWidgetJobTracker::Private::ProgressWidget::deref()
+{
+    refCount--;
+    if (!refCount) {
+        hide();
+        QTimer::singleShot(500, this, SLOT(deleteLater()));
+    }
+}
+
+bool KWidgetJobTracker::Private::ProgressWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    bool shouldDeref = false;
+
+    if ((watched == sourceEdit || watched == destEdit) && event->type() == QEvent::ContextMenu) {
+        ref();
+        shouldDeref = true;
+    }
+
+    bool res = watched->event(event);
+
+    if (shouldDeref) {
+        deref();
+    }
+
+    return res;
+}
 
 void KWidgetJobTracker::Private::ProgressWidget::infoMessage(const QString &plain, const QString &/*rich*/)
 {
@@ -359,8 +391,7 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
 void KWidgetJobTracker::Private::ProgressWidget::slotClean()
 {
     if (!keepOpenChecked) {
-        hide();
-        QTimer::singleShot(500, this, SLOT(deleteLater()));
+        deref();
     } else {
         finishedProperty = true;
         percent(100);
@@ -423,6 +454,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     sourceEdit = new KSqueezedTextLabel(this);
     sourceEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    sourceEdit->installEventFilter(this);
     grid->addWidget(sourceEdit, 0, 2);
 
     destInvite = new QLabel(i18n("Destination:"), this);
@@ -430,6 +462,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     destEdit = new KSqueezedTextLabel(this);
     destEdit->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    destEdit->installEventFilter(this);
     grid->addWidget(destEdit, 1, 2);
 
     QHBoxLayout *progressHBox = new QHBoxLayout();
@@ -576,8 +609,9 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 {
-    location.setFileName("");
-    _k_openFile();
+    KUrl dirLocation(location);
+    dirLocation.setFileName(QString());
+    QProcess::startDetached("dolphin", QStringList() << dirLocation.prettyUrl());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()

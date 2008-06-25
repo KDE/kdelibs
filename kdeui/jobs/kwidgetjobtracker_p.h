@@ -73,7 +73,7 @@ public:
           cancelClose(0), openFile(0), openLocation(0),
           keepOpenCheck(0), pauseButton(0), sourceEdit(0), destEdit(0),
           progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
-          resumeLabel(0), progressBar(0), suspendedProperty(false)
+          resumeLabel(0), progressBar(0), suspendedProperty(false), refCount(1)
     {
         init();
     }
@@ -118,11 +118,17 @@ public:
     bool suspendedProperty;
     bool finishedProperty;
 
+    int refCount; // will not close the dialog if a modal menu is shown
+
     void init();
     void showTotals();
     void setDestVisible(bool visible);
     void checkDestination(const KUrl &dest);
     bool keepOpen() const;
+    void ref();
+    void deref();
+
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 
 public Q_SLOTS:
     virtual void infoMessage(const QString &plain, const QString &rich);
