@@ -757,6 +757,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 # IE extension
   onload        KJS::HTMLElement::BodyOnLoad     DontDelete
 @end
+@begin HTMLBodyElementProtoTable 2
+# Mozilla'ish extension. Ideally we would want to support this on all elements.
+# Not hard, but not an immediate need.
+  focus         KJS::HTMLElement::BodyFocus      DontDelete|Function 0
+@end
 @begin HTMLFormElementTable 11
 # Also supported, by name/index
   elements	KJS::HTMLElement::FormElements	DontDelete|ReadOnly
@@ -2136,6 +2141,13 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       }
     }
     break;
+    case ID_BODY: {
+      if (id == KJS::HTMLElement::BodyFocus) {
+        // Just blur everything. Not perfect, but good enough for now
+        element.document()->setFocusNode(0);
+      }
+    }
+    break;
     case ID_SELECT: {
       DOM::HTMLSelectElementImpl& select = static_cast<DOM::HTMLSelectElementImpl&>(element);
       if (id == KJS::HTMLElement::SelectAdd) {
@@ -2640,7 +2652,8 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIsIndexElementPseudoCtor, "HTMLIsIndexElement",
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLStyleElement", HTMLStyleElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLStyleElementPseudoCtor, "HTMLStyleElement", HTMLStyleElementProto)
 
-KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLBodyElement", HTMLBodyElementProto, HTMLElementProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLBodyElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLBodyElement", HTMLBodyElementProto, HTMLElementFunction)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBodyElementPseudoCtor, "HTMLBodyElement", HTMLBodyElementProto)
 
 KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLFormElementProto, HTMLElementProto)
