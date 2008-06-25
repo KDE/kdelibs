@@ -138,14 +138,14 @@ void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
     const bool squeezed = text() != d->fullText;
     const bool showCustomPopup = squeezed;
     if (showCustomPopup) {
-        QMenu menu(this);
+        QMenu *menu = new QMenu(this);
 
         KAction* act = new KAction(i18n("&Copy Full Text"), this);
         connect(act, SIGNAL(triggered()), this, SLOT(_k_copyFullText()));
-        menu.addAction(act);
+        menu->addAction(act);
 
         ev->accept();
-        menu.exec(ev->globalPos());
+        menu->exec(ev->globalPos());
     } else {
         QLabel::contextMenuEvent(ev);
     }
