@@ -3838,9 +3838,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     if (u.protocol() == QLatin1String("mailto")) {
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
       mailtoMsg += i18n("Email to: ") + KUrl::fromPercentEncoding(u.path().toLatin1());
-      QStringList queries = u.query().mid(1).split('&');
-      QStringList::Iterator it = queries.begin();
-      const QStringList::Iterator itEnd = queries.end();
+      const QStringList queries = u.query().mid(1).split('&');
+      QStringList::ConstIterator it = queries.begin();
+      const QStringList::ConstIterator itEnd = queries.end();
       for (; it != itEnd; ++it)
         if ((*it).startsWith(QLatin1String("subject=")))
           mailtoMsg += i18n(" - Subject: ") + KUrl::fromPercentEncoding((*it).mid(8).toLatin1());

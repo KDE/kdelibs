@@ -1128,7 +1128,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 {
     int rSpan = cell->rowSpan();
     int cSpan = cell->colSpan();
-    QVector<RenderTable::ColumnStruct> &columns = table()->columns;
+    const QVector<RenderTable::ColumnStruct> &columns = table()->columns;
     int nCols = columns.size();
 
     // ### mozilla still seems to do the old HTML way, even for strict DTD
@@ -1215,7 +1215,7 @@ void RenderTableSection::setCellWidths()
 #ifdef DEBUG_LAYOUT
     kDebug( 6040 ) << renderName() << "(Table, this=0x" << this << ")::setCellWidths()";
 #endif
-    QVector<int> &columnPos = table()->columnPos;
+    const QVector<int> &columnPos = table()->columnPos;
 
 	int rows = grid.size();
     for ( int i = 0; i < rows; i++ ) {

@@ -1268,7 +1268,7 @@ void RenderSelect::updateFromElement()
     if ( m_optionsChanged ) {
         if (element()->m_recalcListItems)
             element()->recalcListItems();
-        QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+        const QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
         if(m_useListBox) {
@@ -1441,7 +1441,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    const QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
 
     bool foundOption = false;
     for (int i = 0; i < listItems.size() && !foundOption; i++)
@@ -1456,7 +1456,7 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
 
     KHTMLAssert( !m_useListBox );
 
-    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    const QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1519,7 +1519,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
 
     // don't use listItems() here as we have to avoid recalculations - changing the
     // option list will make use update options not in the way the user expects them
-    QVector<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
+    const QVector<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
     for ( int i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1563,7 +1563,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
-    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    const QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index

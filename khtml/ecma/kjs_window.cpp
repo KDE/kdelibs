@@ -1292,9 +1292,9 @@ void Window::closeNow()
 void Window::afterScriptExecution()
 {
   DOM::DocumentImpl::updateDocumentsRendering();
-  QList<DelayedAction> delayedActions = m_delayed;
+  const QList<DelayedAction> delayedActions = m_delayed;
   m_delayed.clear();
-  QList<DelayedAction>::Iterator it = delayedActions.begin();
+  QList<DelayedAction>::ConstIterator it = delayedActions.begin();
   for ( ; it != delayedActions.end() ; ++it )
   {
     switch ((*it).actionId) {
@@ -1647,7 +1647,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
       winargs.setToolBarsVisible(false);
       winargs.setStatusBarVisible(false);
       winargs.setScrollBarsVisible(false);
-      QStringList flist = features.split(',');
+      const QStringList flist = features.split(',');
       QStringList::ConstIterator it = flist.begin();
       while (it != flist.end()) {
         QString s = *it++;

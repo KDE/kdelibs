@@ -448,7 +448,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     d->m_maxFormCompletionItems = cgHtml.readEntry("MaxFormCompletionItems", 10);
     d->m_autoDelayedActionsEnabled = cgHtml.readEntry ("AutoDelayedActions", true);
     d->m_jsErrorsEnabled = cgHtml.readEntry("ReportJSErrors", true);
-    QStringList accesskeys = cgHtml.readEntry("FallbackAccessKeysAssignments", QStringList());
+    const QStringList accesskeys = cgHtml.readEntry("FallbackAccessKeysAssignments", QStringList());
     d->m_fallbackAccessKeysAssignments.clear();
     for( QStringList::ConstIterator it = accesskeys.begin(); it != accesskeys.end(); ++it )
         if( (*it).length() > 2 && (*it)[ 1 ] == ':' )

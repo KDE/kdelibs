@@ -339,12 +339,12 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
                 for ( type=types.begin(); type!=types.end(); ++type ) {
 
                     // get mime information
-                    QStringList tokens = (*type).split(':', QString::KeepEmptyParts);
+                    const QStringList tokens = (*type).split(':', QString::KeepEmptyParts);
                     if ( tokens.count() < 3 ) // we need 3 items
                         continue;
 
                     MimeClassInfo *mime = new MimeClassInfo;
-                    QStringList::Iterator token = tokens.begin();
+                    QStringList::ConstIterator token = tokens.begin();
                     mime->type = (*token).toLower();
                     //kDebug(6070) << "mime->type=" << mime->type;
                     ++token;

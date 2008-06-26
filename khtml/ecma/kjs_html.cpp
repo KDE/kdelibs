@@ -3090,7 +3090,7 @@ JSValue* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &p
 
   DOM::DOMString pstr = propertyName.domString();
 
-  QList<DOM::NodeImpl*> matches = m_impl->namedItems(pstr);
+  const QList<DOM::NodeImpl*> matches = m_impl->namedItems(pstr);
 
   if (!matches.isEmpty()) {
     if (matches.size() == 1) {

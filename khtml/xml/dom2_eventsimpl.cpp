@@ -622,10 +622,10 @@ void KeyboardEventImpl::initKeyboardEvent(const DOMString &typeArg,
         virtKeyVal = keyIdentifiersToVirtKeys()->toRight(keyIdentifierArg.string().toLatin1());
 
     //Process modifier list.
-    QStringList mods = modifiersList.string().trimmed().simplified().split( ' ' );
+    const QStringList mods = modifiersList.string().trimmed().simplified().split( ' ' );
 
     unsigned modifiers = 0;
-    for (QStringList::Iterator i = mods.begin(); i != mods.end(); ++i)
+    for (QStringList::ConstIterator i = mods.begin(); i != mods.end(); ++i)
         if (unsigned mask = keyModifiersToCode()->toRight((*i).toLatin1()))
             modifiers |= mask;
 

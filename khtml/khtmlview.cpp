@@ -3003,7 +3003,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             // then first character of the following words,
             // and then simply the first free character
             if( key.isNull() && !text.isEmpty()) {
-                QStringList words = text.split( ' ' );
+                const QStringList words = text.split( ' ' );
                 for( QStringList::ConstIterator it = words.begin();
                      it != words.end();
                      ++it ) {
@@ -4053,7 +4053,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     d->repaintTimerId = 0;
 
     QRect updateRegion;
-    QVector<QRect> rects = d->updateRegion.rects();
+    const QVector<QRect> rects = d->updateRegion.rects();
 
     d->updateRegion = QRegion();
 
