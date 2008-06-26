@@ -102,6 +102,8 @@ if (NOT WIN32)
 
   kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 
+  target_link_libraries(lnusertemp kdefakes)
+
   install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 endif (NOT WIN32)
