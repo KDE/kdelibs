@@ -688,7 +688,7 @@ void KFileWidget::slotOk()
 
         KUrl url = KIO::NetAccess::mostLocalUrl(d->url,topLevelWidget());
         if ( ( (mode() & KFile::LocalOnly) == KFile::LocalOnly ) &&
-             !url.isLocalFile() ) 
+             !url.isLocalFile() )
         {
 // ### after message freeze, add message for directories!
             KMessageBox::sorry( this,
@@ -731,7 +731,7 @@ void KFileWidget::slotOk()
 
     KUrl url = KIO::NetAccess::mostLocalUrl(selectedUrl,topLevelWidget());
     if ( ( (mode() & KFile::LocalOnly) == KFile::LocalOnly ) &&
-         !url.isLocalFile() ) 
+         !url.isLocalFile() )
     {
         KMessageBox::sorry( this,
                             i18n("You can only select local files."),
