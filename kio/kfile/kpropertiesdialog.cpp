@@ -3034,7 +3034,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     d->m_systrayBool = false;
 
   d->m_origCommandStr = commandStr;
-  QString pathStr = config.readPathEntry( "Path", QString() );
+  QString pathStr = config.readEntry( "Path", QString() ); // not readPathEntry, see kservice.cpp
   d->m_terminalBool = config.readEntry( "Terminal", false );
   d->m_terminalOptionStr = config.readEntry( "TerminalOptions" );
   d->m_suidBool = config.readEntry( "X-KDE-SubstituteUID", false );
@@ -3194,7 +3194,7 @@ void KDesktopPropsPlugin::applyChanges()
     config.writeEntry( "Exec", d->w->commandEdit->text().prepend("ksystraycmd ") );
   else
     config.writeEntry( "Exec", d->w->commandEdit->text() );
-  config.writePathEntry( "Path", d->w->pathEdit->lineEdit()->text() );
+  config.writeEntry( "Path", d->w->pathEdit->lineEdit()->text() ); // not writePathEntry, see kservice.cpp
 
   // Write mimeTypes
   QStringList mimeTypes;
