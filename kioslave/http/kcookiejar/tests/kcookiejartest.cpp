@@ -2,6 +2,7 @@
     This file is part of KDE
 
     Copyright (C) 2004 Waldo Bastian (bastian@kde.org)
+    Copyright 2008 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public License
@@ -19,15 +20,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <QtCore/QDate>
 #include <QtCore/QString>
 
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+#include <qtest_kde.h>
 #include <kstandarddirs.h>
 
 #include "../kcookiejar.cpp"
@@ -175,7 +171,7 @@ static void processLine(QString line)
    if (line[0] == '#')
    {
       if (line[1] == '#')
-         qWarning("%s", line.toLatin1().constData());
+         qDebug("%s", line.toLatin1().constData());
       return;
    }
 
@@ -216,41 +212,36 @@ static void runRegression(const QString &filename)
       processLine(QString::fromUtf8(buf));
    }
    fclose( file );
-   qWarning("%s OK", filename.toLocal8Bit().data());
+   qDebug("%s OK", filename.toLocal8Bit().data());
 }
 
-int main(int argc, char *argv[])
+class KCookieJarTest : public QObject
 {
-   QString arg1;
-   QString arg2;
-   QString result;
+    Q_OBJECT
+private Q_SLOTS:
+    void initTestCase()
+    {
+        jar = new KCookieJar;
+        KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
+        lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
+        nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
+    }
+    void testCookieFile_data()
+    {
+        QTest::addColumn<QString>("fileName");
+        QTest::newRow("cookie.test") << KDESRCDIR "/cookie.test";
+        QTest::newRow("cookie_rfc.test") << KDESRCDIR "/cookie_rfc.test";
+        QTest::newRow("cookie_saving.test") << KDESRCDIR "/cookie_saving.test";
+        QTest::newRow("cookie_settings.test") << KDESRCDIR "/cookie_settings.test";
+    }
+    void testCookieFile()
+    {
+        QFETCH(QString, fileName);
+        clearConfig();
+        runRegression(fileName);
+    }
+};
 
-   KLocalizedString description = ki18n("KCookiejar regression test");
+QTEST_KDEMAIN(KCookieJarTest, NoGUI)
 
-   KAboutData about("kcookietest", 0, ki18n("kcookietest"), "1.0", description, KAboutData::License_GPL, ki18n("(C) 2004 Waldo Bastian"));
-   KCmdLineArgs::init( argc, argv, &about);
-
-   KCmdLineOptions options;
-   options.add("+testfile", ki18n("Regression test to run"));
-
-   KCmdLineArgs::addCmdLineOptions( options );
-
-   KComponentData a("kcookietest");
-
-   KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
-
-   lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
-   nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
-
-   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-   if (args->count() != 1)
-      KCmdLineArgs::usage();
-
-   jar = new KCookieJar;
-
-   clearConfig();
-
-   const QString file = args->url(0).path();
-   runRegression(file);
-   return 0;
-}
+#include "kcookiejartest.moc"
