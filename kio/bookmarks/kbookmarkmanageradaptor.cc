@@ -19,11 +19,17 @@
 */
 
 #include "kbookmarkmanageradaptor_p.h"
+#include "kbookmarkmanager.h"
 
-KBookmarkManagerAdaptor::KBookmarkManagerAdaptor(QObject *parent)
+KBookmarkManagerAdaptor::KBookmarkManagerAdaptor(KBookmarkManager *parent)
     : QDBusAbstractAdaptor(parent)
 {
     setAutoRelaySignals(true);
+}
+
+void KBookmarkManagerAdaptor::notifyCompleteChange()
+{
+    static_cast<KBookmarkManager*>(parent())->notifyCompleteChange(QString());
 }
 
 #include "kbookmarkmanageradaptor_p.moc"
