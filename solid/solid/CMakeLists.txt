@@ -103,9 +103,9 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
-   MESSAGE( "-- Building Solid HAL backend." )
+   MESSAGE(STATUS "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-	
+
    backends/hal/halacadapter.cpp
    backends/hal/halaudiointerface.cpp
    backends/hal/halbattery.cpp
@@ -133,7 +133,7 @@ endif(NOT WIN32 AND NOT APPLE)
 
 # TODO: mingw
 if(MSVC)
-   MESSAGE( "-- Building Solid WMI backend." )
+   MESSAGE(STATUS "-- Building Solid WMI backend." )
 
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
    backends/wmi/wmiacadapter.cpp
@@ -208,28 +208,24 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
 
 ########### parser build ###############
 
-option(SOLID_PREDICATE_PARSER_UPDATE  "Update Solid predicate parser")
+set(lexer_FILE predicate_lexer)
+set(parser_FILE predicate_parser)
 
-if(SOLID_PREDICATE_PARSER_UPDATE)
-   # the following code has two problems:
-   # it expects mv, which usually doesn't exist on windows
-   # it calls flex and bison without searching for them,
-   # i.e. it expects that they are in the path. Alex
+find_package(Flex)
+find_program(BISON_EXECUTABLE bison)
 
-   set(lexer_FILE predicate_lexer)
-   set(parser_FILE predicate_parser)
+if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
 
-   add_custom_command(OUTPUT ${lexer_FILE}.c
-                      COMMAND flex -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
-                      DEPENDS ${lexer_FILE}.l
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+   add_custom_target(UpdateSolidPredicateParser
+                     COMMAND ${FLEX_EXECUTABLE} -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
+                     COMMAND ${BISON_EXECUTABLE} -p Solid -d -b ${parser_FILE} ${parser_FILE}.y
+                     COMMAND ${CMAKE_COMMAND} -E copy ${parser_FILE}.tab.c ${CMAKE_CURRENT_SOURCE_DIR}/${parser_FILE}.c
+                     COMMAND ${CMAKE_COMMAND} -E copy ${parser_FILE}.tab.h ${CMAKE_CURRENT_SOURCE_DIR}/${parser_FILE}.h
+                     COMMAND ${CMAKE_COMMAND} -E remove ${parser_FILE}.tab.c ${parser_FILE}.tab.h
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-   add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
-                      COMMAND bison -p Solid -d -b ${parser_FILE} ${parser_FILE}.y
-                      COMMAND mv ${parser_FILE}.tab.c ${parser_FILE}.c
-                      COMMAND mv ${parser_FILE}.tab.h ${parser_FILE}.h
-                      DEPENDS ${lexer_FILE}.c
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-endif(SOLID_PREDICATE_PARSER_UPDATE)
+else (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+   add_custom_target(UpdateSolidPredicateParser
+                     COMMAND echo "flex and/or bison not found, so target UpdateSolidPredicateParser inactive")
+endif (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
 
