@@ -48,6 +48,8 @@ namespace Sonnet
         void setLanguage( const QString &language );
 
         /**
+         * Get the currently selected language for spell checking.  Returns an empty string if
+         * kdelibs was built without any spellchecking plugins.
          * @return the language currently selected in the language combobox
          * @since 4.1
          */

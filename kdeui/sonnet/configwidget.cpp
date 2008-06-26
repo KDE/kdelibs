@@ -109,10 +109,12 @@ void ConfigWidget::save()
 
 void ConfigWidget::setFromGui()
 {
-    d->loader->settings()->setDefaultLanguage(
-        d->loader->languages()[
-            d->loader->languageNames().indexOf(
-                d->ui.m_langCombo->currentText() ) ] );
+    if (d->ui.m_langCombo->count() ) {
+        d->loader->settings()->setDefaultLanguage(
+                d->loader->languages()[
+                d->loader->languageNames().indexOf(
+                    d->ui.m_langCombo->currentText() ) ] );
+    }
     d->loader->settings()->setCheckUppercase(
         !d->ui.m_skipUpperCB->isChecked() );
     d->loader->settings()->setSkipRunTogether(
@@ -157,8 +159,12 @@ void ConfigWidget::setLanguage( const QString &language )
 
 QString ConfigWidget::language() const
 {
-    return d->loader->languages()[ d->loader->languageNames().indexOf(
+    if ( d->ui.m_langCombo->count() ) {
+        return d->loader->languages()[ d->loader->languageNames().indexOf(
                                          d->ui.m_langCombo->currentText() ) ];
+    } else {
+        return QString();
+    }
 }
 
 #include "configwidget.moc"
