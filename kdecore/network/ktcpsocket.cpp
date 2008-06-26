@@ -22,6 +22,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 
+#include <QtCore/QDirIterator>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
@@ -222,10 +223,29 @@ public:
         bool haveC = false;
         haveC = QSslSocket::addDefaultCaCertificates(
                   QLatin1String("/etc/ssl/certs/ca-certificates.crt"));
+
         if (!haveC) {
-            haveC = QSslSocket::addDefaultCaCertificates(QLatin1String("/etc/ssl/certs/*.pem"),
-                                                         QSsl::Pem, QRegExp::Wildcard);
+            // Work around a Qt bug discovered by Maksim Orlovich. QSslCertificate::fromPath()
+            // seems to misbehave when using wildcard (shell-style) filename matching. In fact it
+            // *looks* like it will rarely work so we'll avoid it altogether.
+            QList<QSslCertificate> certList;
+
+            QStringList nameFilter(QLatin1String("*.pem"));
+            QDirIterator dir(QLatin1String("/etc/ssl/certs/"), nameFilter, QDir::Files,
+                             QDirIterator::FollowSymlinks);
+            while (dir.hasNext()) {
+                QFile file(dir.next());
+                if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    certList += QSslCertificate::fromData(file.readAll(), QSsl::Pem);
+                    if (!certList.last().isValid()) {
+                        certList.removeLast();
+                    }
+                }
+            }
+            haveC = !certList.isEmpty();
+            QSslSocket::addDefaultCaCertificates(certList);
         }
+
         if (!haveC) {
             // QSslSocket::systemCaCertificates() is b0rken; due to a typo in an #ifdef that
             // is too late to change due to BC we have to do what it is supposed to do.
