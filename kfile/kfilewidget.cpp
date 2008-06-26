@@ -138,6 +138,7 @@ public:
     void _k_enterUrl( const KUrl& );
     void _k_enterUrl( const QString& );
     void _k_locationAccepted( const QString& );
+    void _k_locationActivated( const QString& );
     void _k_slotFilterChanged();
     void _k_fileHighlighted( const KFileItem& );
     void _k_fileSelected( const KFileItem& );
@@ -461,6 +462,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     connect(d->locationEdit, SIGNAL( returnPressed( const QString&  )),
             this,  SLOT( _k_locationAccepted( const QString& ) ));
+    connect(d->locationEdit, SIGNAL( activated( const QString& )),
+            this,  SLOT( _k_locationActivated( const QString& ) ));
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
@@ -1317,6 +1320,13 @@ void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
 {
     q->setSelection( url );
     q->slotOk();
+}
+
+void KFileWidgetPrivate::_k_locationActivated( const QString& url )
+{
+    // the location has been activated by selecting an entry
+    // from the combo box of the location bar
+    q->setUrl( url );
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
