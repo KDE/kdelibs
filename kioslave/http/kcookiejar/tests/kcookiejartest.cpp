@@ -225,11 +225,6 @@ int main(int argc, char *argv[])
    QString arg2;
    QString result;
 
-   KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
-
-   lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
-   nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
-
    KLocalizedString description = ki18n("KCookiejar regression test");
 
    KAboutData about("kcookietest", 0, ki18n("kcookietest"), "1.0", description, KAboutData::License_GPL, ki18n("(C) 2004 Waldo Bastian"));
@@ -241,6 +236,11 @@ int main(int argc, char *argv[])
    KCmdLineArgs::addCmdLineOptions( options );
 
    KComponentData a("kcookietest");
+
+   KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
+
+   lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
+   nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    if (args->count() != 1)
