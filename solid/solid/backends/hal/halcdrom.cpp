@@ -136,7 +136,7 @@ bool Cdrom::callHalDriveEject()
 
         if (reply.isValid())
         {
-            QStringList udis = reply;
+            const QStringList udis = reply;
             if (!udis.isEmpty()) {
                 udi = udis[0];
                 interface = "org.freedesktop.Hal.Device.Volume";

@@ -93,7 +93,7 @@ bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
         }
 
         // not empty or commented out by '#'
-        QStringList items = line.split(' ');
+        const QStringList items = line.split(' ');
 
 #ifdef Q_OS_SOLARIS
         if (items.count() < 5) {

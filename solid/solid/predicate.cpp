@@ -289,7 +289,7 @@ QString Solid::Predicate::toString() const
         {
             value = "{";
 
-            QStringList list = d->value.toStringList();
+            const QStringList list = d->value.toStringList();
 
             QStringList::ConstIterator it = list.begin();
             QStringList::ConstIterator end = list.end();
