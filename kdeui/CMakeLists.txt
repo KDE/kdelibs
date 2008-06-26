@@ -315,7 +315,9 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
+                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+
 install(TARGETS kdeui ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
@@ -548,7 +550,7 @@ if ( Q_WS_QWS )
 endif ( Q_WS_QWS )
 
 kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
-target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} )
+target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${X11_LIBRARIES})
 
 install( TARGETS kded_globalaccel DESTINATION ${PLUGIN_INSTALL_DIR} )
 

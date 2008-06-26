@@ -236,7 +236,7 @@ kde4_add_ui_files(kio_LIB_SRCS
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS})
+target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
 
 
 set(SYS_INOTIFY_H_FOUND 0)
@@ -259,7 +259,9 @@ if(X11_Xrender_FOUND)
    target_link_libraries(kio ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
+                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+
 
 ########### install files ###############
 install(TARGETS kio ${INSTALL_TARGETS_DEFAULT_ARGS})

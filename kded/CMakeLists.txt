@@ -13,7 +13,7 @@ set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
 
 kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} )
+target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
 
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
