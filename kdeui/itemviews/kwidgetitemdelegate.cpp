@@ -271,7 +271,7 @@ void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionView
         widget->render(&pixmap, QPoint(0, 0),
                        QRect(QPoint(0, 0), widgetSize),
                        QWidget::DrawChildren);
-        painter->drawPixmap(widgetPos+option.rect.topLeft(), pixmap);
+        painter->drawPixmap(widgetPos + option.rect.topLeft(), pixmap);
     }
 }
 
