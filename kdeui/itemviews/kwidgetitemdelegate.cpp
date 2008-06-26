@@ -102,7 +102,6 @@ void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionVi
 
             QEvent leaveEvent(QEvent::Leave);
             QCoreApplication::sendEvent(hoveredWidget, &leaveEvent);
-            hoveredWidget->setAttribute(Qt::WA_UnderMouse, false);
             if (mouseEvent) {
                 QHoverEvent hoverLeaveEvent(QEvent::HoverLeave,
                                             mappedPointForWidget(hoveredWidget, indexList[i], mouseEvent->pos()),
@@ -144,7 +143,6 @@ void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionVi
 
                 QEvent enterEvent(QEvent::Enter);
                 QCoreApplication::sendEvent(hoveredWidget, &enterEvent);
-                hoveredWidget->setAttribute(Qt::WA_UnderMouse);
                 if (mouseEvent) {
                     QHoverEvent hoverEnterEvent(QEvent::HoverEnter,
                                                 mappedPointForWidget(hoveredWidget, hoveredIndex, mouseEvent->pos()),
@@ -330,7 +328,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
 
                         QMouseEvent mouseEventCpy(mouseEvent->type(), mappedPointForWidget(hoveredWidget, buttonPressedIndex, mouseEvent->pos()),
                                                   mouseEvent->globalPos(), mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
-                        
+
                         QCoreApplication::sendEvent(hoveredWidget, &mouseEventCpy);
                     }
                 } else {
