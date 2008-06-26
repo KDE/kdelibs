@@ -34,32 +34,41 @@ class KJobPrivate;
  * For all jobs created in an application, the code looks like
  *
  * \code
+ * void SomeClass::methodWithAsynchronousJobCall()
+ * {
  *   KJob * job = someoperation( some parameters );
  *   connect( job, SIGNAL( result( KJob * ) ),
- *            this, SLOT( slotResult( KJob * ) ) );
+ *            this, SLOT( handleResult( KJob * ) ) );
  *   job->start();
+ * }
  * \endcode
  *   (other connects, specific to the job)
  *
- * And slotResult is usually at least:
+ * And handleResult is usually at least:
  *
  * \code
- *  if ( job->error() )
- *      doSomething();
+ * void SomeClass::handleResult( KJob *job )
+ * {
+ *   if ( job->error() )
+ *       doSomething();
+ * }
  * \endcode
  *
  * With the synchronous interface the code looks like
  *
  * \code
- *  KJob *job = someoperation( some parameters );
- *  if ( !job->exec() )
- *  {
- *      // An error occurred
- *  }
- *  else
- *  {
- *      // Do something
- *  }
+ * void SomeClass::methodWithSynchronousJobCall()
+ * {
+ *   KJob *job = someoperation( some parameters );
+ *   if ( !job->exec() )
+ *   {
+ *       // An error occurred
+ *   }
+ *   else
+ *   {
+ *       // Do something
+ *   }
+ * }
  * \endcode
  *
  * @note: KJob and its subclasses is meant to be used 
@@ -131,6 +140,18 @@ public:
     /**
      * Starts the job asynchronously. When the job is finished,
      * result() is emitted.
+     *
+     * This is the method all subclasses need to implement.
+     * It should setup and trigger the workload of the job. It should not do any
+     * work itself. This includes all signals and terminating the job, e.g. by
+     * emitResult(). The workload, which could be another method of the
+     * subclass, is to be triggered using the event loop, e.g. by code like:
+     * \code
+     * void ExampleJob::start()
+     * {
+     *  QTimer::singleShot( 0, this, SLOT( doWork() ) );
+     * }
+     * \endcode
      */
     virtual void start() = 0;
 
