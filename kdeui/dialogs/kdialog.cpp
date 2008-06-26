@@ -63,6 +63,9 @@ void KDialogPrivate::setupLayout()
 
 void KDialogPrivate::queuedLayoutUpdate()
 {
+  if (!dirty)
+    return;
+
   dirty = false;
 
   Q_Q(KDialog);
@@ -93,8 +96,6 @@ void KDialogPrivate::queuedLayoutUpdate()
     mButtonBox->setOrientation( mButtonOrientation );
     mTopLayout->addWidget( mButtonBox );
   }
-
-  q->setMinimumSize( q->minimumSizeHint() );
 }
 
 void KDialogPrivate::setButtonFocus(QPushButton *button, bool isDefault, bool isFocus)
@@ -326,124 +327,23 @@ QWidget *KDialog::mainWidget()
 QSize KDialog::sizeHint() const
 {
     Q_D(const KDialog);
-    return d->mMinSize.expandedTo( minimumSizeHint() ) + d->mIncSize;
-}
-
-QSize KDialogPrivate::widgetSizeHint(QWidget *widget, calculateMinimumSizeHintMode hMode, calculateMinimumSizeHintMode vMode, const QSize &zeroByS) const
-{
-  QSize s;
-  
-  const QSize sizeHint = widget->sizeHint();
-  const QSize minimumSize = widget->minimumSize();
-  const QSize minimumSizeHint = widget->minimumSizeHint();
-
-  if (hMode == NormalMode) {
-    s.rwidth() = sizeHint.width() + zeroByS.width();
-    s.rwidth() = qMax(s.width(), minimumSize.width());
-    s.rwidth() = qMax(s.width(), minimumSizeHint.width());
-  } else {
-    s.rwidth() = minimumSizeHint.width() + zeroByS.width();
-    s.rwidth() = qMax(s.width(), minimumSize.width());
-  }
-
-  if (vMode == NormalMode) {
-    s.rheight() = sizeHint.height() + zeroByS.height();
-    s.rheight() = qMax(s.height(), minimumSize.height());
-    s.rheight() = qMax(s.height(), minimumSizeHint.height());
-  } else {
-    s.rheight() = minimumSizeHint.height() + zeroByS.height();
-    s.rheight() = qMax(s.height(), minimumSize.height());
-  }
-  
-  return s;
-}
-
-QSize KDialogPrivate::calculateMinimumSizeHint(calculateMinimumSizeHintMode hMode, calculateMinimumSizeHintMode vMode) const
-{
-  Q_Q(const KDialog);
-  const int m = q->marginHint();
-  const int s = q->spacingHint();
-
-  const QSize zeroByS( 0, s );
-
-  QSize s1( 0, 0 );
-  QSize s2( 0, 0 );
-
-  //
-  // Url help area
-  //
-  if ( mUrlHelp )
-    s2 = mUrlHelp->minimumSize() + zeroByS;
-
-  s1.rwidth() = qMax( s1.width(), s2.width() );
-  s1.rheight() += s2.height();
-
-  //
-  // User widget
-  //
-  if ( mMainWidget ) {
-    s2 = widgetSizeHint(mMainWidget, hMode, vMode, zeroByS);
-    
-    if ( s2.isEmpty() )
-      s2 = QSize( 100, 100+s );
-  } else
-    s2 = QSize( 100, 100+s );
-
-  s1.rwidth()  = qMax( s1.width(), s2.width() );
-  s1.rheight() += s2.height();
-
-  if ( mDetailsWidget && mDetailsVisible ) {
-    s2 = widgetSizeHint(mDetailsWidget, hMode, vMode, zeroByS);
-    
-    s1.rwidth() = qMax( s1.width(), s2.width() );
-    s1.rheight() += s2.height();
-  }
-
-  //
-  // Button separator
-  //
-  if ( mActionSeparator )
-    s1.rheight() += mActionSeparator->minimumSize().height() + s;
-
-  //
-  // The button box
-  //
-  if ( mButtonBox ) {
-    s2 = mButtonBox->minimumSizeHint();
-    if ( mButtonOrientation == Qt::Horizontal ) {
-      s1.rwidth() = qMax( s1.width(), s2.width() );
-      s1.rheight() += s2.height();
-    } else {
-      s1.rwidth() += s2.width();
-      s1.rheight() = qMax( s1.height(), s2.height() );
+   
+    if (!d->mMinSize.isEmpty())
+        return d->mMinSize.expandedTo( minimumSizeHint() ) + d->mIncSize;
+    else {
+        if (d->dirty)
+            const_cast<KDialogPrivate*>(d)->queuedLayoutUpdate();
+        return QDialog::sizeHint() + d->mIncSize;
     }
-  }
-
-  //
-  // Outer margings
-  //
-  s1.rheight() += 2*m;
-  s1.rwidth()  += 2*m;
-
-  return s1;
 }
 
 QSize KDialog::minimumSizeHint() const
 {
     Q_D(const KDialog);
-    KDialogPrivate::calculateMinimumSizeHintMode hMode = KDialogPrivate::NormalMode;
-    KDialogPrivate::calculateMinimumSizeHintMode vMode = KDialogPrivate::NormalMode;
-    QSize size = d->calculateMinimumSizeHint(hMode, vMode);
-    QRect rect = QApplication::desktop()->availableGeometry(this);
-    QSize adjustedRect = rect.size() * 0.9;
-    bool tooWide = size.width() > adjustedRect.width();
-    bool tooTall = size.height() > adjustedRect.height();
-    if (tooWide || tooTall) {
-      if (tooWide) hMode = KDialogPrivate::ReallyMinimumMode;
-      if (tooTall) vMode = KDialogPrivate::ReallyMinimumMode;
-      size = d->calculateMinimumSizeHint(hMode, vMode);
-    }
-    return size;
+ 
+    if (d->dirty)
+        const_cast<KDialogPrivate*>(d)->queuedLayoutUpdate();
+    return QDialog::minimumSizeHint() + d->mIncSize;
 }
 
 //
