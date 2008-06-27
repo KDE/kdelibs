@@ -32,7 +32,7 @@ class QMenu;
 class KCompletionBox;
 class KUrl;
 
-/**
+/*
  * ### KDE 5: On all methods that it is said that a prettyUrl will be used, it
  *            would be nice to add a flag to the method for forcing the pretty
  *            url or not. (ereslibre)
