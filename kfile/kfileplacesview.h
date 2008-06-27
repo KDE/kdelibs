@@ -50,6 +50,13 @@ public:
     void setDropOnPlaceEnabled(bool enabled);
     bool isDropOnPlaceEnabled() const;
 
+    /**
+     * If \a enabled is true (the default), items will automatically resize
+     * themselves to fill the view.
+     */
+    void setAutoResizeItemsEnabled(bool enabled);
+    bool isAutoResizeItemsEnabled() const;
+
 public Q_SLOTS:
     void setUrl(const KUrl &url);
     void setShowAll(bool showAll);

@@ -206,6 +206,7 @@ public:
     KFilePlacesView * const q;
 
     KUrl currentUrl;
+    bool autoResizeItems;
     bool showAll;
     bool smoothItemResizing;
     bool dropOnPlace;
@@ -244,6 +245,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     d->showAll = false;
     d->smoothItemResizing = false;
     d->dropOnPlace = false;
+    d->autoResizeItems = true;
     d->dragging = false;
     d->lastClickedStorage = 0;
 
@@ -299,6 +301,16 @@ void KFilePlacesView::setDropOnPlaceEnabled(bool enabled)
 bool KFilePlacesView::isDropOnPlaceEnabled() const
 {
     return d->dropOnPlace;
+}
+
+void KFilePlacesView::setAutoResizeItemsEnabled(bool enabled)
+{
+    d->autoResizeItems = enabled;
+}
+
+bool KFilePlacesView::isAutoResizeItemsEnabled() const
+{
+    return d->autoResizeItems;
 }
 
 void KFilePlacesView::setUrl(const KUrl &url)
@@ -702,6 +714,16 @@ void KFilePlacesView::Private::setCurrentIndex(const QModelIndex &index)
 
 void KFilePlacesView::Private::adaptItemSize()
 {
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
+    if (!delegate) return;
+
+    if (!autoResizeItems) {
+        int size = q->iconSize().width(); // Assume width == height
+        delegate->setIconSize(size);
+        q->scheduleDelayedItemsLayout();
+        return;
+    }
+
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
 
     if (placesModel==0) return;
@@ -747,8 +769,7 @@ void KFilePlacesView::Private::adaptItemSize()
         size &= ~0xf;
     }
 
-    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
-    if (!delegate || size==delegate->iconSize()) return;
+    if (size==delegate->iconSize()) return;
 
     if (smoothItemResizing) {
         oldSize = delegate->iconSize();
