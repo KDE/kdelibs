@@ -831,6 +831,8 @@ KStandardDirs::realPath(const QString &dirname)
         return QFile::decodeName(realpath_buffer);
     }
 
+    if ( !dirname.endsWith('/') )
+        return dirname + '/';
     return dirname;
 }
 

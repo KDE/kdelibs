@@ -70,12 +70,14 @@ void KStandarddirsTest::testFindResource()
 
 #ifdef Q_WS_WIN
 #define EXT ".exe"
+#define KIOSLAVE "bin/kioslave.exe"
 #else
 #define EXT ""
+#define KIOSLAVE "kde4/libexec/kioslave"
 #endif
     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
     QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "kde4/libexec/kioslave" EXT ) );
+    QVERIFY( bin.endsWith( KIOSLAVE ) );
     QVERIFY( !QDir::isRelativePath(bin) );
 
     const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
@@ -167,18 +169,20 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( !kdeinit.isEmpty() );
     QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT ) );
 
+#ifdef Q_OS_UNIX
     // findExe with a result in libexec
     const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !lnusertemp.isEmpty() );
     QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
+#endif
 
     // Check the "exe" resource too
     QCOMPARE( KGlobal::dirs()->realFilePath(kdeinit),
               KGlobal::dirs()->locate( "exe", "kdeinit4" ) );
+#ifdef Q_OS_UNIX
     QCOMPARE( KGlobal::dirs()->realFilePath(lnusertemp),
               KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
 
-#ifdef Q_OS_UNIX
     // findExe with relative path
     const QString pwd = QDir::currentPath();
     QDir::setCurrent("/bin");
@@ -211,8 +215,14 @@ void KStandarddirsTest::testFindExe()
 
 void KStandarddirsTest::testLocate()
 {
-    const QString textPlain = "/usr/share/mime/text/x-patch.xml";
-    if (!QFile::exists(textPlain))
+    QString textPlain = "text/x-patch.xml";
+    Q_FOREACH( const QString &path, KGlobal::dirs()->resourceDirs("xdgdata-mime") ) {
+        if (QFile::exists(path + textPlain)) {
+            textPlain = path + textPlain;
+            break;
+        }
+    }
+    if( textPlain == "text/x-patch.xml" )
         QSKIP("xdg-share-mime not installed", SkipAll);
 
     const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/x-patch.xml");
