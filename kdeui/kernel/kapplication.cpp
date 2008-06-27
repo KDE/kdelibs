@@ -885,12 +885,11 @@ void KApplicationPrivate::parseCommandLine( )
     bool nocrashhandler = (!qgetenv("KDE_DEBUG").isEmpty());
     if (!nocrashhandler && args->isSet("crashhandler"))
     {
-        // set default crash handler / set emergency save function to nothing
+        // set default crash handler
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
-        KCrash::setEmergencySaveFunction(NULL);
-
-        KCrash::setApplicationName(args->appName());
     }
+    // Always set the app name, can be usefuls for apps that call setEmergencySaveFunction or enable AutoRestart
+    KCrash::setApplicationName(args->appName());
 
 #ifdef Q_WS_X11
     if ( args->isSet( "waitforwm" ) ) {

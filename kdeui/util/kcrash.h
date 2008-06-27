@@ -89,7 +89,8 @@ namespace KCrash
   enum CrashFlag {
     KeepFDs = 1,          ///< don't close all file descriptors immediately
     SaferDialog = 2,      ///< start DrKonqi without arbitrary disk access
-    AlwaysDirectly = 4    ///< never try to to start DrKonqi via kdeinit
+    AlwaysDirectly = 4,   ///< never try to to start DrKonqi via kdeinit
+    AutoRestart = 8       ///< autorestart this application. Only sensible for KUniqueApplications. @since 4.1.
   };
   Q_DECLARE_FLAGS(CrashFlags, CrashFlag)
 

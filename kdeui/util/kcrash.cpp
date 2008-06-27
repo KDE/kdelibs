@@ -26,6 +26,7 @@
  */
 
 #include "kcrash.h"
+#include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 #include <config-kstandarddirs.h>
 
@@ -62,9 +63,11 @@
 static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
+static char *s_autoRestartCommand = 0;
 static char *s_appPath = 0;
 static char *s_drkonqiPath = 0;
 static KCrash::CrashFlags s_flags = 0;
+static bool s_launchDrKonqi = true;
 
 namespace KCrash
 {
@@ -85,8 +88,10 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
    * We need at least the default crash handler for
    * emergencySaveFunction to be called
    */
-  if (s_emergencySaveFunction && !s_crashHandler)
-    setCrashHandler(defaultCrashHandler);
+  if (s_emergencySaveFunction && !s_crashHandler) {
+      s_launchDrKonqi = false; // --nocrashhandler means "no drkonqi please", let's still honor that
+      setCrashHandler(defaultCrashHandler);
+  }
 }
 
 KCrash::HandlerType
@@ -95,10 +100,44 @@ KCrash::emergencySaveFunction()
 	return s_emergencySaveFunction;
 }
 
+// Set the default crash handler in 10 seconds
+// This is used after an autorestart, the second instance of the application
+// is started with --nocrashhandler (no drkonqi, more precisely), and we
+// set the defaultCrashHandler (to handle autorestart) after 10s.
+// The delay is to see if we stay up for more than 10s time, to avoid infinite
+// respawning if the app crashes on startup.
+class KCrashDelaySetHandler : public QObject
+{
+public:
+    KCrashDelaySetHandler() {
+        startTimer(10000); // 10 s
+    }
+protected:
+    void timerEvent(QTimerEvent *event) {
+        if (!s_crashHandler) // not set meanwhile
+            KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+        killTimer(event->timerId());
+        this->deleteLater();
+    }
+};
+
+
+
 void
 KCrash::setFlags(KCrash::CrashFlags flags)
 {
-	s_flags = flags;
+    s_flags = flags;
+    if (s_flags & AutoRestart) {
+        // We need at least the default crash handler for autorestart to work.
+        if (!s_crashHandler) {
+            s_launchDrKonqi = false; // KDE_DEBUG=1 or --nocrashhandler means "no drkonqi please", let's still honor that
+            KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+            if (!args->isSet("crashhandler")) // --nocrashhandler was passed, probably due to a crash, delay restart handler
+                new KCrashDelaySetHandler;
+            else // probably because KDE_DEBUG=1. set restart handler immediately.
+                setCrashHandler(defaultCrashHandler);
+        }
+    }
 }
 
 void
@@ -111,6 +150,7 @@ void
 KCrash::setApplicationName(const QString& name)
 {
 	s_appName = qstrdup(name.toLatin1().constData());
+        s_autoRestartCommand = qstrdup(QString(name + " --nocrashhandler &").toLatin1().constData());
 }
 
 // This function sets the function which should be responsible for
@@ -183,6 +223,11 @@ KCrash::defaultCrashHandler (int sig)
     if (s_emergencySaveFunction) {
       s_emergencySaveFunction (sig);
     }
+    if ((s_flags & AutoRestart) && s_autoRestartCommand) {
+        sleep(1);
+        setCrashHandler(0); // make sure the new process doesn't inherit SIG_IGN from us
+        system(s_autoRestartCommand);
+    }
     crashRecursionCounter++; //
   }
 
@@ -207,6 +252,12 @@ KCrash::defaultCrashHandler (int sig)
         fprintf(stderr, "KCrash: Application '%s' crashing...\n",
 		s_appName ? s_appName : "<unknown>");
 #endif
+
+        if (!s_launchDrKonqi) {
+            setCrashHandler(0);
+            raise(sig); // dump core, or whatever is the default action for this signal.
+            return;
+        }
 
           const char * argv[24]; // don't forget to update this
           int i = 0;

@@ -108,11 +108,6 @@ protected Q_SLOTS:
     */
    void update (const QString& dir );
 
-   /**
-    * @internal Installs crash handler
-    */
-   void installCrashHandler();
-
    void runDelayedCheck();
 
 protected:
@@ -120,9 +115,6 @@ protected:
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir );
-
-
-   static void crashHandler(int);
 
    /**
     * Pointer to the dirwatch class which tells us, when some directories

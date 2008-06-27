@@ -412,17 +412,6 @@ void Kded::updateResourceList()
   }
 }
 
-void Kded::crashHandler(int)
-{
-   if (_self) // Don't restart if we were closing down
-      system(KDED_EXENAME);
-}
-
-void Kded::installCrashHandler()
-{
-   KCrash::setEmergencySaveFunction(crashHandler);
-}
-
 void Kded::recreate()
 {
    recreate(false);
@@ -461,7 +450,6 @@ void Kded::recreate(bool initial)
       }
       else
          m_needDelayedCheck = false;
-      QTimer::singleShot(100, this, SLOT(installCrashHandler()));
    }
 }
 
@@ -604,7 +592,7 @@ void Kded::unregisterWindowId(qlonglong windowId, const QString &sender)
 
 static void sighandler(int /*sig*/)
 {
-    if (kapp)
+    if (qApp)
        qApp->quit();
 }
 
@@ -695,7 +683,7 @@ public:
   virtual bool process(const DCOPCString &fun, const QByteArray &data,
                        DCOPCString& replyType, QByteArray &replyData)
     {
-      if ( kapp && (fun == "quit()") )
+      if (qApp && (fun == "quit()"))
       {
         qApp->quit();
         replyType = "void";
@@ -804,8 +792,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KDEDApplication k;
      k.setQuitOnLastWindowClosed(false);
 
+     KCrash::setFlags(KCrash::AutoRestart);
+
      // Not sure why kded is created before KDEDApplication
-     // but if it has to be, then it needsto be moved to the main thread
+     // but if it has to be, then it needs to be moved to the main thread
      // before it can use timers (DF)
      kded->moveToThread( k.thread() );
 
