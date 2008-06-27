@@ -1076,23 +1076,23 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
 
     if ( dummyAdded ) {
         if ( !icon.isNull() ) {
-            locationEdit->changeUrl( 0, icon, text );
+            locationEdit->setItemIcon( 0, icon );
+            locationEdit->setItemText( 0, text );
         } else {
             if ( !usePreviousPixmapIfNull ) {
-                locationEdit->changeUrl( 0, QPixmap(), text );
-            } else {
-                locationEdit->changeUrl( 0, text );
+                locationEdit->setItemIcon( 0, QPixmap() );
             }
+            locationEdit->setItemText( 0, text );
         }
     } else {
         if ( !text.isEmpty() ) {
             if ( !icon.isNull() ) {
-                locationEdit->insertUrl( 0, icon, text );
+                locationEdit->insertItem( 0, icon, text );
             } else {
                 if ( !usePreviousPixmapIfNull ) {
-                    locationEdit->insertUrl( 0, QPixmap(), text );
+                    locationEdit->insertItem( 0, QPixmap(), text );
                 } else {
-                    locationEdit->insertUrl( 0, text );
+                    locationEdit->insertItem( 0, text );
                 }
             }
             dummyAdded = true;
