@@ -1147,7 +1147,7 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
     if ( urlList.count() > 1 ) {
         QString urls;
         foreach (const KUrl &url, urlList) {
-            urls += KUrl::toPercentEncoding( QString("\"%1\"").arg( url.fileName() ) ) + ' ';
+            urls += QString( "\"%1\"" ).arg( url.fileName() ) + ' ';
         }
         urls = urls.left( urls.size() - 1 );
 
