@@ -1000,6 +1000,8 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
         multiSelectionChanged();
         emit q->selectionChanged();
     }
+
+    locationEdit->lineEdit()->selectAll();
 }
 
 void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
