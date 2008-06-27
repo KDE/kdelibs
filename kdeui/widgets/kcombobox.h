@@ -33,6 +33,12 @@ class KCompletionBox;
 class KUrl;
 
 /**
+ * ### KDE 5: On all methods that it is said that a prettyUrl will be used, it
+ *            would be nice to add a flag to the method for forcing the pretty
+ *            url or not. (ereslibre)
+ */
+
+/**
  * @short An enhanced combo box.
  *
  * A combined button, line-edit and a popup list widget.
