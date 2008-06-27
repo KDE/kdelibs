@@ -1318,7 +1318,6 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
 void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
 {
-    q->setSelection( url );
     q->slotOk();
 }
 
