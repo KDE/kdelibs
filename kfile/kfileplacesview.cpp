@@ -30,6 +30,7 @@
 
 #include <kcomponentdata.h>
 #include <kdirnotify.h>
+#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -838,7 +839,10 @@ int KFilePlacesView::Private::insertIndicatorHeight(int itemHeight) const
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 {
-    _k_placeActivated(index);
+    if (!KGlobalSettings::singleClick()) {
+        // if double click is used, emulate a single click behavior
+        _k_placeActivated(index);
+    }
 }
 
 void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
