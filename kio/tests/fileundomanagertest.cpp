@@ -32,6 +32,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kdatetime.h>
 
 #include <errno.h>
 #include <utime.h>

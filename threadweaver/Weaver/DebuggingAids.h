@@ -34,7 +34,6 @@
 extern "C"
 {
 #include <stdarg.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
