@@ -319,11 +319,6 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     if ( !text.isEmpty() )
       parent->insertPlainText( text );  // TODO: check if this is html? (MiB)
     return true;
-  } else if (event->modifiers() == Qt::ControlModifier &&
-            (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
-              qobject_cast<KDialog*>(parent->window()) ) {
-    // ignore Ctrl-Return so that KDialogs can close the dialog
-    return true;
   }
   return false;
 }
@@ -754,6 +749,10 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
     if (d->handleShortcut(event)) {
         event->accept();
+    }else if (event->modifiers() == Qt::ControlModifier &&
+            (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
+              qobject_cast<KDialog*>(window()) ) {
+        event->ignore();
     } else {
         QTextEdit::keyPressEvent(event);
     }
