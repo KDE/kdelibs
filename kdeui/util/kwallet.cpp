@@ -153,7 +153,12 @@ Wallet::Wallet(int handle, const QString& name)
 
 Wallet::~Wallet() {
     if (d->handle != -1) {
-        walletLauncher->getInterface().close(d->handle, false, appid());
+        if (!walletLauncher.isDestroyed()) {
+            walletLauncher->getInterface().close(d->handle, false, appid());
+        } else {
+            kDebug() << "Problem with static destruction sequence."
+                        "Destroy any static Wallet before the event-loop exits.";
+        }
         d->handle = -1;
         d->folder.clear();
         d->name.clear();
