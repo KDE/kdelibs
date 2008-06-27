@@ -1500,7 +1500,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
             selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
-            d->_k_assureVisibleSelection();
+            QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
         }
     }
 }

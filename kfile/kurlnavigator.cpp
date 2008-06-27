@@ -500,7 +500,7 @@ void KUrlNavigator::Private::switchView()
     m_toggleEditableMode->setFocus();
     m_editable = !m_editable;
     m_toggleEditableMode->setChecked(m_editable);
-    QTimer::singleShot(0, q, SLOT(updateContent()));
+    updateContent();
     if (q->isUrlEditable()) {
         m_pathBox->setFocus();
     }
