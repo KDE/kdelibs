@@ -282,7 +282,7 @@ public:
 //    bool addCaCertificates(const QString &path, QSsl::EncodingFormat format = QSsl::Pem,
 //                           QRegExp::PatternSyntax syntax = QRegExp::FixedString);
     void addCaCertificates(const QList<QSslCertificate> &certificates);
-    QList<QSslCertificate> certificates() const;
+    QList<QSslCertificate> caCertificates() const;
     QList<KSslCipher> ciphers() const;
     void connectToHostEncrypted(const QString &hostName, quint16 port, OpenMode openMode = ReadWrite);
     // bool isEncrypted() const { return encryptionMode() != UnencryptedMode }

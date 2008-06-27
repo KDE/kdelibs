@@ -647,7 +647,7 @@ void KTcpSocket::addCaCertificates(const QList<QSslCertificate> &certificates)
 }
 
 
-QList<QSslCertificate> KTcpSocket::certificates() const
+QList<QSslCertificate> KTcpSocket::caCertificates() const
 {
     return d->sock.caCertificates();
 }
