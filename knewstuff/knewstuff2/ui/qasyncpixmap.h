@@ -23,8 +23,12 @@
 
 #include <QtGui/QPixmap>
 #include <QtCore/QObject>
+#include <QtCore/QByteArray>
 
 class KJob;
+namespace KIO {
+    class Job;
+}
 
 /**
  * Convenience class for images with remote sources.
@@ -49,10 +53,11 @@ class QAsyncPixmap : public QObject, public QPixmap
 
     private Q_SLOTS:
         void slotDownload(KJob *job);
+        void slotData(KIO::Job* job, const QByteArray& buf);
 
     private:
         QString m_url;
-        QString m_dest;
+        QByteArray m_buffer;
 };
 
 #endif

@@ -21,6 +21,7 @@
 #include "qasyncpixmap.h"
 
 #include <kio/job.h>
+#include <kio/scheduler.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <krandom.h>
@@ -32,13 +33,17 @@ QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
     : QObject(parent), QPixmap(), m_url(url)
 {
     if (!m_url.isEmpty()) {
-        // XXX ???
-         //KTempFile
-        m_dest = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".png";
-
-        KIO::FileCopyJob *job = KIO::file_copy(m_url, m_dest, -1, KIO::Overwrite | KIO::HideProgressInfo);
+        KIO::TransferJob *job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
+        KIO::Scheduler::scheduleJob(job);
         connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
+        connect(job, SIGNAL(data(KIO::Job*,const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
     }
+}
+
+void QAsyncPixmap::slotData(KIO::Job *job, const QByteArray& buf)
+{
+    Q_UNUSED(job);
+    m_buffer.append(buf);
 }
 
 void QAsyncPixmap::slotDownload(KJob *job)
@@ -47,14 +52,11 @@ void QAsyncPixmap::slotDownload(KJob *job)
     if(job->error())
     {
         // XXX ???
+        m_buffer.clear();
         return;
     }
-    load(m_dest);
-    //bool ret = load(m_dest);
-//    QFile::remove(m_dest);
-    //kDebug(550) << "DOWNLOADed to " << m_dest;
-    //kDebug(550) << "ret = " << ret;
-
+    loadFromData(m_buffer);
+    m_buffer.clear();
     emit signalLoaded(m_url, *this);
 }
 
