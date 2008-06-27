@@ -624,7 +624,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
     cg.writeEntry("State", state.toBase64());
     // One day will need to save the version number, but for now, assume 0
 
-    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) {
+    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) { // TODO should be cg == d->autoSaveGroup, to compare both kconfig and group name
         if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
             cg.revertToDefault("ToolBarsMovable");
         else
@@ -702,7 +702,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         restoreState(state);
     }
 
-    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) {
+    if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) { // TODO should be cg == d->autoSaveGroup, to compare both kconfig and group name
         QString entry = cg.readEntry ("ToolBarsMovable", "Enabled");
         if ( entry == "Disabled" )
             KToolBar::setToolBarsLocked(true);
@@ -935,6 +935,12 @@ QString KMainWindow::autoSaveGroup() const
 {
     K_D(const KMainWindow);
     return d->autoSaveSettings ? d->autoSaveGroup.name() : QString();
+}
+
+KConfigGroup KMainWindow::autoSaveConfigGroup() const
+{
+    K_D(const KMainWindow);
+    return d->autoSaveSettings ? d->autoSaveGroup : KConfigGroup();
 }
 
 void KMainWindow::saveAutoSaveSettings()

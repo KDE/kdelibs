@@ -138,8 +138,7 @@ void MainWindow::createGUI( Part * part )
     // KXMLGUIFactory/KXMLGUIBuilder, though...
     if ( autoSaveSettings() ) {
         QWidget *focus = QApplication::focusWidget();
-        KConfigGroup cg(KGlobal::config(), autoSaveGroup());
-        applyMainWindowSettings(cg);
+        applyMainWindowSettings(autoSaveConfigGroup());
 
         //The call to applyMainWindowSettings likes to steal focus via the
         //call to QMainWindow::restoreState.  Don't let it.

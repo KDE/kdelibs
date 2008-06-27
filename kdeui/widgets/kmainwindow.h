@@ -397,11 +397,22 @@ public:
 
     /**
      * @return the group used for setting-autosaving.
-     * Only meaningful if setAutoSaveSettings() was called.
+     * Only meaningful if setAutoSaveSettings(QString) was called.
      * This can be useful for forcing a save or an apply, e.g. before and after
      * using KEditToolbar.
+     *
+     * NOTE: you should rather use saveAutoSaveSettings() for saving or autoSaveConfigGroup() for loading.
+     * This method doesn't make sense if setAutoSaveSettings(KConfigGroup) was called.
      */
     QString autoSaveGroup() const;
+
+    /**
+     * @return the group used for setting-autosaving.
+     * Only meaningful if setAutoSaveSettings() was called.
+     * This can be useful for forcing an apply, e.g. after using KEditToolbar.
+     * @since 4.1
+     */
+    KConfigGroup autoSaveConfigGroup() const;
 
     /**
      * Read settings for statusbar, menubar and toolbar from their respective
