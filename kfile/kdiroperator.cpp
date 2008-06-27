@@ -902,11 +902,14 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
         newurl.cd(QLatin1String(".."));
-        if (!Private::isReadable(newurl)) {
+        KFileItem i(KFileItem::Unknown, KFileItem::Unknown, newurl, true);
+        if (!Private::isReadable(newurl) && i.isDir()) {
             resetCursor();
             KMessageBox::error(d->itemView,
                                i18n("The specified folder does not exist "
                                     "or was not readable."));
+            return;
+        } else if (!i.isDir()) {
             return;
         }
     }
