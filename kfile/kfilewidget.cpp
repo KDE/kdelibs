@@ -1368,18 +1368,18 @@ void KFileWidget::setSelection(const QString& url)
      *  / on host usr
      */
     KIO::UDSEntry entry;
-    KIO::NetAccess::stat(u, entry, this);
+    bool res = KIO::NetAccess::stat(u, entry, this);
     KFileItem i(entry, u);
     //    KFileItem i(u.path());
     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
-    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
+    if ( res && i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
         // (as KFileItem does not check if the file exists or not
         // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
         setUrl(u, true);
     }
-    else {
+    else if ( res ) {
         QString filename = u.url();
         int sep = filename.lastIndexOf('/');
         if (sep >= 0) { // there is a / in it
