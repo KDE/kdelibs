@@ -903,9 +903,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
         // maybe newurl is a file? check its parent directory
         newurl.cd(QLatin1String(".."));
         KIO::UDSEntry entry;
-        KIO::NetAccess::stat(newurl, entry, this);
+        bool res = KIO::NetAccess::stat(newurl, entry, this);
         KFileItem i(entry, newurl);
-        if (!Private::isReadable(newurl) && i.isDir()) {
+        if ((!res || !Private::isReadable(newurl)) && i.isDir()) {
             resetCursor();
             KMessageBox::error(d->itemView,
                                i18n("The specified folder does not exist "
