@@ -40,7 +40,7 @@
 // If we improve our stack usage, we can bump this number.
 #define KJS_MAX_STACK 100
 #else
-#define KJS_MAX_STACK 1000
+#define KJS_MAX_STACK 900
 #endif
 
 #define JAVASCRIPT_CALL_TRACING 0
