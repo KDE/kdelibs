@@ -25,6 +25,10 @@
 class QTableWidget;
 class QTableWidgetItem;
 
+namespace KJS {
+    class ExecState;
+}
+
 namespace KJSDebugger {
 class DebugDocument;
 struct InterpreterContext;
@@ -38,6 +42,8 @@ public:
 
     void displayStack(InterpreterContext* ctx);
     void clearDisplay();
+
+    KJS::ExecState* selectedFrameContext();
 private slots:
     void slotViewItem(QTableWidgetItem* item);
 signals:

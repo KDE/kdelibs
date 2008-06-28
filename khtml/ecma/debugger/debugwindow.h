@@ -130,6 +130,7 @@ protected:
 private Q_SLOTS:
     void displayScript(KJSDebugger::DebugDocument *document);
     void displayScript(KJSDebugger::DebugDocument *document, int line); // -1 denotes not focusing on the line
+    void updateVarView();
     void closeTab();
     void documentDestroyed(KJSDebugger::DebugDocument* doc);
 

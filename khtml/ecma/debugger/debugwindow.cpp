@@ -157,6 +157,8 @@ DebugWindow::DebugWindow(QWidget *parent)
             this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
     connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*, int)),
             this, SLOT(displayScript(KJSDebugger::DebugDocument*, int)));
+    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*, int)),
+            this, SLOT(updateVarView()));
 
     m_breakAtNext = false;
     m_modalLevel  = 0;
@@ -775,15 +777,16 @@ bool DebugWindow::exitContext(ExecState *exec, int sourceId, int lineno, JSObjec
 void DebugWindow::doEval(const QString& qcode)
 {
     // Work out which execution state to use. If we're currently in a debugging session,
-    // use the current context - otherwise, use the global execution state from the interpreter
-    // corresponding to the currently displayed source file.
+    // use the context of the presently selected frame, if any --- otherwise, use the global execution
+    // state from the interpreter corresponding to the currently displayed source file.
     ExecState* exec;
     JSObject*  thisObj;
 
     if (inSession())
     {
-        InterpreterContext* ctx = m_activeSessionCtxs.top();
-        exec    = ctx->execContexts.top();
+        exec = m_callStack->selectedFrameContext();
+        if (!exec)
+            exec = m_activeSessionCtxs.top()->execContexts.top();
         thisObj = exec->context()->thisValue();
     }
     else
@@ -846,6 +849,11 @@ void DebugWindow::doEval(const QString& qcode)
     // in case a nested session was active
     if (inSession())
         setUIMode(Stopped);
+}
+
+void DebugWindow::updateVarView()
+{
+    m_localVariables->updateDisplay(m_callStack->selectedFrameContext());
 }
 
 void DebugWindow::displayScript(DebugDocument* document)

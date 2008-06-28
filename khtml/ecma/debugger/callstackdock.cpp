@@ -99,4 +99,14 @@ void CallStackDock::slotViewItem(QTableWidgetItem* item)
     emit displayScript(entry.doc.get(), entry.lineNumber);
 }
 
+KJS::ExecState* CallStackDock::selectedFrameContext()
+{
+    QList<QTableWidgetItem*> selected = m_view->selectedItems();
+    if (selected.isEmpty())
+        return 0;
+
+    return m_activeCtx->execContexts[m_view->rowCount() - m_view->row(selected[0]) - 1];
+    
+}
+
 }

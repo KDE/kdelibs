@@ -62,20 +62,33 @@ LocalVariablesDock::~LocalVariablesDock()
 {
 }
 
-void LocalVariablesDock::updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item)
+void LocalVariablesDock::updateValue(KJS::ExecState* exec, KJS::JSValue* val,
+                                     QTreeWidgetItem* item, bool recurse)
 {
     // Note: parent is responsible for setting our name..
     item->setText(1, valueToString(val));
-    if (val->isObject())
-        updateObjectProperties(exec, val, item);
+    if (recurse) {
+        if (val->isObject())
+        {
+            updateObjectProperties(exec, val, item);
+        }
+        else
+        {
+            // It has no kids, so treeview item better not, either
+            QList<QTreeWidgetItem*> kids = item->takeChildren();
+            qDeleteAll(kids);
+        }
+    }   
 }
 
 void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSValue* val,
                                                 QTreeWidgetItem* item, bool globalObject)
 {
+    bool root = (item == m_view->invisibleRootItem());
+
     // We have to be careful here -- we don't want to recurse if we're not open;
     // except for root since we may want the + there
-    bool recurse = item->isExpanded() || item == m_view->invisibleRootItem();
+    bool recurse = item->isExpanded() || root;
 
     QStringList props;
     KJS::JSObject* obj = 0;
@@ -101,6 +114,10 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
         }
     }
 
+    // If we're the root, also pretend 'this' is there.
+    if (root)
+        props << QLatin1String("this");
+
     // Sort them, to make updates easier.
     props.sort();
 
@@ -114,10 +131,14 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
     // Update names and values.
     for (int pos = 0; pos < props.size(); ++pos) 
     {
+        QString propName = props[pos];
         QTreeWidgetItem* kid = item->child(pos);
-        kid->setText(0, props[pos]);
-        if (recurse)
-            updateValue(exec, obj->get(exec, KJS::Identifier(KJS::UString(props[pos]))), kid);
+        kid->setText(0, propName);
+
+        if (root && propName == "this")
+            updateValue(exec, exec->thisValue(), kid, true);
+        else
+            updateValue(exec, obj->get(exec, KJS::Identifier(KJS::UString(props[pos]))), kid, recurse);
     }
 }
 

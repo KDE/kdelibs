@@ -48,7 +48,7 @@ private Q_SLOTS:
 private:
     void updateObjectProperties(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item, 
                                 bool globalObject = false);
-    void updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item);
+    void updateValue(KJS::ExecState* exec, KJS::JSValue* val, QTreeWidgetItem* item, bool kidsVisible);
 
 
     QTreeWidget*     m_view;
