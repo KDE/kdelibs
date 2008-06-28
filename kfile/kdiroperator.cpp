@@ -902,7 +902,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
         newurl.cd(QLatin1String(".."));
-        KFileItem i(KFileItem::Unknown, KFileItem::Unknown, newurl, true);
+        KIO::UDSEntry entry;
+        KIO::NetAccess::stat(newurl, entry, this);
+        KFileItem i(entry, newurl);
         if (!Private::isReadable(newurl) && i.isDir()) {
             resetCursor();
             KMessageBox::error(d->itemView,

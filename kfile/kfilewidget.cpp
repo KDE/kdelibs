@@ -1367,7 +1367,9 @@ void KFileWidget::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KFileItem i(KFileItem::Unknown, KFileItem::Unknown, u, true );
+    KIO::UDSEntry entry;
+    KIO::NetAccess::stat(u, entry, this);
+    KFileItem i(entry, u);
     //    KFileItem i(u.path());
     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
