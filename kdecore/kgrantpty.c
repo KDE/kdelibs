@@ -9,11 +9,11 @@
  *
  * Things work as following:
  *
- * In konsole we open a master pty. This can be opened
+ * In konsole we open a master pty. This can be
  * done by at most one process. Prior to opening the
  * master pty, the slave pty cannot be opened. Then, in
  * grantpty, we fork to this program. The trick is, that
- * the parameter is passes as a file handle, which cannot
+ * the parameter is passed as a file handle, which cannot
  * be faked, so that we get a secure setuid root chmod/chown
  * with this program.
  *
