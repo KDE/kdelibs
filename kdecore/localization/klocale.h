@@ -722,7 +722,7 @@ public:
    *
    * The format of the date is a string which contains variables that will
    * be replaced:
-   * @li %Y with the century (e.g. "19" for "1984")
+   * @li %Y with the whole year (e.g. "1984" for "1984")
    * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
    * @li %n with the month (January="1", December="12")
    * @li %m with the month with two digits (January="01", December="12")
@@ -745,7 +745,7 @@ public:
    *
    * The format of the date is a string which contains variables that will
    * be replaced:
-   * @li %Y with the century (e.g. "19" for "1984")
+   * @li %Y with the whole year (e.g. "1984" for "1984")
    * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
    * @li %n with the month (January="1", December="12")
    * @li %m with the month with two digits (January="01", December="12")
