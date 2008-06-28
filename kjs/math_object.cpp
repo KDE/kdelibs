@@ -84,37 +84,27 @@ bool MathObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
 
 JSValue *MathObjectImp::getValueProperty(ExecState *, int token) const
 {
-  double d = -42; // ;)
   switch (token) {
   case Euler:
-    d = exp(1.0);
-    break;
+    return jsNumber(exp(1.0));
   case Ln2:
-    d = log(2.0);
-    break;
+    return jsNumber(log(2.0));
   case Ln10:
-    d = log(10.0);
-    break;
+    return jsNumber(log(10.0));
   case Log2E:
-    d = 1.0/log(2.0);
-    break;
+    return jsNumber(1.0/log(2.0));
   case Log10E:
-    d = 1.0/log(10.0);
-    break;
+    return jsNumber(1.0/log(10.0));
   case Pi:
-    d = piDouble;
-    break;
+    return jsNumber(piDouble);
   case Sqrt1_2:
-    d = sqrt(0.5);
-    break;
+    return jsNumber(sqrt(0.5));
   case Sqrt2:
-    d = sqrt(2.0);
-    break;
-  default:
-    assert(0);
+    return jsNumber(sqrt(2.0));
   }
 
-  return jsNumber(d);
+  assert(0);
+  return 0;
 }
 
 // ------------------------------ MathObjectImp --------------------------------
