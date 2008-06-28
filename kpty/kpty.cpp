@@ -132,11 +132,6 @@ extern "C" {
 
 #include <QtCore/Q_PID>
 
-// not defined on HP-UX for example
-#ifndef CTRL
-# define CTRL(x) ((x) & 037)
-#endif
-
 #define TTY_GROUP "tty"
 
 ///////////////////////
