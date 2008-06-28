@@ -53,33 +53,11 @@ static class kMessageOutputInstaller {
 } kMessageOutputInstallerInstance;
 
 static HINSTANCE kdecoreDllInstance = NULL;
+static wchar_t kde4prefixUtf16[MAX_PATH + 2];
+static QString *kde4Prefix = NULL;
 
-/**
- * The dll entry point - get the instance handle for GetModuleFleNameW
- * Maybe also some special initialization / cleanup can be done here
- **/
-BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID )
+void initKde4prefixUtf16()
 {
-    switch ( fdwReason ) {
-    case DLL_PROCESS_ATTACH:
-        kdecoreDllInstance = hinstDLL;
-        break;
-    default:
-        break;
-    }
-    return true;
-}
-
-
-class kGlobalClass {
-    public: 
-        kGlobalClass();
-        QString kde4Prefix;
-};
-
-kGlobalClass::kGlobalClass()
-{
-    wchar_t kde4prefixUtf16[MAX_PATH + 1];
     //the path is C:\some\path\kde4\bin\kdecore.dll
     GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
     int bs1 = 0, bs2 = 0;
@@ -95,17 +73,50 @@ kGlobalClass::kGlobalClass()
     }
     Q_ASSERT(bs1);
     Q_ASSERT(pos < MAX_PATH + 1);
-    kde4prefixUtf16[bs1] = 0;
-    kde4Prefix = QString::fromUtf16((ushort *) kde4prefixUtf16);
+    kde4prefixUtf16[bs1] = '/';
+    kde4prefixUtf16[bs1+1] = 0;
 }
-
-K_GLOBAL_STATIC(kGlobalClass, myGlobals)
 
 // can't use QCoreApplication::applicationDirPath() because sometimes we
 // don't have an instantiated QCoreApplication
 QString getKde4Prefix()
 {
-    return myGlobals->kde4Prefix;
+  // we can get called after DLL_PROCESS_DETACH!
+  return kde4Prefix ? *kde4Prefix : QString::fromUtf16((ushort*) kde4prefixUtf16);
+}
+
+/**
+ * The dll entry point - get the instance handle for GetModuleFleNameW
+ * Maybe also some special initialization / cleanup can be done here
+ **/
+BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
+{
+    switch ( fdwReason ) {
+    case DLL_PROCESS_ATTACH:
+        kdecoreDllInstance = hinstDLL;
+        initKde4prefixUtf16();
+        kde4Prefix = new QString( QString::fromUtf16((ushort*) kde4prefixUtf16) );
+        break;
+    case DLL_PROCESS_DETACH:
+        /* msdn:
+           When handling DLL_PROCESS_DETACH, a DLL should free resources such
+           as heap memory only if the DLL is being unloaded dynamically (the
+           lpReserved parameter is NULL). If the process is terminating (the
+           lpvReserved parameter is non-NULL), all threads in the process except
+           the current thread either have exited already or have been explicitly
+           terminated by a call to the ExitProcess function, which might leave
+           some process resources such as heaps in an inconsistent state. In this
+           case, it is not safe for the DLL to clean up the resources. Instead,
+           the DLL should allow the operating system to reclaim the memory.
+         */
+        if( lpReserved == NULL )
+            delete kde4Prefix;
+        kde4Prefix = 0;
+        break;
+    default:
+        break;
+    }
+    return true;
 }
 
 /**
