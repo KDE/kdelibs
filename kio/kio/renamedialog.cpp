@@ -28,9 +28,9 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
 #include <QtCore/QDir>
 
+#include <klineedit.h>
 #include <kmessagebox.h>
 #include <kpushbutton.h>
 #include <kio/global.h>
@@ -68,7 +68,7 @@ class RenameDialog::RenameDialogPrivate
   QPushButton *bResume;
   QPushButton *bResumeAll;
   QPushButton *bSuggestNewName;
-  QLineEdit* m_pLineEdit;
+  KLineEdit* m_pLineEdit;
   KUrl src;
   KUrl dest;
   QString mimeSrc;
@@ -281,7 +281,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     QHBoxLayout* layout2 = new QHBoxLayout();
     pLayout->addLayout( layout2 );
 
-    d->m_pLineEdit = new QLineEdit( this );
+    d->m_pLineEdit = new KLineEdit( this );
     layout2->addWidget( d->m_pLineEdit );
     QString fileName = d->dest.fileName();
     d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
