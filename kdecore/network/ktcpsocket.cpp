@@ -21,10 +21,40 @@
 
 #include <kdebug.h>
 #include <kurl.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 
+#include <QtCore/QMutex>
+#include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
+
+K_GLOBAL_STATIC(QMutex, ksslsocketInitMutex)
+static QList<QSslCertificate> *kdeCaCertificateList;
+
+static void initKSslSocket()
+{
+    static bool initialized = false;
+    QMutexLocker locker(ksslsocketInitMutex);
+    if (!initialized) {
+        if (!kdeCaCertificateList) {
+            kdeCaCertificateList = new QList<QSslCertificate>;
+            QSslSocket::setDefaultCaCertificates(*kdeCaCertificateList); // set Qt's set to empty
+        }
+
+        if (!KGlobal::hasMainComponent())
+            return;                 // we need KGlobal::dirs() available
+        initialized = true;
+
+        // set default CAs from KDE's own bundle
+        QStringList bundles = KGlobal::dirs()->findAllResources("data", "kssl/ca-bundle.crt");
+        foreach (const QString &bundle, bundles) {
+            *kdeCaCertificateList += QSslCertificate::fromPath(bundle);
+        }
+        //kDebug(7029) << "Loading" << kdeCaCertificateList->count() << "CA certificates from" << bundles;
+    }
+}
 
 static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
 {
@@ -206,7 +236,12 @@ public:
     KTcpSocketPrivate(KTcpSocket *qq)
      : q(qq),
        emittedReadyRead(false)
-    {}
+    {
+        initKSslSocket();
+
+        Q_ASSERT(kdeCaCertificateList);
+        sock.setCaCertificates(*kdeCaCertificateList);
+    }
 
     KTcpSocket::State state(QAbstractSocket::SocketState s)
     {
