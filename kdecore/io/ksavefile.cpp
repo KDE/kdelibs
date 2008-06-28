@@ -85,8 +85,10 @@ bool KSaveFile::open(OpenMode flags)
     }
 
     if ( !d->tempFileName.isNull() ) {
+#if 0 // do not set an error here, this open() fails, but the file itself is without errors
         d->error=QFile::OpenError;
         d->errorString=i18n("Already opened.");
+#endif
         return false;
     }
 
