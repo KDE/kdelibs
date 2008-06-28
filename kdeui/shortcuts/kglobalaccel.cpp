@@ -246,19 +246,22 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
         // Create a shortcut from the result
         const KShortcut scResult(shortcutFromIntList(result));
 
-        // If this is a configuration action and we have set the shortcut,
-        // inform the real owner of the change. Question is why we do this
-        // after calling setShortcut and not instead of because
-        // setForeignShortcut calls setShortcut. But now it's to late to
-        // change that (setForeignShortcut returns void). I have the
-        // suspicion that the yourShortcutGotChanged signal is never emitted
-        // because of this. Will give it a try ...
         if (isConfigurationAction && (flags & KAction::NoAutoloading)) {
-            // kDebug() << "Calling setForeignShortcut()";
+            // If this is a configuration action and we have set the shortcut,
+            // inform the real owner of the change.
+            // Note that setForeignShortcut will cause a signal to be sent to applications
+            // even if it did not "see" that the shortcut has changed. This is Good because
+            // at the time of comparison (now) the action *already has* the new shortcut.
+            // We called setShortcut(), remember?
+            // Also note that we will see our own signal so we may not need to call
+            // setActiveGlobalShortcutNoEnable - _k_shortcutGotChanged() does it.
+            // In practice it's probably better to get the change propagated here without
+            // DBus delay as we do below.
             iface.setForeignShortcut(actionId, result);
-        // If kdedglobalaccel returned a shortcut that differs from the one we
-        // sent, use that one.
-        } else if (scResult != activeShortcut) {
+        }
+        if (scResult != activeShortcut) {
+            // If kdedglobalaccel returned a shortcut that differs from the one we
+            // sent, use that one. There must have been clashes or some other problem.
             action->d->setActiveGlobalShortcutNoEnable(scResult);
         }
     }

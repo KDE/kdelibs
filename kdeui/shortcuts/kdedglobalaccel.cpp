@@ -498,8 +498,11 @@ void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QLis
     QList<int> oldKeys = ad->keys;
     QList<int> newKeys = setShortcut(actionId, keys, setterFlags);
 
-    if (oldKeys != newKeys)
-        emit yourShortcutGotChanged(actionId, newKeys);
+    // if (oldKeys == newKeys)
+    //     return;
+    // We cannot make that comparison or we break KGlobalAccel which first
+    // calls setShortcut() and *then* setForeignShortcut. 
+    emit yourShortcutGotChanged(actionId, newKeys);
 }
 
 
