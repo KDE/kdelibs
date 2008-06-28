@@ -22,7 +22,6 @@
 #include <kdebug.h>
 #include <kurl.h>
 
-#include <QtCore/QDirIterator>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
@@ -201,67 +200,6 @@ QSslCertificate KSslError::certificate() const
 }
 
 
-// The following is a hackish way to make sure that we load the distribution's list
-// of certificates before the first socket will be used. This has the side effect
-// of doing the same for applications using plain QSslSockets.
-// Let's call that a feature, not a bug.
-#ifdef Q_OS_LINUX
-class DefaultCertificateLoader
-{
-public:
-    DefaultCertificateLoader()
-    {
-        if (s_defaultCertificatesLoaded) {
-            return;
-        }
-        s_defaultCertificatesLoaded = true;
-
-        // Debian should have all certificates nicely bundled in /etc/ssl/certs/ca-certificates.crt,
-        // Suse has a bunch of .pem files in the same directory (Debian too but we don't need to
-        // touch them). Others are unknown.
-        QSslSocket::setDefaultCaCertificates(QList<QSslCertificate>());
-        bool haveC = false;
-        haveC = QSslSocket::addDefaultCaCertificates(
-                  QLatin1String("/etc/ssl/certs/ca-certificates.crt"));
-
-        if (!haveC) {
-            // Work around a Qt bug discovered by Maksim Orlovich. QSslCertificate::fromPath()
-            // seems to misbehave when using wildcard (shell-style) filename matching. In fact it
-            // *looks* like it will rarely work so we'll avoid it altogether.
-            QList<QSslCertificate> certList;
-
-            QStringList nameFilter(QLatin1String("*.pem"));
-            QDirIterator dir(QLatin1String("/etc/ssl/certs/"), nameFilter, QDir::Files,
-                             QDirIterator::FollowSymlinks);
-            while (dir.hasNext()) {
-                QFile file(dir.next());
-                if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                    certList += QSslCertificate::fromData(file.readAll(), QSsl::Pem);
-                    if (!certList.last().isValid()) {
-                        certList.removeLast();
-                    }
-                }
-            }
-            haveC = !certList.isEmpty();
-            QSslSocket::addDefaultCaCertificates(certList);
-        }
-
-        if (!haveC) {
-            // QSslSocket::systemCaCertificates() is b0rken; due to a typo in an #ifdef that
-            // is too late to change due to BC we have to do what it is supposed to do.
-            // If we cannot do that we load the same old list of Qt-supplied certificates
-            // we had before trying to improve the situation. Go!
-            QSslSocket::addDefaultCaCertificates(QSslSocket::systemCaCertificates());
-            haveC = true;   // well...
-        }
-    }
-private:
-    static bool s_defaultCertificatesLoaded;
-};
-bool DefaultCertificateLoader::s_defaultCertificatesLoaded = false;
-#endif
-
-
 class KTcpSocketPrivate
 {
 public:
@@ -371,10 +309,6 @@ public:
 
     KTcpSocket *const q;
     bool emittedReadyRead;
-#ifdef Q_OS_LINUX
-    // load default certificates before instantiating the first QSslSocket
-    DefaultCertificateLoader defaultCertificateLoader;
-#endif
     QSslSocket sock;
     QList<KSslCipher> ciphers;
     KTcpSocket::SslVersion advertisedSslVersion;
