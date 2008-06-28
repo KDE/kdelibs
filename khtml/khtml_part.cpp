@@ -239,7 +239,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   else if ( prof == BrowserViewGUI )
     setXMLFile( "khtml_browser.rc" );
 
-  d = new KHTMLPartPrivate(parent());
+  d = new KHTMLPartPrivate(this, parent());
 
   d->m_view = view;
   setWidget( d->m_view );
@@ -572,6 +572,24 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   return true;
 }
 
+bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
+{
+    return url.hasRef() && urlcmp( url.url(), q->url().url(),
+                    KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment );
+}
+
+void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
+{
+    // Note: we want to emit openUrlNotify first thing, to make the history capture the old state.
+    if (!lockHistory)
+        emit m_extension->openUrlNotify();
+
+    if ( !q->gotoAnchor( url.encodedHtmlRef()) )
+        q->gotoAnchor( url.htmlRef() );
+
+    q->setUrl(url);
+    emit m_extension->setLocationBarUrl( url.prettyUrl() );
+}
 
 bool KHTMLPart::openUrl( const KUrl &url )
 {
@@ -648,8 +666,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
 
-  if (isFrameSet && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment )
-                 && browserArgs.softReload)
+  if (isFrameSet && d->isLocalAnchorJump(url) && browserArgs.softReload)
   {
     QList<khtml::ChildFrame*>::Iterator it = d->m_frames.begin();
     const QList<khtml::ChildFrame*>::Iterator end = d->m_frames.end();
@@ -671,7 +688,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   if ( url.hasRef() && !isFrameSet )
   {
     bool noReloadForced = !args.reload() && !browserArgs.redirectedRequest() && !browserArgs.doPost();
-    if (noReloadForced && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ))
+    if ( noReloadForced &&  d->isLocalAnchorJump(url) )
     {
         kDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url;
         setUrl(url);
@@ -682,7 +699,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
         d->m_bComplete = true;
         if (d->m_doc)
-        d->m_doc->setParsing(false);
+            d->m_doc->setParsing(false);
 
         kDebug( 6050 ) << "completed...";
         emit completed();
@@ -2349,18 +2366,51 @@ KUrl KHTMLPart::completeURL( const QString &url )
   return KUrl( d->m_doc->completeURL( url ) );
 }
 
+QString KHTMLPartPrivate::codeForJavaScriptURL(const QString &u)
+{
+    return KUrl::fromPercentEncoding( u.right( u.length() - 11 ).toLatin1() );
+}
+
+void KHTMLPartPrivate::executeJavascriptURL(const QString &u)
+{
+    QString script = codeForJavaScriptURL(u);
+    kDebug( 6050 ) << "script=" << script;
+    QVariant res = q->executeScript( DOM::Node(), script );
+    if ( res.type() == QVariant::String ) {
+      q->begin( q->url() );
+      q->write( res.toString() );
+      q->end();
+    }
+    emit q->completed();
+}
+
+bool KHTMLPartPrivate::isJavaScriptURL(const QString& url)
+{
+    return url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0;
+}
+
 // Called by ecma/kjs_window in case of redirections from Javascript,
 // and by xml/dom_docimpl.cpp in case of http-equiv meta refresh.
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   kDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url;
   kDebug(6050) << "current redirectURL=" << d->m_redirectURL << " with delay " << d->m_delayRedirect;
+
+  // In case of JS redirections, some, such as jump to anchors, and javascript:
+  // evaluation should actually be handled immediately, and not waiting until
+  // the end of the script. (Besides, we don't want to abort the tokenizer for those)
+  if ( delay == -1 && d->isInPageURL(url) ) {
+    d->executeInPageURL(url, doLockHistory);
+    return;
+  }
+  
   if( delay < 24*60*60 &&
       ( d->m_redirectURL.isEmpty() || delay <= d->m_delayRedirect) ) {
     d->m_delayRedirect = delay;
     d->m_redirectURL = url;
     d->m_redirectLockHistory = doLockHistory;
     kDebug(6050) << " d->m_bComplete=" << d->m_bComplete;
+
     if ( d->m_bComplete ) {
       d->m_redirectionTimer.stop();
       d->m_redirectionTimer.setSingleShot( true );
@@ -2373,26 +2423,18 @@ void KHTMLPart::slotRedirect()
 {
   kDebug(6050) << this << " slotRedirect()";
   QString u = d->m_redirectURL;
+  KUrl url( u );  
   d->m_delayRedirect = 0;
   d->m_redirectURL.clear();
 
-  // SYNC check with ecma/kjs_window.cpp::goURL !
-  if ( u.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
+  if ( d->isInPageURL(u) )
   {
-    QString script = KUrl::fromPercentEncoding( u.right( u.length() - 11 ).toLatin1() );
-    kDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script;
-    QVariant res = executeScript( DOM::Node(), script );
-    if ( res.type() == QVariant::String ) {
-      begin( url() );
-      write( res.toString() );
-      end();
-    }
-    emit completed();
+    d->executeInPageURL(u, d->m_redirectLockHistory);
     return;
   }
+  
   KParts::OpenUrlArguments args;
-  KUrl cUrl( url() );
-  KUrl url( u );
+  KUrl cUrl( this->url() );
 
   // handle windows opened by JS
   if ( openedByJS() && d->m_opener )
@@ -3728,8 +3770,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     return;
   }
 
-  if (url.indexOf( QLatin1String( "javascript:" ),0, Qt::CaseInsensitive ) == 0 ) {
-    QString jscode = KUrl::fromPercentEncoding( url.mid( url.indexOf( "javascript:", 0, Qt::CaseInsensitive ) ).toLatin1() );
+  if ( d->isJavaScriptURL(url) ) {
+    QString jscode = d->codeForJavaScriptURL( url );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
@@ -3896,9 +3938,9 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
+  if ( d->isJavaScriptURL(url) )
   {
-    crossFrameExecuteScript( target, KUrl::fromPercentEncoding( url.mid( 11 ).toLatin1() ) );
+    crossFrameExecuteScript( target, d->codeForJavaScriptURL(url) );
     return false;
   }
 
@@ -3977,15 +4019,9 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   //not apply if the URL is the same page, but without a ref
   if (cURL.hasRef() && (!hasTarget || target == "_self"))
   {
-    KUrl curUrl = this->url();
-    if (urlcmp(cURL.url(), curUrl.url(), KUrl::CompareWithoutFragment) )
-               // don't ignore trailing '/' diff, IE does, even if FFox doesn't
+    if (d->isLocalAnchorJump(cURL))
     {
-      setUrl(cURL);
-      emit d->m_extension->openUrlNotify();
-      if ( !gotoAnchor( this->url().encodedHtmlRef()) )
-        gotoAnchor( this->url().htmlRef() );
-      emit d->m_extension->setLocationBarUrl( this->url().prettyUrl() );
+      d->executeAnchorJump(cURL, browserArgs.lockHistory() );
       return false; // we jumped, but we didn't open a URL
     }
   }
@@ -4359,14 +4395,14 @@ bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QS
   (*it)->m_params = params;
 
   // Support for <frame src="javascript:string">
-  if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
+  if ( d->isJavaScriptURL(url) )
   {
     if ( processObjectRequest(*it, KUrl("about:blank"), QString("text/html") ) ) {
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>((*it)->m_part));
 
       // See if we want to replace content with javascript: output..
       QVariant res = p->executeScript( DOM::Node(),
-                                       KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
+                                       d->codeForJavaScriptURL(url) );
       if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
         p->begin();
         p->write( res.toString() );
@@ -4868,9 +4904,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   QString urlstring = u.url();
 
-  if ( urlstring.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
-    urlstring = KUrl::fromPercentEncoding(urlstring.toLatin1());
-    crossFrameExecuteScript( _target, urlstring.right( urlstring.length() - 11) );
+  if ( d->isJavaScriptURL(urlstring) ) {
+    crossFrameExecuteScript( _target, d->codeForJavaScriptURL(urlstring) );
     return;
   }
 
@@ -5159,9 +5194,8 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArgum
 
   // TODO: handle child target correctly! currently the script are always executed for the parent
   QString urlStr = url.url();
-  if ( urlStr.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
-      QString script = KUrl::fromPercentEncoding( urlStr.right( urlStr.length() - 11 ).toLatin1() );
-      executeScript( DOM::Node(), script );
+  if ( d->isJavaScriptURL(urlStr) ) {
+      executeScript( DOM::Node(), d->codeForJavaScriptURL(urlStr) );
       return;
   }
 

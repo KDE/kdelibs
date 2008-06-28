@@ -1475,20 +1475,15 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   KHTMLPart *active_part = qobject_cast<KHTMLPart*>(active->part());
   // Complete the URL using the "active part" (running interpreter)
   if (active_part && part) {
-    if (url[0] == QChar('#')) {
-      part->gotoAnchor(url.mid(1));
-    } else {
-      QString dstUrl = active_part->htmlDocument().completeURL(url).string();
-      kDebug(6070) << "Window::goURL dstUrl=" << dstUrl;
+    QString dstUrl = active_part->htmlDocument().completeURL(url).string();
+    kDebug(6070) << "Window::goURL dstUrl=" << dstUrl;
 
-      // check if we're allowed to inject javascript
-      // SYNC check with khtml_part.cpp::slotRedirect!
-      if ( isSafeScript(exec) ||
-            dstUrl.indexOf(QLatin1String("javascript:"), 0, Qt::CaseInsensitive) != 0 )
-        part->scheduleRedirection(-1,
-                                  dstUrl,
-                                  lockHistory);
-    }
+    // check if we're allowed to inject javascript
+    if ( isSafeScript(exec) ||
+        !KHTMLPartPrivate::isJavaScriptURL(dstUrl) )
+    part->scheduleRedirection(-1,
+                              dstUrl,
+                              lockHistory);
   } else if (!part && m_frame->m_partContainerElement) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
@@ -2735,8 +2730,12 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
       break;
     }
     case Hash:
-      // when the hash is already the same ignore it
-      if (str == url.ref()) return;
+      // Strip any leading # --- setting hash to #foo is the same as setting it to foo.
+      if (str.startsWith(QLatin1Char('#')))
+        str = str.mid(1);
+
+      // Note that we want to do gotoAnchor even when the hash is already set, so we
+      // scroll the destination into view
       url.setRef(str);
       break;
     case Host: {

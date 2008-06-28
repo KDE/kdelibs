@@ -140,8 +140,9 @@ class KHTMLPartPrivate
   KHTMLPartPrivate(const KHTMLPartPrivate & other);
   KHTMLPartPrivate& operator=(const KHTMLPartPrivate&);
 public:
-  KHTMLPartPrivate(QObject* parent)
+  KHTMLPartPrivate(KHTMLPart* part, QObject* parent)
   {
+    q     = part;
     m_doc = 0L;
     m_decoder = 0L;
 #ifndef KHTML_NO_WALLET
@@ -252,6 +253,8 @@ public:
     //delete m_javaContext;
 #endif
   }
+
+  KHTMLPart* q;
 
   QPointer<khtml::ChildFrame> m_frame;
   KHTMLFrameList m_frames;
@@ -482,6 +485,25 @@ public:
 #ifndef KHTML_NO_WALLET
   KHTMLWalletQueue *m_wq;
 #endif
+
+  bool isLocalAnchorJump(const KUrl& url);
+  void executeAnchorJump(const KUrl& url, bool lockHistory);
+
+  static bool isJavaScriptURL(const QString& url);
+  static QString codeForJavaScriptURL(const QString& url);
+  void executeJavascriptURL(const QString &u);
+
+  bool isInPageURL(const QString& url) {
+    return isLocalAnchorJump(KUrl(url)) || isJavaScriptURL(url);
+  }
+
+  void executeInPageURL(const QString& url, bool lockHistory) {
+    KUrl kurl(url);
+    if (isLocalAnchorJump(kurl))
+      executeAnchorJump(kurl, lockHistory);
+    else
+      executeJavascriptURL(url);
+  }
 };
 
 #endif
