@@ -64,6 +64,10 @@ public:
                      bool delayedMimeTypes)
         : m_entry( entry ),
           m_url( url ),
+          m_strName(),
+          m_strText(),
+          m_iconName(),
+          m_strLowerCaseName(),
           m_pMimeType( 0 ),
           m_fileMode( mode ),
           m_permissions( permissions ),
@@ -134,6 +138,11 @@ public:
     QString m_strText;
 
     /**
+     * The icon name for this item.
+     */
+    mutable QString m_iconName;
+
+    /**
      * The filename in lower case (to speed up sorting)
      */
     mutable QString m_strLowerCaseName;
@@ -167,6 +176,9 @@ public:
 
     mutable bool m_bMimeTypeKnown:1;
     bool m_delayedMimeTypes:1;
+
+    /** True if m_iconName should be used as cache. */
+    mutable bool m_useIconNameCache:1;
 
     // Auto: check leading dot.
     enum { Auto, Hidden, Shown } m_hidden:3;
@@ -261,6 +273,8 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     static const QString& dot = KGlobal::staticQString(".");
     if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != dot )
         m_url.addPath( m_strName );
+
+    m_iconName.clear();
 }
 
 inline //because it is used only in one place
@@ -468,6 +482,7 @@ void KFileItem::refreshMimeType()
 {
     d->m_pMimeType = 0;
     d->m_bMimeTypeKnown = false;
+    d->m_iconName.clear();
 }
 
 void KFileItem::setUrl( const KUrl &url )
@@ -706,22 +721,32 @@ static QString iconFromDesktopFile(const QString& path)
 
 QString KFileItem::iconName() const
 {
-    const QString iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
-    if (!iconName.isEmpty())
-        return iconName;
+    if (d->m_useIconNameCache && !d->m_iconName.isEmpty()) {
+        return d->m_iconName;
+    }
+
+    d->m_iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
+    if (!d->m_iconName.isEmpty()) {
+        d->m_useIconNameCache = d->m_bMimeTypeKnown;
+        return d->m_iconName;
+    }
 
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
     KMimeType::Ptr mime = mimeTypePtr();
     if (isLocalUrl && mime->is("application/x-desktop")) {
-        QString icon = iconFromDesktopFile(url.path());
-        if (!icon.isEmpty())
-            return icon;
+        d->m_iconName = iconFromDesktopFile(url.path());
+        if (!d->m_iconName.isEmpty()) {
+            d->m_useIconNameCache = d->m_bMimeTypeKnown;
+            return d->m_iconName;
+        }
     }
 
     //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name();
-    return mime->iconName(url);
+    d->m_iconName = mime->iconName(url);
+    d->m_useIconNameCache = d->m_bMimeTypeKnown;
+    return d->m_iconName;
 }
 
 QStringList KFileItem::overlays() const
@@ -1050,6 +1075,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_url = _url;
     d->m_strName.clear();
     d->m_strText.clear();
+    d->m_iconName.clear();
     d->m_strLowerCaseName.clear();
     d->m_pMimeType = 0;
     d->m_fileMode = KFileItem::Unknown;
@@ -1062,6 +1088,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_guessedMimeType.clear();
     d->m_metaInfo = KFileMetaInfo();
     d->m_delayedMimeTypes = _delayedMimeTypes;
+    d->m_useIconNameCache = false;
 
     d->readUDSEntry( _urlIsDirectory );
     d->init();
