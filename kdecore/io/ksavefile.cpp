@@ -196,13 +196,16 @@ bool KSaveFile::finalize()
             d->stream = 0;
         }
         close();
-
+        
+        if( error() != NoError ) {
+            QFile::remove(d->tempFileName);
+        }
         //Qt does not allow us to atomically overwrite an existing file,
         //so if the target file already exists, there is no way to change it
         //to the temp file without creating a small race condition. So we use
         //the standard rename call instead, which will do the copy without the
         //race condition.
-        if (0 == KDE_rename(QFile::encodeName(d->tempFileName),
+        else if (0 == KDE_rename(QFile::encodeName(d->tempFileName),
                       QFile::encodeName(d->realFileName))) {
             d->error=QFile::NoError;
             d->errorString.clear();
@@ -210,7 +213,7 @@ bool KSaveFile::finalize()
         } else {
             d->error=QFile::OpenError;
             d->errorString=i18n("Error during rename.");
-            QFile::remove();
+            QFile::remove(d->tempFileName);
         }
 
         d->wasFinalized = true;
