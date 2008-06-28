@@ -364,7 +364,7 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         QString subB(begSeqB, currB - begSeqB);
         const int cmp = QString::localeAwareCompare(subA, subB);
         if (cmp != 0) {
-            return cmp;
+            return cmp < 0 ? -1 : 1;
         }
 
         if (currA->isNull() || currB->isNull()) {
