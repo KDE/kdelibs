@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
+   Copyright (C) 2008 Christian Ehrlicher <ch.ehrlicher@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,88 +25,88 @@
 
 QString getKde4Prefix();
 
+inline QString prefix()        { return getKde4Prefix(); }
+inline QString share()         { return getKde4Prefix() + QLatin1String("share/"); }
+inline QString kde_moduledir() { return getKde4Prefix() + QLatin1String("lib/kde4/"); }
+
 QString KStandardDirs::installPath(const char *type)
 {
     Q_ASSERT(type != NULL);
 
-    QString prefix = getKde4Prefix();
-    QString share = prefix + QLatin1String("/share");
-    QString kde_moduledir = prefix + QLatin1String("/lib/kde4");
-
     switch (type[0]) {
         case 'a':
             if (strcmp("apps", type) == 0)
-                return share + QLatin1String("/applnk/");
+                return share() + QLatin1String("applnk/");
             break;
         case 'c':
             if (strcmp("config", type) == 0)
-                return share + QLatin1String("/config/");
+                return share() + QLatin1String("config/");
             break;
         case 'k':
             if (strcmp("kcfg", type) == 0)
-                return share + QLatin1String("/config.kcfg/");
+                return share() + QLatin1String("config.kcfg/");
             if (strcmp("kdedir", type) == 0)
-                return prefix + '/';
+                return prefix();
             break;
         case 'd':
             if (strcmp("data", type) == 0)
-                return share + QLatin1String("/apps/");
+                return share() + QLatin1String("apps/");
             break;
         case 'e':
             if (strcmp("exe", type) == 0)
-                return prefix + QLatin1String("/bin/");
+                return prefix() + QLatin1String("bin/");
             break;
         case 'h':
             if (strcmp("html", type) == 0)
-                return share + QLatin1String("/doc/HTML/");
+                return share() + QLatin1String("doc/HTML/");
             break;
         case 'i':
             if (strcmp("icon", type) == 0)
-                return share + QLatin1String("/icons/");
+                return share() + QLatin1String("icons/");
             if (strcmp("include", type) == 0)
-                return prefix + "/include";
+                return prefix() + "include";
             break;
         case 'l':
             if (strcmp("lib", type) == 0)
-                return prefix + "/lib/";
+                return prefix() + QString::fromLatin1("lib" KDELIBSUFF "/");
             if (strcmp("libexec", type) == 0)
-                return prefix + QString::fromLatin1(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
+                return prefix() + QString::fromLatin1("lib" KDELIBSUFF "/kde4/libexec/");
             if (strcmp("locale", type) == 0)
-                return share + QLatin1String("/locale/");
+                return share() + QLatin1String("locale/");
             break;
         case 'm':
             if (strcmp("module", type) == 0)
-                return kde_moduledir + '/';
+                return kde_moduledir();
             if (strcmp("mime", type) == 0)
-                return share + QLatin1String("/mimelnk/");
+                return share() + QLatin1String("mimelnk/");
             break;
         case 'q':
             if (strcmp("qtplugins", type) == 0)
-                return kde_moduledir + QLatin1String("/plugins/");
+                return kde_moduledir() + QLatin1String("plugins/");
             break;
         case 's':
             if (strcmp("services", type) == 0)
-                return share + QLatin1String("/kde4/services/");
+                return share() + QLatin1String("kde4/services/");
             if (strcmp("servicetypes", type) == 0)
-                return share + QLatin1String("/kde4/servicetypes/");
+                return share() + QLatin1String("kde4/servicetypes/");
             if (strcmp("sound", type) == 0)
-                return share + QLatin1String("/sounds/");
+                return share() + QLatin1String("sounds/");
             break;
         case 't':
             if (strcmp("templates", type) == 0)
-                return share + QLatin1String("/templates/");
+                return share() + QLatin1String("templates/");
             break;
         case 'w':
             if (strcmp("wallpaper", type) == 0)
-                return share + QLatin1String("/wallpapers/");
+                return share() + QLatin1String("wallpapers/");
             break;
         case 'x':
             if (strcmp("xdgconf-menu", type) == 0)
-                return share + QLatin1String("/currently/undefined/");
+                return share() + QLatin1String("currently/undefined/");
             if (strcmp("xdgdata-apps", type) == 0)
-                return share + QLatin1String("/applications/kde4/");
+                return share() + QLatin1String("applications/kde4/");
             if (strcmp("xdgdata-dirs", type) == 0)
-                return share + QLatin1String("/desktop-directories/");
+                return share() + QLatin1String("desktop-directories/");
             break;
     }
     return QString();
