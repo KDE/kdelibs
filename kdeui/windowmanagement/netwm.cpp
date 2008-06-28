@@ -2657,7 +2657,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
-    p->opacity = 0xffffffff;
+    p->opacity = 0xffffffffU;
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
@@ -2718,7 +2718,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
-    p->opacity = 0xffffffff;
+    p->opacity = 0xffffffffU;
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
@@ -4103,13 +4103,16 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 
     if (dirty2 & WM2Opacity)
     {
-        p->opacity = 0xffffffff;
+        p->opacity = 0xffffffffU;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_opacity, 0l,
 			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->opacity = *((long*)data_ret);
+                // 32bit values are passed as long, so on 64bit systems when reading
+                // 0xffffffff is apparently considered to be -1 and sign-extended to 64bits.
+                // Therefore convert it back to 32bits to fit the stupid _NET_WM_WINDOW_OPACITY format.
+		p->opacity = *((unsigned long*)data_ret) & 0xffffffffU;
 	    }
 
 	    if( data_ret )
