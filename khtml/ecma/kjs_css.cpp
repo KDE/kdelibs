@@ -75,8 +75,7 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
     // syntax for accessing properties, which camel-cases them
     // and can add prefixes to produce things like pixelFoo
     QString prop = p.qstring();
-    int i = prop.length();
-    while ( --i ) {
+    for (int i = prop.length() - 1; i >= 0; --i) {
         char c = prop[i].toLatin1();
         if ( c >= 'A' && c <= 'Z' )
             prop.insert( i, '-' );
