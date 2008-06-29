@@ -1039,6 +1039,11 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 
 	for (uint i = 0; i < indent; i++)
 	    outputStream << "  ";
+
+	// Make doctype's visually different from elements
+	if (node.nodeType() == DOM::Node::DOCUMENT_TYPE_NODE)
+		outputStream << "!doctype ";
+		
 	outputStream << node.nodeName().string();
 
 	switch (node.nodeType()) {
