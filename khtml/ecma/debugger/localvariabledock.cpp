@@ -115,7 +115,7 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
     }
 
     // If we're the root, also pretend 'this' is there.
-    if (root)
+    if (root && exec)
         props << QLatin1String("this");
 
     // Sort them, to make updates easier.
