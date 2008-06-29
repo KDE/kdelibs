@@ -142,7 +142,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 	 && !arg.empty() )
     {
         QString tmp = arg.first();
-        tmp.replace(QRegExp("[\n\r]"), "");
+        tmp.remove(QRegExp("[\n\r]"));
         kDebug(6100) << "status message = " << tmp;
         emit showStatus( tmp );
     }

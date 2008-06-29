@@ -493,7 +493,7 @@ QString KBugReport::text() const
   if (severity == QLatin1String("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
-      package = package.replace(QString::fromLatin1("_"), QString::fromLatin1("-"));
+      package = package.replace('_', '-');
       return QString::fromLatin1("Package: %1").arg(package) +
           QString::fromLatin1("\n"
                               "Application: %1\n"
@@ -501,7 +501,7 @@ QString KBugReport::text() const
                               "Version: %2\n").arg(appname).arg(d->m_strVersion)+
           os+QString::fromLatin1("\n")+bodyText;
   } else {
-      appname = appname.replace(QString::fromLatin1("_"), QString::fromLatin1("-"));
+      appname = appname.replace('_', '-');
       // Case 2 : normal bug
       return QString::fromLatin1("Package: %1\n"
                                  "Version: %2\n"

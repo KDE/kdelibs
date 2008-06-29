@@ -1075,7 +1075,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
         }
     }
 
-  aFilename.replace( QLatin1String("/"), QLatin1String("\\!") )
+  aFilename.replace( '/', QLatin1String("\\!") )
     .prepend( QLatin1Char('#') )
     .append( QLatin1Char('#') )
     .prepend( QLatin1Char('/') ).prepend( aAutosaveDir.absolutePath() );

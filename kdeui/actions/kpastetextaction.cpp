@@ -115,7 +115,7 @@ void KPasteTextActionPrivate::_k_menuAboutToShow()
     foreach (const QString& string, list)
     {
       QString text = fm.elidedText(string.simplified(), Qt::ElideMiddle, fm.maxWidth() * 20);
-      text.replace("&", "&&");
+      text.replace('&', "&&");
       QAction* action = m_popup->addAction(text);
       if (!found && string == clipboardText)
       {

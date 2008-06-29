@@ -638,9 +638,9 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   if ( nameIsEmpty ) {
     name = key;
-    name.replace( " ", QString() );
+    name.remove( ' ' );
   } else if ( name.contains( ' ' ) ) {
-      std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can not contain spaces!"<<std::endl;
+    std::cout<<"Entry '"<<qPrintable(name)<<"' contains spaces! <name> elements can not contain spaces!"<<std::endl;
     name.remove( ' ' );
   }
 

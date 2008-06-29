@@ -391,7 +391,7 @@ void KLocalePrivate::initFormat(KConfig *config)
 
   readConfigEntry("DecimalSymbol", ".", decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", thousandsSeparator);
-  thousandsSeparator.replace( QString::fromLatin1("$0"), QString() );
+  thousandsSeparator.remove( QString::fromLatin1("$0") );
   //kDebug(173) << "thousandsSeparator=" << thousandsSeparator;
 
   readConfigEntry("PositiveSign", "", positiveSign);
@@ -402,7 +402,7 @@ void KLocalePrivate::initFormat(KConfig *config)
   readConfigEntry("MonetaryDecimalSymbol", ".", monetaryDecimalSymbol);
   readConfigEntry("MonetaryThousandsSeparator", ",",
 		  monetaryThousandsSeparator);
-  monetaryThousandsSeparator.replace(QString::fromLatin1("$0"), QString());
+  monetaryThousandsSeparator.remove(QString::fromLatin1("$0"));
 
   readConfigNumEntry("FracDigits", 2, fracDigits, int);
   readConfigEntry("PositivePrefixCurrencySymbol", true,

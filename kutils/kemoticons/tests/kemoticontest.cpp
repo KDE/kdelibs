@@ -74,7 +74,7 @@ void KEmoticonTest::testEmoticonParser()
             inputFile.close();
             expectedFile.close();
 
-            QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").replace("smile.png", QString());
+            QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
 
             QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
 

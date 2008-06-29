@@ -1275,7 +1275,7 @@ void K3Spell::dialog( const QString & word, QStringList & sugg, const char *_slo
   QString marker( "_MARKER_" );
   tmpBuf.replace( lastpos, word.length(), marker );
   QString context = tmpBuf.mid(qMax(lastpos-18,0), 2*18+marker.length());
-  context.replace( '\n',QLatin1String(" "));
+  context.replace( '\n',QLatin1Char(' '));
   context.replace( '<', QLatin1String("&lt;") );
   context.replace( '>', QLatin1String("&gt;") );
   context.replace( marker, QString::fromLatin1("<b>%1</b>").arg( word ) );

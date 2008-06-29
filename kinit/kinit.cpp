@@ -1556,7 +1556,7 @@ static void kdeinit_library_path()
    strcpy(sock_file_old, socketName.data());
 #endif
 
-   display.replace(":","_");
+   display.replace(':','_');
    // WARNING, if you change the socket name, adjust kwrapper too
    QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), *s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
