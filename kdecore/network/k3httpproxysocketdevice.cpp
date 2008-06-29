@@ -250,7 +250,7 @@ bool KHttpProxySocketDevice::parseServerReply()
 	state = 3;
       else if (d->reply.endsWith("\r\n"))
 	state = 2;
-      else if (d->reply.endsWith("\r"))
+      else if (d->reply.endsWith('\r'))
 	state = 1;
       while (state != 4)
 	{

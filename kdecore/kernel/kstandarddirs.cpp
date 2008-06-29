@@ -1492,9 +1492,9 @@ void KStandardDirs::addKDEDefaults()
     else
     {
 #ifdef Q_WS_MACX
-        localKdeDir =  QDir::homePath() + "/Library/Preferences/KDE/";
+        localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
 #else
-        localKdeDir =  QDir::homePath() + "/" + KDE_DEFAULT_HOME + "/";
+        localKdeDir =  QDir::homePath() + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
 #endif
     }
 

@@ -77,9 +77,9 @@ KUser::KUser(UIDMode mode)
 	if (mode == UseEffectiveUID && (_euid = ::geteuid()) != _uid )
 		d = new Private( ::getpwuid( _euid ) );
 	else {
-		d = new Private( ::getenv( "LOGNAME" ) );
+		d = new Private( qgetenv( "LOGNAME" ) );
 		if (uid() != _uid) {
-			d = new Private( ::getenv( "USER" ) );
+			d = new Private( qgetenv( "USER" ) );
 			if (uid() != _uid)
 				d = new Private( ::getpwuid( _uid ) );
 		}

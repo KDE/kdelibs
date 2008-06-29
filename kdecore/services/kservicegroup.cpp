@@ -679,7 +679,7 @@ void KServiceGroupPrivate::parseAttribute( const QString &item ,  bool &showEmpt
     {
         QString tmp( item );
         tmp = tmp.remove( "IL[" );
-        tmp = tmp.remove( "]" );
+        tmp = tmp.remove( ']' );
         bool ok;
         int _inlineValue = tmp.toInt(&ok);
         if ( !ok ) //error

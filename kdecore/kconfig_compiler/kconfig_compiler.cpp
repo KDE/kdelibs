@@ -380,7 +380,7 @@ static QString quoteString( const QString &s )
   QString r = s;
   r.replace( "\\", "\\\\" );
   r.replace( "\"", "\\\"" );
-  r.replace( "\r", "" );
+  r.remove( "\r" );
   r.replace( "\n", "\\n\"\n\"" );
   return "\"" + r + "\"";
 }
@@ -846,7 +846,7 @@ QString defaultValue( const QString &type )
     else if ( type == "Url" )         return "KUrl()";
     else if ( type == "UrlList" )     return "KUrl::List()";
     else {
-        std::cerr<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<std::endl;
+        std::cerr<<"Error, kconfig_compiler does not support the \""<< type <<"\" type!"<<std::endl;
         return "QString"; //For now, but an assert would be better
     }
 }

@@ -137,21 +137,21 @@ void mac_initialize_dbus()
 	if (dbus_initialized)
 		return;
 
-	QString dbusVar = getenv("DBUS_SESSION_BUS_ADDRESS");
+	QString dbusVar = qgetenv("DBUS_SESSION_BUS_ADDRESS");
 	if (!dbusVar.isEmpty()) {
 		dbus_initialized = true;
 		return;
 	}
 
-	dbusVar = QFile::decodeName(getenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
+	dbusVar = QFile::decodeName(qgetenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
 	if (mac_set_dbus_address(dbusVar)) {
 		dbus_initialized = true;
 		return;
 	}
 
 	QString externalProc;
-	QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
-	path << QFile::decodeName(getenv("PATH")).split(':') << "/usr/local/bin";
+	QStringList path = QFile::decodeName(qgetenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
+	path << QFile::decodeName(qgetenv("PATH")).split(':') << "/usr/local/bin";
 
 	for (int i = 0; i < path.size(); ++i) {
 		QString testLaunchctl = QString(path.at(i)).append("/launchctl");
