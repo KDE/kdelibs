@@ -508,7 +508,7 @@ const ClassInfo Context2D::info = { "CanvasRenderingContext2D", 0, &Context2DTab
 
 bool Context2D::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    return getStaticOwnValueSlot<Context2D>(&Context2DTable, this, propertyName, slot);
+    return getStaticValueSlot<Context2D, DOMObject>(exec, &Context2DTable, this, propertyName, slot);
 }
 
 static JSValue* encodeStyle(ExecState* exec, CanvasStyleBaseImpl* style)
