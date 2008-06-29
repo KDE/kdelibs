@@ -2,7 +2,6 @@
 # Note: this mimetype is deprecated. application/ogg replaces it.
 # The old mimetype (application/x-ogg) is only provided for compatibility reasons.
 # application/ogg "inherits" from it, so that apps associated with x-ogg can open ogg files.
-Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-ogg
 Icon=multimedia

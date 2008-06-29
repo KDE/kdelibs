@@ -2,7 +2,6 @@
 # Basetype for MPEG-1 and MPEG-2 audio layer 1-3
 # Doesnt cover MPEG-2 AAC or MPEG-4 audio
 # See also audio/x-mp3 and audio/x-mp2
-Encoding=UTF-8
 Type=MimeType
 MimeType=audio/mpeg
 Icon=sound

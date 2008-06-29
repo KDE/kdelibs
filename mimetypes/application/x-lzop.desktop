@@ -1,6 +1,5 @@
 [Desktop Entry]
 Type=MimeType
-Encoding=UTF-8
 MimeType=application/x-lzop
 Icon=tgz
 Patterns=*.lzo

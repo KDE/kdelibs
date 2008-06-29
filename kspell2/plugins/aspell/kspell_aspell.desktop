@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 ServiceTypes=KSpell/Client
 X-KDE-Library=kspell_aspell

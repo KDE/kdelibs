@@ -1,6 +1,5 @@
 [Desktop Entry]
 Type=MimeType
-Encoding=UTF-8
 MimeType=application/x-kivio
 Icon=kivio_flw
 Patterns=*.flw;

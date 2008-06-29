@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=DCOP/Text-to-Speech
 Comment=Text-to-Speech Service with a DCOP interface

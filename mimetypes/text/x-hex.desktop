@@ -1,7 +1,6 @@
 [Desktop Entry]
 Icon=source
 Type=MimeType
-Encoding=UTF-8
 MimeType=text/x-hex
 X-KDE-IsAlso=text/plain
 Patterns=*.HEX;*.hex;
