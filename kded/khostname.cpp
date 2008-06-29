@@ -76,7 +76,7 @@ KHostName::KHostName()
 
    display = QString::fromLocal8Bit(qgetenv("DISPLAY"));
    // strip the screen number from the display
-   display.replace(QRegExp("\\.[0-9]+$"), "");
+   display.remove(QRegExp("\\.[0-9]+$"));
 #if defined(Q_WS_X11) || defined(Q_WS_QWS)
    if (display.isEmpty())
    {

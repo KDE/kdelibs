@@ -184,9 +184,9 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
     QHash<QString, QString> defMap;
 
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
-    defMap.insert( "IconSet", input.readEntry( "IconSet", name.toLower() + ".png" ).replace( ":", "_" ) );
+    defMap.insert( "IconSet", input.readEntry( "IconSet", name.toLower() + ".png" ).replace( ':', '_' ) );
     defMap.insert( "Pixmap", name.toLower().replace( ":", "_" ) + "_xpm" );
-    defMap.insert( "IncludeFile", input.readEntry( "IncludeFile", name.toLower() + ".h" ).remove( ":" ) );
+    defMap.insert( "IncludeFile", input.readEntry( "IncludeFile", name.toLower() + ".h" ).remove( ':' ) );
     defMap.insert( "ToolTip", input.readEntry( "ToolTip", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "WhatsThis", input.readEntry( "WhatsThis", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "IsContainer", input.readEntry( "IsContainer", "false" ) );

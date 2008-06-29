@@ -158,7 +158,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         if (skip_entry) continue;
 
         name = name.trimmed(); // Process filename
-        name.replace( "/", "" );
+        name.replace( '/', QByteArray() );
         kDebug(7042) << "Filename: " << name << " Size: " << size;
 
         KArchiveEntry* entry;

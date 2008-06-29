@@ -48,8 +48,6 @@
 #include <fixx11h.h>
 #endif
 
-#include <QtGui/QFileDialog>
-
 /** File dialogs are native by default on Windows. */
 #ifdef Q_WS_WIN
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
@@ -84,9 +82,9 @@ static QString qtFilter(const QStringList& filters)
         if (p2!=-1)
             new_name2 = new_name.mid(p2+1);
         if (!new_name1.isEmpty() || !new_name2.isEmpty())
-            new_name = new_name1.trimmed() + " " + new_name2.trimmed();
-        new_name.replace('(',"");
-        new_name.replace(')',"");
+            new_name = new_name1.trimmed() + QLatin1Char(' ') + new_name2.trimmed();
+        new_name.remove('(');
+        new_name.remove(')');
         new_name = new_name.trimmed();
 
         // make filters unique: remove uppercase extensions (case doesn't matter on win32, BTW)
@@ -100,7 +98,7 @@ static QString qtFilter(const QStringList& filters)
         if (!converted.isEmpty())
             converted += ";;";
 
-        converted += (new_name + " (" + allfiltersUnique.join(" ") + ")");
+        converted += (new_name + " (" + allfiltersUnique.join(" ") + QLatin1Char(')'));
     } // foreach
 
     // Strip escape characters from escaped '/' characters.
@@ -302,7 +300,7 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
         foreach( const QString& mimeType, mimeTypes ) {
             KMimeType::Ptr mime( KMimeType::mimeType(mimeType) );
             if (mime)
-               kdeFilter += (mime->patterns().join(" ") + "|" + mime->comment());
+               kdeFilter += (mime->patterns().join(" ") + QLatin1Char('|') + mime->comment());
         }
         d->native->filter = kdeFilter;
     }

@@ -34,8 +34,9 @@
 #ifndef KIO_IMAGEFILTER_P_H
 #define KIO_IMAGEFILTER_P_H
 
+class QImage;
+class QColor;
 namespace KIO {
-
 
 class ImageFilter
 {

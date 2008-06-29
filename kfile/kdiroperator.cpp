@@ -651,13 +651,13 @@ void KDirOperator::mkdir()
                                            i18n("Create new folder in:\n%1" ,  where),
                                            name, &ok, this);
     if (ok)
-        mkdir(KIO::encodeFileName(folder), true);
+        KDirOperator::mkdir(KIO::encodeFileName(folder), true);
 }
 
 bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 {
     // Creates "directory", relative to the current directory (d->currUrl).
-    // The given path may contain any number directories, existant or not.
+    // The given path may contain any number directories, existent or not.
     // They will all be created, if possible.
 
     bool writeOk = false;
@@ -673,7 +673,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
         writeOk = !exists && KIO::NetAccess::mkdir(url, topLevelWidget());
     }
 
-    if (exists) { // url was already existant
+    if (exists) { // url was already existent
         KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
         enterDirectory = false;
     } else if (!writeOk) {

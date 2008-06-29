@@ -31,6 +31,8 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "imagefilter_p.h"
+
 #include <QPainter>
 #include <QImage>
 #include <QColor>
@@ -38,8 +40,6 @@
 
 #include <cmath>
 #include <string.h>
-
-#include "imagefilter_p.h"
 
 using namespace KIO;
 

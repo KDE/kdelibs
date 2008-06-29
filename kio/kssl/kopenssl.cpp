@@ -391,7 +391,7 @@ KOpenSSLProxy::KOpenSSLProxy()
          alib += *shit;
 	     // someone knows why this is needed?
 	     QString tmpStr(alib.toLatin1().constData());
-	     tmpStr.replace(QRegExp("\\(.*\\)"), "");
+	     tmpStr.remove(QRegExp("\\(.*\\)"));
          if (!access(tmpStr.toLatin1(), R_OK)) {
             d->cryptoLib = new KLibrary(alib);
             d->cryptoLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
@@ -563,7 +563,7 @@ KOpenSSLProxy::KOpenSSLProxy()
             alib += '/';
          alib += *shit;
 	     QString tmpStr(alib.toLatin1());
-	     tmpStr.replace(QRegExp("\\(.*\\)"), "");
+	     tmpStr.remove(QRegExp("\\(.*\\)"));
          if (!access(tmpStr.toLatin1(), R_OK)) {
          	d->sslLib = new KLibrary(alib);
             d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
