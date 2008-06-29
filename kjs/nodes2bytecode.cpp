@@ -1056,13 +1056,22 @@ void VarDeclNode::generateCode(CompileState* comp, CodeBlock& block)
     // everything else is a no-op at execution time,
     // and only makes a difference at processVarDecl time
     if (init) {
-        OpValue val = init->generateEvalCode(comp, block);
+        if (comp->inNestedScope()) {
+            // We need to do the full lookup mess, which includes doing split binding and store
+            OpValue quiet   = OpValue::immNode(0);
+            OpValue varName = OpValue::immIdent(&ident);
+            OpValue base;
+            CodeGen::emitOp(comp, block, Op_ScopeLookup, &base, &varName, &quiet);
 
+            OpValue val = init->generateEvalCode(comp, block);
+            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &base, &varName, &val);
+            return;
+        }
+
+        OpValue val = init->generateEvalCode(comp, block);
         size_t localID = comp->functionBody()->lookupSymbolID(ident);
         if (localID == missingSymbolMarker()) {
             // Generate a symbolic assignment, always to local scope
-            // ### may want to tile this?
-
             OpValue identV = OpValue::immIdent(&ident);
             CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &identV, &val);
         } else {
