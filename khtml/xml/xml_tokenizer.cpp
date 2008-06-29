@@ -300,6 +300,11 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
 {
     if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
+
+    // Ignore XML target -- shouldn't be part of the DOM
+    if (target == "xml")
+        return true;
+        
     // ### handle exceptions
     ProcessingInstructionImpl *pi =
         m_doc->createProcessingInstruction(target, new DOMStringImpl(data.unicode(), data.length()));
