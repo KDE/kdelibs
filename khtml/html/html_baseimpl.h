@@ -108,7 +108,7 @@ public:
     KHTMLPart*    contentPart() const;
 
     DOMString url;
-    DOMString name;
+    DOMString name; //Computed name for the frame map
 
     int marginWidth;
     int marginHeight;

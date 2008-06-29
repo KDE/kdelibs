@@ -259,20 +259,20 @@ NodeImpl::Id HTMLFrameElementImpl::id() const
 
 void HTMLFrameElementImpl::ensureUniqueName()
 {
-    // Grab initial name if need be..
-    if (name.isEmpty()) {
-        name = getAttribute(ATTR_NAME);
-        if (name.isNull())
-            name = getAttribute(ATTR_ID);
-    }
+    // If we already have a name, don't do anything.
+    if (!name.isEmpty())
+        return;
 
-    // Ensure uniqueness...
+    // Use the specified name first..
+    name = getAttribute(ATTR_NAME);
+    if (name.isNull())
+        name = getAttribute(ATTR_ID);
+
+    // Generate synthetic name if there isn't a natural one or
+    // if the natural one conflicts
     KHTMLPart* parentPart = document()->part();
-    if (parentPart) {
-        // we need a unique name for every frame in the frameset. Hope that's unique enough.
-        if (name.isEmpty() || parentPart->frameExists( name.string() ) )
-            name = DOMString(parentPart->requestFrameName());
-    }
+    if (name.isEmpty() || parentPart->frameExists( name.string() ) )
+        name = DOMString(parentPart->requestFrameName());
 }
 
 void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
@@ -318,12 +318,6 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onunload", this));
         break;
-    case ATTR_ID:
-    case ATTR_NAME:
-        // FIXME: if already attached, doesn't change the frame name
-        // FIXME: frame name conflicts, no unique frame name anymore
-        name = attr->value();
-        //fallthrough intentional, let the base handle it
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -381,8 +375,6 @@ void HTMLFrameElementImpl::computeContent()
     if (!parentPart)
         return;
 
-    ensureUniqueName();
-
     // Bail out on any disallowed URLs
     if( !document()->isURLAllowed(url.string()) )
         return;
@@ -395,9 +387,10 @@ void HTMLFrameElementImpl::computeContent()
         return;
     }
 
-    // Go ahead and load a part...
-    // ### double-check how multiple requests are handled in the part!
-    clearChildWidget();
+    ensureUniqueName();    
+
+    // Go ahead and load a part... We don't need to clear the widget here,
+    // since the -frames- have their lifetime managed, using the name uniqueness.
     parentPart->requestFrame( this, url.string(), name.string() );
 }
 
@@ -731,8 +724,8 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         addHTMLAlignment( attr->value() );
         break;
     case ATTR_SRC:
+        url = khtml::parseURL(attr->val());
         setNeedComputeContent();
-        HTMLFrameElementImpl::parseAttribute( attr );
         break;
     case ATTR_FRAMEBORDER:
     {
@@ -797,7 +790,8 @@ void HTMLIFrameElementImpl::computeContent()
         return;
 
     ensureUniqueName();
-    clearChildWidget();
+    // Since we have a name, we can request even if we just want to navigate,
+    // since KHTMLPart will make sure to reuse the KPart if the mimetype doesn't change
     parentPart->requestFrame(this, url.string(), name.string(), QStringList(), true);
 }
 

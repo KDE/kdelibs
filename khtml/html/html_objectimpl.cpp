@@ -99,6 +99,9 @@ void HTMLPartContainerElementImpl::setNeedComputeContent()
 
 void HTMLPartContainerElementImpl::setWidget(QWidget* widget)
 {
+    if (widget == m_childWidget)
+        return; // The same part got navigated. Don't do anything
+        
     QWidget* oldWidget = m_childWidget;
     m_childWidget = widget;
     if (m_childWidget)
