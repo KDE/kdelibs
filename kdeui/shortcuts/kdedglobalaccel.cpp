@@ -40,6 +40,7 @@
 
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>
+#include <QtGui/QApplication>
 #endif
 
 #include <kconfiggroup.h>
@@ -634,6 +635,10 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
 #ifdef Q_WS_X11
     // pass X11 timestamp
     long timestamp = QX11Info::appTime();
+    // Make sure kded has ungrabbed the keyboard after receiving the keypress,
+    // otherwise actions in application that try to grab the keyboard (e.g. in kwin)
+    // may fail to do so. There is still a small race condition with this being out-of-process.
+    qApp->syncX();
 #else
     long timestamp = 0;
 #endif
