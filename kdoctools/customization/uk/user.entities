@@ -8,20 +8,20 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom	'<hardware>привід CD-ROM</hardware>'>
+<!ENTITY cdrom	'<hardware>пристрій для читання CD-ROM</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY dpi	'<acronym>т/д</acronym>'>
 <!ENTITY eg     "<abbrev>напр.,</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>тощо</abbrev>">
-<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY FAQ	'<acronym>ЧаП</acronym>'>
 <!ENTITY ie     "<abbrev>тобто</abbrev>">
-<!ENTITY infocenter	"<application>Інфо-центр</application>">
+<!ENTITY infocenter	"<application>Центр довідки</application>">
 <!ENTITY kcontrolcenter	"<application>Центр керування &kde;</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>K-пікнограма &kde;</title></objectinfo>
+ <objectinfo><title>K-піктограма &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>

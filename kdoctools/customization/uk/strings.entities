@@ -15,7 +15,7 @@
 <!ENTITY FDLFCTTitles "СПИСОК"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "текст на першій сторінці &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "без тексу на першій сторінці">
+<!ENTITY FDLFrontCoverText "без тексту на першій сторінці">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "ПЕРЕЛІЧИТИ ЇХНІ НАЗВИ"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "текст на останній сторінці &FDLBCTTitles;">
