@@ -84,6 +84,7 @@
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <kde_file.h>
 
 using namespace KIO;
 
@@ -3101,14 +3102,14 @@ try_again:
     }
     else if (strncasecmp(buf, "Link:", 5) == 0) {
       // We only support Link: <url>; rel="type"   so far
-      QStringList link = QString(buf).replace(QRegExp("^Link:[ ]*"),"").
+      QStringList link = QString(buf).remove(QRegExp("^Link:[ ]*")).
           split(';',QString::SkipEmptyParts);
       if (link.count() == 2) {
         QString rel = link[1].trimmed();
         if (rel.startsWith("rel=\"")) {
           rel = rel.mid(5, rel.length() - 6);
           if (rel.toLower() == "pageservices") {
-            QString url = link[0].replace(QRegExp("[<>]"),"").trimmed();
+            QString url = link[0].remove(QRegExp("[<>]")).trimmed();
             setMetaData("PageServices", url);
           }
         }
@@ -3126,13 +3127,13 @@ try_again:
 
          if (policy.count() == 2) {
             if (policy[0].toLower() == "policyref") {
-               policyrefs << policy[1].replace(QRegExp("[\"\']"), "")
+               policyrefs << policy[1].remove(QRegExp("[\"\']"))
                                       .trimmed();
             } else if (policy[0].toLower() == "cp") {
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
                // efficient but I'm going for correctness right now.
-               const QStringList cps = policy[1].replace(QRegExp("[\"\']"), "")
+               const QStringList cps = policy[1].remove(QRegExp("[\"\']"))
                    .simplified().split(' ',QString::SkipEmptyParts);
 
                for (QStringList::ConstIterator j = cps.begin(); j != cps.end(); ++j)
@@ -4603,7 +4604,7 @@ gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
                 freq+=fgetc(hitdata)<<8;
              else
                 freq=0;
-            fseek(hitdata,0,SEEK_SET);
+            KDE_fseek(hitdata,0,SEEK_SET);
          }
          if (hitdata||(hitdata=fopen(QFile::encodeName(CEF+"_freq"), "w")))
          {
@@ -4688,11 +4689,7 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
-#ifdef Q_WS_WIN
-   (void) ::mkdir( QFile::encodeName(dir) );
-#else
-   (void) ::mkdir( QFile::encodeName(dir), 0700 );
-#endif
+   KDE_mkdir( QFile::encodeName(dir), 0700 );
 
    QString filename = m_request.cef + ".new";  // Create a new cache entryexpireDate
 
@@ -4784,7 +4781,7 @@ void HTTPProtocol::closeCacheEntry()
                         MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 )
         return;
 #else
-      if (::rename( QFile::encodeName(filename), QFile::encodeName(m_request.cef)) == 0)
+      if (KDE_rename( QFile::encodeName(filename), QFile::encodeName(m_request.cef)) == 0)
          return; // Success
 #endif
       kWarning(7113) << "closeCacheEntry: error renaming "
@@ -4807,7 +4804,7 @@ void HTTPProtocol::cleanCache()
 
    struct stat stat_buf;
 
-   int result = ::stat(QFile::encodeName(cleanFile), &stat_buf);
+   int result = KDE_stat(QFile::encodeName(cleanFile), &stat_buf);
    if (result == -1)
    {
       int fd = creat( QFile::encodeName(cleanFile), 0600);

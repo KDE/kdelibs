@@ -771,7 +771,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                           _dest_orig.data(),
                           MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) == 0 )
 #else
-        if ( ::rename( _dest.data(), _dest_orig.data() ) )
+        if ( KDE_rename( _dest.data(), _dest_orig.data() ) )
 #endif
         {
             kWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig;
@@ -929,7 +929,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 #ifdef USE_SENDFILE
        if (use_sendfile) {
             off_t sf = processed_size;
-            n = ::sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
+            n = KDE_sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
             processed_size = sf;
             if ( n == -1 && ( errno == EINVAL || errno == ENOSYS ) ) { //not all filesystems support sendfile()
                 kDebug(7101) << "sendfile() not supported, falling back ";
@@ -1080,7 +1080,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
         }
     }
 
-    if ( ::rename( _src.data(), _dest.data()))
+    if ( KDE_rename( _src.data(), _dest.data()))
     {
         if (( errno == EACCES ) || (errno == EPERM)) {
             error( KIO::ERR_ACCESS_DENIED, _dest );
@@ -1667,7 +1667,7 @@ void FileProtocol::unmount( const QString& _point )
 			<< _point.toLocal8Bit();
 
 		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
-			err = "couldn't open mnttab";
+			err = "could not open mnttab";
 			kDebug(7101) << "VOLMGT: " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 			return;
