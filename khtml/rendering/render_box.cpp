@@ -539,7 +539,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 RenderStyle* ws = v->m_kwp->renderWidget()->style();
                 // only set static background on transparent subframes if the underlying RenderWidget background
                 // has something to show through.
-                if (!ws || !ws->backgroundColor().isValid() || !ws->backgroundColor().alpha() == 255
+                if (!ws || !ws->backgroundColor().isValid() || ws->backgroundColor().alpha() != 255
                         || ws->hasBackgroundImage())
                     v->setHasStaticBackground();
             } else {

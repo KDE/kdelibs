@@ -96,7 +96,7 @@ public:
 
 private:
 	ServiceModelPrivate* const d;
-	friend class ServiceModelPrivate;
+	friend struct ServiceModelPrivate;
 
 };
 
