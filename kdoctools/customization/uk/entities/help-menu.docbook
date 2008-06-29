@@ -5,12 +5,11 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Зміст...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kcron; help pages. (this document).</para></listitem>
+<listitem><para><action>Викликає довідкову систему KDE</action> відкриваючи у ній довідкові сторінки &kcron;. (цей документ).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +17,35 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Що це?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Змінює вигляд вказівника миші на комбінацію стрілки і знака питання.</action> Якщо після цього натиснути таким вказівником на елементи у &kappname;, буде відкрито довідкове вікно (якщо таке існує для цього елемента), з поясненням призначення елемента.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Надіслати звіт про помилку...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Відкриває діалогове вікно звіту про помилку</action>, у якому ви можете повідомити про ваду або надіслати запит до <quote>списку побажань</quote> з побажанням про додавання до програми нових можливостей.</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Про &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Цей пункт меню відкриє вікно з інформацією про версію і авторів програми.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Про KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Цей пункт меню відкриє вікно з інформацією про версію KDE та іншими базовими відомостями.</action></para></listitem>
 </varlistentry>
 </variablelist>
