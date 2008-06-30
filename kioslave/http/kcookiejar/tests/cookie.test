@@ -15,9 +15,10 @@ CHECK http://a.b.c/ Cookie: some_value="quoted value"
 # Without a = sign, the cookie gets interpreted as the value for a cookie with no name
 # This is what IE and Netscape does
 COOKIE ASK http://a.b.c/ Set-Cookie: some_value
-CHECK http://a.b.c/ Cookie: some_value; some_value="quoted value"
+# Note: order in the expected list does not matter. Changed between kde3 and kde4.
+CHECK http://a.b.c/ Cookie: some_value="quoted value"; some_value
 COOKIE ASK http://a.b.c/ Set-Cookie: some_other_value
-CHECK http://a.b.c/ Cookie: some_other_value; some_value="quoted value"
+CHECK http://a.b.c/ Cookie: some_value="quoted value"; some_other_value
 CLEAR COOKIES
 # This doesn't work with old-style netscape cookies, it should work with RFC2965 cookies
 COOKIE ASK http://a.b.c/ Set-Cookie: some_value="quoted value; and such"
@@ -40,7 +41,7 @@ COOKIE ASK http://w.y.z/ Set-Cookie: some_value=value3; Path="/"; expires=%NEXTY
 CHECK http://w.y.z/ Cookie: some_value=value3
 ## Check if multiple cookies work
 COOKIE ASK http://w.y.z/ Set-Cookie: some_value2=foobar; Path="/"; expires=%NEXTYEAR%
-CHECK http://w.y.z/ Cookie: some_value2=foobar; some_value=value3
+CHECK http://w.y.z/ Cookie: some_value=value3; some_value2=foobar
 COOKIE ASK http://w.y.z/ Set-Cookie: some_value=; Path="/"; expires=%LASTYEAR%
 CHECK http://w.y.z/ Cookie: some_value2=foobar
 CLEAR COOKIES
@@ -154,8 +155,8 @@ COOKIE ASK http://192.168.0.1 Set-Cookie: name1=value1; Path="/"; expires=%NEXTY
 COOKIE ASK http://192.168.0.1 Set-Cookie: name11=value11; domain="test.local"; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK http://192.168.0.1:8080 Set-Cookie: name2=value2; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK https://192.168.0.1 Set-Cookie: name3=value3; Path="/"; expires=%NEXTYEAR%; secure
-CHECK http://192.168.0.1 Cookie: name11=value11; name1=value1
+CHECK http://192.168.0.1 Cookie: name1=value1; name11=value11
 CHECK http://192.168.0.1:8080 Cookie: name2=value2
-CHECK https://192.168.0.1 Cookie: name3=value3; name11=value11; name1=value1
+CHECK https://192.168.0.1 Cookie: name1=value1; name11=value11; name3=value3
 CHECK http://192.168.0.10
 CHECK http://192.168.0

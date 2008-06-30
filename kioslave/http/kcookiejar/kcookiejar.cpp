@@ -69,6 +69,7 @@
 #include <ksavefile.h>
 #include <kdebug.h>
 
+#include <algorithm>
 
 // BR87227
 // Waba: Should the number of cookies be limited?
@@ -149,7 +150,7 @@ KHttpCookie::KHttpCookie(const QString &_host,
 //
 // Checks if a cookie has been expired
 //
-bool    KHttpCookie::isExpired(time_t currentDate)
+bool    KHttpCookie::isExpired(time_t currentDate) const
 {
     return (mExpireDate != 0) && (mExpireDate < currentDate);
 }
@@ -157,7 +158,7 @@ bool    KHttpCookie::isExpired(time_t currentDate)
 //
 // Returns a string for a HTTP-header
 //
-QString KHttpCookie::cookieStr(bool useDOMFormat)
+QString KHttpCookie::cookieStr(bool useDOMFormat) const
 {
     QString result;
 
@@ -181,7 +182,7 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
 //
 // Returns whether this cookie should be send to this location.
 bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
-                        const QString &path)
+                        const QString &path) const
 {
     // Cookie domain match check
     if (mDomain.isEmpty())
@@ -221,21 +222,6 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     return false;
 }
 
-// KHttpCookieList
-///////////////////////////////////////////////////////////////////////////
-
-int KHttpCookieList::compareItems( void * item1, void * item2)
-{
-    int pathLen1 = ((KHttpCookie *)item1)->path().length();
-    int pathLen2 = ((KHttpCookie *)item2)->path().length();
-    if (pathLen1 > pathLen2)
-        return -1;
-    if (pathLen1 < pathLen2)
-        return 1;
-    return 0;
-}
-
-
 // KCookieJar
 ///////////////////////////////////////////////////////////////////////////
 
@@ -269,47 +255,37 @@ KCookieJar::~KCookieJar()
     // Not much to do here
 }
 
-static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr, bool nameMatchOnly=false, bool updateWindowId=false)
+// cookiePtr is modified: the window ids of the existing cookie in the list are added to it
+static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie& cookiePtr, bool nameMatchOnly=false, bool updateWindowId=false)
 {
-    QString domain1 = cookiePtr->domain();
+    QString domain1 = cookiePtr.domain();
     if (domain1.isEmpty())
-       domain1 = cookiePtr->host();
+       domain1 = cookiePtr.host();
 
-    for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
-    {
-       QString domain2 = cookie->domain();
-       if (domain2.isEmpty())
-          domain2 = cookie->host();
+    QMutableListIterator<KHttpCookie> cookieIterator(*list);
+    while (cookieIterator.hasNext()) {
+        const KHttpCookie& cookie = cookieIterator.next();
+        QString domain2 = cookie.domain();
+        if (domain2.isEmpty())
+            domain2 = cookie.host();
 
-       if (
-            (cookiePtr->name() == cookie->name()) &&
+        if (
+            (cookiePtr.name() == cookie.name()) &&
             (
               nameMatchOnly ||
-              ( (domain1 == domain2) && (cookiePtr->path() == cookie->path()) )
+              ( (domain1 == domain2) && (cookiePtr.path() == cookie.path()) )
             )
-          )
-       {
-          if (updateWindowId)
-          {
-            for(QList<long>::ConstIterator it = cookie->windowIds().begin();
-                it != cookie->windowIds().end(); ++it)
-            {
-               long windowId = *it;
-               if (windowId && (cookiePtr->windowIds().indexOf(windowId) == -1))
-               {
-                  cookiePtr->windowIds().append(windowId);
-               }
+          ) {
+            if (updateWindowId) {
+                Q_FOREACH(long windowId, cookie.windowIds()) {
+                    if (windowId && (!cookiePtr.windowIds().contains(windowId))) {
+                        cookiePtr.windowIds().append(windowId);
+                    }
+                }
             }
-          }
-          KHttpCookiePtr old_cookie = cookie;
-          cookie = list->next();
-          list->removeRef( old_cookie );
-          break;
-       }
-       else
-       {
-          cookie = list->next();
-       }
+            cookieIterator.remove();
+            break;
+        }
     }
 }
 
@@ -325,7 +301,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     QStringList domains;
     QString fqdn;
     QString path;
-    KHttpCookiePtr cookie;
     KCookieAdvice advice = m_globalAdvice;
 
     if (!parseUrl(_url, fqdn, path))
@@ -361,27 +336,29 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
        if (cookieList->getAdvice() != KCookieDunno)
           advice = cookieList->getAdvice();
 
-       for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
-       {
-          // If the we are setup to automatically accept all session cookies and to
-          // treat all cookies as session cookies or the current cookie is a session
-          // cookie, then send the cookie back regardless of domain policy.
-          if (advice == KCookieReject &&
-              !(m_autoAcceptSessionCookies && 
-                (m_ignoreCookieExpirationDate || cookie->expireDate() == 0)))
-              continue;
+        for (KHttpCookieList::iterator cookieIterator = cookieList->begin();
+             cookieIterator != cookieList->end();
+             ++cookieIterator ) {
+            KHttpCookie& cookie = *cookieIterator;
+            // If the we are setup to automatically accept all session cookies and to
+            // treat all cookies as session cookies or the current cookie is a session
+            // cookie, then send the cookie back regardless of domain policy.
+            if (advice == KCookieReject &&
+                !(m_autoAcceptSessionCookies &&
+                  (m_ignoreCookieExpirationDate || cookie.expireDate() == 0)))
+                continue;
 
-          if (!cookie->match(fqdn, domains, path))
+          if (!cookie.match(fqdn, domains, path))
              continue;
 
-          if( cookie->isSecure() && !secureRequest )
+          if( cookie.isSecure() && !secureRequest )
              continue;
 
-          if( cookie->isHttpOnly() && useDOMFormat )
+          if( cookie.isHttpOnly() && useDOMFormat )
              continue;
 
           // Do not send expired cookies.
-          if ( cookie->isExpired (time(0)) )
+          if ( cookie.isExpired (time(0)) )
           {
              // Note there is no need to actually delete the cookie here
              // since the cookieserver will invoke ::saveCookieJar because
@@ -391,9 +368,9 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              continue;
           }
 
-          if (windowId && (cookie->windowIds().indexOf(windowId) == -1))
+          if (windowId && (cookie.windowIds().indexOf(windowId) == -1))
           {
-             cookie->windowIds().append(windowId);
+             cookie.windowIds().append(windowId);
           }
 
           if (it == domains.end()) // Only needed when processing pending cookies
@@ -408,39 +385,30 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     int cookieCount = 0;
 
     int protVersion=0;
-    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
-    {
-       if (cookie->protocolVersion() > protVersion)
-          protVersion = cookie->protocolVersion();
+    Q_FOREACH(const KHttpCookie& cookie, allCookies) {
+        if (cookie.protocolVersion() > protVersion)
+            protVersion = cookie.protocolVersion();
     }
 
-    for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
-    {
-       if (useDOMFormat)
-       {
-          if (cookieCount > 0)
-             cookieStr += L1("; ");
-          cookieStr += cookie->cookieStr(true);
-       }
-       else
-       {
-          if (cookieCount == 0)
-          {
-             cookieStr += L1("Cookie: ");
-             if (protVersion > 0)
-             {
-                QString version;
-                version.sprintf("$Version=%d; ", protVersion); // Without quotes
-                cookieStr += version;
-             }
-          }
-          else
-          {
-             cookieStr += L1("; ");
-          }
-          cookieStr += cookie->cookieStr(false);
-       }
-       cookieCount++;
+    Q_FOREACH(const KHttpCookie& cookie, allCookies) {
+        if (useDOMFormat) {
+            if (cookieCount > 0)
+                cookieStr += L1("; ");
+            cookieStr += cookie.cookieStr(true);
+        } else {
+            if (cookieCount == 0) {
+                cookieStr += L1("Cookie: ");
+                if (protVersion > 0) {
+                    QString version;
+                    version.sprintf("$Version=%d; ", protVersion); // Without quotes
+                    cookieStr += version;
+                }
+            } else {
+                cookieStr += L1("; ");
+            }
+            cookieStr += cookie.cookieStr(false);
+        }
+        cookieCount++;
     }
 
     return cookieStr;
@@ -552,13 +520,13 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
       _domain = domains[0];
 }
 
-QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
+QString KCookieJar::stripDomain(const KHttpCookie& cookie)
 {
     QString domain; // We file the cookie under this domain.
-    if (cookiePtr->domain().isEmpty())
-       stripDomain( cookiePtr->host(), domain);
+    if (cookie.domain().isEmpty())
+       stripDomain( cookie.host(), domain);
     else
-       stripDomain( cookiePtr->domain(), domain);
+       stripDomain( cookie.domain(), domain);
     return domain;
 }
 
@@ -602,7 +570,7 @@ bool KCookieJar::parseUrl(const QString &_url,
 }
 
 void KCookieJar::extractDomains(const QString &_fqdn,
-                                QStringList &_domains)
+                                QStringList &_domains) const
 {
     if (_fqdn.isEmpty()) // localhost...
         return;
@@ -673,7 +641,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
    to
       Wed Sep 12 2007 07:00:00 GMT
 
-   to allow KDateTime::fromString to properly parse expiration date formats 
+   to allow KDateTime::fromString to properly parse expiration date formats
    used in cookies by some servers such as amazon.com. See BR# 145244.
 */
 static QString fixupDateTime(const QString& date)
@@ -704,7 +672,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 {
     KHttpCookieList cookieList;
     KHttpCookieList cookieList2;
-    KHttpCookiePtr lastCookie = 0;
+    KHttpCookieList::iterator lastCookie = cookieList.end();
     const char *cookieStr = cookie_headers.data();
     QString Name;
     QString Value;
@@ -739,14 +707,14 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Default domain = ""
             // Default path according to rfc2109
 
-            KHttpCookie *cookie = new KHttpCookie(fqdn, L1(""), defaultPath, Name, Value);
+            KHttpCookie cookie(fqdn, L1(""), defaultPath, Name, Value);
             if (windowId)
-               cookie->mWindowIds.append(windowId);
-            cookie->mCrossDomain = crossDomain;
+               cookie.mWindowIds.append(windowId);
+            cookie.mCrossDomain = crossDomain;
 
             // Insert cookie in chain
             cookieList.append(cookie);
-            lastCookie = cookie;
+            lastCookie = cookieList.end(); --lastCookie;
         }
         else if (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0)
         {
@@ -757,14 +725,14 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             // Default domain = ""
             // Default path according to rfc2965
 
-            KHttpCookie *cookie = new KHttpCookie(fqdn, L1(""), defaultPath, Name, Value);
+            KHttpCookie cookie(fqdn, L1(""), defaultPath, Name, Value);
             if (windowId)
-               cookie->mWindowIds.append(windowId);
-            cookie->mCrossDomain = crossDomain;
+               cookie.mWindowIds.append(windowId);
+            cookie.mCrossDomain = crossDomain;
 
             // Insert cookie in chain
             cookieList2.append(cookie);
-            lastCookie = cookie;
+            lastCookie = cookieList2.end(); --lastCookie;
         }
         else
         {
@@ -820,7 +788,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 // 'Wed Sep 12 07:00:00 2007 GMT' format. See BR# 145244.
                 if (lastCookie->mExpireDate == -1)
                   lastCookie->mExpireDate = KDateTime::fromString(fixupDateTime(Value), KDateTime::RFCDate).toTime_t();
-                  
+
                 // We encode parse error/invalid as 0, but KDateTime likes -1, so convert
                 if (lastCookie->mExpireDate == -1)
                   lastCookie->mExpireDate = 0;
@@ -857,10 +825,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     }
 
     // RFC2965 cookies come last so that they override netscape cookies.
-    while( !cookieList2.isEmpty() && (lastCookie = cookieList2.take(0)) )
-    {
-       removeDuplicateFromList(&cookieList, lastCookie, true);
-       cookieList.append(lastCookie);
+    while(!cookieList2.isEmpty()) {
+        lastCookie = cookieList2.begin();
+        removeDuplicateFromList(&cookieList, *lastCookie, true);
+        cookieList.append(*lastCookie);
+        cookieList2.removeFirst();
     }
 
     return cookieList;
@@ -873,16 +842,13 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 * If no cookies are found, 0 is returned.
 */
 KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
-                                          const QByteArray &cookie_domstring,
-                                          long windowId)
+                                           const QByteArray &cookie_domstring,
+                                           long windowId)
 {
     // A lot copied from above
     KHttpCookieList cookieList;
-    KHttpCookiePtr lastCookie = 0;
 
     const char *cookieStr = cookie_domstring.data();
-    QString Name;
-    QString Value;
     QString fqdn;
     QString path;
 
@@ -892,6 +858,8 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
         return KHttpCookieList();
     }
 
+    QString Name;
+    QString Value;
     //  This time it's easy
     while(*cookieStr)
     {
@@ -900,29 +868,38 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
         // Host = FQDN
         // Default domain = ""
         // Default path = ""
-        KHttpCookie *cookie = new KHttpCookie(fqdn, QString(), QString(),
-                                Name, Value );
+        KHttpCookie cookie(fqdn, QString(), QString(),
+                           Name, Value );
         if (windowId)
-            cookie->mWindowIds.append(windowId);
+            cookie.mWindowIds.append(windowId);
 
         cookieList.append(cookie);
-        lastCookie = cookie;
 
         if (*cookieStr != '\0')
             cookieStr++;         // Skip ';' or '\n'
-     }
+    }
 
-     return cookieList;
+    return cookieList;
 }
+
+// KHttpCookieList sorting
+///////////////////////////////////////////////////////////////////////////
+
+// We want the longest path first
+static bool compareCookies(const KHttpCookie& item1, const KHttpCookie& item2)
+{
+    return item1.path().length() > item2.path().length();
+}
+
 
 #ifdef MAX_COOKIE_LIMIT
 static void makeRoom(KHttpCookieList *cookieList, KHttpCookiePtr &cookiePtr)
 {
-     // Too much cookies: throw one away, try to be somewhat clever
+     // Too many cookies: throw one away, try to be somewhat clever
      KHttpCookiePtr lastCookie = 0;
      for(KHttpCookiePtr cookie = cookieList->first(); cookie; cookie = cookieList->next())
      {
-         if (cookieList->compareItems(cookie, cookiePtr) < 0)
+         if (compareCookies(cookie, cookiePtr))
             break;
          lastCookie = cookie;
      }
@@ -935,9 +912,7 @@ static void makeRoom(KHttpCookieList *cookieList, KHttpCookiePtr &cookiePtr)
 //
 // This function hands a KHttpCookie object over to the cookie jar.
 //
-// On return cookiePtr is set to 0.
-//
-void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
+void KCookieJar::addCookie(KHttpCookie &cookie)
 {
     QStringList domains;
     KHttpCookieList *cookieList = 0L;
@@ -945,7 +920,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     // We always need to do this to make sure that the
     // that cookies of type hostname == cookie-domainname
     // are properly removed and/or updated as necessary!
-    extractDomains( cookiePtr->host(), domains );
+    extractDomains( cookie.host(), domains );
     for ( QStringList::ConstIterator it = domains.begin();
           (it != domains.end() && !cookieList);
           ++it )
@@ -954,17 +929,16 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         KHttpCookieList *list= m_cookieDomains.value(key);
         if ( !list ) continue;
 
-        removeDuplicateFromList(list, cookiePtr, false, true);
+        removeDuplicateFromList(list, cookie, false, true);
     }
 
-    QString domain = stripDomain( cookiePtr );
+    QString domain = stripDomain( cookie );
     QString key = domain.isNull() ? L1("") : domain;
     cookieList = m_cookieDomains.value(key);
     if (!cookieList)
     {
         // Make a new cookie list
         cookieList = new KHttpCookieList();
-        cookieList->setAutoDelete(true);
 
         // All cookies whose domain is not already
         // known to us should be added with KCookieDunno.
@@ -979,45 +953,44 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 
     // Add the cookie to the cookie list
     // The cookie list is sorted 'longest path first'
-    if (!cookiePtr->isExpired(time(0)))
+    if (!cookie.isExpired(time(0)))
     {
 #ifdef MAX_COOKIE_LIMIT
         if (cookieList->count() >= MAX_COOKIES_PER_HOST)
-           makeRoom(cookieList, cookiePtr); // Delete a cookie
+           makeRoom(cookieList, cookie); // Delete a cookie
 #endif
-        cookieList->inSort( cookiePtr );
+        cookieList->push_back(cookie);
+        // Use a stable sort so that unit tests are reliable.
+        // In practice it doesn't matter though.
+        qStableSort(cookieList->begin(), cookieList->end(), compareCookies);
+
         m_cookiesChanged = true;
     }
-    else
-    {
-        delete cookiePtr;
-    }
-    cookiePtr = 0;
 }
 
 //
 // This function advices whether a single KHttpCookie object should
 // be added to the cookie jar.
 //
-KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
+KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
 {
-    if (m_rejectCrossDomainCookies && cookiePtr->isCrossDomain())
+    if (m_rejectCrossDomainCookies && cookie.isCrossDomain())
        return KCookieReject;
 
     QStringList domains;
-    extractDomains(cookiePtr->host(), domains);
+    extractDomains(cookie.host(), domains);
 
     // If the cookie specifies a domain, check whether it is valid. Otherwise,
     // accept the cookie anyways but removes the domain="" value to prevent
     // cross-site cookie injection.
-    if (!cookiePtr->domain().isEmpty())
+    if (!cookie.domain().isEmpty())
     {
-      if (!domains.contains(cookiePtr->domain()) &&
-          !cookiePtr->domain().endsWith('.'+cookiePtr->host()))
-         cookiePtr->fixDomain(QString());
+      if (!domains.contains(cookie.domain()) &&
+          !cookie.domain().endsWith('.'+cookie.host()))
+         cookie.fixDomain(QString());
     }
 
-    if (m_autoAcceptSessionCookies && (cookiePtr->expireDate() == 0 ||
+    if (m_autoAcceptSessionCookies && (cookie.expireDate() == 0 ||
         m_ignoreCookieExpirationDate))
        return KCookieAccept;
 
@@ -1101,9 +1074,8 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             m_configChanged = true;
             // Make a new cookie list
             cookieList = new KHttpCookieList();
-            cookieList->setAutoDelete(true);
-            cookieList->setAdvice( _advice);
-            m_cookieDomains.insert( domain, cookieList);
+            cookieList->setAdvice(_advice);
+            m_cookieDomains.insert(domain, cookieList);
             // Update the list of domains
             m_domainList.append( domain);
         }
@@ -1114,10 +1086,10 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
 // This function sets the advice for all cookies originating from
 // the same domain as _cookie
 //
-void KCookieJar::setDomainAdvice(KHttpCookiePtr cookiePtr, KCookieAdvice _advice)
+void KCookieJar::setDomainAdvice(const KHttpCookie& cookie, KCookieAdvice _advice)
 {
     QString domain;
-    stripDomain(cookiePtr->host(), domain); // We file the cookie under this domain.
+    stripDomain(cookie.host(), domain); // We file the cookie under this domain.
 
     setDomainAdvice(domain, _advice);
 }
@@ -1143,8 +1115,8 @@ const QStringList& KCookieJar::getDomainList()
 //
 // Get a list of all cookies in the cookie jar originating from _domain.
 //
-const KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
-                                                 const QString & _fqdn )
+KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
+                                           const QString & _fqdn )
 {
     QString domain;
 
@@ -1158,18 +1130,17 @@ const KHttpCookieList *KCookieJar::getCookieList(const QString & _domain,
 
 //
 // Eat a cookie out of the jar.
-// cookiePtr should be one of the cookies returned by getCookieList()
+// cookieIterator should be one of the cookies returned by getCookieList()
 //
-void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
+void KCookieJar::eatCookie(KHttpCookieList::iterator cookieIterator)
 {
-    QString domain = stripDomain(cookiePtr); // We file the cookie under this domain.
+    const KHttpCookie& cookie = *cookieIterator;
+    QString domain = stripDomain(cookie); // We file the cookie under this domain.
     KHttpCookieList *cookieList = m_cookieDomains.value(domain);
 
-    if (cookieList)
-    {
-        // This deletes cookiePtr!
-        if (cookieList->removeRef( cookiePtr ))
-           m_cookiesChanged = true;
+    if (cookieList) {
+        // This deletes cookie!
+        cookieList->erase(cookieIterator);
 
         if ((cookieList->isEmpty()) &&
             (cookieList->getAdvice() == KCookieDunno))
@@ -1224,33 +1195,25 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
     KHttpCookieList* cookieList;
     if ( !isFQDN )
         cookieList = m_cookieDomains.value(fqdn);
-    else
-    {
+    else {
         QString domain;
         stripDomain( fqdn, domain );
         cookieList = m_cookieDomains.value(domain);
     }
 
-    if ( cookieList )
-    {
-        KHttpCookiePtr cookie=cookieList->first();
-        for (; cookie != 0;)
-        {
-            if ((cookie->expireDate() != 0) && !m_ignoreCookieExpirationDate)
-            {
-               cookie = cookieList->next();
+    if (cookieList) {
+        QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
+        while (cookieIterator.hasNext()) {
+            KHttpCookie& cookie = cookieIterator.next();
+            if ((cookie.expireDate() != 0) && !m_ignoreCookieExpirationDate) {
                continue;
             }
 
-            QList<long> &ids = cookie->windowIds();
-            if (!ids.removeAll(windowId) || !ids.isEmpty())
-            {
-               cookie = cookieList->next();
+            QList<long> &ids = cookie.windowIds();
+            if (!ids.removeAll(windowId) || !ids.isEmpty()) {
                continue;
             }
-            KHttpCookiePtr old_cookie = cookie;
-            cookie = cookieList->next();
-            cookieList->removeRef( old_cookie );
+            cookieIterator.remove();
         }
     }
 }
@@ -1286,47 +1249,35 @@ bool KCookieJar::saveCookies(const QString &_filename)
         bool domainPrinted = false;
 
         KHttpCookieList *cookieList = m_cookieDomains.value(domain);
-        KHttpCookiePtr cookie=cookieList->last();
-
-        for (; cookie != 0;)
-        {
-            if (cookie->isExpired(curTime))
-            {
+        QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
+        while (cookieIterator.hasNext()) {
+            const KHttpCookie& cookie = cookieIterator.next();
+            if (cookie.isExpired(curTime)) {
                 // Delete expired cookies
-                KHttpCookiePtr old_cookie = cookie;
-                cookie = cookieList->prev();
-                cookieList->removeRef( old_cookie );
-            }
-            else if (cookie->expireDate() != 0 && !m_ignoreCookieExpirationDate)
-            {
-                if (!domainPrinted)
-                {
+                cookieIterator.remove();
+            } else if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
+                // Only save cookies that are not "session-only cookies"
+                if (!domainPrinted) {
                     domainPrinted = true;
                     ts << '[' << domain.toLocal8Bit().data() << "]\n";
                 }
                 // Store persistent cookies
                 QString path = L1("\"");
-                path += cookie->path();
+                path += cookie.path();
                 path += '"';
                 QString domain = L1("\"");
-                domain += cookie->domain();
+                domain += cookie.domain();
                 domain += '"';
                 // TODO: replace with direct QTextStream output ?
                 s.sprintf("%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
-                        cookie->host().toLatin1().constData(), domain.toLatin1().constData(),
-                        path.toLatin1().constData(), (unsigned long) cookie->expireDate(),
-                        cookie->protocolVersion(),
-                        cookie->name().isEmpty() ? cookie->value().toLatin1().constData() : cookie->name().toLatin1().constData(),
-                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) +
-                        (cookie->hasExplicitPath() ? 4 : 0) + (cookie->name().isEmpty() ? 8 : 0),
-                        cookie->value().toLatin1().constData());
+                        cookie.host().toLatin1().constData(), domain.toLatin1().constData(),
+                        path.toLatin1().constData(), (unsigned long) cookie.expireDate(),
+                        cookie.protocolVersion(),
+                        cookie.name().isEmpty() ? cookie.value().toLatin1().constData() : cookie.name().toLatin1().constData(),
+                        (cookie.isSecure() ? 1 : 0) + (cookie.isHttpOnly() ? 2 : 0) +
+                        (cookie.hasExplicitPath() ? 4 : 0) + (cookie.name().isEmpty() ? 8 : 0),
+                        cookie.value().toLatin1().constData());
                 ts << s.toLatin1().constData();
-                cookie = cookieList->prev();
-            }
-            else
-            {
-                // Skip session-only cookies
-                cookie = cookieList->prev();
             }
         }
     }
@@ -1334,9 +1285,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
     return saveFile.finalize();
 }
 
-typedef char *charPtr;
-
-static const char *parseField(charPtr &buffer, bool keepQuotes=false)
+static const char *parseField(char* &buffer, bool keepQuotes=false)
 {
     char *result;
     if (!keepQuotes && (*buffer == '\"'))
@@ -1391,11 +1340,11 @@ bool KCookieJar::loadCookies(const QString &_filename)
     {
         if (strcmp(buffer, "# KDE Cookie File\n") == 0)
         {
-          // version 1
+            // version 1
         }
         else if (sscanf(buffer, "# KDE Cookie File v%d\n", &version) != 1)
         {
-          err = true;
+            err = true;
         }
     }
 
@@ -1432,7 +1381,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
                 httpOnly = i & 2;
                 explicitPath = i & 4;
                 if (i & 8)
-                   name = "";
+                    name = "";
                 line[strlen(line)-1] = '\0'; // Strip LF.
                 value = line;
             }
@@ -1454,13 +1403,13 @@ bool KCookieJar::loadCookies(const QString &_filename)
             if ((expDate == 0) || (expDate < curTime))
                 continue;
 
-            KHttpCookie *cookie = new KHttpCookie(QString::fromLatin1(host),
-                                                  QString::fromLatin1(domain),
-                                                  QString::fromLatin1(path),
-                                                  QString::fromLatin1(name),
-                                                  QString::fromLatin1(value),
-                                                  expDate, protVer,
-                                                  secure, httpOnly, explicitPath);
+            KHttpCookie cookie(QString::fromLatin1(host),
+                               QString::fromLatin1(domain),
+                               QString::fromLatin1(path),
+                               QString::fromLatin1(name),
+                               QString::fromLatin1(value),
+                               expDate, protVer,
+                               secure, httpOnly, explicitPath);
             addCookie(cookie);
         }
     }
@@ -1551,4 +1500,17 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice(domain, advice);
     }
+}
+
+QDebug operator<<(QDebug dbg, const KHttpCookie& cookie)
+{
+    dbg.nospace() << cookie.cookieStr(false);
+    return dbg.space();
+}
+
+QDebug operator<<(QDebug dbg, const KHttpCookieList& list)
+{
+    Q_FOREACH(const KHttpCookie& cookie, list)
+        dbg << cookie;
+    return dbg;
 }

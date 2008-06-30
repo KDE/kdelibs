@@ -38,11 +38,17 @@ class KCookieDetail : public QGroupBox
 {
     Q_OBJECT
 
-public :
-    KCookieDetail( KHttpCookieList cookieList, int cookieCount, QWidget *parent=0 );
+public:
+    KCookieDetail(KHttpCookieList cookieList, int cookieCount, QWidget *parent=0);
     ~KCookieDetail();
 
-private :
+
+private Q_SLOTS:
+    void slotNextCookie();
+
+private:
+    void displayCookieDetails();
+
     KLineEdit*   m_name;
     KLineEdit*   m_value;
     KLineEdit*   m_expires;
@@ -51,10 +57,8 @@ private :
     KLineEdit*   m_secure;
 
     KHttpCookieList m_cookieList;
-    KHttpCookiePtr m_cookie;
+    int m_cookieNumber;
 
-private Q_SLOTS:
-    void slotNextCookie();
 };
 
 class KCookieWin : public KDialog
@@ -66,7 +70,7 @@ public :
                 bool showDetails=false );
     ~KCookieWin();
 
-    KCookieAdvice advice( KCookieJar *cookiejar, KHttpCookie* cookie );
+    KCookieAdvice advice( KCookieJar *cookiejar, const KHttpCookie& cookie );
 
 private :
     QPushButton*   m_button;

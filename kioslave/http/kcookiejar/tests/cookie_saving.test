@@ -121,7 +121,7 @@ COOKIE ASK http://frop35.com/ Set-Cookie2: set_by2=x.y.z.frop.com; Version=1; Do
 CHECK http://w.y.z/
 CHECK http://a.b.c/
 CHECK http://w.y1.z/ Cookie: some_value=value with spaces
-CHECK http://a.b1.c/ Cookie: some_other_value; some_value="quoted value"
+CHECK http://a.b1.c/ Cookie: some_value="quoted value"; some_other_value
 CHECK http://a.b2.c/ Cookie: some_value="quoted value
 CHECK http://w.y3.z/ Cookie: some_value2=foobar
 CHECK http://w.y4.z/
@@ -226,7 +226,7 @@ SAVE
 CHECK http://w.y.z/
 CHECK http://a.b.c/
 CHECK http://w.y1.z/ Cookie: some_value=value with spaces
-CHECK http://a.b1.c/ Cookie: some_other_value; some_value="quoted value"
+CHECK http://a.b1.c/ Cookie: some_value="quoted value"; some_other_value
 CHECK http://a.b2.c/ Cookie: some_value="quoted value
 CHECK http://w.y3.z/ Cookie: some_value2=foobar
 CHECK http://w.y4.z/
@@ -330,7 +330,7 @@ SAVE
 CHECK http://w.y.z/
 CHECK http://a.b.c/
 CHECK http://w.y1.z/ Cookie: some_value=value with spaces
-CHECK http://a.b1.c/ Cookie: some_other_value; some_value="quoted value"
+CHECK http://a.b1.c/ Cookie: some_value="quoted value"; some_other_value
 CHECK http://a.b2.c/ Cookie: some_value="quoted value
 CHECK http://w.y3.z/ Cookie: some_value2=foobar
 CHECK http://w.y4.z/

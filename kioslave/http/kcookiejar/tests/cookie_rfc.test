@@ -34,7 +34,7 @@ COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=value3; Version=1; Path="/"; Ma
 CHECK http://w.y.z/ Cookie: $Version=1; some_value=value3; $Path="/"
 ## Check if multiple cookies work
 COOKIE ASK http://w.y.z/ Set-Cookie2: some_value2=foobar; Version=1; Path="/"; Max-Age=3600
-CHECK http://w.y.z/ Cookie: $Version=1; some_value2=foobar; $Path="/"; some_value=value3; $Path="/"
+CHECK http://w.y.z/ Cookie: $Version=1; some_value=value3; $Path="/"; some_value2=foobar; $Path="/"
 COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=; Version=1; Path="/"; Max-Age=0
 CHECK http://w.y.z/ Cookie: $Version=1; some_value2=foobar; $Path="/"
 CLEAR COOKIES

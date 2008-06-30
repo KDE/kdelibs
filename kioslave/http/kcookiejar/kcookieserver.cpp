@@ -31,7 +31,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 
 #include <QtCore/QTimer>
-#include <Qt3Support/Q3PtrList>
 #include <QtCore/QFile>
 
 #include <QtDBus/QtDBus>
@@ -79,7 +78,6 @@ KCookieServer::KCookieServer(QObject* parent, const QList<QVariant>&)
    (void)new KCookieServerAdaptor(this);
    mCookieJar = new KCookieJar;
    mPendingCookies = new KHttpCookieList;
-   mPendingCookies->setAutoDelete(true);
    mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = new QTimer();
@@ -119,30 +117,26 @@ KCookieServer::~KCookieServer()
 
 bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieList )
 {
-  QString fqdn;
-  QStringList domains;
-  QString path;
-  // Check whether 'url' has cookies on the pending list
-  if (mPendingCookies->isEmpty())
-     return false;
-  if (!KCookieJar::parseUrl(url, fqdn, path))
-     return false;
+    QString fqdn;
+    QString path;
+    // Check whether 'url' has cookies on the pending list
+    if (mPendingCookies->isEmpty())
+        return false;
+    if (!KCookieJar::parseUrl(url, fqdn, path))
+        return false;
 
-  mCookieJar->extractDomains( fqdn, domains );
-  for( KHttpCookie *cookie = mPendingCookies->first();
-       cookie != 0L;
-       cookie = mPendingCookies->next())
-  {
-       if (cookie->match( fqdn, domains, path))
-       {
-          if (!cookieList)
-             return true;
-          cookieList->append(cookie);
-       }
-  }
-  if (!cookieList)
-     return false;
-  return cookieList->isEmpty();
+    QStringList domains;
+    mCookieJar->extractDomains(fqdn, domains);
+    Q_FOREACH(const KHttpCookie& cookie, *mPendingCookies) {
+        if (cookie.match( fqdn, domains, path)) {
+            if (!cookieList)
+                return true;
+            cookieList->append(cookie);
+        }
+    }
+    if (!cookieList)
+        return false;
+    return cookieList->isEmpty();
 }
 
 void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHeader,
@@ -156,8 +150,7 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
 
     checkCookies(&cookieList);
 
-    for(KHttpCookiePtr cookie = cookieList.first(); cookie; cookie = cookieList.first())
-       mPendingCookies->append(cookieList.take());
+    *mPendingCookies += cookieList;
 
     if (!mAdvicePending)
     {
@@ -179,26 +172,21 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     else
        list = mPendingCookies;
 
-    KHttpCookiePtr cookie = list->first();
-    while (cookie)
-    {
-        KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
-        switch(advice)
-        {
+    QMutableListIterator<KHttpCookie> cookieIterator(*list);
+    while (cookieIterator.hasNext()) {
+        KHttpCookie& cookie = cookieIterator.next();
+        const KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
+        switch(advice) {
         case KCookieAccept:
-            list->take();
             mCookieJar->addCookie(cookie);
-            cookie = list->current();
+            cookieIterator.remove();
             break;
 
         case KCookieReject:
-            list->take();
-            delete cookie;
-            cookie = list->current();
+            cookieIterator.remove();
             break;
 
         default:
-            cookie = list->next();
             break;
         }
     }
@@ -206,20 +194,16 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     if (cookieList || list->isEmpty())
        return;
 
-    KHttpCookiePtr currentCookie = mPendingCookies->first();
+    const KHttpCookie& currentCookie = mPendingCookies->first();
 
     KHttpCookieList currentList;
     currentList.append(currentCookie);
-    QString currentHost = currentCookie->host();
+    QString currentHost = currentCookie.host();
 
-    cookie = mPendingCookies->next();
-    while (cookie)
-    {
-        if (cookie->host() == currentHost)
-        {
+    Q_FOREACH(const KHttpCookie& cookie, *mPendingCookies) {
+        if (cookie.host() == currentHost) {
             currentList.append(cookie);
         }
-        cookie = mPendingCookies->next();
     }
 
     KCookieWin *kw = new KCookieWin( 0L, currentList,
@@ -232,56 +216,39 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
 
     // Apply the user's choice to all cookies that are currently
     // queued for this host.
-    cookie = mPendingCookies->first();
-    while (cookie)
-    {
-        if (cookie->host() == currentHost)
-        {
-           switch(userAdvice)
-           {
+    QMutableListIterator<KHttpCookie> cookieIterator2(*mPendingCookies);
+    while (cookieIterator2.hasNext()) {
+        KHttpCookie& cookie = cookieIterator2.next();
+        if (cookie.host() != currentHost)
+            continue;
+        switch(userAdvice) {
            case KCookieAccept:
-               mPendingCookies->take();
                mCookieJar->addCookie(cookie);
-               cookie = mPendingCookies->current();
+               cookieIterator2.remove();
                break;
 
            case KCookieReject:
-               mPendingCookies->take();
-               delete cookie;
-               cookie = mPendingCookies->current();
+               cookieIterator2.remove();
                break;
 
            default:
-               qWarning(__FILE__":%d Problen!", __LINE__);
-               cookie = mPendingCookies->next();
+               kWarning() << "userAdvice not accept or reject, this should never happen!";
                break;
-           }
-        }
-        else
-        {
-            cookie = mPendingCookies->next();
         }
     }
-
 
     // Check if we can handle any request
-    RequestList reqToRemove;
-    RequestList::ConstIterator it = mRequestList->constBegin();
-    for ( ; it != mRequestList->constEnd(); ++it )
-    {
-        CookieRequest *request = *it;
-        if (!cookiesPending( request->url ))
-        {
-           QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
+    QMutableListIterator<CookieRequest *> requestIterator(*mRequestList);
+    while (requestIterator.hasNext()) {
+        CookieRequest *request = requestIterator.next();
+        if (!cookiesPending(request->url)) {
+           const QString res = mCookieJar->findCookies(request->url, request->DOM, request->windowId);
 
            QDBusConnection::sessionBus().send(request->reply.createReply(res));
-           reqToRemove += request;
            delete request;
+           requestIterator.remove();
         }
     }
-    it = reqToRemove.constBegin();
-    for( ; it != reqToRemove.constEnd(); ++it )
-        mRequestList->removeAll( *it );
 
     saveCookieJar();
 }
@@ -303,35 +270,35 @@ void KCookieServer::saveCookieJar()
     mTimer->start( 1000*60*SAVE_DELAY );
 }
 
-void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
+void KCookieServer::putCookie( QStringList& out, const KHttpCookie& cookie,
                                const QList<int>& fields )
 {
-	foreach ( int i, fields ) {
+    foreach ( int i, fields ) {
        switch(i)
         {
          case CF_DOMAIN :
-            out << cookie->domain();
+            out << cookie.domain();
             break;
          case CF_NAME :
-            out << cookie->name();
+            out << cookie.name();
             break;
          case CF_PATH :
-            out << cookie->path();
+            out << cookie.path();
             break;
          case CF_HOST :
-            out << cookie->host();
+            out << cookie.host();
             break;
          case CF_VALUE :
-            out << cookie->value();
+            out << cookie.value();
             break;
          case CF_EXPIRE :
-            out << QString::number(cookie->expireDate());
+            out << QString::number(cookie.expireDate());
             break;
          case CF_PROVER :
-            out << QString::number(cookie->protocolVersion());
+            out << QString::number(cookie.protocolVersion());
             break;
          case CF_SECURE :
-            out << QString::number( cookie->isSecure() ? 1 : 0 );
+            out << QString::number(cookie.isSecure() ? 1 : 0);
             break;
          default :
             out << QString();
@@ -339,21 +306,17 @@ void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
     }
 }
 
-bool KCookieServer::cookieMatches( KHttpCookiePtr c,
-                                   const QString &domain, const QString &fqdn,
-                                   const QString &path, const QString &name )
+bool KCookieServer::cookieMatches(const KHttpCookie& c,
+                                  const QString &domain, const QString &fqdn,
+                                  const QString &path, const QString &name)
 {
-    if( c )
-    {
-        bool hasDomain = !domain.isEmpty();
-        return
-       ((hasDomain && c->domain() == domain) ||
-        fqdn == c->host()) &&
-       (c->path()   == path) &&
-       (c->name()   == name) &&
-       (!c->isExpired(time(0)));
-    }
-    return false;
+    const bool hasDomain = !domain.isEmpty();
+    return
+        ((hasDomain && c.domain() == domain) ||
+         fqdn == c.host()) &&
+        (c.path()   == path) &&
+        (c.name()   == name) &&
+        (!c.isExpired(time(0)));
 }
 
 // DBUS function
@@ -403,28 +366,23 @@ KCookieServer::findCookies(const QList<int> &fields,
                            const QString &path,
                            const QString &name)
 {
-   QStringList result;
-   bool allDomCookies = name.isEmpty();
+    QStringList result;
+    const bool allDomCookies = name.isEmpty();
 
-   const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
-   if ( list && !list->isEmpty() )
-   {
-      Q3PtrListIterator<KHttpCookie>it( *list );
-      for ( ; it.current(); ++it )
-      {
-         if ( !allDomCookies )
-         {
-            if ( cookieMatches(it.current(), domain, fqdn, path, name) )
-            {
-               putCookie(result, it.current(), fields);
-               break;
+    const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
+    if (list && !list->isEmpty()) {
+        Q_FOREACH(const KHttpCookie& cookie, *list) {
+            if (!allDomCookies) {
+                if (cookieMatches(cookie, domain, fqdn, path, name)) {
+                    putCookie(result, cookie, fields);
+                    break;
+                }
+            } else {
+                putCookie(result, cookie, fields);
             }
-         }
-         else
-            putCookie(result, it.current(), fields);
-      }
-   }
-   return result;
+        }
+    }
+    return result;
 }
 
 // DBUS function
@@ -459,20 +417,19 @@ void
 KCookieServer::deleteCookie(const QString &domain, const QString &fqdn,
                             const QString &path, const QString &name)
 {
-   const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
-   if ( list && !list->isEmpty() )
-   {
-      Q3PtrListIterator<KHttpCookie>it (*list);
-      for ( ; it.current(); ++it )
-      {
-         if( cookieMatches(it.current(), domain, fqdn, path, name) )
-         {
-            mCookieJar->eatCookie( it.current() );
-            saveCookieJar();
-            break;
-         }
-      }
-   }
+    KHttpCookieList* cookieList = mCookieJar->getCookieList( domain, fqdn );
+    if (cookieList && !cookieList->isEmpty()) {
+        for (KHttpCookieList::iterator cookieIterator = cookieList->begin();
+             cookieIterator != cookieList->end();
+             ++cookieIterator ) {
+            KHttpCookie& cookie = *cookieIterator;
+            if (cookieMatches(cookie, domain, fqdn, path, name)) {
+                mCookieJar->eatCookie(cookieIterator);
+                saveCookieJar();
+                break;
+            }
+        }
+    }
 }
 
 // DBUS function
@@ -516,9 +473,9 @@ KCookieServer::deleteAllCookies()
 
 // DBUS function
 void
-KCookieServer::addDOMCookies(const QString &arg1, const QByteArray &arg2, qlonglong arg3)
+KCookieServer::addDOMCookies(const QString &url, const QByteArray &cookieHeader, qlonglong windowId)
 {
-   addCookies(arg1, arg2, arg3, true);
+   addCookies(url, cookieHeader, windowId, true);
 }
 
 // DBUS function

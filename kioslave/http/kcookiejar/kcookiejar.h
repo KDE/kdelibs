@@ -3,9 +3,9 @@
 
     Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
 
-    This library is free software; you can redistribute it and/or 
-    modify it under the terms of the GNU Library General Public License 
-    as published by the Free Software Foundation; either 
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public License
+    as published by the Free Software Foundation; either
     version 2, or (at your option) version 3.
 
     This software is distributed in the hope that it will be useful,
@@ -28,7 +28,6 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
-#include <Qt3Support/Q3PtrList>
 
 #include <time.h>
 
@@ -51,6 +50,7 @@ class KHttpCookie
 {
     friend class KCookieJar;
     friend class KHttpCookieList;
+    friend QDebug operator<<(QDebug, const KHttpCookie&); // for cookieStr()
 
 protected:
     QString mHost;
@@ -66,7 +66,7 @@ protected:
     bool    mExplicitPath;
     QList<long> mWindowIds;
 
-    QString cookieStr(bool useDOMFormat);
+    QString cookieStr(bool useDOMFormat) const;
 
 public:
     explicit KHttpCookie(const QString &_host=QString(),
@@ -80,37 +80,41 @@ public:
                          bool _httpOnly = false,
                          bool _explicitPath = false);
 
-    QString domain(void) { return mDomain; }
-    QString host(void) { return mHost; }
-    QString path(void) { return mPath; }
-    QString name(void) { return mName; }
-    QString value(void) { return mValue; }
-    QList<long> &windowIds(void) { return mWindowIds; }
+    QString domain() const { return mDomain; }
+    QString host() const { return mHost; }
+    QString path() const { return mPath; }
+    QString name() const { return mName; }
+    QString value() const { return mValue; }
+    QList<long> &windowIds() { return mWindowIds; }
+    const QList<long> &windowIds() const { return mWindowIds; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
-    time_t  expireDate(void) { return mExpireDate; }
-    int     protocolVersion(void) { return mProtocolVersion; }
-    bool    isSecure(void) { return mSecure; }
-    bool    isExpired(time_t currentDate);
-    bool    isCrossDomain(void) { return mCrossDomain; }
-    bool    isHttpOnly(void) { return mHttpOnly; }
-    bool    hasExplicitPath(void) { return mExplicitPath; }
-    bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
+    time_t  expireDate() const { return mExpireDate; }
+    int     protocolVersion() const { return mProtocolVersion; }
+    bool    isSecure() const { return mSecure; }
+    bool    isExpired(time_t currentDate) const;
+    bool    isCrossDomain() const { return mCrossDomain; }
+    bool    isHttpOnly() const { return mHttpOnly; }
+    bool    hasExplicitPath() const { return mExplicitPath; }
+    bool    match(const QString &fqdn, const QStringList &domainList, const QString &path) const;
 };
 
-class KHttpCookieList : public Q3PtrList<KHttpCookie>
+QDebug operator<<(QDebug, const KHttpCookie&);
+
+class KHttpCookieList : public QList<KHttpCookie>
 {
 public:
-    KHttpCookieList() : Q3PtrList<KHttpCookie>(), advice( KCookieDunno )
+    KHttpCookieList() : QList<KHttpCookie>(), advice( KCookieDunno )
     { }
     virtual ~KHttpCookieList() { }
 
-    virtual int compareItems( void * item1, void * item2);
-    KCookieAdvice getAdvice(void) { return advice; }
+    KCookieAdvice getAdvice() const { return advice; }
     void setAdvice(KCookieAdvice _advice) { advice = _advice; }
 
 private:
     KCookieAdvice advice;
 };
+
+QDebug operator<<(QDebug, const KHttpCookieList&);
 
 class KCookieJar
 {
@@ -189,10 +193,8 @@ public:
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.
-     *
-     * On return cookiePtr is set to 0.
      */
-    void addCookie(KHttpCookiePtr &cookiePtr);
+    void addCookie(KHttpCookie &cookie);
 
     /**
      * This function advices whether a single KHttpCookie object should
@@ -202,8 +204,10 @@ public:
      *     - KCookieAccept, the cookie should be added
      *     - KCookieReject, the cookie should not be added
      *     - KCookieAsk, the user should decide what to do
+     *
+     * @param cookie not const, since this method can "fix up" the cookie too.
      */
-    KCookieAdvice cookieAdvice(KHttpCookiePtr cookiePtr);
+    KCookieAdvice cookieAdvice(KHttpCookie& cookie);
 
     /**
      * This function gets the advice for all cookies originating from
@@ -238,7 +242,7 @@ public:
      *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
-    void setDomainAdvice(KHttpCookiePtr _cookie, KCookieAdvice _advice);
+    void setDomainAdvice(const KHttpCookie& _cookie, KCookieAdvice _advice);
 
     /**
      * Get the global advice for cookies
@@ -275,17 +279,17 @@ public:
     /**
      * Get a list of all cookies in the cookie jar originating from _domain.
      */
-    const KHttpCookieList *getCookieList(const QString & _domain,
-                                         const QString& _fqdn );
+    KHttpCookieList *getCookieList(const QString & _domain,
+                                   const QString& _fqdn );
 
     /**
      * Remove & delete a cookie from the jar.
      *
-     * cookiePtr should be one of the entries in a KHttpCookieList.
+     * cookieIterator should be one of the entries in a KHttpCookieList.
      * Update your KHttpCookieList by calling getCookieList after
      * calling this function.
      */
-    void eatCookie(KHttpCookiePtr cookiePtr);
+    void eatCookie(KHttpCookieList::iterator cookieIterator);
 
     /**
      * Remove & delete all cookies for @p domain.
@@ -322,7 +326,7 @@ public:
      * domain listed last
      */
     void extractDomains(const QString &_fqdn,
-                        QStringList &_domainList);
+                        QStringList &_domainList) const;
 
     static QString adviceToStr(KCookieAdvice _advice);
     static KCookieAdvice strToAdvice(const QString &_str);
@@ -346,7 +350,7 @@ public:
 
 protected:
      void stripDomain(const QString &_fqdn, QString &_domain);
-     QString stripDomain( KHttpCookiePtr cookiePtr);
+     QString stripDomain(const KHttpCookie& cookie);
 
 protected:
     QStringList m_domainList;

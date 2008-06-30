@@ -71,9 +71,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setWindowIcon( KIcon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
 # ifdef Q_WS_X11
-    if( cookieList.first()->windowIds().count() > 0 )
+    if( cookieList.first().windowIds().count() > 0 )
     {
-        XSetTransientForHint( QX11Info::display(), winId(), cookieList.first()->windowIds().first());
+        XSetTransientForHint( QX11Info::display(), winId(), cookieList.first().windowIds().first());
     }
     else
     {
@@ -100,9 +100,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                        "You received %1 cookies from", count);
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
-    KHttpCookiePtr cookie = cookieList.first();
+    const KHttpCookie& cookie = cookieList.first();
 
-    QString host (cookie->host());
+    QString host (cookie.host());
     int pos = host.indexOf(':');
     if ( pos > 0 )
     {
@@ -113,7 +113,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     }
 
     txt = QString("<b>%1</b>").arg( QUrl::fromAce(host.toLatin1()) );
-    if (cookie->isCrossDomain())
+    if (cookie.isCrossDomain())
        txt += i18n(" <b>[Cross Domain]</b>");
     lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
@@ -164,7 +164,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setButtonText(KDialog::Yes, i18n("&Accept"));
     setButtonText(KDialog::No, i18n("&Reject"));
     //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
-#ifndef QT_NO_WHATSTHIS    
+#ifndef QT_NO_WHATSTHIS
     setButtonToolTip(Details, i18n("See or modify the cookie information") );
 #endif
     setDefaultButton(Yes);
@@ -176,14 +176,14 @@ KCookieWin::~KCookieWin()
 {
 }
 
-KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
+KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cookie )
 {
     int result = exec();
-    
+
     cookiejar->setShowCookieDetails ( isDetailsWidgetVisible() );
-    
+
     KCookieAdvice advice = (result==KDialog::Yes) ? KCookieAccept : KCookieReject;
-    
+
     int preferredPolicy=-1;
     if( m_onlyCookies->isChecked())
 	preferredPolicy = 0;
@@ -198,7 +198,7 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
 	cookiejar->setGlobalAdvice( advice );
     }
     cookiejar->setPreferredDefaultPolicy( preferredPolicy );
-     
+
     return advice;
 }
 
@@ -267,7 +267,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 #endif
     }
     m_cookieList = cookieList;
-    m_cookie = 0;
+    m_cookieNumber = 0;
     slotNextCookie();
 }
 
@@ -277,52 +277,45 @@ KCookieDetail::~KCookieDetail()
 
 void KCookieDetail::slotNextCookie()
 {
-    KHttpCookiePtr cookie = m_cookieList.first();
-    if (m_cookie) while(cookie)
-    {
-       if (cookie == m_cookie)
-       {
-          cookie = m_cookieList.next();
-          break;
-       }
-       cookie = m_cookieList.next();
-    }
-    m_cookie = cookie;
-    if (!m_cookie)
-        m_cookie = m_cookieList.first();
+    if (m_cookieNumber == m_cookieList.count() - 1)
+        m_cookieNumber = 0;
+    else
+        ++m_cookieNumber;
+    displayCookieDetails();
+}
 
-    if ( m_cookie )
+void KCookieDetail::displayCookieDetails()
+{
+    const KHttpCookie& cookie = m_cookieList.at(m_cookieNumber);
+    m_name->setText(cookie.name());
+    m_value->setText((cookie.value()));
+    if (cookie.domain().isEmpty())
+        m_domain->setText(i18n("Not specified"));
+    else
+        m_domain->setText(cookie.domain());
+    m_path->setText(cookie.path());
+    QDateTime cookiedate;
+    cookiedate.setTime_t(cookie.expireDate());
+    if (cookie.expireDate())
+        m_expires->setText(KGlobal::locale()->formatDateTime(cookiedate));
+    else
+        m_expires->setText(i18n("End of Session"));
+    QString sec;
+    if (cookie.isSecure())
     {
-        m_name->setText( m_cookie->name() );
-        m_value->setText( ( m_cookie->value() ) );
-        if ( m_cookie->domain().isEmpty() )
-          m_domain->setText( i18n("Not specified") );
-        else
-          m_domain->setText( m_cookie->domain() );
-        m_path->setText( m_cookie->path() );
-        QDateTime cookiedate;
-        cookiedate.setTime_t( m_cookie->expireDate() );
-        if ( m_cookie->expireDate() )
-          m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
-        else
-          m_expires->setText( i18n("End of Session") );
-        QString sec;
-        if (m_cookie->isSecure())
-        {
-          if (m_cookie->isHttpOnly())
+        if (cookie.isHttpOnly())
             sec = i18n("Secure servers only");
-          else
-            sec = i18n("Secure servers, page scripts");
-        }
         else
-        {
-          if (m_cookie->isHttpOnly())
-            sec = i18n("Servers");
-          else
-            sec = i18n("Servers, page scripts");
-        }
-        m_secure->setText( sec );
+            sec = i18n("Secure servers, page scripts");
     }
+    else
+    {
+        if (cookie.isHttpOnly())
+            sec = i18n("Servers");
+        else
+            sec = i18n("Servers, page scripts");
+    }
+    m_secure->setText(sec);
 }
 
 #include "kcookiewin.moc"
