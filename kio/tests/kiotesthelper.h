@@ -39,7 +39,7 @@ static void setTimeStamp( const QString& path, const QDateTime& mtime )
     utbuf.modtime = utbuf.actime;
     utime( QFile::encodeName( path ), &utbuf );
     //qDebug( "Time changed for %s", qPrintable( path ) );
-#else defined(Q_OS_WIN)
+#elif defined(Q_OS_WIN)
     struct _utimbuf utbuf;
     utbuf.actime = mtime.toTime_t();
     utbuf.modtime = utbuf.actime;
