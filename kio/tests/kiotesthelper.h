@@ -23,6 +23,8 @@
 #include <kde_file.h>
 #ifdef Q_OS_UNIX
 #include <utime.h>
+#else
+#include <sys/utime.h>
 #endif
 #include <errno.h>
 
@@ -37,6 +39,11 @@ static void setTimeStamp( const QString& path, const QDateTime& mtime )
     utbuf.modtime = utbuf.actime;
     utime( QFile::encodeName( path ), &utbuf );
     //qDebug( "Time changed for %s", qPrintable( path ) );
+#else defined(Q_OS_WIN)
+    struct _utimbuf utbuf;
+    utbuf.actime = mtime.toTime_t();
+    utbuf.modtime = utbuf.actime;
+    _wutime(reinterpret_cast<const wchar_t *>(path.utf16()), &utbuf);
 #endif
 }
 
@@ -81,6 +88,11 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     if ( (opt & NoSymlink) == 0 ) {
         createTestSymlink( path + "/testlink" );
         QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
+    }
+#else
+    // to not change the filecount everywhere in the tests
+    if ( (opt & NoSymlink) == 0 ) {
+        createTestFile( path + "/testlink" );
     }
 #endif
     setTimeStamp( path, s_referenceTimeStamp );

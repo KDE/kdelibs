@@ -1464,7 +1464,8 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
   EntryMap::Iterator it;
   it = m_mapEntries.find(path);
   if(it != m_mapEntries.end()) {
-    Entry* e = &(*it);
+    Entry entry = *it;  // deep copy to not point to uninialized data (can happen inside emitEvent() )
+    Entry *e = &entry;
     e->dirty = true;
     int ev = scanEntry(e);
     if (ev != NoChange)

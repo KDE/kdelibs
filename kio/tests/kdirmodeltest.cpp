@@ -36,6 +36,12 @@
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
+#ifndef Q_WS_WIN
+#define SPECIALCHARS "specialchars%:"
+#else
+#define SPECIALCHARS "specialchars%"
+#endif
+
 void KDirModelTest::initTestCase()
 {
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
@@ -43,9 +49,7 @@ void KDirModelTest::initTestCase()
     m_topLevelFileNames << "toplevelfile_1"
                         << "toplevelfile_2"
                         << "toplevelfile_3"
-#ifndef Q_WS_WIN
-                        << "specialchars%:"
-#endif
+                        << SPECIALCHARS
                         ;
     recreateTestData();
 
@@ -113,9 +117,7 @@ void KDirModelTest::fillModel( bool reload )
     QVERIFY(m_dirIndex.isValid());
     QVERIFY(m_fileIndex.isValid());
     QVERIFY(m_secondFileIndex.isValid());
-#ifndef Q_WS_WIN
     QVERIFY(m_specialFileIndex.isValid());
-#endif
 
     // Now list subdir/
     QVERIFY(m_dirModel.canFetchMore(m_dirIndex));
@@ -125,12 +127,7 @@ void KDirModelTest::fillModel( bool reload )
     // Index of a file inside a directory (subdir/testfile)
     QModelIndex subdirIndex;
     m_fileInDirIndex = QModelIndex();
-#ifndef Q_WS_WIN
-    const int iCnt = 3;
-#else
-    const int iCnt = 2;
-#endif
-    for (int row = 0; row < iCnt; ++row) {
+    for (int row = 0; row < 3; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, m_dirIndex);
         if (m_dirModel.itemForIndex(idx).isDir())
             subdirIndex = idx;
@@ -207,10 +204,8 @@ void KDirModelTest::testNames()
     QString fileName = m_dirModel.data(m_fileIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileName, QString("toplevelfile_1"));
 
-#ifndef Q_WS_WIN
     QString specialFileName = m_dirModel.data(m_specialFileIndex, Qt::DisplayRole).toString();
-    QCOMPARE(specialFileName, QString("specialchars%:"));
-#endif
+    QCOMPARE(specialFileName, QString(SPECIALCHARS));
 
     QString dirName = m_dirModel.data(m_dirIndex, Qt::DisplayRole).toString();
     QCOMPARE(dirName, QString("subdir"));
