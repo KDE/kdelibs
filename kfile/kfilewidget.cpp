@@ -1306,6 +1306,7 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
 void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
 {
+    ops->setCurrentItem( url );
     q->slotOk();
 }
 
@@ -1425,6 +1426,8 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
     } else {
         setDummyHistoryEntry( text );
     }
+
+    ops->setCurrentItem( text );
 
     updateFilter();
 }
