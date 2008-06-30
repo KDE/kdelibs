@@ -1210,6 +1210,15 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
             }
 
             QList<long> &ids = cookie.windowIds();
+
+#ifndef NDEBUG
+            if (ids.contains(windowId)) {
+                if (ids.count() > 1)
+                    kDebug() << "removing window id" << windowId << "from session cookie";
+                else
+                    kDebug() << "deleting session cookie";
+            }
+#endif
             if (!ids.removeAll(windowId) || !ids.isEmpty()) {
                continue;
             }

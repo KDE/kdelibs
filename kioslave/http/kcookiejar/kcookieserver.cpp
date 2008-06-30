@@ -319,9 +319,15 @@ bool KCookieServer::cookieMatches(const KHttpCookie& c,
         (!c.isExpired(time(0)));
 }
 
+
 // DBUS function
-QString
-KCookieServer::findCookies(const QString &url, qlonglong windowId)
+QString KCookieServer::listCookies(const QString &url)
+{
+    return findCookies(url, 0);
+}
+
+// DBUS function
+QString KCookieServer::findCookies(const QString &url, qlonglong windowId)
 {
    if (cookiesPending(url))
    {

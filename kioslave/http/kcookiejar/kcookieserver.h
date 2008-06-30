@@ -39,12 +39,14 @@ class KConfig;
 
 class KCookieServer : public KDEDModule, protected QDBusContext
 {
-  Q_OBJECT
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KCookieServer")
 public:
-  KCookieServer(QObject* parent, const QList<QVariant>&);
-  ~KCookieServer();
+    KCookieServer(QObject* parent, const QList<QVariant>&);
+    ~KCookieServer();
 
 public Q_SLOTS:
+  QString listCookies(const QString &url);
   QString findCookies(const QString &url, qlonglong windowId);
   QStringList findDomains();
   QStringList findCookies(const QList<int> &fields,const QString &domain,const QString& fqdn,const QString &path, const QString &name);
@@ -74,11 +76,11 @@ public:
                   qlonglong windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
 
-public Q_SLOTS:
+private Q_SLOTS:
   void slotSave();
   void slotDeleteSessionCookies(qlonglong windowId);
 
-protected:
+private:
   KCookieJar *mCookieJar;
   KHttpCookieList *mPendingCookies;
   RequestList *mRequestList;
