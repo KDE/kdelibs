@@ -311,7 +311,7 @@ set(khtml_LIB_SRCS
 
 qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
 
-set(kcookiejar_XML ${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/org.kde.KCookieServer.xml)
+set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/../kioslave/http/kcookiejar/org.kde.KCookieServer.xml)
 set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "html/kcookiejar_include.h")
 if (cmake_version GREATER 20500)
    # The following requires CMake CVS.
@@ -327,6 +327,8 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
+
+add_dependencies(khtml kded_kcookiejar)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
