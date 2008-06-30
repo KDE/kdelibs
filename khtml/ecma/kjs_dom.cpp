@@ -583,8 +583,10 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
       return jsBoolean(node.hasAttributes());
     case DOMNode::HasChildNodes:
       return jsBoolean(node.hasChildNodes());
-    case DOMNode::CloneNode:
-      return getDOMNode(exec,node.cloneNode(args[0]->toBoolean(exec)));
+    case DOMNode::CloneNode: {
+      RefPtr<NodeImpl> clone = node.cloneNode(args[0]->toBoolean(exec));
+      return getDOMNode(exec, clone.get());
+    }
     case DOMNode::Normalize:
       node.normalize();
       return jsUndefined();

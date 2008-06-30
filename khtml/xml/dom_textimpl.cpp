@@ -282,7 +282,7 @@ unsigned short CommentImpl::nodeType() const
     return Node::COMMENT_NODE;
 }
 
-NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> CommentImpl::cloneNode(bool /*deep*/)
 {
     return document()->createComment( str );
 }
@@ -448,7 +448,7 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-NodeImpl *TextImpl::cloneNode(bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> TextImpl::cloneNode(bool /*deep*/)
 {
     return document()->createTextNode(str);
 }
@@ -582,7 +582,7 @@ unsigned short CDATASectionImpl::nodeType() const
     return Node::CDATA_SECTION_NODE;
 }
 
-NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> CDATASectionImpl::cloneNode(bool /*deep*/)
 {
     return document()->createCDATASection(str);
 }

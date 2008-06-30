@@ -82,7 +82,7 @@ public:
 
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     virtual bool isAttributeNode() const { return true; }
@@ -184,7 +184,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const = 0;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
     virtual DOMString nodeName() const;
     virtual NodeImpl::Id id() const = 0;
     virtual bool isElementNode() const { return true; }
@@ -304,7 +304,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const;
     virtual DOMString localName() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     virtual bool isXMLElementNode() const { return true; }

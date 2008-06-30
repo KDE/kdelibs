@@ -301,7 +301,7 @@ bool Node::hasChildNodes(  )
 Node Node::cloneNode( bool deep )
 {
     if (!impl) return 0;
-    return impl->cloneNode( deep  );
+    return impl->cloneNode( deep ).get();
 }
 
 void Node::normalize (  )

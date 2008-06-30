@@ -31,6 +31,7 @@
 #include "misc/helper.h"
 #include "misc/shared.h"
 #include "misc/idstring.h"
+#include "wtf/PassRefPtr.h"
 
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
@@ -136,7 +137,7 @@ public:
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     virtual void remove(int &exceptioncode);
     virtual bool hasChildNodes (  ) const;
-    virtual NodeImpl *cloneNode ( bool deep ) = 0;
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep ) = 0;
     virtual DOMString localName() const;
     virtual DOMString prefix() const;
     virtual DOMString namespaceURI() const;

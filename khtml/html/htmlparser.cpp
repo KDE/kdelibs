@@ -1408,7 +1408,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 
     NodeImpl* residualElem = prev->node;
     NodeImpl* blockElem = prevMaxElem ? prevMaxElem->node : current;
-    NodeImpl* parentElem = elem->node;
+    RefPtr<NodeImpl> parentElem = elem->node;
 
     // Check to see if the reparenting that is going to occur is allowed according to the DOM.
     // FIXME: We should either always allow it or perform an additional fixup instead of
@@ -1444,8 +1444,8 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         // in the block stack.
         // This will also affect how we ultimately reparent the block, since we want it to end up
         // under the reopened residual tags (e.g., the <i> in the above example.)
-        NodeImpl* prevNode = 0;
-        NodeImpl* currNode = 0;
+        RefPtr<NodeImpl> prevNode = 0;
+        RefPtr<NodeImpl> currNode = 0;
         currElem = maxElem;
         while (currElem->node != residualElem) {
             if (isResidualStyleTag(currElem->node->id())) {
@@ -1455,11 +1455,11 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
                 removeForbidden(currElem->id, forbiddenTag);
 
                 // Change the stack element's node to point to the clone.
-                currElem->setNode(currNode);
+                currElem->setNode(currNode.get());
 
                 // Attach the previous node as a child of this new node.
                 if (prevNode)
-                    currNode->appendChild(prevNode, exceptionCode);
+                    currNode->appendChild(prevNode.get(), exceptionCode);
                 else // The new parent for the block element is going to be the innermost clone.
                     parentElem = currNode;
 
@@ -1471,7 +1471,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 
         // Now append the chain of new residual style elements if one exists.
         if (prevNode)
-            elem->node->appendChild(prevNode, exceptionCode);
+            elem->node->appendChild(prevNode.get(), exceptionCode);
     }
 
     // We need to make a clone of |residualElem| and place it just inside |blockElem|.
@@ -1487,7 +1487,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 
     if (!advancedResidual) {
     // Step 2: Clone |residualElem|.
-    NodeImpl* newNode = residualElem->cloneNode(false); // Shallow clone. We don't pick up the same kids.
+    RefPtr<NodeImpl> newNode = residualElem->cloneNode(false); // Shallow clone. We don't pick up the same kids.
 
     // Step 3: Place |blockElem|'s children under |newNode|.  Remove all of the children of |blockElem|
     // before we've put |newElem| into the document.  That way we'll only do one attachment of all
@@ -1511,7 +1511,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
 
     // Step 4: Place |newNode| under |blockElem|.  |blockElem| is still out of the document, so no
     // attachment can occur yet.
-    blockElem->appendChild(newNode, exceptionCode);
+    blockElem->appendChild(newNode.get(), exceptionCode);
     }
 
     // Step 5: Reparent |blockElem|.  Now the full attachment of the fixed up tree takes place.
@@ -1567,15 +1567,15 @@ void KHTMLParser::reopenResidualStyleTags(HTMLStackElem* elem, DOM::NodeImpl* ma
     // Loop for each tag that needs to be reopened.
     while (elem) {
         // Create a shallow clone of the DOM node for this element.
-        NodeImpl* newNode = elem->node->cloneNode(false);
+        RefPtr<NodeImpl> newNode = elem->node->cloneNode(false);
 
         // Append the new node. In the malformed table case, we need to insert before the table,
         // which will be the last child.
         int exceptionCode = 0;
         if (malformedTableParent)
-            malformedTableParent->insertBefore(newNode, malformedTableParent->lastChild(), exceptionCode);
+            malformedTableParent->insertBefore(newNode.get(), malformedTableParent->lastChild(), exceptionCode);
         else
-            current->appendChild(newNode, exceptionCode);
+            current->appendChild(newNode.get(), exceptionCode);
         // FIXME: Is it really OK to ignore the exceptions here?
 
         // Now push a new stack element for this node we just created.
@@ -1591,7 +1591,7 @@ void KHTMLParser::reopenResidualStyleTags(HTMLStackElem* elem, DOM::NodeImpl* ma
         malformedTableParent = 0;
 
         // Update |current| manually to point to the new node.
-        setCurrent(newNode);
+        setCurrent(newNode.get());
 
         // Advance to the next tag that needs to be reopened.
         HTMLStackElem* next = elem->next;

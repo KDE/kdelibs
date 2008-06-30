@@ -443,10 +443,10 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
            m_startContainer->nodeType() == Node::COMMENT_NODE) {
 
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true));
+                RefPtr<CharacterDataImpl> c = static_pointer_cast<CharacterDataImpl>(m_startContainer->cloneNode(true));
                 c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_endOffset,exceptioncode);
                 c->deleteData(0,m_startOffset,exceptioncode);
-                fragment->appendChild(c,exceptioncode);
+                fragment->appendChild(c.get(),exceptioncode);
             }
             if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
                 static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,m_endOffset-m_startOffset,exceptioncode);
@@ -460,11 +460,11 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             for (i = 0; n && i < m_startOffset; i++) // skip until m_startOffset
                 n = n->nextSibling();
             while (n && i < m_endOffset) { // delete until m_endOffset
-		NodeImpl *next = n->nextSibling();
+                NodeImpl *next = n->nextSibling();
                 if (action == EXTRACT_CONTENTS)
                     fragment->appendChild(n,exceptioncode); // will remove n from its parent
                 else if (action == CLONE_CONTENTS)
-                    fragment->appendChild(n->cloneNode(true),exceptioncode);
+                    fragment->appendChild(n->cloneNode(true).get(),exceptioncode);
                 else
                     m_startContainer->removeChild(n,exceptioncode);
                 n = next;
@@ -492,7 +492,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     //
     // These are deleted, cloned, or extracted (i.e. both) depending on action.
 
-    NodeImpl *leftContents = 0;
+    RefPtr<NodeImpl> leftContents = 0;
     if (m_startContainer != cmnRoot) {
         // process the left-hand side of the range, up until the last ancestor of
         // m_startContainer before cmnRoot
@@ -501,7 +501,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
            m_startContainer->nodeType() == Node::COMMENT_NODE) {
 
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true));
+                RefPtr<CharacterDataImpl> c = static_pointer_cast<CharacterDataImpl>(m_startContainer->cloneNode(true));
                 c->deleteData(0,m_startOffset,exceptioncode);
                 leftContents = c;
             }
@@ -524,7 +524,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 if (action == EXTRACT_CONTENTS)
                     leftContents->appendChild(n,exceptioncode); // will remove n from m_startContainer
                 else if (action == CLONE_CONTENTS)
-                    leftContents->appendChild(n->cloneNode(true),exceptioncode);
+                    leftContents->appendChild(n->cloneNode(true).get(),exceptioncode);
                 else
                     m_startContainer->removeChild(n,exceptioncode);
                 n = next;
@@ -535,8 +535,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         NodeImpl *n = m_startContainer->nextSibling();
         for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-		NodeImpl *leftContentsParent = leftParent->cloneNode(false);
-		leftContentsParent->appendChild(leftContents,exceptioncode);
+		RefPtr<NodeImpl> leftContentsParent = leftParent->cloneNode(false);
+		leftContentsParent->appendChild(leftContents.get(),exceptioncode);
 		leftContents = leftContentsParent;
 	    }
 
@@ -546,7 +546,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 if (action == EXTRACT_CONTENTS)
                     leftContents->appendChild(n,exceptioncode); // will remove n from leftParent
                 else if (action == CLONE_CONTENTS)
-                    leftContents->appendChild(n->cloneNode(true),exceptioncode);
+                    leftContents->appendChild(n->cloneNode(true).get(),exceptioncode);
                 else
                     leftParent->removeChild(n,exceptioncode);
             }
@@ -554,7 +554,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         }
     }
 
-    NodeImpl *rightContents = 0;
+    RefPtr<NodeImpl> rightContents = 0;
     if (m_endContainer != cmnRoot) {
         // delete the right-hand side of the range, up until the last ancestor of
         // m_endContainer before cmnRoot
@@ -563,7 +563,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
            m_endContainer->nodeType() == Node::COMMENT_NODE) {
 
             if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_endContainer->cloneNode(true));
+                RefPtr<CharacterDataImpl> c =
+			    static_pointer_cast<CharacterDataImpl>(m_endContainer->cloneNode(true));
                 c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_endContainer)->length()-m_endOffset,exceptioncode);
                 rightContents = c;
             }
@@ -591,7 +592,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                     if (action == EXTRACT_CONTENTS)
                         rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from its parent
                     else if (action == CLONE_CONTENTS)
-                        rightContents->insertBefore(n->cloneNode(true),rightContents->firstChild(),exceptioncode);
+                        rightContents->insertBefore(n->cloneNode(true).get(),rightContents->firstChild(),exceptioncode);
                     else
                         m_endContainer->removeChild(n,exceptioncode);
                 }
@@ -602,8 +603,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         NodeImpl *n = m_endContainer->previousSibling();
         for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
         	if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-	            NodeImpl *rightContentsParent = rightParent->cloneNode(false);
-	            rightContentsParent->appendChild(rightContents,exceptioncode);
+	            RefPtr<NodeImpl> rightContentsParent = rightParent->cloneNode(false);
+	            rightContentsParent->appendChild(rightContents.get(),exceptioncode);
 	            rightContents = rightContentsParent;
             }
 
@@ -613,7 +614,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 if (action == EXTRACT_CONTENTS)
                     rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from its parent
                 else if (action == CLONE_CONTENTS)
-                    rightContents->insertBefore(n->cloneNode(true),rightContents->firstChild(),exceptioncode);
+                    rightContents->insertBefore(n->cloneNode(true).get(),rightContents->firstChild(),exceptioncode);
                 else
                     rightParent->removeChild(n,exceptioncode);
 
@@ -654,7 +655,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     // (or just delete the stuff in between)
 
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && leftContents)
-      fragment->appendChild(leftContents,exceptioncode);
+      fragment->appendChild(leftContents.get(),exceptioncode);
 
     NodeImpl *next;
     NodeImpl *n;
@@ -665,14 +666,14 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             if (action == EXTRACT_CONTENTS)
                 fragment->appendChild(n,exceptioncode); // will remove from cmnRoot
             else if (action == CLONE_CONTENTS)
-                fragment->appendChild(n->cloneNode(true),exceptioncode);
+                fragment->appendChild(n->cloneNode(true).get(),exceptioncode);
             else
                 cmnRoot->removeChild(n,exceptioncode);
         }
     }
 
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
-      fragment->appendChild(rightContents,exceptioncode);
+      fragment->appendChild(rightContents.get(),exceptioncode);
 
     // collapse to the proper position - see spec section 2.6
     if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS) {

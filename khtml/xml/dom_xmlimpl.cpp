@@ -100,7 +100,7 @@ unsigned short EntityImpl::nodeType() const
     return Node::ENTITY_NODE;
 }
 
-NodeImpl *EntityImpl::cloneNode ( bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> EntityImpl::cloneNode ( bool /*deep*/)
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
@@ -185,7 +185,7 @@ unsigned short EntityReferenceImpl::nodeType() const
     return Node::ENTITY_REFERENCE_NODE;
 }
 
-NodeImpl *EntityReferenceImpl::cloneNode ( bool deep )
+WTF::PassRefPtr<NodeImpl> EntityReferenceImpl::cloneNode ( bool deep )
 {
     EntityReferenceImpl *clone = new EntityReferenceImpl(docPtr(),m_entityName);
     // ### make sure children are readonly
@@ -273,7 +273,7 @@ unsigned short NotationImpl::nodeType() const
     return Node::NOTATION_NODE;
 }
 
-NodeImpl *NotationImpl::cloneNode ( bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> NotationImpl::cloneNode ( bool /*deep*/)
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
@@ -366,7 +366,7 @@ void ProcessingInstructionImpl::setNodeValue( const DOMString &_nodeValue, int &
     setData(_nodeValue, exceptioncode);
 }
 
-NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> ProcessingInstructionImpl::cloneNode ( bool /*deep*/)
 {
     // ### copy m_localHref
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);

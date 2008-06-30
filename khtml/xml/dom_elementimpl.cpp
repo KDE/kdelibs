@@ -162,8 +162,10 @@ void AttrImpl::createTextChild()
     if (m_value->length() > 0) {
 	TextImpl* textNode = ownerDocument()->createTextNode(m_value);
 	int exceptioncode;
-	appendChild(textNode, exceptioncode);
-	assert(exceptioncode == 0);
+
+	// We want to use addChild and not appendChild here to avoid triggering
+	// mutation events. childrenChanged() will still be called.
+	addChild(textNode);
     }
 }
 
@@ -223,7 +225,7 @@ void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
     setValue(v, exceptioncode);
 }
 
-NodeImpl *AttrImpl::cloneNode ( bool /*deep*/)
+WTF::PassRefPtr<NodeImpl> AttrImpl::cloneNode ( bool /*deep*/)
 {
      AttrImpl* attr = new AttrImpl(0, docPtr(), m_attrId, m_value, m_prefix);
      attr->setHTMLCompat(m_htmlCompat);
@@ -472,15 +474,15 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
     }
 }
 
-NodeImpl *ElementImpl::cloneNode(bool deep)
+WTF::PassRefPtr<NodeImpl> ElementImpl::cloneNode(bool deep)
 {
-    ElementImpl *clone;
+    WTF::RefPtr<ElementImpl> clone; // Make sure to guard...
     if ( !localName().isNull() )
         clone = document()->createElementNS( namespaceURI(), nodeName() );
     else
         clone = document()->createElement( nodeName() );
     if (!clone) return 0;
-    finishCloneNode( clone, deep );
+    finishCloneNode( clone.get(), deep );
     return clone;
 }
 
@@ -1188,10 +1190,10 @@ DOMString XMLElementImpl::tagName() const
     return tn;
 }
 
-NodeImpl *XMLElementImpl::cloneNode ( bool deep )
+WTF::PassRefPtr<NodeImpl> XMLElementImpl::cloneNode ( bool deep )
 {
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(), id(), m_prefix);
-    finishCloneNode( clone, deep );
+    WTF::RefPtr<ElementImpl> clone = new XMLElementImpl(docPtr(), id(), m_prefix);
+    finishCloneNode( clone.get(), deep );
     return clone;
 }
 
@@ -1509,7 +1511,8 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	    m_attrs[i].m_data.value->ref();
 	}
 	else {
-	    m_attrs[i].m_data.attr = static_cast<AttrImpl*>(other->m_attrs[i].m_data.attr->cloneNode(true));
+	    WTF::RefPtr<NodeImpl> clonedAttr = other->m_attrs[i].m_data.attr->cloneNode(true);
+	    m_attrs[i].m_data.attr = static_cast<AttrImpl*>(clonedAttr.get());
 	    m_attrs[i].m_data.attr->ref();
 	    m_attrs[i].m_data.attr->setElement(m_element);
 	}

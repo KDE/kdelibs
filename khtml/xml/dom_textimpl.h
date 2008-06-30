@@ -95,7 +95,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 
@@ -126,7 +126,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 
@@ -165,7 +165,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 

@@ -1747,7 +1747,7 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone)
     NodeImpl *n;
     for(n = firstChild(); n && !exceptioncode; n = n->nextSibling())
     {
-        clone->appendChild(n->cloneNode(true),exceptioncode);
+        clone->appendChild(n->cloneNode(true).get(), exceptioncode);
     }
 }
 

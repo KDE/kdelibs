@@ -392,7 +392,7 @@ public:
     bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
     virtual bool childTypeAllowed( unsigned short nodeType );
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_localName,
                         DOMStringImpl *_prefix, bool readonly, bool lookupHTML, int *pExceptioncode = 0);
@@ -727,7 +727,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     virtual bool childTypeAllowed( unsigned short type );
@@ -757,7 +757,7 @@ public:
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual bool childTypeAllowed( unsigned short type );
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     void setName(const DOMString& n) { m_qualifiedName = n; }
