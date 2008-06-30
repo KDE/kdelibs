@@ -128,8 +128,8 @@ private Q_SLOTS:
 
         parser.parseGlobs(QStringList() << fileName1 << fileName2);
 
-        QVERIFY(textPlain->patterns().contains(ext1));
-        QVERIFY(textPlain->patterns().contains(ext2));
+        QCOMPARE(textPlain->patterns().count(ext1), 1);
+        QCOMPARE(textPlain->patterns().count(ext2), 1);
         QVERIFY(!textPlain->patterns().contains("*.exttoberemoved"));
     }
 
