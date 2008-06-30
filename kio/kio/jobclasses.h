@@ -140,15 +140,15 @@ namespace KIO {
          * message using %1.
          *
          * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
-	 * \code
+         * \code
          *   i18n( "Could not read\n%1" ).arg( errortext );
-	 * \endcode
+         * \endcode
          * Use this to display the error yourself, but for a dialog box
          * use Job::showErrorDialog. Do not call it if error()
-	 * is not 0.
-	 * @return the error message and if there is no error, a message
-	 *         telling the user that the app is broken, so check with
-	 *         error() whether there is an error
+         * is not 0.
+         * @return the error message and if there is no error, a message
+         *         telling the user that the app is broken, so check with
+         *         error() whether there is an error
          */
         QString errorString() const;
 
@@ -160,7 +160,7 @@ namespace KIO {
          * @param method the method that generated this error message
          * (unimplemented)
          * @return the following strings: caption, error + description,
-	 *         causes+solutions
+         *         causes+solutions
          */
         QStringList detailedErrorStrings(const KUrl *reqUrl = 0L,
                                          int method = -1) const;
@@ -190,52 +190,52 @@ namespace KIO {
          * One example use of this is when FileCopyJob calls RenameDialog::open,
          * it must pass the correct progress ID of the parent CopyJob
          * (to hide the progress dialog).
-	 * You can set the parent job only once. By default a job does not
-	 * have a parent job.
-	 * @param parentJob the new parent job
+         * You can set the parent job only once. By default a job does not
+         * have a parent job.
+         * @param parentJob the new parent job
          */
         void setParentJob( Job* parentJob );
 
         /**
-	 * Returns the parent job, if there is one.
-	 * @return the parent job, or 0 if there is none
+         * Returns the parent job, if there is one.
+         * @return the parent job, or 0 if there is none
          * @see setParentJob
          */
         Job* parentJob() const;
 
         /**
          * Set meta data to be sent to the slave, replacing existing
-	 * meta data.
-	 * @param metaData the meta data to set
-	 * @see addMetaData()
-	 * @see mergeMetaData()
+         * meta data.
+         * @param metaData the meta data to set
+         * @see addMetaData()
+         * @see mergeMetaData()
          */
         void setMetaData( const KIO::MetaData &metaData);
 
         /**
          * Add key/value pair to the meta data that is sent to the slave.
-	 * @param key the key of the meta data
-	 * @param value the value of the meta data
-	 * @see setMetaData()
-	 * @see mergeMetaData()
+         * @param key the key of the meta data
+         * @param value the value of the meta data
+         * @see setMetaData()
+         * @see mergeMetaData()
          */
         void addMetaData(const QString &key, const QString &value);
 
         /**
          * Add key/value pairs to the meta data that is sent to the slave.
          * If a certain key already existed, it will be overridden.
-	 * @param values the meta data to add
-	 * @see setMetaData()
-	 * @see mergeMetaData()
+         * @param values the meta data to add
+         * @see setMetaData()
+         * @see mergeMetaData()
          */
         void addMetaData(const QMap<QString,QString> &values);
 
         /**
          * Add key/value pairs to the meta data that is sent to the slave.
          * If a certain key already existed, it will remain unchanged.
-	 * @param values the meta data to merge
-	 * @see setMetaData()
-	 * @see addMetaData()
+         * @param values the meta data to merge
+         * @see setMetaData()
+         * @see addMetaData()
          */
         void mergeMetaData(const QMap<QString,QString> &values);
 
@@ -247,16 +247,16 @@ namespace KIO {
         /**
          * Get meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
-	 * @return the job's meta data
+         * @return the job's meta data
          */
         MetaData metaData() const;
 
         /**
          * Query meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
-	 * @param key the key of the meta data to retrieve
-	 * @return the value of the meta data, or QString() if the
-	 *         @p key does not exist
+         * @param key the key of the meta data to retrieve
+         * @return the value of the meta data, or QString() if the
+         *         @p key does not exist
          */
         QString queryMetaData(const QString &key);
 
@@ -268,7 +268,7 @@ namespace KIO {
          * Emitted when the job is canceled.
          * Signal result() is emitted as well, and error() is,
          * in this case, ERR_USER_CANCELED.
-	 * @param job the job that emitted this signal
+         * @param job the job that emitted this signal
          */
         void canceled( KJob *job );
 
@@ -276,7 +276,7 @@ namespace KIO {
          * Emitted when the slave successfully connected to the host.
          * There is no guarantee the slave will send this, and this is
          * currently unused (in the applications).
-	 * @param job the job that emitted this signal
+         * @param job the job that emitted this signal
          */
         void connected( KIO::Job *job );
 
@@ -286,7 +286,7 @@ namespace KIO {
          * is emitted. This has obviously to be called before
          * the finish signal is emitted by the slave.
          *
-	 * @param job the subjob to add
+         * @param job the subjob to add
          */
         virtual bool addSubjob( KJob *job );
 
@@ -294,17 +294,17 @@ namespace KIO {
          * Mark a sub job as being done.
          *
          * KDE4 change: this doesn't terminate the parent job anymore, call emitResult to do that.
-	 *
-	 * @param job the subjob to remove
+         *
+         * @param job the subjob to remove
          */
         virtual bool removeSubjob( KJob *job );
 
     private:
         /**
          * Forward signal from subjob.
-	 * @param job the subjob
-	 * @param speed the speed in bytes/s
-	 * @see speed()
+         * @param job the subjob
+         * @param speed the speed in bytes/s
+         * @see speed()
          */
         Q_PRIVATE_SLOT(d_func(), void slotSpeed( KJob *job, unsigned long speed ))
         Q_DECLARE_PRIVATE(Job)
@@ -344,9 +344,9 @@ namespace KIO {
 
     public:
         /**
-	 * Returns the SimpleJob's URL
-	 * @return the url
-	 */
+         * Returns the SimpleJob's URL
+         * @return the url
+         */
         const KUrl& url() const;
 
         /**
@@ -383,25 +383,25 @@ namespace KIO {
 
         /**
          * MetaData from the slave is received.
-	 * @param _metaData the meta data
-	 * @see metaData()
+         * @param _metaData the meta data
+         * @see metaData()
          */
         virtual void slotMetaData( const KIO::MetaData &_metaData);
 
     protected:
-	/*
-	 * Allow jobs that inherit SimpleJob and are aware
-	 * of redirections to store the SSL session used.
-	 * Retrieval is handled by SimpleJob::start
-	 * @param m_redirectionURL Reference to redirection URL,
-	 * used instead of m_url if not empty
-	 */
-	void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
+        /*
+         * Allow jobs that inherit SimpleJob and are aware
+         * of redirections to store the SSL session used.
+         * Retrieval is handled by SimpleJob::start
+         * @param m_redirectionURL Reference to redirection URL,
+         * used instead of m_url if not empty
+         */
+        void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
 
         /**
-	 * Creates a new simple job. You don't need to use this constructor,
-	 * unless you create a new job that inherits from SimpleJob.
-	 */
+         * Creates a new simple job. You don't need to use this constructor,
+         * unless you create a new job that inherits from SimpleJob.
+         */
         SimpleJob(SimpleJobPrivate &dd);
     private:
         Q_PRIVATE_SLOT(d_func(), void slotConnected())
@@ -431,20 +431,20 @@ namespace KIO {
         ~StatJob();
 
         /**
-	 * A stat() can have two meanings. Either we want to read from this URL,
+         * A stat() can have two meanings. Either we want to read from this URL,
          * or to check if we can write to it. First case is "source", second is "dest".
          * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
-	 * @param side SourceSide or DestinationSide
+         * @param side SourceSide or DestinationSide
          */
         void setSide(StatSide side);
 
         /**
-	 * A stat() can have two meanings. Either we want to read from this URL,
+         * A stat() can have two meanings. Either we want to read from this URL,
          * or to check if we can write to it. First case is "source", second is "dest".
          * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
-	 * @param source true for "source" mode, false for "dest" mode
+         * @param source true for "source" mode, false for "dest" mode
          */
         KDE_DEPRECATED void setSide( bool source );
 
@@ -455,14 +455,14 @@ namespace KIO {
          * too much time, no need to follow symlinks etc.
          * setDetails(0) is used for very simple probing: we'll only get the answer
          * "it's a file or a directory, or it doesn't exist". This is used by KRun.
-	 * @param details 2 for all details, 1 for simple, 0 for very simple
+         * @param details 2 for all details, 1 for simple, 0 for very simple
          */
         void setDetails( short int details );
 
         /**
          * Call this in the slot connected to result,
          * and only after making sure no error happened.
-	 * @return the result of the stat
+         * @return the result of the stat
          */
         const UDSEntry & statResult() const;
 
@@ -471,17 +471,17 @@ namespace KIO {
          * Signals a redirection.
          * Use to update the URL shown to the user.
          * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param url the new url
+         * @param job the job that is redirected
+         * @param url the new url
          */
         void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param fromUrl the original URL
-	 * @param toUrl the new URL
+         * @param job the job that is redirected
+         * @param fromUrl the original URL
+         * @param toUrl the new URL
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
@@ -518,9 +518,9 @@ namespace KIO {
         void setModificationTime( const QDateTime& mtime );
 
         /**
-	 * Checks whether we got an error page. This currently only happens
-	 * with HTTP urls. Call this from your slot connected to result().
-	 *
+         * Checks whether we got an error page. This currently only happens
+         * with HTTP urls. Call this from your slot connected to result().
+         *
          * @return true if we got an (HTML) error page from the server
          * instead of what we asked for.
          */
@@ -559,14 +559,14 @@ namespace KIO {
         /**
          * Call this in the slot connected to result,
          * and only after making sure no error happened.
-	 * @return the mimetype of the URL
+         * @return the mimetype of the URL
          */
         QString mimetype() const;
 
     protected:
         /**
          * Called when m_subJob finishes.
-	 * @param job the job that finished
+         * @param job the job that finished
          */
         virtual void slotResult( KJob *job );
 
@@ -594,7 +594,7 @@ namespace KIO {
          * work, so you should rather split the data you want
          * to pass here in reasonable chunks (about 1MB maximum)
          *
-	 * @param job the job that emitted this signal
+         * @param job the job that emitted this signal
          * @param data buffer to fill with data to send to the
          * slave. An empty buffer indicates end of data. (EOD)
          */
@@ -604,24 +604,24 @@ namespace KIO {
          * Signals a redirection.
          * Use to update the URL shown to the user.
          * The redirection itself is handled internally.
-	 * @param job the job that emitted this signal
-	 * @param url the new URL
+         * @param job the job that emitted this signal
+         * @param url the new URL
          */
         void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
-	 * @param job the job that emitted this signal
-	 * @param fromUrl the original URL
-	 * @param toUrl the new URL
+         * @param job the job that emitted this signal
+         * @param fromUrl the original URL
+         * @param toUrl the new URL
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
         /**
          * Mimetype determined.
-	 * @param job the job that emitted this signal
-	 * @param type the mime type
+         * @param job the job that emitted this signal
+         * @param type the mime type
          */
         void mimetype( KIO::Job *job, const QString &type );
 
@@ -718,19 +718,19 @@ namespace KIO {
     public:
         virtual ~MultiGetJob();
 
-	/**
-	 * Get an additional file.
-	 *
-	 * @param id the id of the file
-	 * @param url the url of the file to get
-	 * @param metaData the meta data for this request
-	 */
+        /**
+         * Get an additional file.
+         *
+         * @param id the id of the file
+         * @param url the url of the file to get
+         * @param metaData the meta data for this request
+         */
         void get(long id, const KUrl &url, const MetaData &metaData);
 
     Q_SIGNALS:
         /**
          * Data from the slave has arrived.
-	 * @param id the id of the request
+         * @param id the id of the request
          * @param data data received from the slave.
          * End of data (EOD) has been reached if data.size() == 0
          */
@@ -738,8 +738,8 @@ namespace KIO {
 
         /**
          * Mimetype determined
-	 * @param id the id of the request
-	 * @param type the mime type
+         * @param id the id of the request
+         * @param type the mime type
          */
         void mimetype( long id, const QString &type );
 
@@ -748,7 +748,7 @@ namespace KIO {
          *
          * When all files have been processed, result(KJob *) gets
          * emitted.
-	 * @param id the id of the request
+         * @param id the id of the request
          */
         void result( long id);
 
@@ -798,7 +798,7 @@ namespace KIO {
         /**
          * If you know the size of the source file, call this method
          * to inform this job. It will be displayed in the "resume" dialog.
-	 * @param size the size of the source file
+         * @param size the size of the source file
          */
         void setSourceSize(KIO::filesize_t size);
 
@@ -811,16 +811,16 @@ namespace KIO {
          */
         void setModificationTime( const QDateTime& mtime );
 
-	/**
-	 * Returns the source URL.
-	 * @return the source URL
-	 */
+        /**
+         * Returns the source URL.
+         * @return the source URL
+         */
         KUrl srcUrl() const;
 
-	/**
-	 * Returns the destination URL.
-	 * @return the destination URL
-	 */
+        /**
+         * Returns the destination URL.
+         * @return the destination URL
+         */
         KUrl destUrl() const;
 
         bool doSuspend();
@@ -842,7 +842,7 @@ namespace KIO {
     protected Q_SLOTS:
         /**
          * Called whenever a subjob finishes.
-	 * @param job the job that emitted this signal
+         * @param job the job that emitted this signal
          */
         virtual void slotResult( KJob *job );
 
@@ -895,8 +895,8 @@ namespace KIO {
          * uses SimpleJob's processedSize (number of entries listed) and
          * totalSize (total number of entries, if known),
          * as well as percent.
-	 * @param job the job that emitted this signal
-	 * @param list the list of UDSEntries
+         * @param job the job that emitted this signal
+         * @param list the list of UDSEntries
          */
         void entries( KIO::Job *job, const KIO::UDSEntryList& list); // TODO KDE5: use KIO::ListJob* argument to avoid casting
 
@@ -904,17 +904,17 @@ namespace KIO {
          * Signals a redirection.
          * Use to update the URL shown to the user.
          * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param url the new url
+         * @param job the job that is redirected
+         * @param url the new url
          */
         void redirection( KIO::Job *job, const KUrl &url );
 
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
-	 * @param job the job that emitted this signal
-	 * @param fromUrl the original URL
-	 * @param toUrl the new URL
+         * @param job the job that emitted this signal
+         * @param fromUrl the original URL
+         * @param toUrl the new URL
          */
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
