@@ -109,11 +109,6 @@ public:
      * handles setting the locationEdit.
      */
     void multiSelectionChanged();
-    /**
-     * Returns the URL which represents the directory of \a url. If
-     * \a url already is a directory, then just \a url is returned.
-     */
-    static KUrl directoryUrl(const KUrl& url);
 
     /**
      * Returns the absolute version of the URL specified in locationEdit.
@@ -280,7 +275,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->setMovable(false);
 
     d->model = new KFilePlacesModel(this);
-    d->urlNavigator = new KUrlNavigator(d->model, d->directoryUrl(startDir), d->toolbar);
+    d->urlNavigator = new KUrlNavigator(d->model, startDir, d->toolbar);
     d->urlNavigator->setPlacesSelectorVisible(false);
 
     KUrl u;
@@ -452,7 +447,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     QString dir = d->url.url(KUrl::AddTrailingSlash);
 
-    d->urlNavigator->setUrl( d->directoryUrl( dir ) );
+    d->urlNavigator->setUrl( dir );
 
     fileCompletionObj->setDir( dir );
     d->locationEdit->setCompletionObject( fileCompletionObj );
@@ -1052,15 +1047,6 @@ void KFileWidgetPrivate::multiSelectionChanged()
     }
 
     setLocationText( urlList );
-}
-
-KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
-{
-    if (!url.isValid())
-        return url;
-    KFileItem item(S_IFDIR, KFileItem::Unknown, url);
-    item.refresh();
-    return item.isDir() ? url : url.upUrl();
 }
 
 void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon,
