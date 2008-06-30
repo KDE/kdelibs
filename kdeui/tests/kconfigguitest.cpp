@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include <QtGui/QFont>
 #include <kconfiggroup.h>
+#include <kcursor.h>
 
 QTEST_KDEMAIN( KConfigTest, GUI )
 
@@ -35,6 +36,8 @@ QTEST_KDEMAIN( KConfigTest, GUI )
 
 void KConfigTest::initTestCase()
 {
+  KCursor::hideCursorDelay();
+
   KConfig sc( "kconfigtest" );
 
   KConfigGroup cg(&sc, "ComplexTypes");
