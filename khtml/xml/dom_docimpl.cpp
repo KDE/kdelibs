@@ -1916,7 +1916,7 @@ bool DocumentImpl::childTypeAllowed( unsigned short type )
     return false;
 }
 
-NodeImpl *DocumentImpl::cloneNode ( bool deep )
+WTF::PassRefPtr<NodeImpl> DocumentImpl::cloneNode ( bool deep )
 {
 #if 0
     NodeImpl *dtn = m_doctype->cloneNode(deep);
@@ -1924,7 +1924,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool deep )
 #endif
 
     int exceptioncode;
-    DocumentImpl *clone = m_implementation->createDocument("",
+    WTF::RefPtr<NodeImpl> clone = m_implementation->createDocument("",
 							   "",
                                                            0, 0,
                                                            exceptioncode);
@@ -1933,7 +1933,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool deep )
     // ### attributes, styles, ...
 
     if (deep)
-	cloneChildNodes(clone);
+	cloneChildNodes(clone.get());
 
     return clone;
 }
@@ -2987,11 +2987,11 @@ DOMString DocumentFragmentImpl::toString() const
     return result;
 }
 
-NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep )
+WTF::PassRefPtr<NodeImpl> DocumentFragmentImpl::cloneNode ( bool deep )
 {
-    DocumentFragmentImpl *clone = new DocumentFragmentImpl( docPtr() );
+    WTF::RefPtr<DocumentFragmentImpl> clone = new DocumentFragmentImpl( docPtr() );
     if (deep)
-        cloneChildNodes(clone);
+        cloneChildNodes(clone.get());
     return clone;
 }
 
@@ -3065,7 +3065,7 @@ bool DocumentTypeImpl::childTypeAllowed( unsigned short /*type*/ )
     return false;
 }
 
-NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
+WTF::PassRefPtr<NodeImpl> DocumentTypeImpl::cloneNode ( bool /*deep*/ )
 {
     DocumentTypeImpl *clone = new DocumentTypeImpl(implementation(),
 						   0,

@@ -57,7 +57,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -84,7 +84,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -111,7 +111,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -142,7 +142,7 @@ public:
     virtual unsigned short nodeType() const;
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
