@@ -36,6 +36,7 @@ QTEST_KDEMAIN( KConfigTest, GUI )
 
 void KConfigTest::initTestCase()
 {
+  // cheat the linker on windows to link against kdeui
   KCursor::hideCursorDelay();
 
   KConfig sc( "kconfigtest" );
