@@ -139,7 +139,7 @@ namespace khtml {
             m_cachedSheet = dl->requestStyleSheet(url, QString(), "text/css",
                                                   true /* "user sheet" */);
             if (m_cachedSheet)
-		m_cachedSheet->ref( this );
+                m_cachedSheet->ref( this );
         }
         virtual ~PartStyleSheetLoader()
         {
@@ -359,18 +359,18 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
   d->m_paFind->setWhatsThis( i18n( "Find text<br /><br />"
-				   "Shows a dialog that allows you to find text on the displayed page." ) );
+                                   "Shows a dialog that allows you to find text on the displayed page." ) );
 
   d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
   d->m_paFindNext->setWhatsThis( i18n( "Find next<br /><br />"
-				       "Find the next occurrence of the text that you "
-				       "have found using the <b>Find Text</b> function" ) );
+                                       "Find the next occurrence of the text that you "
+                                       "have found using the <b>Find Text</b> function" ) );
 
   d->m_paFindPrev = actionCollection()->addAction( KStandardAction::FindPrev, "findPrevious",
                                                    this, SLOT( slotFindPrev() ) );
   d->m_paFindPrev->setWhatsThis( i18n( "Find previous<br /><br />"
-				       "Find the previous occurrence of the text that you "
-				       "have found using the <b>Find Text</b> function" ) );
+                                       "Find the previous occurrence of the text that you "
+                                       "have found using the <b>Find Text</b> function" ) );
 
   d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
@@ -399,8 +399,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paPrintFrame->setIcon( KIcon( "document-print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
   d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<br /><br />"
-					 "Some pages have several frames. To print only a single frame, click "
-					 "on it and then use this function." ) );
+                                         "Some pages have several frames. To print only a single frame, click "
+                                         "on it and then use this function." ) );
 
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
@@ -930,7 +930,7 @@ QString KHTMLPart::documentSource() const
       {
         QTextStream stream( &f );
         stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
-	sourceStr = stream.readAll();
+        sourceStr = stream.readAll();
         f.close();
       }
       KIO::NetAccess::removeTempFile( tmpFile );
@@ -1430,7 +1430,7 @@ void KHTMLPart::clear()
   if ( d->m_doc )
   {
     if (d->m_doc->attached()) //the view may have detached it already
-	d->m_doc->detach();
+        d->m_doc->detach();
   }
 
   // Moving past doc so that onUnload works.
@@ -1684,7 +1684,7 @@ void KHTMLPart::showError( KJob* job )
                 << " d->m_bCleared=" << d->m_bCleared << endl;
 
   if (job->error() == KIO::ERR_NO_CONTENT)
-	return;
+        return;
 
   if ( (d->m_doc && d->m_doc->parsing()) || d->m_workingURL.isEmpty() ) // if we got any data already
     job->uiDelegate()->showErrorMessage();
@@ -2629,7 +2629,7 @@ void KHTMLPart::setOnlyLocalReferences(bool enable)
 }
 
 void KHTMLPartPrivate::setFlagRecursively(
-	bool KHTMLPartPrivate::*flag, bool value)
+        bool KHTMLPartPrivate::*flag, bool value)
 {
   // first set it on the current one
   this->*flag = value;
@@ -2733,8 +2733,8 @@ void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelecti
 #ifndef KHTML_NO_CARET
 #if 0
   kDebug(6200) << "node: " << node.handle() << " nodeName: "
-  	<< node.nodeName().string() << " offset: " << offset
-	<< " extendSelection " << extendSelection << endl;
+               << node.nodeName().string() << " offset: " << offset
+               << " extendSelection " << extendSelection << endl;
   if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
     emitSelectionChanged();
   view()->ensureCaretVisible();
@@ -3407,11 +3407,11 @@ QString KHTMLPart::selectedText() const
       if(n.nodeType() == DOM::Node::TEXT_NODE && n.handle()->renderer()) {
         DOM::DOMStringImpl *dstr = static_cast<DOM::TextImpl*>(n.handle())->renderString();
         QString str(dstr->s, dstr->l);
-	if(!str.isEmpty()) {
+        if(!str.isEmpty()) {
           if(seenTDTag) {
-	    text += "  ";
-	    seenTDTag = false;
-	  }
+            text += "  ";
+            seenTDTag = false;
+          }
           hasNewLine = false;
           if(n == sel.start().node() && n == sel.end().node())
             text = str.mid(sel.start().offset(), sel.end().offset() - sel.start().offset());
@@ -3421,31 +3421,31 @@ QString KHTMLPart::selectedText() const
             text += str.left(sel.end().offset());
           else
             text += str;
-	}
+        }
       }
       else {
         // This is our simple HTML -> ASCII transformation:
         unsigned short id = n.elementId();
         switch(id) {
-	  case ID_TEXTAREA:
-	    text += static_cast<HTMLTextAreaElementImpl*>(n.handle())->value().string();
-	    break;
-	  case ID_INPUT:
+          case ID_TEXTAREA:
+            text += static_cast<HTMLTextAreaElementImpl*>(n.handle())->value().string();
+            break;
+          case ID_INPUT:
             if (static_cast<HTMLInputElementImpl*>(n.handle())->inputType() != HTMLInputElementImpl::PASSWORD)
-  	      text += static_cast<HTMLInputElementImpl*>(n.handle())->value().string();
-	    break;
-	  case ID_SELECT:
-	    text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
-	    break;
+                text += static_cast<HTMLInputElementImpl*>(n.handle())->value().string();
+            break;
+          case ID_SELECT:
+            text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
+            break;
           case ID_BR:
             text += "\n";
             hasNewLine = true;
             break;
           case ID_IMG:
-	    text += static_cast<HTMLImageElementImpl*>(n.handle())->altText().string();
-	    break;
+            text += static_cast<HTMLImageElementImpl*>(n.handle())->altText().string();
+            break;
           case ID_TD:
-	    break;
+            break;
           case ID_TH:
           case ID_HR:
           case ID_OL:
@@ -3484,8 +3484,8 @@ QString KHTMLPart::selectedText() const
         unsigned short id = n.elementId();
         switch(id) {
           case ID_TD:
-	    seenTDTag = true; //Add two spaces after a td if then followed by text.
-	    break;
+            seenTDTag = true; //Add two spaces after a td if then followed by text.
+            break;
           case ID_TH:
           case ID_HR:
           case ID_OL:
@@ -3497,7 +3497,7 @@ QString KHTMLPart::selectedText() const
           case ID_PRE:
           case ID_BLOCKQUOTE:
           case ID_DIV:
-	    seenTDTag = false;
+            seenTDTag = false;
             if (!hasNewLine)
                text += "\n";
             hasNewLine = true;
@@ -3971,8 +3971,8 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
   if (!checkLinkSecurity(cURL,
-			 ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?</qt>" ),
-			 i18n( "Follow" )))
+                         ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?</qt>" ),
+                         i18n( "Follow" )))
     return false;
 
   browserArgs.frameName = target;
@@ -4282,7 +4282,7 @@ void KHTMLPart::slotSaveFrame()
 
     KUrl srcURL( frame->url() );
 
-	if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
+        if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
         srcURL.setFileName( "index" + defaultExtension() );
 
     KIO::MetaData metaData;
@@ -4712,7 +4712,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       if (!url.url().startsWith("about:")) {
         p->write(url.path());
       } else {
-	p->setUrl(url);
+        p->setUrl(url);
         // we need a body element. testcase: <iframe id="a"></iframe><script>alert(a.document.body);</script>
         p->write("<HTML><TITLE></TITLE><BODY></BODY></HTML>");
       }
@@ -4880,7 +4880,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
           }
           if (rc == KMessageBox::Cancel)
             return;
-      	}
+        }
       }
     }
 
@@ -4910,8 +4910,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (!checkLinkSecurity(u,
-			 ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?</qt>" ),
-			 i18n( "Submit" )))
+                         ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?</qt>" ),
+                         i18n( "Submit" )))
     return;
 
   KParts::OpenUrlArguments args;
@@ -5052,14 +5052,14 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     if (!(d->m_strSelectedURLTarget).isEmpty() &&
            (d->m_strSelectedURLTarget.toLower() != "_top") &&
            (d->m_strSelectedURLTarget.toLower() != "_self") &&
-	   (d->m_strSelectedURLTarget.toLower() != "_parent")) {
+           (d->m_strSelectedURLTarget.toLower() != "_parent")) {
       if (d->m_strSelectedURLTarget.toLower() == "_blank")
         browserArgs.setForcesNewWindow(true);
       else {
-	KHTMLPart *p = this;
-	while (p->parentPart())
-	  p = p->parentPart();
-	if (!p->frameExists(d->m_strSelectedURLTarget))
+        KHTMLPart *p = this;
+        while (p->parentPart())
+          p = p->parentPart();
+        if (!p->frameExists(d->m_strSelectedURLTarget))
           browserArgs.setForcesNewWindow(true);
       }
     }
@@ -5073,13 +5073,13 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   QString mimetype = QLatin1String( "text/html" );
   args.metaData()["referrer"] = referrer;
 
-  if (!linkUrl.isEmpty())				// over a link
+  if (!linkUrl.isEmpty())                                // over a link
   {
-    if (popupURL.isLocalFile())				// safe to do this
+    if (popupURL.isLocalFile())                                // safe to do this
     {
       mimetype = KMimeType::findByUrl(popupURL,0,true,false)->name();
     }
-    else						// look at "extension" of link
+    else                                                // look at "extension" of link
     {
       const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
       if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
@@ -6373,8 +6373,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     if ( _mouse->button() == Qt::LeftButton )
     {
       if ( (!d->m_strSelectedURL.isNull() && !isEditable())
-	        || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) )
-	  return;
+                || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) )
+          return;
 
       d->editor_context.m_beganSelectingText = false;
 
@@ -6590,7 +6590,7 @@ void KHTMLPart::handleMouseMoveEventSelection(khtml::MouseMoveEvent *event)
 
     if ( (mouse->buttons() & Qt::LeftButton) == 0 || !innerNode.handle() || !innerNode.handle()->renderer() ||
         !innerNode.handle()->renderer()->shouldSelect())
-    	return;
+            return;
 
     // handle making selection
     extendSelectionTo(event->x(), event->y(), innerNode);
@@ -6810,8 +6810,8 @@ void KHTMLPart::selectAll()
   // Look for first text/cdata node that has a renderer,
   // or first childless replaced element
   while ( first && !(first->renderer()
-  	&& ((first->nodeType() == Node::TEXT_NODE || first->nodeType() == Node::CDATA_SECTION_NODE)
-		|| (first->renderer()->isReplaced() && !first->renderer()->firstChild()))))
+          && ((first->nodeType() == Node::TEXT_NODE || first->nodeType() == Node::CDATA_SECTION_NODE)
+                || (first->renderer()->isReplaced() && !first->renderer()->firstChild()))))
   {
     next = first->firstChild();
     if ( !next ) next = first->nextSibling();
@@ -6834,8 +6834,8 @@ void KHTMLPart::selectAll()
   // ### Instead of changing this loop, use findLastSelectableNode
   // in render_table.cpp (LS)
   while ( last && !(last->renderer()
-  	&& ((last->nodeType() == Node::TEXT_NODE || last->nodeType() == Node::CDATA_SECTION_NODE)
-		|| (last->renderer()->isReplaced() && !last->renderer()->lastChild()))))
+          && ((last->nodeType() == Node::TEXT_NODE || last->nodeType() == Node::CDATA_SECTION_NODE)
+                || (last->renderer()->isReplaced() && !last->renderer()->lastChild()))))
   {
     next = last->lastChild();
     if ( !next ) next = last->previousSibling();
@@ -6873,16 +6873,16 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     int response = KMessageBox::Cancel;
     if (!message.isEmpty())
     {
-	    response = KMessageBox::warningContinueCancel( 0,
-							   message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
-							   i18n( "Security Warning" ),
-							   KGuiItem(button));
+            response = KMessageBox::warningContinueCancel( 0,
+                                                           message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
+                                                           i18n( "Security Warning" ),
+                                                           KGuiItem(button));
     }
     else
     {
-	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.prettyUrl())),
-				i18n( "Security Alert" ));
+            KMessageBox::error( 0,
+                                i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.prettyUrl())),
+                                i18n( "Security Alert" ));
     }
 
     if (tokenizer)
@@ -7365,7 +7365,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window-suppressed") );
 
-		d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
+                d->m_statusBarPopupLabel->setToolTip(i18n("This page was prevented from opening a new window via JavaScript." ) );
 
         connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedUrl()), SLOT(suppressedPopupMenu()));
         if (d->m_settings->jsPopupBlockerPassivePopup()) {
@@ -7433,7 +7433,7 @@ bool KHTMLPart::inProgress() const
     const ConstFrameIt end = d->m_frames.end();
     for (; it != end; ++it ) {
         if ((*it)->m_run || !(*it)->m_bCompleted)
-	    return true;
+            return true;
     }
 
     return d->m_submitForm || !d->m_redirectURL.isEmpty() || d->m_redirectionTimer.isActive() || d->m_job;
@@ -7445,4 +7445,3 @@ using namespace KParts;
 #ifndef KHTML_NO_WALLET
 #include "khtml_wallet_p.moc"
 #endif
-
