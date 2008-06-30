@@ -116,7 +116,7 @@ namespace KIO {
          * Register @p job with the scheduler.
          * The default is to create a new slave for the job if no slave
          * is available. This can be changed by calling scheduleJob.
-	 * @param job the job to register
+         * @param job the job to register
          */
         static void doJob(SimpleJob *job);
 
@@ -124,20 +124,20 @@ namespace KIO {
          * Calling ths function makes that @p job gets scheduled for later
          * execution, if multiple jobs are registered it might wait for
          * other jobs to finish.
-	 * @param job the job to schedule
+         * @param job the job to schedule
          */
         static void scheduleJob(SimpleJob *job);
 
         /**
          * Stop the execution of a job.
-	 * @param job the job to cancel
+         * @param job the job to cancel
          */
         static void cancelJob(SimpleJob *job);
 
         /**
          * Called when a job is done.
-	 * @param job the finished job
-	 * @param slave the slave that executed the @p job
+         * @param job the finished job
+         * @param slave the slave that executed the @p job
          */
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
 
@@ -149,8 +149,8 @@ namespace KIO {
          * Based on the mimetype, the program can give control to another
          * component in the same process which can then resume the job
          * by simply asking for the same URL again.
-	 * @param job the job that should be stopped
-	 * @param url the URL that is handled by the @p url
+         * @param job the job that should be stopped
+         * @param url the URL that is handled by the @p url
          */
         static void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
 
@@ -217,7 +217,7 @@ namespace KIO {
          * Register the mainwindow @p wid with the KIO subsystem
          * Do not call this, it is called automatically from
          * void KIO::Job::setWindow(QWidget*).
-	 * @param wid the window to register
+         * @param wid the window to register
          */
         static void registerWindow(QWidget *wid);
 
@@ -248,7 +248,7 @@ namespace KIO {
         /**
          * When true, the next job will check whether KLauncher has a slave
          * on hold that is suitable for the job.
-	 * @param b true when KLauncher has a job on hold
+         * @param b true when KLauncher has a job on hold
          */
         static void checkSlaveOnHold(bool b);
 

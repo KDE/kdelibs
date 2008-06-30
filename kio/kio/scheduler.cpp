@@ -383,7 +383,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
 
 void SchedulerPrivate::scheduleJob(SimpleJob *job) {
     newJobs.removeAll(job);
-    JobData jobData = extraJobData.value(job);
+    const JobData& jobData = extraJobData.value(job);
 
     QString protocol = jobData.protocol;
 //    kDebug(7006) << "protocol=" << protocol;

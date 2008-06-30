@@ -284,7 +284,7 @@ void SlaveBase::dispatchLoop()
             ret = d->appConnection.isConnected() ? 0 : -1;
         }
 
-        if (ret == -1) { // some error occurred, perhaps no more applicationi
+        if (ret == -1) { // some error occurred, perhaps no more application
             // When the app exits, should the slave be put back in the pool ?
             if (!d->exit_loop && d->isConnectedToApp && !d->poolSocket.isEmpty()) {
                 disconnectSlave();
