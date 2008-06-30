@@ -33,6 +33,8 @@ KMimeFileParser::KMimeFileParser(KMimeTypeFactory* mimeTypeFactory)
 
 void KMimeFileParser::parseGlobs()
 {
+    // TODO parse globs2 file instead if it exists.
+    // This will fix http://bugs.freedesktop.org/show_bug.cgi?id=15436
     const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
     //kDebug() << globFiles;
     parseGlobs(globFiles);
@@ -58,8 +60,8 @@ void KMimeFileParser::parseGlobs(const QStringList& globFiles)
         }
     }
 
-    const QStringList keys = mimeTypeGlobs.uniqueKeys();
-    Q_FOREACH(const QString& mimeTypeName, keys) {
+    const QStringList allMimes = mimeTypeGlobs.uniqueKeys();
+    Q_FOREACH(const QString& mimeTypeName, allMimes) {
         KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName);
         if (!mimeType) {
             kWarning(7012) << "one of glob files in" << globFiles << "refers to unknown mimetype" << mimeTypeName;
@@ -88,7 +90,11 @@ QHash<QString, QStringList> KMimeFileParser::parseGlobFile(QIODevice* file)
         const QString mimeTypeName = line.left(pos);
         const QString pattern = line.mid(pos+1);
         Q_ASSERT(!pattern.isEmpty());
-        globs[mimeTypeName].append(pattern);
+        //if (mimeTypeName == "text/plain")
+        //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file";
+        QStringList& patterns = globs[mimeTypeName]; // find or create entry
+        if (!patterns.contains(pattern)) // ### I miss a QStringList::makeUnique or something...
+            patterns.append(pattern);
     }
     return globs;
 }

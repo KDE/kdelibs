@@ -111,14 +111,20 @@ private Q_SLOTS:
         QVERIFY(!textPlain->patterns().contains(ext2));
 
         // "local" file
+        // It defines *.ext1 and *.ext2
         KTemporaryFile globTempFile1;
         QVERIFY(globTempFile1.open());
-        const QByteArray testFile1 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.ext2";
+        // Defining ext2 twice is a bonus in this test: it tests the case where
+        // people install freedesktop.org.xml and kde.xml into the same prefix;
+        // we shouldn't end up with *.txt twice in the text/plain patterns.
+        const QByteArray testFile1 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.ext2\ntext/plain:*.ext2";
         globTempFile1.write(testFile1);
         const QString fileName1 = globTempFile1.fileName();
         globTempFile1.close();
 
         // "global" file
+        // It defines *.ext1 and *.exttoberemoved - this will all be overwritten by the local file
+        // so it won't appear.
         KTemporaryFile globTempFile2;
         QVERIFY(globTempFile2.open());
         const QByteArray testFile2 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.exttoberemoved";

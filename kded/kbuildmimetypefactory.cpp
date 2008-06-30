@@ -135,7 +135,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         }
     }
 
-    //kDebug() << "Creating mimetype " << name << " from file " << file;
+    //kDebug() << "Creating mimetype" << name << "from file" << file << "path" << fullPath;
 
     KMimeType* e;
     if ( name == "inode/directory" )
