@@ -603,7 +603,7 @@ QList<int> KdedGlobalAccel::keysFromString(const QString &str)
     QStringList strList = str.split('\t');
     foreach (const QString &s, strList) {
         int key = QKeySequence(s)[0];
-        if (key >= 0) {     //sanity check just in case
+        if (key != -1) {     //sanity check just in case
             ret.append(key);
         }
     }
