@@ -148,6 +148,7 @@ private Q_SLOTS:
 
 private:
     QString selectedTextAsOneLine() const;
+    void addSearchActions(QList<QAction *>& editActions);
 
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate* const d;

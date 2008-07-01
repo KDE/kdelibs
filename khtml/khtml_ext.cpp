@@ -426,91 +426,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
         editActions.append(khtml->actionCollection()->action("selectAll"));
 
-
-        // Fill search provider entries
-        KConfig config("kuriikwsfilterrc");
-        KConfigGroup cg = config.group("General");
-        const QString defaultEngine = cg.readEntry("DefaultSearchEngine", "google");
-        const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
-
-        // search text
-        QString selectedText = d->m_khtml->simplifiedSelectedText();
-        selectedText.replace("&", "&&");
-        if (selectedText.length() > 18) {
-            selectedText.truncate(15);
-            selectedText += "...";
-        }
-
-        // default search provider
-        KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
-
-        // search provider icon
-        KIcon icon;
-        KUriFilterData data;
-        QStringList list;
-        data.setData( QString("some keyword") );
-        list << "kurisearchfilter" << "kuriikwsfilter";
-
-        QString name;
-        if ( KUriFilter::self()->filterUri(data, list) )
-        {
-            QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
-            if ( iconPath.isEmpty() )
-                icon = KIcon("edit-find");
-            else
-                icon = KIcon( QPixmap( iconPath ) );
-            name = service->name();
-        }
-        else
-        {
-            icon = KIcon("google");
-            name = "Google";
-        }
-
-        KAction *action = new KAction( i18n( "Search for '%1' with %2", selectedText, name ), this );
-        d->m_actionCollection->addAction( "searchProvider", action );
-        editActions.append(action);
-        action->setIcon(icon);
-        connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
-
-        // favorite search providers
-        QStringList favoriteEngines;
-        favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
-        favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
-
-        if ( !favoriteEngines.isEmpty()) {
-            KActionMenu* providerList = new KActionMenu( i18n("Search for '%1' with", selectedText), this );
-            d->m_actionCollection->addAction( "searchProviderList", providerList );
-            editActions.append(providerList);
-
-            QStringList::ConstIterator it = favoriteEngines.begin();
-            for ( ; it != favoriteEngines.end(); ++it ) {
-                if (*it==defaultEngine)
-                    continue;
-                service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
-                if (!service)
-                    continue;
-                const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
-                data.setData( searchProviderPrefix + "some keyword" );
-
-                if ( KUriFilter::self()->filterUri(data, list) )
-                {
-                    QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
-                    if ( iconPath.isEmpty() )
-                        icon = KIcon("edit-find");
-                    else
-                        icon = KIcon( QPixmap( iconPath ) );
-                    name = service->name();
-
-                    KAction *action = new KAction( name, this  );
-                    d->m_actionCollection->addAction( QString( "searchProvider" + searchProviderPrefix ).toLatin1().constData(), action );
-                    action->setIcon( icon );
-                    connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
-
-                    providerList->addAction(action);
-                }
-            }
-        }
+        addSearchActions(editActions);
 
         QString selectedTextURL = selectedTextAsOneLine();
         if ( selectedTextURL.contains("://") && KUrl(selectedTextURL).isValid() ) {
@@ -710,6 +626,93 @@ KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 {
     delete d->m_actionCollection;
     delete d;
+}
+
+void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
+{
+    // Fill search provider entries
+    KConfig config("kuriikwsfilterrc");
+    KConfigGroup cg = config.group("General");
+    const QString defaultEngine = cg.readEntry("DefaultSearchEngine", "google");
+    const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
+
+    // search text
+    QString selectedText = d->m_khtml->simplifiedSelectedText();
+    if (selectedText.isEmpty())
+        return;
+
+    selectedText.replace("&", "&&");
+    if (selectedText.length() > 18) {
+        selectedText.truncate(15);
+        selectedText += "...";
+    }
+
+    // default search provider
+    KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
+
+    // search provider icon
+    KIcon icon;
+    KUriFilterData data;
+    QStringList list;
+    data.setData(QString("some keyword"));
+    list << "kurisearchfilter" << "kuriikwsfilter";
+
+    QString name;
+    if (KUriFilter::self()->filterUri(data, list)) {
+        QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
+        if (iconPath.isEmpty())
+            icon = KIcon("edit-find");
+        else
+            icon = KIcon(QPixmap(iconPath));
+        name = service->name();
+    } else {
+        icon = KIcon("google");
+        name = "Google";
+    }
+
+    KAction *action = new KAction(i18n("Search for '%1' with %2", selectedText, name), this);
+    d->m_actionCollection->addAction("searchProvider", action);
+    editActions.append(action);
+    action->setIcon(icon);
+    connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
+
+    // favorite search providers
+    QStringList favoriteEngines;
+    favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
+    favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
+
+    if (!favoriteEngines.isEmpty()) {
+        KActionMenu* providerList = new KActionMenu(i18n("Search for '%1' with", selectedText), this);
+        d->m_actionCollection->addAction("searchProviderList", providerList);
+        editActions.append(providerList);
+
+        QStringList::ConstIterator it = favoriteEngines.begin();
+        for (; it != favoriteEngines.end(); ++it) {
+            if (*it==defaultEngine)
+                continue;
+            service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
+            if (!service)
+                continue;
+            const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
+            data.setData(searchProviderPrefix + "some keyword");
+
+            if (KUriFilter::self()->filterUri(data, list)) {
+                const QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
+                if (iconPath.isEmpty())
+                    icon = KIcon("edit-find");
+                else
+                    icon = KIcon(iconPath);
+                name = service->name();
+
+                KAction *action = new KAction(name, this);
+                d->m_actionCollection->addAction(QString("searchProvider" + searchProviderPrefix).toLatin1().constData(), action);
+                action->setIcon(icon);
+                connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
+
+                providerList->addAction(action);
+            }
+        }
+    }
 }
 
 QString KHTMLPopupGUIClient::selectedTextAsOneLine() const
