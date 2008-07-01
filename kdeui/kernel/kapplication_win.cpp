@@ -51,6 +51,9 @@ void KApplication_init_windows()
 
 // <copy of kdepim/libkdepim/utils.cpp, TODO: move to a shared helper library>
 
+#ifdef _MSC_VER
+//TODO support mingw
+
 #include <windows.h>
 #include <comdef.h> // (bstr_t)
 #include <winperf.h>
@@ -233,3 +236,9 @@ void KApplication_activateWindowForProcess( const QString& executableName )
 }
 
 // </copy>
+
+#else
+void KApplication_activateWindowForProcess( const QString& executableName )
+{
+}
+#endif //!_MSC_VER
