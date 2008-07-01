@@ -1412,7 +1412,7 @@ private Q_SLOTS:
   void slotDecZoom();
   void slotIncZoomFast();
   void slotDecZoomFast();
-  
+
   void slotIncFontSize();
   void slotDecFontSize();
   void slotIncFontSizeFast();
@@ -1591,7 +1591,7 @@ private:
   void clearCaretRectIfNeeded();
   void setFocusNodeIfNeeded(const DOM::Selection &);
   void selectionLayoutChanged();
-  void notifySelectionChanged(bool closeTyping=true);  
+  void notifySelectionChanged(bool closeTyping=true);
   void resetFromScript();
   void emitSelectionChanged();
   void onFirstData();
@@ -1723,7 +1723,7 @@ private:
   void setDebugScript( bool enable );
 
   void runAdFilter();
- 
+
   khtml::EditorContext *editorContext() const;
 
   /**
@@ -1776,6 +1776,15 @@ private:
    * Paints the drag caret.
    */
   void paintDragCaret(QPainter *p, const QRect &rect) const;
+
+  /**
+   * Returns selectedText without any leading or trailing whitespace,
+   * and with non-breaking-spaces turned into normal spaces.
+   *
+   * Note that hasSelection can return true and yet simplifiedSelectedText can be empty,
+   * e.g. when selecting a single space.
+   */
+  QString simplifiedSelectedText() const;
 
   bool handleMouseMoveEventDrag(khtml::MouseMoveEvent *event);
   bool handleMouseMoveEventOver(khtml::MouseMoveEvent *event);

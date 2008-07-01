@@ -218,9 +218,8 @@ void KHTMLPartBrowserExtension::copy()
     if ( !m_editableFormWidget )
     {
         // get selected text and paste to the clipboard
-        QString text= m_part->selectedText();
-	text.replace( QChar( 0xa0 ), ' ' );
-
+        QString text = m_part->selectedText();
+        text.replace( QChar( 0xa0 ), ' ' );
 
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
@@ -262,15 +261,16 @@ void KHTMLPartBrowserExtension::searchProvider()
     // action name is of form "previewProvider[<searchproviderprefix>:]"
     const QString searchProviderPrefix = QString( sender()->objectName() ).mid( 14 );
 
+    const QString text = m_part->simplifiedSelectedText();
     KUriFilterData data;
     QStringList list;
-    data.setData( searchProviderPrefix + m_part->selectedText() );
+    data.setData( searchProviderPrefix + text );
     list << "kurisearchfilter" << "kuriikwsfilter";
 
     if( !KUriFilter::self()->filterUri(data, list) )
     {
         KDesktopFile file("services", "searchproviders/google.desktop");
-        QString encodedSearchTerm = QUrl::toPercentEncoding(m_part->selectedText());
+        QString encodedSearchTerm = QUrl::toPercentEncoding(text);
         KConfigGroup cg(file.desktopGroup());
         data.setData(cg.readEntry("Query").replace("\\{@}", encodedSearchTerm));
     }
@@ -279,14 +279,6 @@ void KHTMLPartBrowserExtension::searchProvider()
     browserArgs.frameName = "_blank";
 
     emit m_part->browserExtension()->openUrlRequest( data.uri(), KParts::OpenUrlArguments(), browserArgs );
-}
-
-void KHTMLPartBrowserExtension::openSelection()
-{
-    KParts::BrowserArguments browserArgs;
-    browserArgs.frameName = "_blank";
-
-    emit m_part->browserExtension()->openUrlRequest( m_part->selectedText(), KParts::OpenUrlArguments(), browserArgs );
 }
 
 void KHTMLPartBrowserExtension::paste()
@@ -442,11 +434,11 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
 
         // search text
-        QString selectedText = khtml->selectedText();
+        QString selectedText = d->m_khtml->simplifiedSelectedText();
         selectedText.replace("&", "&&");
-        if ( selectedText.length()>18 ) {
+        if (selectedText.length() > 18) {
             selectedText.truncate(15);
-            selectedText+="...";
+            selectedText += "...";
         }
 
         // default search provider
@@ -478,7 +470,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         KAction *action = new KAction( i18n( "Search for '%1' with %2", selectedText, name ), this );
         d->m_actionCollection->addAction( "searchProvider", action );
         editActions.append(action);
-        action->setIcon( icon );
+        action->setIcon(icon);
         connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
         // favorite search providers
@@ -487,7 +479,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
 
         if ( !favoriteEngines.isEmpty()) {
-            KActionMenu* providerList = new KActionMenu( i18n( "Search for '%1' with" ,  selectedText ), this );
+            KActionMenu* providerList = new KActionMenu( i18n("Search for '%1' with", selectedText), this );
             d->m_actionCollection->addAction( "searchProviderList", providerList );
             editActions.append(providerList);
 
@@ -520,11 +512,16 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             }
         }
 
-        if ( selectedText.contains("://") && KUrl(selectedText).isValid() ) {
-            KAction *action = new KAction( i18n( "Open '%1'", selectedText ), this );
+        QString selectedTextURL = selectedTextAsOneLine();
+        if ( selectedTextURL.contains("://") && KUrl(selectedTextURL).isValid() ) {
+            if (selectedTextURL.length() > 18) {
+                selectedTextURL.truncate(15);
+                selectedTextURL += "...";
+            }
+            KAction *action = new KAction(i18n("Open '%1'", selectedTextURL), this);
             d->m_actionCollection->addAction( "openSelection", action );
             action->setIcon( KIcon( "window-new" ) );
-            connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( openSelection() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( openSelection() ) );
             editActions.append(action);
         }
 
@@ -713,6 +710,24 @@ KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 {
     delete d->m_actionCollection;
     delete d;
+}
+
+QString KHTMLPopupGUIClient::selectedTextAsOneLine() const
+{
+    QString text = d->m_khtml->simplifiedSelectedText();
+    // in addition to what simplifiedSelectedText does,
+    // remove linefeeds and any whitespace surrounding it (#113177),
+    // to get it all in a single line.
+    text.remove(QRegExp("[\\s]*\\n+[\\s]*"));
+    return text;
+}
+
+void KHTMLPopupGUIClient::openSelection()
+{
+    KParts::BrowserArguments browserArgs;
+    browserArgs.frameName = "_blank";
+
+    emit d->m_khtml->browserExtension()->openUrlRequest(selectedTextAsOneLine(), KParts::OpenUrlArguments(), browserArgs);
 }
 
 KParts::BrowserExtension::ActionGroupMap KHTMLPopupGUIClient::actionGroups() const

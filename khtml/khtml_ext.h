@@ -63,7 +63,6 @@ public Q_SLOTS:
     void copy();
     void paste();
     void searchProvider();
-    void openSelection();
     void reparseConfiguration();
     void print();
     void disableScrolling();
@@ -145,8 +144,11 @@ private Q_SLOTS:
   void slotBlockImage();
   void slotBlockHost();
   void slotBlockIFrame();
+    void openSelection();
 
 private:
+    QString selectedTextAsOneLine() const;
+
   class KHTMLPopupGUIClientPrivate;
   KHTMLPopupGUIClientPrivate* const d;
 };

@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
  *
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
@@ -2403,7 +2402,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
     d->executeInPageURL(url, doLockHistory);
     return;
   }
-  
+
   if( delay < 24*60*60 &&
       ( d->m_redirectURL.isEmpty() || delay <= d->m_delayRedirect) ) {
     d->m_delayRedirect = delay;
@@ -2423,7 +2422,7 @@ void KHTMLPart::slotRedirect()
 {
   kDebug(6050) << this << " slotRedirect()";
   QString u = d->m_redirectURL;
-  KUrl url( u );  
+  KUrl url( u );
   d->m_delayRedirect = 0;
   d->m_redirectURL.clear();
 
@@ -2432,7 +2431,7 @@ void KHTMLPart::slotRedirect()
     d->executeInPageURL(u, d->m_redirectLockHistory);
     return;
   }
-  
+
   KParts::OpenUrlArguments args;
   KUrl cUrl( this->url() );
 
@@ -3536,6 +3535,18 @@ QString KHTMLPart::selectedText() const
        --end;
 
     return text.mid(start, end-start);
+}
+
+QString KHTMLPart::simplifiedSelectedText() const
+{
+    QString text = selectedText();
+    text.replace(QChar(0xa0), ' ');
+    // remove leading and trailing whitespace
+    while (!text.isEmpty() && text[0].isSpace())
+        text = text.mid(1);
+    while (!text.isEmpty() && text[text.length()-1].isSpace())
+        text.truncate(text.length()-1);
+    return text;
 }
 
 bool KHTMLPart::hasSelection() const
