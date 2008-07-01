@@ -593,15 +593,19 @@ void KdedGlobalAccel::loadSettings()
     }
 }
 
+
 QList<int> KdedGlobalAccel::keysFromString(const QString &str)
 {
     QList<int> ret;
     if (str == "none") {
         return ret;
     }
-    QStringList strList = str.split(' ');
+    QStringList strList = str.split('\t');
     foreach (const QString &s, strList) {
-        ret.append(QKeySequence(s)[0]);
+        int key = QKeySequence(s)[0];
+        if (key >= 0) {     //sanity check just in case
+            ret.append(key);
+        }
     }
     return ret;
 }
@@ -615,7 +619,7 @@ QString KdedGlobalAccel::stringFromKeys(const QList<int> &keys)
     QString ret;
     foreach (int key, keys) {
         ret.append(QKeySequence(key).toString());
-        ret.append(' ');
+        ret.append('\t');
     }
     ret.chop(1);
     return ret;
