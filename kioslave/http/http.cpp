@@ -703,7 +703,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     {
       entry.clear();
 
-      QString urlStr = href.text();
+      QString urlStr = QUrl::fromPercentEncoding(href.text().toUtf8());
 #if 0 // qt4/kde4 say: it's all utf8...
       int encoding = remoteEncoding()->encodingMib();
       if ((encoding == 106) && (!KStringHandler::isUtf8(KUrl::decode_string(urlStr, 4).toLatin1())))
