@@ -147,19 +147,28 @@ KUniqueApplication::start(StartFlags flags)
   {
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
 
+     QString pid = QString::number(getpid()); 
      if (forceNewProcess)
-     {
-        QString pid = QString::number(getpid());
         appName = appName + '-' + pid;
-     }
 
      // Check to make sure that we're actually able to register with the D-Bus session
      // server.
-     if (dbusService->registerService(appName) != QDBusConnectionInterface::ServiceRegistered)
+     if (
+#ifdef Q_WS_WIN
+       dbusService->registerService(appName + ".unique-" + pid) != QDBusConnectionInterface::ServiceRegistered
+#else
+       dbusService->registerService(appName) != QDBusConnectionInterface::ServiceRegistered
+#endif
+       )
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
+#ifdef Q_WS_WIN
+        // on Windows we'll restart the app (at least in KMail, KOrganizer, Konact...)
+        return false;
+#else
         ::exit(255);
+#endif
      }
 #ifdef Q_WS_WIN
      Private::s_dbusServiceName = appName;
